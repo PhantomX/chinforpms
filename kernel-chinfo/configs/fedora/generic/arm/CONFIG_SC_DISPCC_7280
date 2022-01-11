@@ -1,14 +1,1 @@
-# Symbol: SC_DISPCC_7280 [=n]
-# Type  : tristate
-# Defined at drivers/clk/qcom/Kconfig:352
-#   Prompt: SC7280 Display Clock Controller
-#   Depends on: COMMON_CLK [=y] && COMMON_CLK_QCOM [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Common Clock Framework (COMMON_CLK [=y])
-#         -> Support for Qualcomm's clock controllers (COMMON_CLK_QCOM [=y])
-# Selects: SC_GCC_7280 [=n]
-# 
-# 
-# 
-# CONFIG_SC_DISPCC_7280 is not set
+CONFIG_SC_DISPCC_7280=m

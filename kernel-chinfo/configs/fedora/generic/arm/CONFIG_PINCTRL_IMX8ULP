@@ -1,13 +1,1 @@
-# Symbol: PINCTRL_IMX8ULP [=n]
-# Type  : tristate
-# Defined at drivers/pinctrl/freescale/Kconfig:169
-#   Prompt: IMX8ULP pinctrl driver
-#   Depends on: PINCTRL [=y] && ARCH_MXC [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Pin controllers (PINCTRL [=y])
-# Selects: PINCTRL_IMX [=y]
-# 
-# 
-# 
 # CONFIG_PINCTRL_IMX8ULP is not set

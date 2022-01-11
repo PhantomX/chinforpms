@@ -1,13 +1,1 @@
-# Symbol: KCSAN [=n]
-# Type  : bool
-# Defined at lib/Kconfig.kcsan:23
-#   Prompt: KCSAN: dynamic data race detector
-#   Depends on: HAVE_ARCH_KCSAN [=y] && HAVE_KCSAN_COMPILER [=y] && DEBUG_KERNEL [=y] && !KASAN [=n] && !KCSAN_KCOV_BROKEN [=n]
-#   Location:
-#     -> Kernel hacking
-#       -> Generic Kernel Debugging Instruments
-# Selects: STACKTRACE [=y]
-# 
-# 
-# 
 # CONFIG_KCSAN is not set

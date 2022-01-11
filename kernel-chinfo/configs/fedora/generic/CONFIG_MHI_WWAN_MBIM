@@ -1,14 +1,1 @@
-# Symbol: MHI_WWAN_MBIM [=n]
-# Type  : tristate
-# Defined at drivers/net/wwan/Kconfig:41
-#   Prompt: MHI WWAN MBIM network driver for QCOM-based PCIe modems
-#   Depends on: NETDEVICES [=y] && WWAN [=y] && MHI_BUS [=m]
-#   Location:
-#     -> Device Drivers
-#       -> Network device support (NETDEVICES [=y])
-#         -> Wireless WAN
-#           -> WWAN Driver Core (WWAN [=y])
-# 
-# 
-# 
 CONFIG_MHI_WWAN_MBIM=m

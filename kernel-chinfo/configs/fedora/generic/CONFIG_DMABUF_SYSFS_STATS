@@ -1,12 +1,1 @@
-# Symbol: DMABUF_SYSFS_STATS [=n]
-# Type  : bool
-# Defined at drivers/dma-buf/Kconfig:75
-#   Prompt: DMA-BUF sysfs statistics
-#   Location:
-#     -> Device Drivers
-#       -> DMABUF options
-# Selects: DMA_SHARED_BUFFER [=y]
-# 
-# 
-# 
 CONFIG_DMABUF_SYSFS_STATS=y

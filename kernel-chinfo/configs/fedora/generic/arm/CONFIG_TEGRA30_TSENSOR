@@ -1,13 +1,1 @@
-# Symbol: TEGRA30_TSENSOR [=n]
-# Type  : tristate
-# Defined at drivers/thermal/tegra/Kconfig:21
-#   Prompt: Tegra30 Thermal Sensor
-#   Depends on: THERMAL [=y] && (ARCH_TEGRA [=y] || COMPILE_TEST [=n]) && (ARCH_TEGRA_3x_SOC [=y] || COMPILE_TEST [=n])
-#   Location:
-#     -> Device Drivers
-#       -> Thermal drivers (THERMAL [=y])
-#         -> NVIDIA Tegra thermal drivers
-# 
-# 
-# 
 CONFIG_TEGRA30_TSENSOR=m

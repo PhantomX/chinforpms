@@ -1,10 +1,1 @@
-# Symbol: VHOST_MENU [=y]
-# Type  : bool
-# Defined at drivers/vhost/Kconfig:23
-#   Prompt: VHOST drivers
-#   Location:
-#     -> Device Drivers
-# 
-# 
-# 
 CONFIG_VHOST_MENU=y

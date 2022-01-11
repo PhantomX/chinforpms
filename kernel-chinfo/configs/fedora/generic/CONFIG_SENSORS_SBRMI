@@ -1,12 +1,1 @@
-# Symbol: SENSORS_SBRMI [=n]
-# Type  : tristate
-# Defined at drivers/hwmon/Kconfig:1564
-#   Prompt: Emulated SB-RMI sensor
-#   Depends on: HWMON [=y] && I2C [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Hardware Monitoring support (HWMON [=y])
-# 
-# 
-# 
 # CONFIG_SENSORS_SBRMI is not set

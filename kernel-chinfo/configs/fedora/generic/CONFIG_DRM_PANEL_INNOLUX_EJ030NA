@@ -1,14 +1,1 @@
-# Symbol: DRM_PANEL_INNOLUX_EJ030NA [=n]
-# Type  : tristate
-# Defined at drivers/gpu/drm/panel/Kconfig:149
-#   Prompt: Innolux EJ030NA 320x480 LCD panel
-#   Depends on: HAS_IOMEM [=y] && DRM [=m] && DRM_PANEL [=y] && OF [=y] && SPI [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> Display Panels
-# Selects: REGMAP_SPI [=m]
-# 
-# 
-# 
 CONFIG_DRM_PANEL_INNOLUX_EJ030NA=m

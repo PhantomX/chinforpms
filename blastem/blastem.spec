@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 460e14497120
-%global date 20210921
+%global commit 3748a2a8a4b7
+%global date 20220101
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.5%{?gver}%{?dist}
+Release:        0.6%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -111,6 +111,9 @@ done
 
 
 %changelog
+* Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.6.20220101hg3748a2a8a4b7
+- Bump
+
 * Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20210921hg460e14497120
 - Update to proper branch
 - Do not build vasm files (menu.bin and tmss.md moved to -bindata extra package)

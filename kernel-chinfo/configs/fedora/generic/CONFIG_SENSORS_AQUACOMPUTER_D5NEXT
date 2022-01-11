@@ -1,12 +1,1 @@
-# Symbol: SENSORS_AQUACOMPUTER_D5NEXT [=n]
-# Type  : tristate
-# Defined at drivers/hwmon/Kconfig:257
-#   Prompt: Aquacomputer D5 Next watercooling pump
-#   Depends on: HWMON [=y] && USB_HID [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Hardware Monitoring support (HWMON [=y])
-# 
-# 
-# 
 CONFIG_SENSORS_AQUACOMPUTER_D5NEXT=m

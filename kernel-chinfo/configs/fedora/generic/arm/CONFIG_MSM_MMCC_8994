@@ -1,14 +1,1 @@
-# Symbol: MSM_MMCC_8994 [=n]
-# Type  : tristate
-# Defined at drivers/clk/qcom/Kconfig:268
-#   Prompt: MSM8994 Multimedia Clock Controller
-#   Depends on: COMMON_CLK [=y] && COMMON_CLK_QCOM [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Common Clock Framework (COMMON_CLK [=y])
-#         -> Support for Qualcomm's clock controllers (COMMON_CLK_QCOM [=y])
-# Selects: MSM_GCC_8994 [=n] && QCOM_GDSC [=y]
-# 
-# 
-# 
 # CONFIG_MSM_MMCC_8994 is not set

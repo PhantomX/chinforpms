@@ -1,13 +1,1 @@
-# Symbol: INTEL_SAR_INT1092 [=n]
-# Type  : tristate
-# Defined at drivers/platform/x86/intel/int1092/Kconfig:1
-#   Prompt: Intel Specific Absorption Rate Driver
-#   Depends on: X86 [=y] && X86_PLATFORM_DEVICES [=y] && X86_PLATFORM_DRIVERS_INTEL [=y] && ACPI [=y]
-#   Location:
-#     -> Device Drivers
-#       -> X86 Platform Specific Device Drivers (X86_PLATFORM_DEVICES [=y])
-#         -> Intel x86 Platform Specific Device Drivers (X86_PLATFORM_DRIVERS_INTEL [=y])
-# 
-# 
-# 
 CONFIG_INTEL_SAR_INT1092=m

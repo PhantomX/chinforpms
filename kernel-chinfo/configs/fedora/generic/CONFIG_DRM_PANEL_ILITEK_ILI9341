@@ -1,14 +1,1 @@
-# Symbol: DRM_PANEL_ILITEK_ILI9341 [=n]
-# Type  : tristate
-# Defined at drivers/gpu/drm/panel/Kconfig:128
-#   Prompt: Ilitek ILI9341 240x320 QVGA panels
-#   Depends on: HAS_IOMEM [=y] && DRM [=m] && DRM_PANEL [=y] && OF [=y] && SPI [=y] && DRM_KMS_HELPER [=m] && DRM_KMS_CMA_HELPER [=y] && BACKLIGHT_CLASS_DEVICE [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> Display Panels
-# Selects: DRM_MIPI_DBI [=m]
-# 
-# 
-# 
 # CONFIG_DRM_PANEL_ILITEK_ILI9341 is not set

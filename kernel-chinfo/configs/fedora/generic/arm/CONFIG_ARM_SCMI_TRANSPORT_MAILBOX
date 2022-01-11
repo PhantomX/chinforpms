@@ -1,14 +1,1 @@
-# Symbol: ARM_SCMI_TRANSPORT_MAILBOX [=y]
-# Type  : bool
-# Defined at drivers/firmware/arm_scmi/Kconfig:45
-#   Prompt: SCMI transport based on Mailbox
-#   Depends on: ARM_SCMI_PROTOCOL [=y] && MAILBOX [=y]
-#   Location:
-#     -> Firmware Drivers
-#       -> ARM System Control and Management Interface Protocol
-#         -> ARM System Control and Management Interface (SCMI) Message Protocol (ARM_SCMI_PROTOCOL [=y])
-# Selects: ARM_SCMI_HAVE_TRANSPORT [=y] && ARM_SCMI_HAVE_SHMEM [=y]
-# 
-# 
-# 
 CONFIG_ARM_SCMI_TRANSPORT_MAILBOX=y

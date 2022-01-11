@@ -7,9 +7,14 @@
 %global include_fedora 1
 # Include RHEL files
 %global include_rhel 1
+# Provide Patchlist.changelog file
+%global patchlist_changelog 1
 
 # Disable LTO in userspace packages.
 %global _lto_cflags %{nil}
+
+# Speep up packaging, no rpaths to search here
+%global __brp_check_rpaths %{nil}
 
 # Option to enable compiling with clang instead of gcc.
 %bcond_with toolchain_clang
@@ -148,24 +153,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 15
+%define base_sublevel 16
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 13
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7e350334bc00cea89c46d3fc94db0d83b8b139ec
+%global pfcommit 314c5704a484cf230394fccb76f240f7af0f54b5
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -193,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 01786ae063a41376d30a48f246b6f6025e9513aa
+%global opensuse_id 487d6b361ff2ff56bbc7ee16277566dbd788104f
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -333,9 +338,14 @@ Summary: The Linux kernel
 %endif
 
 %if %{with toolchain_clang}
-%global clang_make_opts HOSTCC=clang CC=clang
+%ifarch s390x ppc64le
+%global llvm_ias 0
+%else
+%global llvm_ias 1
+%endif
+%global clang_make_opts HOSTCC=clang CC=clang LLVM_IAS=%{llvm_ias}
 %if %{with clang_lto}
-%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm LLVM_IAS=1
+%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm
 %endif
 %global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
@@ -508,6 +518,11 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %endif
 
+# skip BTF in kernel modules for s390x
+%ifnarch s390x
+%define with_kmod_btf --keep-section '.BTF'
+%endif
+
 %if 0%{?fedora}
 # This is not for Fedora
 %define with_zfcpdump 0
@@ -604,7 +619,7 @@ Summary: The Linux kernel
 %define _enable_debug_packages 0
 %endif
 
-%if %{use_vdso}
+%if 0%{?use_vdso}
 
 %if 0%{?skip_nonpae_vdso}
 %define _use_vdso 0
@@ -644,7 +659,7 @@ Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
-ExclusiveArch: x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: noarch x86_64 s390x %{arm} aarch64 ppc64le
 %else
 ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
 %endif
@@ -888,9 +903,12 @@ Source3014: kernel-local-zen
 Source3015: kernel-local-generic
 Source3016: kernel-local-numa
 
+%if 0%{patchlist_changelog}
 Source3997: Patchlist.changelog
-Source3998: README.rst
-Source3999: rpminspect.yaml
+%endif
+Source4000: README.rst
+Source4001: rpminspect.yaml
+Source4002: gating.yaml
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
@@ -936,7 +954,6 @@ Patch1: patch-%{kversion}-redhat.patch
 # Build fail when LRNG is enabled
 Patch2: patch-%{kversion}-revert77f4d04.patch
 Patch3: patch-%{kversion}-revert8313ae8.patch
-Patch4: 0001-Revert-pmadv_ksm-syscall.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -950,24 +967,21 @@ Patch4: 0001-Revert-pmadv_ksm-syscall.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1014: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1015: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
-Patch1016: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
-Patch1017: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1018: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
+Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
+Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
+Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1016: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
+Patch1017: %{opensuse_url}/media-Revert-media-uvcvideo-Set-unique-vdev-name-bas.patch#/openSUSE-media-Revert-media-uvcvideo-Set-unique-vdev-name-bas.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id b10490c6b327150a293c50b9d7000a1d4f67fce7
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2092: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.15/0007-v5.15-futex_waitv.patch#/tkg-0007-v5.15-futex_waitv.patch
-%if 0%{?post_factum}
-Patch2093: 0001-Readd-pmadv_ksm-syscall.patch
-%endif
+%global tkg_id 2c0540c869775f5740e286f6099f4444123adbaa
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -983,13 +997,13 @@ Patch2094: 0001-Revert-commit-536167d.patch
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id b9aeee77b2c3e76c1faeca297e4e4a448babaaee
-Source4000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v9.1+_kernel_v5.5+.patch
+Source6000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v9.1+_kernel_v5.5+.patch
 %endif
 
 %endif
 
 %if !0%{?zen}
-Patch4010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1133,7 +1147,7 @@ AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} %{?with_kmod_btf} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
 
 
 %{nil}
@@ -1548,7 +1562,7 @@ git commit -a -m "Stable update"
 git am %{patches}
 
 %if !0%{?post_factum} && !0%{?zen}
-$patch_command -i %{SOURCE4000}
+$patch_command -i %{SOURCE6000}
 %endif
 
 # END OF PATCH APPLICATIONS
@@ -2292,11 +2306,7 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT/usr/src/kernels
     mv $RPM_BUILD_ROOT/lib/modules/$KernelVer/build $RPM_BUILD_ROOT/$DevelDir
 
-    # This is going to create a broken link during the build, but we don't use
-    # it after this point.  We need the link to actually point to something
-    # when kernel-devel is installed, and a relative link doesn't work across
-    # the F17 UsrMove feature.
-    ln -sf $DevelDir $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
@@ -2404,7 +2414,7 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 	test -d $dir || continue
 	mkdir -p %{buildroot}%{_libexecdir}/kselftests/$dir
 	find $dir -maxdepth 1 -type f \( -executable -o -name '*.py' -o -name settings -o \
-		-name 'btf_dump_test_case_*.c' -o \
+		-name 'btf_dump_test_case_*.c' -o -name '*.ko' -o \
 		-name '*.o' -exec sh -c 'readelf -h "{}" | grep -q "^  Machine:.*BPF"' \; \) -print0 | \
 	xargs -0 cp -t %{buildroot}%{_libexecdir}/kselftests/$dir || true
 done
@@ -2812,7 +2822,7 @@ fi
 %endif
 
 %if %{with_gcov}
-%ifarch x86_64 s390x ppc64le aarch64
+%ifnarch %nobuildarches noarch
 %files gcov
 %{_builddir}
 %endif
@@ -2912,6 +2922,9 @@ fi
 #
 #
 %changelog
+* Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500.chinfo
+- 5.16.0 - pf1
+
 * Wed Jan 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.15.13-500.chinfo
 - 5.15.13 - pf6
 
@@ -3257,56 +3270,6 @@ fi
 
 * Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
 - 5.9.0 -pf1
-
-* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
-- 5.8.14 -pf7
-
-* Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.13-500.chinfo
-- 5.8.13 -pf7
-
-* Sat Sep 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-500.chinfo
-- 5.8.12 - pf6
-
-* Wed Sep 23 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.11-500.chinfo
-- 5.8.11 - pf5
-
-* Thu Sep 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.10-500.chinfo
-- 5.8.10 - pf5
-
-* Sat Sep 12 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.9-500.chinfo
-- 5.8.9 - pf5
-- f32 sync
-
-* Wed Sep 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.8-500.chinfo
-- 5.8.8 - pf4
-
-* Sat Sep 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.7-500.chinfo
-- 5.8.7 - pf4
-
-* Thu Sep 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.6-500.chinfo
-- 5.8.6 - pf4
-
-* Thu Aug 27 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.5-500.chinfo
-- 5.8.5 - pf3
-
-* Wed Aug 26 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.4-500.chinfo
-- 5.8.4 - pf3
-
-* Sat Aug 22 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.3-500.chinfo
-- 5.8.3 - pf2
-
-* Wed Aug 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.2-500.chinfo
-- 5.8.2 - pf2
-
-* Tue Aug 11 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.1-500.chinfo
-- 5.8.1 - pf2
-
-* Thu Aug 06 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-501.chinfo
-- pf sync
-
-* Mon Aug 03 2020 Phantom X <megaphantomx at bol dot com dot br> - 5.8.0-500.chinfo
-- 5.8.0 - pf1
-- Rawhide sync
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

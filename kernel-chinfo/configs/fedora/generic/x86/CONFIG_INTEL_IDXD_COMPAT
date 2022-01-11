@@ -1,13 +1,1 @@
-# Symbol: INTEL_IDXD_COMPAT [=n]
-# Type  : bool
-# Defined at drivers/dma/Kconfig:299
-#   Prompt: Legacy behavior for idxd driver
-#   Depends on: DMADEVICES [=y] && PCI [=y] && X86_64 [=y]
-#   Location:
-#     -> Device Drivers
-#       -> DMA Engine support (DMADEVICES [=y])
-# Selects: INTEL_IDXD_BUS [=m]
-# 
-# 
-# 
 # CONFIG_INTEL_IDXD_COMPAT is not set

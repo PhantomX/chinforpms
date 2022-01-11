@@ -1,13 +1,1 @@
-# Symbol: MFD_RSMU_I2C [=n]
-# Type  : tristate
-# Defined at drivers/mfd/Kconfig:2202
-#   Prompt: Renesas Synchronization Management Unit with I2C
-#   Depends on: HAS_IOMEM [=y] && I2C [=m] && OF [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Multifunction device drivers
-# Selects: MFD_CORE [=m] && REGMAP_I2C [=m]
-# 
-# 
-# 
 CONFIG_MFD_RSMU_I2C=m

@@ -33,13 +33,13 @@ scsidrvs="aacraid aic7xxx be2iscsi bfa bnx2i bnx2fc csiostor cxgbi esas2r fcoe f
 
 usbdrvs="atm image misc serial"
 
-fsdrvs="affs befs cifs coda cramfs dlm ecryptfs hfs hfsplus jfs jffs2 minix nilfs2 ocfs2 reiserfs romfs squashfs sysv ubifs ufs"
+fsdrvs="affs befs coda cramfs dlm ecryptfs hfs hfsplus jfs jffs2 minix nilfs2 ocfs2 reiserfs romfs squashfs sysv ubifs ufs"
 
 netprots="6lowpan appletalk atm ax25 batman-adv bluetooth can dsa ieee802154 l2tp mac80211 mac802154 mpls netrom nfc rds rfkill rose sctp smc wireless"
 
 drmdrvs="amd ast bridge gma500 i2c i915 mgag200 nouveau panel radeon"
 
-singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw regmap-sdw-mbq arizona-micsupp hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa spi-altera-dfl"
+singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw regmap-sdw-mbq arizona-micsupp hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa spi-altera-dfl nct6775 hid-playstation hid-nintendo"
 
 # Grab the arch-specific filter list overrides
 source ./filter-$2.sh

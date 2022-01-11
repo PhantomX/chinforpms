@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 460e14497120
-%global date 20210921
+%global commit 3748a2a8a4b7
+%global date 20220101
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -18,8 +18,6 @@ Summary:        Blastem binary support files
 License:        GPLv3
 URL:            https://www.retrodev.com/%{pkgname}/
 Source0:        https://www.retrodev.com/repos/%{pkgname}/archive/%{commit}.tar.bz2#/%{pkgname}-%{commit}.tar.bz2
-
-Patch0:         0001-img2tiles.py-update-to-python-3.patch
 
 BuildArch:      noarch
 

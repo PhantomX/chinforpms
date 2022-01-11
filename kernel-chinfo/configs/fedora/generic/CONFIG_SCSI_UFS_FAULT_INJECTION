@@ -1,13 +1,1 @@
-# Symbol: SCSI_UFS_FAULT_INJECTION [=n]
-# Type  : bool
-# Defined at drivers/scsi/ufs/Kconfig:196
-#   Prompt: UFS Fault Injection Support
-#   Depends on: SCSI_LOWLEVEL [=y] && SCSI [=y] && SCSI_UFSHCD [=m] && FAULT_INJECTION [=y]
-#   Location:
-#     -> Device Drivers
-#       -> SCSI device support
-#         -> SCSI low-level drivers (SCSI_LOWLEVEL [=y])
-# 
-# 
-# 
 # CONFIG_SCSI_UFS_FAULT_INJECTION is not set

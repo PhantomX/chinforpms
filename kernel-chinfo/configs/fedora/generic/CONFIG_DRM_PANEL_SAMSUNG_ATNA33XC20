@@ -1,14 +1,1 @@
-# Symbol: DRM_PANEL_SAMSUNG_ATNA33XC20 [=n]
-# Type  : tristate
-# Defined at drivers/gpu/drm/panel/Kconfig:368
-#   Prompt: Samsung ATNA33XC20 eDP panel
-#   Depends on: HAS_IOMEM [=y] && DRM [=m] && DRM_PANEL [=y] && OF [=y] && BACKLIGHT_CLASS_DEVICE [=y] && PM [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> Display Panels
-# Selects: DRM_DP_AUX_BUS [=m]
-# 
-# 
-# 
 CONFIG_DRM_PANEL_SAMSUNG_ATNA33XC20=m

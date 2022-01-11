@@ -1,12 +1,1 @@
-# Symbol: F2FS_IOSTAT [=y]
-# Type  : bool
-# Defined at fs/f2fs/Kconfig:137
-#   Prompt: F2FS IO statistics information
-#   Depends on: BLOCK [=y] && F2FS_FS [=m]
-#   Location:
-#     -> File systems
-#       -> F2FS filesystem support (F2FS_FS [=m])
-# 
-# 
-# 
 CONFIG_F2FS_IOSTAT=y

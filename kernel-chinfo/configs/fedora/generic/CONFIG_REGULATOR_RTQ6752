@@ -1,13 +1,1 @@
-# Symbol: REGULATOR_RTQ6752 [=n]
-# Type  : tristate
-# Defined at drivers/regulator/Kconfig:1080
-#   Prompt: Richtek RTQ6752 TFT LCD voltage regulator
-#   Depends on: REGULATOR [=y] && I2C [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Voltage and Current Regulator Support (REGULATOR [=y])
-# Selects: REGMAP_I2C [=y]
-# 
-# 
-# 
 CONFIG_REGULATOR_RTQ6752=m

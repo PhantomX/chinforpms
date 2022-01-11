@@ -1,0 +1,15 @@
+# Symbol: PSTORE_BLK [=n]
+# Type  : tristate
+# Defined at fs/pstore/Kconfig:172
+#   Prompt: Log panic/oops to a block device
+#   Depends on: MISC_FILESYSTEMS [=y] && PSTORE [=y] && BLOCK [=y]
+#   Location:
+#     Main menu
+#       -> File systems
+#         -> Miscellaneous filesystems (MISC_FILESYSTEMS [=y])
+#           -> Persistent store support (PSTORE [=y])
+# Selects: PSTORE_ZONE [=n]
+# 
+# 
+# 
+# CONFIG_PSTORE_BLK is not set

@@ -1,12 +1,1 @@
-# Symbol: SPI_ROCKCHIP_SFC [=n]
-# Type  : tristate
-# Defined at drivers/spi/Kconfig:661
-#   Prompt: Rockchip Serial Flash Controller (SFC)
-#   Depends on: SPI [=y] && SPI_MASTER [=y] && (ARCH_ROCKCHIP [=y] || COMPILE_TEST [=n]) && HAS_IOMEM [=y] && HAS_DMA [=y]
-#   Location:
-#     -> Device Drivers
-#       -> SPI support (SPI [=y])
-# 
-# 
-# 
 # CONFIG_SPI_ROCKCHIP_SFC is not set

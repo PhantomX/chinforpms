@@ -10,7 +10,7 @@
 %global parch i386
 %endif
 
-%global pkgrel 1038
+%global pkgrel 1042
 
 Name:           softmaker-office
 Version:        2021
@@ -169,5 +169,8 @@ install -pm0644 mime/%{name}-%{version}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Mon Jan 10 2022 - 1:2021-1.1042
+- 2021-1042
+
 * Mon Nov 15 2021 - 1:2021-1.1038
 - Initial spec

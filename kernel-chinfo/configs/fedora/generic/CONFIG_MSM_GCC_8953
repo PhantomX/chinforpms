@@ -1,14 +1,1 @@
-# Symbol: MSM_GCC_8953 [=n]
-# Type  : tristate
-# Defined at drivers/clk/qcom/Kconfig:243
-#   Prompt: MSM8953 Global Clock Controller
-#   Depends on: COMMON_CLK [=y] && COMMON_CLK_QCOM [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Common Clock Framework (COMMON_CLK [=y])
-#         -> Support for Qualcomm's clock controllers (COMMON_CLK_QCOM [=y])
-# Selects: QCOM_GDSC [=y]
-# 
-# 
-# 
 # CONFIG_MSM_GCC_8953 is not set

@@ -1,0 +1,13 @@
+# Symbol: ALIBABA_ENI_VDPA [=n]
+# Type  : tristate
+# Defined at drivers/vdpa/Kconfig:81
+#   Prompt: vDPA driver for Alibaba ENI
+#   Depends on: VDPA [=m] && PCI_MSI [=y] && X86 [=y]
+#   Location:
+#     -> Device Drivers
+#       -> vDPA drivers (VDPA [=m])
+# Selects: VIRTIO_PCI_LIB_LEGACY [=y]
+# 
+# 
+# 
+# CONFIG_ALIBABA_ENI_VDPA is not set

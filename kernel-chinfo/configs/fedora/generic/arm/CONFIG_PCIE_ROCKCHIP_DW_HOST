@@ -1,15 +1,1 @@
-# Symbol: PCIE_ROCKCHIP_DW_HOST [=n]
-# Type  : bool
-# Defined at drivers/pci/controller/dwc/Kconfig:217
-#   Prompt: Rockchip DesignWare PCIe controller
-#   Depends on: PCI [=y] && PCI_MSI_IRQ_DOMAIN [=y] && (ARCH_ROCKCHIP [=y] || COMPILE_TEST [=n]) && OF [=y]
-#   Location:
-#     -> Device Drivers
-#       -> PCI support (PCI [=y])
-#         -> PCI controller drivers
-#           -> DesignWare PCI Core Support
-# Selects: PCIE_DW [=y] && PCIE_DW_HOST [=y]
-# 
-# 
-# 
-# CONFIG_PCIE_ROCKCHIP_DW_HOST is not set
+CONFIG_PCIE_ROCKCHIP_DW_HOST=y

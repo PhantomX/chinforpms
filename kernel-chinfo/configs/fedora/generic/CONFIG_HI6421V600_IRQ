@@ -1,13 +1,1 @@
-# Symbol: HI6421V600_IRQ [=n]
-# Type  : tristate
-# Defined at drivers/misc/Kconfig:223
-#   Prompt: HiSilicon Hi6421v600 IRQ and powerkey
-#   Depends on: OF [=y] && SPMI [=m]
-#   Location:
-#     -> Device Drivers
-#       -> Misc devices
-# Selects: MFD_CORE [=y] && REGMAP_SPMI [=m]
-# 
-# 
-# 
 CONFIG_HI6421V600_IRQ=m

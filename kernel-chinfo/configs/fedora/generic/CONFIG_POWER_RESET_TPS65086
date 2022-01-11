@@ -1,12 +1,1 @@
-# Symbol: POWER_RESET_TPS65086 [=n]
-# Type  : bool
-# Defined at drivers/power/reset/Kconfig:207
-#   Prompt: TPS65086 restart driver
-#   Depends on: POWER_RESET [=y] && MFD_TPS65086 [=m]
-#   Location:
-#     -> Device Drivers
-#       -> Board level reset or power off (POWER_RESET [=y])
-# 
-# 
-# 
 CONFIG_POWER_RESET_TPS65086=y

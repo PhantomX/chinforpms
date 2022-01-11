@@ -1,13 +1,1 @@
-# Symbol: MAXLINEAR_GPHY [=n]
-# Type  : tristate
-# Defined at drivers/net/phy/Kconfig:210
-#   Prompt: Maxlinear Ethernet PHYs
-#   Depends on: NETDEVICES [=y] && PHYLIB [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Network device support (NETDEVICES [=y])
-#         -> PHY Device support and infrastructure (PHYLIB [=y])
-# 
-# 
-# 
 CONFIG_MAXLINEAR_GPHY=m

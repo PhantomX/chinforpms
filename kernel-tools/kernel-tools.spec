@@ -24,13 +24,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 15
+%global base_sublevel 16
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 13
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -500,6 +500,9 @@ popd
 
 
 %changelog
+* Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500
+- 5.16.0
+
 * Wed Jan 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.15.13-500
 - 5.15.13
 

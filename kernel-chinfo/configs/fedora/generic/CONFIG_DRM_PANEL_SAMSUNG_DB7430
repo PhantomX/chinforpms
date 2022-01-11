@@ -1,14 +1,1 @@
-# Symbol: DRM_PANEL_SAMSUNG_DB7430 [=n]
-# Type  : tristate
-# Defined at drivers/gpu/drm/panel/Kconfig:379
-#   Prompt: Samsung DB7430-based DPI panels
-#   Depends on: HAS_IOMEM [=y] && DRM [=m] && DRM_PANEL [=y] && OF [=y] && SPI [=y] && GPIOLIB [=y] && BACKLIGHT_CLASS_DEVICE [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> Display Panels
-# Selects: DRM_MIPI_DBI [=m]
-# 
-# 
-# 
 CONFIG_DRM_PANEL_SAMSUNG_DB7430=m

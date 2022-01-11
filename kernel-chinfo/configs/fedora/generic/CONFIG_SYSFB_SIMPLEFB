@@ -1,11 +1,1 @@
-# Symbol: SYSFB_SIMPLEFB [=n]
-# Type  : bool
-# Defined at drivers/firmware/Kconfig:227
-#   Prompt: Mark VGA/VBE/EFI FB as generic system framebuffer
-#   Depends on: SYSFB [=y]
-#   Location:
-#     -> Firmware Drivers
-# 
-# 
-# 
-# CONFIG_SYSFB_SIMPLEFB is not set
+CONFIG_SYSFB_SIMPLEFB=y

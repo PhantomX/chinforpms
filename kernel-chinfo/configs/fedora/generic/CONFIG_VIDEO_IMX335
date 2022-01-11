@@ -1,16 +1,1 @@
-# Symbol: VIDEO_IMX335 [=n]
-# Type  : tristate
-# Defined at drivers/media/i2c/Kconfig:845
-#   Prompt: Sony IMX335 sensor support
-#   Depends on: MEDIA_SUPPORT [=m] && OF_GPIO [=y] && I2C [=m] && VIDEO_V4L2 [=m]
-#   Visible if: MEDIA_SUPPORT [=m] && OF_GPIO [=y] && I2C [=m] && VIDEO_V4L2 [=m] && MEDIA_CAMERA_SUPPORT [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Multimedia support (MEDIA_SUPPORT [=m])
-#         -> Media ancillary drivers
-#           -> Camera sensor devices
-# Selects: VIDEO_V4L2_SUBDEV_API [=y] && MEDIA_CONTROLLER [=y] && V4L2_FWNODE [=m]
-# 
-# 
-# 
 CONFIG_VIDEO_IMX335=m

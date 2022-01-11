@@ -1,13 +1,1 @@
-# Symbol: VDPA_USER [=n]
-# Type  : tristate
-# Defined at drivers/vdpa/Kconfig:36
-#   Prompt: VDUSE (vDPA Device in Userspace) support
-#   Depends on: VDPA [=m] && EVENTFD [=y] && MMU [=y] && HAS_DMA [=y]
-#   Location:
-#     -> Device Drivers
-#       -> vDPA drivers (VDPA [=m])
-# Selects: DMA_OPS [=y] && VHOST_IOTLB [=m] && IOMMU_IOVA [=y]
-# 
-# 
-# 
 CONFIG_VDPA_USER=m

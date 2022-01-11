@@ -1,14 +1,1 @@
-# Symbol: DRM_PANEL_WIDECHIPS_WS2401 [=n]
-# Type  : tristate
-# Defined at drivers/gpu/drm/panel/Kconfig:600
-#   Prompt: Widechips WS2401 DPI panel driver
-#   Depends on: HAS_IOMEM [=y] && DRM [=m] && DRM_PANEL [=y] && SPI [=y] && GPIOLIB [=y] && BACKLIGHT_CLASS_DEVICE [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> Display Panels
-# Selects: DRM_MIPI_DBI [=m]
-# 
-# 
-# 
 CONFIG_DRM_PANEL_WIDECHIPS_WS2401=m

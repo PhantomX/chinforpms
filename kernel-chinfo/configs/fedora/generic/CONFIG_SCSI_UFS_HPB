@@ -1,13 +1,1 @@
-# Symbol: SCSI_UFS_HPB [=n]
-# Type  : bool
-# Defined at drivers/scsi/ufs/Kconfig:187
-#   Prompt: Support UFS Host Performance Booster
-#   Depends on: SCSI_LOWLEVEL [=y] && SCSI [=y] && SCSI_UFSHCD [=m]
-#   Location:
-#     -> Device Drivers
-#       -> SCSI device support
-#         -> SCSI low-level drivers (SCSI_LOWLEVEL [=y])
-# 
-# 
-# 
 CONFIG_SCSI_UFS_HPB=y

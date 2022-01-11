@@ -1,13 +1,1 @@
-# Symbol: NTFS3_FS [=n]
-# Type  : tristate
-# Defined at fs/ntfs3/Kconfig:2
-#   Prompt: NTFS Read-Write file system support
-#   Depends on: BLOCK [=y]
-#   Location:
-#     -> File systems
-#       -> DOS/FAT/EXFAT/NT Filesystems
-# Selects: NLS [=y]
-# 
-# 
-# 
 CONFIG_NTFS3_FS=m

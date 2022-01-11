@@ -1,13 +1,1 @@
-# Symbol: AD5110 [=n]
-# Type  : tristate
-# Defined at drivers/iio/potentiometer/Kconfig:9
-#   Prompt: Analog Devices AD5110 and similar Digital Potentiometer driver
-#   Depends on: IIO [=m] && I2C [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Industrial I/O support (IIO [=m])
-#         -> Digital potentiometers
-# 
-# 
-# 
 CONFIG_AD5110=m

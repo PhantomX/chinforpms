@@ -1,15 +1,1 @@
-# Symbol: SND_HDA_CODEC_CS8409 [=n]
-# Type  : tristate
-# Defined at sound/pci/hda/Kconfig:160
-#   Prompt: Build Cirrus Logic HDA bridge support
-#   Depends on: SOUND [=m] && !UML && SND [=m] && SND_HDA [=m]
-#   Location:
-#     -> Device Drivers
-#       -> Sound card support (SOUND [=m])
-#         -> Advanced Linux Sound Architecture (SND [=m])
-#           -> HD-Audio
-# Selects: SND_HDA_GENERIC [=m]
-# 
-# 
-# 
 CONFIG_SND_HDA_CODEC_CS8409=m

@@ -1,14 +1,1 @@
-# Symbol: SND_SOC_AMD_ACP5x [=n]
-# Type  : tristate
-# Defined at sound/soc/amd/Kconfig:56
-#   Prompt: AMD Audio Coprocessor-v5.x I2S support
-#   Depends on: SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] && X86 [=y] && PCI [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Sound card support (SOUND [=m])
-#         -> Advanced Linux Sound Architecture (SND [=m])
-#           -> ALSA for SoC audio support (SND_SOC [=m])
-# 
-# 
-# 
 CONFIG_SND_SOC_AMD_ACP5x=m

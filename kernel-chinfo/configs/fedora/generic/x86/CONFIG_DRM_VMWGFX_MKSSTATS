@@ -1,13 +1,1 @@
-# Symbol: DRM_VMWGFX_MKSSTATS [=n]
-# Type  : bool
-# Defined at drivers/gpu/drm/vmwgfx/Kconfig:25
-#   Prompt: Enable mksGuestStats instrumentation of vmwgfx by default
-#   Depends on: HAS_IOMEM [=y] && DRM_VMWGFX [=m] && X86 [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> DRM driver for VMware Virtual GPU (DRM_VMWGFX [=m])
-# 
-# 
-# 
 CONFIG_DRM_VMWGFX_MKSSTATS=y

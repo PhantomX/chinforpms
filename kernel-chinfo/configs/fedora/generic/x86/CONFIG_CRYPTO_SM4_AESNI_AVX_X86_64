@@ -1,14 +1,1 @@
-# Symbol: CRYPTO_SM4_AESNI_AVX_X86_64 [=n]
-# Type  : tristate
-# Defined at crypto/Kconfig:1573
-#   Prompt: SM4 cipher algorithm (x86_64/AES-NI/AVX)
-#   Depends on: CRYPTO [=y] && X86 [=y] && 64BIT [=y]
-#   Location:
-#     -> Cryptographic API (CRYPTO [=y])
-# Selects: CRYPTO_SKCIPHER [=y] && CRYPTO_SIMD [=y] && CRYPTO_ALGAPI [=y] && CRYPTO_LIB_SM4 [=n]
-# Selected by [n]:
-#   - CRYPTO_SM4_AESNI_AVX2_X86_64 [=n] && CRYPTO [=y] && X86 [=y] && 64BIT [=y]
-# 
-# 
-# 
 CONFIG_CRYPTO_SM4_AESNI_AVX_X86_64=m

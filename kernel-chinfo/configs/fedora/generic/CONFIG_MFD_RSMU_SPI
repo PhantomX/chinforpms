@@ -1,13 +1,1 @@
-# Symbol: MFD_RSMU_SPI [=n]
-# Type  : tristate
-# Defined at drivers/mfd/Kconfig:2216
-#   Prompt: Renesas Synchronization Management Unit with SPI
-#   Depends on: HAS_IOMEM [=y] && SPI [=y] && OF [=y]
-#   Location:
-#     -> Device Drivers
-#       -> Multifunction device drivers
-# Selects: MFD_CORE [=y] && REGMAP_SPI [=m]
-# 
-# 
-# 
 CONFIG_MFD_RSMU_SPI=m
