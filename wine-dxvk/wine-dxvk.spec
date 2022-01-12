@@ -7,7 +7,7 @@
 %global commit ecd7b67069a6e2a4b78a8a929fd287030d283ccb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211221
-%global with_snapshot 1
+%global with_snapshot 0
 
 %{?mingw_package_header}
 
@@ -21,7 +21,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id a9de5a9fc12d12a2cd50e3aeffae01e6f51ddbd4
+%global sporif_id 1ab4609b69e320fa2cc645bd3b29c745925a3fab
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -37,8 +37,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.9.2
-Release:        109%{?gver}%{?dist}
+Version:        1.9.3
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -251,6 +251,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Jan 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.3-100
+- 1.9.3
+
 * Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.2-109.20211205gitc13395d
 - Add a PR to fix flickering
 

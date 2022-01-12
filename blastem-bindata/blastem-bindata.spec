@@ -12,7 +12,7 @@
 
 Name:           %{pkgname}-bindata
 Version:        0.6.3
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Blastem binary support files
 
 License:        GPLv3
@@ -60,5 +60,8 @@ install -pm0644 menu.bin tmss.md %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.2.20220101hg3748a2a8a4b7
+- Bump
+
 * Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.1.20210921hg460e14497120
 - Initial spec
