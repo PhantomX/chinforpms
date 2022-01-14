@@ -48,11 +48,7 @@ or tweak various Wine settings individually.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n%{name}-%{commit}
-%else
-%autosetup
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed -i -e s:steam:: -e s:flash:: tests/*
 

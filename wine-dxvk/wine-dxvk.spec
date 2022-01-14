@@ -121,11 +121,7 @@ package or when debugging this package.
 
 %prep
 %if 0%{?dxvk_async}
-%if 0%{?with_snapshot}
-%setup -q -n %{pkgname}-%{commit}
-%else
-%setup -q -n %{pkgname}-%{version}
-%endif
+%setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
 %patch100 -p1
 
 %patch200 -p1
@@ -133,11 +129,7 @@ package or when debugging this package.
 
 cp %{S:4} README.async.md
 %else
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 %endif
 
 cp %{S:1} README.%{pkgname}

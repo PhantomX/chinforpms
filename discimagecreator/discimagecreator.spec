@@ -43,11 +43,7 @@ CD and GD, it can dump considering a drive + CD (=combined) offset.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 rm -f Release_ANSI/E_WISE*
 rm -f Release_ANSI/*.exe

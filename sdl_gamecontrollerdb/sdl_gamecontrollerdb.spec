@@ -34,11 +34,7 @@ SDL_GameControllerDB is a community source database of game controller mappings
 to be used with SDL2 Game Controller functionality.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit}
-%else
-%autosetup -n %{pkgname}-%{version}
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" check.py
 

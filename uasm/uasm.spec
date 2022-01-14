@@ -42,11 +42,7 @@ BuildRequires:  make
 UASM is a free MASM-compatible assembler based on JWasm.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 file=History.txt
 iconv -f ISO-8859-1 -t UTF-8 -o $file.new $file && touch -r $file $file.new && mv $file.new $file

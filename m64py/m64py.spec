@@ -48,11 +48,7 @@ plugin-based Nintendo 64 emulator.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -p1
-%endif
+%autosetup %{?gver:-n %{pkgname}-%{commit}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
 

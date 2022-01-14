@@ -1,8 +1,8 @@
 %global pkgname py-sdl2
 
 Name:           pysdl2
-Version:        0.9.9
-Release:        2%{?dist}
+Version:        0.9.10
+Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
 License:        CC0
@@ -76,6 +76,9 @@ rm -f sdl2/test/{audio_test,sdlmixer_test,version_test}.py
 
 
 %changelog
+* Thu Jan 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.10-1
+- 0.9.10
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.9-2
 - Disable one more test
 

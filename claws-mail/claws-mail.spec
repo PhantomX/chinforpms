@@ -1,6 +1,6 @@
-%global commit d02ea2c207e41a46791e211cb975fd6434e3f220
+%global commit 03d035f2e8ee01c90c47b0b5cdf6f7a4ebcd1356
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211103
+%global date 20220113
 %global with_snapshot 1
 
 %global with_python  0
@@ -24,7 +24,7 @@
 
 Name:           claws-mail
 Version:        4.0.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -431,11 +431,10 @@ exporting of your meetings or all your calendars.
 
 
 %prep
+%autosetup %{?gver:-n claws-%{shortcommit}} -p1
+
 %if 0%{?with_snapshot}
-%autosetup -n claws-%{shortcommit} -p1
 echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
-%else
-%autosetup -p1
 %endif
 
 %if 0%{?with_autotools}
@@ -719,7 +718,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
-* Thu Nov 04 2021 Phantom X - 1:4.0.0-104.20211103gitd02ea2c
+* Thu Jan 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-105.20220113git03d035f
+- Bump
+
+* Thu Nov 04 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-104.20211103gitd02ea2c
 - Last snapshot
 
 * Mon Oct 18 2021 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-103.20211013git67e7621

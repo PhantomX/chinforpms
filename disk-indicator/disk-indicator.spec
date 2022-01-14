@@ -7,6 +7,8 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global pkgname Disk-Indicator
+
 Name:           disk-indicator
 Version:        0.2.1
 Release:        2%{?gver}%{?dist}
@@ -15,9 +17,9 @@ Summary:        Turns keyboard LEDs into hard disk indicator
 License:        GPLv3
 URL:            https://github.com/MeanEYE/Disk-Indicator/
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         disk-indicator-homedir.patch
@@ -31,11 +33,7 @@ Small program for Linux that will turn your Scroll, Caps or Num Lock LED or LED
 on your ThinkPad laptop into hard disk indicator.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n Disk-Indicator-%{commit} -p1
-%else
-%autosetup -n Disk-Indicator-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 sed \
   -e '/^LINK_FLAGS=/s|=|\0$(LDFLAGS) |g' \

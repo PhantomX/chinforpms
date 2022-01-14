@@ -62,11 +62,7 @@ improvements, temperature reporting, and logging capabilities.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{pkgname}-%{commit} -p1
-%else
-%autosetup -n %{pkgname}-%{version} -p1
-%endif
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/

@@ -47,11 +47,7 @@ Graphical user interface front end supporting MP3Gain engine which analyzes and
 losslessly adjusts mp3 files to a specified target volume.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-qt5-%{commit} -p1
-%else
-%autosetup -c
-%endif
+%autosetup %{?gver:-n %{name}-qt5-%{commit}}%{!?gver:-c} -p1
 
 
 %build
