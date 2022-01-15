@@ -51,7 +51,7 @@ restrictions, nor does it rely on C code, but uses ctypes instead.
 %autosetup -n %{pkgname}-%{version} -p1
 
 # These tests fail on COPR
-rm -f sdl2/test/{audio_test,sdlmixer_test,version_test}.py
+rm -f sdl2/test/{audio_test,sdl2ext_font_test,sdlgfx_test,sdlmixer_test,version_test}.py
 
 %generate_buildrequires
 %pyproject_buildrequires -r

@@ -1,4 +1,4 @@
-%global commit 03d035f2e8ee01c90c47b0b5cdf6f7a4ebcd1356
+%global commit cf28b240cc4b4998ecce391870f88559d44e361d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220113
 %global with_snapshot 1
@@ -24,7 +24,7 @@
 
 Name:           claws-mail
 Version:        4.0.0
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -718,6 +718,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Fri Jan 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-106.20220113gitcf28b24
+- Bump too
+
 * Thu Jan 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-105.20220113git03d035f
 - Bump
 

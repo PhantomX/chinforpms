@@ -209,7 +209,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 7.10.0
+Version: 8.0.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -287,7 +287,6 @@ BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
-BuildRequires: radvd
 BuildRequires: ebtables
 BuildRequires: module-init-tools
 BuildRequires: cyrus-sasl-devel
@@ -312,8 +311,6 @@ BuildRequires: libiscsi-devel
 BuildRequires: parted-devel
 # For Multipath support
 BuildRequires: device-mapper-devel
-# For XFS reflink clone support
-BuildRequires: xfsprogs-devel
 %if %{with_storage_rbd}
 BuildRequires: librados-devel
 BuildRequires: librbd-devel
@@ -324,12 +321,6 @@ BuildRequires: glusterfs-devel >= 3.4.1
 %endif
 %if %{with_storage_sheepdog}
 BuildRequires: sheepdog
-%endif
-%if %{with_storage_zfs}
-# Support any conforming implementation of zfs. On stock Fedora
-# this is zfs-fuse, but could be zfsonlinux upstream RPMs
-BuildRequires: /sbin/zfs
-BuildRequires: /sbin/zpool
 %endif
 %if %{with_numactl}
 # For QEMU/LXC numa info
@@ -409,8 +400,12 @@ Summary: Server side daemon and supporting files for libvirt library
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
 
-# (client invokes 'nc' against the UNIX socket on the server)
-Requires: /usr/bin/nc
+# netcat is needed on the server side so that clients that have
+# libvirt < 6.9.0 can connect, but newer versions will prefer
+# virt-ssh-helper. Making this a Recommends means that it gets
+# installed by default, but can still be removed if compatibility
+# with old clients is not required
+Recommends: /usr/bin/nc
 
 # for modprobe of pci devices
 Requires: module-init-tools
@@ -470,7 +465,6 @@ Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
-Requires: radvd
 Requires: iptables
 
 %description daemon-driver-network
@@ -1295,13 +1289,18 @@ then \
 fi \
 %libvirt_daemon_finish_restart %1
 
+# For daemons with only UNIX sockets
 %define libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
-
-%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
-
 %define libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
 
+# For daemons with UNIX and INET sockets
+%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
+
 %define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
+
+# For daemons with only UNIX sockets and no unprivileged read-only access
+%define libvirt_daemon_systemd_post_priv() %systemd_post %1.socket %1-admin.socket %1.service
+%define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
 # 'libvirt' group is just to allow password-less polkit access to
@@ -1311,8 +1310,8 @@ fi \
 
 
 %post daemon
-%libvirt_daemon_systemd_post virtlogd
-%libvirt_daemon_systemd_post virtlockdd
+%libvirt_daemon_systemd_post_priv virtlogd
+%libvirt_daemon_systemd_post_priv virtlockd
 %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post_inet virtproxyd
 %else
@@ -1328,8 +1327,8 @@ fi \
 
 %libvirt_daemon_systemd_preun_inet libvirtd
 %libvirt_daemon_systemd_preun_inet virtproxyd
-%libvirt_daemon_systemd_preun virtlogd
-%libvirt_daemon_systemd_preun virtlockdd
+%libvirt_daemon_systemd_preun_priv virtlogd
+%libvirt_daemon_systemd_preun_priv virtlockd
 
 %postun daemon
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
@@ -1401,7 +1400,7 @@ fi
 %endif
 %libvirt_daemon_schedule_restart virtnetworkd
 
-%preun
+%preun daemon-driver-network
 %libvirt_daemon_systemd_preun virtnetworkd
 
 %postun daemon-driver-network
@@ -1479,6 +1478,13 @@ fi
 
 
 %if %{with_qemu}
+%pre daemon-driver-qemu
+# We want soft static allocation of well-known ids, as disk images
+# are commonly shared across NFS mounts by id rather than name; see
+# https://fedoraproject.org/wiki/Packaging:UsersAndGroups
+%sysusers_create_compat %{SOURCE2}
+exit 0
+
 %post daemon-driver-qemu
     %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtqemud
@@ -1600,15 +1606,6 @@ done
 %libvirt_daemon_perform_restart virtnwfilterd
 
 
-%if %{with_qemu}
-%pre daemon-driver-qemu
-# We want soft static allocation of well-known ids, as disk images
-# are commonly shared across NFS mounts by id rather than name; see
-# https://fedoraproject.org/wiki/Packaging:UsersAndGroups
-%sysusers_create_compat %{SOURCE2}
-exit 0
-%endif
-
 %if %{with_lxc}
 %pre login-shell
 getent group virtlogin >/dev/null || groupadd -r virtlogin
@@ -1706,6 +1703,7 @@ exit 0
 
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
+%{_mandir}/man8/virt-ssh-helper.8*
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
@@ -1869,6 +1867,7 @@ exit 0
 %files daemon-driver-qemu
 %config(noreplace) %{_sysconfdir}/sysconfig/virtqemud
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
+%config(noreplace) %{_prefix}/lib/sysctl.d/60-qemu-postcopy-migration.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
 %{_datadir}/augeas/lenses/tests/test_virtqemud.aug
 %{_sysusersdir}/%{name}-qemu.conf
@@ -1997,6 +1996,7 @@ exit 0
 %files client
 %{_mandir}/man1/virsh.1*
 %{_mandir}/man1/virt-xml-validate.1*
+%{_mandir}/man1/virt-pki-query-dn.1*
 %{_mandir}/man1/virt-pki-validate.1*
 %{_bindir}/virsh
 %{_bindir}/virt-xml-validate
@@ -2084,6 +2084,9 @@ exit 0
 
 
 %changelog
+* Fri Jan 14 2022 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
+- 8.0.0
+
 * Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 7.10.0-100
 - 7.10.0
 
