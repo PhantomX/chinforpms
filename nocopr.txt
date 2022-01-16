@@ -67,4 +67,5 @@ vvvvvv-data
 -wine-freeworld
 wps-office
 yabause
+yggdrasil
 zoom

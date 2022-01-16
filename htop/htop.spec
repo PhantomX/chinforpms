@@ -10,7 +10,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.1.1
+Version:        3.1.2
 Release:        100%{?gver}%{?dist}
 Summary:        Interactive process viewer
 
@@ -49,7 +49,7 @@ top(1).
   --enable-openvz \
   --enable-unicode \
   --enable-vserver \
-  --with-sensors \
+  --enable-sensors \
 %{nil}
 
 %make_build
@@ -72,6 +72,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jan 16 2022 Phantom X <megaphantomx at hotmail dot com> - 3.1.2-100
+- 3.1.2
+
 * Fri Oct 15 2021 Phantom X <megaphantomx at hotmail dot com> - 3.1.1-100
 - 3.1.1
 
