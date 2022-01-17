@@ -159,18 +159,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 314c5704a484cf230394fccb76f240f7af0f54b5
+%global pfcommit 178765b9ebfdbf07a0c91c0c42b25f1efa96552b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 487d6b361ff2ff56bbc7ee16277566dbd788104f
+%global opensuse_id 7cbe369418ce4fc6ed2822b6987b2838804522c7
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -971,8 +971,6 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch#/openSUSE-random-fix-crash-on-multiple-early-calls-to-add_bootloader_randomness.patch
-Patch1017: %{opensuse_url}/media-Revert-media-uvcvideo-Set-unique-vdev-name-bas.patch#/openSUSE-media-Revert-media-uvcvideo-Set-unique-vdev-name-bas.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2922,6 +2920,9 @@ fi
 #
 #
 %changelog
+* Sun Jan 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.1-500.chinfo
+- 5.16.1 - pf2
+
 * Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500.chinfo
 - 5.16.0 - pf1
 

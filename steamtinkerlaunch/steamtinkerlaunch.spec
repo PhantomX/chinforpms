@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        6.15
+Version:        9.0.1
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -10,6 +10,7 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 BuildArch:      noarch
 
+BuildRequires:  desktop-file-utils
 Requires:       bash
 Requires:       bc
 Requires:       git
@@ -34,6 +35,7 @@ Recommends:     mangohud
 Recommends:     net-tools
 Recommends:     nyrna
 Recommends:     replay-sorcery
+Recommends:     pev
 Recommends:     scummvm
 Recommends:     rsync
 Recommends:     strace
@@ -60,19 +62,34 @@ on the fly.
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 stl %{buildroot}%{_bindir}/
+install -pm0755 %{name} %{buildroot}%{_bindir}/
 
-mkdir -p %{buildroot}%{_datadir}/stl
-cp -r categories eval guicfgs lang misc regs reshadepresets %{buildroot}%{_datadir}/stl/
+mkdir -p %{buildroot}%{_datadir}/%{name}
+cp -r categories eval guicfgs lang misc %{buildroot}%{_datadir}/%{name}/
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  misc/%{name}.desktop
+
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
+install -pm0644 misc/%{name}.svg \
+  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
 
 
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/stl
-%{_datadir}/stl
+%{_bindir}/%{name}
+%{_datadir}/%{name}
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+
 
 %changelog
+* Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 9.0.1-1
+- 9.0.1
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 6.15-1
 - 6.15
 
