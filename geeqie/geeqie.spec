@@ -1,7 +1,7 @@
 %global commit 31197b3d4f2ee55c84a2ae5c71995e2c5dad91c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211107
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -11,8 +11,8 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        1.6
-Release:        102%{?gver}%{?dist}
+Version:        1.7.1
+Release:        100%{?gver}%{?dist}
 
 URL:            http://geeqie.org
 License:        GPLv2+
@@ -20,7 +20,7 @@ License:        GPLv2+
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/%{name}-%{version}.tar.xz
+Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  gcc-c++
@@ -151,6 +151,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 
 
 %changelog
+* Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.1-100
+- 1.7.1
+
 * Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1.6-102.20211107git31197b3
 - Add some svg mimetypes to desktop file
 

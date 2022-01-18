@@ -21,11 +21,7 @@
 %bcond_with clang
 
 %if %{with clang}
-%if 0%{?fedora} && 0%{?fedora} >= 33
 %global toolchain clang
-%else
-%global optflags %(echo %{optflags} | sed -e 's/-mcet//g' -e 's/-fcf-protection//g' -e 's/-fstack-clash-protection//g' -e 's/$/-Qunused-arguments -Wno-unknown-warning-option -Wno-deprecated-declarations/')
-%endif
 %endif
 
 # Decrease debuginfo verbosity to reduce memory consumption...
@@ -36,7 +32,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.4.3
+Version:        3.4.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -235,6 +231,8 @@ sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMakeLists.txt,Telegram/lib_qr/qr/qr_generate.cpp}
 %endif
 
+sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
+
 
 %build
 # Building Telegram Desktop using cmake...
@@ -291,6 +289,7 @@ cp -p changelog.txt %{_vpath_builddir}/
 desktop-file-edit \
   --set-key=Exec \
   --set-value="%{_bindir}/%{name} -- %u" \
+  --remove-key=Version \
   %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 # sendto
@@ -316,6 +315,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.5-100
+- 3.4.5
+
 * Tue Jan 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.3-100
 - 3.4.3
 

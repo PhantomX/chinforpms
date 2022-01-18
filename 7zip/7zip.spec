@@ -23,7 +23,7 @@
 
 Name:           7zip
 Version:        21.07
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -135,6 +135,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-3
+- Update NASM patches
+
 * Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-2
 - Enable experimental NASM support
 
