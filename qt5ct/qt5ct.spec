@@ -1,12 +1,13 @@
 Name:           qt5ct
 Version:        1.5
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
 URL:            https://sourceforge.net/projects/%{name}/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 Source1:        README.gtk3
+Source2:        60-%{name}.sh
 
 Patch0:         %{name}-gtk3-dialogs.patch
 
@@ -42,6 +43,7 @@ cp -a COPYING AUTHORS ChangeLog README ../
 popd
 
 cp -p %{S:1} .
+cp -p %{S:2} .
 
 %build
 pushd %{name}-%{version}
@@ -61,6 +63,10 @@ make install -C %{name}-%{version}-gtk3/src/qt5ct INSTALL_ROOT=%{buildroot}
 mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
 
 make install -C %{name}-%{version} INSTALL_ROOT=%{buildroot}
+
+mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
+install -pm0755 60-%{name}.sh \
+  %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
 sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
   > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
@@ -90,9 +96,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/%{name}/qss/
 %{_qt5_plugindir}/platformthemes/libqt5ct.so
 %{_qt5_plugindir}/styles/libqt5ct-style.so
+%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
 
 %changelog
+* Tue Jan 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1.5-101
+- Add xinitrc.d script
+
 * Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.5-100
 - 1.5
 

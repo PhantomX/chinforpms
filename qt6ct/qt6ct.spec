@@ -13,7 +13,7 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.5
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 # The entire source code is under BSD-2-Clause License
 License: BSD
@@ -25,6 +25,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 %endif
 Source1:        README.gtk3
+Source2:        60-%{name}.sh
 
 Patch0:         0001-gtk3-dialogs.patch
 
@@ -56,6 +57,7 @@ cp -a COPYING AUTHORS ChangeLog README ../
 popd
 
 cp -p %{S:1} .
+cp -p %{S:2} .
 
 
 %build
@@ -78,6 +80,10 @@ make install -C %{name}-%{srcver}-gtk3/src/qt6ct INSTALL_ROOT=%{buildroot}
 mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
 
 make install -C %{name}-%{srcver} INSTALL_ROOT=%{buildroot}
+
+mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
+install -pm0755 60-%{name}.sh \
+  %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
 sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
   > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
@@ -104,9 +110,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/%{name}/colors/*.conf
 %dir %{_datadir}/%{name}/qss/
 %{_datadir}/%{name}/qss/*.qss
+%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
 
 %changelog
+* Tue Jan 18 2022 Phantom X <megaphantomx at hotmail dot com> - 0.5-102
+- Add xinitrc.d script
+
 * Thu Nov 11 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5-101
 - Rebuild (qt6)
 

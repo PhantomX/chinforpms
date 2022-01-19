@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.0-rc6
+%global wine_stagingver 7.0
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e2e164fb3c97e7437680624b183d83d99f9cadea
+%global tkg_id 118a7e7cadca6f3f5bb43370ffaa85c2c9198c4f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.0~rc6
+Version:        7.0
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -215,9 +215,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 Patch200:       %{whqs_url}/222556#/%{name}-whq-p222556.patch
 Patch201:       %{whqs_url}/222608#/%{name}-whq-p222608.patch
+Patch202:       %{whq_url}/a041075cd2c26874757e0b6e1449c23c1326241c#/%{name}-whq-revert-a041075.patch
 Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
-
-Patch300:       https://github.com/FNA-XNA/FAudio/commit/1e53adc111c2330a8793aeb017c451359c22d02f.patch#/%{name}-gh-faudio-1e53adc.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -379,7 +378,6 @@ Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.pa
 Patch1300:       nier.patch
 Patch1303:       0001-FAudio-Disable-reverb.patch
 Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
-Patch1305:       0001-fsync-include-linux-futex.h-if-exists.patch
 Patch1306:       0001-staging-sys-ioctl.h.patch
 
 # Patch the patch
@@ -977,9 +975,8 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch200 -p1
 %patch201 -p1
+%patch202 -p1 -R
 %patch203 -p1
-
-%patch300 -p1 -d libs/faudio
 
 
 # setup and apply wine-staging patches
@@ -1145,7 +1142,6 @@ patch -p1 -i patch1031.patch
 %patch1300 -p1
 %patch1303 -p1
 %patch1304 -p1
-%patch1305 -p1
 %patch1306 -p1
 
 sed \
@@ -3047,6 +3043,9 @@ fi
 
 
 %changelog
+* Tue Jan 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.0-100
+- 7.0
+
 * Sat Jan 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.0~rc6-100
 - 7.0-rc6
 
