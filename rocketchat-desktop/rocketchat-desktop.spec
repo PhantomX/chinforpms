@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.7.4
+Version:        3.7.6
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -75,6 +75,11 @@ cp -rp opt/%{app_name}/{%{name},locales,resources,swiftshader,*.{bin,dat,json,pa
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
 
+# FIXME: Acceleration do not works without these
+%dnl rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
+%dnl rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
+
+
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -104,6 +109,9 @@ done
 
 
 %changelog
+* Wed Jan 19 2022 Phantom X <megaphantomx at hotmail dot com> - 3.7.6-1
+- 3.7.6
+
 * Tue Jan 04 2022 Phantom X <megaphantomx at hotmail dot com> - 3.7.4-1
 - 3.7.4
 

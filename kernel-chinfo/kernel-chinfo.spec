@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 178765b9ebfdbf07a0c91c0c42b25f1efa96552b
+%global pfcommit 1b98eba797d165619d65d6254d9945de85be0816
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -1807,6 +1807,7 @@ BuildKernel() {
 
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
+    mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/systemtap
 %if %{with_debuginfo}
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
 %endif
@@ -2865,6 +2866,7 @@ fi
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/systemtap\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
@@ -2920,6 +2922,9 @@ fi
 #
 #
 %changelog
+* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.2-500.chinfo
+- 5.16.2 - pf2
+
 * Sun Jan 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.1-500.chinfo
 - 5.16.1 - pf2
 

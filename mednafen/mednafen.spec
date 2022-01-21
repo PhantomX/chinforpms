@@ -4,10 +4,10 @@
 %undefine _hardened_build
 
 Name:           mednafen
-Version:        1.27.1
-%if 1%(echo %{version} | cut -d. -f3) == 10
-%global unstable UNSTABLE
-%endif
+Version:        1.29.0
+%dnl %if 1%(echo %{version} | cut -d. -f3) == 10
+%dnl %global unstable UNSTABLE
+%dnl %endif
 Release:        100%{?unstable:.%{unstable}}%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
@@ -115,6 +115,9 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.29.0-100
+- 1.29.0
+
 * Sun Jun 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.27.1-100
 - 1.27.1
 

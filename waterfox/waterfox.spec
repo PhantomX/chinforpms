@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
-Version:        2021.11
+Version:        2022.01
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -355,7 +355,7 @@ This package contains results of tests executed during build.
 #---------------------------------------------------------------------
 
 %prep
-%autosetup -n Waterfox-%{channel}-%{?gver:%{commit}}%{!?gver:%{version}-%{branch}} -p1 -a 600
+%autosetup -n Waterfox-%{channel}-%{?gver:%{commit}}%{!?gver:%{version}-%{branch}} -N -a 600
 
 %if %{build_langpacks}
   mkdir waterfox-langpacks
@@ -1038,6 +1038,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.01-1.classic
+- 2022.01
+
 * Fri Nov 19 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.11-1.classic
 - 2021.11
 - Update URLs to new Classic repository

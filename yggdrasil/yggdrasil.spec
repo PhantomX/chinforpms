@@ -62,6 +62,15 @@ install -pm0644 %{name}-default-config.service %{buildroot}%{_unitdir}/
 %pre
 %sysusers_create_compat %{SOURCE3}
 
+%preun
+%systemd_preun %{name}.service
+
+%post
+%systemd_post %{name}.service
+
+%postun
+%systemd_postun %{name}.service
+
 
 %files
 %{_bindir}/yggdrasil
