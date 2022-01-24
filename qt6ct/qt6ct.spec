@@ -13,7 +13,7 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.5
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 
 # The entire source code is under BSD-2-Clause License
 License: BSD
@@ -114,6 +114,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Sun Jan 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.5-103
+- Update xinitrc.d
+
 * Tue Jan 18 2022 Phantom X <megaphantomx at hotmail dot com> - 0.5-102
 - Add xinitrc.d script
 

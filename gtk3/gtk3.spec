@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.30-2
+%global classic_ver c6e1a2d8543d58754371b7c2e64d662df8927a57
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -35,7 +35,7 @@
 
 Name:           gtk3
 Version:        3.24.31
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -45,6 +45,7 @@ URL: http://www.gtk.org
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
+Source3:        README.chinforpms
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -58,6 +59,8 @@ Patch104:       gtk+3-startup-mode-cwd.patch
 Patch105:       gtk+3-dateformat-with_time.patch
 Patch106:       gtk+3-location_mode-filename.patch
 Patch107:       gtk+3-print-preview.patch
+Patch108:       0001-CSD-Disable-shadows-by-default.patch
+Patch109:       0001-CSD-Prefer-SSD-by-default.patch
 
 # Debian
 Patch200:       016_no_offscreen_widgets_grabbing.patch
@@ -230,10 +233,14 @@ patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
 patch_command popovers__places-sidebar.patch
 patch_command notebook_wheel_scroll.patch
+patch_command treeview__alternating_row_colours.patch
+patch_command window__rgba-visual.patch
 
 cp %{classic_dir}/README.md README-classic.md
 
 cat %{S:2} | tee -a gtk/theme/Adwaita/gtk-contained{,-dark}.css > /dev/null
+
+cp -p %{S:3} .
 
 rm -fv gtk/gtkresources.c
 rm -fv testsuite/gtk/gtkresources.c testsuite/gtk/gtkprivate.c
@@ -309,7 +316,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS README README-classic.md
+%doc AUTHORS NEWS README README-classic.md README.chinforpms
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*
@@ -404,6 +411,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Jan 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-101
+- Update classic
+- More quality of life fixes
+
 * Tue Dec 21 2021 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-100
 - 3.24.31
 

@@ -1,7 +1,7 @@
-%global commit b6dc83990872106fdb957b2947b71f0dbd77efc4
+%global commit c09a5da157585d171ad896e9862db00d505e4363
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211230
-%global with_snapshot 0
+%global date 20220121
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,14 +33,14 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.0.0
-%global winevulkan 1.2.201
+%global winevulkan 1.2.203
 %global winefastsync 5.15
 
-%global wineFAudio 21.11
+%global wineFAudio 22.01
 %global winegsm 1.0.19
-%global winejpeg 9d
+%global winejpeg 9e
 %global winelcms2 2.12
-%global winempg123 1.29.1
+%global winempg123 1.29.3
 %global winepng 1.6.37
 %global winetiff 4.3.0
 %global winejxrlib 1.1
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.0
+%global wine_stagingver 95bf6698950d82622f7461111b3a199343ce9a21
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 118a7e7cadca6f3f5bb43370ffaa85c2c9198c4f
+%global tkg_id 95960dcb6b42f61bce53049298fb37a8d6079f77
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -3043,6 +3043,9 @@ fi
 
 
 %changelog
+* Sat Jan 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.0-101.20220121gitc09a5da
+- Snapshot
+
 * Tue Jan 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.0-100
 - 7.0
 

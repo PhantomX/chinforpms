@@ -1,6 +1,6 @@
-From 357ce19cae974bc1708ccd483d935741359b44ef Mon Sep 17 00:00:00 2001
+From 9061cdbbc502ce2ab6c36815310f65be2a0587a1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 8 Jan 2022 22:22:21 -0300
+Date: Sat, 22 Jan 2022 00:12:28 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -24,9 +24,6 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
 056613ecc5c79941d4bc9747bdc6f79fe332183a - PixelShaderGen: Add LOD bias to texture() call on systems that don't support it in the sampler
 a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
 ---
- .../settings/model/BooleanSetting.java        |   2 -
- .../ui/SettingsFragmentPresenter.java         |   2 -
- .../app/src/main/res/values/strings.xml       |   2 -
  Source/Core/AudioCommon/AlsaSoundStream.cpp   |   3 +-
  Source/Core/AudioCommon/AudioStretcher.cpp    |   3 +-
  Source/Core/AudioCommon/CubebStream.cpp       |   3 +-
@@ -68,7 +65,6 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/Common/QoSSession.cpp             |   3 +-
  Source/Core/Common/SymbolDB.cpp               |   3 +-
  Source/Core/Common/Thread.cpp                 |   7 +-
- Source/Core/Common/x64ABI.cpp                 |   1 -
  Source/Core/Common/x64Emitter.cpp             |   3 +-
  Source/Core/Common/x64FPURoundMode.cpp        |   3 +-
  Source/Core/Core/CheatGeneration.cpp          |   4 +-
@@ -123,7 +119,6 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../PowerPC/Jit64/Jit_LoadStoreFloating.cpp   |   3 +-
  Source/Core/Core/PowerPC/Jit64/Jit_Paired.cpp |   3 +-
  .../PowerPC/Jit64/Jit_SystemRegisters.cpp     |   3 +-
- .../Core/PowerPC/JitArm64/JitArm64Cache.cpp   |   1 -
  .../PowerPC/JitArm64/JitArm64_BackPatch.cpp   |   3 +-
  .../Core/PowerPC/JitArm64/JitArm64_Branch.cpp |   3 +-
  .../JitArm64/JitArm64_FloatingPoint.cpp       |   3 +-
@@ -133,7 +128,6 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../JitArm64/JitArm64_LoadStorePaired.cpp     |   3 +-
  .../Core/PowerPC/JitArm64/JitArm64_Paired.cpp |   3 +-
  .../JitArm64/JitArm64_SystemRegisters.cpp     |   3 +-
- .../Core/PowerPC/JitArm64/JitArm64_Tables.cpp |   1 -
  Source/Core/Core/PowerPC/JitArm64/JitAsm.cpp  |   3 +-
  .../Core/Core/PowerPC/JitArm64/Jit_Util.cpp   |   3 +-
  .../Core/Core/PowerPC/JitCommon/DivUtils.cpp  |   4 +-
@@ -182,23 +176,18 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/InputCommon/InputConfig.cpp       |   3 +-
  Source/Core/UICommon/CommandLineParse.cpp     |   3 +-
  Source/Core/UICommon/UICommon.cpp             |   3 +-
- .../Core/VideoBackends/D3D/D3DBoundingBox.cpp |   3 +-
+ .../Core/VideoBackends/D3D/D3DBoundingBox.cpp |   4 +-
  Source/Core/VideoBackends/D3D/D3DMain.cpp     |   3 -
  Source/Core/VideoBackends/D3D/D3DState.cpp    |  33 +-
  Source/Core/VideoBackends/D3D/D3DState.h      |   2 +-
- .../Core/VideoBackends/D3D/D3DSwapChain.cpp   |   1 -
  Source/Core/VideoBackends/D3D/DXPipeline.cpp  |   3 +-
  Source/Core/VideoBackends/D3D/DXPipeline.h    |   2 -
- Source/Core/VideoBackends/D3D/DXShader.cpp    |   2 -
  Source/Core/VideoBackends/D3D/DXTexture.cpp   |   3 +-
  Source/Core/VideoBackends/D3D/DXTexture.h     |   2 -
- .../VideoBackends/D3D12/D3D12BoundingBox.cpp  |   2 -
  .../VideoBackends/D3D12/D3D12Renderer.cpp     |   3 +-
- .../VideoBackends/D3D12/D3D12SwapChain.cpp    |   1 -
  .../D3D12/D3D12VertexManager.cpp              |   2 +
  .../Core/VideoBackends/D3D12/DX12Pipeline.cpp |   3 +-
  .../Core/VideoBackends/D3D12/DX12Texture.cpp  |   2 -
- .../D3D12/DescriptorAllocator.cpp             |   1 -
  .../D3D12/DescriptorHeapManager.cpp           |  32 +-
  .../D3D12/DescriptorHeapManager.h             |   2 +-
  .../Core/VideoBackends/D3D12/VideoBackend.cpp |   3 -
@@ -208,12 +197,10 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/VideoBackends/OGL/OGLMain.cpp     |   8 +-
  Source/Core/VideoBackends/OGL/OGLPipeline.cpp |   3 +-
  Source/Core/VideoBackends/OGL/OGLRender.cpp   |   7 -
- Source/Core/VideoBackends/OGL/OGLShader.cpp   |   1 -
  Source/Core/VideoBackends/OGL/OGLTexture.cpp  |   3 +-
  .../VideoBackends/OGL/ProgramShaderCache.cpp  |   9 +-
  .../Core/VideoBackends/OGL/SamplerCache.cpp   |  31 +-
  .../Core/VideoBackends/Software/DebugUtil.cpp |  14 +-
- .../Core/VideoBackends/Software/EfbCopy.cpp   |   1 -
  .../VideoBackends/Software/Rasterizer.cpp     |  32 +-
  .../VideoBackends/Software/SWOGLWindow.cpp    |   3 +-
  .../Core/VideoBackends/Software/SWTexture.cpp |   3 +-
@@ -233,7 +220,6 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../VideoCommon/AbstractStagingTexture.cpp    |   3 +-
  Source/Core/VideoCommon/AbstractTexture.cpp   |   3 +-
  Source/Core/VideoCommon/AsyncRequests.cpp     |   3 +-
- .../Core/VideoCommon/AsyncShaderCompiler.cpp  |   2 -
  Source/Core/VideoCommon/BPMemory.h            | 168 +------
  Source/Core/VideoCommon/BPStructs.cpp         |  88 ++--
  Source/Core/VideoCommon/CMakeLists.txt        |   9 +-
@@ -275,52 +261,13 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 251 files changed, 948 insertions(+), 2568 deletions(-)
+ 237 files changed, 948 insertions(+), 2549 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
  delete mode 100644 Source/Core/VideoCommon/TextureInfo.cpp
  delete mode 100644 Source/Core/VideoCommon/TextureInfo.h
 
-diff --git a/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/model/BooleanSetting.java b/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/model/BooleanSetting.java
-index e062fd5..2b6c3dc 100644
---- a/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/model/BooleanSetting.java
-+++ b/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/model/BooleanSetting.java
-@@ -199,8 +199,6 @@ public enum BooleanSetting implements AbstractBooleanSetting
-   GFX_HACK_EFB_EMULATE_FORMAT_CHANGES(Settings.FILE_GFX, Settings.SECTION_GFX_HACKS,
-           "EFBEmulateFormatChanges", false),
-   GFX_HACK_VERTEX_ROUDING(Settings.FILE_GFX, Settings.SECTION_GFX_HACKS, "VertexRounding", false),
--  GFX_HACK_FAST_TEXTURE_SAMPLING(Settings.FILE_GFX, Settings.SECTION_GFX_HACKS,
--          "FastTextureSampling", true),
- 
-   LOGGER_WRITE_TO_FILE(Settings.FILE_LOGGER, Settings.SECTION_LOGGER_OPTIONS, "WriteToFile", false),
- 
-diff --git a/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/ui/SettingsFragmentPresenter.java b/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/ui/SettingsFragmentPresenter.java
-index 5655a67..e39b151 100644
---- a/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/ui/SettingsFragmentPresenter.java
-+++ b/Source/Android/app/src/main/java/org/dolphinemu/dolphinemu/features/settings/ui/SettingsFragmentPresenter.java
-@@ -748,8 +748,6 @@ public final class SettingsFragmentPresenter
-             R.string.backend_multithreading, R.string.backend_multithreading_description));
-     sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_HACK_EFB_DEFER_INVALIDATION,
-             R.string.defer_efb_invalidation, R.string.defer_efb_invalidation_description));
--    sl.add(new InvertedCheckBoxSetting(mContext, BooleanSetting.GFX_HACK_FAST_TEXTURE_SAMPLING,
--            R.string.manual_texture_sampling, R.string.manual_texture_sampling_description));
-     sl.add(new CheckBoxSetting(mContext, BooleanSetting.GFX_INTERNAL_RESOLUTION_FRAME_DUMPS,
-             R.string.internal_resolution_dumps, R.string.internal_resolution_dumps_description));
- 
-diff --git a/Source/Android/app/src/main/res/values/strings.xml b/Source/Android/app/src/main/res/values/strings.xml
-index b0931ac..15f334f 100644
---- a/Source/Android/app/src/main/res/values/strings.xml
-+++ b/Source/Android/app/src/main/res/values/strings.xml
-@@ -304,8 +304,6 @@
-     <string name="backend_multithreading_description">Enables graphics backend multithreading (Vulkan only). May affect performance. If unsure, leave this unchecked.</string>
-     <string name="defer_efb_invalidation">Defer EFB Cache Invalidation</string>
-     <string name="defer_efb_invalidation_description">Defers invalidation of the EFB access cache until a GPU synchronization command is executed. May improve performance in some games at the cost of stability. If unsure, leave this unchecked.</string>
--    <string name="manual_texture_sampling">Manual Texture Sampling</string>
--    <string name="manual_texture_sampling_description">Use a manual implementation of texture sampling instead of the graphics backend\'s built-in functionality.</string>
-     <string name="internal_resolution_dumps">Dump Frames at Internal Resolution</string>
-     <string name="internal_resolution_dumps_description">Creates frame dumps and screenshots at the internal resolution of the renderer, rather than the size of the window it is displayed within. If the aspect ratio is widescreen, the output image will be scaled horizontally to preserve the vertical resolution.</string>
-     <string name="debugging">Debugging</string>
 diff --git a/Source/Core/AudioCommon/AlsaSoundStream.cpp b/Source/Core/AudioCommon/AlsaSoundStream.cpp
 index 5645efa..c45d7be 100644
 --- a/Source/Core/AudioCommon/AlsaSoundStream.cpp
@@ -464,7 +411,7 @@ index 294e05c..31f22b6 100644
  #include "Common/StringUtil.h"
  #include "Common/Thread.h"
 diff --git a/Source/Core/Common/Arm64Emitter.cpp b/Source/Core/Common/Arm64Emitter.cpp
-index 27be0df..443021b 100644
+index b5c3293..3d23668 100644
 --- a/Source/Core/Common/Arm64Emitter.cpp
 +++ b/Source/Core/Common/Arm64Emitter.cpp
 @@ -1,8 +1,6 @@
@@ -475,9 +422,9 @@ index 27be0df..443021b 100644
 -
  #include <algorithm>
  #include <array>
- #include <cinttypes>
-@@ -13,6 +11,7 @@
- #include <vector>
+ #include <cstring>
+@@ -14,6 +12,7 @@
+ #include <fmt/format.h>
  
  #include "Common/Align.h"
 +#include "Common/Arm64Emitter.h"
@@ -530,7 +477,7 @@ index 109e961..1f666d6 100644
  {
  #ifdef _MSC_VER
 diff --git a/Source/Core/Common/BitField.h b/Source/Core/Common/BitField.h
-index 2f5eba0..26b3c5e 100644
+index 68c0577..20a68c9 100644
 --- a/Source/Core/Common/BitField.h
 +++ b/Source/Core/Common/BitField.h
 @@ -149,7 +149,6 @@ public:
@@ -1102,29 +1049,16 @@ index 7bbc27e..a0967e5 100644
  namespace Common
  {
  int CurrentThreadId()
-diff --git a/Source/Core/Common/x64ABI.cpp b/Source/Core/Common/x64ABI.cpp
-index 0c4f077..afa34f8 100644
---- a/Source/Core/Common/x64ABI.cpp
-+++ b/Source/Core/Common/x64ABI.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "Common/x64ABI.h"
--
- #include "Common/CommonTypes.h"
- #include "Common/x64Emitter.h"
- 
 diff --git a/Source/Core/Common/x64Emitter.cpp b/Source/Core/Common/x64Emitter.cpp
-index 2c95a61..693d903 100644
+index d583765..5f73066 100644
 --- a/Source/Core/Common/x64Emitter.cpp
 +++ b/Source/Core/Common/x64Emitter.cpp
-@@ -1,14 +1,13 @@
+@@ -1,13 +1,12 @@
  // Copyright 2008 Dolphin Emulator Project
  // SPDX-License-Identifier: GPL-2.0-or-later
  
 -#include "Common/x64Emitter.h"
 -
- #include <cinttypes>
  #include <cstring>
  
  #include "Common/CPUDetect.h"
@@ -1231,7 +1165,7 @@ index bdfcb65..afa2bbc 100644
  #include "Common/CommonTypes.h"
  #include "Common/Logging/Log.h"
 diff --git a/Source/Core/Core/DSP/DSPHWInterface.cpp b/Source/Core/Core/DSP/DSPHWInterface.cpp
-index 7853ae0..91058f0 100644
+index 7cdd4d0..3f2dcec 100644
 --- a/Source/Core/Core/DSP/DSPHWInterface.cpp
 +++ b/Source/Core/Core/DSP/DSPHWInterface.cpp
 @@ -2,8 +2,6 @@
@@ -1597,7 +1531,7 @@ index e55f880..475a09f 100644
  #include <cstring>
  #include <string>
 diff --git a/Source/Core/Core/HW/SI/SI_DeviceGBAEmu.cpp b/Source/Core/Core/HW/SI/SI_DeviceGBAEmu.cpp
-index 744defe..1d672a4 100644
+index bb9a6d1..12e533d 100644
 --- a/Source/Core/Core/HW/SI/SI_DeviceGBAEmu.cpp
 +++ b/Source/Core/Core/HW/SI/SI_DeviceGBAEmu.cpp
 @@ -1,8 +1,6 @@
@@ -1649,7 +1583,7 @@ index 07ede79..b23a1eb 100644
  #include "Common/CommonTypes.h"
  
 diff --git a/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp b/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
-index 63571fe..f74b772 100644
+index 8f0cce5..631d395 100644
 --- a/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
 +++ b/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
 @@ -1,8 +1,6 @@
@@ -1716,7 +1650,7 @@ index b8db0b6..7326ae7 100644
  namespace WiimoteReal
  {
 diff --git a/Source/Core/Core/HW/WiimoteReal/IOWin.cpp b/Source/Core/Core/HW/WiimoteReal/IOWin.cpp
-index 6c4ae0a..7f00cc5 100644
+index 2079ed9..fbe21ab 100644
 --- a/Source/Core/Core/HW/WiimoteReal/IOWin.cpp
 +++ b/Source/Core/Core/HW/WiimoteReal/IOWin.cpp
 @@ -1,8 +1,6 @@
@@ -1728,7 +1662,7 @@ index 6c4ae0a..7f00cc5 100644
  #include <algorithm>
  #include <cstdio>
  #include <cstdlib>
-@@ -32,6 +30,7 @@
+@@ -33,6 +31,7 @@
  #include "Core/HW/WiimoteCommon/DataReport.h"
  #include "Core/HW/WiimoteCommon/WiimoteConstants.h"
  #include "Core/HW/WiimoteCommon/WiimoteReport.h"
@@ -1757,7 +1691,7 @@ index ca0c2c5..ff0de2e 100644
  using namespace WiimoteCommon;
  using namespace WiimoteReal;
 diff --git a/Source/Core/Core/IOS/ES/NandUtils.cpp b/Source/Core/Core/IOS/ES/NandUtils.cpp
-index 3c0752f..be202a0 100644
+index af0b17f..ddba2c2 100644
 --- a/Source/Core/Core/IOS/ES/NandUtils.cpp
 +++ b/Source/Core/Core/IOS/ES/NandUtils.cpp
 @@ -1,8 +1,6 @@
@@ -1821,7 +1755,7 @@ index 1e4ea5e..bdc4518 100644
  {
  // This isn't theadsafe, but it's only called from the CPU thread.
 diff --git a/Source/Core/Core/LibusbUtils.cpp b/Source/Core/Core/LibusbUtils.cpp
-index 73ca35b..ca0841d 100644
+index 8ab2f40..2195825 100644
 --- a/Source/Core/Core/LibusbUtils.cpp
 +++ b/Source/Core/Core/LibusbUtils.cpp
 @@ -1,8 +1,6 @@
@@ -2106,20 +2040,8 @@ index f611fd7..2806879 100644
  #include "Core/PowerPC/Jit64/RegCache/JitRegCache.h"
  #include "Core/PowerPC/Jit64Common/Jit64PowerPCState.h"
  #include "Core/PowerPC/PowerPC.h"
-diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64Cache.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64Cache.cpp
-index 6551ed2..a11d1a1 100644
---- a/Source/Core/Core/PowerPC/JitArm64/JitArm64Cache.cpp
-+++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64Cache.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "Core/PowerPC/JitArm64/JitArm64Cache.h"
--
- #include "Common/CommonTypes.h"
- #include "Core/PowerPC/JitArm64/Jit.h"
- #include "Core/PowerPC/JitCommon/JitBase.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_BackPatch.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_BackPatch.cpp
-index ad82c52..ccaafaa 100644
+index 5c68e12..12c6b9f 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_BackPatch.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_BackPatch.cpp
 @@ -1,8 +1,6 @@
@@ -2128,10 +2050,10 @@ index ad82c52..ccaafaa 100644
  
 -#include "Core/PowerPC/JitArm64/Jit.h"
 -
- #include <cinttypes>
  #include <cstddef>
  #include <optional>
-@@ -19,6 +17,7 @@
+ #include <string>
+@@ -18,6 +16,7 @@
  
  #include "Core/HW/Memmap.h"
  #include "Core/PowerPC/Gekko.h"
@@ -2159,7 +2081,7 @@ index a92bc95..c0682b6 100644
  #include "Core/PowerPC/PPCTables.h"
  #include "Core/PowerPC/PowerPC.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
-index b4fbd1c..70f7f9e 100644
+index de3a164..ff37923 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 @@ -1,8 +1,6 @@
@@ -2171,7 +2093,7 @@ index b4fbd1c..70f7f9e 100644
  #include "Common/Arm64Emitter.h"
  #include "Common/CPUDetect.h"
  #include "Common/CommonTypes.h"
-@@ -12,6 +10,7 @@
+@@ -14,6 +12,7 @@
  #include "Core/Core.h"
  #include "Core/CoreTiming.h"
  #include "Core/PowerPC/Gekko.h"
@@ -2264,7 +2186,7 @@ index 1319730..5a4daa5 100644
  #include "Core/PowerPC/PPCTables.h"
  #include "Core/PowerPC/PowerPC.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_Paired.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_Paired.cpp
-index 02377e7..5690bbc 100644
+index 7682679..f2d35cb 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_Paired.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_Paired.cpp
 @@ -1,8 +1,6 @@
@@ -2275,8 +2197,8 @@ index 02377e7..5690bbc 100644
 -
  #include "Common/Arm64Emitter.h"
  #include "Common/CommonTypes.h"
- #include "Common/StringUtil.h"
-@@ -10,6 +8,7 @@
+ #include "Common/Config/Config.h"
+@@ -12,6 +10,7 @@
  #include "Core/ConfigManager.h"
  #include "Core/Core.h"
  #include "Core/CoreTiming.h"
@@ -2305,18 +2227,6 @@ index 3d48711..b311261 100644
  #include "Core/PowerPC/PPCTables.h"
  #include "Core/PowerPC/PowerPC.h"
  
-diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_Tables.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_Tables.cpp
-index ccac60e..ef68cbe 100644
---- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_Tables.cpp
-+++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_Tables.cpp
-@@ -4,7 +4,6 @@
- #include "Core/PowerPC/JitArm64/Jit.h"
- 
- #include <array>
--
- #include "Core/PowerPC/Gekko.h"
- #include "Core/PowerPC/PPCTables.h"
- 
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitAsm.cpp b/Source/Core/Core/PowerPC/JitArm64/JitAsm.cpp
 index 1b93a27..bf650ba 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitAsm.cpp
@@ -2339,7 +2249,7 @@ index 1b93a27..bf650ba 100644
  #include "Core/PowerPC/JitCommon/JitCache.h"
  #include "Core/PowerPC/MMU.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/Jit_Util.cpp b/Source/Core/Core/PowerPC/JitArm64/Jit_Util.cpp
-index fd86e34..669597d 100644
+index 4799e35..7a1ecea 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/Jit_Util.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/Jit_Util.cpp
 @@ -1,14 +1,13 @@
@@ -2389,7 +2299,7 @@ index de55900..06d82e9 100644
  #include <array>
  #include <cstring>
 diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
-index 86877ec..a28dd9a 100644
+index f89c1fc..18d6876 100644
 --- a/Source/Core/Core/State.cpp
 +++ b/Source/Core/Core/State.cpp
 @@ -73,7 +73,7 @@ static Common::Event g_compressAndDumpStateSyncEvent;
@@ -2543,7 +2453,7 @@ index 17c855f..5392ed3 100644
  namespace DiscIO
  {
 diff --git a/Source/Core/DiscIO/FileSystemGCWii.cpp b/Source/Core/DiscIO/FileSystemGCWii.cpp
-index ed4c11d..44ef7b0 100644
+index 4090a98..36fe89c 100644
 --- a/Source/Core/DiscIO/FileSystemGCWii.cpp
 +++ b/Source/Core/DiscIO/FileSystemGCWii.cpp
 @@ -1,8 +1,6 @@
@@ -2605,10 +2515,10 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index a627166..232a31c 100644
+index c0d465a..a8ca800 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -640,6 +640,7 @@
+@@ -641,6 +641,7 @@
      <ClInclude Include="VideoCommon\PostProcessing.h" />
      <ClInclude Include="VideoCommon\RenderBase.h" />
      <ClInclude Include="VideoCommon\RenderState.h" />
@@ -2616,7 +2526,7 @@ index a627166..232a31c 100644
      <ClInclude Include="VideoCommon\ShaderCache.h" />
      <ClInclude Include="VideoCommon\ShaderGenCommon.h" />
      <ClInclude Include="VideoCommon\Statistics.h" />
-@@ -649,8 +650,6 @@
+@@ -650,8 +651,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
@@ -2625,7 +2535,7 @@ index a627166..232a31c 100644
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1213,8 +1212,6 @@
+@@ -1215,8 +1214,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
@@ -2635,7 +2545,7 @@ index a627166..232a31c 100644
      <ClCompile Include="VideoCommon\UberShaderPixel.cpp" />
      <ClCompile Include="VideoCommon\UberShaderVertex.cpp" />
 diff --git a/Source/Core/DolphinQt/AboutDialog.cpp b/Source/Core/DolphinQt/AboutDialog.cpp
-index b5ee68a..047682d 100644
+index e1dce12..f11461f 100644
 --- a/Source/Core/DolphinQt/AboutDialog.cpp
 +++ b/Source/Core/DolphinQt/AboutDialog.cpp
 @@ -1,8 +1,6 @@
@@ -2864,7 +2774,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index ef462d3..b9480a4 100644
+index 7fc42cc..fed2c1f 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -3025,7 +2935,7 @@ index 7a7c548..5937f11 100644
  #include "InputCommon/ControllerInterface/Touch/Touchscreen.h"
  
 diff --git a/Source/Core/InputCommon/ControllerInterface/DInput/DInputJoystick.cpp b/Source/Core/InputCommon/ControllerInterface/DInput/DInputJoystick.cpp
-index 596fd1f..e7a8bea 100644
+index ac72d38..5c9a694 100644
 --- a/Source/Core/InputCommon/ControllerInterface/DInput/DInputJoystick.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/DInput/DInputJoystick.cpp
 @@ -1,8 +1,6 @@
@@ -3037,7 +2947,7 @@ index 596fd1f..e7a8bea 100644
  #include <algorithm>
  #include <limits>
  #include <mutex>
-@@ -13,6 +11,7 @@
+@@ -14,6 +12,7 @@
  #include "Common/Logging/Log.h"
  #include "InputCommon/ControllerInterface/ControllerInterface.h"
  #include "InputCommon/ControllerInterface/DInput/DInput.h"
@@ -3180,7 +3090,7 @@ index 1f8e107..689b4fc 100644
  
  // This is an input plugin using the XInput 2.0 extension to the X11 protocol,
 diff --git a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
-index 43662ed..f4b83f2 100644
+index 6df37b4..752d2e7 100644
 --- a/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 +++ b/Source/Core/InputCommon/ControllerInterface/evdev/evdev.cpp
 @@ -1,8 +1,6 @@
@@ -3201,7 +3111,7 @@ index 43662ed..f4b83f2 100644
  namespace ciface::evdev
  {
 diff --git a/Source/Core/InputCommon/GCAdapter_Android.cpp b/Source/Core/InputCommon/GCAdapter_Android.cpp
-index 416fa30..410d6e4 100644
+index 1e58733..f429705 100644
 --- a/Source/Core/InputCommon/GCAdapter_Android.cpp
 +++ b/Source/Core/InputCommon/GCAdapter_Android.cpp
 @@ -1,8 +1,6 @@
@@ -3243,7 +3153,7 @@ index 5e64b60..ad044ea 100644
  
  InputConfig::InputConfig(const std::string& ini_name, const std::string& gui_name,
 diff --git a/Source/Core/UICommon/CommandLineParse.cpp b/Source/Core/UICommon/CommandLineParse.cpp
-index 7ac1baf..5f312d3 100644
+index 54093f2..8d0312e 100644
 --- a/Source/Core/UICommon/CommandLineParse.cpp
 +++ b/Source/Core/UICommon/CommandLineParse.cpp
 @@ -1,8 +1,6 @@
@@ -3285,10 +3195,10 @@ index a5f0721..bcd330f 100644
  
  #ifdef HAVE_X11
 diff --git a/Source/Core/VideoBackends/D3D/D3DBoundingBox.cpp b/Source/Core/VideoBackends/D3D/D3DBoundingBox.cpp
-index 830ae1f..f4ab892 100644
+index 2eb6da7..6495fcf 100644
 --- a/Source/Core/VideoBackends/D3D/D3DBoundingBox.cpp
 +++ b/Source/Core/VideoBackends/D3D/D3DBoundingBox.cpp
-@@ -1,13 +1,12 @@
+@@ -1,15 +1,13 @@
  // Copyright 2014 Dolphin Emulator Project
  // SPDX-License-Identifier: GPL-2.0-or-later
  
@@ -3297,8 +3207,10 @@ index 830ae1f..f4ab892 100644
  #include <algorithm>
  #include <array>
  
+ #include "Common/Assert.h"
  #include "Common/CommonTypes.h"
  #include "Common/MsgHandler.h"
+-
 +#include "VideoBackends/D3D/D3DBoundingBox.h"
  #include "VideoBackends/D3D/D3DState.h"
  #include "VideoBackends/D3DCommon/D3DCommon.h"
@@ -3318,7 +3230,7 @@ index 4d78c49..0ff911c 100644
  
    g_Config.backend_info.Adapters = D3DCommon::GetAdapterNames();
 diff --git a/Source/Core/VideoBackends/D3D/D3DState.cpp b/Source/Core/VideoBackends/D3D/D3DState.cpp
-index 7fd103d..7cb123d 100644
+index 9a568ae..a1de229 100644
 --- a/Source/Core/VideoBackends/D3D/D3DState.cpp
 +++ b/Source/Core/VideoBackends/D3D/D3DState.cpp
 @@ -1,8 +1,6 @@
@@ -3330,7 +3242,7 @@ index 7fd103d..7cb123d 100644
  #include <algorithm>
  #include <array>
  
-@@ -12,6 +10,7 @@
+@@ -13,6 +11,7 @@
  #include "Common/MsgHandler.h"
  
  #include "VideoBackends/D3D/D3DBase.h"
@@ -3338,7 +3250,7 @@ index 7fd103d..7cb123d 100644
  #include "VideoBackends/D3D/DXTexture.h"
  #include "VideoBackends/D3DCommon/D3DCommon.h"
  #include "VideoCommon/VideoConfig.h"
-@@ -304,43 +303,43 @@ StateCache::~StateCache() = default;
+@@ -305,43 +304,43 @@ StateCache::~StateCache() = default;
  ID3D11SamplerState* StateCache::Get(SamplerState state)
  {
    std::lock_guard<std::mutex> guard(m_lock);
@@ -3396,10 +3308,10 @@ index 7fd103d..7cb123d 100644
    {
      sampdc.Filter = D3D11_FILTER_ANISOTROPIC;
      sampdc.MaxAnisotropy = 1u << g_ActiveConfig.iMaxAnisotropy;
-@@ -349,7 +348,7 @@ ID3D11SamplerState* StateCache::Get(SamplerState state)
+@@ -350,7 +349,7 @@ ID3D11SamplerState* StateCache::Get(SamplerState state)
    ComPtr<ID3D11SamplerState> res;
    HRESULT hr = D3D::device->CreateSamplerState(&sampdc, res.GetAddressOf());
-   CHECK(SUCCEEDED(hr), "Creating D3D sampler state failed");
+   ASSERT_MSG(VIDEO, SUCCEEDED(hr), "Creating D3D sampler state failed: {}", DX11HRWrap(hr));
 -  return m_sampler.emplace(state, std::move(res)).first->second.Get();
 +  return m_sampler.emplace(state.hex, std::move(res)).first->second.Get();
  }
@@ -3418,18 +3330,6 @@ index 795e7a0..b76b85f 100644
    std::mutex m_lock;
  };
  
-diff --git a/Source/Core/VideoBackends/D3D/D3DSwapChain.cpp b/Source/Core/VideoBackends/D3D/D3DSwapChain.cpp
-index 95ed7fd..feec0fa 100644
---- a/Source/Core/VideoBackends/D3D/D3DSwapChain.cpp
-+++ b/Source/Core/VideoBackends/D3D/D3DSwapChain.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/D3D/D3DSwapChain.h"
--
- #include "VideoBackends/D3D/DXTexture.h"
- 
- namespace DX11
 diff --git a/Source/Core/VideoBackends/D3D/DXPipeline.cpp b/Source/Core/VideoBackends/D3D/DXPipeline.cpp
 index 0bdfeb0..0012d38 100644
 --- a/Source/Core/VideoBackends/D3D/DXPipeline.cpp
@@ -3464,22 +3364,8 @@ index 611f709..1dc1f9b 100644
  #include "VideoCommon/AbstractPipeline.h"
  
  namespace DX11
-diff --git a/Source/Core/VideoBackends/D3D/DXShader.cpp b/Source/Core/VideoBackends/D3D/DXShader.cpp
-index 9f7619c..58d2ed6 100644
---- a/Source/Core/VideoBackends/D3D/DXShader.cpp
-+++ b/Source/Core/VideoBackends/D3D/DXShader.cpp
-@@ -2,9 +2,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/D3D/DXShader.h"
--
- #include "Common/Assert.h"
--
- #include "VideoBackends/D3D/D3DBase.h"
- 
- namespace DX11
 diff --git a/Source/Core/VideoBackends/D3D/DXTexture.cpp b/Source/Core/VideoBackends/D3D/DXTexture.cpp
-index 097c4c2..1247b32 100644
+index f3e6912..c8e7e30 100644
 --- a/Source/Core/VideoBackends/D3D/DXTexture.cpp
 +++ b/Source/Core/VideoBackends/D3D/DXTexture.cpp
 @@ -1,8 +1,6 @@
@@ -3514,20 +3400,6 @@ index 2248d45..a49b490 100644
  #include "VideoCommon/AbstractFramebuffer.h"
  #include "VideoCommon/AbstractStagingTexture.h"
  #include "VideoCommon/AbstractTexture.h"
-diff --git a/Source/Core/VideoBackends/D3D12/D3D12BoundingBox.cpp b/Source/Core/VideoBackends/D3D12/D3D12BoundingBox.cpp
-index 3c32645..9a548f0 100644
---- a/Source/Core/VideoBackends/D3D12/D3D12BoundingBox.cpp
-+++ b/Source/Core/VideoBackends/D3D12/D3D12BoundingBox.cpp
-@@ -2,9 +2,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/D3D12/D3D12BoundingBox.h"
--
- #include "Common/Logging/Log.h"
--
- #include "VideoBackends/D3D12/D3D12Renderer.h"
- #include "VideoBackends/D3D12/DX12Context.h"
- 
 diff --git a/Source/Core/VideoBackends/D3D12/D3D12Renderer.cpp b/Source/Core/VideoBackends/D3D12/D3D12Renderer.cpp
 index ece8f14..60ba5ed 100644
 --- a/Source/Core/VideoBackends/D3D12/D3D12Renderer.cpp
@@ -3547,18 +3419,6 @@ index ece8f14..60ba5ed 100644
  #include "VideoBackends/D3D12/D3D12SwapChain.h"
  #include "VideoBackends/D3D12/DX12Context.h"
  #include "VideoBackends/D3D12/DX12Pipeline.h"
-diff --git a/Source/Core/VideoBackends/D3D12/D3D12SwapChain.cpp b/Source/Core/VideoBackends/D3D12/D3D12SwapChain.cpp
-index f7607fb..5557fbf 100644
---- a/Source/Core/VideoBackends/D3D12/D3D12SwapChain.cpp
-+++ b/Source/Core/VideoBackends/D3D12/D3D12SwapChain.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/D3D12/D3D12SwapChain.h"
--
- #include "VideoBackends/D3D12/DX12Context.h"
- #include "VideoBackends/D3D12/DX12Texture.h"
- 
 diff --git a/Source/Core/VideoBackends/D3D12/D3D12VertexManager.cpp b/Source/Core/VideoBackends/D3D12/D3D12VertexManager.cpp
 index b85e4e4..057e662 100644
 --- a/Source/Core/VideoBackends/D3D12/D3D12VertexManager.cpp
@@ -3573,7 +3433,7 @@ index b85e4e4..057e662 100644
  
  #include "Common/Align.h"
 diff --git a/Source/Core/VideoBackends/D3D12/DX12Pipeline.cpp b/Source/Core/VideoBackends/D3D12/DX12Pipeline.cpp
-index aa20f35..776f1a8 100644
+index 52b73e6..cc04a58 100644
 --- a/Source/Core/VideoBackends/D3D12/DX12Pipeline.cpp
 +++ b/Source/Core/VideoBackends/D3D12/DX12Pipeline.cpp
 @@ -1,13 +1,12 @@
@@ -3592,7 +3452,7 @@ index aa20f35..776f1a8 100644
  #include "VideoBackends/D3D12/DX12Texture.h"
  #include "VideoBackends/D3D12/DX12VertexFormat.h"
 diff --git a/Source/Core/VideoBackends/D3D12/DX12Texture.cpp b/Source/Core/VideoBackends/D3D12/DX12Texture.cpp
-index 69b9b75..34d0670 100644
+index 31951b1..c1979c1 100644
 --- a/Source/Core/VideoBackends/D3D12/DX12Texture.cpp
 +++ b/Source/Core/VideoBackends/D3D12/DX12Texture.cpp
 @@ -2,11 +2,9 @@
@@ -3607,20 +3467,8 @@ index 69b9b75..34d0670 100644
  #include "VideoBackends/D3D12/Common.h"
  #include "VideoBackends/D3D12/D3D12Renderer.h"
  #include "VideoBackends/D3D12/D3D12StreamBuffer.h"
-diff --git a/Source/Core/VideoBackends/D3D12/DescriptorAllocator.cpp b/Source/Core/VideoBackends/D3D12/DescriptorAllocator.cpp
-index bfc1c43..5bd022d 100644
---- a/Source/Core/VideoBackends/D3D12/DescriptorAllocator.cpp
-+++ b/Source/Core/VideoBackends/D3D12/DescriptorAllocator.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/D3D12/DescriptorAllocator.h"
--
- #include "VideoBackends/D3D12/DX12Context.h"
- 
- namespace DX12
 diff --git a/Source/Core/VideoBackends/D3D12/DescriptorHeapManager.cpp b/Source/Core/VideoBackends/D3D12/DescriptorHeapManager.cpp
-index e175d6e..412e3c9 100644
+index 97d0c8c..7ce35ac 100644
 --- a/Source/Core/VideoBackends/D3D12/DescriptorHeapManager.cpp
 +++ b/Source/Core/VideoBackends/D3D12/DescriptorHeapManager.cpp
 @@ -2,9 +2,7 @@
@@ -3740,7 +3588,7 @@ index 9ee16c1..89dd437 100644
    // We can only check texture support once we have a device.
    if (g_dx_context)
 diff --git a/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp b/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp
-index 0f491af..075c5ab 100644
+index 69014d8..e06c6a0 100644
 --- a/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp
 +++ b/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp
 @@ -1,8 +1,6 @@
@@ -3752,8 +3600,8 @@ index 0f491af..075c5ab 100644
  #include <d3d11.h>
  #include <d3d12.h>
  #include <dxgi1_3.h>
-@@ -12,7 +10,7 @@
- #include "Common/DynamicLibrary.h"
+@@ -13,7 +11,7 @@
+ #include "Common/HRWrap.h"
  #include "Common/MsgHandler.h"
  #include "Common/StringUtil.h"
 -
@@ -3762,7 +3610,7 @@ index 0f491af..075c5ab 100644
  #include "VideoCommon/VideoConfig.h"
  
 diff --git a/Source/Core/VideoBackends/D3DCommon/Shader.cpp b/Source/Core/VideoBackends/D3DCommon/Shader.cpp
-index 15be6cf..26eeb78 100644
+index 0d7c84b..ba75fc3 100644
 --- a/Source/Core/VideoBackends/D3DCommon/Shader.cpp
 +++ b/Source/Core/VideoBackends/D3DCommon/Shader.cpp
 @@ -1,8 +1,6 @@
@@ -3774,7 +3622,7 @@ index 15be6cf..26eeb78 100644
  #include <fstream>
  #include <wrl/client.h>
  
-@@ -13,6 +11,8 @@
+@@ -14,6 +12,8 @@
  #include "Common/StringUtil.h"
  #include "Common/Version.h"
  
@@ -3861,10 +3709,10 @@ index b4962cf..ee45fe8 100644
  #include "VideoBackends/OGL/OGLShader.h"
  #include "VideoBackends/OGL/OGLVertexManager.h"
 diff --git a/Source/Core/VideoBackends/OGL/OGLRender.cpp b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-index 3b70579..782d5e1 100644
+index 53ed788..81bb5e9 100644
 --- a/Source/Core/VideoBackends/OGL/OGLRender.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-@@ -483,10 +483,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
+@@ -482,10 +482,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
        GLExtensions::Supports("GL_EXT_texture_compression_s3tc");
    g_Config.backend_info.bSupportsBPTCTextures =
        GLExtensions::Supports("GL_ARB_texture_compression_bptc");
@@ -3875,7 +3723,7 @@ index 3b70579..782d5e1 100644
  
    if (m_main_gl_context->IsGLES())
    {
-@@ -513,9 +509,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
+@@ -512,9 +508,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
      // ARB_get_texture_sub_image (unlikely, except maybe on NVIDIA), we can use that instead.
      g_Config.backend_info.bSupportsDepthReadback = g_ogl_config.bSupportsTextureSubImage;
  
@@ -3885,18 +3733,6 @@ index 3b70579..782d5e1 100644
      if (GLExtensions::Supports("GL_EXT_shader_framebuffer_fetch"))
      {
        g_ogl_config.SupportedFramebufferFetch = EsFbFetchType::FbFetchExt;
-diff --git a/Source/Core/VideoBackends/OGL/OGLShader.cpp b/Source/Core/VideoBackends/OGL/OGLShader.cpp
-index 4ba2143..11914f0 100644
---- a/Source/Core/VideoBackends/OGL/OGLShader.cpp
-+++ b/Source/Core/VideoBackends/OGL/OGLShader.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/OGL/OGLShader.h"
--
- #include "VideoBackends/OGL/ProgramShaderCache.h"
- 
- namespace OGL
 diff --git a/Source/Core/VideoBackends/OGL/OGLTexture.cpp b/Source/Core/VideoBackends/OGL/OGLTexture.cpp
 index cf3c5f7..83c1d1b 100644
 --- a/Source/Core/VideoBackends/OGL/OGLTexture.cpp
@@ -3916,7 +3752,7 @@ index cf3c5f7..83c1d1b 100644
  
  namespace OGL
 diff --git a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
-index 8376127..1a5b92c 100644
+index 659882d..f6c89a8 100644
 --- a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 +++ b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 @@ -692,6 +692,7 @@ void ProgramShaderCache::CreateHeader()
@@ -4049,18 +3885,6 @@ index c580461..397442f 100644
    u8 mip = maxLod >> 4;
    u8 fract = maxLod & 0xf;
  
-diff --git a/Source/Core/VideoBackends/Software/EfbCopy.cpp b/Source/Core/VideoBackends/Software/EfbCopy.cpp
-index c23ca56..31fdf3f 100644
---- a/Source/Core/VideoBackends/Software/EfbCopy.cpp
-+++ b/Source/Core/VideoBackends/Software/EfbCopy.cpp
-@@ -2,7 +2,6 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoBackends/Software/EfbCopy.h"
--
- #include "Common/CommonTypes.h"
- #include "Common/Logging/Log.h"
- #include "Core/HW/Memmap.h"
 diff --git a/Source/Core/VideoBackends/Software/Rasterizer.cpp b/Source/Core/VideoBackends/Software/Rasterizer.cpp
 index f886858..de9925d 100644
 --- a/Source/Core/VideoBackends/Software/Rasterizer.cpp
@@ -4334,7 +4158,7 @@ index fd29645..a1ccdd6 100644
      // Cap anisotropy to device limits.
      create_info.anisotropyEnable = VK_TRUE;
 diff --git a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
-index ec38d58..a06cab7 100644
+index 7da5f82..ae010aa 100644
 --- a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
 @@ -2,6 +2,7 @@
@@ -4666,25 +4490,11 @@ index f8306dd..10f5b37 100644
  #include "VideoCommon/Fifo.h"
  #include "VideoCommon/RenderBase.h"
  #include "VideoCommon/Statistics.h"
-diff --git a/Source/Core/VideoCommon/AsyncShaderCompiler.cpp b/Source/Core/VideoCommon/AsyncShaderCompiler.cpp
-index 7e13168..82625f6 100644
---- a/Source/Core/VideoCommon/AsyncShaderCompiler.cpp
-+++ b/Source/Core/VideoCommon/AsyncShaderCompiler.cpp
-@@ -2,9 +2,7 @@
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
- #include "VideoCommon/AsyncShaderCompiler.h"
--
- #include <thread>
--
- #include "Common/Assert.h"
- #include "Common/Logging/Log.h"
- #include "Common/Thread.h"
 diff --git a/Source/Core/VideoCommon/BPMemory.h b/Source/Core/VideoCommon/BPMemory.h
-index 3b89cde..d3e36ea 100644
+index 0d21166..b046aa4 100644
 --- a/Source/Core/VideoCommon/BPMemory.h
 +++ b/Source/Core/VideoCommon/BPMemory.h
-@@ -1112,6 +1112,18 @@ struct fmt::formatter<ZTex2>
+@@ -1113,6 +1113,18 @@ struct fmt::formatter<ZTex2>
    }
  };
  
@@ -4703,7 +4513,7 @@ index 3b89cde..d3e36ea 100644
  // Geometry/other structs
  enum class CullMode : u32
  {
-@@ -2128,160 +2140,6 @@ struct BPS_TmemConfig
+@@ -2133,160 +2145,6 @@ struct BPS_TmemConfig
    u32 texinvalidate;
  };
  
@@ -4864,7 +4674,7 @@ index 3b89cde..d3e36ea 100644
  // All of BP memory
  
  struct BPCmd
-@@ -2346,7 +2204,7 @@ struct BPMemory
+@@ -2351,7 +2209,7 @@ struct BPMemory
    FieldMode fieldmode;                // 68
    u32 unknown10[7];                   // 69-6F
    u32 unknown11[16];                  // 70-7F
@@ -5041,7 +4851,7 @@ index 3504bc6..cf08716 100644
    endif()
  endif()
 diff --git a/Source/Core/VideoCommon/CommandProcessor.cpp b/Source/Core/VideoCommon/CommandProcessor.cpp
-index ddaa0e7..7c4b380 100644
+index c80469f..e197215 100644
 --- a/Source/Core/VideoCommon/CommandProcessor.cpp
 +++ b/Source/Core/VideoCommon/CommandProcessor.cpp
 @@ -1,8 +1,6 @@
@@ -5058,9 +4868,9 @@ index ddaa0e7..7c4b380 100644
  #include "Core/HW/MMIO.h"
  #include "Core/HW/ProcessorInterface.h"
 +#include "VideoCommon/CommandProcessor.h"
+ #include "Core/System.h"
  #include "VideoCommon/Fifo.h"
  
- namespace CommandProcessor
 diff --git a/Source/Core/VideoCommon/ConstantManager.h b/Source/Core/VideoCommon/ConstantManager.h
 index 5335af9..fe80767 100644
 --- a/Source/Core/VideoCommon/ConstantManager.h
@@ -5337,10 +5147,10 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index 6419efd..d74fc45 100644
+index 673c97e..b517012 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
-@@ -332,9 +332,6 @@ PixelShaderUid GetPixelShaderUid()
+@@ -333,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
      uid_data->blend_subtract_alpha = state.subtractAlpha;
    }
  
@@ -5350,7 +5160,7 @@ index 6419efd..d74fc45 100644
    return out;
  }
  
-@@ -385,7 +382,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -386,7 +383,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
      // Declare samplers
      out.Write("SamplerState samp[8] : register(s0);\n"
                "\n"
@@ -5359,7 +5169,7 @@ index 6419efd..d74fc45 100644
    }
    out.Write("\n");
  
-@@ -397,7 +394,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -398,7 +395,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
    out.Write("\tint4 " I_COLORS "[4];\n"
              "\tint4 " I_KCOLORS "[4];\n"
              "\tint4 " I_ALPHA ";\n"
@@ -5368,7 +5178,7 @@ index 6419efd..d74fc45 100644
              "\tint4 " I_ZBIAS "[2];\n"
              "\tint4 " I_INDTEXSCALE "[2];\n"
              "\tint4 " I_INDTEXMTX "[6];\n"
-@@ -418,7 +415,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -419,7 +416,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
              "\tbool  bpmem_dither;\n"
              "\tbool  bpmem_bounding_box;\n"
              "\tuint4 bpmem_pack1[16];\n"  // .xy - combiners, .z - tevind
@@ -5377,7 +5187,7 @@ index 6419efd..d74fc45 100644
              "\tint4  konstLookup[32];\n"
              "\tbool  blend_enable;\n"
              "\tuint  blend_src_factor;\n"
-@@ -427,16 +424,12 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -428,16 +425,12 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
              "\tuint  blend_dst_factor_alpha;\n"
              "\tbool  blend_subtract;\n"
              "\tbool  blend_subtract_alpha;\n"
@@ -5395,7 +5205,7 @@ index 6419efd..d74fc45 100644
  
    if (host_config.per_pixel_lighting)
    {
-@@ -542,320 +535,17 @@ void UpdateBoundingBox(float2 rawpos) {{
+@@ -543,320 +536,17 @@ void UpdateBoundingBox(float2 rawpos) {{
  )",
                fmt::arg("efb_height", EFB_HEIGHT), fmt::arg("efb_scale", I_EFBSCALE));
    }
@@ -5718,7 +5528,7 @@ index 6419efd..d74fc45 100644
  static void WriteColor(ShaderCode& out, APIType api_type, const pixel_shader_uid_data* uid_data,
                         bool use_dual_source);
  static void WriteBlend(ShaderCode& out, const pixel_shader_uid_data* uid_data);
-@@ -876,20 +566,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -877,20 +567,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
              uid_data->genMode_numtexgens, uid_data->genMode_numindstages);
  
    // Stuff that is shared between ubershaders and pixelgen.
@@ -5739,7 +5549,7 @@ index 6419efd..d74fc45 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -944,58 +622,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -945,58 +623,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
         uid_data->useDstAlpha);
    const bool use_shader_blend =
        !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
@@ -5816,7 +5626,7 @@ index 6419efd..d74fc45 100644
      }
  
      if (uid_data->per_pixel_depth)
-@@ -1041,28 +701,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1042,28 +702,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
      out.Write("void main()\n{{\n");
      out.Write("\tfloat4 rawpos = gl_FragCoord;\n");
@@ -5848,7 +5658,7 @@ index 6419efd..d74fc45 100644
                  "\tfloat4 ocol1;\n");
      }
    }
-@@ -1112,8 +755,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1113,8 +756,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("        ) {{\n");
    }
@@ -5857,7 +5667,7 @@ index 6419efd..d74fc45 100644
  
    out.Write("\tint4 c0 = " I_COLORS "[1], c1 = " I_COLORS "[2], c2 = " I_COLORS
              "[3], prev = " I_COLORS "[0];\n"
-@@ -1171,7 +812,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1172,7 +813,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
      {
        out.Write("\tint2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -5866,7 +5676,7 @@ index 6419efd..d74fc45 100644
        // TODO: S24 overflows here?
      }
    }
-@@ -1194,8 +835,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1195,8 +836,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write("\ttempcoord = fixpoint_uv{} >> " I_INDTEXSCALE "[{}].{};\n", texcoord, i / 2,
                  (i & 1) ? "zw" : "xy");
  
@@ -5877,7 +5687,7 @@ index 6419efd..d74fc45 100644
      }
    }
  
-@@ -1313,9 +954,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1314,9 +955,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
    WriteFog(out, uid_data);
  
@@ -5887,7 +5697,7 @@ index 6419efd..d74fc45 100644
    // Write the color and alpha values to the framebuffer
    // If using shader blend, we still use the separate alpha
    WriteColor(out, api_type, uid_data, use_dual_source || use_shader_blend);
-@@ -1604,8 +1242,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
+@@ -1605,8 +1243,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
          '\0',
      };
  
@@ -5898,7 +5708,7 @@ index 6419efd..d74fc45 100644
    }
    else if (uid_data->genMode_numtexgens == 0)
    {
-@@ -1788,6 +1426,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
+@@ -1789,6 +1427,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
    out.Write("){}", tev_scale_table_right[scale]);
  }
  
@@ -5923,7 +5733,7 @@ index 6419efd..d74fc45 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1932,34 +1588,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1933,34 +1589,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
@@ -6540,7 +6350,7 @@ index 0a965e6..c5cd3ef 100644
                                 std::string_view type, std::string_view name, int var_index,
                                 std::string_view semantic = {}, int semantic_index = -1)
 diff --git a/Source/Core/VideoCommon/ShaderGenCommon.h b/Source/Core/VideoCommon/ShaderGenCommon.h
-index b787035..758baf5 100644
+index edbd931..28688cc 100644
 --- a/Source/Core/VideoCommon/ShaderGenCommon.h
 +++ b/Source/Core/VideoCommon/ShaderGenCommon.h
 @@ -15,7 +15,6 @@
@@ -7657,7 +7467,7 @@ index efe6a38..cef3168 100644
    if (memory_stride == bytes_per_row)
    {
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.h b/Source/Core/VideoCommon/TextureCacheBase.h
-index 692aab4..3e533c5 100644
+index daf7e29..b9d7290 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.h
 +++ b/Source/Core/VideoCommon/TextureCacheBase.h
 @@ -15,14 +15,12 @@
@@ -7675,7 +7485,7 @@ index 692aab4..3e533c5 100644
  
  class AbstractFramebuffer;
  class AbstractStagingTexture;
-@@ -195,7 +193,6 @@ public:
+@@ -196,7 +194,6 @@ public:
  
      bool IsEfbCopy() const { return is_efb_copy; }
      bool IsCopy() const { return is_xfb_copy || is_efb_copy; }
@@ -7683,7 +7493,7 @@ index 692aab4..3e533c5 100644
      u32 NumBlocksY() const;
      u32 BytesPerRow() const;
  
-@@ -235,11 +232,17 @@ public:
+@@ -236,11 +233,17 @@ public:
    void Invalidate();
  
    TCacheEntry* Load(const u32 stage);
@@ -7703,7 +7513,7 @@ index 692aab4..3e533c5 100644
    void CopyRenderTargetToTexture(u32 dstAddr, EFBCopyFormat dstFormat, u32 width, u32 height,
                                   u32 dstStride, bool is_depth_copy,
                                   const MathUtil::Rectangle<int>& srcRect, bool isIntensity,
-@@ -301,11 +304,11 @@ private:
+@@ -302,11 +305,11 @@ private:
  
    TCacheEntry* GetXFBFromCache(u32 address, u32 width, u32 height, u32 stride);
  
@@ -8673,7 +8483,7 @@ index 5fa85b2..0ebb385 100644
  
  void VertexManagerBase::Flush()
 diff --git a/Source/Core/VideoCommon/VideoBackendBase.cpp b/Source/Core/VideoCommon/VideoBackendBase.cpp
-index 03d46b7..66c638c 100644
+index b84f6f9..bc50d39 100644
 --- a/Source/Core/VideoCommon/VideoBackendBase.cpp
 +++ b/Source/Core/VideoCommon/VideoBackendBase.cpp
 @@ -47,7 +47,6 @@
@@ -8705,10 +8515,10 @@ index a4aa9bd..3482c0a 100644
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
  
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index 80d42db..495eef6 100644
+index 5bb3e52..81b47cf 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
-@@ -135,7 +135,6 @@ struct VideoConfig final
+@@ -136,7 +136,6 @@ struct VideoConfig final
    int iLog = 0;           // CONF_ bits
    int iSaveTargetId = 0;  // TODO: Should be dropped
    u32 iMissingColorValue = 0;
@@ -8716,7 +8526,7 @@ index 80d42db..495eef6 100644
  
    // Stereoscopy
    StereoMode stereo_mode{};
-@@ -231,9 +230,6 @@ struct VideoConfig final
+@@ -232,9 +231,6 @@ struct VideoConfig final
      bool bSupportsDepthReadback = false;
      bool bSupportsShaderBinaries = false;
      bool bSupportsPipelineCacheData = false;
@@ -8726,7 +8536,7 @@ index 80d42db..495eef6 100644
    } backend_info;
  
    // Utility
-@@ -247,16 +243,6 @@ struct VideoConfig final
+@@ -248,16 +244,6 @@ struct VideoConfig final
      return backend_info.bSupportsGPUTextureDecoding && bEnableGPUTextureDecoding;
    }
    bool UseVertexRounding() const { return bVertexRounding && iEFBScale != 1; }

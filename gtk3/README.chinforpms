@@ -1,0 +1,4 @@
+This GTK3 package have https://github.com/lah7/gtk3-classic patches and
+some other modifications.
+
+CSD shadows are disabled by default, use GTK_SHADOW=1 do reenable.
