@@ -263,7 +263,7 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
 %files mingw-debuginfo
-%{_datadir}/wine/%{pkgname}/*/*.debug
+%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
 
 
 %changelog

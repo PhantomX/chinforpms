@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.9.3
+Version:        1.9.4
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -239,10 +239,13 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
 %files mingw-debuginfo
-%{_datadir}/wine/%{pkgname}/*/*.debug
+%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
 
 
 %changelog
+* Mon Jan 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.4-100
+- 1.9.4
+
 * Tue Jan 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.3-100
 - 1.9.3
 
