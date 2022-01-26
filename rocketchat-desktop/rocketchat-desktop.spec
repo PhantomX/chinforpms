@@ -60,12 +60,20 @@ chrpath --delete opt/%{app_name}/%{name}
 %install
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/usr/bin/sh
-APP_PATH=%{_libdir}/%{name}
-export APP_PATH
+#!/usr/bin/bash
+APP_NAME=%{name}
+APP_PATH="%{_libdir}/%{name}"
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+APP_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/${APP_NAME}-userflags.conf"
+APP_USER_FLAGS=""
+if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
+  APP_USER_FLAGS="$(grep -v '^#' "${APP_USER_FLAGS_FILE}")"
+fi
+
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec ${APP_PATH}/%{name} "$@"
+exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 

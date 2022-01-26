@@ -80,7 +80,7 @@ fi
 
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/usr/bin/sh
+#!/usr/bin/bash
 
 # Ugly fix to xdg-mime CPU spikes
 for module in discord_game_utils discord_utils ;do
@@ -89,11 +89,19 @@ for module in discord_game_utils discord_utils ;do
   fi
 done
 
-APP_PATH=%{_libdir}/%{name}
-export APP_PATH
+APP_NAME=%{name}
+APP_PATH="%{_libdir}/%{name}"
+
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+APP_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/${APP_NAME}-userflags.conf"
+APP_USER_FLAGS=""
+if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
+  APP_USER_FLAGS="$(grep -v '^#' "${APP_USER_FLAGS_FILE}")"
+fi
+
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec ${APP_PATH}/%{execname} "$@"
+exec "${APP_PATH}/%{execname}" "${APP_USER_FLAGS}" "$@"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 

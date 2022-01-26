@@ -68,12 +68,15 @@ ExclusiveArch:  %{ix86} x86_64
 BuildArch:      noarch
 
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
+BuildRequires:  mingw64-filesystem >= 95
 BuildRequires:  mingw32-binutils >= 2.34-100
 BuildRequires:  mingw64-binutils >= 2.34-100
 BuildRequires:  mingw64-gcc >= 10.0
 BuildRequires:  mingw64-gcc-c++ >= 10.0
 BuildRequires:  mingw64-headers >= 8.0
 BuildRequires:  mingw64-winpthreads-static >= 8.0
+
+BuildRequires:  mingw32-filesystem >= 95
 BuildRequires:  mingw32-gcc >= 10.0
 BuildRequires:  mingw32-gcc-c++ >= 10.0
 BuildRequires:  mingw32-headers >= 8.0
@@ -108,15 +111,7 @@ Provides a Vulkan-based implementation of DXGI, D3D9, D3D10 and D3D11
 in order to run 3D applications on Linux using Wine.
 
 
-%package mingw-debuginfo
-Summary:        Debug information for package %{name}
-AutoReq:        0
-AutoProv:       1
-BuildArch:      noarch
-%description mingw-debuginfo
-This package provides debug information for package %{name}.
-Debug information is useful when developing applications that use this
-package or when debugging this package.
+%{?mingw_debug_package}
 
 
 %prep
@@ -237,9 +232,6 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %endif
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
-
-%files mingw-debuginfo
-%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
 
 
 %changelog

@@ -76,23 +76,28 @@ sed \
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{pkgname} <<'EOF'
 #!/usr/bin/bash
-APP_PATH=%{_libdir}/%{name}
-export APP_PATH
+APP_NAME=%{name}
+APP_PATH="%{_libdir}/%{name}"
 
-if [ -n "${HOME}" ] ;then
-  USERDIR="${HOME}/.config/Microsoft"
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+APP_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/${APP_NAME}-userflags.conf"
+APP_USER_FLAGS=""
+if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
+  APP_USER_FLAGS="$(grep -v '^#' "${APP_USER_FLAGS_FILE}")"
+fi
 
-  mkdir -p "${USERDIR}/Microsoft Teams"
-  if [ -d "${USERDIR}/Microsoft Teams" ] && [ ! -d "${USERDIR}/Microsoft Teams - Insiders" ] ;then
-    ln -s "Microsoft Teams" "${USERDIR}/Microsoft Teams - Insiders" >/dev/null 2>&1
-  elif [ -d "${USERDIR}/Microsoft Teams - Insiders" ] && [ ! -d "${USERDIR}/Microsoft Teams" ] ;then
-    ln -s "Microsoft Teams - Insiders" "${USERDIR}/Microsoft Teams"  >/dev/null 2>&1
-  fi
+USERDIR="${XDG_CONFIG_HOME}/Microsoft"
+
+mkdir -p "${USERDIR}/Microsoft Teams"
+if [ -d "${USERDIR}/Microsoft Teams" ] && [ ! -d "${USERDIR}/Microsoft Teams - Insiders" ] ;then
+  ln -s "Microsoft Teams" "${USERDIR}/Microsoft Teams - Insiders" >/dev/null 2>&1
+elif [ -d "${USERDIR}/Microsoft Teams - Insiders" ] && [ ! -d "${USERDIR}/Microsoft Teams" ] ;then
+  ln -s "Microsoft Teams - Insiders" "${USERDIR}/Microsoft Teams"  >/dev/null 2>&1
 fi
 
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}"/%{pkgname} "$@" --disable-namespace-sandbox --disable-setuid-sandbox
+exec "${APP_PATH}/%{pkgname}" "${APP_USER_FLAGS}" "$@" --disable-namespace-sandbox --disable-setuid-sandbox
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{pkgname}
 
