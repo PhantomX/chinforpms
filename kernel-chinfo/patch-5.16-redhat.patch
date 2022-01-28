@@ -23,8 +23,6 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/gpu/drm/amd/amdgpu/cik.c                   |   4 +
- drivers/gpu/drm/amd/amdgpu/vi.c                    |   4 +
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -50,10 +48,10 @@ Subject: [PATCH] patch-5.16-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 46 files changed, 754 insertions(+), 191 deletions(-)
+ 44 files changed, 746 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index fdbd06daf2af..0234d5708219 100644
+index acb8ffee65dc..d41b475c83d3 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -401,11 +399,11 @@ index c68e694fca26..146cba5ae5bc 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 2c80765670bc..5245fad951d8 100644
+index 25d9f04f1995..c2fa1e98fb28 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1725,6 +1725,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
+@@ -1732,6 +1732,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
 +	/*
@@ -511,7 +509,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 7470ee24db2f..a3ac18f64ba7 100644
+index a27ae3999ff3..dc4e136adb08 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -335,6 +335,7 @@
@@ -544,7 +542,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  /**********************************************************************
   *
   * OS independent entropy store.   Here are the functions which handle
-@@ -1878,6 +1887,13 @@ random_poll(struct file *file, poll_table * wait)
+@@ -1880,6 +1889,13 @@ random_poll(struct file *file, poll_table * wait)
  	return mask;
  }
 
@@ -558,7 +556,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  static int
  write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
  {
-@@ -1981,7 +1997,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1983,7 +1999,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -617,7 +615,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	.read  = random_read,
  	.write = random_write,
  	.poll  = random_poll,
-@@ -1992,6 +2059,7 @@ const struct file_operations random_fops = {
+@@ -1994,6 +2061,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -625,7 +623,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	.read  = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -2000,9 +2068,31 @@ const struct file_operations urandom_fops = {
+@@ -2002,9 +2070,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -657,7 +655,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -2018,6 +2108,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2020,6 +2110,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -676,7 +674,7 @@ index 7470ee24db2f..a3ac18f64ba7 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2324,3 +2426,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2329,3 +2431,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -894,36 +892,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/gpu/drm/amd/amdgpu/cik.c b/drivers/gpu/drm/amd/amdgpu/cik.c
-index 54f28c075f21..f10ce740a29c 100644
---- a/drivers/gpu/drm/amd/amdgpu/cik.c
-+++ b/drivers/gpu/drm/amd/amdgpu/cik.c
-@@ -1428,6 +1428,10 @@ static int cik_asic_reset(struct amdgpu_device *adev)
- {
- 	int r;
-
-+	/* APUs don't have full asic reset */
-+	if (adev->flags & AMD_IS_APU)
-+		return 0;
-+
- 	if (cik_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
- 		dev_info(adev->dev, "BACO reset\n");
- 		r = amdgpu_dpm_baco_reset(adev);
-diff --git a/drivers/gpu/drm/amd/amdgpu/vi.c b/drivers/gpu/drm/amd/amdgpu/vi.c
-index fe9a7cc8d9eb..6645ebbd2696 100644
---- a/drivers/gpu/drm/amd/amdgpu/vi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/vi.c
-@@ -956,6 +956,10 @@ static int vi_asic_reset(struct amdgpu_device *adev)
- {
- 	int r;
-
-+	/* APUs don't have full asic reset */
-+	if (adev->flags & AMD_IS_APU)
-+		return 0;
-+
- 	if (vi_asic_reset_method(adev) == AMD_RESET_METHOD_BACO) {
- 		dev_info(adev->dev, "BACO reset\n");
- 		r = amdgpu_dpm_baco_reset(adev);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1268,7 +1236,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e453a5..6759ef17a2c3 100644
+index 8b86406b7162..2dffe129b902 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1279,7 +1247,7 @@ index dd7863e453a5..6759ef17a2c3 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3118,6 +3119,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1444,10 +1412,10 @@ index 9b095ee01364..bf25ef206cd2 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 003950c738d2..ef27596d04d8 100644
+index 20a932690738..494cee3aec7b 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4269,6 +4269,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4272,6 +4272,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1479,10 +1447,10 @@ index 003950c738d2..ef27596d04d8 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 3bc4a86c3d0a..e346da4f58f2 100644
+index ac6c5ccfe1cb..ec784479eece 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5666,6 +5666,13 @@ static void hub_event(struct work_struct *work)
+@@ -5669,6 +5669,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 

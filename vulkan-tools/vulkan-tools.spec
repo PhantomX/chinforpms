@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.2.203
+Version:        1.3.204
 Release:        100%{?dist}
 Summary:        Vulkan tools
 
@@ -23,6 +23,8 @@ BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  vulkan-loader-devel
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
+BuildRequires:  pkgconfig(wayland-protocols)
+BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(x11)
@@ -82,6 +84,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Thu Jan 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.204-100
+- 1.3.204
+
 * Fri Jan 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1.2.203-100
 - 1.2.203
 
