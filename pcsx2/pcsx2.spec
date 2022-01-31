@@ -117,13 +117,12 @@ A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %if 0%{sanitize}
-  mv 3rdparty/include .
-  mv 3rdparty/jpgd .
-  mv 3rdparty/xbyak .
+  mkdir 3rdparty-temp
+  mv 3rdparty/include 3rdparty-temp/
+  mv 3rdparty/jpgd 3rdparty-temp/
+  mv 3rdparty/xbyak 3rdparty-temp/
   rm -rf 3rdparty/*
-  mv include 3rdparty/
-  mv jpgd 3rdparty/
-  mv xbyak 3rdparty/
+  mv 3rdparty-temp/* 3rdparty/
   rm -rf tools
   rm -f common/src/Utilities/x86/MemcpyFast.cpp
   rm -rf .git

@@ -27,13 +27,13 @@ clone: clean
 
 sanitize: clone
 ifeq ($(SANITIZE),1)
-	mv $(DIRNAME)/3rdparty/include $(DIRNAME)/
-	mv $(DIRNAME)/3rdparty/jpgd $(DIRNAME)/
-	mv $(DIRNAME)/3rdparty/xbyak $(DIRNAME)/
+	mkdir 3rdparty-temp
+	mv $(DIRNAME)/3rdparty/include $(DIRNAME)/3rdparty-temp/
+	mv $(DIRNAME)/3rdparty/jpgd $(DIRNAME)/3rdparty-temp/
+	mv $(DIRNAME)/3rdparty/xbyak $(DIRNAME)/3rdparty-temp/
 	rm -rf $(DIRNAME)/3rdparty/*
-	mv $(DIRNAME)/include $(DIRNAME)/3rdparty/
-	mv $(DIRNAME)/jpgd $(DIRNAME)/3rdparty/
-	mv $(DIRNAME)/xbyak $(DIRNAME)/3rdparty/
+	mv $(DIRNAME)/3rdparty-temp/* $(DIRNAME)/3rdparty/
+	rmdir $(DIRNAME)/3rdparty-temp
 	rm -rf $(DIRNAME)/tools
 	rm -f  $(DIRNAME)/common/src/Utilities/x86/MemcpyFast.cpp
 	rm -rf .git

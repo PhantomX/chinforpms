@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit dff8980a2771713728b5d1892249ed13e7588612
+%global commit 0761fe736f1efb633c8c2b947f53176309961dbb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220208
+%global date 20220128
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,7 +16,7 @@
 
 Name:           melonds
 Version:        0.9.3
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -84,6 +84,7 @@ sed \
   -i CMakeLists.txt
 
 %build
+export LDFLAGS="%{build_ldflags} -Wl,-z,noexecstack"
 %cmake \
   -DENABLE_LTO:BOOL=OFF \
 %{nil}
@@ -114,7 +115,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
-* Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-6.20220208gitdff8980
+* Sat Jan 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-7.20220128git0761fe7
+- Bump
+
+* Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-6.20220109gitdff8980
 - Last snapshot
 - File location patch removed, upstream support custom paths now
 

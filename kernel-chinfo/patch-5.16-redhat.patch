@@ -51,7 +51,7 @@ Subject: [PATCH] patch-5.16-redhat
  44 files changed, 746 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index acb8ffee65dc..d41b475c83d3 100644
+index 36ff4ed4763b..1779878aa037 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
