@@ -1,0 +1,38 @@
+From 66894b9aed630123c0673d453b9f936e83c3d61a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 1 Feb 2022 14:15:14 -0300
+Subject: [PATCH] tgcalls-upstream-fixes
+
+---
+ .../tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp     | 1 +
+ .../tgcalls/tgcalls/group/GroupInstanceCustomImpl.cpp           | 2 +-
+ 2 files changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/Telegram/ThirdParty/tgcalls/tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp b/Telegram/ThirdParty/tgcalls/tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp
+index a619cdd..74fc447 100644
+--- a/Telegram/ThirdParty/tgcalls/tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp
++++ b/Telegram/ThirdParty/tgcalls/tgcalls/desktop_capturer/DesktopCaptureSourceHelper.cpp
+@@ -139,6 +139,7 @@ void SourceFrameCallbackImpl::OnCaptureResult(
+ 	    std::unique_ptr<webrtc::DesktopFrame> frame) {
+ 
+     const auto failed = (result != webrtc::DesktopCapturer::Result::SUCCESS)
++        || !frame
+         || frame->size().equals({ 1, 1 });
+     if (failed) {
+         if (result == webrtc::DesktopCapturer::Result::ERROR_PERMANENT) {
+diff --git a/Telegram/ThirdParty/tgcalls/tgcalls/group/GroupInstanceCustomImpl.cpp b/Telegram/ThirdParty/tgcalls/tgcalls/group/GroupInstanceCustomImpl.cpp
+index 4c4faef..574260c 100644
+--- a/Telegram/ThirdParty/tgcalls/tgcalls/group/GroupInstanceCustomImpl.cpp
++++ b/Telegram/ThirdParty/tgcalls/tgcalls/group/GroupInstanceCustomImpl.cpp
+@@ -274,7 +274,7 @@ static std::vector<webrtc::SdpVideoFormat> filterSupportedVideoFormats(std::vect
+                 return lhsLevelAssymetryAllowedPriority < rhsLevelAssymetryAllowedPriority;
+             }
+ 
+-            return true;
++            return false;
+         });
+ 
+         filteredFormats.push_back(h264Formats[0]);
+-- 
+2.34.1
+

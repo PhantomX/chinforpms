@@ -32,7 +32,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.4.8
+Version:        3.5.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -60,6 +60,12 @@ ExclusiveArch:  x86_64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
+Patch10:        0001-tgcalls-upstream-fixes.patch
+Patch11:        %{url}/commit/b415b293cffd1e9902d9d2cd75c11f20c2429be0.patch#/%{name}-gh-b415b29.patch
+Patch12:        %{url}/commit/18bf48bf90b54ad297e9cadb401e31a667db0b9c.patch#/%{name}-gh-18bf48b.patch
+Patch13:        %{url}/commit/4bef1e9f5925b9b97d4dce306a04d141544ecb55.patch#/%{name}-gh-4bef1e9.patch
+Patch14:        %{url}/commit/37cd4f51eb7df28f17d7cfbbec1860df0d079c11.patch#/%{name}-gh-37cd4f5.patch
+
 Patch100:       %{name}-build-fix.patch
 
 # Do not mess input text
@@ -72,6 +78,7 @@ Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
+Patch206:       0001-add-Qt5Widgets-private-include.patch
 
 
 BuildRequires:  cmake(Microsoft.GSL)
@@ -161,10 +168,11 @@ BuildRequires:  pkgconfig(xcb-record)
 BuildRequires:  pkgconfig(xcb-screensaver)
 %endif
 
-BuildRequires:  cmake(absl)
+BuildRequires:  cmake(absl) >= 20211102
 BuildRequires:  cmake(tg_owt)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
 # Telegram Desktop require exact version of Qt due to Qt private API usage.
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
@@ -315,6 +323,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.0-100
+- 3.5.0
+
 * Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.8-100
 - 3.4.8
 

@@ -1,48 +1,51 @@
-From 415b9f538691ad19a396667a1c995dbeca6c509e Mon Sep 17 00:00:00 2001
+From 43fce1f25cf4023ec66ecbe8e3a5e4f125e640ce Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 8 Oct 2021 07:55:41 -0300
+Date: Tue, 1 Feb 2022 11:27:21 -0300
 Subject: [PATCH] Do not show unread counter on muted chats
 
 ---
- .../SourceFiles/dialogs/ui/dialogs_layout.cpp  | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
-index 759492b..82d1ad7 100644
+index dd209de..76a8868 100644
 --- a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
 +++ b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
-@@ -144,7 +144,9 @@ int PaintWideCounter(
- 		UnreadBadgeStyle st;
+@@ -186,6 +186,7 @@ int PaintWideCounter(
  		st.active = active;
+ 		st.selected = selected;
  		st.muted = unreadMuted;
--		paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
 +		if (!st.muted) {
-+			paintUnreadCount(p, counter, unreadRight, unreadTop, st, &unreadWidth);
+ 		const auto badge = PaintUnreadBadge(
+ 			p,
+ 			counter,
+@@ -193,6 +194,7 @@ int PaintWideCounter(
+ 			unreadTop,
+ 			st);
+ 		availableWidth -= badge.width() + st.padding;
 +		}
- 		availableWidth -= unreadWidth + st.padding;
  
  		hadOneBadge = true;
-@@ -1002,13 +1004,13 @@ void PaintCollapsedRow(
+ 	} else if (displayPinnedIcon) {
+@@ -1109,12 +1111,12 @@ void PaintCollapsedRow(
  		const auto unreadRight = fullWidth - st::dialogsPadding.x();
  		UnreadBadgeStyle st;
  		st.muted = true;
--		paintUnreadCount(
+-		PaintUnreadBadge(
 -			p,
 -			QString::number(unread),
 -			unreadRight,
 -			unreadTop,
--			st,
--			nullptr);
-+		//paintUnreadCount(
-+			//p,
-+			//QString::number(unread),
-+			//unreadRight,
-+			//unreadTop,
-+			//st,
-+			//nullptr);
+-			st);
++//		PaintUnreadBadge(
++//			p,
++//			QString::number(unread),
++//			unreadRight,
++//			unreadTop,
++//			st);
  	}
  }
  
 -- 
-2.32.0
+2.34.1
 

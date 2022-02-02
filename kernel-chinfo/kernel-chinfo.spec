@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 603608c4a9274e6c379febc1ec1f80dc76e40e59
+%global pfcommit de37ff9d361e1f2b8fe8e618220b0dcaa89dce25
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -980,7 +980,6 @@ Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-fo
 %global tkg_id 7a080053c8df3ba28ba48cf7adc3c102c1a20dc7
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
 
@@ -2922,6 +2921,12 @@ fi
 #
 #
 %changelog
+* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.5-500.chinfo
+- 5.16.5 - pf3
+
+* Sun Jan 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.4-500.chinfo
+- 5.16.4 - pf3
+
 * Thu Jan 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.3-500.chinfo
 - 5.16.3 - pf3
 

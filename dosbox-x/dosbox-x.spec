@@ -5,7 +5,7 @@
 %global vc_url https://github.com/joncampbell123/%{name}
 
 Name:           dosbox-x
-Version:        0.83.21
+Version:        0.83.22
 Release:        1%{?dist}
 
 Summary:        DOS emulator for running DOS games and applications including Windows 3.x/9x
@@ -107,6 +107,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.dosbox_x.D
 
 
 %changelog
+* Wed Feb 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.83.22-1
+- 0.83.22
+
 * Thu Jan 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0.83.21-1
 - 0.83.21
 

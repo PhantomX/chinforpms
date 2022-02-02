@@ -1,29 +1,17 @@
-# shared/static conditional, good luck with not support shared one
+# shared/static conditional, good luck with not supported shared one
 %bcond_with static
 
 %if %{with static}
 %global debug_package %{nil}
 %endif
 
-# Enable system vpx
-%global with_sysvpx 1
-
-%global commit0 6708e0d31a73e64fe12f54829bf4060c41b2658e
+%global commit0 1fd131d37777c445b58cad3889313a7c26ffc2ee
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20211223
+%global date 20220130
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
-
-%if 0%{?with_sysvpx}
-%global vpxver 1.10.0
-%else
-%global commit2 5b63f0f821e94f8072eb483014cfc33b05978bb9
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 libvpx
-%global bundlevpx 1.9.0
-%endif
 
 %global libsrtp_ver 94ac00d
 %global pffft_ver 483453d
@@ -35,7 +23,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        111%{?gver}%{?dist}
+Release:        112%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -51,16 +39,16 @@ URL:            https://github.com/desktop-app/%{name}
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
-%if !0%{?with_sysvpx}
-Source2:        %{cvc_url}/webm/libvpx/+archive/%{shortcommit2}.tar.gz#/%{srcname2}-%{shortcommit2}.tar.gz
-%endif
 
 # From Gentoo
 Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
+Patch1:         0001-add-missing-libdrm-includedir.patch
 
 
-BuildRequires:  cmake(absl)
+BuildRequires:  cmake(absl) >= 20211102
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(epoxy)
+BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-2.0)
@@ -69,6 +57,7 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavresample)
 BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
@@ -78,11 +67,7 @@ BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(usrsctp)
-%if 0%{?with_sysvpx}
-BuildRequires:  pkgconfig(vpx) >= %{vpxver}
-%else
-Provides:       bundled(libvpx) = %{bundlevpx}~git%{shortcommit2}
-%endif
+BuildRequires:  pkgconfig(vpx) >= 1.10.0
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xdamage)
@@ -122,6 +107,7 @@ Summary:        Development files for %{name}
 %if %{with static}
 Requires:       cmake(absl)
 Requires:       pkgconfig(alsa)
+Requires:       pkgconfig(gbm)
 Requires:       pkgconfig(gio-2.0)
 Requires:       pkgconfig(glib-2.0)
 Requires:       pkgconfig(gobject-2.0)
@@ -130,6 +116,7 @@ Requires:       pkgconfig(libavcodec)
 Requires:       pkgconfig(libavformat)
 Requires:       pkgconfig(libavresample)
 Requires:       pkgconfig(libavutil)
+Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
 Requires:       pkgconfig(libpulse)
@@ -139,11 +126,6 @@ Requires:       pkgconfig(openssl)
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
 Requires:       pkgconfig(vpx) >= 1.10.0
-%if 0%{?with_sysvpx}
-Requires:       pkgconfig(vpx) >= %{vpxver}
-%else
-Provides:       bundled(libvpx) = %{bundlevpx}~git%{shortcommit2}
-%endif
 Requires:       pkgconfig(x11)
 Requires:       pkgconfig(xcomposite)
 Requires:       pkgconfig(xdamage)
@@ -173,6 +155,10 @@ Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 %else
 Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
+# dlopen
+Requires:       libdrm%{?_isa}
+Requires:       mesa-libgbm%{?_isa}
+
 
 %description devel
 %{summary}.
@@ -181,11 +167,6 @@ Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %autosetup -n %{name}-%{commit0} -p1
 
 tar -xf %{S:1} -C src/third_party/libyuv
-%if 0%{?with_sysvpx}
-  sed '/include(cmake\/libvpx.cmake)/d' -i CMakeLists.txt
-%else
-tar -xf %{S:2} -C src/third_party/libvpx/source/libvpx
-%endif
 
 mkdir legal
 %if %{with static}
@@ -198,14 +179,6 @@ cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
 cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
-%if !0%{?with_sysvpx}
-cp -f -p src/third_party/libvpx/source/libvpx/LICENSE legal/LICENSE.libvpx
-cp -f -p src/third_party/libvpx/source/libvpx/PATENTS legal/PATENTS.libvpx
-cp -f -p src/third_party/libvpx/README.chromium legal/README.libvpx
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/LICENSE.TXT legal/LICENSE.libwebm
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/PATENTS.TXT legal/PATENTS.libwebm
-cp -f -p src/third_party/libvpx/source/libvpx/third_party/libwebm/README.libvpx legal/README.libwebm
-%endif
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
 cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
 cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
@@ -239,6 +212,7 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
   -DTG_OWT_USE_PROTOBUF:BOOL=ON \
   -DTG_OWT_BUILD_AUDIO_BACKENDS:BOOL=OFF \
   -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
+  -DDRM_INCLUDE_DIRS:PATH=%{_includedir}/drm \
 %{nil}
 
 %cmake_build
@@ -282,6 +256,9 @@ mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/l
 
 
 %changelog
+* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0-112.20220130git1fd131d
+- Update
+
 * Thu Dec 23 2021 Phantom X <megaphantomx at hotmail dot com> - 0-111.20211223git6708e0d
 - Bump
 
