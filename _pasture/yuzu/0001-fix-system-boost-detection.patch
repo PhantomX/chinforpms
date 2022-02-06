@@ -1,0 +1,32 @@
+From b9e1e68a79005ad884367f0e2f624c6d95eb9ff6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 4 Feb 2022 18:37:12 -0300
+Subject: [PATCH] fix system boost detection
+
+---
+ CMakeLists.txt | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 881b672..063af50 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -204,7 +204,14 @@ macro(yuzu_find_packages)
+     unset(FN_FORCE_REQUIRED)
+ endmacro()
+ 
+-if (NOT YUZU_USE_BUNDLED_BOOST)
++if (NOT YUZU_USE_BUNDLED_BOOST AND YUZU_FIX_CMAKE_BOOST )
++    set(BOOST_ROOT "/usr")
++    set(Boost_INCLUDE_DIR "/usr/include")
++    add_library(Boost::boost INTERFACE IMPORTED)
++    target_include_directories(Boost::boost SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
++    target_link_libraries(Boost::boost INTERFACE boost_context)
++    set(Boost_FOUND ON CACHE BOOL "System boost" FORCE)
++elseif (NOT YUZU_USE_BUNDLED_BOOST)
+     find_package(Boost 1.73.0 CONFIG COMPONENTS context headers QUIET)
+ endif()
+ if (Boost_FOUND)
+-- 
+2.34.1
+

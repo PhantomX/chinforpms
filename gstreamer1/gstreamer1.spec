@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.19.3
+Version:        1.20.0
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -99,7 +99,6 @@ sed -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g
 %meson \
   -D package-name='chinforpms GStreamer package' \
   -D package-origin='https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms' \
-  -D gtk_doc=disabled \
   -D tests=disabled -D examples=disabled \
   -D ptp-helper-permissions=capabilities \
   %{!?with_unwind:-D libunwind=disabled -D libdw=disabled } \
@@ -228,6 +227,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Sat Feb 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1.20.0-100
+- 1.20.0
+
 * Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1.19.3-100
 - 1.19.3
 

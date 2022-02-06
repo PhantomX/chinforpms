@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20220116
+# 20220205
 
 set -e
 
@@ -72,6 +72,7 @@ LRNG_TESTING_MENU
 LRU_GEN
 LRU_GEN_ENABLED
 LRU_GEN_STATS
+SENSORS_ASUS_WMI_EC
 "
 
 pfd="
@@ -81,7 +82,6 @@ pfm="
 X86_AMD_PSTATE
 SENSORS_ASUS_EC
 SENSORS_ASUS_WMI
-SENSORS_ASUS_WMI_EC
 TCP_CONG_BBR2
 V4L2_LOOPBACK
 "

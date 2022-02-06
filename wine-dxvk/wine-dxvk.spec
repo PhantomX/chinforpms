@@ -4,10 +4,10 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit ecd7b67069a6e2a4b78a8a929fd287030d283ccb
+%global commit 2673d7427037fdd6aab9121d04a3a064759fcaa3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211221
-%global with_snapshot 0
+%global date 20220202
+%global with_snapshot 1
 
 %{?mingw_package_header}
 
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.9.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -53,6 +53,9 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
+
+Patch10:        %{url}/pull/2466.patch#/%{name}-gh-pr2466.patch
+Patch11:        %{url}/pull/2477.patch#/%{name}-gh-pr2477.patch
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 
@@ -111,12 +114,22 @@ Provides a Vulkan-based implementation of DXGI, D3D9, D3D10 and D3D11
 in order to run 3D applications on Linux using Wine.
 
 
-%{?mingw_debug_package}
+%package mingw-debuginfo
+Summary:        Debug information for package %{name}
+AutoReq:        0
+AutoProv:       1
+BuildArch:      noarch
+%description mingw-debuginfo
+This package provides debug information for package %{name}.
+Debug information is useful when developing applications that use this
+package or when debugging this package.
 
 
 %prep
 %if 0%{?dxvk_async}
 %setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
+%patch10 -p1
+%patch11 -p1
 %patch100 -p1
 
 %patch200 -p1
@@ -233,8 +246,14 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
+%files mingw-debuginfo
+%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
+
 
 %changelog
+* Sun Feb 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.4-101.20220202git2673d74
+- Snapshot
+
 * Mon Jan 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.4-100
 - 1.9.4
 

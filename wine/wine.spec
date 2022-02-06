@@ -1,7 +1,7 @@
-%global commit c09a5da157585d171ad896e9862db00d505e4363
+%global commit 4364ff8d5c0387edd6fae142affe8e844b291518
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220121
-%global with_snapshot 0
+%global date 20220204
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  7.0.0
+%global winemono  7.1.1
 %global winevulkan 1.3.204
 %global winefastsync 5.15
 
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.1
+%global wine_stagingver 54850aa1ff6f32c08665095775eafece54b7b5d7
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f7ef12337b695000210bc4b7b6f0fac303e2997b
+%global tkg_id 2960fbbe790589a1fe6eb709f9a7ee01fbec4ca3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -222,9 +222,8 @@ Patch203:       0001-Reverts-to-fix-Tokyo-Xanadu-Xe.patch
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
-Patch902:        0001-mfplat-revert-f0cd33c-fixup.patch
 
-# mfplat reverts / 910-991
+# mfplat reverts / 910-996
 Patch910:       %{whq_url}/2d0dc2d47ca6b2d4090dfe32efdba4f695b197ce#/%{name}-whq-mfplat-2d0dc2d.patch
 Patch911:       %{whq_url}/831c6a88aab78db054beb42ca9562146b53963e7#/%{name}-whq-mfplat-831c6a8.patch
 Patch912:       %{whq_url}/3dd8eeeebdeec619570c764285bdcae82dee5868#/%{name}-whq-mfplat-3dd8eee.patch
@@ -302,12 +301,18 @@ Patch983:       %{whq_url}/78f916f598b4e0acadbda2c095058bf8a268eb72#/%{name}-whq
 Patch984:       %{whq_url}/c5a9373dbed9bb53e7739dfb6d2a1a2a5818871b#/%{name}-whq-mfplat-c5a9373.patch
 Patch985:       %{whq_url}/4d2a628dfe9e4aad9ba772854717253d0c6a7bb7#/%{name}-whq-mfplat-4d2a628.patch
 Patch986:       %{whq_url}/03d92af78a5000097b26560bba97320eb013441a#/%{name}-whq-mfplat-03d92af.patch
-Patch987:       %{whq_url}/f0cd33c69e879177559caaf248e86a4d69f9a09e#/%{name}-whq-mfplat-f0cd33c.patch
-Patch988:       %{whq_url}/c0af406c36acd36c117d03a9c74d8366e07bbb5d#/%{name}-whq-mfplat-c0af406.patch
-Patch989:       %{whq_url}/11d1e967b6be4e948ad49cc893e27150c220b02d#/%{name}-whq-mfplat-11d1e96.patch
-Patch990:       %{whq_url}/ad060ae862635948c30ead218fa7a0b2853349eb#/%{name}-whq-mfplat-ad060ae.patch
-Patch991:       %{whq_url}/cd30bf64d6da2b9373c96f0903379233f92ed6a8#/%{name}-whq-mfplat-cd30bf6.patch
+Patch987:       %{whq_url}/11d1e967b6be4e948ad49cc893e27150c220b02d#/%{name}-whq-mfplat-11d1e96.patch
+Patch988:       %{whq_url}/ad060ae862635948c30ead218fa7a0b2853349eb#/%{name}-whq-mfplat-ad060ae.patch
+Patch989:       %{whq_url}/cd30bf64d6da2b9373c96f0903379233f92ed6a8#/%{name}-whq-mfplat-cd30bf6.patch
+Patch990:       %{name}-mfplat-a7508d5.patch
+Patch991:       %{whq_url}/22472a3feb84a1d1857a035feb9883fdce39f6bb#/%{name}-whq-mfplat-22472a3.patch
+Patch992:       %{whq_url}/1541d6b6d8877b9799219e1f56c460b4ccd4744c#/%{name}-whq-mfplat-1541d6b.patch
+Patch993:       %{whq_url}/177c232936dbc17cf212aed389f312d543d0c432#/%{name}-whq-mfplat-177c232.patch
+Patch994:       %{whq_url}/940110d38700808563ee17d77cd59c45c00fd716#/%{name}-whq-mfplat-940110d.patch
+Patch995:       %{whq_url}/91c993bb78f50ea2d4c8159bda87901364c432bb#/%{name}-whq-mfplat-91c993b.patch
+Patch996:       %{whq_url}/83023a9f2b4840a97c5b587a2ba6c2f05a44b7b0#/%{name}-whq-mfplat-83023a9.patch
 
+Patch9998:       0001-mfplat-revert-f0cd33c-fixup.patch
 Patch9999:       0001-mfplat-restore-definitions.patch
 Source950:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.myearlypatch#/%{name}-tkg-0001-Revert-winegstreamer-Get-rid-of-the-WMReader-typedef.patch
 Source951:       %{tkg_url}/hotfixes/restore_staging_mfplat/mfplat-reverts/0002-Revert-wmvcore-Move-the-async-reader-implementation-.myearlypatch#/%{name}-tkg-0002-Revert-wmvcore-Move-the-async-reader-implementation-.patch
@@ -344,8 +349,6 @@ Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1008:       %{tkg_url}/misc/lowlatency_audio.patch#/%{name}-tkg-lowlatency_audio.patch
-Patch1009:       %{ge_url}/wine-hotfixes/testing/lowlatency_audio_pulse.patch#/%{name}-ge-lowlatency_audio_pulse.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -366,7 +369,6 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes3.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes3.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1038:       %{ge_url}/wine-hotfixes/staging/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch#/%{name}-ge-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync-staging-prep.patch#/%{name}-tkg-fastsync-staging-prep.patch
 Patch1051:       %{tkg_url}/misc/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
@@ -382,9 +384,8 @@ Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}
 Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
 
 Patch1300:       nier.patch
-Patch1303:       0001-FAudio-Disable-reverb.patch
-Patch1304:       0001-Ignore-lowlatency-if-STAGING_AUDIO_PERIOD-is-not-set.patch
-Patch1306:       0001-staging-sys-ioctl.h.patch
+Patch1301:       0001-FAudio-Disable-reverb.patch
+Patch1302:       0001-staging-sys-ioctl.h.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -991,9 +992,14 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
-%patch902 -p1
 
+%patch996 -p1 -R
+%patch995 -p1 -R
+%patch994 -p1 -R
+%patch993 -p1 -R
+%patch992 -p1 -R
 %patch991 -p1 -R
+rm -f dlls/winegstreamer/wma_decoder.c
 %patch990 -p1 -R
 %patch989 -p1 -R
 %patch988 -p1 -R
@@ -1075,6 +1081,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch912 -p1 -R
 %patch911 -p1 -R
 %patch910 -p1 -R
+%patch9998 -p1
 %patch9999 -p1
 
 mkdir -p patches/mfplat-reverts
@@ -1093,8 +1100,6 @@ patch -p1 -i patch1000.patch
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
-%patch1008 -p1
-%patch1009 -p1
 
 %patch5000 -p1
 
@@ -1142,9 +1147,8 @@ patch -p1 -i patch1031.patch
 %patch1033 -p1
 #patch1034 -p1
 %patch1035 -p1
-%patch1036 -p1
-%patch1037 -p1
-%patch1038 -p1
+%dnl #FIXME %patch1036 -p1
+%dnl #FIXME %patch1037 -p1
 
 %patch1089 -p1
 %patch1091 -p1 -R
@@ -1152,9 +1156,8 @@ patch -p1 -i patch1031.patch
 %patch1093 -p1
 
 %patch1300 -p1
-%patch1303 -p1
-%patch1304 -p1
-%patch1306 -p1
+%patch1301 -p1
+%patch1302 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2080,6 +2083,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dhcpcsvc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhcpcsvc6.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhtmled.%{wineocx}
+%{_libdir}/wine/%{winedlldir}/diasymreader.%{winedll}
 %{_libdir}/wine/%{winedlldir}/difxapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dinput.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dinput8.%{winedll}
@@ -3057,6 +3061,9 @@ fi
 
 
 %changelog
+* Sun Feb 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.1-101.20220204git4364ff8
+- Snapshot
+
 * Sat Jan 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.1-100
 - 7.1
 

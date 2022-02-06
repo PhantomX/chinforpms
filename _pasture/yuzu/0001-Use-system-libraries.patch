@@ -1,0 +1,126 @@
+From e025fc558e25ae3f4b6f2b4ecf6600c246f05d65 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 4 Feb 2022 18:00:05 -0300
+Subject: [PATCH] Use system libraries
+
+FindMBETLS.cmake from Dolphin-emu project:
+https://github.com/dolphin-emu/dolphin
+https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
+---
+ CMakeLists.txt                           |  4 ----
+ externals/CMakeLists.txt                 | 29 +++++++++++++++++++-----
+ externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++
+ 3 files changed, 46 insertions(+), 10 deletions(-)
+ create mode 100644 externals/find-modules/FindMBEDTLS.cmake
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4bf55d6..881b672 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.15)
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
+ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/find-modules")
+-include(DownloadExternals)
+ include(CMakeDependentOption)
+ 
+ project(yuzu)
+@@ -66,9 +65,6 @@ function(check_submodules_present)
+     endforeach()
+ endfunction()
+ 
+-if(EXISTS ${PROJECT_SOURCE_DIR}/.gitmodules)
+-    check_submodules_present()
+-endif()
+ configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
+                ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
+                COPYONLY)
+diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
+index 82e8ef1..403693c 100644
+--- a/externals/CMakeLists.txt
++++ b/externals/CMakeLists.txt
+@@ -2,7 +2,6 @@
+ 
+ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
+ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/externals/find-modules")
+-include(DownloadExternals)
+ 
+ # xbyak
+ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+@@ -33,8 +32,16 @@ add_subdirectory(glad)
+ add_subdirectory(inih)
+ 
+ # mbedtls
+-add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
+-target_include_directories(mbedtls PUBLIC ./mbedtls/include)
++if(NOT APPLE)
++  find_package(MBEDTLS)
++endif()
++if(MBEDTLS_FOUND)
++  message(STATUS "Using the system mbed TLS")
++  include_directories(${MBEDTLS_INCLUDE_DIRS})
++else()
++  add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
++  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
++endif()
+ 
+ # MicroProfile
+ add_library(microprofile INTERFACE)
+@@ -69,12 +76,22 @@ if (YUZU_USE_EXTERNAL_SDL2)
+ endif()
+ 
+ # SoundTouch
+-add_subdirectory(soundtouch)
++find_package(SoundTouch)
++if(SoundTouch_FOUND)
++  message(STATUS "Using the system soundtouch")
++else()
++  add_subdirectory(soundtouch)
++endif()
+ 
+ # Cubeb
+ if(ENABLE_CUBEB)
+-    set(BUILD_TESTS OFF CACHE BOOL "")
+-    add_subdirectory(cubeb EXCLUDE_FROM_ALL)
++    find_package(cubeb)
++    if(cubeb_FOUND)
++      message(STATUS "Using the system cubeb")
++    else()
++      set(BUILD_TESTS OFF CACHE BOOL "")
++      add_subdirectory(cubeb EXCLUDE_FROM_ALL)
++    endif()
+ endif()
+ 
+ # DiscordRPC
+diff --git a/externals/find-modules/FindMBEDTLS.cmake b/externals/find-modules/FindMBEDTLS.cmake
+new file mode 100644
+index 0000000..97c4515
+--- /dev/null
++++ b/externals/find-modules/FindMBEDTLS.cmake
+@@ -0,0 +1,23 @@
++find_path(MBEDTLS_INCLUDE_DIR mbedtls/ssl.h)
++
++find_library(MBEDTLS_LIBRARY mbedtls)
++find_library(MBEDX509_LIBRARY mbedx509)
++find_library(MBEDCRYPTO_LIBRARY mbedcrypto)
++
++set(MBEDTLS_INCLUDE_DIRS ${MBEDTLS_INCLUDE_DIR})
++set(MBEDTLS_LIBRARIES ${MBEDTLS_LIBRARY} ${MBEDX509_LIBRARY} ${MBEDCRYPTO_LIBRARY})
++
++set(CMAKE_REQUIRED_INCLUDES ${MBEDTLS_INCLUDE_DIRS})
++check_cxx_source_compiles("
++	#include <mbedtls/version.h>
++	#if MBEDTLS_VERSION_NUMBER < 0x02040000
++	#error \"Your mbed TLS version is too old.\"
++	#endif
++	int main() {}"
++	MBEDTLS_VERSION_OK)
++
++include(FindPackageHandleStandardArgs)
++find_package_handle_standard_args(MBEDTLS DEFAULT_MSG
++	MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY MBEDTLS_VERSION_OK)
++
++mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
+-- 
+2.34.1
+
