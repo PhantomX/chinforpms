@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2960fbbe790589a1fe6eb709f9a7ee01fbec4ca3
+%global tkg_id b6206023bd0db91ae12b1dfaba523023f3baa4ad
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -367,7 +367,7 @@ Patch1032:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-t
 Patch1033:       %{tkg_url}/hotfixes/rdr2/0004-winevulkan2.mypatch#/%{name}-tkg-0004-winevulkan2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
-Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes3.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes3.patch
+Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync-staging-prep.patch#/%{name}-tkg-fastsync-staging-prep.patch
@@ -1147,8 +1147,8 @@ patch -p1 -i patch1031.patch
 %patch1033 -p1
 #patch1034 -p1
 %patch1035 -p1
-%dnl #FIXME %patch1036 -p1
-%dnl #FIXME %patch1037 -p1
+%patch1036 -p1
+%patch1037 -p1
 
 %patch1089 -p1
 %patch1091 -p1 -R

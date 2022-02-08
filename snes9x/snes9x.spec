@@ -1,6 +1,6 @@
-%global commit 46f11f61da2f5779583e47aac350732ef5f8c078
+%global commit f1ac3dc6d3d0b7d591224ef544d66f6e56533698
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210825
+%global date 20220202
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -21,8 +21,8 @@
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
-Version:        1.60
-Release:        104%{?gver}%{?dist}
+Version:        1.61
+Release:        0.1%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -53,11 +53,13 @@ BuildRequires:   pkgconfig(gtkmm-3.0)
 BuildRequires:   pkgconfig(gl)
 BuildRequires:   pkgconfig(libpng)
 BuildRequires:   pkgconfig(libpulse)
+BuildRequires:   pkgconfig(libyuv)
 BuildRequires:   pkgconfig(sdl2)
 BuildRequires:   pkgconfig(xext)
 BuildRequires:   pkgconfig(xinerama)
 BuildRequires:   pkgconfig(xrandr)
 BuildRequires:   pkgconfig(xv)
+BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
 BuildRequires:   minizip-devel
@@ -173,6 +175,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Mon Feb 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.1.20220202gitf1ac3dc
+- Last snapshot
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.60-104.20210825git46f11f6
 - Bump
 

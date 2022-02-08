@@ -15,7 +15,8 @@
 # Enable or disable build with support...
 %bcond_with rlottie
 %bcond_with tgvoip
-%bcond_with wayland
+%bcond_without qt5
+%bcond_without wayland
 %bcond_without x11
 
 %bcond_with clang
@@ -28,11 +29,13 @@
 %ifarch x86_64
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 %else
+%global _lto_cflags %{nil}
+%global _smp_build_ncpus 2
 %global optflags %(echo %{optflags} | sed 's/-g /-g2 /')
 %endif
 
 Name:           telegram-desktop
-Version:        3.5.0
+Version:        3.5.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -60,13 +63,8 @@ ExclusiveArch:  x86_64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch10:        0001-tgcalls-upstream-fixes.patch
-Patch11:        %{url}/commit/b415b293cffd1e9902d9d2cd75c11f20c2429be0.patch#/%{name}-gh-b415b29.patch
-Patch12:        %{url}/commit/18bf48bf90b54ad297e9cadb401e31a667db0b9c.patch#/%{name}-gh-18bf48b.patch
-Patch13:        %{url}/commit/4bef1e9f5925b9b97d4dce306a04d141544ecb55.patch#/%{name}-gh-4bef1e9.patch
-Patch14:        %{url}/commit/37cd4f51eb7df28f17d7cfbbec1860df0d079c11.patch#/%{name}-gh-37cd4f5.patch
-
 Patch100:       %{name}-build-fix.patch
+Patch101:       %{name}-unbundled-kwayland-stuff.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -78,19 +76,10 @@ Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
-Patch206:       0001-add-Qt5Widgets-private-include.patch
 
 
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5DBus)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Svg)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5XkbCommonSupport)
-BuildRequires:  cmake(dbusmenu-qt5)
 BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
@@ -137,6 +126,33 @@ BuildRequires:  clang
 BuildRequires:  llvm
 %endif
 
+%if %{with qt5}
+BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5DBus)
+BuildRequires:  cmake(Qt5Gui)
+BuildRequires:  cmake(Qt5Network)
+BuildRequires:  cmake(Qt5Svg)
+BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt5XkbCommonSupport)
+BuildRequires:  cmake(dbusmenu-qt5)
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+Requires:       qt5-qtimageformats%{?_isa}
+%else
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Core5Compat)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6OpenGL)
+BuildRequires:  cmake(Qt6OpenGLWidgets)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
+Requires:       qt6-qtimageformats%{?_isa}
+Provides:       bundled(dbusmenu-qt6) = 0.9.3
+%endif
+
 # Telegram Desktop require patched version of rlottie since 1.8.0.
 # Pull Request pending: https://github.com/Samsung/rlottie/pull/252
 %if %{with rlottie}
@@ -155,10 +171,21 @@ Provides:       bundled(libtgvoip) = 2.4.4
 %endif
 
 %if %{with wayland}
+%if %{with qt5}
 BuildRequires:  cmake(KF5Wayland)
+BuildRequires:  cmake(Qt5Concurrent)
 BuildRequires:  cmake(Qt5WaylandClient)
-BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  qt5-qtbase-static
+%else
+BuildRequires:  cmake(PlasmaWaylandProtocols)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6WaylandClient)
+BuildRequires:  pkgconfig(wayland-protocols)
+BuildRequires:  qt6-qtbase-static
+Provides:       bundled(kf5-kwayland) = 5.90.0
+%endif
+BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  cmake(ECM) >= 5.90.0
 %endif
 
 %if %{with x11}
@@ -174,12 +201,9 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
-# Telegram Desktop require exact version of Qt due to Qt private API usage.
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
-Requires: hicolor-icon-theme
-Requires: open-sans-fonts
-Requires: qt5-qtimageformats%{?_isa}
-Recommends:    webkit2gtk3%{?_isa}
+Requires:       hicolor-icon-theme
+Requires:       open-sans-fonts
+Recommends:     webkit2gtk3%{?_isa}
 
 # Telegram Desktop can use native open/save dialogs with XDG portals.
 Recommends:     xdg-desktop-portal%{?_isa}
@@ -211,7 +235,12 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,fcitx-qt5,hime,hunspell,jemalloc,libdbusmenu-qt,lz4,materialdecoration,minizip,nimf,qt5ct,range-v3,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,extra-cmake-modules,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
+
+# Unbundling kwayland and libdbusmenu-qt if build against Qt5...
+%if %{with qt5}
+rm -rf Telegram/ThirdParty/{kwayland,libdbusmenu-qt}
+%endif
 
 %if %{with rlottie}
   rm -rf Telegram/ThirdParty/rlottie
@@ -264,7 +293,11 @@ sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
+%if %{with qt5}
     -DDESKTOP_APP_QT6:BOOL=OFF \
+%else
+    -DDESKTOP_APP_QT6:BOOL=ON \
+%endif
 %if %{with rlottie}
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
 %endif
@@ -323,6 +356,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Feb 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.1-100
+- 3.5.1
+- RPMFusion sync
+- Enable wayland support
+
 * Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.0-100
 - 3.5.0
 

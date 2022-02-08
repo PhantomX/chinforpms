@@ -133,6 +133,8 @@ mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   --mode=0644 \
+  --set-key=Exec \
+  --set-value="%{name} %u" \
   --set-key=NoDisplay \
   --set-value=true \
   %{optdir}/com.f5.f5vpn.desktop

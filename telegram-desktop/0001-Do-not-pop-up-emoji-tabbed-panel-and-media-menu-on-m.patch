@@ -1,19 +1,18 @@
-From 0c1e60a330f590cff181d99c178263eff1902cbf Mon Sep 17 00:00:00 2001
+From eed216ce5e62c62f171c928cb0e61fd28160553d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 1 Feb 2022 16:19:28 -0300
+Date: Sun, 6 Feb 2022 19:28:42 -0300
 Subject: [PATCH] Do not pop up emoji tabbed panel and media menu on mouse over
 
 Updated from https://github.com/telegramdesktop/tdesktop/pull/8009 by
 Nicholas Guriev <guriev-ns@ya.ru>
 ---
- Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp    | 10 +---------
- Telegram/SourceFiles/chat_helpers/tabbed_panel.h      |  1 -
- Telegram/SourceFiles/history/history_widget.cpp       |  9 +++++----
- .../view/controls/history_view_compose_controls.cpp   |  9 +++++++--
- .../media/view/media_view_overlay_widget.cpp          |  6 ------
- .../media/view/media_view_overlay_widget.h            |  1 -
- 6 files changed, 13 insertions(+), 24 deletions(-)
- delete mode 100644 Telegram/ThirdParty/hunspell/tests/suggestiontest/Makefile.orig
+ Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp     | 10 +---------
+ Telegram/SourceFiles/chat_helpers/tabbed_panel.h       |  1 -
+ Telegram/SourceFiles/history/history_widget.cpp        |  9 +++++----
+ .../view/controls/history_view_compose_controls.cpp    |  9 +++++----
+ .../media/view/media_view_overlay_widget.cpp           |  6 ------
+ .../SourceFiles/media/view/media_view_overlay_widget.h |  1 -
+ 6 files changed, 11 insertions(+), 25 deletions(-)
 
 diff --git a/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp b/Telegram/SourceFiles/chat_helpers/tabbed_panel.cpp
 index 12f4731..bb18fa7 100644
@@ -76,30 +75,30 @@ index 1d4d789..d8493c2 100644
  		}
  	});
 diff --git a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-index 7377d32..036514b 100644
+index 13946c0..036514b 100644
 --- a/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
 +++ b/Telegram/SourceFiles/history/view/controls/history_view_compose_controls.cpp
-@@ -1560,8 +1560,13 @@ void ComposeControls::initTabbedSelector() {
+@@ -1560,10 +1560,11 @@ void ComposeControls::initTabbedSelector() {
  		setTabbedPanel(nullptr);
  	}
  
 -	_tabbedSelectorToggle->addClickHandler([=] {
--		toggleTabbedSelectorMode();
+-		if (_tabbedPanel && _tabbedPanel->isHidden()) {
+-			_tabbedPanel->showAnimated();
+-		} else {
 +	_tabbedSelectorToggle->setAcceptBoth();
 +	_tabbedSelectorToggle->addClickHandler([=](Qt::MouseButton mod) {
 +		if (mod == Qt::LeftButton) {
 +			_tabbedPanel->toggleAnimated();
 +		} else if (mod == Qt::RightButton) {
-+			toggleTabbedSelectorMode();
-+		}
+ 			toggleTabbedSelectorMode();
+ 		}
  	});
- 
- 	const auto selector = _window->tabbedSelector();
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-index b769078..128c692 100644
+index 043875e..8f3b82c 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
-@@ -468,7 +468,6 @@ OverlayWidget::OverlayWidget()
+@@ -470,7 +470,6 @@ OverlayWidget::OverlayWidget()
  	_docCancel->addClickHandler([=] { saveCancel(); });
  
  	_dropdown->setHiddenCallback([this] { dropdownHidden(); });
@@ -107,7 +106,7 @@ index b769078..128c692 100644
  }
  
  void OverlayWidget::refreshLang() {
-@@ -4259,11 +4258,6 @@ void OverlayWidget::updateOverRect(OverState state) {
+@@ -4278,11 +4277,6 @@ void OverlayWidget::updateOverRect(OverState state) {
  bool OverlayWidget::updateOverState(OverState newState) {
  	bool result = true;
  	if (_over != newState) {
@@ -120,10 +119,10 @@ index b769078..128c692 100644
  		updateOverRect(newState);
  		if (_over != OverNone) {
 diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
-index 40f6edb..cbd7c1c 100644
+index 49ab576..0efc0d1 100644
 --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
 +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.h
-@@ -546,7 +546,6 @@ private:
+@@ -547,7 +547,6 @@ private:
  
  	base::unique_qptr<Ui::PopupMenu> _menu;
  	object_ptr<Ui::DropdownMenu> _dropdown;

@@ -5,9 +5,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 1fd131d37777c445b58cad3889313a7c26ffc2ee
+%global commit0 347400dc2377b16be702397ff8db44d5739d2650
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220130
+%global date 20220206
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -23,7 +23,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -42,7 +42,6 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 
 # From Gentoo
 Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
-Patch1:         0001-add-missing-libdrm-includedir.patch
 
 
 BuildRequires:  cmake(absl) >= 20211102
@@ -212,7 +211,6 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
   -DTG_OWT_USE_PROTOBUF:BOOL=ON \
   -DTG_OWT_BUILD_AUDIO_BACKENDS:BOOL=OFF \
   -DTG_OWT_PACKAGED_BUILD:BOOL=ON \
-  -DDRM_INCLUDE_DIRS:PATH=%{_includedir}/drm \
 %{nil}
 
 %cmake_build
@@ -256,6 +254,9 @@ mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/l
 
 
 %changelog
+* Sun Feb 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0-113.20220206git347400d
+- Update
+
 * Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0-112.20220130git1fd131d
 - Update
 
