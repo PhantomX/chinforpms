@@ -1,6 +1,6 @@
-%global commit 2302d96a76231b3035b5925b29ca04bf97eefa3f
+%global commit 4334b688d65944c9ba49e38b21be76b456d13214
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211221
+%global date 20220208
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -16,12 +16,15 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+# Disable LTO. Build fails
+%global _lto_cflags %{nil}
+
 %global pkgname Kronos
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
 Version:        2.2.0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -105,9 +108,6 @@ sed \
 
 
 %build
-# Disable LTO. Build fails
-%global _lto_cflags %{nil}
-
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
@@ -148,6 +148,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-4.20220208git4334b68
+- Last snapshot
+
 * Sun Dec 26 2021 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-3.20211221git2302d96
 - Update
 

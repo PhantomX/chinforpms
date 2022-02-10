@@ -1,0 +1,33 @@
+From 300b4539ea18abf7af84a66a8782a4837f83337a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 9 Feb 2022 16:11:12 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ 3rdparty/CMakeLists.txt | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
+index 232616e..039e888 100644
+--- a/3rdparty/CMakeLists.txt
++++ b/3rdparty/CMakeLists.txt
+@@ -129,7 +129,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
+ add_subdirectory(discord-rpc)
+ 
+ # Cubeb
+-add_subdirectory(cubeb EXCLUDE_FROM_ALL)
++find_package(cubeb)
++if(cubeb_FOUND)
++	message(STATUS "Using the system cubeb")
++	add_library(cubeb INTERFACE)
++	target_link_libraries(cubeb INTERFACE cubeb::cubeb)
++	add_library(3rdparty::cubeb ALIAS cubeb)
++else()
++	add_subdirectory(cubeb EXCLUDE_FROM_ALL)
++endif()
+ 
+ # SoundTouch
+ add_subdirectory(SoundTouch EXCLUDE_FROM_ALL)
+-- 
+2.35.1
+

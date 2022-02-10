@@ -1,8 +1,11 @@
+# Disable LTO. Crash.
+%global _lto_cflags %{nil}
 %undefine _cmake_shared_libs
+%undefine _hardened_build
 
-%global commit 19617f7edbbc0d709508045770877a85d586ab9a
+%global commit cdbd72e79c9f91fd8261fd3bc2fa25b883a17fbe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210928
+%global date 20220208
 %global with_snapshot 1
 
 # Enable system boost
@@ -14,15 +17,15 @@
 # Enable advanced simd, ssse3+
 %bcond_with  adv_simd
 
-%global commit1 de6fe184a9ac1a06895cdd1c9b437f0a0bdf14ad
+%global commit1 c4e3767e265808590986d5db6ca1b5532a7f3d13
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 Catch
 
-%global commit2 f320e7d92a33ee80ae42deef79da78cfc30868af
+%global commit2 f2102243e6fdd48c0b2a393a0993cca228f20573
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 71e3553d78190be9edce0eb1ea06ba937640a0a8
+%global commit3 af0d4a7c18ee90d544866a8cf24e6a0d48d3edc4
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -62,8 +65,6 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%undefine _hardened_build
-
 %global vc_url  https://github.com/citra-emu
 
 Name:           citra
@@ -97,7 +98,6 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
-Patch11:        %{vc_url}/%{name}/pull/5785.patch#/%{name}-gh-pr5785.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -198,15 +198,6 @@ sed -e '/^#include <exception>/a#include <system_error>' \
     -i externals/cryptopp/CMakeLists.txt
 %endif
 
-# glibc 2.34 fix
-sed \
-  -e '/SIGSTKSZ/s|constexpr size_t signal_stack_size = std::max|const size_t signal_stack_size = std::max<size_t>|g' \
-  -i externals/dynarmic/src/backend/x64/exception_handler_posix.cpp
-
-sed \
-  -e '/MINSIGSTKSZ/s|sigStackSize = 32768 >= MINSIGSTKSZ ? 32768 : MINSIGSTKSZ|sigStackSize = 32768|g' \
-  -i externals/catch/include/internal/catch_fatal_condition.cpp externals/catch/single_include/catch2/catch.hpp
-
 %if 0%{?with_snapshot}
   sed \
     -e 's|@GIT_REV@|%{commit}|g' \
@@ -217,9 +208,6 @@ sed \
 %endif
 
 %build
-# Disable LTO. Crash.
-%global _lto_cflags %{nil}
-
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
@@ -234,7 +222,7 @@ export TRAVIS_TAG="%{version}-%{release}"
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else
-  ENABLE_QT:BOOL=OFF \
+  -DENABLE_QT:BOOL=OFF \
 %endif
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
@@ -270,8 +258,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %if %{with qt}
 %files qt
-%{_bindir}/%{name}-qt
 %license license.txt
+%{_bindir}/%{name}-qt
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/mime/packages/%{name}.xml

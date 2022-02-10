@@ -35,7 +35,7 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.5.1
+Version:        3.5.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -118,7 +118,6 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  minizip-compat-devel
 BuildRequires:  ninja-build
 BuildRequires:  python3
-BuildRequires:  qt5-qtbase-private-devel
 
 %if %{with clang}
 BuildRequires:  compiler-rt
@@ -135,6 +134,7 @@ BuildRequires:  cmake(Qt5Svg)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  cmake(Qt5XkbCommonSupport)
 BuildRequires:  cmake(dbusmenu-qt5)
+BuildRequires:  qt5-qtbase-private-devel
 %{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 Requires:       qt5-qtimageformats%{?_isa}
 %else
@@ -185,7 +185,7 @@ BuildRequires:  qt6-qtbase-static
 Provides:       bundled(kf5-kwayland) = 5.90.0
 %endif
 BuildRequires:  pkgconfig(wayland-client)
-BuildRequires:  cmake(ECM) >= 5.90.0
+BuildRequires:  extra-cmake-modules >= 5.90.0
 %endif
 
 %if %{with x11}
@@ -356,6 +356,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.2-100
+- 3.5.2
+
 * Mon Feb 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.1-100
 - 3.5.1
 - RPMFusion sync

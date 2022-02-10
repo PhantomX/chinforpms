@@ -1,18 +1,21 @@
 # shared/static conditional, good luck with not supported shared one
 %bcond_with static
+# Use bundled abseil-cpp
+%bcond_without absl
 
 %if %{with static}
 %global debug_package %{nil}
 %endif
 
-%global commit0 347400dc2377b16be702397ff8db44d5739d2650
+%global commit0 db7d4697aba4aeb51369e25cc9f8f4b3a2bbb8e7
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220206
+%global date 20220207
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
+%global absl_ver 39f46fa
 %global libsrtp_ver 94ac00d
 %global pffft_ver 483453d
 %global openh264_ver 6f26bce
@@ -23,7 +26,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        113%{?gver}%{?dist}
+Release:        114%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -42,9 +45,13 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 
 # From Gentoo
 Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
+%if !%{with absl}
+Patch100:       0001-fix-build-with-bundled-absl.patch
+%endif
 
-
+%if %{with absl}
 BuildRequires:  cmake(absl) >= 20211102
+%endif
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(epoxy)
 BuildRequires:  pkgconfig(gbm)
@@ -83,6 +90,9 @@ BuildRequires:  ninja-build
 BuildRequires:  yasm
 
 Provides:       bundled(base64) = 0~git
+%if !%{with absl}
+Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
+%endif
 Provides:       bundled(dcsctp) = 0~git
 Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
@@ -104,7 +114,6 @@ Special fork of the OpenWebRTC library for the Telegram messenger.
 %package devel
 Summary:        Development files for %{name}
 %if %{with static}
-Requires:       cmake(absl)
 Requires:       pkgconfig(alsa)
 Requires:       pkgconfig(gbm)
 Requires:       pkgconfig(gio-2.0)
@@ -134,6 +143,9 @@ Requires:       pkgconfig(xrender)
 Requires:       pkgconfig(xrandr)
 Requires:       pkgconfig(xtst)
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+%if !%{with absl}
+Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
+%endif
 Provides:       bundled(rnnoise) = 0~git91ef40
 Provides:       bundled(base64) = 0~git
 Provides:       bundled(dcsctp) = 0~git
@@ -154,6 +166,9 @@ Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
 %else
 Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
+%if %{with absl}
+Requires:       cmake(absl)
+%endif
 # dlopen
 Requires:       libdrm%{?_isa}
 Requires:       mesa-libgbm%{?_isa}
@@ -169,10 +184,12 @@ tar -xf %{S:1} -C src/third_party/libyuv
 
 mkdir legal
 %if %{with static}
-cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
-cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
 cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
+%endif
+%if !%{with absl}
+cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
+cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif
 cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
@@ -221,6 +238,9 @@ cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudi
 mkdir _tmpheaders
 mv %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/{base64,sigslot} _tmpheaders/
 mv %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include _tmpheaders/libyuv_include
+%if !%{with absl}
+mv %{buildroot}%{_includedir}/%{name}/third_party/abseil-cpp/absl _tmpheaders/abseil-cpp_absl
+%endif
 
 rm -rf %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/*
 rm -rf %{buildroot}%{_includedir}/%{name}/common_audio/third_party
@@ -230,6 +250,10 @@ rm -rf %{buildroot}%{_includedir}/%{name}/third_party
 mv _tmpheaders/{base64,sigslot} %{buildroot}%{_includedir}/%{name}/rtc_base/third_party/
 mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include
 mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/libyuv/include/
+%if !%{with absl}
+mkdir -p %{buildroot}%{_includedir}/%{name}/third_party/abseil-cpp/absl/
+mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/abseil-cpp/absl/
+%endif
 
 %if %{without static}
 %files
@@ -254,6 +278,9 @@ mv _tmpheaders/libyuv_include/* %{buildroot}%{_includedir}/%{name}/third_party/l
 
 
 %changelog
+* Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0-114.20220207gitdb7d469
+- Bundled abseil-cpp optional support
+
 * Sun Feb 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0-113.20220206git347400d
 - Update
 

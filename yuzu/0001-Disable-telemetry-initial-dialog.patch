@@ -1,0 +1,62 @@
+From a3888a9cd99459f785ded65a467368340aef1628 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 9 Feb 2022 10:26:57 -0300
+Subject: [PATCH] Disable telemetry initial dialog
+
+Set default to false, if needed, enabled it in options
+---
+ src/common/settings.h      |  2 +-
+ src/yuzu/main.cpp          | 10 ++--------
+ src/yuzu_cmd/default_ini.h |  2 +-
+ 3 files changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/src/common/settings.h b/src/common/settings.h
+index 9bee6e1..7dce994 100644
+--- a/src/common/settings.h
++++ b/src/common/settings.h
+@@ -616,7 +616,7 @@ struct Values {
+     BasicSetting<std::string> network_interface{std::string(), "network_interface"};
+ 
+     // WebService
+-    BasicSetting<bool> enable_telemetry{true, "enable_telemetry"};
++    BasicSetting<bool> enable_telemetry{false, "enable_telemetry"};
+     BasicSetting<std::string> web_api_url{"https://api.yuzu-emu.org", "web_api_url"};
+     BasicSetting<std::string> yuzu_username{std::string(), "yuzu_username"};
+     BasicSetting<std::string> yuzu_token{std::string(), "yuzu_token"};
+diff --git a/src/yuzu/main.cpp b/src/yuzu/main.cpp
+index c788db1..24011a9 100644
+--- a/src/yuzu/main.cpp
++++ b/src/yuzu/main.cpp
+@@ -176,14 +176,8 @@ void GMainWindow::ShowTelemetryCallout() {
+ 
+     UISettings::values.callout_flags =
+         UISettings::values.callout_flags.GetValue() | static_cast<uint32_t>(CalloutFlag::Telemetry);
+-    const QString telemetry_message =
+-        tr("<a href='https://yuzu-emu.org/help/feature/telemetry/'>Anonymous "
+-           "data is collected</a> to help improve yuzu. "
+-           "<br/><br/>Would you like to share your usage data with us?");
+-    if (QMessageBox::question(this, tr("Telemetry"), telemetry_message) != QMessageBox::Yes) {
+-        Settings::values.enable_telemetry = false;
+-        system->ApplySettings();
+-    }
++    Settings::values.enable_telemetry = false;
++    system->ApplySettings();
+ }
+ 
+ const int GMainWindow::max_recent_files_item;
+diff --git a/src/yuzu_cmd/default_ini.h b/src/yuzu_cmd/default_ini.h
+index 6d613bf..445a9b1 100644
+--- a/src/yuzu_cmd/default_ini.h
++++ b/src/yuzu_cmd/default_ini.h
+@@ -430,7 +430,7 @@ disable_fps_limit=false
+ [WebService]
+ # Whether or not to enable telemetry
+ # 0: No, 1 (default): Yes
+-enable_telemetry =
++enable_telemetry = 0
+ # URL for Web API
+ web_api_url = https://api.yuzu-emu.org
+ # Username and token for yuzu Web Service
+-- 
+2.35.1
+

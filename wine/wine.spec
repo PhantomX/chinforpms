@@ -1,6 +1,6 @@
-%global commit 4364ff8d5c0387edd6fae142affe8e844b291518
+%global commit 54b8c8c7eaafd19780cb4d91b763fe2f20327f50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220204
+%global date 20220207
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -32,11 +32,11 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  7.1.1
+%global winemono  7.1.2
 %global winevulkan 1.3.204
 %global winefastsync 5.15
 
-%global wineFAudio 22.01
+%global wineFAudio 22.02
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.12
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 54850aa1ff6f32c08665095775eafece54b7b5d7
+%global wine_stagingver aec911361861a2ee3613156f6de3d705afdb9318
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,6 +107,8 @@
 %global fastsync 1
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
+# mfplat streaming reverts
+%global mfplat 1
 %global vulkanup 0
 
 %if !0%{?fshack}
@@ -146,7 +148,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -223,7 +225,7 @@ Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-stagin
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
-# mfplat reverts / 910-996
+# mfplat reverts / 910-997
 Patch910:       %{whq_url}/2d0dc2d47ca6b2d4090dfe32efdba4f695b197ce#/%{name}-whq-mfplat-2d0dc2d.patch
 Patch911:       %{whq_url}/831c6a88aab78db054beb42ca9562146b53963e7#/%{name}-whq-mfplat-831c6a8.patch
 Patch912:       %{whq_url}/3dd8eeeebdeec619570c764285bdcae82dee5868#/%{name}-whq-mfplat-3dd8eee.patch
@@ -311,6 +313,7 @@ Patch993:       %{whq_url}/177c232936dbc17cf212aed389f312d543d0c432#/%{name}-whq
 Patch994:       %{whq_url}/940110d38700808563ee17d77cd59c45c00fd716#/%{name}-whq-mfplat-940110d.patch
 Patch995:       %{whq_url}/91c993bb78f50ea2d4c8159bda87901364c432bb#/%{name}-whq-mfplat-91c993b.patch
 Patch996:       %{whq_url}/83023a9f2b4840a97c5b587a2ba6c2f05a44b7b0#/%{name}-whq-mfplat-83023a9.patch
+Patch997:       %{whq_url}/8c7ad5fc397e4814c33fa4b85be505db94d70016#/%{name}-whq-mfplat-8c7ad5f.patch
 
 Patch9998:       0001-mfplat-revert-f0cd33c-fixup.patch
 Patch9999:       0001-mfplat-restore-definitions.patch
@@ -380,12 +383,14 @@ Patch1055:       0001-update-proton-cpu-topology-overrides.patch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1092:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
-Patch1093:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
+Patch1092:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
+Patch1093:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
+Patch1094:       0001-mfplat-revert-Restore-Use-IMemAllocator-GetBuffer-di.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-sys-ioctl.h.patch
+Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.2.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -993,6 +998,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
+%if 0%{?mfplat}
+%patch997 -p1 -R
 %patch996 -p1 -R
 %patch995 -p1 -R
 %patch994 -p1 -R
@@ -1087,6 +1094,7 @@ rm -f dlls/winegstreamer/wma_decoder.c
 mkdir -p patches/mfplat-reverts
 cp -a %{mfplatreverts} patches/mfplat-reverts/
 rename '%{name}-tkg-' '' patches/mfplat-reverts/%{name}-tkg-*.patch
+%endif
 
 %patch1006 -p1
 cp %{P:1000} patch1000.patch
@@ -1153,11 +1161,15 @@ patch -p1 -i patch1031.patch
 %patch1089 -p1
 %patch1091 -p1 -R
 %patch1092 -p1
+%if 0%{?mfplat}
 %patch1093 -p1
+%patch1094 -p1
+%endif
 
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
+%patch1303 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -1983,6 +1995,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-credentials-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-cryptoapi-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-grouppolicy-l1-1-0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-ansi-l2-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l1-1-1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l2-1-0.%{winedll}
@@ -3061,6 +3074,11 @@ fi
 
 
 %changelog
+* Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.1-102.20220207git54b8c8c
+- Bump
+- wine-mono 7.1.2
+- mfplat streaming restoring optional support
+
 * Sun Feb 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.1-101.20220204git4364ff8
 - Snapshot
 

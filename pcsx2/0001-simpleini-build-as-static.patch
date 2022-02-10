@@ -1,0 +1,24 @@
+From bf549a61e1a7af4988b44bc4e60b935d689831ce Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 29 Jan 2022 20:09:01 -0300
+Subject: [PATCH] simpleini: build as static
+
+---
+ 3rdparty/simpleini/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/3rdparty/simpleini/CMakeLists.txt b/3rdparty/simpleini/CMakeLists.txt
+index e557ed5..c640d93 100644
+--- a/3rdparty/simpleini/CMakeLists.txt
++++ b/3rdparty/simpleini/CMakeLists.txt
+@@ -4,6 +4,6 @@ set(SRCS
+     src/ConvertUTF.c
+ )
+ 
+-add_library(simpleini ${SRCS})
++add_library(simpleini STATIC ${SRCS})
+ target_include_directories(simpleini PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
+ target_include_directories(simpleini INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
+-- 
+2.34.1
+

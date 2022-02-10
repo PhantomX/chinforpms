@@ -1,13 +1,11 @@
-From bbcf4fc3b954abb84f9a18f1a445926c2ffcec4d Mon Sep 17 00:00:00 2001
+From 9e921539bd3aa2ff60752475a612fd41f1b05cae Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 8 Aug 2021 23:10:12 -0300
+Date: Wed, 9 Feb 2022 09:18:28 -0300
 Subject: [PATCH] Use system libraries
 
-FindCUBEB.cmake, CheckLib.cmake and enet search from Dolphin-emu project:
+CheckLib.cmake and enet search from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
-https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
 ---
- CMakeModules/FindCUBEB.cmake          |  15 +++
  dep/CMakeLists.txt                    |  60 +++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
@@ -20,32 +18,10 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindCUBEB.cmake
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
  src/frontend-common/CMakeLists.txt    |  10 +-
- 13 files changed, 307 insertions(+), 10 deletions(-)
- create mode 100644 CMakeModules/FindCUBEB.cmake
+ 12 files changed, 292 insertions(+), 10 deletions(-)
 
-diff --git a/CMakeModules/FindCUBEB.cmake b/CMakeModules/FindCUBEB.cmake
-new file mode 100644
-index 0000000..c0a730c
---- /dev/null
-+++ b/CMakeModules/FindCUBEB.cmake
-@@ -0,0 +1,15 @@
-+find_path(CUBEB_INCLUDE_DIR cubeb.h PATH_SUFFIXES cubeb)
-+find_library(CUBEB_LIBRARY cubeb)
-+mark_as_advanced(CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
-+
-+include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(CUBEB DEFAULT_MSG
-+	CUBEB_INCLUDE_DIR CUBEB_LIBRARY)
-+
-+if(CUBEB_FOUND AND NOT TARGET CUBEB)
-+  add_library(cubeb::cubeb UNKNOWN IMPORTED)
-+  set_target_properties(cubeb::cubeb PROPERTIES
-+    IMPORTED_LOCATION "${CUBEB_LIBRARY}"
-+    INTERFACE_INCLUDE_DIRECTORIES "${CUBEB_INCLUDE_DIR}"
-+  )
-+endif()
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 95493b8..0d518e8 100644
+index 95493b8..d4df5fd 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
 @@ -1,23 +1,81 @@
@@ -121,8 +97,8 @@ index 95493b8..0d518e8 100644
    add_subdirectory(tinyxml2)
 +  endif()
 +
-+  find_package(CUBEB)
-+  if(CUBEB_FOUND)
++  find_package(cubeb)
++  if(cubeb_FOUND)
 +    message(STATUS "Using the system cubeb")
 +  else()
    add_subdirectory(cubeb)
@@ -531,5 +507,5 @@ index 4a56607..7f36e2c 100644
  
  # Copy the provided data directory to the output directory.
 -- 
-2.31.1
+2.35.1
 

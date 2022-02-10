@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/f797526f9dc15ef9cbd53acc02e6ae5fcdf01cf8
+ f797526f9dc15ef9cbd53acc02e6ae5fcdf01cf8 drm/i915/psr: Disable PSR2 selective fetch for all TGL steps
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/85b2a5e2d9318e807e4d0bf39b4f0197ec6ef7af
+ 85b2a5e2d9318e807e4d0bf39b4f0197ec6ef7af ath11k: add support for WCN6855 hw2.1
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/31d9a211e602746035c9f53cfd6070cbacae68e4
+ 31d9a211e602746035c9f53cfd6070cbacae68e4 ata: libata-core: Fix ata_dev_config_cpr()
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/78d32feef05fdbc59daccda9b8b1cacf872a95ba
  78d32feef05fdbc59daccda9b8b1cacf872a95ba Revert "ath11k: add support for WCN6855 hw2.1"
 

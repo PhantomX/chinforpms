@@ -17,21 +17,28 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
+ drivers/ata/libata-core.c                          |  14 +--
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/char/random.c                              | 115 +++++++++++++++++++
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/i915/display/intel_psr.c           |  10 +-
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/net/wireless/ath/ath11k/core.c             |  51 +++++++++
+ drivers/net/wireless/ath/ath11k/core.h             |   1 +
+ drivers/net/wireless/ath/ath11k/mhi.c              |   1 +
+ drivers/net/wireless/ath/ath11k/pci.c              |  16 ++-
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ include/linux/ata.h                                |   2 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -48,10 +55,10 @@ Subject: [PATCH] patch-5.16-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 44 files changed, 746 insertions(+), 191 deletions(-)
+ 51 files changed, 827 insertions(+), 205 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 2d7b7fe5cbad..52e21618ca2c 100644
+index 0cbab4df51b9..aff665749e8b 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -447,6 +454,40 @@ index f76b8418e6fb..350e52fccc30 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
+index 1cdf8cfcc31b..94bc5dbb31e1 100644
+--- a/drivers/ata/libata-core.c
++++ b/drivers/ata/libata-core.c
+@@ -2486,23 +2486,21 @@ static void ata_dev_config_cpr(struct ata_device *dev)
+ 	struct ata_cpr_log *cpr_log = NULL;
+ 	u8 *desc, *buf = NULL;
+
+-	if (!ata_identify_page_supported(dev,
+-				 ATA_LOG_CONCURRENT_POSITIONING_RANGES))
++	if (ata_id_major_version(dev->id) < 11 ||
++	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
+ 		goto out;
+
+ 	/*
+-	 * Read IDENTIFY DEVICE data log, page 0x47
+-	 * (concurrent positioning ranges). We can have at most 255 32B range
+-	 * descriptors plus a 64B header.
++	 * Read the concurrent positioning ranges log (0x47). We can have at
++	 * most 255 32B range descriptors plus a 64B header.
+ 	 */
+ 	buf_len = (64 + 255 * 32 + 511) & ~511;
+ 	buf = kzalloc(buf_len, GFP_KERNEL);
+ 	if (!buf)
+ 		goto out;
+
+-	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
+-				     ATA_LOG_CONCURRENT_POSITIONING_RANGES,
+-				     buf, buf_len >> 9);
++	err_mask = ata_read_log_page(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES,
++				     0, buf, buf_len >> 9);
+ 	if (err_mask)
+ 		goto out;
+
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -892,6 +933,28 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 7a205fd5023b..42d57ebd9061 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -735,10 +735,14 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
+ 		return false;
+ 	}
+
+-	/* Wa_14010254185 Wa_14010103792 */
+-	if (IS_TGL_DISPLAY_STEP(dev_priv, STEP_A0, STEP_C0)) {
++	/*
++	 * There's two things stopping this from being enabled on TGL:
++	 * For steps A0-C0: workarounds Wa_14010254185 Wa_14010103792 are missing
++	 * For all steps: PSR2 selective fetch causes screen flickering
++	 */
++	if (IS_TIGERLAKE(dev_priv)) {
+ 		drm_dbg_kms(&dev_priv->drm,
+-			    "PSR2 sel fetch not enabled, missing the implementation of WAs\n");
++			    "PSR2 sel fetch not enabled, currently broken on TGL\n");
+ 		return false;
+ 	}
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1275,6 +1338,128 @@ index 8b86406b7162..2dffe129b902 100644
  /*
   * Changes the default domain of an iommu group that has *only* one device
   *
+diff --git a/drivers/net/wireless/ath/ath11k/core.c b/drivers/net/wireless/ath/ath11k/core.c
+index cb8cacbbd5b4..032c3d2568f5 100644
+--- a/drivers/net/wireless/ath/ath11k/core.c
++++ b/drivers/net/wireless/ath/ath11k/core.c
+@@ -276,6 +276,57 @@ static const struct ath11k_hw_params ath11k_hw_params[] = {
+ 			.max_fft_bins = 0,
+ 		},
+
++		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
++					BIT(NL80211_IFTYPE_AP),
++		.supports_monitor = false,
++		.supports_shadow_regs = true,
++		.idle_ps = true,
++		.cold_boot_calib = false,
++		.supports_suspend = true,
++		.hal_desc_sz = sizeof(struct hal_rx_desc_wcn6855),
++		.fix_l1ss = false,
++		.max_tx_ring = DP_TCL_NUM_RING_MAX_QCA6390,
++		.hal_params = &ath11k_hw_hal_params_qca6390,
++		.supports_dynamic_smps_6ghz = false,
++		.alloc_cacheable_memory = false,
++		.wakeup_mhi = true,
++	},
++	{
++		.name = "wcn6855 hw2.1",
++		.hw_rev = ATH11K_HW_WCN6855_HW21,
++		.fw = {
++			.dir = "WCN6855/hw2.1",
++			.board_size = 256 * 1024,
++			.cal_offset = 128 * 1024,
++		},
++		.max_radios = 3,
++		.bdf_addr = 0x4B0C0000,
++		.hw_ops = &wcn6855_ops,
++		.ring_mask = &ath11k_hw_ring_mask_qca6390,
++		.internal_sleep_clock = true,
++		.regs = &wcn6855_regs,
++		.qmi_service_ins_id = ATH11K_QMI_WLFW_SERVICE_INS_ID_V01_QCA6390,
++		.host_ce_config = ath11k_host_ce_config_qca6390,
++		.ce_count = 9,
++		.target_ce_config = ath11k_target_ce_config_wlan_qca6390,
++		.target_ce_count = 9,
++		.svc_to_ce_map = ath11k_target_service_to_ce_map_wlan_qca6390,
++		.svc_to_ce_map_len = 14,
++		.single_pdev_only = true,
++		.rxdma1_enable = false,
++		.num_rxmda_per_pdev = 2,
++		.rx_mac_buf_ring = true,
++		.vdev_start_delay = true,
++		.htt_peer_map_v2 = false,
++
++		.spectral = {
++			.fft_sz = 0,
++			.fft_pad_sz = 0,
++			.summary_pad_sz = 0,
++			.fft_hdr_len = 0,
++			.max_fft_bins = 0,
++		},
++
+ 		.interface_modes = BIT(NL80211_IFTYPE_STATION) |
+ 					BIT(NL80211_IFTYPE_AP),
+ 		.supports_monitor = false,
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index 011373b91ae0..3d6519612422 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -117,6 +117,7 @@ enum ath11k_hw_rev {
+ 	ATH11K_HW_IPQ6018_HW10,
+ 	ATH11K_HW_QCN9074_HW10,
+ 	ATH11K_HW_WCN6855_HW20,
++	ATH11K_HW_WCN6855_HW21,
+ };
+
+ enum ath11k_firmware_mode {
+diff --git a/drivers/net/wireless/ath/ath11k/mhi.c b/drivers/net/wireless/ath/ath11k/mhi.c
+index 49c0b1ad40a0..95f5a1960676 100644
+--- a/drivers/net/wireless/ath/ath11k/mhi.c
++++ b/drivers/net/wireless/ath/ath11k/mhi.c
+@@ -356,6 +356,7 @@ int ath11k_mhi_register(struct ath11k_pci *ab_pci)
+ 		break;
+ 	case ATH11K_HW_QCA6390_HW20:
+ 	case ATH11K_HW_WCN6855_HW20:
++	case ATH11K_HW_WCN6855_HW21:
+ 		ath11k_mhi_config = &ath11k_mhi_config_qca6390;
+ 		break;
+ 	default:
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index 4c348bacf2cb..9fe496d35b38 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -25,7 +25,7 @@
+ #define WINDOW_RANGE_MASK		GENMASK(18, 0)
+
+ #define TCSR_SOC_HW_VERSION		0x0224
+-#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(16, 8)
++#define TCSR_SOC_HW_VERSION_MAJOR_MASK	GENMASK(11, 8)
+ #define TCSR_SOC_HW_VERSION_MINOR_MASK	GENMASK(7, 0)
+
+ /* BAR0 + 4k is always accessible, and no
+@@ -1297,9 +1297,21 @@ static int ath11k_pci_probe(struct pci_dev *pdev,
+ 					   &soc_hw_version_minor);
+ 		switch (soc_hw_version_major) {
+ 		case 2:
+-			ab->hw_rev = ATH11K_HW_WCN6855_HW20;
++			switch (soc_hw_version_minor) {
++			case 0x00:
++			case 0x01:
++				ab->hw_rev = ATH11K_HW_WCN6855_HW20;
++				break;
++			case 0x10:
++			case 0x11:
++				ab->hw_rev = ATH11K_HW_WCN6855_HW21;
++				break;
++			default:
++				goto unsupported_wcn6855_soc;
++			}
+ 			break;
+ 		default:
++unsupported_wcn6855_soc:
+ 			dev_err(&pdev->dev, "Unsupported WCN6855 SOC hardware version: %d %d\n",
+ 				soc_hw_version_major, soc_hw_version_minor);
+ 			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
 index 1af8a4513708..5a23e077ab86 100644
 --- a/drivers/nvme/host/core.c
@@ -1464,6 +1649,24 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/linux/ata.h b/include/linux/ata.h
+index 199e47e97d64..21292b5bbb55 100644
+--- a/include/linux/ata.h
++++ b/include/linux/ata.h
+@@ -324,12 +324,12 @@ enum {
+ 	ATA_LOG_NCQ_NON_DATA	= 0x12,
+ 	ATA_LOG_NCQ_SEND_RECV	= 0x13,
+ 	ATA_LOG_IDENTIFY_DEVICE	= 0x30,
++	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
+
+ 	/* Identify device log pages: */
+ 	ATA_LOG_SECURITY	  = 0x06,
+ 	ATA_LOG_SATA_SETTINGS	  = 0x08,
+ 	ATA_LOG_ZONED_INFORMATION = 0x09,
+-	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
+
+ 	/* Identify device SATA settings log:*/
+ 	ATA_LOG_DEVSLP_OFFSET	  = 0x30,
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h
@@ -1840,7 +2043,7 @@ index 64abdfb20bc2..ed920477e11d 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/tools/testing/selftests/netfilter/nft_nat.sh b/tools/testing/selftests/netfilter/nft_nat.sh
-index d88867d2fed7..349a319a9e51 100755
+index eb8543b9a5c4..79fe627b9e81 100755
 --- a/tools/testing/selftests/netfilter/nft_nat.sh
 +++ b/tools/testing/selftests/netfilter/nft_nat.sh
 @@ -880,8 +880,9 @@ EOF

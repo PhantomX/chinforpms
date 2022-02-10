@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8284af1fcaf25725cfaa94a4b2b915b0287122e4
+%global pfcommit 7ad8ff884005581af90c634e544a2a7a631b43ce
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -315,9 +315,6 @@ Summary: The Linux kernel
 
 # Use kernel-local-generic (CONFIG_GENERIC_CPU=y)
 %global with_generic %{?_with_generic:     1} %{?!_with_generic:     0}
-
-# Disables numa (--with numa to enable)
-%define with_numa    %{?_with_numa:        1} %{?!_with_numa:        0}
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -901,7 +898,6 @@ Source3012: kernel-local-native
 Source3013: kernel-local-pf
 Source3014: kernel-local-zen
 Source3015: kernel-local-generic
-Source3016: kernel-local-numa
 
 %if 0%{patchlist_changelog}
 Source3997: Patchlist.changelog
@@ -1613,10 +1609,6 @@ cat %{SOURCE3015} >> kernel-local
 %else
 cat %{SOURCE3011} >> kernel-local
 %endif
-%endif
-
-%if !%{with_numa}
-cat %{SOURCE3016} >> kernel-local
 %endif
 
 %if 0%{?post_factum}
@@ -2922,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.8-500.chinfo
+- 5.16.8 - pf3
+
 * Sat Feb 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.7-500.chinfo
 - 5.16.7 - pf3
 

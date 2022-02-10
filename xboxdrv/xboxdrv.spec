@@ -1,7 +1,7 @@
 %global commit 7f2251bc1b6c8ac6b81f0cfcc6a9a4894899ee28
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200226
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -13,7 +13,7 @@
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPLv3+
@@ -37,13 +37,13 @@ Source6:        org.seul.xboxdrv.policy
 
 %if !%{?with_snapshot}
 # Fix 60 seconds delay
-Patch1:         %{gl_url}/merge_requests/214.patch#/%{name}-gl-214.patch
+Patch1:         %{gl_url}/-/merge_requests/262.patch#/%{name}-gl-262.patch
 # Fix "pure virtual function called" crash and related hang
-Patch2:         %{gl_url}/merge_requests/220.patch#/%{name}-gl-220.patch
+Patch2:         xboxdrv-pr220.patch
 # Don't submit transfers when controller is disconnecting
-Patch3:         %{gl_url}/merge_requests/221.patch#/%{name}-gl-221.patch
+Patch3:         xboxdrv-pr221.patch
 # Ensure string2btn matches btn2string's output
-Patch4:         %{gl_url}/merge_requests/227.patch#/%{name}-gl-227.patch
+Patch4:         xboxdrv-pr227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
 Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1.patch
@@ -140,6 +140,9 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-108
+- Return to official fork
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-107.20200226git7f2251b
 - Fix build with new scons
 

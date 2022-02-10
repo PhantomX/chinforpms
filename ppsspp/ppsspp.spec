@@ -1,6 +1,6 @@
-%global commit 54d63cc1daf2a0cdc812e9af85854bb4ae5ef399
+%global commit 695efe37296e31b5b4fd8a354a62b3e219ac53f7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220121
+%global date 20220208
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -25,7 +25,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 70bfd4a77487e56ef60b4adfc47f714cfea59794
+%global commit2 3ad7ddb9eb2af898dce8c4b5e9a28b77b3f7ddd7
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 

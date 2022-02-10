@@ -48,6 +48,7 @@ python-pyctr
 -reicast
 -odrive
 rocketchat-desktop
+rpcs3
 snes9x
 softmaker-office
 -soulseekqt
@@ -68,4 +69,5 @@ vvvvvv-data
 wps-office
 yabause
 yggdrasil
+yuzu
 zoom

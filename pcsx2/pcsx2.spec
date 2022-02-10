@@ -1,13 +1,19 @@
 # 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit 94c6814be8a471de6c1f59bf73689b473aafc039
+%global commit af648334d1d8503d2853c93b18dec7b9932ef1f3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210821
+%global date 20220207
 %global with_snapshot 1
+
+%global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 glslang
+
+%global commit11 89a28209e89f69a5eda560d2ef9c13915c95616a
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 imgui
 
 %global sanitize 0
 %bcond_with     native
-# Revert SSE4 updates
-%bcond_without  sse4
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
@@ -16,12 +22,16 @@
 %endif
 
 %undefine _hardened_build
+%undefine _cmake_shared_libs
 
+%global glad_ver 0.1.25
 %global jpgc_ver 1.05
+%global simpleini_ver 4.17
+%global xxhash_ver 0.8.1
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        137%{?gver}%{?dist}
+Release:        138%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -42,13 +52,15 @@ Source0:        %{name}-clean-%{version}.tar.xz
 %endif
 %endif
 Source1:        Makefile
+Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
-%if %{without sse4}
-# Revert this, needs sse4
-Patch0:         0001-Revert-SSE4-updates.patch
-%endif
-Patch1:         0001-System-libchdr-support.patch
+Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-common-build-as-static.patch
+Patch3:         0001-glad-build-as-static.patch
+Patch4:         0001-glslang-build-as-static.patch
+Patch5:         0001-imgui-build-as-static.patch
+Patch6:         0001-simpleini-build-as-static.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -58,6 +70,7 @@ BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(bzip2)
+BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
@@ -74,43 +87,44 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
+BuildRequires:  cmake(ryml) >= 0.3.0
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
-BuildRequires:  pkgconfig(yaml-cpp)
 BuildRequires:  pkgconfig(zlib)
 # use SDL that depends wxGTK
+BuildRequires:  vulkan-headers
 BuildRequires:  wxGTK3-devel
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  sdl_gamecontrollerdb >= 0-41
 
 Requires:       joystick
+Requires:       google-roboto-fonts
+Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb >= 0-42
+Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(glslang) = 0~git%{shortcommit10}
+Provides:       bundled(imgui) = 0~git%{shortcommit11}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
+Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xbyak)
-
-%if %{without sse4}
-%global _description %{expand:
-WARNING: This build is modified to require a CPU with SSE2 instructions and is
-not supported by upstream.}
-%else
-%global _description %{expand:
-WARNING: It requires a CPU with SSE4 instructions. If your CPU does not
-support this instruction set, it does not have enough horsepower to run
-this emulator anyway.}
-%endif
+Provides:       bundled(xxhash) = %{xxhash_ver}
 
 
 %description
-A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
-%_description
+A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included).
+
+It requires a CPU with SSE4 instructions. If your CPU does not
+support this instruction set, it does not have enough horsepower to run
+this emulator anyway.
 
 
 %prep
@@ -119,7 +133,12 @@ A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
 %if 0%{sanitize}
   mkdir 3rdparty-temp
   mv 3rdparty/include 3rdparty-temp/
+  mv 3rdparty/glad 3rdparty-temp/
+  mv 3rdparty/glslang 3rdparty-temp/
+  mv 3rdparty/imgui 3rdparty-temp/
   mv 3rdparty/jpgd 3rdparty-temp/
+  mv 3rdparty/rapidyaml 3rdparty-temp/
+  mv 3rdparty/simpleini 3rdparty-temp/
   mv 3rdparty/xbyak 3rdparty-temp/
   rm -rf 3rdparty/*
   mv 3rdparty-temp/* 3rdparty/
@@ -127,6 +146,9 @@ A Playstation 2 emulator. Requires a dump of a real PS2 BIOS (not included)
   rm -f common/src/Utilities/x86/MemcpyFast.cpp
   rm -rf .git
 %endif
+
+%{?gver:tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1}
+%{?gver:tar -xf %{S:11} -C 3rdparty/imgui/imgui --strip-components 1}
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -139,18 +161,11 @@ sed -i 's/\r//' pcsx2/Docs/License.txt
 #Remove fedora incompatible values
 sed -i 's/@PCSX2_MENU_CATEGORIES@/Game;Emulator;GTK;/g' linux_various/PCSX2.desktop.in
 
-sed \
-  -e 's|/usr/share/fonts/truetype/my_favorite_font_e_g_DejaVu Sans.ttf|%{_fontbasedir}/google-roboto/Roboto-Regular.ttf|' \
-  -i pcsx2/GS/GS.cpp
-
 %if 0%{?with_snapshot}
 sed -i \
   -e '/PCSX2_GIT_REV/s| ""| "v%{version}-git%{shortcommit}"|g' \
   cmake/Pcsx2Utils.cmake
 %endif
-
-cp -pf %{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt \
-  pcsx2/PAD/Linux/res/game_controller_db.txt
 
 sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 
@@ -186,6 +201,7 @@ sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 %endif
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
+  -DCUBEB_API:BOOL=TUE \
   -DUSE_SYSTEM_YAML:BOOL=TRUE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DDISABLE_SETCAP:BOOL=TRUE \
@@ -200,19 +216,28 @@ sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 %install
 %cmake_install
 
-mv %{buildroot}%{_bindir}/PCSX2 %{buildroot}%{_bindir}/PCSX2.bin
+mv %{buildroot}%{_bindir}/pcsx2 %{buildroot}%{_bindir}/pcsx2.bin
 
-cat > %{buildroot}%{_bindir}/PCSX2 <<EOF
+cat > %{buildroot}%{_bindir}/pcsx2 <<EOF
 #!/usr/bin/sh
 export GDK_BACKEND=x11
-export __GL_THREADED_OPTIMIZATIONS=1
 export mesa_glthread=true
 export MESA_NO_ERROR=1
-exec %{_bindir}/PCSX2.bin
+exec %{_bindir}/pcsx2.bin
 EOF
-chmod 0755 %{buildroot}%{_bindir}/PCSX2
+chmod 0755 %{buildroot}%{_bindir}/pcsx2
 
 mkdir -p %{buildroot}%{_libdir}/PCSX2
+
+rm -f %{buildroot}%{_datadir}/PCSX2/resources/game_controller_db.txt
+ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
+  %{buildroot}%{_datadir}/PCSX2/resources/game_controller_db.txt
+
+rm -f %{buildroot}%{_datadir}/PCSX2/resources/fonts/Roboto*
+ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
+  %{buildroot}%{_datadir}/PCSX2/resources/fonts/Roboto-Regular.ttf
+ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
+  %{buildroot}%{_datadir}/PCSX2/resources/fonts/RobotoMono-Medium.ttf
 
 # strip extra copies of pdf files, which are now in /doc/pcsx2
 rm -rf %{buildroot}/usr/share/doc/P*
@@ -229,20 +254,13 @@ for res in 16 22 24 32 36 48 64 72 96 ;do
     ${dir}/PCSX2.png
 done
 
-# Install Desktop file
-mv linux_various/PCSX2.desktop.in -f linux_various/PCSX2.desktop
-desktop-file-install \
-  --dir=%{buildroot}/%{_datadir}/applications \
+desktop-file-edit \
   --set-key="Exec" \
-  --set-value="PCSX2" \
-  linux_various/PCSX2.desktop
+  --set-value="pcsx2" \
+  %{buildroot}/%{_datadir}/applications/PCSX2.desktop
 
 #strip extra copy of icon file, Wrong place for fedora
 rm -rf %{buildroot}/usr/share/pixmaps
-
-# Install man page
-mkdir -p %{buildroot}/%{_mandir}/man1
-install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 %find_lang pcsx2_Iconized
 %find_lang pcsx2_Main
@@ -250,8 +268,8 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
 %doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
-%{_bindir}/PCSX2
-%{perms_pcsx2} %{_bindir}/PCSX2.bin
+%{_bindir}/pcsx2
+%{perms_pcsx2} %{_bindir}/pcsx2.bin
 %dir %{_libdir}/PCSX2
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
@@ -260,6 +278,9 @@ install -p -D -m 644 bin/docs/PCSX2.1 %{buildroot}/%{_mandir}/man1
 
 
 %changelog
+* Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-138.20220207gitaf64833
+- Last snapshot
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-137.20210821git94c6814
 - Downgrade more
 

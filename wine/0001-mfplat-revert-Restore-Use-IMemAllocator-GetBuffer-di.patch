@@ -1,0 +1,64 @@
+From 6f79edb412fe44a66d6d26f5a3034dfe26de09fb Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 8 Feb 2022 14:08:55 -0300
+Subject: [PATCH] mfplat revert: Restore Use IMemAllocator::GetBuffer()
+ directly
+
+This restore commit 8c7ad5fc397e4814c33fa4b85be505db94d70016, reverted in previous
+patches
+---
+ dlls/winegstreamer/quartz_parser.c | 19 ++++++-------------
+ 1 file changed, 6 insertions(+), 13 deletions(-)
+
+diff --git a/dlls/winegstreamer/quartz_parser.c b/dlls/winegstreamer/quartz_parser.c
+index c192f4e..f20b239 100644
+--- a/dlls/winegstreamer/quartz_parser.c
++++ b/dlls/winegstreamer/quartz_parser.c
+@@ -669,12 +669,10 @@ static HRESULT send_sample(struct parser_source *pin, IMediaSample *sample,
+     IMediaSample_SetSyncPoint(sample, !event->u.buffer.delta);
+ 
+     if (!pin->pin.pin.peer)
+-        hr = VFW_E_NOT_CONNECTED;
+-    else
+-        hr = IMemInputPin_Receive(pin->pin.pMemInputPin, sample);
+-
+-    TRACE("sending sample returned: %08x\n", hr);
++        return VFW_E_NOT_CONNECTED;
+ 
++    hr = IMemInputPin_Receive(pin->pin.pMemInputPin, sample);
++    TRACE("Receive() returned hr %#x.\n", hr);
+     return hr;
+ }
+ 
+@@ -696,12 +694,9 @@ static void send_buffer(struct parser_source *pin, const struct wg_parser_event
+         {
+             uint32_t advance;
+ 
+-            hr = BaseOutputPinImpl_GetDeliveryBuffer(&pin->pin, &sample, NULL, NULL, 0);
+-
+-            if (FAILED(hr))
++            if (FAILED(hr = IMemAllocator_GetBuffer(pin->pin.pAllocator, &sample, NULL, NULL, 0)))
+             {
+-                if (hr != VFW_E_NOT_CONNECTED)
+-                    ERR("Could not get a delivery buffer (%x), returning GST_FLOW_FLUSHING\n", hr);
++                ERR("Failed to get a sample, hr %#x.\n", hr);
+                 break;
+             }
+ 
+@@ -719,12 +714,10 @@ static void send_buffer(struct parser_source *pin, const struct wg_parser_event
+     }
+     else
+     {
+-        hr = BaseOutputPinImpl_GetDeliveryBuffer(&pin->pin, &sample, NULL, NULL, 0);
+ 
+         if (FAILED(hr))
+         {
+-            if (hr != VFW_E_NOT_CONNECTED)
+-                ERR("Could not get a delivery buffer (%x), returning GST_FLOW_FLUSHING\n", hr);
++            ERR("Failed to get a sample, hr %#x.\n", hr);
+         }
+         else
+         {
+-- 
+2.35.1
+
