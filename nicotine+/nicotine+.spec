@@ -1,7 +1,7 @@
 %global commit 11edbc6625c6962c491afc1b00e8dbc01c2246ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211226
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -9,11 +9,12 @@
 
 %global cname  nicotine
 %global pkgname  nicotine-plus
+%global appdata_id org.nicotine_plus.Nicotine
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.0
-Release:        101%{?gver}%{?dist}
+Version:        3.2.1
+Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 #   (see pynicotine/geoip/README.md)
@@ -63,6 +64,10 @@ that users want and/or need.
 
 
 %build
+# This fixes files installation below
+touch data/%{appdata_id}.desktop
+touch data/%{appdata_id}.metainfo.xml
+
 %pyproject_wheel
 
 
@@ -83,21 +88,25 @@ rm -rf %{buildroot}%{_datadir}/doc
 # Tests requiring an Internet connection are disabled
 %dnl GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/org.nicotine_plus.Nicotine.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.nicotine_plus.Nicotine.metainfo.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appdata_id}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.metainfo.xml
 
 
 %files -f %{cname}.lang -f %{pyproject_files}
 %license COPYING
 %doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
 %{_bindir}/%{cname}
-%{_datadir}/applications/*.desktop
-%{_datadir}/icons/hicolor/*/apps/*.*
-%{_metainfodir}/*.metainfo.xml
-%{_mandir}/man1/*.1*
+%{_datadir}/applications/%{appdata_id}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appdata_id}*.*
+%{_datadir}/icons/hicolor/scalable/intl/nplus-*.svg
+%{_metainfodir}/%{appdata_id}.metainfo.xml
+%{_mandir}/man1/%{cname}.1*
 
 
 %changelog
+* Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-100
+- 3.2.1
+
 * Mon Dec 27 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-101.20211226git11edbc6
 - Snapshot
 

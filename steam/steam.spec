@@ -11,7 +11,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.73
+Version:        1.0.0.74
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -46,8 +46,6 @@ Patch0:         %{name}-makefile.patch
 # Do not try to copy steam.desktop to the user's desktop from lib/steam
 Patch1:         %{name}-no-icon-on-desktop.patch
 
-# Create stdout logs on user directory
-Patch10:         %{name}-log-stdout-to-file.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -75,6 +73,7 @@ Requires:       vulkan-loader
 # Minimum requirements for starting the steam client for the first time
 Requires:       alsa-lib%{?_isa}
 Requires:       gtk2%{?_isa}
+Requires:       libICE%{?_isa}
 Requires:       libnsl%{?_isa}
 Requires:       libxcrypt-compat%{?_isa}
 Requires:       libpng12%{?_isa}
@@ -115,6 +114,7 @@ Requires:       alsa-plugins-pulseaudio%{?_isa}
 Recommends:     gamemode
 Recommends:     gamemode%{?_isa}
 Recommends:     (gnome-shell-extension-gamemode if gnome-shell)
+Recommends:     (gnome-shell-extension-appindicator if gnome-shell)
 
 # Proton uses xdg-desktop-portal to open URLs from inside a container
 Requires:       xdg-desktop-portal
@@ -208,6 +208,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.74-100
+- 1.0.0.74
+
 * Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.73-100
 - 1.0.0.73
 

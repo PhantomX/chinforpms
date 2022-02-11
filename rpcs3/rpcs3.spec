@@ -2,9 +2,9 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit d172b9add63d0535b7572a411a7af9d5a6b9b2fa
+%global commit d6597038eeb36f6dbb6bb422d6a2edac63a62df6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220208
+%global date 20220210
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -61,7 +61,7 @@
 
 Name:           rpcs3
 Version:        0.0.20
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -250,5 +250,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.20-2.20220210gitd659703
+- Bump
+
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.20-1.20220208gitd172b9a
 - Initial spec

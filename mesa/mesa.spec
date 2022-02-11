@@ -8,7 +8,6 @@
 %global with_omx 1
 %global with_opencl 1
 %endif
-%global base_dri nouveau,r100,r200
 %global base_vulkan ,amd
 %endif
 
@@ -17,7 +16,6 @@
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
-%global platform_dri ,i915,i965
 %global platform_vulkan ,intel
 %endif
 
@@ -50,9 +48,6 @@
 %bcond_with valgrind
 %endif
 
-%if !0%{?rhel}
-%global dri_drivers %{?base_dri}%{?platform_dri}
-%endif
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
@@ -66,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        21.3.5
+Version:        22.0.0~rc2
 Release:        100%{?dist}
 
 License:        MIT
@@ -91,7 +86,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.107
+BuildRequires:  pkgconfig(libdrm) >= 2.4.109
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
@@ -386,7 +381,6 @@ export RANLIB="gcc-ranlib"
 %meson \
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
-  -Ddri-drivers=%{?dri_drivers} \
   -Dosmesa=true \
 %if 0%{?with_hardware}
   -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
@@ -535,9 +529,6 @@ popd
 %{_libdir}/dri/virtio_gpu_dri.so
 
 %if 0%{?with_hardware}
-%{_libdir}/dri/radeon_dri.so
-%{_libdir}/dri/r200_dri.so
-%{_libdir}/dri/nouveau_vieux_dri.so
 %if 0%{?with_r300}
 %{_libdir}/dri/r300_dri.so
 %endif
@@ -548,9 +539,6 @@ popd
 %{_libdir}/dri/radeonsi_dri.so
 %endif
 %ifarch %{ix86} x86_64
-%{_libdir}/dri/i830_dri.so
-%{_libdir}/dri/i915_dri.so
-%{_libdir}/dri/i965_dri.so
 %{_libdir}/dri/crocus_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
@@ -665,13 +653,17 @@ popd
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
 
 %files vulkan-overlay
-%doc src/vulkan/overlay-layer/README
+%doc src/vulkan/overlay-layer/README.rst
 %{_bindir}/mesa-overlay-control.py
 %{_libdir}/libVkLayer_MESA_overlay.so
 %{_datadir}/vulkan/explicit_layer.d/VkLayer_MESA_overlay.json
 
 
 %changelog
+* Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.0~rc2-100
+- 22.0.0-rc2
+- Remove old unsupported dri drivers removed from tree from list
+
 * Wed Jan 26 2022 Phantom X <megaphantomx at hotmail dot com> - 21.3.5-100
 - 21.3.5
 
