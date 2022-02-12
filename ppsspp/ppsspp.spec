@@ -11,7 +11,7 @@
 %global with_egl 0
 
 # Enable system ffmpeg
-%global with_sysffmpeg 0
+%global with_sysffmpeg 1
 %if !0%{?with_sysffmpeg}
 %global bundleffmpegver 3.0.2
 %endif

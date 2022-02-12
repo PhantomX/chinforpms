@@ -17,7 +17,6 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
- drivers/ata/libata-core.c                          |  14 +--
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/char/random.c                              | 115 +++++++++++++++++++
@@ -38,7 +37,6 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- include/linux/ata.h                                |   2 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -55,10 +53,10 @@ Subject: [PATCH] patch-5.16-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 51 files changed, 827 insertions(+), 205 deletions(-)
+ 49 files changed, 820 insertions(+), 196 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 0cbab4df51b9..aff665749e8b 100644
+index 1f32bb42f328..592f45010531 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -454,40 +452,6 @@ index f76b8418e6fb..350e52fccc30 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
-diff --git a/drivers/ata/libata-core.c b/drivers/ata/libata-core.c
-index 1cdf8cfcc31b..94bc5dbb31e1 100644
---- a/drivers/ata/libata-core.c
-+++ b/drivers/ata/libata-core.c
-@@ -2486,23 +2486,21 @@ static void ata_dev_config_cpr(struct ata_device *dev)
- 	struct ata_cpr_log *cpr_log = NULL;
- 	u8 *desc, *buf = NULL;
-
--	if (!ata_identify_page_supported(dev,
--				 ATA_LOG_CONCURRENT_POSITIONING_RANGES))
-+	if (ata_id_major_version(dev->id) < 11 ||
-+	    !ata_log_supported(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES))
- 		goto out;
-
- 	/*
--	 * Read IDENTIFY DEVICE data log, page 0x47
--	 * (concurrent positioning ranges). We can have at most 255 32B range
--	 * descriptors plus a 64B header.
-+	 * Read the concurrent positioning ranges log (0x47). We can have at
-+	 * most 255 32B range descriptors plus a 64B header.
- 	 */
- 	buf_len = (64 + 255 * 32 + 511) & ~511;
- 	buf = kzalloc(buf_len, GFP_KERNEL);
- 	if (!buf)
- 		goto out;
-
--	err_mask = ata_read_log_page(dev, ATA_LOG_IDENTIFY_DEVICE,
--				     ATA_LOG_CONCURRENT_POSITIONING_RANGES,
--				     buf, buf_len >> 9);
-+	err_mask = ata_read_log_page(dev, ATA_LOG_CONCURRENT_POSITIONING_RANGES,
-+				     0, buf, buf_len >> 9);
- 	if (err_mask)
- 		goto out;
-
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -1649,24 +1613,6 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/include/linux/ata.h b/include/linux/ata.h
-index 199e47e97d64..21292b5bbb55 100644
---- a/include/linux/ata.h
-+++ b/include/linux/ata.h
-@@ -324,12 +324,12 @@ enum {
- 	ATA_LOG_NCQ_NON_DATA	= 0x12,
- 	ATA_LOG_NCQ_SEND_RECV	= 0x13,
- 	ATA_LOG_IDENTIFY_DEVICE	= 0x30,
-+	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
-
- 	/* Identify device log pages: */
- 	ATA_LOG_SECURITY	  = 0x06,
- 	ATA_LOG_SATA_SETTINGS	  = 0x08,
- 	ATA_LOG_ZONED_INFORMATION = 0x09,
--	ATA_LOG_CONCURRENT_POSITIONING_RANGES = 0x47,
-
- 	/* Identify device SATA settings log:*/
- 	ATA_LOG_DEVSLP_OFFSET	  = 0x30,
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h

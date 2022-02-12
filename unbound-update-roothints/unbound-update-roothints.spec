@@ -41,7 +41,7 @@ EOF
 
 cat > %{buildroot}%{_unitdir}/%{name}.timer <<'EOF'
 [Unit]
-Description=Run root.hints monthly
+Description=Update unbound root.hints monthly
 Wants=network-online.target
 
 [Timer]

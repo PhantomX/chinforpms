@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/ebcfc72287e1a1c6758e2d80776e8c797c14c14e
+ ebcfc72287e1a1c6758e2d80776e8c797c14c14e tipc: improve size validations for received domain records
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f797526f9dc15ef9cbd53acc02e6ae5fcdf01cf8
  f797526f9dc15ef9cbd53acc02e6ae5fcdf01cf8 drm/i915/psr: Disable PSR2 selective fetch for all TGL steps
 
