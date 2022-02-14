@@ -1,0 +1,46 @@
+--- geeqie-f692950aaf0e9dc3cf275b25bfcc0b1df9a96bb6/src/remote.c	2022-01-01 17:30:57.000000000 +0100
++++ geeqie-f692950aaf0e9dc3cf275b25bfcc0b1df9a96bb6/src/remote.c	2022-01-24 08:54:55.364198781 +0100
+@@ -248,7 +248,6 @@
+ {
+ 	RemoteConnection *rc;
+ 	struct sockaddr_un addr;
+-	gint sun_path_len;
+ 	gint fd;
+ 	GIOChannel *channel;
+ 
+@@ -261,9 +260,11 @@
+ 	fd = socket(PF_UNIX, SOCK_STREAM, 0);
+ 	if (fd == -1) return NULL;
+ 
++	if (strlen(path) > sizeof(addr.sun_path)) return NULL;
++	strncpy(addr.sun_path, path, sizeof(addr.sun_path));
++
+ 	addr.sun_family = AF_UNIX;
+-	sun_path_len = MIN(strlen(path) + 1, UNIX_PATH_MAX);
+-	strncpy(addr.sun_path, path, sun_path_len);
++
+ 	if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1 ||
+ 	    listen(fd, REMOTE_SERVER_BACKLOG) == -1)
+ 		{
+@@ -302,7 +303,6 @@
+ 	RemoteConnection *rc;
+ 	struct stat st;
+ 	struct sockaddr_un addr;
+-	gint sun_path_len;
+ 	gint fd;
+ 
+ 	if (stat(path, &st) != 0 || !S_ISSOCK(st.st_mode)) return NULL;
+@@ -310,9 +310,11 @@
+ 	fd = socket(PF_UNIX, SOCK_STREAM, 0);
+ 	if (fd == -1) return NULL;
+ 
++	if (strlen(path) > sizeof(addr.sun_path)) return NULL;
++	strncpy(addr.sun_path, path, sizeof(addr.sun_path));
++
+ 	addr.sun_family = AF_UNIX;
+-	sun_path_len = MIN(strlen(path) + 1, UNIX_PATH_MAX);
+-	strncpy(addr.sun_path, path, sun_path_len);
++
+ 	if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1)
+ 		{
+ 		DEBUG_1("error connecting to socket: %s", strerror(errno));

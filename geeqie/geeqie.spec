@@ -11,7 +11,7 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        1.7.1
+Version:        1.7.2
 Release:        100%{?gver}%{?dist}
 
 URL:            http://geeqie.org
@@ -22,6 +22,11 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         sun_path.patch
+Patch10:        %{vc_url}/commit/35f9552fca47bbe17e31f7247d1f017186397b5e.patch#/%{name}-gh-35f9552.patch
+Patch11:        %{vc_url}/commit/1db6df57c7dce3703ca0da80668e12e8a6faef47.patch#/%{name}-gh-1db6df5.patch
+Patch12:        %{vc_url}/commit/97b1d0546e3c2e7ca18bbd3483087b02668f3df8.patch#/%{name}-gh-97b1d05.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  autoconf
@@ -151,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 
 
 %changelog
+* Sun Feb 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2-100
+- 1.7.2
+
 * Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.1-100
 - 1.7.1
 

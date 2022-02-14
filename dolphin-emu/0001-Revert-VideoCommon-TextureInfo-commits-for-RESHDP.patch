@@ -1,6 +1,6 @@
-From 9061cdbbc502ce2ab6c36815310f65be2a0587a1 Mon Sep 17 00:00:00 2001
+From 4861219001a230153fa14a7cdb6fb9adfadea93d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 22 Jan 2022 00:12:28 -0300
+Date: Sat, 12 Feb 2022 10:28:14 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -215,7 +215,7 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../Core/VideoBackends/Vulkan/VKRenderer.cpp  |  11 +-
  Source/Core/VideoBackends/Vulkan/VKShader.cpp |   3 +-
  .../Core/VideoBackends/Vulkan/VKTexture.cpp   |   3 +-
- .../VideoBackends/Vulkan/VulkanContext.cpp    |  24 +-
+ .../VideoBackends/Vulkan/VulkanContext.cpp    |  22 +-
  .../VideoBackends/Vulkan/VulkanLoader.cpp     |   4 +-
  .../VideoCommon/AbstractStagingTexture.cpp    |   3 +-
  Source/Core/VideoCommon/AbstractTexture.cpp   |   3 +-
@@ -231,7 +231,7 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../VideoCommon/GeometryShaderManager.cpp     |   3 +-
  Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++-
  Source/Core/VideoCommon/HiresTextures.h       |   9 +-
- Source/Core/VideoCommon/PixelShaderGen.cpp    | 472 ++----------------
+ Source/Core/VideoCommon/PixelShaderGen.cpp    | 471 ++----------------
  Source/Core/VideoCommon/PixelShaderGen.h      |   2 -
  .../Core/VideoCommon/PixelShaderManager.cpp   |  32 +-
  Source/Core/VideoCommon/PixelShaderManager.h  |   1 -
@@ -261,7 +261,7 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 237 files changed, 948 insertions(+), 2549 deletions(-)
+ 237 files changed, 947 insertions(+), 2547 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -791,7 +791,7 @@ index 803a327..b5075a9 100644
  // Generic, do nothing
  namespace FPURoundMode
 diff --git a/Source/Core/Common/IOFile.cpp b/Source/Core/Common/IOFile.cpp
-index 1378906..5ecec71 100644
+index 374c56a..677a5c7 100644
 --- a/Source/Core/Common/IOFile.cpp
 +++ b/Source/Core/Common/IOFile.cpp
 @@ -1,8 +1,6 @@
@@ -1519,7 +1519,7 @@ index 1f3b9fc..1d9b509 100644
  namespace Win32TAPHelper
  {
 diff --git a/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp b/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
-index e55f880..475a09f 100644
+index 6f4d7ad..e2a8cae 100644
 --- a/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
 +++ b/Source/Core/Core/HW/EXI/EXI_DeviceIPL.cpp
 @@ -2,6 +2,7 @@
@@ -1733,7 +1733,7 @@ index 2e2fee3..fce3967 100644
  
  namespace IOS::HLE::FS
 diff --git a/Source/Core/Core/IOS/FS/HostBackend/File.cpp b/Source/Core/Core/IOS/FS/HostBackend/File.cpp
-index 1e4ea5e..bdc4518 100644
+index 9f58c2f..1c0ad3a 100644
 --- a/Source/Core/Core/IOS/FS/HostBackend/File.cpp
 +++ b/Source/Core/Core/IOS/FS/HostBackend/File.cpp
 @@ -1,8 +1,6 @@
@@ -2081,7 +2081,7 @@ index a92bc95..c0682b6 100644
  #include "Core/PowerPC/PPCTables.h"
  #include "Core/PowerPC/PowerPC.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
-index de3a164..ff37923 100644
+index 40bad6e..9b6b948 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_FloatingPoint.cpp
 @@ -1,8 +1,6 @@
@@ -2299,10 +2299,10 @@ index de55900..06d82e9 100644
  #include <array>
  #include <cstring>
 diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
-index f89c1fc..18d6876 100644
+index b1a3c70..5a9da30 100644
 --- a/Source/Core/Core/State.cpp
 +++ b/Source/Core/Core/State.cpp
-@@ -73,7 +73,7 @@ static Common::Event g_compressAndDumpStateSyncEvent;
+@@ -74,7 +74,7 @@ static std::recursive_mutex g_save_thread_mutex;
  static std::thread g_save_thread;
  
  // Don't forget to increase this after doing changes on the savestate system
@@ -2333,7 +2333,7 @@ index 7062c36..38416ad 100644
  #include "DiscIO/CompressedBlob.h"
  #include "DiscIO/DirectoryBlob.h"
 diff --git a/Source/Core/DiscIO/CISOBlob.cpp b/Source/Core/DiscIO/CISOBlob.cpp
-index 36c6850..ff0687d 100644
+index 2840840..0c5251e 100644
 --- a/Source/Core/DiscIO/CISOBlob.cpp
 +++ b/Source/Core/DiscIO/CISOBlob.cpp
 @@ -1,8 +1,6 @@
@@ -2354,7 +2354,7 @@ index 36c6850..ff0687d 100644
  namespace DiscIO
  {
 diff --git a/Source/Core/DiscIO/CompressedBlob.cpp b/Source/Core/DiscIO/CompressedBlob.cpp
-index 8f491a4..70d123c 100644
+index 056c2f4..3d363ee 100644
 --- a/Source/Core/DiscIO/CompressedBlob.cpp
 +++ b/Source/Core/DiscIO/CompressedBlob.cpp
 @@ -1,7 +1,10 @@
@@ -2390,7 +2390,7 @@ index 8f491a4..70d123c 100644
  #include "DiscIO/MultithreadedCompressor.h"
  #include "DiscIO/Volume.h"
 diff --git a/Source/Core/DiscIO/DriveBlob.cpp b/Source/Core/DiscIO/DriveBlob.cpp
-index 3755317..643dad5 100644
+index 033a6d2..177e7bf 100644
 --- a/Source/Core/DiscIO/DriveBlob.cpp
 +++ b/Source/Core/DiscIO/DriveBlob.cpp
 @@ -1,8 +1,6 @@
@@ -2432,7 +2432,7 @@ index 0594e31..35ab81d 100644
  namespace DiscIO
  {
 diff --git a/Source/Core/DiscIO/FileBlob.cpp b/Source/Core/DiscIO/FileBlob.cpp
-index 17c855f..5392ed3 100644
+index e185fe9..e662810 100644
 --- a/Source/Core/DiscIO/FileBlob.cpp
 +++ b/Source/Core/DiscIO/FileBlob.cpp
 @@ -1,8 +1,6 @@
@@ -3174,7 +3174,7 @@ index 54093f2..8d0312e 100644
  namespace CommandLineParse
  {
 diff --git a/Source/Core/UICommon/UICommon.cpp b/Source/Core/UICommon/UICommon.cpp
-index a5f0721..bcd330f 100644
+index 1e6aa4b..bc6a8b3 100644
 --- a/Source/Core/UICommon/UICommon.cpp
 +++ b/Source/Core/UICommon/UICommon.cpp
 @@ -1,8 +1,6 @@
@@ -3216,7 +3216,7 @@ index 2eb6da7..6495fcf 100644
  #include "VideoBackends/D3DCommon/D3DCommon.h"
  
 diff --git a/Source/Core/VideoBackends/D3D/D3DMain.cpp b/Source/Core/VideoBackends/D3D/D3DMain.cpp
-index 4d78c49..0ff911c 100644
+index ea11c33..8163087 100644
 --- a/Source/Core/VideoBackends/D3D/D3DMain.cpp
 +++ b/Source/Core/VideoBackends/D3D/D3DMain.cpp
 @@ -107,9 +107,6 @@ void VideoBackend::FillBackendInfo()
@@ -3227,8 +3227,8 @@ index 4d78c49..0ff911c 100644
 -  g_Config.backend_info.bSupportsTextureQueryLevels = true;
 -  g_Config.backend_info.bSupportsLodBiasInSampler = true;
    g_Config.backend_info.bSupportsLogicOp = D3D::SupportsLogicOp(g_Config.iAdapter);
+   g_Config.backend_info.bSupportsSettingObjectNames = true;
  
-   g_Config.backend_info.Adapters = D3DCommon::GetAdapterNames();
 diff --git a/Source/Core/VideoBackends/D3D/D3DState.cpp b/Source/Core/VideoBackends/D3D/D3DState.cpp
 index 9a568ae..a1de229 100644
 --- a/Source/Core/VideoBackends/D3D/D3DState.cpp
@@ -3574,7 +3574,7 @@ index 7ff42c8..ce4d23b 100644
  };
  }  // namespace DX12
 diff --git a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
-index 9ee16c1..89dd437 100644
+index 2ddec74..2d15eb4 100644
 --- a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
 +++ b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
 @@ -83,9 +83,6 @@ void VideoBackend::FillBackendInfo()
@@ -3584,9 +3584,9 @@ index 9ee16c1..89dd437 100644
 -  g_Config.backend_info.bSupportsCoarseDerivatives = true;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = true;
 -  g_Config.backend_info.bSupportsLodBiasInSampler = true;
+   g_Config.backend_info.bSupportsSettingObjectNames = true;
  
    // We can only check texture support once we have a device.
-   if (g_dx_context)
 diff --git a/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp b/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp
 index 69014d8..e06c6a0 100644
 --- a/Source/Core/VideoBackends/D3DCommon/D3DCommon.cpp
@@ -3632,7 +3632,7 @@ index 0d7c84b..ba75fc3 100644
  #include "VideoCommon/VideoConfig.h"
  
 diff --git a/Source/Core/VideoBackends/Null/NullBackend.cpp b/Source/Core/VideoBackends/Null/NullBackend.cpp
-index 635650c..c4e4cad 100644
+index 0a400fc..ed370df 100644
 --- a/Source/Core/VideoBackends/Null/NullBackend.cpp
 +++ b/Source/Core/VideoBackends/Null/NullBackend.cpp
 @@ -56,9 +56,6 @@ void VideoBackend::InitBackendInfo()
@@ -3642,11 +3642,11 @@ index 635650c..c4e4cad 100644
 -  g_Config.backend_info.bSupportsCoarseDerivatives = false;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = false;
 -  g_Config.backend_info.bSupportsLodBiasInSampler = false;
+   g_Config.backend_info.bSupportsSettingObjectNames = false;
  
    // aamodes: We only support 1 sample, so no MSAA
-   g_Config.backend_info.Adapters.clear();
 diff --git a/Source/Core/VideoBackends/OGL/OGLMain.cpp b/Source/Core/VideoBackends/OGL/OGLMain.cpp
-index 4f4dc21..3ca79d5 100644
+index 3e16b86..316a23f 100644
 --- a/Source/Core/VideoBackends/OGL/OGLMain.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLMain.cpp
 @@ -33,8 +33,6 @@ Make AA apply instantly during gameplay if possible
@@ -3689,9 +3689,9 @@ index 4f4dc21..3ca79d5 100644
    g_Config.backend_info.bSupportsBPTCTextures = false;
 -  g_Config.backend_info.bSupportsCoarseDerivatives = false;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = false;
+   g_Config.backend_info.bSupportsSettingObjectNames = false;
  
    g_Config.backend_info.Adapters.clear();
- 
 diff --git a/Source/Core/VideoBackends/OGL/OGLPipeline.cpp b/Source/Core/VideoBackends/OGL/OGLPipeline.cpp
 index b4962cf..ee45fe8 100644
 --- a/Source/Core/VideoBackends/OGL/OGLPipeline.cpp
@@ -3709,7 +3709,7 @@ index b4962cf..ee45fe8 100644
  #include "VideoBackends/OGL/OGLShader.h"
  #include "VideoBackends/OGL/OGLVertexManager.h"
 diff --git a/Source/Core/VideoBackends/OGL/OGLRender.cpp b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-index 53ed788..81bb5e9 100644
+index 123b11b..0f2250b 100644
 --- a/Source/Core/VideoBackends/OGL/OGLRender.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLRender.cpp
 @@ -482,10 +482,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
@@ -3734,7 +3734,7 @@ index 53ed788..81bb5e9 100644
      {
        g_ogl_config.SupportedFramebufferFetch = EsFbFetchType::FbFetchExt;
 diff --git a/Source/Core/VideoBackends/OGL/OGLTexture.cpp b/Source/Core/VideoBackends/OGL/OGLTexture.cpp
-index cf3c5f7..83c1d1b 100644
+index 113be2f..e19707c 100644
 --- a/Source/Core/VideoBackends/OGL/OGLTexture.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLTexture.cpp
 @@ -1,12 +1,11 @@
@@ -3750,7 +3750,7 @@ index cf3c5f7..83c1d1b 100644
 +#include "VideoBackends/OGL/OGLTexture.h"
  #include "VideoBackends/OGL/SamplerCache.h"
  
- namespace OGL
+ #include "VideoCommon/VideoConfig.h"
 diff --git a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 index 659882d..f6c89a8 100644
 --- a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
@@ -3979,7 +3979,7 @@ index 082c263..a70f1b0 100644
  namespace SW
  {
 diff --git a/Source/Core/VideoBackends/Software/SWmain.cpp b/Source/Core/VideoBackends/Software/SWmain.cpp
-index 654813d..a0aa8e0 100644
+index 753f869..c0c2aff 100644
 --- a/Source/Core/VideoBackends/Software/SWmain.cpp
 +++ b/Source/Core/VideoBackends/Software/SWmain.cpp
 @@ -1,8 +1,6 @@
@@ -4006,9 +4006,9 @@ index 654813d..a0aa8e0 100644
 -  g_Config.backend_info.bSupportsCoarseDerivatives = false;
 -  g_Config.backend_info.bSupportsTextureQueryLevels = false;
 -  g_Config.backend_info.bSupportsLodBiasInSampler = false;
+   g_Config.backend_info.bSupportsSettingObjectNames = false;
  
    // aamodes
-   g_Config.backend_info.AAModes = {1};
 diff --git a/Source/Core/VideoBackends/Software/SetupUnit.cpp b/Source/Core/VideoBackends/Software/SetupUnit.cpp
 index 48ab2b2..2b919f4 100644
 --- a/Source/Core/VideoBackends/Software/SetupUnit.cpp
@@ -4311,7 +4311,7 @@ index db5037f..06a3f09 100644
    }
  
 diff --git a/Source/Core/VideoBackends/Vulkan/VKShader.cpp b/Source/Core/VideoBackends/Vulkan/VKShader.cpp
-index 650ac85..4f88ec4 100644
+index 81d7c23..c9d32cb 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKShader.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VKShader.cpp
 @@ -1,13 +1,12 @@
@@ -4328,9 +4328,9 @@ index 650ac85..4f88ec4 100644
 +#include "VideoBackends/Vulkan/VKShader.h"
  #include "VideoBackends/Vulkan/VulkanContext.h"
  
- namespace Vulkan
+ #include "VideoCommon/VideoConfig.h"
 diff --git a/Source/Core/VideoBackends/Vulkan/VKTexture.cpp b/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
-index b47a5d6..90d1357 100644
+index 2bd06bf..f4b9182 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VKTexture.cpp
 @@ -1,8 +1,6 @@
@@ -4349,9 +4349,9 @@ index b47a5d6..90d1357 100644
 +#include "VideoBackends/Vulkan/VKTexture.h"
  #include "VideoBackends/Vulkan/VulkanContext.h"
  
- namespace Vulkan
+ #include "VideoCommon/VideoConfig.h"
 diff --git a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
-index 40e5429..460180b 100644
+index 8e0f0ed..8d6f6d8 100644
 --- a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 @@ -1,8 +1,6 @@
@@ -4371,19 +4371,17 @@ index 40e5429..460180b 100644
  #include "VideoCommon/DriverDetails.h"
  #include "VideoCommon/VideoCommon.h"
  
-@@ -286,10 +285,7 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
-   config->backend_info.bSupportsBPTCTextures = false;              // Dependent on features.
+@@ -291,9 +290,6 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
    config->backend_info.bSupportsLogicOp = false;                   // Dependent on features.
    config->backend_info.bSupportsLargePoints = false;               // Dependent on features.
--  config->backend_info.bSupportsFramebufferFetch = false;          // Dependent on OS and features.
+   config->backend_info.bSupportsFramebufferFetch = false;          // Dependent on OS and features.
 -  config->backend_info.bSupportsCoarseDerivatives = true;          // Assumed support.
 -  config->backend_info.bSupportsTextureQueryLevels = true;         // Assumed support.
 -  config->backend_info.bSupportsLodBiasInSampler = false;          // Dependent on OS.
-+  config->backend_info.bSupportsFramebufferFetch = false;          // No support.
+   config->backend_info.bSupportsSettingObjectNames = false;        // Dependent on features.
  }
  
- void VulkanContext::PopulateBackendInfoAdapters(VideoConfig* config, const GPUList& gpu_list)
-@@ -317,13 +313,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+@@ -322,13 +318,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
    config->backend_info.bSupportsSSAA = (features.sampleRateShading == VK_TRUE);
    config->backend_info.bSupportsLogicOp = (features.logicOp == VK_TRUE);
  
@@ -4397,7 +4395,7 @@ index 40e5429..460180b 100644
    // Disable geometry shader when shaderTessellationAndGeometryPointSize is not supported.
    // Seems this is needed for gl_Layer.
    if (!features.shaderTessellationAndGeometryPointSize)
-@@ -348,15 +337,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+@@ -353,15 +342,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
                                                properties.limits.pointSizeRange[0] <= 1.0f &&
                                                properties.limits.pointSizeRange[1] >= 16;
  
@@ -4851,7 +4849,7 @@ index 3504bc6..cf08716 100644
    endif()
  endif()
 diff --git a/Source/Core/VideoCommon/CommandProcessor.cpp b/Source/Core/VideoCommon/CommandProcessor.cpp
-index c80469f..e197215 100644
+index 51b67a9..9d82820 100644
 --- a/Source/Core/VideoCommon/CommandProcessor.cpp
 +++ b/Source/Core/VideoCommon/CommandProcessor.cpp
 @@ -1,8 +1,6 @@
@@ -4920,7 +4918,7 @@ index 5335af9..fe80767 100644
  
  struct VertexShaderConstants
 diff --git a/Source/Core/VideoCommon/DriverDetails.cpp b/Source/Core/VideoCommon/DriverDetails.cpp
-index 0852820..f12318d 100644
+index 829d050..7c91542 100644
 --- a/Source/Core/VideoCommon/DriverDetails.cpp
 +++ b/Source/Core/VideoCommon/DriverDetails.cpp
 @@ -1,11 +1,10 @@
@@ -5147,7 +5145,7 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index 673c97e..b517012 100644
+index ddb03f8..60c926b 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
 @@ -333,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
@@ -5205,11 +5203,10 @@ index 673c97e..b517012 100644
  
    if (host_config.per_pixel_lighting)
    {
-@@ -543,320 +536,17 @@ void UpdateBoundingBox(float2 rawpos) {{
- )",
+@@ -544,319 +537,17 @@ void UpdateBoundingBox(float2 rawpos) {{
                fmt::arg("efb_height", EFB_HEIGHT), fmt::arg("efb_scale", I_EFBSCALE));
    }
--
+ 
 -  if (host_config.manual_texture_sampling)
 -  {
 -    if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
@@ -5518,7 +5515,7 @@ index 673c97e..b517012 100644
  static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, int n,
                         APIType api_type, bool stereo);
  static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBias bias, TevOp op,
-                             bool clamp, TevScale scale, bool alpha);
+                             bool clamp, TevScale scale);
 +static void SampleTexture(ShaderCode& out, std::string_view texcoords, std::string_view texswap,
 +                          int texmap, bool stereo, APIType api_type);
  static void WriteAlphaTest(ShaderCode& out, const pixel_shader_uid_data* uid_data, APIType api_type,
@@ -5528,7 +5525,7 @@ index 673c97e..b517012 100644
  static void WriteColor(ShaderCode& out, APIType api_type, const pixel_shader_uid_data* uid_data,
                         bool use_dual_source);
  static void WriteBlend(ShaderCode& out, const pixel_shader_uid_data* uid_data);
-@@ -877,20 +567,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -877,20 +568,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
              uid_data->genMode_numtexgens, uid_data->genMode_numindstages);
  
    // Stuff that is shared between ubershaders and pixelgen.
@@ -5549,7 +5546,7 @@ index 673c97e..b517012 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -945,58 +623,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -945,58 +624,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
         uid_data->useDstAlpha);
    const bool use_shader_blend =
        !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
@@ -5626,7 +5623,7 @@ index 673c97e..b517012 100644
      }
  
      if (uid_data->per_pixel_depth)
-@@ -1042,28 +702,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1042,28 +703,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
      out.Write("void main()\n{{\n");
      out.Write("\tfloat4 rawpos = gl_FragCoord;\n");
@@ -5658,7 +5655,7 @@ index 673c97e..b517012 100644
                  "\tfloat4 ocol1;\n");
      }
    }
-@@ -1113,8 +756,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1113,8 +757,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("        ) {{\n");
    }
@@ -5667,7 +5664,7 @@ index 673c97e..b517012 100644
  
    out.Write("\tint4 c0 = " I_COLORS "[1], c1 = " I_COLORS "[2], c2 = " I_COLORS
              "[3], prev = " I_COLORS "[0];\n"
-@@ -1172,7 +813,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1172,7 +814,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
      {
        out.Write("\tint2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -5676,7 +5673,7 @@ index 673c97e..b517012 100644
        // TODO: S24 overflows here?
      }
    }
-@@ -1195,8 +836,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1195,8 +837,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write("\ttempcoord = fixpoint_uv{} >> " I_INDTEXSCALE "[{}].{};\n", texcoord, i / 2,
                  (i & 1) ? "zw" : "xy");
  
@@ -5687,7 +5684,7 @@ index 673c97e..b517012 100644
      }
    }
  
-@@ -1314,9 +955,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1326,9 +968,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
    WriteFog(out, uid_data);
  
@@ -5697,7 +5694,7 @@ index 673c97e..b517012 100644
    // Write the color and alpha values to the framebuffer
    // If using shader blend, we still use the separate alpha
    WriteColor(out, api_type, uid_data, use_dual_source || use_shader_blend);
-@@ -1605,8 +1243,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
+@@ -1617,8 +1256,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
          '\0',
      };
  
@@ -5708,7 +5705,7 @@ index 673c97e..b517012 100644
    }
    else if (uid_data->genMode_numtexgens == 0)
    {
-@@ -1789,6 +1427,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
+@@ -1803,6 +1442,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
    out.Write("){}", tev_scale_table_right[scale]);
  }
  
@@ -5733,7 +5730,7 @@ index 673c97e..b517012 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1933,34 +1589,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1947,34 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
@@ -6289,7 +6286,7 @@ index 0000000..2b09393
 +}
 +}  // namespace SamplerCommon
 diff --git a/Source/Core/VideoCommon/ShaderCache.cpp b/Source/Core/VideoCommon/ShaderCache.cpp
-index eada4c9..494db47 100644
+index 984793d..001e396 100644
 --- a/Source/Core/VideoCommon/ShaderCache.cpp
 +++ b/Source/Core/VideoCommon/ShaderCache.cpp
 @@ -588,9 +588,7 @@ AbstractPipelineConfig ShaderCache::GetGXPipelineConfig(
@@ -6726,7 +6723,7 @@ index 6a1eff4..0000000
 -
 -}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index efe6a38..cef3168 100644
+index 078abf1..6eb715e 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
 @@ -40,9 +40,9 @@
@@ -7429,7 +7426,7 @@ index efe6a38..cef3168 100644
      }
    }
  
-@@ -2841,21 +2854,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
+@@ -2855,21 +2868,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
  }
  
  u32 TextureCacheBase::TCacheEntry::BytesPerRow() const
@@ -7457,7 +7454,7 @@ index efe6a38..cef3168 100644
  }
  
  u32 TextureCacheBase::TCacheEntry::NumBlocksY() const
-@@ -2912,8 +2922,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
+@@ -2926,8 +2936,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
  {
    const u32 bytes_per_row = BytesPerRow();
    const u32 hash_sample_size = HashSampleSize();
@@ -8139,7 +8136,7 @@ index 4e3b0ff..d1a736a 100644
 +}
  }  // namespace UberShader
 diff --git a/Source/Core/VideoCommon/UberShaderPixel.cpp b/Source/Core/VideoCommon/UberShaderPixel.cpp
-index 178de46..1520111 100644
+index fa6ad7b..8f9a563 100644
 --- a/Source/Core/VideoCommon/UberShaderPixel.cpp
 +++ b/Source/Core/VideoCommon/UberShaderPixel.cpp
 @@ -55,9 +55,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
@@ -8297,7 +8294,7 @@ index 178de46..1520111 100644
    };
  
    // ======================
-@@ -528,28 +508,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -530,28 +510,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
  
      out.Write("void main()\n{{\n");
      out.Write("  float4 rawpos = gl_FragCoord;\n");
@@ -8329,7 +8326,7 @@ index 178de46..1520111 100644
                  "  float4 ocol1;\n");
      }
    }
-@@ -598,8 +561,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -600,8 +563,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("\n        ) {{\n");
    }
@@ -8338,7 +8335,7 @@ index 178de46..1520111 100644
  
    out.Write("  int3 tevcoord = int3(0, 0, 0);\n"
              "  State s;\n"
-@@ -657,7 +618,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -659,7 +620,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      {
        out.Write("    int2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -8347,7 +8344,7 @@ index 178de46..1520111 100644
        // TODO: S24 overflows here?
      }
  
-@@ -691,7 +652,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -693,7 +654,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      // For the undefined case, we just skip applying the indirect operation, which is close enough.
      // Viewtiful Joe hits the undefined case (bug 12525).
      // Wrapping and add to previous still apply in this case (and when the stage is disabled).
@@ -8356,7 +8353,7 @@ index 178de46..1520111 100644
      out.Write("        int3 indcoord;\n");
      LookupIndirectTexture("indcoord", "bt");
      out.Write("        if (bs != 0u)\n"
-@@ -781,8 +742,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -783,8 +744,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "      uint sampler_num = {};\n",
                BitfieldExtract<&TwoTevStageOrders::texmap0>("ss.order"));
      out.Write("\n"
@@ -8369,7 +8366,7 @@ index 178de46..1520111 100644
                BitfieldExtract<&TevStageCombiner::AlphaCombiner::tswap>("ss.ac"));
      out.Write("      s.TexColor = Swizzle(swap, color);\n");
      out.Write("    }} else {{\n"
-@@ -1109,40 +1072,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -1114,40 +1077,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
              "  }}\n"
              "\n");
  
@@ -8483,7 +8480,7 @@ index 5fa85b2..0ebb385 100644
  
  void VertexManagerBase::Flush()
 diff --git a/Source/Core/VideoCommon/VideoBackendBase.cpp b/Source/Core/VideoCommon/VideoBackendBase.cpp
-index b84f6f9..bc50d39 100644
+index 78e4c7c..366266d 100644
 --- a/Source/Core/VideoCommon/VideoBackendBase.cpp
 +++ b/Source/Core/VideoCommon/VideoBackendBase.cpp
 @@ -47,7 +47,6 @@
@@ -8494,7 +8491,7 @@ index b84f6f9..bc50d39 100644
  #include "VideoCommon/TextureCacheBase.h"
  #include "VideoCommon/VertexLoaderManager.h"
  #include "VideoCommon/VertexManagerBase.h"
-@@ -323,7 +322,6 @@ void VideoBackendBase::InitializeShared()
+@@ -322,7 +321,6 @@ void VideoBackendBase::InitializeShared()
    VertexShaderManager::Init();
    GeometryShaderManager::Init();
    PixelShaderManager::Init();
@@ -8515,7 +8512,7 @@ index a4aa9bd..3482c0a 100644
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
  
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index 5bb3e52..81b47cf 100644
+index 88a7ae5..a948b63 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
 @@ -136,7 +136,6 @@ struct VideoConfig final
@@ -8533,10 +8530,10 @@ index 5bb3e52..81b47cf 100644
 -    bool bSupportsCoarseDerivatives = false;
 -    bool bSupportsTextureQueryLevels = false;
 -    bool bSupportsLodBiasInSampler = false;
+     bool bSupportsSettingObjectNames = false;
    } backend_info;
  
-   // Utility
-@@ -248,16 +244,6 @@ struct VideoConfig final
+@@ -249,16 +245,6 @@ struct VideoConfig final
      return backend_info.bSupportsGPUTextureDecoding && bEnableGPUTextureDecoding;
    }
    bool UseVertexRounding() const { return bVertexRounding && iEFBScale != 1; }
@@ -8591,5 +8588,5 @@ index c348649..f954ca7 100644
    Fifo::DoState(p);
    p.DoMarker("Fifo");
 -- 
-2.34.1
+2.35.1
 
