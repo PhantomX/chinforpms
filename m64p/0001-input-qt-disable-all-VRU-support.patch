@@ -1,0 +1,164 @@
+From 3ea6559a106c89fe41f93d628133ed639f4deb0b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 14 Feb 2022 14:09:50 -0300
+Subject: [PATCH] input-qt: disable all VRU support
+
+Only when building against upstream mupen64plus.
+---
+ mupen64plus-input-qt/main.cpp | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
+
+diff --git a/mupen64plus-input-qt/main.cpp b/mupen64plus-input-qt/main.cpp
+index fdc556c..6a75cdb 100644
+--- a/mupen64plus-input-qt/main.cpp
++++ b/mupen64plus-input-qt/main.cpp
+@@ -27,7 +27,9 @@
+ #include "m64p_plugin.h"
+ #include "main.h"
+ #include "configdialog.h"
++#ifdef CONT_TYPE_VRU
+ #include "vosk/vosk_api.h"
++#endif
+ #include "osal/osal_dynamiclib.h"
+ #include "vruwords.h"
+ #include "funcs.h"
+@@ -48,7 +50,9 @@
+ #define QT_INPUT_PLUGIN_VERSION 0x020500
+ #define INPUT_PLUGIN_API_VERSION 0x020101
+ static int l_PluginInit = 0;
++#ifdef CONT_TYPE_VRU
+ static int l_TalkingState = 0;
++#endif
+ static unsigned char myKeyState[SDL_NUM_SCANCODES];
+ static QSettings* settings;
+ static QSettings* controllerSettings;
+@@ -56,6 +60,7 @@ static QSettings* gameSettings;
+ static QSettings* gameControllerSettings;
+ static SController controller[4];   // 4 controllers
+ static m64p_dynlib_handle coreHandle;
++#ifdef CONT_TYPE_VRU
+ static VoskModel *model;
+ static VoskRecognizer *recognizer;
+ static QStringList words;
+@@ -85,6 +90,7 @@ ptr_vosk_model_free VoskFreeModel;
+ ptr_vosk_recognizer_free VoskFreeRecognizer;
+ ptr_vosk_set_log_level VoskSetLogLevel;
+ ptr_vosk_recognizer_set_max_alternatives VoskSetAlternatives;
++#endif
+ 
+ ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath;
+ ptr_ConfigGetUserDataPath ConfigGetUserDataPath;
+@@ -338,6 +344,7 @@ static unsigned char DataCRC( unsigned char *Data, int iLenght )
+     return Remainder;
+ }
+ 
++#ifdef CONT_TYPE_VRU
+ EXPORT void CALL SendVRUWord(uint16_t length, uint16_t *word, uint8_t lang)
+ {
+     QByteArray word_array;
+@@ -504,6 +511,7 @@ EXPORT void CALL ReadVRUResults(uint16_t *error_flags, uint16_t *num_results, ui
+     matches[8] = match[4];
+     matches[9] = (match[4] == 0x7FFF) ? 0 : 0x400;
+ }
++#endif
+ 
+ EXPORT void CALL ControllerCommand(int Control, unsigned char *Command)
+ {
+@@ -672,9 +680,13 @@ void setKey(int Control, uint32_t key, BUTTONS *Keys, QString button)
+ void setPak(int Control)
+ {
+     QString pak = gameControllerSettings->value("Controller" + QString::number(Control + 1) + "/Pak").toString();
++#ifdef CONT_TYPE_VRU
+     if (controller[Control].control->Type == CONT_TYPE_VRU)
+         controller[Control].control->Plugin = PLUGIN_NONE;
+     else if (pak == "Transfer")
++#else
++    if (pak == "Transfer")
++#endif
+         controller[Control].control->Plugin = PLUGIN_TRANSFER_PAK;
+     else if (pak == "Rumble")
+         controller[Control].control->Plugin = PLUGIN_RAW;
+@@ -690,6 +702,7 @@ EXPORT void CALL GetKeys( int Control, BUTTONS *Keys )
+         return;
+ 
+     setPak(Control);
++#ifdef CONT_TYPE_VRU
+     if (controller[Control].control->Type == CONT_TYPE_VRU)
+     {
+         if (l_TalkingState == 0)
+@@ -704,6 +717,7 @@ EXPORT void CALL GetKeys( int Control, BUTTONS *Keys )
+             return;
+         }
+     }
++#endif
+ 
+     Keys->Value = 0;
+     setKey(Control, 0x0001/*R_DPAD*/, Keys, "DPadR");
+@@ -727,6 +741,7 @@ EXPORT void CALL GetKeys( int Control, BUTTONS *Keys )
+     setAxis(Control, 1/*Y_AXIS*/, Keys, "AxisDown", -1);
+ }
+ 
++#ifdef CONT_TYPE_VRU
+ static int setupVosk()
+ {
+     if (voskLib)
+@@ -773,11 +788,14 @@ static int setupVosk()
+     voskLib = NULL;
+     return 0;
+ }
++#endif
+ 
+ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
+ {
++#ifdef CONT_TYPE_VRU
+     model = nullptr;
+     recognizer = nullptr;
++#endif
+     gameSettings = new QSettings(settings->fileName(), QSettings::IniFormat);
+     gameControllerSettings = new QSettings(controllerSettings->fileName(), QSettings::IniFormat);
+ 
+@@ -797,7 +815,9 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
+         controller[i].control = ControlInfo.Controls + i;
+         controller[i].control->RawData = 0;
+         controller[i].control->Present = 0;
++#ifdef CONT_TYPE_STANDARD
+         controller[i].control->Type = CONT_TYPE_STANDARD;
++#endif
+         controller[i].gamepad = NULL;
+         controller[i].joystick = NULL;
+         gamepad = gameControllerSettings->value("Controller" + QString::number(i + 1) + "/Gamepad").toString();
+@@ -832,6 +852,7 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
+             }
+             if (i == 0) controller[i].control->Present = 1; //Player 1
+         }
++#ifdef CONT_TYPE_VRU
+         else if (gamepad == "Emulate VRU") {
+             controller[i].control->Type = CONT_TYPE_VRU;
+             controller[i].control->Plugin = PLUGIN_NONE;
+@@ -844,6 +865,7 @@ EXPORT void CALL InitiateControllers(CONTROL_INFO ControlInfo)
+             else
+                 controller[i].control->Present = 1;
+         }
++#endif
+         else /*specific gamepad selected*/ {
+             controller_index = gamepad.split(":")[0].toInt();
+             gamepad_name = gamepad.split(":")[1];
+@@ -912,6 +934,7 @@ EXPORT void CALL RomClosed(void)
+ 
+     gameSettings->sync();
+     gameControllerSettings->sync();
++#ifdef CONT_TYPE_VRU
+     if (model)
+         VoskFreeModel(model);
+     if (recognizer)
+@@ -922,6 +945,7 @@ EXPORT void CALL RomClosed(void)
+     SDL_CloseAudioDevice(audio_dev);
+     if(hardware_spec != NULL) free(hardware_spec);
+     hardware_spec = NULL;
++#endif
+     delete gameSettings;
+     delete gameControllerSettings;
+ }
+-- 
+2.35.1
+

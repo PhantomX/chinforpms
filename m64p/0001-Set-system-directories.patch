@@ -1,0 +1,84 @@
+From 385389135060ec57b806ad150760fce86ca943af Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 14 Feb 2022 12:03:04 -0300
+Subject: [PATCH] Set system directories
+
+https://aur.archlinux.org/cgit/aur.git/tree/030-m64p-fix-paths.patch?h=m64p
+---
+ mupen64plus-gui/mainwindow.cpp     | 11 ++++++-----
+ mupen64plus-gui/settingsdialog.cpp |  2 +-
+ 2 files changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/mupen64plus-gui/mainwindow.cpp b/mupen64plus-gui/mainwindow.cpp
+index 00cb0f4..ceefc06 100644
+--- a/mupen64plus-gui/mainwindow.cpp
++++ b/mupen64plus-gui/mainwindow.cpp
+@@ -4,6 +4,7 @@
+ #include <QCloseEvent>
+ #include <QActionGroup>
+ #include <QDesktopServices>
++#include <QStandardPaths>
+ #include "settingsdialog.h"
+ #include "plugindialog.h"
+ #include "mainwindow.h"
+@@ -44,7 +45,7 @@ void MainWindow::updatePlugins()
+ #ifdef PLUGIN_DIR_PATH
+     QString pluginPath = PLUGIN_DIR_PATH;
+ #else
+-    QString pluginPath = QCoreApplication::applicationDirPath();
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
+ #endif
+     QDir PluginDir(pluginPath);
+     PluginDir.setFilter(QDir::Files);
+@@ -374,7 +375,7 @@ MainWindow::MainWindow(QWidget *parent) :
+     updatePIF(ui);
+ 
+     if (!settings->contains("configDirPath"))
+-        settings->setValue("configDirPath", "$CONFIG_PATH$");
++        settings->setValue("configDirPath", QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QStringLiteral(u"/mupen64plus"));
+ 
+ #ifdef CONFIG_DIR_PATH
+     settings->setValue("configDirPath", CONFIG_DIR_PATH);
+@@ -434,7 +435,7 @@ void MainWindow::updateApp()
+ 
+ void MainWindow::setupDiscord()
+ {
+-    QLibrary *discordLib = new QLibrary((QDir(QCoreApplication::applicationDirPath()).filePath("discord_game_sdk")), this);
++    QLibrary *discordLib = new QLibrary(QStringLiteral(u"_RPM_LIBDIR_/discord_game_sdk"), this);
+ 
+     memset(&discord_app, 0, sizeof(discord_app));
+ 
+@@ -1019,7 +1020,7 @@ void MainWindow::loadCoreLib()
+ #ifdef CORE_LIBRARY_PATH
+     QString corePath = CORE_LIBRARY_PATH;
+ #else
+-    QString corePath = QCoreApplication::applicationDirPath();
++    QString corePath = QStringLiteral(u"_RPM_LIBDIR_");
+ #endif
+     m64p_error res = osal_dynlib_open(&coreLib, QDir(corePath).filePath(OSAL_DEFAULT_DYNLIB_FILENAME).toUtf8().constData());
+ 
+@@ -1109,7 +1110,7 @@ void MainWindow::loadPlugins()
+ #ifdef PLUGIN_DIR_PATH
+     QString pluginPath = PLUGIN_DIR_PATH;
+ #else
+-    QString pluginPath = QCoreApplication::applicationDirPath();
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
+ #endif
+     QString file_path;
+     QString plugin_path;
+diff --git a/mupen64plus-gui/settingsdialog.cpp b/mupen64plus-gui/settingsdialog.cpp
+index 9d12ae6..3c197c5 100644
+--- a/mupen64plus-gui/settingsdialog.cpp
++++ b/mupen64plus-gui/settingsdialog.cpp
+@@ -58,7 +58,7 @@ void SettingsDialog::initStuff()
+ #ifdef PLUGIN_DIR_PATH
+     QString pluginPath = PLUGIN_DIR_PATH;
+ #else
+-    QString pluginPath = QCoreApplication::applicationDirPath();
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
+ #endif
+     QDir PluginDir(pluginPath);
+     QStringList Filter;
+-- 
+2.35.1
+

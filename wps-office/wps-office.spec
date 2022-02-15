@@ -9,8 +9,8 @@
 %global minver %%(echo %{version} | cut -d. -f4)
 
 Name:           wps-office
-Version:        11.1.0.10702
-Release:        3%{?dist}
+Version:        11.1.0.10920
+Release:        1%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -330,7 +330,10 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
-* Tue Nov 16 2021 Phantom X - 1:11.1.0.10702-3
+* Mon Feb 14 2022 - 1:11.1.0.10920-1
+- 11.1.0.10920
+
+* Tue Nov 16 2021 - 1:11.1.0.10702-3
 - Icon name fixes
 
 * Fri Oct 01 2021 - 11.1.0.10702-2

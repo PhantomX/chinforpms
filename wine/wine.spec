@@ -1,7 +1,7 @@
 %global commit 54b8c8c7eaafd19780cb4d91b763fe2f20327f50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220207
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver aec911361861a2ee3613156f6de3d705afdb9318
+%global wine_stagingver b9f7ec5ccf8fcdeedd6f93f41fe6530f365498ad
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id f4bae1a9abb738f3ef247de97430ecb562d22e39
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b6206023bd0db91ae12b1dfaba523023f3baa4ad
+%global tkg_id 3fd39420e7d33ff3386462e8a11f69a51075015d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -103,8 +103,8 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# fastsync/winesync
-%global fastsync 1
+# fastsync/winesync (crashing)
+%global fastsync 0
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 # mfplat streaming reverts
@@ -147,8 +147,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.1
-Release:        102%{?gver}%{?dist}
+Version:        7.2
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -314,6 +314,8 @@ Patch994:       %{whq_url}/940110d38700808563ee17d77cd59c45c00fd716#/%{name}-whq
 Patch995:       %{whq_url}/91c993bb78f50ea2d4c8159bda87901364c432bb#/%{name}-whq-mfplat-91c993b.patch
 Patch996:       %{whq_url}/83023a9f2b4840a97c5b587a2ba6c2f05a44b7b0#/%{name}-whq-mfplat-83023a9.patch
 Patch997:       %{whq_url}/8c7ad5fc397e4814c33fa4b85be505db94d70016#/%{name}-whq-mfplat-8c7ad5f.patch
+Patch998:       %{whq_url}/fc5719e4c57079b19bde8d169bf0b55194649e73#/%{name}-whq-mfplat-fc5719e.patch
+Patch999:       %{whq_url}/766617d6f0e50b03e9fd43b4bc29bdcddb19daf1#/%{name}-whq-mfplat-766617d.patch
 
 Patch9998:       0001-mfplat-revert-f0cd33c-fixup.patch
 Patch9999:       0001-mfplat-restore-definitions.patch
@@ -999,6 +1001,8 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch901 -p1
 
 %if 0%{?mfplat}
+%patch999 -p1 -R
+%patch998 -p1 -R
 %patch997 -p1 -R
 %patch996 -p1 -R
 %patch995 -p1 -R
@@ -3074,6 +3078,10 @@ fi
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.2-100
+- 7.2
+- Disable fastsync for the time
+
 * Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.1-102.20220207git54b8c8c
 - Bump
 - wine-mono 7.1.2

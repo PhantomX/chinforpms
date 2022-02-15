@@ -1,28 +1,42 @@
-%global commit 094325c6cc30f80a510a47652860bbbbe3c1212b
+%global commit 85d0d3f79d01309829d2c052e0c6f8e301775e32
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210606
-%global with_snapshot 0
+%global date 20220208
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
+%global sanitize 0
 
 Name:           m64p
-Version:        2021.8.9
-Release:        1%{?dist}
+Version:        2022.2.7
+Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
 # * mupen64plus-audio-sdl2 - GPLv2
 # * mupen64plus-input-raphnetraw - GPLv2
-# * parallel-rdp-standalone - MIT
-# * parallel-rsp - MIT or LGPLv3
 License:        GPLv3 and (MIT or LGPLv3) and GPLv2
 URL:            https://github.com/loganmc10/%{name}
 
+%if 0%{sanitize}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+%else
+# Use Makefile to download
+%if 0%{?with_snapshot}
+Source0:        %{name}-clean-%{shortcommit}.tar.xz
+%else
+Source0:        %{name}-clean-%{version}.tar.xz
+%endif
+%endif
 Source1:        %{name}.appdata.xml
 
 Patch0:         0001-Set-system-directories.patch
+Patch1:         0001-input-qt-disable-all-VRU-support.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -43,27 +57,28 @@ BuildRequires:  vulkan-headers
 
 Requires:       hicolor-icon-theme
 Requires:       mupen64plus
+Requires:       mupen64plus-rsp-parallel%{?_isa}
+Requires:       mupen64plus-video-parallel%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 %description
 %{summary}.
 
+This build do not have VRU support.
+
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 rm -f *.exe
 rm -rf mupen64plus-core
-rm -rf parallel-rdp-standalone/vulkan-headers
+rm -rf parallel-rdp-standalone
+rm -rf parallel-rsp
 rm -f mupen64plus-gui/discord/*.{dylib,so,dll}
 rm -f mupen64plus-input-qt/vosk/*.{dylib,so,dll}
 
 mkdir LICENSEdir READMEdir
-for i in mupen64plus-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standalone,rsp} ;do
+for i in mupen64plus-{audio-sdl2,gui,input-{qt,raphnetraw}} ;do
   if [ -f $i/LICENSES ] ;then
     mkdir -p LICENSEdir/$i
     cp -p $i/LICENSES LICENSEdir/$i/
@@ -74,14 +89,15 @@ for i in mupen64plus-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standa
   fi
 done
 
-for i in mupen64plus-input-raphnetraw parallel-rdp-standalone ;do
+for i in mupen64plus-input-raphnetraw ;do
   if [ -f $i/README.md ] ;then
     mkdir -p READMEdir/$i
     cp -p $i/README.md READMEdir/$i/
   fi
 done
 
-sed -e 's|_RPM_LIBDIR_|%{_libdir}|g' -i mupen64plus-gui/mainwindow.cpp
+sed -e 's|_RPM_LIBDIR_|%{_libdir}|g' \
+  -i mupen64plus-gui/{mainwindow,settingsdialog}.cpp
 
 echo '#define GUI_VERSION "%{commit}"' > mupen64plus-gui/version.h
 
@@ -91,10 +107,6 @@ sed \
   -e 's|-L/usr/local/lib ||g' \
   -e '/-no-pie/d' \
   -i mupen64plus-*/mupen64plus-*.pro
-
-sed \
-  -e 's|../mupen64plus-core/src/api|%{_includedir}/mupen64plus|g' \
-  -i parallel-{rdp-standalone,rsp}/CMakeLists.txt 
 
 sed -e '/^#include "config.h"/d' -i mupen64plus-input-raphnetraw/src/plugin_front.c
 
@@ -136,21 +148,9 @@ for i in mupen64plus-input-qt mupen64plus-gui ;do
   popd
 done
 
-for i in parallel-rdp-standalone parallel-rsp ;do
-  pushd $i
-    %cmake
-  popd
-done
-
 for i in mupen64plus-audio-sdl2 mupen64plus-input-raphnetraw ;do
   pushd $i
     %make_build V=1 -C projects/unix all
-  popd
-done
-
-for i in parallel-rdp-standalone parallel-rsp ;do
-  pushd $i
-    %cmake_build
   popd
 done
 
@@ -175,10 +175,8 @@ done
 install -pm0755 mupen64plus-input-qt/build/libmupen64plus-input-qt.so \
   %{buildroot}%{_libdir}/%{name}/mupen64plus-input-qt.so
 
-install -pm0755 parallel-rdp-standalone/%{__cmake_builddir}/mupen64plus-video-parallel.so \
-  %{buildroot}%{_libdir}/%{name}/
-install -pm0755 parallel-rsp/%{__cmake_builddir}/mupen64plus-rsp-parallel.so \
-  %{buildroot}%{_libdir}/%{name}/
+ln -s ../mupen64plus/mupen64plus-rsp-parallel.so %{buildroot}%{_libdir}/%{name}/
+ln -s ../mupen64plus/mupen64plus-video-parallel.so %{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -207,6 +205,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.2.7-1.20220208git85d0d3f
+- 2022.2.7
+- Require external parallel packages
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.8.9-1
 - 2021.8.9
 

@@ -1,6 +1,6 @@
-%global commit a605261932cee8519756c01b9f09464e04363788
+%global commit 1f495d5514c04b0ab1af3a86851f0f5270d4cb00
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210727
+%global date 20220214
 %global with_snapshot 1
 
 %global commit1 af6af5b1fd4fdb435c836be15371dd047f395c4d
@@ -15,7 +15,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{name}-rom
 
-%global commit4 88766c6e2d30492e64d78999825068aa598c1080
+%global commit4 4bac3aeb98aff2d89095c59ec105aad721a16167
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
@@ -38,11 +38,13 @@
 #undefine _hardened_build
 %global _legacy_common_support 1
 
+%global xxhash_ver 0.8.1
+
 %global vc_url  https://github.com/%{name}
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -86,6 +88,9 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
+
+Provides:       bundled(xxhash) = %{xxhash_ver}
+
 
 %description
 Mupen64Plus is a plugin-based N64 emulator for Linux which is capable of
@@ -198,6 +203,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-110.20220214git1f495d5
+- Update
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-109.20210727gita605261
 - Bump
 

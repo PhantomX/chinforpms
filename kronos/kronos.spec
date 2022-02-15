@@ -1,6 +1,6 @@
-%global commit 4334b688d65944c9ba49e38b21be76b456d13214
+%global commit c9e1548ef74a2986ef998439a1d97e28380aa0ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220208
+%global date 20220211
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -23,8 +23,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.2.0
-Release:        4%{?gver}%{?dist}
+Version:        2.3.1
+Release:        1%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -148,6 +148,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-1.20220211gitc9e1548
+- 2.3.1
+
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-4.20220208git4334b68
 - Last snapshot
 

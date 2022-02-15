@@ -1,7 +1,7 @@
 %global commit d416bcb9ca3ab49eec07f93993caae4f72e3df4a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210719
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,8 +10,8 @@
 %global pkgname vkBasalt
 
 Name:           vkbasalt
-Version:        0.3.2.4
-Release:        3%{?gver}%{?dist}
+Version:        0.3.2.5
+Release:        1%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
 
 License:        zlib
@@ -68,6 +68,9 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.5-1
+- 0.3.2.5
+
 * Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.4-3.20210719gitd416bcb
 - Bump
 

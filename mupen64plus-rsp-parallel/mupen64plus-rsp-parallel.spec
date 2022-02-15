@@ -1,6 +1,6 @@
-%global commit a9646b27c2ef399e5917735b4d84ebe93edcce39
+%global commit e67cee3131651c3e48343294d94fa68a6f8ec14c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210713
+%global date 20220208
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           mupen64plus-rsp-parallel
 Version:        0
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        paraLLEl-RDP RSP plugin for Mupen64Plus emulator
 
 License:        (MIT or LGPLv3)
@@ -70,5 +70,8 @@ install -pm0755 %{__cmake_builddir}/%{name}.so %{buildroot}%{_libdir}/mupen64plu
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.2.20220208gite67cee3
+- Snapshot update
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20210713gita9646b2
 - Initial spec

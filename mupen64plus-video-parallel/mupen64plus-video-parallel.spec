@@ -1,17 +1,19 @@
-%global commit 0b2ed4b3eada8f9b3f730443b94971f5365813b5
+%global commit c8ff5b40ce457693be55260ab3101056c172295a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210809
+%global date 20220210
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global volk_ver 185
+
 %global pkgname  parallel-rdp-standalone
 
 Name:           mupen64plus-video-parallel
 Version:        0
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        paraLLEl-RDP video plugin for Mupen64Plus emulator
 
 License:        MIT
@@ -32,6 +34,9 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  vulkan-headers
 Requires:       mupen64plus%{?_isa} >= 2.5.9
 Requires:       mupen64plus-rsp-parallel%{?_isa} >= 0-0.1
+
+Provides:      bundled(volk) = %{volk_ver}
+
 
 %description
 This is a the paraLLEl-RDP video plugin for Mupen64Plus emulator.
@@ -67,5 +72,8 @@ install -pm0755 %{__cmake_builddir}/%{name}.so %{buildroot}%{_libdir}/mupen64plu
 
 
 %changelog
+* Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.2.20220210gitc8ff5b4
+- Last snapshot
+
 * Tue Aug 24 2021 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20210809git0b2ed4b
 - Initial spec
