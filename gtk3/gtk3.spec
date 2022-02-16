@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.31-2
+%global classic_ver 3.24.31-3
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -35,7 +35,7 @@
 
 Name:           gtk3
 Version:        3.24.31
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -46,6 +46,11 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
+
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4273
+Patch0:  gtk3-3.24.31-meson.patch
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4280
+Patch1:  gtk3-3.24.31-meson-reftest.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -70,53 +75,49 @@ Patch202:       060_ignore-random-icons.patch
 # Ubuntu
 Patch300:       restore_filechooser_typeaheadfind.patch
 
-BuildRequires:  pkgconfig(atk) >= %{atk_version}
-BuildRequires:  pkgconfig(atk-bridge-2.0)
-BuildRequires:  pkgconfig(glib-2.0) >= %{glib2_version}
-BuildRequires:  pkgconfig(gobject-introspection-1.0)
-BuildRequires:  pkgconfig(cairo) >= %{cairo_version}
-BuildRequires:  pkgconfig(cairo-gobject) >= %{cairo_version}
-BuildRequires:  pkgconfig(pango) >= %{pango_version}
-BuildRequires:  pkgconfig(fribidi) >= %{fribidi_version}
-BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
-BuildRequires:  pkgconfig(xi)
-BuildRequires:  pkgconfig(xrandr) >= %{xrandr_version}
-BuildRequires:  pkgconfig(xrender)
-BuildRequires:  pkgconfig(xrender)
-BuildRequires:  pkgconfig(xcursor)
-BuildRequires:  pkgconfig(xfixes)
-BuildRequires:  pkgconfig(xinerama)
-BuildRequires:  pkgconfig(xcomposite)
-BuildRequires:  pkgconfig(xdamage)
-BuildRequires:  pkgconfig(epoxy) >= %{epoxy_version}
-BuildRequires:  gcc
-BuildRequires:  gettext-devel
-BuildRequires:  gettext
-BuildRequires:  gtk-doc
-BuildRequires:  cups-devel
-BuildRequires:  pkgconfig(rest-0.7)
-BuildRequires:  pkgconfig(json-glib-1.0)
-BuildRequires:  pkgconfig(cloudproviders)
+BuildRequires: pkgconfig(atk) >= %{atk_version}
+BuildRequires: pkgconfig(atk-bridge-2.0)
+BuildRequires: pkgconfig(avahi-gobject)
+BuildRequires: pkgconfig(cairo) >= %{cairo_version}
+BuildRequires: pkgconfig(cairo-gobject) >= %{cairo_version}
 %if 0%{?with_cloudprovides}
 BuildRequires:  pkgconfig(cloudproviders)
+%endif
+BuildRequires: pkgconfig(colord)
+BuildRequires: pkgconfig(egl)
+BuildRequires: pkgconfig(epoxy) >= %{epoxy_version}
+BuildRequires: pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
+BuildRequires: pkgconfig(glib-2.0) >= %{glib2_version}
+BuildRequires: pkgconfig(gobject-introspection-1.0)
+BuildRequires: pkgconfig(iso-codes)
+BuildRequires: pkgconfig(pango) >= %{pango_version}
+%if 0%{?with_sysprof}
+BuildRequires:  pkgconfig(sysprof-capture-4)
 %endif
 %if 0%{?with_tracker}
 BuildRequires:  pkgconfig(tracker-sparql-3.0)
 %endif
-BuildRequires:  pkgconfig(colord)
-BuildRequires:  pkgconfig(avahi-gobject)
-#BuildRequires:  sassc
-BuildRequires:  desktop-file-utils
-BuildRequires:  pkgconfig(egl)
-BuildRequires:  pkgconfig(wayland-client) >= %{wayland_version}
-BuildRequires:  pkgconfig(wayland-cursor) >= %{wayland_version}
-BuildRequires:  pkgconfig(wayland-egl) >= %{wayland_version}
-BuildRequires:  pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
-BuildRequires:  pkgconfig(xkbcommon)
-%if 0%{?with_sysprof}
-BuildRequires:  pkgconfig(sysprof-capture-4)
-%endif
+BuildRequires: pkgconfig(wayland-client) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-cursor) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-egl) >= %{wayland_version}
+BuildRequires: pkgconfig(wayland-protocols) >= %{wayland_protocols_version}
+BuildRequires: pkgconfig(xi)
+BuildRequires: pkgconfig(xrandr) >= %{xrandr_version}
+BuildRequires: pkgconfig(xrender)
+BuildRequires: pkgconfig(xrender)
+BuildRequires: pkgconfig(xcursor)
+BuildRequires: pkgconfig(xfixes)
+BuildRequires: pkgconfig(xinerama)
+BuildRequires: pkgconfig(xcomposite)
+BuildRequires: pkgconfig(xdamage)
+BuildRequires: pkgconfig(xkbcommon)
+BuildRequires: cups-devel
+BuildRequires: desktop-file-utils
+BuildRequires: gettext
+BuildRequires: gtk-doc
+BuildRequires: meson
 BuildRequires:  make
+#BuildRequires:  sassc
 
 # standard icons
 Requires:       adwaita-icon-theme
@@ -139,7 +140,16 @@ Requires:       libwayland-cursor%{?_isa} >= %{wayland_version}
 Requires:       gdk-pixbuf2-modules%{?_isa}
 
 # make sure we have a reasonable gsettings backend
-Recommends:    dconf%{?_isa}
+Recommends:     dconf%{?_isa}
+
+# For sound theme events in gtk3 apps
+
+Recommends:     libcanberra-gtk3%{?_isa}
+
+%if 0%{?with_tracker}
+# For Tracker search in the file chooser.
+Recommends:     tracker-miners 
+%endif
 
 Provides:      gtk3-classic = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:      gtk3-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -229,6 +239,7 @@ patch_command csd__server-side-shadow.patch
 patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__labels-wrapping.patch
 patch_command other__mnemonics-delay.patch
+patch_command other__remove_dead_keys_underline.patch
 patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
 patch_command popovers__places-sidebar.patch
@@ -247,40 +258,30 @@ rm -fv testsuite/gtk/gtkresources.c testsuite/gtk/gtkprivate.c
 
 %build
 export CFLAGS='-fno-strict-aliasing %{build_cflags}'
-(if ! test -x configure; then NOCONFIGURE=1 ./autogen.sh; CONFIGFLAGS=--enable-gtk-doc; fi;
- %configure $CONFIGFLAGS \
-        --enable-debug=mininum \
-        --enable-xkb \
-        --enable-xinerama \
-        --enable-xrandr \
-        --enable-xfixes \
-        --enable-xcomposite \
-        --enable-xdamage \
-        --enable-x11-backend \
-        --enable-wayland-backend \
+
+%meson \
 %if 0%{?with_broadway}
-        --enable-broadway-backend \
+        -Dbroadway_backend=true \
 %endif
+        -Dbuiltin_immodules=wayland,waylandgtk \
+        -Dcolord=yes \
 %if 0%{?with_cloudprovides}
-        --enable-cloudproviders \
+        -Dcloudproviders=true \
 %endif
+        -Dgtk_doc=true \
+        -Dinstalled_tests=true \
+        -Dman=true \
 %if 0%{?with_tracker}
-        --enable-tracker3 \
+        -Dtracker3=true \
 %endif
-        --enable-colord \
-        --enable-installed-tests \
-        --with-included-immodules=wayland \
+        -Dxinerama=yes \
 %{nil}
 
-)
+%meson_build
 
-# fight unused direct deps
-sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
-
-%make_build
 
 %install
-%make_install RUN_QUERY_IMMODULES_TEST=false
+%meson_install
 
 %find_lang gtk30
 %find_lang gtk30-properties
@@ -324,7 +325,6 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_libdir}/libgailutil-3.so.*
 %dir %{_libdir}/gtk-3.0
 %dir %{_libdir}/gtk-3.0/%{bin_version}
-%dir %{_datadir}/gtk-3.0
 %dir %{_libdir}/gtk-3.0/%{bin_version}/immodules
 %{_libdir}/gtk-3.0/%{bin_version}/printbackends
 %{_libdir}/gtk-3.0/modules
@@ -340,6 +340,8 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.EmojiChooser.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.Settings.Debug.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gtk.exampleapp.gschema.xml
+%dir %{_datadir}/gtk-3.0
+%{_datadir}/gtk-3.0/emoji/
 %if 0%{?with_broadway}
 %{_bindir}/broadwayd
 %{_mandir}/man1/broadwayd.1*
@@ -411,6 +413,10 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-104
+- classic 3.24.31-3
+- Rawhide sync (meson)
+
 * Thu Feb 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-103
 - classic 3.24.31-2
 

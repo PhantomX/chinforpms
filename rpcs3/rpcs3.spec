@@ -116,7 +116,7 @@ BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers
+BuildRequires:  vulkan-headers >= 1.2.198
 
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Concurrent)

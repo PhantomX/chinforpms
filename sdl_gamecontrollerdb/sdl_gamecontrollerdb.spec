@@ -1,6 +1,6 @@
-%global commit 1fb968e1fb7c376ab31780efdc86948f944d34fc
+%global commit e30a56ffe032ec756345c7e57abab9067d04406a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211112
+%global date 20220215
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        42%{?gver}%{?dist}
+Release:        43%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
@@ -36,27 +36,25 @@ to be used with SDL2 Game Controller functionality.
 %prep
 %autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" check.py
-
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" duplicates.py
 
 %build
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 check.py %{buildroot}%{_bindir}/gamecontrollerdb-check
-
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %files
 %license LICENSE
-%doc README.md
-%{_bindir}/gamecontrollerdb-check
+%doc README.md duplicates.py
 %{_datadir}/%{pkgname}/gamecontrollerdb.txt
 
 
 %changelog
+* Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 0-43.20220215gite30a56f
+- Last snapshot
+
 * Sun Nov 14 2021 Phantom X <megaphantomx at hotmail dot com> - 0-42.20211112git1fb968e
 - 20211112git1fb968e
 

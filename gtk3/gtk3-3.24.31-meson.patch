@@ -1,0 +1,316 @@
+From 9bad0a2d5e35fdd2d89efedae1298d7c3dd158a3 Mon Sep 17 00:00:00 2001
+From: David King <amigadave@amigadave.com>
+Date: Tue, 21 Dec 2021 10:09:29 +0000
+Subject: [PATCH 1/3] meson: Remove missing reftests
+
+Removed from autotools build in commit
+93e1f7f1ec709325fe9b0554b92add06ad988ae8.
+---
+ testsuite/reftests/meson.build | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/testsuite/reftests/meson.build b/testsuite/reftests/meson.build
+index 9bfe1bb698..b4bf6784cc 100644
+--- a/testsuite/reftests/meson.build
++++ b/testsuite/reftests/meson.build
+@@ -291,9 +291,6 @@ test_data = [
+   'label-text-shadow-clipping.css',
+   'label-text-shadow-clipping.ref.ui',
+   'label-text-shadow-clipping.ui',
+-  'label-text-shadow-changes-modify-clip.css',
+-  'label-text-shadow-changes-modify-clip.ref.ui',
+-  'label-text-shadow-changes-modify-clip.ui',
+   'label-width-chars-dont-shrink.ref.ui',
+   'label-width-chars-dont-shrink.ui',
+   'label-wrap-justify.ref.ui',
+@@ -405,10 +402,6 @@ test_data = [
+   'textview-margins.ui',
+   'textview-tags.ref.ui',
+   'textview-tags.ui',
+-  'toplevel-vs-popup.ref.ui',
+-  'toplevel-vs-popup.ui',
+-  'treeview-crash-too-wide.ref.ui',
+-  'treeview-crash-too-wide.ui',
+   'treeview-fixed-height.css',
+   'treeview-fixed-height.ref.ui',
+   'treeview-fixed-height.ui',
+-- 
+2.33.1
+
+
+From 2b566f0633a740cca2b30941231f0507de873002 Mon Sep 17 00:00:00 2001
+From: David King <amigadave@amigadave.com>
+Date: Tue, 21 Dec 2021 11:10:37 +0000
+Subject: [PATCH 2/3] meson: Install example schema XML
+
+---
+ examples/application10/meson.build | 4 +++-
+ examples/application5/meson.build  | 4 +++-
+ examples/application6/meson.build  | 4 +++-
+ examples/application7/meson.build  | 4 +++-
+ examples/application8/meson.build  | 4 +++-
+ examples/application9/meson.build  | 4 +++-
+ 6 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/examples/application10/meson.build b/examples/application10/meson.build
+index ce842ae794..417a64155e 100644
+--- a/examples/application10/meson.build
++++ b/examples/application10/meson.build
+@@ -5,7 +5,7 @@ app10_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app10_schemas = gnome.compile_schemas()
++app10_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app10 = executable(
+@@ -21,3 +21,5 @@ app10 = executable(
+   app10_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application5/meson.build b/examples/application5/meson.build
+index f0fed1ca59..8ecb41948e 100644
+--- a/examples/application5/meson.build
++++ b/examples/application5/meson.build
+@@ -5,7 +5,7 @@ app5_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app5_schemas = gnome.compile_schemas()
++app5_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app5 = executable(
+@@ -19,3 +19,5 @@ app5 = executable(
+   app5_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application6/meson.build b/examples/application6/meson.build
+index 2d923f35a3..8a172e2e26 100644
+--- a/examples/application6/meson.build
++++ b/examples/application6/meson.build
+@@ -5,7 +5,7 @@ app6_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app6_schemas = gnome.compile_schemas()
++app6_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app6 = executable(
+@@ -21,3 +21,5 @@ app6 = executable(
+   app6_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application7/meson.build b/examples/application7/meson.build
+index cc32f36ad0..4c46221085 100644
+--- a/examples/application7/meson.build
++++ b/examples/application7/meson.build
+@@ -5,7 +5,7 @@ app7_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app7_schemas = gnome.compile_schemas()
++app7_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app7 = executable(
+@@ -21,3 +21,5 @@ app7 = executable(
+   app7_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application8/meson.build b/examples/application8/meson.build
+index 1192f4d688..ee49034d2b 100644
+--- a/examples/application8/meson.build
++++ b/examples/application8/meson.build
+@@ -5,7 +5,7 @@ app8_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app8_schemas = gnome.compile_schemas()
++app8_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app8 = executable(
+@@ -21,3 +21,5 @@ app8 = executable(
+   app8_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+diff --git a/examples/application9/meson.build b/examples/application9/meson.build
+index fccee738cb..46b77c4d17 100644
+--- a/examples/application9/meson.build
++++ b/examples/application9/meson.build
+@@ -5,7 +5,7 @@ app9_resources = gnome.compile_resources(
+   source_dir: '.'
+ )
+ 
+-app9_schemas = gnome.compile_schemas()
++app9_schemas = gnome.compile_schemas(depend_files: files(['org.gtk.exampleapp.gschema.xml']))
+ 
+ 
+ app9 = executable(
+@@ -21,3 +21,5 @@ app9 = executable(
+   app9_schemas,
+   dependencies: libgtk_dep
+ )
++
++install_data('org.gtk.exampleapp.gschema.xml', install_dir: gtk_schemasdir)
+-- 
+2.33.1
+
+
+From e36849e6a397bc7e0356bd51583d79f821f9c3db Mon Sep 17 00:00:00 2001
+From: David King <amigadave@amigadave.com>
+Date: Tue, 21 Dec 2021 14:04:40 +0000
+Subject: [PATCH 3/3] Revert "meson: simplify builtin_immodules build option"
+
+This reverts commit 749a58ab26bc01381d66ccefdd3aa42a34353e70.
+
+This maintains feature parity with the autotools build.
+---
+ gtk/meson.build           |  2 +-
+ meson.build               | 30 ++++++++++++++++++++++++------
+ meson_options.txt         |  4 ++--
+ modules/input/meson.build |  2 +-
+ 4 files changed, 28 insertions(+), 10 deletions(-)
+
+diff --git a/gtk/meson.build b/gtk/meson.build
+index 9754686cca..12aa7db5c3 100644
+--- a/gtk/meson.build
++++ b/gtk/meson.build
+@@ -959,7 +959,7 @@ foreach l: immodules
+   cond = l.get(2, true)
+   cflags = l.get(3, [])
+ 
+-  if cond and builtin_immodules
++  if cond and (builtin_immodules.contains(name) or builtin_all_immodules)
+     gtk_cargs += ['-DINCLUDE_IM_@0@'.format(name.underscorify())]
+     mod = static_library('staticimmodule-@0@'.format(name),
+                          sources + gtk_dep_sources,
+diff --git a/meson.build b/meson.build
+index 16d1597116..15cca3de15 100644
+--- a/meson.build
++++ b/meson.build
+@@ -499,6 +499,8 @@ else
+   cdata.set_quoted('ISO_CODES_PREFIX', get_option('prefix'))
+ endif
+ 
++backend_immodules = []
++
+ pc_gdk_extra_libs = []
+ 
+ cairo_found_type = cairo_dep.type_name()
+@@ -554,6 +556,7 @@ if wayland_enabled
+   wlprotocolsdep = dependency('wayland-protocols', version: wayland_proto_req)
+   wlcursordep    = dependency('wayland-cursor', version: wayland_req)
+   wlegldep       = dependency('wayland-egl')
++  backend_immodules += ['wayland']
+ 
+   wayland_pkgs = [
+     'wayland-client', wayland_req,
+@@ -578,6 +581,8 @@ if x11_enabled
+   fontconfig_dep = dependency('fontconfig', fallback: ['fontconfig', 'fontconfig_dep'])
+   atkbridge_dep  = dependency('atk-bridge-2.0', version: at_spi2_atk_req)
+ 
++  backend_immodules += ['xim']
++
+   x11_pkgs = ['fontconfig', 'x11', 'xext', 'xi', 'xrandr']
+ 
+   if xcursor_dep.found()
+@@ -656,10 +661,12 @@ endif
+ 
+ if broadway_enabled
+   pc_gdk_extra_libs += ['-lz']
++  backend_immodules += ['broadway']
+ endif
+ 
+ if quartz_enabled
+   pc_gdk_extra_libs += ['-Wl,-framework,Cocoa', '-Wl,-framework,Carbon', '-Wl,-framework,CoreGraphics']
++  backend_immodules += ['quartz']
+ endif
+ 
+ extra_demo_ldflags = []
+@@ -674,6 +681,7 @@ if win32_enabled
+     pc_gdk_extra_libs += ['-Wl,-luuid']
+   endif
+   pc_gdk_extra_libs += ['-lwinmm', '-ldwmapi', '-lsetupapi', '-lcfgmgr32']
++  backend_immodules += ['ime']
+ 
+   # Check whether libepoxy is built with EGL support on Windows
+   win32_has_egl = epoxy_dep.get_variable(
+@@ -684,20 +692,30 @@ endif
+ 
+ # IMModules stuff-unfortunately we need to put items here
+ # as they can be built as modules or built directly into GTK
++builtin_all_immodules = false
++
+ builtin_modules_opt = get_option('builtin_immodules')
+-if builtin_modules_opt == 'auto'
++builtin_immodules = []
++
++if builtin_modules_opt == ''
+   if os_win32
+     # Current MSVC projects build all immodules directly into GTK by default,
+     # as does the mingw autotools build
+     message('IMModules are built into GTK for MSVC builds by default')
+-    builtin_immodules = true
++    builtin_immodules = ['all']
+   else
+-    builtin_immodules = false
++    builtin_immodules = ['none']
+   endif
+-elif builtin_modules_opt == 'yes'
+-  builtin_immodules = true
+ else
+-  builtin_immodules = false
++  builtin_immodules = builtin_modules_opt.split(',')
++endif
++
++if builtin_immodules.contains('none')
++  builtin_immodules = []
++elif builtin_immodules.contains('all')
++  builtin_all_immodules = true
++elif builtin_immodules.contains('backend')
++  builtin_immodules += backend_immodules
+ endif
+ 
+ proto_sources = [
+diff --git a/meson_options.txt b/meson_options.txt
+index 1ca55b1467..94099aa01e 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -45,5 +45,5 @@ option('installed_tests', type: 'boolean', value: 'false',
+   description : 'enable installed tests')
+ 
+ # input modules
+-option('builtin_immodules', type: 'combo', choices : ['yes', 'no', 'auto'],
+-       value: 'auto', description: 'Build immodules into GTK so/DLL')
++option('builtin_immodules', type: 'string',
++       value: '', description: 'Build specified immodules into GTK so/DLL (comma-separated list), "all", "none" or "backend"')
+diff --git a/modules/input/meson.build b/modules/input/meson.build
+index 7b201af894..95534b05ec 100644
+--- a/modules/input/meson.build
++++ b/modules/input/meson.build
+@@ -7,7 +7,7 @@ foreach l: immodules
+   cond = l.get(2, true)
+   cflags = l.get(3, [])
+ 
+-  if cond and not builtin_immodules
++  if cond and not (builtin_immodules.contains(name) or builtin_all_immodules)
+     shared_module('im-@0@'.format(name),
+                   immod_sources,
+                   c_args: common_cflags + cflags,
+-- 
+2.33.1
+

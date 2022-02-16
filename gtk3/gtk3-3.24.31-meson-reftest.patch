@@ -1,0 +1,53 @@
+From 7f295eeb324c3d793bdf302fa7ea9ebdd8a52bcf Mon Sep 17 00:00:00 2001
+From: David King <amigadave@amigadave.com>
+Date: Thu, 23 Dec 2021 10:53:57 +0000
+Subject: [PATCH] meson: Do not install reftests
+
+Match the testsuite in the main branch.
+---
+ testsuite/reftests/meson.build | 25 +------------------------
+ 1 file changed, 1 insertion(+), 24 deletions(-)
+
+diff --git a/testsuite/reftests/meson.build b/testsuite/reftests/meson.build
+index b4bf6784cc..2135ebb434 100644
+--- a/testsuite/reftests/meson.build
++++ b/testsuite/reftests/meson.build
+@@ -22,9 +22,7 @@ libreftest = shared_library('reftest',
+ 
+ gtk_reftest = executable('gtk-reftest', 'gtk-reftest.c',
+   link_with : [libgtkreftestprivate, libreftest],
+-  dependencies : libgtk_dep,
+-  install: get_option('installed_tests'),
+-  install_dir: installed_test_bindir)
++  dependencies : libgtk_dep)
+ 
+ test_data = [
+   '721800-0px-dotted-border.css',
+@@ -457,24 +455,3 @@ foreach testname : test_data
+          is_parallel: false)
+   endif
+ endforeach
+-
+-reftests_installed_tests = [
+-  'reftests-dark.test',
+-  'reftests-hc.test',
+-  'reftests-hci.test',
+-  'reftests.test',
+-]
+-
+-if get_option('installed_tests')
+-  test_cdata = configuration_data()
+-  test_cdata.set('libexecdir', gtk_libexecdir)
+-
+-  foreach t: reftests_installed_tests
+-    configure_file(input: '@0@.in'.format(t),
+-                   output: t,
+-                   configuration: test_cdata,
+-                   install_dir: installed_test_datadir)
+-  endforeach
+-
+-  install_data(test_data, install_dir: testexecdir)
+-endif
+-- 
+2.33.1
+

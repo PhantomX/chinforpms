@@ -3,11 +3,14 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit cd3dab49275356073347e824a35398f9f5860bf4
+%global commit 3b475158905f6e6049fe4855c1e48bc21a3b0c7c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220208
-%global with_snapshot 1
+%global date 20220215
+
+%global with_ea 1
+%if !0%{?with_ea}
 %global with_mainline 1
+%endif
 
 # Enable system boost
 %bcond_without boost
@@ -16,6 +19,7 @@
 # Disable Qt build
 %bcond_without qt
 
+%if !0%{?with_ea}
 %global commit1 a8cbfd9af4f3f3cdad6efcd067e76edec76c1338
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
@@ -47,33 +51,35 @@
 %global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
-
+%endif
 
 %global glad_ver 0.1.29
 
-%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
-%endif
 
+%if 0%{?with_ea}
+%global vc_name pineapple-src
+%else
+%global vc_name %{name}
 %if 0%{?with_mainline}
-%global vc_name -mainline
+%global vc_name %{name}-mainline
+%endif
 %endif
 
 %global vc_url  https://github.com/yuzu-emu
 
+%global vc_url  https://github.com/pineappleEA
+
 Name:           yuzu
-Version:        912
+Version:        2493
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPLv2
 URL:            https://yuzu-emu.org
 
-%if 0%{?with_snapshot}
-Source0:        %{vc_url}/%{name}%{?vc_name:%{vc_name}}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-%else
-Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif
+Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
+%if !0%{?with_ea}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/ReinUsesLisp/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/benhoyt/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
@@ -82,6 +88,7 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/citra-emu/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+%endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
@@ -98,7 +105,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  boost-devel >= 1.76.0
 BuildRequires:  cmake(cubeb)
-BuildRequires:  pkgconfig(crypto)
+BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 8.0.1
 BuildRequires:  pkgconfig(libavcodec)
@@ -127,15 +134,15 @@ BuildRequires:  shared-mime-info
 
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(dynarmic) = 0~git%{shortcommit1}
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
-Provides:       bundled(inih) = 0~git%{shortcommit2}
-Provides:       bundled(xbyak) = 0~git%{shortcommit3}
-Provides:       bundled(sirit) = 0~git%{shortcommit4}
-Provides:       bundled(cpp-httplib) = 0~git%{shortcommit6}
-Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
-Provides:       bundled(mbedtls) = 0~git%{shortcommit8}
+Provides:       bundled(inih) = 0~git%{?shortcommit2}
+Provides:       bundled(xbyak) = 0~git%{?shortcommit3}
+Provides:       bundled(sirit) = 0~git%{?shortcommit4}
+Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
+Provides:       bundled(soundtouch) = 0~git%{?shortcommit7}
+Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 
 
 %description
@@ -154,8 +161,13 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup %{?gver:-n %{name}%{?vc_name:%{vc_name}}-%{commit}} -p1
+%autosetup -n %{vc_name}-%{commit} -p1
 
+%if 0%{?with_ea}
+pushd externals
+rm -rf cubeb/* discord-rpc ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL Vulkan-Headers
+popd
+%else
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 tar -xf %{S:2} -C externals/inih/inih --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
@@ -164,6 +176,7 @@ tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
+%endif
 
 sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
@@ -177,25 +190,18 @@ sed \
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
-%if 0%{?with_snapshot}
-  sed \
-    -e 's|@GIT_REV@|%{commit}|g' \
-    -e 's|@GIT_BRANCH@|HEAD|g' \
-    -e 's|@GIT_DESC@|%{shortcommit}|g' \
-    -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
-    -i src/common/scm_rev.cpp.in
-%endif
+sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
+
+sed \
+  -e 's|@GIT_REV@|%{commit}|g' \
+  -e 's|@GIT_BRANCH@|main|g' \
+  -e 's|@GIT_DESC@|%{shortcommit}|g' \
+  -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
+  -i src/common/scm_rev.cpp.in
 
 %build
 mkdir -p dist/compatibility_list/
 cp %{S:20} dist/compatibility_list/
-
-%if 0%{?with_snapshot}
-export CI=true
-export TRAVIS=true
-export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
-export TRAVIS_TAG="%{version}-%{release}"
-%endif
 
 %cmake \
 %if %{with qt}
@@ -246,5 +252,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2493-1.20220215git3b47515
+- 2493 eraly access
+
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 912-1.20220208gitcd3dab4
 - Initial spec
