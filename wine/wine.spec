@@ -384,8 +384,8 @@ Patch1055:       0001-update-proton-cpu-topology-overrides.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
-Patch1091:       %{valve_url}/commit/2d9b0f2517bd7ac68078b33792d9c06315384c04.patch#/%{name}-valve-2d9b0f2.patch
-Patch1092:       %{valve_url}/commit/ba230cf936910f12e756cf63594b6238391e6691.patch#/%{name}-valve-ba230cf.patch
+Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.patch#/%{name}-valve-8d5fed7.patch
+Patch1092:       %{valve_url}/commit/5f45dece300837793ed1b8ecb7489124c7a1f738.patch#/%{name}-valve-5f45dec.patch
 Patch1093:       %{ge_url}/wine-hotfixes/staging/mfplat_dxgi_stub.patch#/%{name}-ge-mfplat_dxgi_stub.patch
 Patch1094:       0001-mfplat-revert-Restore-Use-IMemAllocator-GetBuffer-di.patch
 

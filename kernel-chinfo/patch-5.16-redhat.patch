@@ -10,7 +10,6 @@ Subject: [PATCH] patch-5.16-redhat
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/resource.c                         |  23 +++-
  arch/x86/kernel/setup.c                            |  22 ++--
  crypto/rng.c                                       |  73 +++++++++++-
  drivers/acpi/apei/hest.c                           |   8 ++
@@ -37,6 +36,7 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ drivers/usb/gadget/legacy/inode.c                  |  10 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -53,10 +53,10 @@ Subject: [PATCH] patch-5.16-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 49 files changed, 820 insertions(+), 196 deletions(-)
+ 49 files changed, 805 insertions(+), 198 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 1f32bb42f328..592f45010531 100644
+index 36bbff16530b..e17c7fd5312f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -87,10 +87,10 @@ index c2724d986fa0..8063dcef65f7 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c4207cf9bb17..9e440657f15e 100644
+index ae0e93871ee5..7d5274349536 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1023,7 +1023,7 @@ endchoice
+@@ -1093,7 +1093,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -99,7 +99,7 @@ index c4207cf9bb17..9e440657f15e 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1277,6 +1277,7 @@ config XEN
+@@ -1347,6 +1347,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -154,49 +154,6 @@ index 225ab2d0a4c6..6a06cde25ca2 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
-diff --git a/arch/x86/kernel/resource.c b/arch/x86/kernel/resource.c
-index 9b9fb7882c20..9ae64f9af956 100644
---- a/arch/x86/kernel/resource.c
-+++ b/arch/x86/kernel/resource.c
-@@ -1,4 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
-+#include <linux/dmi.h>
- #include <linux/ioport.h>
- #include <asm/e820/api.h>
-
-@@ -23,11 +24,31 @@ static void resource_clip(struct resource *res, resource_size_t start,
- 		res->start = end + 1;
- }
-
-+/*
-+ * Some BIOS-es contain a bug where they add addresses which map to
-+ * system RAM in the PCI host bridge window returned by the ACPI _CRS
-+ * method, see commit 4dc2287c1805 ("x86: avoid E820 regions when
-+ * allocating address space"). To avoid this Linux by default excludes
-+ * E820 reservations when allocating addresses since 2010.
-+ * In 2019 some systems have shown-up with E820 reservations which cover
-+ * the entire _CRS returned PCI host bridge window, causing all attempts
-+ * to assign memory to PCI BARs to fail if Linux uses E820 reservations.
-+ *
-+ * Ideally Linux would fully stop using E820 reservations, but then
-+ * the old systems this was added for will regress.
-+ * Instead keep the old behavior for old systems, while ignoring the
-+ * E820 reservations for any systems from now on.
-+ */
- static void remove_e820_regions(struct resource *avail)
- {
--	int i;
-+	int i, year = dmi_get_bios_year();
- 	struct e820_entry *entry;
-
-+	if (year >= 2018)
-+		return;
-+
-+	pr_info_once("PCI: Removing E820 reservations from host bridge windows\n");
-+
- 	for (i = 0; i < e820_table->nr_entries; i++) {
- 		entry = &e820_table->entries[i];
-
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
 index e04f5e6eb33f..8015e3d2dc9a 100644
 --- a/arch/x86/kernel/setup.c
@@ -1263,7 +1220,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8b86406b7162..2dffe129b902 100644
+index 3632bf8b4031..f9675209b5a2 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -7,6 +7,7 @@
@@ -1274,7 +1231,7 @@ index 8b86406b7162..2dffe129b902 100644
  #include <linux/dma-iommu.h>
  #include <linux/kernel.h>
  #include <linux/bits.h>
-@@ -3119,6 +3120,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -3124,6 +3125,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -1613,6 +1570,42 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
+index 3b58f4fc0a80..25c8809e0a38 100644
+--- a/drivers/usb/gadget/legacy/inode.c
++++ b/drivers/usb/gadget/legacy/inode.c
+@@ -1826,8 +1826,9 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
+ 	spin_lock_irq (&dev->lock);
+ 	value = -EINVAL;
+ 	if (dev->buf) {
++		spin_unlock_irq(&dev->lock);
+ 		kfree(kbuf);
+-		goto fail;
++		return value;
+ 	}
+ 	dev->buf = kbuf;
+
+@@ -1874,8 +1875,8 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
+
+ 	value = usb_gadget_probe_driver(&gadgetfs_driver);
+ 	if (value != 0) {
+-		kfree (dev->buf);
+-		dev->buf = NULL;
++		spin_lock_irq(&dev->lock);
++		goto fail;
+ 	} else {
+ 		/* at this point "good" hardware has for the first time
+ 		 * let the USB the host see us.  alternatively, if users
+@@ -1892,6 +1893,9 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
+ 	return value;
+
+ fail:
++	dev->config = NULL;
++	dev->hs_config = NULL;
++	dev->dev = NULL;
+ 	spin_unlock_irq (&dev->lock);
+ 	pr_debug ("%s: %s fail %zd, %p\n", shortname, __func__, value, dev);
+ 	kfree (dev->buf);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h

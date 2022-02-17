@@ -93,6 +93,7 @@ chinfo-extramimetypes
 claws-mail
 claws-mail-themes
 cmdpack
+cpupower-gui
 cropgui
 curlew
 deluge

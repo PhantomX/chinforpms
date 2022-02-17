@@ -1,3 +1,12 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/f02942b95fb601b9729da7be1ae55d2255dcc045
+ f02942b95fb601b9729da7be1ae55d2255dcc045 Revert "x86/PCI: Ignore E820 reservations for bridge windows on newer systems"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/0ee56a84bdf2c277b9b47ed0e006802d40d5d3cc
+ 0ee56a84bdf2c277b9b47ed0e006802d40d5d3cc usb: gadget: clear related members when goto fail
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/6c9ee5e7caa95bbbe3a131552845ae141658a4ef
+ 6c9ee5e7caa95bbbe3a131552845ae141658a4ef usb: gadget: don't release an existing dev->buf
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/ebcfc72287e1a1c6758e2d80776e8c797c14c14e
  ebcfc72287e1a1c6758e2d80776e8c797c14c14e tipc: improve size validations for received domain records
 

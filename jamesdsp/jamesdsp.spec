@@ -1,6 +1,6 @@
-%global commit 66b7cb5340ed85b09a5ae6e6b7f0bf379b8d8ada
+%global commit d85332f1f674b6ede81658c3f4e911b9b7b978c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220105
+%global date 20220212
 %global with_snapshot 1
 
 %global commit1 814a5941ed1e2568b54a07597451ef8b4dc91f98
@@ -29,7 +29,7 @@
 
 Name:           jamesdsp
 Version:        2.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -160,7 +160,6 @@ sed \
   -e '/TARGET =/s|lib%{name}|%{name}|g' \
   -e '/staticlib/s|^|#|g' \
   -e 's| -O2||g' \
-  -e 's|/usr/lib\b|%{_libdir}|g' \
   -i lib%{name}/lib%{name}.pro
 
 sed \
@@ -198,13 +197,13 @@ EOF
 
 %build
 pushd lib%{name}
-%qmake_qt5 lib%{name}.pro
+%qmake_qt5 lib%{name}.pro PREFIX=%{_prefix} LIBDIR=%{_libdir}
 %make_build
 popd
 
 mkdir buildpw
 pushd buildpw
-%qmake_qt5 ../src/src.pro
+%qmake_qt5 ../src/src.pro PREFIX=%{_prefix}
 %make_build
 popd
 
@@ -271,6 +270,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Wed Feb 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3-2.20220212gitd85332f
+- Bump
+
 * Thu Jan 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3-1.20220105git66b7cb5
 - 2.3
 - Bundle new libraries and liveprogide (EELEditor)
