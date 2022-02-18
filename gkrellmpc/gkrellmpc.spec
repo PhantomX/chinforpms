@@ -1,14 +1,15 @@
 %global gkplugindir %{_libdir}/gkrellm2/plugins
+%global ver     %%(echo %{version} | tr '~' '_')
 
 Name:           gkrellmpc
-Version:        0.1_beta10
-Release:        3%{?dist}
+Version:        0.1~beta10
+Release:        4%{?dist}
 Summary:        GKrellM plugin to control MPD
 
 License:        GPLv2
 URL:            http://mpd.wikia.com/wiki/Client:GKrellMPC
 
-Source0:        http://mina.naguib.ca/dist/%{name}-%{version}.tar.gz
+Source0:        http://mina.naguib.ca/dist/%{name}-%{ver}.tar.gz
 
 ### Debian
 Patch0:         fix-makefile-flags.patch
@@ -32,7 +33,7 @@ Requires:       gkrellm >= 2.2.0
 GKrellMPC is a GKrellM plugin to control MPD.
 
 %prep
-%autosetup -p1
+%autosetup -n %{name}-%{ver} -p1
 
 %build
 %set_build_flags
@@ -52,6 +53,9 @@ install -pm0755 %{name}.so \
 
 
 %changelog
+* Thu Feb 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1~beta10-4
+- Fix version tag
+
 * Fri Jan 25 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.1_beta10-3
 - Add some patches from Simon Marchi
 - Fix console Glib g_strtod warnings

@@ -1,7 +1,6 @@
-# 87daea8a06ec2197443548ed49e27c6404a2cdb2 is the last one with SSE2 support
-%global commit af648334d1d8503d2853c93b18dec7b9932ef1f3
+%global commit 5b6986c230dca86634ad61aa0ce12e5801507b31
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220207
+%global date 20220216
 %global with_snapshot 1
 
 %global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
@@ -12,7 +11,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
-%global sanitize 0
+%global sanitize 1
 %bcond_with     native
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
@@ -31,7 +30,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        138%{?gver}%{?dist}
+Release:        139%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -89,13 +88,13 @@ BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  cmake(ryml) >= 0.3.0
 BuildRequires:  pkgconfig(samplerate)
+# use SDL that depends wxGTK
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
-# use SDL that depends wxGTK
 BuildRequires:  vulkan-headers
 BuildRequires:  wxGTK3-devel
 BuildRequires:  fonts-rpm-macros
@@ -130,22 +129,20 @@ this emulator anyway.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-%if 0%{sanitize}
-  mkdir 3rdparty-temp
-  mv 3rdparty/include 3rdparty-temp/
-  mv 3rdparty/glad 3rdparty-temp/
-  mv 3rdparty/glslang 3rdparty-temp/
-  mv 3rdparty/imgui 3rdparty-temp/
-  mv 3rdparty/jpgd 3rdparty-temp/
-  mv 3rdparty/rapidyaml 3rdparty-temp/
-  mv 3rdparty/simpleini 3rdparty-temp/
-  mv 3rdparty/xbyak 3rdparty-temp/
-  rm -rf 3rdparty/*
-  mv 3rdparty-temp/* 3rdparty/
-  rm -rf tools
-  rm -f common/src/Utilities/x86/MemcpyFast.cpp
-  rm -rf .git
-%endif
+mkdir 3rdparty-temp
+mv 3rdparty/include 3rdparty-temp/
+mv 3rdparty/glad 3rdparty-temp/
+mv 3rdparty/glslang 3rdparty-temp/
+mv 3rdparty/imgui 3rdparty-temp/
+mv 3rdparty/jpgd 3rdparty-temp/
+mv 3rdparty/rapidyaml 3rdparty-temp/
+mv 3rdparty/simpleini 3rdparty-temp/
+mv 3rdparty/xbyak 3rdparty-temp/
+rm -rf 3rdparty/*
+mv 3rdparty-temp/* 3rdparty/
+rm -rf tools
+rm -f common/src/Utilities/x86/MemcpyFast.cpp
+rm -rf .git
 
 %{?gver:tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1}
 %{?gver:tar -xf %{S:11} -C 3rdparty/imgui/imgui --strip-components 1}
@@ -168,6 +165,14 @@ sed -i \
 %endif
 
 sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
+
+cat > pcsx2.wrapper <<'EOF'
+#!/usr/bin/sh
+export GDK_BACKEND=x11
+export mesa_glthread=true
+export MESA_NO_ERROR=1
+exec %{_bindir}/pcsx2.bin "$@"
+EOF
 
 
 %build
@@ -218,14 +223,7 @@ sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 
 mv %{buildroot}%{_bindir}/pcsx2 %{buildroot}%{_bindir}/pcsx2.bin
 
-cat > %{buildroot}%{_bindir}/pcsx2 <<EOF
-#!/usr/bin/sh
-export GDK_BACKEND=x11
-export mesa_glthread=true
-export MESA_NO_ERROR=1
-exec %{_bindir}/pcsx2.bin
-EOF
-chmod 0755 %{buildroot}%{_bindir}/pcsx2
+install -pm0755 pcsx2.wrapper %{buildroot}%{_bindir}/pcsx2
 
 mkdir -p %{buildroot}%{_libdir}/PCSX2
 
@@ -278,6 +276,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Thu Feb 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-139.20220216git5b6986c
+- Bump
+
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-138.20220207gitaf64833
 - Last snapshot
 

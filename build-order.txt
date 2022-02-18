@@ -175,6 +175,7 @@ nicotine+
 openjazz
 opentyrian
 orage
+pcsx2-multiconfigtool
 pcsxr
 perl-rename
 pev

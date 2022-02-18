@@ -22,7 +22,7 @@ Requires:       xrandr
 Requires:       xwininfo
 Requires:       unzip
 Requires:       yad >= 7.2
-Recommends:     zenity
+Recommends:     steam
 Recommends:     boxtron
 Recommends:     cabextract
 Recommends:     gameconqueror
