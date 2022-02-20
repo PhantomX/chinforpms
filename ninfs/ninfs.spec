@@ -1,6 +1,6 @@
-%global commit dee583ba3205c4e050e0b193a85a4177eb334159
+%global commit 66898891a02379896b4ef3d732ac220f08f9469d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210629
+%global date 20220208
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,7 +13,7 @@
 %global pyctrver 0.5.1
 
 Name:           ninfs
-Version:        2.0~a6
+Version:        2.0~a8
 Release:        1%{?gver}%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
@@ -34,6 +34,7 @@ BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist haccrypto} = %{haccryptover}
 BuildRequires:  %{py3_dist pyctr} = %{pyctrver}
 BuildRequires:  %{py3_dist pycryptodomex} >= 3.10.1
+BuildRequires:  %{py3_dist pypng} >= 0.0.21
 BuildRequires:  python3-tkinter
 BuildRequires:  desktop-file-utils
 Requires:       fuse
@@ -93,6 +94,9 @@ done
 
 
 %changelog
+* Fri Feb 18 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0~a8-1.20220208git6689889
+- 2.0-a8
+
 * Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0~a6-1.20210629gitdee583b
 - 2.0-a6 snapshot
 - Update to best packaging practices

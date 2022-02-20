@@ -2,6 +2,7 @@ aacgain
 -alac_decoder
 -amdgpu-pro-vulkan-driver
 authy
+bandwhich
 bh-fonts
 binkplayer
 blastem-bindata

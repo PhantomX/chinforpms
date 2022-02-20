@@ -214,6 +214,7 @@ smtube
 steamtinkerlaunch
 thrash-protect
 tyrian-data
+u4pak
 unbound-update-roothints
 vhba
 vhba-kmod

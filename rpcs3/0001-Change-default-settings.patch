@@ -1,0 +1,28 @@
+From 14e090286b3145a146123693584e7b91d739cf70 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 19 Feb 2022 21:58:41 -0300
+Subject: [PATCH] Change default settings
+
+---
+ rpcs3/rpcs3qt/gui_settings.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rpcs3/rpcs3qt/gui_settings.h b/rpcs3/rpcs3qt/gui_settings.h
+index 6aff35d..71bae86 100644
+--- a/rpcs3/rpcs3qt/gui_settings.h
++++ b/rpcs3/rpcs3qt/gui_settings.h
+@@ -201,9 +201,9 @@ namespace gui
+ 	const gui_save m_currentStylesheet = gui_save(meta, "currentStylesheet", DefaultStylesheet);
+ 	const gui_save m_showDebugTab      = gui_save(meta, "showDebugTab",      false);
+ 	const gui_save m_enableUIColors    = gui_save(meta, "enableUIColors",    false);
+-	const gui_save m_richPresence      = gui_save(meta, "useRichPresence",   true);
++	const gui_save m_richPresence      = gui_save(meta, "useRichPresence",   false);
+ 	const gui_save m_discordState      = gui_save(meta, "discordState",      "");
+-	const gui_save m_check_upd_start   = gui_save(meta, "checkUpdateStart",  update_on);
++	const gui_save m_check_upd_start   = gui_save(meta, "checkUpdateStart",  update_off);
+ 
+ 	const gui_save gs_disableMouse      = gui_save(gs_frame, "disableMouse",          false);
+ 	const gui_save gs_disableKbHotkeys  = gui_save(gs_frame, "disableKbHotkeys",      false);
+-- 
+2.35.1
+

@@ -1,8 +1,6 @@
 # Binary packaging only, go is hateful
 
-%global debug_package %{nil}
-%global _build_id_links none
-%global __strip /bin/true
+%undefine _debugsource_packages
 
 %global vc_url  https://github.com/yggdrasil-network/yggdrasil-go
 %global vc_id   408d381591e99c273bf8db520a185478cdd8024f
@@ -10,8 +8,8 @@
 %global pkgrel 1
 
 Name:           yggdrasil
-Version:        0.4.2
-Release:        1%{?dist}
+Version:        0.4.3
+Release:        0%{?dist}
 Summary:        End-to-end encrypted IPv6 networking
 
 License:        GPLv3
@@ -45,8 +43,6 @@ cp -p %{S:4} .
 
 
 %build
-strip --strip-unneeded usr/bin/%{name}
-strip --strip-unneeded usr/bin/%{name}ctl
 
 
 %install
@@ -73,6 +69,8 @@ install -pm0644 %{name}-default-config.service %{buildroot}%{_unitdir}/
 
 
 %files
+%license LICENSE
+%doc README.md
 %{_bindir}/yggdrasil
 %{_bindir}/yggdrasilctl
 %{_unitdir}/%{name}-default-config.service

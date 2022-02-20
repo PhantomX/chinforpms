@@ -1,6 +1,7 @@
-%global debug_package %{nil}
+# Binary packaging only, go is hateful
+
+%undefine _debugsource_packages
 %global _build_id_links none
-%global __strip /bin/true
 
 %ifarch x86_64
 %global parch x86_64

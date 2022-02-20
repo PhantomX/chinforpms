@@ -84,6 +84,7 @@ Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortco
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
+Patch11:        0001-Change-default-settings.patch
 
 
 BuildRequires:  desktop-file-utils

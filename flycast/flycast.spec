@@ -1,6 +1,6 @@
 %global commit 4fe8e405690ec9b73c63f1614950e44be31a7792
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220206
+%global date 20220215
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -34,7 +34,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -225,6 +225,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sat Feb 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-9.20220215git4fe8e40
+- Last snapshot
+
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-8.20220206git4fe8e40
 - Update
 
