@@ -29,3 +29,7 @@ WINE_DISABLE_FAST_SYNC=1 to disable fastsync (needed if using WINEESYNC or WINEF
 WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable
+
+PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER override
+=================================
+Enable with PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1 environment variable

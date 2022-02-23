@@ -101,6 +101,9 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libpng)

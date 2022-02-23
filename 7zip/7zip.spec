@@ -80,7 +80,7 @@ This build do not have RAR support.
 %endif
 
 # correct end-of-line encoding
-find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.gcc" -o -name "*.mak" -o -name "*.txt" \) -exec sed 's/\r//' -i {} ';'
+find . -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.mak' -o -name '*.txt' \) -exec sed 's/\r//' -i {} ';'
 
 # move license files
 mv DOC/License.txt DOC/copying.txt .

@@ -112,6 +112,9 @@ Provides:       bundled(boost) = 0~git%{shortcommit11}
 BuildRequires:  cmake(cubeb)
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 %endif
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libusb-1.0)

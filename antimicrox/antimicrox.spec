@@ -64,7 +64,7 @@ do not have any form of built-in gamepad support.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-find src -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+find src -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 sed \
   -e 's|\/usr\/lib\/udev\/rules.d|%{_udevrulesdir}|g' \

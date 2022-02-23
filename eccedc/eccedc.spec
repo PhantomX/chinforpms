@@ -43,7 +43,7 @@ edc (user data is all zero).
 %prep
 %autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
-find %{pkgname} -type f \( -name "*.cpp" -o -name "*.h" \) -exec sed -e 's/\r//' -i {} ';'
+find %{pkgname} -type f \( -name '*.c*' -o -name '*.h*' \) -exec sed -e 's/\r//' -i {} ';'
 
 sed -e 's|-O2||g' -i %{pkgname}/makefile
 

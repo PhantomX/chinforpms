@@ -60,6 +60,9 @@ BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 %endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  discount

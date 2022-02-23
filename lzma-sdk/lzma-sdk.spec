@@ -53,7 +53,7 @@ for f in .h .c .cpp .dsw .dsp .java .cs .txt makefile; do
 done
 
 # correct end-of-line encoding
-find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.gcc" -o -name "*.txt" \) -exec sed 's/\r//' -i {} ';'
+find . -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.txt' \) -exec sed 's/\r//' -i {} ';'
 
 install -p -m 0644 %{SOURCE1} .
 

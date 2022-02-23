@@ -53,7 +53,7 @@ mv "Release_ANSI/Doc/Firmware&Tool.md" Release_ANSI/Doc/Firmware_and_Tool.md
 
 sed -e 's/\r//' -i Release_ANSI/Doc/*.txt Release_ANSI/*.{dat,txt}
 
-find %{pkgname} -type f \( -name "*.cpp" -o -name "*.h" \) -exec sed -e 's/\r//' -i {} ';'
+find %{pkgname} -type f \( -name '*.c*' -o -name '*.h*' \) -exec sed -e 's/\r//' -i {} ';'
 
 sed -e 's|-O2||g' -i %{pkgname}/makefile
 

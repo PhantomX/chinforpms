@@ -67,7 +67,7 @@ to most people.
 %autosetup -n %{name}
 
 # Permission cleanup
-find \( -name \*.c\* -or -name \*.h\* -or -name \*.inc \) -exec chmod -x {} \;
+find \( -name '*.c*' -or -name '*.h*' -or -name '*.inc' \) -exec chmod -x {} \;
 
 
 %build

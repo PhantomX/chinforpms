@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 db7d4697aba4aeb51369e25cc9f8f4b3a2bbb8e7
+%global commit0 4cba1acdd718b700bb33945c0258283689d4eac7
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220207
+%global date 20220209
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -63,6 +63,9 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavresample)
 BuildRequires:  pkgconfig(libavutil)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
@@ -214,6 +217,10 @@ cp -f -p src/modules/third_party/g722/LICENSE legal/LICENSE.g722
 cp -f -p src/modules/third_party/g722/README.chromium legal/README.g722
 cp -f -p src/modules/third_party/portaudio/LICENSE legal/LICENSE.portaudio
 cp -f -p src/modules/third_party/portaudio/README.chromium legal/README.portaudio
+
+sed \
+  -e '/if (BUILD_SHARED_LIBS)/{n;n;s/WARNING/DEBUG/}' \
+  -i CMakeLists.txt
 
 
 %build

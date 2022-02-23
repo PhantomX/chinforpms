@@ -120,7 +120,7 @@ rm -rf core/deps/glslang
 tar -xf %{S:1} -C core/deps/luabridge/ --strip-components 1
 tar -xf %{S:2} -C core/deps/breakpad/ --strip-components 1
 
-find . -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd core/deps/breakpad
 sed -e '/" -Werror"/d' -i configure.ac

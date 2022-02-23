@@ -9,7 +9,7 @@
 
 Name:           yggdrasil
 Version:        0.4.3
-Release:        0%{?dist}
+Release:        1%{?dist}
 Summary:        End-to-end encrypted IPv6 networking
 
 License:        GPLv3
@@ -78,6 +78,9 @@ install -pm0644 %{name}-default-config.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Fri Feb 18 2022 Phantom X <megaphantomx at hotmail dot com> - 0.4.3-1
+- 0.4.3
+
 * Sat Jan 15 2022 Phantom X <megaphantomx at hotmail dot com> - 0.4.2-1
 - Initial spec
 

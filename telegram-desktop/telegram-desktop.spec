@@ -195,6 +195,11 @@ BuildRequires:  pkgconfig(xcb-record)
 BuildRequires:  pkgconfig(xcb-screensaver)
 %endif
 
+# Fedora now has a stripped ffmpeg. Make sure we're using the full version.
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
+
 BuildRequires:  cmake(absl) >= 20211102
 BuildRequires:  cmake(tg_owt)
 BuildRequires:  pkgconfig(libjpeg)
@@ -259,7 +264,7 @@ rm -rf Telegram/ThirdParty/{kwayland,libdbusmenu-qt}
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
-find Telegram -type f \( -name "*.cpp" -o -name "*.h" \) -exec chmod -x {} ';'
+find Telegram -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 

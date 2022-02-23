@@ -112,6 +112,9 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
@@ -214,7 +217,7 @@ rm -rf ext/{libpng,libzip,vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
-find ext Core -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name "*.y" \) -exec chmod -x {} ';'
+find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
 %if 0%{?with_snapshot}
 sed -i \

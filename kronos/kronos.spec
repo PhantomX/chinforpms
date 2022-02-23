@@ -88,10 +88,10 @@ rm -rf yabause/src/tools/libchdr/deps/{flac,lzma,zlib}*
 cp -p yabause/{COPYING,AUTHORS,README} .
 
 # fix end-of-line encoding
-find \( -name "*.cpp" -or -name \*.c\* -or -name \*.h\* -or -name AUTHORS \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.c*' -or -name '*.h*' -or -name AUTHORS \) -exec sed -i 's/\r$//' {} \;
 
 #fix permissions
-find \( -name "*.cpp" -or -name \*.c\* -or -name \*.h\* \) -exec chmod -x {} \;
+find \( -name '*.c*' -or -name '*.h*' \) -exec chmod -x {} \;
 
 sed \
   -e 's| -Wno-format -march=native -funroll-loops||g' \

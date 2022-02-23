@@ -3,9 +3,9 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit 3b475158905f6e6049fe4855c1e48bc21a3b0c7c
+%global commit 566fc94adbe09ff317b0ca382aa048b1bbb24a74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220215
+%global date 20220222
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -71,7 +71,7 @@
 %global vc_url  https://github.com/pineappleEA
 
 Name:           yuzu
-Version:        2493
+Version:        2503
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -111,6 +111,9 @@ BuildRequires:  pkgconfig(fmt) >= 8.0.1
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
@@ -177,6 +180,9 @@ tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
+
+find . -type f -exec chmod -x {} ';'
+find . -type f -name '*.sh' -exec chmod +x {} ';'
 
 sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
@@ -252,8 +258,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Feb 22 2022 Phantom X <megaphantomx at hotmail dot com> - 2503-1.20220222git566fc94
+- 2503 ea
+
 * Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2493-1.20220215git3b47515
-- 2493 eraly access
+- 2493 early access
 
 * Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 912-1.20220208gitcd3dab4
 - Initial spec

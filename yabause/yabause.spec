@@ -73,10 +73,10 @@ but optionally a real Saturn BIOS can be used, however it is not included.
 %{?gver: cp -p %{name}/{COPYING,AUTHORS,ChangeLog,README} .}
 
 # fix end-of-line encoding
-find \( -name \*.c\* -or -name \*.h\* -or -name AUTHORS \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.c*' -or -name '*.h*' -or -name AUTHORS \) -exec sed -i 's/\r$//' {} \;
 
 #fix permissions
-find \( -name \*.c\* -or -name \*.h\* \) -exec chmod -x {} \;
+find \( -name '*.c*' -or -name '*.h*' \) -exec chmod -x {} \;
 
 #rm -f %{name}/src/glext.h
 #rm -rf %{name}/src/gllibs

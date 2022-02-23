@@ -1,6 +1,6 @@
-%global commit 5b6986c230dca86634ad61aa0ce12e5801507b31
+%global commit 4e7ade8612b921c7fac22a8771bc3da4f8a6e159
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220216
+%global date 20220221
 %global with_snapshot 1
 
 %global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
@@ -30,7 +30,7 @@
 
 Name:           pcsx2
 Version:        1.7.0
-Release:        139%{?gver}%{?dist}
+Release:        140%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -276,6 +276,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Tue Feb 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-140.20220221git4e7ade8
+- Update
+
 * Thu Feb 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-139.20220216git5b6986c
 - Bump
 
