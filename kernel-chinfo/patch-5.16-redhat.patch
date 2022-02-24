@@ -56,7 +56,7 @@ Subject: [PATCH] patch-5.16-redhat
  49 files changed, 805 insertions(+), 198 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 36bbff16530b..e17c7fd5312f 100644
+index 00ba75768af7..f95367fb3134 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -471,7 +471,7 @@ index c59265146e9c..caa8458edde2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index a27ae3999ff3..dc4e136adb08 100644
+index ebe86de9d0ac..cf0062d903a1 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -335,6 +335,7 @@
@@ -518,7 +518,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  static int
  write_pool(struct entropy_store *r, const char __user *buffer, size_t count)
  {
-@@ -1983,7 +1999,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+@@ -1986,7 +2002,58 @@ static int random_fasync(int fd, struct file *filp, int on)
  	return fasync_helper(fd, filp, on, &fasync);
  }
 
@@ -577,7 +577,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  	.read  = random_read,
  	.write = random_write,
  	.poll  = random_poll,
-@@ -1994,6 +2061,7 @@ const struct file_operations random_fops = {
+@@ -1997,6 +2064,7 @@ const struct file_operations random_fops = {
  };
 
  const struct file_operations urandom_fops = {
@@ -585,7 +585,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  	.read  = urandom_read,
  	.write = random_write,
  	.unlocked_ioctl = random_ioctl,
-@@ -2002,9 +2070,31 @@ const struct file_operations urandom_fops = {
+@@ -2005,9 +2073,31 @@ const struct file_operations urandom_fops = {
  	.llseek = noop_llseek,
  };
 
@@ -617,7 +617,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  	int ret;
 
  	if (flags & ~(GRND_NONBLOCK|GRND_RANDOM|GRND_INSECURE))
-@@ -2020,6 +2110,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
+@@ -2023,6 +2113,18 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count,
  	if (count > INT_MAX)
  		count = INT_MAX;
 
@@ -636,7 +636,7 @@ index a27ae3999ff3..dc4e136adb08 100644
  	if (!(flags & GRND_INSECURE) && !crng_ready()) {
  		if (flags & GRND_NONBLOCK)
  			return -EAGAIN;
-@@ -2329,3 +2431,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+@@ -2332,3 +2434,16 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
  		add_device_randomness(buf, size);
  }
  EXPORT_SYMBOL_GPL(add_bootloader_randomness);
@@ -1382,7 +1382,7 @@ index 4c348bacf2cb..9fe496d35b38 100644
  				soc_hw_version_major, soc_hw_version_minor);
  			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1af8a4513708..5a23e077ab86 100644
+index 352766aa3122..16a2c9417536 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1449,7 +1449,7 @@ index 1af8a4513708..5a23e077ab86 100644
  }
  EXPORT_SYMBOL_GPL(nvme_complete_rq);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 13e5d503ed07..daaeb316f624 100644
+index 99c2307b04e2..654c033bbbb2 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -65,14 +65,10 @@ bool nvme_mpath_set_disk_name(struct nvme_ns *ns, char *disk_name, int *flags)

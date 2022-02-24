@@ -47,7 +47,14 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
 
+%bcond_with     clang
 %bcond_with     native
+# Fail with system llvm
+%bcond_without  llvm_submod
+
+%if %{with clang}
+%global toolchain clang
+%endif
 
 %global sevenzip_ver 19.00
 %global stb_ver 2.27
@@ -61,7 +68,7 @@
 
 Name:           rpcs3
 Version:        0.0.20
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -80,7 +87,9 @@ Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortc
 Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+%if %{with llvm_submod}
 Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
@@ -90,10 +99,19 @@ Patch11:        0001-Change-default-settings.patch
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+BuildRequires:  llvm
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  cmake(cubeb)
+%if !%{with llvm_submod}
+BuildRequires:  cmake(LLVM)
+%endif
 BuildRequires:  pkgconfig(flatbuffers)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
@@ -147,7 +165,9 @@ Provides:       bundled(hidapi) = 0~git%{shortcommit14}
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
 Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
+%if %{with llvm_submod}
 Provides:       bundled(llvm) = 0~git%{shortcommit18}
+%endif
 
 %description
 RPCS3 is a multi-platform open-source Sony PlayStation 3 emulator and debugger
@@ -165,6 +185,7 @@ tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
 tar -xf %{S:15} -C 3rdparty/wolfssl/wolfssl --strip-components 1
 tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
 tar -xf %{S:17} -C 3rdparty/SPIRV/SPIRV-Headers --strip-components 1
+%if %{with llvm_submod}
 tar -xf %{S:18} -C llvm --strip-components 1
 
 mkdir -p %{__cmake_builddir}/3rdparty/llvm_build/ittapi
@@ -172,6 +193,9 @@ tar -xf %{S:19} -C %{__cmake_builddir}/3rdparty/llvm_build/ittapi --strip-compon
 
 sed -e 's|${GIT_EXECUTABLE}|true|g' \
   -i llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
+
+cp -p llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
+%endif
 
 pushd 3rdparty
 cp -p stblib/LICENSE LICENSE.stb
@@ -196,10 +220,27 @@ popd
 %build
 
 %cmake \
+  -G Ninja \
+%if %{with clang}
+  -DCMAKE_C_COMPILER=%{_bindir}/clang \
+  -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
+  -DCMAKE_AR=%{_bindir}/llvm-ar \
+  -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
+  -DCMAKE_LINKER=%{_bindir}/llvm-ld \
+  -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
+  -DCMAKE_NM=%{_bindir}/llvm-nm \
+%else
+  -DCMAKE_AR=%{_bindir}/gcc-ar \
+  -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
+  -DCMAKE_NM=%{_bindir}/gcc-nm \
+%endif
 %if 0%{with native}
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=ON \
 %else
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
+%endif
+%if !%{with llvm_submod}
+  -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_FAUDIO:BOOL=OFF \
   -DUSE_DISCORD_RPC:BOOL=OFF \

@@ -187,6 +187,7 @@ psxmemcardmgr
 pulsemixer
 -purple-rocketchat
 -python-pafy
+python-u4pak
 qemu
 qmc2
 qmp3gain
@@ -199,6 +200,7 @@ radeon-profile
 radeon-profile-daemon
 -rclone
 retext
+rust-u4pak
 SDL1
 -sdl12-compat
 sdl2-controllermap
@@ -214,7 +216,6 @@ smtube
 steamtinkerlaunch
 thrash-protect
 tyrian-data
-u4pak
 unbound-update-roothints
 vhba
 vhba-kmod

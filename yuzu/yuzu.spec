@@ -14,8 +14,6 @@
 
 # Enable system boost
 %bcond_without boost
-# Enable ffmpeg support
-%bcond_with ffmpeg
 # Disable Qt build
 %bcond_without qt
 

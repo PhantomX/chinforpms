@@ -4,15 +4,17 @@
 
 %global gver .%{date}git%{shortcommit}
 
-Name:           u4pak
+%global pkgname u4pak
+
+Name:           python-%{pkgname}
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Unreal Engine 4 .pak archive tool
 
 License:        BSD
-URL:            https://github.com/panzi/%{name}
+URL:            https://github.com/panzi/%{pkgname}
 
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 # Extracted from %%{name}.py
 Source1:        LICENSE
 
@@ -22,15 +24,15 @@ BuildRequires:  python3-devel
 
 
 %description
-%{name} unpacks, packs, lists, tests and mounts Unreal Engine 4 .pak archives.
+%{pkgname} unpacks, packs, lists, tests and mounts Unreal Engine 4 .pak archives.
 
 
 %prep
-%autosetup -n %{name}-%{commit}
+%autosetup -n %{pkgname}-%{commit}
 
 cp -p %{S:1} .
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}.py
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{pkgname}.py
 
 
 %build
@@ -38,14 +40,17 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}.py
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name}.py %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{pkgname}.py %{buildroot}%{_bindir}/p%{pkgname}
 
 %files
 %license LICENSE
 %doc README.md
-%{_bindir}/%{name}
+%{_bindir}/p%{pkgname}
 
 
 %changelog
+* Wed Feb 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0-2.20210921gitd4f447f
+- Rename to python-u4pak (pu4pak)
+
 * Sat Feb 19 2022 Phantom X <megaphantomx at hotmail dot com> - 0-1.20210921gitd4f447f
 - Initial spec
