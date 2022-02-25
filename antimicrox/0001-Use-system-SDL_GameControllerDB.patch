@@ -1,6 +1,6 @@
-From 0f3e4ffbc8998373f14e45cd50d30bd9c726fe02 Mon Sep 17 00:00:00 2001
+From bba4a2d1791c5e66332018608d3836798b64a2cb Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 4 Jan 2022 07:44:34 -0300
+Date: Thu, 24 Feb 2022 18:43:43 -0300
 Subject: [PATCH] Use system SDL_GameControllerDB
 
 ---
@@ -8,18 +8,18 @@ Subject: [PATCH] Use system SDL_GameControllerDB
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/sdleventreader.cpp b/src/sdleventreader.cpp
-index b6a475d..f8ecf83 100644
+index 75e9177..76f8dc3 100644
 --- a/src/sdleventreader.cpp
 +++ b/src/sdleventreader.cpp
-@@ -252,7 +252,7 @@ void SDLEventReader::loadSdlMappingsFromDatabase()
+@@ -251,7 +251,7 @@ void SDLEventReader::haltServices()
+ void SDLEventReader::loadSdlMappingsFromDatabase()
  {
      QString database_file;
- #if defined(Q_OS_UNIX)
 -    database_file = QApplication::applicationDirPath().append("/../share/antimicrox/gamecontrollerdb.txt");
 +    database_file = "_RPM_GCDBDIR_/gamecontrollerdb.txt";
- #elif defined(Q_OS_WIN)
-     database_file = QApplication::applicationDirPath().append("\\share\\antimicrox\\gamecontrollerdb.txt");
- #endif
+     if (QFile::exists(database_file))
+     {
+         int result = SDL_GameControllerAddMappingsFromFile(database_file.toStdString().c_str());
 -- 
-2.34.1
+2.35.1
 
