@@ -68,7 +68,7 @@ its governor. The application is similar in functionality to cpupower.
 %meson_install
 
 
-%find_lang %{name}
+%find_lang %{name} --with-man
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appdata_id}.desktop
@@ -107,7 +107,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 %{_datadir}/applications/%{appdata_id}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appdata_id}.*
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/*/man1/%{name}.1*
 %{_metainfodir}/%{appdata_id}.appdata.xml
 
 

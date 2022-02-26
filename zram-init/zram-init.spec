@@ -8,7 +8,7 @@
 %endif
 
 Name:           zram-init
-Version:        10.5
+Version:        11.1
 Release:        1%{?gver}%{?dist}
 Summary:        A wrapper script for the zram kernel module
 
@@ -72,7 +72,7 @@ sed \
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -pm0644 %{S:2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
-%find_lang %{name}
+%find_lang %{name} --with-man
 
 
 %postun
@@ -97,6 +97,9 @@ install -pm0644 %{S:2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 
 %changelog
+* Fri Feb 25 2022 Phantom X <megaphantomx at hotmail dot com> - 11.1-1
+- 11.1
+
 * Sat Aug 15 2020 Phantom X <megaphantomx at hotmail dot com> - 10.5-1
 - 10.5
 - Makefile and gettext

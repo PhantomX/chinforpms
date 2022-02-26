@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit d45f5a8d794462bdc99a5dfddc82999999eb4bb6
+%global commit b42c07253efecb630d86369efbb4bdf56c5e0b8b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220215
+%global date 20220224
 %global with_snapshot 1
 
 %{?mingw_package_header}
@@ -21,7 +21,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 1ab4609b69e320fa2cc645bd3b29c745925a3fab
+%global sporif_id 2c41ae818236dcfdf37e7262360dd9eea42ee5d6
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -38,7 +38,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.9.4
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -53,9 +53,6 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
-
-Patch10:        %{url}/pull/2466.patch#/%{name}-gh-pr2466.patch
-Patch11:        %{url}/pull/2477.patch#/%{name}-gh-pr2477.patch
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 
@@ -128,8 +125,6 @@ package or when debugging this package.
 %prep
 %if 0%{?dxvk_async}
 %setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
-%patch10 -p1
-%patch11 -p1
 %patch100 -p1
 
 %patch200 -p1
@@ -251,6 +246,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Feb 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.4-104.20220224gitb42c072
+- Last snapshot
+
 * Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.9.4-103.20220215gitd45f5a8
 - Again
 

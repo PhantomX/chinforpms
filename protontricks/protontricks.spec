@@ -1,15 +1,14 @@
 %bcond_with tests
 
 Name:           protontricks
-Version:        1.6.1
-Release:        1%{?dist}
+Version:        1.7.0
+Release:        0%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
 License:        GPLv3
 URL:            https://github.com/Matoking/protontricks
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{url}/commit/29110104655da2041d4939674d04f3b651992db7.patch#/%{name}-gh-2911010.patch
 Patch10:        0001-Disable-setuptools_scm-version-check.patch
 
 BuildArch:      noarch
@@ -24,6 +23,7 @@ BuildRequires:  %{py3_dist pytest} >= 6.0
 %endif
 Requires:       winetricks
 
+Recommends:     steam
 Recommends:     wine
 Recommends:     zenity
 

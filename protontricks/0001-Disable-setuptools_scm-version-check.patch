@@ -1,14 +1,38 @@
-From cc4759b71e4cfe601db4569a14f55fd161a318f4 Mon Sep 17 00:00:00 2001
+From 10915eb845af63cd7ee5db5fb60f36348ff5538a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 7 Jul 2021 22:05:26 -0300
+Date: Fri, 25 Feb 2022 09:07:50 -0300
 Subject: [PATCH] Disable setuptools_scm version check
 
 ---
- setup.py | 8 --------
- 1 file changed, 8 deletions(-)
+ pyproject.toml       | 4 +---
+ requirements_dev.txt | 1 -
+ setup.py             | 3 ---
+ 3 files changed, 1 insertion(+), 7 deletions(-)
 
+diff --git a/pyproject.toml b/pyproject.toml
+index 0bc4247..8d91941 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,8 +1,6 @@
+ [build-system]
+ requires = [
+     "setuptools",
+-    "wheel",
+-    "setuptools-scm < 6 ; python_version <= '3.5'",
+-    "setuptools-scm ; python_version > '3.5'"
++    "wheel"
+ ]
+ build-backend = "setuptools.build_meta"
+diff --git a/requirements_dev.txt b/requirements_dev.txt
+index 2dd3d35..8a7523c 100644
+--- a/requirements_dev.txt
++++ b/requirements_dev.txt
+@@ -1,3 +1,2 @@
+ pytest>=6.0
+ pytest-cov>=2.10
+-setuptools-scm
 diff --git a/setup.py b/setup.py
-index 22076c5..f04263f 100644
+index d10780c..854816d 100644
 --- a/setup.py
 +++ b/setup.py
 @@ -16,9 +16,6 @@ URL = "https://github.com/Matoking/protontricks"
@@ -21,18 +45,6 @@ index 22076c5..f04263f 100644
      description=DESCRIPTION,
      long_description=LONG_DESCRIPTION,
      data_files=[
-@@ -28,11 +25,6 @@ setup(
-     packages=["protontricks"],
-     package_data={"": ["LICENSE"]},
-     package_dir={"protontricks": "src/protontricks"},
--    setup_requires=[
--        # setuptools-scm v6 requires Python 3.6+
--        "setuptools_scm<6 ; python_version <= '3.5'",
--        "setuptools_scm ; python_version > '3.5'"
--    ],
-     install_requires=[
-         "setuptools",  # Required for pkg_resources
-         "vdf>=3.2"
 -- 
-2.31.1
+2.35.1
 
