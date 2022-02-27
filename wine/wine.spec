@@ -1,7 +1,7 @@
-%global commit 53cb28e6d9daa7cbcc190cd02aeaba37c297adc4
+%global commit 2d0e84e60196693d1caa6e2d70422051b56cfe08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220221
-%global with_snapshot 1
+%global date 20220224
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -32,7 +32,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  7.1.2
+%global winemono  7.1.5
 %global winevulkan 1.3.204
 %global winefastsync 5.15
 
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver bcfed21ea1925e06c1f0db0e86cb2380300b8aa9
+%global wine_stagingver 7.3
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,10 +88,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id a45fd858556b0708374aadf6cac37e9d76721dc4
+%global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 6fec794e018840a0c0b26216571cb2b7cc44f99e
+%global tkg_id e68405f4cf3691184b18a2a1d6b70f1cccbd7094
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,8 +145,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.2
-Release:        102%{?gver}%{?dist}
+Version:        7.3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -213,8 +213,32 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-Patch200:       %{whqs_url}/222608#/%{name}-whq-p222608.patch
 Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
+# mfplat things, again
+Patch210:       %{whq_url}/fc5719e4c57079b19bde8d169bf0b55194649e73#/%{name}-whq-revert-mfplat-fc5719e.patch
+Patch211:       %{whq_url}/4d929972c341bff2da3616606b8cbeadf85dba26#/%{name}-whq-revert-mfplat-4d92997.patch
+Patch212:       %{whq_url}/34a55c7b96c97b178ea1ab519eb0e847096f2076#/%{name}-whq-revert-mfplat-34a55c7.patch
+Patch213:       %{whq_url}/d84d9054f5466212e122fac70265eae841438764#/%{name}-whq-revert-mfplat-d84d905.patch
+Patch214:       %{whq_url}/0052ffbfa0e7672278b3d5fcdb767d604fa0f565#/%{name}-whq-revert-mfplat-0052ffb.patch
+Patch215:       %{whq_url}/4dd187b2227767524825e51eddd14f206ffd03dd#/%{name}-whq-revert-mfplat-4dd187b.patch
+Patch216:       %{whq_url}/7da1828c4927faec011d1c15d2f3f9bbb43435b7#/%{name}-whq-revert-mfplat-7da1828.patch
+Patch217:       %{whq_url}/5144b27661fcd6705353d832e0383085f8afe842#/%{name}-whq-revert-mfplat-5144b27.patch
+Patch218:       %{whq_url}/28c9c138d2658a4c3252a94d45a1e8b7ac28be7f#/%{name}-whq-revert-mfplat-28c9c13.patch
+Patch219:       %{whq_url}/0c59cfc14e33a5706c1873151780d5b2dcc536ca#/%{name}-whq-revert-mfplat-0c59cfc.patch
+Patch220:       %{whq_url}/a4be9e85687f7a8d7476ee3d3ced80eeec720f57#/%{name}-whq-revert-mfplat-a4be9e8.patch
+Patch221:       %{whq_url}/d2f653a854ccd17688813d6b7f585acbfb45b9ba#/%{name}-whq-revert-mfplat-d2f653a.patch
+Patch222:       %{whq_url}/aa867c6cfba48a63179088ec6381c73488853659#/%{name}-whq-revert-mfplat-aa867c6.patch
+Patch223:       %{whq_url}/9196fee58349558593fd7edf4768b189c25f6293#/%{name}-whq-revert-mfplat-9196fee.patch
+Patch224:       %{whq_url}/227a1275b14a2ffd71a4d0c621cb655e3576ad02#/%{name}-whq-revert-mfplat-227a127.patch
+Patch225:       %{whq_url}/cd90f650df483eddd73c53319b2e1f5bddfb3f25#/%{name}-whq-revert-mfplat-cd90f65.patch
+
+# mouse focus
+Patch300:       %{whq_url}/fcc1581938aa84aff86357ba3154775353ff8c9e#/%{name}-whq-revert-proton-fcc1581.patch
+Patch301:       %{whq_url}/0c6d042cc3b1b2cbfb702bb3d199cc7a83e6cbd2#/%{name}-whq-revert-proton-0c6d042.patch
+Patch302:       %{whq_url}/088033cfb655123fb0daef2c0347e38c26801a19#/%{name}-whq-revert-proton-088033c.patch
+Patch303:       %{whq_url}/d9f21fcca5376f47b842f3d061674898eb0db310#/%{name}-whq-revert-proton-d9f21fc.patch
+Patch304:       %{whq_url}/cb4c3b8d77d6f89e418cde3f3a4b7f9daea9d381#/%{name}-whq-revert-proton-cb4c3b8.patch
+Patch305:       %{whq_url}/bde39137cf4d8d392b8ca844b70b32d8ae922124#/%{name}-whq-revert-proton-bde3913.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -262,11 +286,13 @@ Patch1055:       0001-update-proton-cpu-topology-overrides.patch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.patch#/%{name}-valve-8d5fed7.patch
+Patch1092:       %{ge_url}/proton/31-proton-mfplat-patches.patch#/%{name}-ge-31-proton-mfplat-patches.patch
+Patch1093:       %{ge_url}/game-patches/v5-0001-windowscodecs-Correctly-handle-8bpp-custom-conver.patch#/%{name}-ge-v5-0001-windowscodecs-Correctly-handle-8bpp-custom-conver.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-sys-ioctl.h.patch
-Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.2.patch
+Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.5.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -864,8 +890,31 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch200 -p1
 %patch201 -p1 -R
+
+%patch225 -p1 -R
+%patch224 -p1 -R
+%patch223 -p1 -R
+%patch222 -p1 -R
+%patch221 -p1 -R
+%patch220 -p1 -R
+%patch219 -p1 -R
+%patch218 -p1 -R
+%patch217 -p1 -R
+%patch216 -p1 -R
+%patch215 -p1 -R
+%patch214 -p1 -R
+%patch213 -p1 -R
+%patch212 -p1 -R
+%patch211 -p1 -R
+%patch210 -p1 -R
+
+%patch305 -p1 -R
+%patch304 -p1 -R
+%patch303 -p1 -R
+%patch302 -p1 -R
+%patch301 -p1 -R
+%patch300 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -938,6 +987,8 @@ patch -p1 -i patch1031.patch
 
 %patch1089 -p1
 %patch1091 -p1 -R
+%patch1092 -p1
+%patch1093 -p1
 
 %patch1300 -p1
 %patch1301 -p1
@@ -1551,246 +1602,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/advpack.%{winedll}
 %{_libdir}/wine/%{winedlldir}/amsi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/amstream.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-identity-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-appmodel-runtime-l1-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-apiquery-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-appcompat-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-appinit-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-psm-appnotify-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-atoms-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-bem-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-com-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-com-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-com-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-comm-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-console-l3-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-crt-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-datetime-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-datetime-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-debug-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-debug-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-delayload-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-delayload-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-errorhandling-l1-1-3.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-featurestaging-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-fibers-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-fibers-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-ansi-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-fromapp-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l1-2-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l1-2-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l2-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-file-l2-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-handle-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-heap-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-heap-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-heap-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-heap-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-interlocked-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-interlocked-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-io-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-io-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-job-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-job-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-largeinteger-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-legacy-l1-1-5.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-kernel32-private-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-2-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l1-2-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-libraryloader-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-l1-2-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-l1-2-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-obsolete-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-obsolete-l1-3-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localization-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-localregistry-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-memory-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-memory-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-memory-l1-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-memory-l1-1-3.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-memory-l1-1-4.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-misc-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-namedpipe-ansi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-namedpipe-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-namedpipe-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-namespace-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-normalization-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-path-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-privateprofile-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-privateprofile-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processenvironment-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processenvironment-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processthreads-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processthreads-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processthreads-l1-1-2.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processthreads-l1-1-3.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processtopology-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-profile-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-psapi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-psapi-ansi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-psapi-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-processtopology-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-quirks-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-realtime-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-realtime-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-registry-l2-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-registryuserspecific-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-rtlsupport-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-rtlsupport-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-shlwapi-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-shlwapi-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-shlwapi-obsolete-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-shutdown-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-sidebyside-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-string-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-string-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-string-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-stringansi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-stringloader-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-synch-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-synch-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-synch-l1-2-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-synch-ansi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-sysinfo-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-sysinfo-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-sysinfo-l1-2-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-systemtopology-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-threadpool-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-threadpool-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-threadpool-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-threadpool-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-timezone-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-toolhelp-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-url-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-util-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-version-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-version-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-version-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-versionansi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-windowserrorreporting-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-windowserrorreporting-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-error-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-error-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-errorprivate-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-registration-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-roparameterizediid-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-string-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-winrt-string-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-wow64-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-wow64-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-xstate-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-core-xstate-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-conio-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-convert-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-environment-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-filesystem-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-heap-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-locale-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-math-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-multibyte-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-process-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-runtime-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-stdio-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-string-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-time-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-crt-utility-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-devices-config-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-devices-config-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-devices-query-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-advapi32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-advapi32-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-kernel32-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-normaliz-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-ole32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-shell32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-shlwapi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-shlwapi-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-user32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-downlevel-version-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-dx-d3dkmt-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventing-classicprovider-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventing-consumer-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventing-controller-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventing-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventing-provider-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-eventlog-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-gaming-tcui-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-gdi-dpiinfo-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-mm-joystick-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-mm-misc-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-mm-mme-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-mm-time-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-ntuser-dc-access-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-ntuser-rectangle-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-ntuser-sysparams-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-perf-legacy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-power-base-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-power-setting-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-draw-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-private-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-private-l1-1-4.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-window-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-winevent-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-wmpointer-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-rtcore-ntuser-wmpointer-l1-1-3.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-activedirectoryclient-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-audit-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-base-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-base-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-base-private-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-credentials-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-cryptoapi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-grouppolicy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-ansi-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsalookup-l2-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-lsapolicy-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-provider-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-sddl-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-security-systemfunctions-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-core-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-core-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-management-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-management-l2-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-private-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-winsvc-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-service-winsvc-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-obsolete-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-scaling-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-scaling-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-stream-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-stream-winrt-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shcore-thread-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shell-shellcom-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/api-ms-win-shell-shellfolders-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/apisetschema.%{winedll}
 %{_libdir}/wine/%{winedlldir}/apphelp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/appwiz.%{winecpl}
@@ -1921,58 +1732,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/esent.%{winedll}
 %{_libdir}/wine/%{winedlldir}/evr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/explorerframe.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-authz-context-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-domainjoin-netjoin-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-dwmapi-ext-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-dc-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-dc-create-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-dc-create-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-devcaps-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-draw-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-draw-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-font-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-font-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-gdi-render-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-kernel32-package-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-kernel32-package-current-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-dialogbox-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-draw-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-gui-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-gui-l1-3-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-keyboard-l1-3-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-misc-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-misc-l1-5-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-message-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-message-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-misc-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-mouse-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-private-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-private-l1-3-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-rectangle-ext-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-uicontext-ext-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-window-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-window-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-window-l1-1-4.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-windowclass-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ntuser-windowclass-l1-1-1.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-oleacc-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-ras-rasapi32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-gdi-devcaps-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-gdi-object-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-gdi-rgn-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-cursor-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-dc-access-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-dpi-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-dpi-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-rawinput-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-syscolors-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-rtcore-ntuser-sysparams-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-security-credui-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-security-cryptui-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-shell-comctl32-init-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-shell-comdlg32-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-shell-shell32-l1-2-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-uxtheme-themes-l1-1-0.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winedlldir}/ext-ms-win-appmodel-usercontext-l1-1-0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ext-ms-win-xaml-pal-l1-1-0.%{winedll}
@@ -2848,6 +2607,9 @@ fi
 
 
 %changelog
+* Sat Feb 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-100
+- 7.3
+
 * Tue Feb 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.2-102.20220221git53cb28e
 - Bump to get staging restored mfplat streaming support
 

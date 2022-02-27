@@ -3,13 +3,13 @@
 %undefine _cmake_shared_libs
 %undefine _hardened_build
 
-%global commit cdbd72e79c9f91fd8261fd3bc2fa25b883a17fbe
+%global commit 25ad002e6e7301b5c62bbde129a273e53027e9be
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220208
+%global date 20220224
 %global with_snapshot 1
 
 # Enable system boost
-%bcond_with boost
+%bcond_without boost
 # Enable ffmpeg support
 %bcond_with ffmpeg
 # Disable Qt build
@@ -45,7 +45,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 ext-soundtouch
 
-%global commit8 3e032a73d7e97eb434a053391d95029eebd7e189
+%global commit8 01db7cdd00aabcce559a8dddce8798dabb71949b
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
@@ -69,7 +69,7 @@
 
 Name:           citra
 Version:        0
-Release:        17%{?gver}%{?dist}
+Release:        18%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -98,6 +98,7 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
+Patch2:         0001-fix-system-boost-detection.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -238,6 +239,9 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
   -DENABLE_WEB_SERVICE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
+  -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
+  -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
+  -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
 %{nil}
 
 cp -f %{S:20} %{__cmake_builddir}/dist/compatibility_list/
@@ -271,6 +275,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Feb 26 2022 Phantom X <megaphantomx at hotmail dot com> - 0-18.20220224git25ad002
+- Bump
+- Reenable system boost
+
 * Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 0-17.20210511gita2f34ea
 - Update
 - BR: libusb-1.0
