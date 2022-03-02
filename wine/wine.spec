@@ -91,7 +91,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e68405f4cf3691184b18a2a1d6b70f1cccbd7094
+%global tkg_id e640dc310509a6fb9e3cd297057fbec3de98b2bb
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -111,13 +111,12 @@
 
 %if !0%{?fshack}
 # childwindow.patch (breaks nine)
-%dnl %wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
+%dnl %global wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
 %endif
 
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %endif
-
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://github.com/wine-mirror/wine
@@ -146,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -232,19 +231,10 @@ Patch223:       %{whq_url}/9196fee58349558593fd7edf4768b189c25f6293#/%{name}-whq
 Patch224:       %{whq_url}/227a1275b14a2ffd71a4d0c621cb655e3576ad02#/%{name}-whq-revert-mfplat-227a127.patch
 Patch225:       %{whq_url}/cd90f650df483eddd73c53319b2e1f5bddfb3f25#/%{name}-whq-revert-mfplat-cd90f65.patch
 
-# mouse focus
-Patch300:       %{whq_url}/fcc1581938aa84aff86357ba3154775353ff8c9e#/%{name}-whq-revert-proton-fcc1581.patch
-Patch301:       %{whq_url}/0c6d042cc3b1b2cbfb702bb3d199cc7a83e6cbd2#/%{name}-whq-revert-proton-0c6d042.patch
-Patch302:       %{whq_url}/088033cfb655123fb0daef2c0347e38c26801a19#/%{name}-whq-revert-proton-088033c.patch
-Patch303:       %{whq_url}/d9f21fcca5376f47b842f3d061674898eb0db310#/%{name}-whq-revert-proton-d9f21fc.patch
-Patch304:       %{whq_url}/cb4c3b8d77d6f89e418cde3f3a4b7f9daea9d381#/%{name}-whq-revert-proton-cb4c3b8.patch
-Patch305:       %{whq_url}/bde39137cf4d8d392b8ca844b70b32d8ae922124#/%{name}-whq-revert-proton-bde3913.patch
-
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
-
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -908,13 +898,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch212 -p1 -R
 %patch211 -p1 -R
 %patch210 -p1 -R
-
-%patch305 -p1 -R
-%patch304 -p1 -R
-%patch303 -p1 -R
-%patch302 -p1 -R
-%patch301 -p1 -R
-%patch300 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2607,6 +2590,9 @@ fi
 
 
 %changelog
+* Sun Feb 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-101
+- Update tkg patches
+
 * Sat Feb 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-100
 - 7.3
 

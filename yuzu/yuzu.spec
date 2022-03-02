@@ -3,9 +3,9 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit 566fc94adbe09ff317b0ca382aa048b1bbb24a74
+%global commit a1e50a2b0d0fed69168852473d3585bf3226d87c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220222
+%global date 20220228
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -69,7 +69,7 @@
 %global vc_url  https://github.com/pineappleEA
 
 Name:           yuzu
-Version:        2503
+Version:        2520
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -221,6 +221,7 @@ cp %{S:20} dist/compatibility_list/
   -DENABLE_WEB_SERVICE:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
+  -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
 %{nil}
@@ -256,6 +257,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Feb 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2520-1.20220228gita1e50a2
+- 2520 ea
+
 * Tue Feb 22 2022 Phantom X <megaphantomx at hotmail dot com> - 2503-1.20220222git566fc94
 - 2503 ea
 

@@ -7,7 +7,7 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit 4b07535909ef369f3f976d8f5787d8e132101e8d
+%global commit dc622fc7156b63eb53ed677df15c9af3feb6293d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220225
 %global with_snapshot 1
@@ -55,7 +55,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.5
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -270,6 +270,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Feb 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.5-3.20220225gitdc622fc
+- Bump for extra fixes
+
 * Fri Feb 25 2022 Phantom X <megaphantomx at hotmail dot com> - 2.5-2.20220225git4b07535
 - Snapshot
 

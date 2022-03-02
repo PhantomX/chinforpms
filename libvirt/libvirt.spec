@@ -206,10 +206,28 @@
 
 %define tls_priority "@LIBVIRT,SYSTEM"
 
+# libvirt 8.1.0 stops distributing any sysconfig files.
+# If the user has customized their sysconfig file,
+# the RPM upgrade path will rename it to .rpmsave
+# because the file is no longer managed by RPM.
+# To prevent a regression we rename it back after the
+# transaction to preserve the user's modifications
+%define libvirt_sysconfig_pre() \
+    for sc in %{?*} ; do \
+        test -f "%{_sysconfdir}/sysconfig/${sc}.rpmsave" || continue ; \
+        mv -v "%{_sysconfdir}/sysconfig/${sc}.rpmsave" "%{_sysconfdir}/sysconfig/${sc}.rpmsave.old" ; \
+    done \
+    %{nil}
+%define libvirt_sysconfig_posttrans() \
+    for sc in %{?*} ; do \
+        test -f "%{_sysconfdir}/sysconfig/${sc}.rpmsave" || continue ; \
+        mv -v "%{_sysconfdir}/sysconfig/${sc}.rpmsave" "%{_sysconfdir}/sysconfig/${sc}" ; \
+    done \
+    %{nil}
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.0.0
+Version: 8.1.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -285,7 +303,6 @@ BuildRequires: sanlock-devel >= 2.4
 BuildRequires: libpcap-devel >= 1.5.0
 BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
-BuildRequires: dnsmasq >= 2.41
 BuildRequires: iptables
 BuildRequires: ebtables
 BuildRequires: module-init-tools
@@ -333,7 +350,6 @@ BuildRequires: fuse-devel >= 2.8.6
 %if %{with_libssh2}
 BuildRequires: libssh2-devel >= 1.3.0
 %endif
-
 %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
 %endif
@@ -371,7 +387,6 @@ BuildRequires: libssh-devel >= 0.7.0
 %endif
 
 BuildRequires: rpcgen
-
 BuildRequires: libtirpc-devel
 
 # Needed for the firewalld_reload macro
@@ -512,7 +527,6 @@ Requires: netcf-libs >= 0.2.2
 %description daemon-driver-interface
 The interface driver plugin for the libvirtd daemon, providing
 an implementation of the host network interface APIs.
-
 
 %package daemon-driver-secret
 Summary: Secret driver plugin for the libvirtd daemon
@@ -941,7 +955,6 @@ Libvirt plugin for NSS for translating domain names into IP addresses.
 %autosetup -S git_am
 
 %build
-
 %if 0%{?fedora} >= %{min_fedora} || 0%{?rhel} >= %{min_rhel}
     %define supported_platform 1
 %else
@@ -1185,20 +1198,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
 
 %meson_install
 
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/lock-driver/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/connection-driver/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-backend/*.a
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.la
-rm -f $RPM_BUILD_ROOT%{_libdir}/libvirt/storage-file/*.a
-%if %{with_wireshark}
-rm -f $RPM_BUILD_ROOT%{wireshark_plugindir}/libvirt.la
-%endif
-
 # We don't want to install /etc/libvirt/qemu/networks in the main %%files list
 # because if the admin wants to delete the default network completely, we don't
 # want to end up re-incarnating it on every RPM upgrade.
@@ -1295,7 +1294,6 @@ fi \
 
 # For daemons with UNIX and INET sockets
 %define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
-
 %define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
 
 # For daemons with only UNIX sockets and no unprivileged read-only access
@@ -1303,6 +1301,7 @@ fi \
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
+%libvirt_sysconfig_pre libvirtd virtproxyd virtlogd virtlockd libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to
 # libvirtd. The uid number is irrelevant, so we use dynamic allocation
 # described at the above link.
@@ -1350,6 +1349,7 @@ if [ $1 -ge 1 ] ; then
 fi
 
 %posttrans daemon
+%libvirt_sysconfig_posttrans libvirtd virtproxyd virtlogd virtlockd libvirt-guests
 if test %libvirt_daemon_needs_restart libvirtd
 then
     # See if user has previously modified their install to
@@ -1390,6 +1390,9 @@ fi
 
 %libvirt_daemon_finish_restart libvirtd
 
+%pre daemon-driver-network
+%libvirt_sysconfig_pre virtnetworkd
+
 %post daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
@@ -1409,8 +1412,11 @@ fi
 %endif
 
 %posttrans daemon-driver-network
+%libvirt_sysconfig_posttrans virtnetworkd
 %libvirt_daemon_perform_restart virtnetworkd
 
+%pre daemon-driver-nwfilter
+%libvirt_sysconfig_pre virtnwfilterd
 
 %post daemon-driver-nwfilter
 %if %{with_modular_daemons}
@@ -1422,8 +1428,11 @@ fi
 %libvirt_daemon_systemd_preun virtnwfilterd
 
 %posttrans daemon-driver-nwfilter
+%libvirt_sysconfig_posttrans virtnwfilterd
 %libvirt_daemon_perform_restart virtnwfilterd
 
+%pre daemon-driver-nodedev
+%libvirt_sysconfig_pre virtnodedevd
 
 %post daemon-driver-nodedev
 %if %{with_modular_daemons}
@@ -1435,8 +1444,11 @@ fi
 %libvirt_daemon_systemd_preun virtnodedevd
 
 %posttrans daemon-driver-nodedev
+%libvirt_sysconfig_posttrans virtnodedevd
 %libvirt_daemon_perform_restart virtnodedevd
 
+%pre daemon-driver-interface
+%libvirt_sysconfig_pre virtinterfaced
 
 %post daemon-driver-interface
 %if %{with_modular_daemons}
@@ -1448,8 +1460,11 @@ fi
 %libvirt_daemon_systemd_preun virtinterfaced
 
 %posttrans daemon-driver-interface
+%libvirt_sysconfig_posttrans virtinterfaced
 %libvirt_daemon_perform_restart virtinterfaced
 
+%pre daemon-driver-secret
+%libvirt_sysconfig_pre virtsecretd
 
 %post daemon-driver-secret
 %if %{with_modular_daemons}
@@ -1461,24 +1476,30 @@ fi
 %libvirt_daemon_systemd_preun virtsecretd
 
 %posttrans daemon-driver-secret
+%libvirt_sysconfig_posttrans virtsecretd
 %libvirt_daemon_perform_restart virtsecretd
 
 
-%post daemon-driver-storage
+%pre daemon-driver-storage-core
+%libvirt_sysconfig_pre virtstoraged
+
+%post daemon-driver-storage-core
 %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtstoraged
 %endif
 %libvirt_daemon_schedule_restart virtstoraged
 
-%preun daemon-driver-storage
+%preun daemon-driver-storage-core
 %libvirt_daemon_systemd_preun virtstoraged
 
-%posttrans daemon-driver-storage
+%posttrans daemon-driver-storage-core
+%libvirt_sysconfig_posttrans virtstoraged
 %libvirt_daemon_perform_restart virtstoraged
 
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
+%libvirt_sysconfig_pre virtqemud
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
@@ -1495,11 +1516,15 @@ exit 0
 %libvirt_daemon_systemd_preun virtqemud
 
 %posttrans daemon-driver-qemu
+%libvirt_sysconfig_posttrans virtqemud
 %libvirt_daemon_perform_restart virtqemud
 %endif
 
 
 %if %{with_lxc}
+%pre daemon-driver-lxc
+%libvirt_sysconfig_pre virtlxcd
+
 %post daemon-driver-lxc
     %if %{with_modular_daemons}
 %libvirt_daemon_systemd_post virtlxcd
@@ -1510,6 +1535,7 @@ exit 0
 %libvirt_daemon_systemd_preun virtlxcd
 
 %posttrans daemon-driver-lxc
+%libvirt_sysconfig_posttrans virtlxcd
 %libvirt_daemon_perform_restart virtlxcd
 %endif
 
@@ -1521,10 +1547,14 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtvboxd
 
+%pre daemon-driver-vbox
+%libvirt_sysconfig_pre virtvboxd
+
 %preun daemon-driver-vbox
 %libvirt_daemon_systemd_preun virtvboxd
 
 %posttrans daemon-driver-vbox
+%libvirt_sysconfig_posttrans virtvboxd
 %libvirt_daemon_perform_restart virtvboxd
 %endif
 
@@ -1536,12 +1566,17 @@ exit 0
     %endif
 %libvirt_daemon_schedule_restart virtxend
 
+%pre daemon-driver-libxl
+%libvirt_sysconfig_pre virtxend
+
 %preun daemon-driver-libxl
 %libvirt_daemon_systemd_preun virtxend
 
 %posttrans daemon-driver-libxl
+%libvirt_sysconfig_posttrans virtxend
 %libvirt_daemon_perform_restart virtxend
 %endif
+
 
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
@@ -1621,8 +1656,7 @@ exit 0
 
 %files daemon
 
-%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
-
+## chinforpms changes
 %{_sysusersdir}/%{name}.conf
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirtd.socket
@@ -1644,22 +1678,20 @@ exit 0
 %{_unitdir}/virtlockd.socket
 %{_unitdir}/virtlockd-admin.socket
 %{_unitdir}/libvirt-guests.service
-%config(noreplace) %{_sysconfdir}/sysconfig/libvirtd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtproxyd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlogd
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlockd
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtproxyd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlogd.conf
 %config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
-%config(noreplace) %{_sysconfdir}/sysconfig/libvirt-guests
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
 %dir %{_datadir}/libvirt/
 
 %ghost %dir %{_rundir}/libvirt/
+%ghost %dir %{_rundir}/libvirt/common/
+
+%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/images/
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/filesystems/
@@ -1704,6 +1736,7 @@ exit 0
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_mandir}/man8/virt-ssh-helper.8*
+%{_mandir}/man8/libvirt-guests.8*
 %{_mandir}/man8/libvirtd.8*
 %{_mandir}/man8/virtlogd.8*
 %{_mandir}/man8/virtlockd.8*
@@ -1720,14 +1753,12 @@ exit 0
 %ghost %{_sysconfdir}/libvirt/qemu/networks/default.xml
 %ghost %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
 
-
 %files daemon-config-nwfilter
 %dir %{_datadir}/libvirt/nwfilter/
 %{_datadir}/libvirt/nwfilter/*.xml
 %ghost %{_sysconfdir}/libvirt/nwfilter/*.xml
 
 %files daemon-driver-interface
-%config(noreplace) %{_sysconfdir}/sysconfig/virtinterfaced
 %config(noreplace) %{_sysconfdir}/libvirt/virtinterfaced.conf
 %{_datadir}/augeas/lenses/virtinterfaced.aug
 %{_datadir}/augeas/lenses/tests/test_virtinterfaced.aug
@@ -1736,11 +1767,11 @@ exit 0
 %{_unitdir}/virtinterfaced-ro.socket
 %{_unitdir}/virtinterfaced-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtinterfaced
+%ghost %dir %{_rundir}/libvirt/interface/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_interface.so
 %{_mandir}/man8/virtinterfaced.8*
 
 %files daemon-driver-network
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnetworkd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnetworkd.conf
 %{_datadir}/augeas/lenses/virtnetworkd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
@@ -1764,7 +1795,6 @@ exit 0
 %endif
 
 %files daemon-driver-nodedev
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnodedevd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
 %{_datadir}/augeas/lenses/virtnodedevd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnodedevd.aug
@@ -1773,11 +1803,11 @@ exit 0
 %{_unitdir}/virtnodedevd-ro.socket
 %{_unitdir}/virtnodedevd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtnodedevd
+%ghost %dir %{_rundir}/libvirt/nodedev/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nodedev.so
 %{_mandir}/man8/virtnodedevd.8*
 
 %files daemon-driver-nwfilter
-%config(noreplace) %{_sysconfdir}/sysconfig/virtnwfilterd
 %config(noreplace) %{_sysconfdir}/libvirt/virtnwfilterd.conf
 %{_datadir}/augeas/lenses/virtnwfilterd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnwfilterd.aug
@@ -1788,11 +1818,12 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtnwfilterd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/nwfilter/
 %ghost %dir %{_rundir}/libvirt/network/
+%ghost %dir %{_rundir}/libvirt/nwfilter-binding/
+%ghost %dir %{_rundir}/libvirt/nwfilter/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_nwfilter.so
 %{_mandir}/man8/virtnwfilterd.8*
 
 %files daemon-driver-secret
-%config(noreplace) %{_sysconfdir}/sysconfig/virtsecretd
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
 %{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
@@ -1801,13 +1832,14 @@ exit 0
 %{_unitdir}/virtsecretd-ro.socket
 %{_unitdir}/virtsecretd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtsecretd
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/secrets/
+%ghost %dir %{_rundir}/libvirt/secrets/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_secret.so
 %{_mandir}/man8/virtsecretd.8*
 
 %files daemon-driver-storage
 
 %files daemon-driver-storage-core
-%config(noreplace) %{_sysconfdir}/sysconfig/virtstoraged
 %config(noreplace) %{_sysconfdir}/libvirt/virtstoraged.conf
 %{_datadir}/augeas/lenses/virtstoraged.aug
 %{_datadir}/augeas/lenses/tests/test_virtstoraged.aug
@@ -1817,6 +1849,9 @@ exit 0
 %{_unitdir}/virtstoraged-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtstoraged
 %attr(0755, root, root) %{_libexecdir}/libvirt_parthelper
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/storage/autostart/
+%ghost %dir %{_rundir}/libvirt/storage/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_storage.so
 %{_libdir}/%{name}/storage-backend/libvirt_storage_backend_fs.so
 %{_libdir}/%{name}/storage-file/libvirt_storage_file_fs.so
@@ -1865,11 +1900,11 @@ exit 0
 
 %if %{with_qemu}
 %files daemon-driver-qemu
-%config(noreplace) %{_sysconfdir}/sysconfig/virtqemud
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-qemu-postcopy-migration.conf
 %{_datadir}/augeas/lenses/virtqemud.aug
 %{_datadir}/augeas/lenses/tests/test_virtqemud.aug
+## chinforpms changes
 %{_sysusersdir}/%{name}-qemu.conf
 %{_unitdir}/virtqemud.service
 %{_unitdir}/virtqemud.socket
@@ -1877,18 +1912,31 @@ exit 0
 %{_unitdir}/virtqemud-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtqemud
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/qemu/autostart/
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/qemu/
 %config(noreplace) %{_sysconfdir}/libvirt/qemu.conf
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-lockd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.qemu
 %ghost %dir %{_rundir}/libvirt/qemu/
+%ghost %dir %{_rundir}/libvirt/qemu/dbus/
+%ghost %dir %{_rundir}/libvirt/qemu/slirp/
+%ghost %dir %{_rundir}/libvirt/qemu/swtpm/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/target/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/checkpoint/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/dump/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/nvram/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/ram/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/save/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/snapshot/
 %dir %attr(0750, root, root) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
 %{_libdir}/%{name}/connection-driver/libvirt_driver_qemu.so
 %dir %attr(0711, root, root) %{_localstatedir}/lib/libvirt/swtpm/
 %dir %attr(0730, tss, tss) %{_localstatedir}/log/swtpm/libvirt/qemu/
+## chinforpms changes
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/qemu/
 %{_bindir}/virt-qemu-run
 %{_mandir}/man1/virt-qemu-run.1*
@@ -1897,7 +1945,6 @@ exit 0
 
 %if %{with_lxc}
 %files daemon-driver-lxc
-%config(noreplace) %{_sysconfdir}/sysconfig/virtlxcd
 %config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
 %{_datadir}/augeas/lenses/virtlxcd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlxcd.aug
@@ -1907,6 +1954,8 @@ exit 0
 %{_unitdir}/virtlxcd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtlxcd
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/lxc/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/lxc/autostart/
 %config(noreplace) %{_sysconfdir}/libvirt/lxc.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.lxc
 %ghost %dir %{_rundir}/libvirt/lxc/
@@ -1920,7 +1969,6 @@ exit 0
 
 %if %{with_libxl}
 %files daemon-driver-libxl
-%config(noreplace) %{_sysconfdir}/sysconfig/virtxend
 %config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
 %{_datadir}/augeas/lenses/virtxend.aug
 %{_datadir}/augeas/lenses/tests/test_virtxend.aug
@@ -1932,18 +1980,23 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/libxl.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd.libxl
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-lockd.conf
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/libxl/
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/libxl/autostart/
 %{_datadir}/augeas/lenses/libvirtd_libxl.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/libxl/
 %ghost %dir %{_rundir}/libvirt/libxl/
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/channel/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/channel/target/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/dump/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/save/
 %{_libdir}/%{name}/connection-driver/libvirt_driver_libxl.so
 %{_mandir}/man8/virtxend.8*
 %endif
 
 %if %{with_vbox}
 %files daemon-driver-vbox
-%config(noreplace) %{_sysconfdir}/sysconfig/virtvboxd
 %config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
 %{_datadir}/augeas/lenses/virtvboxd.aug
 %{_datadir}/augeas/lenses/tests/test_virtvboxd.aug
@@ -2008,6 +2061,7 @@ exit 0
 
 %files libs -f %{name}.lang
 %license COPYING COPYING.LESSER
+%dir %attr(0700, root, root) %{_sysconfdir}/libvirt/
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{_sysconfdir}/libvirt/libvirt-admin.conf
 %{_libdir}/libvirt.so.*
@@ -2016,7 +2070,6 @@ exit 0
 %{_libdir}/libvirt-admin.so.*
 %dir %{_datadir}/libvirt/
 %dir %{_datadir}/libvirt/schemas/
-%dir %attr(0755, root, root) %{_localstatedir}/lib/libvirt/
 
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
@@ -2084,6 +2137,9 @@ exit 0
 
 
 %changelog
+* Tue Mar 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.1.0-100
+- 8.1.0
+
 * Fri Jan 14 2022 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
 - 8.0.0
 
