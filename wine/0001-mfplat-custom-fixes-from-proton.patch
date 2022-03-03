@@ -1,0 +1,124 @@
+From 613fc774b0fa9ab605194e9c40b1125983f28f5a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 2 Mar 2022 02:27:43 -0300
+Subject: [PATCH] mfplat: custom fixes from proton
+
+* Rename PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER variable to
+  WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER
+* Add WINE_IMF_SOURCE_READER_NO_FLUSH and WINE_WG_VIDEO_FORMAT_BGRX variables
+---
+ dlls/mfplat/main.c             | 20 ++++++++++++++++++--
+ dlls/mfreadwrite/reader.c      | 12 ++++++++++++
+ dlls/winegstreamer/wm_reader.c | 14 ++++++++++++++
+ 3 files changed, 44 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/mfplat/main.c b/dlls/mfplat/main.c
+index f239dab..5c13a11 100644
+--- a/dlls/mfplat/main.c
++++ b/dlls/mfplat/main.c
+@@ -17,6 +17,7 @@
+  */
+ 
+ #include <stdarg.h>
++#include <stdlib.h>
+ #include <string.h>
+ #include <math.h>
+ #include <limits.h>
+@@ -9247,11 +9248,26 @@ static const IMFDXGIDeviceManagerVtbl dxgi_device_manager_vtbl =
+ HRESULT WINAPI MFCreateDXGIDeviceManager(UINT *token, IMFDXGIDeviceManager **manager)
+ {
+     struct dxgi_device_manager *object;
+-    const char *do_not_create = getenv("PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER");
++    const char *sgi = getenv("SteamGameId");
++    const char *do_not_create = getenv("WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER");
+ 
+     TRACE("%p, %p.\n", token, manager);
+ 
+-    if (do_not_create && do_not_create[0] != '\0')
++    /* Returning a DXGI device manager triggers a bug and breaks The
++     * Long Dark and Trailmakers. This should be removed once CW bug
++     * #19126 is solved. Returning a DXGI device manager also breaks
++     * Age of Empires Definitive Edition - this gameid should be removed
++     * once CW bug #19741 is solved. */
++    if ((sgi && (
++                strcmp(sgi, "305620") == 0 || /* The Long Dark */
++                strcmp(sgi, "1110100") == 0 || /* Power Rangers: Battle for the Grid */
++                strcmp(sgi, "983970") == 0 || /* Haven */
++                strcmp(sgi, "585420") == 0 || /* Trailmakers */
++                strcmp(sgi, "684450") == 0 || /* Surviving the Aftermath */
++                strcmp(sgi, "1017900") == 0 || /* Age of Empires: Definitive Edition */
++                strcmp(sgi, "1331440") == 0 /* FUSER */
++               )) ||
++       (do_not_create && atoi(do_not_create) == 1))
+     {
+         FIXME("stubbing out\n");
+         return E_NOTIMPL;
+diff --git a/dlls/mfreadwrite/reader.c b/dlls/mfreadwrite/reader.c
+index bdf2e7f..b22ea58 100644
+--- a/dlls/mfreadwrite/reader.c
++++ b/dlls/mfreadwrite/reader.c
+@@ -18,6 +18,7 @@
+  */
+ 
+ #include <stdarg.h>
++#include <stdlib.h>
+ 
+ #define COBJMACROS
+ #define NONAMELESSUNION
+@@ -2082,10 +2083,21 @@ static HRESULT source_reader_flush_async(struct source_reader *reader, unsigned
+ static HRESULT WINAPI src_reader_Flush(IMFSourceReader *iface, DWORD index)
+ {
+     struct source_reader *reader = impl_from_IMFSourceReader(iface);
++    const char *sgi;
++    const char *ignore_flush = getenv("WINE_IMF_SOURCE_READER_NO_FLUSH");
+     HRESULT hr;
+ 
+     TRACE("%p, %#lx.\n", iface, index);
+ 
++    sgi = getenv("SteamGameId");
++    if ((sgi && strcmp(sgi, "1293160") == 0) || (ignore_flush && atoi(ignore_flush) == 1))
++    {
++        /* In The Medium flushes sometimes lead to the callback
++           calling objects that have already been destroyed. */
++        WARN("ignoring flush\n");
++        return S_OK;
++    }
++
+     EnterCriticalSection(&reader->cs);
+ 
+     if (reader->async_callback)
+diff --git a/dlls/winegstreamer/wm_reader.c b/dlls/winegstreamer/wm_reader.c
+index 941254c..13089c1 100644
+--- a/dlls/winegstreamer/wm_reader.c
++++ b/dlls/winegstreamer/wm_reader.c
+@@ -16,6 +16,8 @@
+  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+  */
+ 
++#include <stdlib.h>
++
+ #include "gst_private.h"
+ 
+ WINE_DEFAULT_DEBUG_CHANNEL(wmvcore);
+@@ -1508,6 +1510,18 @@ static HRESULT init_stream(struct wm_reader *reader, QWORD file_size)
+              * Shadowgrounds provides wmv3 video and assumes that the initial
+              * video type will be BGR. */
+             stream->format.u.video.format = WG_VIDEO_FORMAT_BGR;
++            {
++                /* HACK: Persona 4 Golden tries to read compressed samples, and
++                 * then autoplug them via quartz to a filter that only accepts
++                 * BGRx. This is not trivial to implement. Return BGRx from the
++                 * wmvcore reader for now. */
++
++                const char *id = getenv("SteamGameId");
++                const char *force_bgrx = getenv("WINE_WG_VIDEO_FORMAT_BGRX");
++
++                if ((id && !strcmp(id, "1113000")) || (force_bgrx && atoi(force_bgrx) == 1))
++                    stream->format.u.video.format = WG_VIDEO_FORMAT_BGRx;
++            }
+         }
+         wg_parser_stream_enable(stream->wg_stream, &stream->format, NULL);
+     }
+-- 
+2.35.1
+

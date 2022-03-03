@@ -1,5 +1,5 @@
 Name:           vkd3d
-Version:        1.2
+Version:        1.3
 Release:        100%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -13,7 +13,10 @@ Source10:       https://dl.winehq.org/%{name}/source/%{name}-%{version}.tar.xz.s
 
 
 BuildRequires:  make
+BuildRequires:  bison
 BuildRequires:  gcc
+BuildRequires:  flex
+BuildRequires:  pkgconfig(ncurses)
 BuildRequires:  pkgconfig(SPIRV-Tools-shared)
 BuildRequires:  pkgconfig(vulkan) >= 1.1.113
 BuildRequires:  pkgconfig(xcb-event)
@@ -123,9 +126,11 @@ find %{buildroot} -name '*.la' -delete
 %files -n libvkd3d-devel
 %dir %{_includedir}/vkd3d
 %{_includedir}/vkd3d/vkd3d.h
+%{_includedir}/vkd3d/vkd3d_d3d9types.h
 %{_includedir}/vkd3d/vkd3d_d3d12.h
 %{_includedir}/vkd3d/vkd3d_d3d12sdklayers.h
 %{_includedir}/vkd3d/vkd3d_d3dcommon.h
+%{_includedir}/vkd3d/vkd3d_d3dcompiler.h
 %{_includedir}/vkd3d/vkd3d_dxgibase.h
 %{_includedir}/vkd3d/vkd3d_dxgiformat.h
 %{_includedir}/vkd3d/vkd3d_types.h
@@ -145,6 +150,7 @@ find %{buildroot} -name '*.la' -delete
 
 %files -n libvkd3d-shader-devel
 %{_includedir}/vkd3d/vkd3d_shader.h
+%{_includedir}/vkd3d/vkd3d_d3dx9shader.h
 %{_libdir}/libvkd3d-shader.so
 %{_libdir}/pkgconfig/libvkd3d-shader.pc
 
@@ -160,6 +166,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.3-100
+- 1.3
+
 * Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 1:1.2-100
 - 1.2
 - Remove vkd3d-proton switch, better use standalone dll

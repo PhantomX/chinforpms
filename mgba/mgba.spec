@@ -1,6 +1,6 @@
-%global commit 9cfa7120b186b125406a850d373d86e5be40a7bd
+%global commit 245a20b442d577c90221fdbfd16ea573d0046523
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220212
+%global date 20220301
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -14,7 +14,7 @@
 
 Name:           mgba
 Version:        0.10.0
-Release:        0.11%{?gver}%{?dist}
+Release:        0.12%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -27,6 +27,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
+Patch10:        %{name}-revert-7c8a068.patch
 
 
 BuildRequires:  cmake
@@ -177,6 +178,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.12.20220301git245a20b
+- Update
+
 * Sat Feb 12 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.11.20220212git9cfa712
 - Bump
 

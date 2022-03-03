@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        5.1.2567.49
+Version:        5.1.2567.57
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -144,6 +144,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Mar 02 2022 - 5.1.2567.57-1
+- 5.1.2567.57
+
 * Wed Feb 16 2022 - 5.1.2567.49-1
 - 5.1.2567.49
 

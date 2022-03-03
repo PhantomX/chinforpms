@@ -1,36 +1,38 @@
-From 591d2b7a7129f535c1ffd161f0bbdc9cdcd5fe4e Mon Sep 17 00:00:00 2001
+From 4013c6ada268d2e07da3072fe21d530cfaad2274 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 7 Nov 2021 18:20:36 -0300
+Date: Wed, 2 Mar 2022 10:29:34 -0300
 Subject: [PATCH] HACK:winex11: limits resources->nmode
 
 fix https://github.com/ValveSoftware/Proton/issues/2929
 Updated from yuiiio <atbjyk@protonmail.com> patch
 ---
- dlls/winex11.drv/xrandr.c | 28 ++++++++++++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+ dlls/winex11.drv/xrandr.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
 
 diff --git a/dlls/winex11.drv/xrandr.c b/dlls/winex11.drv/xrandr.c
-index 67fc354..a98a08b 100644
+index 425ce22..8ed1c72 100644
 --- a/dlls/winex11.drv/xrandr.c
 +++ b/dlls/winex11.drv/xrandr.c
-@@ -23,6 +23,8 @@
+@@ -22,6 +22,8 @@
+ 
  #include "config.h"
- #include "wine/port.h"
  
 +#include <stdlib.h>
 +
  #define NONAMELESSSTRUCT
  #define NONAMELESSUNION
  
-@@ -398,11 +400,22 @@ static BOOL is_broken_driver(void)
+@@ -400,11 +402,24 @@ static BOOL is_broken_driver(void)
              continue;
          }
  
 +    int limit = 53; // required by nier_automata (55), sekiro (53), dark_souls3 (53)
 +    int capped_screen_resources_nmode = screen_resources->nmode;
 +    const char *sgi = getenv("SteamGameId");
++    const char *limit_res_num = getenv("WINE_LIMIT_RESOLUTION_NUMBER");
 +
-+    if (sgi && (!strcmp(sgi, "374320") | !strcmp(sgi, "524220") | !strcmp(sgi, "814380")))
++    if ((sgi && (!strcmp(sgi, "374320") || !strcmp(sgi, "524220") || !strcmp(sgi, "814380"))) ||
++       (limit_res_num && atoi(limit_res_num) == 1))
 +    {
 +        if (screen_resources->nmode > limit) {
 +            capped_screen_resources_nmode = limit;
@@ -46,15 +48,17 @@ index 67fc354..a98a08b 100644
              {
                  if (output_info->modes[i] != screen_resources->modes[j].id)
                      continue;
-@@ -1475,9 +1488,20 @@ static BOOL xrandr14_get_modes( ULONG_PTR id, DWORD flags, DEVMODEW **new_modes,
+@@ -1512,9 +1527,22 @@ static BOOL xrandr14_get_modes( ULONG_PTR id, DWORD flags, DEVMODEW **new_modes,
      if (!modes)
          goto done;
  
 +    int limit = 53; // required by nier_automata (55), sekiro (53), dark_souls3 (53)
 +    int capped_screen_resources_nmode = screen_resources->nmode;
 +    const char *sgi = getenv("SteamGameId");
++    const char *limit_res_num = getenv("WINE_LIMIT_RESOLUTION_NUMBER");
 +
-+    if (sgi && (!strcmp(sgi, "374320") | !strcmp(sgi, "524220") | !strcmp(sgi, "814380")))
++    if ((sgi && (!strcmp(sgi, "374320") || !strcmp(sgi, "524220") || !strcmp(sgi, "814380"))) ||
++       (limit_res_num && atoi(limit_res_num) == 1))
 +    {
 +        if (screen_resources->nmode > limit) {
 +            capped_screen_resources_nmode = limit;
@@ -69,5 +73,5 @@ index 67fc354..a98a08b 100644
              if (output_info->modes[i] != screen_resources->modes[j].id)
                  continue;
 -- 
-2.33.1
+2.35.1
 

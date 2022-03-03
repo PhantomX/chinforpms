@@ -1,6 +1,6 @@
-From 4861219001a230153fa14a7cdb6fb9adfadea93d Mon Sep 17 00:00:00 2001
+From 6f05b47e482b4fc0f3cea9ace15ad39f920e6d0a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 12 Feb 2022 10:28:14 -0300
+Date: Wed, 2 Mar 2022 17:30:14 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -23,6 +23,8 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
 4e12d6e871680fe70bb45e7909f00a89539f7a3f - ShaderGenCommon: Add bit for LOD bias
 056613ecc5c79941d4bc9747bdc6f79fe332183a - PixelShaderGen: Add LOD bias to texture() call on systems that don't support it in the sampler
 a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
+bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destination alpha factors in logic op workaround
+608799f1e454f8473e5709204adb544eac52ddca - PixelShaderGen: Check uid_data for use_shader_logic_op
 ---
  Source/Core/AudioCommon/AlsaSoundStream.cpp   |   3 +-
  Source/Core/AudioCommon/AudioStretcher.cpp    |   3 +-
@@ -231,11 +233,11 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  .../VideoCommon/GeometryShaderManager.cpp     |   3 +-
  Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++-
  Source/Core/VideoCommon/HiresTextures.h       |   9 +-
- Source/Core/VideoCommon/PixelShaderGen.cpp    | 471 ++----------------
+ Source/Core/VideoCommon/PixelShaderGen.cpp    | 470 ++----------------
  Source/Core/VideoCommon/PixelShaderGen.h      |   2 -
  .../Core/VideoCommon/PixelShaderManager.cpp   |  32 +-
  Source/Core/VideoCommon/PixelShaderManager.h  |   1 -
- Source/Core/VideoCommon/RenderState.cpp       | 119 +++--
+ Source/Core/VideoCommon/RenderState.cpp       | 121 ++---
  Source/Core/VideoCommon/RenderState.h         | 157 ++----
  Source/Core/VideoCommon/SamplerCommon.h       |  27 +
  Source/Core/VideoCommon/ShaderCache.cpp       |   4 +-
@@ -261,7 +263,7 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 237 files changed, 947 insertions(+), 2547 deletions(-)
+ 237 files changed, 948 insertions(+), 2547 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -1401,7 +1403,7 @@ index a5e3d20..0e0dd08 100644
  using namespace Gen;
  
 diff --git a/Source/Core/Core/DSP/Jit/x64/DSPJitMultiplier.cpp b/Source/Core/Core/DSP/Jit/x64/DSPJitMultiplier.cpp
-index d37e7fd..7fba07f 100644
+index 617c924..90ef9ce 100644
 --- a/Source/Core/Core/DSP/Jit/x64/DSPJitMultiplier.cpp
 +++ b/Source/Core/Core/DSP/Jit/x64/DSPJitMultiplier.cpp
 @@ -5,13 +5,12 @@
@@ -2286,7 +2288,7 @@ index f1b6a1b..0c8f557 100644
  {
  Magic SignedDivisionConstants(s32 d)
 diff --git a/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp b/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
-index de55900..06d82e9 100644
+index ca09054..02235d3 100644
 --- a/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
 +++ b/Source/Core/Core/PowerPC/JitCommon/JitCache.cpp
 @@ -1,8 +1,6 @@
@@ -2515,10 +2517,10 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index c0d465a..a8ca800 100644
+index 79557b5..7d794c6 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -641,6 +641,7 @@
+@@ -642,6 +642,7 @@
      <ClInclude Include="VideoCommon\PostProcessing.h" />
      <ClInclude Include="VideoCommon\RenderBase.h" />
      <ClInclude Include="VideoCommon\RenderState.h" />
@@ -2526,7 +2528,7 @@ index c0d465a..a8ca800 100644
      <ClInclude Include="VideoCommon\ShaderCache.h" />
      <ClInclude Include="VideoCommon\ShaderGenCommon.h" />
      <ClInclude Include="VideoCommon\Statistics.h" />
-@@ -650,8 +651,6 @@
+@@ -651,8 +652,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
@@ -2535,7 +2537,7 @@ index c0d465a..a8ca800 100644
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1215,8 +1214,6 @@
+@@ -1217,8 +1216,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
@@ -2774,7 +2776,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index 7fc42cc..fed2c1f 100644
+index 9c7d4d3..d5a1aeb 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -2786,7 +2788,7 @@ index 7fc42cc..fed2c1f 100644
  #include <QApplication>
  #include <QCloseEvent>
  #include <QDateTime>
-@@ -88,6 +86,7 @@
+@@ -89,6 +87,7 @@
  #include "DolphinQt/GameList/GameList.h"
  #include "DolphinQt/Host.h"
  #include "DolphinQt/HotkeyScheduler.h"
@@ -3174,7 +3176,7 @@ index 54093f2..8d0312e 100644
  namespace CommandLineParse
  {
 diff --git a/Source/Core/UICommon/UICommon.cpp b/Source/Core/UICommon/UICommon.cpp
-index 1e6aa4b..bc6a8b3 100644
+index 4d043d3..28e1aee 100644
 --- a/Source/Core/UICommon/UICommon.cpp
 +++ b/Source/Core/UICommon/UICommon.cpp
 @@ -1,8 +1,6 @@
@@ -3709,7 +3711,7 @@ index b4962cf..ee45fe8 100644
  #include "VideoBackends/OGL/OGLShader.h"
  #include "VideoBackends/OGL/OGLVertexManager.h"
 diff --git a/Source/Core/VideoBackends/OGL/OGLRender.cpp b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-index 123b11b..0f2250b 100644
+index fae0d7a..ddcfff8 100644
 --- a/Source/Core/VideoBackends/OGL/OGLRender.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLRender.cpp
 @@ -482,10 +482,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
@@ -4849,7 +4851,7 @@ index 3504bc6..cf08716 100644
    endif()
  endif()
 diff --git a/Source/Core/VideoCommon/CommandProcessor.cpp b/Source/Core/VideoCommon/CommandProcessor.cpp
-index 51b67a9..9d82820 100644
+index 6ebb726..249ce67 100644
 --- a/Source/Core/VideoCommon/CommandProcessor.cpp
 +++ b/Source/Core/VideoCommon/CommandProcessor.cpp
 @@ -1,8 +1,6 @@
@@ -4866,9 +4868,9 @@ index 51b67a9..9d82820 100644
  #include "Core/HW/MMIO.h"
  #include "Core/HW/ProcessorInterface.h"
 +#include "VideoCommon/CommandProcessor.h"
+ #include "Core/PowerPC/PowerPC.h"
  #include "Core/System.h"
  #include "VideoCommon/Fifo.h"
- 
 diff --git a/Source/Core/VideoCommon/ConstantManager.h b/Source/Core/VideoCommon/ConstantManager.h
 index 5335af9..fe80767 100644
 --- a/Source/Core/VideoCommon/ConstantManager.h
@@ -4956,7 +4958,7 @@ index 4d71a7c..efc351f 100644
  
  static constexpr u64 FPS_REFRESH_INTERVAL = 250000;
 diff --git a/Source/Core/VideoCommon/GXPipelineTypes.h b/Source/Core/VideoCommon/GXPipelineTypes.h
-index ca3fb89..231bdde 100644
+index b448dc1..aada95f 100644
 --- a/Source/Core/VideoCommon/GXPipelineTypes.h
 +++ b/Source/Core/VideoCommon/GXPipelineTypes.h
 @@ -19,7 +19,7 @@ namespace VideoCommon
@@ -5145,7 +5147,7 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index ddb03f8..60c926b 100644
+index 1883433..60c926b 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
 @@ -333,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
@@ -5546,12 +5548,14 @@ index ddb03f8..60c926b 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -945,58 +624,40 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -944,59 +623,41 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+       (!DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DUAL_SOURCE_BLENDING) ||
         uid_data->useDstAlpha);
    const bool use_shader_blend =
-       !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
--  const bool use_shader_logic_op =
--      !host_config.backend_logic_op && host_config.backend_shader_framebuffer_fetch;
+-      !use_dual_source && uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch;
+-  const bool use_shader_logic_op = !host_config.backend_logic_op && uid_data->logic_op_enable &&
+-                                   host_config.backend_shader_framebuffer_fetch;
++      !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
  
    if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
    {
@@ -5730,36 +5734,33 @@ index ddb03f8..60c926b 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1947,34 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1947,31 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
 -static void WriteLogicOp(ShaderCode& out, const pixel_shader_uid_data* uid_data)
 -{
--  if (uid_data->logic_op_enable)
--  {
--    static constexpr std::array<const char*, 16> logic_op_mode{
--        "int4(0, 0, 0, 0)",          // CLEAR
--        "prev & fb_value",           // AND
--        "prev & ~fb_value",          // AND_REVERSE
--        "prev",                      // COPY
--        "~prev & fb_value",          // AND_INVERTED
--        "fb_value",                  // NOOP
--        "prev ^ fb_value",           // XOR
--        "prev | fb_value",           // OR
--        "~(prev | fb_value)",        // NOR
--        "~(prev ^ fb_value)",        // EQUIV
--        "~fb_value",                 // INVERT
--        "prev | ~fb_value",          // OR_REVERSE
--        "~prev",                     // COPY_INVERTED
--        "~prev | fb_value",          // OR_INVERTED
--        "~(prev & fb_value)",        // NAND
--        "int4(255, 255, 255, 255)",  // SET
--    };
+-  static constexpr std::array<const char*, 16> logic_op_mode{
+-      "int4(0, 0, 0, 0)",          // CLEAR
+-      "prev & fb_value",           // AND
+-      "prev & ~fb_value",          // AND_REVERSE
+-      "prev",                      // COPY
+-      "~prev & fb_value",          // AND_INVERTED
+-      "fb_value",                  // NOOP
+-      "prev ^ fb_value",           // XOR
+-      "prev | fb_value",           // OR
+-      "~(prev | fb_value)",        // NOR
+-      "~(prev ^ fb_value)",        // EQUIV
+-      "~fb_value",                 // INVERT
+-      "prev | ~fb_value",          // OR_REVERSE
+-      "~prev",                     // COPY_INVERTED
+-      "~prev | fb_value",          // OR_INVERTED
+-      "~(prev & fb_value)",        // NAND
+-      "int4(255, 255, 255, 255)",  // SET
+-  };
 -
--    out.Write("\tint4 fb_value = iround(initial_ocol0 * 255.0);\n");
--    out.Write("\tprev = {};\n", logic_op_mode[uid_data->logic_op_mode]);
--  }
+-  out.Write("\tint4 fb_value = iround(initial_ocol0 * 255.0);\n");
+-  out.Write("\tprev = {};\n", logic_op_mode[uid_data->logic_op_mode]);
 -}
 -
  static void WriteColor(ShaderCode& out, APIType api_type, const pixel_shader_uid_data* uid_data,
@@ -5852,7 +5853,7 @@ index 6145049..4d13017 100644
    static void SetViewportChanged();
    static void SetEfbScaleChanged(float scalex, float scaley);
 diff --git a/Source/Core/VideoCommon/RenderState.cpp b/Source/Core/VideoCommon/RenderState.cpp
-index 15559ae..291aa9c 100644
+index 3b3554b..291aa9c 100644
 --- a/Source/Core/VideoCommon/RenderState.cpp
 +++ b/Source/Core/VideoCommon/RenderState.cpp
 @@ -2,10 +2,9 @@
@@ -5899,16 +5900,21 @@ index 15559ae..291aa9c 100644
  // If the framebuffer format has no alpha channel, it is assumed to
  // ONE on blending. As the backends may emulate this framebuffer
  // configuration with an alpha channel, we just drop all references
-@@ -199,45 +216,42 @@ void BlendingState::ApproximateLogicOpWithBlending()
+@@ -196,50 +213,45 @@ void BlendingState::ApproximateLogicOpWithBlending()
+   blendenable = true;
+   subtract = approximations[u32(logicmode.Value())].subtract;
+   srcfactor = approximations[u32(logicmode.Value())].srcfactor;
+-  srcfactoralpha = approximations[u32(logicmode.Value())].srcfactor;
    dstfactor = approximations[u32(logicmode.Value())].dstfactor;
- }
- 
+-  dstfactoralpha = approximations[u32(logicmode.Value())].dstfactor;
++}
++
 +BlendingState& BlendingState::operator=(const BlendingState& rhs)
 +{
 +  hex = rhs.hex;
 +  return *this;
-+}
-+
+ }
+ 
  void SamplerState::Generate(const BPMemory& bp, u32 index)
  {
 -  auto tex = bp.tex.GetUnit(index);
@@ -5971,7 +5977,7 @@ index 15559ae..291aa9c 100644
  }
  
  namespace RenderState
-@@ -330,42 +344,37 @@ BlendingState GetNoColorWriteBlendState()
+@@ -332,42 +344,37 @@ BlendingState GetNoColorWriteBlendState()
  SamplerState GetInvalidSamplerState()
  {
    SamplerState state;
@@ -6347,10 +6353,10 @@ index 0a965e6..c5cd3ef 100644
                                 std::string_view type, std::string_view name, int var_index,
                                 std::string_view semantic = {}, int semantic_index = -1)
 diff --git a/Source/Core/VideoCommon/ShaderGenCommon.h b/Source/Core/VideoCommon/ShaderGenCommon.h
-index edbd931..28688cc 100644
+index bec69fe..9ec9fea 100644
 --- a/Source/Core/VideoCommon/ShaderGenCommon.h
 +++ b/Source/Core/VideoCommon/ShaderGenCommon.h
-@@ -15,7 +15,6 @@
+@@ -16,7 +16,6 @@
  #include "Common/CommonTypes.h"
  #include "Common/EnumMap.h"
  #include "Common/StringUtil.h"
@@ -6358,7 +6364,7 @@ index edbd931..28688cc 100644
  
  #include "VideoCommon/VideoCommon.h"
  
-@@ -170,9 +169,6 @@ union ShaderHostConfig
+@@ -171,9 +170,6 @@ union ShaderHostConfig
    BitField<21, 1, bool, u32> backend_logic_op;
    BitField<22, 1, bool, u32> backend_palette_conversion;
    BitField<23, 1, bool, u32> enable_validation_layer;
@@ -6368,7 +6374,7 @@ index edbd931..28688cc 100644
  
    static ShaderHostConfig GetCurrent();
  };
-@@ -182,8 +178,6 @@ std::string GetDiskShaderCacheFileName(APIType api_type, const char* type, bool
+@@ -183,8 +179,6 @@ std::string GetDiskShaderCacheFileName(APIType api_type, const char* type, bool
                                         bool include_host_config, bool include_api = true);
  
  void WriteIsNanHeader(ShaderCode& out, APIType api_type);
@@ -6377,7 +6383,7 @@ index edbd931..28688cc 100644
  
  void GenerateVSOutputMembers(ShaderCode& object, APIType api_type, u32 texgens,
                               const ShaderHostConfig& host_config, std::string_view qualifier);
-@@ -202,16 +196,6 @@ void AssignVSOutputMembers(ShaderCode& object, std::string_view a, std::string_v
+@@ -203,16 +197,6 @@ void AssignVSOutputMembers(ShaderCode& object, std::string_view a, std::string_v
  const char* GetInterpolationQualifier(bool msaa, bool ssaa, bool in_glsl_interface_block = false,
                                        bool in = false);
  

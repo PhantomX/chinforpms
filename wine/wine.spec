@@ -1,7 +1,7 @@
-%global commit 2d0e84e60196693d1caa6e2d70422051b56cfe08
+%global commit 89a8b32d7a976504ee98ba1a7d08574bc9bc00e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220224
-%global with_snapshot 0
+%global date 20220301
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -80,7 +80,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.3
+%global wine_stagingver 8c4c65ff27bc85cea430b2b3acb2c841c737ded7
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +91,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e640dc310509a6fb9e3cd297057fbec3de98b2bb
+%global tkg_id 6213aae639edd98307a29f14732225eea78d8e7c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.3
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -212,9 +212,10 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
+Patch200:       %{whq_url}/7b233f3032e4850b0f387faef4aae5ed6d5175de#/%{name}-whq-revert-7b233f3.patch
 Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
 # mfplat things, again
-Patch210:       %{whq_url}/fc5719e4c57079b19bde8d169bf0b55194649e73#/%{name}-whq-revert-mfplat-fc5719e.patch
+Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
 Patch211:       %{whq_url}/4d929972c341bff2da3616606b8cbeadf85dba26#/%{name}-whq-revert-mfplat-4d92997.patch
 Patch212:       %{whq_url}/34a55c7b96c97b178ea1ab519eb0e847096f2076#/%{name}-whq-revert-mfplat-34a55c7.patch
 Patch213:       %{whq_url}/d84d9054f5466212e122fac70265eae841438764#/%{name}-whq-revert-mfplat-d84d905.patch
@@ -229,16 +230,15 @@ Patch221:       %{whq_url}/d2f653a854ccd17688813d6b7f585acbfb45b9ba#/%{name}-whq
 Patch222:       %{whq_url}/aa867c6cfba48a63179088ec6381c73488853659#/%{name}-whq-revert-mfplat-aa867c6.patch
 Patch223:       %{whq_url}/9196fee58349558593fd7edf4768b189c25f6293#/%{name}-whq-revert-mfplat-9196fee.patch
 Patch224:       %{whq_url}/227a1275b14a2ffd71a4d0c621cb655e3576ad02#/%{name}-whq-revert-mfplat-227a127.patch
-Patch225:       %{whq_url}/cd90f650df483eddd73c53319b2e1f5bddfb3f25#/%{name}-whq-revert-mfplat-cd90f65.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
+Patch900:        0001-staging-restore-mfplat-streaming-patchset.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch1000:       %{tkg_url}/proton/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
-Patch1001:       0001-update-use_clock_monotonic.patch
+Patch1000:       %{tkg_url}/proton/use_clock_monotonic-staging.patch#/%{name}-tkg-use_clock_monotonic-staging.patch
 Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
 Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
@@ -276,13 +276,13 @@ Patch1055:       0001-update-proton-cpu-topology-overrides.patch
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.patch#/%{name}-valve-8d5fed7.patch
-Patch1092:       %{ge_url}/proton/31-proton-mfplat-patches.patch#/%{name}-ge-31-proton-mfplat-patches.patch
-Patch1093:       %{ge_url}/game-patches/v5-0001-windowscodecs-Correctly-handle-8bpp-custom-conver.patch#/%{name}-ge-v5-0001-windowscodecs-Correctly-handle-8bpp-custom-conver.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-sys-ioctl.h.patch
 Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.5.patch
+Patch1304:       0001-winegstreamer-remove-last-WG_PARSER_EVENT_SEGMENT.patch
+Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -880,9 +880,9 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch200 -p1 -R
 %patch201 -p1 -R
 
-%patch225 -p1 -R
 %patch224 -p1 -R
 %patch223 -p1 -R
 %patch222 -p1 -R
@@ -904,12 +904,11 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
+%patch900 -p1
 %patch901 -p1
 
 %patch1006 -p1
-cp %{P:1000} patch1000.patch
-%patch1001 -p1
-patch -p1 -i patch1000.patch
+%patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
 #FIXME: verify if is not breaking nine again
@@ -923,6 +922,9 @@ patch -p1 -i patch1000.patch
 
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
+
+patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-different-gst-registry-file.patch
+%patch210 -p1
 
 %if 0%{?fastsync}
 %patch1050 -p1
@@ -970,13 +972,13 @@ patch -p1 -i patch1031.patch
 
 %patch1089 -p1
 %patch1091 -p1 -R
-%patch1092 -p1
-%patch1093 -p1
 
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
 %patch1303 -p1
+%patch1304 -p1
+%patch1305 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2590,6 +2592,9 @@ fi
 
 
 %changelog
+* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-102.20220301git89a8b32
+- Snapshot
+
 * Sun Feb 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-101
 - Update tkg patches
 

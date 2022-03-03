@@ -19,9 +19,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 466bb17e55960b75b47cc9f8a789f080e930d40a
+%global commit d32c72038ae8be1cb8b047ca3dae99ba7b3626d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220211
+%global date 20220302
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +35,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        154%{?gver}%{?dist}
+Release:        155%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -132,6 +132,9 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 %endif
 %if 0%{?with_sysvulkan}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
@@ -416,6 +419,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-155.20220302gitd32c720
+- Last snapshot
+
 * Sat Feb 12 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-154.20220211git466bb17
 - Bump
 

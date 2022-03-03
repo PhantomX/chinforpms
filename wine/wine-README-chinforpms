@@ -30,6 +30,18 @@ WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable
 
-PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER override
+WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER override (Haven and others fix)
 =================================
-Enable with PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1 environment variable
+Enable with WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER=1 environment variable
+
+WINE_IMF_SOURCE_READER_NO_FLUSH override (In The Medium fix)
+=================================
+Enable with WINE_IMF_SOURCE_READER_NO_FLUSH=1 environment variable
+
+WINE_LIMIT_RESOLUTION_NUMBER override (Nier fix)
+=================================
+Enable with WINE_LIMIT_RESOLUTION_NUMBER=1 environment variable
+
+WINE_WG_VIDEO_FORMAT_BGRX override (Persona 4 Golden fix)
+=================================
+Enable with WINE_WG_VIDEO_FORMAT_BGRX=1 environment variable
