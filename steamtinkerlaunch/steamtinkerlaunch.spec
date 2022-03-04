@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        9.0.1
+Version:        9.2
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -87,6 +87,9 @@ install -pm0644 misc/%{name}.svg \
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 9.2-1
+- 9.2
+
 * Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 9.0.1-1
 - 9.0.1
 

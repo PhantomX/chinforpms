@@ -1,8 +1,12 @@
 %bcond_with keeshare
 %bcond_with yubikey
 
+%global appname org.%{name}.KeePassXC
+
+%global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
+
 Name:           keepassxc
-Version:        2.6.6
+Version:        2.7.0~beta1
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -11,9 +15,12 @@ Epoch:          1
 
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
-Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 
+Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 
+# Patch0: fixes GNOME quirks on Wayland sessions
+# Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
+Patch0:         xcb.patch
 Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
@@ -23,12 +30,9 @@ BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  asciidoctor
-BuildRequires:  pkgconfig(gpg-error)
-BuildRequires:  pkgconfig(libargon2)
+BuildRequires:  pkgconfig(botan-2)
 BuildRequires:  pkgconfig(libcurl)
-BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libqrencode)
-BuildRequires:  pkgconfig(libsodium)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core) >= 5.2
 BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
@@ -61,12 +65,9 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup -p1
-
+%autosetup -n %{name}-%{ver} -p1
 
 %build
-%global _lto_cflags %{nil}
-
 %cmake \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
@@ -94,14 +95,14 @@ cross-platform and modern open-source password manager.
 desktop-file-edit \
   --add-mime-type="application/x-keepass" \
   --add-mime-type="application/x-keepassxc" \
-  %{buildroot}%{_datadir}/applications/org.%{name}.KeePassXC.desktop
+  %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 #install appdata files
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.KeePassXC.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
-%find_lang keepassx --with-qt
+%find_lang %{name} --with-qt
 
-%files -f keepassx.lang
+%files -f %{name}.lang
 %license COPYING LICENSE*
 %doc README.md
 %{_bindir}/%{name}
@@ -121,6 +122,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.Ke
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0~beta1-100
+- 2.7.0-beta1
+- BR: botan-2
+- LTO is safe now
+
 * Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.6-100
 - 2.6.6
 

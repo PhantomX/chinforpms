@@ -1,5 +1,5 @@
 Name:           devedeng
-Version:        4.16.0
+Version:        4.17.0
 Release:        100%{?dist}
 Summary:        A program to create video DVDs and CDs (VCD, sVCD or CVD)
 
@@ -8,7 +8,6 @@ Epoch:          1
 License:        GPLv3
 URL:            http://www.rastersoft.com/programas/devede.html
 Source0:        https://gitlab.com/rastersoft/%{name}/-/archive/%{version}/%{name}-%{version}.tar.gz
-Source1:        devede_ng.py.appdata.xml
 
 BuildArch:      noarch
 
@@ -52,19 +51,20 @@ sed -e "s|copy_files_verbose|%{name}_\0|g" \
   -i setup.py src/copy_files_verbose.py src/%{name}/file_copy.py
 mv src/copy_files_verbose.py src/%{name}_copy_files_verbose.py
 
+sed -e "/locale/s|'/usr', ||g" -i setup.py
+
+%generate_buildrequires
+%pyproject_buildrequires -r
+
+
 %build
-%py3_build
-
-# Remove shebang from Python libraries
-for lib in build/lib/devedeng/*.py; do
-  sed '1{\@^#!/usr/bin/env python@d}' $lib > $lib.new &&
-  touch -r $lib $lib.new &&
-  mv $lib.new $lib
-done
-
+%pyproject_wheel
 
 %install
-%py3_install
+%pyproject_install
+
+%pyproject_save_files %{name}
+
 
 # Fix desktop file
 desktop-file-edit \
@@ -78,29 +78,28 @@ rm -f %{buildroot}%{_datadir}/pixmaps/%{name}.svg
 # Add docs
 mv %{buildroot}%{_pkgdocdir} _docs/
 
-# Install AppData file
-install -d %{buildroot}%{_metainfodir}
-install -p -m 644 %{SOURCE1} %{buildroot}%{_metainfodir}
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 %find_lang %{name}
 
 
-%files -f %{name}.lang
+%files -f %{pyproject_files} -f %{name}.lang
 %doc _docs/* HISTORY.md README.md
 %license COPYING
 %{_bindir}/devede_ng.py
 %{_bindir}/%{name}_copy_files_verbose.py
 %{_datadir}/%{name}
-%{python3_sitelib}/%{name}*.egg-info
-%{python3_sitelib}/%{name}
-%{_metainfodir}/devede_ng.py.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 %{_datadir}/applications/devede_ng.py.desktop
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 %exclude %{_mandir}/man1/devede.1*
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.17.0-100
+- 4.17.0
+- Update to best packaging practices
+
 * Tue Oct 15 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:4.16.0-100
 - 4.16.0
 

@@ -1,4 +1,4 @@
-%global smoothver 0.9.8
+%global smoothver 0.9.9
 
 %global sanitize 0
 
@@ -7,7 +7,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           boca
-Version:        1.0.5
+Version:        1.0.6a
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -60,7 +60,7 @@ development with %{name} library.
 %if 0%{sanitize}
 %autosetup -n %{name}-%{ver} -p1
 
-for i in aiff au bonk cdrip faad2 fdkaac mac voc wave wma ;do
+for i in aiff alac au bonk cdrip faad2 fdkaac mac voc wave wma ;do
   rm -rf components/decoder/$i
 done
 for i in bonk coreaudio coreaudioconnect faac fdkaac voaacenc wave wma ;do
@@ -116,6 +116,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.6a-1
+- 1.0.6a
+
 * Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.5-1
 - 1.0.5
 

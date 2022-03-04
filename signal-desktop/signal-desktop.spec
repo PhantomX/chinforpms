@@ -12,7 +12,7 @@
 %endif
 
 Name:           signal-desktop
-Version:        5.12.2
+Version:        5.34.0
 Release:        1%{?beta:.%{beta}}%{?dist}
 Summary:        Private messaging from your desktop
 
@@ -28,6 +28,7 @@ BuildRequires:  desktop-file-utils
 Requires:       cairo%{?_isa}
 Requires:       glib2%{?_isa}
 Requires:       pango%{?_isa}
+Requires:       libappindicator%{_isa}
 Requires:       libdbusmenu%{?_isa}
 Requires:       hicolor-icon-theme
 
@@ -146,6 +147,9 @@ done
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 5.34.0-1
+- 5.34.0
+
 * Thu Aug 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.2-1
 - 5.12.2
 

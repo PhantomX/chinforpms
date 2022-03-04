@@ -1,9 +1,11 @@
-%global smoothver 0.9.8
+%global smoothver 0.9.9
+
+%global appname org.%{name}.%{name}
 
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           freac
-Version:        1.1.5
+Version:        1.1.6
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
@@ -72,11 +74,11 @@ mv %{buildroot}%{_datadir}/doc _docs
 desktop-file-edit \
   --set-key="Exec" \
   --set-value="%{name} --scale:1.2" \
-%{buildroot}%{_datadir}/applications/org.%{name}.%{name}.desktop
+%{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/org.%{name}.%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{name}.appdata.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
 
 %files
@@ -91,6 +93,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.%{name}.%{
 
 
 %changelog
+* Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.6-1
+- 1.1.6
+
 * Fri Aug 13 2021 Phantom X <megaphantomx at hotmail dot com> - 1.1.5-1
 - 1.1.5
 

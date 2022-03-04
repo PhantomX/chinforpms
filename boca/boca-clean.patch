@@ -1,18 +1,30 @@
-diff -up freac-cdk-1.1-alpha-20181201/components/decoder/Makefile.clean freac-cdk-1.1-alpha-20181201/components/decoder/Makefile
---- freac-cdk-1.1-alpha-20181201/components/decoder/Makefile.clean	2017-11-18 21:08:06.000000000 -0200
-+++ freac-cdk-1.1-alpha-20181201/components/decoder/Makefile	2019-01-23 17:19:48.883217123 -0200
+From 4ba93d776a2871e3e15696135cb541335cb54857 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 3 Mar 2022 07:59:41 -0300
+Subject: [PATCH] clean nonfree components
+
+---
+ components/decoder/Makefile | 2 +-
+ components/encoder/Makefile | 6 +-----
+ 2 files changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/components/decoder/Makefile b/components/decoder/Makefile
+index 87cf83b..2ca4dbe 100644
+--- a/components/decoder/Makefile
++++ b/components/decoder/Makefile
 @@ -4,7 +4,7 @@ BOCA_PATH = ../..
  
  include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
  
--FOLDERS = cuesheet faad2 fdkaac flac mac mpg123 opus sndfile speex vorbis
+-FOLDERS = alac cuesheet faad2 fdkaac flac mac mpg123 opus sndfile speex vorbis
 +FOLDERS = cuesheet flac mpg123 opus sndfile speex vorbis
  
  ifneq ($(BUILD_OSX),True)
  	FOLDERS += lame mad
-diff -up freac-cdk-1.1-alpha-20181201/components/encoder/Makefile.clean freac-cdk-1.1-alpha-20181201/components/encoder/Makefile
---- freac-cdk-1.1-alpha-20181201/components/encoder/Makefile.clean	2017-11-18 21:08:06.000000000 -0200
-+++ freac-cdk-1.1-alpha-20181201/components/encoder/Makefile	2019-01-23 17:19:46.907228283 -0200
+diff --git a/components/encoder/Makefile b/components/encoder/Makefile
+index 922c5ba..26f0a4a 100644
+--- a/components/encoder/Makefile
++++ b/components/encoder/Makefile
 @@ -4,11 +4,7 @@ BOCA_PATH = ../..
  
  include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
@@ -26,3 +38,6 @@ diff -up freac-cdk-1.1-alpha-20181201/components/encoder/Makefile.clean freac-cd
  
  ifeq ($(USE_WINE),True)
  	FOLDERS += coreaudioconnect
+-- 
+2.35.1
+

@@ -1,5 +1,5 @@
 NAME = boca
-VERSION ?= 1.0.5
+VERSION ?= 1.0.6a
 SANITIZE ?= 1
 CLEAN_PATCH = $(NAME)-clean.patch
 
@@ -20,6 +20,7 @@ clone: clean
 sanitize: clone $(CLEAN_PATCH)
 ifeq ($(SANITIZE),1)
 	rm -rf $(DIRNAME)/components/decoder/aiff
+	rm -rf $(DIRNAME)/components/decoder/alac
 	rm -rf $(DIRNAME)/components/decoder/au
 	rm -rf $(DIRNAME)/components/decoder/bonk
 	rm -rf $(DIRNAME)/components/decoder/cdrip
