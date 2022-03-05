@@ -34,8 +34,8 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
 
 Name:           gtk3
-Version:        3.24.31
-Release:        104%{?dist}
+Version:        3.24.32
+Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -46,11 +46,6 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
-
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4273
-Patch0:  gtk3-3.24.31-meson.patch
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4280
-Patch1:  gtk3-3.24.31-meson-reftest.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -413,6 +408,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Mar 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.32-100
+- 3.24.32
+
 * Tue Feb 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.31-104
 - classic 3.24.31-3
 - Rawhide sync (meson)

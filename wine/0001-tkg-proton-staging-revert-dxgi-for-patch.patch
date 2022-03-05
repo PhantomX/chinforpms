@@ -1,0 +1,29 @@
+From 17666804c99b6f8202337c7e04805a5744367db6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 5 Mar 2022 00:45:57 -0300
+Subject: [PATCH] tkg proton staging: revert dxgi for patch
+
+---
+ dlls/dxgi/Makefile.in | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/dxgi/Makefile.in b/dlls/dxgi/Makefile.in
+index d439800..daf8cff 100644
+--- a/dlls/dxgi/Makefile.in
++++ b/dlls/dxgi/Makefile.in
+@@ -1,8 +1,10 @@
+ EXTRADEFS = -DWINE_NO_LONG_TYPES
+ MODULE    = dxgi.dll
+ IMPORTLIB = dxgi
+-IMPORTS   = gdi32 dxguid uuid wined3d user32 win32u
+-EXTRAINCL = $(VKD3D_PE_CFLAGS)
++IMPORTS   = gdi32 dxguid uuid wined3d user32
++EXTRAINCL = $(VKD3D_CFLAGS)
++
++EXTRADLLFLAGS = -mcygwin
+ 
+ C_SRCS = \
+ 	adapter.c \
+-- 
+2.35.1
+

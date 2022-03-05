@@ -1,6 +1,6 @@
-%global commit 89a8b32d7a976504ee98ba1a7d08574bc9bc00e6
+%global commit 18230d23c599f1f5f9dd419dccc11c49117cc3b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220301
+%global date 20220304
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -44,6 +44,7 @@
 %global winepng 1.6.37
 %global winetiff 4.3.0
 %global winejxrlib 1.1
+%global winevkd3d 1.3
 %global winexml2 2.9.12
 %global winexslt 1.1.34
 %global winezlib 1.2.11
@@ -80,7 +81,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8c4c65ff27bc85cea430b2b3acb2c841c737ded7
+%global wine_stagingver a79a08a6f7fdd9e4123cb55aa4e946060a14aef0
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -91,7 +92,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 6213aae639edd98307a29f14732225eea78d8e7c
+%global tkg_id e5c34fa1108fe9097ad4376734c9d652a468f555
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -212,8 +213,15 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
-Patch200:       %{whq_url}/7b233f3032e4850b0f387faef4aae5ed6d5175de#/%{name}-whq-revert-7b233f3.patch
 Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
+Patch202:       %{whq_url}/ab780cee837f9d80a512a04aaceb7c5f554b5558#/%{name}-whq-revert-hid-ab780ce.patch
+Patch203:       %{whq_url}/9d2c868db3a893ffc5567ad89f9ec83dcbf55920#/%{name}-whq-revert-hid-9d2c868.patch
+Patch204:       %{whq_url}/e4105a71d1449355563e1bf23349826d416d53f1#/%{name}-whq-revert-hid-e4105a7.patch
+Patch205:       %{whq_url}/1200e9d472deaa99e80d8fd80821008e3c9021bc#/%{name}-whq-revert-hid-1200e9d.patch
+Patch206:       %{whq_url}/f8f843a85a780be9da8eaacbb3efb995a16c5ba6#/%{name}-whq-revert-hid-f8f843a.patch
+Patch207:       %{whq_url}/6efb40718be445111a4b757f0acd8a6c66161b25#/%{name}-whq-revert-hid-6efb407.patch
+Patch208:       %{whq_url}/42c8860b23a024a1e0bbb6ad6445d7182698603e#/%{name}-whq-revert-hid-42c8860.patch
+
 # mfplat things, again
 Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
 Patch211:       %{whq_url}/4d929972c341bff2da3616606b8cbeadf85dba26#/%{name}-whq-revert-mfplat-4d92997.patch
@@ -238,36 +246,37 @@ Patch900:        0001-staging-restore-mfplat-streaming-patchset.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch1000:       %{tkg_url}/proton/use_clock_monotonic-staging.patch#/%{name}-tkg-use_clock_monotonic-staging.patch
-Patch1002:       %{tkg_url}/proton/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
-Patch1003:       %{tkg_url}/misc/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
-Patch1004:       %{tkg_url}/misc/steam.patch#/%{name}-tkg-steam.patch
-Patch1005:       %{tkg_url}/misc/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
+Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic-staging.patch#/%{name}-tkg-use_clock_monotonic-staging.patch
+Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch1003:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
+Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
+Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1008:       0001-tkg-proton-staging-revert-dxgi-for-patch.patch
 
 # fsync
-Patch1020:       %{tkg_url}/proton/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
-Patch1021:       %{tkg_url}/proton/server_Abort_waiting_on_a_completion_port_when_closing_it.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it.patch
-Patch1022:       %{tkg_url}/proton/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
+Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
+Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_port_when_closing_it.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it.patch
+Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
-Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1024:       %{tkg_url}/proton/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
-Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
-Patch1027:       %{tkg_url}/proton/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
-Patch1028:       %{tkg_url}/proton/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
+Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
+Patch1024:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
+Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
+Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
+Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
-Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1032:       %{tkg_url}/proton/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
+Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
 Patch1033:       %{tkg_url}/hotfixes/rdr2/0004-winevulkan2.mypatch#/%{name}-tkg-0004-winevulkan2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 
-Patch1050:       %{tkg_url}/misc/fastsync-staging-prep.patch#/%{name}-tkg-fastsync-staging-prep.patch
-Patch1051:       %{tkg_url}/misc/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
+Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-prep.patch#/%{name}-tkg-fastsync-staging-prep.patch
+Patch1051:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1052:       fastsync-clock_monotonic-fixup.patch
 Patch1053:       0001-update-fastsync-staging-protonify.patch
 Patch1054:       0001-fastsync-sys-ioctl.h.patch
@@ -279,10 +288,10 @@ Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.pa
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
-Patch1302:       0001-staging-sys-ioctl.h.patch
 Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.5.patch
 Patch1304:       0001-winegstreamer-remove-last-WG_PARSER_EVENT_SEGMENT.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
+Patch1306:       0001-tkg-proton-staging-restore-dxgi-for-patch.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -350,8 +359,6 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
-BuildRequires:  pkgconfig(libvkd3d) >= 1.2
-BuildRequires:  pkgconfig(libvkd3d-shader) >= 1.2
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  pkgconfig(odbc)
@@ -571,6 +578,7 @@ Provides:       libtiff = %{winetiff}
 Provides:       jxrlib = %{winejxrlib}
 Provides:       libxml2 = %{winexml2}
 Provides:       libxslt = %{winexslt}
+Provides:       libvkd3d = %{winevkd3d}
 Provides:       zlib = %{winezlib}
 
 # removed as of 1.7.35
@@ -880,8 +888,15 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch200 -p1 -R
 %patch201 -p1 -R
+
+%patch208 -p1 -R
+%patch207 -p1 -R
+%patch206 -p1 -R
+%patch205 -p1 -R
+%patch204 -p1 -R
+%patch203 -p1 -R
+%patch202 -p1 -R
 
 %patch224 -p1 -R
 %patch223 -p1 -R
@@ -917,6 +932,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
+%patch1008 -p1
 
 %patch5000 -p1
 
@@ -975,10 +991,10 @@ patch -p1 -i patch1031.patch
 
 %patch1300 -p1
 %patch1301 -p1
-%patch1302 -p1
 %patch1303 -p1
 %patch1304 -p1
 %patch1305 -p1
+%patch1306 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -1641,10 +1657,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/d3d10_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d10core.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d11.%{winedll}
-%{_libdir}/wine/%{winesodir}/d3d12.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/d3d12.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/d3d12.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dcompiler_*.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dim.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dim700.%{winedll}
@@ -1704,10 +1717,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dwrite.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dx8vb.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dxdiagn.%{winedll}
-%{_libdir}/wine/%{winesodir}/dxgi.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/dxgi.dll
-%endif
+%{_libdir}/wine/%{winedlldir}/dxgi.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winedlldir}/dxgkrnl.%{winesys}
 %{_libdir}/wine/%{winedlldir}/dxgmms1.%{winesys}
@@ -2146,11 +2156,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/d3d8thk.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d9.%{winedll}
 %{_libdir}/wine/%{winesodir}/opengl32.dll.so
-%{_libdir}/wine/%{winesodir}/wined3d.dll.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/opengl32.dll
-%{_libdir}/wine/%{winedlldir}/wined3d.dll
 %endif
+%{_libdir}/wine/%{winedlldir}/wined3d.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winexinput.%{winesys}
 %{_libdir}/wine/%{winesodir}/dnsapi.so
 %{_libdir}/wine/%{winedlldir}/dnsapi.%{winedll}
@@ -2592,6 +2601,9 @@ fi
 
 
 %changelog
+* Sat Mar 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-103.20220304git18230d2
+- Bump
+
 * Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-102.20220301git89a8b32
 - Snapshot
 

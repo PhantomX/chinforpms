@@ -61,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.0.0~rc2
+Version:        22.0.0~rc3
 Release:        100%{?dist}
 
 License:        MIT
@@ -660,6 +660,9 @@ popd
 
 
 %changelog
+* Fri Mar 04 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.0~rc3-100
+- 22.0.0-rc3
+
 * Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.0~rc2-100
 - 22.0.0-rc2
 - Remove old unsupported dri drivers removed from tree from list
