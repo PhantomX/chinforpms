@@ -92,7 +92,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e5c34fa1108fe9097ad4376734c9d652a468f555
+%global tkg_id 07cc38fd4ec5e1c942f455ac15a2220fd69e7ee5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -253,7 +253,6 @@ Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1008:       0001-tkg-proton-staging-revert-dxgi-for-patch.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -291,7 +290,6 @@ Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.5.patch
 Patch1304:       0001-winegstreamer-remove-last-WG_PARSER_EVENT_SEGMENT.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
-Patch1306:       0001-tkg-proton-staging-restore-dxgi-for-patch.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -932,7 +930,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
-%patch1008 -p1
 
 %patch5000 -p1
 
@@ -994,7 +991,6 @@ patch -p1 -i patch1031.patch
 %patch1303 -p1
 %patch1304 -p1
 %patch1305 -p1
-%patch1306 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \

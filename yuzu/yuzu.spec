@@ -3,9 +3,9 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit a1e50a2b0d0fed69168852473d3585bf3226d87c
+%global commit 8667d19bf22f66b1f8b61606bfe2036ca844dcc0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220228
+%global date 20220306
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -14,6 +14,8 @@
 
 # Enable system boost
 %bcond_without boost
+# Enable system mbedtls (needs cmac builtin support)
+%bcond_with mbedtls
 # Disable Qt build
 %bcond_without qt
 
@@ -69,7 +71,7 @@
 %global vc_url  https://github.com/pineappleEA
 
 Name:           yuzu
-Version:        2520
+Version:        2528
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -85,7 +87,9 @@ Source4:        https://github.com/herumi/%{srcname4}/archive/%{commit4}/%{srcna
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/citra-emu/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+%if !%{with mbedtls}
 Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+%endif
 %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
@@ -95,13 +99,16 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-fix-system-boost-detection.patch
 %endif
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
+Patch3:         0001-revert-logging-Convert-backend_thread-into-an-std-jt.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
+%if %{with boost}
 BuildRequires:  boost-devel >= 1.76.0
+%endif
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
@@ -116,6 +123,9 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
+%if %{with mbedtls}
+BuildRequires:  mbedtls >= 2.6.10
+%endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sdl2)
@@ -143,7 +153,9 @@ Provides:       bundled(xbyak) = 0~git%{?shortcommit3}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(soundtouch) = 0~git%{?shortcommit7}
+%if !%{with mbedtls}
 Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
+%endif
 
 
 %description
@@ -167,6 +179,9 @@ This is the Qt frontend.
 %if 0%{?with_ea}
 pushd externals
 rm -rf cubeb/* discord-rpc ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL Vulkan-Headers
+%if %{with mbedtls}
+rm -rf mbedtls
+%endif
 popd
 %else
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
@@ -176,14 +191,21 @@ tar -xf %{S:4} -C externals/xbyak --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
+%if !%{with mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
+%endif
 %endif
 
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
 
+%if !%{with mbedtls}
 sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
+  -i externals/CMakeLists.txt
+%endif
+
+sed \
   -e '/find_package/s|SoundTouch|\0_DISABLED|g' \
   -i externals/CMakeLists.txt
 
@@ -257,6 +279,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Mar 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2528-1.20220306git8667d19
+- 2528 ea
+
 * Mon Feb 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2520-1.20220228gita1e50a2
 - 2520 ea
 
