@@ -122,6 +122,15 @@ tar -xf %{S:2} -C core/deps/breakpad/ --strip-components 1
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
+pushd core/deps
+cp -p breakpad/LICENSE LICENSE.breakpad
+cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p nowide/COPYING COPYING.nowide
+cp -p picotcp/COPYING COPYING.picotcp
+cp -p volk/LICENSE.md LICENSE.volk.md
+cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
+popd
+
 pushd core/deps/breakpad
 sed -e '/" -Werror"/d' -i configure.ac
 autoreconf -if
@@ -213,7 +222,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %files
-%license LICENSE
+%license LICENSE core/deps/{COPYING,COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop

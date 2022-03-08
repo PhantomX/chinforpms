@@ -29,11 +29,12 @@ gstreamer1-plugins-ugly
 hactool
 hakuneko-desktop
 -higan
-irpf2017
+-irpf2017
 irpf2018
 irpf2019
 irpf2020
 irpf2021
+irpf2022
 -kepka
 lbreakouthd
 mame-data-icons

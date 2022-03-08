@@ -1,3 +1,9 @@
+# Disable this. Local lto flags in use.
+%global _lto_cflags %{nil}
+
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+
 %global commit e5809740a5ff6da20938da4051cd211849ddf11b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210906
@@ -85,10 +91,7 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 
 %build
-# Disable this. Local lto flags in use.
-%global _lto_cflags %{nil}
-
-export flags="%(echo %{build_cxxflags} | sed -e 's/-O2\b/-O3/')"
+export flags="%{build_cxxflags}"
 export options="%{build_ldflags}"
 
 %make_build -C %{name} target=%{name} verbose \

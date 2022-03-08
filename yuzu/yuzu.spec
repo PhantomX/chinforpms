@@ -3,6 +3,11 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,relro -Wl,-z,now}
+
 %global commit 8667d19bf22f66b1f8b61606bfe2036ca844dcc0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220306
@@ -199,6 +204,19 @@ tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
 
+pushd externals
+cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
+cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
+%if !%{with mbedtls}
+cp -p mbedtls/LICENSE LICENSE.mbedtls
+%endif
+cp -p sirit/LICENSE.txt LICENSE.sirit
+cp -p soundtouch/COPYING.txt COPYING.soundtouch
+cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
+sed -e 's/\r//' -i COPYRIGHT.xbyak
+popd
+
 %if !%{with mbedtls}
 sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
@@ -212,9 +230,6 @@ sed \
 sed \
   -e '/-pedantic-errors/d' \
   -i externals/dynarmic/CMakeLists.txt
-
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
@@ -261,7 +276,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
-%license license.txt
+%license license.txt externals/{COPYING,COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %dnl %{_mandir}/man6/%{name}.6*

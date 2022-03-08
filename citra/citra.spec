@@ -3,9 +3,14 @@
 %undefine _cmake_shared_libs
 %undefine _hardened_build
 
-%global commit 25ad002e6e7301b5c62bbde129a273e53027e9be
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,relro -Wl,-z,now}
+
+%global commit ac98458e0b234e13936a9c2a98a413408d0f08c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220224
+%global date 20220305
 %global with_snapshot 1
 
 # Enable system boost
@@ -61,6 +66,12 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 ext-boost
 
+%global commit12 6e27aa4c8671e183f11e327a2e1f556c64fdc4a9
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 cpp-jwt
+
+%global cpphttplibver b251668
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -69,7 +80,7 @@
 
 Name:           citra
 Version:        0
-Release:        18%{?gver}%{?dist}
+Release:        19%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -93,6 +104,7 @@ Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{s
 %if !%{with boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
+Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -134,6 +146,7 @@ BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
 Provides:       bundled(catch) = 0~git%{shortcommit1}
+Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
 Provides:       bundled(fmt) = 0~git%{shortcommit4}
@@ -143,6 +156,7 @@ Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
 Provides:       bundled(xbyak) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
+Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 
 
 %description
@@ -178,12 +192,32 @@ tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 %if !%{with boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
+tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
+
+find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
+
+pushd externals
+%if !%{with boost}
+cp -p boost/LICENSE_1_0.txt LICENSE.boost
+%endif
+cp -p catch/LICENSE.txt LICENSE.catch
+cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
+cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
+cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+cp -p fmt/LICENSE.rst LICENSE.fmt.rst
+cp -p inih/inih/LICENSE.txt LICENSE.inih.md
+cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
+cp -p nihstro/license.txt LICENSE.nihstro
+cp -p soundtouch/COPYING.txt COPYING.soundtouch
+cp -p teakra/LICENSE LICENSE.teakra
+cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
+sed -e 's/\r//' -i COPYRIGHT.xbyak LICENSE.cpp-jwt
+popd
+
 
 rm -f externals/json/json.hpp
 ln -sf %{_includedir}/nlohmann/json.hpp \
   externals/json/json.hpp
-
-sed -e '/ENABLE_WEB_SERVICE/s|ON|OFF|g' -i CMakeLists.txt
 
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
 
@@ -212,9 +246,6 @@ sed -e '/^#include <exception>/a#include <system_error>' \
 %endif
 
 %build
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 %if 0%{?with_snapshot}
 export CI=true
 export TRAVIS=true
@@ -233,11 +264,13 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 %if %{with ffmpeg}
   -DENABLE_FFMPEG:BOOL=ON \
+  -DENABLE_FFMPEG_AUDIO_DECODER:BOOL=ON \
+  -DENABLE_FFMPEG_VIDEO_DUMPER:BOOL=ON \
 %endif
 %if !%{with adv_simd}
   -DCRYPTOPP_DISABLE_SSSE3:BOOL=ON \
 %endif
-  -DENABLE_WEB_SERVICE:BOOL=OFF \
+  -DENABLE_WEB_SERVICE:BOOL=ON \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
@@ -257,7 +290,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
-%license license.txt
+%license license.txt externals/{COPYING,COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-room
@@ -276,6 +309,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Mar 07 2022 Phantom X <megaphantomx at hotmail dot com> - 0-19.20220305gitac98458
+- Bump to fix upstream issues
+- Enable web service
+
 * Sat Feb 26 2022 Phantom X <megaphantomx at hotmail dot com> - 0-18.20220224git25ad002
 - Bump
 - Reenable system boost

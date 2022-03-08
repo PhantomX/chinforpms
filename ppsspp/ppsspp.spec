@@ -1,3 +1,12 @@
+# https://github.com/hrydgard/ppsspp/issues/13312
+%global _lto_cflags %{nil}
+%undefine _hardened_build
+%undefine _cmake_shared_libs
+
+%dnl %global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,relro -Wl,-z,now}
+
 %global commit 3bfab6326af73d27c8a2a41a58ca31f7ee2d8b8b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220224
@@ -17,9 +26,6 @@
 %endif
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %global with_smallffmpeg 1
-
-# https://github.com/hrydgard/ppsspp/issues/13312
-%global _lto_cflags %{nil}
 
 %global commit1 36ad6b19b22de2075a01a4f0c765e3ef514dc38f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -48,9 +54,6 @@
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
-
-%undefine _hardened_build
-%undefine _cmake_shared_libs
 
 %global vc_url  https://github.com/hrydgard
 
@@ -154,6 +157,7 @@ Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(armips) = 0~git%{shortcommit4}
+Provides:       bundled(cityhash)
 Provides:       bundled(gason)
 Provides:       bundled(glslang) = 0~git%{shortcommit6}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
@@ -219,6 +223,21 @@ rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
+%if %{with ffmpeg}
+%if !0%{?with_sysffmpeg}
+cp -p ffmpeg/LICENSE.md ext/LICENSE.ffmpeg.md
+%endif
+%endif
+
+pushd ext
+cp -p armips/LICENSE.txt LICENSE.armips
+cp -p cityhash/COPYING COPYING.cityhash
+cp -p gason/LICENSE LICENSE.gason
+cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
+cp -p udis86/LICENSE LICENSE.udis86
+popd
+
 %if 0%{?with_snapshot}
 sed -i \
   -e "/GIT_VERSION/s|unknown|%{version}-%{release}|g" \
@@ -240,15 +259,22 @@ sed \
   -i CMakeLists.txt
 
 sed \
-  -e 's| -O3 | -O2 |g' \
-  -i CMakeLists.txt ext/armips/ext/tinyformat/Makefile
+  -e 's| -O2 | |g' \
+  -i CMakeLists.txt
+
+sed \
+  -e 's|"-O2"|""|g' \
+  -i CMakeLists.txt
+
+sed \
+  -e 's| -O3 | |g' \
+  -i ext/armips/ext/tinyformat/Makefile
 
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
-  -e '/extra-cflags/s|-O3|%{build_cflags}|g' \
   -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
   -i linux_*.sh
@@ -263,18 +289,18 @@ popd
 
 
 %build
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 pushd ext/native/tools
 %cmake \
 %{nil}
 
-%cmake_build
 popd
 
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
 pushd ffmpeg
+sed \
+  -e '/extra-cflags/s|-O3|%{build_cflags}|g' \
+  -i linux_*.sh
 %ifarch x86_64
 ./linux_x86-64.sh
 %endif
@@ -337,6 +363,10 @@ popd
 %endif
 %{nil}
 
+pushd ext/native/tools
+%cmake_build
+popd
+
 %cmake_build
 
 
@@ -388,7 +418,7 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files
-%license LICENSE.TXT
+%license LICENSE.TXT ext/{COPYING,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
