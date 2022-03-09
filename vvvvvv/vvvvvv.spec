@@ -1,16 +1,14 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit f7454baffa1a97ac6a2d4e792936c8e1bc391c04
+%global commit 9c698c084e7bb25d699499c59d402d0a48103ee0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211222
-
-%undefine _hardened_build
+%global date 20220214
 
 %global with_systinyxml 0
 
 %global bundlelodepngver 20191109
 %global bundlephysfsver 0
-%global bundletinyxml 8.0.0
+%global bundletinyxml 9.0.0
 
 %global gver .%{date}git%{shortcommit}
 
@@ -18,7 +16,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -80,7 +78,10 @@ sed \
   -e '/find_package(utf8cpp CONFIG)/aadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
   -e '/target_link_libraries/s| tinyxml2 | tinyxml2-static |g' \
   -i desktop_version/CMakeLists.txt
+cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
 %endif
+
+cp -p third_party/lodepng/LICENSE.txt LICENSE.lodepng
 
 cp -p desktop_version/README.md README_desktop.md
 
@@ -142,7 +143,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %files
-%license LICENSE.md
+%license LICENSE.*
 %doc README.md README_desktop.md
 %{_bindir}/%{pkgname}
 %{_datadir}/applications/%{pkgname}.desktop
@@ -151,7 +152,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
-* Wed Dec 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4-4.20211222gitf7454ba
+* Tue Mar 08 2022 - 2.4-5.20220214git9c698c0
+- Bump
+
+* Wed Dec 22 2021 - 2.4-4.20211222gitf7454ba
 - Last snapshot
 
 * Wed Nov 24 2021 - 2.4-3.20211114git6e832ca

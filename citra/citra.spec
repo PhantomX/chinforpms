@@ -6,7 +6,7 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,relro -Wl,-z,now}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %global commit ac98458e0b234e13936a9c2a98a413408d0f08c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})

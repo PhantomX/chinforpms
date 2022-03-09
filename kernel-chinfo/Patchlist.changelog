@@ -1,3 +1,15 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/ce338c425415d1e9623815d79bb88a98818f4157
+ ce338c425415d1e9623815d79bb88a98818f4157 Revert "PCI/MSI: Mask MSI-X vectors only on success"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/bb6f217f11225d6c72a4c43601df295b29c5457d
+ bb6f217f11225d6c72a4c43601df295b29c5457d drm/i915/psr: Set "SF Partial Frame Enable" also on full update
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/88d7b2ee03edb6abba36a7a34011e1c036bb2c62
+ 88d7b2ee03edb6abba36a7a34011e1c036bb2c62 Revert "drm/i915/psr: Disable PSR2 selective fetch for all TGL steps"
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/1c96abf3c7126a2fb24f689b1ffcdd6eda0ffdc6
+ 1c96abf3c7126a2fb24f689b1ffcdd6eda0ffdc6 drm/nouveau/backlight: Fix LVDS backlight detection on some laptops
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/f02942b95fb601b9729da7be1ae55d2255dcc045
  f02942b95fb601b9729da7be1ae55d2255dcc045 Revert "x86/PCI: Ignore E820 reservations for bridge windows on newer systems"
 

@@ -1,7 +1,17 @@
-%global commit 4e7ade8612b921c7fac22a8771bc3da4f8a6e159
+# https://github.com/hrydgard/ppsspp/issues/13312
+%global _lto_cflags %{nil}
+%undefine _hardened_build
+%undefine _cmake_shared_libs
+
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit 2d08d3dc9495135f5488f74cd7a1849b99d12d0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220221
-%global with_snapshot 1
+%global date 20220308
+%global with_snapshot 0
 
 %global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -20,17 +30,14 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%undefine _hardened_build
-%undefine _cmake_shared_libs
-
 %global glad_ver 0.1.25
 %global jpgc_ver 1.05
 %global simpleini_ver 4.17
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.0
-Release:        140%{?gver}%{?dist}
+Version:        1.7.2421
+Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPLv3 and LGPLv3+
@@ -144,8 +151,8 @@ rm -rf tools
 rm -f common/src/Utilities/x86/MemcpyFast.cpp
 rm -rf .git
 
-%{?gver:tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1}
-%{?gver:tar -xf %{S:11} -C 3rdparty/imgui/imgui --strip-components 1}
+tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1
+tar -xf %{S:11} -C 3rdparty/imgui/imgui --strip-components 1
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -161,8 +168,12 @@ sed -i 's/@PCSX2_MENU_CATEGORIES@/Game;Emulator;GTK;/g' linux_various/PCSX2.desk
 %if 0%{?with_snapshot}
 sed -i \
   -e '/PCSX2_GIT_REV/s| ""| "v%{version}-git%{shortcommit}"|g' \
-  cmake/Pcsx2Utils.cmake
+%else
+sed -i \
+  -e '/PCSX2_GIT_REV/s| ""| "v%{version}"|g' \
+  -e '/PCSX2_GIT_TAG/s| ""| "v%{version}"|g' \
 %endif
+  cmake/Pcsx2Utils.cmake
 
 sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 
@@ -184,9 +195,6 @@ EOF
 # have no much impact on speed 2/ some gcc flags (used to) crash PCSX2"
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
-%global _lto_cflags %{nil}
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//') -fuse-ld=bfd
-
 %cmake \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
@@ -206,7 +214,7 @@ EOF
 %endif
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
-  -DCUBEB_API:BOOL=TUE \
+  -DCUBEB_API:BOOL=TRUE \
   -DUSE_SYSTEM_YAML:BOOL=TRUE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DDISABLE_SETCAP:BOOL=TRUE \
@@ -272,10 +280,20 @@ rm -rf %{buildroot}/usr/share/pixmaps
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*
-%{_datadir}/PCSX2/
+%dir %{_datadir}/PCSX2
+%dir %{_datadir}/PCSX2/resources
+%{_datadir}/PCSX2/resources/fonts
+%{_datadir}/PCSX2/resources/shaders
+%{_datadir}/PCSX2/resources/cheats_ws.zip
+%{_datadir}/PCSX2/resources/GameIndex.yaml
+%{_datadir}/PCSX2/resources/cover-placeholder.png
+%{_datadir}/PCSX2/resources/game_controller_db.txt
 
 
 %changelog
+* Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2421-1
+- 1.7.2421 tag release
+
 * Tue Feb 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.0-140.20220221git4e7ade8
 - Update
 

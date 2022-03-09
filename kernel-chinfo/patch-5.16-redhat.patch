@@ -22,7 +22,9 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/gpu/drm/i915/display/intel_psr.c           |  10 +-
+ drivers/gpu/drm/i915/display/intel_psr.c           |  16 ++-
+ drivers/gpu/drm/i915/i915_reg.h                    |   1 +
+ drivers/gpu/drm/nouveau/nouveau_backlight.c        |   3 +-
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -34,9 +36,9 @@ Subject: [PATCH] patch-5.16-redhat
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
+ drivers/pci/msi.c                                  |  13 +--
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- drivers/usb/gadget/legacy/inode.c                  |  10 +-
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -53,10 +55,10 @@ Subject: [PATCH] patch-5.16-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/netfilter/nft_nat.sh       |   5 +-
- 49 files changed, 805 insertions(+), 198 deletions(-)
+ 51 files changed, 811 insertions(+), 205 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 00ba75768af7..f95367fb3134 100644
+index 6702e44821eb..9e7e71b0abbb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -87,10 +89,10 @@ index c2724d986fa0..8063dcef65f7 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index ae0e93871ee5..7d5274349536 100644
+index 651bf217465e..874ef87c9585 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1093,7 +1093,7 @@ endchoice
+@@ -1109,7 +1109,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -99,7 +101,7 @@ index ae0e93871ee5..7d5274349536 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1347,6 +1347,7 @@ config XEN
+@@ -1363,6 +1363,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -133,7 +135,7 @@ index 5ad1dde23dc5..b6192d58eed3 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 225ab2d0a4c6..6a06cde25ca2 100644
+index 65a31cb0611f..5d059341f02b 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -144,7 +146,7 @@ index 225ab2d0a4c6..6a06cde25ca2 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -963,6 +964,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -965,6 +966,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -855,27 +857,72 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
-index 7a205fd5023b..42d57ebd9061 100644
+index 7a205fd5023b..3ba8b717e176 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
 +++ b/drivers/gpu/drm/i915/display/intel_psr.c
-@@ -735,10 +735,14 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
- 		return false;
- 	}
+@@ -1400,6 +1400,13 @@ static inline u32 man_trk_ctl_single_full_frame_bit_get(struct drm_i915_private
+ 	       PSR2_MAN_TRK_CTL_SF_SINGLE_FULL_FRAME;
+ }
 
--	/* Wa_14010254185 Wa_14010103792 */
--	if (IS_TGL_DISPLAY_STEP(dev_priv, STEP_A0, STEP_C0)) {
-+	/*
-+	 * There's two things stopping this from being enabled on TGL:
-+	 * For steps A0-C0: workarounds Wa_14010254185 Wa_14010103792 are missing
-+	 * For all steps: PSR2 selective fetch causes screen flickering
-+	 */
-+	if (IS_TIGERLAKE(dev_priv)) {
- 		drm_dbg_kms(&dev_priv->drm,
--			    "PSR2 sel fetch not enabled, missing the implementation of WAs\n");
-+			    "PSR2 sel fetch not enabled, currently broken on TGL\n");
- 		return false;
- 	}
++static inline u32 man_trk_ctl_partial_frame_bit_get(struct drm_i915_private *dev_priv)
++{
++	return IS_ALDERLAKE_P(dev_priv) ?
++	       ADLP_PSR2_MAN_TRK_CTL_SF_PARTIAL_FRAME_UPDATE :
++	       PSR2_MAN_TRK_CTL_SF_PARTIAL_FRAME_UPDATE;
++}
++
+ static void psr_force_hw_tracking_exit(struct intel_dp *intel_dp)
+ {
+ 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
+@@ -1495,7 +1502,13 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
+ {
+ 	struct intel_crtc *crtc = to_intel_crtc(crtc_state->uapi.crtc);
+ 	struct drm_i915_private *dev_priv = to_i915(crtc->base.dev);
+-	u32 val = PSR2_MAN_TRK_CTL_ENABLE;
++	u32 val = 0;
++
++	if (!IS_ALDERLAKE_P(dev_priv))
++		val = PSR2_MAN_TRK_CTL_ENABLE;
++
++	/* SF partial frame enable has to be set even on full update */
++	val |= man_trk_ctl_partial_frame_bit_get(dev_priv);
 
+ 	if (full_update) {
+ 		/*
+@@ -1515,7 +1528,6 @@ static void psr2_man_trk_ctl_calc(struct intel_crtc_state *crtc_state,
+ 	} else {
+ 		drm_WARN_ON(crtc_state->uapi.crtc->dev, clip->y1 % 4 || clip->y2 % 4);
+
+-		val |= PSR2_MAN_TRK_CTL_SF_PARTIAL_FRAME_UPDATE;
+ 		val |= PSR2_MAN_TRK_CTL_SU_REGION_START_ADDR(clip->y1 / 4 + 1);
+ 		val |= PSR2_MAN_TRK_CTL_SU_REGION_END_ADDR(clip->y2 / 4 + 1);
+ 	}
+diff --git a/drivers/gpu/drm/i915/i915_reg.h b/drivers/gpu/drm/i915/i915_reg.h
+index 14ce8809efdd..e927776ae183 100644
+--- a/drivers/gpu/drm/i915/i915_reg.h
++++ b/drivers/gpu/drm/i915/i915_reg.h
+@@ -4738,6 +4738,7 @@ enum {
+ #define  ADLP_PSR2_MAN_TRK_CTL_SU_REGION_START_ADDR(val)	REG_FIELD_PREP(ADLP_PSR2_MAN_TRK_CTL_SU_REGION_START_ADDR_MASK, val)
+ #define  ADLP_PSR2_MAN_TRK_CTL_SU_REGION_END_ADDR_MASK		REG_GENMASK(12, 0)
+ #define  ADLP_PSR2_MAN_TRK_CTL_SU_REGION_END_ADDR(val)		REG_FIELD_PREP(ADLP_PSR2_MAN_TRK_CTL_SU_REGION_END_ADDR_MASK, val)
++#define  ADLP_PSR2_MAN_TRK_CTL_SF_PARTIAL_FRAME_UPDATE		REG_BIT(31)
+ #define  ADLP_PSR2_MAN_TRK_CTL_SF_SINGLE_FULL_FRAME		REG_BIT(14)
+ #define  ADLP_PSR2_MAN_TRK_CTL_SF_CONTINUOS_FULL_FRAME		REG_BIT(13)
+
+diff --git a/drivers/gpu/drm/nouveau/nouveau_backlight.c b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+index 1cbd71abc80a..9d2513de959b 100644
+--- a/drivers/gpu/drm/nouveau/nouveau_backlight.c
++++ b/drivers/gpu/drm/nouveau/nouveau_backlight.c
+@@ -294,7 +294,8 @@ nv50_backlight_init(struct nouveau_backlight *bl,
+ 	struct nouveau_drm *drm = nouveau_drm(nv_encoder->base.base.dev);
+ 	struct nvif_object *device = &drm->client.device.object;
+
+-	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)))
++	if (!nvif_rd32(device, NV50_PDISP_SOR_PWM_CTL(ffs(nv_encoder->dcb->or) - 1)) ||
++	    nv_conn->base.status != connector_status_connected)
+ 		return -ENODEV;
+
+ 	if (nv_conn->type == DCB_CONNECTOR_eDP) {
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1382,7 +1429,7 @@ index 4c348bacf2cb..9fe496d35b38 100644
  				soc_hw_version_major, soc_hw_version_minor);
  			ret = -EOPNOTSUPP;
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 352766aa3122..16a2c9417536 100644
+index 5785f6abf194..7fc5f15a4b78 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -244,6 +244,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1517,6 +1564,37 @@ index 9b095ee01364..bf25ef206cd2 100644
  static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
  {
  }
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index 8465221be6d2..64f37ad8227d 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -722,6 +722,9 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+ 		goto out_disable;
+ 	}
+
++	/* Ensure that all table entries are masked. */
++	msix_mask_all(base, tsize);
++
+ 	ret = msix_setup_entries(dev, base, entries, nvec, affd);
+ 	if (ret)
+ 		goto out_disable;
+@@ -748,16 +751,6 @@ static int msix_capability_init(struct pci_dev *dev, struct msix_entry *entries,
+ 	/* Set MSI-X enabled bits and unmask the function */
+ 	pci_intx_for_msi(dev, 0);
+ 	dev->msix_enabled = 1;
+-
+-	/*
+-	 * Ensure that all table entries are masked to prevent
+-	 * stale entries from firing in a crash kernel.
+-	 *
+-	 * Done late to deal with a broken Marvell NVME device
+-	 * which takes the MSI-X mask bits into account even
+-	 * when MSI-X is disabled, which prevents MSI delivery.
+-	 */
+-	msix_mask_all(base, tsize);
+ 	pci_msix_clear_and_set_ctrl(dev, PCI_MSIX_FLAGS_MASKALL, 0);
+
+ 	pcibios_free_irq(dev);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 20a932690738..494cee3aec7b 100644
 --- a/drivers/pci/quirks.c
@@ -1570,42 +1648,6 @@ index ac6c5ccfe1cb..ec784479eece 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/drivers/usb/gadget/legacy/inode.c b/drivers/usb/gadget/legacy/inode.c
-index 3b58f4fc0a80..25c8809e0a38 100644
---- a/drivers/usb/gadget/legacy/inode.c
-+++ b/drivers/usb/gadget/legacy/inode.c
-@@ -1826,8 +1826,9 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
- 	spin_lock_irq (&dev->lock);
- 	value = -EINVAL;
- 	if (dev->buf) {
-+		spin_unlock_irq(&dev->lock);
- 		kfree(kbuf);
--		goto fail;
-+		return value;
- 	}
- 	dev->buf = kbuf;
-
-@@ -1874,8 +1875,8 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
-
- 	value = usb_gadget_probe_driver(&gadgetfs_driver);
- 	if (value != 0) {
--		kfree (dev->buf);
--		dev->buf = NULL;
-+		spin_lock_irq(&dev->lock);
-+		goto fail;
- 	} else {
- 		/* at this point "good" hardware has for the first time
- 		 * let the USB the host see us.  alternatively, if users
-@@ -1892,6 +1893,9 @@ dev_config (struct file *fd, const char __user *buf, size_t len, loff_t *ptr)
- 	return value;
-
- fail:
-+	dev->config = NULL;
-+	dev->hs_config = NULL;
-+	dev->dev = NULL;
- 	spin_unlock_irq (&dev->lock);
- 	pr_debug ("%s: %s fail %zd, %p\n", shortname, __func__, value, dev);
- 	kfree (dev->buf);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ef8dbc0a1522..836a5dfc6156 100644
 --- a/include/linux/efi.h

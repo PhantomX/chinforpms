@@ -5,7 +5,6 @@ adwaita-qt
 chinforpms-rpm-config
 -compat-bison-36
 -compat-gcc-32
-cubeb
 -dxil-spirv
 -FAudio
 -FAudio-freeworld
@@ -14,15 +13,12 @@ gamemode
 -glslang
 gnome-theme-extra
 gstreamer1
-gstreamer1-plugins-base
+-gstreamer1-plugins-base
 -gstreamer1-plugins-ugly-free
 gtk3
 gtk3-nocsd
-kernel-tools
 ladspa-tap-plugins
 libeatmydata
-libmirage
-libmpd
 -libogg
 -libvorbis
 libvorbis-aotuv

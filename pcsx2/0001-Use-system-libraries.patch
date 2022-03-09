@@ -1,39 +1,41 @@
-From 4094390807aa23e721aa4c0f73ff6f87cfe40fe0 Mon Sep 17 00:00:00 2001
+From ee26ca0a9d363dafbff7e8ce2db73525a980b071 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 9 Feb 2022 07:45:19 -0300
+Date: Tue, 8 Mar 2022 14:39:06 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 20 +++++++++++++++++---
+ cmake/SearchForStuff.cmake | 26 +++++++++++++++++++------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
  pcsx2/CMakeLists.txt       |  2 +-
- 4 files changed, 20 insertions(+), 6 deletions(-)
+ 4 files changed, 23 insertions(+), 9 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 30d15e4..8cf3cf9 100644
+index f65acc7..ce48de5 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -247,7 +247,17 @@ if(QT_BUILD)
+@@ -247,8 +247,18 @@ if(QT_BUILD)
  	add_subdirectory(3rdparty/sdl2 EXCLUDE_FROM_ALL)
  endif()
  
 -add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
+-target_compile_options(chdr-static PRIVATE "-w")
 +check_lib(CHDR libchdr)
 +if(NOT CHDR_FOUND)
-+    message(STATUS "No system libchdr was found")
-+    set(CHDR_SYSTEM_LIBRARY chdr-static)
-+    add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
-+    include_directories(3rdparty/libchdr/libchdr/include/libchdr)
++	message(STATUS "No system libchdr was found")
++	set(CHDR_SYSTEM_LIBRARY chdr-static)
++	add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
++	include_directories(3rdparty/libchdr/libchdr/include/libchdr)
++	target_compile_options(chdr-static PRIVATE "-w")
 +else()
-+    include_directories(${CHDR_INCLUDE_DIRS})
-+    set(CHDR_SYSTEM_LIBRARY ${CHDR_LIBRARIES})
-+    message(STATUS "Found libchdr: ${CHDR_SYSTEM_LIBRARY}")
++	include_directories(${CHDR_INCLUDE_DIRS})
++	set(CHDR_SYSTEM_LIBRARY ${CHDR_LIBRARIES})
++	message(STATUS "Found libchdr: ${CHDR_SYSTEM_LIBRARY}")
 +endif()
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -264,10 +274,14 @@ add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
+@@ -265,12 +275,16 @@ add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -42,11 +44,15 @@ index 30d15e4..8cf3cf9 100644
  
  if(CUBEB_API)
 -	add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
+-	target_compile_options(cubeb PRIVATE "-w")
+-	target_compile_options(speex PRIVATE "-w")
 +	find_package(cubeb)
 +	if(cubeb_FOUND)
 +		message(STATUS "Using the system cubeb")
 +	else()
 +		add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
++		target_compile_options(cubeb PRIVATE "-w")
++		target_compile_options(speex PRIVATE "-w")
 +	endif()
  endif()
  
@@ -77,10 +83,10 @@ index 785e457..935b6bf 100644
  
  class ChdFileReader : public ThreadedFileReader
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 8752510..bde5c85 100644
+index cc4b7c9..e16e7ad 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1526,7 +1526,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1524,7 +1524,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	imgui
  	fmt::fmt
  	ryml

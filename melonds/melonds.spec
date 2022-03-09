@@ -1,8 +1,11 @@
 %undefine _cmake_shared_libs
 
-%global commit 2c21787f335b27169672f16c663fffd9da9085c8
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+
+%global commit 20c39eb3f148f09e547a07eb7f9cd65840b6f989
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220228
+%global date 20220308
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -15,8 +18,8 @@
 %global fatfs_ver 86631
 
 Name:           melonds
-Version:        0.9.3
-Release:        8%{?gver}%{?dist}
+Version:        0.9.4
+Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -115,6 +118,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-1.20220308git20c39eb
+- 0.9.4
+
 * Mon Feb 28 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-8.20220228git2c21787
 - Update
 

@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8ed5ed7be97f112bfa777c0440d066e79e177686
+%global pfcommit f8c99a8a13f9adcb7ab49c4f13fc5083e4f9d033
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 607a2b17efda3fd78cc0ab869a4111b28b95cfba
+%global opensuse_id bd40cb23d12a1f3c064867e31c6645052d1e16dc
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -973,7 +973,7 @@ Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 38513e05b4333795f5fbc167e854e1793027b334
+%global tkg_id abf5d0c459630f6a2d56c2f4ab0312de1ee4b64b
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 %dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
@@ -2914,6 +2914,9 @@ fi
 #
 #
 %changelog
+* Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.13-500.chinfo
+- 5.16.13 - pf5
+
 * Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.12-500.chinfo
 - 5.16.12 - pf5
 

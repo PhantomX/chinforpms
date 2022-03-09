@@ -5,7 +5,7 @@
 
 %dnl %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,relro -Wl,-z,now}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %global commit 3bfab6326af73d27c8a2a41a58ca31f7ee2d8b8b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
