@@ -1,0 +1,44 @@
+From ad7c6089a18cd8ad66cd97135e3a9dabfccea9b9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 9 Mar 2022 17:46:25 -0300
+Subject: [PATCH] testStructuredClone.cpp: Remove
+ testStructuredClone_invalidLength test
+
+Build failure when debug is disabled
+This reverts part of commit 18213329b676e532f56b6042bc0baae1cec1d5d2,
+---
+ js/src/jsapi-tests/testStructuredClone.cpp | 18 ------------------
+ 1 file changed, 18 deletions(-)
+
+diff --git a/js/src/jsapi-tests/testStructuredClone.cpp b/js/src/jsapi-tests/testStructuredClone.cpp
+index 1a0fada..a01afcc 100644
+--- a/js/src/jsapi-tests/testStructuredClone.cpp
++++ b/js/src/jsapi-tests/testStructuredClone.cpp
+@@ -9,24 +9,6 @@
+ 
+ using namespace js;
+ 
+-#ifdef DEBUG
+-// Skip test, since it will abort with an assert in buf->Init(7).
+-#else
+-BEGIN_TEST(testStructuredClone_invalidLength) {
+-  auto buf = js::MakeUnique<JSStructuredCloneData>(
+-      JS::StructuredCloneScope::DifferentProcess);
+-  CHECK(buf);
+-  CHECK(buf->Init(7));
+-  RootedValue clone(cx);
+-  JS::CloneDataPolicy policy;
+-  CHECK(!JS_ReadStructuredClone(cx, *buf, JS_STRUCTURED_CLONE_VERSION,
+-                                JS::StructuredCloneScope::DifferentProcess,
+-                                &clone, policy, nullptr, nullptr));
+-  return true;
+-}
+-END_TEST(testStructuredClone_invalidLength)
+-#endif
+-
+ BEGIN_TEST(testStructuredClone_object)
+ {
+     JS::RootedObject g1(cx, createGlobal());
+-- 
+2.35.1
+

@@ -131,7 +131,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
-Version:        2022.01
+Version:        2022.02
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -193,6 +193,7 @@ Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+Patch450:       %{vc_url}/pull/74.patch#/%{name}-gh-pr74.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -216,6 +217,7 @@ Patch706:        0001-Update-patch-bug847568.patch
 Patch707:        0001-Update-patch-bug1456512.patch
 Patch708:        0001-mbft-tests-fix-build.patch
 Patch709:        0001-TestAudioEventTimeline.cpp-gtest-fix-build.patch
+Patch710:        0001-testStructuredClone.cpp-Remove-testStructuredClone_i.patch
 
 # Gentoo
 Patch800:        seamonkey-2.53.3-system_libvpx-1.8.patch
@@ -400,6 +402,8 @@ This package contains results of tests executed during build.
 %endif
 %patch419 -p1 -b .mozilla-1320560
 
+%patch450 -p1 -b .pr74
+
 # Debian extension patch
 %patch500 -p1 -b .440908
 
@@ -441,7 +445,7 @@ for i in \
   702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
   1395486 1396722 1398021 1399412 1401909 1412420 1417751 1419762 1425267 1427126 \
   1430508 1433747 1438425 1440943 1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
-  712130 1384121 1384701 1388744 1401063 1406396 1413143 1415883 1402442 1437450 1464872 1465108 \
+  712130 1384121 1384701 1388744 1401063 1406396 1408397 1413143 1415883 1402442 1437450 1464872 1465108 \
   1447519
 do
   rm -f _patches/patch-bug${i}
@@ -465,6 +469,7 @@ done
 %patch704 -p1 -b .no-diagnostics-color
 %patch708 -p1 -b .mbft-build-fix
 %patch709 -p1 -b .TestAudioEventTimeline.cpp-build-fix
+%patch710 -p1 -b .testStructuredClone.cpp-build-fix
 
 %patch800 -p2 -b .system-vpx
 %patch801 -p1 -b .CLEANUP-workaround
@@ -1038,6 +1043,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Wed Mar 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.02-1.classic
+- 2022.02
+
 * Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.01-1.classic
 - 2022.01
 

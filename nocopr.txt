@@ -52,6 +52,7 @@ python-pyctr
 -odrive
 rocketchat-desktop
 rpcs3
+rusty-psn
 snes9x
 softmaker-office
 -soulseekqt
