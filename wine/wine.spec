@@ -1,7 +1,7 @@
 %global commit 18230d23c599f1f5f9dd419dccc11c49117cc3b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220304
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.1.5
-%global winevulkan 1.3.204
+%global winevulkan 1.3.207
 %global winefastsync 5.15
 
 %global wineFAudio 22.02
@@ -81,7 +81,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver a79a08a6f7fdd9e4123cb55aa4e946060a14aef0
+%global wine_stagingver 7.4
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -92,9 +92,9 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 07cc38fd4ec5e1c942f455ac15a2220fd69e7ee5
+%global tkg_id 5e1fc3ce25ce8da095a3e228f45eab98f01d93fa
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 8364f288b3e826c7b698ca260c5decf12f66b9f8
+%global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -145,8 +145,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.3
-Release:        103%{?gver}%{?dist}
+Version:        7.4
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -214,13 +214,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
 Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
-Patch202:       %{whq_url}/ab780cee837f9d80a512a04aaceb7c5f554b5558#/%{name}-whq-revert-hid-ab780ce.patch
-Patch203:       %{whq_url}/9d2c868db3a893ffc5567ad89f9ec83dcbf55920#/%{name}-whq-revert-hid-9d2c868.patch
-Patch204:       %{whq_url}/e4105a71d1449355563e1bf23349826d416d53f1#/%{name}-whq-revert-hid-e4105a7.patch
-Patch205:       %{whq_url}/1200e9d472deaa99e80d8fd80821008e3c9021bc#/%{name}-whq-revert-hid-1200e9d.patch
-Patch206:       %{whq_url}/f8f843a85a780be9da8eaacbb3efb995a16c5ba6#/%{name}-whq-revert-hid-f8f843a.patch
-Patch207:       %{whq_url}/6efb40718be445111a4b757f0acd8a6c66161b25#/%{name}-whq-revert-hid-6efb407.patch
-Patch208:       %{whq_url}/42c8860b23a024a1e0bbb6ad6445d7182698603e#/%{name}-whq-revert-hid-42c8860.patch
 
 # mfplat things, again
 Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
@@ -238,6 +231,12 @@ Patch221:       %{whq_url}/d2f653a854ccd17688813d6b7f585acbfb45b9ba#/%{name}-whq
 Patch222:       %{whq_url}/aa867c6cfba48a63179088ec6381c73488853659#/%{name}-whq-revert-mfplat-aa867c6.patch
 Patch223:       %{whq_url}/9196fee58349558593fd7edf4768b189c25f6293#/%{name}-whq-revert-mfplat-9196fee.patch
 Patch224:       %{whq_url}/227a1275b14a2ffd71a4d0c621cb655e3576ad02#/%{name}-whq-revert-mfplat-227a127.patch
+Patch225:       %{whq_url}/506963aaea8e3c6e4820884b3308da27f435e580#/%{name}-whq-revert-mfplat-506963a.patch
+Patch226:       %{name}-revert-mfplat-446bb1e.patch
+Patch227:       %{whq_url}/6a7428a0fae887cecf2e97b9cab9de9cf7811446#/%{name}-whq-revert-mfplat-6a7428a.patch
+Patch228:       %{name}-revert-mfplat-7a4aafd.patch
+Patch229:       %{whq_url}/6860e9ab29f4fbcfe35cb0519cfe94b94f54a36f#/%{name}-whq-revert-mfplat-6860e9a.patch
+Patch230:       %{name}-revert-mfplat-24e5467.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -268,7 +267,6 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
-Patch1033:       %{tkg_url}/hotfixes/rdr2/0004-winevulkan2.mypatch#/%{name}-tkg-0004-winevulkan2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
@@ -888,14 +886,14 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
-%patch208 -p1 -R
-%patch207 -p1 -R
-%patch206 -p1 -R
-%patch205 -p1 -R
-%patch204 -p1 -R
-%patch203 -p1 -R
-%patch202 -p1 -R
-
+%patch230 -p1 -R
+rm -f dlls/winegstreamer/h264_decoder.c
+%patch229 -p1 -R
+%patch228 -p1 -R
+%patch227 -p1 -R
+rm -f dlls/mf/tests/nv12frame.bin
+%patch226 -p1 -R
+%patch225 -p1 -R
 %patch224 -p1 -R
 %patch223 -p1 -R
 %patch222 -p1 -R
@@ -977,7 +975,6 @@ patch -p1 -i patch1031.patch
 %patch1031 -p1
 %endif
 %patch1032 -p1
-%patch1033 -p1
 #patch1034 -p1
 %patch1035 -p1
 %patch1036 -p1
@@ -1535,6 +1532,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/conhost.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cscript.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dism.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/dllhost.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dpnsvr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/eject.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/expand.%{wineexe}
@@ -2597,6 +2595,9 @@ fi
 
 
 %changelog
+* Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-100
+- 7.4
+
 * Sat Mar 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.3-103.20220304git18230d2
 - Bump
 

@@ -1,0 +1,137 @@
+From 24e546779f4e0fa86b20fe0c4023b44f019fbd25 Mon Sep 17 00:00:00 2001
+From: =?utf8?q?R=C3=A9mi=20Bernon?= <rbernon@codeweavers.com>
+Date: Wed, 9 Mar 2022 09:53:06 +0100
+Subject: [PATCH] winegstreamer: Introduce new H264 decoder transform stub.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf8
+Content-Transfer-Encoding: 8bit
+
+Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=45988
+Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=47084
+Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=49715
+Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=52183
+Signed-off-by: RÃ©mi Bernon <rbernon@codeweavers.com>
+Signed-off-by: Nikolay Sivov <nsivov@codeweavers.com>
+Signed-off-by: Alexandre Julliard <julliard@winehq.org>
+---
+ dlls/mf/tests/mf.c                           |   2 +-
+ dlls/winegstreamer/Makefile.in               |   1 +
+ dlls/winegstreamer/gst_private.h             |   1 +
+ dlls/winegstreamer/mfplat.c                  |  29 +-
+ dlls/winegstreamer/winegstreamer_classes.idl |   6 +
+ 6 files changed, 313 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/mf/tests/mf.c b/dlls/mf/tests/mf.c
+index 0cfcf40fd3d..880fbc9fc3f 100644
+--- a/dlls/mf/tests/mf.c
++++ b/dlls/mf/tests/mf.c
+@@ -6878,7 +6878,7 @@ static void test_h264_decoder(void)
+     {
+         status = 0;
+         memset(&output, 0, sizeof(output));
+-        output.pSample = create_sample(NULL, output_info.cbSize);
++        output.pSample = create_sample(NULL, 0x3fc000);
+         hr = IMFTransform_ProcessOutput(transform, 0, 1, &output, &status);
+         if (hr != MF_E_TRANSFORM_NEED_MORE_INPUT) break;
+         ok(hr == MF_E_TRANSFORM_NEED_MORE_INPUT, "ProcessOutput returned %#lx\n", hr);
+diff --git a/dlls/winegstreamer/Makefile.in b/dlls/winegstreamer/Makefile.in
+index 0bcdb3eec65..3524cffb399 100644
+--- a/dlls/winegstreamer/Makefile.in
++++ b/dlls/winegstreamer/Makefile.in
+@@ -8,6 +8,7 @@ EXTRALIBS = $(GSTREAMER_LIBS) $(PTHREAD_LIBS)
+ 
+ C_SRCS = \
+ 	audioconvert.c \
++	h264_decoder.c \
+ 	main.c \
+ 	media_source.c \
+ 	mfplat.c \
+diff --git a/dlls/winegstreamer/gst_private.h b/dlls/winegstreamer/gst_private.h
+index a3f8c0ab5eb..34b3e0c1047 100644
+--- a/dlls/winegstreamer/gst_private.h
++++ b/dlls/winegstreamer/gst_private.h
+@@ -118,6 +118,7 @@ void mf_media_type_to_wg_format(IMFMediaType *type, struct wg_format *format);
+ 
+ HRESULT winegstreamer_stream_handler_create(REFIID riid, void **obj);
+ 
++HRESULT h264_decoder_create(REFIID riid, void **ret);
+ HRESULT audio_converter_create(REFIID riid, void **ret);
+ 
+ struct wm_stream
+diff --git a/dlls/winegstreamer/mfplat.c b/dlls/winegstreamer/mfplat.c
+index 9b3fc429d32..7eb673b61ae 100644
+--- a/dlls/winegstreamer/mfplat.c
++++ b/dlls/winegstreamer/mfplat.c
+@@ -408,6 +408,7 @@ class_objects[] =
+     { &CLSID_VideoProcessorMFT, &video_processor_create },
+     { &CLSID_GStreamerByteStreamHandler, &winegstreamer_stream_handler_create },
+     { &CLSID_WINEAudioConverter, &audio_converter_create },
++    { &CLSID_MSH264DecoderMFT, &h264_decoder_create },
+ };
+ 
+ HRESULT mfplat_get_class_object(REFCLSID rclsid, REFIID riid, void **obj)
+@@ -457,6 +458,21 @@ static const GUID *const wma_decoder_output_types[] =
+     &MFAudioFormat_Float,
+ };
+ 
++static WCHAR h264_decoderW[] = L"Microsoft H264 Video Decoder MFT";
++static const GUID *const h264_decoder_input_types[] =
++{
++    &MFVideoFormat_H264,
++    &MFVideoFormat_H264_ES,
++};
++static const GUID *const h264_decoder_output_types[] =
++{
++    &MFVideoFormat_NV12,
++    &MFVideoFormat_YV12,
++    &MFVideoFormat_IYUV,
++    &MFVideoFormat_I420,
++    &MFVideoFormat_YUY2,
++};
++
+ static const struct mft
+ {
+     const GUID *clsid;
+@@ -493,13 +509,24 @@ mfts[] =
+         ARRAY_SIZE(wma_decoder_output_types),
+         wma_decoder_output_types,
+     },
++    {
++        &CLSID_MSH264DecoderMFT,
++        &MFT_CATEGORY_VIDEO_DECODER,
++        h264_decoderW,
++        MFT_ENUM_FLAG_SYNCMFT,
++        &MFMediaType_Video,
++        ARRAY_SIZE(h264_decoder_input_types),
++        h264_decoder_input_types,
++        ARRAY_SIZE(h264_decoder_output_types),
++        h264_decoder_output_types,
++    },
+ };
+ 
+ HRESULT mfplat_DllRegisterServer(void)
+ {
+     unsigned int i, j;
+     HRESULT hr;
+-    MFT_REGISTER_TYPE_INFO input_types[4], output_types[2];
++    MFT_REGISTER_TYPE_INFO input_types[4], output_types[5];
+ 
+     for (i = 0; i < ARRAY_SIZE(mfts); i++)
+     {
+diff --git a/dlls/winegstreamer/winegstreamer_classes.idl b/dlls/winegstreamer/winegstreamer_classes.idl
+index 90dc1dc839b..347ee906a52 100644
+--- a/dlls/winegstreamer/winegstreamer_classes.idl
++++ b/dlls/winegstreamer/winegstreamer_classes.idl
+@@ -73,3 +73,9 @@ coclass WINEAudioConverter { }
+     uuid(2eeb4adf-4578-4d10-bca7-bb955f56320a)
+ ]
+ coclass CWMADecMediaObject {};
++
++[
++    threading(both),
++    uuid(62ce7e72-4c71-4d20-b15d-452831a87d9d)
++]
++coclass CMSH264DecoderMFT {}
+-- 
+2.20.1
+

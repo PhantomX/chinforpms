@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8667d19bf22f66b1f8b61606bfe2036ca844dcc0
+%global commit b98acbedfe0ec6f2e03a50ed1ce8c4a913bafe0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220306
+%global date 20220313
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -76,7 +76,7 @@
 %global vc_url  https://github.com/pineappleEA
 
 Name:           yuzu
-Version:        2528
+Version:        2545
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -104,7 +104,6 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-fix-system-boost-detection.patch
 %endif
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
-Patch3:         0001-revert-logging-Convert-backend_thread-into-an-std-jt.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -294,6 +293,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2545-1.20220313gitb98acbe
+- 2545 ea
+
 * Sun Mar 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2528-1.20220306git8667d19
 - 2528 ea
 
