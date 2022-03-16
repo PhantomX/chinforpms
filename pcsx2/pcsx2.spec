@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2421
+Version:        1.7.2449
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -291,6 +291,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Mon Mar 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2449-1
+- 1.7.2449
+
 * Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2421-1
 - 1.7.2421 tag release
 

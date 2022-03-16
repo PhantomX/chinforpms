@@ -1,16 +1,30 @@
+%global commit 0b6a141434a5da96dfd685a9257ee7067e9766cd
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220206
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
 
+%global vc_url  https://github.com/%{name}/%{name}
+
 Name:           asbru-cm
-Version:        6.3.2
-Release:        1%{?dist}
+Version:        6.3.3
+Release:        0.1%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
 URL:            https://asbru-cm.net
 
-%global vc_url  https://github.com/%{name}/%{name}
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
+%endif
 
 BuildArch:      noarch
 
@@ -73,7 +87,7 @@ remote terminal sessions and automating repetitive tasks.
 
 
 %prep
-%autosetup -n %{name}-%{ver} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
 
 sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/asbru_conn
 sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/asbru_conn
@@ -140,6 +154,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-0.1.20220206git0b6a141
+- 6.3.3 snapshot
+
 * Fri Mar 05 2021 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-1
 - 6.3.2
 

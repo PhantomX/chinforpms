@@ -1,6 +1,6 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.26.1
+Version:        2.27.0
 Release:        100%{?dist}
 
 Epoch:          1
@@ -94,6 +94,7 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %build
 %{cmake_kf5} \
+  -Wno-dev \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
 
@@ -115,9 +116,8 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %files -f %{name}.lang
-%doc AUTHORS CHANGELOG README
+%doc AUTHORS CHANGELOG README.md
 %license COPYING
-%{_kf5_sysconfdir}/xdg/skrooge_unit.knsrc
 %{_kf5_bindir}/skrooge*
 %{_kf5_metainfodir}/org.kde.skrooge.appdata.xml
 %{_kf5_datadir}/applications/org.kde.skrooge.desktop
@@ -129,6 +129,7 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 %{_kf5_datadir}/config.kcfg/skg*.kcfg
 %{_kf5_datadir}/knotifications5/skrooge.notifyrc
 %{_kf5_datadir}/knsrcfiles/skrooge_monthly.knsrc
+%{_kf5_datadir}/knsrcfiles/skrooge_unit.knsrc
 %{_kf5_datadir}/kservices5/*.desktop
 %{_kf5_datadir}/kservices5/sources/*.desktop
 %{_kf5_datadir}/kservicetypes5/*.desktop
@@ -149,6 +150,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.27.0-100
+- 2.27.0
+
 * Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.26.1-100
 - 2.26.1
 

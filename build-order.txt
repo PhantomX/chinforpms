@@ -164,6 +164,7 @@ mgba
 mingw-crt
 mingw-w64-tools
 mingw-winpthreads
+move-to-next-monitor
 mozilla-gnotifier
 -mozilla-keepassxc-browser
 mp3val
