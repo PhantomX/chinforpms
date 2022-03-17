@@ -1,3 +1,9 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2
+ c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2 nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
+
+https://gitlab.com/cki-project/kernel-ark/-/commit/e9849fac129d5c7acb0556e0d29f0b3bf5103c0e
+ e9849fac129d5c7acb0556e0d29f0b3bf5103c0e Restrict FS_LOCATIONS to NFS v4.2+ to work around Qnap knfsd-3.4.6 bug
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/ce338c425415d1e9623815d79bb88a98818f4157
  ce338c425415d1e9623815d79bb88a98818f4157 Revert "PCI/MSI: Mask MSI-X vectors only on success"
 

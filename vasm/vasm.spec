@@ -16,7 +16,7 @@
 %global pkgver %%(c=%{version}; echo ${c//./_})
 
 Name:           vasm
-Version:        1.8j
+Version:        1.9
 Release:        1%{?dist}
 Summary:        Portable 6502 6800 arm c16x jagrisc m68k ppc vidcore x86 z80 assembler
 
@@ -69,5 +69,8 @@ install -pm0755 vobjdump %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 16 2022 - 1.9-1
+- 1.9
+
 * Sat Mar 27 2021 - 1.8j-1
 - Initial spec

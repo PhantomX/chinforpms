@@ -2,9 +2,14 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global commit d6597038eeb36f6dbb6bb422d6a2edac63a62df6
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit f3a325fe1af75aed7758b0ba8db9f4b032b3f044
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220210
+%global date 20220314
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -67,8 +72,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.20
-Release:        3%{?gver}%{?dist}
+Version:        0.0.21
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -188,8 +193,10 @@ tar -xf %{S:17} -C 3rdparty/SPIRV/SPIRV-Headers --strip-components 1
 %if %{with llvm_submod}
 tar -xf %{S:18} -C llvm --strip-components 1
 
-mkdir -p %{__cmake_builddir}/3rdparty/llvm_build/ittapi
-tar -xf %{S:19} -C %{__cmake_builddir}/3rdparty/llvm_build/ittapi --strip-components 1
+mkdir ittapi
+tar -xf %{S:19} -C ittapi --strip-components 1
+mkdir -p %{__cmake_builddir}/3rdparty/llvm_build
+ln -s ../../../ittapi %{__cmake_builddir}/3rdparty/llvm_build/ittapi
 
 sed -e 's|${GIT_EXECUTABLE}|true|g' \
   -i llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
@@ -217,10 +224,18 @@ popd
     -i %{name}/git-version.cmake
 %endif
 
+# This resets RPM flags
+sed \
+  -e '/CMAKE_CXX_FLAGS/d' \
+  -e '/CMAKE_C_FLAGS/d' \
+  -i CMakeLists.txt
+
+
 %build
 
 %cmake \
   -G Ninja \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with clang}
   -DCMAKE_C_COMPILER=%{_bindir}/clang \
   -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
@@ -295,6 +310,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-1.20220314gitf3a325f
+- 0.0.21
+- Fix build flags propagation
+
 * Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.20-2.20220210gitd659703
 - Bump
 

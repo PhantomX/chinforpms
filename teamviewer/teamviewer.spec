@@ -8,7 +8,7 @@
 %global vermajor %%(echo %{version} | cut -d. -f1)
 
 Name:           teamviewer
-Version:        15.22.3
+Version:        15.27.3
 Release:        1%{?dist}
 Summary:        Remote control and meeting solution
 
@@ -199,6 +199,9 @@ done
 
 
 %changelog
+* Wed Mar 16 2022 - 15.27.3-1
+- 15.27.3
+
 * Sat Oct 02 2021 - 15.22.3-1
 - 15.22.3
 

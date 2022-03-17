@@ -2,10 +2,11 @@
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 20c39eb3f148f09e547a07eb7f9cd65840b6f989
+%global commit 709a5980edd5d2834b7136c1519f8d2a3529e19e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220308
+%global date 20220314
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,7 +20,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -89,6 +90,7 @@ sed \
 %build
 export LDFLAGS="%{build_ldflags} -Wl,-z,noexecstack"
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_LTO:BOOL=OFF \
 %{nil}
 
@@ -118,6 +120,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-2.20220314git709a598
+- Return to snapshot
+
 * Wed Mar 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-1.20220308git20c39eb
 - 0.9.4
 

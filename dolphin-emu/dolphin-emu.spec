@@ -3,6 +3,10 @@
 # Disable LTO. Segfaults.
 %global _lto_cflags -fno-lto
 
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
 %bcond_with ffmpeg
 %global with_egl 1
 %global with_llvm 0
@@ -19,9 +23,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit d32c72038ae8be1cb8b047ca3dae99ba7b3626d8
+%global commit bf261f6144a8cc75bcbdd4c09b19bdfa3dbe49b3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220302
+%global date 20220315
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -35,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        155%{?gver}%{?dist}
+Release:        156%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -271,10 +275,9 @@ sed \
 
 
 %build
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DAPPROVED_VENDORED_DEPENDENCIES=";" \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
@@ -419,6 +422,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-156.20220315gitbf261f6
+- Bump
+
 * Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-155.20220302gitd32c720
 - Last snapshot
 

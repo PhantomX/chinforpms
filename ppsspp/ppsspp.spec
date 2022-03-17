@@ -3,13 +3,13 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%dnl %global with_optim 3
+%global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3bfab6326af73d27c8a2a41a58ca31f7ee2d8b8b
+%global commit 97bc7a1ae3b3a87bff211bd3ece33e9c3012725a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220224
+%global date 20220313
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -62,7 +62,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        109%{?gver}%{?dist}
+Release:        110%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -320,6 +320,7 @@ popd
 %endif
 
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -440,6 +441,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-110.20220313git97bc7a1
+- Bump
+
 * Mon Feb 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-109.20220224git3bfab63
 - Bump
 

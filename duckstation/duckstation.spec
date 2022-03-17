@@ -1,6 +1,10 @@
 %undefine _cmake_shared_libs
 #global _lto_cflags -fno-lto
 
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
 %global with_sysvulkan 0
 
 %global commit 51041e47f70123eda41d999701f5651830a0a95e
@@ -175,6 +179,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 
 %build
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DUSE_WAYLAND:BOOL=ON \
   -DENABLE_CHEEVOS:BOOL=ON \
   -DENABLE_DISCORD_PRESENCE:BOOL=OFF \

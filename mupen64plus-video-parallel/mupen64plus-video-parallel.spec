@@ -1,6 +1,10 @@
-%global commit c8ff5b40ce457693be55260ab3101056c172295a
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit 96368886b5808bc7bae9eb025d3c4f0988772e1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220210
+%global date 20220218
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,7 +17,7 @@
 
 Name:           mupen64plus-video-parallel
 Version:        0
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        paraLLEl-RDP video plugin for Mupen64Plus emulator
 
 License:        MIT
@@ -72,6 +76,9 @@ install -pm0755 %{__cmake_builddir}/%{name}.so %{buildroot}%{_libdir}/mupen64plu
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.3.20220218git9636888
+- Bump
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.2.20220210gitc8ff5b4
 - Last snapshot
 

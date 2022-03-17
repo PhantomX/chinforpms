@@ -1,6 +1,6 @@
-%global commit f1ac3dc6d3d0b7d591224ef544d66f6e56533698
+%global commit a8fafcd94c9c675db2e503e87f0a6b38c6bad6fb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220202
+%global date 20220312
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -22,7 +22,7 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -175,6 +175,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.2.20220312gita8fafcd
+- Update
+
 * Mon Feb 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.1.20220202gitf1ac3dc
 - Last snapshot
 

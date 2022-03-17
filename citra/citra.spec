@@ -254,6 +254,7 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else

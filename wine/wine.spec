@@ -1,6 +1,6 @@
-%global commit 8a52d3e93f5690fd0833c228d54a996a784afad7
+%global commit 670a1e81b465f67cb7e49fdb84c1fc96853fc9d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220314
+%global date 20220315
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -81,7 +81,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7b49214435cf061eed8206ebe048ac5df9564cfe
+%global wine_stagingver 849ac07bcece2581c8e3c51fe7a74eb457f8fbe2
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -92,7 +92,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 1bdfe8f390a54bf8f7e0ab59ed7a733e0da7f721
+%global tkg_id df290866d392bf0b102370d441d3d13986b26b51
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.4
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -238,6 +238,13 @@ Patch228:       %{name}-revert-mfplat-7a4aafd.patch
 Patch229:       %{whq_url}/6860e9ab29f4fbcfe35cb0519cfe94b94f54a36f#/%{name}-whq-revert-mfplat-6860e9a.patch
 Patch230:       %{name}-revert-mfplat-24e5467.patch
 Patch231:       %{whq_url}/6834fc5c9dd11026261aaa723d9df29d373ebdf5#/%{name}-whq-revert-mfplat-6834fc5.patch
+Patch232:       %{whq_url}/2d7c37da495cc25d14f5b2761a5d7e2a2111320a#/%{name}-whq-revert-mfplat-2d7c37d.patch
+Patch233:       %{whq_url}/dfce20f34322e4d4087edf0e5f065ae7a2493151#/%{name}-whq-revert-mfplat-dfce20f.patch
+Patch234:       %{whq_url}/648ea45b810f54e5da69a239a4198c3f48b4c7e2#/%{name}-whq-revert-mfplat-648ea45.patch
+Patch235:       %{whq_url}/3dd1aefc682adff082d2ae267a230f684dc1e9c4#/%{name}-whq-revert-mfplat-3dd1aef.patch
+Patch236:       %{whq_url}/f71c51cb19fd694ad9e169ecc37767a93bbe40aa#/%{name}-whq-revert-mfplat-f71c51c.patch
+Patch237:       %{whq_url}/651e4002ceeb9a15b11a184b5f47a732e26b7e00#/%{name}-whq-revert-mfplat-651e400.patch
+Patch238:       %{whq_url}/e4258d529342cc1dc486a136d0f715520b3dd5da#/%{name}-whq-revert-mfplat-e4258d5.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -887,6 +894,13 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
+%patch238 -p1 -R
+%patch237 -p1 -R
+%patch236 -p1 -R
+%patch235 -p1 -R
+%patch234 -p1 -R
+%patch233 -p1 -R
+%patch232 -p1 -R
 %patch231 -p1 -R
 %patch230 -p1 -R
 rm -f dlls/winegstreamer/h264_decoder.c
@@ -2597,6 +2611,9 @@ fi
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-102.20220315git670a1e8
+- tkg updates
+
 * Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-101.20220314git8a52d3e
 - Snapshot
 

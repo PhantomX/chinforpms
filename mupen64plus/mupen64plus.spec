@@ -1,6 +1,13 @@
-%global commit 1f495d5514c04b0ab1af3a86851f0f5270d4cb00
+#undefine _hardened_build
+%global _legacy_common_support 1
+
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit 49dd0bfc8f48afd04ddd1762ea9d9e89a85fc8a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220214
+%global date 20220218
 %global with_snapshot 1
 
 %global commit1 af6af5b1fd4fdb435c836be15371dd047f395c4d
@@ -19,7 +26,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
-%global commit5 32e27344214946f0dce3cd2b4fff152a3538bd8f
+%global commit5 b5f62979ed77e526877c9c67dbb8568a3511347c
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{name}-ui-console
 
@@ -35,16 +42,13 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-#undefine _hardened_build
-%global _legacy_common_support 1
-
 %global xxhash_ver 0.8.1
 
 %global vc_url  https://github.com/%{name}
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -155,7 +159,7 @@ sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="$OPTFLAGS %{build_ldflags} -Wl,-z,relro -Wl,-z,now"
+export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -203,6 +207,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-111.20220218git49dd0bf
+- Bump
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-110.20220214git1f495d5
 - Update
 

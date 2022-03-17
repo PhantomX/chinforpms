@@ -1,3 +1,7 @@
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
 %global commit e67cee3131651c3e48343294d94fa68a6f8ec14c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220208

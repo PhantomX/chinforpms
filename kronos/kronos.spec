@@ -1,6 +1,17 @@
-%global commit c9e1548ef74a2986ef998439a1d97e28380aa0ed
+%undefine _hardened_build
+%undefine _cmake_shared_libs
+
+# Disable LTO. Build fails
+%global _lto_cflags %{nil}
+
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit 9dff05e9dce426c92add5a860b3b7d84e0e23f2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220211
+%global date 20220316
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,18 +24,12 @@
 # Enable system libchdr
 %global with_libchdr 1
 
-%undefine _hardened_build
-%undefine _cmake_shared_libs
-
-# Disable LTO. Build fails
-%global _lto_cflags %{nil}
-
 %global pkgname Kronos
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
 Version:        2.3.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -108,11 +113,9 @@ sed \
 
 
 %build
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 %cmake3 \
   -S yabause \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DYAB_PORTS=qt \
 %if 0%{?with_egl}
   -DYAB_FORCE_GLES31:BOOL=ON \
@@ -148,6 +151,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-2.20220316git9dff05e
+- Snapshot
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-1.20220211gitc9e1548
 - 2.3.1
 

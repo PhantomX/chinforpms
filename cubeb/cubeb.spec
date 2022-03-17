@@ -1,6 +1,6 @@
-%global commit 3a04ed2946e796a15bd37d1900be42244d685bbf
+%global commit 6e5b9fe38cdac65fb3cdce11cf8006a015976cad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220228
+%global date 20220308
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        28%{?gver}%{?dist}
+Release:        29%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -40,7 +40,7 @@ BuildRequires:  graphviz
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(speex)
+BuildRequires:  pkgconfig(speexdsp)
 
 Requires:       jack-audio-connection-kit%{?_isa}
 Requires:       pulseaudio-libs%{?_isa}
@@ -66,12 +66,14 @@ tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1
 
 rm -rf src/android
+rm -rf subprojects/speex
 
 sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %build
 %cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DBUILD_TESTS:BOOL=OFF \
   -DUSE_PULSE:BOOL=ON \
   -DUSE_ALSA:BOOL=ON \
@@ -103,6 +105,9 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-29.20220308git6e5b9fe
+- Fix speex detection
+
 * Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-28.20220228git3a04ed2
 - Update
 

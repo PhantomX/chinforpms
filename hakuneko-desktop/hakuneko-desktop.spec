@@ -16,7 +16,8 @@ Release:        2%{?dist}
 Summary:        Manga Downloader
 
 License:        Unlicense and MIT
-URL:            https://sourceforge.net/projects/%{real_name}/
+URL:            https://hakuneko.download
+
 Source0:        https://github.com/manga-download/hakuneko/releases/download/v%{version}/%{name}_%{version}_linux_%{parch}.rpm
 Source1:        https://github.com/manga-download/hakuneko/raw/master/UNLICENSE
 
