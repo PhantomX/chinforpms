@@ -1,0 +1,204 @@
+From 584e3b1439789aeb7ee2aa2eb89bbc4c33566892 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 17 Mar 2022 13:53:39 -0300
+Subject: [PATCH] Makefile: package build fixes
+
+---
+ Makefile | 110 ++++++++++++++++++-------------------------------------
+ 1 file changed, 35 insertions(+), 75 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index ccb4a4a..c21db0a 100644
+--- a/Makefile
++++ b/Makefile
+@@ -22,6 +22,15 @@ ifeq ($(BZIP2),0)
+   endif
+ endif
+ 
++PREFIX ?= /usr/local
++BINDIR ?= $(PREFIX)/bin
++LIBDIR ?= $(PREFIX)/lib
++INCDIR ?= $(PREFIX)/include
++
++LIBRARY = libhdiffpatch.so
++LIBRARYMINOR = $(LIBRARY)._RPM_MINOR_
++LIBRARYMAJOR = $(LIBRARYMINOR)._RPM_MAJOR_
++
+ HDIFF_OBJ  := 
+ HPATCH_OBJ := \
+     libHDiffPatch/HPatch/patch.o \
+@@ -42,7 +51,7 @@ ifeq ($(BSD),0)
+ else
+ 	HPATCH_OBJ += bsdiff_wrapper/bspatch_wrapper.o
+ endif
+-MD5_PATH := ../libmd5
++MD5_PATH := libmd5
+ ifeq ($(DIR_DIFF),0)
+ else
+   ifeq ($(MD5),0)
+@@ -50,66 +59,6 @@ else
+ 	HPATCH_OBJ += $(MD5_PATH)/md5.o
+   endif
+ endif
+-LZMA_PATH := ../lzma/C
+-ifeq ($(LZMA),0)
+-else # https://www.7-zip.org  https://github.com/sisong/lzma
+-  HPATCH_OBJ += $(LZMA_PATH)/LzmaDec.o \
+-  				$(LZMA_PATH)/Lzma2Dec.o 
+-  HDIFF_OBJ  += $(LZMA_PATH)/LzFind.o \
+-  				$(LZMA_PATH)/LzFindOpt.o \
+-  				$(LZMA_PATH)/CpuArch.o \
+-  				$(LZMA_PATH)/LzmaEnc.o \
+-				$(LZMA_PATH)/Lzma2Enc.o  
+-  ifeq ($(MT),0)  
+-  else  
+-    HDIFF_OBJ+= $(LZMA_PATH)/LzFindMt.o \
+-  				$(LZMA_PATH)/MtCoder.o \
+-  				$(LZMA_PATH)/MtDec.o \
+-				$(LZMA_PATH)/Threads.o
+-  endif
+-endif
+-ZSTD_PATH := ../zstd/lib
+-ifeq ($(ZSTD),0)
+-else # https://github.com/facebook/zstd
+-  HPATCH_OBJ += $(ZSTD_PATH)/common/debug.o \
+-  				$(ZSTD_PATH)/common/entropy_common.o \
+-  				$(ZSTD_PATH)/common/error_private.o \
+-  				$(ZSTD_PATH)/common/fse_decompress.o \
+-  				$(ZSTD_PATH)/common/xxhash.o \
+-  				$(ZSTD_PATH)/common/zstd_common.o \
+-  				$(ZSTD_PATH)/decompress/huf_decompress.o \
+-  				$(ZSTD_PATH)/decompress/zstd_ddict.o \
+-  				$(ZSTD_PATH)/decompress/zstd_decompress.o \
+-  				$(ZSTD_PATH)/decompress/zstd_decompress_block.o
+-  HDIFF_OBJ  += $(ZSTD_PATH)/compress/fse_compress.o \
+-  				$(ZSTD_PATH)/compress/hist.o \
+-  				$(ZSTD_PATH)/compress/huf_compress.o \
+-  				$(ZSTD_PATH)/compress/zstd_compress.o \
+-  				$(ZSTD_PATH)/compress/zstd_compress_literals.o \
+-  				$(ZSTD_PATH)/compress/zstd_compress_sequences.o \
+-  				$(ZSTD_PATH)/compress/zstd_compress_superblock.o \
+-  				$(ZSTD_PATH)/compress/zstd_double_fast.o \
+-  				$(ZSTD_PATH)/compress/zstd_fast.o \
+-  				$(ZSTD_PATH)/compress/zstd_lazy.o \
+-  				$(ZSTD_PATH)/compress/zstd_ldm.o \
+-  				$(ZSTD_PATH)/compress/zstd_opt.o
+-  ifeq ($(MT),0)
+-  else  
+-    HDIFF_OBJ+= $(ZSTD_PATH)/common/pool.o \
+-				$(ZSTD_PATH)/common/threading.o \
+-				$(ZSTD_PATH)/compress/zstdmt_compress.o
+-  endif
+-endif
+-BZ2_PATH := ../bzip2
+-ifeq ($(BZIP2),1) # https://github.com/sisong/bzip2
+-  HPATCH_OBJ += $(BZ2_PATH)/blocksort.o \
+-  				$(BZ2_PATH)/bzlib.o \
+-  				$(BZ2_PATH)/compress.o \
+-  				$(BZ2_PATH)/crctable.o \
+-  				$(BZ2_PATH)/decompress.o \
+-  				$(BZ2_PATH)/huffman.o \
+-  				$(BZ2_PATH)/randtable.o
+-endif
+ 
+ HDIFF_OBJ += \
+     hdiffz_import_patch.o \
+@@ -148,7 +97,7 @@ endif
+ 
+ 
+ DEF_FLAGS := \
+-    -O3 -DNDEBUG -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
++    -fPIC -DNDEBUG -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
+     -D_IS_NEED_ALL_CompressPlugin=0 \
+     -D_IS_NEED_DEFAULT_CompressPlugin=0 \
+     -D_CompressPlugin_zlib  \
+@@ -158,7 +107,7 @@ ifeq ($(BZIP2),0)
+ else
+     DEF_FLAGS += -D_CompressPlugin_bz2
+ 	ifeq ($(BZIP2),1)
+-        DEF_FLAGS += -I$(BZ2_PATH)
++        DEF_FLAGS += $(shell pkg-config --cflags-only-I bzip2)
+ 	endif
+ endif
+ ifeq ($(DIR_DIFF),0)
+@@ -180,13 +129,12 @@ else
+ endif
+ ifeq ($(LZMA),0)
+ else
+-  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2 -I$(LZMA_PATH)
++  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2 $(shell pkg-config --cflags-only-I lzmasdk-c)
+ endif
+ ifeq ($(ZSTD),0)
+ else
+   DEF_FLAGS += \
+-    -D_CompressPlugin_zstd -DZSTD_DISABLE_ASM -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common \
+-	-I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
++    -D_CompressPlugin_zstd -DZSTD_DISABLE_ASM -I$(ZSTD_PATH) $(shell pkg-config --cflags-only-I libzstd)
+ endif
+ 
+ ifeq ($(MT),0)
+@@ -204,6 +152,8 @@ PATCH_LINK := -lz			# link zlib
+ ifeq ($(BZIP2),2)
+   PATCH_LINK += -lbz2		# link bzip2
+ endif
++PATCH_LINK += -lzstd
++PATCH_LINK += -llzmasdk
+ DIFF_LINK  := $(PATCH_LINK)
+ ifeq ($(MT),0)
+ else
+@@ -220,15 +170,15 @@ CXXFLAGS += $(DEF_FLAGS)
+ 
+ .PHONY: all install clean
+ 
+-all: libhdiffpatch.a hpatchz hdiffz mostlyclean
++all: $(LIBRARYMAJOR) hpatchz hdiffz
+ 
+-libhdiffpatch.a: $(HDIFF_OBJ)
+-	$(AR) rcs $@ $^
++$(LIBRARYMAJOR): $(HDIFF_OBJ)
++	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) -DNDEBUG $(LDFLAGS) -Wl,-z,defs $(HDIFF_OBJ) $(PATCH_LINK)
+ 
+ hpatchz: $(HPATCH_OBJ)
+-	$(CC) hpatchz.c $(HPATCH_OBJ) $(CFLAGS) $(PATCH_LINK) -o hpatchz
+-hdiffz: libhdiffpatch.a
+-	$(CXX) hdiffz.cpp libhdiffpatch.a $(CXXFLAGS) $(DIFF_LINK) -o hdiffz
++	$(CC) hpatchz.c $(HPATCH_OBJ) $(CFLAGS) $(LDFLAGS) $(PATCH_LINK) -o hpatchz
++hdiffz: $(LIBRARYMAJOR)
++	$(CXX) hdiffz.cpp $(LIBRARYMAJOR) $(CXXFLAGS) $(LDFLAGS) $(DIFF_LINK) -o hdiffz
+ 
+ ifeq ($(OS),Windows_NT) # mingw?
+   RM := del /Q /F
+@@ -237,17 +187,27 @@ else
+   RM := rm -f
+   DEL_HDIFF_OBJ := $(HDIFF_OBJ)
+ endif
+-INSTALL_X := install -m 0755
+-INSTALL_BIN := $(DESTDIR)/usr/local/bin
++INSTALL_X := install -m 0755 -D
++INSTALL_F := install -m 0644 -D
++INSTALL_BIN := $(DESTDIR)/$(BINDIR)
++INSTALL_LIB := $(DESTDIR)/$(LIBDIR)
++INSTALL_INC := $(DESTDIR)/$(INCDIR)
+ 
+ mostlyclean: hpatchz hdiffz
+ 	$(RM) $(DEL_HDIFF_OBJ)
+ clean:
+-	$(RM) libhdiffpatch.a hpatchz hdiffz $(DEL_HDIFF_OBJ)
++	$(RM) $(LIBRARYMAJOR) hpatchz hdiffz $(DEL_HDIFF_OBJ)
+ 
+ install: all
+ 	$(INSTALL_X) hdiffz $(INSTALL_BIN)/hdiffz
+ 	$(INSTALL_X) hpatchz $(INSTALL_BIN)/hpatchz
++	$(INSTALL_X) $(LIBRARYMAJOR) $(INSTALL_LIB)/$(LIBRARYMAJOR)
++	ln -s $(LIBRARYMAJOR) $(INSTALL_LIB)/$(LIBRARYMINOR)
++	ln -s $(LIBRARYMINOR) $(INSTALL_LIB)/$(LIBRARY)
++	$(INSTALL_F) libHDiffPatch/HDiff/diff.h $(INSTALL_INC)/HDiffPatch/HDiff/diff.h
++	$(INSTALL_F) libHDiffPatch/HPatch/patch.h $(INSTALL_INC)/HDiffPatch/HPatch/patch.h
++	$(INSTALL_F) dirDiffPatch/dir_diff/dir_diff.h $(INSTALL_INC)/HDiffPatch/dir_diff/dir_diff.h
++	$(INSTALL_F) dirDiffPatch/dir_patch/dir_patch.h $(INSTALL_INC)/HDiffPatch/dir_patch/dir_patch.h
+ 
+ uninstall:
+ 	$(RM)  $(INSTALL_BIN)/hdiffz  $(INSTALL_BIN)/hpatchz
+-- 
+2.35.1
+

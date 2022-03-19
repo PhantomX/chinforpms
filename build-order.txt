@@ -132,6 +132,7 @@ gnome-themes-extra
 gogextract
 gpa
 gtk3-nocsd
+hdiffpatch
 -hollywood
 htop
 image-analyzer
