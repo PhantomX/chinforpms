@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 16
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1aeaa72c3dbea0910c8c7d414f9b0249491ddec5
+%global pfcommit ea1ed05d551d932f766f8cf7e961187351c3d349
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id bd40cb23d12a1f3c064867e31c6645052d1e16dc
+%global opensuse_id d9656de6b3513226e3c46c64f6d43940d3047897
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -1171,6 +1171,8 @@ Requires: gcc\
 %if %{-m:1}%{!-m:0}\
 Requires: kernel-devel-uname-r = %{KVERREL}\
 %endif\
+Suggests: duperemove\
+Suggests: hardlink\
 %description %{?1:%{1}-}devel\
 This package provides kernel headers and makefiles sufficient to build modules\
 against the %{?2:%{2} }kernel package.\
@@ -2645,7 +2647,13 @@ if [ -f /etc/sysconfig/kernel ]\
 then\
     . /etc/sysconfig/kernel || exit $?\
 fi\
-if [ "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
+drstatus=1\
+if [ "$DUPEREMOVE" != "no" -a -x /usr/sbin/duperemove -a ! -e /run/ostree-booted ] \
+then\
+    /usr/sbin/duperemove -rd /usr/src/kernels > /dev/null 2>&1\
+    drstatus=$?
+fi\
+if [ "$drstatus" -ne 0 -a "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
@@ -2914,7 +2922,11 @@ fi
 #
 #
 %changelog
-* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.14-500.chinfo
+* Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500.chinfo
+- 5.16.16 - pf7
+- Add block dedupe on devel files when duperemove is installed and supported by file system
+
+* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.15-500.chinfo
 - 5.16.15 - pf7
 
 * Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.14-500.chinfo

@@ -1,3 +1,6 @@
+https://gitlab.com/cki-project/kernel-ark/-/commit/dfe21b33039e0c863a4e41a8e8508fa6af46bad8
+ dfe21b33039e0c863a4e41a8e8508fa6af46bad8 drm/mgag200: Fix PLL setup for g200wb and g200ew
+
 https://gitlab.com/cki-project/kernel-ark/-/commit/c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2
  c6295fc9bb25d3684c10aaa89e00f5e12ccd4dd2 nfc: st21nfca: Fix potential buffer overflows in EVT_TRANSACTION
 
