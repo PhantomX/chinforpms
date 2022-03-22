@@ -1,1 +1,1 @@
-# CONFIG_RTW89 is not set
+CONFIG_RTW89=m

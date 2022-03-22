@@ -25,13 +25,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 16
+%define base_sublevel 17
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
@@ -181,6 +181,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500.chinfo
+- 5.17.0
+
 * Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500.chinfo
 - 5.16.16
 
@@ -526,90 +529,3 @@ done
 
 * Mon Dec 14 13:13:58 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.0-500.chinfo
 - 5.10.0
-
-* Fri Dec 11 11:28:56 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.14-500.chinfo
-- 5.9.14
-
-* Tue Dec 08 08:05:13 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.13-500.chinfo
-- 5.9.13
-
-* Wed Dec  2 08:16:31 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.12-500.chinfo
-- 5.9.12
-
-* Tue Nov 24 15:07:55 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.11-500.chinfo
-- 5.9.11
-
-* Sun Nov 22 10:18:31 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.10-500.chinfo
-- 5.9.10
-
-* Wed Nov 18 18:55:25 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.9-500.chinfo
-- 5.9.9
-
-* Tue Nov 10 20:02:10 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.8-500.chinfo
-- 5.9.8
-
-* Tue Nov 10 16:09:36 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.7-500.chinfo
-- 5.9.7
-
-* Thu Nov 05 20:09:30 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.6-500.chinfo
-- 5.9.6
-
-* Wed Nov  4 18:55:42 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.4-500.chinfo
-- 5.9.4
-
-* Sun Nov  1 17:21:08 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.3-500.chinfo
-- 5.9.3
-
-* Thu Oct 29 14:34:00 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.2-500.chinfo
-- 5.9.2
-
-* Sat Oct 17 17:27:38 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.1-500.chinfo
-- 5.9.1
-
-* Tue Oct 13 19:46:33 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
-- 5.9.0
-
-* Wed Oct  7 14:59:04 -03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.14-500.chinfo
-- 5.8.14
-
-* Thu Oct 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.13-500.chinfo
-- 5.8.13
-
-* Sat Sep 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.12-500.chinfo
-- 5.8.12
-
-* Wed Sep 23 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.11-500.chinfo
-- 5.8.11
-
-* Thu Sep 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.10-500.chinfo
-- 5.8.10
-
-* Sat Sep 12 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.9-500.chinfo
-- 5.8.9
-
-* Wed Sep 09 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.8-500.chinfo
-- 5.8.8
-
-* Sat Sep 05 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.7-500.chinfo
-- 5.8.7
-
-* Thu Sep 03 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.6-500.chinfo
-- 5.8.6
-
-* Thu Aug 27 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.5-500.chinfo
-- 5.8.5
-
-* Wed Aug 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.4-500.chinfo
-- 5.8.4
-
-* Sat Aug 22 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.3-500.chinfo
-- 5.8.3
-
-* Wed Aug 19 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.2-500.chinfo
-- 5.8.2
-
-* Tue Aug 11 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.1-500.chinfo
-- 5.8.1
-
-* Thu Aug 06 2020 Phantom X <megaphantomx at hotmail dot com> - 5.8.0-501.chinfo
-- Bump

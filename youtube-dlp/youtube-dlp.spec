@@ -4,7 +4,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2022.02.04
+Version:        2022.03.08.1
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -113,6 +113,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.03.08.1-1
+- 2022.03.08.1
+
 * Fri Feb 04 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.02.04-1
 - 2022.02.04
 

@@ -1,0 +1,13 @@
+# Symbol: HISI_PCIE_PMU [=n]
+# Type  : tristate
+# Defined at drivers/perf/hisilicon/Kconfig:9
+#   Prompt: HiSilicon PCIE PERF PMU
+#   Depends on: PERF_EVENTS [=y] && PCI [=y] && ARM64 [=y]
+#   Location:
+#     Main menu
+#       -> Device Drivers
+#         -> Performance monitor support
+# 
+# 
+# 
+# CONFIG_HISI_PCIE_PMU is not set

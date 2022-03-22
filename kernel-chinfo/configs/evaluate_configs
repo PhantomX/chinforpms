@@ -771,6 +771,40 @@ map_configs_to_array() { #uses CONFIG, configmap, cfgs
 	return 0
 }
 
+generate_finalconfiglist() {
+	awk '
+		/is not set/ {
+			split ($0, a, "#");
+			split(a[2], b);
+			print b[1] ;
+		}
+		/=/ {
+			split ($0, a, "=");
+			print a[1];
+		}
+	' *.config | sort -u >> .finalconfiglist
+}
+
+find_dead_configs() {
+	echo > .finalconfiglist
+	echo > .configlist
+
+	grep -q "rhel" flavors && (cd ..; make rh-configs) && generate_finalconfiglist
+	grep -q "fedora" flavors && (cd ..; make fedora-configs) && generate_finalconfiglist
+	sort -o .finalconfiglist -u .finalconfiglist
+
+	find ./ -name CONFIG_* | sed 's!.*/!!' | sort -u > .configlist
+
+	echo "These CONFIGS defined in redhat/configs but not the final .configs have been deleted:"
+	comm .configlist .finalconfiglist -2 -3 | while read FILENAME
+	do
+		echo $FILENAME
+		find ./ -name $FILENAME | xargs rm -f
+	done
+
+	rm -f .configlist .finalconfiglist
+}
+
 #
 #
 # MAIN
@@ -781,13 +815,17 @@ map_configs_to_array() { #uses CONFIG, configmap, cfgs
 FINDFIXES=false
 FIXCOMMON=false
 configs=
-while getopts "c:dfhjp:" opt; do
+while getopts "c:dDfhjp:" opt; do
 	case ${opt} in
 	c )
 		configs=$OPTARG
 		;;
 	d )
 		DEBUG=true
+		;;
+	D )
+		find_dead_configs
+		exit 0
 		;;
 	f )
 		# Find fixes per config-variant

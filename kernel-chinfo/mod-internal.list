@@ -18,11 +18,14 @@ test_bits
 test_kasan
 time_test
 fat_test
+lib_test
 rational-test
 test_list_sort
 slub_kunit
-lib_test
+memcpy_kunit
+dev_addr_lists_test
 kfence_test
+test_hash
 locktorture
 mac80211_hwsim
 netdevsim
@@ -43,3 +46,6 @@ test_klp_state3
 torture
 refscale
 memcpy_kunit
+dev_addr_lists_test
+test_hash
+test_bpf

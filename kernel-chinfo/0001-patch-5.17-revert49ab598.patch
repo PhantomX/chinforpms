@@ -1,0 +1,237 @@
+From f11d1f6ccfc01c44b67e62d15267778ee4b9ca00 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 21 Mar 2022 10:47:27 -0300
+Subject: [PATCH 1/2] patch-5.17-revert49ab598
+
+Revert commits 49ab59830b0858ea5e4f27bfa7c6234d02bf487c and
+c1ee15318f4a2688057fd1aeee6272603d0871f0
+---
+ drivers/char/random.c  | 128 ++++++-----------------------------------
+ include/linux/random.h |   7 ---
+ 2 files changed, 16 insertions(+), 119 deletions(-)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 184dbb9..82b7e28 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -344,7 +344,6 @@
+ #include <linux/syscalls.h>
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
+-#include <linux/rcupdate.h>
+ #include <crypto/chacha.h>
+ #include <crypto/blake2s.h>
+ 
+@@ -360,9 +359,23 @@
+ /* #define ADD_INTERRUPT_BENCH */
+ 
+ /*
+- * Hook for external RNG.
++ * Configuration information
+  */
+-static const struct random_extrng __rcu *extrng;
++#define INPUT_POOL_SHIFT	12
++#define INPUT_POOL_WORDS	(1 << (INPUT_POOL_SHIFT-5))
++#define OUTPUT_POOL_SHIFT	10
++#define OUTPUT_POOL_WORDS	(1 << (OUTPUT_POOL_SHIFT-5))
++#define EXTRACT_SIZE		(BLAKE2S_HASH_SIZE / 2)
++
++/*
++ * To allow fractional bits to be tracked, the entropy_count field is
++ * denominated in units of 1/8th bits.
++ *
++ * 2*(ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
++ * credit_entropy_bits() needs to be 64 bits wide.
++ */
++#define ENTROPY_SHIFT 3
++#define ENTROPY_BITS(r) ((r)->entropy_count >> ENTROPY_SHIFT)
+ 
+ /*
+  * If the entropy count falls under this number of bits, then we
+@@ -492,9 +505,6 @@ static int ratelimit_disable __read_mostly;
+ module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
+ 
+-static const struct file_operations extrng_random_fops;
+-static const struct file_operations extrng_urandom_fops;
+-
+ /**********************************************************************
+  *
+  * OS independent entropy store.   Here are the functions which handle
+@@ -1784,13 +1794,6 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+ 	return mask;
+ }
+ 
+-static __poll_t
+-extrng_poll(struct file *file, poll_table * wait)
+-{
+-	/* extrng pool is always full, always read, no writes */
+-	return EPOLLIN | EPOLLRDNORM;
+-}
+-
+ static int write_pool(const char __user *buffer, size_t count)
+ {
+ 	size_t bytes;
+@@ -1895,58 +1898,7 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 	return fasync_helper(fd, filp, on, &fasync);
+ }
+ 
+-static int random_open(struct inode *inode, struct file *filp)
+-{
+-	const struct random_extrng *rng;
+-
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (!rng)
+-		return 0;
+-
+-	filp->f_op = &extrng_random_fops;
+-	filp->private_data = rng->owner;
+-
+-	return 0;
+-}
+-
+-static int urandom_open(struct inode *inode, struct file *filp)
+-{
+-	const struct random_extrng *rng;
+-
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (!rng)
+-		return 0;
+-
+-	filp->f_op = &extrng_urandom_fops;
+-	filp->private_data = rng->owner;
+-
+-	return 0;
+-}
+-
+-static int extrng_release(struct inode *inode, struct file *filp)
+-{
+-	module_put(filp->private_data);
+-	return 0;
+-}
+-
+-static ssize_t
+-extrng_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+-{
+-	return rcu_dereference_raw(extrng)->extrng_read(buf, nbytes);
+-}
+-
+ const struct file_operations random_fops = {
+-	.open  = random_open,
+ 	.read = random_read,
+ 	.write = random_write,
+ 	.poll = random_poll,
+@@ -1957,7 +1909,6 @@ const struct file_operations random_fops = {
+ };
+ 
+ const struct file_operations urandom_fops = {
+-	.open  = urandom_open,
+ 	.read = urandom_read,
+ 	.write = random_write,
+ 	.unlocked_ioctl = random_ioctl,
+@@ -1966,31 +1917,9 @@ const struct file_operations urandom_fops = {
+ 	.llseek = noop_llseek,
+ };
+ 
+-static const struct file_operations extrng_random_fops = {
+-	.open  = random_open,
+-	.read  = extrng_read,
+-	.write = random_write,
+-	.poll  = extrng_poll,
+-	.unlocked_ioctl = random_ioctl,
+-	.fasync = random_fasync,
+-	.llseek = noop_llseek,
+-	.release = extrng_release,
+-};
+-
+-static const struct file_operations extrng_urandom_fops = {
+-	.open  = urandom_open,
+-	.read  = extrng_read,
+-	.write = random_write,
+-	.unlocked_ioctl = random_ioctl,
+-	.fasync = random_fasync,
+-	.llseek = noop_llseek,
+-	.release = extrng_release,
+-};
+-
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
+ {
+-	const struct random_extrng *rng;
+ 	int ret;
+ 
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+@@ -2006,18 +1935,6 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 	if (count > INT_MAX)
+ 		count = INT_MAX;
+ 
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (rng) {
+-		ret = rng->extrng_read(buf, count);
+-		module_put(rng->owner);
+-		return ret;
+-	}
+-
+ 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+ 		if (flags & GRND_NONBLOCK)
+ 			return -EAGAIN;
+@@ -2337,16 +2254,3 @@ void add_bootloader_randomness(const void *buf, unsigned int size)
+ 		add_device_randomness(buf, size);
+ }
+ EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+-
+-void random_register_extrng(const struct random_extrng *rng)
+-{
+-	rcu_assign_pointer(extrng, rng);
+-}
+-EXPORT_SYMBOL_GPL(random_register_extrng);
+-
+-void random_unregister_extrng(void)
+-{
+-	RCU_INIT_POINTER(extrng, NULL);
+-	synchronize_rcu();
+-}
+-EXPORT_SYMBOL_GPL(random_unregister_extrng);
+diff --git a/include/linux/random.h b/include/linux/random.h
+index 4edfdb3..c45b269 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -14,11 +14,6 @@
+ 
+ #include <uapi/linux/random.h>
+ 
+-struct random_extrng {
+-	ssize_t (*extrng_read)(void __user *buf, size_t buflen);
+-	struct module *owner;
+-};
+-
+ struct random_ready_callback {
+ 	struct list_head list;
+ 	void (*func)(struct random_ready_callback *rdy);
+@@ -49,8 +44,6 @@ extern bool rng_is_initialized(void);
+ extern int add_random_ready_callback(struct random_ready_callback *rdy);
+ extern void del_random_ready_callback(struct random_ready_callback *rdy);
+ extern int __must_check get_random_bytes_arch(void *buf, int nbytes);
+-void random_register_extrng(const struct random_extrng *rng);
+-void random_unregister_extrng(void);
+ 
+ #ifndef MODULE
+ extern const struct file_operations random_fops, urandom_fops;
+-- 
+2.35.1
+

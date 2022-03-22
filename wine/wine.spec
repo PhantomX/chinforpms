@@ -1,6 +1,6 @@
-%global commit 670a1e81b465f67cb7e49fdb84c1fc96853fc9d7
+%global commit 47b02e8c1ea4ad82cd572dc3dcf60af753222f39
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220315
+%global date 20220318
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -33,7 +33,7 @@
 %global no64bit   0
 %global winegecko 2.47.2
 %global winemono  7.1.5
-%global winevulkan 1.3.207
+%global winevulkan 1.3.208
 %global winefastsync 5.15
 
 %global wineFAudio 22.02
@@ -81,7 +81,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 849ac07bcece2581c8e3c51fe7a74eb457f8fbe2
+%global wine_stagingver 8fb1779241b02af85e920a0a7b944855126c4148
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -92,7 +92,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id df290866d392bf0b102370d441d3d13986b26b51
+%global tkg_id 13ad1fc31c0c94666e6bf24cd2d485a8ad91fc7a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,7 +146,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.4
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -269,7 +269,6 @@ Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fs
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1026:       %{tkg_url}/proton-tkg-specific/proton-pa/proton-pa-staging.patch#/%{name}-tkg-proton-pa-staging.patch
 Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
@@ -971,7 +970,6 @@ patch -p1 -i patch1051.patch
 %endif
 %patch1024 -p1
 %patch1025 -p1
-#patch1026 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -2611,6 +2609,9 @@ fi
 
 
 %changelog
+* Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-103.20220318git47b02e8
+- Weekend bump
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-102.20220315git670a1e8
 - tkg updates
 

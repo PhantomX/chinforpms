@@ -14,7 +14,7 @@
 # listed here.
 
 # Overrides is individual modules which need to remain in kernel-core due to deps.
-overrides="cec wmi wmi-bmof"
+overrides="cec"
 
 # Set the default dirs/modules to filter out
 driverdirs="atm auxdisplay bcma bluetooth firewire fpga infiniband leds media memstick mfd mmc mtd nfc ntb pcmcia platform power ssb soundwire staging tty uio w1"
@@ -24,6 +24,10 @@ chardrvs="mwave pcmcia"
 netdrvs="appletalk can dsa hamradio ieee802154 ppp slip usb wireless"
 
 ethdrvs="3com adaptec alteon amd aquantia atheros broadcom cadence calxeda chelsio cisco dec dlink emulex marvell mellanox neterion nvidia packetengines qlogic rdc sfc silan sis smsc stmicro sun tehuti ti wiznet xircom"
+
+iiodrvs="accel light pressure proximity"
+
+iiocommondrvs="cros_ec_sensors"
 
 inputdrvs="gameport tablet touchscreen"
 
@@ -39,7 +43,7 @@ netprots="6lowpan appletalk atm ax25 batman-adv bluetooth can dsa ieee802154 l2t
 
 drmdrvs="amd ast bridge gma500 i2c i915 mgag200 nouveau panel radeon"
 
-singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw regmap-sdw-mbq arizona-micsupp hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa spi-altera-dfl nct6775 hid-playstation hid-nintendo"
+singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit  chcr parport_serial regmap-sdw regmap-sdw-mbq arizona-micsupp hid-asus iTCO_wdt rnbd-client rnbd-server mlx5_vdpa spi-altera-dfl nct6775 hid-playstation hid-nintendo asus_wmi_sensors asus_wmi_ec_sensors asus_ec_sensors"
 
 # Grab the arch-specific filter list overrides
 source ./filter-$2.sh
@@ -106,6 +110,18 @@ done
 for scsi in ${scsidrvs}
 do
 	filter_dir $1 drivers/scsi/${scsi}
+done
+
+# IIO
+for iio in ${iiodrvs}
+do
+        filter_dir $1 drivers/iio/${iio}
+done
+
+# IIO Common
+for iio in ${iiocommondrvs}
+do
+        filter_dir $1 drivers/iio/common/${iio}
 done
 
 # Input

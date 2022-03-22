@@ -101,6 +101,8 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 
 
+ExclusiveArch:  x86_64
+
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  cmake

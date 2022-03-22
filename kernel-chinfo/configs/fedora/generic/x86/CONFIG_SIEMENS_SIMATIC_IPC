@@ -1,0 +1,13 @@
+# Symbol: SIEMENS_SIMATIC_IPC [=n]
+# Type  : tristate
+# Defined at drivers/platform/x86/Kconfig:1129
+#   Prompt: Siemens Simatic IPC Class driver
+#   Depends on: X86 [=y] && X86_PLATFORM_DEVICES [=y] && PCI [=y]
+#   Location:
+#     Main menu
+#       -> Device Drivers
+#         -> X86 Platform Specific Device Drivers (X86_PLATFORM_DEVICES [=y])
+# 
+# 
+# 
+# CONFIG_SIEMENS_SIMATIC_IPC is not set

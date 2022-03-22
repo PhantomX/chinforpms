@@ -68,6 +68,8 @@ Patch4:         0001-glslang-build-as-static.patch
 Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 
+ExclusiveArch:  x86_64
+
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils

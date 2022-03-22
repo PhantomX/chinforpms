@@ -153,24 +153,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 16
+%define base_sublevel 17
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 16
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ea1ed05d551d932f766f8cf7e961187351c3d349
+%global pfcommit 0a89ddaed95fc16236411e6c538f83e926299bfc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id d9656de6b3513226e3c46c64f6d43940d3047897
+%global opensuse_id abac8264d9e6dc1049466633bc7ae7df68bc19bf
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -828,6 +828,8 @@ Source37: filter-aarch64.sh.rhel
 Source38: filter-ppc64le.sh.rhel
 Source39: filter-s390x.sh.rhel
 Source40: filter-modules.sh.rhel
+
+Source41: x509.genkey.centos
 %endif
 
 %if 0%{?include_fedora}
@@ -863,7 +865,6 @@ Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
 Source82: update_scripts.sh
-Source83: generate_crashkernel_default.sh
 
 Source84: mod-internal.list
 
@@ -948,8 +949,8 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 Patch1: patch-%{kversion}-redhat.patch
 %if 0%{?post_factum}
 # Build fail when LRNG is enabled
-Patch2: patch-%{kversion}-revert77f4d04.patch
-Patch3: patch-%{kversion}-revert8313ae8.patch
+Patch2: 0001-patch-%{kversion}-revert49ab598.patch
+Patch3: 0002-patch-%{kversion}-revert0c5b51f.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -973,10 +974,8 @@ Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id abf5d0c459630f6a2d56c2f4ab0312de1ee4b64b
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-%dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.16/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%global tkg_id 91e59cb0a14773c471141874c069f49a826e308c
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.17/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -2309,9 +2308,6 @@ BuildKernel() {
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
 
-    # Generate crashkernel default config
-    %{SOURCE83} "$KernelVer" "$Arch" "$RPM_BUILD_ROOT"
-
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
     %ifarch x86_64 aarch64
@@ -2651,7 +2647,7 @@ drstatus=1\
 if [ "$DUPEREMOVE" != "no" -a -x /usr/sbin/duperemove -a ! -e /run/ostree-booted ] \
 then\
     /usr/sbin/duperemove -rd /usr/src/kernels > /dev/null 2>&1\
-    drstatus=$?
+    drstatus=$?\
 fi\
 if [ "$drstatus" -ne 0 -a "$HARDLINK" != "no" -a -x /usr/bin/hardlink -a ! -e /run/ostree-booted ] \
 then\
@@ -2696,9 +2692,20 @@ fi\
 %define kernel_modules_post() \
 %{expand:%%post %{?1:%{1}-}modules}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+if [ ! -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}} ]; then\
+	mkdir -p %{_localstatedir}/lib/rpm-state/%{name}\
+	touch %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}}\
+fi\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}modules}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}\
+%{expand:%%posttrans %{?1:%{1}-}modules}\
+if [ -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}} ]; then\
+	rm -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}}\
+	echo "Running: dracut -f --kver %{KVERREL}%{?1:+%{1}}"\
+	dracut -f --kver "%{KVERREL}%{?1:+%{1}}" || exit $?\
+fi\
 %{nil}
 
 # This macro defines a %%posttrans script for a kernel package.
@@ -2713,6 +2720,7 @@ then\
     %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
 fi\
 %endif\
+rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 %{nil}
 
@@ -2733,6 +2741,8 @@ if [ `uname -i` == "x86_64" -o `uname -i` == "i386" ] &&\
    [ -f /etc/sysconfig/kernel ]; then\
   /bin/sed -r -i -e 's/^DEFAULTKERNEL=%{-r*}$/DEFAULTKERNEL=kernel%{?-v:-%{-v*}}/' /etc/sysconfig/kernel || exit $?\
 fi}\
+mkdir -p %{_localstatedir}/lib/rpm-state/%{name}\
+touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
 %{nil}
 
 #
@@ -2865,7 +2875,6 @@ fi
 %if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
 %endif\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/crashkernel.default\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/systemtap\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
@@ -2922,6 +2931,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500.chinfo
+- 5.17.0 - pf1
+
 * Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500.chinfo
 - 5.16.16 - pf7
 - Add block dedupe on devel files when duperemove is installed and supported by file system
@@ -3271,51 +3283,6 @@ fi
 
 * Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.1-500.chinfo
 - 5.10.1 - pf2
-
-* Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.14-500.chinfo
-- 5.9.14 - pf7
-
-* Tue Dec 08 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.13-500.chinfo
-- 5.9.13 - pf7
-
-* Wed Dec 02 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.12-500.chinfo
-- 5.9.12 - pf6
-
-* Tue Nov 24 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.11-500.chinfo
-- 5.9.11 - pf6
-
-* Sun Nov 22 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.10-500.chinfo
-- 5.9.10 - pf5
-
-* Wed Nov 18 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.9-500.chinfo
-- 5.9.9 - pf5
-- f33 sync
-
-* Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.8-500.chinfo
-- 5.9.8 - pf4
-
-* Tue Nov 10 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.7-500.chinfo
-- 5.9.7 - pf3
-
-* Thu Nov 05 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.6-500.chinfo
-- 5.9.6 - pf3
-
-* Wed Nov 04 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.4-500.chinfo
-- 5.9.4 - pf3
-
-* Sun Nov 01 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.3-500.chinfo
-- 5.9.3 - pf2
-
-* Thu Oct 29 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.2-500.chinfo
-- 5.9.2 - pf2
-- stabilization sync
-
-* Sat Oct 17 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.1-500.chinfo
-- 5.9.1 - pf2
-- Added fsync patch from tkg until it is merged in pf
-
-* Tue Oct 13 2020 Phantom X <megaphantomx at hotmail dot com> - 5.9.0-500.chinfo
-- 5.9.0 -pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

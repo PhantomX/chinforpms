@@ -105,6 +105,8 @@ Patch1:         0001-fix-system-boost-detection.patch
 %endif
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 
+ExclusiveArch:  x86_64
+
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  gcc
