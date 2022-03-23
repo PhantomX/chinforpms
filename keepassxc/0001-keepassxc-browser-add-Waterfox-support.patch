@@ -1,6 +1,6 @@
-From 8dec230b9ebf093e049d03aa8ee97cb02a736ce5 Mon Sep 17 00:00:00 2001
+From ce949af65f177051e36367cfedf9ba2c54cb6ea1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 3 Mar 2022 07:31:16 -0300
+Date: Tue, 22 Mar 2022 09:33:02 -0300
 Subject: [PATCH] keepassxc-browser: add Waterfox support
 
 ---
@@ -13,10 +13,10 @@ Subject: [PATCH] keepassxc-browser: add Waterfox support
  6 files changed, 37 insertions(+), 3 deletions(-)
 
 diff --git a/share/translations/keepassxc_en.ts b/share/translations/keepassxc_en.ts
-index 92d8de7..d959682 100644
+index 2b83e1d..68c7175 100644
 --- a/share/translations/keepassxc_en.ts
 +++ b/share/translations/keepassxc_en.ts
-@@ -968,6 +968,10 @@ Do you want to delete the entry?
+@@ -973,6 +973,10 @@ Would you like to migrate your existing settings now?</source>
          <source>Chromium</source>
          <translation type="unfinished"></translation>
      </message>
@@ -28,10 +28,10 @@ index 92d8de7..d959682 100644
          <source>Show a notification when credentials are requested</source>
          <extracomment>Credentials mean login data requested via browser extension</extracomment>
 diff --git a/share/translations/keepassxc_en_US.ts b/share/translations/keepassxc_en_US.ts
-index 5381beb..d57d4a3 100644
+index bbb17d0..31a3ff8 100644
 --- a/share/translations/keepassxc_en_US.ts
 +++ b/share/translations/keepassxc_en_US.ts
-@@ -773,6 +773,10 @@ chrome-laptop.</translation>
+@@ -987,6 +987,10 @@ Would you like to migrate your existing settings now?</translation>
          <source>Chromium</source>
          <translation>Chromium</translation>
      </message>
@@ -42,8 +42,8 @@ index 5381beb..d57d4a3 100644
      <message>
          <source>Show a notification when credentials are requested</source>
          <extracomment>Credentials mean login data requested via browser extension</extracomment>
-@@ -7913,4 +7917,4 @@ Example: JBSWY3DPEHPK3PXP</translation>
-         <translation>No hardware keys detected</translation>
+@@ -8894,4 +8898,4 @@ Example: JBSWY3DPEHPK3PXP</translation>
+         <translation>Failed to complete a challenge-response, the specific error was: %1</translation>
      </message>
  </context>
 -</TS>
@@ -82,7 +82,7 @@ index d0f8161..6285346 100644
      // Custom browser settings
      auto customBrowserEnabled = m_ui->customBrowserSupport->isChecked();
 diff --git a/src/browser/BrowserSettingsWidget.ui b/src/browser/BrowserSettingsWidget.ui
-index 25508a7..ea700b8 100644
+index 1f8902b..ca12057 100644
 --- a/src/browser/BrowserSettingsWidget.ui
 +++ b/src/browser/BrowserSettingsWidget.ui
 @@ -104,6 +104,16 @@

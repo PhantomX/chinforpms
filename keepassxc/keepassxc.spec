@@ -6,7 +6,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.0~beta1
+Version:        2.7.0
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -30,7 +30,8 @@ BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  asciidoctor
-BuildRequires:  pkgconfig(botan-2)
+BuildRequires:  pkgconfig(botan-2) >= 2.11.0
+BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libqrencode)
 BuildRequires:  pkgconfig(Qt5)
@@ -122,6 +123,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Mar 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0-100
+- 2.7.0
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0~beta1-100
 - 2.7.0-beta1
 - BR: botan-2
