@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at hotmail dot com>
 # Suggested usage: $ wineninecfg --help
 #
-# Copyright 2018-2021 Phantom X, Goiania, Brazil.
+# Copyright 2018-2022 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20210501
+ver=20220324
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -65,6 +65,10 @@ checkcfg(){
       winesodir=i386-unix
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+    if [ -z "${native_path}" ] ;then
+      echo 'Error while getting native winepath!'
+      exit 5
+    fi
     lib_path="/usr/lib${lib}/wine/${winesodir}"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
@@ -105,6 +109,10 @@ setcfg(){
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      if [ -z "${native_path}" ] ;then
+        echo 'Error while getting native winepath!'
+        exit 5
+      fi
       lib_path="/usr/lib${lib}/wine/${winesodir}"
       arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do
@@ -176,6 +184,10 @@ unsetcfg(){
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      if [ -z "${native_path}" ] ;then
+        echo 'Error while getting native winepath!'
+        exit 5
+      fi
       lib_path="/usr/lib${lib}/wine/${winesodir}"
       arch_path="${lib_path}/${winearchdir}"
       for dll in ${dlls} ;do

@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
 #
-# Copyright 2018-2021 Phantom X, Goiania, Brazil.
+# Copyright 2018-2022 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20210427
+ver=20220324
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -66,6 +66,10 @@ checkcfg(){
       lib=32
     fi
     native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+    if [ -z "${native_path}" ] ;then
+      echo 'Error while getting native winepath!'
+      exit 5
+    fi
     lib_path="${datadir}/${lib}"
     for dll in ${dlls} ;do
       if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
@@ -106,6 +110,10 @@ setcfg(){
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      if [ -z "${native_path}" ] ;then
+        echo 'Error while getting native winepath!'
+        exit 5
+      fi
       lib_path="${datadir}/${lib}"
       arch_path="${wine_path}/${winearchdir}"
       for dll in ${dlls} ;do
@@ -177,6 +185,10 @@ unsetcfg(){
     fi
     if wine${winebits} reg query /? &>/dev/null ;then
       native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+      if [ -z "${native_path}" ] ;then
+        echo 'Error while getting native winepath!'
+        exit 5
+      fi
       lib_path="${datadir}/${lib}"
       arch_path="${wine_path}/${winearchdir}"
       for dll in ${dlls} ;do

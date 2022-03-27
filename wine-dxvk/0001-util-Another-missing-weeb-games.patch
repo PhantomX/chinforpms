@@ -1,0 +1,37 @@
+From 5d04301af8bac7dc910c07f85a07cf49fdbffbba Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 24 Mar 2022 18:58:41 -0300
+Subject: [PATCH] [util] Another missing weeb games
+
+Atelier Sophie before DX game (A17) and Atelier Sophie 2
+---
+ src/util/config/config.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/util/config/config.cpp b/src/util/config/config.cpp
+index 82f1095..1e71ee4 100644
+--- a/src/util/config/config.cpp
++++ b/src/util/config/config.cpp
+@@ -167,8 +167,8 @@ namespace dxvk {
+     { R"(\\Atelier_(Ayesha|Escha_and_Logy|Shallie)(_EN)?\.exe$)", {{
+       { "d3d9.deferSurfaceCreation",        "True" },
+     }} },
+-    /* Atelier Firis                              */
+-    { R"(\\A18\.exe$)", {{
++    /* Atelier Firis/Sophie                              */
++    { R"(\\A(17|18)\.exe$)", {{
+       { "d3d9.deferSurfaceCreation",        "True" },
+     }} },
+     /* Atelier Rorona/Totori/Meruru               */
+@@ -176,7 +176,7 @@ namespace dxvk {
+       { "d3d9.deferSurfaceCreation",        "True" },
+     }} },
+     /* Just how many of these games are there?    */
+-    { R"(\\Atelier_(Lulua|Lydie_and_Suelle|Ryza(_2)?)\.exe$)", {{
++    { R"(\\Atelier_(Lulua|Lydie_and_Suelle|Ryza|Sophie(_2)?)\.exe$)", {{
+       { "d3d9.deferSurfaceCreation",        "True" },
+     }} },
+     /* ...                                        */
+-- 
+2.35.1
+

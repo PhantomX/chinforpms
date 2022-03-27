@@ -4,9 +4,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit b42c07253efecb630d86369efbb4bdf56c5e0b8b
+%global commit 0db26a0456acde96cbd95e30880137bde3568403
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220224
+%global date 20220324
 %global with_snapshot 0
 
 %{?mingw_package_header}
@@ -21,7 +21,7 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id 2c41ae818236dcfdf37e7262360dd9eea42ee5d6
+%global sporif_id 56d62b98d8cdf51770f7ef440233a4bfb1e223c3
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
 
 %global valve_url https://github.com/ValveSoftware/dxvk
@@ -37,7 +37,7 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.10
+Version:        1.10.1
 Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -55,6 +55,7 @@ Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
+Patch101:       0001-util-Another-missing-weeb-games.patch
 
 
 %if 0%{?dxvk_async}
@@ -126,6 +127,7 @@ package or when debugging this package.
 %if 0%{?dxvk_async}
 %setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
 %patch100 -p1
+%patch101 -p1
 
 %patch200 -p1
 %patch201 -p1
@@ -179,14 +181,10 @@ TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
 
 sed \
-  -e "/static-libstdc++/a\  add_global_link_arguments('$TEMP_LDFLAGS', language : 'cpp')" \
-  -e "/static-libstdc++/a\  add_global_link_arguments('$TEMP_LDFLAGS', language : 'c')" \
-  -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'cpp')" \
-  -e "/static-libstdc++/a\  add_project_arguments('$TEMP_CFLAGS', language : 'c')" \
+  -e "/-DNOMINMAX/a\  '$TEMP_CFLAGS'," \
+  -e "/static-libstdc++/a\  '$TEMP_LDFLAGS'," \
 %if %{without sse3}
-  -e "s|if dxvk_compiler.has_argument('-msse3')|if dxvk_compiler.has_argument('-msse3_disabled')|g" \
-  -e "s|and dxvk_compiler.has_argument('-msse3')||g" \
-  -e "s| '-msse3',||g" \
+  -e "/-msse3/d" \
 %endif
   -i meson.build
 
@@ -246,6 +244,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Mar 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.1-100
+- 1.10.1
+
 * Fri Mar 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10-100
 - 1.10
 

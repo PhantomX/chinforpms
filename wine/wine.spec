@@ -1,7 +1,7 @@
 %global commit 47b02e8c1ea4ad82cd572dc3dcf60af753222f39
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220318
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -81,7 +81,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8fb1779241b02af85e920a0a7b944855126c4148
+%global wine_stagingver 7.5
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -92,7 +92,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 13ad1fc31c0c94666e6bf24cd2d485a8ad91fc7a
+%global tkg_id 7048aa12c16e17006e6202bf93e09c8f8660dfe3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,8 +145,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.4
-Release:        103%{?gver}%{?dist}
+Version:        7.5
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -989,10 +989,10 @@ patch -p1 -i patch1031.patch
 %patch1031 -p1
 %endif
 %patch1032 -p1
-#patch1034 -p1
-%patch1035 -p1
-%patch1036 -p1
-%patch1037 -p1
+%dnl #FIXME breaks something %patch1034 -p1
+%dnl #FIXME needs rebase %patch1035 -p1
+%dnl #FIXME needs rebase %patch1036 -p1
+%dnl #FIXME needs rebase %patch1037 -p1
 
 %patch1089 -p1
 %patch1091 -p1 -R
@@ -2386,6 +2386,7 @@ fi
 %{_datadir}/wine/nls/c_949.nls
 %{_datadir}/wine/nls/c_950.nls
 %{_datadir}/wine/nls/l_intl.nls
+%{_datadir}/wine/nls/locale.nls
 %{_datadir}/wine/nls/normidna.nls
 %{_datadir}/wine/nls/normnfc.nls
 %{_datadir}/wine/nls/normnfd.nls
@@ -2592,10 +2593,7 @@ fi
 
 %files alsa
 %{_libdir}/wine/%{winesodir}/winealsa.so
-%{_libdir}/wine/%{winesodir}/winealsa.drv.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/winealsa.drv
-%endif
+%{_libdir}/wine/%{winedlldir}/winealsa.%{winedrv}
 
 %files openal
 %{_libdir}/wine/%{winesodir}/openal32.dll.so
@@ -2609,6 +2607,9 @@ fi
 
 
 %changelog
+* Sat Mar 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.5-100
+- 7.5
+
 * Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.4-103.20220318git47b02e8
 - Weekend bump
 

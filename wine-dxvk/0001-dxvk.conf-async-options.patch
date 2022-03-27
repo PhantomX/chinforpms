@@ -14,7 +14,7 @@ index 769e1f6..f0e4ed9 100644
 @@ -557,3 +557,20 @@
  # - True/False
  
- # d3d9.apitraceMode = False
+ # dxvk.enableDebugUtils = True
 +
 +# Sets the async pipeline compiler
 +# 
