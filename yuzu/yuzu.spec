@@ -62,18 +62,20 @@
 
 %global gver .%{date}git%{shortcommit}
 
+%global vcm_url   https://github.com/yuzu-emu
+%global vcea_url  https://github.com/pineappleEA
+
 %if 0%{?with_ea}
 %global vc_name pineapple-src
+%global vc_url  %{vcea_url}
 %else
 %global vc_name %{name}
 %if 0%{?with_mainline}
 %global vc_name %{name}-mainline
+%global vc_url  %{vcm_url}
 %endif
 %endif
 
-%global vc_url  https://github.com/yuzu-emu
-
-%global vc_url  https://github.com/pineappleEA
 
 Name:           yuzu
 Version:        2552

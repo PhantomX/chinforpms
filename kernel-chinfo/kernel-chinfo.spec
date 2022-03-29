@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 0a89ddaed95fc16236411e6c538f83e926299bfc
+%global pfcommit 372ec49d4298b5cab668d7c0da6b7287e93177b9
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -974,8 +974,9 @@ Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 91e59cb0a14773c471141874c069f49a826e308c
+%global tkg_id 19dda36dea731f944fbcb11d30123f59150af089
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.17/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
@@ -2931,6 +2932,9 @@ fi
 #
 #
 %changelog
+* Mon Mar 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.1-500.chinfo
+- 5.17.1 - pf1
+
 * Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500.chinfo
 - 5.17.0 - pf1
 
