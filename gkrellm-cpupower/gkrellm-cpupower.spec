@@ -3,7 +3,7 @@
 
 Name:           gkrellm-cpupower
 Version:        0.1.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Gkrellm plugin for manipulating CPU frequency
 
 License:        GPLv2
@@ -28,11 +28,12 @@ A Gkrellm2 plugin for displaying and manipulating CPU frequency.
 %patch0
 
 sed -i \
-  -e "s|-O2 -Wall|%{build_cflags}|g" \
-  -e '/^LFLAGS =/s|-shared|\0 %{build_ldflags} -Wl,--as-needed|g' \
+  -e 's|-O2 -Wall|$(CFLAGS)|g' \
+  -e '/^LFLAGS =/s|-shared|\0 $(LDFLAGS) -Wl,--as-needed|g' \
   Makefile
 
 %build
+%set_build_flags
 %make_build
 
 %install
@@ -51,6 +52,9 @@ install -pm0755 cpufreqnextgovernor %{buildroot}%{_sbindir}/
 %{gkplugindir}/cpupower.so
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-3
+- Fix for package_note_file
+
 * Thu Jun 15 2017 Phantom X <megaphantomx at bol dot com dot br> - 0.1.6-2
 - rpmlint fix
 - BR: kernel-tools-libs-devel

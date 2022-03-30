@@ -61,7 +61,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.0.0
+Version:        22.0.1
 Release:        100%{?dist}
 
 License:        MIT
@@ -72,6 +72,16 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
+
+# Patches from Karol Herbst to make Tegra work again:
+# https://bugzilla.redhat.com/show_bug.cgi?id=1989726#c46
+# see also:
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/5399
+# Last four revert https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/3724
+Patch0005: 0003-Revert-nouveau-Use-format-modifiers-in-buffer-alloca.patch
+Patch0006: 0004-Revert-nouveau-no-modifier-the-invalid-modifier.patch
+Patch0007: 0005-Revert-nouveau-Use-DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEA.patch
+Patch0008: 0006-Revert-nouveau-Stash-supported-sector-layout-in-scre.patch
 
 
 BuildRequires:  meson >= 0.45
@@ -660,6 +670,12 @@ popd
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-100
+- 22.0.1
+
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.0-101
+- Rawhide sync
+
 * Thu Mar 10 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.0-100
 - 22.0.0
 

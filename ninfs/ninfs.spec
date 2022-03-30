@@ -1,7 +1,7 @@
 %global commit 66898891a02379896b4ef3d732ac220f08f9469d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220208
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -13,7 +13,7 @@
 %global pyctrver 0.5.1
 
 Name:           ninfs
-Version:        2.0~a8
+Version:        2.0~a9
 Release:        1%{?gver}%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
@@ -49,7 +49,7 @@ card contents, and you can browse and copy out just the files that you need.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
 
 %generate_buildrequires
 %pyproject_buildrequires -r
@@ -94,6 +94,9 @@ done
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0~a9-1
+- 2.0a9
+
 * Fri Feb 18 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0~a8-1.20220208git6689889
 - 2.0-a8
 

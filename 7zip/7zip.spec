@@ -23,7 +23,7 @@
 
 Name:           7zip
 Version:        21.07
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -87,8 +87,11 @@ mv DOC/License.txt DOC/copying.txt .
 
 sed \
   -e 's| -Werror | |g' \
-  -e 's|-O2 |%{build_cxxflags} |g' \
-  -e 's|$(LDFLAGS)|\0 %{build_ldflags} -Wl,-z,noexecstack|g' \
+  -e 's|-O2 | |g' \
+  -e 's|^CFLAGS =|CFLAGS +=|g' \
+  -e 's|^CXXFLAGS =|CXXFLAGS +=|g' \
+  -e 's|^LDFLAGS =|LDFLAGS +=|g' \
+  -e 's|$(LDFLAGS)|\0 -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
   -e '/^MY_ASM/s|asmc|uasm|g' \
   -i CPP/7zip/7zip_gcc.mak
@@ -102,6 +105,8 @@ sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main
 
 
 %build
+%set_build_flags
+
 %if %{with asm}
 %if "%{asmopt}" == "nasm"
 export USE_NASM=1
@@ -135,6 +140,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-4
+- Fix for package_note_file
+
 * Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-3
 - Update NASM patches
 

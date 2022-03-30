@@ -17,7 +17,7 @@
 
 Name:           vasm
 Version:        1.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Portable 6502 6800 arm c16x jagrisc m68k ppc vidcore x86 z80 assembler
 
 License:        VASMBSD
@@ -37,11 +37,12 @@ various formats or absolute code.
 %autosetup -n %{name}
 
 sed \
-  -e 's|-O2|%{build_cflags}|g' \
-  -e 's|-lm|%{build_ldflags} -Wl,-z,noexecstack \0|g' \
+  -e 's|-O2|$(CFLAGS)|g' \
+  -e 's|^LDFLAGS =|LDFLAGS += -Wl,-z,noexecstack |g' \
   -i Makefile
 
 %build
+%set_build_flags
 for cpu in %{cpu_list}; do
   for syntax in %{syntax_list}; do
     %make_build CPU=${cpu} SYNTAX=${syntax}
@@ -69,6 +70,9 @@ install -pm0755 vobjdump %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Mar 29 2022 - 1.9-2
+- Fix for package_note_file
+
 * Wed Mar 16 2022 - 1.9-1
 - 1.9
 

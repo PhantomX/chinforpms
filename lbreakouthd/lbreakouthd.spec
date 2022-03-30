@@ -1,6 +1,6 @@
 Name:           lbreakouthd
 Version:        1.0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A breakout-style arcade game
 
 License:        GPLv3
@@ -14,6 +14,7 @@ BuildRequires:  automake
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(sdl2)
@@ -88,6 +89,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.9-2
+- BR: gcc-c++
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.9-1
 - 1.0.9
 

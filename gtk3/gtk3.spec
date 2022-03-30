@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.31-3
+%global classic_ver 3.24.33
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -31,10 +31,10 @@
 %endif
 %global classic_dir gtk3-classic-%{classic_ver}
 
-%global vc_url https://gitlab.gnome.org/GNOME/gtk/-/commit
+%global vc_url https://gitlab.gnome.org/GNOME/gtk/-
 
 Name:           gtk3
-Version:        3.24.32
+Version:        3.24.33
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -46,6 +46,8 @@ Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
+
+Patch10:        %{vc_url}/merge_requests/4537.patch#/%{name}-gl-mr4537.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -408,6 +410,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.33-100
+- 3.24.33
+
 * Fri Mar 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.32-100
 - 3.24.32
 

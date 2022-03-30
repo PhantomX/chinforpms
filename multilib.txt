@@ -25,10 +25,10 @@ libvorbis-aotuv
 libstrangle
 -linux-steam-integration
 mangohud
-mingw-crt
-mingw-headers
-mingw-w64-tools
-mingw-winpthreads
+-mingw-crt
+-mingw-headers
+-mingw-w64-tools
+-mingw-winpthreads
 qt5ct
 qt6ct
 SDL1
@@ -38,8 +38,8 @@ SDL1
 -spirv-headers
 -spirv-tools
 taglib
-v4l-utils
-vkd3d
+-v4l-utils
+-vkd3d
 vulkan-headers
 vulkan-loader
 -webp-pixbuf-loader

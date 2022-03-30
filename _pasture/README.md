@@ -82,6 +82,7 @@ some seasonal packages too, these can return when needed
  * **simplescreenrecorder** - Do not have interest anymore
  * **steamwm** - Broken
  * **telegram** - Unneeded
+ * **ueberzug** - ytfzf
  * **VirtualBox** - Extra patches, a boot logo, no update checking, **VirtualBox-extpack-oracle**
  *                  and **VirtualBox-guest-additions-iso** support.
  *                  Do not have interest anymore
@@ -100,3 +101,4 @@ some seasonal packages too, these can return when needed
  * **xorg-x11-drv-ati** - Seasonal package
  * **xorg-x11-server** - Seasonal package
  * **xvidcore** - For i686 mock build
+ * **ytfzf** - Do not have interest anymore

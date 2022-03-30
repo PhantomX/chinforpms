@@ -8,7 +8,7 @@
 %endif
 
 Name:           libeatmydata
-Version:        129
+Version:        130
 Release:        1%{?gver}%{?dist}
 Summary:        Library and utilities designed to disable fsync and friends
 
@@ -70,6 +70,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 130-1
+- 130
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 129-1
 - 129
 

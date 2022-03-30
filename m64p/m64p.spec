@@ -11,7 +11,7 @@
 
 Name:           m64p
 Version:        2022.2.7
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
 # * mupen64plus-audio-sdl2 - GPLv2
@@ -126,7 +126,6 @@ icotool -x mupen64plus-gui/mupen64plus.ico
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -139,6 +138,7 @@ export PIE=1
 EOF
 
 %build
+%set_build_flags
 source ./%{name}-env
 
 for i in mupen64plus-input-qt mupen64plus-gui ;do
@@ -205,6 +205,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.2.7-2.20220208git85d0d3f
+- Fix for package_note_file
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.2.7-1.20220208git85d0d3f
 - 2022.2.7
 - Require external parallel packages

@@ -2,7 +2,7 @@
 
 Name:           python-%{pkgname}
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Nintendo Switch XTSN crypto for Python
 
 License:        MIT
@@ -12,6 +12,8 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 
 BuildRequires:  python3-devel
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
 
 
 %global _description %{expand:
@@ -50,6 +52,10 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-2
+- BR: gcc
+- BR: gcc-c++
+
 * Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-1
 - 0.1.1
 - Update to best packaging practices

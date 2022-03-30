@@ -43,7 +43,6 @@ This is a RSP plugin for Mupen64Plus emulator.
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -57,6 +56,7 @@ EOF
 
 
 %build
+%set_build_flags
 source ./%{name}-env
 
 # It's safe to build without cleanup, object directory is not the same

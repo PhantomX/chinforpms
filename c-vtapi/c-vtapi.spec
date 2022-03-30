@@ -60,7 +60,9 @@ autoreconf -ivf
   --disable-silent-rules \
   --disable-doxygen-ps \
   --disable-doxygen-pdf \
-  --disable-examples
+  --disable-examples \
+%{nil}
+
 %make_build
 
 

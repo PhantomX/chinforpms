@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 3748a2a8a4b7
-%global date 20220101
+%global commit 9209858b2f74
+%global date 20220326
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,7 +12,7 @@
 
 Name:           %{pkgname}-bindata
 Version:        0.6.3
-Release:        0.2%{?gver}%{?dist}
+Release:        0.4%{?gver}%{?dist}
 Summary:        Blastem binary support files
 
 License:        GPLv3
@@ -60,6 +60,12 @@ install -pm0644 menu.bin tmss.md %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.4.20220326hg9209858b2f74
+- Rebump
+
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.3.20220326hg9209858b2f74
+- New snapshot
+
 * Sun Jan 09 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.2.20220101hg3748a2a8a4b7
 - Bump
 

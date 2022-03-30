@@ -1,6 +1,6 @@
-%global commit 4635f7dae065b96dc3708afc8191eaa6ae8620ed
+%global commit e1d4b12d22fd710f0155d75585940f0d439f1544
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210928
+%global date 20211019
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           uksmd
 Version:        0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 
 Summary:        Userspace KSM helper daemon
 License:        GPLv3
@@ -74,6 +74,9 @@ install -pm0644 distro/%{name}.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0-4.20211019gite1d4b12
+- Bump
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 0-3.20210928git4635f7d
 - Last snapshot
 

@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 a264028ec71d9096e0aa629113c49c25db89d260
+%global commit0 1fe5e68d999e0bf88d0128ad813438726732f6e0
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220225
+%global date 20220314
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -26,7 +26,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        115%{?gver}%{?dist}
+Release:        116%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -45,6 +45,7 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 
 # From Gentoo
 Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
+Patch10:        0001-gcc-12-build-fix.patch
 %if !%{with absl}
 Patch100:       0001-fix-build-with-bundled-absl.patch
 %endif
@@ -61,8 +62,9 @@ BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gio-unix-2.0)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
-BuildRequires:  pkgconfig(libavresample)
 BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  pkgconfig(libswscale)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
 %endif
@@ -125,8 +127,9 @@ Requires:       pkgconfig(gobject-2.0)
 Requires:       pkgconfig(gio-unix-2.0)
 Requires:       pkgconfig(libavcodec)
 Requires:       pkgconfig(libavformat)
-Requires:       pkgconfig(libavresample)
 Requires:       pkgconfig(libavutil)
+Requires:       pkgconfig(libswresample)
+Requires:       pkgconfig(libswscale)
 Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
@@ -285,6 +288,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0-116.20220314git1fe5e68
+- Bump
+
 * Tue Mar 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0-115.20220225gita264028
 - Bump
 

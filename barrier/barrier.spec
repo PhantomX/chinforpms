@@ -18,8 +18,8 @@
 %endif
 
 Name:           barrier
-Version:        2.3.3
-Release:        4%{?gver}%{?dist}
+Version:        2.4.0
+Release:        1%{?gver}%{?dist}
 Summary:        Share mouse and keyboard between multiple computers over the network
 
 License:        GPLv2
@@ -131,6 +131,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-1.20210923gitdd8c2a1
+- 2.4.0
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-4.20210923gitdd8c2a1
 - Last snapshot
 

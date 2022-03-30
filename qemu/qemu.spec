@@ -65,9 +65,12 @@
 %endif
 
 # Matches spice ExclusiveArch
-%global have_spice 0
-%ifarch %{ix86} x86_64 %{arm} aarch64
 %global have_spice 1
+%ifnarch %{ix86} x86_64 %{arm} aarch64
+%global have_spice 0
+%endif
+%if 0%{?rhel} >= 9
+%global have_spice 0
 %endif
 
 # Matches xen ExclusiveArch
@@ -120,6 +123,9 @@
 %endif
 
 %global have_block_gluster 1
+%if 0%{?rhel} >= 9
+%global have_block_gluster 0
+%endif
 
 %define have_block_nfs 0
 %if 0%{?fedora}
@@ -136,6 +142,11 @@
 %define have_librdma 1
 %ifarch %{arm}
 %define have_librdma 0
+%endif
+
+%define have_libcacard 1
+%if 0%{?rhel} >= 9
+%define have_libcacard 0
 %endif
 
 %define with_systemtap 1
@@ -190,7 +201,6 @@
 %define requires_char_baum Requires: %{name}-char-baum = %{evr}
 %define requires_device_usb_host Requires: %{name}-device-usb-host = %{evr}
 %define requires_device_usb_redirect Requires: %{name}-device-usb-redirect = %{evr}
-%define requires_device_usb_smartcard Requires: %{name}-device-usb-smartcard = %{evr}
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
@@ -228,6 +238,12 @@
 %define requires_device_display_qxl %{nil}
 %define requires_audio_spice %{nil}
 %define requires_char_spice %{nil}
+%endif
+
+%if %{have_libcacard}
+%define requires_device_usb_smartcard Requires: %{name}-device-usb-smartcard = %{evr}
+%else
+%define requires_device_usb_smartcard %{nil}
 %endif
 
 %global requires_all_modules \
@@ -284,7 +300,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 6.2.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -302,6 +318,12 @@ Source27: kvm.conf
 Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
+
+Patch0001: 0001-sgx-stub-fix.patch
+
+# CVE-2022-0358
+# https://bugzilla.redhat.com/show_bug.cgi?id=2046202
+Patch0002: 0001-virtiofsd-Drop-membership-of-all-supplementary-groups.patch
 
 
 BuildRequires: meson >= %{meson_version}
@@ -413,8 +435,10 @@ BuildRequires: xen-devel
 BuildRequires: bzip2-devel
 # TLS test suite
 BuildRequires: libtasn1-devel
+%if %{have_libcacard}
 # smartcard device
 BuildRequires: libcacard-devel
+%endif
 %if %{have_virgl}
 # virgl 3d support
 BuildRequires: virglrenderer-devel
@@ -478,6 +502,7 @@ Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
 Requires: %{name}-img = %{epoch}:%{version}-%{release}
 Requires: %{name}-tools = %{epoch}:%{version}-%{release}
 Requires: qemu-pr-helper = %{epoch}:%{version}-%{release}
+Requires: vhostuser-backend(fs)
 
 %description
 %{name} is an open source virtualizer that provides hardware
@@ -541,6 +566,15 @@ Summary: qemu-pr-helper utility for %{name}
 %description -n qemu-pr-helper
 This package provides the qemu-pr-helper utility that is required for certain
 SCSI features.
+
+
+%package -n qemu-virtiofsd
+Summary: QEMU virtio-fs shared file system daemon
+Provides: vhostuser-backend(fs)
+%description -n qemu-virtiofsd
+This package provides virtiofsd daemon. This program is a vhost-user backend
+that implements the virtio-fs device that is used for sharing a host directory
+tree with a guest.
 
 
 %package tests
@@ -765,11 +799,13 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-usb-redirect
 This package provides the usbredir device for QEMU.
 
+%if %{have_libcacard}
 %package device-usb-smartcard
 Summary: QEMU USB smartcard device
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description device-usb-smartcard
 This package provides the USB smartcard device for QEMU.
+%endif
 
 %if %{have_virgl}
 %package device-display-vhost-user-gpu
@@ -917,6 +953,9 @@ This package provides the QEMU system emulator for ARM systems.
 %package system-arm-core
 Summary: QEMU system emulator for ARM
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
+%if %{have_edk2}
+Requires: edk2-arm
+%endif
 %description system-arm-core
 This package provides the QEMU system emulator for ARM boards.
 
@@ -1445,7 +1484,9 @@ run_configure \
   --enable-dmg \
   --enable-fuse \
   --enable-gio \
+%if %{have_block_gluster}
   --enable-glusterfs \
+%endif
   --enable-gtk \
   --enable-libdaxctl \
 %if %{have_block_nfs}
@@ -1472,7 +1513,9 @@ run_configure \
 %if %{have_sdl_image}
   --enable-sdl-image \
 %endif
+%if %{have_libcacard}
   --enable-smartcard \
+%endif
 %if %{have_spice}
   --enable-spice \
   --enable-spice-protocol \
@@ -1811,6 +1854,12 @@ popd
 %{_mandir}/man8/qemu-pr-helper.8*
 
 
+%files -n qemu-virtiofsd
+%{_mandir}/man1/virtiofsd.1*
+%{_libexecdir}/virtiofsd
+%{_datadir}/qemu/vhost-user/50-qemu-virtiofsd.json
+
+
 %files tools
 %{_bindir}/qemu-keymap
 %{_bindir}/qemu-edid
@@ -1840,11 +1889,8 @@ popd
 %{_datadir}/icons/*
 %{_datadir}/%{name}/keymaps/
 %{_datadir}/%{name}/linuxboot_dma.bin
-%{_datadir}/%{name}/vhost-user/50-qemu-virtiofsd.json
 %attr(4755, -, -) %{_libexecdir}/qemu-bridge-helper
-%{_libexecdir}/virtiofsd
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/man1/virtiofsd.1*
 %{_mandir}/man7/qemu-block-drivers.7*
 %{_mandir}/man7/qemu-cpu-models.7*
 %{_mandir}/man7/qemu-ga-ref.7*
@@ -1946,8 +1992,10 @@ popd
 %{_libdir}/%{name}/hw-usb-host.so
 %files device-usb-redirect
 %{_libdir}/%{name}/hw-usb-redirect.so
+%if %{have_libcacard}
 %files device-usb-smartcard
 %{_libdir}/%{name}/hw-usb-smartcard.so
+%endif
 
 
 %if %{have_virgl}
@@ -2245,6 +2293,9 @@ popd
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2:6.2.0-101
+- Rawhide sync
+
 * Wed Dec 15 2021 Phantom X <megaphantomx at hotmail dot com> - 2:6.2.0-100
 - 6.2.0
 

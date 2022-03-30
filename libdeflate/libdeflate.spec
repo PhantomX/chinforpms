@@ -1,7 +1,7 @@
 %global soversion 0
 
 Name:           libdeflate
-Version:        1.8
+Version:        1.10
 Release:        1%{?dist}
 Summary:        Heavily optimized library for compression and decompression
 
@@ -79,6 +79,7 @@ rm -f %{buildroot}%{_libdir}/*.a
 %license COPYING
 %{_includedir}/%{name}.h
 %{_libdir}/%{name}.so
+%{_libdir}/pkgconfig/%{name}.pc
 
 %files progs
 %license COPYING
@@ -86,5 +87,8 @@ rm -f %{buildroot}%{_libdir}/*.a
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.10-1
+- 1.10
+
 * Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1.8-1
 - Initial spec

@@ -21,7 +21,7 @@ libvirt
 libxspf
 lzlib
 lzma-sdk
-mingw-headers
+-mingw-headers
 p7zip
 pysdl2
 -python-iniherit
@@ -50,7 +50,6 @@ libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
-mesa
 pygtk2
 -python-markups
 -python-yoyo-migrations
@@ -62,6 +61,10 @@ vulkan-loader
 xcftools
 
 # 3
+mesa
+
+# 4
+7zip
 adriconf
 adwaita-qt
 -aisleriot
@@ -104,8 +107,8 @@ disk-indicator
 dosbox-x
 easytag
 -emojione-picker
-FAudio
-FAudio-noreverb
+-FAudio
+-FAudio-noreverb
 fcrackzip
 firefox-chinfo-prefs
 firejail
@@ -148,7 +151,7 @@ kse
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
 libstrangle
-liveprogide
+-liveprogide
 -linux-steam-integration
 lutris
 lunzip
@@ -162,9 +165,9 @@ mcomix3
 mednafen
 mednaffe
 mgba
-mingw-crt
-mingw-w64-tools
-mingw-winpthreads
+-mingw-crt
+-mingw-w64-tools
+-mingw-winpthreads
 move-to-next-monitor
 mozilla-gnotifier
 -mozilla-keepassxc-browser
@@ -189,6 +192,7 @@ psxmemcardmgr
 pulsemixer
 -purple-rocketchat
 -python-pafy
+python-pypng
 python-u4pak
 qemu
 qmc2
@@ -221,7 +225,7 @@ tyrian-data
 unbound-update-roothints
 vhba
 vhba-kmod
-vkd3d
+-vkd3d
 waterfox
 waterfox-filesystem
 waterfox-classic-theme-restorer
@@ -238,9 +242,9 @@ winesync
 winesync-kmod
 wxmp3gain
 wxmp3val
-ueberzug
+-ueberzug
 uksmd
-v4l-utils
+-v4l-utils
 winetricks
 xarchiver
 xboxdrv
@@ -251,10 +255,10 @@ xinput-gui
 -xorg-x11-server
 -yad
 youtube-dlp
-ytfzf
+-ytfzf
 zram-init
 
-# 4
+# 5
 -audacious-plugins
 -audacious-plugins-freeworld
 -belle-sip
@@ -273,7 +277,7 @@ vkbasalt
 whdd
 wine
 
-# 5
+# 6
 -belcard
 mingw-wine-gecko
 wine-dxvk

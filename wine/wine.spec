@@ -56,6 +56,7 @@
 
 %if 0%{?wine_mingw}
 %undefine _annotated_build
+%undefine _package_note_file
 %global libext %{nil}
 %global winedlldir %{winearchdir}
 %endif
@@ -1102,6 +1103,7 @@ export CROSSCFLAGS="`echo $CFLAGS | sed \
 # mingw linker do not support -z,relro and now
 export CROSSLDFLAGS="`echo $LDFLAGS | sed \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-ld,,' \
+  -e 's,-Wl,--build-id=sha1,,' \
   `"
 
 mkdir bin

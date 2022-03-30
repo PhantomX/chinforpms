@@ -13,7 +13,7 @@
 
 Name:           wiimms-iso-tools
 Version:        3.04a
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPLv2+
@@ -68,8 +68,10 @@ sed -e 's|/usr/local|/usr|g' -i project/setup.sh
 
 sed -i \
   -e 's|$(PRE)strip|/bin/true|g' \
-  -e "s|-static-libgcc|%{build_ldflags} -Wl,-z,noexecstack|g" \
-  -e "/CFLAGS/s|-O3|%{build_cflags}|g" \
+  -e "s|-static-libgcc|-Wl,-z,noexecstack|g" \
+  -e "/CFLAGS/s|-O3||g" \
+  -e '/strip $(CFLAGS)/d' \
+  -e '/strip $(LDFLAGS)/d' \
   -e 's|^doc: $(MAIN_TOOLS)|doc:|g' \
   -e 's|@$(CC)|$(CC)|g' \
   -e 's|@if|if|g' \
@@ -78,6 +80,7 @@ sed -i \
   project/Makefile
 
 %build
+%set_build_flags
 %make_build -C project INSTALL_PATH=%{_prefix} HAVE_ZLIB=1
 %make_build -C project doc
 
@@ -112,6 +115,9 @@ done
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 3.04a-2.20210418gite58ce74
+- Fix for package_note_file
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 3.04a-1.20210418gite58ce74
 - 3.04a
 

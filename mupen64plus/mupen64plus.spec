@@ -159,7 +159,6 @@ sed -i -e '/projects\/unix install/g' ./m64p_build.sh
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="%{optflags}"
-export LDFLAGS="$OPTFLAGS %{build_ldflags}"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -177,6 +176,7 @@ source ./%{name}-env
 ./m64p_build.sh %{?_smp_mflags}
 
 %install
+%set_build_flags
 source ./%{name}-env
 ./m64p_install.sh INSTALL="install -p" INSTALL_STRIP_FLAG= DESTDIR="%{buildroot}"
 

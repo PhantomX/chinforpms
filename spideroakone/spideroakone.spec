@@ -17,14 +17,14 @@
 # Set to 1 to use system libs
 %global with_curl 0
 %global with_dbusmenuqt 0
-%global with_ffi 1
+%global with_ffi 0
 %global with_python 0
 %global with_pillow 0
 %global with_pyqt 0
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -287,6 +287,9 @@ done
 
 
 %changelog
+* Wed Mar 30 2022 - 3:7.5.0-10
+- with_ffi 0
+
 * Fri Nov 06 2020 - 3:7.5.0-9
 - with_python 0
 

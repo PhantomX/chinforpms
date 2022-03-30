@@ -1,4 +1,5 @@
 %undefine _annotated_build
+%undefine _auto_set_build_flags
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 # Disable LTO
@@ -7,10 +8,10 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit dc622fc7156b63eb53ed677df15c9af3feb6293d
+%global commit 2e8fb2718227d977e715ad87529e11bb168a49bd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220225
-%global with_snapshot 0
+%global date 20220324
+%global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -26,7 +27,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 83e1a9ed8ce289cebb1c02c8167d663dc1befb24
+%global commit4 6eb8fc3598ed2a9777677fbe59038c8d0664a434
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
@@ -55,7 +56,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -270,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-2.20220324git2e8fb27
+- Snapshot
+
 * Fri Mar 04 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-1
 - 2.6
 

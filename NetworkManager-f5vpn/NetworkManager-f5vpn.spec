@@ -1,5 +1,5 @@
 Name:           NetworkManager-f5vpn
-Version:        0.4
+Version:        0.5
 Release:        1%{?dist}
 Summary:        NetworkManager VPN plugin for F5 SSL VPN
 
@@ -48,6 +48,11 @@ sed \
   -e '/libraries(f5vpn-cli/a install(TARGETS f5vpn-cli DESTINATION bin)' \
   -i CMakeLists.txt
 
+if grep -q 'pppd/bad' CMakeLists.txt ;then
+  echo "ppp version error mismatch."
+  exit 1
+fi
+
 sed -e 's|/usr/bin/pppd|%{_sbindir}/pppd|g' -i lib/f5vpn_connect.c
 
 
@@ -94,6 +99,9 @@ install -pm0644 nmf5vpnservice.{te,pp} %{buildroot}%{_datadir}/%{name}/
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.5-1
+- 0.5
+
 * Thu Jul 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0.4-1
 - 0.4
 

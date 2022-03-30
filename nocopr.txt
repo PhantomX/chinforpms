@@ -12,7 +12,7 @@ cdrtools
 citra
 -cowsrevenge
 czkawka
-desmume
+-desmume
 discord
 -dropboxd
 duckstation
@@ -25,7 +25,7 @@ flycast
 gens-gs
 gflash-player
 glow
-gstreamer1-plugins-ugly
+-gstreamer1-plugins-ugly
 hactool
 hakuneko-desktop
 -higan

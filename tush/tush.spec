@@ -1,6 +1,6 @@
 Name:           tush
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The Utility for SNES Headers
 
 License:        Unknown
@@ -11,6 +11,7 @@ Source0:        tush.zip
 Patch0:         0001-fix-OpenDialog-crash.patch
 
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  wxGTK3-devel
 Requires:       gnome-icon-theme
@@ -25,8 +26,8 @@ rm -f *.exe
 sed -e 's/\r//' -i *.txt
 
 sed \
-  -e 's|-Os -pipe|%{build_cxxflags}|g' \
-  -e '/LDFLAGS/s|-s|%{build_ldflags}|g' \
+  -e 's|^CFLAGS=-Os -pipe|CFLAGS+=|g' \
+  -e '/^LDFLAGS=/d' \
   -i src/Makefile
 
 
@@ -61,5 +62,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-2
+- Fix for package_note_file
+
 * Sat Nov 20 2021 Phantom X <megaphantomx at hotmail dot com>
 - Initial spec

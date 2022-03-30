@@ -1,6 +1,6 @@
 Name:           fss-parallel-tools
 Version:        1.49
-Release:        1%{?dist}
+Release:        3%{?dist}
 Summary:        Parallel tar, rm and cp utilities
 
 License:        UPL
@@ -27,11 +27,13 @@ tar -xof %{name}-%{version}.tar.gz --strip-components 1
 rm -f %{name}-%{version}.tar.gz
 
 sed \
-  -e '/^CFLAGS/s|-g -O1|%{build_cflags}|g' \
-  -e '/^LDFLAGS/s|$| %{build_ldflags}|g' \
+  -e '/^CFLAGS/s|-g -O1||g' \
+  -e 's|^CFLAGS=|CFLAGS+=|g' \
+  -e 's|^LDFLAGS=|LDFLAGS+=|g' \
   -i Makefile
 
 %build
+%set_build_flags
 %make_build
 
 %install
@@ -51,5 +53,11 @@ done
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.49-3
+- Fix for package_note_file
+
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.49-2
+- Undefine _package_note_file
+
 * Thu Jul 04 2019 Phantom X <megaphantomx at bol dot com dot br> - 1.49-1
 - Initial spec

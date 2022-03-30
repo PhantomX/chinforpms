@@ -21,6 +21,9 @@
 
 # Enable system ffmpeg
 %global with_sysffmpeg 1
+%if 0%{?fedora} && 0%{?fedora} >= 36
+%global with_sysffmpeg 0
+%endif
 %if !0%{?with_sysffmpeg}
 %global bundleffmpegver 3.0.2
 %endif

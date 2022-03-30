@@ -1,5 +1,5 @@
 Name:           lunzip
-Version:        1.12
+Version:        1.13
 Release:        1%{?dist}
 Summary:        Decompressor for lzip files
 
@@ -42,6 +42,9 @@ make check
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.13-1
+- 1.13
+
 * Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.12-1
 - 1.12
 

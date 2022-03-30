@@ -1,0 +1,44 @@
+From d984ddf1a64ce9fae36395b423cf6e52afc9a07a Mon Sep 17 00:00:00 2001
+From: "Benjamin A. Beasley" <code@musicinmybrain.net>
+Date: Wed, 16 Mar 2022 14:33:41 -0400
+Subject: [PATCH] Disable SysinfoTest.NominalCPUFrequency
+
+SysinfoTest.NominalCPUFrequency in absl_sysinfo_test fails occasionally
+on aarch64, but see:
+
+NominalCPUFrequency Test from SysInfoTest Suite Fails on M1 Mac
+https://github.com/abseil/abseil-cpp/issues/1053#issuecomment-961432444
+
+in which an upstream author opines:
+
+  If the only problem you are trying to solve is a failing test, this is safe
+  to ignore since this code is never called. I should consider stripping this
+  test out of the open source release. NominalCPUFrequency is only called in
+  code private to Google and we do have tests on the platforms we use it on.
+
+We therefore disable it on all architectures, since any future failures
+will also not be meaningful.
+
+Note also that this test is removed upstream in commit
+732b5580f089101ce4b8cdff55bb6461c59a6720 (internal commit
+7e8da4f14afd25d11713eee6b743ba31605332bf).
+---
+ absl/base/internal/sysinfo_test.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/absl/base/internal/sysinfo_test.cc b/absl/base/internal/sysinfo_test.cc
+index 5f9e45f..1a944f0 100644
+--- a/absl/base/internal/sysinfo_test.cc
++++ b/absl/base/internal/sysinfo_test.cc
+@@ -44,7 +44,7 @@ TEST(SysinfoTest, NumCPUs) {
+ // frequency, while others do not. Since we can't predict a priori what a given
+ // machine is going to do, just disable this test on POWER on Linux.
+ #if !(defined(__linux) && (defined(__ppc64__) || defined(__PPC64__)))
+-TEST(SysinfoTest, NominalCPUFrequency) {
++TEST(SysinfoTest, DISABLED_NominalCPUFrequency) {
+   // Linux only exposes the CPU frequency on certain architectures, and
+   // Emscripten doesn't expose it at all.
+ #if defined(__linux__) &&                                                  \
+-- 
+2.35.1
+

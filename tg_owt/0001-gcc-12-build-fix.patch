@@ -1,0 +1,38 @@
+From 536e42e82f04f6a612529789faf1f48cdb29414e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 29 Mar 2022 22:19:26 -0300
+Subject: [PATCH] gcc 12 build fix
+
+---
+ src/common_video/h265/h265_pps_parser.h          | 2 ++
+ src/modules/include/module_common_types_public.h | 1 +
+ 2 files changed, 3 insertions(+)
+
+diff --git a/src/common_video/h265/h265_pps_parser.h b/src/common_video/h265/h265_pps_parser.h
+index 28c95ea..397c773 100644
+--- a/src/common_video/h265/h265_pps_parser.h
++++ b/src/common_video/h265/h265_pps_parser.h
+@@ -11,6 +11,8 @@
+ #ifndef COMMON_VIDEO_H265_PPS_PARSER_H_
+ #define COMMON_VIDEO_H265_PPS_PARSER_H_
+ 
++#include <cstdint>
++
+ #include "absl/types/optional.h"
+ 
+ namespace rtc {
+diff --git a/src/modules/include/module_common_types_public.h b/src/modules/include/module_common_types_public.h
+index 345e45c..e686e5d 100644
+--- a/src/modules/include/module_common_types_public.h
++++ b/src/modules/include/module_common_types_public.h
+@@ -12,6 +12,7 @@
+ #define MODULES_INCLUDE_MODULE_COMMON_TYPES_PUBLIC_H_
+ 
+ #include <limits>
++#include <cstdint>
+ 
+ #include "absl/types/optional.h"
+ 
+-- 
+2.35.1
+

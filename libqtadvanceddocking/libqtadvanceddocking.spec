@@ -1,7 +1,7 @@
 %global pkgname Qt-Advanced-Docking-System
 
 Name:           libqtadvanceddocking
-Version:        3.8.1
+Version:        3.8.2
 Release:        1%{?dist}
 Summary:        Advanced Docking System for Qt
 
@@ -10,7 +10,6 @@ URL:            https://github.com/githubuser0xFFFF/%{pkgname}
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
-Patch0:         %{url}/commit/535b9260958a16858bd30f5b7e0a66e4efedaad8.patch#/%{name}-gh-535b926.patch
 Patch10:        0001-cmake-library-fixes.patch
 
 
@@ -67,5 +66,8 @@ developing applications that use %{name}.
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.2-1
+- 3.8.2
+
 * Mon Dec 13 2021 Phantom X <megaphantomx at hotmail dot com> - 3.8.1-1
 - Initial spec

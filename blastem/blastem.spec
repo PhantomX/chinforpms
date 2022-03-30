@@ -1,7 +1,9 @@
 %undefine _hardened_build
 
-%global commit 0013362c320c
-%global date 20220213
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
+%global commit 9209858b2f74
+%global date 20220326
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +12,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.7%{?gver}%{?dist}
+Release:        0.8%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPLv3
@@ -47,17 +49,20 @@ sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c vgmplay.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
-BLASTEM_OPTFLAGS="%{build_cflags} -flto=%{_smp_build_ncpus} -fuse-linker-plugin"
 sed \
-  -e "/^OPT:=/s|-O2 -flto|$BLASTEM_OPTFLAGS|g" \
-  -e 's|$(OPT) $(LDFLAGS)|\0 %{build_ldflags} -Wl,-z,relro -Wl,-z,now|g' \
-  -e 's|$(CC)|\0 $(CFLAGS)|g' \
+  -e '/^CFLAGS:=$(OPT) $(CFLAGS)/d' \
+  -e '/^LDFLAGS:=$(OPT) $(LDFLAGS)/d' \
+  -e 's|^CFLAGS:=|CFLAGS+=|g' \
+  -e 's|^LDFLAGS:=|LDFLAGS+=|g' \
+  -e 's|$(OPT)|$(LDFLAGS)|g' \
+  -e '/^CFLAGS+=/s| $(CFLAGS)||g' \
   -i Makefile
 
 icotool -x icons/windows.ico
 
 
 %build
+%set_build_flags
 %make_build \
   CC=gcc \
   DATA_PATH=/usr/share/blastem \
@@ -111,6 +116,10 @@ done
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.8.20220326hg9209858b2f74
+- New snapshot
+- Fix for package_note_file
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.7.20220213hg0013362c320c
 - Update
 

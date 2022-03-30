@@ -1,9 +1,11 @@
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+
 # Enable system mbedtls (needs old release, with cmac builtin support)
 %bcond_with mbedtls
 
 Name:           hactool
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A tool to view information about file formats for the Nintendo Switch
 
 License:        ISC
@@ -37,15 +39,15 @@ formats for the Nintendo Switch, especially Nintendo Content Archives.
     -i Makefile
 %endif
 
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 cat > config.mk <<EOF
 CC = gcc
-CFLAGS = %{optflags} -pedantic -std=gnu11 -fPIC
-LDFLAGS = %{build_ldflags} -Wl,-z,relro -Wl,-z,now -lmbedtls -lmbedx509 -lmbedcrypto
+CFLAGS += -pedantic -std=gnu11 -fPIC
+LDFLAGS += -Wl,-z,relro -Wl,-z,now -lmbedtls -lmbedx509 -lmbedcrypto
 EOF
 
 
 %build
+%set_build_flags
 %make_build
 
 
@@ -61,5 +63,8 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.4.0-2
+- Fix for package_note_file
+
 * Sun Mar 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1.4.0-1
 - Initial spec

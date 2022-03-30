@@ -1,9 +1,9 @@
-%global commit 45dfe03aa57db686bd992dc5add45bd76fc03543
+%global commit 2d6337beb6fa8be83d9164b45b53fd3b3300fb34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210223
+%global date 20220203
 %global with_snapshot 1
 
-%global commit1 07f90de4e5cc6f7aff8e8b62ca1a39804907848f
+%global commit1 5f44724e8fcdebf8a6b9fd009543c9dcfae4ea32
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libpe
 
@@ -15,7 +15,7 @@
 
 Name:           pev
 Version:        0.81
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PE file analysis toolkit
 
 License:        GPLv2
@@ -100,6 +100,9 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.81-2.20220203git2d6337b
+- Last archived snapshot
+
 * Fri Aug 13 2021 Phantom X <megaphantomx at bol dot com dot br> - 0.81-1.20210223git45dfe03
 - 0.81 snapshot
 

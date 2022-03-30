@@ -66,6 +66,9 @@ Source20:       thunar-sendto-%{name}.desktop
 Patch100:       %{name}-build-fix.patch
 Patch101:       %{name}-unbundled-kwayland-stuff.patch
 
+# https://github.com/TelegramMessenger/tgcalls/pull/14
+Patch102:       %{name}-ffmpeg5.patch
+
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
 Patch200:       %{name}-no-text-replace.patch
@@ -93,8 +96,9 @@ BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(json11)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
-BuildRequires:  pkgconfig(libavresample)
 BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)

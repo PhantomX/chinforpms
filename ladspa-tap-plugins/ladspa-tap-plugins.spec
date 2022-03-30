@@ -3,7 +3,7 @@
 
 Name:           ladspa-%{pkgname}
 Version:        1.0.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Tom's Audio Processing plugin
 
 License:        GPLv2+
@@ -31,12 +31,13 @@ professional DAW environment such as Ardour.
 rm -f ladspa.h
 
 sed \
-  -e '/^CFLAGS  =/s|-I. -O3 -Wall -fomit-frame-pointer -funroll-loops|%{build_cflags}|g' \
-  -e 's|^LDFLAGS = |\0%{build_ldflags}|g' \
+  -e '/^CFLAGS  =/s|CFLAGS  = -I. -O3 -Wall -fomit-frame-pointer -funroll-loops|CFLAGS +=|g' \
+  -e 's|^LDFLAGS = |LDFLAGS +=|g' \
   -i Makefile
 
 
 %build
+%set_build_flags
 %make_build
 
 
@@ -55,6 +56,9 @@ mkdir -p %{buildroot}%{_libdir}/ladspa
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.1-101
+- Fix for package_note_file
+
 * Tue Dec 14 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.1-100
 - 1.0.1
 

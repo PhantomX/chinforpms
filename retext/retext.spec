@@ -1,7 +1,7 @@
 %global with_tests 0
 
 Name:           retext
-Version:        7.2.1
+Version:        7.2.3
 Release:        100%{?dist}
 License:        GPLv3+
 Summary:        Text editor for Markdown and reStructuredText
@@ -97,6 +97,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/me.mitya57.ReText.des
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 7.2.3-100
+- 7.2.3
+
 * Mon Mar 08 2021 Phantom X <megaphantomx at hotmail dot com> - 7.2.1-100
 - 7.2.1
 

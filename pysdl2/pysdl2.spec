@@ -1,7 +1,9 @@
+%bcond_with check
+
 %global pkgname py-sdl2
 
 Name:           pysdl2
-Version:        0.9.10
+Version:        0.9.11
 Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
@@ -10,7 +12,7 @@ URL:            https://github.com/marcusva/py-sdl2
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
-Patch0:         0001-skip-some-tests.patch
+#Patch0:         0001-skip-some-tests.patch
 
 BuildArch:      noarch
 BuildRequires:  python3-devel
@@ -66,8 +68,10 @@ rm -f sdl2/test/{audio_test,sdl2ext_font_test,sdlgfx_test,sdlmixer_test,version_
 
 
 %check
+%if %{with check}
 %{pytest}
 %{__python3} setup.py test
+%endif
 
 
 %files -n python3-sdl2 -f %{pyproject_files}
@@ -76,6 +80,10 @@ rm -f sdl2/test/{audio_test,sdl2ext_font_test,sdlgfx_test,sdlmixer_test,version_
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.11-1
+- 0.9.11
+- Disable check for the time
+
 * Thu Jan 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.10-1
 - 0.9.10
 

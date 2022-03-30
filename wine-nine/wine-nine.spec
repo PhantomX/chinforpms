@@ -1,4 +1,7 @@
+%undefine _auto_set_build_flags
 %undefine _hardened_build
+%undefine _package_note_file
+
 # Disable LTO
 %global _lto_cflags %{nil}
 
@@ -26,7 +29,7 @@
 
 Name:           wine-nine
 Version:        0.8
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -158,6 +161,9 @@ desktop-file-install \
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-5
+- Undefine _package_note_file
+
 * Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2:0.8-4
 - Update script to architecture-specific library directories
 

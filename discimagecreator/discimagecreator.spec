@@ -1,7 +1,7 @@
 %global commit 32007ef4ba0888c06edd17c92fea7de1eac149de
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210916
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,7 +10,7 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20210701
+Version:        20220301
 Release:        1%{?gver}%{?dist}
 Summary:        Disc and disk image creation tool 
 
@@ -83,6 +83,9 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 20220301-1
+- 20220301
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 20210701-1.20210916git32007ef
 - 20210701
 

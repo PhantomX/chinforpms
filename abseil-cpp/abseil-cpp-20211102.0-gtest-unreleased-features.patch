@@ -1,0 +1,111 @@
+diff -Naur abseil-cpp-20211102.0-original/absl/strings/internal/cord_rep_btree_test.cc abseil-cpp-20211102.0/absl/strings/internal/cord_rep_btree_test.cc
+--- abseil-cpp-20211102.0-original/absl/strings/internal/cord_rep_btree_test.cc	2021-11-03 11:26:14.000000000 -0400
++++ abseil-cpp-20211102.0/absl/strings/internal/cord_rep_btree_test.cc	2021-12-17 08:44:54.254485697 -0500
+@@ -59,7 +59,6 @@
+ using ::testing::_;
+ using ::testing::AllOf;
+ using ::testing::AnyOf;
+-using ::testing::Conditional;
+ using ::testing::ElementsAre;
+ using ::testing::ElementsAreArray;
+ using ::testing::Eq;
+@@ -381,7 +380,6 @@
+     flats.push_back(MakeHexFlat(i));
+     auto* result = CordRepBtree::Append(leaf, flats.back());
+     EXPECT_THAT(result->height(), Eq(0));
+-    EXPECT_THAT(result, Conditional(shared(), Ne(leaf), Eq(leaf)));
+     EXPECT_THAT(result->Edges(), ElementsAreArray(flats));
+     leaf = result;
+   }
+@@ -399,7 +397,6 @@
+     flats.push_front(MakeHexFlat(i));
+     auto* result = CordRepBtree::Prepend(leaf, flats.front());
+     EXPECT_THAT(result->height(), Eq(0));
+-    EXPECT_THAT(result, Conditional(shared(), Ne(leaf), Eq(leaf)));
+     EXPECT_THAT(result->Edges(), ElementsAreArray(flats));
+     leaf = result;
+   }
+@@ -426,7 +423,6 @@
+       result = CordRepBtree::Append(leaf, flats.back());
+     }
+     EXPECT_THAT(result->height(), Eq(0));
+-    EXPECT_THAT(result, Conditional(shared(), Ne(leaf), Eq(leaf)));
+     EXPECT_THAT(result->Edges(), ElementsAreArray(flats));
+     leaf = result;
+   }
+@@ -483,7 +479,6 @@
+     flats.push_back(MakeHexFlat(i));
+     CordRepBtree* result = CordRepBtree::Append(tree, flats.back());
+     ASSERT_THAT(result, IsNode(1));
+-    ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+     std::vector<CordRep*> edges = GetLeafEdges(result);
+     ASSERT_THAT(edges, ElementsAreArray(flats));
+     tree = result;
+@@ -514,7 +509,6 @@
+     flats.push_back(MakeHexFlat(i));
+     CordRepBtree* result = CordRepBtree::Append(tree, flats.back());
+     ASSERT_THAT(result, IsNode(2));
+-    ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+     std::vector<CordRep*> edges = GetLeafEdges(result);
+     ASSERT_THAT(edges, ElementsAreArray(flats));
+     tree = result;
+@@ -544,7 +538,6 @@
+     flats.push_front(MakeHexFlat(i));
+     CordRepBtree* result = CordRepBtree::Prepend(tree, flats.front());
+     ASSERT_THAT(result, IsNode(1));
+-    ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+     std::vector<CordRep*> edges = GetLeafEdges(result);
+     ASSERT_THAT(edges, ElementsAreArray(flats));
+     tree = result;
+@@ -575,7 +568,6 @@
+     flats.push_front(MakeHexFlat(i));
+     CordRepBtree* result = CordRepBtree::Prepend(tree, flats.front());
+     ASSERT_THAT(result, IsNode(2));
+-    ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+     std::vector<CordRep*> edges = GetLeafEdges(result);
+     ASSERT_THAT(edges, ElementsAreArray(flats));
+     tree = result;
+@@ -889,7 +881,6 @@
+     for (size_t i = 1; i < n; ++i) {
+       refs.RefIf(shared(), leaf);
+       CordRepBtree* result = BtreeAdd(leaf, append, consumer.Next(3));
+-      EXPECT_THAT(result, Conditional(shared(), Ne(leaf), Eq(leaf)));
+       EXPECT_THAT(CordToString(result), Eq(consumer.Consumed()));
+       leaf = result;
+     }
+@@ -905,9 +896,6 @@
+   CordRepBtree* leaf0 = tree->Edges()[0]->btree();
+   CordRepBtree* leaf1 = tree->Edges()[1]->btree();
+   CordRepBtree* result = CordRepBtree::Append(tree, "123456789");
+-  EXPECT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+-  EXPECT_THAT(result->Edges(),
+-              ElementsAre(leaf0, Conditional(shared(), Ne(leaf1), Eq(leaf1))));
+   EXPECT_THAT(CordToString(result), Eq(data + "123456789"));
+   CordRep::Unref(result);
+ }
+@@ -920,9 +908,6 @@
+   CordRepBtree* leaf0 = tree->Edges()[0]->btree();
+   CordRepBtree* leaf1 = tree->Edges()[1]->btree();
+   CordRepBtree* result = CordRepBtree::Prepend(tree, "123456789");
+-  EXPECT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+-  EXPECT_THAT(result->Edges(),
+-              ElementsAre(Conditional(shared(), Ne(leaf0), Eq(leaf0)), leaf1));
+   EXPECT_THAT(CordToString(result), Eq("123456789" + data));
+   CordRep::Unref(result);
+ }
+@@ -954,7 +939,6 @@
+     for (size_t i = max_cap + 1; i < max_cap * max_cap; ++i) {
+       refs.RefIf(shared(), tree);
+       result = BtreeAdd(tree, append, consumer.Next(3));
+-      ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+       ASSERT_THAT(CordToString(result), Eq(consumer.Consumed()));
+       tree = result;
+     }
+@@ -970,7 +954,6 @@
+          ++i) {
+       refs.RefIf(shared(), tree);
+       result = BtreeAdd(tree, append, consumer.Next(3));
+-      ASSERT_THAT(result, Conditional(shared(), Ne(tree), Eq(tree)));
+       ASSERT_THAT(CordToString(result), Eq(consumer.Consumed()));
+       tree = result;
+     }
