@@ -1,3 +1,14 @@
+%undefine _hardened_build
+%undefine _cmake_shared_libs
+
+# Disable LTO. Build fails
+%global _lto_cflags %{nil}
+
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+
 %global commit 7e38821dbac265490f115e163c523a939acda759
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180707
@@ -10,14 +21,11 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-#undefine _hardened_build
-%undefine _cmake_shared_libs
-
 %global vc_url https://github.com/Yabause/%{name}
 
 Name:           yabause
 Version:        0.9.15
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPLv2+
@@ -59,6 +67,9 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libavutil)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  ffmpeg-devel
+%endif
 %endif
 Requires:       hicolor-icon-theme
 
@@ -88,11 +99,6 @@ sed -e '/GDKGLEXT_CONFIG_INCLUDE_DIR/s| lib/| %{_lib}/|' \
   -i %{name}/src/gtk/CMakeLists.txt
 
 %build
-# Disable LTO. Segfaults
-%global _lto_cflags %{nil}
-
-export LDFLAGS="%{build_ldflags} -Wl,-z,relro -Wl,-z,now"
-
 pushd mini18n
 minii18n="$(pwd)"
 %cmake3 \
@@ -104,7 +110,7 @@ popd
 %cmake3 \
   -S %{name} \
   -DYAB_PORTS=qt \
-  -DYAB_OPTIMIZATION=-O2 \
+  -DYAB_OPTIMIZATION=-O%{?with_optim}%{!?with_optim:2} \
   -DYAB_USE_CXX:BOOL=ON \
   -DYAB_NETWORK:BOOL=ON \
   -DYAB_OPTIMIZED_DMA:BOOL=ON \
@@ -144,6 +150,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-103.20180707git7e38821
+- Build flags update
+
 * Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.15-102.20180707git7e38821
 - CHD patch update
 

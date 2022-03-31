@@ -79,7 +79,7 @@
 
 Name:           yuzu
 Version:        2552
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPLv2
@@ -106,6 +106,9 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-fix-system-boost-detection.patch
 %endif
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
+%if 0%{?with_ea}
+Patch10:        0001-gcc-12-build-fix.patch
+%endif
 
 ExclusiveArch:  x86_64
 
@@ -298,6 +301,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2552-2.20220315git24d7346
+- gcc 12 build fixes
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2552-1.20220315git24d7346
 - 2552 ea
 

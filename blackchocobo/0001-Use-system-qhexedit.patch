@@ -1,78 +1,37 @@
-From 976810f51fe5867a8f86269c77335aaf60594e18 Mon Sep 17 00:00:00 2001
+From e165431f3237f8e138a36d0cc8a76ae3df521c7b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 30 Sep 2021 23:08:00 -0300
+Date: Wed, 30 Mar 2022 08:33:19 -0300
 Subject: [PATCH] Use system qhexedit
 
 ---
- CMakeLists.txt     | 16 ++++++++++++++++
- src/mainwindow.cpp |  4 ++++
- 2 files changed, 20 insertions(+)
+ CMakeLists.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0e60e80..1f0bc96 100644
+index a850281..d64e4e1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -14,6 +14,8 @@ set(REQUIRED_QT_VERSION "5.15.0")
+@@ -10,6 +10,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
  
  cmake_policy(SET CMP0010 NEW)
  
 +option(USE_SYSTEM_QHEXEDIT "Dynamically link against system qhexedit" OFF)
 +
- project( blackchocobo VERSION 1.10.5 DESCRIPTION "Final Fantasy 7 Save Editor")
+ project( blackchocobo VERSION 1.80.0 DESCRIPTION "Final Fantasy 7 Save Editor")
  # Get the version from git if it's a git repository
- set(BC_VERSION ${CMAKE_PROJECT_VERSION})
-@@ -47,7 +49,13 @@ find_package(ff7tk REQUIRED NO_MODULE COMPONENTS
- 
+ IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
+@@ -92,5 +94,11 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
  add_subdirectory(deploy)
+ add_subdirectory(icons)
  add_subdirectory(lang)
 +if(USE_SYSTEM_QHEXEDIT)
 +find_package(PkgConfig REQUIRED)
-+pkg_search_module(QHEXEDIT REQUIRED qhexedit2-qt5)
++pkg_search_module(QHEXEDIT REQUIRED qhexedit2-qt6)
 +add_library(QHEXEDIT INTERFACE IMPORTED GLOBAL)
 +else()
  add_subdirectory(qhexedit)
 +endif()
- 
- if(WIN32)
-     set(PLATFORM_EX_SRC ${CMAKE_BINARY_DIR}/deploy/blackchocobo.rc)
-@@ -84,6 +92,13 @@ add_executable(${BIN_NAME} WIN32 MACOSX_BUNDLE
-       ${PLATFORM_EX_SRC}
-     )
- 
-+if(USE_SYSTEM_QHEXEDIT)
-+    target_compile_definitions(${BIN_NAME} PUBLIC USE_SYSTEM_QHEXEDIT)
-+    target_include_directories(${BIN_NAME} PUBLIC ${QHEXEDIT_INCLUDE_DIRS})
-+else()
-+    set(QHEXEDIT_LIBRARIES "")
-+endif()
-+
- target_link_libraries (${BIN_NAME} PUBLIC
-         Qt::Core
-         Qt::Gui
-@@ -93,6 +108,7 @@ target_link_libraries (${BIN_NAME} PUBLIC
-         QHEXEDIT
-         ff7tk::ff7tk
-         ff7tk::ff7tkWidgets
-+        ${QHEXEDIT_LIBRARIES}
-     )
- 
- if(APPLE)
-diff --git a/src/mainwindow.cpp b/src/mainwindow.cpp
-index a99a688..01613a3 100644
---- a/src/mainwindow.cpp
-+++ b/src/mainwindow.cpp
-@@ -55,7 +55,11 @@
- #include <ChocoboManager.h>
- #include <LocationViewer.h>
- 
-+#ifdef USE_SYSTEM_QHEXEDIT
-+#include <qhexedit.h>
-+#else
- #include <qhexedit/qhexedit.h>
-+#endif
- /*~~~~~~~~GUI Set Up~~~~~~~*/
- MainWindow::MainWindow(QWidget *parent)
-     : QMainWindow(parent)
+ add_subdirectory(src)
 -- 
-2.31.1
+2.35.1
 

@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 97bc7a1ae3b3a87bff211bd3ece33e9c3012725a
+%global commit 6f04f52f5ca51b60c719e074199691b2ccf32860
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220313
+%global date 20220324
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -65,7 +65,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        110%{?gver}%{?dist}
+Release:        111%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -292,6 +292,7 @@ popd
 
 
 %build
+%set_build_flags
 pushd ext/native/tools
 %cmake \
 %{nil}
@@ -302,7 +303,7 @@ popd
 %if !0%{?with_sysffmpeg}
 pushd ffmpeg
 sed \
-  -e '/extra-cflags/s|-O3|%{build_cflags}|g' \
+  -e "/extra-cflags/s|-O3|$CFLAGS|g" \
   -i linux_*.sh
 %ifarch x86_64
 ./linux_x86-64.sh
@@ -444,6 +445,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-111.20220324git6f04f52
+- Last snapshot
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-110.20220313git97bc7a1
 - Bump
 

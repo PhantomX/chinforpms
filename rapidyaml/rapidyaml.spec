@@ -1,5 +1,5 @@
 Name:           rapidyaml
-Version:        0.3.0
+Version:        0.4.1
 Release:        1%{?dist}
 Summary:        A library to parse and emit YAML, and do it fast
 
@@ -60,5 +60,8 @@ sed -e '/_INSTALL_DIR/s| lib/|%{_lib}|g' -i ext/c4core/cmake/c4Project.cmake
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-1
+- 0.4.1
+
 * Sat Jan 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.3.0-1
 - Initial spec

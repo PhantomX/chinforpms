@@ -1,0 +1,25 @@
+From 0f262f6e0e4f3f63f3552e1cef3b48c3d9527b9a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 30 Mar 2022 08:20:39 -0300
+Subject: [PATCH] cmake: do not install dbg files
+
+---
+ src/CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 3746682..0e2d2ab 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -87,7 +87,7 @@ macro(MAKE_LIBRARY LIB_TARGET HEADER_INSTALL_DIR)
+             COMPONENT ff7tk_development
+     )
+ 
+-    if(UNIX)
++    if(UNIX_DISABLED)
+         if(NOT APPLE)
+             add_custom_command(TARGET ${LIB_TARGET} POST_BUILD
+                 COMMAND ${CMAKE_OBJCOPY} --only-keep-debug $<TARGET_FILE:${LIB_TARGET}> $<TARGET_FILE:${LIB_TARGET}>.dbg
+-- 
+2.35.1
+

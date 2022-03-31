@@ -6,6 +6,9 @@
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
+%undefine _auto_set_build_flags
+%undefine _package_note_file
+
 %global winearchdir %{nil}
 %global winesodir %{nil}
 %ifarch %{ix86}

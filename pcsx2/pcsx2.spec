@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2465
+Version:        1.7.2541
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -95,7 +95,7 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
-BuildRequires:  cmake(ryml) >= 0.3.0
+BuildRequires:  cmake(ryml) >= 0.4.1
 BuildRequires:  pkgconfig(samplerate)
 # use SDL that depends wxGTK
 BuildRequires:  pkgconfig(sdl2)
@@ -293,6 +293,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2541-1
+- 1.7.2541
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2465-1
 - 1.7.2465
 

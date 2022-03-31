@@ -123,7 +123,7 @@ sed \
 %if !0%{?with_libchdr}
   -DUSE_SYSTEM_CHDR:BOOL=OFF \
 %endif
-  -DYAB_OPTIMIZATION=-O3 \
+  -DYAB_OPTIMIZATION=-O%{?with_optim}%{!?with_optim:2} \
   -DYAB_NETWORK:BOOL=ON \
   -DYAB_USE_SCSPMIDI:BOOL=ON \
   -DYAB_WANT_OPENAL:BOOL=OFF \

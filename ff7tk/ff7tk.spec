@@ -1,6 +1,8 @@
-%global commit 8fbdd9efb1e23d74433f6c4260f84ebfa84ec79d
+%undefine _package_note_file
+
+%global commit 94bfe2a9191e78454c83414f543680b1a313d2dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210928
+%global date 20220323
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,7 +10,7 @@
 %endif
 
 Name:           ff7tk
-Version:        0.80.21
+Version:        0.82.0.0
 Release:        1%{?gver}%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
@@ -17,15 +19,22 @@ URL:            https://github.com/sithlord48/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 
+Patch10:        0001-cmake-do-not-install-dbg-files.patch
+
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Quick)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5Xml)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Core5Compat)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Linguist)
+BuildRequires:  cmake(Qt6Quick)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6Xml)
+BuildRequires:  qt6-linguist
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(zlib)
 
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -46,15 +55,23 @@ development with %{name} library.
 %prep
 %autosetup -n %{name}-%{commit} -p1
 
+rm -rf .git
+
 sed \
-  -e '/GenerateExportHeader/aadd_definitions(-DGIT_VERSION="%{shortcommit}")' \
   -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
   -e 's|share/pkgconfig|${CMAKE_INSTALL_LIBDIR}/pkgconfig|g' \
+  -e '/share\/licenses/d' \
   -i CMakeLists.txt
+
+sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i lang/CMakeLists.txt
+
 
 %build
 %cmake \
-  -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
+  -DQt6_LRELEASE_EXECUTABLE=lrelease-qt6 \
+  -DENABLE_TESTING:BOOL=OFF \
+  -DCMAKE_SKIP_RPATH:BOOL=ON \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
 
 %cmake_build
@@ -80,6 +97,10 @@ sed \
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.82.0.0-1.20220323git94bfe2a
+- 0.82.0.0
+- Qt6
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 0.80.21-1.20210928git8fbdd9e
 - 0.8.21
 

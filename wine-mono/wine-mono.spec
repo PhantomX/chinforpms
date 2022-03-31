@@ -1,4 +1,10 @@
+# Disable LTO
+%global _lto_cflags %{nil}
+
+%undefine _auto_set_build_flags
 %undefine _hardened_build
+%undefine _package_note_file
+
 %{?mingw_package_header}
 
 %global with_bin 1
@@ -114,9 +120,6 @@ sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/
 
 
 %build
-# Disable LTO
-%global _lto_cflags %{nil}
-
 %if !0%{?with_bin}
 export BTLS_CFLAGS="-fPIC"
 export CPPFLAGS_FOR_BTLS="-fPIC"

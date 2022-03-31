@@ -37,6 +37,7 @@ irpf2021
 irpf2022
 -kepka
 lbreakouthd
+kronos
 mame-data-icons
 mame-data-roms
 melonds

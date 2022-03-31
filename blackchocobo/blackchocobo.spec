@@ -1,6 +1,6 @@
-%global commit 89f7cf53f5edc72d2ce0e97eab973028afbec909
+%global commit 7a63073e0beb9b8c83f75a64345255e9d120bed6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210928
+%global date 20220324
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,13 +8,15 @@
 %endif
 
 # Enable system qhexedit
-%global with_qhexedit 1
+%global with_qhexedit 0
+
+%global ff7tk_ver 0.82
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.10.5
-Release:        2%{?gver}%{?dist}
+Version:        1.80.0
+Release:        1%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 License:        GPLv3
@@ -34,16 +36,20 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libappstream-glib
-BuildRequires:  cmake(ff7tk)
-BuildRequires:  cmake(ff7tkWidgets)
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Quick)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5Xml)
+BuildRequires:  cmake(ff7tk) >= %{ff7tk_ver}
+BuildRequires:  cmake(ff7tkWidgets) >= %{ff7tk_ver}
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Core5Compat)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Linguist)
+BuildRequires:  cmake(Qt6Quick)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6Xml)
+BuildRequires:  qt6-linguist
+BuildRequires:  pkgconfig(xkbcommon)
 %if 0%{?with_qhexedit}
-BuildRequires:  pkgconfig(qhexedit2-qt5)
+BuildRequires:  pkgconfig(qhexedit2-qt6)
 %else
 Provides:       bundled(qhexedit2) = 0.8.6
 %endif
@@ -60,25 +66,28 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
+rm -rf .git
+
 %if 0%{?with_qhexedit}
   rm -rf qhexedit
 %endif
 
 sed \
-  -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
-  -e 's|share/metadata/|share/metainfo/|' \
   -e '/licenses\/blackchocobo\//d' \
-  -i CMakeLists.txt
+  -i src/CMakeLists.txt
 
 %if 0%{?with_snapshot}
   sed \
-    -e '/CMAKE_PROJECT_VERSION/astring(APPEND BC_VERSION "-%{shortcommit}")' \
+    -e 's|${CMAKE_PROJECT_VERSION_TWEAK}|%{shortcommit}|g' \
     -i CMakeLists.txt
 %endif
 
+
 %build
 %cmake \
-  -DQt5_LRELEASE_EXECUTABLE=lrelease-qt5 \
+  -DQt6_LRELEASE_EXECUTABLE=lrelease-qt6 \
+  -DCMAKE_SKIP_RPATH:BOOL=ON \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if 0%{?with_qhexedit}
   -DUSE_SYSTEM_QHEXEDIT:BOOL=ON \
 %endif
@@ -104,7 +113,7 @@ ln -s ../../../../pixmaps/%{name}.png \
 for res in 16 24 32 48 64 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert icon/Black_Chocobo.png -filter Lanczos -resize ${res}x${res} \
+  convert deploy/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 
@@ -126,6 +135,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1.80.0-1.20220324git7a63073
+- 1.80.0
+- Qt6
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1.10.5-2.20210415gitafa6866
 - Bump
 

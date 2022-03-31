@@ -56,6 +56,7 @@ pygtk2
 -perl-Gtk3
 perl-X11-GUITest
 qcodeeditor
+rapidyaml
 -spirv-tools
 vulkan-loader
 xcftools

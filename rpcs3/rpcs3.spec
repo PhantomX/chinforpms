@@ -7,9 +7,20 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f3a325fe1af75aed7758b0ba8db9f4b032b3f044
+# Enable system ffmpeg
+%global with_sysffmpeg 1
+%if 0%{?fedora} && 0%{?fedora} >= 36
+%global with_sysffmpeg 0
+%endif
+%if !0%{?with_sysffmpeg}
+%global bundleffmpegver 4.2.1
+%endif
+# Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
+%global with_smallffmpeg 1
+
+%global commit 4a86638ce898e3bd68ade8e7ba794253782ea411
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220314
+%global date 20220329
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -32,7 +43,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 4bbf90d60419ffcdc2d2f402be794b98d155f2c9
+%global commit15 dcaa218ed891a13d57e435b19fbbd1f6ae2d4868
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -51,6 +62,10 @@
 %global commit19 c2a515bd34f37ba83c61474a04cd2bba57fde67e
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
+
+%global commit20 bf019f8c88bc64638fccef62840e935ab2689a4a
+%global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
+%global srcname20 ffmpeg-core
 
 %bcond_with     clang
 %bcond_with     native
@@ -73,7 +88,7 @@
 
 Name:           rpcs3
 Version:        0.0.21
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -96,6 +111,14 @@ Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortc
 Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
+%if !0%{?with_sysffmpeg}
+%if 0%{?with_smallffmpeg}
+Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
+%else
+Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+%endif
+%endif
+Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -122,12 +145,20 @@ BuildRequires:  cmake(LLVM)
 BuildRequires:  pkgconfig(flatbuffers)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
+%if 0%{?with_sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
+%endif
+%else
+BuildRequires:  make
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(libva-drm)
+BuildRequires:  pkgconfig(libva-x11)
+Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
@@ -205,6 +236,27 @@ sed -e 's|${GIT_EXECUTABLE}|true|g' \
 
 cp -p llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
 %endif
+%if !0%{?with_sysffmpeg}
+tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
+
+cp -p 3rdparty/ffmpeg/LICENSE.md 3rdparty/LICENSE.ffmpeg.md
+
+sed -e 's|${FFMPEG_LIB_SWRESAMPLE}|\0 va va-drm va-x11|g' -i 3rdparty/CMakeLists.txt
+
+pushd 3rdparty/ffmpeg
+rm -rf linux/*/*
+rm -rf macos/*/*
+rm -rf windows/*/*
+
+sed \
+  -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
+  -e 's|disable-yasm|\0 --enable-vaapi --enable-hwaccel=h264_vaapi|g' \
+  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
+  -e '/make install/d' \
+  -i linux_*.sh
+
+popd
+%endif
 
 pushd 3rdparty
 cp -p stblib/LICENSE LICENSE.stb
@@ -234,6 +286,19 @@ sed \
 
 
 %build
+%set_build_flags
+
+%if !0%{?with_sysffmpeg}
+pushd 3rdparty/ffmpeg
+sed \
+  -e "/extra-cflags/s|-O3|$CFLAGS|g" \
+  -i linux_*.sh
+./linux_x86-64.sh
+%make_build
+make install
+mv linux/x86_64/lib/*.a linux/x86_64/
+popd
+%endif
 
 %cmake \
   -G Ninja \
@@ -263,11 +328,14 @@ sed \
   -DUSE_DISCORD_RPC:BOOL=OFF \
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
   -DUSE_SYSTEM_CURL:BOOL=ON \
+%if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
+%endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
   -DUSE_SYSTEM_XXHASH:BOOL=ON \
+  -DSPIRV_WERROR:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -312,6 +380,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-2.20220329git4a86638
+- Bump
+- Build with bundled ffmpeg
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-1.20220314gitf3a325f
 - 0.0.21
 - Fix build flags propagation

@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 709a5980edd5d2834b7136c1519f8d2a3529e19e
+%global commit 02b859ad9dcfbc06cdb8f3a69e12a053752b85f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220314
+%global date 20220327
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,7 +20,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -39,6 +39,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
+Patch10:        0001-gcc-12-build-fix.patch
 
 ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64
 
@@ -87,11 +88,19 @@ sed \
   -e 's|STREQUAL Release|STREQUAL Release_disabled|g' \
   -i CMakeLists.txt
 
+sed \
+  -e '/-Wfatal-errors$/d' \
+  -e '/-pedantic-errors$/d' \
+  -i src/teakra/CMakeLists.txt
+
+
 %build
-export LDFLAGS="%{build_ldflags} -Wl,-z,noexecstack"
+%set_build_flags
+export LDFLAGS+=" -Wl,-z,noexecstack"
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_LTO:BOOL=OFF \
+  -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -120,6 +129,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-3.20220327git02b859a
+- Bump
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-2.20220314git709a598
 - Return to snapshot
 

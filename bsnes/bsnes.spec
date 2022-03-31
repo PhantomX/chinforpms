@@ -91,8 +91,9 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 
 %build
-export flags="%{build_cxxflags}"
-export options="%{build_ldflags}"
+%set_build_flags
+export flags="$CFLAGS"
+export options="${CXXFLAGS}"
 
 %make_build -C %{name} target=%{name} verbose \
   build=performance local=false hiro=%{toolkit} \
@@ -100,7 +101,7 @@ export options="%{build_ldflags}"
   lto=true \
 %endif
 %{nil}
-
+exit 20
 
 %install
 mkdir -p %{buildroot}%{_bindir}

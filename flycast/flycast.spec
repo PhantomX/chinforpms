@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 514eedbc63d3df47038d4bc3a5e5756b12b2755f
+%global commit 0c46ea13c74a53236eee829b5b8b59f8e80087f2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220307
+%global date 20220327
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -38,7 +38,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -169,10 +169,11 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 
 
 %build
-export LDFLAGS="%{build_ldflags} -Wl,--sort-common"
+%set_build_flags
+export LDFLAGS+=" -Wl,--sort-common"
 EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize -fno-operator-names"
-export CFLAGS="%{build_cflags} ${EXTRA_CFLAGS}"
-export CXXFLAGS="%{build_cxxflags} ${EXTRA_CFLAGS}"
+export CFLAGS+=" ${EXTRA_CFLAGS}"
+export CXXFLAGS+=" ${EXTRA_CFLAGS}"
 
 %cmake \
   -GNinja \
@@ -238,6 +239,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-11.20220327git0c46ea1
+- Update
+
 * Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-10.20220307git514eedb
 - Bump
 
