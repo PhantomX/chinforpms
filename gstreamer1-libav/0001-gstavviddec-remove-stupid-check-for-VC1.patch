@@ -1,0 +1,28 @@
+From a9e08535f91a0238c4088b75d38b0b88c1f567af Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 3 Apr 2022 00:03:59 -0300
+Subject: [PATCH] gstavviddec: remove stupid check for VC1
+
+Seems unneeded now
+---
+ ext/libav/gstavviddec.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/ext/libav/gstavviddec.c b/ext/libav/gstavviddec.c
+index f5197fb..8b9f86c 100644
+--- a/ext/libav/gstavviddec.c
++++ b/ext/libav/gstavviddec.c
+@@ -477,10 +477,6 @@ gst_ffmpegviddec_set_format (GstVideoDecoder * decoder,
+   GST_DEBUG_OBJECT (ffmpegdec, "setcaps called");
+ 
+   GST_OBJECT_LOCK (ffmpegdec);
+-  /* stupid check for VC1 */
+-  if ((oclass->in_plugin->id == AV_CODEC_ID_WMV3) ||
+-      (oclass->in_plugin->id == AV_CODEC_ID_VC1))
+-    oclass->in_plugin->id = gst_ffmpeg_caps_to_codecid (state->caps, NULL);
+ 
+   /* close old session */
+   if (ffmpegdec->opened) {
+-- 
+2.35.1
+

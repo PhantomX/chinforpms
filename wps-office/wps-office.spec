@@ -10,7 +10,7 @@
 
 Name:           wps-office
 Version:        11.1.0.10920
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -92,6 +92,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libnssckbi.so*
 %global __requires_exclude %__requires_exclude|^libopencv_world.so*
 %global __requires_exclude %__requires_exclude|^libpdfmain.so*
+%global __requires_exclude %__requires_exclude|^libpaho-mqtt3-as*
 %global __requires_exclude %__requires_exclude|^libpinyintag.so*
 %global __requires_exclude %__requires_exclude|^libplayer.so*
 %global __requires_exclude %__requires_exclude|^libpng12.so*
@@ -226,7 +227,7 @@ rm -fv %{buildroot}%{progdir}/office6/libnss3.so*
 rm -fv %{buildroot}%{progdir}/office6/libnssdbm3.so*
 rm -fv %{buildroot}%{progdir}/office6/libnssutil3.so*
 rm -fv %{buildroot}%{progdir}/office6/libplc4.so*
-rm -fv %{buildroot}%{progdir}/office6/libodbc.so*
+rm -fv %{buildroot}%{progdir}/office6/libodbc*.so*
 rm -fv %{buildroot}%{progdir}/office6/libsmime3.so*
 rm -fv %{buildroot}%{progdir}/office6/libsoftokn3.so*
 rm -fv %{buildroot}%{progdir}/office6/libSDL2*.so*
@@ -330,6 +331,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Fri Apr 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:11.1.0.10920-2
+- Fix requires_exclude
+
 * Mon Feb 14 2022 - 1:11.1.0.10920-1
 - 11.1.0.10920
 

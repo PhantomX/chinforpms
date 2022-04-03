@@ -1,24 +1,29 @@
+# gstreamer1.prov is broken and hangs, workarround it
+%global __gstreamer1_provides %{nil}
+
+%global src_name gst-libav
+
 Name:           gstreamer1-libav
-Version:        1.16.2
-Release:        2%{?dist}
+Epoch:          1
+Version:        1.20.0
+Release:        100%{?dist}
 Summary:        GStreamer 1.0 libav-based plug-ins
+
 License:        LGPLv2+
-URL:            https://gstreamer.freedesktop.org/
-Source0:        %{url}/src/gst-libav/gst-libav-%{version}.tar.xz
+URL:            https://gstreamer.freedesktop.org
 
-Patch0:         gst-ffmpeg-0.10.12-ChangeLog-UTF-8.patch
+Source0:        %{url}/src/%{src_name}/%{src_name}-%{version}.tar.xz
 
-BuildRequires:  gcc
+Patch0:         0001-gstavviddec-remove-stupid-check-for-VC1.patch
+
+BuildRequires:  gcc-c++
+BuildRequires:  meson
 BuildRequires:  gstreamer1-devel >= %{version}
 BuildRequires:  gstreamer1-plugins-base-devel >= %{version}
 BuildRequires:  orc-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ffmpeg-devel
-
-%ifarch %{ix86} x86_64
-BuildRequires:  yasm
-%endif
 
 %description
 GStreamer is a streaming media framework, based on graphs of filters which
@@ -30,7 +35,8 @@ plugins.
 
 This package provides libav-based GStreamer plug-ins.
 
-
+%if 0
+# gstreamer1 uses hotdoc which isn't provided yet
 %package devel-docs
 Summary: Development documentation for the libav GStreamer plug-in
 Requires: %{name} = %{version}-%{release}
@@ -42,42 +48,104 @@ operate on media data.
 
 This package contains the development documentation for the libav GStreamer
 plug-in.
+%endif
 
 
 %prep
-%autosetup -p1 -n gst-libav-%{version}
-
+%autosetup -n %{src_name}-%{version} -p1
 
 %build
-%configure  \
-  --disable-silent-rules --disable-fatal-warnings \
-  --disable-dependency-tracking \
-  --disable-static \
-  --with-package-name="gst-libav 1.0 rpmfusion rpm" \
-  --with-package-origin="http://rpmfusion.org/"  \
-  --with-system-libav
+%meson  \
+    -D package-name='chinforpms GStreamer-plugins-ugly package' \
+    -D package-origin='https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms' \
+    -D doc=disabled
 
-%make_build V=1
-
+%meson_build
 
 %install
-%make_install V=1
-
-rm -fv %{buildroot}%{_libdir}/gstreamer-1.0/libgst*.la
+%meson_install
 
 
 %files
-%doc AUTHORS ChangeLog NEWS README TODO
-%license COPYING.LIB
+%doc AUTHORS ChangeLog NEWS README.md
+%license COPYING
 %{_libdir}/gstreamer-1.0/libgstlibav.so
 
+%if 0
 %files devel-docs
 # Take the dir and everything below it for proper dir ownership
 %doc %{_datadir}/gtk-doc
-
+%endif
 
 %changelog
-* Fri Feb 14 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.16.2-2
+* Sun Apr 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.1-100
+- Fix crash with wmv videos
+
+* Sun Feb 06 2022 Sérgio Basto <sergio@serjux.com> - 1:1.20.0-1
+- Update gstreamer1-libav to 1.20.0
+
+* Mon Nov 15 2021 Sérgio Basto <sergio@serjux.com> - 1:1.19.3-2
+- Rebuilt for new ffmpeg snapshot
+
+* Mon Nov 15 2021 Sérgio Basto <sergio@serjux.com> - 1:1.19.3-1
+- Update gstreamer1-libav to 1.19.3
+
+* Thu Nov 11 2021 Leigh Scott <leigh123linux@gmail.com> - 1:1.19.2-2
+- Rebuilt for new ffmpeg snapshot
+
+* Sat Oct 09 2021 Sérgio Basto <sergio@serjux.com> - 1:1.19.2-1
+- Update gstreamer1-libav to 1.19.2
+
+* Mon Aug 02 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1:1.19.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+- gstreamer1.prov is broken and hangs, workarround it
+
+* Tue Jun 08 2021 Leigh Scott <leigh123linux@gmail.com> - 1.19.1-1
+- Update
+
+* Wed Mar 24 2021 Leigh Scott <leigh123linux@gmail.com> - 1.18.4-2
+- Drop patch
+
+* Wed Mar 17 2021 Leigh Scott <leigh123linux@gmail.com> - 1.18.4-1
+- 1.18.4
+
+* Sun Feb 28 2021 Leigh Scott <leigh123linux@gmail.com> - 1.18.2-4
+- Add patch for ffmpeg-4.4
+
+* Wed Feb 03 2021 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.18.2-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Thu Dec 31 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.2-2
+- Rebuilt for new ffmpeg snapshot
+
+* Sun Dec 13 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.2-1
+- 1.18.2
+
+* Sun Nov  1 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.1-1
+- 1.18.1
+
+* Wed Sep  9 2020 Leigh Scott <leigh123linux@gmail.com> - 1.18.0-1
+- 1.18.0
+
+* Sun Aug 23 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.90-1
+- 1.17.90
+
+* Tue Aug 18 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.17.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jul 08 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.2-1
+- 1.17.2
+
+* Mon Jun 22 2020 Leigh Scott <leigh123linux@gmail.com> - 1.17.1-1
+- 1.17.1
+
+* Thu Mar 12 2020 Leigh Scott <leigh123linux@gmail.com> - 1.16.2-3
+- Rebuilt for i686
+
+* Tue Feb 04 2020 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 1.16.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Sat Feb 01 2020 Leigh Scott <leigh123linux@googlemail.com> - 1.16.2-1
 - 1.16.2
 
 * Wed Sep 25 2019 Leigh Scott <leigh123linux@googlemail.com> - 1.16.1-1
