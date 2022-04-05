@@ -68,6 +68,7 @@ developing applications that use %{name}.
 %cmake3 \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
+  -DENABLE_WERROR:BOOL=OFF \
 %{nil}
 
 %cmake3_build

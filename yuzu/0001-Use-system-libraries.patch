@@ -1,6 +1,6 @@
-From 364ae820955a3b37d64dcafd0bd5bea3e8495bc1 Mon Sep 17 00:00:00 2001
+From dee86e684719cb82a8b75f70703bd4ed55d4bad3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 6 Mar 2022 03:14:49 -0300
+Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
 
 FindMBETLS.cmake from Dolphin-emu project:
@@ -8,14 +8,14 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
  CMakeLists.txt                           |  4 ----
- externals/CMakeLists.txt                 | 29 +++++++++++++++++++-----
- externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++
+ externals/CMakeLists.txt                 | 22 +++++++++++++++++-----
+ externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++++++
  src/core/CMakeLists.txt                  |  2 +-
- 4 files changed, 47 insertions(+), 11 deletions(-)
+ 4 files changed, 41 insertions(+), 10 deletions(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4bf55d6..881b672 100755
+index 11a4598..a85a5b1 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.15)
@@ -37,7 +37,7 @@ index 4bf55d6..881b672 100755
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
                 COPYONLY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 82e8ef1..403693c 100755
+index 64361de..35fd1cb 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -2,7 +2,6 @@
@@ -67,17 +67,7 @@ index 82e8ef1..403693c 100755
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -69,12 +76,22 @@ if (YUZU_USE_EXTERNAL_SDL2)
- endif()
- 
- # SoundTouch
--add_subdirectory(soundtouch)
-+find_package(SoundTouch)
-+if(SoundTouch_FOUND)
-+  message(STATUS "Using the system soundtouch")
-+else()
-+  add_subdirectory(soundtouch)
-+endif()
+@@ -70,8 +77,13 @@ endif()
  
  # Cubeb
  if(ENABLE_CUBEB)
@@ -123,10 +113,10 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index 1bed84c..5ea392b 100755
+index 6fc1063..bd0b483 100755
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -720,7 +720,7 @@ endif()
+@@ -754,7 +754,7 @@ endif()
  create_target_directory_groups(core)
  
  target_link_libraries(core PUBLIC common PRIVATE audio_core video_core)

@@ -1,0 +1,54 @@
+From 64112518ef43b3052f8bae1ee3cdc9cdd70b1f36 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 4 Apr 2022 16:39:52 -0300
+Subject: [PATCH] proton-tkg-staging: temporary patch the patch
+
+---
+ patch1025.patch | 26 +++++++++++---------------
+ 1 file changed, 11 insertions(+), 15 deletions(-)
+
+diff --git a/patch1025.patch b/patch1025.patch
+index 7256a99..50a10a5 100644
+--- a/patch1025.patch
++++ b/patch1025.patch
+@@ -1568,26 +1568,22 @@ index 159797020f2..e8a31100646 100644
+ 
+      if (info->tid)
+      {
+-@@ -400,21 +401,25 @@ static LRESULT call_hook( struct hook_info *info, INT code, WPARAM wparam, LPARA
++@@ -200,12 +201,12 @@ static LRESULT call_hook( struct win_hook_params *info )
++         switch(info->id)
+          {
+          case WH_KEYBOARD_LL:
+-             if (!user_callbacks) break;
+--            user_callbacks->send_ll_message( info->pid, info->tid, WM_WINE_KEYBOARD_LL_HOOK,
+--                                             info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG,
+--                                             get_ll_hook_timeout(), &ret );
+-+            lres = user_callbacks->send_ll_message( info->pid, info->tid, WM_WINE_KEYBOARD_LL_HOOK,
+-+                info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG, get_ll_hook_timeout(), &ret );
++-            send_internal_message_timeout( info->pid, info->tid, WM_WINE_KEYBOARD_LL_HOOK,
+++            lres = send_internal_message_timeout( info->pid, info->tid, WM_WINE_KEYBOARD_LL_HOOK,
++                                            info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG,
++                                            get_ll_hook_timeout(), &ret );
+              break;
+          case WH_MOUSE_LL:
+-             if (!user_callbacks) break;
+--            user_callbacks->send_ll_message( info->pid, info->tid, WM_WINE_MOUSE_LL_HOOK,
+--                                             info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG,
+--                                             get_ll_hook_timeout(), &ret );
+-+            lres = user_callbacks->send_ll_message( info->pid, info->tid, WM_WINE_MOUSE_LL_HOOK,
+-+                info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG, get_ll_hook_timeout(), &ret );
++-            send_internal_message_timeout( info->pid, info->tid, WM_WINE_MOUSE_LL_HOOK,
+++            lres = send_internal_message_timeout( info->pid, info->tid, WM_WINE_MOUSE_LL_HOOK,
++                                            info->wparam, (LPARAM)&h_extra, SMTO_ABORTIFHUNG,
++                                            get_ll_hook_timeout(), &ret );
+              break;
+-         default:
+-             ERR("Unknown hook id %d\n", info->id);
++@@ -214,6 +215,12 @@ static LRESULT call_hook( struct win_hook_params *info )
+              assert(0);
+              break;
+          }
+-- 
+2.35.1
+

@@ -1,12 +1,12 @@
-From 9e921539bd3aa2ff60752475a612fd41f1b05cae Mon Sep 17 00:00:00 2001
+From 1bffebf051ca3a50e78b690432f696150798ad54 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 9 Feb 2022 09:18:28 -0300
+Date: Mon, 4 Apr 2022 15:48:06 -0300
 Subject: [PATCH] Use system libraries
 
 CheckLib.cmake and enet search from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 ---
- dep/CMakeLists.txt                    |  60 +++++++++++-
+ dep/CMakeLists.txt                    |  64 ++++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
  dep/stb/CMakeLists.txt                |   5 +
@@ -14,17 +14,17 @@ https://github.com/dolphin-emu/dolphin
  src/common/CMakeLists.txt             |  43 ++++++++-
  src/common/audio_stream.cpp           |   2 +-
  src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++++++
- src/core/CMakeLists.txt               |  17 +++-
+ src/core/CMakeLists.txt               |  19 +++-
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |  10 +-
- src/frontend-common/CMakeLists.txt    |  10 +-
- 12 files changed, 292 insertions(+), 10 deletions(-)
+ src/frontend-common/CMakeLists.txt    |   8 +-
+ 12 files changed, 294 insertions(+), 12 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 95493b8..d4df5fd 100644
+index e3eeca9..2e26653 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,23 +1,81 @@
+@@ -1,21 +1,79 @@
  add_subdirectory(glad)
 -add_subdirectory(stb)
 +
@@ -49,7 +49,6 @@ index 95493b8..d4df5fd 100644
 +  message(STATUS "Using the system libchdr")
 +else()
  add_subdirectory(lzma)
- add_subdirectory(libFLAC)
  add_subdirectory(libchdr)
 +endif()
 +
@@ -88,25 +87,26 @@ index 95493b8..d4df5fd 100644
  set(LIBSAMPLERATE_ENABLE_SINC_BEST_CONVERTER OFF)
  add_subdirectory(libsamplerate)
 +endif()
- 
- if(NOT BUILD_LIBRETRO_CORE)
-+  find_package(tinyxml2)
-+  if(tinyxml2_FOUND)
-+    message(STATUS "Using the system tinyxml2")
-+  else()
-   add_subdirectory(tinyxml2)
-+  endif()
 +
-+  find_package(cubeb)
-+  if(cubeb_FOUND)
-+    message(STATUS "Using the system cubeb")
-+  else()
-   add_subdirectory(cubeb)
-+  endif()
++find_package(tinyxml2)
++if(tinyxml2_FOUND)
++  message(STATUS "Using the system tinyxml2")
++else()
++  add_subdirectory(tinyxml2)
++endif()
 +
-   add_subdirectory(googletest)
- endif()
++find_package(cubeb)
++if(cubeb_FOUND)
++  message(STATUS "Using the system cubeb")
++else()
++  add_subdirectory(cubeb)
++endif()
  
+-add_subdirectory(tinyxml2)
+-add_subdirectory(cubeb)
+ add_subdirectory(googletest)
+ 
+ if(ENABLE_DISCORD_PRESENCE)
 diff --git a/dep/discord-rpc/CMakeLists.txt b/dep/discord-rpc/CMakeLists.txt
 index b7a2511..6b5f9ed 100644
 --- a/dep/discord-rpc/CMakeLists.txt
@@ -182,7 +182,7 @@ index baf945a..c04e954 100644
  add_library(vulkan-loader ${SRCS})
  target_include_directories(vulkan-loader PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index a21f409..ba57416 100644
+index f3b2de4..6666ceb 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
 @@ -116,9 +116,50 @@ add_library(common
@@ -249,7 +249,7 @@ index 66a94cb..f5b00f0 100644
 \ No newline at end of file
 +}
 diff --git a/src/common/vulkan/shader_compiler.cpp b/src/common/vulkan/shader_compiler.cpp
-index 9340522..636cdef 100644
+index 45833e5..994614c 100644
 --- a/src/common/vulkan/shader_compiler.cpp
 +++ b/src/common/vulkan/shader_compiler.cpp
 @@ -14,14 +14,25 @@
@@ -290,7 +290,7 @@ index 9340522..636cdef 100644
    {
      DumpBadShader("Failed to parse shader");
      return std::nullopt;
-@@ -141,6 +156,120 @@ void DeinitializeGlslang()
+@@ -139,6 +154,120 @@ void DeinitializeGlslang()
    glslang_initialized = false;
  }
  
@@ -412,10 +412,10 @@ index 9340522..636cdef 100644
  {
    return CompileShaderToSPV(EShLangVertex, "vs", source_code);
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index b9a0e04..e2b8302 100644
+index 019e0ab..69589c6 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -114,10 +114,23 @@ set(RECOMPILER_SRCS
+@@ -118,10 +118,23 @@ set(RECOMPILER_SRCS
      cpu_recompiler_types.h
  )
  
@@ -438,9 +438,16 @@ index b9a0e04..e2b8302 100644
 -target_link_libraries(core PRIVATE glad stb xxhash imgui)
 +target_link_libraries(core PUBLIC Threads::Threads common vulkan-loader)
 +target_link_libraries(core PRIVATE glad stb imgui)
- target_compile_definitions(core PUBLIC "-DWITH_IMGUI=1")
  
  if(WIN32)
+   target_sources(core PRIVATE
+@@ -164,5 +177,5 @@ if(ENABLE_CHEEVOS)
+     cheevos.h
+   )
+   target_compile_definitions(core PUBLIC -DWITH_CHEEVOS=1)
+-  target_link_libraries(core PRIVATE rcheevos rapidjson)
++  target_link_libraries(core PRIVATE rcheevos)
+ endif()
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
 index 66a7d3f..31fcb92 100644
 --- a/src/core/texture_replacements.cpp
@@ -458,10 +465,10 @@ index 66a7d3f..31fcb92 100644
  Log_SetChannel(TextureReplacements);
  
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index f468a1b..161b937 100644
+index b54e830..6f68ed2 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -138,7 +138,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
+@@ -139,7 +139,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
  
  add_executable(duckstation-qt ${SRCS} ${QM_FILES})
  target_include_directories(duckstation-qt PRIVATE "${Qt5Gui_PRIVATE_INCLUDE_DIRS}")
@@ -479,10 +486,10 @@ index f468a1b..161b937 100644
  if(WIN32)
    # We want a Windows subsystem application not console.
 diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
-index 4a56607..7f36e2c 100644
+index 97e67b0..dda61a3 100644
 --- a/src/frontend-common/CMakeLists.txt
 +++ b/src/frontend-common/CMakeLists.txt
-@@ -45,7 +45,13 @@ add_library(frontend-common
+@@ -41,7 +41,13 @@ add_library(frontend-common
    vulkan_host_display.h
  )
  
@@ -497,15 +504,6 @@ index 4a56607..7f36e2c 100644
  
  if(WIN32)
    target_sources(frontend-common PRIVATE
-@@ -137,7 +143,7 @@ if(ENABLE_CHEEVOS)
-     cheevos.h
-   )
-   target_compile_definitions(frontend-common PUBLIC -DWITH_CHEEVOS=1)
--  target_link_libraries(frontend-common PRIVATE rcheevos rapidjson)
-+  target_link_libraries(frontend-common PRIVATE rcheevos)
- endif()
- 
- # Copy the provided data directory to the output directory.
 -- 
 2.35.1
 

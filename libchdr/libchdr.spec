@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        13%{?gver}%{?dist}
+Release:        14%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -26,6 +26,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch10:        0001-Shared-library-fixes.patch
 Patch11:        0001-Use-system-lzma-sdk.patch
 Patch12:        0001-Do-not-build-static-library-if-INSTALL_STATIC_LIBS-O.patch
+Patch13:        0001-dep-libchdr-Add-chd_precache_progress.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -86,6 +87,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-14.20220209gita03e693
+- Add chd_precache_progress patch from Connor McLaughlin
+
 * Sat Feb 19 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-13.20220209gita03e693
 - Bump
 

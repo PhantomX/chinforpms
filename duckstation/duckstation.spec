@@ -7,9 +7,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 51041e47f70123eda41d999701f5651830a0a95e
+%global commit 1d9075fa1c53b58e493178f39afc770d1bc8fd59
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220110
+%global date 20220404
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,11 +21,12 @@
 %global glad_ver 0.1.33
 %global imgui_ver 1.81
 %global md5_ver 1.6
+%global rcheevos_scommit 0e9eb7c
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        53%{?gver}%{?dist}
+Release:        54%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -100,7 +101,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
-Provides:       bundled(rcheevos) = 0~git
+Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini)
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(xbyak)
@@ -243,6 +244,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-54.20220404git1d9075f
+- Bump
+
 * Tue Jan 11 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-53.20220110git51041e4
 - rcheevos update
 

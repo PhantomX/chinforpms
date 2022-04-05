@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 24d73467bcbe9b340c3a2d2d22243e3565197fe0
+%global commit cea32b5c9278956bc222c454ea9715b78082599c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220315
+%global date 20220404
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -49,10 +49,6 @@
 %global shortcommit6 %(c=%{commit5}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
-%global commit7 060181eaf273180d3a7e87349895bd0cb6ccbf4a
-%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
-%global srcname7 ext-soundtouch
-
 %global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
@@ -78,8 +74,8 @@
 
 
 Name:           yuzu
-Version:        2552
-Release:        2%{?gver}%{?dist}
+Version:        2644
+Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPLv2
@@ -93,7 +89,6 @@ Source3:        https://github.com/benhoyt/%{srcname3}/archive/%{commit3}/%{srcn
 Source4:        https://github.com/herumi/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/citra-emu/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %if !%{with mbedtls}
 Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
@@ -163,7 +158,6 @@ Provides:       bundled(inih) = 0~git%{?shortcommit2}
 Provides:       bundled(xbyak) = 0~git%{?shortcommit3}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
-Provides:       bundled(soundtouch) = 0~git%{?shortcommit7}
 %if !%{with mbedtls}
 Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
@@ -201,7 +195,6 @@ tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:4} -C externals/xbyak --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
-tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 %if !%{with mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
@@ -218,7 +211,6 @@ cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p sirit/LICENSE.txt LICENSE.sirit
-cp -p soundtouch/COPYING.txt COPYING.soundtouch
 cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
 sed -e 's/\r//' -i COPYRIGHT.xbyak
 popd
@@ -228,10 +220,6 @@ sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
   -i externals/CMakeLists.txt
 %endif
-
-sed \
-  -e '/find_package/s|SoundTouch|\0_DISABLED|g' \
-  -i externals/CMakeLists.txt
 
 sed \
   -e '/-pedantic-errors/d' \
@@ -301,6 +289,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 2644-1.20220404gitcea32b5
+- 2644 ea
+- SoundTouch is not needed anymore
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2552-2.20220315git24d7346
 - gcc 12 build fixes
 

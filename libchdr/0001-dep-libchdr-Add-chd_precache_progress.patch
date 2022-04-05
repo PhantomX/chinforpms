@@ -1,0 +1,138 @@
+From 9e04741c76fdfd59684ea543fb90f619c8bf1522 Mon Sep 17 00:00:00 2001
+From: Connor McLaughlin <stenzek@gmail.com>
+Date: Sun, 3 Apr 2022 20:54:53 +1000
+Subject: [PATCH] dep/libchdr: Add chd_precache_progress()
+
+Alternative which reports back as the file is read.
+---
+ include/libchdr/chd.h       |  1 +
+ include/libchdr/coretypes.h | 20 ++----------------
+ src/libchdr_chd.c           | 42 ++++++++++++++++++++++++++++++-------
+ 3 files changed, 37 insertions(+), 26 deletions(-)
+
+diff --git a/include/libchdr/chd.h b/include/libchdr/chd.h
+index a37edc3..2b85da7 100644
+--- a/include/libchdr/chd.h
++++ b/include/libchdr/chd.h
+@@ -375,6 +375,7 @@ CHD_EXPORT chd_error chd_open(const char *filename, int mode, chd_file *parent,
+ 
+ /* precache underlying file */
+ CHD_EXPORT chd_error chd_precache(chd_file *chd);
++CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t pos, size_t total, void* param), void* param);
+ 
+ /* close a CHD file */
+ CHD_EXPORT void chd_close(chd_file *chd);
+diff --git a/include/libchdr/coretypes.h b/include/libchdr/coretypes.h
+index 338a0f0..30ff9d0 100644
+--- a/include/libchdr/coretypes.h
++++ b/include/libchdr/coretypes.h
+@@ -4,21 +4,8 @@
+ #include <stdint.h>
+ #include <stdio.h>
+ 
+-#ifdef USE_LIBRETRO_VFS
+-#include <streams/file_stream_transforms.h>
+-#endif
+-
+ #define ARRAY_LENGTH(x) (sizeof(x)/sizeof(x[0]))
+ 
+-#if defined(__PS3__) || defined(__PSL1GHT__)
+-#undef UINT32
+-#undef UINT16
+-#undef UINT8
+-#undef INT32
+-#undef INT16
+-#undef INT8
+-#endif
+-
+ typedef uint64_t UINT64;
+ typedef uint32_t UINT32;
+ typedef uint16_t UINT16;
+@@ -32,10 +19,7 @@ typedef int8_t INT8;
+ #define core_file FILE
+ #define core_fopen(file) fopen(file, "rb")
+ 
+-#if defined USE_LIBRETRO_VFS
+-	#define core_fseek fseek
+-	#define core_ftell ftell
+-#elif defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WIN64__)
++#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WIN64__)
+ 	#define core_fseek _fseeki64
+ 	#define core_ftell _ftelli64
+ #elif defined(_LARGEFILE_SOURCE) && defined(_FILE_OFFSET_BITS) && _FILE_OFFSET_BITS == 64
+@@ -51,7 +35,7 @@ typedef int8_t INT8;
+ #define core_fread(fc, buff, len) fread(buff, 1, len, fc)
+ #define core_fclose fclose
+ 
+-static UINT64 core_fsize(core_file *f)
++static inline UINT64 core_fsize(core_file *f)
+ {
+     UINT64 rv;
+     UINT64 p = core_ftell(f);
+diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
+index b284ed1..8b93900 100644
+--- a/src/libchdr_chd.c
++++ b/src/libchdr_chd.c
+@@ -1530,12 +1530,19 @@ cleanup:
+     memory
+ -------------------------------------------------*/
+ 
+-CHD_EXPORT chd_error chd_precache(chd_file *chd)
++CHD_EXPORT chd_error chd_precache(chd_file* chd)
+ {
++	return chd_precache_progress(chd, NULL, NULL);
++}
++
++CHD_EXPORT chd_error chd_precache_progress(chd_file *chd, void(*progress)(size_t pos, size_t total, void* param), void* param)
++{
++#define PRECACHE_CHUNK_SIZE 16 * 1024 * 1024
++
+ #ifdef _MSC_VER
+-	size_t size, count;
++	size_t size, done, req_count, count, last_update_done, update_interval;
+ #else
+-	ssize_t size, count;
++	ssize_t size, done, req_count, count, last_update_done, update_interval;
+ #endif
+ 
+ 	if (chd->file_cache == NULL)
+@@ -1548,12 +1555,31 @@ CHD_EXPORT chd_error chd_precache(chd_file *chd)
+ 		if (chd->file_cache == NULL)
+ 			return CHDERR_OUT_OF_MEMORY;
+ 		core_fseek(chd->file, 0, SEEK_SET);
+-		count = core_fread(chd->file, chd->file_cache, size);
+-		if (count != size)
++
++		done = 0;
++		last_update_done = 0;
++		update_interval = ((size + 99) / 100);
++
++		while (done < size)
+ 		{
+-			free(chd->file_cache);
+-			chd->file_cache = NULL;
+-			return CHDERR_READ_ERROR;
++			req_count = size - done;
++			if (req_count > PRECACHE_CHUNK_SIZE)
++				req_count = PRECACHE_CHUNK_SIZE;
++
++			count = core_fread(chd->file, chd->file_cache + done, req_count);
++			if (count != req_count)
++			{
++				free(chd->file_cache);
++				chd->file_cache = NULL;
++				return CHDERR_READ_ERROR;
++			}
++
++			done += req_count;
++			if (progress != NULL && (done - last_update_done) >= update_interval && done != size)
++			{
++				last_update_done = done;
++				progress(done, size, param);
++			}
+ 		}
+ 	}
+ 
+-- 
+2.35.1
+
