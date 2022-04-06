@@ -1,5 +1,6 @@
 # Binary packaging only, go is hateful
 
+%global _build_id_links none
 %undefine _debugsource_packages
 
 %global vc_url  https://github.com/yggdrasil-network/yggdrasil-go

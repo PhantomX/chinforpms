@@ -5,6 +5,8 @@
 %global pkgyear 2022
 %global pkgname IRPF%{pkgyear}
 
+%global jre_ver 11
+
 Name:           irpf%{pkgyear}
 Version:        1.0
 Release:        1%{?dist}
@@ -19,7 +21,7 @@ BuildArch:      noarch
 BuildRequires:  desktop-file-utils
 BuildRequires:  unzip
 BuildRequires:  ImageMagick
-Requires:       jre-11
+Requires:       jre-%{jre_ver}
 Requires:       hicolor-icon-theme
 Requires:       xdg-utils
 
@@ -59,7 +61,7 @@ mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 
-exec /usr/lib/jvm/jre-11/bin/java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
+exec /usr/lib/jvm/jre-%{jre_ver}/bin/java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
 EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 

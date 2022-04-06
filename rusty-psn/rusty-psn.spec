@@ -1,5 +1,6 @@
 # Binary packaging only, rust is hateful
 
+%global _build_id_links none
 %undefine _debugsource_packages
 
 %global vc_id   c5d2640a25137d55d8e9f01f6283ad209983df3d

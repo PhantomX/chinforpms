@@ -9,6 +9,15 @@
 %undefine _auto_set_build_flags
 %undefine _package_note_file
 
+# This package uses top level ASM constructs which are incompatible with LTO.
+# Top level ASMs are often used to implement symbol versioning.  gcc-10
+# introduces a new mechanism for symbol versioning which works with LTO.
+# Converting packages to use that mechanism instead of toplevel ASMs is
+# recommended.
+# Disable LTO
+%global _lto_cflags %{nil}
+
+
 %global winearchdir %{nil}
 %global winesodir %{nil}
 %ifarch %{ix86}
@@ -1041,15 +1050,6 @@ autoreconf -f
 
 
 %build
-
-# This package uses top level ASM constructs which are incompatible with LTO.
-# Top level ASMs are often used to implement symbol versioning.  gcc-10
-# introduces a new mechanism for symbol versioning which works with LTO.
-# Converting packages to use that mechanism instead of toplevel ASMs is
-# recommended.
-# Disable LTO
-%global _lto_cflags %{nil}
-
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
@@ -1355,7 +1355,7 @@ install -m 0755 -d %{buildroot}%{_fontconfig_templatedir} \
 install -p -m 0644 %{SOURCE501} %{buildroot}%{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf
 
 ln -s \
-  $(realpath --relative-to=%{_fontconfig_confdir} %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf) \
+  $(realpath -m --relative-to=%{_fontconfig_confdir} %{_fontconfig_templatedir}/20-wine-tahoma-nobitmaps.conf) \
   %{buildroot}%{_fontconfig_confdir}/20-wine-tahoma-nobitmaps.conf
 
 %if 0%{?wine_staging}

@@ -1,9 +1,9 @@
 %global rname   nxlog
-%global tarver  2.11.13
+%global tarver  3.0.14
 %global dl_id   348
 
 Name:           %{rname}-ce
-Version:        2.11.2190
+Version:        3.0.2272
 Release:        1%{?dist}
 Summary:        A modular, multi-threaded, high-performance log management solution
 
@@ -116,5 +116,8 @@ EOF
 
 
 %changelog
+* Tue Apr 05 2022 Phantom X <megaphantomx at hotmail dot com> - 3.0.2272-1
+- 3.0.2272
+
 * Fri Aug 06 2021 Phantom X <megaphantomx at hotmail dot com> - 2.11.2190-1
 - Initial spec

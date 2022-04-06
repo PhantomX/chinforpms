@@ -8,7 +8,7 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit cea32b5c9278956bc222c454ea9715b78082599c
+%global commit 016426eebf751c74cb7967c5523f54a9df3d7421
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220404
 
@@ -74,7 +74,7 @@
 
 
 Name:           yuzu
-Version:        2644
+Version:        2645
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -289,6 +289,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 05 2022 Phantom X <megaphantomx at hotmail dot com> - 2645-1.20220404gitcea32b5
+- 2645 ea
+
 * Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 2644-1.20220404gitcea32b5
 - 2644 ea
 - SoundTouch is not needed anymore

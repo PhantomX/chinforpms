@@ -12,6 +12,7 @@ cdrtools
 citra
 -cowsrevenge
 czkawka
+dbeaver-ce
 -desmume
 discord
 -dropboxd

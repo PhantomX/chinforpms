@@ -1,4 +1,8 @@
 %global _legacy_common_support 1
+%undefine _auto_set_build_flags
+
+# Disable this. Local lto flags in use.
+%global _lto_cflags %{nil}
 
 %global commit 93fc15e9f2d68d8a43b22c57b8b935f272ce06eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -639,9 +643,6 @@ chmod -x third_party/rust/itertools/src/lib.rs
 #---------------------------------------------------------------------
 
 %build
-# Disable this. Local lto flags in use.
-%global _lto_cflags %{nil}
-
 %if 0%{?system_sqlite}
 # Do not proceed with build if the sqlite require would be broken:
 # make sure the minimum requirement is non-empty, ...

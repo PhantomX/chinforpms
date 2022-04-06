@@ -10,7 +10,7 @@
 %endif
 
 Name:           binkplayer
-Version:        2021.03
+Version:        2022.03
 Release:        1%{?dist}
 Summary:        Bink Video Player
 
@@ -110,6 +110,9 @@ EOF
 
 
 %changelog
+* Tue Apr 05 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.03-1
+- 2022.03
+
 * Mon Apr 19 2021 - 2021.03-1
 - 2021.03
 

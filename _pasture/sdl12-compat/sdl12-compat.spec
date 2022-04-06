@@ -1,6 +1,6 @@
-%global commit a3bfcb2f85ec6477c4bc54585c1749934e6486d4
+%global commit 3f496287f50f3ca14916cc6e0ab6f3b2a4548366
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210814
+%global date 20220401
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,11 +8,13 @@
 %endif
 
 Name:           sdl12-compat
-Version:        1.2.50
-Release:        4%{?gver}%{?dist}
+Version:        1.2.53
+Release:        0.0%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
-License:        zlib and MIT
+# mp3 decoder code is MIT-0/PD
+# SDL_opengl.h is zlib and MIT
+License:        zlib and (Public Domain or MIT-0) and MIT
 URL:            https://github.com/libsdl-org/%{name}
 
 %if 0%{?with_snapshot}
@@ -21,22 +23,68 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+# Multilib aware-header stub
+Source1:        SDL_config.h
+
+# Backports from upstream (0001~0500)
+
+# Proposed patches (0501~1000)
+
+# Fedora specific patches (1001+)
+Patch1001:      sdl12-compat-sdlconfig-multilib.patch
+
 
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  gcc-c++
+BuildRequires:  git-core
 BuildRequires:  make
-BuildRequires:  pkgconfig(dri)
-BuildRequires:  pkgconfig(glu)
-BuildRequires:  pkgconfig(sdl2)
-Requires:       SDL2%{?_isa} >= 2.0.14
-
+BuildRequires:  SDL2-devel
+BuildRequires:  mesa-libGL-devel
+BuildRequires:  mesa-libGLU-devel
+# This replaces SDL
+Obsoletes:      SDL < 1.2.15-49
+Conflicts:      SDL < 1.2.50
+Provides:       SDL = %{version}
+Provides:       SDL%{?_isa} = %{version}
+# This dlopens SDL2 (?!), so manually depend on it
+Requires:       SDL2%{?_isa} >= 2.0.18
 
 %description
 Simple DirectMedia Layer (SDL) is a cross-platform multimedia library
 designed to provide fast access to the graphics frame buffer and audio device.
 
 This code is a compatibility layer; it provides a binary-compatible API for
+programs written against SDL 1.2, but it uses SDL 2.0 behind the scenes.
+
+If you are writing new code, please target SDL 2.0 directly and do not use
+this layer.
+
+%package devel
+Summary:        Files to develop SDL 1.2 applications using SDL 2.0
+Requires:       %{name}%{?_isa} = %{version}-%{release}
+# This replaces SDL-devel
+Obsoletes:      SDL-devel < 1.2.15-49
+Conflicts:      SDL-devel < 1.2.50
+Provides:       SDL-devel = %{version}
+Provides:       SDL-devel%{?_isa} = %{version}
+%if ! %{with static}
+# We don't provide the static library, but we want to replace SDL-static anyway
+Obsoletes:      SDL-static < 1.2.15-49
+Conflicts:      SDL-static < 1.2.50
+%endif
+# Add deps required to compile SDL apps
+## For SDL_opengl.h
+Requires:       pkgconfig(gl)
+Requires:       pkgconfig(glu)
+## For SDL_syswm.h
+Requires:       pkgconfig(x11)
+Requires:       pkgconfig(xproto)
+
+%description devel
+Simple DirectMedia Layer (SDL) is a cross-platform multimedia library
+designed to provide fast access to the graphics frame buffer and audio device.
+
+This code is a compatibility layer; it provides a source-compatible API for
 programs written against SDL 1.2, but it uses SDL 2.0 behind the scenes.
 
 If you are writing new code, please target SDL 2.0 directly and do not use
@@ -53,7 +101,6 @@ this layer.
 
 %build
 %cmake \
-  -DSDL12DEVEL:BOOL=FALSE \
 %{nil}
 
 %cmake_build
@@ -62,22 +109,27 @@ this layer.
 %install
 %cmake_install
 
-rm -fv %{buildroot}%{_libdir}/*.so
-rm -fv %{buildroot}%{_libdir}/*.a
+# Rename SDL_config.h to SDL_config-<arch>.h to avoid file conflicts on
+# multilib systems and install SDL_config.h wrapper
+mv %{buildroot}/%{_includedir}/SDL/SDL_config.h %{buildroot}/%{_includedir}/SDL/SDL_config-%{_arch}.h
+install -m644 %{SOURCE1} %{buildroot}/%{_includedir}/SDL/SDL_config.h
 
-mkdir -p %{buildroot}%{_libdir}/%{name}
-mv %{buildroot}%{_libdir}/*.so.* %{buildroot}%{_libdir}/%{name}/
-
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
-echo "%{_libdir}/%{name}" \
-  > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+# Delete leftover static files
+rm -f %{buildroot}%{_libdir}/*.a
 
 
 %files
 %license LICENSE.txt
-%doc BUGS.txt README.md
-%{_libdir}/%{name}/*.so.*
-%config(noreplace) %{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+%doc README.md BUGS.txt
+%{_libdir}/libSDL-1.2.so.*
+
+%files devel
+%{_bindir}/sdl-config
+%{_datadir}/aclocal/sdl.m4
+%{_includedir}/SDL/
+%{_libdir}/libSDL-1.2.so
+%{_libdir}/libSDL.so
+%{_libdir}/pkgconfig/sdl12_compat.pc
 
 
 %changelog

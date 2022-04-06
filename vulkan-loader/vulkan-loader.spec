@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.3.210
+Version:        1.3.211
 Release:        100%{?dist}
 Summary:        Vulkan ICD desktop loader
 
@@ -68,7 +68,6 @@ developing applications that use %{name}.
 %cmake3 \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
-  -DENABLE_WERROR:BOOL=OFF \
 %{nil}
 
 %cmake3_build
@@ -102,6 +101,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Tue Apr 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.211-100
+- 1.3.211
+
 * Sat Apr 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.210-100
 - 1.3.210
 

@@ -130,7 +130,7 @@ for res in 16 22 24 32 48 64 72 96 128 192 ;do
     ${dir}/%{name}.png
 done
 
-ln -sf "$(realpath --relative-to="%{_libdir}/%{name}" "%{_datadir}/icons/hicolor/256x256/apps")"/%{name}.png \
+ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_datadir}/icons/hicolor/256x256/apps")"/%{name}.png \
   %{buildroot}%{_libdir}/%{name}/
 
 
