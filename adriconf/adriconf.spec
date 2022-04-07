@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        2.4.1
+Version:        2.5.0
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -11,7 +11,6 @@ Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  boost-devel
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  gtest-devel
@@ -24,7 +23,7 @@ BuildRequires:  pkgconfig(gtkmm-3.0)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpci)
-BuildRequires:  pkgconfig(libxml++-3.0)
+BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  pkgconfig(x11)
 Requires:       hicolor-icon-theme
 
@@ -88,6 +87,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedeskto
 
 
 %changelog
+* Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-1
+- 2.5.0
+- BR: -boost
+- BR: libxml++-3.0->pugixml
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-1
 - 2.4.1
 

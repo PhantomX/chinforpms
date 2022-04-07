@@ -1,6 +1,6 @@
-From ce949af65f177051e36367cfedf9ba2c54cb6ea1 Mon Sep 17 00:00:00 2001
+From d50dfec6cfdc2c56e9583afd045ba044e8cff68d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 22 Mar 2022 09:33:02 -0300
+Date: Wed, 6 Apr 2022 08:17:01 -0300
 Subject: [PATCH] keepassxc-browser: add Waterfox support
 
 ---
@@ -13,10 +13,10 @@ Subject: [PATCH] keepassxc-browser: add Waterfox support
  6 files changed, 37 insertions(+), 3 deletions(-)
 
 diff --git a/share/translations/keepassxc_en.ts b/share/translations/keepassxc_en.ts
-index 2b83e1d..68c7175 100644
+index 5fa8e75..2024422 100644
 --- a/share/translations/keepassxc_en.ts
 +++ b/share/translations/keepassxc_en.ts
-@@ -973,6 +973,10 @@ Would you like to migrate your existing settings now?</source>
+@@ -977,6 +977,10 @@ Would you like to migrate your existing settings now?</source>
          <source>Chromium</source>
          <translation type="unfinished"></translation>
      </message>
@@ -28,10 +28,10 @@ index 2b83e1d..68c7175 100644
          <source>Show a notification when credentials are requested</source>
          <extracomment>Credentials mean login data requested via browser extension</extracomment>
 diff --git a/share/translations/keepassxc_en_US.ts b/share/translations/keepassxc_en_US.ts
-index bbb17d0..31a3ff8 100644
+index 2d0919b..9e117e6 100644
 --- a/share/translations/keepassxc_en_US.ts
 +++ b/share/translations/keepassxc_en_US.ts
-@@ -987,6 +987,10 @@ Would you like to migrate your existing settings now?</translation>
+@@ -991,6 +991,10 @@ Would you like to migrate your existing settings now?</translation>
          <source>Chromium</source>
          <translation>Chromium</translation>
      </message>
@@ -42,7 +42,7 @@ index bbb17d0..31a3ff8 100644
      <message>
          <source>Show a notification when credentials are requested</source>
          <extracomment>Credentials mean login data requested via browser extension</extracomment>
-@@ -8894,4 +8898,4 @@ Example: JBSWY3DPEHPK3PXP</translation>
+@@ -8902,4 +8906,4 @@ Example: JBSWY3DPEHPK3PXP</translation>
          <translation>Failed to complete a challenge-response, the specific error was: %1</translation>
      </message>
  </context>
@@ -50,7 +50,7 @@ index bbb17d0..31a3ff8 100644
 \ No newline at end of file
 +</TS>
 diff --git a/src/browser/BrowserSettingsWidget.cpp b/src/browser/BrowserSettingsWidget.cpp
-index d0f8161..6285346 100644
+index 8dd26d3..ce6bcbe 100644
 --- a/src/browser/BrowserSettingsWidget.cpp
 +++ b/src/browser/BrowserSettingsWidget.cpp
 @@ -86,9 +86,10 @@ BrowserSettingsWidget::BrowserSettingsWidget(QWidget* parent)
@@ -73,7 +73,7 @@ index d0f8161..6285346 100644
  #endif
  #ifndef Q_OS_LINUX
      m_ui->snapWarningLabel->setVisible(false);
-@@ -225,6 +227,7 @@ void BrowserSettingsWidget::saveSettings()
+@@ -237,6 +239,7 @@ void BrowserSettingsWidget::saveSettings()
      settings->setBrowserSupport(BrowserShared::BRAVE, m_ui->braveSupport->isChecked());
      settings->setBrowserSupport(BrowserShared::VIVALDI, m_ui->vivaldiSupport->isChecked());
      settings->setBrowserSupport(BrowserShared::TOR_BROWSER, m_ui->torBrowserSupport->isChecked());
@@ -115,10 +115,10 @@ index e9542a7..817289e 100644
          MAX_SUPPORTED
      };
 diff --git a/src/browser/NativeMessageInstaller.cpp b/src/browser/NativeMessageInstaller.cpp
-index dbf6b9b..01f7b5d 100644
+index f4876f4..62e788c 100644
 --- a/src/browser/NativeMessageInstaller.cpp
 +++ b/src/browser/NativeMessageInstaller.cpp
-@@ -50,6 +50,8 @@ namespace
+@@ -51,6 +51,8 @@ namespace
      const QString TARGET_DIR_BRAVE =
          QStringLiteral("/Library/Application Support/BraveSoftware/Brave-Browser/NativeMessagingHosts");
      const QString TARGET_DIR_EDGE = QStringLiteral("/Library/Application Support/Microsoft Edge/NativeMessagingHosts");
@@ -127,7 +127,7 @@ index dbf6b9b..01f7b5d 100644
  #elif defined(Q_OS_WIN)
      const QString TARGET_DIR_CHROME = QStringLiteral(
          "HKEY_CURRENT_USER\\Software\\Google\\Chrome\\NativeMessagingHosts\\org.keepassxc.keepassxc_browser");
-@@ -62,6 +64,8 @@ namespace
+@@ -63,6 +65,8 @@ namespace
      const QString TARGET_DIR_BRAVE = TARGET_DIR_CHROME;
      const QString TARGET_DIR_EDGE = QStringLiteral(
          "HKEY_CURRENT_USER\\Software\\Microsoft\\Edge\\NativeMessagingHosts\\org.keepassxc.keepassxc_browser");
@@ -136,7 +136,7 @@ index dbf6b9b..01f7b5d 100644
  #else
      const QString TARGET_DIR_CHROME = QStringLiteral("/google-chrome/NativeMessagingHosts");
      const QString TARGET_DIR_CHROMIUM = QStringLiteral("/chromium/NativeMessagingHosts");
-@@ -71,6 +75,7 @@ namespace
+@@ -72,6 +76,7 @@ namespace
          "/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/TorBrowser/Data/Browser/.mozilla/native-messaging-hosts");
      const QString TARGET_DIR_BRAVE = QStringLiteral("/BraveSoftware/Brave-Browser/NativeMessagingHosts");
      const QString TARGET_DIR_EDGE = QStringLiteral("/microsoft-edge/NativeMessagingHosts");
@@ -144,7 +144,7 @@ index dbf6b9b..01f7b5d 100644
  #endif
  } // namespace
  
-@@ -159,6 +164,8 @@ QString NativeMessageInstaller::getTargetPath(SupportedBrowsers browser) const
+@@ -160,6 +165,8 @@ QString NativeMessageInstaller::getTargetPath(SupportedBrowsers browser) const
          return TARGET_DIR_BRAVE;
      case SupportedBrowsers::EDGE:
          return TARGET_DIR_EDGE;
@@ -153,7 +153,7 @@ index dbf6b9b..01f7b5d 100644
      case SupportedBrowsers::CUSTOM:
          return browserSettings()->customBrowserLocation();
      default:
-@@ -190,6 +197,8 @@ QString NativeMessageInstaller::getBrowserName(SupportedBrowsers browser) const
+@@ -191,6 +198,8 @@ QString NativeMessageInstaller::getBrowserName(SupportedBrowsers browser) const
          return QStringLiteral("brave");
      case SupportedBrowsers::EDGE:
          return QStringLiteral("edge");
@@ -162,17 +162,17 @@ index dbf6b9b..01f7b5d 100644
      case SupportedBrowsers::CUSTOM:
          return QStringLiteral("custom");
      default:
-@@ -221,6 +230,9 @@ QString NativeMessageInstaller::getNativeMessagePath(SupportedBrowsers browser)
+@@ -222,6 +231,9 @@ QString NativeMessageInstaller::getNativeMessagePath(SupportedBrowsers browser)
+         basePath = QDir::homePath() + "/.local/share";
      } else if (browser == SupportedBrowsers::FIREFOX) {
-         // Firefox stores its config in ~/
          basePath = QDir::homePath();
 +    } else if (browser == SupportedBrowsers::WATERFOX) {
 +        // Waterfox stores its config in ~/
 +        basePath = QDir::homePath();
      } else {
-         basePath = QStandardPaths::writableLocation(QStandardPaths::ConfigLocation);
+         basePath = QDir::homePath() + "/.config";
      }
-@@ -276,7 +288,7 @@ QJsonObject NativeMessageInstaller::constructFile(SupportedBrowsers browser)
+@@ -315,7 +327,7 @@ QJsonObject NativeMessageInstaller::constructFile(SupportedBrowsers browser)
  
      QJsonArray arr;
      if (browser == SupportedBrowsers::FIREFOX || browser == SupportedBrowsers::TOR_BROWSER

@@ -1,13 +1,22 @@
+%global commit 5916a8f8dd93eb6a5de544caedd7a9d8e9a3b1ee
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220406
+%global with_snapshot 0
+
 %bcond_with keeshare
 %bcond_with yubikey
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
 
 %global appname org.%{name}.KeePassXC
 
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.0
-Release:        100%{?dist}
+Version:        2.7.1
+Release:        100%{?gver}%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -16,7 +25,12 @@ Epoch:          1
 License:        Boost and BSD and CC0 and GPLv3 and LGPLv2 and LGPLv2+ and LGPLv3+ and Public Domain
 URL:            https://keepassxc.org/
 
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
+%dnl Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 
 # Patch0: fixes GNOME quirks on Wayland sessions
 # Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
@@ -51,7 +65,7 @@ BuildRequires:  qt5-linguist
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  readline-devel
 %if %{with keeshare}
-BuildRequires:  quazip-qt5-devel
+BuildRequires:  minizip-devel
 %endif
 %if %{with yubikey}
 BuildRequires:  libyubikey-devel
@@ -66,7 +80,18 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup -n %{name}-%{ver} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+
+%if 0%{?with_snapshot}
+if [ ! -e .gitrev ] ;then
+  echo "%{shortcommit}" > .gitrev
+fi
+%else
+if [ ! -e .version ] ;then
+  echo "%{version}" > .version
+fi
+%endif
+
 
 %build
 %cmake \
@@ -123,6 +148,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-100
+- 2.7.1
+
 * Tue Mar 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0-100
 - 2.7.0
 

@@ -1,6 +1,6 @@
-%global commit d04440dabbf8ee58cfcea8c536e7e89b0f9a5c0c
+%global commit 6848785a4bac9c8f77ed380ca813e2964b4660b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220314
+%global date 20220406
 %global with_snapshot 1
 
 %global with_python  0
@@ -23,8 +23,8 @@
 %global vc_url  https://git.claws-mail.org/?p=claws.git
 
 Name:           claws-mail
-Version:        4.0.0
-Release:        108%{?gver}%{?dist}
+Version:        4.1.0
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -733,6 +733,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.0-100.20220406git6848785
+- 4.1.0 gtk3tree update
+
 * Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.0.0-108.20220314gitd04440d
 - Update
 - New keyword-warner plugin

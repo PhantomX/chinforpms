@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d2711ef54dd95c95f9bc1e1c96c219184d4e9b9d
+%global tkg_id b6c59d868ef29e30ec5cbe55bdb1bcb0d23fde60
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -285,7 +285,7 @@ Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fs
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1026:       0001-proton-tkg-staging-temporary-patch-the-patch.patch
+Patch1026:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out.mypatch#/%{name}-tkg-remove_hooks_that_time_out.patch
 Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
@@ -299,6 +299,7 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.patch#/%{name}-valve-8d5fed7.patch
+Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.patch#/%{name}-valve-3b176c0.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -969,9 +970,8 @@ patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-d
 %patch1023 -p1
 %endif
 %patch1024 -p1
-cp %{P:1025} patch1025.patch
+%patch1025 -p1
 %patch1026 -p1
-patch -p1 -i patch1025.patch
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -992,6 +992,7 @@ patch -p1 -i patch1025.patch
 
 %patch1089 -p1
 %patch1091 -p1 -R
+%patch1092 -p1
 
 %patch1300 -p1
 %patch1301 -p1

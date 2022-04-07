@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.9.1
+Version:        0.5.10
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -15,6 +15,8 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         0001-Disable-gtk-update-icon-cache-execution.patch
 Patch1:         %{name}-gamemodelib.patch
+
+Patch10:        %{vc_url}/pull/4197.patch#/%{name}-gh-pr4197.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
@@ -38,7 +40,7 @@ Requires:       p7zip
 Requires:       p7zip-plugins
 Requires:       pciutils
 Requires:       %{py3_dist dbus-python}
-Requires:       %{py3_dist file-magic}
+Requires:       %{py3_dist distro}
 Requires:       %{py3_dist evdev}
 Requires:       %{py3_dist lxml}
 Requires:       %{py3_dist pygobject}
@@ -63,6 +65,9 @@ Requires:       mesa-dri-drivers(x86-32)
 Requires:       mesa-vulkan-drivers(x86-32)
 Requires:       vulkan-loader(x86-32)
 Requires:       libglvnd-glx(x86-32)
+Recommends:     pipewire(x86-32)
+Recommends:     wine-pulseaudio(x86-32)
+Recommends:     wine-core(x86-32)
 %endif
 
 
@@ -75,8 +80,6 @@ on Linux.
 
 %prep
 %autosetup -p1
-
-sed -e 's|python-magic|file-magic|g' -i requirements.txt setup.py
 
 %generate_buildrequires
 %pyproject_buildrequires -r
@@ -114,6 +117,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.10-100
+- 0.5.10
+
 * Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.9.1-100
 - 0.5.9.1
 

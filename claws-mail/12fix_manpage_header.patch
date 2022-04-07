@@ -9,8 +9,8 @@ index ae2f530..a9135ee 100644
  
  .SH "NAME"
  .LP
--Claws Mail \- a GTK+ based fast email and news client
-+claws\-mail \- a GTK+ based fast email and news client
+-Claws Mail \- a GTK based fast email and news client
++claws\-mail \- a GTK based fast email and news client
  
  .SH "SYNOPSIS"
  .B claws\-mail
