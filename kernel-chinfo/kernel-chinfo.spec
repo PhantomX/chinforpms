@@ -159,18 +159,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 372ec49d4298b5cab668d7c0da6b7287e93177b9
+%global pfcommit 140ce03e5f318826d6c0e431f2ab2d45b58332ae
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id abac8264d9e6dc1049466633bc7ae7df68bc19bf
+%global opensuse_id ffe3c2ba58eb5ebaa4b26df773fe00aadfa8ba15
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -823,7 +823,6 @@ Source33: kernel-x86_64-debug-rhel.config
 
 Source34: filter-x86_64.sh.rhel
 Source35: filter-armv7hl.sh.rhel
-Source36: filter-i686.sh.rhel
 Source37: filter-aarch64.sh.rhel
 Source38: filter-ppc64le.sh.rhel
 Source39: filter-s390x.sh.rhel
@@ -842,8 +841,6 @@ Source54: kernel-armv7hl-fedora.config
 Source55: kernel-armv7hl-debug-fedora.config
 Source56: kernel-armv7hl-lpae-fedora.config
 Source57: kernel-armv7hl-lpae-debug-fedora.config
-Source58: kernel-i686-fedora.config
-Source59: kernel-i686-debug-fedora.config
 Source60: kernel-ppc64le-fedora.config
 Source61: kernel-ppc64le-debug-fedora.config
 Source62: kernel-s390x-fedora.config
@@ -853,7 +850,6 @@ Source65: kernel-x86_64-debug-fedora.config
 
 Source67: filter-x86_64.sh.fedora
 Source68: filter-armv7hl.sh.fedora
-Source69: filter-i686.sh.fedora
 Source70: filter-aarch64.sh.fedora
 Source71: filter-ppc64le.sh.fedora
 Source72: filter-s390x.sh.fedora
@@ -968,13 +964,15 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1016: %{opensuse_url}/x86-pm-save-the-msr-validity-status-at-context-setup.patch#/openSUSE-x86-pm-save-the-msr-validity-status-at-context-setup.patch
+Patch1017: %{opensuse_url}/x86-speculation-restore-speculation-related-msrs-during-s3-resume.patch#/openSUSE-x86-speculation-restore-speculation-related-msrs-during-s3-resume.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id 19dda36dea731f944fbcb11d30123f59150af089
+%global tkg_id a9980d5b1c4d7732817855afb8ca9aefe2c5e0e2
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.17/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
@@ -2932,6 +2930,9 @@ fi
 #
 #
 %changelog
+* Fri Apr 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.2-500
+- 5.17.2 - pf2
+
 * Mon Mar 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.1-500.chinfo
 - 5.17.1 - pf1
 

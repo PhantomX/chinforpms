@@ -1,1 +1,1 @@
-# CONFIG_XILINX_AMS is not set
+CONFIG_XILINX_AMS=m

@@ -1,7 +1,7 @@
-%global commit 0de8d01b09b1cc7ca34f7ae3890b4a416ff801fe
+%global commit 5a815669e8e7a3f0a37648510494f8b36c29c1f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220401
-%global with_snapshot 1
+%global date 20220406
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -44,8 +44,8 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.2
-%global winemono  7.1.5
-%global winevulkan 1.3.210
+%global winemono  7.2.0
+%global winevulkan 1.3.211
 
 %global wineFAudio 22.02
 %global winegsm 1.0.19
@@ -56,8 +56,8 @@
 %global winetiff 4.3.0
 %global winejxrlib 1.1
 %global winevkd3d 1.3
-%global winexml2 2.9.12
-%global winexslt 1.1.34
+%global winexml2 2.9.13
+%global winexslt 1.1.35
 %global winezlib 1.2.11
 
 %global _default_patch_fuzz 2
@@ -93,7 +93,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 3d32dd06263b797f6313100b128e8a54da9f0c57
+%global wine_stagingver 7.6
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b6c59d868ef29e30ec5cbe55bdb1bcb0d23fde60
+%global tkg_id 9190e08090447cd8a384c33befd9e6aa29004e0f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -155,8 +155,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.5
-Release:        101%{?gver}%{?dist}
+Version:        7.6
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -225,7 +225,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
 
-# mfplat things, again
+# mfplat things, again (remove when AAC support is added)
 Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
 Patch211:       %{whq_url}/4d929972c341bff2da3616606b8cbeadf85dba26#/%{name}-whq-revert-mfplat-4d92997.patch
 Patch212:       %{whq_url}/34a55c7b96c97b178ea1ab519eb0e847096f2076#/%{name}-whq-revert-mfplat-34a55c7.patch
@@ -261,6 +261,17 @@ Patch241:       %{whq_url}/606505e5643d8df2a23a2cc074fa9b6b2ae8b05f#/%{name}-whq
 Patch242:       %{whq_url}/f38369416f6487013bf197d70420bd9feef7e485#/%{name}-whq-revert-mfplat-f383694.patch
 Patch243:       %{whq_url}/edef14126cbdb64dda218688a51b6e170cb4909b#/%{name}-whq-revert-mfplat-edef141.patch
 Patch244:       %{name}-revert-mfplat-7735b48.patch
+Patch245:       %{whq_url}/b5d6c5992092fd0c96deacbe892668aba6759f93#/%{name}-whq-revert-mfplat-b5d6c59.patch
+Patch246:       %{whq_url}/55282e0d0988b66809ddb58b9f3b7449f8284fc1#/%{name}-whq-revert-mfplat-55282e0.patch
+Patch247:       %{whq_url}/ebd2b7d7049e46b37caad7b0235064d1a7ec3104#/%{name}-whq-revert-mfplat-ebd2b7d.patch
+Patch248:       %{whq_url}/db41b2ae238da4a8f73060948e94b8bdc64f64bb#/%{name}-whq-revert-mfplat-db41b2a.patch
+Patch249:       %{whq_url}/5861379d6df87562753322e251261868943e91ca#/%{name}-whq-revert-mfplat-5861379.patch
+Patch250:       %{whq_url}/bcd39c5061768d6d9a822cb8f8effa715ca62972#/%{name}-whq-revert-mfplat-bcd39c5.patch
+Patch251:       %{whq_url}/3827f0487db5ad12f1beb7aabb4e6bbc278a8145#/%{name}-whq-revert-mfplat-3827f04.patch
+Patch252:       %{whq_url}/bffe90496c904a0f95242e1bbfd3709fb1ff5e5d#/%{name}-whq-revert-mfplat-bffe904.patch
+Patch253:       %{whq_url}/3b83fe637e8b1f0e0cbac1d53106718f56b6afdc#/%{name}-whq-revert-mfplat-3b83fe6.patch
+Patch254:       %{whq_url}/38b98c653680cd87ecd3060601a57f996c35272e#/%{name}-whq-revert-mfplat-38b98c6.patch
+Patch255:       %{whq_url}/8091f3a0b8463d41049ed4ade98c79f82c86ebbc#/%{name}-whq-revert-mfplat-8091f3a.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -295,6 +306,7 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
+Patch1038:       0001-proton-tkg-staging-temporary-patch-the-patch.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -303,7 +315,6 @@ Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.pa
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
-Patch1303:       0001-mscoree-Update-Wine-Mono-to-7.1.5.patch
 Patch1304:       0001-winegstreamer-remove-last-WG_PARSER_EVENT_SEGMENT.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
@@ -898,6 +909,17 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
+%patch255 -p1 -R
+%patch254 -p1 -R
+%patch253 -p1 -R
+%patch252 -p1 -R
+%patch251 -p1 -R
+%patch250 -p1 -R
+%patch249 -p1 -R
+%patch248 -p1 -R
+%patch247 -p1 -R
+%patch246 -p1 -R
+%patch245 -p1 -R
 %patch244 -p1 -R
 %patch243 -p1 -R
 %patch242 -p1 -R
@@ -970,7 +992,9 @@ patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-d
 %patch1023 -p1
 %endif
 %patch1024 -p1
-%patch1025 -p1
+cp %{P:1025} patch1025.patch
+%patch1038 -p1
+patch -p1 -i patch1025.patch
 %patch1026 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
@@ -996,7 +1020,6 @@ patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-d
 
 %patch1300 -p1
 %patch1301 -p1
-%patch1303 -p1
 %patch1304 -p1
 %patch1305 -p1
 
@@ -2596,6 +2619,9 @@ fi
 
 
 %changelog
+* Sat Apr 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.6-100
+- 7.6
+
 * Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.5-101.20220401git0de8d01
 - Snapshot
 

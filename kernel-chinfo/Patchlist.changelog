@@ -1,3 +1,33 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1324e08de44f4f42845c6c3d3c46bfac8edb5f9e
+ 1324e08de44f4f42845c6c3d3c46bfac8edb5f9e Move the patch to the redhat directory so it doesn't end up as an applied patch
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/363f7c429a6526e005366aae4e1eaa8e3b34fc1d
+ 363f7c429a6526e005366aae4e1eaa8e3b34fc1d Update Fix 'mem_section' will never be NULL gcc 12 warning to V4
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c5539841799051d17639fb1b832f7e5fc0c1c818
+ c5539841799051d17639fb1b832f7e5fc0c1c818 NFSv4.1 provide mount option to toggle trunking discovery
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1526e96221f95f1dfc53d819cdf62ceecb87e8bd
+ 1526e96221f95f1dfc53d819cdf62ceecb87e8bd Add the Revert patch so that it can be applied when building dist-git for F34 and F35
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8ddc4fc30e26b182187aaf1dbcf1ed0eb99b2b11
+ 8ddc4fc30e26b182187aaf1dbcf1ed0eb99b2b11 Bluetooth: hci_core: Rate limit the logging of invalid SCO handle
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d5a6eac9a6da1b26edd8d387a3a5883cefd7e5c5
+ d5a6eac9a6da1b26edd8d387a3a5883cefd7e5c5 Bluetooth: hci_event: Fix HCI_EV_VENDOR max_len
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/709cbda1fe263ee37d446ad989fd7f8c4bd1f618
+ 709cbda1fe263ee37d446ad989fd7f8c4bd1f618 Update mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b6493d3f05a910b5a094a256395c9587760d73d4
+ b6493d3f05a910b5a094a256395c9587760d73d4 net: bcmgenet: Use stronger register read/writes to assure ordering
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/442a5cb0498230a157a4f482de2d53796a400435
+ 442a5cb0498230a157a4f482de2d53796a400435 Revert "swiotlb: rework "fix info leak with DMA_FROM_DEVICE""
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2151233ebcc5c33b39ed3ba2b5a848f7205d5159
+ 2151233ebcc5c33b39ed3ba2b5a848f7205d5159 drm/i915: Temporarily disable selective fetch for PSR2 on ADL-P
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106
  9db0837f0d0b5ddd9b81e1feb1bcbff21ae93106 mm/sparsemem: Fix 'mem_section' will never be NULL gcc 12 warning
 

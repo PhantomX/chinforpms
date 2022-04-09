@@ -10,15 +10,16 @@ SCRIPT=$(readlink -f "$0")
 OUTPUT_DIR="$PWD"
 SCRIPT_DIR=$(dirname "$SCRIPT")
 
-LANG=en_US.UTF-8
-
 if [ -z "$3" ]; then
 	cat "$OUTPUT_DIR"/flavors > "$OUTPUT_DIR"/.flavors
 else
 	echo "$3" > "$OUTPUT_DIR"/.flavors
 fi
 
+# shellcheck disable=SC2015
 RHJOBS="$(test -n "$4" && echo "$4" || nproc --all)"
+
+LANG=en_US.UTF-8
 
 # to handle this script being a symlink
 cd "$SCRIPT_DIR"
@@ -73,7 +74,7 @@ function merge_configs()
 
 	name=$OUTPUT_DIR/$PACKAGE_NAME-$archvar-$flavor.config
 	echo "Building $name ... "
-	touch config-merging.$count config-merged.$count
+	touch config-merging."$count" config-merged."$count"
 
 	# apply based on order
 	skip_if_missing=""
@@ -85,31 +86,31 @@ function merge_configs()
 
 			test -n "$skip_if_missing" && test ! -e "$cfile" && continue
 
-			if ! perl merge.pl "$cfile" config-merging.$count > config-merged.$count; then
+			if ! perl merge.pl "$cfile" config-merging."$count" > config-merged."$count"; then
 				die "Failed to merge $cfile"
 			fi
-			mv config-merged.$count config-merging.$count
+			mv config-merged."$count" config-merging."$count"
 		done
 
 		# first configs in $order is baseline, all files should be
 		# there.  second pass is overrides and can be missing.
 		skip_if_missing="1"
 	done
-	if [ "x$arch" == "xaarch64" ]; then
-		echo "# arm64" > "$name"
-	elif [ "x$arch" == "xppc64le" ]; then
-		echo "# powerpc" > "$name"
-	elif [ "x$arch" == "xs390x" ]; then
-		echo "# s390" > "$name"
-	elif [ "x$arch" == "xarmv7hl" ]; then
-		echo "# arm" > "$name"
-	elif [ "x$arch" == "xi686" ]; then
-		echo "# i386" > "$name"
-	else
-		echo "# $arch" > "$name"
-	fi
-	sort config-merging.$count >> "$name"
-	rm -f config-merged.$count config-merging.$count
+	case "$arch" in
+	"aarch64")
+		echo "# arm64" > "$name";;
+	"ppc64le")
+		echo "# powerpc" > "$name";;
+	"s390x")
+		echo "# s390" > "$name";;
+	"armv7hl")
+		echo "# arm" > "$name";;
+	*)
+		echo "# $arch" > "$name";;
+	esac
+
+	sort config-merging."$count" >> "$name"
+	rm -f config-merged."$count" config-merging."$count"
 	echo "Building $name complete"
 }
 
@@ -156,7 +157,7 @@ function build_flavor()
 			merge_configs "$arch" "$configs" "$order" "$flavor" "$count" &
 			waitpids[$count]=$!
 			((count++))
-			while [ "$(jobs | grep Running | wc -l)" -ge $RHJOBS ]; do :; done
+			while [ "$(jobs | grep -c Running)" -ge "$RHJOBS" ]; do :; done
 		fi
 	done < "$control_file"
 

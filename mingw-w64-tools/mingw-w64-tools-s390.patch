@@ -1,0 +1,122 @@
+diff --git a/mingw-w64-tools/widl/include/basetsd.h b/mingw-w64-tools/widl/include/basetsd.h
+index a4774a2..0963881 100644
+--- a/mingw-w64-tools/widl/include/basetsd.h
++++ b/mingw-w64-tools/widl/include/basetsd.h
+@@ -36,7 +36,7 @@ extern "C" {
+  * 64-bit.
+  */
+ 
+-#if (defined(__x86_64__) || defined(__powerpc64__) || defined(__aarch64__)) && !defined(_WIN64)
++#if (defined(__x86_64__) || defined(__powerpc64__) || defined(__aarch64__) || defined(__s390x__)) && !defined(_WIN64)
+ #define _WIN64
+ #endif
+ 
+@@ -295,6 +295,8 @@ typedef ULONG_PTR KAFFINITY, *PKAFFINITY;
+ # define WORDS_BIGENDIAN
+ #elif defined(__MIPSEL__)
+ # undef  WORDS_BIGENDIAN
++#elif defined(__s390__)
++# define WORDS_BIGENDIAN
+ #elif !defined(RC_INVOKED) && !defined(__WIDL__) && !defined(__midl)
+ # error Unknown CPU architecture!
+ #endif
+diff --git a/mingw-w64-tools/widl/include/winnt.h b/mingw-w64-tools/widl/include/winnt.h
+index 9296a3d..2f33bda 100644
+--- a/mingw-w64-tools/widl/include/winnt.h
++++ b/mingw-w64-tools/widl/include/winnt.h
+@@ -1651,6 +1651,36 @@ typedef struct _KNONVOLATILE_CONTEXT_POINTERS
+ 
+ #endif /* __aarch64__ */
+ 
++#ifdef __s390x__
++
++/*
++ * FIXME:
++ *
++ * There is no official CONTEXT structure defined for the S/390
++ * architecture, so I just made one up.
++ *
++ * This structure is completely dummy, made just to build widl.
++ *
++ */
++
++#define CONTEXT_S390X            0x10000000
++
++#define CONTEXT_CONTROL         (CONTEXT_S390X | 0x00000001)
++#define CONTEXT_FLOATING_POINT  (CONTEXT_S390X | 0x00000002)
++#define CONTEXT_INTEGER         (CONTEXT_S390X | 0x00000004)
++
++#define CONTEXT_FULL (CONTEXT_CONTROL | CONTEXT_FLOATING_POINT | CONTEXT_INTEGER)
++
++#define EXCEPTION_READ_FAULT    0
++#define EXCEPTION_WRITE_FAULT   1
++#define EXCEPTION_EXECUTE_FAULT 8
++
++typedef struct _CONTEXT
++{
++} CONTEXT, *PCONTEXT;
++
++#endif  /* __s390x__ */
++
+ #if !defined(CONTEXT_FULL) && !defined(RC_INVOKED)
+ #error You need to define a CONTEXT for your CPU
+ #endif
+diff --git a/mingw-w64-tools/widl/tools.h b/mingw-w64-tools/widl/tools.h
+index 1e86e38..8bde837 100644
+--- a/mingw-w64-tools/widl/tools.h
++++ b/mingw-w64-tools/widl/tools.h
+@@ -79,7 +79,7 @@
+ 
+ struct target
+ {
+-    enum { CPU_i386, CPU_x86_64, CPU_ARM, CPU_ARM64 } cpu;
++    enum { CPU_i386, CPU_x86_64, CPU_ARM, CPU_ARM64, CPU_S390X } cpu;
+ 
+     enum
+     {
+@@ -383,6 +383,8 @@ static inline struct target get_default_target(void)
+     target.cpu = CPU_ARM;
+ #elif defined(__aarch64__)
+     target.cpu = CPU_ARM64;
++#elif defined(__s390x__)
++    target.cpu = CPU_S390X;
+ #else
+ #error Unsupported CPU
+ #endif
+@@ -417,6 +419,7 @@ static inline unsigned int get_target_ptr_size( struct target target )
+         [CPU_x86_64]    = 8,
+         [CPU_ARM]       = 4,
+         [CPU_ARM64]     = 8,
++        [CPU_S390X]     = 8,
+     };
+     return sizes[target.cpu];
+ }
+@@ -430,6 +433,7 @@ static inline void set_target_ptr_size( struct target *target, unsigned int size
+         if (size == 8) target->cpu = CPU_x86_64;
+         break;
+     case CPU_x86_64:
++    case CPU_S390X:
+         if (size == 4) target->cpu = CPU_i386;
+         break;
+     case CPU_ARM:
+@@ -460,6 +464,7 @@ static inline int get_cpu_from_name( const char *name )
+         { "aarch64",   CPU_ARM64 },
+         { "arm64",     CPU_ARM64 },
+         { "arm",       CPU_ARM },
++        { "s390x",     CPU_S390X },
+     };
+     unsigned int i;
+ 
+@@ -505,7 +510,8 @@ static inline const char *get_arch_dir( struct target target )
+         [CPU_i386]   = "i386",
+         [CPU_x86_64] = "x86_64",
+         [CPU_ARM]    = "arm",
+-        [CPU_ARM64]  = "aarch64"
++        [CPU_ARM64]  = "aarch64",
++        [CPU_S390X]  = "s390x"
+     };
+ 
+     if (!cpu_names[target.cpu]) return "";
+-- 
+2.35.1
+

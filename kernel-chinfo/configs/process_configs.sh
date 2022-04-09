@@ -85,14 +85,14 @@ checkoptions()
 					 print "Found "a[1]"="a[2]" after generation, had " a[1]"="configs[a[1]]" in Source tree";
 			}
 		}
-	' "$1" "$2" > .mismatches${count}
+	' "$1" "$2" > .mismatches"${count}"
 
 	checkoptions_error=false
-	if test -s .mismatches${count}
+	if test -s .mismatches"${count}"
 	then
 		while read -r LINE
 		do
-			if find ./ -name "$(echo "$LINE" | awk -F "=" ' { print $1 } ' | awk ' { print $2 }')" -print0 | xargs -0 grep ^ | grep -q "process_configs_known_broken"; then
+			if find "${REDHAT}"/configs -name "$(echo "$LINE" | awk -F "=" ' { print $1 } ' | awk ' { print $2 }')" -print0 | xargs -0 grep ^ | grep -q "process_configs_known_broken"; then
 				# This is a known broken config.
 				# See script help warning.
 				checkoptions_error=false
@@ -100,14 +100,13 @@ checkoptions()
 				checkoptions_error=true
 				break
 			fi
-		done < .mismatches${count}
+		done < .mismatches"${count}"
 
 		! $checkoptions_error && return
 
-		sed -i "1s/^/Error: Mismatches found in configuration files for ${arch} ${variant}\n/" .mismatches${count}
-		[ "$CONTINUEONERROR" ] || exit 1
+		sed -i "1s/^/Error: Mismatches found in configuration files for ${arch} ${variant}\n/" .mismatches"${count}"
 	else
-		rm -f .mismatches${count}
+		rm -f .mismatches"${count}"
 	fi
 }
 
@@ -206,11 +205,13 @@ function commit_new_configs()
 		fi
 		echo -n "Checking for new configs in $cfg ... "
 
-		make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE=$(get_cross_compile $arch) KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig
+		# shellcheck disable=SC2086
+		make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE="$(get_cross_compile "$arch")" KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig
 		grep -E 'CONFIG_' .listnewconfig > .newoptions
 		if test -s .newoptions
 		then
-			make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE=$(get_cross_compile $arch) KCONFIG_CONFIG="$cfgorig" helpnewconfig >& .helpnewconfig
+		# shellcheck disable=SC2086
+			make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE="$(get_cross_compile "$arch")" KCONFIG_CONFIG="$cfgorig" helpnewconfig >& .helpnewconfig
 			parsenewconfigs
 		fi
 		rm .newoptions
@@ -249,31 +250,31 @@ function process_config()
 
 	echo "Processing $cfg ... "
 
-	make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE=$(get_cross_compile $arch) KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig${count}
-	grep -E 'CONFIG_' .listnewconfig${count} > .newoptions${count}
-	if test -n "$NEWOPTIONS" && test -s .newoptions${count}
+	# shellcheck disable=SC2086
+	make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE="$(get_cross_compile "$arch")" KCONFIG_CONFIG="$cfgorig" listnewconfig >& .listnewconfig"${count}"
+	grep -E 'CONFIG_' .listnewconfig"${count}" > .newoptions"${count}"
+	if test -n "$NEWOPTIONS" && test -s .newoptions"${count}"
 	then
-		echo "Found unset config items in ${arch} ${variant}, please set them to an appropriate value" >> .errors${count}
-		cat .newoptions${count} >> .errors${count}
-		rm .newoptions${count}
+		echo "Found unset config items in ${arch} ${variant}, please set them to an appropriate value" >> .errors"${count}"
+		cat .newoptions"${count}" >> .errors"${count}"
+		rm .newoptions"${count}"
 		RETURNCODE=1
-		[ "$CONTINUEONERROR" ] || exit 1
 	fi
-	rm .newoptions${count}
+	rm .newoptions"${count}"
 
-	grep -E 'config.*warning' .listnewconfig${count} > .warnings${count}
-	if test -n "$CHECKWARNINGS" && test -s .warnings${count}
+	grep -E 'config.*warning' .listnewconfig"${count}" > .warnings"${count}"
+	if test -n "$CHECKWARNINGS" && test -s .warnings"${count}"
 	then
-		echo "Found misconfigured config items in ${arch} ${variant}, please set them to an appropriate value" >> .errors${count}
-		cat .warnings${count} >> .errors${count}
-		rm .warnings${count}
-		[ "$CONTINUEONERROR" ] || exit 1
+		echo "Found misconfigured config items in ${arch} ${variant}, please set them to an appropriate value" >> .errors"${count}"
+		cat .warnings"${count}" >> .errors"${count}"
+		rm .warnings"${count}"
 	fi
-	rm .warnings${count}
+	rm .warnings"${count}"
 
-	rm .listnewconfig${count}
+	rm .listnewconfig"${count}"
 
-	make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE=$(get_cross_compile $arch) KCONFIG_CONFIG="$cfgorig" olddefconfig > /dev/null || exit 1
+	# shellcheck disable=SC2086
+	make ${MAKEOPTS} ARCH="$arch" CROSS_COMPILE="$(get_cross_compile "$arch")" KCONFIG_CONFIG="$cfgorig" olddefconfig > /dev/null || exit 1
 	echo "# $arch" > "$cfgtmp"
 	cat "$cfgorig" >> "$cfgtmp"
 	if test -n "$CHECKOPTIONS"
@@ -304,10 +305,14 @@ function process_configs()
 	count=0
 	for cfg in "$SCRIPT_DIR/${PACKAGE_NAME}${KVERREL}${SUBARCH}"*.config
 	do
+		if [ "$count" -eq 0 ]; then
+			# do the first one by itself so that tools are built
+			process_config "$cfg" "$count"
+		fi
 		process_config "$cfg" "$count" &
 		waitpids[${count}]=$!
 		((count++))
-		while [ "$(jobs | grep Running | wc -l)" -ge $RHJOBS ]; do :; done
+		while [ "$(jobs | grep -c Running)" -ge "$RHJOBS" ]; do :; done
 	done
 	for pid in ${waitpids[*]}; do
 		wait ${pid}
@@ -332,7 +337,6 @@ function process_configs()
 }
 
 CHECKOPTIONS=""
-CONTINUEONERROR=""
 NEWOPTIONS=""
 TESTRUN=""
 CHECKWARNINGS=""
@@ -347,7 +351,6 @@ do
 	case $key in
 		-a)
 			CHECKOPTIONS="x"
-			CONTINUEONERROR="x"
 			NEWOPTIONS="x"
 			CHECKWARNINGS="x"
 			;;
@@ -356,9 +359,6 @@ do
 			;;
 		-h)
 			usage
-			;;
-		-i)
-			CONTINUEONERROR="x"
 			;;
 		-n)
 			NEWOPTIONS="x"
@@ -374,7 +374,7 @@ do
 			;;
 		-m)
 			shift
-			if [ "$1" = "CC=clang" -o "$1" = "LLVM=1" ]; then
+			if [ "$1" = "CC=clang" ] || [ "$1" = "LLVM=1" ]; then
 				CC_IS_CLANG=1
 			fi
 			MAKEOPTS="$MAKEOPTS $1"
@@ -389,6 +389,7 @@ PACKAGE_NAME="${1:-kernel}" # defines the package name used
 KVERREL="$(test -n "$2" && echo "-$2" || echo "")"
 SUBARCH="$(test -n "$3" && echo "-$3" || echo "")"
 FLAVOR="$(test -n "$4" && echo "-$4" || echo "-ark")"
+# shellcheck disable=SC2015
 RHJOBS="$(test -n "$5" && echo "$5" || nproc --all)"
 SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
