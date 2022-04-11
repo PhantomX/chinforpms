@@ -1,6 +1,6 @@
-From 6f05b47e482b4fc0f3cea9ace15ad39f920e6d0a Mon Sep 17 00:00:00 2001
+From f3e45e9fa49032f4073273fae85e0bacd615be90 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 2 Mar 2022 17:30:14 -0300
+Date: Sun, 10 Apr 2022 19:07:35 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -25,6 +25,7 @@ b1f79d9ecf87070c78789acdf5bc329637bc5812 - Treewide: Adjust order of includes
 a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
 bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destination alpha factors in logic op workaround
 608799f1e454f8473e5709204adb544eac52ddca - PixelShaderGen: Check uid_data for use_shader_logic_op
+bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround for shader logic ops
 ---
  Source/Core/AudioCommon/AlsaSoundStream.cpp   |   3 +-
  Source/Core/AudioCommon/AudioStretcher.cpp    |   3 +-
@@ -233,7 +234,7 @@ bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destinati
  .../VideoCommon/GeometryShaderManager.cpp     |   3 +-
  Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++-
  Source/Core/VideoCommon/HiresTextures.h       |   9 +-
- Source/Core/VideoCommon/PixelShaderGen.cpp    | 470 ++----------------
+ Source/Core/VideoCommon/PixelShaderGen.cpp    | 475 ++----------------
  Source/Core/VideoCommon/PixelShaderGen.h      |   2 -
  .../Core/VideoCommon/PixelShaderManager.cpp   |  32 +-
  Source/Core/VideoCommon/PixelShaderManager.h  |   1 -
@@ -254,7 +255,7 @@ bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destinati
  Source/Core/VideoCommon/TextureInfo.h         | 118 -----
  Source/Core/VideoCommon/UberShaderCommon.cpp  |  19 +-
  Source/Core/VideoCommon/UberShaderCommon.h    |  19 +
- Source/Core/VideoCommon/UberShaderPixel.cpp   | 155 ++----
+ Source/Core/VideoCommon/UberShaderPixel.cpp   | 163 ++----
  Source/Core/VideoCommon/UberShaderVertex.cpp  |   2 +-
  Source/Core/VideoCommon/VertexLoaderBase.h    |   5 +-
  .../Core/VideoCommon/VertexLoader_Color.cpp   |   3 +-
@@ -263,7 +264,7 @@ bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destinati
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 237 files changed, 948 insertions(+), 2547 deletions(-)
+ 237 files changed, 954 insertions(+), 2554 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -1125,11 +1126,11 @@ index 7ac600c..ee8d27c 100644
  namespace Config
  {
 diff --git a/Source/Core/Core/Config/GraphicsSettings.cpp b/Source/Core/Core/Config/GraphicsSettings.cpp
-index 1015bd4..fdf128f 100644
+index 143fdd9..e68a0c9 100644
 --- a/Source/Core/Core/Config/GraphicsSettings.cpp
 +++ b/Source/Core/Core/Config/GraphicsSettings.cpp
-@@ -151,8 +151,6 @@ const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES{
- const Info<bool> GFX_HACK_VERTEX_ROUDING{{System::GFX, "Hacks", "VertexRounding"}, false};
+@@ -152,8 +152,6 @@ const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES{
+ const Info<bool> GFX_HACK_VERTEX_ROUNDING{{System::GFX, "Hacks", "VertexRounding"}, false};
  const Info<u32> GFX_HACK_MISSING_COLOR_VALUE{{System::GFX, "Hacks", "MissingColorValue"},
                                               0xFFFFFFFF};
 -const Info<bool> GFX_HACK_FAST_TEXTURE_SAMPLING{{System::GFX, "Hacks", "FastTextureSampling"},
@@ -1138,12 +1139,12 @@ index 1015bd4..fdf128f 100644
  // Graphics.GameSpecific
  
 diff --git a/Source/Core/Core/Config/GraphicsSettings.h b/Source/Core/Core/Config/GraphicsSettings.h
-index e5289a3..2c6aa4c 100644
+index 9418198..2fb81ca 100644
 --- a/Source/Core/Core/Config/GraphicsSettings.h
 +++ b/Source/Core/Core/Config/GraphicsSettings.h
-@@ -124,7 +124,6 @@ extern const Info<bool> GFX_HACK_COPY_EFB_SCALED;
+@@ -125,7 +125,6 @@ extern const Info<bool> GFX_HACK_COPY_EFB_SCALED;
  extern const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES;
- extern const Info<bool> GFX_HACK_VERTEX_ROUDING;
+ extern const Info<bool> GFX_HACK_VERTEX_ROUNDING;
  extern const Info<u32> GFX_HACK_MISSING_COLOR_VALUE;
 -extern const Info<bool> GFX_HACK_FAST_TEXTURE_SAMPLING;
  
@@ -2517,10 +2518,10 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index 79557b5..7d794c6 100644
+index 3523d28..fbc890a 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -642,6 +642,7 @@
+@@ -644,6 +644,7 @@
      <ClInclude Include="VideoCommon\PostProcessing.h" />
      <ClInclude Include="VideoCommon\RenderBase.h" />
      <ClInclude Include="VideoCommon\RenderState.h" />
@@ -2528,7 +2529,7 @@ index 79557b5..7d794c6 100644
      <ClInclude Include="VideoCommon\ShaderCache.h" />
      <ClInclude Include="VideoCommon\ShaderGenCommon.h" />
      <ClInclude Include="VideoCommon\Statistics.h" />
-@@ -651,8 +652,6 @@
+@@ -653,8 +654,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
@@ -2537,7 +2538,7 @@ index 79557b5..7d794c6 100644
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1217,8 +1216,6 @@
+@@ -1222,8 +1221,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
@@ -2776,7 +2777,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index 9c7d4d3..d5a1aeb 100644
+index 3be8f9d..7b28f00 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -2862,7 +2863,7 @@ index 52a8a54..7d89d8a 100644
  {
    if (event->type() == QEvent::WindowDeactivate)
 diff --git a/Source/Core/DolphinQt/Settings/PathPane.cpp b/Source/Core/DolphinQt/Settings/PathPane.cpp
-index d793fa9..2c212ad 100644
+index 0ffed70..471786b 100644
 --- a/Source/Core/DolphinQt/Settings/PathPane.cpp
 +++ b/Source/Core/DolphinQt/Settings/PathPane.cpp
 @@ -1,8 +1,6 @@
@@ -2874,9 +2875,9 @@ index d793fa9..2c212ad 100644
  #include <QCheckBox>
  #include <QDir>
  #include <QGroupBox>
-@@ -20,6 +18,7 @@
- 
+@@ -21,6 +19,7 @@
  #include "DolphinQt/QtUtils/DolphinFileDialog.h"
+ #include "DolphinQt/QtUtils/NonDefaultQPushButton.h"
  #include "DolphinQt/Settings.h"
 +#include "DolphinQt/Settings/PathPane.h"
  
@@ -3176,7 +3177,7 @@ index 54093f2..8d0312e 100644
  namespace CommandLineParse
  {
 diff --git a/Source/Core/UICommon/UICommon.cpp b/Source/Core/UICommon/UICommon.cpp
-index 4d043d3..28e1aee 100644
+index cb857fd..4086bb5 100644
 --- a/Source/Core/UICommon/UICommon.cpp
 +++ b/Source/Core/UICommon/UICommon.cpp
 @@ -1,8 +1,6 @@
@@ -5147,7 +5148,7 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index 1883433..60c926b 100644
+index 837001c..60c926b 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
 @@ -333,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
@@ -5548,19 +5549,18 @@ index 1883433..60c926b 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -944,59 +623,41 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -944,56 +623,41 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        (!DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DUAL_SOURCE_BLENDING) ||
         uid_data->useDstAlpha);
    const bool use_shader_blend =
 -      !use_dual_source && uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch;
 -  const bool use_shader_logic_op = !host_config.backend_logic_op && uid_data->logic_op_enable &&
 -                                   host_config.backend_shader_framebuffer_fetch;
+-  const bool use_framebuffer_fetch = use_shader_blend || use_shader_logic_op;
 +      !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
  
    if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
    {
--    bool use_framebuffer_fetch = use_shader_blend || use_shader_logic_op;
--
 -#ifdef __APPLE__
 -    // Framebuffer fetch is only supported by Metal, so ensure that we're running Vulkan (MoltenVK)
 -    // if we want to use it.
@@ -5569,16 +5569,24 @@ index 1883433..60c926b 100644
      {
 -      if (use_dual_source)
 +      if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_FRAGMENT_SHADER_INDEX_DECORATION))
-+      {
+       {
+-        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 {};\n"
+-                  "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n",
+-                  use_framebuffer_fetch ? "real_ocol0" : "ocol0");
 +        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 ocol0;\n"
 +                  "FRAGMENT_OUTPUT_LOCATION(1) out vec4 ocol1;\n");
-+      }
-+      else
-       {
-         out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 ocol0;\n"
-                   "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n");
        }
--      else if (use_shader_blend)
+       else
+       {
+-        // Metal doesn't support a single unified variable for both input and output,
+-        // so when using framebuffer fetch, we declare the input separately below.
+-        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 {};\n",
+-                  use_framebuffer_fetch ? "real_ocol0" : "ocol0");
++        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 ocol0;\n"
++                  "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n");
+       }
+-
+-      if (use_framebuffer_fetch)
 +    }
 +    else if (use_shader_blend)
 +    {
@@ -5587,19 +5595,11 @@ index 1883433..60c926b 100644
 +      // and use a temporary for calculations, then set the output value once at the end of the
 +      // shader
 +      if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_FRAGMENT_SHADER_INDEX_DECORATION))
-       {
--        // Metal doesn't support a single unified variable for both input and output, so we declare
--        // the output separately. The input will be defined later below.
--        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 real_ocol0;\n");
++      {
 +        out.Write("FRAGMENT_OUTPUT_LOCATION(0) FRAGMENT_INOUT vec4 real_ocol0;\n");
-       }
-       else
++      }
++      else
        {
--        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 ocol0;\n");
--      }
--
--      if (use_framebuffer_fetch)
--      {
 -        // Subpass inputs will be converted to framebuffer fetch by SPIRV-Cross.
 -        out.Write("INPUT_ATTACHMENT_BINDING(0, 0, 0) uniform subpassInput in_ocol0;\n");
 +        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) FRAGMENT_INOUT vec4 real_ocol0;\n");
@@ -5615,7 +5615,7 @@ index 1883433..60c926b 100644
 -                has_broken_decoration ? "FRAGMENT_OUTPUT_LOCATION(0)" :
 -                                        "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0)",
 -                use_framebuffer_fetch ? "FRAGMENT_INOUT" : "out",
--                use_shader_blend ? "real_ocol0" : "ocol0");
+-                use_framebuffer_fetch ? "real_ocol0" : "ocol0");
 -
 -      if (use_dual_source)
 -      {
@@ -5627,7 +5627,7 @@ index 1883433..60c926b 100644
      }
  
      if (uid_data->per_pixel_depth)
-@@ -1042,28 +703,11 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1039,29 +703,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
      out.Write("void main()\n{{\n");
      out.Write("\tfloat4 rawpos = gl_FragCoord;\n");
@@ -5637,29 +5637,31 @@ index 1883433..60c926b 100644
 -      // Store off a copy of the initial framebuffer value.
 -      //
 -      // If FB_FETCH_VALUE isn't defined (i.e. no special keyword for fetching from the
--      // framebuffer), we read from real_ocol0 or ocol0, depending if shader blending is enabled.
+-      // framebuffer), we read from real_ocol0.
 -      out.Write("#ifdef FB_FETCH_VALUE\n"
 -                "\tfloat4 initial_ocol0 = FB_FETCH_VALUE;\n"
 -                "#else\n"
--                "\tfloat4 initial_ocol0 = {};\n"
--                "#endif\n",
--                use_shader_blend ? "real_ocol0" : "ocol0");
+-                "\tfloat4 initial_ocol0 = real_ocol0;\n"
+-                "#endif\n");
+-
+-      // QComm's Adreno driver doesn't seem to like using the framebuffer_fetch value as an
+-      // intermediate value with multiple reads & modifications, so we pull out the "real" output
+-      // value above and use a temporary for calculations, then set the output value once at the
+-      // end of the shader.
+-      out.Write("\tfloat4 ocol0;\n");
 -    }
 -
      if (use_shader_blend)
      {
--      // QComm's Adreno driver doesn't seem to like using the framebuffer_fetch value as an
--      // intermediate value with multiple reads & modifications, so we pull out the "real" output
--      // value above and use a temporary for calculations, then set the output value once at the
--      // end of the shader if we are using shader blending.
--      out.Write("\tfloat4 ocol0;\n"
+-      out.Write("\tfloat4 ocol1;\n");
 +      // Store off a copy of the initial fb value for blending
 +      out.Write("\tfloat4 initial_ocol0 = FB_FETCH_VALUE;\n"
 +                "\tfloat4 ocol0;\n"
-                 "\tfloat4 ocol1;\n");
++                "\tfloat4 ocol1;\n");
      }
    }
-@@ -1113,8 +757,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+   else  // D3D
+@@ -1110,8 +757,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("        ) {{\n");
    }
@@ -5668,7 +5670,7 @@ index 1883433..60c926b 100644
  
    out.Write("\tint4 c0 = " I_COLORS "[1], c1 = " I_COLORS "[2], c2 = " I_COLORS
              "[3], prev = " I_COLORS "[0];\n"
-@@ -1172,7 +814,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1169,7 +814,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
      {
        out.Write("\tint2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -5677,7 +5679,7 @@ index 1883433..60c926b 100644
        // TODO: S24 overflows here?
      }
    }
-@@ -1195,8 +837,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1192,8 +837,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write("\ttempcoord = fixpoint_uv{} >> " I_INDTEXSCALE "[{}].{};\n", texcoord, i / 2,
                  (i & 1) ? "zw" : "xy");
  
@@ -5688,7 +5690,7 @@ index 1883433..60c926b 100644
      }
    }
  
-@@ -1326,9 +968,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1323,17 +968,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
    WriteFog(out, uid_data);
  
@@ -5698,7 +5700,15 @@ index 1883433..60c926b 100644
    // Write the color and alpha values to the framebuffer
    // If using shader blend, we still use the separate alpha
    WriteColor(out, api_type, uid_data, use_dual_source || use_shader_blend);
-@@ -1617,8 +1256,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
+ 
+   if (use_shader_blend)
+     WriteBlend(out, uid_data);
+-  else if (use_framebuffer_fetch)
+-    out.Write("\treal_ocol0 = ocol0;\n");
+ 
+   if (uid_data->bounding_box)
+     out.Write("\tUpdateBoundingBox(rawpos.xy);\n");
+@@ -1616,8 +1256,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
          '\0',
      };
  
@@ -5709,7 +5719,7 @@ index 1883433..60c926b 100644
    }
    else if (uid_data->genMode_numtexgens == 0)
    {
-@@ -1803,6 +1442,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
+@@ -1802,6 +1442,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
    out.Write("){}", tev_scale_table_right[scale]);
  }
  
@@ -5734,7 +5744,7 @@ index 1883433..60c926b 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1947,31 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1946,31 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
@@ -8142,7 +8152,7 @@ index 4e3b0ff..d1a736a 100644
 +}
  }  // namespace UberShader
 diff --git a/Source/Core/VideoCommon/UberShaderPixel.cpp b/Source/Core/VideoCommon/UberShaderPixel.cpp
-index fa6ad7b..8f9a563 100644
+index 7bb4eb4..8f9a563 100644
 --- a/Source/Core/VideoCommon/UberShaderPixel.cpp
 +++ b/Source/Core/VideoCommon/UberShaderPixel.cpp
 @@ -55,9 +55,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
@@ -8155,7 +8165,7 @@ index fa6ad7b..8f9a563 100644
    const bool early_depth = uid_data->early_depth != 0;
    const bool per_pixel_depth = uid_data->per_pixel_depth != 0;
    const bool bounding_box = host_config.bounding_box;
-@@ -66,59 +63,45 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -66,57 +63,45 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
  
    out.Write("// Pixel UberShader for {} texgens{}{}\n", numTexgen,
              early_depth ? ", early-depth" : "", per_pixel_depth ? ", per-pixel depth" : "");
@@ -8176,16 +8186,24 @@ index fa6ad7b..8f9a563 100644
      {
 -      if (use_dual_source)
 +      if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_FRAGMENT_SHADER_INDEX_DECORATION))
-+      {
+       {
+-        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 {};\n"
+-                  "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n",
+-                  use_framebuffer_fetch ? "real_ocol0" : "ocol0");
 +        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 ocol0;\n"
 +                  "FRAGMENT_OUTPUT_LOCATION(1) out vec4 ocol1;\n");
-+      }
-+      else
-       {
-         out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 ocol0;\n"
-                   "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n");
        }
--      else if (use_shader_blend)
+       else
+       {
+-        // Metal doesn't support a single unified variable for both input and output,
+-        // so when using framebuffer fetch, we declare the input separately below.
+-        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 {};\n",
+-                  use_framebuffer_fetch ? "real_ocol0" : "ocol0");
++        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) out vec4 ocol0;\n"
++                  "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 1) out vec4 ocol1;\n");
+       }
+-
+-      if (use_framebuffer_fetch)
 +    }
 +    else if (use_shader_blend)
 +    {
@@ -8195,20 +8213,12 @@ index fa6ad7b..8f9a563 100644
 +      // shader
 +      if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_FRAGMENT_SHADER_INDEX_DECORATION))
        {
--        // Metal doesn't support a single unified variable for both input and output, so we declare
--        // the output separately. The input will be defined later below.
--        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 real_ocol0;\n");
-+        out.Write("FRAGMENT_OUTPUT_LOCATION(0) FRAGMENT_INOUT vec4 real_ocol0;\n");
-       }
-       else
-       {
--        out.Write("FRAGMENT_OUTPUT_LOCATION(0) out vec4 ocol0;\n");
--      }
--
--      if (use_framebuffer_fetch)
--      {
 -        // Subpass inputs will be converted to framebuffer fetch by SPIRV-Cross.
 -        out.Write("INPUT_ATTACHMENT_BINDING(0, 0, 0) uniform subpassInput in_ocol0;\n");
++        out.Write("FRAGMENT_OUTPUT_LOCATION(0) FRAGMENT_INOUT vec4 real_ocol0;\n");
++      }
++      else
++      {
 +        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) FRAGMENT_INOUT vec4 real_ocol0;\n");
        }
      }
@@ -8222,7 +8232,7 @@ index fa6ad7b..8f9a563 100644
 -                has_broken_decoration ? "FRAGMENT_OUTPUT_LOCATION(0)" :
 -                                        "FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0)",
 -                use_framebuffer_fetch ? "FRAGMENT_INOUT" : "out",
--                use_shader_blend ? "real_ocol0" : "ocol0");
+-                use_framebuffer_fetch ? "real_ocol0" : "ocol0");
 -
 -      if (use_dual_source)
 -      {
@@ -8234,7 +8244,7 @@ index fa6ad7b..8f9a563 100644
      }
  
      if (per_pixel_depth)
-@@ -243,17 +226,17 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -241,17 +226,17 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
    {
      // Doesn't look like DirectX supports this. Oh well the code path is here just in case it
      // supports this in the future.
@@ -8257,7 +8267,7 @@ index fa6ad7b..8f9a563 100644
                "dynamic indexing of the sampler array\n"
                "  // With any luck the shader compiler will optimise this if the hardware supports "
                "dynamic indexing.\n"
-@@ -261,14 +244,9 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -259,14 +244,9 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      for (int i = 0; i < 8; i++)
      {
        if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
@@ -8274,7 +8284,7 @@ index fa6ad7b..8f9a563 100644
      }
      out.Write("  }}\n"
                "}}\n\n");
-@@ -306,8 +284,8 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -304,8 +284,8 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
    // ======================
    //    Indirect Lookup
    // ======================
@@ -8285,7 +8295,7 @@ index fa6ad7b..8f9a563 100644
      // in_index_name is the indirect stage, not the tev stage
      // bpmem_iref is packed differently from RAS1_IREF
      // This function assumes bpmem_iref is nonzero (i.e. matrix is not off, and the
-@@ -323,9 +301,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -321,9 +301,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "  else\n"
                "    fixedPoint_uv = fixedPoint_uv >> " I_INDTEXSCALE "[{} >> 1].zw;\n"
                "\n"
@@ -8300,7 +8310,7 @@ index fa6ad7b..8f9a563 100644
    };
  
    // ======================
-@@ -530,28 +510,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -528,29 +510,12 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
  
      out.Write("void main()\n{{\n");
      out.Write("  float4 rawpos = gl_FragCoord;\n");
@@ -8310,29 +8320,31 @@ index fa6ad7b..8f9a563 100644
 -      // Store off a copy of the initial framebuffer value.
 -      //
 -      // If FB_FETCH_VALUE isn't defined (i.e. no special keyword for fetching from the
--      // framebuffer), we read from real_ocol0 or ocol0, depending if shader blending is enabled.
+-      // framebuffer), we read from real_ocol0.
 -      out.Write("#ifdef FB_FETCH_VALUE\n"
 -                "  float4 initial_ocol0 = FB_FETCH_VALUE;\n"
 -                "#else\n"
--                "  float4 initial_ocol0 = {};\n"
--                "#endif\n",
--                use_shader_blend ? "real_ocol0" : "ocol0");
+-                "  float4 initial_ocol0 = real_ocol0;\n"
+-                "#endif\n");
+-
+-      // QComm's Adreno driver doesn't seem to like using the framebuffer_fetch value as an
+-      // intermediate value with multiple reads & modifications, so we pull out the "real" output
+-      // value above and use a temporary for calculations, then set the output value once at the
+-      // end of the shader.
+-      out.Write("  float4 ocol0;\n");
 -    }
 -
      if (use_shader_blend)
      {
--      // QComm's Adreno driver doesn't seem to like using the framebuffer_fetch value as an
--      // intermediate value with multiple reads & modifications, so we pull out the "real" output
--      // value above and use a temporary for calculations, then set the output value once at the
--      // end of the shader if we are using shader blending.
--      out.Write("  float4 ocol0;\n"
+-      out.Write("  float4 ocol1;\n");
 +      // Store off a copy of the initial fb value for blending
 +      out.Write("  float4 initial_ocol0 = FB_FETCH_VALUE;\n"
 +                "  float4 ocol0;\n"
-                 "  float4 ocol1;\n");
++                "  float4 ocol1;\n");
      }
    }
-@@ -600,8 +563,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+   else  // D3D
+@@ -598,8 +563,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("\n        ) {{\n");
    }
@@ -8341,7 +8353,7 @@ index fa6ad7b..8f9a563 100644
  
    out.Write("  int3 tevcoord = int3(0, 0, 0);\n"
              "  State s;\n"
-@@ -659,7 +620,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -657,7 +620,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      {
        out.Write("    int2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -8350,7 +8362,7 @@ index fa6ad7b..8f9a563 100644
        // TODO: S24 overflows here?
      }
  
-@@ -693,7 +654,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -691,7 +654,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      // For the undefined case, we just skip applying the indirect operation, which is close enough.
      // Viewtiful Joe hits the undefined case (bug 12525).
      // Wrapping and add to previous still apply in this case (and when the stage is disabled).
@@ -8359,7 +8371,7 @@ index fa6ad7b..8f9a563 100644
      out.Write("        int3 indcoord;\n");
      LookupIndirectTexture("indcoord", "bt");
      out.Write("        if (bs != 0u)\n"
-@@ -783,8 +744,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -781,8 +744,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "      uint sampler_num = {};\n",
                BitfieldExtract<&TwoTevStageOrders::texmap0>("ss.order"));
      out.Write("\n"
@@ -8372,7 +8384,7 @@ index fa6ad7b..8f9a563 100644
                BitfieldExtract<&TevStageCombiner::AlphaCombiner::tswap>("ss.ac"));
      out.Write("      s.TexColor = Swizzle(swap, color);\n");
      out.Write("    }} else {{\n"
-@@ -1114,40 +1077,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -1112,40 +1077,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
              "  }}\n"
              "\n");
  
@@ -8413,6 +8425,17 @@ index fa6ad7b..8f9a563 100644
    // D3D requires that the shader outputs be uint when writing to a uint render target for logic op.
    if (api_type == APIType::D3D && uid_data->uint_output)
    {
+@@ -1258,10 +1189,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+               "    real_ocol0 = ocol0;\n"
+               "  }}\n");
+   }
+-  else if (use_framebuffer_fetch)
+-  {
+-    out.Write("  real_ocol0 = ocol0;\n");
+-  }
+ 
+   out.Write("}}\n"
+             "\n"
 diff --git a/Source/Core/VideoCommon/UberShaderVertex.cpp b/Source/Core/VideoCommon/UberShaderVertex.cpp
 index 6891535..8d3b128 100644
 --- a/Source/Core/VideoCommon/UberShaderVertex.cpp
@@ -8506,11 +8529,11 @@ index 78e4c7c..366266d 100644
    g_Config.VerifyValidity();
    UpdateActiveConfig();
 diff --git a/Source/Core/VideoCommon/VideoConfig.cpp b/Source/Core/VideoCommon/VideoConfig.cpp
-index a4aa9bd..3482c0a 100644
+index 4221422..d7d2bd9 100644
 --- a/Source/Core/VideoCommon/VideoConfig.cpp
 +++ b/Source/Core/VideoCommon/VideoConfig.cpp
-@@ -137,7 +137,6 @@ void VideoConfig::Refresh()
-   bVertexRounding = Config::Get(Config::GFX_HACK_VERTEX_ROUDING);
+@@ -138,7 +138,6 @@ void VideoConfig::Refresh()
+   bVertexRounding = Config::Get(Config::GFX_HACK_VERTEX_ROUNDING);
    iEFBAccessTileSize = Config::Get(Config::GFX_HACK_EFB_ACCESS_TILE_SIZE);
    iMissingColorValue = Config::Get(Config::GFX_HACK_MISSING_COLOR_VALUE);
 -  bFastTextureSampling = Config::Get(Config::GFX_HACK_FAST_TEXTURE_SAMPLING);
@@ -8518,10 +8541,10 @@ index a4aa9bd..3482c0a 100644
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
  
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index 88a7ae5..a948b63 100644
+index 146ba84..ff685a8 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
-@@ -136,7 +136,6 @@ struct VideoConfig final
+@@ -137,7 +137,6 @@ struct VideoConfig final
    int iLog = 0;           // CONF_ bits
    int iSaveTargetId = 0;  // TODO: Should be dropped
    u32 iMissingColorValue = 0;
@@ -8529,7 +8552,7 @@ index 88a7ae5..a948b63 100644
  
    // Stereoscopy
    StereoMode stereo_mode{};
-@@ -232,9 +231,6 @@ struct VideoConfig final
+@@ -233,9 +232,6 @@ struct VideoConfig final
      bool bSupportsDepthReadback = false;
      bool bSupportsShaderBinaries = false;
      bool bSupportsPipelineCacheData = false;
@@ -8539,7 +8562,7 @@ index 88a7ae5..a948b63 100644
      bool bSupportsSettingObjectNames = false;
    } backend_info;
  
-@@ -249,16 +245,6 @@ struct VideoConfig final
+@@ -250,16 +246,6 @@ struct VideoConfig final
      return backend_info.bSupportsGPUTextureDecoding && bEnableGPUTextureDecoding;
    }
    bool UseVertexRounding() const { return bVertexRounding && iEFBScale != 1; }

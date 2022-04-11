@@ -14,7 +14,7 @@ index 769e1f6..f0e4ed9 100644
 @@ -557,3 +557,20 @@
  # - True/False
  
- # dxvk.enableDebugUtils = True
+ # dxvk.enableDebugUtils = False
 +
 +# Sets the async pipeline compiler
 +# 

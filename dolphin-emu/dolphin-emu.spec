@@ -23,9 +23,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit bf261f6144a8cc75bcbdd4c09b19bdfa3dbe49b3
+%global commit 1f4df1dabf261c573f260d92bdee8b7c28132ebe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220315
+%global date 20220410
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -39,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        156%{?gver}%{?dist}
+Release:        157%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -125,7 +125,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
-BuildRequires:  mbedtls-devel
+BuildRequires:  mbedtls-devel >= 2.28.0
 BuildRequires:  minizip-devel
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
@@ -286,6 +286,7 @@ sed \
   -DUSE_SHARED_MGBA:BOOL=ON \
   -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
+  -DENABLE_AUTOUPDATE:BOOL=OFF \
 %if !%{with ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
 %endif
@@ -422,6 +423,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Apr 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-157.20220410git1f4df1d
+- Update
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-156.20220315gitbf261f6
 - Bump
 

@@ -54,7 +54,7 @@ sed \
 
 cat > %{name}.desktop <<'EOF'
 [Desktop Entry]
-Name=%{pkgname}
+Name=PCSX2-MultiConfigTool
 Comment=Manager for multiple Configs with PCSX2
 Exec=%{name}
 Icon=%{name}

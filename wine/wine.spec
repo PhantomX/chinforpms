@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9190e08090447cd8a384c33befd9e6aa29004e0f
+%global tkg_id 78cbc5702f44b59b960728cfeb15578d9e02f402
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -306,7 +306,7 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1038:       0001-proton-tkg-staging-temporary-patch-the-patch.patch
+Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -992,10 +992,9 @@ patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-d
 %patch1023 -p1
 %endif
 %patch1024 -p1
-cp %{P:1025} patch1025.patch
-%patch1038 -p1
-patch -p1 -i patch1025.patch
+%patch1025 -p1
 %patch1026 -p1
+%patch1038 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
