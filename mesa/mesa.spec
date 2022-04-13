@@ -62,7 +62,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.0.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -670,6 +670,9 @@ popd
 
 
 %changelog
+* Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-101
+- Rebuild (llvm)
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-100
 - 22.0.1
 

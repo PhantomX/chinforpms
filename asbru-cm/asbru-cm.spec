@@ -1,6 +1,6 @@
-%global commit 0b6a141434a5da96dfd685a9257ee7067e9766cd
+%global commit 14071958b4e1364216d6bd00001dd080f6a66e69
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220206
+%global date 20220409
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,7 +13,7 @@
 
 Name:           asbru-cm
 Version:        6.3.3
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -154,6 +154,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-0.2.20220409git1407195
+- Bump to improve new KeePassXC support
+
 * Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-0.1.20220206git0b6a141
 - 6.3.3 snapshot
 

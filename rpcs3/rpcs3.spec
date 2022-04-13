@@ -18,9 +18,9 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %global with_smallffmpeg 1
 
-%global commit 4a86638ce898e3bd68ade8e7ba794253782ea411
+%global commit 3ed5a935fb4f66da84c32d7cd1856de0d36f85af
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220329
+%global date 20220410
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -88,7 +88,7 @@
 
 Name:           rpcs3
 Version:        0.0.21
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -380,6 +380,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-3.20220410git3ed5a93
+- Update
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-2.20220329git4a86638
 - Bump
 - Build with bundled ffmpeg

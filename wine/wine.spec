@@ -1,7 +1,7 @@
-%global commit 5a815669e8e7a3f0a37648510494f8b36c29c1f6
+%global commit 02faaea93b78d5d53976b2955bef7beffa780d02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220406
-%global with_snapshot 0
+%global date 20220411
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 78cbc5702f44b59b960728cfeb15578d9e02f402
+%global tkg_id 0d79d91f8dc41a65198799821298b1b349a772fe
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -156,7 +156,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.6
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -272,6 +272,10 @@ Patch252:       %{whq_url}/bffe90496c904a0f95242e1bbfd3709fb1ff5e5d#/%{name}-whq
 Patch253:       %{whq_url}/3b83fe637e8b1f0e0cbac1d53106718f56b6afdc#/%{name}-whq-revert-mfplat-3b83fe6.patch
 Patch254:       %{whq_url}/38b98c653680cd87ecd3060601a57f996c35272e#/%{name}-whq-revert-mfplat-38b98c6.patch
 Patch255:       %{whq_url}/8091f3a0b8463d41049ed4ade98c79f82c86ebbc#/%{name}-whq-revert-mfplat-8091f3a.patch
+Patch256:       %{whq_url}/90dc7f5b944192da4b7e2f4a3d5e687fe0c9cdd2#/%{name}-whq-revert-mfplat-90dc7f5.patch
+Patch257:       %{whq_url}/ed2c300d02acefa2aedd4333ff4a982137c1d4fe#/%{name}-whq-revert-mfplat-ed2c300.patch
+Patch258:       %{whq_url}/6f1b3cf975965e1383e5f5c802cebdc0f4956c2a#/%{name}-whq-revert-mfplat-6f1b3cf.patch
+Patch259:       %{whq_url}/ce9a42e8bda50fd5eb91c8dee78f310881d2c7e5#/%{name}-whq-revert-mfplat-ce9a42e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -909,6 +913,10 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
+%patch259 -p1 -R
+%patch258 -p1 -R
+%patch257 -p1 -R
+%patch256 -p1 -R
 %patch255 -p1 -R
 %patch254 -p1 -R
 %patch253 -p1 -R
@@ -2618,6 +2626,9 @@ fi
 
 
 %changelog
+* Tue Apr 12 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.6-101.20220411git02faaea
+- Snapshot
+
 * Sat Apr 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.6-100
 - 7.6
 

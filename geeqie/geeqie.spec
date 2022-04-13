@@ -3,6 +3,8 @@
 %global date 20211107
 %global with_snapshot 0
 
+%bcond_with map
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -11,22 +13,24 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        1.7.2
+Version:        1.7.3
 Release:        100%{?gver}%{?dist}
 
-URL:            http://geeqie.org
+URL:            https://www.geeqie.org
 License:        GPLv2+
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
+%dnl Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %endif
 
 Patch0:         sun_path.patch
 Patch10:        %{vc_url}/commit/35f9552fca47bbe17e31f7247d1f017186397b5e.patch#/%{name}-gh-35f9552.patch
 Patch11:        %{vc_url}/commit/1db6df57c7dce3703ca0da80668e12e8a6faef47.patch#/%{name}-gh-1db6df5.patch
 Patch12:        %{vc_url}/commit/97b1d0546e3c2e7ca18bbd3483087b02668f3df8.patch#/%{name}-gh-97b1d05.patch
+Patch13:        %{vc_url}/commit/aef9faa33fff7cfd796989cf0627181a3dbb5cec.patch#/%{name}-gh-aef9faa.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  autoconf
@@ -40,17 +44,25 @@ BuildRequires:  yelp-tools
 # for /usr/bin/appstream-util
 BuildRequires:  libappstream-glib
 
+BuildRequires:  pkgconfig(ddjvuapi)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(exiv2)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(lirc)
+BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libjpeg)
+BuildRequires:  pkgconfig(libjxl)
+BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libwebp)
 BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
 BuildRequires:  gnome-doc-utils
+%if %{with map}
+BuildRequires:  pkgconfig(clutter-gtk-1.0)
+BuildRequires:  pkgconfig(champlain-0.12)
+%endif
 
 #BuildRequires:  pkgconfig(libheif)
 #BuildRequires:  pkgconfig(libffmpegthumbnailer)
@@ -84,10 +96,12 @@ and zoom.
 # fix autoconf problem with missing version
 sed -r -i 's/m4_translit\(.*m4_newline\)/[%{version}%{?gver:+git%{date}-%{shortcommit}}]/' configure.ac
 
+%if !%{with map}
 sed \
   -e 's/clutter-1.0/clutter-1.0_disabled/g' \
   -e 's/champlain-gtk-0.12/champlain-gtk-0.12_disabled/g' \
   -i configure*
+%endif
 
 autoreconf -f -i ; intltoolize
 # guard against missing executables at (re)build-time,
@@ -114,6 +128,9 @@ cflags=(
 
 %configure \
   --enable-lirc \
+%if !%{with map}
+  --disable-map \
+%endif
   --with-readmedir=%{_pkgdocdir} CFLAGS="$CFLAGS ${cflags[*]}"
 
 # this will fail w/o git repo structure
@@ -156,6 +173,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 
 
 %changelog
+* Tue Apr 12 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3-100
+- 1.7.3
+- Rawhide sync
+
 * Sun Feb 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2-100
 - 1.7.2
 
