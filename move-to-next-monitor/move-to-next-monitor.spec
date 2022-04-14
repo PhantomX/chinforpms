@@ -6,7 +6,7 @@
 
 Name:           move-to-next-monitor
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Script to move windows from one monitor to the next
 
 License:        GPLv3
@@ -21,6 +21,7 @@ Requires:       xdotool
 Requires:       xprop
 Requires:       xrandr
 Requires:       wmctrl
+Requires:       xwininfo
 
 
 %description
@@ -48,5 +49,8 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Apr 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-2.20180509git899c056
+- R: xwininfo
+
 * Mon Mar 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-1.20180509git899c056
 - Initial spec

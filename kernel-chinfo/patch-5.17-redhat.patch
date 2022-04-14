@@ -25,7 +25,9 @@ Subject: [PATCH] patch-5.17-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/i915/display/intel_bios.c          |   6 +
  drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
+ drivers/gpu/drm/i915/display/intel_vbt_defs.h      |   3 +
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -42,12 +44,12 @@ Subject: [PATCH] patch-5.17-redhat
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
- include/linux/mmzone.h                             |  11 +-
  include/linux/module.h                             |   1 +
  include/linux/nfs_fs_sb.h                          |   1 +
  include/linux/random.h                             |   7 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ include/sound/memalloc.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/dma/swiotlb.c                               |  12 +-
  kernel/module.c                                    |   2 +
@@ -59,7 +61,8 @@ Subject: [PATCH] patch-5.17-redhat
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 55 files changed, 767 insertions(+), 211 deletions(-)
+ sound/core/memalloc.c                              | 111 +++++++++++++++++-
+ 58 files changed, 884 insertions(+), 208 deletions(-)
 
 diff --git a/Documentation/core-api/dma-attributes.rst b/Documentation/core-api/dma-attributes.rst
 index 1887d92e8e92..17706dc91ec9 100644
@@ -111,7 +114,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index 06d852cad74f..408d95c9769e 100644
+index 02fbef1a0213..7e08c751f348 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -924,6 +927,23 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
+index 9d989c9f5da4..5d97a251d3dc 100644
+--- a/drivers/gpu/drm/i915/display/intel_bios.c
++++ b/drivers/gpu/drm/i915/display/intel_bios.c
+@@ -1968,6 +1968,12 @@ static int _intel_bios_max_tmds_clock(const struct intel_bios_encoder_data *devd
+ 		fallthrough;
+ 	case HDMI_MAX_DATA_RATE_PLATFORM:
+ 		return 0;
++	case HDMI_MAX_DATA_RATE_594:
++		return 594000;
++	case HDMI_MAX_DATA_RATE_340:
++		return 340000;
++	case HDMI_MAX_DATA_RATE_300:
++		return 300000;
+ 	case HDMI_MAX_DATA_RATE_297:
+ 		return 297000;
+ 	case HDMI_MAX_DATA_RATE_165:
 diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
 index b00de57cc957..c613b531b281 100644
 --- a/drivers/gpu/drm/i915/display/intel_psr.c
@@ -943,6 +963,20 @@ index b00de57cc957..c613b531b281 100644
 +
  	return crtc_state->enable_psr2_sel_fetch = true;
  }
+
+diff --git a/drivers/gpu/drm/i915/display/intel_vbt_defs.h b/drivers/gpu/drm/i915/display/intel_vbt_defs.h
+index f043d85ba64d..e8f99ba4e772 100644
+--- a/drivers/gpu/drm/i915/display/intel_vbt_defs.h
++++ b/drivers/gpu/drm/i915/display/intel_vbt_defs.h
+@@ -307,6 +307,9 @@ struct bdb_general_features {
+ #define HDMI_MAX_DATA_RATE_PLATFORM	0			/* 204 */
+ #define HDMI_MAX_DATA_RATE_297		1			/* 204 */
+ #define HDMI_MAX_DATA_RATE_165		2			/* 204 */
++#define HDMI_MAX_DATA_RATE_594		3			/* 249 */
++#define HDMI_MAX_DATA_RATE_340		4			/* 249 */
++#define HDMI_MAX_DATA_RATE_300		5			/* 249 */
+
+ #define LEGACY_CHILD_DEVICE_CONFIG_SIZE		33
 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
@@ -1710,31 +1744,6 @@ index 419b5febc3ca..491323dfe4e0 100644
   * Security hooks for perf events
   *
   * @perf_event_open:
-diff --git a/include/linux/mmzone.h b/include/linux/mmzone.h
-index aed44e9b5d89..c7a0d500b396 100644
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1389,13 +1389,16 @@ static inline unsigned long *section_to_usemap(struct mem_section *ms)
-
- static inline struct mem_section *__nr_to_section(unsigned long nr)
- {
-+	unsigned long root = SECTION_NR_TO_ROOT(nr);
-+
-+	if (unlikely(root >= NR_SECTION_ROOTS))
-+		return NULL;
-+
- #ifdef CONFIG_SPARSEMEM_EXTREME
--	if (!mem_section)
-+	if (!mem_section || !mem_section[root])
- 		return NULL;
- #endif
--	if (!mem_section[SECTION_NR_TO_ROOT(nr)])
--		return NULL;
--	return &mem_section[SECTION_NR_TO_ROOT(nr)][nr & SECTION_ROOT_MASK];
-+	return &mem_section[root][nr & SECTION_ROOT_MASK];
- }
- extern size_t mem_section_usage_size(void);
-
 diff --git a/include/linux/module.h b/include/linux/module.h
 index 1e135fd5c076..6ec4d001c1e2 100644
 --- a/include/linux/module.h
@@ -1819,6 +1828,22 @@ index 25b3ef71f495..d37a6c88c69f 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/include/sound/memalloc.h b/include/sound/memalloc.h
+index 653dfffb3ac8..8d79cebf95f3 100644
+--- a/include/sound/memalloc.h
++++ b/include/sound/memalloc.h
+@@ -51,6 +51,11 @@ struct snd_dma_device {
+ #define SNDRV_DMA_TYPE_DEV_SG	SNDRV_DMA_TYPE_DEV /* no SG-buf support */
+ #define SNDRV_DMA_TYPE_DEV_WC_SG	SNDRV_DMA_TYPE_DEV_WC
+ #endif
++/* fallback types, don't use those directly */
++#ifdef CONFIG_SND_DMA_SGBUF
++#define SNDRV_DMA_TYPE_DEV_SG_FALLBACK		10
++#define SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK	11
++#endif
+
+ /*
+  * info for buffer allocation
 diff --git a/init/Kconfig b/init/Kconfig
 index e9119bf54b1f..e3b57b4898fe 100644
 --- a/init/Kconfig
@@ -2034,3 +2059,154 @@ index b7cf5cbfdc67..3cde9062fcf6 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
+diff --git a/sound/core/memalloc.c b/sound/core/memalloc.c
+index 6fd763d4d15b..15dc7160ba34 100644
+--- a/sound/core/memalloc.c
++++ b/sound/core/memalloc.c
+@@ -499,6 +499,10 @@ static const struct snd_malloc_ops snd_dma_wc_ops = {
+ };
+ #endif /* CONFIG_X86 */
+
++#ifdef CONFIG_SND_DMA_SGBUF
++static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size);
++#endif
++
+ /*
+  * Non-contiguous pages allocator
+  */
+@@ -509,8 +513,18 @@ static void *snd_dma_noncontig_alloc(struct snd_dma_buffer *dmab, size_t size)
+
+ 	sgt = dma_alloc_noncontiguous(dmab->dev.dev, size, dmab->dev.dir,
+ 				      DEFAULT_GFP, 0);
+-	if (!sgt)
++	if (!sgt) {
++#ifdef CONFIG_SND_DMA_SGBUF
++		if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG)
++			dmab->dev.type = SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK;
++		else
++			dmab->dev.type = SNDRV_DMA_TYPE_DEV_SG_FALLBACK;
++		return snd_dma_sg_fallback_alloc(dmab, size);
++#else
+ 		return NULL;
++#endif
++	}
++
+ 	dmab->dev.need_sync = dma_need_sync(dmab->dev.dev,
+ 					    sg_dma_address(sgt->sgl));
+ 	p = dma_vmap_noncontiguous(dmab->dev.dev, size, sgt);
+@@ -633,6 +647,8 @@ static void *snd_dma_sg_wc_alloc(struct snd_dma_buffer *dmab, size_t size)
+
+ 	if (!p)
+ 		return NULL;
++	if (dmab->dev.type != SNDRV_DMA_TYPE_DEV_WC_SG)
++		return p;
+ 	for_each_sgtable_page(sgt, &iter, 0)
+ 		set_memory_wc(sg_wc_address(&iter), 1);
+ 	return p;
+@@ -665,6 +681,95 @@ static const struct snd_malloc_ops snd_dma_sg_wc_ops = {
+ 	.get_page = snd_dma_noncontig_get_page,
+ 	.get_chunk_size = snd_dma_noncontig_get_chunk_size,
+ };
++
++/* Fallback SG-buffer allocations for x86 */
++struct snd_dma_sg_fallback {
++	size_t count;
++	struct page **pages;
++	dma_addr_t *addrs;
++};
++
++static void __snd_dma_sg_fallback_free(struct snd_dma_buffer *dmab,
++				       struct snd_dma_sg_fallback *sgbuf)
++{
++	size_t i;
++
++	if (sgbuf->count && dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		set_pages_array_wb(sgbuf->pages, sgbuf->count);
++	for (i = 0; i < sgbuf->count && sgbuf->pages[i]; i++)
++		dma_free_coherent(dmab->dev.dev, PAGE_SIZE,
++				  page_address(sgbuf->pages[i]),
++				  sgbuf->addrs[i]);
++	kvfree(sgbuf->pages);
++	kvfree(sgbuf->addrs);
++	kfree(sgbuf);
++}
++
++static void *snd_dma_sg_fallback_alloc(struct snd_dma_buffer *dmab, size_t size)
++{
++	struct snd_dma_sg_fallback *sgbuf;
++	struct page **pages;
++	size_t i, count;
++	void *p;
++
++	sgbuf = kzalloc(sizeof(*sgbuf), GFP_KERNEL);
++	if (!sgbuf)
++		return NULL;
++	count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	pages = kvcalloc(count, sizeof(*pages), GFP_KERNEL);
++	if (!pages)
++		goto error;
++	sgbuf->pages = pages;
++	sgbuf->addrs = kvcalloc(count, sizeof(*sgbuf->addrs), GFP_KERNEL);
++	if (!sgbuf->addrs)
++		goto error;
++
++	for (i = 0; i < count; sgbuf->count++, i++) {
++		p = dma_alloc_coherent(dmab->dev.dev, PAGE_SIZE,
++				       &sgbuf->addrs[i], DEFAULT_GFP);
++		if (!p)
++			goto error;
++		sgbuf->pages[i] = virt_to_page(p);
++	}
++
++	if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		set_pages_array_wc(pages, count);
++	p = vmap(pages, count, VM_MAP, PAGE_KERNEL);
++	if (!p)
++		goto error;
++	dmab->private_data = sgbuf;
++	return p;
++
++ error:
++	__snd_dma_sg_fallback_free(dmab, sgbuf);
++	return NULL;
++}
++
++static void snd_dma_sg_fallback_free(struct snd_dma_buffer *dmab)
++{
++	vunmap(dmab->area);
++	__snd_dma_sg_fallback_free(dmab, dmab->private_data);
++}
++
++static int snd_dma_sg_fallback_mmap(struct snd_dma_buffer *dmab,
++				    struct vm_area_struct *area)
++{
++	struct snd_dma_sg_fallback *sgbuf = dmab->private_data;
++
++	if (dmab->dev.type == SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK)
++		area->vm_page_prot = pgprot_writecombine(area->vm_page_prot);
++	return vm_map_pages(area, sgbuf->pages, sgbuf->count);
++}
++
++static const struct snd_malloc_ops snd_dma_sg_fallback_ops = {
++	.alloc = snd_dma_sg_fallback_alloc,
++	.free = snd_dma_sg_fallback_free,
++	.mmap = snd_dma_sg_fallback_mmap,
++	/* reuse vmalloc helpers */
++	.get_addr = snd_dma_vmalloc_get_addr,
++	.get_page = snd_dma_vmalloc_get_page,
++	.get_chunk_size = snd_dma_vmalloc_get_chunk_size,
++};
+ #endif /* CONFIG_SND_DMA_SGBUF */
+
+ /*
+@@ -736,6 +841,10 @@ static const struct snd_malloc_ops *dma_ops[] = {
+ #ifdef CONFIG_GENERIC_ALLOCATOR
+ 	[SNDRV_DMA_TYPE_DEV_IRAM] = &snd_dma_iram_ops,
+ #endif /* CONFIG_GENERIC_ALLOCATOR */
++#ifdef CONFIG_SND_DMA_SGBUF
++	[SNDRV_DMA_TYPE_DEV_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
++	[SNDRV_DMA_TYPE_DEV_WC_SG_FALLBACK] = &snd_dma_sg_fallback_ops,
++#endif
+ #endif /* CONFIG_HAS_DMA */
+ };
+

@@ -159,18 +159,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 140ce03e5f318826d6c0e431f2ab2d45b58332ae
+%global pfcommit d89ff40186cdc32ffdc252e557f5a10cd0b4bca0
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id ffe3c2ba58eb5ebaa4b26df773fe00aadfa8ba15
+%global opensuse_id 458c79bcfef7aa0a86e9e99ad43f7a01ac999a14
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -964,8 +964,6 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/x86-pm-save-the-msr-validity-status-at-context-setup.patch#/openSUSE-x86-pm-save-the-msr-validity-status-at-context-setup.patch
-Patch1017: %{opensuse_url}/x86-speculation-restore-speculation-related-msrs-during-s3-resume.patch#/openSUSE-x86-speculation-restore-speculation-related-msrs-during-s3-resume.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2930,7 +2928,10 @@ fi
 #
 #
 %changelog
-* Fri Apr 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.2-500
+* Wed Apr 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.3-500.chinfo
+- 5.17.3 - pf3
+
+* Fri Apr 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.2-500.chinfo
 - 5.17.2 - pf2
 
 * Mon Mar 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.1-500.chinfo

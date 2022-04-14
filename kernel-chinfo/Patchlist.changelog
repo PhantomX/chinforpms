@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/10744450395503f1c584313b322f52e8f8542ef0
+ 10744450395503f1c584313b322f52e8f8542ef0 ALSA: memalloc: Add fallback SG-buffer allocations for x86
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/46b6019e2cd4f3b778dc92eccee8facaf5b66be1
+ 46b6019e2cd4f3b778dc92eccee8facaf5b66be1 drm/i915: update new TMDS clock setting defined by VBT
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1324e08de44f4f42845c6c3d3c46bfac8edb5f9e
  1324e08de44f4f42845c6c3d3c46bfac8edb5f9e Move the patch to the redhat directory so it doesn't end up as an applied patch
 
