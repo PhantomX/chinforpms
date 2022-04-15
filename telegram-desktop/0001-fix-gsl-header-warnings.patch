@@ -1,0 +1,67 @@
+From cc0be7c025fe7af17030f910de2a6265b4beaf7a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 14 Apr 2022 16:36:31 -0300
+Subject: [PATCH] fix gsl header warnings
+
+---
+ Telegram/SourceFiles/export/output/export_output_file.cpp | 2 +-
+ Telegram/lib_base/base/assertion.h                        | 2 +-
+ Telegram/lib_base/base/bytes.h                            | 2 +-
+ Telegram/lib_rpl/rpl/consumer.h                           | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/Telegram/SourceFiles/export/output/export_output_file.cpp b/Telegram/SourceFiles/export/output/export_output_file.cpp
+index fd32fd4..8d9d4c4 100644
+--- a/Telegram/SourceFiles/export/output/export_output_file.cpp
++++ b/Telegram/SourceFiles/export/output/export_output_file.cpp
+@@ -14,7 +14,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+ #include <QtCore/QFileInfo>
+ #include <QtCore/QDir>
+ 
+-#include <gsl/gsl_util>
++#include <gsl/util>
+ 
+ namespace Export {
+ namespace Output {
+diff --git a/Telegram/lib_base/base/assertion.h b/Telegram/lib_base/base/assertion.h
+index c336dfe..0519423 100644
+--- a/Telegram/lib_base/base/assertion.h
++++ b/Telegram/lib_base/base/assertion.h
+@@ -9,7 +9,7 @@
+ #include <cstdlib>
+ 
+ // Ensures/Expects.
+-#include <gsl/gsl_assert>
++#include <gsl/assert>
+ 
+ namespace base {
+ namespace assertion {
+diff --git a/Telegram/lib_base/base/bytes.h b/Telegram/lib_base/base/bytes.h
+index 6a1767a..6ca6471 100644
+--- a/Telegram/lib_base/base/bytes.h
++++ b/Telegram/lib_base/base/bytes.h
+@@ -8,7 +8,7 @@
+ 
+ #include "base/basic_types.h"
+ #include <gsl/gsl>
+-#include <gsl/gsl_byte>
++#include <gsl/byte>
+ #include <vector>
+ #include <array>
+ 
+diff --git a/Telegram/lib_rpl/rpl/consumer.h b/Telegram/lib_rpl/rpl/consumer.h
+index d59aa32..55ee947 100644
+--- a/Telegram/lib_rpl/rpl/consumer.h
++++ b/Telegram/lib_rpl/rpl/consumer.h
+@@ -7,7 +7,7 @@
+ #pragma once
+ 
+ #include <memory>
+-#include <gsl/gsl_assert>
++#include <gsl/assert>
+ #include <rpl/lifetime.h>
+ #include <rpl/details/callable.h>
+ 
+-- 
+2.35.1
+

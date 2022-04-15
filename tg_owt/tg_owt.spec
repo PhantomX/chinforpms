@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 1fe5e68d999e0bf88d0128ad813438726732f6e0
+%global commit0 63a934db1ed212ebf8aaaa20f0010dd7b0d7b396
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220314
+%global date 20220413
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -26,7 +26,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        116%{?gver}%{?dist}
+Release:        117%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -39,6 +39,8 @@ Summary:        WebRTC library for the Telegram messenger
 # rnnoise - BSD
 License:        BSD and ASL 2.0
 URL:            https://github.com/desktop-app/%{name}
+
+ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
@@ -54,7 +56,8 @@ Patch100:       0001-fix-build-with-bundled-absl.patch
 BuildRequires:  cmake(absl) >= 20211102
 %endif
 BuildRequires:  pkgconfig(alsa)
-BuildRequires:  pkgconfig(epoxy)
+BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -94,6 +97,12 @@ BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
 
+# dlopen
+Requires:       libdrm%{?_isa}
+Requires:       mesa-libgbm%{?_isa}
+Requires:       mesa-libEGL%{?_isa}
+Requires:       mesa-libGL%{?_isa}
+
 Provides:       bundled(base64) = 0~git
 %if !%{with absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
@@ -120,6 +129,8 @@ Special fork of the OpenWebRTC library for the Telegram messenger.
 Summary:        Development files for %{name}
 %if %{with static}
 Requires:       pkgconfig(alsa)
+Requires:       pkgconfig(egl)
+Requires:       pkgconfig(gl)
 Requires:       pkgconfig(gbm)
 Requires:       pkgconfig(gio-2.0)
 Requires:       pkgconfig(glib-2.0)
@@ -175,9 +186,6 @@ Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if %{with absl}
 Requires:       cmake(absl)
 %endif
-# dlopen
-Requires:       libdrm%{?_isa}
-Requires:       mesa-libgbm%{?_isa}
 
 
 %description devel
@@ -288,6 +296,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Thu Apr 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-117.20220413git63a934d
+- Update
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0-116.20220314git1fe5e68
 - Bump
 

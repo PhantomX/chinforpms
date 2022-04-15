@@ -15,8 +15,12 @@
 # Enable or disable build with support...
 %bcond_with rlottie
 %bcond_with tgvoip
-%bcond_without qt5
+%bcond_with qt5
+%if %{with qt5}
+%bcond_with wayland
+%else
 %bcond_without wayland
+%endif
 %bcond_without x11
 
 %bcond_with clang
@@ -35,8 +39,8 @@
 %endif
 
 Name:           telegram-desktop
-Version:        3.6.1
-Release:        101%{?dist}
+Version:        3.6.3
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -58,16 +62,14 @@ Epoch:          1
 License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
 URL:            https://github.com/telegramdesktop/%{appname}
 
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
 Patch101:       %{name}-unbundled-kwayland-stuff.patch
-
-# https://github.com/TelegramMessenger/tgcalls/pull/14
-Patch102:       %{name}-ffmpeg5.patch
+Patch102:       %{name}-ecm-version-downgrade.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -79,6 +81,7 @@ Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
+Patch206:       0001-fix-gsl-header-warnings.patch
 
 
 BuildRequires:  cmake(Microsoft.GSL)
@@ -212,6 +215,10 @@ BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
 Requires:       hicolor-icon-theme
 Requires:       open-sans-fonts
+Recommends:     libdrm%{?_isa}
+Recommends:     mesa-libgbm%{?_isa}
+Recommends:     mesa-libEGL%{?_isa}
+Recommends:     mesa-libGL%{?_isa}
 Recommends:     webkit2gtk3%{?_isa}
 
 # Telegram Desktop can use native open/save dialogs with XDG portals.
@@ -279,6 +286,10 @@ sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMa
 
 sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
 
+sed \
+  -e 's|${third_party_loc}/wayland-protocols/|${WaylandProtocols_DATADIR}/|g' \
+  -i Telegram/lib_ui/CMakeLists.txt Telegram/lib_waylandshells/waylandshells/xdg-shell/CMakeLists.txt
+
 
 %build
 # Building Telegram Desktop using cmake...
@@ -311,7 +322,6 @@ sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
     -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
 %endif
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
-    -DDESKTOP_APP_USE_GLIBC_WRAPS:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
 %if %{with wayland}
     -DDESKTOP_APP_DISABLE_WAYLAND_INTEGRATION:BOOL=OFF \
@@ -323,9 +333,8 @@ sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
 %else
     -DDESKTOP_APP_DISABLE_X11_INTEGRATION:BOOL=ON \
 %endif
-    -DTDESKTOP_DISABLE_REGISTER_CUSTOM_SCHEME:BOOL=ON \
-    -DTDESKTOP_DISABLE_DESKTOP_FILE_GENERATION:BOOL=ON \
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
+    -DWaylandProtocols_DATADIR:PATH=%{_datadir}/wayland-protocols \
 %{nil}
 
 cp -p changelog.txt %{_vpath_builddir}/
@@ -365,7 +374,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
-* qua mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.6.1-101
+* Thu Apr 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.6.3-100
+- 3.6.3
+- qt6
+
+* Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.6.1-101
 - ffmpeg5 patch
 
 * Fri Mar 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.6.1-100
