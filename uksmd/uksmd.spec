@@ -44,9 +44,10 @@ pf-kernel (https://gitlab.com/post-factum/pf-kernel/).
 
 
 %build
+%set_build_flags
 %make_build \
-  CFLAGS="%{build_cflags} -fno-plt" \
-  LDFLAGS="%{build_ldflags} `pkg-config --libs libprocps libcap-ng`"
+  CFLAGS="$CFLAGS -fno-plt" \
+  LDFLAGS="$LDFLAGS $(pkg-config --libs libprocps libcap-ng)"
 
 
 %install

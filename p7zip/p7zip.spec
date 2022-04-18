@@ -118,6 +118,7 @@ chmod +x check/*.sh
 sed -e 's|strip |true |g' -i install.sh
 
 %build
+%set_build_flags
 pushd CPP/7zip/CMAKE/
 sh ./generate.sh
 popd
@@ -135,8 +136,8 @@ cp -f makefile.linux_any_cpu_gcc_4.X makefile.machine
 %if %{with gui}
   7zG \
 %endif
-    OPTFLAGS="%{optflags}" \
-    LDFLAGS="%{build_ldflags}" \
+    OPTFLAGS="$CFLAGS" \
+    LDFLAGS="$LDFLAGS" \
     DEST_HOME=%{_prefix} \
     DEST_BIN=%{_bindir} \
     DEST_SHARE=%{_libexecdir}/p7zip \

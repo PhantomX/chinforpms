@@ -34,7 +34,8 @@ This release is compiled with aoTuV optimizations patches
 %prep
 %autosetup -n %{pkgname}-%{version} -p1
 
-sed -i "s|-O20|%{build_cflags}|" configure
+sed -i "s|-O20||" configure
+sed -i "s|-O3||" configure
 sed -i "s/-ffast-math//" configure
 sed -i "s/-mcpu=750//" configure
 

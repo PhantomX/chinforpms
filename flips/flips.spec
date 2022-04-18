@@ -65,7 +65,8 @@ sed \
 
 
 %build
-RPM_CXX_FLAGS="%{build_cxxflags}"
+%set_build_flags
+RPM_CXX_FLAGS="$CXXFLAGS"
 # make.sh flags
 RPM_CXX_FLAGS+=" -fomit-frame-pointer -fmerge-all-constants -fvisibility=hidden"
 RPM_CXX_FLAGS+=" -fno-exceptions -fno-unwind-tables -fno-asynchronous-unwind-tables"
@@ -79,9 +80,8 @@ RPM_CXX_FLAGS+=" -fprofile-dir=obj/"
 %endif
 
 export CXX=g++
-export CFLAGS=""
 export RPM_CXX_FLAGS
-export LFLAGS="%{build_ldflags} $RPM_CXX_FLAGS"
+export LFLAGS="$LDFLAGS $RPM_CXX_FLAGS"
 
 unset DISPLAY
 

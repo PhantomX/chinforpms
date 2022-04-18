@@ -178,6 +178,7 @@ mpdnotify
 mupen64plus
 NetworkManager-f5vpn
 nicotine+
+nvtop
 openjazz
 opentyrian
 orage

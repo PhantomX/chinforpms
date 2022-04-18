@@ -1,7 +1,17 @@
+# This package has a configure test which uses ASMs, but does not link the
+# resultant .o files.  As such the ASM test is always successful in pure
+# LTO mode.  We can use -ffat-lto-objects to force code generation.
+#
+# -ffat-lto-objects is the default for F33, but is expected to be removed
+# in F34.  So we list it explicitly here.
+%global _lto_cflags -flto=auto -ffat-lto-objects
+
 # src/types.h is set to issue error on i386 and warning on other architectures
 # when trying to enable position-independent code. It is not recommended for
 # performance reasons
 %undefine _hardened_build
+
+%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 Name:           mednafen
 Version:        1.29.0
@@ -71,20 +81,6 @@ find \( -name '*.c*' -or -name '*.h*' -or -name '*.inc' \) -exec chmod -x {} \;
 
 
 %build
-# This package has a configure test which uses ASMs, but does not link the
-# resultant .o files.  As such the ASM test is always successful in pure
-# LTO mode.  We can use -ffat-lto-objects to force code generation.
-#
-# -ffat-lto-objects is the default for F33, but is expected to be removed
-# in F34.  So we list it explicitly here.
-%global _lto_cflags -flto=auto -ffat-lto-objects
-
-CFLAGS="%{build_cflags} -Wl,-z,relro -Wl,-z,now"
-CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -Wl,-z,now"
-
-export CFLAGS
-export CXXFLAGS
-
 # Bad optmizations to non haswell
 export ax_cv_cflags_gcc_option__mtune_haswell=no
 

@@ -1,3 +1,6 @@
+# Disable this. Local lto flags in use.
+%global _lto_cflags %{nil}
+
 %ifnarch s390x
 %global with_hardware 1
 %global with_vulkan_hw 1
@@ -367,19 +370,16 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   src/vulkan/overlay-layer/mesa-overlay-control.py
 
 %build
-# Disable this. Local lto flags in use.
-%global _lto_cflags %{nil}
-
 %if 0%{?with_lto}
+%set_build_flags
 MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
 MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
 
-export CFLAGS="$MESA_CFLAGS $MESA_COMMON_FLAGS"
+export CFLAGS="$CFLAGS $MESA_LTO_FLAGS $MESA_COMMON_FLAGS"
 export FCFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
-export CFLAGS="%{build_cflags} $MESA_COMMON_FLAGS"
-export CXXFLAGS="%{build_cxxflags} $MESA_COMMON_FLAGS"
-export LDFLAGS="%{build_ldflags} $MESA_LTO_FLAGS"
+export CXXFLAGS="$CXXFLAGS $MESA_LTO_FLAGS $MESA_COMMON_FLAGS"
+export LDFLAGS="$LDFLAGS $MESA_LTO_FLAGS"
 
 export CC=gcc
 export CXX=g++

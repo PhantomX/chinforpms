@@ -26,15 +26,14 @@ MP3val is also able to fix most of the problems.
 %patch01
 
 %{__sed} -i \
-  -e "/^CXXFLAGS/s|-O2|%{build_cxxflags}|g" \
+  -e "s|^CXXFLAGS=|CXXFLAGS?=|g" \
   -e '/$(CXX)/s|$(CXXFLAGS)|\0 $(LDFLAGS)|g' \
   Makefile.linux
 
 %build
-
-export LDFLAGS="%{build_ldflags}"
+%set_build_flags
 %make_build -f Makefile.linux
-
+exit 20
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm 0755 %{name} %{buildroot}%{_bindir}/

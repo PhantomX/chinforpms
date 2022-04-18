@@ -1,0 +1,246 @@
+From b6ed58bbee7f39956b2002f8aec2067b7afd149a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 17 Apr 2022 17:08:02 -0300
+Subject: [PATCH] use system lzma-sdk
+
+---
+ Makefile                   |  7 ++++
+ qmc2.pro                   | 72 +++++++++++++++++++++-----------------
+ src/arcade/qmc2-arcade.pro | 65 ++++++++++++++++++----------------
+ src/sevenzipfile.h         |  8 ++---
+ 4 files changed, 86 insertions(+), 66 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index 07be095..b68e2c8 100644
+--- a/Makefile
++++ b/Makefile
+@@ -662,6 +662,10 @@ ifeq '$(LIBARCHIVE)' '1'
+ DEFINES += QMC2_LIBARCHIVE_ENABLED
+ endif
+ 
++ifeq '$(SYSTEM_SEVENZIP)' '0'
++DEFINES += QMC2_BUNDLED_SEVENZIP
++endif
++
+ ifeq '$(SYSTEM_MINIZIP)' '0'
+ DEFINES += QMC2_BUNDLED_MINIZIP
+ endif
+@@ -936,6 +940,9 @@ endif
+ ifeq '$(SYSTEM_MINIZIP)' '0'
+ ARCADE_DEFINES += QMC2_ARCADE_BUNDLED_MINIZIP
+ endif
++ifeq '$(SYSTEM_SEVENZIP)' '0'
++ARCADE_DEFINES += QMC2_ARCADE_BUNDLED_SEVENZIP
++endif
+ ifeq '$(SYSTEM_ZLIB)' '0'
+ ARCADE_DEFINES += QMC2_ARCADE_BUNDLED_ZLIB
+ endif
+diff --git a/qmc2.pro b/qmc2.pro
+index d115e30..ef40f1b 100644
+--- a/qmc2.pro
++++ b/qmc2.pro
+@@ -11,8 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
+ 	SOURCES += src/qftp/qftp.cpp \
+ 		src/qftp/qurlinfo.cpp
+ 	INCLUDEPATH += src/ \
+-       		src/qftp \
+-		src/lzma
++    		src/qftp
+ 	TEMPLATE = app
+ 	FORMS += ui/qmc2main.ui \
+ 		ui/options.ui \
+@@ -164,35 +163,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
+ 		src/setupwizard.cpp \
+ 		src/clickablelabel.cpp \
+ 		src/htmleditor/htmleditor.cpp \
+-		src/htmleditor/highlighter.cpp \
+-		src/lzma/7zAlloc.c \
+-		src/lzma/7zBuf2.c \
+-		src/lzma/7zBuf.c \
+-		src/lzma/7zCrc.c \
+-		src/lzma/7zCrcOpt.c \
+-		src/lzma/7zDec.c \
+-		src/lzma/7zFile.c \
+-		src/lzma/7zArcIn.c \
+-		src/lzma/7zStream.c \
+-		src/lzma/Alloc.c \
+-		src/lzma/Bcj2.c \
+-		src/lzma/Bra86.c \
+-		src/lzma/Bra.c \
+-		src/lzma/BraIA64.c \
+-		src/lzma/CpuArch.c \
+-		src/lzma/Delta.c \
+-		src/lzma/LzFind.c \
+-		src/lzma/Lzma2Dec.c \
+-		src/lzma/Lzma2Enc.c \
+-		src/lzma/Lzma86Dec.c \
+-		src/lzma/Lzma86Enc.c \
+-		src/lzma/LzmaDec.c \
+-		src/lzma/LzmaEnc.c \
+-		src/lzma/LzmaLib.c \
+-		src/lzma/Ppmd7.c \
+-		src/lzma/Ppmd7Dec.c \
+-		src/lzma/Ppmd7Enc.c \
+-		src/lzma/Sha256.c
++		src/htmleditor/highlighter.cpp
+ 	HEADERS += src/qmc2main.h \
+ 		src/options.h \
+ 		src/docbrowser.h \
+@@ -303,7 +274,44 @@ greaterThan(QT_MAJOR_VERSION, 4) {
+ 		data/lng/qmc2_us.ts
+ 	RESOURCES += qmc2.qrc
+ 	QMAKE_MAKEFILE = Makefile.qmake
+-	DEFINES += _7ZIP_PPMD_SUPPORT _7ZIP_ST
++
++	contains(DEFINES, QMC2_BUNDLED_SEVENZIP) {
++		INCLUDEPATH += src/lzma
++		SOURCES += src/lzma/7zAlloc.c \
++		src/lzma/7zBuf2.c \
++		src/lzma/7zBuf.c \
++		src/lzma/7zCrc.c \
++		src/lzma/7zCrcOpt.c \
++		src/lzma/7zDec.c \
++		src/lzma/7zFile.c \
++		src/lzma/7zArcIn.c \
++		src/lzma/7zStream.c \
++		src/lzma/Alloc.c \
++		src/lzma/Bcj2.c \
++		src/lzma/Bra86.c \
++		src/lzma/Bra.c \
++		src/lzma/BraIA64.c \
++		src/lzma/CpuArch.c \
++		src/lzma/Delta.c \
++		src/lzma/LzFind.c \
++		src/lzma/Lzma2Dec.c \
++		src/lzma/Lzma2Enc.c \
++		src/lzma/Lzma86Dec.c \
++		src/lzma/Lzma86Enc.c \
++		src/lzma/LzmaDec.c \
++		src/lzma/LzmaEnc.c \
++		src/lzma/LzmaLib.c \
++		src/lzma/Ppmd7.c \
++		src/lzma/Ppmd7Dec.c \
++		src/lzma/Ppmd7Enc.c \
++		src/lzma/Sha256.c
++
++		DEFINES += _7ZIP_PPMD_SUPPORT _7ZIP_ST
++	} else {
++		CONFIG += link_pkgconfig
++		PKGCONFIG += lzmasdk-c
++	}
++
+ 
+ 	contains(DEFINES, QMC2_LIBARCHIVE_ENABLED) {
+ 		SOURCES += src/archivefile.cpp
+diff --git a/src/arcade/qmc2-arcade.pro b/src/arcade/qmc2-arcade.pro
+index 7f2a3d7..8da4b41 100644
+--- a/src/arcade/qmc2-arcade.pro
++++ b/src/arcade/qmc2-arcade.pro
+@@ -38,34 +38,6 @@ SOURCES += main.cpp \
+     ../settings.cpp \
+     ../sevenzipfile.cpp \
+     ../bigbytearray.cpp \
+-    ../lzma/7zAlloc.c \
+-    ../lzma/7zBuf2.c \
+-    ../lzma/7zBuf.c \
+-    ../lzma/7zCrc.c \
+-    ../lzma/7zCrcOpt.c \
+-    ../lzma/7zDec.c \
+-    ../lzma/7zFile.c \
+-    ../lzma/7zArcIn.c \
+-    ../lzma/7zStream.c \
+-    ../lzma/Alloc.c \
+-    ../lzma/Bcj2.c \
+-    ../lzma/Bra86.c \
+-    ../lzma/Bra.c \
+-    ../lzma/BraIA64.c \
+-    ../lzma/CpuArch.c \
+-    ../lzma/Delta.c \
+-    ../lzma/LzFind.c \
+-    ../lzma/Lzma2Dec.c \
+-    ../lzma/Lzma2Enc.c \
+-    ../lzma/Lzma86Dec.c \
+-    ../lzma/Lzma86Enc.c \
+-    ../lzma/LzmaDec.c \
+-    ../lzma/LzmaEnc.c \
+-    ../lzma/LzmaLib.c \
+-    ../lzma/Ppmd7.c \
+-    ../lzma/Ppmd7Dec.c \
+-    ../lzma/Ppmd7Enc.c \
+-    ../lzma/Sha256.c \
+     ../iconcachedbmgr.cpp
+ 
+ lessThan(QT_MAJOR_VERSION, 5) {
+@@ -97,8 +69,6 @@ HEADERS += \
+     ../bigbytearray.h \
+     ../iconcachedbmgr.h
+ 
+-INCLUDEPATH += ../lzma
+-
+ DEFINES += QMC2_ARCADE
+ 
+ contains(DEFINES, QMC2_ARCADE_LIBARCHIVE_ENABLED) {
+@@ -107,6 +77,41 @@ contains(DEFINES, QMC2_ARCADE_LIBARCHIVE_ENABLED) {
+     LIBS += -larchive
+ }
+ 
++contains(DEFINES, QMC2_ARCADE_BUNDLED_SEVENZIP) {
++    INCLUDEPATH += ../lzma
++    SOURCES +=     ../lzma/7zAlloc.c \
++    ../lzma/7zBuf2.c \
++    ../lzma/7zBuf.c \
++    ../lzma/7zCrc.c \
++    ../lzma/7zCrcOpt.c \
++    ../lzma/7zDec.c \
++    ../lzma/7zFile.c \
++    ../lzma/7zArcIn.c \
++    ../lzma/7zStream.c \
++    ../lzma/Alloc.c \
++    ../lzma/Bcj2.c \
++    ../lzma/Bra86.c \
++    ../lzma/Bra.c \
++    ../lzma/BraIA64.c \
++    ../lzma/CpuArch.c \
++    ../lzma/Delta.c \
++    ../lzma/LzFind.c \
++    ../lzma/Lzma2Dec.c \
++    ../lzma/Lzma2Enc.c \
++    ../lzma/Lzma86Dec.c \
++    ../lzma/Lzma86Enc.c \
++    ../lzma/LzmaDec.c \
++    ../lzma/LzmaEnc.c \
++    ../lzma/LzmaLib.c \
++    ../lzma/Ppmd7.c \
++    ../lzma/Ppmd7Dec.c \
++    ../lzma/Ppmd7Enc.c \
++    ../lzma/Sha256.c
++} else {
++    CONFIG += link_pkgconfig
++    PKGCONFIG += lzmasdk-c
++}
++
+ contains(DEFINES, QMC2_ARCADE_BUNDLED_MINIZIP) {
+     INCLUDEPATH += ../minizip
+     SOURCES += ../minizip/zip.c \
+diff --git a/src/sevenzipfile.h b/src/sevenzipfile.h
+index 49155a1..c4c1571 100644
+--- a/src/sevenzipfile.h
++++ b/src/sevenzipfile.h
+@@ -16,10 +16,10 @@
+ #include "bigbytearray.h"
+ 
+ extern "C" {
+-#include "lzma/7z.h"
+-#include "lzma/7zAlloc.h"
+-#include "lzma/7zCrc.h"
+-#include "lzma/7zFile.h"
++#include "7z.h"
++#include "7zAlloc.h"
++#include "7zCrc.h"
++#include "7zFile.h"
+ }
+ 
+ class SevenZipMetaData
+-- 
+2.35.1
+

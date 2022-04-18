@@ -1,5 +1,5 @@
 Name:           sdl2-controllermap
-Version:        2.0.18
+Version:        2.0.20
 Release:        1%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 
@@ -25,7 +25,8 @@ sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i test/controllermap.c
 
 
 %build
-gcc %{build_cflags} %(pkg-config --cflags --libs sdl2) %{build_ldflags} \
+%set_build_flags
+$CC $CFLAGS %(pkg-config --cflags --libs sdl2) $LDFLAGS \
   test/controllermap.c -o %{name}
 
 
@@ -46,6 +47,9 @@ install -pm0644 test/{axis,button,controllermap*}.bmp \
 
 
 %changelog
+* Sun Apr 17 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.20-1
+- 2.0.20
+
 * Thu Dec 02 2021 Phantom X <megaphantomx at hotmail dot com> - 2.0.18-1
 - 2.0.18
 

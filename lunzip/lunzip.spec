@@ -22,7 +22,8 @@ Lunzip is a decompressor for lzip files.
 
 
 %build
-%configure CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}"
+%set_build_flags
+%configure CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 %make_build
 
 

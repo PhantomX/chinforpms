@@ -33,11 +33,12 @@ developing applications that use %{name}.
 
 
 %build
+%set_build_flags
 %configure \
   --disable-static \
   --enable-shared \
   --disable-ldconfig \
-  CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" \
+  CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS" \
 %{nil}
 
 %make_build

@@ -23,7 +23,8 @@ Plzip is a massively parallel (multi-threaded) implementation of lzip.
 
 
 %build
-%configure CXXFLAGS="%{build_cxxflags}" LDFLAGS="%{build_ldflags}"
+%set_build_flags
+%configure CXXFLAGS="%{CXXFLAGS}" LDFLAGS="$LDFLAGS"
 %make_build
 
 

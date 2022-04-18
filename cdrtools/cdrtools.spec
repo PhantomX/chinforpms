@@ -90,9 +90,10 @@ for i in \
 done
 
 %build
+%set_build_flags
 %make_build GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
-    CPPOPTX="%{optflags}" COPTX="%{optflags} -DTRY_EXT2_FS" \
-    LDOPTX="%{build_ldflags}"
+    CPPOPTX="$CXXFLAGS" COPTX="$CFLAGS -DTRY_EXT2_FS" \
+    LDOPTX="$LDFLAGS"
 
 %install
 make GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \

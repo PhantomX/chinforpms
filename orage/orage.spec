@@ -48,7 +48,8 @@ using the Orage Clock plugin for the panel.
 
 
 %build
-export CFLAGS="%{build_cflags} -I/usr/include/libical"
+%set_build_flags
+export CFLAGS="$CFLAGS -I/usr/include/libical"
 %configure \
   --disable-static \
   --enable-libical \

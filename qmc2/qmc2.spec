@@ -1,6 +1,24 @@
+%global commit 9186ba6c6fc370874d16a9743246f6871b4ab2f3
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220417
+%global with_snapshot 0
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
+
+%if 0%{?with_snapshot}
+%global git_rev v%{version}g%{shortcommit}
+%else
+%global git_rev 0
+%endif
+
+%global pkgname qmc2-mame-fe
+%global vc_url https://github.com/qmc2/%{pkgname}
+
 Name:           qmc2
-Version:        0.195
-Release:        101%{?dist}
+Version:        0.242
+Release:        100%{?gver}%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -8,26 +26,25 @@ Summary:        M.A.M.E. Catalog / Launcher II
 #everything else is GPLv2
 License:        GPLv2 and ASL 2.0 and MIT
 URL:            http://qmc2.batcom-it.net
-Source0:        http://downloads.sourceforge.net/qmc2/%{name}-%{version}.tar.bz2
 
-Patch0:         %{name}-minizip.patch
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
+Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+%endif
+
 #Fedora-specific configuration
 Patch1:         %{name}-ini.patch
-Patch2:         %{name}-listxml-softlist-fix.patch
-Patch3:         %{name}-fedora-linux.patch
 
-# Patches from FreeBSD
-Patch10:        qmc2-htmleditor_htmleditor.ui.patch
-Patch11:        qmc2-imagechecker.cpp.patch
-# Patches from Arch
-Patch12:        qmc2-qt5.15.patch
-Patch13:        qmc2-types.patch
+Patch10:        0001-system-minizip-fix.patch
+%dnl Patch11:        0001-use-system-lzma-sdk.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  minizip-devel
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
+%dnl BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
@@ -72,30 +89,27 @@ the games"
 
 
 %prep
-%autosetup -p1 -n %{name}
-pushd arch/Linux/
-ln -s Fedora.cfg Fedora_release_30.cfg
-ln -s Fedora.cfg Fedora_release_31.cfg
-ln -s Fedora.cfg Fedora_release_32.cfg
-ln -s Fedora.cfg Fedora_release_33.cfg
-ln -s Fedora.cfg Fedora_release_34.cfg
-ln -s Fedora.cfg Fedora_Linux_release_35.cfg
-popd
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 #ensure system minizip and zlib are used
-rm -rf minizip
-rm -rf zlib
+rm -rf src/minizip
+rm -rf src/zlib
+%dnl rm -rf src/lzma
 
 
 %build
+%set_build_flags
 %make_build QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" \
-  L_FLAGS="%{build_ldflags}" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1
+  DISTCFG=1 CC_FLAGS="$CFLAGS" CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" \
+  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
+  CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
 %make_build arcade QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CC_FLAGS="%{build_cflags}" CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" \
-  L_FLAGS="%{build_ldflags}" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1
+  DISTCFG=1 CC_FLAGS="$CFLAGS" CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" \
+  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
+  CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
 %make_build qchdman QMAKE=%{_qt5_qmake} \
-  DISTCFG=1 CXX_FLAGS="%{build_cxxflags} -I%{_includedir}/minizip" L_FLAGS="%{build_ldflags}"
-%make_build doc QMAKE=%{_qt5_qmake} DISTCFG=1
+  DISTCFG=1 CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" L_FLAGS="$LDFLAGS" \
+  CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
+%make_build doc QMAKE=%{_qt5_qmake} DISTCFG=1 CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
 
 
 %install
@@ -114,10 +128,9 @@ make qchdman-install DESTDIR=%{buildroot} \
 make doc-install DESTDIR=%{buildroot} QMAKE=%{_qt5_qmake} DISTCFG=1 MAN_DIR=%{_mandir}
 
 #remove docs since we are installing docs in %%doc
-pushd %{buildroot}%{_datadir}/%{name}
-rm -fr doc
-ln -s %{_docdir}/%{name} doc
-popd
+rm -rf %{buildroot}%{_datadir}/%{name}/doc
+ln -sf "$(realpath -m --relative-to="%{_datadir}/%{name}" "%{_docdir}/%{name}")" \
+  %{buildroot}%{_datadir}/%{name}/doc
 
 #validate the desktop files
 desktop-file-validate %{buildroot}%{_datadir}/applications/qmc2-sdlmame.desktop
@@ -151,6 +164,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Sun Apr 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.242-100
+- 0.242
+
 * Tue Sep 29 2020 Phantom X <megaphantomx at hotmail dot com> - 0.195-101
 - Fedora sync
 - Fix qt 5.15 build

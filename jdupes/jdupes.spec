@@ -24,9 +24,9 @@ BuildRequires:  xxhash-devel
 rm -f xxhash.*
 
 %build
+%set_build_flags
 %make_build \
-  COMPILER_OPTIONS="%{build_cflags} -DNDEBUG -DSMA_MAX_FREE=11" \
-  LDFLAGS="%{build_ldflags}" \
+  COMPILER_OPTIONS="$CFLAGS -DNDEBUG -DSMA_MAX_FREE=11" \
   CFLAGS_EXTRA="-DENABLE_DEDUPE -DSTATIC_DEDUPE_H=1" \
 %{nil}
 

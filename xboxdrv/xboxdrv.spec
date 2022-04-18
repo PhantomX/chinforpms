@@ -85,14 +85,15 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
 
 
 %build
+%set_build_flags
 scons %{?_smp_mflags} \
  CC=gcc \
  CXX=g++ \
  BUILD=custom \
- CCFLAGS="%{build_cflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
- CXXFLAGS="%{build_cxxflags} -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
+ CCFLAGS="$CFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
+ CXXFLAGS="$CXXFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
  CPPFLAGS=" -ansi -pedantic" \
- LINKFLAGS="%{build_ldflags} -fPIC -pie -Wl,-z,now"
+ LINKFLAGS="$LDFLAGS -fPIC -pie -Wl,-z,now"
 
 %install
 make install PREFIX=%{_prefix} DESTDIR=%{buildroot}

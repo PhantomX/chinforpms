@@ -77,11 +77,12 @@ done
 
 
 %build
+%set_build_flags
+export CFLAGS="$CFLAGS -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
 for i in core modules tools/moddesc ;do
   pushd $i
   chmod +x configure
 
-  CFLAGS="%{build_cflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE" \
   %configure \
 %ifarch %{ix86}
     --build=i686-redhat-linux \
@@ -91,7 +92,7 @@ for i in core modules tools/moddesc ;do
   sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
   sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
   # Dirty fix to old libtool issues
-  sed -i -e 's! -shared ! %{build_ldflags}\0!g' libtool
+  sed -i -e "s! -shared ! $LDFLAGS\0!g" libtool
 
   popd
 done

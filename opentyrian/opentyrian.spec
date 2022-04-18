@@ -42,19 +42,16 @@ employed to fight Microsol and save the galaxy.
 
 chmod -x CREDITS
 
-sed \
-  -e "s|-O2|%{build_cflags}|g" \
-  -i Makefile
-
 
 %build
+%set_build_flags
+export CFLAGS="$CFLAGS -pedantic -Wall -Wextra -Wno-missing-field-initializers"
 %make_build \
   prefix="%{_prefix}" \
   gamesdir="%{_datadir}" \
   VCS_IDREV="(echo %{version}-%{release})" \
   WITH_GRAB_MOUSE=false \
   STRIP=/bin/true \
-  LDFLAGS="%{build_ldflags}" \
 %{nil}
 
 %install
