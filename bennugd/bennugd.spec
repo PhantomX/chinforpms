@@ -78,7 +78,7 @@ done
 
 %build
 %set_build_flags
-export CFLAGS="$CFLAGS -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
+export CFLAGS+=" -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
 for i in core modules tools/moddesc ;do
   pushd $i
   chmod +x configure

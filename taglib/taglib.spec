@@ -79,7 +79,7 @@ Files needed when building software with %{name}.
 
 %build
 %set_build_flags
-export CXXFLAGS="$CXXFLAGS -std=c++11"
+export CXXFLAGS+=" -std=c++11"
 %{cmake} \
 %if %{with tests}
   -DBUILD_TESTS:BOOL=ON \

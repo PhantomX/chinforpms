@@ -375,11 +375,11 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
 MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
 MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
 
-export CFLAGS="$CFLAGS $MESA_LTO_FLAGS $MESA_COMMON_FLAGS"
+export CFLAGS+=" $MESA_COMMON_FLAGS"
 export FCFLAGS="$CFLAGS"
 export FFLAGS="$CFLAGS"
-export CXXFLAGS="$CXXFLAGS $MESA_LTO_FLAGS $MESA_COMMON_FLAGS"
-export LDFLAGS="$LDFLAGS $MESA_LTO_FLAGS"
+export CXXFLAGS+=" $MESA_COMMON_FLAGS"
+export LDFLAGS+=" $MESA_LTO_FLAGS"
 
 export CC=gcc
 export CXX=g++

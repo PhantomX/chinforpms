@@ -7,6 +7,8 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+
 %global imgui_ver 1.81
 
 %global pkgname MangoHud
@@ -71,19 +73,8 @@ rm -f include/nvml.h
 
 cp -f -p %{S:3} bin/%{name}.in
 
-mesonarray(){
-  echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
-}
-
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
-
-TEMP_CFLAGS="`mesonarray "%{optflags}"`"
-
-sed -e "/-D__STDC_CONSTANT_MACROS/i\  '${TEMP_CFLAGS}'," -i meson.build
-
 
 %build
-
 %meson \
   --libdir=%{_libdir} \
   -Dappend_libdir_mangohud=true \

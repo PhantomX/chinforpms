@@ -1,0 +1,25 @@
+From f69904b1a8015283bbec3fc4dba854f97240649c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 18 Apr 2022 09:30:16 -0300
+Subject: [PATCH] set atril as print preview
+
+---
+ gtk/gtksettings.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gtk/gtksettings.c b/gtk/gtksettings.c
+index fb303bb..19496e2 100644
+--- a/gtk/gtksettings.c
++++ b/gtk/gtksettings.c
+@@ -59,7 +59,7 @@
+ #ifdef GDK_WINDOWING_MACOS
+ #define PRINT_PREVIEW_COMMAND "open -b com.apple.Preview %f"
+ #else
+-#define PRINT_PREVIEW_COMMAND "evince --unlink-tempfile --preview --print-settings %s %f"
++#define PRINT_PREVIEW_COMMAND "atril --unlink-tempfile --preview --print-settings %s %f"
+ #endif
+ 
+ /**
+-- 
+2.35.1
+

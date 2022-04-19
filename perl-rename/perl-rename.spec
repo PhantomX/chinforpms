@@ -30,8 +30,7 @@ Requires:  perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 
 
 %build
-# Remove OPTIMIZE=... from noarch packages (unneeded)
-%{__perl} Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
+%{__perl} Makefile.PL INSTALLDIRS=vendor OPTIMIZE="$CFLAGS"
 %make_build
 
 

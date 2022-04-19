@@ -87,8 +87,8 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
 %build
 %set_build_flags
 scons %{?_smp_mflags} \
- CC=gcc \
- CXX=g++ \
+ CC=$CC \
+ CXX=$CXX \
  BUILD=custom \
  CCFLAGS="$CFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
  CXXFLAGS="$CXXFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \

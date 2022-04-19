@@ -8,7 +8,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}/
 
 Name:           %{rname}-ce
-Version:        22.0.2
+Version:        22.0.3
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -60,6 +60,9 @@ install -pm0644 icon.xpm .eclipseproduct \
 cp -rp configuration configuration features p2 plugins \
   %{buildroot}%{_libdir}/%{name}/
 
+ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_licensedir}/%{name}")" \
+  %{buildroot}%{_libdir}/%{name}/licenses
+
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 install -pm0644 %{rname}.ini %{buildroot}%{_sysconfdir}/%{name}/
 ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_sysconfdir}/%{name}")"/%{rname}.ini \
@@ -102,5 +105,8 @@ done
 
 
 %changelog
+* Mon Apr 18 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.3-1
+- 22.0.3
+
 * Tue Apr 05 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.2-1
 - Initial spec

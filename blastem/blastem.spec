@@ -64,7 +64,6 @@ icotool -x icons/windows.ico
 %build
 %set_build_flags
 %make_build \
-  CC=gcc \
   DATA_PATH=/usr/share/blastem \
   FONT_PATH=/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf \
   HOST_ZLIB=1

@@ -45,7 +45,7 @@ chmod -x CREDITS
 
 %build
 %set_build_flags
-export CFLAGS="$CFLAGS -pedantic -Wall -Wextra -Wno-missing-field-initializers"
+export CFLAGS+=" -pedantic -Wall -Wextra -Wno-missing-field-initializers"
 %make_build \
   prefix="%{_prefix}" \
   gamesdir="%{_datadir}" \

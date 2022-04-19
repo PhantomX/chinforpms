@@ -255,7 +255,7 @@ rm -fv testsuite/gtk/gtkresources.c testsuite/gtk/gtkprivate.c
 
 %build
 %set_build_flags
-export CFLAGS="$CFLAGS -fno-strict-aliasing"
+export CFLAGS+=" -fno-strict-aliasing"
 
 %meson \
 %if 0%{?with_broadway}

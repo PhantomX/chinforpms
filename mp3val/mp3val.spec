@@ -33,7 +33,7 @@ MP3val is also able to fix most of the problems.
 %build
 %set_build_flags
 %make_build -f Makefile.linux
-exit 20
+
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm 0755 %{name} %{buildroot}%{_bindir}/

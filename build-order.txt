@@ -12,6 +12,7 @@ glyr
 gob2
 gstreamer1
 gtk3
+gtk4
 libeatmydata
 libmirage
 -libogg
@@ -44,6 +45,7 @@ xwit
 -dxil-spirv
 ff7tk
 -gstreamer1-plugins-base
+libadwaita
 libchdr
 libdeflate
 libqtadvanceddocking
