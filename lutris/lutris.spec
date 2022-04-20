@@ -3,7 +3,7 @@
 %global vc_url https://github.com/%{name}/%{name}
 
 Name:           lutris
-Version:        0.5.10
+Version:        0.5.10.1
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Install and play any video game easily
@@ -15,8 +15,6 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
 Patch0:         0001-Disable-gtk-update-icon-cache-execution.patch
 Patch1:         %{name}-gamemodelib.patch
-
-Patch10:        %{vc_url}/pull/4197.patch#/%{name}-gh-pr4197.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
@@ -117,6 +115,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/net.lutris.Lutris.des
 
 
 %changelog
+* Tue Apr 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.10.1-100
+- 0.5.10.1
+
 * Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.10-100
 - 0.5.10
 

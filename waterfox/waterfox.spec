@@ -135,7 +135,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
-Version:        2022.02
+Version:        2022.04
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -197,7 +197,6 @@ Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
-Patch450:       %{vc_url}/pull/74.patch#/%{name}-gh-pr74.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -405,8 +404,6 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .mozilla-1238661
 %endif
 %patch419 -p1 -b .mozilla-1320560
-
-%patch450 -p1 -b .pr74
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -639,6 +636,10 @@ echo "ac_add_options --disable-eme" >> .mozconfig
 # Remove executable bit to make brp-mangle-shebangs happy.
 chmod -x third_party/rust/itertools/src/lib.rs
 
+find \
+  dom/plugins gfx/{skia,layers,gl} intl/icu/source/i18n \
+  js/src/wasm media/webrtc netwerk/sctp xpcom/threads \
+  -type f \( -name '*.c*' -o -name '*.h' \) -exec chmod -x {} ';'
 
 #---------------------------------------------------------------------
 
@@ -1044,6 +1045,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Apr 19 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.04-1.classic
+- 2022.04
+
 * Wed Mar 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.02-1.classic
 - 2022.02
 

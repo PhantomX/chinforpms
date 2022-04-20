@@ -52,7 +52,7 @@ libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
-pygtk2
+-pygtk2
 -python-markups
 -python-yoyo-migrations
 -perl-Gtk3
@@ -118,7 +118,7 @@ firejail
 firetools
 flips
 fluxbox-chinfo-menu
-fslint
+-fslint
 fss-parallel-tools
 eccedc
 engrampa

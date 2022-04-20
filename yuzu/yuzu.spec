@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2a9a83843ceebafda13ee3cbda7fc12d534f8fe8
+%global commit 8aa17b7ffc8a5e29ec98a150fdcba3818ff288ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220416
+%global date 20220419
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -74,7 +74,7 @@
 
 
 Name:           yuzu
-Version:        2682
+Version:        2687
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -235,9 +235,6 @@ sed \
   -i src/common/scm_rev.cpp.in
 
 %build
-mkdir -p dist/compatibility_list/
-cp %{S:20} dist/compatibility_list/
-
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with qt}
@@ -258,6 +255,8 @@ cp %{S:20} dist/compatibility_list/
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
 %{nil}
 
+cp -f %{S:20} %{__cmake_builddir}/dist/compatibility_list/
+
 %cmake_build
 
 
@@ -266,12 +265,13 @@ cp %{S:20} dist/compatibility_list/
 
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
+rm -rf %{buildroot}%{_libdir}
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
-%license license.txt externals/{COPYING,COPYRIGHT,LICENSE}.*
+%license license.txt externals/{COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %dnl %{_mandir}/man6/%{name}.6*
@@ -289,6 +289,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Apr 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2687-1.20220416git8aa17b7
+- 2687 ea
+
 * Sat Apr 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2682-1.20220416git2a9a838
 - 2682 ea
 
