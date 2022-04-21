@@ -1,6 +1,3 @@
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/10744450395503f1c584313b322f52e8f8542ef0
- 10744450395503f1c584313b322f52e8f8542ef0 ALSA: memalloc: Add fallback SG-buffer allocations for x86
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/46b6019e2cd4f3b778dc92eccee8facaf5b66be1
  46b6019e2cd4f3b778dc92eccee8facaf5b66be1 drm/i915: update new TMDS clock setting defined by VBT
 
