@@ -195,6 +195,7 @@
 %endif
 %define requires_block_ssh Requires: %{name}-block-ssh = %{evr}
 %define requires_audio_alsa Requires: %{name}-audio-alsa = %{evr}
+%define requires_audio_dbus Requires: %{name}-audio-dbus = %{evr}
 %define requires_audio_oss Requires: %{name}-audio-oss = %{evr}
 %define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
@@ -202,6 +203,7 @@
 %define requires_device_usb_host Requires: %{name}-device-usb-host = %{evr}
 %define requires_device_usb_redirect Requires: %{name}-device-usb-redirect = %{evr}
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
+%define requires_ui_dbus Requires: %{name}-ui-dbus = %{evr}
 %define requires_ui_gtk Requires: %{name}-ui-gtk = %{evr}
 %define requires_ui_sdl Requires: %{name}-ui-sdl = %{evr}
 %define requires_ui_egl_headless Requires: %{name}-ui-egl-headless = %{evr}
@@ -255,6 +257,7 @@
 %{requires_block_rbd} \
 %{requires_block_ssh} \
 %{requires_audio_alsa} \
+%{requires_audio_dbus} \
 %{requires_audio_oss} \
 %{requires_audio_pa} \
 %{requires_audio_sdl} \
@@ -299,8 +302,8 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 6.2.0
-Release: 101%{?dist}
+Version: 7.0.0
+Release: 100%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -320,10 +323,6 @@ Source31: kvm-x86.conf
 Source36: README.tests
 
 Patch0001: 0001-sgx-stub-fix.patch
-
-# CVE-2022-0358
-# https://bugzilla.redhat.com/show_bug.cgi?id=2046202
-Patch0002: 0001-virtiofsd-Drop-membership-of-all-supplementary-groups.patch
 
 
 BuildRequires: meson >= %{meson_version}
@@ -447,8 +446,6 @@ BuildRequires: virglrenderer-devel
 # preferred disassembler for TCG
 BuildRequires: capstone-devel
 %endif
-# parallels disk images require libxml2
-BuildRequires: libxml2-devel
 # qemu-ga
 BuildRequires: libudev-devel
 # qauth infrastructure
@@ -683,6 +680,12 @@ Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description audio-alsa
 This package provides the additional ALSA audio driver for QEMU.
 
+%package  audio-dbus
+Summary: QEMU D-Bus audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-dbus
+This package provides the additional D-Bus audio driver for QEMU.
+
 %package  audio-oss
 Summary: QEMU OSS audio driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
@@ -715,6 +718,12 @@ Summary: QEMU curses UI driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description ui-curses
 This package provides the additional curses UI for QEMU.
+
+%package  ui-dbus
+Summary: QEMU D-Bus UI driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description ui-dbus
+This package provides the additional D-Bus UI for QEMU.
 
 %package  ui-gtk
 Summary: QEMU GTK UI driver
@@ -1233,8 +1242,8 @@ mkdir -p %{static_builddir}
   --disable-avx2                   \\\
   --disable-avx512f                \\\
   --disable-block-drv-whitelist-in-tools \\\
-  --disable-bpf                    \\\
   --disable-bochs                  \\\
+  --disable-bpf                    \\\
   --disable-brlapi                 \\\
   --disable-bsd-user               \\\
   --disable-bzip2                  \\\
@@ -1244,6 +1253,7 @@ mkdir -p %{static_builddir}
   --disable-cfi-debug              \\\
   --disable-cloop                  \\\
   --disable-cocoa                  \\\
+  --disable-coreaudio              \\\
   --disable-coroutine-pool         \\\
   --disable-crypto-afalg           \\\
   --disable-curl                   \\\
@@ -1253,10 +1263,12 @@ mkdir -p %{static_builddir}
   --disable-debug-tcg              \\\
   --disable-dmg                    \\\
   --disable-docs                   \\\
+  --disable-dsound                 \\\
   --disable-fdt                    \\\
   --disable-fuse                   \\\
   --disable-fuse-lseek             \\\
   --disable-gcrypt                 \\\
+  --disable-gettext                \\\
   --disable-gio                    \\\
   --disable-glusterfs              \\\
   --disable-gnutls                 \\\
@@ -1266,7 +1278,9 @@ mkdir -p %{static_builddir}
   --disable-hax                    \\\
   --disable-hvf                    \\\
   --disable-iconv                  \\\
+  --disable-jack                   \\\
   --disable-kvm                    \\\
+  --disable-l2tpv3                 \\\
   --disable-libdaxctl              \\\
   --disable-libiscsi               \\\
   --disable-libnfs                 \\\
@@ -1274,7 +1288,6 @@ mkdir -p %{static_builddir}
   --disable-libssh                 \\\
   --disable-libudev                \\\
   --disable-libusb                 \\\
-  --disable-libxml2                \\\
   --disable-linux-aio              \\\
   --disable-linux-io-uring         \\\
   --disable-linux-user             \\\
@@ -1291,8 +1304,11 @@ mkdir -p %{static_builddir}
   --disable-netmap                 \\\
   --disable-nettle                 \\\
   --disable-numa                   \\\
+  --disable-nvmm                   \\\
   --disable-opengl                 \\\
+  --disable-oss                    \\\
   --disable-parallels              \\\
+  --disable-pa                     \\\
   --disable-pie                    \\\
   --disable-pvrdma                 \\\
   --disable-qcow1                  \\\
@@ -1307,6 +1323,7 @@ mkdir -p %{static_builddir}
   --disable-sdl                    \\\
   --disable-sdl-image              \\\
   --disable-seccomp                \\\
+  --disable-selinux                \\\
   --disable-slirp                  \\\
   --disable-slirp-smbd             \\\
   --disable-smartcard              \\\
@@ -1345,7 +1362,6 @@ mkdir -p %{static_builddir}
   --disable-whpx                   \\\
   --disable-xen                    \\\
   --disable-xen-pci-passthrough    \\\
-  --disable-xfsctl                 \\\
   --disable-xkbcommon              \\\
   --disable-zstd                   \\\
   --with-git-submodules=ignore     \\\
@@ -1411,11 +1427,14 @@ run_configure \
   --enable-docs \
 %if %{have_fdt}
   --enable-fdt=system \
+  --enable-gettext \
 %endif
   --enable-gnutls \
   --enable-guest-agent \
   --enable-iconv \
+  --enable-jack \
   --enable-kvm \
+  --enable-l2tpv3 \
   --enable-libiscsi \
 %if %{have_pmem}
   --enable-libpmem \
@@ -1437,6 +1456,8 @@ run_configure \
 %if %{have_opengl}
   --enable-opengl \
 %endif
+  --enable-oss \
+   --enable-pa \
   --enable-pie \
 %if %{have_block_rbd}
   --enable-rbd \
@@ -1493,7 +1514,6 @@ run_configure \
   --enable-libnfs \
 %endif
   --enable-libudev \
-  --enable-libxml2 \
 %if %{have_liburing}
   --enable-linux-io-uring \
 %endif
@@ -1949,6 +1969,8 @@ popd
 
 %files audio-alsa
 %{_libdir}/%{name}/audio-alsa.so
+%files audio-dbus
+%{_libdir}/%{name}/audio-dbus.so
 %files audio-oss
 %{_libdir}/%{name}/audio-oss.so
 %files audio-pa
@@ -1963,6 +1985,8 @@ popd
 
 %files ui-curses
 %{_libdir}/%{name}/ui-curses.so
+%files ui-dbus
+%{_libdir}/%{name}/ui-dbus.so
 %files ui-gtk
 %{_libdir}/%{name}/ui-gtk.so
 %files ui-sdl
@@ -2199,6 +2223,7 @@ popd
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/u-boot.e500
 %{_datadir}/%{name}/u-boot-sam460-20100605.bin
+%{_datadir}/%{name}/vof*.bin
 %if %{have_memlock_limits}
 %{_sysconfdir}/security/limits.d/95-kvm-memlock.conf
 %endif
@@ -2209,7 +2234,6 @@ popd
 %{_bindir}/qemu-system-riscv32
 %{_bindir}/qemu-system-riscv64
 %{_datadir}/%{name}/opensbi-riscv*.bin
-%{_datadir}/%{name}/opensbi-riscv*.elf
 %{_datadir}/systemtap/tapset/qemu-system-riscv*.stp
 %{_mandir}/man1/qemu-system-riscv*.1*
 
@@ -2293,6 +2317,10 @@ popd
 
 
 %changelog
+* Fri Apr 22 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.0.0-100
+- 7.0.0
+- Rawhide sync
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2:6.2.0-101
 - Rawhide sync
 

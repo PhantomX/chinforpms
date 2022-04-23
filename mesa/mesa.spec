@@ -64,8 +64,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.0.1
-Release:        101%{?dist}
+Version:        22.0.2
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -534,6 +534,7 @@ popd
 %files dri-drivers
 %dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%{_datadir}/drirc.d/00-radv-defaults.conf
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
@@ -670,6 +671,9 @@ popd
 
 
 %changelog
+* Fri Apr 22 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.2-100
+- 22.0.2
+
 * Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-101
 - Rebuild (llvm)
 
