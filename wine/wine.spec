@@ -1,7 +1,7 @@
 %global commit e254680ed15f43409114881d8ed613aa4b0de944
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220415
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -93,7 +93,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5147239513e46eade22c4fafbf4c0b5e388574c7
+%global wine_stagingver 7.7
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id baa8836b59a376593bf2cbf189645500cdc24a02
+%global tkg_id eee4cf3c059aca5658a6acf45003ef27dcbab17d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -136,15 +136,6 @@
 
 %global staging_banner Chinforpms Staging
 
-# binfmt macros for RHEL
-%if 0%{?rhel} == 7
-%global _binfmtdir /usr/lib/binfmt.d
-%global binfmt_apply() \
-/usr/lib/systemd/systemd-binfmt  %{?*} >/dev/null 2>&1 || : \
-%{nil}
-
-%endif
-
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -155,8 +146,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.6
-Release:        102%{?gver}%{?dist}
+Version:        7.7
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -276,6 +267,7 @@ Patch256:       %{whq_url}/90dc7f5b944192da4b7e2f4a3d5e687fe0c9cdd2#/%{name}-whq
 Patch257:       %{whq_url}/ed2c300d02acefa2aedd4333ff4a982137c1d4fe#/%{name}-whq-revert-mfplat-ed2c300.patch
 Patch258:       %{whq_url}/6f1b3cf975965e1383e5f5c802cebdc0f4956c2a#/%{name}-whq-revert-mfplat-6f1b3cf.patch
 Patch259:       %{whq_url}/ce9a42e8bda50fd5eb91c8dee78f310881d2c7e5#/%{name}-whq-revert-mfplat-ce9a42e.patch
+Patch260:       %{whq_url}/86e0a2489a7e82bff3eb751094661270a40a2167#/%{name}-whq-revert-mfplat-86e0a24.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -913,6 +905,7 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
+%patch260 -p1 -R
 %patch259 -p1 -R
 %patch258 -p1 -R
 %patch257 -p1 -R
@@ -1430,21 +1423,6 @@ install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1
 mkdir -p %{buildroot}/%{_metainfodir}/
 install -p -m 0644 %{SOURCE150} %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
 appstream-util validate-relax --nonet %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
-
-%if 0%{?rhel} == 6
-%post sysvinit
-if [ $1 -eq 1 ]; then
-/sbin/chkconfig --add wine
-/sbin/chkconfig --level 2345 wine on
-/sbin/service wine start &>/dev/null || :
-fi
-
-%preun sysvinit
-if [ $1 -eq 0 ]; then
-/sbin/service wine stop >/dev/null 2>&1
-/sbin/chkconfig --del wine
-fi
-%endif
 
 %post systemd
 %binfmt_apply wine.conf
@@ -2142,6 +2120,7 @@ fi
 %{_libdir}/wine/%{winesodir}/winspool.so
 %{_libdir}/wine/%{winedlldir}/winspool.%{winedrv}
 %{_libdir}/wine/%{winedlldir}/winsta.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wintypes.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmadmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
@@ -2556,11 +2535,6 @@ fi
 %files systemd
 %config %{_binfmtdir}/wine.conf
 
-%if 0%{?rhel} == 6
-%files sysvinit
-%{_initrddir}/wine
-%endif
-
 # ldap subpackage
 %files ldap
 %{_libdir}/wine/%{winesodir}/wldap32.so
@@ -2626,6 +2600,9 @@ fi
 
 
 %changelog
+* Sat Apr 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.7-100
+- 7.7
+
 * Sat Apr 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.6-102.20220415gite254680
 - Bump
 
