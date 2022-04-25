@@ -97,9 +97,6 @@ Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcomm
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
-%if %{with boost}
-Patch1:         0001-fix-system-boost-detection.patch
-%endif
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 %if 0%{?with_ea}
 Patch10:        0001-gcc-12-build-fix.patch
@@ -227,6 +224,13 @@ sed \
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
+%if %{with boost}
+sed \
+  -e '/Boost/s|CONFIG ||g' \
+  -e '/Boost/s| headers||g' \
+  -i CMakeLists.txt
+%endif
+
 sed \
   -e 's|@GIT_REV@|%{commit}|g' \
   -e 's|@GIT_BRANCH@|main|g' \
@@ -245,7 +249,6 @@ sed \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DYUZU_FIX_CMAKE_BOOST:BOOL=ON \
   -DYUZU_TESTS:BOOL=OFF \
   -DENABLE_WEB_SERVICE:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \

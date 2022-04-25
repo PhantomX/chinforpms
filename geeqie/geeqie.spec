@@ -152,6 +152,7 @@ install -p -m 0644 AUTHORS COPYING NEWS README* TODO \
 desktop-file-install \
     --delete-original \
     --dir %{buildroot}%{_datadir}/applications \
+    --add-mime-type="image/jxl" \
     --add-mime-type="image/svg;image/svg+xml;image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
 
