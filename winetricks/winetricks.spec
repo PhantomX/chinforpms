@@ -8,7 +8,7 @@
 %endif
 
 Name:           winetricks
-Version:        20220328
+Version:        20220411
 Release:        100%{?gver}%{?dist}
 
 Summary:        Work around common problems in Wine
@@ -76,6 +76,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 20220411-100
+- 20220411
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 20220328-100
 - 20220328
 
