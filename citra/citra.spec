@@ -8,15 +8,15 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ac98458e0b234e13936a9c2a98a413408d0f08c9
+%global commit 1382035d4de5ada310c7f4fd00f1836b16ab74fb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220305
+%global date 20220423
 %global with_snapshot 1
 
 # Enable system boost
 %bcond_without boost
 # Enable ffmpeg support
-%bcond_with ffmpeg
+%bcond_without ffmpeg
 # Disable Qt build
 %bcond_without qt
 # Enable advanced simd, ssse3+
@@ -80,7 +80,7 @@
 
 Name:           citra
 Version:        0
-Release:        19%{?gver}%{?dist}
+Release:        20%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -310,6 +310,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 0-20.20220423git1382035
+- Bump
+- Build with ffmpeg by default
+
 * Mon Mar 07 2022 Phantom X <megaphantomx at hotmail dot com> - 0-19.20220305gitac98458
 - Bump to fix upstream issues
 - Enable web service

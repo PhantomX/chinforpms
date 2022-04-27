@@ -1,6 +1,6 @@
-From 563d34ef483d70dc6ffc93acbf60ffeff23635fe Mon Sep 17 00:00:00 2001
+From e829ffac8fef9b5785b1754815717b7a3363db98 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 9 Feb 2022 08:15:48 -0300
+Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
 
 zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
@@ -15,7 +15,6 @@ zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
  Core/TextureReplacer.cpp              |  2 +-
  Core/Util/PPGeDraw.cpp                |  2 +-
  GPU/Common/TextureDecoder.cpp         |  2 +-
- GPU/Common/TextureDecoderNEON.cpp     |  2 +-
  GPU/D3D11/TextureCacheD3D11.cpp       |  2 +-
  GPU/Directx9/TextureCacheDX9.cpp      |  2 +-
  GPU/GLES/TextureCacheGLES.cpp         |  2 +-
@@ -23,13 +22,13 @@ zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
  UI/CwCheatScreen.cpp                  |  2 +-
  Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
- 18 files changed, 37 insertions(+), 17 deletions(-)
+ 17 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6882811..ca93c34 100644
+index 7f77287..8ce982e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -154,6 +154,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
+@@ -155,6 +155,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
  option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)
  option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
@@ -37,7 +36,7 @@ index 6882811..ca93c34 100644
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
  option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
  option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1310,11 +1311,30 @@ add_library(xbrz STATIC
+@@ -1316,11 +1317,30 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -147,7 +146,7 @@ index 5adea20..24e900c 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index f4a2e72..a81de5e 100644
+index 17ac72a..a658a28 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -173,33 +172,20 @@ index ccd5a79..f73b9a6 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Format/ZIMLoad.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 7cd89f5..744d549 100644
+index c18c96e..7ff2471 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
-@@ -16,7 +16,7 @@
- // https://github.com/hrydgard/ppsspp and http://www.ppsspp.org/.
+@@ -17,7 +17,7 @@
  
  #include "ppsspp_config.h"
+ 
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
+ 
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
- #include "Common/CPUDetect.h"
-diff --git a/GPU/Common/TextureDecoderNEON.cpp b/GPU/Common/TextureDecoderNEON.cpp
-index e0a427e..3f0ad05 100644
---- a/GPU/Common/TextureDecoderNEON.cpp
-+++ b/GPU/Common/TextureDecoderNEON.cpp
-@@ -19,7 +19,7 @@
- 
- #if PPSSPP_ARCH(ARM_NEON)
- 
--#include "ext/xxhash.h"
-+#include "xxhash.h"
- 
- #if defined(_MSC_VER) && PPSSPP_ARCH(ARM64)
- #include <arm64_neon.h>
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 199f408..df379c2 100644
+index 58a38cb..ee85a5d 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -37,7 +37,7 @@
@@ -212,7 +198,7 @@ index 199f408..df379c2 100644
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 26f15e6..c8e354f 100644
+index e9673e8..cc06a48 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -34,7 +34,7 @@
@@ -225,7 +211,7 @@ index 26f15e6..c8e354f 100644
  
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 160b435..3980b3b 100644
+index 66607cb..c0a08c1 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -238,7 +224,7 @@ index 160b435..3980b3b 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index de04a1b..38e765f 100644
+index 58d20e9..d632a57 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -264,7 +250,7 @@ index aaf5b8e..dd0c863 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index d36ebca..b3e0cb0 100644
+index cee7701..6a9e2d1 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -22,7 +22,7 @@
@@ -277,10 +263,10 @@ index d36ebca..b3e0cb0 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 83f160d..f0b610d 100644
+index 281a700..7fbdece 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
-@@ -3,7 +3,7 @@
+@@ -4,7 +4,7 @@
  #include <tchar.h>
  #include <math.h>
  #include <iomanip>
@@ -290,5 +276,5 @@ index 83f160d..f0b610d 100644
  #include "Windows/resource.h"
  #include "Core/MemMap.h"
 -- 
-2.35.1
+2.36.0
 

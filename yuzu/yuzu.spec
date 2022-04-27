@@ -74,7 +74,7 @@
 
 
 Name:           yuzu
-Version:        2687
+Version:        2706
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -292,6 +292,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 2706-1.20220419git8aa17b7
+- 2706 ea
+
 * Wed Apr 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2687-1.20220416git8aa17b7
 - 2687 ea
 

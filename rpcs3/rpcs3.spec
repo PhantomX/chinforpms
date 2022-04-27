@@ -9,18 +9,16 @@
 
 # Enable system ffmpeg
 %global with_sysffmpeg 1
-%if 0%{?fedora} && 0%{?fedora} >= 36
-%global with_sysffmpeg 0
-%endif
-%if !0%{?with_sysffmpeg}
 %global bundleffmpegver 4.2.1
-%endif
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %global with_smallffmpeg 1
+# Enable system flatbuffers
+%global with_sysflatbuffers 0
+%global bundleflatbuffers 2.0.6
 
-%global commit 3ed5a935fb4f66da84c32d7cd1856de0d36f85af
+%global commit e0d3a3b0ed6b42351dfe610d3ad97ef2dac96196
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220410
+%global date 20220425
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -35,7 +33,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
+%global commit13 9bb8cfffb0eed010e07132282c41d73064a7a609
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -67,6 +65,10 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
+%global commit21 615616cb5549a34bdf288c04bc1b94bd7a65c396
+%global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
+%global srcname21 flatbuffers
+
 %bcond_with     clang
 %bcond_with     native
 # Fail with system llvm
@@ -76,7 +78,6 @@
 %global toolchain clang
 %endif
 
-%global sevenzip_ver 19.00
 %global stb_ver 2.27
 
 %if 0%{?with_snapshot}
@@ -118,6 +119,9 @@ Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
 Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %endif
 %endif
+%if !0%{?with_sysflatbuffers}
+Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
+%endif
 Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
@@ -142,16 +146,20 @@ BuildRequires:  cmake(cubeb)
 %if !%{with llvm_submod}
 BuildRequires:  cmake(LLVM)
 %endif
-BuildRequires:  pkgconfig(flatbuffers)
+%if 0%{?with_sysflatbuffers}
+BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
+%else
+Provides:       bundled(flatbuffers) = %{bundleflatbuffers}
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
 %if 0%{?with_sysffmpeg}
-BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavcodec) >= %{bundleffmpegver}
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  ffmpeg-devel
+BuildRequires:  ffmpeg-devel >= %{bundleffmpegver}
 %endif
 %else
 BuildRequires:  make
@@ -194,7 +202,6 @@ BuildRequires:  shared-mime-info
 
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(7z) = %{sevenzip_ver}
 Provides:       bundled(spirv-tools) = 0~git%{shortcommit10}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
@@ -256,6 +263,10 @@ sed \
   -i linux_*.sh
 
 popd
+%endif
+%if !0%{?with_sysflatbuffers}
+tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
+cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
 %endif
 
 pushd 3rdparty
@@ -321,12 +332,15 @@ popd
 %else
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
 %endif
+  -DWITH_LLVM:BOOL=ON \
 %if !%{with llvm_submod}
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_FAUDIO:BOOL=OFF \
   -DUSE_DISCORD_RPC:BOOL=OFF \
+%if 0%{?with_sysflatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
+%endif
   -DUSE_SYSTEM_CURL:BOOL=ON \
 %if 0%{?with_sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
@@ -382,6 +396,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 %changelog
 * Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-3.20220410git3ed5a93
 - Update
+- Reenable system ffmpeg
+- Build with bundled flatbluffers
 
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-2.20220329git4a86638
 - Bump

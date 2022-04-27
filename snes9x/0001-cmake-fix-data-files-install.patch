@@ -1,0 +1,39 @@
+From ddab617b62e18c00312ccfbf643f9b2be9005727 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 26 Apr 2022 17:02:45 -0300
+Subject: [PATCH] cmake: fix data files install
+
+---
+ gtk/CMakeLists.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/gtk/CMakeLists.txt b/gtk/CMakeLists.txt
+index a2de6bb..6785cbf 100644
+--- a/gtk/CMakeLists.txt
++++ b/gtk/CMakeLists.txt
+@@ -20,8 +20,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ set(CMAKE_INSTALL_DATADIR "snes9x" CACHE STRING "cheats.bml directory")
+ set(CMAKE_INSTALL_LOCALEDIR locale CACHE STRING "Locale directory")
+ 
+-string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_DATADIR})
+-string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_LOCALEDIR})
++string(APPEND DATADIR ${SHARE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATADIR})
++string(APPEND LOCALEDIR ${SHARE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_LOCALEDIR})
+ add_compile_definitions(HAVE_LIBPNG
+                         ZLIB SNES9X_GTK
+                         NETPLAY_SUPPORT
+@@ -42,7 +42,10 @@ set(DEFINES)
+ include(FindGettext)
+ 
+ foreach(lang es fr_FR ja pt_BR ru sr@latin uk zh_CN)
+-    GETTEXT_PROCESS_PO_FILES(${lang} ALL INSTALL_DESTINATION "share/locale/" PO_FILES po/${lang}.po)
++    GETTEXT_PROCESS_PO_FILES(${lang} ALL PO_FILES po/${lang}.po)
++    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${lang}.gmo
++                  DESTINATION "${SHARE_INSTALL_PREFIX}/locale/${lang}/LC_MESSAGES/"
++                  RENAME ${CMAKE_PROJECT_NAME}.mo)
+ endforeach()
+ 
+ find_package(PkgConfig REQUIRED)
+-- 
+2.36.0
+

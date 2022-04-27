@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6f04f52f5ca51b60c719e074199691b2ccf32860
+%global commit cf9c3e8c76f1df5c2b028141fff9d4e9fd029e13
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220324
+%global date 20220426
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -65,7 +65,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        111%{?gver}%{?dist}
+Release:        112%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -445,6 +445,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-112.20220426gitcf9c3e8
+- Bump
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-111.20220324git6f04f52
 - Last snapshot
 

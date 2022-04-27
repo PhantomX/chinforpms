@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2582
+Version:        1.7.2663
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -93,6 +93,8 @@ BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(libzip)
+BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  cmake(ryml) >= 0.4.1
@@ -293,6 +295,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2663-1
+- 1.7.2663
+
 * Sun Apr 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2582-1
 - 1.7.2582
 

@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.2.2
+Version:        3.2.3
 Release:        100%{?gver}%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -94,6 +94,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 
 rm -f %{buildroot}%{_datadir}/%{name}/CHANGELOG.md
 rm -f %{buildroot}%{_datadir}/%{name}/gamecontrollerdb.txt
+rm -f %{buildroot}%{_datadir}/%{name}/LICENSE_SDL_GameControllerDB
 
 rm -rf %{buildroot}%{_includedir}
 
@@ -119,6 +120,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Wed Apr 27 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.3-100
+- 3.2.3
+
 * Thu Feb 24 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.2-100
 - 3.2.2
 

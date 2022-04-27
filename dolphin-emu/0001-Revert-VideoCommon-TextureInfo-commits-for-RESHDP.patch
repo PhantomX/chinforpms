@@ -1,6 +1,6 @@
-From f3e45e9fa49032f4073273fae85e0bacd615be90 Mon Sep 17 00:00:00 2001
+From 738deddfa4984d3b7a46440096457030e1a4772c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 10 Apr 2022 19:07:35 -0300
+Date: Tue, 26 Apr 2022 16:01:06 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
 
 2d59dcb95d1256bdbe0bf020c029b191477a241c - VideoCommon/TextureInfo: Fix mipmap loading from tmem
@@ -26,6 +26,8 @@ a96cfe253114d28f7318d33eb9bb8cb0017bd45d - GLES: Fix LOD bias int/float mismatch
 bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destination alpha factors in logic op workaround
 608799f1e454f8473e5709204adb544eac52ddca - PixelShaderGen: Check uid_data for use_shader_logic_op
 bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround for shader logic ops
+259a5fc7c02d48f21d2479d8e259519bc4ed443e - DriverDetails: Add broken discard with early-Z bug on Apple Silicon GPUs
+---
 ---
  Source/Core/AudioCommon/AlsaSoundStream.cpp   |   3 +-
  Source/Core/AudioCommon/AudioStretcher.cpp    |   3 +-
@@ -215,47 +217,49 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  .../VideoBackends/Vulkan/StagingBuffer.cpp    |   3 +-
  .../VideoBackends/Vulkan/VKBoundingBox.cpp    |   3 +-
  Source/Core/VideoBackends/Vulkan/VKMain.cpp   |   3 +-
+ .../Core/VideoBackends/Vulkan/VKPipeline.cpp  |   7 +-
  .../Core/VideoBackends/Vulkan/VKRenderer.cpp  |  11 +-
  Source/Core/VideoBackends/Vulkan/VKShader.cpp |   3 +-
  .../Core/VideoBackends/Vulkan/VKTexture.cpp   |   3 +-
- .../VideoBackends/Vulkan/VulkanContext.cpp    |  22 +-
+ .../VideoBackends/Vulkan/VulkanContext.cpp    |  29 +-
  .../VideoBackends/Vulkan/VulkanLoader.cpp     |   4 +-
  .../VideoCommon/AbstractStagingTexture.cpp    |   3 +-
  Source/Core/VideoCommon/AbstractTexture.cpp   |   3 +-
  Source/Core/VideoCommon/AsyncRequests.cpp     |   3 +-
- Source/Core/VideoCommon/BPMemory.h            | 168 +------
- Source/Core/VideoCommon/BPStructs.cpp         |  88 ++--
+ Source/Core/VideoCommon/BPMemory.h            | 168 +-----
+ Source/Core/VideoCommon/BPStructs.cpp         |  88 +--
  Source/Core/VideoCommon/CMakeLists.txt        |   9 +-
  Source/Core/VideoCommon/CommandProcessor.cpp  |   3 +-
  Source/Core/VideoCommon/ConstantManager.h     |  10 +-
- Source/Core/VideoCommon/DriverDetails.cpp     |   3 +-
+ Source/Core/VideoCommon/DriverDetails.cpp     |   5 +-
+ Source/Core/VideoCommon/DriverDetails.h       |  10 +-
  Source/Core/VideoCommon/FPSCounter.cpp        |   3 +-
  Source/Core/VideoCommon/GXPipelineTypes.h     |   2 +-
  .../VideoCommon/GeometryShaderManager.cpp     |   3 +-
  Source/Core/VideoCommon/HiresTextures.cpp     |  93 +++-
  Source/Core/VideoCommon/HiresTextures.h       |   9 +-
- Source/Core/VideoCommon/PixelShaderGen.cpp    | 475 ++----------------
+ Source/Core/VideoCommon/PixelShaderGen.cpp    | 502 ++----------------
  Source/Core/VideoCommon/PixelShaderGen.h      |   2 -
  .../Core/VideoCommon/PixelShaderManager.cpp   |  32 +-
  Source/Core/VideoCommon/PixelShaderManager.h  |   1 -
- Source/Core/VideoCommon/RenderState.cpp       | 121 ++---
+ Source/Core/VideoCommon/RenderState.cpp       | 121 +++--
  Source/Core/VideoCommon/RenderState.h         | 157 ++----
  Source/Core/VideoCommon/SamplerCommon.h       |  27 +
  Source/Core/VideoCommon/ShaderCache.cpp       |   4 +-
- Source/Core/VideoCommon/ShaderGenCommon.cpp   |  28 --
+ Source/Core/VideoCommon/ShaderGenCommon.cpp   |  28 -
  Source/Core/VideoCommon/ShaderGenCommon.h     |  16 -
- Source/Core/VideoCommon/TMEM.cpp              | 290 -----------
+ Source/Core/VideoCommon/TMEM.cpp              | 290 ----------
  Source/Core/VideoCommon/TMEM.h                |  26 -
- Source/Core/VideoCommon/TextureCacheBase.cpp  | 370 +++++++-------
+ Source/Core/VideoCommon/TextureCacheBase.cpp  | 370 ++++++-------
  Source/Core/VideoCommon/TextureCacheBase.h    |  17 +-
  Source/Core/VideoCommon/TextureConfig.cpp     |   3 +-
  .../VideoCommon/TextureDecoder_Generic.cpp    |  16 +-
  .../Core/VideoCommon/TextureDecoder_x64.cpp   |   3 +-
- Source/Core/VideoCommon/TextureInfo.cpp       | 315 ------------
- Source/Core/VideoCommon/TextureInfo.h         | 118 -----
+ Source/Core/VideoCommon/TextureInfo.cpp       | 315 -----------
+ Source/Core/VideoCommon/TextureInfo.h         | 118 ----
  Source/Core/VideoCommon/UberShaderCommon.cpp  |  19 +-
  Source/Core/VideoCommon/UberShaderCommon.h    |  19 +
- Source/Core/VideoCommon/UberShaderPixel.cpp   | 163 ++----
+ Source/Core/VideoCommon/UberShaderPixel.cpp   | 190 ++-----
  Source/Core/VideoCommon/UberShaderVertex.cpp  |   2 +-
  Source/Core/VideoCommon/VertexLoaderBase.h    |   5 +-
  .../Core/VideoCommon/VertexLoader_Color.cpp   |   3 +-
@@ -264,7 +268,7 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 237 files changed, 954 insertions(+), 2554 deletions(-)
+ 239 files changed, 967 insertions(+), 2621 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -1126,10 +1130,10 @@ index 7ac600c..ee8d27c 100644
  namespace Config
  {
 diff --git a/Source/Core/Core/Config/GraphicsSettings.cpp b/Source/Core/Core/Config/GraphicsSettings.cpp
-index 143fdd9..e68a0c9 100644
+index b5b4f36..0644123 100644
 --- a/Source/Core/Core/Config/GraphicsSettings.cpp
 +++ b/Source/Core/Core/Config/GraphicsSettings.cpp
-@@ -152,8 +152,6 @@ const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES{
+@@ -151,8 +151,6 @@ const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES{
  const Info<bool> GFX_HACK_VERTEX_ROUNDING{{System::GFX, "Hacks", "VertexRounding"}, false};
  const Info<u32> GFX_HACK_MISSING_COLOR_VALUE{{System::GFX, "Hacks", "MissingColorValue"},
                                               0xFFFFFFFF};
@@ -1139,10 +1143,10 @@ index 143fdd9..e68a0c9 100644
  // Graphics.GameSpecific
  
 diff --git a/Source/Core/Core/Config/GraphicsSettings.h b/Source/Core/Core/Config/GraphicsSettings.h
-index 9418198..2fb81ca 100644
+index 6895501..7b0030d 100644
 --- a/Source/Core/Core/Config/GraphicsSettings.h
 +++ b/Source/Core/Core/Config/GraphicsSettings.h
-@@ -125,7 +125,6 @@ extern const Info<bool> GFX_HACK_COPY_EFB_SCALED;
+@@ -124,7 +124,6 @@ extern const Info<bool> GFX_HACK_COPY_EFB_SCALED;
  extern const Info<bool> GFX_HACK_EFB_EMULATE_FORMAT_CHANGES;
  extern const Info<bool> GFX_HACK_VERTEX_ROUNDING;
  extern const Info<u32> GFX_HACK_MISSING_COLOR_VALUE;
@@ -2168,7 +2172,7 @@ index 9a0326e..3e03ef3 100644
  #include "Core/PowerPC/MMU.h"
  #include "Core/PowerPC/PPCTables.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStorePaired.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStorePaired.cpp
-index 1319730..5a4daa5 100644
+index 4fa015d..91dc4b8 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStorePaired.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStorePaired.cpp
 @@ -1,8 +1,6 @@
@@ -2302,7 +2306,7 @@ index ca09054..02235d3 100644
  #include <array>
  #include <cstring>
 diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
-index b1a3c70..5a9da30 100644
+index 71e8642..f67f35b 100644
 --- a/Source/Core/Core/State.cpp
 +++ b/Source/Core/Core/State.cpp
 @@ -74,7 +74,7 @@ static std::recursive_mutex g_save_thread_mutex;
@@ -3114,7 +3118,7 @@ index 6df37b4..752d2e7 100644
  namespace ciface::evdev
  {
 diff --git a/Source/Core/InputCommon/GCAdapter_Android.cpp b/Source/Core/InputCommon/GCAdapter_Android.cpp
-index 1e58733..f429705 100644
+index 499a9ec..d1be357 100644
 --- a/Source/Core/InputCommon/GCAdapter_Android.cpp
 +++ b/Source/Core/InputCommon/GCAdapter_Android.cpp
 @@ -1,8 +1,6 @@
@@ -3219,10 +3223,10 @@ index 2eb6da7..6495fcf 100644
  #include "VideoBackends/D3DCommon/D3DCommon.h"
  
 diff --git a/Source/Core/VideoBackends/D3D/D3DMain.cpp b/Source/Core/VideoBackends/D3D/D3DMain.cpp
-index ea11c33..8163087 100644
+index 6fc2c28..ccd231d 100644
 --- a/Source/Core/VideoBackends/D3D/D3DMain.cpp
 +++ b/Source/Core/VideoBackends/D3D/D3DMain.cpp
-@@ -107,9 +107,6 @@ void VideoBackend::FillBackendInfo()
+@@ -106,9 +106,6 @@ void VideoBackend::FillBackendInfo()
    g_Config.backend_info.bSupportsSSAA = true;
    g_Config.backend_info.bSupportsShaderBinaries = true;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
@@ -3577,10 +3581,10 @@ index 7ff42c8..ce4d23b 100644
  };
  }  // namespace DX12
 diff --git a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
-index 2ddec74..2d15eb4 100644
+index 197d309..d466dec 100644
 --- a/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
 +++ b/Source/Core/VideoBackends/D3D12/VideoBackend.cpp
-@@ -83,9 +83,6 @@ void VideoBackend::FillBackendInfo()
+@@ -82,9 +82,6 @@ void VideoBackend::FillBackendInfo()
    g_Config.backend_info.AAModes = DXContext::GetAAModes(g_Config.iAdapter);
    g_Config.backend_info.bSupportsShaderBinaries = true;
    g_Config.backend_info.bSupportsPipelineCacheData = true;
@@ -3635,10 +3639,10 @@ index 0d7c84b..ba75fc3 100644
  #include "VideoCommon/VideoConfig.h"
  
 diff --git a/Source/Core/VideoBackends/Null/NullBackend.cpp b/Source/Core/VideoBackends/Null/NullBackend.cpp
-index 0a400fc..ed370df 100644
+index 5d04a5a..21bb07d 100644
 --- a/Source/Core/VideoBackends/Null/NullBackend.cpp
 +++ b/Source/Core/VideoBackends/Null/NullBackend.cpp
-@@ -56,9 +56,6 @@ void VideoBackend::InitBackendInfo()
+@@ -55,9 +55,6 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsPartialDepthCopies = false;
    g_Config.backend_info.bSupportsShaderBinaries = false;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
@@ -3649,7 +3653,7 @@ index 0a400fc..ed370df 100644
  
    // aamodes: We only support 1 sample, so no MSAA
 diff --git a/Source/Core/VideoBackends/OGL/OGLMain.cpp b/Source/Core/VideoBackends/OGL/OGLMain.cpp
-index 3e16b86..316a23f 100644
+index a286625..838d1ed 100644
 --- a/Source/Core/VideoBackends/OGL/OGLMain.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLMain.cpp
 @@ -33,8 +33,6 @@ Make AA apply instantly during gameplay if possible
@@ -3669,7 +3673,7 @@ index 3e16b86..316a23f 100644
  
  #include "VideoCommon/FramebufferManager.h"
  #include "VideoCommon/TextureCacheBase.h"
-@@ -93,7 +92,6 @@ void VideoBackend::InitBackendInfo()
+@@ -92,7 +91,6 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsPartialDepthCopies = true;
    g_Config.backend_info.bSupportsShaderBinaries = false;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
@@ -3677,7 +3681,7 @@ index 3e16b86..316a23f 100644
  
    // TODO: There is a bug here, if texel buffers or SSBOs/atomics are not supported the graphics
    // options will show the option when it is not supported. The only way around this would be
-@@ -101,7 +99,7 @@ void VideoBackend::InitBackendInfo()
+@@ -100,7 +98,7 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsGPUTextureDecoding = true;
    g_Config.backend_info.bSupportsBBox = true;
  
@@ -3686,7 +3690,7 @@ index 3e16b86..316a23f 100644
    g_Config.backend_info.bSupportsDualSourceBlend = true;
    g_Config.backend_info.bSupportsPrimitiveRestart = true;
    g_Config.backend_info.bSupportsPaletteConversion = true;
-@@ -109,8 +107,6 @@ void VideoBackend::InitBackendInfo()
+@@ -108,8 +106,6 @@ void VideoBackend::InitBackendInfo()
    g_Config.backend_info.bSupportsDepthClamp = true;
    g_Config.backend_info.bSupportsST3CTextures = false;
    g_Config.backend_info.bSupportsBPTCTextures = false;
@@ -3712,7 +3716,7 @@ index b4962cf..ee45fe8 100644
  #include "VideoBackends/OGL/OGLShader.h"
  #include "VideoBackends/OGL/OGLVertexManager.h"
 diff --git a/Source/Core/VideoBackends/OGL/OGLRender.cpp b/Source/Core/VideoBackends/OGL/OGLRender.cpp
-index fae0d7a..ddcfff8 100644
+index 4c68694..a8af82a 100644
 --- a/Source/Core/VideoBackends/OGL/OGLRender.cpp
 +++ b/Source/Core/VideoBackends/OGL/OGLRender.cpp
 @@ -482,10 +482,6 @@ Renderer::Renderer(std::unique_ptr<GLContext> main_gl_context, float backbuffer_
@@ -3755,7 +3759,7 @@ index 113be2f..e19707c 100644
  
  #include "VideoCommon/VideoConfig.h"
 diff --git a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
-index 659882d..f6c89a8 100644
+index 817f894..70422a2 100644
 --- a/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 +++ b/Source/Core/VideoBackends/OGL/ProgramShaderCache.cpp
 @@ -692,6 +692,7 @@ void ProgramShaderCache::CreateHeader()
@@ -3889,10 +3893,10 @@ index c580461..397442f 100644
    u8 fract = maxLod & 0xf;
  
 diff --git a/Source/Core/VideoBackends/Software/Rasterizer.cpp b/Source/Core/VideoBackends/Software/Rasterizer.cpp
-index f886858..de9925d 100644
+index aaa5255..cb6e5ae 100644
 --- a/Source/Core/VideoBackends/Software/Rasterizer.cpp
 +++ b/Source/Core/VideoBackends/Software/Rasterizer.cpp
-@@ -163,33 +163,31 @@ static void InitSlope(Slope* slope, float f1, float f2, float f3, float DX31, fl
+@@ -211,33 +211,31 @@ static void Draw(s32 x, s32 y, s32 xi, s32 yi)
  
  static inline void CalculateLOD(s32* lodp, bool* linear, u32 texmap, u32 texcoord)
  {
@@ -3982,7 +3986,7 @@ index 082c263..a70f1b0 100644
  namespace SW
  {
 diff --git a/Source/Core/VideoBackends/Software/SWmain.cpp b/Source/Core/VideoBackends/Software/SWmain.cpp
-index 753f869..c0c2aff 100644
+index a74b2eb..12bcbf5 100644
 --- a/Source/Core/VideoBackends/Software/SWmain.cpp
 +++ b/Source/Core/VideoBackends/Software/SWmain.cpp
 @@ -1,8 +1,6 @@
@@ -4002,7 +4006,7 @@ index 753f869..c0c2aff 100644
  
  #include "VideoCommon/FramebufferManager.h"
  #include "VideoCommon/TextureCacheBase.h"
-@@ -85,9 +84,6 @@ void VideoSoftware::InitBackendInfo()
+@@ -84,9 +83,6 @@ void VideoSoftware::InitBackendInfo()
    g_Config.backend_info.bSupportsShaderBinaries = false;
    g_Config.backend_info.bSupportsPipelineCacheData = false;
    g_Config.backend_info.bSupportsBBox = true;
@@ -4161,7 +4165,7 @@ index fd29645..a1ccdd6 100644
      // Cap anisotropy to device limits.
      create_info.anisotropyEnable = VK_TRUE;
 diff --git a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
-index 7da5f82..ae010aa 100644
+index b8f0a23..b4ba6d4 100644
 --- a/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
 @@ -2,6 +2,7 @@
@@ -4256,6 +4260,38 @@ index 56cf93a..abe531a 100644
  #include "VideoBackends/Vulkan/VulkanContext.h"
  
  #include "VideoCommon/FramebufferManager.h"
+diff --git a/Source/Core/VideoBackends/Vulkan/VKPipeline.cpp b/Source/Core/VideoBackends/Vulkan/VKPipeline.cpp
+index 61c51b5..77ac29b 100644
+--- a/Source/Core/VideoBackends/Vulkan/VKPipeline.cpp
++++ b/Source/Core/VideoBackends/Vulkan/VKPipeline.cpp
+@@ -133,7 +133,7 @@ static VkPipelineDepthStencilStateCreateInfo GetVulkanDepthStencilState(const De
+ }
+ 
+ static VkPipelineColorBlendAttachmentState
+-GetVulkanAttachmentBlendState(const BlendingState& state, AbstractPipelineUsage usage)
++GetVulkanAttachmentBlendState(const BlendingState& state)
+ {
+   VkPipelineColorBlendAttachmentState vk_state = {};
+ 
+@@ -143,8 +143,7 @@ GetVulkanAttachmentBlendState(const BlendingState& state, AbstractPipelineUsage
+   bool use_shader_blend = !use_dual_source && state.usedualsrc && state.dstalpha &&
+                           g_ActiveConfig.backend_info.bSupportsFramebufferFetch;
+ 
+-  if (use_shader_blend || (usage == AbstractPipelineUsage::GX &&
+-                           DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z)))
++  if (use_shader_blend)
+   {
+     vk_state.blendEnable = VK_FALSE;
+   }
+@@ -350,7 +349,7 @@ std::unique_ptr<VKPipeline> VKPipeline::Create(const AbstractPipelineConfig& con
+   VkPipelineDepthStencilStateCreateInfo depth_stencil_state =
+       GetVulkanDepthStencilState(config.depth_state);
+   VkPipelineColorBlendAttachmentState blend_attachment_state =
+-      GetVulkanAttachmentBlendState(config.blending_state, config.usage);
++      GetVulkanAttachmentBlendState(config.blending_state);
+   VkPipelineColorBlendStateCreateInfo blend_state =
+       GetVulkanColorBlendState(config.blending_state, &blend_attachment_state, 1);
+ 
 diff --git a/Source/Core/VideoBackends/Vulkan/VKRenderer.cpp b/Source/Core/VideoBackends/Vulkan/VKRenderer.cpp
 index db5037f..06a3f09 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKRenderer.cpp
@@ -4354,7 +4390,7 @@ index 2bd06bf..f4b9182 100644
  
  #include "VideoCommon/VideoConfig.h"
 diff --git a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
-index 8e0f0ed..8d6f6d8 100644
+index 0a82d64..7d8e6c7 100644
 --- a/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VulkanContext.cpp
 @@ -1,8 +1,6 @@
@@ -4374,7 +4410,7 @@ index 8e0f0ed..8d6f6d8 100644
  #include "VideoCommon/DriverDetails.h"
  #include "VideoCommon/VideoCommon.h"
  
-@@ -291,9 +290,6 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
+@@ -290,9 +289,6 @@ void VulkanContext::PopulateBackendInfo(VideoConfig* config)
    config->backend_info.bSupportsLogicOp = false;                   // Dependent on features.
    config->backend_info.bSupportsLargePoints = false;               // Dependent on features.
    config->backend_info.bSupportsFramebufferFetch = false;          // Dependent on OS and features.
@@ -4384,7 +4420,7 @@ index 8e0f0ed..8d6f6d8 100644
    config->backend_info.bSupportsSettingObjectNames = false;        // Dependent on features.
  }
  
-@@ -322,13 +318,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+@@ -321,13 +317,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
    config->backend_info.bSupportsSSAA = (features.sampleRateShading == VK_TRUE);
    config->backend_info.bSupportsLogicOp = (features.logicOp == VK_TRUE);
  
@@ -4398,7 +4434,7 @@ index 8e0f0ed..8d6f6d8 100644
    // Disable geometry shader when shaderTessellationAndGeometryPointSize is not supported.
    // Seems this is needed for gl_Layer.
    if (!features.shaderTessellationAndGeometryPointSize)
-@@ -353,15 +342,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+@@ -352,15 +341,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
                                                properties.limits.pointSizeRange[0] <= 1.0f &&
                                                properties.limits.pointSizeRange[1] >= 16;
  
@@ -4414,6 +4450,20 @@ index 8e0f0ed..8d6f6d8 100644
    // Our usage of primitive restart appears to be broken on AMD's binary drivers.
    // Seems to be fine on GCN Gen 1-2, unconfirmed on GCN Gen 3, causes driver resets on GCN Gen 4.
    if (DriverDetails::HasBug(DriverDetails::BUG_PRIMITIVE_RESTART))
+@@ -370,13 +350,6 @@ void VulkanContext::PopulateBackendInfoFeatures(VideoConfig* config, VkPhysicalD
+   // with depth clamping. Fall back to inverted depth range for these.
+   if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_REVERSED_DEPTH_RANGE))
+     config->backend_info.bSupportsReversedDepthRange = false;
+-
+-  // Calling discard when early depth test is enabled can break on some Apple Silicon GPU drivers.
+-  if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z))
+-  {
+-    // We will use shader blending, so disable hardware dual source blending.
+-    config->backend_info.bSupportsDualSourceBlend = false;
+-  }
+ }
+ 
+ void VulkanContext::PopulateBackendInfoMultisampleModes(
 diff --git a/Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp b/Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp
 index 6b1f688..7c94da0 100644
 --- a/Source/Core/VideoBackends/Vulkan/VulkanLoader.cpp
@@ -4492,7 +4542,7 @@ index f8306dd..10f5b37 100644
  #include "VideoCommon/RenderBase.h"
  #include "VideoCommon/Statistics.h"
 diff --git a/Source/Core/VideoCommon/BPMemory.h b/Source/Core/VideoCommon/BPMemory.h
-index 0d21166..b046aa4 100644
+index 4729e06..6aa5d27 100644
 --- a/Source/Core/VideoCommon/BPMemory.h
 +++ b/Source/Core/VideoCommon/BPMemory.h
 @@ -1113,6 +1113,18 @@ struct fmt::formatter<ZTex2>
@@ -4514,7 +4564,7 @@ index 0d21166..b046aa4 100644
  // Geometry/other structs
  enum class CullMode : u32
  {
-@@ -2133,160 +2145,6 @@ struct BPS_TmemConfig
+@@ -2173,160 +2185,6 @@ struct BPS_TmemConfig
    u32 texinvalidate;
  };
  
@@ -4675,7 +4725,7 @@ index 0d21166..b046aa4 100644
  // All of BP memory
  
  struct BPCmd
-@@ -2351,7 +2209,7 @@ struct BPMemory
+@@ -2391,7 +2249,7 @@ struct BPMemory
    FieldMode fieldmode;                // 68
    u32 unknown10[7];                   // 69-6F
    u32 unknown11[16];                  // 70-7F
@@ -4685,7 +4735,7 @@ index 0d21166..b046aa4 100644
    TevReg tevregs[4];                  // 0xE0
    FogRangeParams fogRange;            // 0xE8
 diff --git a/Source/Core/VideoCommon/BPStructs.cpp b/Source/Core/VideoCommon/BPStructs.cpp
-index 503ef61..09193cb 100644
+index c6746d4..523340d 100644
 --- a/Source/Core/VideoCommon/BPStructs.cpp
 +++ b/Source/Core/VideoCommon/BPStructs.cpp
 @@ -32,7 +32,6 @@
@@ -4696,7 +4746,7 @@ index 503ef61..09193cb 100644
  #include "VideoCommon/TextureCacheBase.h"
  #include "VideoCommon/TextureDecoder.h"
  #include "VideoCommon/VertexShaderManager.h"
-@@ -353,7 +352,7 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
+@@ -351,7 +350,7 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
      if (OpcodeDecoder::g_record_fifo_data)
        FifoRecorder::GetInstance().UseMemory(addr, tlutXferCount, MemoryUpdate::TMEM);
  
@@ -4705,7 +4755,7 @@ index 503ef61..09193cb 100644
  
      return;
    }
-@@ -459,7 +458,8 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
+@@ -457,7 +456,8 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
    }
      return;
    case BPMEM_TEXINVALIDATE:
@@ -4715,7 +4765,7 @@ index 503ef61..09193cb 100644
      return;
  
    case BPMEM_ZCOMPARE:  // Set the Z-Compare and EFB pixel format
-@@ -567,7 +567,7 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
+@@ -565,7 +565,7 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
        if (OpcodeDecoder::g_record_fifo_data)
          FifoRecorder::GetInstance().UseMemory(src_addr, bytes_read, MemoryUpdate::TMEM);
  
@@ -4724,7 +4774,7 @@ index 503ef61..09193cb 100644
      }
      return;
  
-@@ -645,48 +645,48 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
+@@ -643,48 +643,48 @@ static void BPWritten(const BPCmd& bp, int cycles_into_future)
        GeometryShaderManager::SetTexCoordChanged((bp.address - BPMEM_SU_SSIZE) >> 1);
      }
      return;
@@ -4873,7 +4923,7 @@ index 6ebb726..249ce67 100644
  #include "Core/System.h"
  #include "VideoCommon/Fifo.h"
 diff --git a/Source/Core/VideoCommon/ConstantManager.h b/Source/Core/VideoCommon/ConstantManager.h
-index 5335af9..fe80767 100644
+index 9fd4c06..f7e351b 100644
 --- a/Source/Core/VideoCommon/ConstantManager.h
 +++ b/Source/Core/VideoCommon/ConstantManager.h
 @@ -15,14 +15,13 @@ using int4 = std::array<s32, 4>;
@@ -4921,7 +4971,7 @@ index 5335af9..fe80767 100644
  
  struct VertexShaderConstants
 diff --git a/Source/Core/VideoCommon/DriverDetails.cpp b/Source/Core/VideoCommon/DriverDetails.cpp
-index 829d050..7c91542 100644
+index 6d7749c..7c91542 100644
 --- a/Source/Core/VideoCommon/DriverDetails.cpp
 +++ b/Source/Core/VideoCommon/DriverDetails.cpp
 @@ -1,11 +1,10 @@
@@ -4937,6 +4987,36 @@ index 829d050..7c91542 100644
  
  namespace DriverDetails
  {
+@@ -140,8 +139,6 @@ constexpr BugInfo m_known_bugs[] = {
+      -1.0, -1.0, true},
+     {API_VULKAN, OS_ALL, VENDOR_QUALCOMM, DRIVER_QUALCOMM, Family::UNKNOWN, BUG_PRIMITIVE_RESTART,
+      -1.0, -1.0, true},
+-    {API_VULKAN, OS_OSX, VENDOR_APPLE, DRIVER_PORTABILITY, Family::UNKNOWN,
+-     BUG_BROKEN_DISCARD_WITH_EARLY_Z, -1.0, -1.0, true},
+ };
+ 
+ static std::map<Bug, BugInfo> m_bugs;
+diff --git a/Source/Core/VideoCommon/DriverDetails.h b/Source/Core/VideoCommon/DriverDetails.h
+index 70c3945..f902f31 100644
+--- a/Source/Core/VideoCommon/DriverDetails.h
++++ b/Source/Core/VideoCommon/DriverDetails.h
+@@ -319,15 +319,7 @@ enum Bug
+   // BUG: Multi-threaded shader pre-compilation sometimes crashes
+   // Used primarily in Videoconfig.cpp's GetNumAutoShaderPreCompilerThreads()
+   // refer to https://github.com/dolphin-emu/dolphin/pull/9414 for initial validation coverage
+-  BUG_BROKEN_MULTITHREADED_SHADER_PRECOMPILATION,
+-
+-  // BUG: Some driver and Apple Silicon GPU combinations have problems with fragment discard when
+-  // early depth test is enabled. Discarded fragments may appear corrupted (Super Mario Sunshine,
+-  // Sonic Adventure 2: Battle, Phantasy Star Online Epsiodes 1 & 2, etc).
+-  // Affected devices: Apple Silicon GPUs of Apple family 4 and newer.
+-  // Started version: -1
+-  // Ended version: -1
+-  BUG_BROKEN_DISCARD_WITH_EARLY_Z,
++  BUG_BROKEN_MULTITHREADED_SHADER_PRECOMPILATION
+ };
+ 
+ // Initializes our internal vendor, device family, and driver version
 diff --git a/Source/Core/VideoCommon/FPSCounter.cpp b/Source/Core/VideoCommon/FPSCounter.cpp
 index 4d71a7c..efc351f 100644
 --- a/Source/Core/VideoCommon/FPSCounter.cpp
@@ -5148,10 +5228,21 @@ index 78e4046..21e6e2d 100644
    static u32 CalculateMipCount(u32 width, u32 height);
  
 diff --git a/Source/Core/VideoCommon/PixelShaderGen.cpp b/Source/Core/VideoCommon/PixelShaderGen.cpp
-index 837001c..60c926b 100644
+index 4a9e910..e64c08a 100644
 --- a/Source/Core/VideoCommon/PixelShaderGen.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderGen.cpp
-@@ -333,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
+@@ -321,9 +321,7 @@ PixelShaderUid GetPixelShaderUid()
+   BlendingState state = {};
+   state.Generate(bpmem);
+ 
+-  if (((state.usedualsrc && state.dstalpha) ||
+-       DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z)) &&
+-      g_ActiveConfig.backend_info.bSupportsFramebufferFetch &&
++  if (state.usedualsrc && state.dstalpha && g_ActiveConfig.backend_info.bSupportsFramebufferFetch &&
+       !g_ActiveConfig.backend_info.bSupportsDualSourceBlend)
+   {
+     uid_data->blend_enable = state.blendenable;
+@@ -335,9 +333,6 @@ PixelShaderUid GetPixelShaderUid()
      uid_data->blend_subtract_alpha = state.subtractAlpha;
    }
  
@@ -5161,7 +5252,7 @@ index 837001c..60c926b 100644
    return out;
  }
  
-@@ -386,7 +383,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -388,7 +383,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
      // Declare samplers
      out.Write("SamplerState samp[8] : register(s0);\n"
                "\n"
@@ -5170,7 +5261,7 @@ index 837001c..60c926b 100644
    }
    out.Write("\n");
  
-@@ -398,7 +395,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -400,7 +395,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
    out.Write("\tint4 " I_COLORS "[4];\n"
              "\tint4 " I_KCOLORS "[4];\n"
              "\tint4 " I_ALPHA ";\n"
@@ -5179,7 +5270,7 @@ index 837001c..60c926b 100644
              "\tint4 " I_ZBIAS "[2];\n"
              "\tint4 " I_INDTEXSCALE "[2];\n"
              "\tint4 " I_INDTEXMTX "[6];\n"
-@@ -419,7 +416,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -421,7 +416,7 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
              "\tbool  bpmem_dither;\n"
              "\tbool  bpmem_bounding_box;\n"
              "\tuint4 bpmem_pack1[16];\n"  // .xy - combiners, .z - tevind
@@ -5188,7 +5279,7 @@ index 837001c..60c926b 100644
              "\tint4  konstLookup[32];\n"
              "\tbool  blend_enable;\n"
              "\tuint  blend_src_factor;\n"
-@@ -428,16 +425,12 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
+@@ -430,16 +425,12 @@ void WritePixelShaderCommonHeader(ShaderCode& out, APIType api_type,
              "\tuint  blend_dst_factor_alpha;\n"
              "\tbool  blend_subtract;\n"
              "\tbool  blend_subtract_alpha;\n"
@@ -5206,7 +5297,7 @@ index 837001c..60c926b 100644
  
    if (host_config.per_pixel_lighting)
    {
-@@ -544,319 +537,17 @@ void UpdateBoundingBox(float2 rawpos) {{
+@@ -546,319 +537,17 @@ void UpdateBoundingBox(float2 rawpos) {{
                fmt::arg("efb_height", EFB_HEIGHT), fmt::arg("efb_scale", I_EFBSCALE));
    }
  
@@ -5528,7 +5619,7 @@ index 837001c..60c926b 100644
  static void WriteColor(ShaderCode& out, APIType api_type, const pixel_shader_uid_data* uid_data,
                         bool use_dual_source);
  static void WriteBlend(ShaderCode& out, const pixel_shader_uid_data* uid_data);
-@@ -877,20 +568,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -879,20 +568,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
              uid_data->genMode_numtexgens, uid_data->genMode_numindstages);
  
    // Stuff that is shared between ubershaders and pixelgen.
@@ -5549,14 +5640,19 @@ index 837001c..60c926b 100644
    if (uid_data->forced_early_z && g_ActiveConfig.backend_info.bSupportsEarlyZ)
    {
      // Zcomploc (aka early_ztest) is a way to control whether depth test is done before
-@@ -944,56 +623,41 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -946,61 +623,41 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        (!DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DUAL_SOURCE_BLENDING) ||
         uid_data->useDstAlpha);
    const bool use_shader_blend =
--      !use_dual_source && uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch;
+-      !use_dual_source &&
+-      (uid_data->useDstAlpha ||
+-       DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z)) &&
+-      host_config.backend_shader_framebuffer_fetch;
 -  const bool use_shader_logic_op = !host_config.backend_logic_op && uid_data->logic_op_enable &&
 -                                   host_config.backend_shader_framebuffer_fetch;
--  const bool use_framebuffer_fetch = use_shader_blend || use_shader_logic_op;
+-  const bool use_framebuffer_fetch =
+-      use_shader_blend || use_shader_logic_op ||
+-      DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z);
 +      !use_dual_source && (uid_data->useDstAlpha && host_config.backend_shader_framebuffer_fetch);
  
    if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
@@ -5627,7 +5723,7 @@ index 837001c..60c926b 100644
      }
  
      if (uid_data->per_pixel_depth)
-@@ -1039,29 +703,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1046,29 +703,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
      out.Write("void main()\n{{\n");
      out.Write("\tfloat4 rawpos = gl_FragCoord;\n");
@@ -5661,7 +5757,7 @@ index 837001c..60c926b 100644
      }
    }
    else  // D3D
-@@ -1110,8 +757,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1117,8 +757,6 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("        ) {{\n");
    }
@@ -5670,7 +5766,7 @@ index 837001c..60c926b 100644
  
    out.Write("\tint4 c0 = " I_COLORS "[1], c1 = " I_COLORS "[2], c2 = " I_COLORS
              "[3], prev = " I_COLORS "[0];\n"
-@@ -1169,7 +814,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1176,7 +814,7 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
      {
        out.Write("\tint2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -5679,7 +5775,7 @@ index 837001c..60c926b 100644
        // TODO: S24 overflows here?
      }
    }
-@@ -1192,8 +837,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1199,8 +837,8 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
        out.Write("\ttempcoord = fixpoint_uv{} >> " I_INDTEXSCALE "[{}].{};\n", texcoord, i / 2,
                  (i & 1) ? "zw" : "xy");
  
@@ -5690,7 +5786,7 @@ index 837001c..60c926b 100644
      }
    }
  
-@@ -1323,17 +968,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
+@@ -1330,17 +968,12 @@ ShaderCode GeneratePixelShaderCode(APIType api_type, const ShaderHostConfig& hos
  
    WriteFog(out, uid_data);
  
@@ -5708,7 +5804,7 @@ index 837001c..60c926b 100644
  
    if (uid_data->bounding_box)
      out.Write("\tUpdateBoundingBox(rawpos.xy);\n");
-@@ -1616,8 +1256,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
+@@ -1623,8 +1256,8 @@ static void WriteStage(ShaderCode& out, const pixel_shader_uid_data* uid_data, i
          '\0',
      };
  
@@ -5719,7 +5815,7 @@ index 837001c..60c926b 100644
    }
    else if (uid_data->genMode_numtexgens == 0)
    {
-@@ -1802,6 +1442,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
+@@ -1809,6 +1442,24 @@ static void WriteTevRegular(ShaderCode& out, std::string_view components, TevBia
    out.Write("){}", tev_scale_table_right[scale]);
  }
  
@@ -5744,7 +5840,33 @@ index 837001c..60c926b 100644
  constexpr Common::EnumMap<const char*, CompareMode::Always> tev_alpha_funcs_table{
      "(false)",         // CompareMode::Never
      "(prev.a <  {})",  // CompareMode::Less
-@@ -1946,31 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
+@@ -1876,23 +1527,9 @@ static void WriteAlphaTest(ShaderCode& out, const pixel_shader_uid_data* uid_dat
+   // ZCOMPLOC HACK:
+   if (!uid_data->alpha_test_use_zcomploc_hack)
+   {
+-#ifdef __APPLE__
+-    if (uid_data->forced_early_z &&
+-        DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z))
+-    {
+-      // Instead of using discard, fetch the framebuffer's color value and use it as the output
+-      // for this fragment.
+-      out.Write("\t\t{} = float4(initial_ocol0.xyz, 1.0);\n",
+-                use_dual_source ? "real_ocol0" : "ocol0");
++    out.Write("\t\tdiscard;\n");
++    if (api_type == APIType::D3D)
+       out.Write("\t\treturn;\n");
+-    }
+-    else
+-#endif
+-    {
+-      out.Write("\t\tdiscard;\n");
+-      if (api_type == APIType::D3D)
+-        out.Write("\t\treturn;\n");
+-    }
+   }
+ 
+   out.Write("\t}}\n");
+@@ -1967,31 +1604,6 @@ static void WriteFog(ShaderCode& out, const pixel_shader_uid_data* uid_data)
    out.Write("\tprev.rgb = (prev.rgb * (256 - ifog) + " I_FOGCOLOR ".rgb * ifog) >> 8;\n");
  }
  
@@ -6363,7 +6485,7 @@ index 0a965e6..c5cd3ef 100644
                                 std::string_view type, std::string_view name, int var_index,
                                 std::string_view semantic = {}, int semantic_index = -1)
 diff --git a/Source/Core/VideoCommon/ShaderGenCommon.h b/Source/Core/VideoCommon/ShaderGenCommon.h
-index bec69fe..9ec9fea 100644
+index c9f0246..65d437d 100644
 --- a/Source/Core/VideoCommon/ShaderGenCommon.h
 +++ b/Source/Core/VideoCommon/ShaderGenCommon.h
 @@ -16,7 +16,6 @@
@@ -6739,7 +6861,7 @@ index 6a1eff4..0000000
 -
 -}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index 078abf1..6eb715e 100644
+index b1c9ead..c97d62c 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
 @@ -40,9 +40,9 @@
@@ -6789,7 +6911,7 @@ index 078abf1..6eb715e 100644
  {
    DEBUG_ASSERT(g_ActiveConfig.backend_info.bSupportsPaletteConversion);
  
-@@ -756,7 +758,7 @@ void TextureCacheBase::TCacheEntry::DoState(PointerWrap& p)
+@@ -762,7 +764,7 @@ void TextureCacheBase::TCacheEntry::DoState(PointerWrap& p)
  }
  
  TextureCacheBase::TCacheEntry*
@@ -6798,7 +6920,7 @@ index 078abf1..6eb715e 100644
                                            TLUTFormat tlutfmt)
  {
    // If the flag may_have_overlapping_textures is cleared, there are no overlapping EFB copies,
-@@ -965,22 +967,16 @@ void TextureCacheBase::DumpTexture(TCacheEntry* entry, std::string basename, uns
+@@ -971,22 +973,16 @@ void TextureCacheBase::DumpTexture(TCacheEntry* entry, std::string basename, uns
    entry->texture->Save(filename, level);
  }
  
@@ -6825,7 +6947,7 @@ index 078abf1..6eb715e 100644
  
    SamplerState state = {};
    state.Generate(bpmem, index);
-@@ -988,18 +984,19 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
+@@ -994,18 +990,19 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
    // Force texture filtering config option.
    if (g_ActiveConfig.bForceFiltering)
    {
@@ -6851,7 +6973,7 @@ index 078abf1..6eb715e 100644
    {
      // https://www.opengl.org/registry/specs/EXT/texture_filter_anisotropic.txt
      // For predictable results on all hardware/drivers, only use one of:
-@@ -1008,40 +1005,39 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
+@@ -1014,40 +1011,39 @@ static void SetSamplerState(u32 index, float custom_tex_scale, bool custom_tex,
      // Letting the game set other combinations will have varying arbitrary results;
      // possibly being interpreted as equal to bilinear/trilinear, implicitly
      // disabling anisotropy, or changing the anisotropic algorithm employed.
@@ -6904,7 +7026,7 @@ index 078abf1..6eb715e 100644
      {
        g_renderer->SetTexture(i, tentry->texture.get());
        PixelShaderManager::SetTexDims(i, tentry->native_width, tentry->native_height);
-@@ -1050,8 +1046,6 @@ void TextureCacheBase::BindTextures(BitSet32 used_textures)
+@@ -1056,8 +1052,6 @@ void TextureCacheBase::BindTextures(BitSet32 used_textures)
        SetSamplerState(i, custom_tex_scale, tentry->is_custom_tex, tentry->has_arbitrary_mips);
      }
    }
@@ -6913,7 +7035,7 @@ index 078abf1..6eb715e 100644
  }
  
  class ArbitraryMipmapDetector
-@@ -1202,27 +1196,28 @@ private:
+@@ -1208,27 +1202,28 @@ private:
  TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
  {
    // if this stage was not invalidated by changes to texture registers, keep the current texture
@@ -6959,7 +7081,7 @@ index 078abf1..6eb715e 100644
  
    if (!entry)
      return nullptr;
-@@ -1232,65 +1227,92 @@ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
+@@ -1238,65 +1233,92 @@ TextureCacheBase::TCacheEntry* TextureCacheBase::Load(const u32 stage)
  
    // We need to keep track of invalided textures until they have actually been replaced or
    // re-loaded
@@ -7077,7 +7199,7 @@ index 078abf1..6eb715e 100644
    }
    else
    {
-@@ -1324,7 +1346,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1330,7 +1352,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    //
    // For efb copies, the entry created in CopyRenderTargetToTexture always has to be used, or else
    // it was done in vain.
@@ -7086,7 +7208,7 @@ index 078abf1..6eb715e 100644
    TexAddrCache::iterator iter = iter_range.first;
    TexAddrCache::iterator oldest_entry = iter;
    int temp_frameCount = 0x7fffffff;
-@@ -1349,14 +1371,13 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1355,14 +1377,13 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
      // Do not load strided EFB copies, they are not meant to be used directly.
      // Also do not directly load EFB copies, which were partly overwritten.
@@ -7103,7 +7225,7 @@ index 078abf1..6eb715e 100644
            IsPlayingBackFifologWithBrokenEFBCopies)
        {
          // The texture format in VRAM must match the format that the copy was created with. Some
-@@ -1365,10 +1386,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1371,10 +1392,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
          // GPU (e.g. IA4 and I8 or RGB565 and RGBA5). The only known game which reinteprets texels
          // in this manner is Spiderman Shattered Dimensions, where it creates a copy in B8 format,
          // and sets it up as a IA4 texture.
@@ -7116,7 +7238,7 @@ index 078abf1..6eb715e 100644
            {
              // Delay the conversion until afterwards, it's possible this texture has already been
              // converted.
-@@ -1391,7 +1412,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1397,7 +1418,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
          // TODO: We should check width/height/levels for EFB copies. I'm not sure what effect
          // checking width/height/levels would have.
@@ -7125,7 +7247,7 @@ index 078abf1..6eb715e 100644
            return entry;
  
          // Note that we found an unconverted EFB copy, then continue.  We'll
-@@ -1414,12 +1435,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1420,12 +1441,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      {
        // For normal textures, all texture parameters need to match
        if (!entry->IsEfbCopy() && entry->hash == full_hash && entry->format == full_format &&
@@ -7141,7 +7263,7 @@ index 078abf1..6eb715e 100644
          entry->texture->FinishedRendering();
          return entry;
        }
-@@ -1433,7 +1452,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1439,7 +1458,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      // Also skip XFB copies, we might need to still scan them out
      // or load them as regular textures later.
      if (entry->frameCount != FRAMECOUNT_INVALID && entry->frameCount < temp_frameCount &&
@@ -7150,7 +7272,7 @@ index 078abf1..6eb715e 100644
      {
        temp_frameCount = entry->frameCount;
        oldest_entry = iter;
-@@ -1443,13 +1462,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1449,13 +1468,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
    if (unreinterpreted_copy != textures_by_address.end())
    {
@@ -7166,7 +7288,7 @@ index 078abf1..6eb715e 100644
  
      if (decoded_entry)
        return decoded_entry;
-@@ -1457,8 +1474,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1463,8 +1480,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
    if (unconverted_copy != textures_by_address.end())
    {
@@ -7177,7 +7299,7 @@ index 078abf1..6eb715e 100644
  
      if (decoded_entry)
      {
-@@ -1473,8 +1490,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1479,8 +1496,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    // Example: Tales of Symphonia (GC) uses over 500 small textures in menus, but only around 70
    // different ones
    if (textureCacheSafetyColorSampleSize == 0 ||
@@ -7187,7 +7309,7 @@ index 078abf1..6eb715e 100644
    {
      auto hash_range = textures_by_hash.equal_range(full_hash);
      TexHashCache::iterator hash_iter = hash_range.first;
-@@ -1482,12 +1498,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1488,12 +1504,10 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      {
        TCacheEntry* entry = hash_iter->second;
        // All parameters, except the address, need to match here
@@ -7203,7 +7325,7 @@ index 078abf1..6eb715e 100644
          entry->texture->FinishedRendering();
          return entry;
        }
-@@ -1505,7 +1519,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1511,7 +1525,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    std::shared_ptr<HiresTexture> hires_tex;
    if (g_ActiveConfig.bHiresTextures)
    {
@@ -7213,7 +7335,7 @@ index 078abf1..6eb715e 100644
  
      if (hires_tex)
      {
-@@ -1515,22 +1530,21 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1521,22 +1536,21 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
          width = level.width;
          height = level.height;
        }
@@ -7242,7 +7364,7 @@ index 078abf1..6eb715e 100644
  
    // create the entry/texture
    const TextureConfig config(width, height, texLevels, 1, 1,
-@@ -1540,6 +1554,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1546,6 +1560,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
      return nullptr;
  
    ArbitraryMipmapDetector arbitrary_mip_detector;
@@ -7250,7 +7372,7 @@ index 078abf1..6eb715e 100644
    if (hires_tex)
    {
      const auto& level = hires_tex->m_levels[0];
-@@ -1553,13 +1568,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1559,13 +1574,11 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    if (!hires_tex)
    {
      if (!decode_on_gpu ||
@@ -7268,7 +7390,7 @@ index 078abf1..6eb715e 100644
  
        // Allocate memory for all levels at once
        size_t total_texture_size = decoded_texture_size;
-@@ -1568,7 +1581,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1574,7 +1587,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
        size_t mip_downsample_buffer_size = decoded_texture_size * 5 / 16;
  
        size_t prev_level_size = decoded_texture_size;
@@ -7277,7 +7399,7 @@ index 078abf1..6eb715e 100644
        {
          prev_level_size /= 4;
          total_texture_size += prev_level_size;
-@@ -1579,39 +1592,35 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1585,39 +1598,35 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
  
        CheckTempSize(total_texture_size);
        dst_buffer = temp;
@@ -7329,7 +7451,7 @@ index 078abf1..6eb715e 100644
    entry->SetHashes(base_hash, full_hash);
    entry->is_custom_tex = hires_tex != nullptr;
    entry->memory_stride = entry->BytesPerRow();
-@@ -1620,7 +1629,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1626,7 +1635,8 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    std::string basename;
    if (g_ActiveConfig.bDumpTextures && !hires_tex)
    {
@@ -7339,7 +7461,7 @@ index 078abf1..6eb715e 100644
    }
  
    if (hires_tex)
-@@ -1634,34 +1644,46 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1640,34 +1650,46 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    }
    else
    {
@@ -7404,7 +7526,7 @@ index 078abf1..6eb715e 100644
      }
    }
  
-@@ -1679,8 +1701,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
+@@ -1685,8 +1707,7 @@ TextureCacheBase::GetTexture(const int textureCacheSafetyColorSampleSize, Textur
    INCSTAT(g_stats.num_textures_uploaded);
    SETSTAT(g_stats.num_textures_alive, static_cast<int>(textures_by_address.size()));
  
@@ -7414,7 +7536,7 @@ index 078abf1..6eb715e 100644
  
    // This should only be needed if the texture was updated, or used GPU decoding.
    entry->texture->FinishedRendering();
-@@ -2551,21 +2572,13 @@ TextureCacheBase::InvalidateTexture(TexAddrCache::iterator iter, bool discard_pe
+@@ -2557,21 +2578,13 @@ TextureCacheBase::InvalidateTexture(TexAddrCache::iterator iter, bool discard_pe
  
    for (size_t i = 0; i < bound_textures.size(); ++i)
    {
@@ -7442,7 +7564,7 @@ index 078abf1..6eb715e 100644
      }
    }
  
-@@ -2855,21 +2868,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
+@@ -2861,21 +2874,18 @@ bool TextureCacheBase::DecodeTextureOnGPU(TCacheEntry* entry, u32 dst_level, con
  }
  
  u32 TextureCacheBase::TCacheEntry::BytesPerRow() const
@@ -7470,7 +7592,7 @@ index 078abf1..6eb715e 100644
  }
  
  u32 TextureCacheBase::TCacheEntry::NumBlocksY() const
-@@ -2926,8 +2936,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
+@@ -2932,8 +2942,6 @@ u64 TextureCacheBase::TCacheEntry::CalculateHash() const
  {
    const u32 bytes_per_row = BytesPerRow();
    const u32 hash_sample_size = HashSampleSize();
@@ -8152,20 +8274,22 @@ index 4e3b0ff..d1a736a 100644
 +}
  }  // namespace UberShader
 diff --git a/Source/Core/VideoCommon/UberShaderPixel.cpp b/Source/Core/VideoCommon/UberShaderPixel.cpp
-index 7bb4eb4..8f9a563 100644
+index 161f401..27750de 100644
 --- a/Source/Core/VideoCommon/UberShaderPixel.cpp
 +++ b/Source/Core/VideoCommon/UberShaderPixel.cpp
-@@ -55,9 +55,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -55,11 +55,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
    const bool stereo = host_config.stereo;
    const bool use_dual_source = host_config.backend_dual_source_blend;
    const bool use_shader_blend = !use_dual_source && host_config.backend_shader_framebuffer_fetch;
 -  const bool use_shader_logic_op =
 -      !host_config.backend_logic_op && host_config.backend_shader_framebuffer_fetch;
--  const bool use_framebuffer_fetch = use_shader_blend || use_shader_logic_op;
+-  const bool use_framebuffer_fetch =
+-      use_shader_blend || use_shader_logic_op ||
+-      DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z);
    const bool early_depth = uid_data->early_depth != 0;
    const bool per_pixel_depth = uid_data->per_pixel_depth != 0;
    const bool bounding_box = host_config.bounding_box;
-@@ -66,57 +63,45 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -68,57 +63,45 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
  
    out.Write("// Pixel UberShader for {} texgens{}{}\n", numTexgen,
              early_depth ? ", early-depth" : "", per_pixel_depth ? ", per-pixel depth" : "");
@@ -8212,13 +8336,13 @@ index 7bb4eb4..8f9a563 100644
 +      // and use a temporary for calculations, then set the output value once at the end of the
 +      // shader
 +      if (DriverDetails::HasBug(DriverDetails::BUG_BROKEN_FRAGMENT_SHADER_INDEX_DECORATION))
-       {
--        // Subpass inputs will be converted to framebuffer fetch by SPIRV-Cross.
--        out.Write("INPUT_ATTACHMENT_BINDING(0, 0, 0) uniform subpassInput in_ocol0;\n");
++      {
 +        out.Write("FRAGMENT_OUTPUT_LOCATION(0) FRAGMENT_INOUT vec4 real_ocol0;\n");
 +      }
 +      else
-+      {
+       {
+-        // Subpass inputs will be converted to framebuffer fetch by SPIRV-Cross.
+-        out.Write("INPUT_ATTACHMENT_BINDING(0, 0, 0) uniform subpassInput in_ocol0;\n");
 +        out.Write("FRAGMENT_OUTPUT_LOCATION_INDEXED(0, 0) FRAGMENT_INOUT vec4 real_ocol0;\n");
        }
      }
@@ -8244,7 +8368,7 @@ index 7bb4eb4..8f9a563 100644
      }
  
      if (per_pixel_depth)
-@@ -241,17 +226,17 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -243,17 +226,17 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
    {
      // Doesn't look like DirectX supports this. Oh well the code path is here just in case it
      // supports this in the future.
@@ -8267,7 +8391,7 @@ index 7bb4eb4..8f9a563 100644
                "dynamic indexing of the sampler array\n"
                "  // With any luck the shader compiler will optimise this if the hardware supports "
                "dynamic indexing.\n"
-@@ -259,14 +244,9 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -261,14 +244,9 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      for (int i = 0; i < 8; i++)
      {
        if (api_type == APIType::OpenGL || api_type == APIType::Vulkan)
@@ -8284,7 +8408,7 @@ index 7bb4eb4..8f9a563 100644
      }
      out.Write("  }}\n"
                "}}\n\n");
-@@ -304,8 +284,8 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -306,8 +284,8 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
    // ======================
    //    Indirect Lookup
    // ======================
@@ -8295,7 +8419,7 @@ index 7bb4eb4..8f9a563 100644
      // in_index_name is the indirect stage, not the tev stage
      // bpmem_iref is packed differently from RAS1_IREF
      // This function assumes bpmem_iref is nonzero (i.e. matrix is not off, and the
-@@ -321,9 +301,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -323,9 +301,11 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "  else\n"
                "    fixedPoint_uv = fixedPoint_uv >> " I_INDTEXSCALE "[{} >> 1].zw;\n"
                "\n"
@@ -8310,7 +8434,7 @@ index 7bb4eb4..8f9a563 100644
    };
  
    // ======================
-@@ -528,29 +510,12 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -530,29 +510,12 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
  
      out.Write("void main()\n{{\n");
      out.Write("  float4 rawpos = gl_FragCoord;\n");
@@ -8344,7 +8468,7 @@ index 7bb4eb4..8f9a563 100644
      }
    }
    else  // D3D
-@@ -598,8 +563,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -600,8 +563,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
        out.Write(",\n  in uint layer : SV_RenderTargetArrayIndex\n");
      out.Write("\n        ) {{\n");
    }
@@ -8353,7 +8477,7 @@ index 7bb4eb4..8f9a563 100644
  
    out.Write("  int3 tevcoord = int3(0, 0, 0);\n"
              "  State s;\n"
-@@ -657,7 +620,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -659,7 +620,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      {
        out.Write("    int2 fixpoint_uv{} = int2(", i);
        out.Write("(tex{}.z == 0.0 ? tex{}.xy : tex{}.xy / tex{}.z)", i, i, i, i);
@@ -8362,7 +8486,7 @@ index 7bb4eb4..8f9a563 100644
        // TODO: S24 overflows here?
      }
  
-@@ -691,7 +654,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -693,7 +654,7 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
      // For the undefined case, we just skip applying the indirect operation, which is close enough.
      // Viewtiful Joe hits the undefined case (bug 12525).
      // Wrapping and add to previous still apply in this case (and when the stage is disabled).
@@ -8371,7 +8495,7 @@ index 7bb4eb4..8f9a563 100644
      out.Write("        int3 indcoord;\n");
      LookupIndirectTexture("indcoord", "bt");
      out.Write("        if (bs != 0u)\n"
-@@ -781,8 +744,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -783,8 +744,10 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "      uint sampler_num = {};\n",
                BitfieldExtract<&TwoTevStageOrders::texmap0>("ss.order"));
      out.Write("\n"
@@ -8384,7 +8508,49 @@ index 7bb4eb4..8f9a563 100644
                BitfieldExtract<&TevStageCombiner::AlphaCombiner::tswap>("ss.ac"));
      out.Write("      s.TexColor = Swizzle(swap, color);\n");
      out.Write("    }} else {{\n"
-@@ -1112,40 +1077,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -1009,21 +972,8 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+       out.Write("  depth = float(zbuffer_zCoord) / 16777216.0;\n");
+   }
+ 
+-  out.Write("  // Alpha Test\n");
+-
+-  if (early_depth && DriverDetails::HasBug(DriverDetails::BUG_BROKEN_DISCARD_WITH_EARLY_Z))
+-  {
+-    // Instead of using discard, fetch the framebuffer's color value and use it as the output
+-    // for this fragment.
+-    out.Write("  #define discard_fragment {{ {} = float4(initial_ocol0.xyz, 1.0); return; }}\n",
+-              use_shader_blend ? "real_ocol0" : "ocol0");
+-  }
+-  else
+-  {
+-    out.Write("  #define discard_fragment discard\n");
+-  }
+-
+-  out.Write("  if (bpmem_alphaTest != 0u) {{\n"
++  out.Write("  // Alpha Test\n"
++            "  if (bpmem_alphaTest != 0u) {{\n"
+             "    bool comp0 = alphaCompare(TevResult.a, " I_ALPHA ".r, {});\n",
+             BitfieldExtract<&AlphaTest::comp0>("bpmem_alphaTest"));
+   out.Write("    bool comp1 = alphaCompare(TevResult.a, " I_ALPHA ".g, {});\n",
+@@ -1034,13 +984,13 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+             "    switch ({}) {{\n",
+             BitfieldExtract<&AlphaTest::logic>("bpmem_alphaTest"));
+   out.Write("    case 0u: // AND\n"
+-            "      if (comp0 && comp1) break; else discard_fragment; break;\n"
++            "      if (comp0 && comp1) break; else discard; break;\n"
+             "    case 1u: // OR\n"
+-            "      if (comp0 || comp1) break; else discard_fragment; break;\n"
++            "      if (comp0 || comp1) break; else discard; break;\n"
+             "    case 2u: // XOR\n"
+-            "      if (comp0 != comp1) break; else discard_fragment; break;\n"
++            "      if (comp0 != comp1) break; else discard; break;\n"
+             "    case 3u: // XNOR\n"
+-            "      if (comp0 == comp1) break; else discard_fragment; break;\n"
++            "      if (comp0 == comp1) break; else discard; break;\n"
+             "    }}\n"
+             "  }}\n"
+             "\n");
+@@ -1127,40 +1077,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
              "  }}\n"
              "\n");
  
@@ -8425,7 +8591,7 @@ index 7bb4eb4..8f9a563 100644
    // D3D requires that the shader outputs be uint when writing to a uint render target for logic op.
    if (api_type == APIType::D3D && uid_data->uint_output)
    {
-@@ -1258,10 +1189,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
+@@ -1279,10 +1195,6 @@ ShaderCode GenPixelShader(APIType api_type, const ShaderHostConfig& host_config,
                "    real_ocol0 = ocol0;\n"
                "  }}\n");
    }
@@ -8437,7 +8603,7 @@ index 7bb4eb4..8f9a563 100644
    out.Write("}}\n"
              "\n"
 diff --git a/Source/Core/VideoCommon/UberShaderVertex.cpp b/Source/Core/VideoCommon/UberShaderVertex.cpp
-index 6891535..8d3b128 100644
+index 40b4cd6..2ed88db 100644
 --- a/Source/Core/VideoCommon/UberShaderVertex.cpp
 +++ b/Source/Core/VideoCommon/UberShaderVertex.cpp
 @@ -49,8 +49,8 @@ ShaderCode GenVertexShader(APIType api_type, const ShaderHostConfig& host_config
@@ -8488,7 +8654,7 @@ index b41272c..93c5658 100644
  namespace
  {
 diff --git a/Source/Core/VideoCommon/VertexManagerBase.cpp b/Source/Core/VideoCommon/VertexManagerBase.cpp
-index 5fa85b2..0ebb385 100644
+index bb23a46..f868747 100644
 --- a/Source/Core/VideoCommon/VertexManagerBase.cpp
 +++ b/Source/Core/VideoCommon/VertexManagerBase.cpp
 @@ -28,6 +28,7 @@
@@ -8529,10 +8695,10 @@ index 78e4c7c..366266d 100644
    g_Config.VerifyValidity();
    UpdateActiveConfig();
 diff --git a/Source/Core/VideoCommon/VideoConfig.cpp b/Source/Core/VideoCommon/VideoConfig.cpp
-index 4221422..d7d2bd9 100644
+index 6d8cd7f..b5c4071 100644
 --- a/Source/Core/VideoCommon/VideoConfig.cpp
 +++ b/Source/Core/VideoCommon/VideoConfig.cpp
-@@ -138,7 +138,6 @@ void VideoConfig::Refresh()
+@@ -137,7 +137,6 @@ void VideoConfig::Refresh()
    bVertexRounding = Config::Get(Config::GFX_HACK_VERTEX_ROUNDING);
    iEFBAccessTileSize = Config::Get(Config::GFX_HACK_EFB_ACCESS_TILE_SIZE);
    iMissingColorValue = Config::Get(Config::GFX_HACK_MISSING_COLOR_VALUE);
@@ -8541,10 +8707,10 @@ index 4221422..d7d2bd9 100644
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
  
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index 146ba84..ff685a8 100644
+index 640038d..1fd1144 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
-@@ -137,7 +137,6 @@ struct VideoConfig final
+@@ -138,7 +138,6 @@ struct VideoConfig final
    int iLog = 0;           // CONF_ bits
    int iSaveTargetId = 0;  // TODO: Should be dropped
    u32 iMissingColorValue = 0;
@@ -8552,7 +8718,7 @@ index 146ba84..ff685a8 100644
  
    // Stereoscopy
    StereoMode stereo_mode{};
-@@ -233,9 +232,6 @@ struct VideoConfig final
+@@ -231,9 +230,6 @@ struct VideoConfig final
      bool bSupportsDepthReadback = false;
      bool bSupportsShaderBinaries = false;
      bool bSupportsPipelineCacheData = false;
@@ -8562,7 +8728,7 @@ index 146ba84..ff685a8 100644
      bool bSupportsSettingObjectNames = false;
    } backend_info;
  
-@@ -250,16 +246,6 @@ struct VideoConfig final
+@@ -248,16 +244,6 @@ struct VideoConfig final
      return backend_info.bSupportsGPUTextureDecoding && bEnableGPUTextureDecoding;
    }
    bool UseVertexRounding() const { return bVertexRounding && iEFBScale != 1; }
@@ -8617,5 +8783,5 @@ index c348649..f954ca7 100644
    Fifo::DoState(p);
    p.DoMarker("Fifo");
 -- 
-2.35.1
+2.36.0
 

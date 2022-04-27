@@ -1,20 +1,30 @@
-From ee26ca0a9d363dafbff7e8ce2db73525a980b071 Mon Sep 17 00:00:00 2001
+From ad079b730d8d0fb594a612a436fb3af676637e52 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 8 Mar 2022 14:39:06 -0300
+Date: Tue, 26 Apr 2022 11:38:34 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 26 +++++++++++++++++++------
+ cmake/SearchForStuff.cmake | 37 ++++++++++++++++++++++++++++---------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
  pcsx2/CMakeLists.txt       |  2 +-
- 4 files changed, 23 insertions(+), 9 deletions(-)
+ 4 files changed, 31 insertions(+), 12 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index f65acc7..ce48de5 100644
+index fdfa176..feb0884 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -247,8 +247,18 @@ if(QT_BUILD)
+@@ -239,9 +239,6 @@ if(NOT USE_SYSTEM_YAML)
+ 	endif()
+ endif()
+ 
+-# We could use a system version of zstd, but is it going to be recent enough?
+-add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
+-
+ if(QT_BUILD)
+ 	# Default to bundled Qt6 for Windows.
+ 	if(WIN32 AND NOT DEFINED Qt6_DIR)
+@@ -255,8 +252,18 @@ if(QT_BUILD)
  	add_subdirectory(3rdparty/sdl2 EXCLUDE_FROM_ALL)
  endif()
  
@@ -35,7 +45,23 @@ index f65acc7..ce48de5 100644
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -265,12 +275,16 @@ add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
+@@ -269,7 +276,15 @@ endif()
+ 
+ add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
++
++find_package(LIBZIP REQUIRED)
++if(LIBZIP_FOUND)
++	message(STATUS "Using the system libzip")
++else()
++# We could use a system version of zstd, but is it going to be recent enough?
++add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/libzip EXCLUDE_FROM_ALL)
++endif()
+ 
+ if(USE_OPENGL)
+ 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
+@@ -277,12 +292,16 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -57,10 +83,10 @@ index f65acc7..ce48de5 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index 69a2728..5a9857d 100644
+index 70290cf..3e51ec6 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
-@@ -135,7 +135,7 @@ target_sources(common PRIVATE
+@@ -142,7 +142,7 @@ endif()
  
  if(USE_VULKAN)
  	target_link_libraries(common PUBLIC
@@ -83,18 +109,18 @@ index 785e457..935b6bf 100644
  
  class ChdFileReader : public ThreadedFileReader
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index cc4b7c9..e16e7ad 100644
+index bf9e4ee..903d966 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1524,7 +1524,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1605,7 +1605,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	imgui
  	fmt::fmt
  	ryml
 -	chdr-static
 +	${CHDR_SYSTEM_LIBRARY}
+ 	zip
  	wxWidgets::all
  	ZLIB::ZLIB
- 	PkgConfig::SOUNDTOUCH
 -- 
-2.35.1
+2.36.0
 

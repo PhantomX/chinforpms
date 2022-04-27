@@ -1,6 +1,8 @@
-%global commit a8fafcd94c9c675db2e503e87f0a6b38c6bad6fb
+%undefine _cmake_shared_libs
+
+%global commit f3fafab8b327df5012cb048f567f1679033c9d6f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220312
+%global date 20220425
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -22,7 +24,7 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.2%{?gver}%{?dist}
+Release:        0.3%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -39,10 +41,10 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 
 # Fix CFLAGS usage in CLI version
 Patch0:         %{name}-1.56.1-unix_flags.patch
+Patch1:         0001-cmake-fix-data-files-install.patch
 
 BuildRequires:   gcc-c++
-BuildRequires:   meson
-BuildRequires:   ninja-build
+BuildRequires:   cmake
 BuildRequires:   autoconf
 BuildRequires:   make
 BuildRequires:   nasm
@@ -94,11 +96,15 @@ This package contains a graphical user interface using GTK+.
 
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
-%{?gver:tar -xf %{S:10} -C shaders/SPIRV-Cross --strip-components 1}
-%{?gver:tar -xf %{S:11} -C shaders/glslang --strip-components 1}
+%{?gver:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
+%{?gver:tar -xf %{S:11} -C external/glslang --strip-components 1}
 
 # Remove bundled libs
 rm -rf unzip
+
+sed \
+  -e 's|${MINIZIP_CFLAGS}|-I%{_includedir}/minizip|g' \
+  -i gtk/CMakeLists.txt
 
 pushd unix
 autoreconf -ivf
@@ -108,10 +114,11 @@ popd
 %build
 # Build GTK version
 pushd gtk
-%meson \
+%cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if !%{with portaudio}
-  -Dportaudio=false \
-%endif \
+  -DUSE_PORTAUDIO:BOOL=OFF \
+%endif
 %{nil}
 
 popd
@@ -126,7 +133,7 @@ pushd unix
 popd
 
 pushd gtk
-%meson_build
+%cmake_build
 popd
 
 pushd unix
@@ -137,7 +144,7 @@ popd
 %install
 # Install GTK version
 pushd gtk
-%meson_install
+%cmake_install
 popd
 
 # Install CLI version
@@ -175,6 +182,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.3.20220425gitf3fafab
+- Bump
+- meson->cmake
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.2.20220312gita8fafcd
 - Update
 
