@@ -7,9 +7,6 @@
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/363f7c429a6526e005366aae4e1eaa8e3b34fc1d
  363f7c429a6526e005366aae4e1eaa8e3b34fc1d Update Fix 'mem_section' will never be NULL gcc 12 warning to V4
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/c5539841799051d17639fb1b832f7e5fc0c1c818
- c5539841799051d17639fb1b832f7e5fc0c1c818 NFSv4.1 provide mount option to toggle trunking discovery
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1526e96221f95f1dfc53d819cdf62ceecb87e8bd
  1526e96221f95f1dfc53d819cdf62ceecb87e8bd Add the Revert patch so that it can be applied when building dist-git for F34 and F35
 
