@@ -1,7 +1,7 @@
-%global commit e254680ed15f43409114881d8ed613aa4b0de944
+%global commit 64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220415
-%global with_snapshot 0
+%global date 20220428
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -93,7 +93,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.7
+%global wine_stagingver d7507fbe002b99b95b4446d5617e17785804368a
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -104,7 +104,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id eee4cf3c059aca5658a6acf45003ef27dcbab17d
+%global tkg_id 55225e937b0780ff0ed8258d3659f49c41c067ea
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -147,7 +147,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.7
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -268,6 +268,17 @@ Patch257:       %{whq_url}/ed2c300d02acefa2aedd4333ff4a982137c1d4fe#/%{name}-whq
 Patch258:       %{whq_url}/6f1b3cf975965e1383e5f5c802cebdc0f4956c2a#/%{name}-whq-revert-mfplat-6f1b3cf.patch
 Patch259:       %{whq_url}/ce9a42e8bda50fd5eb91c8dee78f310881d2c7e5#/%{name}-whq-revert-mfplat-ce9a42e.patch
 Patch260:       %{whq_url}/86e0a2489a7e82bff3eb751094661270a40a2167#/%{name}-whq-revert-mfplat-86e0a24.patch
+Patch261:       %{whq_url}/d7c4fa0d5724b7a89f5b80970e8f62efcc457f8c#/%{name}-whq-revert-mfplat-d7c4fa0.patch
+Patch262:       %{whq_url}/b52a48b97ecbb8f7aff187a7743647dfab0670ea#/%{name}-whq-revert-mfplat-b52a48b.patch
+Patch263:       %{whq_url}/3f1036b61b59e3a99ea6bf1f1d6984a878df6d7b#/%{name}-whq-revert-mfplat-3f1036b.patch
+Patch264:       %{whq_url}/a7c60623158b048244701f104ca4daeb739637a4#/%{name}-whq-revert-mfplat-a7c6062.patch
+Patch265:       %{whq_url}/e7a3cf7baf41419263ee24690501734602bf1c25#/%{name}-whq-revert-mfplat-e7a3cf7.patch
+Patch266:       %{whq_url}/4455f0c3546a07ee2069cda8df50ca9f271070e6#/%{name}-whq-revert-mfplat-4455f0c.patch
+Patch267:       %{whq_url}/9cc016ecb925d41f3835c07a02e23a5776a77517#/%{name}-whq-revert-mfplat-9cc016e.patch
+Patch268:       %{whq_url}/8c5207f6a7232c20ad12a0d3171185442faa1295#/%{name}-whq-revert-mfplat-8c5207f.patch
+Patch269:       %{whq_url}/3aaa953bd6f71c77a3d3ec34ab0f5155f67346db#/%{name}-whq-revert-mfplat-3aaa953.patch
+Patch270:       %{whq_url}/2298f04a1d40a008a843ac4b0573d1a3234d5f82#/%{name}-whq-revert-mfplat-2298f04.patch
+Patch271:       %{whq_url}/64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5#/%{name}-whq-revert-mfplat-64b96ee.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -302,7 +313,7 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support2.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support2.patch
+Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support3.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support3.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -905,6 +916,17 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch201 -p1 -R
 
+%patch271 -p1 -R
+%patch270 -p1 -R
+%patch269 -p1 -R
+%patch268 -p1 -R
+%patch267 -p1 -R
+%patch266 -p1 -R
+%patch265 -p1 -R
+%patch264 -p1 -R
+%patch263 -p1 -R
+%patch262 -p1 -R
+%patch261 -p1 -R
 %patch260 -p1 -R
 %patch259 -p1 -R
 %patch258 -p1 -R
@@ -1732,10 +1754,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/esent.%{winedll}
 %{_libdir}/wine/%{winedlldir}/evr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/explorerframe.%{winedll}
-%if 0%{?wine_staging}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-appmodel-usercontext-l1-1-0.%{winedll}
-%{_libdir}/wine/%{winedlldir}/ext-ms-win-xaml-pal-l1-1-0.%{winedll}
-%endif
 %{_libdir}/wine/%{winedlldir}/faultrep.%{winedll}
 %{_libdir}/wine/%{winedlldir}/feclient.%{winedll}
 %{_libdir}/wine/%{winedlldir}/fltlib.%{winedll}
@@ -1767,9 +1785,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/icinfo.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/icmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ieframe.%{winedll}
-%if 0%{?wine_staging}
-%{_libdir}/wine/%{winedlldir}/iertutil.%{winedll}
-%endif
 %{_libdir}/wine/%{winedlldir}/ieproxy.%{winedll}
 %{_libdir}/wine/%{winedlldir}/imaadp32.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/imagehlp.%{winedll}
@@ -2088,6 +2103,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.speech.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.networking.%{winedll}
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winedlldir}/win32k.%{winesys}
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
@@ -2600,6 +2616,9 @@ fi
 
 
 %changelog
+* Sat Apr 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.7-101.20220428git64b96ee
+- Snapshot
+
 * Sat Apr 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.7-100
 - 7.7
 

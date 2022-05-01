@@ -13,33 +13,14 @@
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with support...
-%bcond_with rlottie
-%bcond_with tgvoip
-%bcond_with qt5
-%if %{with qt5}
-%bcond_with wayland
-%else
 %bcond_without wayland
-%endif
 %bcond_without x11
 
-%bcond_with clang
-
-%if %{with clang}
-%global toolchain clang
-%endif
-
-# Decrease debuginfo verbosity to reduce memory consumption...
-%ifarch x86_64
+# Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
-%else
-%global _lto_cflags %{nil}
-%global _smp_build_ncpus 2
-%global optflags %(echo %{optflags} | sed 's/-g /-g2 /')
-%endif
 
 Name:           telegram-desktop
-Version:        3.7.2
+Version:        3.7.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -89,6 +70,7 @@ BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
+BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(giomm-2.4)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -105,6 +87,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
+BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(openssl)
@@ -126,25 +109,6 @@ BuildRequires:  minizip-compat-devel
 BuildRequires:  ninja-build
 BuildRequires:  python3
 
-%if %{with clang}
-BuildRequires:  compiler-rt
-BuildRequires:  clang
-BuildRequires:  llvm
-%endif
-
-%if %{with qt5}
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5DBus)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Svg)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5XkbCommonSupport)
-BuildRequires:  cmake(dbusmenu-qt5)
-BuildRequires:  qt5-qtbase-private-devel
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
-Requires:       qt5-qtimageformats%{?_isa}
-%else
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6Core5Compat)
 BuildRequires:  cmake(Qt6DBus)
@@ -157,41 +121,15 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 Requires:       qt6-qtimageformats%{?_isa}
-Provides:       bundled(dbusmenu-qt6) = 0.9.3
-%endif
-
-# Telegram Desktop require patched version of rlottie since 1.8.0.
-# Pull Request pending: https://github.com/Samsung/rlottie/pull/252
-%if %{with rlottie}
-BuildRequires:  cmake(rlottie)
-%else
-Provides:       bundled(rlottie) = 0~git
-%endif
-
-%if %{with tgvoip}
-BuildRequires:  pkgconfig(tgvoip) >= 2.4.4
-%else
-BuildRequires:  pkgconfig(alsa)
-BuildRequires:  pkgconfig(libpipewire-0.3)
-BuildRequires:  pkgconfig(libpulse)
-Provides:       bundled(libtgvoip) = 2.4.4
-%endif
 
 %if %{with wayland}
-%if %{with qt5}
-BuildRequires:  cmake(KF5Wayland)
-BuildRequires:  cmake(Qt5Concurrent)
-BuildRequires:  cmake(Qt5WaylandClient)
-BuildRequires:  qt5-qtbase-static
-%else
-BuildRequires:  cmake(PlasmaWaylandProtocols)
+BuildRequires:  cmake(PlasmaWaylandProtocols) >= 1.6.0
 BuildRequires:  cmake(Qt6Concurrent)
 BuildRequires:  cmake(Qt6WaylandClient)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  qt6-qtbase-static
-Provides:       bundled(kf5-kwayland) = 5.90.0
-%endif
-BuildRequires:  pkgconfig(wayland-client)
+Provides:       bundled(kf5-kwayland) = 5.93.0
 BuildRequires:  extra-cmake-modules >= 5.90.0
 %endif
 
@@ -230,6 +168,10 @@ Recommends:     (xdg-desktop-portal-kde%{?_isa} if plasma-workspace-wayland%{?_i
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
+# Virtual provides for bundled libraries...
+Provides:       bundled(rlottie) = 0~git
+Provides:       bundled(libtgvoip) = 2.4.4
+
 
 %description
 Telegram is a messaging app with a focus on speed and security, it's super
@@ -253,25 +195,12 @@ cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,extra-cmake-modules,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
 
-# Unbundling kwayland and libdbusmenu-qt if build against Qt5...
-%if %{with qt5}
-rm -rf Telegram/ThirdParty/{kwayland,libdbusmenu-qt}
-%endif
+sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
+  -i cmake/external/rlottie/CMakeLists.txt
 
-%if %{with rlottie}
-  rm -rf Telegram/ThirdParty/rlottie
-%else
-  sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-    -i cmake/external/rlottie/CMakeLists.txt
-%endif
-
-%if %{with tgvoip}
-  rm -rf Telegram/ThirdParty/libtgvoip
-%else
-  rm -f Telegram/ThirdParty/libtgvoip/json11.*
-  sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-    -i Telegram/cmake/lib_tgvoip.cmake
-%endif
+rm -f Telegram/ThirdParty/libtgvoip/json11.*
+sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
+  -i Telegram/{cmake,ThirdParty/libtgvoip}/lib_tgvoip.cmake
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
@@ -296,31 +225,14 @@ sed \
 %cmake \
     -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
-%if %{with clang}
-    -DCMAKE_C_COMPILER=%{_bindir}/clang \
-    -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
-    -DCMAKE_AR=%{_bindir}/llvm-ar \
-    -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
-    -DCMAKE_LINKER=%{_bindir}/llvm-ld \
-    -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
-    -DCMAKE_NM=%{_bindir}/llvm-nm \
-%else
     -DCMAKE_AR=%{_bindir}/gcc-ar \
     -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
     -DCMAKE_NM=%{_bindir}/gcc-nm \
-%endif
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
-%if %{with qt5}
-    -DDESKTOP_APP_QT6:BOOL=OFF \
-%else
     -DDESKTOP_APP_QT6:BOOL=ON \
-%endif
-%if %{with rlottie}
-    -DDESKTOP_APP_LOTTIE_USE_CACHE:BOOL=OFF \
-%endif
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
 %if %{with wayland}
@@ -374,6 +286,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Apr 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.3-100
+- 3.7.3
+- RPMFusion sync
+
 * Mon Apr 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.2-100
 - 3.7.2
 
