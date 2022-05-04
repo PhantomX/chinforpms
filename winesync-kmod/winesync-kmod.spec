@@ -9,16 +9,16 @@
 
 %define repo chinforpms
 
-%global commit ee18b220dde45003cd7ce7360fe3e633678b97df
+%global commit 50ed00eef095c7799949b2523a5c21210b374f86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211202
+%global date 20220421
 
 %global gver .%{date}git%{shortcommit}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           winesync-kmod
-Version:        5.15.5
+Version:        5.16.20
 Release:        1%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
@@ -29,13 +29,11 @@ Source0:        %{vc_url}/%{commit}:/drivers/misc/winesync.c#/winesync.c_%{short
 Source1:        %{vc_url}/%{commit}:/include/uapi/linux/winesync.h#/winesync.h_%{shortcommit}
 Source2:        Makefile
 Source3:        winesync-kmod-excludekernel-filter.txt
-# Patch from https://aur.archlinux.org/packages/winesync/
-Source4:        exported-symbols-hack.patch
 
 # get the needed BuildRequires (in parts depending on what we build for)
 BuildRequires:  %{_bindir}/kmodtool
 BuildRequires:  %{_bindir}/make
-BuildRequires:  %{_bindir}/patch
+%dnl BuildRequires:  %{_bindir}/patch
 %{!?kernels:BuildRequires: buildsys-build-%{repo}-kerneldevpkgs-%{?buildforkernels:%{buildforkernels}}%{!?buildforkernels:current}-%{_target_cpu} }
 # kmodtool does its magic here
 %{expand:%(kmodtool --target %{_target_cpu} --repo %{repo} --kmodname %{name} %{?buildforkernels:--%{buildforkernels}} %{?kernels:--for-kernels "%{?kernels}"} --filterfile %{SOURCE3} 2>/dev/null) }
@@ -59,7 +57,7 @@ for kernel_version in %{?kernel_versions} ; do
   cp -p %{SOURCE0} _kmod_build_${kernel_version%%___*}/winesync.c
   cp -p %{SOURCE1} _kmod_build_${kernel_version%%___*}/include/uapi/linux/winesync.h
   cp -p %{SOURCE2} _kmod_build_${kernel_version%%___*}/Makefile
-  patch -p1 -s --fuzz=0 --no-backup-if-mismatch -f -d _kmod_build_${kernel_version%%___*}/ -i %{SOURCE4}
+%dnl  patch -p1 -s --fuzz=0 --no-backup-if-mismatch -f -d _kmod_build_${kernel_version%%___*}/ -i %{SOURCE4}
 done
 
 %build
@@ -75,6 +73,9 @@ done
 
 
 %changelog
+* Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-1.20220421git50ed00e
+- 5.16.20
+
 * Mon Dec 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-1.20211202gitee18b22
 - 5.15.5
 

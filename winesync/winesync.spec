@@ -1,20 +1,20 @@
 %global debug_package %{nil}
 
-%global commit ee18b220dde45003cd7ce7360fe3e633678b97df
+%global commit 50ed00eef095c7799949b2523a5c21210b374f86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211202
+%global date 20220421
 
 %global gver .%{date}git%{shortcommit}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           winesync
-Version:        5.15.5
-Release:        2%{?gver}%{?dist}
+Version:        5.16.20
+Release:        1%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
-URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync3
+URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync4
 
 Source0:        %{vc_url}/%{commit}:/Documentation/userspace-api/winesync.rst#/winesync.rst_%{shortcommit}
 Source1:        %{vc_url}/%{commit}:/COPYING
@@ -76,6 +76,9 @@ install -m644 -D %{SOURCE2} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-1.20220421git50ed00e
+- 5.16.20
+
 * Thu Dec 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-2.20211202gitee18b22
 - Do not build main package on %%{ix86} archs
 

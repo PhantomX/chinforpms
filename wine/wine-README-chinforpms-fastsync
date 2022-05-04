@@ -1,0 +1,4 @@
+
+WINE_DISABLE_FAST_SYNC
+=================================
+WINE_DISABLE_FAST_SYNC=1 to disable fastsync (needed if using WINEESYNC or WINEFSYNC)

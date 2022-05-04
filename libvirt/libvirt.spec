@@ -227,7 +227,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.2.0
+Version: 8.3.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -2137,6 +2137,9 @@ exit 0
 
 
 %changelog
+* Mon May 02 2022 Phantom X <megaphantomx at hotmail dot com> - 8.3.0-100
+- 8.3.0
+
 * Sat Apr 02 2022 Phantom X <megaphantomx at hotmail dot com> - 8.2.0-100
 - 8.2.0
 

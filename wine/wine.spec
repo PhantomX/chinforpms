@@ -1,6 +1,6 @@
-%global commit 64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5
+%global commit f91f4348356285ede39915f0d10ffae11c4871e5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220428
+%global date 20220502
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -43,6 +43,7 @@
 %global with_debug 0
 %endif
 %global no64bit   0
+%global winefastsync 5.16
 %global winegecko 2.47.2
 %global winemono  7.2.0
 %global winevulkan 1.3.211
@@ -93,7 +94,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver d7507fbe002b99b95b4446d5617e17785804368a
+%global wine_stagingver cd7567fdc10f18a865c3b33a51ecf9604a71271d
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -104,7 +105,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 55225e937b0780ff0ed8258d3659f49c41c067ea
+%global tkg_id ae37734a739f59e4c06d270f12b2272f8dca4f9b
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -116,6 +117,8 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
+# fastsync/winesync
+%global fastsync 1
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 %global vulkanup 0
@@ -147,7 +150,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.7
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -170,6 +173,7 @@ Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
 Source7:        wine-README-chinforpms-fshack
+Source8:        wine-README-chinforpms-fastsync
 
 Source50:       https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml/vk.xml#/vk-%{winevulkan}.xml
 
@@ -213,8 +217,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-
-Patch201:       %{whq_url}/2abcdf08033334075a22e65b97a7f8874361e72a#/%{name}-whq-revert-2abcdf0.patch
 
 # mfplat things, again (remove when AAC support is added)
 Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
@@ -278,7 +280,20 @@ Patch267:       %{whq_url}/9cc016ecb925d41f3835c07a02e23a5776a77517#/%{name}-whq
 Patch268:       %{whq_url}/8c5207f6a7232c20ad12a0d3171185442faa1295#/%{name}-whq-revert-mfplat-8c5207f.patch
 Patch269:       %{whq_url}/3aaa953bd6f71c77a3d3ec34ab0f5155f67346db#/%{name}-whq-revert-mfplat-3aaa953.patch
 Patch270:       %{whq_url}/2298f04a1d40a008a843ac4b0573d1a3234d5f82#/%{name}-whq-revert-mfplat-2298f04.patch
-Patch271:       %{whq_url}/64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5#/%{name}-whq-revert-mfplat-64b96ee.patch
+Patch271:       %{whq_url}/a7a90de929f3a37507a3f4d4231c778f79e5fa94#/%{name}-whq-revert-mfplat-a7a90de.patch
+Patch272:       %{whq_url}/64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5#/%{name}-whq-revert-mfplat-64b96ee.patch
+Patch273:       %{whq_url}/ab1203999211209da4e737d9fc71581bea9a6bd1#/%{name}-whq-revert-mfplat-ab12039.patch
+Patch274:       %{name}-revert-mfplat-77c25c8.patch
+Patch275:       %{whq_url}/6e2ac3b6172dca128c83f21e10a89f4477025da0#/%{name}-whq-revert-mfplat-6e2ac3b.patch
+Patch276:       %{name}-revert-mfplat-29c67fb.patch
+Patch277:       %{whq_url}/1e3ae78a693f3ecb01012b19d06f76da16ee37d2#/%{name}-whq-revert-mfplat-1e3ae78.patch
+Patch278:       %{whq_url}/f46618e386dedfae2a95f48cb97a14c86cd2565b#/%{name}-whq-revert-mfplat-f46618e.patch
+Patch279:       %{whq_url}/7d28e8ec89254ba0fd4e7612c71f5479e82f9d2a#/%{name}-whq-revert-mfplat-7d28e8e.patch
+Patch280:       %{whq_url}/562d8c338dd975706a7611a1a899ab4a8a3a2911#/%{name}-whq-revert-mfplat-562d8c3.patch
+Patch281:       %{whq_url}/aacf6bcd0f0cb619906f4199d65a70eaf57ec5a8#/%{name}-whq-revert-mfplat-aacf6bc.patch
+Patch282:       %{whq_url}/7c20724b0d29cee02010a3114575315b9fc9d439#/%{name}-whq-revert-mfplat-7c20724.patch
+Patch283:       %{whq_url}/1933981760f50e86e91d15baeedd64bbdb5f2109#/%{name}-whq-revert-mfplat-1933981.patch
+Patch284:       %{whq_url}/f91f4348356285ede39915f0d10ffae11c4871e5#/%{name}-whq-revert-mfplat-f91f434.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -287,7 +302,7 @@ Patch900:        0001-staging-restore-mfplat-streaming-patchset.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic-staging.patch#/%{name}-tkg-use_clock_monotonic-staging.patch
+Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
 Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
@@ -314,6 +329,9 @@ Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.p
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support3.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support3.patch
+
+Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
+Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -422,6 +440,9 @@ BuildRequires:  libappstream-glib
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
+%if 0%{?fastsync}
+BuildRequires:  winesync-devel >= %{winefastsync}
+%endif
 %endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -445,6 +466,9 @@ Requires:       mesa-dri-drivers(x86-32)
 Recommends:     wine-dxvk(x86-32)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-32)
+%if 0%{?fastsync}
+Recommends:     winesync >= %{winefastsync}
+%endif
 
 # x86-64 parts
 %ifarch x86_64
@@ -914,8 +938,22 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch201 -p1 -R
-
+%patch284 -p1 -R
+%patch283 -p1 -R
+%patch282 -p1 -R
+%patch281 -p1 -R
+%patch280 -p1 -R
+%patch279 -p1 -R
+%patch278 -p1 -R
+%patch277 -p1 -R
+%patch276 -p1 -R
+%patch275 -p1 -R
+%patch274 -p1 -R
+rm -f dlls/mf/tests/audiodata.bin
+mv dlls/mf/tests/wmadecdata.bin dlls/mf/tests/wmadata.bin
+rm -f dlls/mf/tests/wmaencdata.bin
+%patch273 -p1 -R
+%patch272 -p1 -R
 %patch271 -p1 -R
 %patch270 -p1 -R
 %patch269 -p1 -R
@@ -1005,9 +1043,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
-patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-different-gst-registry-file.patch
-%patch210 -p1
-
 %patch1020 -p1
 %patch1021 -p1
 %patch1022 -p1
@@ -1030,6 +1065,10 @@ patch -p1 -R -i patches/mfplat-streaming-support/0001-winegstreamer-HACK-Use-a-d
 %endif
 %patch1029 -p1
 %patch1031 -p1
+%if 0%{?fastsync}
+%patch1050 -p1
+%patch1051 -p1
+%endif
 %patch1032 -p1
 %dnl #FIXME breaks something %patch1034 -p1
 %dnl #FIXME needs rebase %patch1035 -p1
@@ -1081,6 +1120,11 @@ cp -p %{SOURCE6} README.chinforpms
 cat README.chinforpms %{SOURCE7} >> README.chinforpms.fshack
 touch -r README.chinforpms README.chinforpms.fshack
 mv -f README.chinforpms.fshack README.chinforpms
+%endif
+%if 0%{?fastsync}
+cat README.chinforpms %{SOURCE8} >> README.chinforpms.fastsync
+touch -r README.chinforpms README.chinforpms.fastsync
+mv -f README.chinforpms.fastsync README.chinforpms
 %endif
 
 cp -p %{SOURCE502} README.tahoma
@@ -2616,6 +2660,9 @@ fi
 
 
 %changelog
+* Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.7-102.20220502gitf91f434
+- fastsync
+
 * Sat Apr 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.7-101.20220428git64b96ee
 - Snapshot
 

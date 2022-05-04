@@ -16,9 +16,9 @@
 %global with_sysflatbuffers 0
 %global bundleflatbuffers 2.0.6
 
-%global commit e0d3a3b0ed6b42351dfe610d3ad97ef2dac96196
+%global commit 0786a0a0886749c1e24bf46990789f0570391da4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220425
+%global date 20220503
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -88,8 +88,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.21
-Release:        4%{?gver}%{?dist}
+Version:        0.0.22
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -394,6 +394,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.22-1.20220503git0786a0a
+- 0.0.22
+
 * Mon Apr 25 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.21-4.20220425gite0d3a3b
 - Bump
 - Reenable system ffmpeg

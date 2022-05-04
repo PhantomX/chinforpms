@@ -8,14 +8,14 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit 25c4bc18e716d49eeb5560341aaae603171a2953
+%global commit 4603c25d69ed4f41497762f1899dfcc36e2e17d3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220408
+%global date 20220428
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 2cb1e8c88b79fc59e70ef7c0287e7129bc3debc6
+%global commit1 be697eb2ae18f62bf2ea57d8213fd7afc93b7433
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -56,7 +56,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -271,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon May 02 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-4.20220428git4603c25
+- Last snapshot
+
 * Sat Apr 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-3.20220408git25c4bc1
 - Update
 
