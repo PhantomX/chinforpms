@@ -1,5 +1,5 @@
 // Chinforinfula Firefox settings
-// 20211104
+// 20220504
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
@@ -77,6 +77,7 @@ pref("privacy.userContext.enabled", true);
 pref("privacy.userContext.ui.enabled", true);
 pref("toolkit.cosmeticAnimations.enabled", false);
 pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+pref("widget.gtk.overlay-scrollbars.enabled", false);
 
 // Proton
 // Defaults for now, use https://github.com/Aris-t2/CustomCSSforFx/ to fix

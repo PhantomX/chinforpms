@@ -18,6 +18,7 @@ BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(gl)
+Recommends:     (libstrangle(x86-32) if glibc(x86-32))
 
 
 %description

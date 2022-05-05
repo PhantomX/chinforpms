@@ -31,6 +31,7 @@ BuildRequires:  pkgconfig(systemd)
 Requires:       polkit
 Requires:       PolicyKit-authentication-agent
 Requires:       systemd
+Recommends:     (gamemode(x86-32) if glibc(x86-32))
 
 %description
 GameMode is a daemon/lib combo for Linux that allows games to request

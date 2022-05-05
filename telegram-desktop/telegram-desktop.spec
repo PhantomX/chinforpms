@@ -20,7 +20,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        3.7.3
+Version:        3.7.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -48,6 +48,8 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
+Patch10:        %{url}/commit/caf2be13b344b361baa7ca793cb8cb7e8fbf0846.patch#/%{name}-gh-caf2be1.patch
+
 Patch100:       %{name}-build-fix.patch
 Patch101:       %{name}-unbundled-kwayland-stuff.patch
 Patch102:       %{name}-ecm-version-downgrade.patch
@@ -63,6 +65,7 @@ Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-fix-gsl-header-warnings.patch
+Patch207:       0001-tgcalls-fix-build.patch
 
 
 BuildRequires:  cmake(Microsoft.GSL)
@@ -286,6 +289,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Thu May 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.4-100
+- 3.7.4
+
 * Fri Apr 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.3-100
 - 3.7.3
 - RPMFusion sync

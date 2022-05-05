@@ -1,0 +1,24 @@
+From 33a58f5bfde86f840427c93bc11e5ee5dd065e9b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 4 May 2022 21:48:00 -0300
+Subject: [PATCH] tgcalls: fix build
+
+---
+ Telegram/ThirdParty/tgcalls/tgcalls/utils/gzip.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Telegram/ThirdParty/tgcalls/tgcalls/utils/gzip.h b/Telegram/ThirdParty/tgcalls/tgcalls/utils/gzip.h
+index a3f3ea2..416300f 100644
+--- a/Telegram/ThirdParty/tgcalls/tgcalls/utils/gzip.h
++++ b/Telegram/ThirdParty/tgcalls/tgcalls/utils/gzip.h
+@@ -3,6 +3,7 @@
+ 
+ #include <absl/types/optional.h>
+ #include <vector>
++#include <stdint.h>
+ 
+ namespace tgcalls {
+ 
+-- 
+2.36.0
+

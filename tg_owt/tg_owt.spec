@@ -7,13 +7,17 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 63a934db1ed212ebf8aaaa20f0010dd7b0d7b396
+%global commit0 442d5bb593c0ae314960308d78f2016ad1f80c3e
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220413
+%global date 20220504
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
+
+%global commit2 21fc8ef30415a635e7351ffa0e5d5367943d4a94
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 crc32c
 
 %global absl_ver 39f46fa
 %global libsrtp_ver 94ac00d
@@ -26,11 +30,12 @@
 
 Name:           tg_owt
 Version:        0
-Release:        117%{?gver}%{?dist}
+Release:        118%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
 # abseil-cpp - ASL 2.0
+# crc32c - BSD
 # libsrtp - BSD
 # libwebm - BSD
 # libyuv - BSD
@@ -44,9 +49,8 @@ ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        https://github.com/google/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
-# From Gentoo
-Patch0:         tg_owt-0_pre20211207-fix-dcsctp-references.patch
 Patch10:        0001-gcc-12-build-fix.patch
 %if !%{with absl}
 Patch100:       0001-fix-build-with-bundled-absl.patch
@@ -80,7 +84,6 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
-BuildRequires:  pkgconfig(usrsctp)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
@@ -102,6 +105,7 @@ Requires:       libdrm%{?_isa}
 Requires:       mesa-libgbm%{?_isa}
 Requires:       mesa-libEGL%{?_isa}
 Requires:       mesa-libGL%{?_isa}
+Requires:       pipewire-libs%{?_isa}
 
 Provides:       bundled(base64) = 0~git
 %if !%{with absl}
@@ -112,6 +116,7 @@ Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
 Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
+Provides:       bundled(google-crc32c) = 1.1.0~git%{shortcommit2}
 Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
 Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
@@ -195,6 +200,7 @@ Requires:       cmake(absl)
 %autosetup -n %{name}-%{commit0} -p1
 
 tar -xf %{S:1} -C src/third_party/libyuv
+tar -xf %{S:2} -C src/third_party/crc32c/src --strip-components 1
 
 mkdir legal
 %if %{with static}
@@ -205,6 +211,8 @@ cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif
+cp -f -p src/third_party/crc32c/src/LICENSE legal/LICENSE.libsrtp
+cp -f -p src/third_party/crc32c/src/README.md legal/README.crc32c.md
 cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
@@ -297,6 +305,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Wed May 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0-118.20220504git442d5bb
+- Bump
+
 * Thu Apr 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0-117.20220413git63a934d
 - Update
 

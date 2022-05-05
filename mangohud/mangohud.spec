@@ -15,7 +15,7 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.6.6
+Version:        0.6.7
 Release:        100%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -94,6 +94,8 @@ cp -f -p %{S:3} bin/%{name}.in
 
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
+rm -f %{buildroot}%{_datadir}/vulkan/implicit_layer.d/libMangoApp.json
+
 
 %files
 %license LICENSE
@@ -106,6 +108,9 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 
 %changelog
+* Thu May 05 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.7-100
+- 0.6.7
+
 * Tue Oct 19 2021 Phantom X <megaphantomx at hotmail dot com> - 0.6.6-100
 - 0.6.6
 
