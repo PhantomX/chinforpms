@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8aa17b7ffc8a5e29ec98a150fdcba3818ff288ef
+%global commit 226e4633b9707641dac3ae27c84705944fcf70f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220419
+%global date 20220507
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -72,9 +72,11 @@
 %endif
 %endif
 
+%global appname org.yuzu_emu.%{name}
+
 
 Name:           yuzu
-Version:        2706
+Version:        2721
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -98,6 +100,7 @@ Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
+Patch3:         0001-appstream-validate.patch
 %if 0%{?with_ea}
 Patch10:        0001-gcc-12-build-fix.patch
 %endif
@@ -109,6 +112,7 @@ BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 %if %{with boost}
 BuildRequires:  boost-devel >= 1.76.0
 %endif
@@ -270,7 +274,8 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
 rm -rf %{buildroot}%{_libdir}
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files
@@ -284,14 +289,18 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %files qt
 %license license.txt
 %{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/mime/packages/%{name}.xml
+%{_datadir}/mime/packages/%{appname}.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 %dnl %{_mandir}/man6/%{name}-qt.6*
 %endif
 
 
 %changelog
+* Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2721-1.20220507git226e463
+- 2721 ea
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 2706-1.20220419git8aa17b7
 - 2706 ea
 

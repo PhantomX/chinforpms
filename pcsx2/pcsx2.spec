@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2663
+Version:        1.7.2715
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -166,6 +166,12 @@ chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
 sed -i 's/\r//' pcsx2/Docs/GPL.txt
 sed -i 's/\r//' pcsx2/Docs/License.txt
 
+pushd 3rdparty
+cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
+cp -p simpleini/LICENCE.txt LICENSE.simpleini
+cp -p xbyak/xbyak/COPYRIGHT COPYRIGHT.xbyak
+popd
+
 #Remove fedora incompatible values
 sed -i 's/@PCSX2_MENU_CATEGORIES@/Game;Emulator;GTK;/g' linux_various/PCSX2.desktop.in
 
@@ -277,7 +283,8 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
-%doc bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
+%license COPYING* 3rdparty/{COPYRIGHT,LICENSE}.*
+%doc README.md bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{_bindir}/pcsx2
 %{perms_pcsx2} %{_bindir}/pcsx2.bin
 %dir %{_libdir}/PCSX2
@@ -295,6 +302,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2715-1
+- 1.7.2715
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2663-1
 - 1.7.2663
 

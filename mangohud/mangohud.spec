@@ -16,7 +16,7 @@
 
 Name:           mangohud
 Version:        0.6.7
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -31,6 +31,8 @@ Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
 
+Patch10:        0001-system-nlohmann_json.patch
+Patch11:        0001-mangoapp-libdir-install.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -42,9 +44,11 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(glfw3)
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(spdlog)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  python3
 BuildRequires:  python3-mako
 BuildRequires:  unzip
@@ -56,6 +60,8 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       bundled(imgui) = %{imgui_ver}
 
 Recommends:     (mangohud(x86-32) if glibc(x86-32))
+
+Suggests:       goverlay
 
 
 %description
@@ -81,9 +87,13 @@ cp -f -p %{S:3} bin/%{name}.in
   -Dglibcxx_asserts=false \
   -Duse_system_spdlog=enabled \
   -Duse_system_vulkan=enabled \
+  -Dmangoapp=true \
+  -Dmangoapp_layer=true \
+  -Dmangohudctl=true \
   -Dinclude_doc=false \
   -Dwith_nvml=disabled \
   -Dwith_xnvctrl=disabled \
+  -Dwith_wayland=enabled \
 %{nil}
 
 %meson_build
@@ -94,20 +104,23 @@ cp -f -p %{S:3} bin/%{name}.in
 
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
-rm -f %{buildroot}%{_datadir}/vulkan/implicit_layer.d/libMangoApp.json
-
 
 %files
 %license LICENSE
 %doc README.md bin/%{pkgname}.conf
-%{_bindir}/%{name}
+%{_bindir}/mango*
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
-%{_datadir}/vulkan/implicit_layer.d/%{pkgname}.json
+%{_libdir}/%{name}/libMangoApp.so
+%{_datadir}/vulkan/implicit_layer.d/*.json
 %{_mandir}/man1/%{name}.1*
 
 
 %changelog
+* Fri May 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.7-101
+- Enable wayland-support
+- Enable MangoApp (system json patch)
+
 * Thu May 05 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.7-100
 - 0.6.7
 

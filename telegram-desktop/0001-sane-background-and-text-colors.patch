@@ -1,0 +1,28 @@
+From 3c0ec4b2aaba0aafa3c40697e2bb0de0216213ec Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 5 May 2022 20:10:39 -0300
+Subject: [PATCH] sane background and text colors
+
+---
+ Telegram/lib_ui/ui/colors.palette | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Telegram/lib_ui/ui/colors.palette b/Telegram/lib_ui/ui/colors.palette
+index 9acd342..4aef75b 100644
+--- a/Telegram/lib_ui/ui/colors.palette
++++ b/Telegram/lib_ui/ui/colors.palette
+@@ -8,9 +8,9 @@
+ // basic
+ windowBg: #ffffff; // white: fallback for background
+ windowFg: #000000; // black: fallback for text
+-windowBgOver: #f1f1f1; // light gray: fallback for background with mouse over
++windowBgOver: #3584e4; // light gray: fallback for background with mouse over
+ windowBgRipple: #e5e5e5; // darker gray: fallback for ripple effect
+-windowFgOver: windowFg; // black: fallback for text with mouse over
++windowFgOver: #ffffff; // black: fallback for text with mouse over
+ windowSubTextFg: #999999; // gray: fallback for additional text
+ windowSubTextFgOver: #919191; // darker gray: fallback for additional text with mouse over
+ windowBoldFg: #222222; // dark gray: fallback for bold text
+-- 
+2.36.0
+

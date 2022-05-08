@@ -1,0 +1,32 @@
+From c7757e4b1cc5694a553ef5a8de903fa4d1f90d44 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 6 May 2022 14:04:03 -0300
+Subject: [PATCH] system nlohmann_json
+
+---
+ meson.build | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index fd4e04c..eddb1ae 100644
+--- a/meson.build
++++ b/meson.build
+@@ -273,8 +273,13 @@ endif
+ 
+ if get_option('mangoapp') or get_option('mangoapp_layer')
+   glfw3_dep = dependency('glfw3')
+-  json_sp = subproject('nlohmann_json')
+-  json_dep = json_sp.get_variable('nlohmann_json_dep')
++  json_dep = dependency('nlohmann_json')
++  if not spdlog_dep.found()
++    json_sp = subproject('nlohmann_json')
++    json_dep = json_sp.get_variable('nlohmann_json_dep')
++  else
++    json_dep = dependency('nlohmann_json', required: true)
++  endif
+ endif
+ 
+ subdir('src')
+-- 
+2.36.0
+

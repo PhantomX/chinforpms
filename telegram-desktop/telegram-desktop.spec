@@ -66,6 +66,7 @@ Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-fix-gsl-header-warnings.patch
 Patch207:       0001-tgcalls-fix-build.patch
+Patch208:       0001-sane-background-and-text-colors.patch
 
 
 BuildRequires:  cmake(Microsoft.GSL)

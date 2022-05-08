@@ -1,0 +1,25 @@
+From 7d79cd96fb95c1d65474393a08585ca41bb4ee40 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 7 May 2022 11:54:56 -0300
+Subject: [PATCH] appstream validate
+
+---
+ dist/org.yuzu_emu.yuzu.metainfo.xml | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/dist/org.yuzu_emu.yuzu.metainfo.xml b/dist/org.yuzu_emu.yuzu.metainfo.xml
+index 5f36613..1480f8c 100755
+--- a/dist/org.yuzu_emu.yuzu.metainfo.xml
++++ b/dist/org.yuzu_emu.yuzu.metainfo.xml
+@@ -25,8 +25,6 @@
+   <url type="donation">https://yuzu-emu.org/donate/</url>
+   <url type="translate">https://www.transifex.com/projects/p/yuzu</url>
+   <url type="contact">https://community.citra-emu.org/</url>
+-  <url type="vcs-browser">https://github.com/yuzu-emu/yuzu</url>
+-  <url type="contribute">https://yuzu-emu.org/wiki/contributing/</url>
+   <launchable type="desktop-id">org.yuzu_emu.yuzu.desktop</launchable>
+   <provides>
+     <binary>yuzu</binary>
+-- 
+2.36.0
+
