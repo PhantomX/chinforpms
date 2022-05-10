@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit f3fafab8b327df5012cb048f567f1679033c9d6f
+%global commit 8c0a4a4168c029fe337904ed4e2f600e71248548
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220425
+%global date 20220430
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -24,7 +24,7 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.3%{?gver}%{?dist}
+Release:        0.4%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other
@@ -182,6 +182,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Mon May 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.4.20220430git8c0a4a4
+- Bump
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.3.20220425gitf3fafab
 - Bump
 - meson->cmake
