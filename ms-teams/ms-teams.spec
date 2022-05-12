@@ -14,8 +14,8 @@
 %global pkgrel 1
 
 Name:           ms-%{pkgname}
-Version:        1.4.00.26453
-Release:        2%{?dist}
+Version:        1.5.00.10453
+Release:        1%{?dist}
 Summary:        Chat-centered workspace in Office 365
 
 License:        Microsoft End User License Agreement
@@ -138,6 +138,9 @@ done
 
 
 %changelog
+* Tue May 10 2022 - 1.5.00.10453-1
+- 1.5.00.10453
+
 * Thu Oct 07 2021 - 1.4.00.26453-2
 - 1.4.00.26453
 

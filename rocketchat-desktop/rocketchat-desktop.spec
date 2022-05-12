@@ -12,13 +12,13 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.7.8
+Version:        3.8.5
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
 License:        MIT
 URL:            https://rocket.chat
-Source0:        https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/%{version}/%{real_name}-%{version}.%{parch}.rpm
+Source0:        https://github.com/RocketChat/Rocket.Chat.Electron/releases/download/%{version}/%{real_name}-%{version}-linux-%{parch}.rpm
 Source1:        https://github.com/RocketChat/Rocket.Chat.Electron/raw/%{version}/LICENSE
 
 ExclusiveArch:  %{ix86} x86_64
@@ -117,6 +117,9 @@ done
 
 
 %changelog
+* Tue May 10 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.5-1
+- 3.8.5
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 3.7.8-1
 - 3.7.8
 
