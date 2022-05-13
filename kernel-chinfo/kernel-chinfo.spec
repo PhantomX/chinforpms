@@ -159,18 +159,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 0e8a21c531916e88b056a9d01dbeca8ccd83cd22
+%global pfcommit d4f12e0431e19e55f66e45f3a72159abfd27d2a6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 35de487b990b1b73fd0c959f3149969cd4732f32
+%global opensuse_id c9a5fa1b9f6f6fd24077192f84b23566f1349996
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -310,10 +310,10 @@ Summary: The Linux kernel
 
 ### CPU optimizations
 ### with native take precedence, next is generic, then one set in kernel-local-cpu
-# Use kernel-local-native (CONFIG_MNATIVE=y)
+# Use kernel-local-cpu-native (CONFIG_MNATIVE=y)
 %global with_native  %{?_with_native:     1} %{?!_with_native:     0}
 
-# Use kernel-local-generic (CONFIG_GENERIC_CPU=y)
+# Use kernel-local-cpu-generic (CONFIG_GENERIC_CPU=y)
 %global with_generic %{?_with_generic:     1} %{?!_with_generic:     0}
 
 %if 0%{?fedora}
@@ -891,10 +891,10 @@ Source3001: kernel-local
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 Source3011: kernel-local-cpu
-Source3012: kernel-local-native
+Source3012: kernel-local-cpu-native
 Source3013: kernel-local-pf
 Source3014: kernel-local-zen
-Source3015: kernel-local-generic
+Source3015: kernel-local-cpu-generic
 
 %if 0%{patchlist_changelog}
 Source3997: Patchlist.changelog
@@ -2928,8 +2928,11 @@ fi
 #
 #
 %changelog
+* Thu May 12 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.7-500.chinfo
+- 5.17.7 - pf5
+
 * Mon May 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.6-500.chinfo
-- 5.17.6 - pf3
+- 5.17.6 - pf4
 
 * Wed Apr 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.5-500.chinfo
 - 5.17.5 - pf3
