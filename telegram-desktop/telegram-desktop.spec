@@ -20,7 +20,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        3.7.4
+Version:        3.7.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -48,7 +48,6 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch10:        %{url}/commit/caf2be13b344b361baa7ca793cb8cb7e8fbf0846.patch#/%{name}-gh-caf2be1.patch
 
 Patch100:       %{name}-build-fix.patch
 Patch101:       %{name}-unbundled-kwayland-stuff.patch
@@ -290,6 +289,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri May 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.5-100
+- 3.7.5
+
 * Thu May 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.4-100
 - 3.7.4
 

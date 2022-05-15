@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 442d5bb593c0ae314960308d78f2016ad1f80c3e
+%global commit0 10d5f4bf77333ef6b43516f90d2ce13273255f41
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220504
+%global date 20220508
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -30,7 +30,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        118%{?gver}%{?dist}
+Release:        119%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -305,6 +305,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Fri May 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-119.20220508git10d5f4b
+- Last snapshot
+
 * Wed May 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0-118.20220504git442d5bb
 - Bump
 

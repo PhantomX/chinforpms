@@ -1,7 +1,7 @@
-%global commit f91f4348356285ede39915f0d10ffae11c4871e5
+%global commit 5aa9340c3d12ebf42cf4b9f8a170c55e00c48338
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220502
-%global with_snapshot 0
+%global date 20220513
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -46,7 +46,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.2
 %global winemono  7.2.0
-%global winevulkan 1.3.211
+%global winevulkan 1.3.213
 
 %global wineFAudio 22.02
 %global winegsm 1.0.19
@@ -94,7 +94,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.8
+%global wine_stagingver e534d6546a5be9f1cd53a0ea3ac79db7d977bed7
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -105,7 +105,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 92f221b1ad9ee800801bfce0fcc3aeeffdf75a89
+%global tkg_id 2405b9e954e156c68aee737543a2964330ea0df4
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -117,16 +117,13 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
+# childwindow (breaks nine)
+%global childwindow 0
 # fastsync/winesync
 %global fastsync 1
-# proton FS hack (wine virtual desktop with DXVK is not working well)
+# proton FS hack (wine virtual desktop with DXVK is not working well, breaks nine)
 %global fshack 0
 %global vulkanup 0
-
-%if !0%{?fshack}
-# childwindow.patch (breaks nine)
-%dnl %global wine_staging_opts %%{?wine_staging_opts} -W Pipelight -W winex11-Vulkan_support
-%endif
 
 %if 0%{?fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -312,6 +309,20 @@ Patch299:       %{whq_url}/89d28156cf561afe0bc8692e611a96631af51433#/%{name}-whq
 Patch300:       %{whq_url}/bf6aa078a709d5afd0c11d1a4e01eb1094c0d09e#/%{name}-whq-revert-mfplat-bf6aa07.patch
 Patch301:       %{whq_url}/23fb8a6b49304a0b8ccf5a10e5bbd603691ba7bc#/%{name}-whq-revert-mfplat-23fb8a6.patch
 Patch302:       %{whq_url}/6eca6ad68644639ef54706363dcbb2d62962da8f#/%{name}-whq-revert-mfplat-6eca6ad.patch
+Patch303:       %{whq_url}/048e21d22e33fb8187532851dad6ce566592156b#/%{name}-whq-revert-mfplat-048e21d.patch
+Patch304:       %{whq_url}/1d7d3f58d6666e2a5793a79ea8a28476f961e9c2#/%{name}-whq-revert-mfplat-1d7d3f5.patch
+Patch305:       %{whq_url}/ce71f5a05f226b3f68328d4632cd78ac9440d073#/%{name}-whq-revert-mfplat-ce71f5a.patch
+Patch306:       %{whq_url}/d686663d22cb027fae7607acf3bae96ab34018f5#/%{name}-whq-revert-mfplat-d686663.patch
+Patch307:       %{whq_url}/ca10760d2e7ea4f8718741592fd639f589247e53#/%{name}-whq-revert-mfplat-ca10760.patch
+Patch308:       %{whq_url}/529efbb4c91365f2f555b3c09ffda946f3843f5d#/%{name}-whq-revert-mfplat-529efbb.patch
+Patch309:       %{whq_url}/fc2128d7fcd869b238932d50f034b8ff3e8be65c#/%{name}-whq-revert-mfplat-fc2128d.patch
+Patch310:       %{whq_url}/bd527c1946cc92dfeee072542815e71b2e3d1861#/%{name}-whq-revert-mfplat-bd527c1.patch
+Patch311:       %{whq_url}/b7fa00be65363132f1fd8686bfa0a81b394c0dba#/%{name}-whq-revert-mfplat-b7fa00b.patch
+Patch312:       %{whq_url}/bae7ac48bce5e0566b30a8dd3a766b343b5617a7#/%{name}-whq-revert-mfplat-bae7ac4.patch
+Patch313:       %{whq_url}/faf6f267aead1c2c1f59b051aa7bc12d25dc8941#/%{name}-whq-revert-mfplat-faf6f26.patch
+Patch314:       %{whq_url}/5db4b0cff96dae30643613a01d13b75196a00c25#/%{name}-whq-revert-mfplat-5db4b0c.patch
+Patch315:       %{whq_url}/2567ff497d40cbc43a1d5d766636b6dd77fc4618#/%{name}-whq-revert-mfplat-2567ff4.patch
+Patch316:       %{whq_url}/e3f226fde01d96c5e7799884ed4da5324adceca9#/%{name}-whq-revert-mfplat-e3f226f.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -327,6 +338,7 @@ Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1008:       %{tkg_url}/hotfixes/SetThreadInformation/SetThreadInformation.mypatch#/%{name}-tkg-SetThreadInformation.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -347,6 +359,8 @@ Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.p
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support3.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support3.patch
+Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
+Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
@@ -957,6 +971,20 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch316 -p1 -R
+%patch315 -p1 -R
+%patch314 -p1 -R
+%patch313 -p1 -R
+%patch312 -p1 -R
+%patch311 -p1 -R
+%patch310 -p1 -R
+%patch309 -p1 -R
+%patch308 -p1 -R
+%patch307 -p1 -R
+%patch306 -p1 -R
+%patch305 -p1 -R
+%patch304 -p1 -R
+%patch303 -p1 -R
 %patch302 -p1 -R
 %patch301 -p1 -R
 %patch300 -p1 -R
@@ -1069,12 +1097,14 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
-#FIXME: verify if is not breaking nine again
-#patch1003 -p1
+%if 0%{?childwindow}
+%patch1003 -p1
+%endif
 %endif
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
+%patch1008 -p1
 
 %patch5000 -p1
 
@@ -1091,6 +1121,10 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1025 -p1
 %patch1026 -p1
 %patch1038 -p1
+%if 0%{?childwindow}
+%patch1039 -p1
+%endif
+%patch1040 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1

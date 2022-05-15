@@ -8,9 +8,9 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit 4603c25d69ed4f41497762f1899dfcc36e2e17d3
+%global commit 1a773cfb713366948c0c76cada6453b2687f49cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220428
+%global date 20220514
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
@@ -27,7 +27,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 6eb8fc3598ed2a9777677fbe59038c8d0664a434
+%global commit4 33d4dd987fc8fc6475ff9ca2b4f0c3cc6e793337
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
@@ -56,7 +56,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 License:        LGPLv2+
@@ -96,7 +96,7 @@ BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
-BuildRequires:  pkgconfig(vulkan) >= 1.2.140
+BuildRequires:  pkgconfig(vulkan) >= 1.3.213
 BuildRequires:  spirv-headers-devel >= 1.5.4
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -271,6 +271,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-5.20220514git1a773cf
+- Bump
+
 * Mon May 02 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-4.20220428git4603c25
 - Last snapshot
 
