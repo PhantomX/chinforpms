@@ -147,7 +147,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.8
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2733,6 +2733,9 @@ fi
 
 
 %changelog
+* Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.8-101.20220513git5aa9340
+- Snapshot
+
 * Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.8-100
 - 7.8
 
