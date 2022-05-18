@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.6.2
+Version:        4.6.4
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -29,12 +29,6 @@ URL:            https://www.gtk.org
 
 Source0:        https://download.gnome.org/sources/gtk/%(echo %{version} | cut -d. -f-2)/gtk-%{version}.tar.xz
 Source2:        chinforpms-adwaita.css
-
-# Fix portal save/load dialogs not working on X
-# https://bugzilla.redhat.com/show_bug.cgi?id=2068041
-# https://gitlab.gnome.org/GNOME/gtk/-/issues/4805
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4605
-Patch0:         0001-gtkimmulticontext-Handle-switches-between-displays.patch
 
 # Disable this @#$& by default
 Patch100:       0001-Disable-overlay-scrolling.patch
@@ -264,6 +258,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Mon May 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.4-100
+- 4.6.4
+
 * Mon Apr 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.2-100
 - gtk4-classic incomplete attempt
 
