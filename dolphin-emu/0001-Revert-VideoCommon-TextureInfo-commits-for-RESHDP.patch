@@ -1,4 +1,4 @@
-From 738deddfa4984d3b7a46440096457030e1a4772c Mon Sep 17 00:00:00 2001
+From 2b647e7117c4a4054e3307f2ebfd640ea250c409 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 16:01:06 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
@@ -27,7 +27,6 @@ bdc55f9557477ecbaabf3a98f2560e461bc44ba9 - RenderState: Set source and destinati
 608799f1e454f8473e5709204adb544eac52ddca - PixelShaderGen: Check uid_data for use_shader_logic_op
 bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround for shader logic ops
 259a5fc7c02d48f21d2479d8e259519bc4ed443e - DriverDetails: Add broken discard with early-Z bug on Apple Silicon GPUs
----
 ---
  Source/Core/AudioCommon/AlsaSoundStream.cpp   |   3 +-
  Source/Core/AudioCommon/AudioStretcher.cpp    |   3 +-
@@ -137,7 +136,6 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  .../Core/Core/PowerPC/JitArm64/Jit_Util.cpp   |   3 +-
  .../Core/Core/PowerPC/JitCommon/DivUtils.cpp  |   4 +-
  .../Core/Core/PowerPC/JitCommon/JitCache.cpp  |   2 -
- Source/Core/Core/State.cpp                    |   2 +-
  Source/Core/DiscIO/Blob.cpp                   |   3 +-
  Source/Core/DiscIO/CISOBlob.cpp               |   3 +-
  Source/Core/DiscIO/CompressedBlob.cpp         |  11 +-
@@ -268,7 +266,7 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 239 files changed, 967 insertions(+), 2621 deletions(-)
+ 238 files changed, 966 insertions(+), 2620 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -2130,7 +2128,7 @@ index cb73416..989a732 100644
  #include "Core/PowerPC/JitCommon/DivUtils.h"
  #include "Core/PowerPC/PPCTables.h"
 diff --git a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
-index 99253b1..64866e7 100644
+index 2781ba3..152ebe7 100644
 --- a/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
 +++ b/Source/Core/Core/PowerPC/JitArm64/JitArm64_LoadStore.cpp
 @@ -1,8 +1,6 @@
@@ -2142,7 +2140,7 @@ index 99253b1..64866e7 100644
  #include "Common/Arm64Emitter.h"
  #include "Common/BitSet.h"
  #include "Common/CommonTypes.h"
-@@ -13,6 +11,7 @@
+@@ -14,6 +12,7 @@
  #include "Core/HW/DSP.h"
  #include "Core/HW/MMIO.h"
  #include "Core/HW/Memmap.h"
@@ -2305,19 +2303,6 @@ index ca09054..02235d3 100644
  #include <algorithm>
  #include <array>
  #include <cstring>
-diff --git a/Source/Core/Core/State.cpp b/Source/Core/Core/State.cpp
-index 71e8642..f67f35b 100644
---- a/Source/Core/Core/State.cpp
-+++ b/Source/Core/Core/State.cpp
-@@ -74,7 +74,7 @@ static std::recursive_mutex g_save_thread_mutex;
- static std::thread g_save_thread;
- 
- // Don't forget to increase this after doing changes on the savestate system
--constexpr u32 STATE_VERSION = 139;  // Last changed in PR 8350
-+constexpr u32 STATE_VERSION = 138;  // Last changed in PR 9670
- 
- // Maps savestate versions to Dolphin versions.
- // Versions after 42 don't need to be added to this list,
 diff --git a/Source/Core/DiscIO/Blob.cpp b/Source/Core/DiscIO/Blob.cpp
 index 7062c36..38416ad 100644
 --- a/Source/Core/DiscIO/Blob.cpp
@@ -2522,7 +2507,7 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index 3523d28..fbc890a 100644
+index d4cdb0a..d51a51c 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
 @@ -644,6 +644,7 @@
@@ -2781,7 +2766,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index 3be8f9d..7b28f00 100644
+index 5099ffa..7333ebb 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -2888,7 +2873,7 @@ index 0ffed70..471786b 100644
  PathPane::PathPane(QWidget* parent) : QWidget(parent)
  {
 diff --git a/Source/Core/DolphinQt/TAS/WiiTASInputWindow.cpp b/Source/Core/DolphinQt/TAS/WiiTASInputWindow.cpp
-index cad896b..df84495 100644
+index 1b379c7..cf7588e 100644
 --- a/Source/Core/DolphinQt/TAS/WiiTASInputWindow.cpp
 +++ b/Source/Core/DolphinQt/TAS/WiiTASInputWindow.cpp
 @@ -1,8 +1,6 @@
@@ -4542,7 +4527,7 @@ index f8306dd..10f5b37 100644
  #include "VideoCommon/RenderBase.h"
  #include "VideoCommon/Statistics.h"
 diff --git a/Source/Core/VideoCommon/BPMemory.h b/Source/Core/VideoCommon/BPMemory.h
-index 4729e06..6aa5d27 100644
+index 28155a2..73ff490 100644
 --- a/Source/Core/VideoCommon/BPMemory.h
 +++ b/Source/Core/VideoCommon/BPMemory.h
 @@ -1113,6 +1113,18 @@ struct fmt::formatter<ZTex2>
@@ -6861,7 +6846,7 @@ index 6a1eff4..0000000
 -
 -}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index b1c9ead..c97d62c 100644
+index 406a7be..f0a2c13 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
 @@ -40,9 +40,9 @@
@@ -8783,5 +8768,5 @@ index c348649..f954ca7 100644
    Fifo::DoState(p);
    p.DoMarker("Fifo");
 -- 
-2.36.0
+2.36.1
 

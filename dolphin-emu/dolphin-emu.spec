@@ -23,9 +23,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 4cd48e609c507e65b95bca5afb416b59eaf7f683
+%global commit 62601663e578bcd0b981e134c84fbc9d37850a15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220424
+%global date 20220517
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -39,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        158%{?gver}%{?dist}
+Release:        159%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -72,9 +72,7 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
 #Update soundtouch:
 #https://github.com/dolphin-emu/dolphin/pull/8725
-Patch2:         0001-soundtouch-update-to-2.1.2.patch
-Patch3:         0002-soundtouch-Use-shorts-instead-of-floats-for-samples.patch
-Patch4:         0003-soundtouch-disable-exceptions.patch
+Patch2:         0001-Update-to-soundtouch-2.3.1.patch
 #This needs to be fixed, I've reverted the patch that breaks minizip
 Patch5:         0004-Revert-Externals-Update-minizip-search-path.patch
 Patch10:        0001-mgba-system-library-support.patch
@@ -170,7 +168,7 @@ Provides:       bundled(cpp-argparse)
 #https://github.com/AdmiralCurtiss/rangeset
 Provides:       bundled(rangeset)
 #soundtouch cannot be unbundled easily, as it requires compile time changes:
-Provides:       bundled(soundtouch) = 2.1.2
+Provides:       bundled(soundtouch) = 2.3.1
 #dolphin uses tests not included in upstream gtest (possibly unbundle later):
 Provides:       bundled(gtest) = 1.9.0
 #dolphin uses a very old bochs, which is impatible with f35+'s bochs.
@@ -423,6 +421,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu May 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-159.20220517git6260166
+- Bump
+- Rawhide sync (SoundTouch 2.3.1)
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-158.20220424git4cd48e6
 - Bump
 

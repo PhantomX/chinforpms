@@ -64,7 +64,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.0.3
+Version:        22.1.0
 Release:        100%{?dist}
 
 License:        MIT
@@ -87,7 +87,7 @@ Patch0007: 0005-Revert-nouveau-Use-DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEA.patch
 Patch0008: 0006-Revert-nouveau-Stash-supported-sector-layout-in-scre.patch
 
 
-BuildRequires:  meson >= 0.45
+BuildRequires:  meson >= 0.53
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -104,7 +104,7 @@ BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.8
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.24
 BuildRequires:  pkgconfig(wayland-client) >= 1.18
 BuildRequires:  pkgconfig(wayland-server) >= 1.18
 BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
@@ -671,6 +671,9 @@ popd
 
 
 %changelog
+* Wed May 18 2022 Phantom X <megaphantomx at hotmail dot com> - 22.1.0-100
+- 22.1.0
+
 * Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.3-100
 - 22.0.3
 
