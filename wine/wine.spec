@@ -1,7 +1,7 @@
 %global commit 5aa9340c3d12ebf42cf4b9f8a170c55e00c48338
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220513
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -46,7 +46,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.2
 %global winemono  7.2.0
-%global winevulkan 1.3.213
+%global winevulkan 1.3.214
 
 %global wineFAudio 22.02
 %global winegsm 1.0.19
@@ -94,7 +94,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver e534d6546a5be9f1cd53a0ea3ac79db7d977bed7
+%global wine_stagingver 7.9
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -105,7 +105,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2405b9e954e156c68aee737543a2964330ea0df4
+%global tkg_id 0b3a029c377d43bfd4d6a60bacf2cca94350dad7
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,8 +146,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.8
-Release:        101%{?gver}%{?dist}
+Version:        7.9
+Release:        99%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -323,6 +323,14 @@ Patch313:       %{whq_url}/faf6f267aead1c2c1f59b051aa7bc12d25dc8941#/%{name}-whq
 Patch314:       %{whq_url}/5db4b0cff96dae30643613a01d13b75196a00c25#/%{name}-whq-revert-mfplat-5db4b0c.patch
 Patch315:       %{whq_url}/2567ff497d40cbc43a1d5d766636b6dd77fc4618#/%{name}-whq-revert-mfplat-2567ff4.patch
 Patch316:       %{whq_url}/e3f226fde01d96c5e7799884ed4da5324adceca9#/%{name}-whq-revert-mfplat-e3f226f.patch
+Patch317:       %{whq_url}/68fa3f673633c138596b86ad2ed1befcd0cc63c5#/%{name}-whq-revert-mfplat-68fa3f6.patch
+Patch318:       %{whq_url}/5b04d18945c547144bf692f6418af5ec25315835#/%{name}-whq-revert-mfplat-5b04d18.patch
+Patch319:       %{whq_url}/f14018f7edecdff5784ee98e10f1defa6ee75040#/%{name}-whq-revert-mfplat-f14018f.patch
+Patch320:       %{whq_url}/5387718c6fbd36b7a6309122f4af68d475a344e8#/%{name}-whq-revert-mfplat-5387718.patch
+Patch321:       %{whq_url}/4c999efdfb6df56e48deec14444442415d8d1ae2#/%{name}-whq-revert-mfplat-4c999ef.patch
+Patch322:       %{whq_url}/411ef13e7c2bbc43afcfc8fe1a1e251b79a059be#/%{name}-whq-revert-mfplat-411ef13.patch
+Patch323:       %{whq_url}/0c2f1121cc8caa5815ea48ccbe7f891f6891f39e#/%{name}-whq-revert-mfplat-0c2f112.patch
+Patch324:       %{whq_url}/0416d2f167dc852fca9a41ecf398b32409665657#/%{name}-whq-revert-mfplat-0416d2f.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -338,7 +346,6 @@ Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1008:       %{tkg_url}/hotfixes/SetThreadInformation/SetThreadInformation.mypatch#/%{name}-tkg-SetThreadInformation.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -971,6 +978,14 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch324 -p1 -R
+%patch323 -p1 -R
+%patch322 -p1 -R
+%patch321 -p1 -R
+%patch320 -p1 -R
+%patch319 -p1 -R
+%patch318 -p1 -R
+%patch317 -p1 -R
 %patch316 -p1 -R
 %patch315 -p1 -R
 %patch314 -p1 -R
@@ -1104,7 +1119,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
-%patch1008 -p1
 
 %patch5000 -p1
 
@@ -2255,6 +2269,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/winsta.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wintypes.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanui.%{winedll}
+# FIXME - remove when mfplat reverts are unneeded
 %{_libdir}/wine/%{winedlldir}/wmadmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmi.%{winedll}
