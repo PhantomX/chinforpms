@@ -24,13 +24,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 17
+%global base_sublevel 18
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 9
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -100,9 +100,6 @@ Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/patch-%{majo
 Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
 %endif
 %endif
-
-# ongoing complaint, full discussion delayed until ksummit/plumbers
-Patch0: 0001-iio-Use-event-header-from-kernel-tree.patch
 
 # rpmlint cleanup
 Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
@@ -226,7 +223,6 @@ cd linux-%{kversion}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 
-%patch0 -p1
 %patch6 -p1
 
 # END OF PATCH APPLICATIONS
@@ -500,6 +496,9 @@ popd
 
 
 %changelog
+* Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.0-500
+- 5.18.0
+
 * Wed May 18 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.9-500
 - 5.17.9
 
@@ -782,51 +781,3 @@ popd
 
 * Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.0-500.chinfo
 - 5.11.0
-
-* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
-- 5.10.16
-
-* Wed Feb 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.15-500.chinfo
-- 5.10.15
-
-* Sun Feb 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.14-500.chinfo
-- 5.10.14
-
-* Wed Feb 03 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.13-500.chinfo
-- 5.10.13
-
-* Sat Jan 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.12-500.chinfo
-- 5.10.12
-
-* Wed Jan 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.10-500.chinfo
-- 5.10.11
-
-* Sat Jan 23 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.10-500.chinfo
-- 5.10.10
-
-* Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.9-500.chinfo
-- 5.10.9
-
-* Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.8-500.chinfo
-- 5.10.8
-
-* Tue Jan 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.7-500.chinfo
-- 5.10.7
-
-* Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.6-500.chinfo
-- 5.10.6
-
-* Wed Jan 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.5-500.chinfo
-- 5.10.5
-
-* Wed Dec 30 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.4-500.chinfo
-- 5.10.4
-
-* Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.3-500.chinfo
-- 5.10.3
-
-* Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.2-500.chinfo
-- 5.10.2
-
-* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.0-500.chinfo
-- 5.10.0

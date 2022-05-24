@@ -1,0 +1,13 @@
+# Symbol: F2FS_UNFAIR_RWSEM [=n]
+# Type  : bool
+# Defined at fs/f2fs/Kconfig:147
+#   Prompt: F2FS unfair rw_semaphore
+#   Depends on: BLOCK [=y] && F2FS_FS [=m] && BLK_CGROUP [=y]
+#   Location:
+#     Main menu
+#       -> File systems
+#         -> F2FS filesystem support (F2FS_FS [=m])
+# 
+# 
+# 
+CONFIG_F2FS_UNFAIR_RWSEM=y

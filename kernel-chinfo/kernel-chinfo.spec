@@ -153,24 +153,24 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 17
+%define base_sublevel 18
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 97177704cc8e1e5ba16731e942a609b83bb3b719
+%global pfcommit 50c01fc7c958c011d49569c5a4c4e880acc0a95a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id c9a5fa1b9f6f6fd24077192f84b23566f1349996
+%global opensuse_id 3e3b5e4d8c931882eb136c191acf0252fa815604
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -945,8 +945,8 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 Patch1: patch-%{kversion}-redhat.patch
 %if 0%{?post_factum}
 # Build fail when LRNG is enabled
-Patch2: 0001-patch-%{kversion}-revert49ab598.patch
-Patch3: 0002-patch-%{kversion}-revert0c5b51f.patch
+Patch2: 0001-patch-%{kversion}-revert2017f71.patch
+Patch3: 0002-patch-%{kversion}-revert0cc8e2f.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -964,14 +964,15 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
+Patch1016: %{opensuse_url}/Revert-net-af_key-add-check-for-pfkey_broadcast-in-f.patch#/openSUSE-Revert-net-af_key-add-check-for-pfkey_broadcast-in-f.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id a9980d5b1c4d7732817855afb8ca9aefe2c5e0e2
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.17/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%global tkg_id e063412fe4ec57c1dad270b595e7efde14aa6115
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.18/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
@@ -1619,7 +1620,7 @@ cat %{SOURCE3014} >> kernel-local
 cp %{SOURCE80} .
 # merge.pl
 cp %{SOURCE3000} .
-VERSION=%{version} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
+FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
 
 
 # Merge in any user-provided local config option changes
@@ -1671,7 +1672,8 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-./process_configs.sh $OPTS kernel %{rpmversion}
+RHJOBS=%{?_smp_build_ncpus} PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${rpmversion}
+
 
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
@@ -1749,7 +1751,7 @@ InitBuildVars() {
     cp configs/$Config .config
 
     %if %{signkernel}%{signmodules}
-    cp $RPM_SOURCE_DIR/x509.genkey certs/.
+    cp configs/x509.genkey certs/.
     %endif
 
     Arch=`head -1 .config | cut -b 3-`
@@ -2206,7 +2208,7 @@ BuildKernel() {
     remove_depmod_files
 
     # Identify modules in the kernel-modules-extras package
-    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $RPM_SOURCE_DIR/mod-extra.list
+    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $(realpath configs/mod-extra.list)
     # Identify modules in the kernel-modules-extras package
     %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE84} internal
 
@@ -2217,6 +2219,7 @@ BuildKernel() {
     # Copy the System.map file for depmod to use, and create a backup of the
     # full module tree so we can restore it after we're done filtering
     cp System.map $RPM_BUILD_ROOT/.
+    cp configs/filter-*.sh $RPM_BUILD_ROOT/.
     pushd $RPM_BUILD_ROOT
     mkdir restore
     cp -r lib/modules/$KernelVer/* restore/.
@@ -2232,7 +2235,6 @@ BuildKernel() {
     # modules lists.  This actually removes anything going into -modules
     # from the dir.
     find lib/modules/$KernelVer/kernel -name *.ko | sort -n > modules.list
-    cp $RPM_SOURCE_DIR/filter-*.sh .
     ./filter-modules.sh modules.list %{_target_cpu}
     rm filter-*.sh
 
@@ -2928,6 +2930,9 @@ fi
 #
 #
 %changelog
+* Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.0-500.chinfo
+- 5.18.0 - pf1
+
 * Wed May 18 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.9-500.chinfo
 - 5.17.9 - pf5
 

@@ -1,1 +1,1 @@
-CONFIG_UIO_AEC=m
+# CONFIG_UIO_AEC is not set

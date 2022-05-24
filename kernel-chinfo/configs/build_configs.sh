@@ -4,20 +4,22 @@
 # and debug to form the necessary $PACKAGE_NAME<version>-<arch>-<variant>.config
 # files for building RHEL kernels, based on the contents of a control file
 
+test -n "$RHTEST" && exit 0
+
 PACKAGE_NAME="${1:-kernel}" # defines the package name used
-SUBARCH="${2:-}" # defines a specific arch
+
 SCRIPT=$(readlink -f "$0")
 OUTPUT_DIR="$PWD"
 SCRIPT_DIR=$(dirname "$SCRIPT")
 
-if [ -z "$3" ]; then
+if [ -z "$2" ]; then
 	cat "$OUTPUT_DIR"/flavors > "$OUTPUT_DIR"/.flavors
 else
-	echo "$3" > "$OUTPUT_DIR"/.flavors
+	echo "$2" > "$OUTPUT_DIR"/.flavors
 fi
 
 # shellcheck disable=SC2015
-RHJOBS="$(test -n "$4" && echo "$4" || nproc --all)"
+RHJOBS="${RHJOBS:-$(nproc --all)}"
 
 LANG=en_US.UTF-8
 
@@ -145,9 +147,9 @@ function build_flavor()
 			arch=$(echo "$line" | cut -f1 -d"=")
 			configs=$(echo "$line" | cut -f2 -d"=")
 
-			if [ -n "$SUBARCH" ]; then
+			if [ -n "$ARCH_MACH" ]; then
 				case $arch in
-					$SUBARCH*)
+					$ARCH_MACH*)
 						;;
 					*)
 						continue

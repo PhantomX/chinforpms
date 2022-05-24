@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2715
+Version:        1.7.2781
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -93,14 +93,15 @@ BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(libzip)
+BuildRequires:  pkgconfig(libzip) >= 1.8.0
+BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  cmake(ryml) >= 0.4.1
 BuildRequires:  pkgconfig(samplerate)
 # use SDL that depends wxGTK
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= 2.0.22
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
@@ -112,6 +113,8 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
+BuildRequires:  unzip
+BuildRequires:  zip
 
 Requires:       joystick
 Requires:       google-roboto-fonts
@@ -195,6 +198,14 @@ export MESA_NO_ERROR=1
 exec %{_bindir}/pcsx2.bin "$@"
 EOF
 
+mkdir cheats_ws_tmp
+pushd cheats_ws_tmp
+unzip -q ../bin/resources/cheats_ws.zip
+rename PNACH pnach *.*
+zip -9 -q ../cheats_ws_new.zip *.*
+popd
+touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
+mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
 
 %build
 
@@ -226,6 +237,7 @@ EOF
   -DUSE_VTUNE:BOOL=FALSE \
   -DCUBEB_API:BOOL=TRUE \
   -DUSE_SYSTEM_YAML:BOOL=TRUE \
+  -DUSE_SYSTEM_ZSTD:BOOL=TRUE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \
   -DDISABLE_SETCAP:BOOL=TRUE \
   -DENABLE_TESTS:BOOL=FALSE \
@@ -302,6 +314,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2781-1
+- 1.7.2769
+
 * Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2715-1
 - 1.7.2715
 

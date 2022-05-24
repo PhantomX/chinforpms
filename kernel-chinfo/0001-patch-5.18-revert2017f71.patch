@@ -1,0 +1,195 @@
+From 3d6148aa513dd2be68808092925c645d3e489e44 Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Mon, 23 May 2022 11:27:49 -0300
+Subject: [PATCH 1/2] patch-5.18-revert2017f71
+
+Revert commits 2017f71858ed010d0081082a7d4af4634ba4967d and
+8e648aae90c1d739b5ead43fb84c2cae550a8344
+---
+ drivers/char/random.c  | 95 ------------------------------------------
+ include/linux/random.h |  7 ----
+ 2 files changed, 102 deletions(-)
+
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 4f660c0..4c9adb4 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -52,7 +52,6 @@
+ #include <linux/syscalls.h>
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
+-#include <linux/rcupdate.h>
+ #include <linux/uaccess.h>
+ #include <crypto/chacha.h>
+ #include <crypto/blake2s.h>
+@@ -61,11 +60,6 @@
+ #include <asm/irq_regs.h>
+ #include <asm/io.h>
+ 
+-/*
+- * Hook for external RNG.
+- */
+-static const struct random_extrng __rcu *extrng;
+-
+ /*********************************************************************
+  *
+  * Initialization and readiness waiting.
+@@ -101,9 +95,6 @@ static int ratelimit_disable __read_mostly;
+ module_param_named(ratelimit_disable, ratelimit_disable, int, 0644);
+ MODULE_PARM_DESC(ratelimit_disable, "Disable random ratelimit suppression");
+ 
+-static const struct file_operations extrng_random_fops;
+-static const struct file_operations extrng_urandom_fops;
+-
+ /*
+  * Returns whether or not the input pool has been seeded and thus guaranteed
+  * to supply cryptographically secure random numbers. This applies to: the
+@@ -594,63 +585,6 @@ static ssize_t get_random_bytes_user(void __user *buf, size_t nbytes)
+ 	return ret ? ret : -EFAULT;
+ }
+ 
+-static __poll_t
+-extrng_poll(struct file *file, poll_table * wait)
+-{
+-	/* extrng pool is always full, always read, no writes */
+-	return EPOLLIN | EPOLLRDNORM;
+-}
+-
+-static int random_open(struct inode *inode, struct file *filp)
+-{
+-	const struct random_extrng *rng;
+-
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (!rng)
+-		return 0;
+-
+-	filp->f_op = &extrng_random_fops;
+-	filp->private_data = rng->owner;
+-
+-	return 0;
+-}
+-
+-static int urandom_open(struct inode *inode, struct file *filp)
+-{
+-	const struct random_extrng *rng;
+-
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (!rng)
+-		return 0;
+-
+-	filp->f_op = &extrng_urandom_fops;
+-	filp->private_data = rng->owner;
+-
+-	return 0;
+-}
+-
+-static int extrng_release(struct inode *inode, struct file *filp)
+-{
+-	module_put(filp->private_data);
+-	return 0;
+-}
+-
+-static ssize_t
+-extrng_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+-{
+-	return rcu_dereference_raw(extrng)->extrng_read(buf, nbytes);
+-}
+-
+ /*
+  * Batched entropy returns random integers. The quality of the random
+  * number is good as /dev/urandom. In order to ensure that the randomness
+@@ -1250,19 +1184,6 @@ void add_bootloader_randomness(const void *buf, size_t size)
+ }
+ EXPORT_SYMBOL_GPL(add_bootloader_randomness);
+ 
+-void random_register_extrng(const struct random_extrng *rng)
+-{
+-	rcu_assign_pointer(extrng, rng);
+-}
+-EXPORT_SYMBOL_GPL(random_register_extrng);
+-
+-void random_unregister_extrng(void)
+-{
+-	RCU_INIT_POINTER(extrng, NULL);
+-	synchronize_rcu();
+-}
+-EXPORT_SYMBOL_GPL(random_unregister_extrng);
+-
+ #if IS_ENABLED(CONFIG_VMGENID)
+ static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
+ 
+@@ -1545,9 +1466,6 @@ static void try_to_generate_entropy(void)
+ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 		flags)
+ {
+-	const struct random_extrng *rng;
+-	int ret;
+-
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+ 
+@@ -1561,18 +1479,6 @@ SYSCALL_DEFINE3(getrandom, char __user *, buf, size_t, count, unsigned int,
+ 	if (count > INT_MAX)
+ 		count = INT_MAX;
+ 
+-	rcu_read_lock();
+-	rng = rcu_dereference(extrng);
+-	if (rng && !try_module_get(rng->owner))
+-		rng = NULL;
+-	rcu_read_unlock();
+-
+-	if (rng) {
+-		ret = rng->extrng_read(buf, count);
+-		module_put(rng->owner);
+-		return ret;
+-	}
+-
+ 	if (!(flags & GRND_INSECURE) && !crng_ready()) {
+ 		int ret;
+ 
+@@ -1733,7 +1639,6 @@ static int random_fasync(int fd, struct file *filp, int on)
+ }
+ 
+ const struct file_operations random_fops = {
+-	.open = random_open,
+ 	.read = random_read,
+ 	.write = random_write,
+ 	.poll = random_poll,
+diff --git a/include/linux/random.h b/include/linux/random.h
+index c6f631b..2217d00 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -10,11 +10,6 @@
+ 
+ #include <uapi/linux/random.h>
+ 
+-struct random_extrng {
+-	ssize_t (*extrng_read)(void __user *buf, size_t buflen);
+-	struct module *owner;
+-};
+-
+ struct random_ready_callback {
+ 	struct list_head list;
+ 	void (*func)(struct random_ready_callback *rdy);
+@@ -56,8 +51,6 @@ extern bool rng_is_initialized(void);
+ extern int register_random_ready_notifier(struct notifier_block *nb);
+ extern int unregister_random_ready_notifier(struct notifier_block *nb);
+ extern size_t __must_check get_random_bytes_arch(void *buf, size_t nbytes);
+-void random_register_extrng(const struct random_extrng *rng);
+-void random_unregister_extrng(void);
+ 
+ #ifndef MODULE
+ extern const struct file_operations random_fops, urandom_fops;
+-- 
+2.36.1
+

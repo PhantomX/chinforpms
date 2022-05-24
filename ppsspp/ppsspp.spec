@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit cf9c3e8c76f1df5c2b028141fff9d4e9fd029e13
+%global commit 017f71a70381144d25f22ebf775404daa7887901
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220426
+%global date 20220522
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -65,7 +65,7 @@
 
 Name:           ppsspp
 Version:        1.12.3
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -147,7 +147,7 @@ BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers >= 1.3.204
+BuildRequires:  vulkan-headers >= 1.3.211
 %if %{with qt}
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
@@ -445,6 +445,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun May 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-113.20220522git017f71a
+- Update
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-112.20220426gitcf9c3e8
 - Bump
 

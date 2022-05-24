@@ -1,67 +1,56 @@
-From ad079b730d8d0fb594a612a436fb3af676637e52 Mon Sep 17 00:00:00 2001
+From 18b7a08d1b8842589277579925d63ef13e64d33f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 26 Apr 2022 11:38:34 -0300
+Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 37 ++++++++++++++++++++++++++++---------
+ cmake/SearchForStuff.cmake | 34 ++++++++++++++++++++++++----------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
- pcsx2/CMakeLists.txt       |  2 +-
- 4 files changed, 31 insertions(+), 12 deletions(-)
+ 3 files changed, 26 insertions(+), 12 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index fdfa176..feb0884 100644
+index 0ee7485..25b6169 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -239,9 +239,6 @@ if(NOT USE_SYSTEM_YAML)
- 	endif()
- endif()
+@@ -213,11 +213,10 @@ endif()
  
--# We could use a system version of zstd, but is it going to be recent enough?
--add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
--
+ find_optional_system_library(fmt 3rdparty/fmt/fmt 7.1.3)
+ find_optional_system_library(ryml 3rdparty/rapidyaml/rapidyaml 0.4.0)
+-find_optional_system_library(zstd 3rdparty/zstd 1.4.5)
+-if (${zstd_TYPE} STREQUAL System)
+-	alias_library(Zstd::Zstd zstd::libzstd_shared)
+-	alias_library(pcsx2-zstd zstd::libzstd_shared)
+-endif()
++
++check_lib(zstd libzstd)
++alias_library(Zstd::Zstd PkgConfig::zstd)
++alias_library(pcsx2-zstd PkgConfig::zstd)
+ find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
+ 
  if(QT_BUILD)
- 	# Default to bundled Qt6 for Windows.
- 	if(WIN32 AND NOT DEFINED Qt6_DIR)
-@@ -255,8 +252,18 @@ if(QT_BUILD)
- 	add_subdirectory(3rdparty/sdl2 EXCLUDE_FROM_ALL)
+@@ -233,8 +232,19 @@ if(QT_BUILD)
+ 	find_optional_system_library(SDL2 3rdparty/sdl2 2.0.22)
  endif()
  
--add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
--target_compile_options(chdr-static PRIVATE "-w")
++if(WIN32)
+ add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
+-add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
++endif()
 +check_lib(CHDR libchdr)
 +if(NOT CHDR_FOUND)
 +	message(STATUS "No system libchdr was found")
-+	set(CHDR_SYSTEM_LIBRARY chdr-static)
-+	add_subdirectory(3rdparty/libchdr/libchdr EXCLUDE_FROM_ALL)
-+	include_directories(3rdparty/libchdr/libchdr/include/libchdr)
-+	target_compile_options(chdr-static PRIVATE "-w")
++	add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
 +else()
 +	include_directories(${CHDR_INCLUDE_DIRS})
 +	set(CHDR_SYSTEM_LIBRARY ${CHDR_LIBRARIES})
 +	message(STATUS "Found libchdr: ${CHDR_SYSTEM_LIBRARY}")
++	alias_library(chdr-static PkgConfig::CHDR)
 +endif()
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -269,7 +276,15 @@ endif()
- 
- add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
- add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
-+
-+find_package(LIBZIP REQUIRED)
-+if(LIBZIP_FOUND)
-+	message(STATUS "Using the system libzip")
-+else()
-+# We could use a system version of zstd, but is it going to be recent enough?
-+add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
- add_subdirectory(3rdparty/libzip EXCLUDE_FROM_ALL)
-+endif()
- 
- if(USE_OPENGL)
- 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
-@@ -277,12 +292,16 @@ endif()
+@@ -254,12 +264,16 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -83,10 +72,10 @@ index fdfa176..feb0884 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index 70290cf..3e51ec6 100644
+index 22bd3f0..4139802 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
-@@ -142,7 +142,7 @@ endif()
+@@ -130,7 +130,7 @@ endif()
  
  if(USE_VULKAN)
  	target_link_libraries(common PUBLIC
@@ -108,19 +97,6 @@ index 785e457..935b6bf 100644
  #include <vector>
  
  class ChdFileReader : public ThreadedFileReader
-diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index bf9e4ee..903d966 100644
---- a/pcsx2/CMakeLists.txt
-+++ b/pcsx2/CMakeLists.txt
-@@ -1605,7 +1605,7 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
- 	imgui
- 	fmt::fmt
- 	ryml
--	chdr-static
-+	${CHDR_SYSTEM_LIBRARY}
- 	zip
- 	wxWidgets::all
- 	ZLIB::ZLIB
 -- 
-2.36.0
+2.36.1
 

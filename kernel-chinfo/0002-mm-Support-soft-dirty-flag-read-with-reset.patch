@@ -1,7 +1,7 @@
-From 9c85113cf4019e7b277a44e72bda8b78347aa72f Mon Sep 17 00:00:00 2001
+From 6761514fad4a569f45bbf63477cb62563084bdc3 Mon Sep 17 00:00:00 2001
 From: Paul Gofman <pgofman@codeweavers.com>
 Date: Thu, 7 May 2020 14:05:31 +0300
-Subject: [PATCH 2/2] mm: Support soft dirty flag read with reset.
+Subject: [PATCH] mm: Support soft dirty flag read with reset.
 
 ---
  fs/proc/base.c     |   3 +
@@ -10,10 +10,10 @@ Subject: [PATCH 2/2] mm: Support soft dirty flag read with reset.
  3 files changed, 130 insertions(+), 18 deletions(-)
 
 diff --git a/fs/proc/base.c b/fs/proc/base.c
-index d654ce7..9c13be9 100644
+index c103184..a7be720 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
-@@ -3222,6 +3222,9 @@ static const struct pid_entry tgid_base_stuff[] = {
+@@ -3221,6 +3221,9 @@ static const struct pid_entry tgid_base_stuff[] = {
  	REG("smaps",      S_IRUGO, proc_pid_smaps_operations),
  	REG("smaps_rollup", S_IRUGO, proc_pid_smaps_rollup_operations),
  	REG("pagemap",    S_IRUSR, proc_pagemap_operations),
@@ -36,7 +36,7 @@ index 06a80f7..4794d54 100644
  extern unsigned long task_vsize(struct mm_struct *);
  extern unsigned long task_statm(struct mm_struct *,
 diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 6f03e65..5e8148e 100644
+index 83c7dd6..52d4bf7 100644
 --- a/fs/proc/task_mmu.c
 +++ b/fs/proc/task_mmu.c
 @@ -1085,8 +1085,8 @@ static inline bool pte_is_pinned(struct vm_area_struct *vma, unsigned long addr,
@@ -359,5 +359,4 @@ index 6f03e65..5e8148e 100644
  
  #ifdef CONFIG_NUMA
 -- 
-2.35.1
-
+2.36.1

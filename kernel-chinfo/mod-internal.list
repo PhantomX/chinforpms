@@ -45,7 +45,15 @@ test_klp_state2
 test_klp_state3
 torture
 refscale
+rcuscale
 memcpy_kunit
 dev_addr_lists_test
 test_hash
 test_bpf
+stackinit_kunit
+overflow_kunit
+clk-gate_test
+clk_test
+mtty
+test_hmm
+test_vmalloc
