@@ -7,7 +7,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.9.6.2225
+Version:        5.10.6.3192
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -32,9 +32,16 @@ Provides:       bundled(qt) = 5.12.10
 %global __provides_exclude_from ^%{progdir}/.*
 
 %global __requires_exclude ^libfaac1.so.*
+%global __requires_exclude %__requires_exclude|^libaomagent.so.*
+%global __requires_exclude %__requires_exclude|^libcef.so.*
+%global __requires_exclude %__requires_exclude|^libclDNN64.so.*
 %global __requires_exclude %__requires_exclude|^libfdkaac2.*.so.*
 %global __requires_exclude %__requires_exclude|^libicu.*.so.*
+%global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libGLESv2.so
+%global __requires_exclude %__requires_exclude|^libmkldnn.so
 %global __requires_exclude %__requires_exclude|^libmpg123.so
+%global __requires_exclude %__requires_exclude|^libOpenCL.so.*
 %global __requires_exclude %__requires_exclude|^libQt.*.so.*
 
 
@@ -90,7 +97,7 @@ cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
 APP_PATH=%{progdir}
 export APP_PATH
-LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="%{progdir}/cef:${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec ${APP_PATH}/ZoomLauncher "$@"
 EOF
@@ -138,6 +145,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Thu May 26 2022 - 5.10.6.3192-1
+- 5.10.6.3192
+
 * Wed Mar 16 2022 - 5.9.6.2225-1
 - 5.9.6.2225
 
