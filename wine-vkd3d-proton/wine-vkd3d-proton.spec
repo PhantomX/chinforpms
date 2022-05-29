@@ -8,22 +8,22 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit 1a773cfb713366948c0c76cada6453b2687f49cd
+%global commit cca7613bcaa78bd2fbcbf9a9ed50dd639e9c5bb6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220514
+%global date 20220525
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 be697eb2ae18f62bf2ea57d8213fd7afc93b7433
+%global commit1 d97bb340d8f79317fb7b8049717ff6ffd0dace0f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 2d12367ced2dd34444822340070b4545ae7c02f1
+%global commit2 98340ec500e92a534dc8384d5c45d2f488e40f6a
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 bab4e5911b1bfa5a86bc80006b7301ae48363844
+%global commit3 b3ff97d0feafd2b7ca72aec7215cfc3d0998fb79
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
@@ -56,9 +56,10 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
+# dxil-spirv - MIT
 License:        LGPLv2+
 URL:            https://github.com/HansKristian-Work/%{pkgname}
 
@@ -110,6 +111,8 @@ Requires:       vulkan-loader >= 1.2
 Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
+
+Provides:       bundled(dxil-spirv) = 0~git%{shortcommit1}
 
 Provides:       wine-vkd3d-d3d12 = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -271,6 +274,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat May 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-6.20220525gitcca7613
+- Update
+
 * Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-5.20220514git1a773cf
 - Bump
 

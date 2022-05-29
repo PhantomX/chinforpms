@@ -1,7 +1,7 @@
-%global commit 5aa9340c3d12ebf42cf4b9f8a170c55e00c48338
+%global commit d3378c1441c4bd7ff9dc8191ef1fee71a779d1b7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220513
-%global with_snapshot 0
+%global date 20220526
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -46,20 +46,20 @@
 %global winefastsync 5.16
 %global winegecko 2.47.2
 %global winemono  7.2.0
-%global winevulkan 1.3.214
+%global winevulkan 1.3.215
 
 %global wineFAudio 22.02
 %global winegsm 1.0.19
 %global winejpeg 9e
-%global winelcms2 2.12
+%global winelcms2 2.13.1
 %global winempg123 1.29.3
 %global winepng 1.6.37
 %global winetiff 4.3.0
 %global winejxrlib 1.1
 %global winevkd3d 1.3
-%global winexml2 2.9.13
+%global winexml2 2.9.14
 %global winexslt 1.1.35
-%global winezlib 1.2.11
+%global winezlib 1.2.12
 
 %global _default_patch_fuzz 2
 
@@ -94,7 +94,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.9
+%global wine_stagingver 8ee2551c93b7f62bdbd26e8dbc8a666fc2051518
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -105,7 +105,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0b3a029c377d43bfd4d6a60bacf2cca94350dad7
+%global tkg_id 16bdef95ce7b0c19bd3e75b7517667c95749155e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -147,7 +147,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.9
-Release:        99%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -331,6 +331,24 @@ Patch321:       %{whq_url}/4c999efdfb6df56e48deec14444442415d8d1ae2#/%{name}-whq
 Patch322:       %{whq_url}/411ef13e7c2bbc43afcfc8fe1a1e251b79a059be#/%{name}-whq-revert-mfplat-411ef13.patch
 Patch323:       %{whq_url}/0c2f1121cc8caa5815ea48ccbe7f891f6891f39e#/%{name}-whq-revert-mfplat-0c2f112.patch
 Patch324:       %{whq_url}/0416d2f167dc852fca9a41ecf398b32409665657#/%{name}-whq-revert-mfplat-0416d2f.patch
+Patch325:       %{whq_url}/50c20cf8cf7b9fb5caee39f55e339c0ff4a2c0d1#/%{name}-whq-revert-mfplat-50c20cf.patch
+Patch326:       %{whq_url}/32a72b3e78b6e258eba4a325d3d750f5311921c9#/%{name}-whq-revert-mfplat-32a72b3.patch
+Patch327:       %{whq_url}/16d93a32e3dcf5013dce8d6f2fbade8c8c0a4c53#/%{name}-whq-revert-mfplat-16d93a3.patch
+Patch328:       %{whq_url}/ea81a48259804c2ed0aa74d98e1362e5ad7f76ef#/%{name}-whq-revert-mfplat-ea81a48.patch
+Patch329:       %{name}-revert-mfplat-031747a.patch
+Patch330:       %{whq_url}/71b136384b208e85be362d523cc4cc7be9aff202#/%{name}-whq-revert-mfplat-71b1363.patch
+Patch331:       %{whq_url}/fb0f6b4be46032e2e38a804822eaccb772e5d9bb#/%{name}-whq-revert-mfplat-fb0f6b4.patch
+Patch332:       %{whq_url}/bee6d2049e2f2c3b87ab5bcc5458ff900ec42850#/%{name}-whq-revert-mfplat-bee6d20.patch
+Patch333:       %{whq_url}/e8bf5dcdf8cdbb365e9ca8703debdc2ae5f98279#/%{name}-whq-revert-mfplat-e8bf5dc.patch
+Patch334:       %{whq_url}/c39dbe1f31435e715cd10bdf83be864e00346699#/%{name}-whq-revert-mfplat-c39dbe1.patch
+Patch335:       %{whq_url}/ee7958bac7a176aa250cdcc23b9bb5c009204015#/%{name}-whq-revert-mfplat-ee7958b.patch
+Patch336:       %{whq_url}/21832ac226da7e31944df26bf02ff231d2a1a941#/%{name}-whq-revert-mfplat-21832ac.patch
+Patch337:       %{whq_url}/0892b92b56531aa3b1c67948bf0cd06152ed361e#/%{name}-whq-revert-mfplat-0892b92.patch
+Patch338:       %{whq_url}/2ae08f035fdb5665eab4cef6333344ace528c61e#/%{name}-whq-revert-mfplat-2ae08f0.patch
+Patch339:       %{whq_url}/7adcdb6ff8c6ac321a1f21bfa4123d08c3bc52d5#/%{name}-whq-revert-mfplat-7adcdb6.patch
+Patch340:       %{whq_url}/6abd8e23b8be24af194d97c2fa6bd9e9fed4b29a#/%{name}-whq-revert-mfplat-6abd8e2.patch
+Patch341:       %{whq_url}/8abbc0096da3b6e836d9b7559eb31a73f113bc2f#/%{name}-whq-revert-mfplat-8abbc00.patch
+Patch342:       %{whq_url}/99ce6e87a3b22c5602d7bbedd43bb40627b63321#/%{name}-whq-revert-mfplat-99ce6e8.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -978,6 +996,26 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch342 -p1 -R
+%patch341 -p1 -R
+%patch340 -p1 -R
+%patch339 -p1 -R
+%patch338 -p1 -R
+%patch337 -p1 -R
+%patch336 -p1 -R
+%patch335 -p1 -R
+%patch334 -p1 -R
+%patch333 -p1 -R
+%patch332 -p1 -R
+%patch331 -p1 -R
+%patch330 -p1 -R
+%patch329 -p1 -R
+rm -f dlls/qasf/tests/test.wmv
+rm -f dlls/qasf/tests/resource.rc
+%patch328 -p1 -R
+%patch327 -p1 -R
+%patch326 -p1 -R
+%patch325 -p1 -R
 %patch324 -p1 -R
 %patch323 -p1 -R
 %patch322 -p1 -R
@@ -2748,6 +2786,9 @@ fi
 
 
 %changelog
+* Sat May 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.9-101.20220526gitd3378c1
+- Snapshot
+
 * Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.8-101.20220513git5aa9340
 - Snapshot
 

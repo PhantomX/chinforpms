@@ -53,8 +53,8 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
-%global commit18 509d31ad89676522f7121b3bb8688f7d29b7ee60
-%global shortcommit18 %(c=%{commit17}; echo ${c:0:7})
+%global commit18 c725f494c91611018f5d830eca22c0a1662c0f31
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 llvm
 
 %global commit19 c2a515bd34f37ba83c61474a04cd2bba57fde67e
@@ -291,8 +291,8 @@ popd
 
 # This resets RPM flags
 sed \
-  -e '/CMAKE_CXX_FLAGS/d' \
-  -e '/CMAKE_C_FLAGS/d' \
+  -e '/set(CMAKE_CXX_FLAGS/d' \
+  -e '/set(CMAKE_C_FLAGS/d' \
   -i CMakeLists.txt
 
 

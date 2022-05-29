@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.8.5
+Version:        3.8.6
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -117,6 +117,9 @@ done
 
 
 %changelog
+* Thu May 19 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.6-1
+- 3.8.6
+
 * Tue May 10 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.5-1
 - 3.8.5
 
