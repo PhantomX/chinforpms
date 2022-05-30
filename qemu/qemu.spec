@@ -215,6 +215,8 @@
 %define requires_device_display_virtio_gpu_ccw Requires: %{name}-device-display-virtio-gpu-ccw = %{evr}
 %define requires_device_display_virtio_vga Requires: %{name}-device-display-virtio-vga = %{evr}
 %define requires_device_display_virtio_vga_gl Requires: %{name}-device-display-virtio-vga-gl = %{evr}
+%define requires_package_qemu_pr_helper Requires: qemu-pr-helper
+%define requires_package_virtiofsd Requires: vhostuser-backend(fs)
 
 %if %{have_virgl}
 %define requires_device_display_vhost_user_gpu Requires: %{name}-device-display-vhost-user-gpu = %{evr}
@@ -223,6 +225,7 @@
 %endif
 
 %if %{have_jack}
+%define jack_drv jack,
 %define requires_audio_jack Requires: %{name}-audio-jack = %{evr}
 %else
 %define requires_audio_jack %{nil}
@@ -283,6 +286,8 @@
 %{requires_device_usb_host} \
 %{requires_device_usb_redirect} \
 %{requires_device_usb_smartcard} \
+%{requires_package_qemu_pr_helper} \
+%{requires_package_virtiofsd} \
 
 # Modules which can be conditionally built
 %global obsoletes_some_modules \
@@ -295,7 +300,7 @@ Obsoletes: %{name}-system-moxie-core <= %{epoch}:%{version}-%{release} \
 Obsoletes: %{name}-system-unicore32 <= %{epoch}:%{version}-%{release} \
 Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 
-%global vc_url https://git.qemu.org/?p=qemu.git;a=patch
+%global vc_url https://gitlab.com/qemu-project/qemu/-/commit
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
@@ -303,7 +308,7 @@ Summary: QEMU is a FAST! processor emulator
 Name: qemu
 # If rc, use "~" instead "-", as ~rc1
 Version: 7.0.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 Epoch: 2
 License: GPLv2 and BSD and MIT and CC-BY
 URL: http://www.qemu.org/
@@ -324,6 +329,8 @@ Source36: README.tests
 
 Patch0001: 0001-sgx-stub-fix.patch
 
+Patch0100: %{vc_url}/2f743ef6366c2df4ef51ef3ae318138cdc0125ab.patch#/%{name}-gl-2f743ef.patch
+Patch0101: %{vc_url}/38738f7dbbda90fbc161757b7f4be35b52205552.patch#/%{name}-gl-38738f7.patch
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
@@ -498,8 +505,7 @@ Requires: %{name}-system-x86 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
 Requires: %{name}-img = %{epoch}:%{version}-%{release}
 Requires: %{name}-tools = %{epoch}:%{version}-%{release}
-Requires: qemu-pr-helper = %{epoch}:%{version}-%{release}
-Requires: vhostuser-backend(fs)
+
 
 %description
 %{name} is an open source virtualizer that provides hardware
@@ -906,7 +912,6 @@ This package provides the user mode emulation of qemu targets
 %if %{user_static}
 %package user-static
 Summary: QEMU user mode emulation of qemu targets static build
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
 Requires(post): systemd-units
 Requires(postun): systemd-units
 # qemu-user-binfmt + qemu-user-static both provide binfmt rules
@@ -1307,8 +1312,8 @@ mkdir -p %{static_builddir}
   --disable-nvmm                   \\\
   --disable-opengl                 \\\
   --disable-oss                    \\\
-  --disable-parallels              \\\
   --disable-pa                     \\\
+  --disable-parallels              \\\
   --disable-pie                    \\\
   --disable-pvrdma                 \\\
   --disable-qcow1                  \\\
@@ -1384,7 +1389,7 @@ run_configure() {
         --extra-cflags="%{optflags}" \
 %else
         --extra-cflags="%{optflags} -DSTAP_SDT_ARG_CONSTRAINT=g" \
-%endif 
+%endif
         --with-pkgversion="%{name}-%{version}-%{release}" \
         --with-suffix="%{name}" \
         --firmwarepath="%firmwaredirs" \
@@ -1420,15 +1425,15 @@ run_configure \
 %endif
   --enable-bpf \
   --enable-cap-ng \
-  --enable-capstone=system \
+  --enable-capstone=auto \
   --enable-coroutine-pool \
   --enable-curl \
   --enable-debug-info \
   --enable-docs \
 %if %{have_fdt}
   --enable-fdt=system \
-  --enable-gettext \
 %endif
+  --enable-gettext \
   --enable-gnutls \
   --enable-guest-agent \
   --enable-iconv \
@@ -1457,7 +1462,7 @@ run_configure \
   --enable-opengl \
 %endif
   --enable-oss \
-   --enable-pa \
+  --enable-pa \
   --enable-pie \
 %if %{have_block_rbd}
   --enable-rbd \
@@ -1493,7 +1498,7 @@ run_configure \
   --enable-xkbcommon \
   \
   \
-  --audio-drv-list=pa,sdl,alsa,jack,oss \
+  --audio-drv-list=pa,sdl,alsa,%{?jack_drv}oss \
   --target-list-exclude=moxie-softmmu \
   --with-default-devices \
   --enable-auth-pam \
@@ -1757,6 +1762,10 @@ mkdir -p %{static_buildroot}
 
 pushd %{static_builddir}
 make DESTDIR=%{static_buildroot} install
+
+# Duplicates what the main build installs and we don't
+# need second copy with a -static suffix
+rm -f %{static_buildroot}%{_bindir}/qemu-trace-stap
 popd  # static
 
 # Rename all QEMU user emulators to have a -static suffix
@@ -1906,6 +1915,7 @@ popd
 %files common -f %{name}.lang
 %license COPYING COPYING.LIB LICENSE
 %dir %{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/vhost-user/
 %{_datadir}/icons/*
 %{_datadir}/%{name}/keymaps/
 %{_datadir}/%{name}/linuxboot_dma.bin
@@ -2113,6 +2123,7 @@ popd
 
 %if %{user_static}
 %files user-static
+%license COPYING COPYING.LIB LICENSE
 # Just use wildcard matches here: we will catch any new/missing files
 # in the qemu-user filelists
 %{_exec_prefix}/lib/binfmt.d/qemu-*-static.conf
@@ -2317,6 +2328,10 @@ popd
 
 
 %changelog
+* Sun May 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.0.0-101
+- Rawhide sync
+- Some upstream patches
+
 * Fri Apr 22 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.0.0-100
 - 7.0.0
 - Rawhide sync

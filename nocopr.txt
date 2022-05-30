@@ -47,6 +47,7 @@ ms-teams
 ninfs
 pcsx2
 ppsspp
+ps3dec
 psximager
 python-haccrypto
 python-pyctr
