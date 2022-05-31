@@ -159,18 +159,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 50c01fc7c958c011d49569c5a4c4e880acc0a95a
+%global pfcommit e7e0fd1241fc653d5d8236e6a8b2374f6102e598
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 3e3b5e4d8c931882eb136c191acf0252fa815604
+%global opensuse_id d00e88d58dfc679cfddede128d4ff4f3bfbeb313
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -945,8 +945,8 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 Patch1: patch-%{kversion}-redhat.patch
 %if 0%{?post_factum}
 # Build fail when LRNG is enabled
-Patch2: 0001-patch-%{kversion}-revert2017f71.patch
-Patch3: 0002-patch-%{kversion}-revert0cc8e2f.patch
+%dnl Patch2: 0001-patch-%{kversion}-revert2017f71.patch
+%dnl Patch3: 0002-patch-%{kversion}-revert0cc8e2f.patch
 %endif
 
 # empty final patch to facilitate testing of kernel patches
@@ -2930,6 +2930,9 @@ fi
 #
 #
 %changelog
+* Mon May 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.1-500.chinfo
+- 5.18.1 - pf2
+
 * Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.0-500.chinfo
 - 5.18.0 - pf1
 
