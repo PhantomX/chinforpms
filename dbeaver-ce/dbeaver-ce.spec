@@ -5,10 +5,10 @@
 
 %global jre_ver 17
 
-%global vc_url https://github.com/%{rname}/%{rname}/
+%global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        22.0.3
+Version:        22.0.5
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -105,6 +105,9 @@ done
 
 
 %changelog
+* Wed Jun 01 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.5-1
+- 22.0.5
+
 * Mon Apr 18 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.3-1
 - 22.0.3
 

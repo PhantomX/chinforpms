@@ -1,6 +1,6 @@
-%global commit a03e69319164f69d781ab8e453f8cf407387bd13
+%global commit 045f2a7f23f5ac10c0122f6f56e42023dfb71e2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220209
+%global date 20220523
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.1
-Release:        14%{?gver}%{?dist}
+Release:        15%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -87,6 +87,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Wed Jun 01 2022 Phantom X - 0.1-15.20220523git045f2a7
+- Bump
+
 * Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-14.20220209gita03e693
 - Add chd_precache_progress patch from Connor McLaughlin
 

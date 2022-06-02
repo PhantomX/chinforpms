@@ -8,7 +8,7 @@
 %global czkawka_id 20c89f44f06f483cb44f32bb5ec2f674a5b8e27f
 
 Name:           czkawka
-Version:        4.0.0
+Version:        4.1.0
 Release:        1%{?dist}
 Summary:        File cleaning utility
 
@@ -76,6 +76,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{desktop_name
 
 
 %changelog
+* Wed Jun 01 2022 Phantom X <megaphantomx at hotmail dot com> - 4.1.0-1
+- 4.1.0
+
 * Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 4.0.0-1
 - 4.0.0
 
