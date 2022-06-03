@@ -87,7 +87,7 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
-* Wed Jun 01 2022 Phantom X - 0.1-15.20220523git045f2a7
+* Wed Jun 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-15.20220523git045f2a7
 - Bump
 
 * Mon Apr 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-14.20220209gita03e693
