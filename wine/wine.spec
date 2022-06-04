@@ -1,7 +1,7 @@
 %global commit d92866863f6b5ca01675254ad315659b40f88ed4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220527
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -35,6 +35,9 @@
 %ifarch aarch64
 %global winearchdir aarch64-windows
 %global winesodir aarch64-unix
+%global __brp_llvm_compile_lto_elf %nil
+%global __brp_strip_lto %nil
+%global __brp_strip_static_archive %nil
 %endif
 
 %ifarch %{ix86} x86_64
@@ -45,7 +48,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.2
-%global winemono  7.2.0
+%global winemono  7.3.0
 %global winevulkan 1.3.215
 
 %global wineFAudio 22.02
@@ -68,7 +71,6 @@
 
 %if 0%{?wine_mingw}
 %undefine _annotated_build
-%undefine _package_note_file
 %global libext %{nil}
 %global winedlldir %{winearchdir}
 %endif
@@ -94,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8ee2551c93b7f62bdbd26e8dbc8a666fc2051518
+%global wine_stagingver 7.10
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -105,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 16bdef95ce7b0c19bd3e75b7517667c95749155e
+%global tkg_id 461ec53f0762238eb31e6dbcf4b7376d6cf0987a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -146,8 +148,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.9
-Release:        102%{?gver}%{?dist}
+Version:        7.10
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -349,6 +351,11 @@ Patch339:       %{whq_url}/7adcdb6ff8c6ac321a1f21bfa4123d08c3bc52d5#/%{name}-whq
 Patch340:       %{whq_url}/6abd8e23b8be24af194d97c2fa6bd9e9fed4b29a#/%{name}-whq-revert-mfplat-6abd8e2.patch
 Patch341:       %{whq_url}/8abbc0096da3b6e836d9b7559eb31a73f113bc2f#/%{name}-whq-revert-mfplat-8abbc00.patch
 Patch342:       %{whq_url}/99ce6e87a3b22c5602d7bbedd43bb40627b63321#/%{name}-whq-revert-mfplat-99ce6e8.patch
+Patch343:       %{whq_url}/c4c3912bad1c67bb70fd009eee18e0a58cdfe929#/%{name}-whq-revert-mfplat-c4c3912.patch
+Patch344:       %{whq_url}/f7ca5cfa27e433530f2725d44045ea5284fd332a#/%{name}-whq-revert-mfplat-f7ca5cf.patch
+Patch345:       %{whq_url}/24266121f1396a3b6ef4d40a7b35a0a31931539c#/%{name}-whq-revert-mfplat-2426612.patch
+Patch346:       %{whq_url}/9c711ba7488d78a91e133083567e56feb446a7c8#/%{name}-whq-revert-mfplat-9c711ba.patch
+Patch347:       %{whq_url}/7a8254fd05a2c7c89783d65cba544f2899611c73#/%{name}-whq-revert-mfplat-7a8254f.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -407,9 +414,9 @@ Patch5000:      0001-chinforpms-message.patch
 # END of staging patches
 
 %if !0%{?no64bit}
-ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
+ExclusiveArch:  %{ix86} x86_64 aarch64
 %else
-ExclusiveArch:  %{ix86} %{arm}
+ExclusiveArch:  %{ix86}
 %endif
 
 BuildRequires:  bison
@@ -419,6 +426,7 @@ BuildRequires:  automake
 BuildRequires:  make
 %ifarch aarch64
 BuildRequires:  clang >= 5.0
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 %endif
@@ -996,6 +1004,11 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch347 -p1 -R
+%patch346 -p1 -R
+%patch345 -p1 -R
+%patch344 -p1 -R
+%patch343 -p1 -R
 %patch342 -p1 -R
 %patch341 -p1 -R
 %patch340 -p1 -R
@@ -1322,6 +1335,9 @@ EOF
 chmod 0755 bin/*gcc
 export PATH="$(pwd)/bin:$PATH"
 %endif
+
+# required so that both Linux and Windows development files can be found
+unset PKG_CONFIG_PATH 
 
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
@@ -2786,6 +2802,9 @@ fi
 
 
 %changelog
+* Sat Jun 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.10-100
+- 7.10
+
 * Mon May 30 2022 Phantom X - 1:7.9-102.20220527gitd928668
 - Forgotten last snapshot
 
