@@ -50,7 +50,7 @@ Subject: [PATCH] patch-5.18-redhat
  43 files changed, 712 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 2bb168acb8f4..d4a8ca96e4a2 100644
+index 6b1d606a92f6..548f077c486c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
