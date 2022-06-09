@@ -1,4 +1,4 @@
-From 200ab06c0ccfffdadff1d7a4b7e1df5be44e7d35 Mon Sep 17 00:00:00 2001
+From 55ecf3663520933933c7b01f6cac9c85fe52f716 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 30 Mar 2022 20:03:17 -0300
 Subject: [PATCH] gcc 12 build fix
@@ -6,13 +6,14 @@ Subject: [PATCH] gcc 12 build fix
 ---
  src/common/common_types.h                               | 6 ++++++
  src/common/settings.cpp                                 | 6 ++++++
+ src/core/debugger/debugger.cpp                          | 1 +
  src/core/file_sys/content_archive.cpp                   | 6 ++++++
  src/core/hle/service/sockets/bsd.cpp                    | 6 ++++++
  src/input_common/drivers/udp_client.cpp                 | 1 +
  src/shader_recompiler/frontend/maxwell/control_flow.cpp | 6 ++++++
  src/shader_recompiler/ir_opt/verification_pass.cpp      | 6 ++++++
  src/video_core/macro/macro_jit_x64.cpp                  | 6 ++++++
- 8 files changed, 43 insertions(+)
+ 9 files changed, 44 insertions(+)
 
 diff --git a/src/common/common_types.h b/src/common/common_types.h
 index 0fc225a..f625bcf 100755
@@ -32,7 +33,7 @@ index 0fc225a..f625bcf 100755
  using u16 = std::uint16_t; ///< 16-bit unsigned short
  using u32 = std::uint32_t; ///< 32-bit unsigned word
 diff --git a/src/common/settings.cpp b/src/common/settings.cpp
-index 9a9c74a..156168d 100755
+index 6ffab63..568a75d 100755
 --- a/src/common/settings.cpp
 +++ b/src/common/settings.cpp
 @@ -8,6 +8,12 @@
@@ -48,6 +49,18 @@ index 9a9c74a..156168d 100755
  namespace Settings {
  
  Values values;
+diff --git a/src/core/debugger/debugger.cpp b/src/core/debugger/debugger.cpp
+index 8d64990..3c09805 100755
+--- a/src/core/debugger/debugger.cpp
++++ b/src/core/debugger/debugger.cpp
+@@ -4,6 +4,7 @@
+ #include <algorithm>
+ #include <mutex>
+ #include <thread>
++#include <utility>
+ 
+ #include <boost/asio.hpp>
+ #include <boost/process/async_pipe.hpp>
 diff --git a/src/core/file_sys/content_archive.cpp b/src/core/file_sys/content_archive.cpp
 index 93f7844..a86d5f1 100755
 --- a/src/core/file_sys/content_archive.cpp
@@ -129,7 +142,7 @@ index f89f4ac..5e75018 100755
  
  static void ValidateTypes(const IR::Program& program) {
 diff --git a/src/video_core/macro/macro_jit_x64.cpp b/src/video_core/macro/macro_jit_x64.cpp
-index dc2b490..256a7c2 100755
+index dc53765..1532e86 100755
 --- a/src/video_core/macro/macro_jit_x64.cpp
 +++ b/src/video_core/macro/macro_jit_x64.cpp
 @@ -17,6 +17,12 @@
@@ -146,5 +159,5 @@ index dc2b490..256a7c2 100755
  MICROPROFILE_DEFINE(MacroJitExecute, "GPU", "Execute macro JIT", MP_RGB(255, 255, 0));
  
 -- 
-2.36.0
+2.36.1
 

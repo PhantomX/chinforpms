@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        5.2.2623.48
+Version:        5.3.2679.38
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -86,7 +86,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,swiftshader,update-*,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
@@ -136,7 +136,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/MEIPreload
 %{_libdir}/%{name}/resources
-%{_libdir}/%{name}/swiftshader/*.so
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/xfce4/helpers/%{name}.desktop
@@ -144,6 +143,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Jun 07 2022 - 5.3.2679.38-1
+- 5.3.2679.38
+
 * Thu May 26 2022 - 5.2.2623.48-1
 - 5.2.2623.48
 

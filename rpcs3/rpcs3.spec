@@ -16,9 +16,9 @@
 %global with_sysflatbuffers 0
 %global bundleflatbuffers 2.0.6
 
-%global commit 2ba437b6dc0c68a6f2cc4a683012c3d25310839a
+%global commit 64616f1408b85d00c0167d62d0163c7c3ad517d0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220514
+%global date 20220608
 %global with_snapshot 1
 
 %global commit10 895927bd3f2d653f40cebab55aa6c7eabde30a86
@@ -89,7 +89,7 @@
 
 Name:           rpcs3
 Version:        0.0.22
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -123,6 +123,8 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         https://github.com/RPCS3/rpcs3/pull/12200.patch#/%{name}-gh-pr12200.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -394,6 +396,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Jun 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.22-3.20220608git64616f1
+- Update
+
 * Wed May 18 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.22-2.20220514git2ba437b
 - Bump
 

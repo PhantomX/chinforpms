@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5dfc24ae4d08c0fb495b8fe77dca28c4300b23a6
+%global commit 43bf9efaf8b8528b335451e2f8b474d7263539bc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220529
+%global date 20220608
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -76,7 +76,7 @@
 
 
 Name:           yuzu
-Version:        2743
+Version:        2764
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -299,6 +299,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Thu Jun 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2764-1.20220608git43bf9ef
+- 2764 ea
+
 * Sun May 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2743-1.20220529git5dfc24a
 - 2743 ea
 
