@@ -1,0 +1,111 @@
+'\" t
+.\"     Title: FBPAGER
+.\"    Author: Martin F. Krafft
+.\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
+.\"      Date: April 19, 2004
+.\"    Manual: fbpager
+.\"    Source: fluxbox
+.\"  Language: English
+.\"
+.TH "FBPAGER" "1" "April 19, 2004" "fluxbox" "fbpager"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+fbpager \- pager application for the Fluxbox window manager
+.SH "SYNOPSIS"
+.HP \w'\fBfbpager\fR\ 'u
+\fBfbpager\fR [\fB\-display\ \fR\fB\fIX\ display\fR\fR] [\fB\-w\fR] [\fB\-rc\ \fR\fB\fIresource\ file\fR\fR] [\fB\-sr\fR] [\fB\-s\ \fR\fB\fIscreen\fR\fR] [\fB\-v\fR] [\fB\-h\fR] [\fB\-l\ \fR\fB\fIlayer\fR\fR]
+.SH "DESCRIPTION"
+.PP
+This manual page documents briefly the
+\fBfbpager\fR
+command\&. This manual page was written for the
+Debian(TM)
+distribution because the original program does not have a manual page\&.
+.PP
+\fBfbpager\fR
+is a pager application for Fluxbox, giving you an overview of the window arrangement covering your various desktops\&. it is very configurable and can be made to fit your needs \-\- most probably\&.
+.SH "OPTIONS"
+.PP
+\fB\-display \fR\fB\fIX display\fR\fR
+.RS 4
+Specify the X display to use
+.RE
+.PP
+\fB\-w\fR
+.RS 4
+Withdrawn state (for the Fluxbox slit)
+.RE
+.PP
+\fB\-rc \fR\fB\fIresource file\fR\fR
+.RS 4
+Specify the resource file to use
+.RE
+.PP
+\fB\-sr\fR
+.RS 4
+Display the resources
+.RE
+.PP
+\fB\-s \fR\fB\fIscreen\fR\fR
+.RS 4
+Specify the screen to use
+.RE
+.PP
+\fB\-v\fR
+.RS 4
+Show version of program
+.RE
+.PP
+\fB\-h\fR
+.RS 4
+Show summary of options\&.
+.RE
+.PP
+\fB\-l \fR\fB\fIlayer\fR\fR
+.RS 4
+layer, values: top or bottom
+.RE
+.SH "SEE ALSO"
+.PP
+fluxbox(1)
+.PP
+/usr/share/doc/fbpager/README
+.SH "AUTHOR"
+.PP
+This manual page was written by martin f\&. krafft
+<madduck@debian\&.org>
+for the
+Debian(TM)
+system (but may be used by others)\&. Permission is granted to copy, distribute and/or modify this document under the terms of the
+GNU
+General Public License, Version 2 any later version published by the Free Software Foundation\&.
+.PP
+On Debian systems, the complete text of the GNU General Public License can be found in /usr/share/common\-licenses/GPL\&.
+.SH "AUTHOR"
+.PP
+\fBMartin F\&. Krafft\fR
+.RS 4
+Author.
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2003 martin f. krafft
+.br

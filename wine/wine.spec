@@ -1,7 +1,7 @@
-%global commit d92866863f6b5ca01675254ad315659b40f88ed4
+%global commit 35939bbe0c04534da07ece7f6a47a560d356f7a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220527
-%global with_snapshot 0
+%global date 20220610
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -49,9 +49,9 @@
 %global winefastsync 5.16
 %global winegecko 2.47.2
 %global winemono  7.3.0
-%global winevulkan 1.3.215
+%global winevulkan 1.3.217
 
-%global wineFAudio 22.02
+%global wineFAudio 22.06
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.13.1
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.10
+%global wine_stagingver 560db77d412183b8dddedd35b17950c753de00ce
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 461ec53f0762238eb31e6dbcf4b7376d6cf0987a
+%global tkg_id 2cfd6c2f2878232bf90db2ba228b21280f91e745
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -119,11 +119,11 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# childwindow (breaks nine)
+# childwindow
 %global childwindow 0
 # fastsync/winesync
 %global fastsync 1
-# proton FS hack (wine virtual desktop with DXVK is not working well, breaks nine)
+# proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 %global vulkanup 0
 
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.10
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -356,6 +356,14 @@ Patch344:       %{whq_url}/f7ca5cfa27e433530f2725d44045ea5284fd332a#/%{name}-whq
 Patch345:       %{whq_url}/24266121f1396a3b6ef4d40a7b35a0a31931539c#/%{name}-whq-revert-mfplat-2426612.patch
 Patch346:       %{whq_url}/9c711ba7488d78a91e133083567e56feb446a7c8#/%{name}-whq-revert-mfplat-9c711ba.patch
 Patch347:       %{whq_url}/7a8254fd05a2c7c89783d65cba544f2899611c73#/%{name}-whq-revert-mfplat-7a8254f.patch
+Patch348:       %{whq_url}/9f3eb4b7f04c0233d1e62d55c299362f2de4ca52#/%{name}-whq-revert-mfplat-9f3eb4b.patch
+Patch349:       %{whq_url}/240aff382def741f306783227d4d46d67e931a36#/%{name}-whq-revert-mfplat-240aff3.patch
+Patch350:       %{whq_url}/4f242f09c006e96f8518092b746648b2fdbd43f6#/%{name}-whq-revert-mfplat-4f242f0.patch
+Patch351:       %{name}-revert-mfplat-b38935f.patch
+Patch352:       %{whq_url}/f17b80105681c2c025d61fe98175c4b83da2d5d2#/%{name}-whq-revert-mfplat-f17b801.patch
+Patch353:       %{whq_url}/c40ab0f9a62f02b80fe7604d698db4aa3a8b7713#/%{name}-whq-revert-mfplat-c40ab0f.patch
+Patch354:       %{whq_url}/35f9b6f0b166300041fbc3cde09dbef44b855916#/%{name}-whq-revert-mfplat-35f9b6f.patch
+Patch355:       %{whq_url}/474d1824c474fa731885c76481fefddb6899d0df#/%{name}-whq-revert-mfplat-474d182.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -491,8 +499,9 @@ BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xcursor)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xfixes)
-# childwindow.patch
-#BuildRequires:  pkgconfig(xpresent)
+%if 0%{?childwindow}
+BuildRequires:  pkgconfig(xpresent)
+%endif
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xmu)
@@ -611,7 +620,9 @@ Requires:       libXcursor(x86-32)
 Requires:       libXfixes(x86-32)
 Requires:       libXi(x86-32)
 Requires:       libXinerama(x86-32)
-#Requires:       libXpresent(x86-32)
+%if 0%{?childwindow}
+Requires:       libXpresent(x86-32)
+%endif
 Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXxf86vm(x86-32)
@@ -642,7 +653,9 @@ Requires:       libXcursor(x86-64)
 Requires:       libXfixes(x86-64)
 Requires:       libXi(x86-64)
 Requires:       libXinerama(x86-64)
-#Requires:       libXpresent(x86-64)
+%if 0%{?childwindow}
+Requires:       libXpresent(x86-64)
+%endif
 Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXxf86vm(x86-64)
@@ -670,7 +683,9 @@ Requires:       gstreamer1-plugins-good
 Requires:       libgcrypt
 Requires:       libXcursor
 Requires:       libXfixes
-#Requires:       libXpresent
+%if 0%{?childwindow}
+Requires:       libXpresent
+%endif
 Requires:       libXrender
 Requires:       libpcap
 Requires:       mesa-libOSMesa
@@ -1004,6 +1019,15 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch355 -p1 -R
+%patch354 -p1 -R
+%patch353 -p1 -R
+%patch352 -p1 -R
+rm -f dlls/winegstreamer/wg_allocator.c
+%patch351 -p1 -R
+%patch350 -p1 -R
+%patch349 -p1 -R
+%patch348 -p1 -R
 %patch347 -p1 -R
 %patch346 -p1 -R
 %patch345 -p1 -R
@@ -2802,6 +2826,9 @@ fi
 
 
 %changelog
+* Sat Jun 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.10-101.20220610git35939bb
+- Snapshot
+
 * Sat Jun 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.10-100
 - 7.10
 

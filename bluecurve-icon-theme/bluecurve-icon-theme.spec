@@ -1,4 +1,4 @@
-%global bit_hash 3a3ecac0922f964bb1c4be617e8dec37
+%global src_hash 3a3ecac0922f964bb1c4be617e8dec37
 
 Name:           bluecurve-icon-theme
 Summary:        Bluecurve icon theme
@@ -9,7 +9,7 @@ Epoch:          1
 
 License:        GPL+
 # There is no official upstream yet
-Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{bit_hash}/%{name}-%{version}.tar.bz2
+Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{src_hash}/%{name}-%{version}.tar.bz2
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/Bluecurve-classic.tar.bz2/b0a34d7a0af0e0c1786f7d459a94b9ee/Bluecurve-classic.tar.bz2
 Source3:        link.png
 URL:            http://www.redhat.com
