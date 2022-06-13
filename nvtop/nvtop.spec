@@ -8,7 +8,7 @@
 %endif
 
 Name:           nvtop
-Version:        2.0.1
+Version:        2.0.2
 Release:        1%{?gver}%{?dist}
 Summary:        AMD and NVIDIA GPUs htop like monitoring tool 
 
@@ -57,5 +57,8 @@ htop familiar way.
 
 
 %changelog
+* Sun Jun 12 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.2-1
+- 2.0.2
+
 * Sat Apr 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-1
 - Initial spec
