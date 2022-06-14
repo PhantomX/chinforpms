@@ -17,7 +17,8 @@ index 9acd342..4aef75b 100644
  windowFg: #000000; // black: fallback for text
 -windowBgOver: #f1f1f1; // light gray: fallback for background with mouse over
 +windowBgOver: #419fd9; // light gray: fallback for background with mouse over
- windowBgRipple: #e5e5e5; // darker gray: fallback for ripple effect
+-windowBgRipple: #e5e5e5; // darker gray: fallback for ripple effect
++windowBgRipple: #3593cd; // darker gray: fallback for ripple effect
 -windowFgOver: windowFg; // black: fallback for text with mouse over
 +windowFgOver: #ffffff; // black: fallback for text with mouse over
  windowSubTextFg: #999999; // gray: fallback for additional text

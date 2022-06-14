@@ -23,6 +23,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc
+BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  pkgconfig(libdrm) >= 2.4.110
 BuildRequires:  pkgconfig(ncursesw)

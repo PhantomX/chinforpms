@@ -1,13 +1,18 @@
+
 // Chinforinfula Firefox settings
-// 20220504
+// Some personal and privacy modifications
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
+lockPref("chinfo.cfg.version", "20220613");
+
+// etc
 pref("accessibility.force_disabled", 1);
 pref("beacon.enabled", false);
 pref("browser.aboutwelcome.enabled", false);
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.cache.offline.enable", false);
+pref("browser.download.always_ask_before_handling_new_types", true);
 pref("browser.download.folderList", 1);
 pref("browser.download.hide_plugins_without_extensions", false);
 pref("browser.download.manager.addToRecentDocs", false);
@@ -327,6 +332,14 @@ pref("browser.safebrowsing.provider.google4.reportPhishMistakeURL", "");
 pref("browser.safebrowsing.provider.google4.dataSharing.enabled", false);
 pref("browser.safebrowsing.provider.google4.dataSharingURL", "");
 
+// Disable prefetching
+pref("network.prefetch-next", false);
+pref("network.dns.disablePrefetch", true);
+pref("network.predictor.enabled", false);
+pref("network.predictor.enable-prefetch", false);
+pref("network.http.speculative-parallel-limit", 0);
+pref("browser.places.speculativeConnect.enabled", false);
+
 // Disable Screenshots
 //pref("extensions.screenshots.disabled", true);
 
@@ -388,7 +401,7 @@ pref("browser.send_pings", false);
 // Ping the same host as the origin page (if above is true)
 pref("browser.send_pings.require_same_host", true);
 
-// Disable SPDY
+// Disable SPDY (99-, Waterfox)
 pref("network.http.spdy.enabled", false);
 pref("network.http.spdy.enabled.deps", false);
 pref("network.http.spdy.enabled.http2", false);
