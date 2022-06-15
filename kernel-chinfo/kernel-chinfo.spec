@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7bc4f067cc09a96b1eed98a6b2ef125fdeac8397
+%global pfcommit d0b0b24ed72a63859ebad00ea0c7bfde3fa6ea7a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -964,7 +964,6 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/Revert-net-af_key-add-check-for-pfkey_broadcast-in-f.patch#/openSUSE-Revert-net-af_key-add-check-for-pfkey_broadcast-in-f.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2930,6 +2929,9 @@ fi
 #
 #
 %changelog
+* Tue Jun 14 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.4-500.chinfo
+- 5.18.4 - pf2
+
 * Thu Jun 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.3-500.chinfo
 - 5.18.3 - pf2
 
