@@ -36,7 +36,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2781
+Version:        1.7.2953
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -123,6 +123,7 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(cpuinfo) = 0~git
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = 0~git%{shortcommit11}
@@ -145,6 +146,7 @@ this emulator anyway.
 
 mkdir 3rdparty-temp
 mv 3rdparty/include 3rdparty-temp/
+mv 3rdparty/cpuinfo 3rdparty-temp/
 mv 3rdparty/glad 3rdparty-temp/
 mv 3rdparty/glslang 3rdparty-temp/
 mv 3rdparty/imgui 3rdparty-temp/
@@ -306,7 +308,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 %dir %{_datadir}/PCSX2
 %dir %{_datadir}/PCSX2/resources
 %{_datadir}/PCSX2/resources/fonts
+%{_datadir}/PCSX2/resources/icons
 %{_datadir}/PCSX2/resources/shaders
+%{_datadir}/PCSX2/resources/cheats_ni.zip
 %{_datadir}/PCSX2/resources/cheats_ws.zip
 %{_datadir}/PCSX2/resources/GameIndex.yaml
 %{_datadir}/PCSX2/resources/cover-placeholder.png
@@ -314,6 +318,9 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2953-1
+- 1.7.2953
+
 * Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2781-1
 - 1.7.2769
 

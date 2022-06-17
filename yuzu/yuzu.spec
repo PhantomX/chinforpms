@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 43bf9efaf8b8528b335451e2f8b474d7263539bc
+%global commit ca4f54b4b348038e7699d8601145879eebdc7613
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220608
+%global date 20220615
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -76,7 +76,7 @@
 
 
 Name:           yuzu
-Version:        2764
+Version:        2787
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -101,10 +101,8 @@ Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 Patch0:         0001-Use-system-libraries.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
-%if 0%{?with_ea}
-Patch10:        0001-gcc-12-build-fix.patch
-%endif
-Patch11:        yuzu-issue-8376.patch
+
+Patch10:        0001-boost-build-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -299,6 +297,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Jun 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2787-1.20220615gitca4f54b
+- 2787 ea
+
 * Thu Jun 09 2022 Phantom X <megaphantomx at hotmail dot com> - 2764-1.20220608git43bf9ef
 - 2764 ea
 

@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 4
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d0b0b24ed72a63859ebad00ea0c7bfde3fa6ea7a
+%global pfcommit 467e194143e4c6ead0c07f92099948976b86187a
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -198,7 +198,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id b06f5950199f688f027746f3589174bb52a0c0e3
+%global opensuse_id ed6345d7fa91bf63fa223be9a7742d6bb49c8a72
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2929,6 +2929,9 @@ fi
 #
 #
 %changelog
+* Thu Jun 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.5-500.chinfo
+- 5.18.5 - pf2
+
 * Tue Jun 14 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.4-500.chinfo
 - 5.18.4 - pf2
 

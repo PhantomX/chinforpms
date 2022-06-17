@@ -1,0 +1,37 @@
+From cdd62f58b88dc73783fa7aa071b3b56a02c28b63 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Jun 2022 20:40:58 -0300
+Subject: [PATCH] boost build fix
+
+---
+ src/core/debugger/debugger.cpp          | 1 +
+ src/input_common/drivers/udp_client.cpp | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/core/debugger/debugger.cpp b/src/core/debugger/debugger.cpp
+index ab39409..f76e9d5 100755
+--- a/src/core/debugger/debugger.cpp
++++ b/src/core/debugger/debugger.cpp
+@@ -5,6 +5,7 @@
+ #include <mutex>
+ #include <thread>
+ 
++#include <utility>
+ #include <boost/asio.hpp>
+ #include <boost/process/async_pipe.hpp>
+ 
+diff --git a/src/input_common/drivers/udp_client.cpp b/src/input_common/drivers/udp_client.cpp
+index 825262a..89f2a54 100755
+--- a/src/input_common/drivers/udp_client.cpp
++++ b/src/input_common/drivers/udp_client.cpp
+@@ -3,6 +3,7 @@
+ // Refer to the license.txt file included.
+ 
+ #include <random>
++#include <utility>
+ #include <boost/asio.hpp>
+ #include <fmt/format.h>
+ 
+-- 
+2.36.1
+

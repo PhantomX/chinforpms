@@ -20,7 +20,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        3.7.5
+Version:        3.7.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -50,8 +50,6 @@ Source20:       thunar-sendto-%{name}.desktop
 
 
 Patch100:       %{name}-build-fix.patch
-Patch101:       %{name}-unbundled-kwayland-stuff.patch
-Patch102:       %{name}-ecm-version-downgrade.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -100,7 +98,6 @@ BuildRequires:  pkgconfig(rnnoise)
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
-BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  libappstream-glib
@@ -132,8 +129,6 @@ BuildRequires:  cmake(Qt6WaylandClient)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  qt6-qtbase-static
-Provides:       bundled(kf5-kwayland) = 5.93.0
-BuildRequires:  extra-cmake-modules >= 5.90.0
 %endif
 
 %if %{with x11}
@@ -196,7 +191,7 @@ business messaging needs.
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,extra-cmake-modules,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i cmake/external/rlottie/CMakeLists.txt
@@ -220,8 +215,12 @@ sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
 
 sed \
   -e 's|${third_party_loc}/wayland-protocols/|${WaylandProtocols_DATADIR}/|g' \
-  -i Telegram/lib_ui/CMakeLists.txt Telegram/lib_waylandshells/waylandshells/xdg-shell/CMakeLists.txt
+  -i Telegram/lib_ui/CMakeLists.txt Telegram/lib_waylandshells/waylandshells/xdg-shell/CMakeLists.txt \
+  Telegram/lib_base/CMakeLists.txt Telegram/CMakeLists.txt
 
+sed \
+  -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
+  -i Telegram/CMakeLists.txt
 
 %build
 # Building Telegram Desktop using cmake...
@@ -250,6 +249,7 @@ sed \
 %endif
     -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
     -DWaylandProtocols_DATADIR:PATH=%{_datadir}/wayland-protocols \
+    -DPLASMA_WAYLAND_PROTOCOLS_DIR:PATH=%{_datadir}/plasma-wayland-protocols \
 %{nil}
 
 cp -p changelog.txt %{_vpath_builddir}/
@@ -289,6 +289,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.6-100
+- 3.7.6
+
 * Fri May 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.7.5-100
 - 3.7.5
 
