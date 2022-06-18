@@ -23,9 +23,9 @@
 # Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
 %global with_reshdp 1
 
-%global commit 62601663e578bcd0b981e134c84fbc9d37850a15
+%global commit 23ed611077d65b43d9ef8f0971e9e5c57699fd91
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220517
+%global date 20220617
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -39,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        159%{?gver}%{?dist}
+Release:        160%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -73,8 +73,6 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 #Update soundtouch:
 #https://github.com/dolphin-emu/dolphin/pull/8725
 Patch2:         0001-Update-to-soundtouch-2.3.1.patch
-#This needs to be fixed, I've reverted the patch that breaks minizip
-Patch5:         0004-Revert-Externals-Update-minizip-search-path.patch
 Patch10:        0001-mgba-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -194,19 +192,20 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Dolphin Emulator without a graphical user interface.
 
 
+%package tool
+Summary:        Dolphin Emulator CLI utility
+
+%description tool
+This package provides "dolphin-tool", which is a CLI-based utility for
+functions such as managing disc images. 
+
+
 %package data
 Summary:        Dolphin Emulator data files
 BuildArch:      noarch
 
 %description data
 This package provides the data files for dolphin-emu.
-
-
-%package        tools
-Summary:        Additional tools files for %{name}
-
-%description tools
-Additional tools files for %{name}.
 
 
 ####################################################
@@ -220,6 +219,17 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 #Font license, just making things more generic
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
+
+#Fix for minizip install path
+sed \
+  -e 's|<mz_compat.h>|<minizip/mz_compat.h>|' \
+  -i Source/Core/Common/MinizipUtil.h \
+     Source/Core/UICommon/ResourcePack/ResourcePack.cpp \
+     Source/Core/DiscIO/VolumeVerifier.cpp
+
+sed \
+  -e 's|minizip-ng|minizip|g' \
+  -i CMakeLists.txt Source/Core/{Common,DiscIO,UICommon}/CMakeLists.txt
 
 # Fix for newer vulkan/glslang
 sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
@@ -376,7 +386,7 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}.lang
 %doc Readme.md
-%license COPYING Externals/licenses.md
+%license COPYING Data/license.txt Externals/licenses.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-x11
 %{_mandir}/man6/%{name}.*
@@ -396,7 +406,7 @@ appstream-util validate-relax --nonet \
 
 %files nogui
 %doc Readme.md
-%license COPYING Externals/licenses.md
+%license COPYING Data/license.txt Externals/licenses.md
 %{_bindir}/%{name}-nogui
 %{_mandir}/man6/%{name}-nogui.*
 %if 0%{?with_reshdp}
@@ -406,7 +416,7 @@ appstream-util validate-relax --nonet \
 
 %files data
 %doc Readme.md docs/gc-font-tool.cpp
-%license COPYING font-licenses.txt
+%license COPYING Data/license.txt font-licenses.txt
 #For the gui package:
 %exclude %{_datadir}/%{name}/sys/Resources/
 %exclude %{_datadir}/%{name}/sys/Themes/
@@ -415,12 +425,15 @@ appstream-util validate-relax --nonet \
 %{_datadir}/%{name}/
 %{_udevrulesdir}/*.rules
 
-%files tools
-%license COPYING
+%files tool
+%license COPYING Data/license.txt
 %{_bindir}/dolphin-tool
 
 
 %changelog
+* Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-160.20220617git23ed611
+- Update
+
 * Thu May 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-159.20220517git6260166
 - Bump
 - Rawhide sync (SoundTouch 2.3.1)

@@ -1,4 +1,4 @@
-From 2b647e7117c4a4054e3307f2ebfd640ea250c409 Mon Sep 17 00:00:00 2001
+From b51c393b7580732f28bd05d28231cfe7fe87e4b7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 16:01:06 -0300
 Subject: [PATCH] Revert VideoCommon/TextureInfo commits for RESHDP
@@ -175,7 +175,6 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  .../ControllerInterface/Touch/Touchscreen.cpp |   7 +-
  .../ControllerInterface/Xlib/XInput2.cpp      |   4 +-
  .../ControllerInterface/evdev/evdev.cpp       |   3 +-
- Source/Core/InputCommon/GCAdapter_Android.cpp |   3 +-
  Source/Core/InputCommon/InputConfig.cpp       |   3 +-
  Source/Core/UICommon/CommandLineParse.cpp     |   3 +-
  Source/Core/UICommon/UICommon.cpp             |   3 +-
@@ -266,7 +265,7 @@ bbb64ff9930e191389a4ba7b696bb82174c30c1b - Shadergen: Use real_ocol0 workaround 
  Source/Core/VideoCommon/VideoConfig.cpp       |   1 -
  Source/Core/VideoCommon/VideoConfig.h         |  14 -
  Source/Core/VideoCommon/VideoState.cpp        |   8 +-
- 238 files changed, 966 insertions(+), 2620 deletions(-)
+ 237 files changed, 965 insertions(+), 2618 deletions(-)
  create mode 100644 Source/Core/VideoCommon/SamplerCommon.h
  delete mode 100644 Source/Core/VideoCommon/TMEM.cpp
  delete mode 100644 Source/Core/VideoCommon/TMEM.h
@@ -342,7 +341,7 @@ index 7b998b1..512535e 100644
  #include "Common/Logging/Log.h"
  #include "Common/Logging/LogManager.h"
 diff --git a/Source/Core/AudioCommon/Mixer.cpp b/Source/Core/AudioCommon/Mixer.cpp
-index f6bebb6..e3b834a 100644
+index e0b7f28..2fc31d6 100644
 --- a/Source/Core/AudioCommon/Mixer.cpp
 +++ b/Source/Core/AudioCommon/Mixer.cpp
 @@ -2,12 +2,12 @@
@@ -728,7 +727,7 @@ index 873387f..abe8bc3 100644
  
  EGLDisplay GLContextEGLAndroid::OpenEGLDisplay()
 diff --git a/Source/Core/Common/GL/GLInterface/GLX.cpp b/Source/Core/Common/GL/GLInterface/GLX.cpp
-index 930994a..5154424 100644
+index b04296d..099866f 100644
 --- a/Source/Core/Common/GL/GLInterface/GLX.cpp
 +++ b/Source/Core/Common/GL/GLInterface/GLX.cpp
 @@ -1,11 +1,10 @@
@@ -909,7 +908,7 @@ index 724d28f..8e4d504 100644
  {
  // Multiply a NxM matrix by a MxP matrix.
 diff --git a/Source/Core/Common/MemoryUtil.cpp b/Source/Core/Common/MemoryUtil.cpp
-index 858135b..2088916 100644
+index f94af85..ed103f7 100644
 --- a/Source/Core/Common/MemoryUtil.cpp
 +++ b/Source/Core/Common/MemoryUtil.cpp
 @@ -1,8 +1,6 @@
@@ -1224,7 +1223,7 @@ index 6020758..9a3bf9f 100644
  // Stacks. The stacks are outside the DSP RAM, in dedicated hardware.
  namespace DSP
 diff --git a/Source/Core/Core/DSP/Interpreter/DSPIntArithmetic.cpp b/Source/Core/Core/DSP/Interpreter/DSPIntArithmetic.cpp
-index 9a6e133..c4319db 100644
+index 0a9485b..b8d0b66 100644
 --- a/Source/Core/Core/DSP/Interpreter/DSPIntArithmetic.cpp
 +++ b/Source/Core/Core/DSP/Interpreter/DSPIntArithmetic.cpp
 @@ -3,10 +3,9 @@
@@ -1255,7 +1254,7 @@ index 8b2aca8..5f67d95 100644
  namespace DSP::Interpreter
  {
 diff --git a/Source/Core/Core/DSP/Interpreter/DSPIntLoadStore.cpp b/Source/Core/Core/DSP/Interpreter/DSPIntLoadStore.cpp
-index 17973a9..df6fb4c 100644
+index 89bfa92..a20271f 100644
 --- a/Source/Core/Core/DSP/Interpreter/DSPIntLoadStore.cpp
 +++ b/Source/Core/Core/DSP/Interpreter/DSPIntLoadStore.cpp
 @@ -3,9 +3,8 @@
@@ -1270,7 +1269,7 @@ index 17973a9..df6fb4c 100644
  namespace DSP::Interpreter
  {
 diff --git a/Source/Core/Core/DSP/Interpreter/DSPIntMisc.cpp b/Source/Core/Core/DSP/Interpreter/DSPIntMisc.cpp
-index 7b1971a..4335bb2 100644
+index 4c3af7e..a4f3769 100644
 --- a/Source/Core/Core/DSP/Interpreter/DSPIntMisc.cpp
 +++ b/Source/Core/Core/DSP/Interpreter/DSPIntMisc.cpp
 @@ -3,11 +3,10 @@
@@ -1304,7 +1303,7 @@ index 9f94505..0816e8d 100644
  namespace DSP::Interpreter
  {
 diff --git a/Source/Core/Core/DSP/Jit/x64/DSPJitArithmetic.cpp b/Source/Core/Core/DSP/Jit/x64/DSPJitArithmetic.cpp
-index 864c488..1a9270c 100644
+index 921d352..1d9bc8b 100644
 --- a/Source/Core/Core/DSP/Jit/x64/DSPJitArithmetic.cpp
 +++ b/Source/Core/Core/DSP/Jit/x64/DSPJitArithmetic.cpp
 @@ -3,10 +3,10 @@
@@ -1321,7 +1320,7 @@ index 864c488..1a9270c 100644
  using namespace Gen;
  
 diff --git a/Source/Core/Core/DSP/Jit/x64/DSPJitBranch.cpp b/Source/Core/Core/DSP/Jit/x64/DSPJitBranch.cpp
-index 12e70e4..81ee4f6 100644
+index 79e2da9..cb6d9b1 100644
 --- a/Source/Core/Core/DSP/Jit/x64/DSPJitBranch.cpp
 +++ b/Source/Core/Core/DSP/Jit/x64/DSPJitBranch.cpp
 @@ -1,13 +1,12 @@
@@ -1340,7 +1339,7 @@ index 12e70e4..81ee4f6 100644
  using namespace Gen;
  
 diff --git a/Source/Core/Core/DSP/Jit/x64/DSPJitCCUtil.cpp b/Source/Core/Core/DSP/Jit/x64/DSPJitCCUtil.cpp
-index 30cd5d8..a891d0c 100644
+index 3fd5a70..0f6b6a7 100644
 --- a/Source/Core/Core/DSP/Jit/x64/DSPJitCCUtil.cpp
 +++ b/Source/Core/Core/DSP/Jit/x64/DSPJitCCUtil.cpp
 @@ -3,9 +3,8 @@
@@ -1425,7 +1424,7 @@ index 617c924..90ef9ce 100644
  using namespace Gen;
  
 diff --git a/Source/Core/Core/DSP/Jit/x64/DSPJitUtil.cpp b/Source/Core/Core/DSP/Jit/x64/DSPJitUtil.cpp
-index 67c66e0..bbf97b9 100644
+index bdddff7..b5a80c5 100644
 --- a/Source/Core/Core/DSP/Jit/x64/DSPJitUtil.cpp
 +++ b/Source/Core/Core/DSP/Jit/x64/DSPJitUtil.cpp
 @@ -1,11 +1,11 @@
@@ -1443,7 +1442,7 @@ index 67c66e0..bbf97b9 100644
  using namespace Gen;
  
 diff --git a/Source/Core/Core/HW/EXI/BBA/TAPServer_Apple.cpp b/Source/Core/Core/HW/EXI/BBA/TAPServer_Apple.cpp
-index ad87b5e..516b79a 100644
+index 77a8f74..326d6c5 100644
 --- a/Source/Core/Core/HW/EXI/BBA/TAPServer_Apple.cpp
 +++ b/Source/Core/Core/HW/EXI/BBA/TAPServer_Apple.cpp
 @@ -1,8 +1,6 @@
@@ -1455,7 +1454,7 @@ index ad87b5e..516b79a 100644
  #include <fcntl.h>
  #include <sys/socket.h>
  #include <sys/un.h>
-@@ -11,6 +9,7 @@
+@@ -12,6 +10,7 @@
  #include "Common/Logging/Log.h"
  #include "Common/StringUtil.h"
  #include "Core/HW/EXI/EXI_Device.h"
@@ -1588,7 +1587,7 @@ index 07ede79..b23a1eb 100644
  #include "Common/CommonTypes.h"
  
 diff --git a/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp b/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
-index 8f0cce5..631d395 100644
+index 4d1d84d..d1b0f54 100644
 --- a/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
 +++ b/Source/Core/Core/HW/WiimoteEmu/EmuSubroutines.cpp
 @@ -1,8 +1,6 @@
@@ -1717,7 +1716,7 @@ index af0b17f..ddba2c2 100644
  #include "Core/IOS/FS/FileSystemProxy.h"
  #include "Core/IOS/Uids.h"
 diff --git a/Source/Core/Core/IOS/FS/HostBackend/FS.cpp b/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
-index 2e2fee3..fce3967 100644
+index 27daeea..1ae8050 100644
 --- a/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
 +++ b/Source/Core/Core/IOS/FS/HostBackend/FS.cpp
 @@ -1,8 +1,6 @@
@@ -1760,7 +1759,7 @@ index 9f58c2f..1c0ad3a 100644
  {
  // This isn't theadsafe, but it's only called from the CPU thread.
 diff --git a/Source/Core/Core/LibusbUtils.cpp b/Source/Core/Core/LibusbUtils.cpp
-index 8ab2f40..2195825 100644
+index 1b1852d..9ccc915 100644
 --- a/Source/Core/Core/LibusbUtils.cpp
 +++ b/Source/Core/Core/LibusbUtils.cpp
 @@ -1,8 +1,6 @@
@@ -2507,10 +2506,10 @@ index df12eab..1d8e370 100644
  
  namespace DiscIO
 diff --git a/Source/Core/DolphinLib.props b/Source/Core/DolphinLib.props
-index d4cdb0a..d51a51c 100644
+index ea6c970..a2317d4 100644
 --- a/Source/Core/DolphinLib.props
 +++ b/Source/Core/DolphinLib.props
-@@ -644,6 +644,7 @@
+@@ -648,6 +648,7 @@
      <ClInclude Include="VideoCommon\PostProcessing.h" />
      <ClInclude Include="VideoCommon\RenderBase.h" />
      <ClInclude Include="VideoCommon\RenderState.h" />
@@ -2518,7 +2517,7 @@ index d4cdb0a..d51a51c 100644
      <ClInclude Include="VideoCommon\ShaderCache.h" />
      <ClInclude Include="VideoCommon\ShaderGenCommon.h" />
      <ClInclude Include="VideoCommon\Statistics.h" />
-@@ -653,8 +654,6 @@
+@@ -657,8 +658,6 @@
      <ClInclude Include="VideoCommon\TextureConverterShaderGen.h" />
      <ClInclude Include="VideoCommon\TextureDecoder_Util.h" />
      <ClInclude Include="VideoCommon\TextureDecoder.h" />
@@ -2527,7 +2526,7 @@ index d4cdb0a..d51a51c 100644
      <ClInclude Include="VideoCommon\UberShaderCommon.h" />
      <ClInclude Include="VideoCommon\UberShaderPixel.h" />
      <ClInclude Include="VideoCommon\UberShaderVertex.h" />
-@@ -1222,8 +1221,6 @@
+@@ -1230,8 +1229,6 @@
      <ClCompile Include="VideoCommon\TextureConversionShader.cpp" />
      <ClCompile Include="VideoCommon\TextureConverterShaderGen.cpp" />
      <ClCompile Include="VideoCommon\TextureDecoder_Common.cpp" />
@@ -2766,7 +2765,7 @@ index 9681522..e01caa4 100644
  
  ListProxyModel::ListProxyModel(QObject* parent) : QSortFilterProxyModel(parent)
 diff --git a/Source/Core/DolphinQt/MainWindow.cpp b/Source/Core/DolphinQt/MainWindow.cpp
-index 5099ffa..7333ebb 100644
+index d2dea76..6f93655 100644
 --- a/Source/Core/DolphinQt/MainWindow.cpp
 +++ b/Source/Core/DolphinQt/MainWindow.cpp
 @@ -1,8 +1,6 @@
@@ -3102,27 +3101,6 @@ index 6df37b4..752d2e7 100644
  
  namespace ciface::evdev
  {
-diff --git a/Source/Core/InputCommon/GCAdapter_Android.cpp b/Source/Core/InputCommon/GCAdapter_Android.cpp
-index 499a9ec..d1be357 100644
---- a/Source/Core/InputCommon/GCAdapter_Android.cpp
-+++ b/Source/Core/InputCommon/GCAdapter_Android.cpp
-@@ -1,8 +1,6 @@
- // Copyright 2014 Dolphin Emulator Project
- // SPDX-License-Identifier: GPL-2.0-or-later
- 
--#include "InputCommon/GCAdapter.h"
--
- #include <algorithm>
- #include <array>
- #include <jni.h>
-@@ -19,6 +17,7 @@
- #include "Core/HW/SI/SI_Device.h"
- #include "Core/HW/SystemTimers.h"
- 
-+#include "InputCommon/GCAdapter.h"
- #include "InputCommon/GCPadStatus.h"
- 
- #include "jni/AndroidCommon/IDCache.h"
 diff --git a/Source/Core/InputCommon/InputConfig.cpp b/Source/Core/InputCommon/InputConfig.cpp
 index 5e64b60..ad044ea 100644
 --- a/Source/Core/InputCommon/InputConfig.cpp
@@ -4225,7 +4203,7 @@ index 3138a31..7e4b134 100644
  #include "VideoBackends/Vulkan/VulkanContext.h"
  
 diff --git a/Source/Core/VideoBackends/Vulkan/VKMain.cpp b/Source/Core/VideoBackends/Vulkan/VKMain.cpp
-index 56cf93a..abe531a 100644
+index bc76aa5..ffbc32c 100644
 --- a/Source/Core/VideoBackends/Vulkan/VKMain.cpp
 +++ b/Source/Core/VideoBackends/Vulkan/VKMain.cpp
 @@ -1,8 +1,6 @@
@@ -4849,7 +4827,7 @@ index c6746d4..523340d 100644
  
    switch (bp.address & 0xF0)
 diff --git a/Source/Core/VideoCommon/CMakeLists.txt b/Source/Core/VideoCommon/CMakeLists.txt
-index 3504bc6..cf08716 100644
+index ec8f89c..e90fadf 100644
 --- a/Source/Core/VideoCommon/CMakeLists.txt
 +++ b/Source/Core/VideoCommon/CMakeLists.txt
 @@ -70,6 +70,7 @@ add_library(videocommon
@@ -5037,7 +5015,7 @@ index b448dc1..aada95f 100644
  struct GXPipelineUid
  {
 diff --git a/Source/Core/VideoCommon/GeometryShaderManager.cpp b/Source/Core/VideoCommon/GeometryShaderManager.cpp
-index f488ed7..3afeb1d 100644
+index f71a687..de7b644 100644
 --- a/Source/Core/VideoCommon/GeometryShaderManager.cpp
 +++ b/Source/Core/VideoCommon/GeometryShaderManager.cpp
 @@ -1,13 +1,12 @@
@@ -5897,7 +5875,7 @@ index 6a7a638..adf9960 100644
    u32 texMtxInfo_n_projection : 8;  // 8x1 bit
    u32 tevindref_bi0 : 3;
 diff --git a/Source/Core/VideoCommon/PixelShaderManager.cpp b/Source/Core/VideoCommon/PixelShaderManager.cpp
-index 675bcce..436db9d 100644
+index 4e6ce9f..075a5ec 100644
 --- a/Source/Core/VideoCommon/PixelShaderManager.cpp
 +++ b/Source/Core/VideoCommon/PixelShaderManager.cpp
 @@ -273,22 +273,16 @@ void PixelShaderManager::SetDestAlphaChanged()
@@ -6846,7 +6824,7 @@ index 6a1eff4..0000000
 -
 -}  // namespace TMEM
 diff --git a/Source/Core/VideoCommon/TextureCacheBase.cpp b/Source/Core/VideoCommon/TextureCacheBase.cpp
-index 406a7be..f0a2c13 100644
+index dc08fd9..2af374f 100644
 --- a/Source/Core/VideoCommon/TextureCacheBase.cpp
 +++ b/Source/Core/VideoCommon/TextureCacheBase.cpp
 @@ -40,9 +40,9 @@
@@ -8639,7 +8617,7 @@ index b41272c..93c5658 100644
  namespace
  {
 diff --git a/Source/Core/VideoCommon/VertexManagerBase.cpp b/Source/Core/VideoCommon/VertexManagerBase.cpp
-index bb23a46..f868747 100644
+index 72f0292..130dde0 100644
 --- a/Source/Core/VideoCommon/VertexManagerBase.cpp
 +++ b/Source/Core/VideoCommon/VertexManagerBase.cpp
 @@ -28,6 +28,7 @@
@@ -8660,7 +8638,7 @@ index bb23a46..f868747 100644
  
  void VertexManagerBase::Flush()
 diff --git a/Source/Core/VideoCommon/VideoBackendBase.cpp b/Source/Core/VideoCommon/VideoBackendBase.cpp
-index 78e4c7c..366266d 100644
+index 3a2eafd..20eb3dd 100644
 --- a/Source/Core/VideoCommon/VideoBackendBase.cpp
 +++ b/Source/Core/VideoCommon/VideoBackendBase.cpp
 @@ -47,7 +47,6 @@
@@ -8671,7 +8649,7 @@ index 78e4c7c..366266d 100644
  #include "VideoCommon/TextureCacheBase.h"
  #include "VideoCommon/VertexLoaderManager.h"
  #include "VideoCommon/VertexManagerBase.h"
-@@ -322,7 +321,6 @@ void VideoBackendBase::InitializeShared()
+@@ -314,7 +313,6 @@ void VideoBackendBase::InitializeShared()
    VertexShaderManager::Init();
    GeometryShaderManager::Init();
    PixelShaderManager::Init();
@@ -8680,17 +8658,17 @@ index 78e4c7c..366266d 100644
    g_Config.VerifyValidity();
    UpdateActiveConfig();
 diff --git a/Source/Core/VideoCommon/VideoConfig.cpp b/Source/Core/VideoCommon/VideoConfig.cpp
-index 6d8cd7f..b5c4071 100644
+index 58893c9..4ebc5b1 100644
 --- a/Source/Core/VideoCommon/VideoConfig.cpp
 +++ b/Source/Core/VideoCommon/VideoConfig.cpp
-@@ -137,7 +137,6 @@ void VideoConfig::Refresh()
+@@ -142,7 +142,6 @@ void VideoConfig::Refresh()
    bVertexRounding = Config::Get(Config::GFX_HACK_VERTEX_ROUNDING);
    iEFBAccessTileSize = Config::Get(Config::GFX_HACK_EFB_ACCESS_TILE_SIZE);
    iMissingColorValue = Config::Get(Config::GFX_HACK_MISSING_COLOR_VALUE);
 -  bFastTextureSampling = Config::Get(Config::GFX_HACK_FAST_TEXTURE_SAMPLING);
  
    bPerfQueriesEnable = Config::Get(Config::GFX_PERF_QUERIES_ENABLE);
- 
+ }
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
 index 640038d..1fd1144 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
@@ -8731,7 +8709,7 @@ index 640038d..1fd1144 100644
    u32 GetShaderCompilerThreads() const;
    u32 GetShaderPrecompilerThreads() const;
 diff --git a/Source/Core/VideoCommon/VideoState.cpp b/Source/Core/VideoCommon/VideoState.cpp
-index c348649..f954ca7 100644
+index 538c3d0..73e8a27 100644
 --- a/Source/Core/VideoCommon/VideoState.cpp
 +++ b/Source/Core/VideoCommon/VideoState.cpp
 @@ -1,8 +1,6 @@

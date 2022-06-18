@@ -1,6 +1,6 @@
-%global commit 14e1552a3bc8a55e4b0d0cd8aad644276ba4abf6
+%global commit 0dce8b392a56f70f41196038371e2506724aead4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220516
+%global date 20220617
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -14,7 +14,7 @@
 
 Name:           mgba
 Version:        0.10.0
-Release:        0.16%{?gver}%{?dist}
+Release:        0.17%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -123,6 +123,8 @@ sed -i \
   src/core/version.c.in
 %endif
 
+sed -e 's|BUILD_UPDATER ON|BUILD_UPDATER OFF|g' -i CMakeLists.txt
+
 
 %build
 %global _lto_cflags %{nil}
@@ -134,6 +136,7 @@ sed -i \
 %if %{without ffmpeg}
   -DUSE_FFMPEG:BOOL=OFF \
 %endif
+  -DBUILD_UPDATER:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -177,6 +180,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.17.20220617git0dce8b3
+- Bump
+
 * Thu May 19 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.16.20220516git14e1552
 - Update
 
