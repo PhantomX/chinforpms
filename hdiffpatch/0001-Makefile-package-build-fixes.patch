@@ -1,17 +1,30 @@
-From 584e3b1439789aeb7ee2aa2eb89bbc4c33566892 Mon Sep 17 00:00:00 2001
+From acc1480e72a1fae727cd474d39f1ba281db314da Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 17 Mar 2022 13:53:39 -0300
 Subject: [PATCH] Makefile: package build fixes
 
 ---
- Makefile | 110 ++++++++++++++++++-------------------------------------
- 1 file changed, 35 insertions(+), 75 deletions(-)
+ Makefile | 68 +++++++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 52 insertions(+), 16 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ccb4a4a..c21db0a 100644
+index 722fcc9..83440e6 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -22,6 +22,15 @@ ifeq ($(BZIP2),0)
+@@ -3,10 +3,10 @@ DIR_DIFF := 1
+ MT       := 1
+ # 0: not need zlib;  1: compile zlib source code;  2: used -lz to link zlib lib;
+ ZLIB     := 2
+-LZMA     := 1
++LZMA     := 2
+ ARM64ASM := 0
+ # 0: not need zstd;  1: compile zstd source code;  2: used -lzstd to link zstd lib;
+-ZSTD     := 1
++ZSTD     := 2
+ MD5      := 1
+ STATIC_CPP := 0
+ # used clang?
+@@ -31,6 +31,15 @@ ifeq ($(BZIP2),0)
    endif
  endif
  
@@ -27,7 +40,7 @@ index ccb4a4a..c21db0a 100644
  HDIFF_OBJ  := 
  HPATCH_OBJ := \
      libHDiffPatch/HPatch/patch.o \
-@@ -42,7 +51,7 @@ ifeq ($(BSD),0)
+@@ -51,7 +60,7 @@ ifeq ($(BSD),0)
  else
  	HPATCH_OBJ += bsdiff_wrapper/bspatch_wrapper.o
  endif
@@ -36,74 +49,17 @@ index ccb4a4a..c21db0a 100644
  ifeq ($(DIR_DIFF),0)
  else
    ifeq ($(MD5),0)
-@@ -50,66 +59,6 @@ else
- 	HPATCH_OBJ += $(MD5_PATH)/md5.o
+@@ -60,8 +69,7 @@ else
    endif
  endif
--LZMA_PATH := ../lzma/C
+ LZMA_PATH := ../lzma/C
 -ifeq ($(LZMA),0)
 -else # https://www.7-zip.org  https://github.com/sisong/lzma
--  HPATCH_OBJ += $(LZMA_PATH)/LzmaDec.o \
--  				$(LZMA_PATH)/Lzma2Dec.o 
--  HDIFF_OBJ  += $(LZMA_PATH)/LzFind.o \
--  				$(LZMA_PATH)/LzFindOpt.o \
--  				$(LZMA_PATH)/CpuArch.o \
--  				$(LZMA_PATH)/LzmaEnc.o \
--				$(LZMA_PATH)/Lzma2Enc.o  
--  ifeq ($(MT),0)  
--  else  
--    HDIFF_OBJ+= $(LZMA_PATH)/LzFindMt.o \
--  				$(LZMA_PATH)/MtCoder.o \
--  				$(LZMA_PATH)/MtDec.o \
--				$(LZMA_PATH)/Threads.o
--  endif
--endif
--ZSTD_PATH := ../zstd/lib
--ifeq ($(ZSTD),0)
--else # https://github.com/facebook/zstd
--  HPATCH_OBJ += $(ZSTD_PATH)/common/debug.o \
--  				$(ZSTD_PATH)/common/entropy_common.o \
--  				$(ZSTD_PATH)/common/error_private.o \
--  				$(ZSTD_PATH)/common/fse_decompress.o \
--  				$(ZSTD_PATH)/common/xxhash.o \
--  				$(ZSTD_PATH)/common/zstd_common.o \
--  				$(ZSTD_PATH)/decompress/huf_decompress.o \
--  				$(ZSTD_PATH)/decompress/zstd_ddict.o \
--  				$(ZSTD_PATH)/decompress/zstd_decompress.o \
--  				$(ZSTD_PATH)/decompress/zstd_decompress_block.o
--  HDIFF_OBJ  += $(ZSTD_PATH)/compress/fse_compress.o \
--  				$(ZSTD_PATH)/compress/hist.o \
--  				$(ZSTD_PATH)/compress/huf_compress.o \
--  				$(ZSTD_PATH)/compress/zstd_compress.o \
--  				$(ZSTD_PATH)/compress/zstd_compress_literals.o \
--  				$(ZSTD_PATH)/compress/zstd_compress_sequences.o \
--  				$(ZSTD_PATH)/compress/zstd_compress_superblock.o \
--  				$(ZSTD_PATH)/compress/zstd_double_fast.o \
--  				$(ZSTD_PATH)/compress/zstd_fast.o \
--  				$(ZSTD_PATH)/compress/zstd_lazy.o \
--  				$(ZSTD_PATH)/compress/zstd_ldm.o \
--  				$(ZSTD_PATH)/compress/zstd_opt.o
--  ifeq ($(MT),0)
--  else  
--    HDIFF_OBJ+= $(ZSTD_PATH)/common/pool.o \
--				$(ZSTD_PATH)/common/threading.o \
--				$(ZSTD_PATH)/compress/zstdmt_compress.o
--  endif
--endif
--BZ2_PATH := ../bzip2
--ifeq ($(BZIP2),1) # https://github.com/sisong/bzip2
--  HPATCH_OBJ += $(BZ2_PATH)/blocksort.o \
--  				$(BZ2_PATH)/bzlib.o \
--  				$(BZ2_PATH)/compress.o \
--  				$(BZ2_PATH)/crctable.o \
--  				$(BZ2_PATH)/decompress.o \
--  				$(BZ2_PATH)/huffman.o \
--  				$(BZ2_PATH)/randtable.o
--endif
- 
- HDIFF_OBJ += \
-     hdiffz_import_patch.o \
-@@ -148,7 +97,7 @@ endif
++ifeq ($(LZMA),1) # https://www.7-zip.org  https://github.com/sisong/lzma
+   HPATCH_OBJ += $(LZMA_PATH)/LzmaDec.o \
+   				$(LZMA_PATH)/Lzma2Dec.o 
+   ifeq ($(ARM64ASM),0)
+@@ -175,7 +183,7 @@ endif
  
  
  DEF_FLAGS := \
@@ -111,42 +67,67 @@ index ccb4a4a..c21db0a 100644
 +    -fPIC -DNDEBUG -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 \
      -D_IS_NEED_ALL_CompressPlugin=0 \
      -D_IS_NEED_DEFAULT_CompressPlugin=0 \
-     -D_CompressPlugin_zlib  \
-@@ -158,7 +107,7 @@ ifeq ($(BZIP2),0)
- else
-     DEF_FLAGS += -D_CompressPlugin_bz2
+     -D_IS_NEED_ALL_ChecksumPlugin=0 \
+@@ -201,6 +209,9 @@ else
  	ifeq ($(BZIP2),1)
--        DEF_FLAGS += -I$(BZ2_PATH)
-+        DEF_FLAGS += $(shell pkg-config --cflags-only-I bzip2)
+         DEF_FLAGS += -I$(BZ2_PATH)
  	endif
++	ifeq ($(BZIP2),2)
++        DEF_FLAGS += $(shell pkg-config --cflags-only-I bzip2)
++	endif
+ endif
+ ifeq ($(ZLIB),0)
+ else
+@@ -208,6 +219,9 @@ else
+ 	ifeq ($(ZLIB),1)
+         DEF_FLAGS += -I$(ZLIB_PATH)
+ 	endif
++	ifeq ($(ZLIB),2)
++        DEF_FLAGS += $(shell pkg-config --cflags-only-I zlib)
++	endif
  endif
  ifeq ($(DIR_DIFF),0)
-@@ -180,13 +129,12 @@ else
+   DEF_FLAGS += -D_IS_NEED_DIR_DIFF_PATCH=0
+@@ -231,11 +245,17 @@ else
  endif
  ifeq ($(LZMA),0)
  else
 -  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2 -I$(LZMA_PATH)
-+  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2 $(shell pkg-config --cflags-only-I lzmasdk-c)
++  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2
+   ifeq ($(ARM64ASM),0)
+   else
+     DEF_FLAGS += -D_LZMA_DEC_OPT
+   endif
++	ifeq ($(LZMA),1)
++      DEF_FLAGS += -I$(LZMA_PATH)
++	endif
++	ifeq ($(LZMA),2)
++      DEF_FLAGS += $(shell pkg-config --cflags-only-I lzmasdk-c)
++	endif
  endif
  ifeq ($(ZSTD),0)
  else
-   DEF_FLAGS += \
--    -D_CompressPlugin_zstd -DZSTD_DISABLE_ASM -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common \
--	-I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
-+    -D_CompressPlugin_zstd -DZSTD_DISABLE_ASM -I$(ZSTD_PATH) $(shell pkg-config --cflags-only-I libzstd)
+@@ -244,6 +264,9 @@ else
+       DEF_FLAGS += -DZSTD_DISABLE_ASM -DZSTD_HAVE_WEAK_SYMBOLS=0 -DZSTD_TRACE=0 \
+ 	    -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common -I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
+ 	endif
++	ifeq ($(ZSTD),2)
++      DEF_FLAGS += $(shell pkg-config --cflags-only-I libzstd)
++	endif
  endif
  
  ifeq ($(MT),0)
-@@ -204,6 +152,8 @@ PATCH_LINK := -lz			# link zlib
+@@ -264,6 +287,9 @@ endif
  ifeq ($(BZIP2),2)
    PATCH_LINK += -lbz2		# link bzip2
  endif
-+PATCH_LINK += -lzstd
-+PATCH_LINK += -llzmasdk
- DIFF_LINK  := $(PATCH_LINK)
- ifeq ($(MT),0)
- else
-@@ -220,15 +170,15 @@ CXXFLAGS += $(DEF_FLAGS)
++ifeq ($(LZMA),2)
++  PATCH_LINK += -llzmasdk		# link lzmasdk
++endif
+ ifeq ($(ZSTD),2)
+   PATCH_LINK += -lzstd		# link zstd
+ endif
+@@ -295,15 +321,15 @@ CXXFLAGS += $(DEF_FLAGS)
  
  .PHONY: all install clean
  
@@ -168,7 +149,7 @@ index ccb4a4a..c21db0a 100644
  
  ifeq ($(OS),Windows_NT) # mingw?
    RM := del /Q /F
-@@ -237,17 +187,27 @@ else
+@@ -312,17 +338,27 @@ else
    RM := rm -f
    DEL_HDIFF_OBJ := $(HDIFF_OBJ)
  endif
@@ -200,5 +181,5 @@ index ccb4a4a..c21db0a 100644
  uninstall:
  	$(RM)  $(INSTALL_BIN)/hdiffz  $(INSTALL_BIN)/hpatchz
 -- 
-2.35.1
+2.36.1
 

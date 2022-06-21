@@ -14,7 +14,7 @@
 
 Name:           mgba
 Version:        0.10.0
-Release:        0.17%{?gver}%{?dist}
+Release:        0.18%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -180,6 +180,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.18.20220617git0dce8b3
+- lzma-sdk rebuild
+
 * Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-0.17.20220617git0dce8b3
 - Bump
 

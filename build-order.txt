@@ -41,6 +41,7 @@ xwit
 
 # 2
 -aom
+asmc
 -compat-gcc-32
 -dxil-spirv
 ff7tk

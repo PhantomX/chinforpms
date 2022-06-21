@@ -8,14 +8,14 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit cca7613bcaa78bd2fbcbf9a9ed50dd639e9c5bb6
+%global commit de5b751468ac44cb493aeaee8238f8983e9f6ea1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220525
+%global date 20220617
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 d97bb340d8f79317fb7b8049717ff6ffd0dace0f
+%global commit1 b1afbf5fa8e6f10f6c226cea222a8a5d5518870f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -27,7 +27,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 33d4dd987fc8fc6475ff9ca2b4f0c3cc6e793337
+%global commit4 245d25ce8c3337919dc7916d0e62e31a0d8748ab
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
@@ -56,7 +56,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -274,6 +274,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-7.20220617gitde5b751
+- Bump
+
 * Sat May 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-6.20220525gitcca7613
 - Update
 

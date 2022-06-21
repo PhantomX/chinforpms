@@ -1,6 +1,6 @@
-%global commit ed742959eb312355042ef0b5928b2bd5724298db
+%global commit 5f4132329a77ddc1ec1851d01152d60150a04cde
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210912
+%global date 20220418
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.3%{?gver}%{?dist}
+Release:        0.4%{?gver}%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -31,6 +31,9 @@ Source0:        https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}
 # https://bugzilla.gnome.org/show_bug.cgi?id=776110
 # https://gitlab.gnome.org/GNOME/easytag/-/issues/8
 Patch0:         %{vc_url}/-/merge_requests/8.patch#/%{name}-gl-mr8.patch
+
+# Debian
+Patch10:        01_remove-pixdata.patch
 
 BuildRequires:  libappstream-glib
 BuildRequires:  desktop-file-utils
@@ -125,6 +128,9 @@ make check
 
 
 %changelog
+* Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.4.20220418git5f41323
+- Bump
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.3.20210912gited74295
 - Update
 

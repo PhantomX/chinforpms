@@ -1,9 +1,9 @@
 %global sanitize 0
 
 %bcond_without asm
-# Select the assembler (uasm or nasm)
-# nasm can be used with Fedora
-%global asmopt nasm
+# Select the assembler (asmc or uasm)
+# asmc can be used with Fedora
+%global asmopt asmc
 
 %global platform %{nil}
 %if %{with asm}
@@ -12,6 +12,7 @@
 %endif
 %ifarch x86_64
 %global platform _x64
+%global asmc 64
 %endif
 %ifarch arm
 %global platform _arm64
@@ -22,8 +23,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        21.07
-Release:        4%{?dist}
+Version:        22.00
+Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPLv2+ and BSD and Public Domain
@@ -38,15 +39,11 @@ Source0:        %{name}-free-%{version}.tar.xz
 Source1:        Makefile
 
 Patch1:         0001-set-7zCon.sfx-path.patch
-%if %{with asm}
-%if "%{asmopt}" == "nasm"
-# Experimental NASM support
-Patch10:        0001-Add-NASM-support.patch
-%endif
-%endif
+# https://aur.archlinux.org/cgit/aur.git/tree/01-gcc-12.patch?h=7-zip
+Patch2:         01-gcc-12.patch
 
 %if %{with asm}
-%if "%{asmopt}" == "nasm"
+%if "%{asmopt}" == "asmc"
 ExclusiveArch:  x86_64
 %else
 ExclusiveArch:  %{ix86} x86_64 %{arm}
@@ -93,13 +90,8 @@ sed \
   -e 's|^LDFLAGS =|LDFLAGS +=|g' \
   -e 's|$(LDFLAGS)|\0 -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
-  -e '/^MY_ASM/s|asmc|uasm|g' \
+  -e '/^MY_ASM/s|asmc|%{asmopt}%{asmc}|g' \
   -i CPP/7zip/7zip_gcc.mak
-
-# https://github.com/justdan96/7zip_static/blob/main/Dockerfile#L27
-sed -e \
-  '1iOPTION FRAMEPRESERVEFLAGS:ON\nOPTION PROLOGUE:NONE\nOPTION EPILOGUE:NONE' \
-  -i Asm/x86/LzFindOpt.asm
 
 sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main.cpp
 
@@ -108,11 +100,8 @@ sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main
 %set_build_flags
 
 %if %{with asm}
-%if "%{asmopt}" == "nasm"
-export USE_NASM=1
+export USE_ASM=1
 %endif
-%endif
-
 export DISABLE_RAR=1
 
 pushd CPP/7zip/Bundles/Alone2
@@ -140,6 +129,11 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 22.00-1
+- 22.00
+- Removed NASM patches 
+- Build with asmc, now is good
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-4
 - Fix for package_note_file
 

@@ -1,6 +1,6 @@
-%global commit b0fa2cec0bb28bd68c4060e4bdf91fe2bcdb8776
+%global commit 1efd5dc6238f78e1960997a2d9d7a08390c9ad22
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220312
+%global date 20220520
 %global with_snapshot 1
 
 %global commit1 51edeb63ec3f456f4950922c5011c326a062fbce
@@ -19,7 +19,7 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.1.2
+Version:        4.2.1
 Release:        1%{?gver}%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
@@ -121,5 +121,8 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2.1-1.20220520git1efd5dc
+- 4.2.1
+
 * Thu Mar 17 2022 Phantom X <megaphantomx at hotmail dot com> - 4.1.2-1.20220312gitb0fa2ce
 - Initial spec

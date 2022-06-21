@@ -1,6 +1,6 @@
-%global commit 7c2af65066e8174ca2eec36978213cca7ac61030
+%global commit 33834a2ccffe665a264b45afd1d7f39c85e5f454
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220223
+%global date 20220619
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,20 +8,17 @@
 %endif
 
 # Set to 0 after bootstrap
-%global bootstrap 1
+%global bootstrap 0
 
 %undefine _debugsource_packages
-%undefine _hardened_build
-%global _lto_cflags %{nil}
 
 %ifarch x86_64
 %global platform 64
 %endif
-%global makefile GccLinux%{?platform}.mak
 
 Name:           asmc
-Version:        2.33.44
-Release:        0%{?gver}%{?dist}
+Version:        2.34
+Release:        1%{?gver}%{?dist}
 Summary:        Asmc Macro Assembler
 
 License:        GPLv2
@@ -51,31 +48,29 @@ rm -f bin/*.exe
 
 %if 0%{?bootstrap}
   chmod +x bin/%{name}{,64}
-  sed -e '/AFLAGS/s|asmc64|../../bin/\0|' -i source/%{name}/GccLinux64.mak
+  sed -e '/CC =/s|asmc64|%{name}%{platform}|' -i source/%{name}/gcc/makefile
 %else
   rm -f bin/%{name}{,64}
-  sed -e '/AFLAGS/s|../../bin/||' -i source/%{name}/GccLinux.mak
+  sed -e '/chmod/d' -i source/%{name}/gcc/makefile
+  sed -e 's|^CC =.*|CC = %{name}%{platform}|' -i source/%{name}/gcc/makefile
 %endif
 
 sed \
-  -e 's|gcc -o|gcc $(CFLAGS) -o|' \
+  -e 's|,-pie,-z,now,|,|g' \
+  -e 's|gcc |\0$(CFLAGS) |' \
+  -e '/gcc/s| -s | |' \
   -e '/gcc/s|$@|\0 $(LDFLAGS)|' \
-  -i source/asmc/%{makefile}
+  -i source/%{name}/gcc/makefile
 
 %build
 %set_build_flags
-%ifarch x86_64
-make -C source/asmc -f ./%{makefile}
-make -C source/asmc -f ./%{makefile} X64=1
-%else
-make -C source/asmc -f ./%{makefile}
-make -C source/asmc -f ./%{makefile} ASMC64=1
-%endif
+make -C source/%{name}/gcc -f ./makefile %{name}
+make -C source/%{name}/gcc -f ./makefile %{name}64
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 source/asmc/%{name} %{buildroot}%{_bindir}/
-install -pm0755 source/asmc/%{name}64 %{buildroot}%{_bindir}/
+install -pm0755 source/%{name}/gcc/%{name} %{buildroot}%{_bindir}/
+install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %files
@@ -86,3 +81,6 @@ install -pm0755 source/asmc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2.34-1.20220619git33834a2
+- Initial spec
+

@@ -1,3 +1,5 @@
+%bcond_without asm
+
 %global ver     %%(echo %{version} | tr -d '.')
 %global vermajor %%(echo %{version} | cut -d. -f2)
 %global verminor %%(echo %{version} | cut -d. -f1)
@@ -5,7 +7,7 @@
 #global packver %%{ver}
 
 Name:           lzma-sdk%{?packver}
-Version:        21.07
+Version:        22.00
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -16,6 +18,13 @@ Source0:        %{url}/a/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
+# https://aur.archlinux.org/cgit/aur.git/tree/01-gcc-12.patch?h=7-zip
+Patch1:         01-gcc-12.patch
+
+%if %{with asm}
+ExclusiveArch:  x86_64
+BuildRequires:  asmc
+%endif
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -68,6 +77,7 @@ sed \
   -e 's|-Wall -Werror -Wextra ||g' \
   -e 's|CFLAGS =|CFLAGS +=|' \
   -e 's|CXXFLAGS =|CXXFLAGS +=|' \
+  -e '/^MY_ASM/s|asmc|asmc64|g' \
   -i C/7zip_gcc_c.mak
 
 cat > lzmasdk-c.pc <<'EOF'
@@ -97,8 +107,14 @@ EOF
 
 %build
 %set_build_flags
-%make_build -C C/Util/Lzma -f makefile.gcc clean
-%make_build -C C/Util/Lzma -f makefile.gcc all
+
+%if %{with asm}
+export USE_ASM=1
+export IS_X64=1
+%endif
+
+%make_build -C C/Util/Lzma -f makefile.gcc clean MY_ASM=asmc64
+%make_build -C C/Util/Lzma -f makefile.gcc all MY_ASM=asmc64
 
 %install
 mkdir -p %{buildroot}%{_libdir}
@@ -125,6 +141,10 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 22.00-100
+- 22.00
+- asmc support
+
 * Fri Jan 07 2022 Phantom X <megaphantomx at hotmail dot com> - 21.07-100
 - 21.07
 

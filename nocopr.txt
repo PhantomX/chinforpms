@@ -65,7 +65,7 @@ teamviewer
 telegram-desktop
 tg_owt
 tush
-uasm
+-uasm
 vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
@@ -75,6 +75,6 @@ vvvvvv-data
 -wine-freeworld
 wps-office
 yabause
-yggdrasil
+-yggdrasil
 yuzu
 zoom
