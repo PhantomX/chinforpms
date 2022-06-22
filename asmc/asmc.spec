@@ -7,7 +7,8 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-# Set to 0 after bootstrap
+# Use provided binary for first time bootstrap
+# Set to 0 after
 %global bootstrap 0
 
 %undefine _debugsource_packages
@@ -44,28 +45,53 @@ BuildRequires:  gcc
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-rm -f bin/*.exe
-
-%if 0%{?bootstrap}
-  chmod +x bin/%{name}{,64}
-  sed -e '/CC =/s|asmc64|%{name}%{platform}|' -i source/%{name}/gcc/makefile
-%else
-  rm -f bin/%{name}{,64}
-  sed -e '/chmod/d' -i source/%{name}/gcc/makefile
-  sed -e 's|^CC =.*|CC = %{name}%{platform}|' -i source/%{name}/gcc/makefile
-%endif
-
 sed \
   -e 's|,-pie,-z,now,|,|g' \
   -e 's|gcc |\0$(CFLAGS) |' \
   -e '/gcc/s| -s | |' \
   -e '/gcc/s|$@|\0 $(LDFLAGS)|' \
+  -e '/chmod/d' \
   -i source/%{name}/gcc/makefile
+
 
 %build
 %set_build_flags
-make -C source/%{name}/gcc -f ./makefile %{name}
-make -C source/%{name}/gcc -f ./makefile %{name}64
+
+
+mkdir stage1
+
+%if 0%{?bootstrap}
+  chmod +x bin/%{name}{,64}
+  bsbin="../../../bin/%{name}%{platform}"
+%else
+  rm -f bin/*
+  bsbin=%{name}%{platform}
+%endif
+
+for i in %{name}{,64} ;do
+  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=${bsbin}
+  mv source/%{name}/gcc/${i} stage1/
+done
+
+rm -f bin/*
+
+mkdir stage2
+
+for i in %{name}{,64} ;do
+  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=../../../stage1/%{name}%{platform}
+  mv source/%{name}/gcc/${i} stage2/
+done
+
+for i in %{name}{,64} ;do
+  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=../../../stage2/%{name}%{platform}
+done
+
+
+%check
+for i in %{name}{,64} ;do
+  cmp stage2/${i} source/%{name}/gcc/${i}
+done
+
 
 %install
 mkdir -p %{buildroot}%{_bindir}
