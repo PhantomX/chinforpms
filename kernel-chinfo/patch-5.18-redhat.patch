@@ -26,6 +26,7 @@ Subject: [PATCH] patch-5.18-redhat
  drivers/firmware/efi/libstub/x86-stub.c            | 119 +++++++++++++++++++-
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/gpu/drm/i915/display/intel_psr.c           |   9 ++
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -47,10 +48,10 @@ Subject: [PATCH] patch-5.18-redhat
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 43 files changed, 712 insertions(+), 191 deletions(-)
+ 44 files changed, 721 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 6b1d606a92f6..548f077c486c 100644
+index 27850d452d65..c6cd7b49725d 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -365,7 +366,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index f1827257ef0e..5a45c2cd3dc2 100644
+index 2610e809c802..4f04a6bcf2e9 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -400,7 +401,7 @@ index f1827257ef0e..5a45c2cd3dc2 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Kconfig b/drivers/firmware/efi/Kconfig
-index 2c3dac5ecb36..f44f8b746e42 100644
+index 243882f5e5f9..4a0fa81a563d 100644
 --- a/drivers/firmware/efi/Kconfig
 +++ b/drivers/firmware/efi/Kconfig
 @@ -91,6 +91,18 @@ config EFI_SOFT_RESERVE
@@ -435,7 +436,7 @@ index c02ff25dd477..d860f8eb9a81 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 5502e176d51b..93b61ca552d6 100644
+index ff57db8f8d05..d7dfde3260bf 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -929,6 +930,26 @@ index 2bfbb05f7d89..a504f7234f35 100644
  		ret = sysfb_create_simplefb(si, &mode);
  		if (!ret)
  			return 0;
+diff --git a/drivers/gpu/drm/i915/display/intel_psr.c b/drivers/gpu/drm/i915/display/intel_psr.c
+index 6c9e6e7f0afd..f0ff2f1f5fcb 100644
+--- a/drivers/gpu/drm/i915/display/intel_psr.c
++++ b/drivers/gpu/drm/i915/display/intel_psr.c
+@@ -744,6 +744,15 @@ static bool intel_psr2_sel_fetch_config_valid(struct intel_dp *intel_dp,
+ 		return false;
+ 	}
+
++	/* Temporary workaround for Lenovo's issues with the X1 Carbon 10th Gen
++	 * See: https://bugzilla.redhat.com/show_bug.cgi?id=2065794
++	 */
++	if (IS_ALDERLAKE_P(dev_priv)) {
++		drm_dbg_kms(&dev_priv->drm,
++			    "PSR2 sel fetch disabled on ADL-P, see rhbz2065794\n");
++		return false;
++	}
++
+ 	return crtc_state->enable_psr2_sel_fetch = true;
+ }
+
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1313,7 +1334,7 @@ index 857d4c2fd1a2..9353941f3a97 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index e1846d04817f..9725d5f03eee 100644
+index 1ea85c88d795..d30563dabd95 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1449,10 +1470,10 @@ index a2b53ca63335..021e51c64cde 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index da829274fc66..bb6e79ec3d00 100644
+index 41aeaa235132..e8137d31cc93 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4284,6 +4284,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4285,6 +4285,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1502,7 +1523,7 @@ index 1460857026e0..7e1964891089 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccd4d3f91c98..2241dfa131e7 100644
+index cc6d2be2ffd5..418d814d2eb7 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1514,7 +1535,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -383,6 +385,7 @@ void efi_native_runtime_setup(void);
+@@ -385,6 +387,7 @@ void efi_native_runtime_setup(void);
  #define EFI_LOAD_FILE_PROTOCOL_GUID		EFI_GUID(0x56ec3091, 0x954c, 0x11d2,  0x8e, 0x3f, 0x00, 0xa0, 0xc9, 0x69, 0x72, 0x3b)
  #define EFI_LOAD_FILE2_PROTOCOL_GUID		EFI_GUID(0x4006c0c1, 0xfcb3, 0x403e,  0x99, 0x6d, 0x4a, 0x6c, 0x87, 0x24, 0xe0, 0x6d)
  #define EFI_RT_PROPERTIES_TABLE_GUID		EFI_GUID(0xeb66918a, 0x7eef, 0x402a,  0x84, 0x2e, 0x93, 0x1d, 0x21, 0xc3, 0x8a, 0xe9)
@@ -1522,7 +1543,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
 
  #define EFI_IMAGE_SECURITY_DATABASE_GUID	EFI_GUID(0xd719b2cb, 0x3d3a, 0x4596,  0xa3, 0xbc, 0xda, 0xd0, 0x0e, 0x67, 0x65, 0x6f)
  #define EFI_SHIM_LOCK_GUID			EFI_GUID(0x605dab50, 0xe046, 0x4300,  0xab, 0xb6, 0x3d, 0xd8, 0x10, 0xdd, 0x8b, 0x23)
-@@ -435,6 +438,7 @@ typedef struct {
+@@ -437,6 +440,7 @@ typedef struct {
  } efi_config_table_type_t;
 
  #define EFI_SYSTEM_TABLE_SIGNATURE ((u64)0x5453595320494249ULL)
@@ -1530,7 +1551,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
 
  #define EFI_2_30_SYSTEM_TABLE_REVISION  ((2 << 16) | (30))
  #define EFI_2_20_SYSTEM_TABLE_REVISION  ((2 << 16) | (20))
-@@ -829,6 +833,14 @@ extern int __init efi_setup_pcdp_console(char *);
+@@ -831,6 +835,14 @@ extern int __init efi_setup_pcdp_console(char *);
  #define EFI_MEM_ATTR		10	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	11	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	12	/* Are EFI boot-services memory segments available? */
@@ -1545,7 +1566,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
 
  #ifdef CONFIG_EFI
  /*
-@@ -840,6 +852,8 @@ static inline bool efi_enabled(int feature)
+@@ -842,6 +854,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
 
@@ -1554,7 +1575,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
  bool __pure __efi_soft_reserve_enabled(void);
 
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -860,6 +874,8 @@ static inline bool efi_enabled(int feature)
+@@ -862,6 +876,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
 
@@ -1563,7 +1584,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -872,6 +888,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
+@@ -874,6 +890,7 @@ static inline bool efi_rt_services_supported(unsigned int mask)
  #endif
 
  extern int efi_status_to_err(efi_status_t status);
@@ -1571,7 +1592,7 @@ index ccd4d3f91c98..2241dfa131e7 100644
 
  /*
   * Variable Attributes
-@@ -1124,13 +1141,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1126,13 +1143,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1651,10 +1672,10 @@ index 7fc4e9f49f54..6f0b0b2dc73d 100644
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
 diff --git a/init/Kconfig b/init/Kconfig
-index ddcbefe535e9..5061ef5ba38b 100644
+index fa63cc019ebf..8643b5cef9f1 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1649,7 +1649,7 @@ config AIO
+@@ -1663,7 +1663,7 @@ config AIO
  	  this option saves about 7k.
 
  config IO_URING
@@ -1698,10 +1719,10 @@ index 16d475b3e203..4e333f14b84e 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index 5f45c3c07dbd..86609ec63b86 100644
+index 093894a640dc..1c43a9462b4b 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
-@@ -47,7 +47,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  		return NULL;
 
  	if (*status != EFI_BUFFER_TOO_SMALL) {
@@ -1711,7 +1732,7 @@ index 5f45c3c07dbd..86609ec63b86 100644
  		return NULL;
  	}
 
-@@ -58,7 +59,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
+@@ -84,7 +85,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
  	*status = efi.get_variable(name, guid, NULL, &lsize, db);
  	if (*status != EFI_SUCCESS) {
  		kfree(db);

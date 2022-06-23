@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8c91f362b5c06f3ff01ca58ea67266da928f55b1
+ 8c91f362b5c06f3ff01ca58ea67266da928f55b1 drm/i915: Temporarily disable selective fetch for PSR2 on ADL-P
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a7c0a52660e5b4c851d966b5aa634ffdd22650a2
+ a7c0a52660e5b4c851d966b5aa634ffdd22650a2 drm/amd/display: Cap OLED brightness per max frame-average luminance
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/a6e2920b9cffa449fbe11bb55c6f3c60f9d81bcd
  a6e2920b9cffa449fbe11bb55c6f3c60f9d81bcd drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 
