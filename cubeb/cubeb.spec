@@ -1,6 +1,6 @@
-%global commit 708f52cccffe69ed1d65b52903237c990db860a9
+%global commit 744d638ba702dd4d364d03c423556dfa5517e3fa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220413
+%global date 20220623
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        31%{?gver}%{?dist}
+Release:        32%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -42,7 +42,6 @@ BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(speexdsp)
 
-Requires:       jack-audio-connection-kit%{?_isa}
 Requires:       pulseaudio-libs%{?_isa}
 
 
@@ -105,6 +104,10 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Thu Jun 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-32.20220623git744d638
+- Bump
+- Remove jack-audio-connection-kit BR
+
 * Tue Apr 26 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-31.20220413git708f52c
 - Update
 

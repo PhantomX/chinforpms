@@ -17,12 +17,20 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 89a28209e89f69a5eda560d2ef9c13915c95616a
+%global commit11 60bea052a92cbb4a93b221002fdf04f0da3698e1
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
 %global sanitize 1
 %bcond_with     native
+
+%bcond_without  qt
+
+%if %{with qt}
+%global appbin %{name}-qt
+%else
+%global appbin %{name}
+%endif
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
@@ -36,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.2953
+Version:        1.7.2991
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -67,6 +75,8 @@ Patch3:         0001-glad-build-as-static.patch
 Patch4:         0001-glslang-build-as-static.patch
 Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
+Patch7:         0001-Qt-do-not-set-a-default-theme.patch
+Patch8:         0001-Update-default-paths.patch
 
 ExclusiveArch:  x86_64
 
@@ -99,6 +109,17 @@ BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
 #BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  cmake(ryml) >= 0.4.1
+%if %{with qt}
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Linguist)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
+%else
+BuildRequires:  wxGTK3-devel
+%endif
 BuildRequires:  pkgconfig(samplerate)
 # use SDL that depends wxGTK
 BuildRequires:  pkgconfig(sdl2) >= 2.0.22
@@ -108,7 +129,6 @@ BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
-BuildRequires:  wxGTK3-devel
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
@@ -192,14 +212,6 @@ sed -i \
 
 sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
 
-cat > pcsx2.wrapper <<'EOF'
-#!/usr/bin/sh
-export GDK_BACKEND=x11
-export mesa_glthread=true
-export MESA_NO_ERROR=1
-exec %{_bindir}/pcsx2.bin "$@"
-EOF
-
 mkdir cheats_ws_tmp
 pushd cheats_ws_tmp
 unzip -q ../bin/resources/cheats_ws.zip
@@ -208,6 +220,10 @@ zip -9 -q ../cheats_ws_new.zip *.*
 popd
 touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
 mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
+
+sed -e 's|_RPM_DATADIR_|%{_datadir}|g' \
+  -i pcsx2-qt/QtHost.cpp
+
 
 %build
 
@@ -223,6 +239,9 @@ mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
   -DBUILD_REPLAY_LOADERS:BOOL=FALSE \
+%if %{with qt}
+  -DQT_BUILD:BOOL=TRUE \
+%endif
   -DXDG_STD:BOOL=TRUE \
   -DEGL_API:BOOL=TRUE \
   -DGLSL_API:BOOL=TRUE \
@@ -253,10 +272,6 @@ mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
 %install
 %cmake_install
 
-mv %{buildroot}%{_bindir}/pcsx2 %{buildroot}%{_bindir}/pcsx2.bin
-
-install -pm0755 pcsx2.wrapper %{buildroot}%{_bindir}/pcsx2
-
 mkdir -p %{buildroot}%{_libdir}/PCSX2
 
 rm -f %{buildroot}%{_datadir}/PCSX2/resources/game_controller_db.txt
@@ -266,8 +281,14 @@ ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
 rm -f %{buildroot}%{_datadir}/PCSX2/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
   %{buildroot}%{_datadir}/PCSX2/resources/fonts/Roboto-Regular.ttf
+
+%if 0%{?fedora} && 0%{?fedora} >= 36
+ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
+  %{buildroot}%{_datadir}/PCSX2/resources/fonts/RobotoMono-Medium.ttf
+%else
 ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
   %{buildroot}%{_datadir}/PCSX2/resources/fonts/RobotoMono-Medium.ttf
+%endif
 
 # strip extra copies of pdf files, which are now in /doc/pcsx2
 rm -rf %{buildroot}/usr/share/doc/P*
@@ -286,21 +307,28 @@ done
 
 desktop-file-edit \
   --set-key="Exec" \
-  --set-value="pcsx2" \
+  --set-value="%{appbin}" \
   %{buildroot}/%{_datadir}/applications/PCSX2.desktop
 
 #strip extra copy of icon file, Wrong place for fedora
 rm -rf %{buildroot}/usr/share/pixmaps
 
+%if %{with qt}
+# No localization for Qt GUI yet
+rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
+%else
 %find_lang pcsx2_Iconized
 %find_lang pcsx2_Main
+%endif
 
-
+%if %{with qt}
+%files
+%else
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
+%endif
 %license COPYING* 3rdparty/{COPYRIGHT,LICENSE}.*
 %doc README.md bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
-%{_bindir}/pcsx2
-%{perms_pcsx2} %{_bindir}/pcsx2.bin
+%{perms_pcsx2} %{_bindir}/%{appbin}
 %dir %{_libdir}/PCSX2
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
@@ -318,6 +346,11 @@ rm -rf %{buildroot}/usr/share/pixmaps
 
 
 %changelog
+* Thu Jun 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2991-1
+- 1.7.2991
+- Qt build
+- Remove wrapper
+
 * Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.2953-1
 - 1.7.2953
 
