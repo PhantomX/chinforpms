@@ -1,7 +1,7 @@
-%global commit 35939bbe0c04534da07ece7f6a47a560d356f7a1
+%global commit af8ed02b572081206be6c505261f5f2e98a8053c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220610
-%global with_snapshot 0
+%global date 20220624
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -59,7 +59,7 @@
 %global winepng 1.6.37
 %global winetiff 4.3.0
 %global winejxrlib 1.1
-%global winevkd3d 1.3
+%global winevkd3d 1.4
 %global winexml2 2.9.14
 %global winexslt 1.1.35
 %global winezlib 1.2.12
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.11
+%global wine_stagingver 6be691c005b0d268f3dd38a3dbe76bc95f4e155f
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 954109ff6549685b3a5b9b0c3548367778418d42
+%global tkg_id 5321d49a3051763960b7abd3e539611fa2ccf429
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.11
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -417,9 +417,11 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes4.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes4.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patch
+%dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support3.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support3.patch
+Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support4.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
+Patch1041:       %{tkg_url}/hotfixes/larger_def_heap/larger_def_heap.mypatch#/%{name}-tkg-larger_def_heap.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
@@ -1255,6 +1257,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1039 -p1
 %endif
 %patch1040 -p1
+%patch1041 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -2868,6 +2871,9 @@ fi
 
 
 %changelog
+* Sat Jun 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.11-101.20220624gitaf8ed02
+- Snapshot
+
 * Sat Jun 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.11-100
 - 7.11
 
