@@ -1,6 +1,6 @@
-%global commit 33834a2ccffe665a264b45afd1d7f39c85e5f454
+%global commit e0454b045860d0a4f72ae2f8a22574ba4f19647b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220619
+%global date 20220621
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -18,7 +18,7 @@
 %endif
 
 Name:           asmc
-Version:        2.34
+Version:        2.34.01
 Release:        1%{?gver}%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -46,7 +46,6 @@ BuildRequires:  gcc
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 sed \
-  -e 's|,-pie,-z,now,|,|g' \
   -e 's|gcc |\0$(CFLAGS) |' \
   -e '/gcc/s| -s | |' \
   -e '/gcc/s|$@|\0 $(LDFLAGS)|' \
@@ -107,6 +106,9 @@ install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Jun 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.34.01-1.20220621gite0454b0
+- 2.34.01
+
 * Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 2.34-1.20220619git33834a2
 - Initial spec
 

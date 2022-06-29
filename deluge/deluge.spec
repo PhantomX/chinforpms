@@ -10,7 +10,7 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
-Version:        2.0.5
+Version:        2.1.0
 Release:        100%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
@@ -157,6 +157,10 @@ install -m644 packaging/systemd/user.conf %{buildroot}%{_unitdir}/%{name}-web.se
 
 install -Dpm 644 %{SOURCE1} %{buildroot}%{_sysusersdir}/%{name}-daemon.conf
 
+mkdir -p %{buildroot}%{_userunitdir}
+install -m644 packaging/systemd/user/deluged.service %{buildroot}%{_userunitdir}/%{name}-daemon.service
+install -m644 packaging/systemd/user/deluge-web.service %{buildroot}%{_userunitdir}/%{name}-web.service
+
 mkdir -p %{buildroot}/var/lib/%{name}
 
 ## NOTE: The lang files should REEEAALLLY be in a standard place such as
@@ -239,6 +243,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_unitdir}/%{name}-web.service
 %dir %{_unitdir}/%{name}-web.service.d
 %{_unitdir}/%{name}-web.service.d/user.conf
+%{_userunitdir}/%{name}-web.service
 
 %files daemon
 %{_bindir}/%{name}d
@@ -246,6 +251,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_unitdir}/%{name}-daemon.service
 %dir %{_unitdir}/%{name}-daemon.service.d
 %{_unitdir}/%{name}-daemon.service.d/user.conf
+%{_userunitdir}/%{name}-daemon.service
 %attr(-,%{name}, %{name})/var/lib/%{name}/
 %{_mandir}/man?/%{name}d*
 
@@ -272,6 +278,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.0-100
+- 2.1.0
+
 * Thu Dec 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.0.5-100
 - 2.0.5
 

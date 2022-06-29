@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 74852520dcaad6ba103d3fa719ee70484645cb25
+%global commit 6a5db32d5d2f1973804ab200d1644aaeb697abac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220620
+%global date 20220627
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -38,7 +38,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        18%{?gver}%{?dist}
+Release:        19%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -239,6 +239,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-19.20220627git6a5db32
+- Update
+
 * Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-18.20220620git7485252
 - Bump and lzma-sdk rebuild
 

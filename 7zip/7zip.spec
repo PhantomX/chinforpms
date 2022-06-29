@@ -91,6 +91,8 @@ sed \
   -e 's|$(LDFLAGS)|\0 -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
   -e '/^MY_ASM/s|asmc|%{asmopt}%{asmc}|g' \
+  -e '/^AFLAGS_ABI =/s|-elf64|\0 -DASMC64|g' \
+  -e '/^AFLAGS =/s|-nologo|\0 -fpic|g' \
   -i CPP/7zip/7zip_gcc.mak
 
 sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main.cpp
