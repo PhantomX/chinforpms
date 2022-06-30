@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit 50ed00eef095c7799949b2523a5c21210b374f86
+%global commit 9ac10c6e711ec096274ecc676ae83a7cf2a1213f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220421
+%global date 20220503
 
 %global gver .%{date}git%{shortcommit}
 
@@ -10,7 +10,7 @@
 
 Name:           winesync
 Version:        5.16.20
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
@@ -76,6 +76,9 @@ install -m644 -D %{SOURCE2} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-2.20220503git9ac10c6
+- Bump
+
 * Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-1.20220421git50ed00e
 - 5.16.20
 

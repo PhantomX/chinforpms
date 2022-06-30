@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ca4f54b4b348038e7699d8601145879eebdc7613
+%global commit ad703668f3ed1aef2ebc5c8a02e26bfcb5d4e391
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220615
+%global date 20220630
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -25,7 +25,7 @@
 %bcond_without qt
 
 %if !0%{?with_ea}
-%global commit1 a8cbfd9af4f3f3cdad6efcd067e76edec76c1338
+%global commit1 5ad1d02351bf4fee681a3d701d210b419f41a505
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
@@ -33,7 +33,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 inih
 
-%global commit3 a39596358a3a5488c06554c0c15184a6af71e433
+%global commit3 aa292d56650bc28f2b2d75973fab2e61d0136f9c
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
@@ -45,7 +45,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 9648f950f5a8a41d18833cf4a85f5821b1bcac54
+%global commit6 305a7abcb9b4e9e349843c6d563212e6c1bbbf21
 %global shortcommit6 %(c=%{commit5}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
@@ -76,7 +76,7 @@
 
 
 Name:           yuzu
-Version:        2787
+Version:        2806
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -103,6 +103,7 @@ Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
 
 Patch10:        0001-boost-build-fix.patch
+Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
 
 ExclusiveArch:  x86_64
 
@@ -297,6 +298,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Thu Jun 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2806-1.20220630gitad70366
+- 2806 ea
+
 * Wed Jun 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2787-1.20220615gitca4f54b
 - 2787 ea
 

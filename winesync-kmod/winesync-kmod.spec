@@ -9,9 +9,9 @@
 
 %define repo chinforpms
 
-%global commit 50ed00eef095c7799949b2523a5c21210b374f86
+%global commit 9ac10c6e711ec096274ecc676ae83a7cf2a1213f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220421
+%global date 20220513
 
 %global gver .%{date}git%{shortcommit}
 
@@ -23,7 +23,7 @@ Release:        1%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
-URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync3
+URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync4
 
 Source0:        %{vc_url}/%{commit}:/drivers/misc/winesync.c#/winesync.c_%{shortcommit}
 Source1:        %{vc_url}/%{commit}:/include/uapi/linux/winesync.h#/winesync.h_%{shortcommit}

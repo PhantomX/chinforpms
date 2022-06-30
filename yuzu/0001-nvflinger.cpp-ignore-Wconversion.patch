@@ -1,0 +1,29 @@
+From 86ded244a86dd59751b1827af1ea58a68f37c7f2 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 29 Jun 2022 23:24:33 -0300
+Subject: [PATCH] nvflinger.cpp: ignore -Wconversion
+
+---
+ src/core/hle/service/nvflinger/nvflinger.cpp | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/core/hle/service/nvflinger/nvflinger.cpp b/src/core/hle/service/nvflinger/nvflinger.cpp
+index 747efb0..c1fe538 100755
+--- a/src/core/hle/service/nvflinger/nvflinger.cpp
++++ b/src/core/hle/service/nvflinger/nvflinger.cpp
+@@ -26,6 +26,12 @@
+ #include "video_core/host1x/host1x.h"
+ #include "video_core/host1x/syncpoint_manager.h"
+ 
++#ifdef __GNUC__
++#ifndef __clang__
++#pragma GCC diagnostic ignored "-Wconversion"
++#endif
++#endif
++
+ namespace Service::NVFlinger {
+ 
+ constexpr auto frame_ns = std::chrono::nanoseconds{1000000000 / 60};
+-- 
+2.36.1
+

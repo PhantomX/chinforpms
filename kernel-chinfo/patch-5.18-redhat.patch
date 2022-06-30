@@ -51,7 +51,7 @@ Subject: [PATCH] patch-5.18-redhat
  44 files changed, 721 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 27850d452d65..c6cd7b49725d 100644
+index 6ac3335f65af..5df170f9243f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1334,7 +1334,7 @@ index 857d4c2fd1a2..9353941f3a97 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 1ea85c88d795..d30563dabd95 100644
+index a2862a56fadc..1cddbc757925 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -240,6 +240,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
