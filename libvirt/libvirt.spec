@@ -20,7 +20,9 @@
 
 %define arches_systemtap_64bit  %{arches_64bit}
 %define arches_dmidecode        %{arches_x86}
-%define arches_xen              %{arches_x86} aarch64
+%if 0%{?fedora} >= 36
+    %define arches_xen              x86_64 aarch64
+%endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
 %define arches_zfs              %{arches_x86} %{power64} %{arm}
@@ -227,7 +229,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.4.0
+Version: 8.5.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -2137,6 +2139,9 @@ exit 0
 
 
 %changelog
+* Fri Jul 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.5.0-100
+- 8.5.0
+
 * Wed Jun 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.4.0-100
 - 8.4.0
 

@@ -7,7 +7,7 @@
 %global progdir %{_libdir}/%{name}
 
 Name:           zoom
-Version:        5.10.6.3192
+Version:        5.11.1.3595
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -145,6 +145,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Fri Jul 01 2022 - 5.11.1.3595-1
+- 5.11.1.3595
+
 * Thu May 26 2022 - 5.10.6.3192-1
 - 5.10.6.3192
 
