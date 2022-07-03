@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/70b6a2dd3426c05d36f40c5d75e4f4a4d6196a59
+ 70b6a2dd3426c05d36f40c5d75e4f4a4d6196a59 Revert "smb3: fix empty netname context on secondary channels"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2b7d5f1fa4cd5ece616da1f102894581590036a9
+ 2b7d5f1fa4cd5ece616da1f102894581590036a9 Revert "smb3: use netname when available on secondary channels"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/8c91f362b5c06f3ff01ca58ea67266da928f55b1
  8c91f362b5c06f3ff01ca58ea67266da928f55b1 drm/i915: Temporarily disable selective fetch for PSR2 on ADL-P
 
