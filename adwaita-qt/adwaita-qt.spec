@@ -1,6 +1,6 @@
-%global commit 85670f8f2f61fd10f867d55555282d0951925160
+%global commit a736e89eb3fc0a711023771d6dbbe6011d122533
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211110
+%global date 20220630
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           adwaita-qt
-Version:        1.4.50
-Release:        104%{?gver}%{?dist}
+Version:        1.4.2
+Release:        0.1%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -161,6 +161,9 @@ popd
 
 
 %changelog
+* Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.2-0.1.20220630gita736e89
+- 1.4.2 snapshot
+
 * Thu Dec 30 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.50-104.20211110git85670f8
 - Update padding patch
 

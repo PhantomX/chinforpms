@@ -18,14 +18,9 @@
 %global enablejit 1
 %endif
 
-# Add extra RESHDP Edition modifications (as a new binary)
-# https://github.com/MoArtis/dolphin
-# Temporary: https://github.com/dolphin-emu/dolphin/pull/9711
-%global with_reshdp 1
-
-%global commit 23ed611077d65b43d9ef8f0971e9e5c57699fd91
+%global commit e18053d3075dd010a3a9db80d1b29b99cf7b69da
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220617
+%global date 20220625
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -39,7 +34,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        160%{?gver}%{?dist}
+Release:        161%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -76,9 +71,6 @@ Patch2:         0001-Update-to-soundtouch-2.3.1.patch
 Patch10:        0001-mgba-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
-Patch101:       0001-Revert-VideoCommon-TextureInfo-commits-for-RESHDP.patch
-Patch102:       0001-Mask-hack-for-RE3.patch
-Patch103:       0001-RESHDP-Edition-label.patch
 
 
 BuildRequires:  gcc
@@ -197,7 +189,7 @@ Summary:        Dolphin Emulator CLI utility
 
 %description tool
 This package provides "dolphin-tool", which is a CLI-based utility for
-functions such as managing disc images. 
+functions such as managing disc images.
 
 
 %package data
@@ -316,15 +308,6 @@ sed \
 %endif
 %{nil}
 
-%if 0%{?with_reshdp}
-%cmake_build
-mv %{__cmake_builddir}/Binaries/%{name} %{name}-reshdp
-mv %{__cmake_builddir}/Binaries/%{name}-nogui %{name}-reshdp-nogui
-%endif
-
-patch -p1 -R -i %{P:103}
-patch -p1 -R -i %{P:102}
-patch -p1 -R -i %{P:101}
 %cmake_build
 
 
@@ -343,29 +326,6 @@ sed -e '/^Exec=/s|=.*$|=%{name}|' \
   -i %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-x11.6
-
-%if 0%{?with_reshdp}
-install -pm0755 %{name}-reshdp %{buildroot}%{_bindir}/%{name}-reshdp-x11
-install -pm0755 %{name}-reshdp-nogui %{buildroot}%{_bindir}/
-
-cat > %{buildroot}%{_bindir}/%{name}-reshdp <<'EOF'
-#!/usr/bin/bash
-export QT_QPA_PLATFORM=xcb
-exec %{_bindir}/%{name}-reshdp-x11 "$@"
-EOF
-chmod 755 %{buildroot}%{_bindir}/%{name}-reshdp
-
-cp -p %{buildroot}%{_datadir}/applications/%{name}{,-reshdp}.desktop
-sed \
-  -e '/^Exec=/s|=.*$|=%{name}-reshdp|' \
-  -e '/Name.*=/s|$| (RESHDP Edition)|g' \
- -i %{buildroot}%{_datadir}/applications/%{name}-reshdp.desktop
-
-echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp.6
-echo '.so man6/%{name}.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp-x11.6
-echo '.so man6/%{name}-nogui.6' > %{buildroot}%{_mandir}/man6/%{name}-reshdp-nogui.6
-
-%endif
 
 mkdir -p %{buildroot}%{_udevrulesdir}/
 install -pm0644 Data/51-usb-device.rules %{buildroot}%{_udevrulesdir}/
@@ -396,23 +356,12 @@ appstream-util validate-relax --nonet \
 %{_datadir}/%{name}/sys/Resources/
 %{_datadir}/%{name}/sys/Themes/
 %{_metainfodir}/*.appdata.xml
-%if 0%{?with_reshdp}
-%{_bindir}/%{name}-reshdp
-%{_bindir}/%{name}-reshdp-x11
-%{_datadir}/applications/%{name}-reshdp.desktop
-%{_mandir}/man6/%{name}-reshdp.*
-%{_mandir}/man6/%{name}-reshdp-x11.*
-%endif
 
 %files nogui
 %doc Readme.md
 %license COPYING Data/license.txt Externals/licenses.md
 %{_bindir}/%{name}-nogui
 %{_mandir}/man6/%{name}-nogui.*
-%if 0%{?with_reshdp}
-%{_bindir}/%{name}-reshdp-nogui
-%{_mandir}/man6/%{name}-reshdp-nogui.*
-%endif
 
 %files data
 %doc Readme.md docs/gc-font-tool.cpp
@@ -431,6 +380,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-161.20220625gite18053d
+- Bump
+- Remove RESHDP modifications
+
 * Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-160.20220617git23ed611
 - Update
 

@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 661b485b58eaa2cde9130fd5fabd28d6e0f20a91
+%global commit 969b9eb89dfd409cee5fa1279e730cbef8d5a5ba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220622
+%global date 20220702
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -91,8 +91,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.22
-Release:        5%{?gver}%{?dist}
+Version:        0.0.23
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -411,6 +411,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Jul 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-1.20220702git969b9eb
+- 0.0.23
+
 * Wed Jun 22 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.22-5.20220622git661b485
 - Update
 

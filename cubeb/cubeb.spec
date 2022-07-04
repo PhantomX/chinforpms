@@ -1,6 +1,6 @@
-%global commit 744d638ba702dd4d364d03c423556dfa5517e3fa
+%global commit 6f79fd7c0d3ddcd464b9e0cd21ad55c89680f102
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220623
+%global date 20220629
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        32%{?gver}%{?dist}
+Release:        33%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -104,6 +104,9 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-33.20220629git6f79fd7
+- Update
+
 * Thu Jun 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-32.20220623git744d638
 - Bump
 - Remove jack-audio-connection-kit BR

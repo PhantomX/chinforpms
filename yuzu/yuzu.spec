@@ -76,7 +76,7 @@
 
 
 Name:           yuzu
-Version:        2806
+Version:        2814
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -242,6 +242,9 @@ sed \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
   -i src/common/scm_rev.cpp.in
 
+cp -f %{S:20} .
+
+
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -262,7 +265,7 @@ sed \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
 %{nil}
 
-cp -f %{S:20} %{__cmake_builddir}/dist/compatibility_list/
+cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 
 %cmake_build
 
@@ -298,6 +301,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Jul 03 2022 Phantom X <megaphantomx at hotmail dot com> - 2814-1.20220630gitad70366
+- 2814 ea
+
 * Thu Jun 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2806-1.20220630gitad70366
 - 2806 ea
 

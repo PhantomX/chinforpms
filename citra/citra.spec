@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 88a475970240e1dbade1720b02f9e5338647b1b8
+%global commit 355933218d00603c910cd0a9daead0b1cd72a3c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220611
+%global date 20220703
 %global with_snapshot 1
 
 # Enable system boost
@@ -30,7 +30,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 af0d4a7c18ee90d544866a8cf24e6a0d48d3edc4
+%global commit3 9f88f234a180a5e8d5620b4803c971fb6dc2d9f2
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -62,7 +62,7 @@
 %global shortcommit10 %(c=%{commit9}; echo ${c:0:7})
 %global srcname10 lodepng
 
-%global commit11 36603a1e665e849d29b1735a12c0a51284a10dd0
+%global commit11 e12ef06218596b52d9b5d6e1639484866a8e7067
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 ext-boost
 
@@ -247,6 +247,9 @@ sed -e '/^#include <exception>/a#include <system_error>' \
     -i src/common/scm_rev.cpp.in
 %endif
 
+cp -f %{S:20} .
+
+
 %build
 %if 0%{?with_snapshot}
 export CI=true
@@ -281,7 +284,7 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
 %{nil}
 
-cp -f %{S:20} %{__cmake_builddir}/dist/compatibility_list/
+cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 
 %cmake_build
 
