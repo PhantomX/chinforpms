@@ -5,6 +5,7 @@
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %bcond_with ffmpeg
@@ -18,9 +19,9 @@
 %global enablejit 1
 %endif
 
-%global commit e18053d3075dd010a3a9db80d1b29b99cf7b69da
+%global commit d625c612c4a40a8c8db3d90b313f5643aec9c890
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220625
+%global date 20220702
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -380,9 +381,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
-* Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-161.20220625gite18053d
+* Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-161.20220702gitd625c61
 - Bump
 - Remove RESHDP modifications
+- Remove -D_GLIBCXX_ASSERTIONS for the time
 
 * Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-160.20220617git23ed611
 - Update

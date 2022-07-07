@@ -63,6 +63,8 @@ some seasonal packages too, these can return when needed
  * **nicotine+** - Seasonal package, updated
  * **opencore-amr** - For i686 mock build
  * **ortp** - linphoneqt
+ * **pcsx2-multiconfigtool** - Unneded with pcsx2-qt
+ * **pcsxr** - Unmaintained
  * **perl-Gtk3** - Unneeded
  * **pspshrink** - Unmaintained
  * **purple-rocketchat** - Unmaintained

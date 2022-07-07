@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3043
+Version:        1.7.3057
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -86,7 +86,6 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  ImageMagick
-BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(freetype2)
@@ -210,8 +209,6 @@ sed -i \
 %endif
   cmake/Pcsx2Utils.cmake
 
-sed -e '/ALSA::ALSA/a		rt' -i pcsx2/CMakeLists.txt
-
 mkdir cheats_ws_tmp
 pushd cheats_ws_tmp
 unzip -q ../bin/resources/cheats_ws.zip
@@ -220,9 +217,6 @@ zip -9 -q ../cheats_ws_new.zip *.*
 popd
 touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
 mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
-
-sed -e 's|_RPM_DATADIR_|%{_datadir}|g' \
-  -i pcsx2-qt/QtHost.cpp
 
 
 %build
@@ -235,6 +229,7 @@ sed -e 's|_RPM_DATADIR_|%{_datadir}|g' \
 # Extensive testing will is therefore needed. See rpmfusion bug #2455
 
 %cmake \
+  -DCMAKE_INSTALL_DOCDIR:PATH=%{_pkgdocdir} \
   -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
@@ -272,8 +267,6 @@ sed -e 's|_RPM_DATADIR_|%{_datadir}|g' \
 %install
 %cmake_install
 
-mkdir -p %{buildroot}%{_libdir}/PCSX2
-
 rm -f %{buildroot}%{_datadir}/PCSX2/resources/game_controller_db.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/PCSX2/resources/game_controller_db.txt
@@ -291,7 +284,7 @@ ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
 %endif
 
 # strip extra copies of pdf files, which are now in /doc/pcsx2
-rm -rf %{buildroot}/usr/share/doc/P*
+rm -rf %{buildroot}%{_pkgdocdir}
 
 # Install icon
 mkdir -p %{buildroot}/%{_datadir}/icons/hicolor/128x128/apps/
@@ -329,7 +322,6 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 %license COPYING* 3rdparty/{COPYRIGHT,LICENSE}.*
 %doc README.md bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
-%dir %{_libdir}/PCSX2
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_mandir}/man1/PCSX2.*
@@ -346,6 +338,9 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Wed Jul 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3057-1
+- 1.7.3057
+
 * Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3043-1
 - 1.7.3043
 
