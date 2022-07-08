@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f147438b42147e1cf44f1471dc2a4288486dd791
+ f147438b42147e1cf44f1471dc2a4288486dd791 netfilter: nf_tables: stricter validation of element data
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/536f55b6208f317e86c5876014be423642690098
+ 536f55b6208f317e86c5876014be423642690098 Revert "Revert "smb3: use netname when available on secondary channels""
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f881c8e206d2f230bd7b67dd4b611b46e07ff202
+ f881c8e206d2f230bd7b67dd4b611b46e07ff202 Revert "Revert "smb3: fix empty netname context on secondary channels""
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/70b6a2dd3426c05d36f40c5d75e4f4a4d6196a59
  70b6a2dd3426c05d36f40c5d75e4f4a4d6196a59 Revert "smb3: fix empty netname context on secondary channels"
 

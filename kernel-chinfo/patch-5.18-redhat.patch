@@ -36,7 +36,6 @@ Subject: [PATCH] patch-5.18-redhat
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- fs/cifs/smb2pdu.c                                  |  21 +---
  include/linux/efi.h                                |  24 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -44,15 +43,16 @@ Subject: [PATCH] patch-5.18-redhat
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/module_signing.c                            |   9 +-
+ net/netfilter/nf_tables_api.c                      |   9 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 45 files changed, 727 insertions(+), 206 deletions(-)
+ 45 files changed, 729 insertions(+), 192 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 751cfd786c8c..1dbeaa096d9b 100644
+index 088b84f99203..53ce8dbdd481 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -129,7 +129,7 @@ index 1cc85b8ff42e..b7ee128c67ce 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index d860ac300919..6e63924932e6 100644
+index 2cef49983e9e..c50998b4b554 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -140,7 +140,7 @@ index d860ac300919..6e63924932e6 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
 
-@@ -965,6 +966,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -970,6 +971,9 @@ void __init setup_arch(char **cmdline_p)
 
  	log_component_list();
 
@@ -1523,49 +1523,6 @@ index 1460857026e0..7e1964891089 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/cifs/smb2pdu.c b/fs/cifs/smb2pdu.c
-index 6a8a00f28b19..179c1630bf56 100644
---- a/fs/cifs/smb2pdu.c
-+++ b/fs/cifs/smb2pdu.c
-@@ -543,7 +543,6 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 		      struct TCP_Server_Info *server, unsigned int *total_len)
- {
- 	char *pneg_ctxt;
--	char *hostname = NULL;
- 	unsigned int ctxt_len, neg_context_count;
-
- 	if (*total_len > 200) {
-@@ -571,24 +570,16 @@ assemble_neg_contexts(struct smb2_negotiate_req *req,
- 	*total_len += ctxt_len;
- 	pneg_ctxt += ctxt_len;
-
-+	ctxt_len = build_netname_ctxt((struct smb2_netname_neg_context *)pneg_ctxt,
-+					server->hostname);
-+	*total_len += ctxt_len;
-+	pneg_ctxt += ctxt_len;
-+
- 	build_posix_ctxt((struct smb2_posix_neg_context *)pneg_ctxt);
- 	*total_len += sizeof(struct smb2_posix_neg_context);
- 	pneg_ctxt += sizeof(struct smb2_posix_neg_context);
-
--	/*
--	 * secondary channels don't have the hostname field populated
--	 * use the hostname field in the primary channel instead
--	 */
--	hostname = CIFS_SERVER_IS_CHAN(server) ?
--		server->primary_server->hostname : server->hostname;
--	if (hostname && (hostname[0] != 0)) {
--		ctxt_len = build_netname_ctxt((struct smb2_netname_neg_context *)pneg_ctxt,
--					      hostname);
--		*total_len += ctxt_len;
--		pneg_ctxt += ctxt_len;
--		neg_context_count = 4;
--	} else /* second channels do not have a hostname */
--		neg_context_count = 3;
-+	neg_context_count = 4;
-
- 	if (server->compress_algorithm) {
- 		build_compression_ctxt((struct smb2_compression_capabilities_context *)
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index cc6d2be2ffd5..418d814d2eb7 100644
 --- a/include/linux/efi.h
@@ -1749,6 +1706,32 @@ index 8723ae70ea1f..fb2d773498c2 100644
 +	}
 +	return ret;
  }
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 81243c834abb..a136148627e7 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5213,13 +5213,20 @@ static int nft_setelem_parse_data(struct nft_ctx *ctx, struct nft_set *set,
+ 				  struct nft_data *data,
+ 				  struct nlattr *attr)
+ {
++	u32 dtype;
+ 	int err;
+
+ 	err = nft_data_init(ctx, data, NFT_DATA_VALUE_MAXLEN, desc, attr);
+ 	if (err < 0)
+ 		return err;
+
+-	if (desc->type != NFT_DATA_VERDICT && desc->len != set->dlen) {
++	if (set->dtype == NFT_DATA_VERDICT)
++		dtype = NFT_DATA_VERDICT;
++	else
++		dtype = NFT_DATA_VALUE;
++
++	if (dtype != desc->type ||
++	    set->dlen != desc->len) {
+ 		nft_data_release(data, desc->type);
+ 		return -EINVAL;
+ 	}
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 16d475b3e203..4e333f14b84e 100755
 --- a/scripts/tags.sh
