@@ -135,7 +135,7 @@ ExcludeArch: armv7hl
 
 Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
-Version:        2022.04
+Version:        2022.06
 Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -213,13 +213,11 @@ Patch700:        %{name}-nolangpacks.patch
 # https://github.com/WaterfoxCo/Waterfox/pull/547.patch, down
 Patch701:        %{name}-waterfoxdir-1.patch
 Patch702:        %{name}-waterfoxdir-2.patch
-Patch703:        %{name}-fix-testing-file.patch
 Patch704:        %{name}-disable-diagnostics-color.patch
 Patch705:        0001-Update-patch-bug1403998.patch
 Patch706:        0001-Update-patch-bug847568.patch
 Patch707:        0001-Update-patch-bug1456512.patch
 Patch708:        0001-mbft-tests-fix-build.patch
-Patch709:        0001-TestAudioEventTimeline.cpp-gtest-fix-build.patch
 Patch710:        0001-testStructuredClone.cpp-Remove-testStructuredClone_i.patch
 
 # Gentoo
@@ -412,7 +410,7 @@ This package contains results of tests executed during build.
 %patch600 -p1 -b .pgo
 %patch601 -p1 -b .1516081
 %patch602 -p1 -b .1516803
-%patch603 -p1 -b .1397365
+%dnl %patch603 -p1 -b .1397365
 %patch604 -p1 -b .gentoo_pgo
 
 # Prepare FreeBSD patches
@@ -444,8 +442,8 @@ done
 # 5: uncertain
 for i in \
   702179 730495 991253 1021761 1144632 1288587 1379148 1393235 1393283 1393627 \
-  1395486 1396722 1398021 1399412 1401909 1412420 1417751 1419762 1425267 1427126 \
-  1430508 1433747 1438425 1440943 1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
+  1395486 1396722 1398021 1399412 1401909 1411415 1412420 1417751 1418894 1419762 1425267 1427126 \
+  1430508 1433747 1438425 1438645 1440943 1452576 1452619 1453127 1454285 1455235 1466606 1469257 \
   712130 1384121 1384701 1388744 1401063 1406396 1408397 1413143 1415883 1402442 1437450 1464872 1465108 \
   1447519
 do
@@ -466,10 +464,8 @@ done
 %patch700 -p1 -b .nolangpacks
 %patch701 -p1 -b .waterfoxdir-1
 %patch702 -p1 -b .waterfoxdir-2
-%patch703 -p1 -b .fix-testing-file
 %patch704 -p1 -b .no-diagnostics-color
 %patch708 -p1 -b .mbft-build-fix
-%patch709 -p1 -b .TestAudioEventTimeline.cpp-build-fix
 %patch710 -p1 -b .testStructuredClone.cpp-build-fix
 
 %patch800 -p2 -b .system-vpx
@@ -1045,6 +1041,9 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Fri Jul 08 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.06-1.classic
+- 2022.06
+
 * Tue Apr 19 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.04-1.classic
 - 2022.04
 

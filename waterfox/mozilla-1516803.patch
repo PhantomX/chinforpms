@@ -1,14 +1,25 @@
-diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/security/sandbox/linux/moz.build.1516803 Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/security/sandbox/linux/moz.build
---- Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/security/sandbox/linux/moz.build.1516803	2019-01-08 11:39:44.002864753 -0200
-+++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/security/sandbox/linux/moz.build	2019-01-08 11:40:38.624513603 -0200
-@@ -98,8 +98,8 @@ if CONFIG['GNU_CXX']:
- # gcc lto likes to put the top level asm in syscall.cc in a different partition
- # from the function using it which breaks the build.  Work around that by
+From 00a5d2a38bac63aca5c83fadd5fb5fbcb43fe21a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 8 Jul 2022 16:10:43 -0300
+Subject: [PATCH] Mozilla 1516083 rebase for Waterfox
+
+---
+ security/sandbox/linux/moz.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/security/sandbox/linux/moz.build b/security/sandbox/linux/moz.build
+index d12ca8e..5997167 100644
+--- a/security/sandbox/linux/moz.build
++++ b/security/sandbox/linux/moz.build
+@@ -101,7 +101,7 @@ if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
  # forcing there to be only one partition.
--if '-flto' in CONFIG['OS_CXXFLAGS'] and not CONFIG['CLANG_CXX']:
--    LDFLAGS += ['--param lto-partitions=1']
-+if CONFIG['CC_TYPE'] != 'clang':
-+    LDFLAGS += ['--param', 'lto-partitions=1']
+ for f in CONFIG['OS_CXXFLAGS']:
+     if f.startswith('-flto') and CONFIG['CC_TYPE'] != 'clang':
+-        LDFLAGS += ['--param lto-partitions=1']
++        LDFLAGS += ['--param', 'lto-partitions=1']
  
  DEFINES['NS_NO_XPCOM'] = True
  DisableStlWrapping()
+-- 
+2.36.1
+

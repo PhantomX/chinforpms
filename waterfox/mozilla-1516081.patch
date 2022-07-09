@@ -1,4 +1,4 @@
-From f652a5490a2fb0774f21a5c5bfd48f0ef40c412c Mon Sep 17 00:00:00 2001
+From cbdcb6c54ea3f533d5d86ea5a6fffcfb8f54e743 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 20 Aug 2021 19:33:56 -0300
 Subject: [PATCH] Mozilla 1516081 rebase for Waterfox
@@ -10,12 +10,12 @@ Subject: [PATCH] Mozilla 1516081 rebase for Waterfox
  3 files changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/build/moz.configure/toolchain.configure b/build/moz.configure/toolchain.configure
-index 98b1ee6..2b889d7 100755
+index af458a2..7dfec46 100755
 --- a/build/moz.configure/toolchain.configure
 +++ b/build/moz.configure/toolchain.configure
-@@ -1157,10 +1157,10 @@ set_config('VISIBILITY_FLAGS', visibility_flags)
- def pgo_flags(compiler):
-     if compiler.type in ('gcc', 'clang'):
+@@ -1195,10 +1195,10 @@ def pgo_flags(compiler, build_env, target):
+ 
+     if compiler.type == 'gcc':
          return namespace(
 -            gen_cflags=['-fprofile-generate'],
 +            gen_cflags=['-fprofile-generate', '-DMOZ_PROFILE_INSTRUMENTATION'],
@@ -67,5 +67,5 @@ index e72335f..eb70f15 100644
    const PRIntervalTime ticksDuration = PR_MillisecondsToInterval(1000);
    options->crashAfterTicks = crashAfterMS / ticksDuration;
 -- 
-2.31.1
+2.36.1
 

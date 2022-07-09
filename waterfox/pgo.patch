@@ -22,7 +22,7 @@ diff -up Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck
 +++ Waterfox-ff4597172229f8d71940c3885b74b903b7b1821a/extensions/spellcheck/src/moz.build	2019-01-08 11:27:26.673823140 -0200
 @@ -32,3 +32,5 @@ EXPORTS.mozilla += [
  
- if CONFIG['GNU_CXX']:
+ if CONFIG['CC_TYPE'] in ('clang', 'gcc'):
      CXXFLAGS += ['-Wno-error=shadow']
 +
 +CXXFLAGS += ['-fno-devirtualize']

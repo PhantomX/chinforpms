@@ -5,6 +5,7 @@
 %global __strip /bin/true
 
 %global progdir %{_libdir}/%{name}
+%global appname us.zoom.Zoom
 
 Name:           zoom
 Version:        5.11.1.3595
@@ -66,7 +67,7 @@ rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
 cp %{S:1} .
 
 mv usr/share/pixmaps/Zoom.png usr/share/pixmaps/%{name}.png
-mv usr/share/applications/Zoom.desktop usr/share/applications/us.zoom.Zoom.desktop
+mv usr/share/applications/Zoom.desktop usr/share/applications/%{appname}.desktop
 
 find opt/%{name}/ -name '*.so*' | xargs chmod +x
 find opt/%{name}/ -type l -name '*.so' -delete
@@ -93,7 +94,7 @@ mkdir -p %{buildroot}%{progdir}
 mv opt/%{name}/* %{buildroot}%{progdir}
 
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
+cat > %{buildroot}%{_bindir}/%{appname} <<'EOF'
 #!/usr/bin/sh
 APP_PATH=%{progdir}
 export APP_PATH
@@ -101,7 +102,7 @@ LD_LIBRARY_PATH="%{progdir}/cef:${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 export LD_LIBRARY_PATH
 exec ${APP_PATH}/ZoomLauncher "$@"
 EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+chmod 0755 %{buildroot}%{_bindir}/%{appname}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -109,14 +110,14 @@ desktop-file-install \
   --remove-key="Encoding" \
   --remove-key="Name[en_US]" \
   --remove-category="Application" \
-  --set-icon="us.zoom.Zoom" \
+  --set-icon="%{appname}" \
   --set-key="Exec" \
-  --set-value="%{name} %U" \
-  usr/share/applications/us.zoom.Zoom.desktop
+  --set-value="%{appname} %U" \
+  usr/share/applications/%{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/{apps,mimetypes}
 install -pm0644 usr/share/pixmaps/%{name}.png \
-  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/us.zoom.Zoom.png
+  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{appname}.png
 install -pm0644 usr/share/pixmaps/application-x-*.png \
   %{buildroot}%{_datadir}/icons/hicolor/256x256/mimetypes/
 
@@ -124,7 +125,7 @@ for res in 16 24 32 48 64 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}
   mkdir -p ${dir}/{apps,mimetypes}
   convert usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
-    ${dir}/apps/us.zoom.Zoom.png
+    ${dir}/apps/%{appname}.png
   convert usr/share/pixmaps/application-x-%{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/mimetypes/application-x-%{name}.png
 done
@@ -136,7 +137,7 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 %files
 %license LICENSE
-%{_bindir}/%{name}
+%{_bindir}/%{appname}
 %{progdir}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*x*/apps/*.png
