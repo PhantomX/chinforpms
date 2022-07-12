@@ -1,7 +1,7 @@
-%global commit af8ed02b572081206be6c505261f5f2e98a8053c
+%global commit 7b79e3a87b1e1a9478e92d6ea3b5973da4388a82
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220624
-%global with_snapshot 0
+%global date 20220708
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.12
+%global wine_stagingver f7d87c5bfbaf8846b1a44249988ee13710707b28
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4d09a4c28b656030c20b44db0f97bbec0db6efc3
+%global tkg_id 4ef932d2d7c58b2e011075ccddacc8f505ca77c0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.12
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -395,6 +395,19 @@ Patch383:       %{whq_url}/2e0a56257a15af8dee6ebad55f180591b1c1e18c#/%{name}-whq
 Patch384:       %{whq_url}/2f83de8cffdc059fb9e3db9b86a9a98b1f299b03#/%{name}-whq-revert-mfplat-2f83de8.patch
 Patch385:       %{whq_url}/0a78a9f56d35e2c03913ea7a5dc8f98294f89ea8#/%{name}-whq-revert-mfplat-0a78a9f.patch
 Patch386:       %{name}-revert-mfplat-194e09b.patch
+Patch387:       %{whq_url}/963f76180b9ec05c65fb4e0bdee7d1e642379207#/%{name}-whq-revert-mfplat-963f761.patch
+Patch388:       %{whq_url}/a3b3708134a8956c79929764df7271b2a153f5f0#/%{name}-whq-revert-mfplat-a3b3708.patch
+Patch389:       %{whq_url}/b43e4a54e2ab646570bc2a08d0ebccd6e15e245b#/%{name}-whq-revert-mfplat-b43e4a5.patch
+Patch390:       %{whq_url}/4676273b888458f1d47f4a7823c9033dc4f3441d#/%{name}-whq-revert-mfplat-4676273.patch
+Patch391:       %{whq_url}/5981f2ed735a2a130dcc743ef9bb6d2ab0b33197#/%{name}-whq-revert-mfplat-5981f2e.patch
+Patch392:       %{whq_url}/568b4bc902857a4c1666fb5e83c85c1d4b2e1a71#/%{name}-whq-revert-mfplat-568b4bc.patch
+Patch393:       %{whq_url}/ec097bc1b0194c335dc5745cc5963c45d9682743#/%{name}-whq-revert-mfplat-ec097bc.patch
+Patch394:       %{whq_url}/7187965a75ca6abeb512a436bc7fcd84640591fd#/%{name}-whq-revert-mfplat-7187965.patch
+Patch395:       %{whq_url}/7e046aa49e70f97aac2adacc5c0bc5f55e52b2a3#/%{name}-whq-revert-mfplat-7e046aa.patch
+Patch396:       %{whq_url}/f5f741842287e1db81c85c2ed737ae086781ae58#/%{name}-whq-revert-mfplat-f5f7418.patch
+Patch397:       %{whq_url}/e15af49029189ef18497fd6da3fccd73f07a324b#/%{name}-whq-revert-mfplat-e15af49.patch
+Patch398:       %{whq_url}/51bd7f86b611242d0375fefa4fe66dda85fe485f#/%{name}-whq-revert-mfplat-51bd7f8.patch
+Patch399:       %{whq_url}/7b79e3a87b1e1a9478e92d6ea3b5973da4388a82#/%{name}-whq-revert-mfplat-7b79e3a.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -1051,6 +1064,19 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch399 -p1 -R
+%patch398 -p1 -R
+%patch397 -p1 -R
+%patch396 -p1 -R
+%patch395 -p1 -R
+%patch394 -p1 -R
+%patch393 -p1 -R
+%patch392 -p1 -R
+%patch391 -p1 -R
+%patch390 -p1 -R
+%patch389 -p1 -R
+%patch388 -p1 -R
+%patch387 -p1 -R
 %patch386 -p1 -R
 %patch385 -p1 -R
 %patch384 -p1 -R
@@ -2179,6 +2205,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msvcp120_app.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140_1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msvcp140_2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140_atomic_wait.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr70.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr71.%{winedll}
@@ -2898,6 +2925,9 @@ fi
 
 
 %changelog
+* Sat Jul 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.12-101.20220708git7b79e3a
+- Snapshot
+
 * Sat Jul 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.12-100
 - 7.12
 
