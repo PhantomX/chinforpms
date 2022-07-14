@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,13 +170,16 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c68ab8d1beb301a8934c27210f21a2751628b0cb
+%global pfcommit f1045ab755fb175e0199cfab247cbe78c8a5bfe0
+%global pfcoprhash ab42741c10fbba20e580bd38ea330e25
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
 %global pfrange %(c=%{pfcommit}; echo ${c:0:7})
 %endif
-%global extra_patch https://github.com/pfactum/pf-kernel/compare/v%{major_ver}.%{base_sublevel}...%{pfcommit}.diff#/pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.patch
+%global pfpatch pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.pfpatch
+%dnl %global extra_patch https://codeberg.org/pf-kernel/linux/compare/v%{major_ver}.%{base_sublevel}...%{pfcommit}.diff#/%{pfpatch}
+%global extra_patch https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{pfpatch}/%{pfcoprhash}/%{pfpatch}
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
@@ -198,7 +201,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 4e304805b2b38bd845b63f22f722b0ddfbea9529
+%global opensuse_id 834606b50bfe0230432925ee1a8ef2e20d15484d
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -2929,6 +2932,9 @@ fi
 #
 #
 %changelog
+* Wed Jul 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.11-500.chinfo
+- 5.18.11 - pf4
+
 * Thu Jul 07 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.10-500.chinfo
 - 5.18.10 - pf4
 

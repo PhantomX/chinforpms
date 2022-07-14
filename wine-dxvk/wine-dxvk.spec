@@ -9,7 +9,7 @@
 %global commit f95f5418529822e60e108dd8e33100c17dc6b839
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220702
-%global with_snapshot 1
+%global with_snapshot 0
 
 %{?mingw_package_header}
 
@@ -28,7 +28,7 @@
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global dxvk_async 1
+%global dxvk_async 0
 
 %global winecommonver 5.3
 
@@ -39,8 +39,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.10.1
-Release:        108%{?gver}%{?dist}
+Version:        1.10.2
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -246,6 +246,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Jul 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.2-100
+- 1.10.2
+- dxvk_async disabled for the time
+
 * Sun Jul 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.1-108.20220702gitf95f541
 - Update
 

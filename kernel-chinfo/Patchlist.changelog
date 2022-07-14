@@ -1,3 +1,186 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/124840092adcbd2b256ecb6ec277d90a52e9ca35
+ 124840092adcbd2b256ecb6ec277d90a52e9ca35 x86/static_call: Serialize __static_call_fixup() properly
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f1cd8d2d0cd2bcef47e57461e74ec0b2fe30a4c8
+ f1cd8d2d0cd2bcef47e57461e74ec0b2fe30a4c8 x86/speculation: Disable RRSBA behavior
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4dc27302e00b50a59cd2cf9c6ecd9309771e169f
+ 4dc27302e00b50a59cd2cf9c6ecd9309771e169f x86/kexec: Disable RET on kexec
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0e261456ca23f6c04f914249b42486f209007085
+ 0e261456ca23f6c04f914249b42486f209007085 x86/bugs: Do not enable IBPB-on-entry when IBPB is not supported
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d95cf0fdf4171baa6d7bb99c4125c67aae648071
+ d95cf0fdf4171baa6d7bb99c4125c67aae648071 x86/entry: Move PUSH_AND_CLEAR_REGS() back into error_entry
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9411ab806d9eed3187da4d3d5855a0aef47fb8e6
+ 9411ab806d9eed3187da4d3d5855a0aef47fb8e6 x86/bugs: Add Cannon lake to RETBleed affected CPU list
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/11d19d8eb5b01b5d167cb874fdc218ee09552e77
+ 11d19d8eb5b01b5d167cb874fdc218ee09552e77 x86/retbleed: Add fine grained Kconfig knobs
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d49c727bee53a6addd289dad312f4f5725ba852b
+ d49c727bee53a6addd289dad312f4f5725ba852b x86/cpu/amd: Enumerate BTC_NO
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e76884511dd032c0c557783271922d62d9c588f9
+ e76884511dd032c0c557783271922d62d9c588f9 x86/common: Stamp out the stepping madness
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3fdf6fdaf55ab629187ca1b9e35767e2ca77d6bb
+ 3fdf6fdaf55ab629187ca1b9e35767e2ca77d6bb KVM: VMX: Prevent RSB underflow before vmenter
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5405cabb27372d196f1fc368cfd3be5cdc9eeacf
+ 5405cabb27372d196f1fc368cfd3be5cdc9eeacf x86/speculation: Fill RSB on vmexit for IBRS
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/654cc553e9456109c6ba66a797770f586a720935
+ 654cc553e9456109c6ba66a797770f586a720935 KVM: VMX: Fix IBRS handling after vmexit
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c54bc2089bc6b7c1f819b184a5713cabe28ce4e7
+ c54bc2089bc6b7c1f819b184a5713cabe28ce4e7 KVM: VMX: Prevent guest RSB poisoning attacks with eIBRS
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/2426e78b2e6c4f2d1bc2b41c6d2c6f420c24873b
+ 2426e78b2e6c4f2d1bc2b41c6d2c6f420c24873b KVM: VMX: Convert launched argument to flags
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5af28f4a99f36d4fce375de01466e6f175cd399b
+ 5af28f4a99f36d4fce375de01466e6f175cd399b KVM: VMX: Flatten __vmx_vcpu_run()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ac8c93f3d2698a845768b758be8a2132b9f8a582
+ ac8c93f3d2698a845768b758be8a2132b9f8a582 objtool: Re-add UNWIND_HINT_{SAVE_RESTORE}
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/78ef570693b0fda3b84644d9c65917afd66be35a
+ 78ef570693b0fda3b84644d9c65917afd66be35a x86/speculation: Remove x86_spec_ctrl_mask
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0dfa5101c58a48d54bc102b33378d0332404068f
+ 0dfa5101c58a48d54bc102b33378d0332404068f x86/speculation: Use cached host SPEC_CTRL value for guest entry/exit
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/60d7d9c106f7642e0b0ebe2d5b458fe45d46a800
+ 60d7d9c106f7642e0b0ebe2d5b458fe45d46a800 x86/speculation: Fix SPEC_CTRL write on SMT state change
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/06668635e3c237f50ff83638e53c09a99bc96567
+ 06668635e3c237f50ff83638e53c09a99bc96567 x86/speculation: Fix firmware entry SPEC_CTRL handling
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/284c4e731495217963a407a40125f698fd127ba8
+ 284c4e731495217963a407a40125f698fd127ba8 x86/speculation: Fix RSB filling with CONFIG_RETPOLINE=n
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9072ecef88a18bba73dd59c78d202c9966574aab
+ 9072ecef88a18bba73dd59c78d202c9966574aab x86/cpu/amd: Add Spectral Chicken
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1bb1b29681e50fbc2c13a89670764a76f41ea2b6
+ 1bb1b29681e50fbc2c13a89670764a76f41ea2b6 objtool: Add entry UNRET validation
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9234c57b23755b4de25d6fc0b6e294110a5f2287
+ 9234c57b23755b4de25d6fc0b6e294110a5f2287 x86/bugs: Do IBPB fallback check only once
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f3aa67ca9cc86e5ce4c109105973b15547044c79
+ f3aa67ca9cc86e5ce4c109105973b15547044c79 x86/bugs: Add retbleed=ibpb
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4327ea3494083f292f93a5c1dbfdc6ad7f24a0c6
+ 4327ea3494083f292f93a5c1dbfdc6ad7f24a0c6 x86/xen: Add UNTRAIN_RET
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/847a4bc2368d59d95ec794a6810f0b0ca78976cc
+ 847a4bc2368d59d95ec794a6810f0b0ca78976cc x86/xen: Rename SYS* entry points
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/07b81941724e3b2f8794c60ee606b9fbc73e465a
+ 07b81941724e3b2f8794c60ee606b9fbc73e465a objtool: Update Retpoline validation
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/87046e111b3e21e97d9b48ea28101b8507de1c7b
+ 87046e111b3e21e97d9b48ea28101b8507de1c7b intel_idle: Disable IBRS during long idle
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0125965863f43cf6d02d3383bc62535fc616b1f5
+ 0125965863f43cf6d02d3383bc62535fc616b1f5 x86/bugs: Report Intel retbleed vulnerability
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6abb082c94b62af0b52ac7bbe0e018c69e320edb
+ 6abb082c94b62af0b52ac7bbe0e018c69e320edb x86/bugs: Split spectre_v2_select_mitigation() and spectre_v2_user_select_mitigation()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/784077d71eada3b1a29b21f6b447c375fcd015c1
+ 784077d71eada3b1a29b21f6b447c375fcd015c1 x86/speculation: Add spectre_v2=ibrs option to support Kernel IBRS
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b6755754d19816815235c8fca8979856763afbc9
+ b6755754d19816815235c8fca8979856763afbc9 x86/bugs: Optimize SPEC_CTRL MSR writes
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7bf4ec77d5295a12398892eb6d400b536bd46899
+ 7bf4ec77d5295a12398892eb6d400b536bd46899 x86/entry: Add kernel IBRS implementation
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/934dc61b4bb06140e3e833bb959d940f4d9d745d
+ 934dc61b4bb06140e3e833bb959d940f4d9d745d x86/bugs: Keep a per-CPU IA32_SPEC_CTRL value
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/08920a7bd3e3eb23e73f1723c3dd7b84be8a4ea2
+ 08920a7bd3e3eb23e73f1723c3dd7b84be8a4ea2 x86/bugs: Enable STIBP for JMP2RET
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e8e3d9b8841298ec8486687c4f3faddff9c2e3a3
+ e8e3d9b8841298ec8486687c4f3faddff9c2e3a3 x86/bugs: Add AMD retbleed= boot parameter
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/54b9f6b8610b35422f7e439b80429b07da44688b
+ 54b9f6b8610b35422f7e439b80429b07da44688b x86/bugs: Report AMD retbleed vulnerability
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/98db9034780970f94cf0fd66f6c3371ce5bd1da0
+ 98db9034780970f94cf0fd66f6c3371ce5bd1da0 x86: Add magic AMD return-thunk
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a0e5b305e6692711272e1d253a456bf66c728edb
+ a0e5b305e6692711272e1d253a456bf66c728edb objtool: Treat .text.__x86.* as noinstr
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/480a54ea74a0364bfa4e404487f89a50d3721cf8
+ 480a54ea74a0364bfa4e404487f89a50d3721cf8 x86/entry: Avoid very early RET
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b881f755be2f276dca2ff2563d5cc4ae38561c51
+ b881f755be2f276dca2ff2563d5cc4ae38561c51 x86: Use return-thunk in asm code
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9b9b256ca2665c776a56acd643e8e90d7c8ad1b4
+ 9b9b256ca2665c776a56acd643e8e90d7c8ad1b4 x86/sev: Avoid using __x86_return_thunk
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5aca0c5b86a52e2487c4d846ac08f20d5fb9ce11
+ 5aca0c5b86a52e2487c4d846ac08f20d5fb9ce11 x86/vsyscall_emu/64: Don't use RET in vsyscall emulation
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b043bec99f6df6a105e8dfc3d3710cb723d1156a
+ b043bec99f6df6a105e8dfc3d3710cb723d1156a x86/kvm: Fix SETcc emulation for return thunks
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/35c1c7b56206a7c8c2c55fd38959a800ad45834d
+ 35c1c7b56206a7c8c2c55fd38959a800ad45834d x86/bpf: Use alternative RET encoding
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/128a4c9d899643f8c42873fb59f81d37c9bbd76c
+ 128a4c9d899643f8c42873fb59f81d37c9bbd76c x86/ftrace: Use alternative RET encoding
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/513a532d275fa88edcb1b95f42549c5ea186af5d
+ 513a532d275fa88edcb1b95f42549c5ea186af5d x86,static_call: Use alternative RET encoding
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/51b38cc89fdf189a0f57dd5a16c34679cad642cd
+ 51b38cc89fdf189a0f57dd5a16c34679cad642cd objtool: skip non-text sections when adding return-thunk sites
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d848ebf0fea9eafccde938d87b17cfc785ad7e73
+ d848ebf0fea9eafccde938d87b17cfc785ad7e73 x86,objtool: Create .return_sites
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d708480894fa6ae9914a905a68dae62a54dc766c
+ d708480894fa6ae9914a905a68dae62a54dc766c x86: Undo return-thunk damage
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/48017501b6f739ff3275c3f1cd8f67d09cd8e476
+ 48017501b6f739ff3275c3f1cd8f67d09cd8e476 x86/retpoline: Use -mfunction-return
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c185ac0fda3d1f08539610f8b57b60ad5741a2fd
+ c185ac0fda3d1f08539610f8b57b60ad5741a2fd x86/retpoline: Swizzle retpoline thunk
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/db12c81022a72fd8b8d0f040bc3389d223c676b4
+ db12c81022a72fd8b8d0f040bc3389d223c676b4 x86/retpoline: Cleanup some #ifdefery
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/de09dfb0a730fd86778c10ea8bcbe191732ce8a4
+ de09dfb0a730fd86778c10ea8bcbe191732ce8a4 x86/cpufeatures: Move RETPOLINE flags to word 11
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/5c52f2151e1fd6e6000e21ac608f44bf59f2128b
+ 5c52f2151e1fd6e6000e21ac608f44bf59f2128b x86/kvm/vmx: Make noinstr clean
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3ea5c419e079e9f665384cb20eb525a74b86c2b0
+ 3ea5c419e079e9f665384cb20eb525a74b86c2b0 x86/entry: Remove skip_r11rcx
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6ebde394accb03a251fb6b28faaa02faa87962f7
+ 6ebde394accb03a251fb6b28faaa02faa87962f7 x86/entry: Don't call error_entry() for XENPV
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/29257405882fbacf0347ff711abf491bc09e495e
+ 29257405882fbacf0347ff711abf491bc09e495e x86/entry: Move PUSH_AND_CLEAR_REGS out of error_entry()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d4880e98e5bee7ec35a9d5eebaf83f0c674e131b
+ d4880e98e5bee7ec35a9d5eebaf83f0c674e131b x86/entry: Switch the stack after error_entry() returns
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/26879111c5ca69517b620f9d9fe8b576dc3bdf87
+ 26879111c5ca69517b620f9d9fe8b576dc3bdf87 x86/traps: Use pt_regs directly in fixup_bad_iret()
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/f147438b42147e1cf44f1471dc2a4288486dd791
  f147438b42147e1cf44f1471dc2a4288486dd791 netfilter: nf_tables: stricter validation of element data
 

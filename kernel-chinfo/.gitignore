@@ -12,6 +12,7 @@ enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
 /kernel-stable-*.patch
 /patchwork-*.patch
 /pf-*.patch
+/pf-*.pfpatch
 /openSUSE-*.patch
 /tkg-*.patch
 /zzz-*.patch
