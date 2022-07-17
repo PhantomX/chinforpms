@@ -19,10 +19,14 @@
 %global enablejit 1
 %endif
 
-%global commit d625c612c4a40a8c8db3d90b313f5643aec9c890
+%global commit 1da24f66feab4d78a21ef795c7bd24b6d76cff8d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220702
+%global date 20220715
 %global with_snapshot 1
+
+%global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 SPIRV-Cross
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -35,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        161%{?gver}%{?dist}
+Release:        163%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -61,6 +65,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
+Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
 %if 0%{?with_sysvulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -167,6 +172,8 @@ Provides:       bundled(gtest) = 1.9.0
 #Furthermore, the dolphin gtest test cases that fail with f33/34 bochs
 #My best guess is that this is 2.6.6, as dolphin does not specify
 Provides:       bundled(bochs) = 2.6.6
+Provides:       bundled(FatFS) = 86631
+Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
 
 
 %description
@@ -254,6 +261,8 @@ rm -rf \
 %if 0%{?with_sysvulkan}
   rm -rf glslang
 %endif
+
+tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson
@@ -381,6 +390,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-163.20220715git1da24f6
+- Update
+
 * Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-161.20220702gitd625c61
 - Bump
 - Remove RESHDP modifications

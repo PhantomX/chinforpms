@@ -1,0 +1,49 @@
+--- a/old-configure.in	2020-11-30 06:47:56.000000000 -0600
++++ b/old-configure.in	2022-01-27 07:24:48.411615321 -0600
+@@ -2071,7 +2071,7 @@
+             # and NSS with -mnop-fun-dllimport flag. The drawback of this solution is that
+             # function thunks need to be generated for cross-DLL calls.
+             MOZ_FOLD_LIBS_FLAGS="-mnop-fun-dllimport"
+-            LDFLAGS="$LDFLAGS -Wl,--file-alignment,0x1000"
++            LDFLAGS="$LDFLAGS -Wl,--file-alignment,0x1000 -Wl,--image-base,0x10000000"
+         else
+             # Silence problematic clang warnings
+             CXXFLAGS="$CXXFLAGS -Wno-incompatible-ms-struct"
+--- a/gfx/2d/Matrix.h	2020-11-30 06:47:56.000000000 -0600
++++ b/gfx/2d/Matrix.h	2022-01-24 17:23:38.812193714 -0600
+@@ -11,6 +11,7 @@
+ #include "Point.h"
+ #include "Quaternion.h"
+ #include <iosfwd>
++#include <limits>
+ #include <math.h>
+ #include "mozilla/Attributes.h"
+ #include "mozilla/DebugOnly.h"
+--- a/gfx/2d/BaseRect.h	2020-11-30 06:47:56.000000000 -0600
++++ b/gfx/2d/BaseRect.h	2022-01-24 17:34:42.951126605 -0600
+@@ -8,6 +8,7 @@
+ 
+ #include <algorithm>
+ #include <cmath>
++#include <limits>
+ #include <ostream>
+ 
+ #include "mozilla/Assertions.h"
+--- a/nsprpub/pr/src/io/prmapopt.c	2020-11-30 06:47:56.000000000 -0600
++++ b/nsprpub/pr/src/io/prmapopt.c	2022-01-24 17:47:10.013250910 -0600
+@@ -19,6 +19,7 @@
+ 
+ #if defined(WINNT) || defined(__MINGW32__)
+ #include <winsock.h>
++#include <winsock2.h>
+ #endif
+ 
+ /* MinGW doesn't define these in its winsock.h. */
+--- a/js/src/ctypes/libffi/configure	2022-01-25 15:31:21.136318541 -0600
++++ b/js/src/ctypes/libffi/configure	2022-01-27 07:20:06.853378891 -0600
+@@ -22137,4 +22137,5 @@
+ 
+ # Copy this file instead of using AC_CONFIG_LINK in order to support
+ # compiling with MSVC, which won't understand cygwin style symlinks.
++mkdir include
+ cp ${srcdir}/src/$TARGETDIR/ffitarget.h include/ffitarget.h

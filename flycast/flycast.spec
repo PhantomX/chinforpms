@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6a5db32d5d2f1973804ab200d1644aaeb697abac
+%global commit 76bf57466851a5cffdc938273a86bcc2e654b985
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220627
+%global date 20220715
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -38,7 +38,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        19%{?gver}%{?dist}
+Release:        20%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -58,6 +58,11 @@ Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{s
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+
+Patch10:        %{url}/commit/7f9d9b81aaaa1e2c58c93732997c4ad3745e888c.patch#/%{name}-gh-7f9d9b8.patch
+Patch11:        %{url}/commit/4f206d2773a09942669b2263032deba6657dc69a.patch#/%{name}-gh-4f206d2.patch
+Patch12:        %{url}/commit/ab791d1b9c9ae48801a0961d48ee27804fcb0e13.patch#/%{name}-gh-ab791d1.patch
+Patch13:        %{url}/commit/9d17fc15a38b7d07d9a0fb12f08649c5720e137f.patch#/%{name}-gh-9d17fc1.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -239,6 +244,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-20.20220715git76bf574
+- Bump
+
 * Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-19.20220627git6a5db32
 - Update
 

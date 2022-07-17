@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f85925fcd6c342313f009aae0f72629b9d96b9f8
+%global commit f5c1094d03c317a93d4f088c34e7a89c16a2b2bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220523
+%global date 20220707
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,7 +20,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -39,6 +39,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
+Patch10:        %{vc_url}/pull/1402.patch#/%{name}-gh-pr1402.patch
 
 ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64
 
@@ -129,6 +130,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-7.20220707gitf5c1094
+- Update
+
 * Fri May 27 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-6.20220523gitf85925f
 - Bump
 

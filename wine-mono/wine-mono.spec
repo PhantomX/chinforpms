@@ -5,7 +5,7 @@
 %undefine _hardened_build
 %undefine _package_note_file
 
-%{?mingw_package_header}
+%?mingw_package_header
 
 %global with_bin 1
 #Set to 1 to download sources from github
@@ -15,13 +15,15 @@
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
+%global __objdump /bin/true
+%global __debug_install_post /bin/true
 %endif
 
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
 Version:        7.3.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -91,6 +93,7 @@ Requires: wine-filesystem
 %description
 Windows Mono library required for Wine.
 
+%global mingw_build_win64 0
 %global mingw_build_win32 0
 %{?mingw_debug_package}
 
@@ -159,6 +162,10 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 
 %endif
 
+chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/*/*.{config,rsp}
+chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/Current/bin/Roslyn/*.targets
+
+
 %files
 %license COPYING
 %doc README
@@ -167,12 +174,12 @@ cp mono-basic/LICENSE mono-basic-LICENSE
 %doc mono-basic-README
 %endif
 %{_datadir}/wine/mono/%{name}-%{version}/
-%exclude %{_datadir}/wine/mono/%{name}-%{version}/bin/*.debug
-%exclude %{_datadir}/wine/mono/%{name}-%{version}/lib/*.debug
-%exclude %{_datadir}/wine/mono/%{name}-%{version}/support/*.debug
 
 
 %changelog
+* Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 7.3.0-101
+- Debug fixes
+
 * Sat Jun 04 2022 Phantom X <megaphantomx at hotmail dot com> - 7.3.0-100
 - 7.3.0
 

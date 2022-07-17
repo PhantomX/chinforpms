@@ -13,7 +13,7 @@
 
 Name:           asbru-cm
 Version:        6.3.3
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -26,6 +26,9 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
+Patch0:         %{vc_url}/commit/61372995970756c913e11ff26e63990fbabb50ef.patch#/%{name}-gh-6137299.patch
+Patch1:         %{vc_url}/commit/1c06e77e20dae449eae29ebf7c629c33ced101c5.patch#/%{name}-gh-1c06e77.patch
+
 BuildArch:      noarch
 
 BuildRequires:  pkgconfig(bash-completion)
@@ -34,7 +37,7 @@ BuildRequires:  pkgconfig
 Requires:       perl-interpreter
 Requires:       perl(Carp)
 Requires:       perl(Compress::Raw::Zlib)
-Requires:       perl(Crypt::CBC)
+Requires:       perl(Crypt::CBC) >= 3.04
 Requires:       perl(Crypt::Rijndael)
 Requires:       perl(Crypt::Blowfish)
 Requires:       perl(Data::Dumper)
@@ -154,6 +157,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Fri Jul 15 2022 Phantom X - 6.3.3-2
+- perl-Crypt-CBC 3.04 fix
+
 * Wed May 25 2022 Phantom X - 6.3.3-1
 - 6.3.3
 

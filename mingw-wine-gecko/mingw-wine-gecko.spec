@@ -2,12 +2,20 @@
 
 %global with_bin 1
 
+%if 0%{?with_bin}
+%global debug_package %{nil}
+%global _build_id_links none
+%global __strip /bin/true
+%global __objdump /bin/true
+%global __debug_install_post /bin/true
+%endif
+
 %global msiname wine-gecko
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
-Version:        2.47.2
-Release:        102%{?dist}
+Version:        2.47.3
+Release:        100%{?dist}
 Summary:        Gecko library required for Wine
 
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
@@ -18,12 +26,18 @@ Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{ve
 %else
 Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-src.tar.xz
 %endif
-Source2:        %{vc_url}/ci/master/tree/LICENSE?format=raw#/LICENSE
-Source3:        %{vc_url}/ci/master/tree/LEGAL?format=raw#/LEGAL
-Source4:        %{vc_url}/ci/master/tree/README.txt?format=raw#/README.txt
-
-
-Patch0:         %{name}-mozconfig.patch
+%if !0%{?with_bin}
+# https://bugs.winehq.org/show_bug.cgi?id=52455
+Source2:        https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz
+%endif
+# https://bugs.winehq.org/show_bug.cgi?id=51918
+Patch0:         %{name}-python310-1.patch
+Patch1:         %{name}-python310-2.patch
+# https://bugs.winehq.org/show_bug.cgi?id=52085
+Patch2:         %{name}-gcc11.patch
+Source3:        %{vc_url}/ci/master/tree/LICENSE?format=raw#/LICENSE
+Source4:        %{vc_url}/ci/master/tree/LEGAL?format=raw#/LEGAL
+Source5:        %{vc_url}/ci/master/tree/README.txt?format=raw#/README.txt
 
 BuildArch:      noarch
 
@@ -85,6 +99,10 @@ Requires:      wine-common
 %description -n mingw64-%{msiname}
 Windows Gecko library required for Wine.
 
+%global mingw_build_win32 0
+%global mingw_build_win64 0
+%{?mingw_debug_package}
+
 %prep
 %if 0%{?with_bin}
 %setup -q -T -c -n %{name}-%{version}
@@ -94,14 +112,24 @@ tar xf %{S:0} -C %{msiname}-%{version}-x86_64/dist/
 tar xf %{S:1} -C %{msiname}-%{version}-x86/dist/
 
 mkdir %{msiname}-%{version}
-cp -p %{S:2} %{S:3} %{S:4} %{msiname}-%{version}/
+cp -p %{S:3} %{S:4} %{S:5} %{msiname}-%{version}/
 
 %else
 
 %setup -q -c -n %{msiname}-%{version}
 cd %{msiname}-%{version}
 
-%patch0 -p1 -b.mozconfig
+%patch0 -p0
+pushd wine-gecko-%{version}/python/virtualenv/
+rm -rf ./*
+gzip -dc %{SOURCE1} | tar -xf - --strip-components=1
+popd
+pushd js/src/ctypes/libffi
+rm -rf ./*
+gzip -dc %{SOURCE2} | tar -xf - --strip-components=1
+popd
+%patch1 -p1
+%patch2 -p1
 
 # fix nsprpub cross compile detection
 sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure
@@ -121,16 +149,16 @@ cd %{msiname}-%{version}
 # setup build options...
 echo "mk_add_options MOZ_MAKE_FLAGS=%{_smp_mflags}" >> wine/mozconfig-common
 echo "export CFLAGS=\"-DWINE_GECKO_SRC\"" >> wine/mozconfig-common
-# hack around GCC 10 regression by adding -save-temps
-# https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96391
-echo "export CXXFLAGS=\"\$CFLAGS -fpermissive -mxsave -save-temps\"" >> wine/mozconfig-common
 
 cp wine/mozconfig-common wine/mozconfig-common.build
 
 # ... and build
-TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --no-package -win32
+# Make jobserver is broken under Python 3.10
+#TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win32
+TOOLCHAIN_PREFIX=i686-w64-mingw32- MAKEOPTS="-j1" ./wine/make_package --msi-package -win32
 
-TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --no-package -win64
+#TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="%{_smp_mflags}" ./wine/make_package --msi-package -win64
+TOOLCHAIN_PREFIX=x86_64-w64-mingw32- MAKEOPTS="-j1" ./wine/make_package --msi-package -win64
 %endif
 
 
@@ -155,6 +183,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.47.3-100
+- 2.47.3
+
 * Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 2.47.2-102
 - Return bin for Fedora 34
 

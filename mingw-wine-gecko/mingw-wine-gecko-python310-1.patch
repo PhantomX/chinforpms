@@ -1,0 +1,288 @@
+diff -uNr wine-gecko-2.47.2.org/media/webrtc/trunk/tools/gyp/pylib/gyp/msvs_emulation.py wine-gecko-2.47.2/media/webrtc/trunk/tools/gyp/pylib/gyp/msvs_emulation.py
+--- wine-gecko-2.47.2.org/media/webrtc/trunk/tools/gyp/pylib/gyp/msvs_emulation.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/media/webrtc/trunk/tools/gyp/pylib/gyp/msvs_emulation.py	2021-10-06 16:16:55.695835188 +0200
+@@ -91,7 +91,7 @@
+   """Add |prefix| to |element| or each subelement if element is iterable."""
+   if element is None:
+     return element
+-  if (isinstance(element, collections.Iterable) and
++  if (isinstance(element, collections.abc.Iterable) and
+       not isinstance(element, basestring)):
+     return [prefix + e for e in element]
+   else:
+@@ -104,7 +104,7 @@
+   if map is not None and element is not None:
+     if not callable(map):
+       map = map.get # Assume it's a dict, otherwise a callable to do the remap.
+-    if (isinstance(element, collections.Iterable) and
++    if (isinstance(element, collections.abc.Iterable) and
+         not isinstance(element, basestring)):
+       element = filter(None, [map(elem) for elem in element])
+     else:
+@@ -117,7 +117,7 @@
+   then add |element| to it, adding each item in |element| if it's a list or
+   tuple."""
+   if append is not None and element is not None:
+-    if (isinstance(element, collections.Iterable) and
++    if (isinstance(element, collections.abc.Iterable) and
+         not isinstance(element, basestring)):
+       append.extend(element)
+     else:
+diff -uNr wine-gecko-2.47.2.org/media/webrtc/trunk/tools/gyp/test/lib/TestGyp.py wine-gecko-2.47.2/media/webrtc/trunk/tools/gyp/test/lib/TestGyp.py
+--- wine-gecko-2.47.2.org/media/webrtc/trunk/tools/gyp/test/lib/TestGyp.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/media/webrtc/trunk/tools/gyp/test/lib/TestGyp.py	2021-10-06 16:16:55.759837366 +0200
+@@ -496,7 +496,7 @@
+     if status is None:
+       kw['status'] = None
+     else:
+-      if not isinstance(status, collections.Iterable): status = (status,)
++      if not isinstance(status, collections.abc.Iterable): status = (status,)
+       kw['status'] = list(itertools.chain((0,), status))
+     self.cmake_build(gyp_file, target, **kw)
+     kw['status'] = status
+diff -uNr wine-gecko-2.47.2.org/python/bitstring/bitstring.py wine-gecko-2.47.2/python/bitstring/bitstring.py
+--- wine-gecko-2.47.2.org/python/bitstring/bitstring.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/bitstring/bitstring.py	2021-10-06 16:16:55.789838387 +0200
+@@ -1286,7 +1286,7 @@
+             data = bytearray((s + 7) // 8)
+             self._datastore = ByteStore(data, s, 0)
+             return
+-        if isinstance(s, collections.Iterable):
++        if isinstance(s, collections.abc.Iterable):
+             # Evaluate each item as True or False and set bits to 1 or 0.
+             self._setbin_unsafe(''.join(str(int(bool(x))) for x in s))
+             return
+@@ -3487,7 +3487,7 @@
+         if pos is None:
+             self._invert_all()
+             return
+-        if not isinstance(pos, collections.Iterable):
++        if not isinstance(pos, collections.abc.Iterable):
+             pos = (pos,)
+         length = self.len
+ 
+@@ -3575,7 +3575,7 @@
+                     bytesizes.append(PACK_CODE_SIZE[f])
+                 else:
+                     bytesizes.extend([PACK_CODE_SIZE[f[-1]]] * int(f[:-1]))
+-        elif isinstance(fmt, collections.Iterable):
++        elif isinstance(fmt, collections.abc.Iterable):
+             bytesizes = fmt
+             for bytesize in bytesizes:
+                 if not isinstance(bytesize, numbers.Integral) or bytesize < 0:
+diff -uNr wine-gecko-2.47.2.org/python/bitstring/test/test_bitstream.py wine-gecko-2.47.2/python/bitstring/test/test_bitstream.py
+--- wine-gecko-2.47.2.org/python/bitstring/test/test_bitstream.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/bitstring/test/test_bitstream.py	2021-10-06 16:16:55.791838455 +0200
+@@ -3456,7 +3456,7 @@
+         self.assertEqual(s.len, 17)
+ 
+     def testInitFromIterable(self):
+-        self.assertTrue(isinstance(range(10), collections.Iterable))
++        self.assertTrue(isinstance(range(10), collections.abc.Iterable))
+         s = ConstBitStream(range(12))
+         self.assertEqual(s, '0x7ff')
+ 
+diff -uNr wine-gecko-2.47.2.org/python/mach/mach/config.py wine-gecko-2.47.2/python/mach/mach/config.py
+--- wine-gecko-2.47.2.org/python/mach/mach/config.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mach/mach/config.py	2021-10-06 16:16:55.838840055 +0200
+@@ -246,7 +246,7 @@
+         cls.config_settings[section][option] = meta
+ 
+ 
+-class ConfigSettings(collections.Mapping):
++class ConfigSettings(collections.abc.Mapping):
+     """Interface for configuration settings.
+ 
+     This is the main interface to the configuration.
+@@ -292,7 +292,7 @@
+     will result in exceptions being raised.
+     """
+ 
+-    class ConfigSection(collections.MutableMapping, object):
++    class ConfigSection(collections.abc.MutableMapping, object):
+         """Represents an individual config section."""
+         def __init__(self, config, name, settings):
+             object.__setattr__(self, '_config', config)
+diff -uNr wine-gecko-2.47.2.org/python/mach/mach/decorators.py wine-gecko-2.47.2/python/mach/mach/decorators.py
+--- wine-gecko-2.47.2.org/python/mach/mach/decorators.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mach/mach/decorators.py	2021-10-06 16:16:55.841840157 +0200
+@@ -151,7 +151,7 @@
+               'Conditions argument must take a list ' + \
+               'of functions. Found %s instead.'
+ 
+-        if not isinstance(command.conditions, collections.Iterable):
++        if not isinstance(command.conditions, collections.abc.Iterable):
+             msg = msg % (command.name, type(command.conditions))
+             raise MachError(msg)
+ 
+diff -uNr wine-gecko-2.47.2.org/python/mach/mach/main.py wine-gecko-2.47.2/python/mach/mach/main.py
+--- wine-gecko-2.47.2.org/python/mach/mach/main.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mach/mach/main.py	2021-10-06 16:16:55.840840123 +0200
+@@ -6,7 +6,7 @@
+ # (mach). It is packaged as a module because everything is a library.
+ 
+ 
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ import argparse
+ import codecs
+diff -uNr wine-gecko-2.47.2.org/python/mozbuild/mozbuild/backend/configenvironment.py wine-gecko-2.47.2/python/mozbuild/mozbuild/backend/configenvironment.py
+--- wine-gecko-2.47.2.org/python/mozbuild/mozbuild/backend/configenvironment.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mozbuild/mozbuild/backend/configenvironment.py	2021-10-06 16:16:55.798838694 +0200
+@@ -7,7 +7,7 @@
+ import os
+ import sys
+ 
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ import mozpack.path as mozpath
+ 
+diff -uNr wine-gecko-2.47.2.org/python/mozbuild/mozbuild/makeutil.py wine-gecko-2.47.2/python/mozbuild/mozbuild/makeutil.py
+--- wine-gecko-2.47.2.org/python/mozbuild/mozbuild/makeutil.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mozbuild/mozbuild/makeutil.py	2021-10-06 16:16:55.797838660 +0200
+@@ -6,7 +6,7 @@
+ 
+ import os
+ import re
+-from collections import Iterable
++from collections.abc import Iterable
+ 
+ 
+ class Makefile(object):
+diff -uNr wine-gecko-2.47.2.org/python/mozbuild/mozbuild/util.py wine-gecko-2.47.2/python/mozbuild/mozbuild/util.py
+--- wine-gecko-2.47.2.org/python/mozbuild/mozbuild/util.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/mozbuild/mozbuild/util.py	2021-10-06 16:16:55.800838762 +0200
+@@ -598,7 +598,7 @@
+         self._strings = StrictOrderingOnAppendList()
+         self._children = {}
+ 
+-    class StringListAdaptor(collections.Sequence):
++    class StringListAdaptor(collections.abc.Sequence):
+         def __init__(self, hsl):
+             self._hsl = hsl
+ 
+diff -uNr wine-gecko-2.47.2.org/python/requests/requests/packages/urllib3/_collections.py wine-gecko-2.47.2/python/requests/requests/packages/urllib3/_collections.py
+--- wine-gecko-2.47.2.org/python/requests/requests/packages/urllib3/_collections.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/requests/requests/packages/urllib3/_collections.py	2021-10-06 16:16:55.858840736 +0200
+@@ -1,5 +1,5 @@
+ from __future__ import absolute_import
+-from collections import Mapping, MutableMapping
++from collections.abc import Mapping, MutableMapping
+ try:
+     from threading import RLock
+ except ImportError:  # Platform-specific: No threads available
+diff -uNr wine-gecko-2.47.2.org/python/requests/requests/sessions.py wine-gecko-2.47.2/python/requests/requests/sessions.py
+--- wine-gecko-2.47.2.org/python/requests/requests/sessions.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/requests/requests/sessions.py	2021-10-06 16:16:55.867841042 +0200
+@@ -9,7 +9,7 @@
+ 
+ """
+ import os
+-from collections import Mapping
++from collections.abc import Mapping
+ from datetime import datetime
+ 
+ from .auth import _basic_auth_str
+diff -uNr wine-gecko-2.47.2.org/python/virtualenv/virtualenv.py wine-gecko-2.47.2/python/virtualenv/virtualenv.py
+--- wine-gecko-2.47.2.org/python/virtualenv/virtualenv.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/python/virtualenv/virtualenv.py	2021-10-06 17:03:17.323147059 +0200
+@@ -1010,13 +1010,13 @@
+ 
+     if is_darwin:
+         prefixes.extend((
+-            os.path.join("/Library/Python", sys.version[:3], "site-packages"),
++            os.path.join("/Library/Python", sys.version[:4], "site-packages"),
+             os.path.join(sys.prefix, "Extras", "lib", "python"),
+-            os.path.join("~", "Library", "Python", sys.version[:3], "site-packages"),
++            os.path.join("~", "Library", "Python", sys.version[:4], "site-packages"),
+             # Python 2.6 no-frameworks
+-            os.path.join("~", ".local", "lib","python", sys.version[:3], "site-packages"),
++            os.path.join("~", ".local", "lib","python", sys.version[:4], "site-packages"),
+             # System Python 2.7 on OSX Mountain Lion
+-            os.path.join("~", "Library", "Python", sys.version[:3], "lib", "python", "site-packages")))
++            os.path.join("~", "Library", "Python", sys.version[:4], "lib", "python", "site-packages")))
+ 
+     if hasattr(sys, 'real_prefix'):
+         prefixes.append(sys.real_prefix)
+@@ -1060,7 +1060,7 @@
+             # special-case custom readline.so on OS X, but not for pypy:
+             if modname == 'readline' and sys.platform == 'darwin' and not (
+                     is_pypy or filename.endswith(join('lib-dynload', 'readline.so'))):
+-                dst_filename = join(dst_prefix, 'lib', 'python%s' % sys.version[:3], 'readline.so')
++                dst_filename = join(dst_prefix, 'lib', 'python%s' % sys.version[:4], 'readline.so')
+             elif modname == 'readline' and sys.platform == 'win32':
+                 # special-case for Windows, where readline is not a
+                 # standard module, though it may have been installed in
+@@ -1524,7 +1524,7 @@
+     except ImportError:
+         pass
+     else:
+-        if sysconfig._get_default_scheme() == 'posix_local':
++        if sysconfig.get_default_scheme() == 'posix_local':
+             local_path = os.path.join(home_dir, 'local')
+             if not os.path.exists(local_path):
+                 os.mkdir(local_path)
+@@ -1552,7 +1552,7 @@
+ 
+     logger.debug('This system uses lib64; symlinking lib64 to lib')
+ 
+-    assert os.path.basename(lib_dir) == 'python%s' % sys.version[:3], (
++    assert os.path.basename(lib_dir) == 'python%s' % sys.version[:4], (
+         "Unexpected python lib dir: %r" % lib_dir)
+     lib_parent = os.path.dirname(lib_dir)
+     top_level = os.path.dirname(lib_parent)
+@@ -1610,7 +1610,7 @@
+     fixup_pth_and_egg_link(home_dir)
+     ## FIXME: need to fix up distutils.cfg
+ 
+-OK_ABS_SCRIPTS = ['python', 'python%s' % sys.version[:3],
++OK_ABS_SCRIPTS = ['python', 'python%s' % sys.version[:4],
+                   'activate', 'activate.bat', 'activate_this.py',
+                   'activate.fish', 'activate.csh']
+ 
+@@ -1620,7 +1620,7 @@
+             '%s /c' % os.path.normcase(os.environ.get('COMSPEC', 'cmd.exe')),
+             '', '.exe')
+     else:
+-        new_shebang_args = ('/usr/bin/env', sys.version[:3], '')
++        new_shebang_args = ('/usr/bin/env', sys.version[:4], '')
+ 
+     # This is what we expect at the top of scripts:
+     shebang = '#!%s' % os.path.normcase(os.path.join(
+diff -uNr wine-gecko-2.47.2.org/testing/marionette/client/marionette_driver/wait.py wine-gecko-2.47.2/testing/marionette/client/marionette_driver/wait.py
+--- wine-gecko-2.47.2.org/testing/marionette/client/marionette_driver/wait.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/testing/marionette/client/marionette_driver/wait.py	2021-10-06 16:16:55.442826578 +0200
+@@ -76,7 +76,7 @@
+ 
+         exceptions = []
+         if ignored_exceptions is not None:
+-            if isinstance(ignored_exceptions, collections.Iterable):
++            if isinstance(ignored_exceptions, collections.abc.Iterable):
+                 exceptions.extend(iter(ignored_exceptions))
+             else:
+                 exceptions.append(ignored_exceptions)
+diff -uNr wine-gecko-2.47.2.org/testing/mozbase/versioninfo.py wine-gecko-2.47.2/testing/mozbase/versioninfo.py
+--- wine-gecko-2.47.2.org/testing/mozbase/versioninfo.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/testing/mozbase/versioninfo.py	2021-10-06 16:16:55.500828552 +0200
+@@ -9,7 +9,7 @@
+ from commit messages.
+ """
+ 
+-from collections import Iterable
++from collections.abc import Iterable
+ from distutils.version import StrictVersion
+ import argparse
+ import os
+diff -uNr wine-gecko-2.47.2.org/testing/web-platform/tests/tools/html5lib/html5lib/trie/_base.py wine-gecko-2.47.2/testing/web-platform/tests/tools/html5lib/html5lib/trie/_base.py
+--- wine-gecko-2.47.2.org/testing/web-platform/tests/tools/html5lib/html5lib/trie/_base.py	2020-11-30 13:47:56.000000000 +0100
++++ wine-gecko-2.47.2/testing/web-platform/tests/tools/html5lib/html5lib/trie/_base.py	2021-10-06 16:16:55.358823720 +0200
+@@ -1,6 +1,6 @@
+ 
+ 
+-from collections import Mapping
++from collections.abc import Mapping
+ 
+ 
+ class Trie(Mapping):

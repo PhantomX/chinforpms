@@ -1,7 +1,7 @@
 %global commit 7b79e3a87b1e1a9478e92d6ea3b5973da4388a82
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220708
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -47,9 +47,9 @@
 %endif
 %global no64bit   0
 %global winefastsync 5.16
-%global winegecko 2.47.2
+%global winegecko 2.47.3
 %global winemono  7.3.0
-%global winevulkan 1.3.219
+%global winevulkan 1.3.221
 
 %global wineFAudio 22.06
 %global winegsm 1.0.19
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f7d87c5bfbaf8846b1a44249988ee13710707b28
+%global wine_stagingver 7.13
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4ef932d2d7c58b2e011075ccddacc8f505ca77c0
+%global tkg_id 568316696c581fb04bac45d9fc609eff72aa828f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -148,8 +148,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.12
-Release:        101%{?gver}%{?dist}
+Version:        7.13
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -408,6 +408,11 @@ Patch396:       %{whq_url}/f5f741842287e1db81c85c2ed737ae086781ae58#/%{name}-whq
 Patch397:       %{whq_url}/e15af49029189ef18497fd6da3fccd73f07a324b#/%{name}-whq-revert-mfplat-e15af49.patch
 Patch398:       %{whq_url}/51bd7f86b611242d0375fefa4fe66dda85fe485f#/%{name}-whq-revert-mfplat-51bd7f8.patch
 Patch399:       %{whq_url}/7b79e3a87b1e1a9478e92d6ea3b5973da4388a82#/%{name}-whq-revert-mfplat-7b79e3a.patch
+Patch400:       %{whq_url}/2db8a0a94efd3d45f2888c96f293670112414533#/%{name}-whq-revert-mfplat-2db8a0a.patch
+Patch401:       %{whq_url}/142e6e78619975bd064a73110b8999fc9fe7ae84#/%{name}-whq-revert-mfplat-142e6e7.patch
+Patch402:       %{whq_url}/fb513fcc0742390338a30e0df13111bf21de0920#/%{name}-whq-revert-mfplat-fb513fc.patch
+Patch403:       %{whq_url}/6c2b8fd3a4dadc0f6061c11e0bbc05326d504423#/%{name}-whq-revert-mfplat-6c2b8fd.patch
+Patch404:       %{whq_url}/177046a137635a697830f23406d84b72b588784d#/%{name}-whq-revert-mfplat-177046a.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -442,7 +447,8 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patch
+%dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patch
+Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support5.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 Patch1041:       %{tkg_url}/hotfixes/larger_def_heap/larger_def_heap.mypatch#/%{name}-tkg-larger_def_heap.patch
@@ -1064,6 +1070,11 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch404 -p1 -R
+%patch403 -p1 -R
+%patch402 -p1 -R
+%patch401 -p1 -R
+%patch400 -p1 -R
 %patch399 -p1 -R
 %patch398 -p1 -R
 %patch397 -p1 -R
@@ -2430,7 +2441,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/winevulkan.%{winedll}
 %endif
 %{_libdir}/wine/%{winesodir}/wineusb.so
-%{_libdir}/wine/%{winesodir}/wineusb.sys.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/wineusb.sys
 %endif
@@ -2925,6 +2935,9 @@ fi
 
 
 %changelog
+* Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.13-100
+- 7.13
+
 * Sat Jul 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.12-101.20220708git7b79e3a
 - Snapshot
 

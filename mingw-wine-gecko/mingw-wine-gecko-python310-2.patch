@@ -1,0 +1,27 @@
+diff --git a/media/webrtc/trunk/tools/gyp/pylib/gyp/common.py b/media/webrtc/trunk/tools/gyp/pylib/gyp/common.py
+index b268d229a483..4f9cb0eca728 100644
+--- a/media/webrtc/trunk/tools/gyp/pylib/gyp/common.py
++++ b/media/webrtc/trunk/tools/gyp/pylib/gyp/common.py
+@@ -494,7 +494,7 @@ def uniquer(seq, idfun=None):
+ 
+ 
+ # Based on http://code.activestate.com/recipes/576694/.
+-class OrderedSet(collections.MutableSet):
++class OrderedSet(collections.abc.MutableSet):
+   def __init__(self, iterable=None):
+     self.end = end = []
+     end += [None, end, end]         # sentinel node for doubly linked list
+diff --git a/testing/mozbase/manifestparser/manifestparser/filters.py b/testing/mozbase/manifestparser/manifestparser/filters.py
+index 3bc7c3a60541..cd5b8268358c 100644
+--- a/testing/mozbase/manifestparser/manifestparser/filters.py
++++ b/testing/mozbase/manifestparser/manifestparser/filters.py
+@@ -8,7 +8,8 @@ dictionary of values, and returns a new iterable of test objects. It is
+ possible to define custom filters if the built-in ones are not enough.
+ """
+ 
+-from collections import defaultdict, MutableSequence
++from collections import defaultdict
++from collections.abc import MutableSequence
+ import itertools
+ import os
+ 

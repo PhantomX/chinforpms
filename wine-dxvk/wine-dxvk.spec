@@ -23,12 +23,13 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id afa870972ac7cd2a48787f76503acc10533228b4
+%global sporif_id cef9106da692b6f5faa5a8194019b4f58de13e89
 %global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
+%global asyncpatch -af418dc
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global dxvk_async 0
+%global dxvk_async 1
 
 %global winecommonver 5.3
 
@@ -40,7 +41,7 @@
 
 Name:           wine-%{pkgname}
 Version:        1.10.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -61,7 +62,7 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 
 
 %if 0%{?dxvk_async}
-Patch200:       %{sporif_url}/dxvk-async.patch#/%{name}-sporif-dxvk-async.patch
+Patch200:       %{sporif_url}/dxvk-async%{?asyncpatch}.patch#/%{name}-sporif-dxvk-async%{?asyncpatch}.patch
 Patch201:       0001-dxvk.conf-async-options.patch
 Source4:        %{sporif_url}/README.md#/README.async.md
 %endif
@@ -246,6 +247,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.2-101
+- Reenable async
+
 * Thu Jul 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.2-100
 - 1.10.2
 - dxvk_async disabled for the time
