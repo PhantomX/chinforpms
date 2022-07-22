@@ -8,7 +8,7 @@
 %endif
 
 Name:           gamemode
-Version:        1.6.1
+Version:        1.7
 Release:        100%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -63,10 +63,13 @@ sed -e '/^GAMEMODEAUTO_NAME/s|lib|/usr/\\$LIB/lib|' -i data/%{name}run
 
 rm -f %{buildroot}%{_libdir}/*.a
 
+%pre
+%sysusers_create_compat %{buildroot}%{_sysusersdir}/%{name}.conf
+
 
 %files
 %license LICENSE.txt
-%doc README.md example/%{name}.ini
+%doc README.md
 %{_bindir}/%{name}*
 %{_libdir}/lib*.so.*
 %{_libexecdir}/%{name}
@@ -77,6 +80,7 @@ rm -f %{buildroot}%{_libdir}/*.a
 %{_datadir}/polkit-1/actions/*.policy
 %{_datadir}/%{name}/
 %{_metainfodir}/*.metainfo.xml
+%{_sysusersdir}/%{name}.conf
 
 %files devel
 %license LICENSE.txt
@@ -86,6 +90,9 @@ rm -f %{buildroot}%{_libdir}/*.a
 
 
 %changelog
+* Thu Jul 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-100
+- 1.7
+
 * Fri Feb 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.6.1-100
 - 1.6.1
 
