@@ -5,11 +5,13 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+%global with_nogui 0
+
 %global with_sysvulkan 0
 
-%global commit 6f932c29a5dbf30b936f440f084ebaf1f0bed5fa
+%global commit f07a6c243d9090d5d215b82d4e59869bbb88d6f1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220513
+%global date 20220723
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,14 +21,14 @@
 %global vc_url  https://github.com/stenzek/%{name}
 
 %global glad_ver 0.1.33
-%global imgui_ver 1.81
+%global imgui_ver 1.88
 %global md5_ver 1.6
 %global rcheevos_scommit 0e9eb7c
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        56%{?gver}%{?dist}
+Release:        57%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -38,6 +40,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        org.%{name}.DuckStation.metainfo.xml
+Source2:        %{name}.sh
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -56,14 +59,16 @@ BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
-BuildRequires:  qt5-qtbase-private-devel
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(fmt) >= 8
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcurl)
@@ -93,6 +98,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  hicolor-icon-theme
 
+Requires:       coreutils
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
@@ -112,12 +118,14 @@ A Sony PlayStation (PSX) emulator, focusing on playability, speed, and long-term
 maintainability.
 
 
+%if %{?with_nogui}
 %package nogui
 Summary:        DuckStation emulator without a graphical user interface
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description nogui
 DuckStation emulator without a graphical user interface.
+%endif
 
 
 %package data
@@ -135,7 +143,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cubeb discord-rpc libchdr libFLAC libsamplerate lzma minizip msvc \
+  cubeb discord-rpc fmt libchdr libFLAC libsamplerate lzma minizip msvc \
   rapidjson tinyxml2 vulkan-loader/include/vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
@@ -169,18 +177,18 @@ sed \
   -i src/scmversion/gen_scmversion.sh
 %endif
 
-sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
-  -i src/duckstation-qt/qthostinterface.cpp \
-  src/frontend-common/common_host_interface.cpp \
-  src/frontend-common/postprocessing_chain.cpp
+cp -p %{S:2} .
 
-sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
-  -i src/frontend-common/sdl_controller_interface.cpp
+sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
+  -i src/duckstation-qt/qthost.cpp %{name}.sh
 
 
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+%if !%{?with_nogui}
+  -DBUILD_NOGUI_FRONTEND:BOOL=OFF \
+%endif
   -DUSE_WAYLAND:BOOL=ON \
   -DENABLE_CHEEVOS:BOOL=ON \
   -DENABLE_DISCORD_PRESENCE:BOOL=OFF \
@@ -191,13 +199,22 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/bin/%{name}-{qt,nogui} %{buildroot}%{_bindir}/
+install -pm0755 %{__cmake_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt.bin
+install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}-qt
+
+%if 0%{?with_nogui}
+install -pm0755 %{__cmake_builddir}/bin/%{name}-nogui %{buildroot}%{_bindir}/%{name}-nogui.bin
+install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}-nogui
+%endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{__cmake_builddir}/bin/{database,inputprofiles,resources,shaders,translations} \
+cp -r %{__cmake_builddir}/bin/{inputprofiles,resources,shaders,translations} \
   %{buildroot}%{_datadir}/%{name}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
+ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
+  %{buildroot}%{_datadir}/%{name}/resources/gamecontrollerdb.txt
+
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -224,16 +241,18 @@ appstream-util validate-relax --nonet \
 %files -f %{name}-qt.lang
 %doc README.md
 %license LICENSE dep/LICENSE.* dep/COPYRIGHT.*
-%{_bindir}/%{name}-qt
+%{_bindir}/%{name}-qt*
 %{_datadir}/applications/%{name}-qt.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}-qt.*
 %{_metainfodir}/*.metainfo.xml
 
 
+%if %{?with_nogui}
 %files nogui
 %doc README.md
 %license LICENSE dep/LICENSE.* dep/COPYRIGHT.*
-%{_bindir}/%{name}-nogui
+%{_bindir}/%{name}-nogui*
+%endif
 
 
 %files data
@@ -244,6 +263,12 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jul 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-57.20220723gitf07a6c2
+- Bump
+- Qt6
+- Add wrapper to copy some files to home dir
+- nogui optional switch, disabled by default
+
 * Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-56.20220513git6f932c2
 - Last snapshot
 

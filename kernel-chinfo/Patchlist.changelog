@@ -1,3 +1,30 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f014b0b869404c24a955539ae044dae72f639cce
+ f014b0b869404c24a955539ae044dae72f639cce um: Add missing apply_returns()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0aabd44e8df94774bcadbd06c88a49257f5b27f3
+ 0aabd44e8df94774bcadbd06c88a49257f5b27f3 x86/bugs: Remove apostrophe typo
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7095e33ea429177c0b44b7194efeb334af5fd897
+ 7095e33ea429177c0b44b7194efeb334af5fd897 tools headers cpufeatures: Sync with the kernel sources
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/44a6c2ee845e197336ad8993d9369d11a342b9b3
+ 44a6c2ee845e197336ad8993d9369d11a342b9b3 tools arch x86: Sync the msr-index.h copy with the kernel sources
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d93f9a7a81a4fcfad3c03b2d3aee7f3ce15b73dc
+ d93f9a7a81a4fcfad3c03b2d3aee7f3ce15b73dc KVM: emulate: do not adjust size of fastop and setcc subroutines
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/eda959dfce68b14c64ed2a46be10c3ad190dfec9
+ eda959dfce68b14c64ed2a46be10c3ad190dfec9 x86/kvm: fix FASTOP_SIZE when return thunks are enabled
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ea3cd1bd63d9f4f574c2859b5b0d8ffabc430bef
+ ea3cd1bd63d9f4f574c2859b5b0d8ffabc430bef efi/x86: use naked RET on mixed mode call wrapper
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0b667f92cd5ec5d23426696cf698af4464954c8b
+ 0b667f92cd5ec5d23426696cf698af4464954c8b x86/speculation: Use DECLARE_PER_CPU for x86_spec_ctrl_current
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9fb40753adacf689d8bf16ddccafec7a9cb506c0
+ 9fb40753adacf689d8bf16ddccafec7a9cb506c0 x86/asm/32: Fix ANNOTATE_UNRET_SAFE use on 32-bit
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/124840092adcbd2b256ecb6ec277d90a52e9ca35
  124840092adcbd2b256ecb6ec277d90a52e9ca35 x86/static_call: Serialize __static_call_fixup() properly
 

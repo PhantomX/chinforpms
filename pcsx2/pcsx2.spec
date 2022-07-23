@@ -110,10 +110,13 @@ BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(ryml) >= 0.4.1
 %if %{with qt}
 BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
-BuildRequires:  cmake(Qt6Linguist)
+BuildRequires:  cmake(Qt6GuiTools)
+BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6WWidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 %else

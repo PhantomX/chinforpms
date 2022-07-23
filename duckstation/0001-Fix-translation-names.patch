@@ -1,18 +1,18 @@
-From 8704dde82d0a7bd23c55ae9180f7a581b45c8cea Mon Sep 17 00:00:00 2001
+From 00dc03d7f81d1a064f3c218757e9b87dde2369b8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 1 Jun 2021 19:55:22 -0300
 Subject: [PATCH] Fix translation names
 
 ---
- src/duckstation-qt/CMakeLists.txt      | 6 +++---
- src/duckstation-qt/qthostinterface.cpp | 6 +++---
+ src/duckstation-qt/CMakeLists.txt | 6 +++---
+ src/duckstation-qt/qthost.cpp     | 6 +++---
  2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index 161b937..653730a 100644
+index 45a4f25..852e236 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -126,11 +126,11 @@ set(TS_FILES
+@@ -148,11 +148,11 @@ set(TS_FILES
    translations/duckstation-qt_ja.ts
    translations/duckstation-qt_nl.ts
    translations/duckstation-qt_pl.ts
@@ -27,11 +27,11 @@ index 161b937..653730a 100644
  )
  
  set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations")
-diff --git a/src/duckstation-qt/qthostinterface.cpp b/src/duckstation-qt/qthostinterface.cpp
-index b52eceb..ada176f 100644
---- a/src/duckstation-qt/qthostinterface.cpp
-+++ b/src/duckstation-qt/qthostinterface.cpp
-@@ -78,11 +78,11 @@ std::vector<std::pair<QString, QString>> QtHostInterface::getAvailableLanguageLi
+diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
+index 760097c..2878752 100644
+--- a/src/duckstation-qt/qthost.cpp
++++ b/src/duckstation-qt/qthost.cpp
+@@ -131,11 +131,11 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
            {QStringLiteral("Italiano"), QStringLiteral("it")},
            {QStringLiteral("Nederlands"), QStringLiteral("nl")},
            {QStringLiteral("Polski"), QStringLiteral("pl")},
@@ -45,7 +45,7 @@ index b52eceb..ada176f 100644
 +          {QStringLiteral("简体中文"), QStringLiteral("zh_CN")}};
  }
  
- bool QtHostInterface::Initialize()
+ bool QtHost::InBatchMode()
 -- 
-2.31.1
+2.37.1
 

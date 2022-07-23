@@ -1,22 +1,28 @@
-From 896f0156347f36fdade1f6c1944b496142609fb3 Mon Sep 17 00:00:00 2001
+From 978a99540b90318f8b9b281942568fba003b5acd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 17 Aug 2021 18:37:47 -0300
 Subject: [PATCH] Set datadir to RPM packaging
 
 ---
- src/duckstation-qt/qthostinterface.cpp        | 21 +------------------
- src/frontend-common/common_host_interface.cpp |  6 +++---
- src/frontend-common/postprocessing_chain.cpp  |  9 ++++----
- .../sdl_controller_interface.cpp              |  3 +--
- 4 files changed, 10 insertions(+), 29 deletions(-)
+ src/duckstation-qt/qthost.cpp            | 23 ++---------------------
+ 1 file changed, 2 insertions(+), 21 deletions(-)
 
-diff --git a/src/duckstation-qt/qthostinterface.cpp b/src/duckstation-qt/qthostinterface.cpp
-index 2e1c650..251af74 100644
---- a/src/duckstation-qt/qthostinterface.cpp
-+++ b/src/duckstation-qt/qthostinterface.cpp
-@@ -136,26 +136,7 @@ void QtHostInterface::installTranslator()
+diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
+index 2db9b27..760097c 100644
+--- a/src/duckstation-qt/qthost.cpp
++++ b/src/duckstation-qt/qthost.cpp
+@@ -259,7 +259,7 @@ void QtHost::SetResourcesDirectory()
  {
-   const QString language(QString::fromStdString(GetStringSettingValue("Main", "Language", "en")));
+ #ifndef __APPLE__
+   // On Windows/Linux, these are in the binary directory.
+-  EmuFolders::Resources = Path::Combine(EmuFolders::AppRoot, "resources");
++  EmuFolders::Resources = "_RPM_DATADIR_/resources";
+ #else
+   // On macOS, this is in the bundle resources directory.
+   EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
+@@ -438,26 +438,7 @@ void QtHost::InstallTranslator()
+ {
+   const QString language(QString::fromStdString(Host::GetBaseStringSettingValue("Main", "Language", "en")));
  
 -  // install the base qt translation first
 -  const QString base_dir(QStringLiteral("%1/translations").arg(qApp->applicationDirPath()));
@@ -42,90 +48,6 @@ index 2e1c650..251af74 100644
    const QString path = QStringLiteral("%1/duckstation-qt_%3.qm").arg(base_dir).arg(language);
    if (!QFile::exists(path))
    {
-diff --git a/src/frontend-common/common_host_interface.cpp b/src/frontend-common/common_host_interface.cpp
-index 12b6463..dcd23e4 100644
---- a/src/frontend-common/common_host_interface.cpp
-+++ b/src/frontend-common/common_host_interface.cpp
-@@ -2739,7 +2739,7 @@ CommonHostInterface::InputProfileList CommonHostInterface::GetInputProfileList()
-   InputProfileList profiles;
- 
-   const std::string user_dir(GetUserDirectoryRelativePath("inputprofiles"));
--  const std::string program_dir(GetProgramDirectoryRelativePath("inputprofiles"));
-+  const std::string program_dir("_RPM_DATADIR_/inputprofiles");
- 
-   FindInputProfiles(user_dir, &profiles);
-   if (user_dir != program_dir)
-@@ -2780,7 +2780,7 @@ std::string CommonHostInterface::GetInputProfilePath(const char* name) const
-   if (FileSystem::FileExists(path.c_str()))
-     return path;
- 
--  path = GetProgramDirectoryRelativePath("inputprofiles" FS_OSPATH_SEPARATOR_STR "%s.ini", name);
-+  path = StringUtil::StdStringFromFormat("_RPM_DATADIR_/inputprofiles" FS_OSPATH_SEPARATOR_STR "%s.ini", name);
-   if (FileSystem::FileExists(path.c_str()))
-     return path;
- 
-@@ -4118,7 +4118,7 @@ std::unique_ptr<ByteStream> CommonHostInterface::OpenPackageFile(const char* pat
- {
-   const u32 allowed_flags = (BYTESTREAM_OPEN_READ | BYTESTREAM_OPEN_SEEKABLE | BYTESTREAM_OPEN_STREAMED);
-   const std::string full_path(
--    StringUtil::StdStringFromFormat("%s" FS_OSPATH_SEPARATOR_STR "%s", m_program_directory.c_str(), path));
-+    StringUtil::StdStringFromFormat("_RPM_DATADIR_" FS_OSPATH_SEPARATOR_STR "%s", path));
-   const u32 real_flags = (flags & allowed_flags) | BYTESTREAM_OPEN_READ;
-   Log_DevPrintf("Requesting package file '%s'", path);
-   return FileSystem::OpenFile(full_path.c_str(), real_flags);
-diff --git a/src/frontend-common/postprocessing_chain.cpp b/src/frontend-common/postprocessing_chain.cpp
-index 5b72a09..e311375 100644
---- a/src/frontend-common/postprocessing_chain.cpp
-+++ b/src/frontend-common/postprocessing_chain.cpp
-@@ -3,6 +3,7 @@
- #include "common/file_system.h"
- #include "common/log.h"
- #include "common/string.h"
-+#include "common/string_util.h"
- #include "core/host_interface.h"
- #include <sstream>
- Log_SetChannel(PostProcessingChain);
-@@ -25,8 +26,8 @@ static bool TryLoadingShader(PostProcessingShader* shader, const std::string_vie
-   }
-   else
-   {
--    filename = g_host_interface->GetProgramDirectoryRelativePath("shaders" FS_OSPATH_SEPARATOR_STR "%s.glsl",
--                                                                 shader_name_str.c_str());
-+    filename = StringUtil::StdStringFromFormat("_RPM_DATADIR_/shaders/%s.glsl",
-+                                              shader_name_str.c_str());
-     if (FileSystem::FileExists(filename.c_str()))
-     {
-       if (!shader->LoadFromFile(std::move(shader_name_str), filename.c_str()))
-@@ -132,7 +133,7 @@ std::vector<std::string> PostProcessingChain::GetAvailableShaderNames()
- {
-   std::vector<std::string> names;
- 
--  std::string program_dir = g_host_interface->GetProgramDirectoryRelativePath("shaders");
-+  std::string program_dir = "_RPM_DATADIR_/shaders";
-   std::string user_dir = g_host_interface->GetUserDirectoryRelativePath("shaders");
-   FileSystem::FindResultsArray results;
-   FileSystem::FindFiles(user_dir.c_str(), "*.glsl",
-@@ -200,4 +201,4 @@ void PostProcessingChain::ClearStages()
-   m_shaders.clear();
- }
- 
--} // namespace FrontendCommon
-\ No newline at end of file
-+} // namespace FrontendCommon
-diff --git a/src/frontend-common/sdl_controller_interface.cpp b/src/frontend-common/sdl_controller_interface.cpp
-index 20e81da..c86fd56 100644
---- a/src/frontend-common/sdl_controller_interface.cpp
-+++ b/src/frontend-common/sdl_controller_interface.cpp
-@@ -71,8 +71,7 @@ std::string SDLControllerInterface::GetGameControllerDBFileName() const
-   if (FileSystem::FileExists(filename.c_str()))
-     return filename;
- 
--  filename =
--    m_host_interface->GetProgramDirectoryRelativePath("database" FS_OSPATH_SEPARATOR_STR "gamecontrollerdb.txt");
-+  filename = "_RPM_GCDBDIR_/gamecontrollerdb.txt";
-   if (FileSystem::FileExists(filename.c_str()))
-     return filename;
- 
 -- 
-2.31.1
+2.37.1
 

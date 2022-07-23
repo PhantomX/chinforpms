@@ -121,9 +121,9 @@ index 2be2cfce3bf..a8c3090a814 100644
      NtUserDestroyAcceleratorTable,
      NtUserDestroyInputContext,
 +    NtUserEnableMouseInPointer,
+     NtUserDispatchMessage,
      NtUserEndMenu,
      NtUserFindExistingCursorIcon,
-     NtUserFindWindowEx,
 diff --git a/dlls/win32u/win32u.spec b/dlls/win32u/win32u.spec
 index d1104df7371..2b840e587d1 100644
 --- a/dlls/win32u/win32u.spec

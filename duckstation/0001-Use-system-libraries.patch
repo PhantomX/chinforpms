@@ -1,4 +1,4 @@
-From 1bffebf051ca3a50e78b690432f696150798ad54 Mon Sep 17 00:00:00 2001
+From 2ffe8d54a8141086bd35c2379283cc3fbab3d429 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 15:48:06 -0300
 Subject: [PATCH] Use system libraries
@@ -6,28 +6,32 @@ Subject: [PATCH] Use system libraries
 CheckLib.cmake and enet search from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 ---
- dep/CMakeLists.txt                    |  64 ++++++++++++-
+ dep/CMakeLists.txt                    |  67 ++++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
  dep/stb/CMakeLists.txt                |   5 +
- dep/vulkan-loader/CMakeLists.txt      |   9 ++
- src/common/CMakeLists.txt             |  43 ++++++++-
- src/common/audio_stream.cpp           |   2 +-
+ src/common/CMakeLists.txt             |  38 +++++++-
  src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++++++
- src/core/CMakeLists.txt               |  19 +++-
+ src/core/CMakeLists.txt               |  12 ++-
  src/core/texture_replacements.cpp     |   2 +
- src/duckstation-qt/CMakeLists.txt     |  10 +-
- src/frontend-common/CMakeLists.txt    |   8 +-
- 12 files changed, 294 insertions(+), 12 deletions(-)
+ src/duckstation-qt/CMakeLists.txt     |   8 +-
+ src/frontend-common/CMakeLists.txt    |   4 +-
+ src/util/CMakeLists.txt               |  22 ++++-
+ 11 files changed, 290 insertions(+), 12 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index e3eeca9..2e26653 100644
+index f2307ed..e45dffe 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,21 +1,79 @@
+@@ -1,21 +1,82 @@
++find_package(fmt 8)
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
+ add_subdirectory(fmt)
++endif()
  add_subdirectory(glad)
 -add_subdirectory(stb)
-+
 +pkg_search_module(zlib zlib)
 +if(zlib_FOUND)
 +  message(STATUS "Using the system zlib")
@@ -75,8 +79,6 @@ index e3eeca9..2e26653 100644
  add_subdirectory(glslang)
 +endif()
 +
-+pkg_search_module(vulkan-loader vulkan)
- add_subdirectory(vulkan-loader)
  add_subdirectory(imgui)
  add_subdirectory(simpleini)
  
@@ -157,35 +159,11 @@ index 8206b10..bd575a4 100644
  target_include_directories(stb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
  target_link_libraries(stb zlib Threads::Threads "${CMAKE_DL_LIBS}")
 +endif()
-diff --git a/dep/vulkan-loader/CMakeLists.txt b/dep/vulkan-loader/CMakeLists.txt
-index baf945a..c04e954 100644
---- a/dep/vulkan-loader/CMakeLists.txt
-+++ b/dep/vulkan-loader/CMakeLists.txt
-@@ -1,3 +1,11 @@
-+if(vulkan-loader_FOUND)
-+  message(STATUS "Using the system vulkan")
-+ set(SRCS
-+	include/vulkan_entry_points.h
-+	include/vulkan_loader.h
-+	src/vulkan_loader.cpp
-+)
-+else()
- set(SRCS
- 	include/vulkan_entry_points.h
- 	include/vulkan_loader.h
-@@ -22,6 +30,7 @@ set(SRCS
- 	include/vulkan/vulkan_macos.h
- 	src/vulkan_loader.cpp
- )
-+endif()
- 
- add_library(vulkan-loader ${SRCS})
- target_include_directories(vulkan-loader PUBLIC  "${CMAKE_CURRENT_SOURCE_DIR}/include")
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index f3b2de4..6666ceb 100644
+index 3785bad..6a97c87 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -116,9 +116,50 @@ add_library(common
+@@ -86,10 +86,46 @@ add_library(common
    window_info.h
  )
  
@@ -218,11 +196,6 @@ index f3b2de4..6666ceb 100644
 +target_link_libraries(common PRIVATE glslang)
 +endif()
 +
-+if(vulkan_loader_FOUND)
-+target_include_directories(common PRIVATE ${vulkan_loader_INCLUDE_DIRS})
-+target_link_libraries(common PRIVATE ${vulkan_loader_LIBRARIES})
-+endif()
-+
 +if(zlib_FOUND)
 +target_include_directories(common PRIVATE ${zlib_INCLUDE_DIRS})
 +target_link_libraries(common PRIVATE ${zlib_LIBRARIES})
@@ -232,22 +205,12 @@ index f3b2de4..6666ceb 100644
 +
  target_include_directories(common PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
--target_link_libraries(common PRIVATE glad stb Threads::Threads libchdr glslang vulkan-loader zlib minizip samplerate)
-+target_link_libraries(common PRIVATE glad stb Threads::Threads vulkan-loader)
+ target_link_libraries(common PUBLIC fmt Threads::Threads)
+-target_link_libraries(common PRIVATE glad stb libchdr glslang zlib minizip samplerate "${CMAKE_DL_LIBS}")
++target_link_libraries(common PRIVATE glad stb "${CMAKE_DL_LIBS}")
  
  if(WIN32)
    target_sources(common PRIVATE
-diff --git a/src/common/audio_stream.cpp b/src/common/audio_stream.cpp
-index 66a94cb..f5b00f0 100644
---- a/src/common/audio_stream.cpp
-+++ b/src/common/audio_stream.cpp
-@@ -384,4 +384,4 @@ void AudioStream::ResampleInput(std::unique_lock<std::mutex> buffer_lock)
-   }
-   m_resample_out_buffer.erase(m_resample_out_buffer.begin(),
-                               m_resample_out_buffer.begin() + (static_cast<u32>(sd.output_frames_gen) * m_channels));
--}
-\ No newline at end of file
-+}
 diff --git a/src/common/vulkan/shader_compiler.cpp b/src/common/vulkan/shader_compiler.cpp
 index 45833e5..994614c 100644
 --- a/src/common/vulkan/shader_compiler.cpp
@@ -412,18 +375,13 @@ index 45833e5..994614c 100644
  {
    return CompileShaderToSPV(EShLangVertex, "vs", source_code);
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index 019e0ab..69589c6 100644
+index f6239e6..2fac0af 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -118,10 +118,23 @@ set(RECOMPILER_SRCS
+@@ -118,10 +118,18 @@ set(RECOMPILER_SRCS
      cpu_recompiler_types.h
  )
  
-+if(vulkan_loader_FOUND)
-+target_include_directories(core PRIVATE ${vulkan_loader_INCLUDE_DIRS})
-+target_link_libraries(core PRIVATE ${vulkan_loader_LIBRARIES})
-+endif()
-+
 +if(xxhash_FOUND)
 +  target_compile_definitions(core PUBLIC "-DSYSTEM_XXHASH=1")
 +  target_include_directories(core PRIVATE ${xxhash_INCLUDE_DIRS})
@@ -434,26 +392,19 @@ index 019e0ab..69589c6 100644
 +
  target_include_directories(core PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
--target_link_libraries(core PUBLIC Threads::Threads common zlib vulkan-loader)
--target_link_libraries(core PRIVATE glad stb xxhash imgui)
-+target_link_libraries(core PUBLIC Threads::Threads common vulkan-loader)
+-target_link_libraries(core PUBLIC Threads::Threads common util zlib)
+-target_link_libraries(core PRIVATE glad stb xxhash imgui rapidjson tinyxml2)
++target_link_libraries(core PUBLIC Threads::Threads common util)
 +target_link_libraries(core PRIVATE glad stb imgui)
  
  if(WIN32)
    target_sources(core PRIVATE
-@@ -164,5 +177,5 @@ if(ENABLE_CHEEVOS)
-     cheevos.h
-   )
-   target_compile_definitions(core PUBLIC -DWITH_CHEEVOS=1)
--  target_link_libraries(core PRIVATE rcheevos rapidjson)
-+  target_link_libraries(core PRIVATE rcheevos)
- endif()
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index 66a7d3f..31fcb92 100644
+index 7d44aa4..3e5d910 100644
 --- a/src/core/texture_replacements.cpp
 +++ b/src/core/texture_replacements.cpp
-@@ -7,9 +7,11 @@
- #include "host_interface.h"
+@@ -9,9 +9,11 @@
+ #include "host.h"
  #include "settings.h"
  #include "xxhash.h"
 +#ifndef SYSTEM_XXHASH
@@ -465,45 +416,76 @@ index 66a7d3f..31fcb92 100644
  Log_SetChannel(TextureReplacements);
  
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index b54e830..6f68ed2 100644
+index b5320e3..7336f85 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -139,7 +139,15 @@ qt5_add_translation(QM_FILES ${TS_FILES})
+@@ -160,7 +160,13 @@ qt6_add_translation(QM_FILES ${TS_FILES})
  
  add_executable(duckstation-qt ${SRCS} ${QM_FILES})
- target_include_directories(duckstation-qt PRIVATE "${Qt5Gui_PRIVATE_INCLUDE_DIRS}")
--target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad minizip scmversion vulkan-loader Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
-+
+ target_include_directories(duckstation-qt PRIVATE "${Qt6Gui_PRIVATE_INCLUDE_DIRS}" "${CMAKE_CURRENT_SOURCE_DIR}")
+-target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad minizip scmversion Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)
 +if(minizip_FOUND)
 +target_include_directories(duckstation-qt PRIVATE ${minizip_INCLUDE_DIRS})
 +target_link_libraries(duckstation-qt PRIVATE ${minizip_LIBRARIES})
 +else()
 +target_link_libraries(duckstation-qt PRIVATE minizip)
 +endif()
-+
-+target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad scmversion vulkan-loader Qt5::Core Qt5::Gui Qt5::Widgets Qt5::Network)
++target_link_libraries(duckstation-qt PRIVATE frontend-common core common imgui glad scmversion Qt6::Core Qt6::Gui Qt6::Widgets Qt6::Network)
  
  if(WIN32)
    # We want a Windows subsystem application not console.
 diff --git a/src/frontend-common/CMakeLists.txt b/src/frontend-common/CMakeLists.txt
-index 97e67b0..dda61a3 100644
+index 91c12cf..c62ddde 100644
 --- a/src/frontend-common/CMakeLists.txt
 +++ b/src/frontend-common/CMakeLists.txt
-@@ -41,7 +41,13 @@ add_library(frontend-common
+@@ -40,7 +40,7 @@ add_library(frontend-common
    vulkan_host_display.h
  )
  
--target_link_libraries(frontend-common PUBLIC core common glad vulkan-loader cubeb imgui simpleini tinyxml2 rapidjson scmversion)
-+target_link_libraries(frontend-common PUBLIC core common glad vulkan-loader cubeb imgui simpleini tinyxml2 scmversion)
-+
-+if(rapidjson_FOUND)
-+  target_include_directories(frontend-common PRIVATE ${rapidjson_INCLUDE_DIRS})
-+else()
-+  target_link_libraries(frontend-common PRIVATE rapidjson)
-+endif()
+-target_link_libraries(frontend-common PUBLIC core common glad cubeb imgui tinyxml2 rapidjson scmversion)
++target_link_libraries(frontend-common PUBLIC core common glad cubeb imgui tinyxml2 scmversion)
  
  if(WIN32)
    target_sources(frontend-common PRIVATE
+@@ -115,7 +115,7 @@ if(ENABLE_CHEEVOS)
+     achievements.h
+   )
+   target_compile_definitions(frontend-common PUBLIC -DWITH_CHEEVOS=1)
+-  target_link_libraries(frontend-common PRIVATE rcheevos rapidjson)
++  target_link_libraries(frontend-common PRIVATE rcheevos)
+ endif()
+ 
+ # Copy the provided data directory to the output directory.
+diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
+index 8cf36ce..492c942 100644
+--- a/src/util/CMakeLists.txt
++++ b/src/util/CMakeLists.txt
+@@ -44,4 +44,24 @@ add_library(util
+ target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_link_libraries(util PUBLIC common simpleini)
+-target_link_libraries(util PRIVATE libchdr samplerate zlib)
++
++if(libchdr_FOUND)
++target_include_directories(util PRIVATE ${libchdr_INCLUDE_DIRS})
++target_link_libraries(util PRIVATE ${libchdr_LIBRARIES})
++else()
++target_link_libraries(util PRIVATE libchdr)
++endif()
++
++if(samplerate_FOUND)
++target_include_directories(util PRIVATE ${samplerate_INCLUDE_DIRS})
++target_link_libraries(util PRIVATE ${samplerate_LIBRARIES})
++else()
++target_link_libraries(util PRIVATE samplerate)
++endif()
++
++if(zlib_FOUND)
++target_include_directories(util PRIVATE ${zlib_INCLUDE_DIRS})
++target_link_libraries(util PRIVATE ${zlib_LIBRARIES})
++else()
++target_link_libraries(util PRIVATE zlib)
++endif()
 -- 
-2.35.1
+2.37.1
 

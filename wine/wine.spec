@@ -1,7 +1,7 @@
-%global commit 7b79e3a87b1e1a9478e92d6ea3b5973da4388a82
+%global commit 7b77b4e3b4ea732ed592ac15f000875f5d1f1daa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220708
-%global with_snapshot 0
+%global date 20220722
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.13
+%global wine_stagingver 9fd1bb66d3c26b727865af806e0f0f052eaeb842
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 568316696c581fb04bac45d9fc609eff72aa828f
+%global tkg_id 76854ffdc9b9d5b65702d090116ed2efb686fbf0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.13
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -419,6 +419,7 @@ Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-stagin
 
 Patch900:        0001-staging-restore-mfplat-streaming-patchset.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
+Patch902:        %{wine_stg_url}/commit/86091d3b1f5068693e1720ae1c301d2916dc975f.patch#/%{name}-staging-revert-86091d3.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
@@ -447,8 +448,8 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-%dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patch
-Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support5.patch
+%dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patchg 
+Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support6.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 Patch1041:       %{tkg_url}/hotfixes/larger_def_heap/larger_def_heap.mypatch#/%{name}-tkg-larger_def_heap.patch
@@ -1285,6 +1286,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch900 -p1
 %patch901 -p1
+%patch902 -p1 -R
 
 %patch1006 -p1
 %patch1000 -p1
@@ -2935,6 +2937,9 @@ fi
 
 
 %changelog
+* Sat Jul 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.13-101.20220722git7b77b4e
+- Snapshot
+
 * Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.13-100
 - 7.13
 

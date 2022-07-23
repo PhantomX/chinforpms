@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 13
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,8 +170,8 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 95a952024c2a71fdb78555cb6aca1c55c2946ae2
-%global pfcoprhash d9bfc724e33021e97db89eeed508887d
+%global pfcommit a22fc19dc839b730dab84a0f32d79c2bd9cdb975
+%global pfcoprhash bac4c562a4df8a359fd35526ef8ee7a7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -201,7 +201,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 33056238c43297176aa855dd4294b4a32936697e
+%global opensuse_id 54276625fe3d816a1569383c38149eac21a1733c
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -967,11 +967,6 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/tty-extract-tty_flip_buffer_commit-from-tty_flip_buf.patch#/openSUSE-tty-extract-tty_flip_buffer_commit-from-tty_flip_buf.patch
-Patch1017: %{opensuse_url}/tty-use-new-tty_insert_flip_string_and_push_buffer-i.patch#/openSUSE-tty-use-new-tty_insert_flip_string_and_push_buffer-i.patch
-Patch1018: %{opensuse_url}/x86-entry-Remove-UNTRAIN_RET-from-native_irq_return_.patch#/openSUSE-x86-entry-Remove-UNTRAIN_RET-from-native_irq_return_.patch
-Patch1019: %{opensuse_url}/x86-mm-Simplify-RESERVE_BRK.patch#/openSUSE-x86-mm-Simplify-RESERVE_BRK.patch
-Patch1020: %{opensuse_url}/x86-bugs-Remove-apostrophe-typo.patch#/openSUSE-x86-bugs-Remove-apostrophe-typo.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
@@ -2937,6 +2932,9 @@ fi
 #
 #
 %changelog
+* Fri Jul 22 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.13-500.chinfo
+- 5.18.13 - pf4
+
 * Mon Jul 18 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.12-500.chinfo
 - 5.18.12 - pf4
 
