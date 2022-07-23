@@ -208,9 +208,6 @@
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/26879111c5ca69517b620f9d9fe8b576dc3bdf87
  26879111c5ca69517b620f9d9fe8b576dc3bdf87 x86/traps: Use pt_regs directly in fixup_bad_iret()
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/f147438b42147e1cf44f1471dc2a4288486dd791
- f147438b42147e1cf44f1471dc2a4288486dd791 netfilter: nf_tables: stricter validation of element data
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/536f55b6208f317e86c5876014be423642690098
  536f55b6208f317e86c5876014be423642690098 Revert "Revert "smb3: use netname when available on secondary channels""
 

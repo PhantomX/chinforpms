@@ -20,7 +20,7 @@ do
   if ! [[ -e "${DUCKSTATIONHOME}/${file}" ]] ;then
     install -D "${file}" -pm0644 "${DUCKSTATIONHOME}/${file}" >/dev/null 2>&1
   fi
-done < <(find inputprofiles shaders -type f)
+done < <(find inputprofiles -type f)
 popd >/dev/null 2>&1
 
 exec "/usr/bin/$(basename "$0").bin" "$@"

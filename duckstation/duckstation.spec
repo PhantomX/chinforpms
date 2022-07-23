@@ -9,7 +9,7 @@
 
 %global with_sysvulkan 0
 
-%global commit f07a6c243d9090d5d215b82d4e59869bbb88d6f1
+%global commit 2d4404c0318f1b9402f79fcd88bfc5fb07c00ec9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220723
 %global with_snapshot 1
@@ -99,6 +99,8 @@ BuildRequires:  libappstream-glib
 BuildRequires:  hicolor-icon-theme
 
 Requires:       coreutils
+Requires:       google-roboto-fonts
+Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
@@ -208,13 +210,24 @@ install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}-nogui
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{__cmake_builddir}/bin/{inputprofiles,resources,shaders,translations} \
+cp -r %{__cmake_builddir}/bin/{inputprofiles,resources,translations} \
   %{buildroot}%{_datadir}/%{name}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{name}/resources/gamecontrollerdb.txt
 
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto*
+ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto-Regular.ttf
+
+%if 0%{?fedora} && 0%{?fedora} >= 36
+ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
+%else
+ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
+%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -263,7 +276,7 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
-* Sat Jul 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-57.20220723gitf07a6c2
+* Sat Jul 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-57.20220723git2d4404c
 - Bump
 - Qt6
 - Add wrapper to copy some files to home dir

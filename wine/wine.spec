@@ -1317,7 +1317,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1024 -p1
 %patch1025 -p1
 %patch1026 -p1
-%patch1038 -p1
+%dnl %patch1038 -p1
 %if 0%{?childwindow}
 %patch1039 -p1
 %endif
