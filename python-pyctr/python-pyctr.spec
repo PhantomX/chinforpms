@@ -1,14 +1,14 @@
-%global pkgname pyctr
+%global srcname pyctr
 
-Name:           python-%{pkgname}
+Name:           python-%{srcname}
 Version:        0.5.1
 Release:        1%{?dist}
 Summary:        Python library to interact with Nintendo 3DS files
 
 License:        MIT
-URL:            https://github.com/ihaveamac/%{pkgname}
+URL:            https://github.com/ihaveamac/%{srcname}
 
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
 BuildArch:      noarch
 
@@ -18,21 +18,21 @@ BuildRequires:  %{py3_dist pycryptodomex}
 
 
 %global _description %{expand:
-%{pkgname} is a Python library to interact with Nintendo 3DS files.}
+%{srcname} is a Python library to interact with Nintendo 3DS files.}
 
 %description %_description
 
-%package     -n python3-%{pkgname}
+%package     -n python3-%{srcname}
 Summary:        %{summary}
 Requires:       %{py3_dist pycryptodomex}
-Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-%{pkgname}
+%description -n python3-%{srcname}
 %_description
 
 
 %prep
-%autosetup -n %{pkgname}-%{version} -p1
+%autosetup -n %{srcname}-%{version} -p1
 
 %if 0%{?fedora} < 35
 # Push this down for the time
@@ -50,14 +50,14 @@ sed -e 's|Pillow>=8.2|Pillow>=8.1|g' -i setup.py
 %install
 %pyproject_install
 
-%pyproject_save_files %{pkgname}
+%pyproject_save_files %{srcname}
 
 
 %check
 %{__python3} setup.py test
 
 
-%files -n python3-%{pkgname} -f %{pyproject_files}
+%files -n python3-%{srcname} -f %{pyproject_files}
 %license LICENSE
 %doc README.md
 

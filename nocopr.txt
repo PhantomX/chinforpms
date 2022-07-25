@@ -55,6 +55,8 @@ python-pyctr
 -odrive
 rocketchat-desktop
 rpcs3
+rustdesk
+rustdesk-server
 rusty-psn
 snes9x
 softmaker-office

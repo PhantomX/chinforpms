@@ -1,4 +1,4 @@
-%global modname pypng
+%global srcname pypng
 
 Name:               python-pypng
 Version:            0.0.21
@@ -6,8 +6,8 @@ Release:            1%{?dist}
 Summary:            Pure Python PNG image encoder/decoder
 
 License:            MIT
-URL:                http://pypi.python.org/pypi/pypng
-Source0:            https://github.com/drj11/%{modname}/archive/%{modname}-%{version}.tar.gz
+URL:                https://pypi.python.org/pypi/pypng
+Source0:            https://github.com/drj11/%{srcname}/archive/%{srcname}-%{version}.tar.gz
 
 BuildArch:          noarch
 
@@ -20,7 +20,7 @@ PyPNG allows PNG image files to be read and written using pure Python.\
 \
 It's available from github.com https://github.com/drj11/pypng\
 \
-Documentation is kindly hosted by PyPI http://pythonhosted.org/pypng/
+Documentation is kindly hosted by PyPI http://pythonhosted.org/pypng/.
 
 %description %_description
 
@@ -29,11 +29,7 @@ Summary:            Pure Python PNG image encoder/decoder
 %{?python_provide:%python_provide python3-pypng}
 
 %description -n python3-pypng
-PyPNG allows PNG image files to be read and written using pure Python.
-
-It's available from github.com https://github.com/drj11/pypng
-
-Documentation is kindly hosted by PyPI http://pythonhosted.org/pypng/
+%{_description}
 
 
 %package -n pypng-tools
@@ -47,7 +43,7 @@ This package have the distribution tools.
 
 
 %prep
-%setup -q -n %{modname}-%{modname}-%{version}
+%setup -q -n %{srcname}-%{srcname}-%{version}
 
 %generate_buildrequires
 %pyproject_buildrequires -t

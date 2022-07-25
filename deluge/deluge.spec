@@ -10,7 +10,7 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
-Version:        2.1.0
+Version:        2.1.1
 Release:        100%{?gver}%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
@@ -278,6 +278,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sun Jul 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.1-100
+- 2.1.1
+
 * Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.0-100
 - 2.1.0
 

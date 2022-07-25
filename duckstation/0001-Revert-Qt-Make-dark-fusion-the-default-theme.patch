@@ -20,7 +20,7 @@ index ddb79ee..17a4ecb 100644
 +static const char* DEFAULT_THEME_NAME = "default";
  
  MainWindow* g_main_window = nullptr;
- 
+ static QString s_unthemed_style_name;
 -- 
 2.37.1
 

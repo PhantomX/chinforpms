@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 2d4404c0318f1b9402f79fcd88bfc5fb07c00ec9
+%global commit 25c52f97d4439222defc2f9f798a53b83c47cff9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220723
+%global date 20220724
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -146,7 +146,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cubeb discord-rpc fmt libchdr libFLAC libsamplerate lzma minizip msvc \
-  rapidjson tinyxml2 vulkan-loader/include/vulkan xxhash zlib
+  rapidjson tinyxml2 vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
   rm -rf glslang

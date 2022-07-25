@@ -1,4 +1,4 @@
-From 2ffe8d54a8141086bd35c2379283cc3fbab3d429 Mon Sep 17 00:00:00 2001
+From d32bbd52f7d51cb6a01306815267b0e39448c981 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 15:48:06 -0300
 Subject: [PATCH] Use system libraries
@@ -6,24 +6,24 @@ Subject: [PATCH] Use system libraries
 CheckLib.cmake and enet search from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 ---
- dep/CMakeLists.txt                    |  67 ++++++++++++-
+ dep/CMakeLists.txt                    |  71 +++++++++++++-
  dep/discord-rpc/CMakeLists.txt        |   7 +-
  dep/minizip/CMakeLists.txt            |   8 +-
  dep/stb/CMakeLists.txt                |   5 +
- src/common/CMakeLists.txt             |  38 +++++++-
+ src/common/CMakeLists.txt             |  46 ++++++++-
  src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++++++
  src/core/CMakeLists.txt               |  12 ++-
  src/core/texture_replacements.cpp     |   2 +
  src/duckstation-qt/CMakeLists.txt     |   8 +-
  src/frontend-common/CMakeLists.txt    |   4 +-
  src/util/CMakeLists.txt               |  22 ++++-
- 11 files changed, 290 insertions(+), 12 deletions(-)
+ 11 files changed, 301 insertions(+), 13 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index f2307ed..e45dffe 100644
+index 312ba8f..c143de7 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,21 +1,82 @@
+@@ -1,22 +1,89 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -81,6 +81,13 @@ index f2307ed..e45dffe 100644
 +
  add_subdirectory(imgui)
  add_subdirectory(simpleini)
++
++find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h PATHS ${INCLUDE_INSTALL_DIR} /usr/include /usr/local/include)
++if(vulkan_INCLUDE_DIRS)
++  message(STATUS "Using the system vulkan-headers")
++else()
+ add_subdirectory(vulkan)
++endif()
  
 +pkg_search_module(samplerate samplerate)
 +if(samplerate_FOUND)
@@ -160,10 +167,10 @@ index 8206b10..bd575a4 100644
  target_link_libraries(stb zlib Threads::Threads "${CMAKE_DL_LIBS}")
 +endif()
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 3785bad..6a97c87 100644
+index 61a0814..3dd9292 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -86,10 +86,46 @@ add_library(common
+@@ -86,10 +86,52 @@ add_library(common
    window_info.h
  )
  
@@ -203,10 +210,17 @@ index 3785bad..6a97c87 100644
 +target_link_libraries(common PRIVATE zlib)
 +endif()
 +
++if(vulkan_INCLUDE_DIRS)
++target_include_directories(common PRIVATE ${vulkan_INCLUDE_DIRS})
++else()
++target_link_libraries(common PUBLIC vulkan-headers)
++endif()
++
  target_include_directories(common PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(common PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
- target_link_libraries(common PUBLIC fmt Threads::Threads)
+-target_link_libraries(common PUBLIC fmt Threads::Threads vulkan-headers)
 -target_link_libraries(common PRIVATE glad stb libchdr glslang zlib minizip samplerate "${CMAKE_DL_LIBS}")
++target_link_libraries(common PUBLIC fmt Threads::Threads)
 +target_link_libraries(common PRIVATE glad stb "${CMAKE_DL_LIBS}")
  
  if(WIN32)

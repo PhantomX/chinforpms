@@ -1,14 +1,14 @@
-%global pkgname haccrypto
+%global srcname haccrypto
 
-Name:           python-%{pkgname}
+Name:           python-%{srcname}
 Version:        0.1.1
 Release:        2%{?dist}
 Summary:        Nintendo Switch XTSN crypto for Python
 
 License:        MIT
-URL:            https://github.com/luigoalma/%{pkgname}
+URL:            https://github.com/luigoalma/%{srcname}
 
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
 
 BuildRequires:  python3-devel
@@ -17,20 +17,20 @@ BuildRequires:  gcc-c++
 
 
 %global _description %{expand:
-%{pkgname} is the Nintendo Switch XTSN crypto for Python.}
+%{srcname} is the Nintendo Switch XTSN crypto for Python.}
 
 %description %_description
 
-%package     -n python3-%{pkgname}
+%package     -n python3-%{srcname}
 Summary:        %{summary}
-Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description -n python3-%{pkgname}
+%description -n python3-%{srcname}
 %_description
 
 
 %prep
-%autosetup -n %{pkgname}-%{version} -p1
+%autosetup -n %{srcname}-%{version} -p1
 
 %generate_buildrequires
 %pyproject_buildrequires -r
@@ -43,10 +43,10 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 %install
 %pyproject_install
 
-%pyproject_save_files %{pkgname}
+%pyproject_save_files %{srcname}
 
 
-%files -n python3-%{pkgname} -f %{pyproject_files}
+%files -n python3-%{srcname} -f %{pyproject_files}
 %license LICENSE.md
 %doc README.md
 
