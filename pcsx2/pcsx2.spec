@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3079
+Version:        1.7.3131
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -116,7 +116,7 @@ BuildRequires:  cmake(Qt6GuiTools)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
-BuildRequires:  cmake(Qt6WWidgetsTools)
+BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 %else
@@ -215,11 +215,15 @@ sed -i \
 mkdir cheats_ws_tmp
 pushd cheats_ws_tmp
 unzip -q ../bin/resources/cheats_ws.zip
-rename PNACH pnach *.*
-zip -9 -q ../cheats_ws_new.zip *.*
+if ls *.PNACH >/dev/null 2>&1 ;then
+  rename PNACH pnach *.*
+  zip -9 -q ../cheats_ws_new.zip *.*
+fi
 popd
-touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
-mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
+if [ -f cheats_ws_new.zip ] ;then
+  touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
+  mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
+fi
 
 
 %build
@@ -341,6 +345,9 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3131-1
+- 1.7.3131
+
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3079-1
 - 1.7.3079
 

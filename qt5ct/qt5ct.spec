@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.5
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -100,6 +100,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1.5-103
+- Rebuild (qt5)
+
 * Sun Jan 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1.5-102
 - Update xinitrc.d
 

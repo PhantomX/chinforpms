@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 4196928320aec0e4f2bd11be3c6b95bd3b7547b0
+%global commit ad59fe0fe83dc5e26a047dbd29b80b4679c4ee06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220628
+%global date 20220727
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -64,8 +64,8 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.12.3
-Release:        115%{?gver}%{?dist}
+Version:        1.13
+Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -99,6 +99,8 @@ Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
+
+Patch10:        %{vc_url}/%{name}/pull/15736.patch#/%{name}-gh-pr15736.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -445,6 +447,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13-100.20220727gitad59fe0
+- 1.13
+
 * Sun Jul 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.12.3-115.20220628git4196928
 - Bump
 

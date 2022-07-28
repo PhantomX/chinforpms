@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f5c1094d03c317a93d4f088c34e7a89c16a2b2bf
+%global commit 98903f80764c3be5c01ab149b50d1eb55fec4bfd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220707
+%global date 20220727
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,7 +20,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -47,10 +47,12 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  make
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6OpenGL)
+BuildRequires:  cmake(Qt6OpenGLWidgets)
 BuildRequires:  pkgconfig(epoxy)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpcap)
@@ -102,6 +104,7 @@ export LDFLAGS+=" -Wl,-z,noexecstack"
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_LTO:BOOL=OFF \
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
+  -DUSE_QT6:BOOL=ON \
 %{nil}
 
 %cmake_build
@@ -130,6 +133,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-8.20220727git98903f8
+- Last snapshot
+- Qt6
+
 * Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-7.20220707gitf5c1094
 - Update
 
