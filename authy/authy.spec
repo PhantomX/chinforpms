@@ -11,7 +11,7 @@
 
 Name:           authy
 # Version from application info
-Version:        1.9.0
+Version:        2.2.1
 Release:        1%{?dist}
 Summary:        Two factor authentication desktop application
 
@@ -36,7 +36,7 @@ Requires:       hicolor-icon-theme
 %global __requires_exclude ^libffmpeg.so
 %global __requires_exclude %__requires_exclude|^libEGL.so
 %global __requires_exclude %__requires_exclude|^libGLESv2.so
-%global __requires_exclude %__requires_exclude|^libVkICD_mock_icd.so
+%global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
 
 
 %description
@@ -77,7 +77,7 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp %{name}/{%{name},locales,resources,*.{bin,dat,pak,so}} \
+cp -rp %{name}/{%{name},locales,resources,swiftshader,*.{bin,dat,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
@@ -105,6 +105,9 @@ done
 
 
 %changelog
+* Thu Jul 28 2022 - 2.2.1-1
+- 2.2.1
+
 * Wed Nov 24 2021 - 1.9.0-1
 - 1.9.0
 

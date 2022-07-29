@@ -9,8 +9,8 @@
 %global minver %%(echo %{version} | cut -d. -f4)
 
 Name:           wps-office
-Version:        11.1.0.10920
-Release:        2%{?dist}
+Version:        11.1.0.11664
+Release:        1%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -71,11 +71,17 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libjpeg.so*
 %global __requires_exclude %__requires_exclude|^libjsapiservice.so*
 %global __requires_exclude %__requires_exclude|^libjscefservice.so*
+%global __requires_exclude %__requires_exclude|^libkappessframework.so*
 %global __requires_exclude %__requires_exclude|^libkbrowserclient.so*
+%global __requires_exclude %__requires_exclude|^libkcloudfiledialog.so*
 %global __requires_exclude %__requires_exclude|^libkdcsdk_linux.so*
 %global __requires_exclude %__requires_exclude|^libkdownload.so*
+%global __requires_exclude %__requires_exclude|^libkfpccomb.so*
 %global __requires_exclude %__requires_exclude|^libKMailLib.so*
+%global __requires_exclude %__requires_exclude|^libkmodule.so*
+%global __requires_exclude %__requires_exclude|^libknetwork.so*
 %global __requires_exclude %__requires_exclude|^libknewshare.so*
+%global __requires_exclude %__requires_exclude|^libkonlinefileconfig.so*
 %global __requires_exclude %__requires_exclude|^libkpromecloudopendialog.so*
 %global __requires_exclude %__requires_exclude|^libkprometheus.so*
 %global __requires_exclude %__requires_exclude|^libkqingaccountsdk.so*
@@ -84,6 +90,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libksoapi.so*
 %global __requires_exclude %__requires_exclude|^libksolite.so*
 %global __requires_exclude %__requires_exclude|^libkso.so*
+%global __requires_exclude %__requires_exclude|^libksqlite3.so*
 %global __requires_exclude %__requires_exclude|^libmediacoder.so*
 %global __requires_exclude %__requires_exclude|^libmediaflash.so*
 %global __requires_exclude %__requires_exclude|^libmediaplayer.so*
@@ -138,6 +145,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^librtfreader.so*
 %global __requires_exclude %__requires_exclude|^libsearchcore.so*
 %global __requires_exclude %__requires_exclude|^libspelldllv3.so*
+%global __requires_exclude %__requires_exclude|^libsqlite3.so*
 %global __requires_exclude %__requires_exclude|^libssl.so*
 %global __requires_exclude %__requires_exclude|^libswfplayer.so*
 %global __requires_exclude %__requires_exclude|^libswresample.so*
@@ -331,7 +339,10 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
-* Fri Apr 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:11.1.0.10920-2
+* Thu Jul 28 2022 - 1:11.1.0.11664-1
+- 11.1.0.11664
+
+* Fri Apr 01 2022 - 1:11.1.0.10920-2
 - Fix requires_exclude
 
 * Mon Feb 14 2022 - 1:11.1.0.10920-1

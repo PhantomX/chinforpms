@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        21.11
+Version:        22.07
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -24,14 +24,10 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         %{vc_url}/commit/de0c1f833c12a992af5c7daebe1705cd2c72f743.patch#/%{name}-gh-de0c1f8.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  make
-BuildRequires:  pkgconfig(gstreamer-1.0)
-BuildRequires:  pkgconfig(gstreamer-audio-1.0)
-BuildRequires:  pkgconfig(gstreamer-app-1.0)
 BuildRequires:  pkgconfig(sdl2)
 
 
@@ -88,7 +84,7 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 %files -n lib%{name}
 %license LICENSE
-%doc README README.gstreamer
+%doc README
 %{_libdir}/*.so.*
 
 %files -n lib%{name}-devel
@@ -99,6 +95,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:22.07-100
+- 22.07
+
 * Wed Nov 03 2021 Phantom X <megaphantomx at hotmail dot com> - 1:21.11-100
 - 21.11
 

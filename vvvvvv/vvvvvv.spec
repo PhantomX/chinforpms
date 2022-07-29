@@ -1,14 +1,25 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 9c698c084e7bb25d699499c59d402d0a48103ee0
+%global commit 8ca53fa5d2ebf5acda41fd85a889f1190120d1f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220214
+%global date 20220705
 
 %global with_systinyxml 0
 
-%global bundlelodepngver 20191109
-%global bundlephysfsver 0
-%global bundletinyxml 9.0.0
+%global commit2 5601b8272a6850b7c5d693dd0c0e16da50be8d8d
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 lodepng
+
+%global commit3 6925c1067de2c9e39d626bcba84db0113f8395f2
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 physfs
+
+%global commit4 e45d9d16d430a3f5d3eee9fe40d5e194e1e5e63a
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 tinyxml2
+
+%global commit5 22.07
+%global srcname5 FAudio
 
 %global gver .%{date}git%{shortcommit}
 
@@ -16,7 +27,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -28,7 +39,12 @@ License:        VVVVVV
 URL:            https://github.com/TerryCavanagh/%{pkgname}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
+Source2:        https://github.com/lvandeve/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/icculus/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        https://github.com/leethomason/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        https://github.com/FNA-XNA/FAudio/archive/%{commit5}/%{srcname5}-%{commit5}.tar.gz
 
+Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
 
 
@@ -38,8 +54,8 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  ImageMagick
+BuildRequires:  pkgconfig(FAudio)
 BuildRequires:  pkgconfig(sdl2)
-BuildRequires:  pkgconfig(SDL2_mixer)
 BuildRequires:  pkgconfig(physfs)
 %if 0%{?with_systinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
@@ -51,10 +67,10 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       bundled(lodepng) = %{bundlelodepngver}
-#Provides:       bundled(physfs) = %%{bundlephysfsver}
+Provides:       bundled(lodepng) = 0~git%{shortcommit2}
+#Provides:       bundled(physfs) = 0~git%%{shortcommit3}
 %if !0%{?with_systinyxml}
-Provides:       bundled(tinyxml2) = %{bundletinyxml}
+Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
 
 
@@ -65,14 +81,11 @@ Provides:       bundled(tinyxml2) = %{bundletinyxml}
 %prep
 %autosetup -n %{pkgname}-%{commit} -p1
 
-# Make sure that we are using system ones
-mv third_party/physfs/extras .
-rm -rf third_party/physfs/*
-mv extras third_party/physfs/
-rm -rf third_party/utfcpp/
-%if 0%{?with_systinyxml}
-rm -rf third_party/tinyxml2/
-%else
+tar -xf %{S:2} -C third_party/lodepng --strip-components 1
+tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
+
+%if !%{?with_systinyxml}
+tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
 sed \
   -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \
   -e '/find_package(utf8cpp CONFIG)/aadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
@@ -81,12 +94,14 @@ sed \
 cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
 %endif
 
-cp -p third_party/lodepng/LICENSE.txt LICENSE.lodepng
+tar -xf %{S:5} -C third_party/FAudio \*/src/stb\*.h --strip-components 1
+
+cp -p third_party/lodepng/LICENSE LICENSE.lodepng
 
 cp -p desktop_version/README.md README_desktop.md
 
 sed \
-  -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
+  -e 's|find_package(Git)|find_package(Git_disabled)|g' \
   -e '/CMAKE_BUILD_WITH_INSTALL_RPATH/d' \
   -e '/CMAKE_INSTALL_RPATH/d' \
   -i desktop_version/CMakeLists.txt
@@ -103,9 +118,6 @@ sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.c
 %cmake \
   -S desktop_version \
   -DBUNDLE_DEPENDENCIES:BOOL=OFF \
-%if 0%{?with_systinyxml}
-  -DUSE_SYSTEM_TINYXML:BOOL=ON \
-%endif
 %{nil}
 
 %cmake_build
@@ -152,6 +164,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4-6.20220705git8ca53fa
+- Update
+- BR: FAudio, instead SDL2_mixer
+
 * Tue Mar 08 2022 - 2.4-5.20220214git9c698c0
 - Bump
 

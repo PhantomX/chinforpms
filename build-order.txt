@@ -113,7 +113,7 @@ disk-indicator
 dosbox-x
 easytag
 -emojione-picker
--FAudio
+FAudio
 -FAudio-noreverb
 fcrackzip
 firefox-chinfo-prefs

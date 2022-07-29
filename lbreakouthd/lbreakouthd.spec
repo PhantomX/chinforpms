@@ -1,6 +1,6 @@
 Name:           lbreakouthd
-Version:        1.0.9
-Release:        2%{?dist}
+Version:        1.0.10
+Release:        1%{?dist}
 Summary:        A breakout-style arcade game
 
 License:        GPLv3
@@ -89,6 +89,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.10-1
+- 1.0.10
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.9-2
 - BR: gcc-c++
 

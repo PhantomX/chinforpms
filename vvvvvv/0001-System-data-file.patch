@@ -1,4 +1,4 @@
-From f0ab6608ee09e6321bdcb900eeff4b7ab62a5b6e Mon Sep 17 00:00:00 2001
+From 8c4060e80d27861f0fd4d573f39aebf929ac98af Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Sep 2021 22:40:06 -0300
 Subject: [PATCH] System data file
@@ -8,7 +8,7 @@ Subject: [PATCH] System data file
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index 6caabdc..35b83ce 100644
+index ab51697..dd44ba5 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
 @@ -154,7 +154,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
@@ -20,8 +20,8 @@ index 6caabdc..35b83ce 100644
              "data.zip"
          );
      }
-@@ -177,7 +177,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
-         goto end;
+@@ -176,7 +176,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
+         return 0;
      }
  
 -    SDL_snprintf(output, sizeof(output), "%s%s", basePath, "gamecontrollerdb.txt");
@@ -30,5 +30,5 @@ index 6caabdc..35b83ce 100644
      {
          vlog_info("gamecontrollerdb.txt not found!");
 -- 
-2.31.1
+2.37.1
 

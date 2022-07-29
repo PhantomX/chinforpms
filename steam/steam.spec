@@ -11,7 +11,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.74
+Version:        1.0.0.75
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -70,8 +70,9 @@ Requires:       mesa-vulkan-drivers
 Requires:       vulkan-loader%{?_isa}
 Requires:       vulkan-loader
 
-# Minimum requirements for starting the steam client for the first time
+# Minimum requirements for starting the steam client using system libraries
 Requires:       alsa-lib%{?_isa}
+Requires:       fontconfig%{?_isa}
 Requires:       gtk2%{?_isa}
 Requires:       libICE%{?_isa}
 Requires:       libnsl%{?_isa}
@@ -82,6 +83,7 @@ Requires:       libXinerama%{?_isa}
 Requires:       libXtst%{?_isa}
 Requires:       libXScrnSaver%{?_isa}
 Requires:       mesa-libGL%{?_isa} >= 17.2.2-2
+Requires:       NetworkManager-libnm%{?_isa}
 Requires:       nss%{?_isa}
 Requires:       pulseaudio-libs%{?_isa}
 Requires:       SDL2%{?_isa}
@@ -109,7 +111,8 @@ Requires:       libdbusmenu-gtk3%{?_isa} >= 16.04.0
 Requires:       libatomic%{?_isa}
 
 # Required by Shank
-Requires:       alsa-plugins-pulseaudio%{?_isa}
+Requires:       (alsa-plugins-pulseaudio%{?_isa} if pulseaudio)
+Requires:       (pipewire-alsa%{?_isa} if pipewire)
 
 Recommends:     gamemode
 Recommends:     gamemode%{?_isa}
@@ -153,6 +156,11 @@ cp %{SOURCE5} .
 %install
 %make_install
 
+rm -f %{buildroot}%{_bindir}/%{name}
+ln -s \
+  $(realpath -m --relative-to="%{_bindir}" "%{_libdir}/%{name}")/bin_steam.sh \
+  %{buildroot}%{_bindir}/%{name}
+
 rm -fr %{buildroot}%{_docdir}/%{name}/ \
     %{buildroot}%{_bindir}/%{name}deps
 
@@ -188,7 +196,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 %license COPYING steam_subscriber_agreement.txt
 %doc debian/changelog README.Fedora
 %{_bindir}/%{name}
-%{_metainfodir}/*.metainfo.xml
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
@@ -208,6 +215,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.75-100
+- 1.0.0.75
+
 * Thu Feb 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.74-100
 - 1.0.0.74
 

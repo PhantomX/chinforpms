@@ -148,6 +148,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake(cubeb)
+BuildRequires:  cmake(FAudio)
 %if !%{with llvm_submod}
 BuildRequires:  cmake(LLVM)
 %endif
@@ -350,7 +351,7 @@ popd
 %if !%{with llvm_submod}
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
-  -DUSE_FAUDIO:BOOL=OFF \
+  -DUSE_SYSTEM_FAUDIO:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \
 %if 0%{?with_sysflatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
