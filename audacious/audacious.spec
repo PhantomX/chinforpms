@@ -2,13 +2,13 @@
 %bcond_without gtk
 
 Name:            audacious
-Version:         4.0.5
+Version:         4.2
 Release:         100%{?dist}
 
 %global tar_ver %{version}
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.0
+%global aud_ver 4.2
 
 # Audacious Generic Plugin API is defined in audacious-libs subpackage.
 
@@ -24,18 +24,14 @@ BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
 
-BuildRequires:  pkgconfig(libguess)
 BuildRequires:  desktop-file-utils
-BuildRequires:  qt5-qtbase-devel
+BuildRequires:  make
+
+%{?with_gtk:BuildRequires: pkgconfig(gtk+-2.0)}
+BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Widgets)
-
-%if %{with gtk}
-BuildRequires:  pkgconfig(gtk+-2.0)
-%endif
-
-
 
 # The automatic SONAME dependency is not enough
 # during version upgrades.
@@ -84,9 +80,7 @@ Library files for the Audacious audio player.
 Summary: Development files for the Audacious audio player
 Requires: %{name}-libs%{?_isa} = %{version}-%{release}
 Requires: glib2-devel%{?_isa}
-%if %{with gtk}
-Requires: gtk2-devel%{?_isa}
-%endif
+%{?with_gtk:Requires: gtk2-devel%{?_isa}}
 
 %description devel
 Files needed when building software for the Audacious audio player.
@@ -102,18 +96,17 @@ api_min=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION_MIN' src/libaudcore/plugin.h 
 [ "${api_min}" == "%{aud_plugin_api_min}" ] || exit -1
 
 sed -i '\,^.SILENT:,d' buildsys.mk.in
+sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
 
 
 %build
-rm -rf _bin
-mkdir _bin
-ln -s /usr/bin/moc-qt5 _bin/moc
-export PATH=$PATH:$(pwd)/_bin
+#rm -rf _bin
+#mkdir _bin
+#ln -s /usr/bin/moc-qt5 _bin/moc
+#export PATH=$PATH:$(pwd)/_bin
 
 %configure  \
-%if %{with gtk}
-    --enable-gtk  \
-%endif
+    %{?with_gtk:--enable-gtk}%{!?with_gtk:--disable-gtk} \
     --with-buildstamp="chinforpms package"  \
     --disable-silent-rules \
     --disable-rpath \
@@ -133,8 +126,8 @@ desktop-file-install  \
     --dir %{buildroot}%{_datadir}/applications  \
     %{buildroot}%{_datadir}/applications/audacious.desktop
 
-install -D -m0644 contrib/%{name}.appdata.xml %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/%{name}.appdata.xml
+install -D -m0644 contrib/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files -f %{name}.lang
@@ -145,7 +138,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/%{name}.ap
 %{_mandir}/man[^3]/*
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}*.*
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 
 %files libs
 # license file included in this subpkg
@@ -157,14 +150,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/%{name}.ap
 %{_includedir}/audacious/
 %{_includedir}/libaudcore/
 %{_includedir}/libaudqt/
-%if %{with gtk}
-%{_includedir}/libaudgui/
-%endif
+%{?with_gtk:%{_includedir}/libaudgui/}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 
 
 %changelog
+* Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
+- 4.2
+
 * Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.5-100
 - 4.0.5
 

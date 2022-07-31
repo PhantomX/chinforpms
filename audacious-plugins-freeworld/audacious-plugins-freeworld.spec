@@ -5,7 +5,7 @@
 %{?aud_plugin_dep}
 
 Name:           audacious-plugins-freeworld
-Version:        4.0.5
+Version:        4.2
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
 License:        GPLv3
@@ -14,8 +14,10 @@ Source0:        http://distfiles.audacious-media-player.org/audacious-plugins-%{
 
 BuildRequires:  audacious-devel >= %{version}
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  taglib-devel >= 1.4
 BuildRequires:  libmms-devel
 BuildRequires:  gettext
@@ -82,6 +84,7 @@ This is the plugin needed to access MMS streams.
 %prep
 %setup -q -n audacious-plugins-%{version}
 sed -i '\,^.SILENT:,d' buildsys.mk.in
+sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
 
 
 %build
@@ -92,7 +95,9 @@ sed -i '\,^.SILENT:,d' buildsys.mk.in
         --disable-neon \
         --disable-flac \
         --disable-wavpack \
-        --disable-mpg123
+        --disable-mpg123 \
+%{nil}
+
 %make_build -C src/aac
 %make_build -C src/ffaudio
 %make_build -C src/mms
@@ -102,7 +107,7 @@ sed -i '\,^.SILENT:,d' buildsys.mk.in
 %make_install -C src/aac
 %make_install -C src/ffaudio
 %make_install -C src/mms
-find %buildroot -type f -name "*.la" -exec rm -f {} ';'
+find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 
 
 %files
@@ -121,6 +126,9 @@ find %buildroot -type f -name "*.la" -exec rm -f {} ';'
 
 
 %changelog
+* Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
+- 4.2
+
 * Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.5-100
 - 4.0.5
 

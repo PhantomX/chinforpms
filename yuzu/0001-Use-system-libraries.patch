@@ -1,4 +1,4 @@
-From 127389988fa72416ffc9c5df0798c7ef2cdc9268 Mon Sep 17 00:00:00 2001
+From d27db56353a654ea355d6965df33beebd9d57ad8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -7,17 +7,17 @@ FindMBETLS.cmake from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                           |  4 ----
- externals/CMakeLists.txt                 | 25 +++++++++++++++++++-----
- externals/find-modules/FindMBEDTLS.cmake | 23 ++++++++++++++++++++++
- 3 files changed, 43 insertions(+), 9 deletions(-)
+ CMakeLists.txt                           |  4 ---
+ externals/CMakeLists.txt                 | 34 ++++++++++++++++++++----
+ externals/find-modules/FindMBEDTLS.cmake | 23 ++++++++++++++++
+ 3 files changed, 52 insertions(+), 9 deletions(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index be70c04..d7740fa 100755
+index eed57cc..62f9eb7 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.15)
+@@ -6,7 +6,6 @@ cmake_minimum_required(VERSION 3.15)
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/find-modules")
@@ -25,7 +25,7 @@ index be70c04..d7740fa 100755
  include(CMakeDependentOption)
  
  project(yuzu)
-@@ -64,9 +63,6 @@ function(check_submodules_present)
+@@ -81,9 +80,6 @@ function(check_submodules_present)
      endforeach()
  endfunction()
  
@@ -36,10 +36,10 @@ index be70c04..d7740fa 100755
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
                 COPYONLY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 64361de..8ecec2f 100755
+index 6d04ace..fe7842b 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -2,7 +2,6 @@
+@@ -3,7 +3,6 @@
  
  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/externals/find-modules")
@@ -47,7 +47,7 @@ index 64361de..8ecec2f 100755
  
  # xbyak
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
-@@ -33,8 +32,19 @@ add_subdirectory(glad)
+@@ -34,8 +33,19 @@ add_subdirectory(glad)
  add_subdirectory(inih)
  
  # mbedtls
@@ -69,7 +69,21 @@ index 64361de..8ecec2f 100755
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -70,8 +80,13 @@ endif()
+@@ -75,13 +85,27 @@ if (YUZU_USE_EXTERNAL_SDL2)
+ endif()
+ 
+ # ENet
++pkg_check_modules(ENET IMPORTED_TARGET libenet)
++if(ENET_FOUND)
++  message(STATUS "Using the system enet")
++  add_library(enet-shared INTERFACE)
++  target_link_libraries(enet-shared INTERFACE PkgConfig::ENET)
++  target_include_directories(enet-shared INTERFACE PkgConfig::ENET)
++  add_library(enet ALIAS enet-shared)
++else()
+ add_subdirectory(enet)
+ target_include_directories(enet INTERFACE ./enet/include)
++endif()
  
  # Cubeb
  if(ENABLE_CUBEB)
@@ -115,5 +129,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.36.1
+2.37.1
 

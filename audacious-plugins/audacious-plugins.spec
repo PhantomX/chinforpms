@@ -8,13 +8,13 @@
 %{?aud_plugin_dep}
 
 Name:           audacious-plugins
-Version:        4.0.5
+Version:        4.2
 Release:        100%{?dist}
 
 %global tar_ver %{version}
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.0
+%global aud_ver 4.2
 
 Summary: Plugins for the Audacious audio player
 URL: http://audacious-media-player.org/
@@ -35,6 +35,7 @@ Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
 Patch2:         audacious-plugins-3.6-ladspa.patch
 
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  audacious-devel >= %{aud_ver}
 BuildRequires:  gettext-devel
 BuildRequires:  neon-devel
@@ -67,16 +68,17 @@ BuildRequires:  pkgconfig(libbinio)
 BuildRequires:  pkgconfig(libopenmpt)
 BuildRequires:  pkgconfig(libmpg123)
 BuildRequires:  lame-devel
+
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  pkgconfig(Qt5Multimedia)
 BuildRequires:  pkgconfig(Qt5Network)
+BuildRequires:  pkgconfig(Qt5OpenGL)
+BuildRequires:  pkgconfig(Qt5X11Extras)
 BuildRequires:  pkgconfig(ampache_browser_1)
 
-%if %{with gtk}
-BuildRequires:  pkgconfig(gtk+-2.0)
-%endif
+%{?with_gtk:BuildRequires: pkgconfig(gtk+-2.0)}
 
 %global __provides_exclude_from ^%{_libdir}/audacious/*\\.so$
 
@@ -137,6 +139,7 @@ done
 grep -q -s __RPM_LIB * -R && exit 1
 
 sed -i '\,^.SILENT:,d' buildsys.mk.in
+sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
 
 
 %build
@@ -147,18 +150,18 @@ sed -i '\,^.SILENT:,d' buildsys.mk.in
     --enable-vorbis  \
     --enable-flac  \
     --enable-neon  \
+    --enable-ampache \
     --enable-mpg123 \
     --enable-filewriter-mp3 \
     --enable-openmpt \
-    --disable-sndio \
+    --enable-streamtuner \
+    --enable-qthotkey \
     --disable-aac  \
+    --disable-sndio \
     --disable-mms  \
     --with-ffmpeg=none  \
     --enable-qt  \
-    --enable-ampache \
-%if %{with gtk}
-    --enable-gtk  \
-%endif
+    %{?with_gtk:--enable-gtk}%{!?with_gtk:--disable-gtk} \
     --disable-rpath \
 %{nil}
 
@@ -170,10 +173,10 @@ sed -i '\,^.SILENT:,d' buildsys.mk.in
 %find_lang %{name}
 
 
-mkdir -p ${RPM_BUILD_ROOT}%{_datadir}/appdata
-install -p -m0644 %{SOURCE100} ${RPM_BUILD_ROOT}%{_datadir}/appdata
-install -p -m0644 %{SOURCE101} ${RPM_BUILD_ROOT}%{_datadir}/appdata
-install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
+mkdir -p %{buildroot}%{_metainfodir}
+install -p -m0644 %{SOURCE100} %{buildroot}%{_metainfodir}/
+install -p -m0644 %{SOURCE101} %{buildroot}%{_metainfodir}/
+install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 
 
 %files -f %{name}.lang
@@ -188,6 +191,7 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 %{_libdir}/audacious/Container/pls.so
 %{_libdir}/audacious/Container/xspf.so
 %dir %{_libdir}/audacious/Effect/
+%{_libdir}/audacious/Effect/bitcrusher.so
 %{_libdir}/audacious/Effect/bs2b.so
 %{_libdir}/audacious/Effect/compressor.so
 %{_libdir}/audacious/Effect/crossfade.so
@@ -212,6 +216,7 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 %{_libdir}/audacious/General/mpris2.so
 %{_libdir}/audacious/General/notify.so
 %{_libdir}/audacious/General/playlist-manager-qt.so
+%{_libdir}/audacious/General/qthotkey.so
 %{_libdir}/audacious/General/qtui.so
 %{_libdir}/audacious/General/scrobbler.so
 %{_libdir}/audacious/General/search-tool-qt.so
@@ -219,7 +224,7 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 %{_libdir}/audacious/General/song_change.so
 %{_libdir}/audacious/General/song-info-qt.so
 %{_libdir}/audacious/General/statusicon-qt.so
-#{_libdir}/audacious/General/streamtuner.so
+%{_libdir}/audacious/General/streamtuner.so
 %dir %{_libdir}/audacious/Input/
 %{_libdir}/audacious/Input/cdaudio-ng.so
 %{_libdir}/audacious/Input/flacng.so
@@ -252,7 +257,6 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 %{_libdir}/audacious/General/aosd.so
 %{_libdir}/audacious/General/gtkui.so
 %{_libdir}/audacious/General/hotkey.so
-%{_libdir}/audacious/General/lyricwiki.so
 %{_libdir}/audacious/General/playlist-manager.so
 %{_libdir}/audacious/General/search-tool.so
 %{_libdir}/audacious/General/skins.so
@@ -266,7 +270,7 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 
 %files jack
 %{_libdir}/audacious/Output/jack-ng.so
-%{_datadir}/appdata/%{name}-jack.metainfo.xml
+%{_metainfodir}/%{name}-jack.metainfo.xml
 
 %files exotic
 %{_libdir}/audacious/Input/adplug.so
@@ -275,15 +279,18 @@ install -p -m0644 %{SOURCE102} ${RPM_BUILD_ROOT}%{_datadir}/appdata
 %{_libdir}/audacious/Input/sid.so
 %{_libdir}/audacious/Input/vtx.so
 %{_libdir}/audacious/Input/xsf.so
-%{_datadir}/appdata/%{name}-exotic.metainfo.xml
+%{_metainfodir}/%{name}-exotic.metainfo.xml
 
 %files amidi
 %{_libdir}/audacious/Input/amidi-plug.so
 #%%{_libdir}/audacious/Input/amidi-plug/
-%{_datadir}/appdata/%{name}-amidi.metainfo.xml
+%{_metainfodir}/%{name}-amidi.metainfo.xml
 
 
 %changelog
+* Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
+- 4.2
+
 * Sat Jul 11 2020 Phantom X <megaphantomx at hotmail dot com> - 4.0.5-100
 - 4.0.5
 

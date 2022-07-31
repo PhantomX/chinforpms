@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2a9883730d9c2811960c6b3336439b0adb0969d3
+%global commit 7b69f77b502afca74bd45ecf4cf82947b19b90cc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220715
+%global date 20220730
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -76,7 +76,7 @@
 
 
 Name:           yuzu
-Version:        2836
+Version:        2877
 Release:        1%{?gver}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -127,6 +127,7 @@ BuildRequires:  pkgconfig(libswscale)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
 %endif
+BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
@@ -185,7 +186,7 @@ This is the Qt frontend.
 
 %if 0%{?with_ea}
 pushd externals
-rm -rf cubeb/* discord-rpc ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL Vulkan-Headers
+rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL Vulkan-Headers
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
@@ -242,6 +243,9 @@ sed \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
   -i src/common/scm_rev.cpp.in
+
+# https://github.com/pineappleEA/pineapple-src/issues/80
+rm -f src/core/network/network.h
 
 cp -f %{S:20} .
 
@@ -302,6 +306,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 2877-1.20220730git7b69f77
+- 2877 ea
+- BR: libenet
+
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2836-1.20220715git2a98837
 - 2836 ea
 
