@@ -1,23 +1,15 @@
-From e0b8c7b18f873b52c6704a8fa180a09bbbd04126 Mon Sep 17 00:00:00 2001
+From b5fe79f2ea2bd24e0c3f8f2355abdaffd2ec908b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
-CheckLib.cmake and enet search from Dolphin-emu project:
-https://github.com/dolphin-emu/dolphin
-https://github.com/dolphin-emu/dolphin/raw/master/CMake/CheckLib.cmake
 ---
- CMakeLists.txt                         |  2 -
- externals/CMakeLists.txt               | 27 ++++++++----
- externals/cmake-modules/CheckLib.cmake | 57 ++++++++++++++++++++++++++
- externals/cmake-modules/FindZstd.cmake | 25 +++++++++++
- src/common/CMakeLists.txt              |  2 +-
- 5 files changed, 103 insertions(+), 10 deletions(-)
- create mode 100644 externals/cmake-modules/CheckLib.cmake
- create mode 100644 externals/cmake-modules/FindZstd.cmake
+ CMakeLists.txt           |  2 --
+ externals/CMakeLists.txt | 26 +++++++++++++++++++++++---
+ 2 files changed, 23 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6fdc5ec..2fe8b77 100644
+index 4a3cedc..52078f1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,7 +6,6 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.15)
@@ -28,7 +20,7 @@ index 6fdc5ec..2fe8b77 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -63,7 +62,6 @@ function(check_submodules_present)
+@@ -71,7 +70,6 @@ function(check_submodules_present)
          endif()
      endforeach()
  endfunction()
@@ -37,39 +29,42 @@ index 6fdc5ec..2fe8b77 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 31083d5..aa1f737 100644
+index 99b5310..748ae3f 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -6,7 +6,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+@@ -6,7 +6,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
  endif()
  
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
 -include(DownloadExternals)
-+include(CheckLib)
  include(ExternalProject)
  
  # Boost
-@@ -80,17 +80,30 @@ target_include_directories(SoundTouch INTERFACE ./soundtouch/include)
+@@ -80,17 +79,38 @@ target_include_directories(SoundTouch INTERFACE ./soundtouch/include)
  add_subdirectory(teakra EXCLUDE_FROM_ALL)
  
  # Zstandard
--add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
--target_include_directories(libzstd_static INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/externals/zstd/lib>)
-+find_package(Zstd)
++pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
++if(ZSTD_FOUND)
++  message(STATUS "Using the system enet")
++  add_library(zstd-shared INTERFACE)
++  target_link_libraries(zstd-shared INTERFACE PkgConfig::ZSTD)
++  add_library(libzstd_static ALIAS zstd-shared)
++else()
+ add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
+ target_include_directories(libzstd_static INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/externals/zstd/lib>)
++endif()
  
  # ENet
--add_subdirectory(enet)
--target_include_directories(enet INTERFACE ./enet/include)
-+check_lib(ENET libenet enet enet/enet.h QUIET)
-+include(CheckSymbolExists)
-+if (ENET_FOUND)
-+  set(CMAKE_REQUIRED_INCLUDES ${ENET_INCLUDE_DIRS})
-+  set(CMAKE_REQUIRED_FLAGS ${ENET_LDFLAGS})
-+  set(CMAKE_REQUIRED_LIBRARIES ${ENET_LIBRARIES})
-+  check_symbol_exists(enet_socket_get_address enet/enet.h ENET_HAVE_SGA)
-+  set(CMAKE_REQUIRED_INCLUDES)
-+  set(CMAKE_REQUIRED_FLAGS)
-+  set(CMAKE_REQUIRED_LIBRARIES)
++pkg_check_modules(ENET IMPORTED_TARGET libenet)
++if(ENET_FOUND)
++  message(STATUS "Using the system enet")
++  add_library(enet-shared INTERFACE)
++  target_link_libraries(enet-shared INTERFACE PkgConfig::ENET)
++  add_library(enet ALIAS enet-shared)
++else()
+ add_subdirectory(enet)
+ target_include_directories(enet INTERFACE ./enet/include)
 +endif()
  
  # Cubeb
@@ -86,113 +81,6 @@ index 31083d5..aa1f737 100644
  endif()
  
  # DiscordRPC
-diff --git a/externals/cmake-modules/CheckLib.cmake b/externals/cmake-modules/CheckLib.cmake
-new file mode 100644
-index 0000000..e6408a4
---- /dev/null
-+++ b/externals/cmake-modules/CheckLib.cmake
-@@ -0,0 +1,57 @@
-+find_package(PkgConfig)
-+
-+macro(_internal_message msg)
-+	if(NOT ${_is_quiet})
-+		message(STATUS "${msg}")
-+	endif()
-+endmacro()
-+
-+macro(check_lib var pc lib)
-+	set(_is_required 0)
-+	set(_is_quiet 0)
-+	set(_arg_list ${ARGN})
-+	foreach(_arg ${ARGN})
-+		if(_arg STREQUAL "REQUIRED")
-+			list(REMOVE_ITEM _arg_list "REQUIRED")
-+			set(_is_required 1)
-+		endif()
-+		if(_arg STREQUAL "QUIET")
-+			list(REMOVE_ITEM _arg_list "QUIET")
-+			set(_is_quiet 1)
-+		endif()
-+	endforeach()
-+
-+	if(PKG_CONFIG_FOUND AND NOT ${var}_FOUND)
-+		pkg_search_module(${var} QUIET ${pc})
-+	endif()
-+
-+	if(${var}_FOUND)
-+		if(${var}_INCLUDE_DIRS)
-+			include_directories(${${var}_INCLUDE_DIRS})
-+		endif()
-+		# Make sure include directories for headers found using find_path below
-+		# are re-added when reconfiguring
-+		if(${var}_INCLUDE)
-+			include_directories(${${var}_INCLUDE})
-+		endif()
-+		_internal_message("${lib} found")
-+	else()
-+		find_library(${var} ${lib})
-+		if(_arg_list)
-+			find_path(${var}_INCLUDE ${_arg_list})
-+		else()
-+			set(${var}_INCLUDE FALSE)
-+		endif()
-+		if(${var} AND ${var}_INCLUDE)
-+			include_directories(${${var}_INCLUDE})
-+			_internal_message("${lib} found")
-+			set(${var}_FOUND 1 CACHE INTERNAL "")
-+		else()
-+			if(_is_required)
-+				message(FATAL_ERROR "${lib} is required but not found")
-+			else()
-+				_internal_message("${lib} not found")
-+			endif()
-+		endif()
-+	endif()
-+endmacro()
-diff --git a/externals/cmake-modules/FindZstd.cmake b/externals/cmake-modules/FindZstd.cmake
-new file mode 100644
-index 0000000..d61a7a9
---- /dev/null
-+++ b/externals/cmake-modules/FindZstd.cmake
-@@ -0,0 +1,25 @@
-+# - Try to find ZSTD
-+# Once done, this will define
-+#
-+#  ZSTD_FOUND - system has ZSTD
-+#  ZSTD_INCLUDE_DIRS - the ZSTD include directories
-+#  ZSTD_LIBRARIES - the ZSTD library
-+find_package(PkgConfig)
-+
-+pkg_check_modules(ZSTD_PKGCONF libzstd)
-+
-+find_path(ZSTD_INCLUDE_DIRS
-+  NAMES zstd.h
-+  PATHS ${ZSTD_PKGCONF_INCLUDE_DIRS}
-+)
-+
-+
-+find_library(ZSTD_LIBRARIES
-+  NAMES zstd
-+  PATHS ${ZSTD_PKGCONF_LIBRARY_DIRS}
-+)
-+
-+include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(Zstd DEFAULT_MSG ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
-+
-+mark_as_advanced(ZSTD_INCLUDE_DIRS ZSTD_LIBRARIES)
-diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 5d65965..e3457d8 100644
---- a/src/common/CMakeLists.txt
-+++ b/src/common/CMakeLists.txt
-@@ -130,7 +130,7 @@ endif()
- create_target_directory_groups(common)
- 
- target_link_libraries(common PUBLIC fmt microprofile Boost::boost Boost::serialization)
--target_link_libraries(common PRIVATE libzstd_static)
-+target_link_libraries(common PRIVATE zstd)
- if (ARCHITECTURE_x86_64)
-     target_link_libraries(common PRIVATE xbyak)
- endif()
 -- 
-2.35.1
+2.37.1
 

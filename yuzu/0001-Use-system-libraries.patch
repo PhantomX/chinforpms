@@ -69,7 +69,7 @@ index 6d04ace..fe7842b 100755
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -75,13 +85,27 @@ if (YUZU_USE_EXTERNAL_SDL2)
+@@ -75,13 +85,26 @@ if (YUZU_USE_EXTERNAL_SDL2)
  endif()
  
  # ENet
@@ -78,7 +78,6 @@ index 6d04ace..fe7842b 100755
 +  message(STATUS "Using the system enet")
 +  add_library(enet-shared INTERFACE)
 +  target_link_libraries(enet-shared INTERFACE PkgConfig::ENET)
-+  target_include_directories(enet-shared INTERFACE PkgConfig::ENET)
 +  add_library(enet ALIAS enet-shared)
 +else()
  add_subdirectory(enet)

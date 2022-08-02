@@ -153,25 +153,26 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 18
+%define base_sublevel 19
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 15
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit c36a607b2191bf5c0783253b2bd55e2b4b6a65ba
-%global pfcoprhash 55d8bf35b047234551f02916114711d0
+%global pfcommit a52e15c398880adceae85753e10fc99588c95b82
+%global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
+%global pfcoprhash e005c65ed099191eefd89078ec59ea55
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -194,14 +195,14 @@ Summary: The Linux kernel
 %endif
 
 # Apply zen patches? (zen release number to enable, 0 to disable)
-# This is not very tested
+# This is not well tested
 %global zen 0
 %if 0%{?zen}
 # Disable post_factum if zen is requested
 %global post_factum 0
 %endif
 
-%global opensuse_id 54276625fe3d816a1569383c38149eac21a1733c
+%global opensuse_id e9f89c92d073b95a8dc7365ba369004e1bb2eaf9
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -518,11 +519,6 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %endif
 
-# skip BTF in kernel modules for s390x
-%ifnarch s390x
-%define with_kmod_btf --keep-section '.BTF'
-%endif
-
 %if 0%{?fedora}
 # This is not for Fedora
 %define with_zfcpdump 0
@@ -683,6 +679,9 @@ BuildRequires: patchutils
 %endif
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+# glibc-static is required for a consistent build environment (specifically
+# CONFIG_CC_CAN_LINK_STATIC=y).
+BuildRequires: glibc-static
 %ifnarch %{nobuildarches} noarch
 BuildRequires: bpftool
 %endif
@@ -694,6 +693,9 @@ BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
+%endif
+%if %{signmodules} || %{signkernel}
+BuildRequires: openssl-devel
 %endif
 %if %{with_selftests}
 BuildRequires: clang llvm
@@ -724,8 +726,12 @@ BuildRequires: kabi-dw
 %endif
 
 %if %{signkernel}%{signmodules}
-BuildRequires: openssl openssl-devel
+BuildRequires: openssl
 %if %{signkernel}
+# ELN uses Fedora signing process, so exclude
+%if 0%{?rhel}%{?centos} && !0%{?eln}
+BuildRequires: system-sb-certs
+%endif
 %ifarch x86_64 aarch64
 BuildRequires: nss-tools
 BuildRequires: pesign >= 0.10-4
@@ -866,6 +872,7 @@ Source81: process_configs.sh
 Source82: update_scripts.sh
 
 Source84: mod-internal.list
+Source85: mod-partner.list
 
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
@@ -971,10 +978,9 @@ Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2004: %{patchwork_url}/12257303/mbox/#/patchwork-v2-block-add-protection-for-divide-by-zero-in-blk_mq_map_queues.patch
 
-%global tkg_id e063412fe4ec57c1dad270b595e7efde14aa6115
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.18/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2094: 0001-Revert-commit-536167d.patch
 
@@ -1010,18 +1016,20 @@ The kernel meta package
 
 #
 # This macro does requires, provides, conflicts, obsoletes for a kernel package.
-#    %%kernel_reqprovconf <subpackage>
+#    %%kernel_reqprovconf [-o] <subpackage>
 # It uses any kernel_<subpackage>_conflicts and kernel_<subpackage>_obsoletes
 # macros defined above.
 #
-%define kernel_reqprovconf \
+%define kernel_reqprovconf(o) \
+%if %{-o:0}%{!-o:1}\
 Provides: kernel = %{rpmversion}-%{pkg_release}\
+%endif\
 Provides: kernel-%{_target_cpu} = %{rpmversion}-%{pkg_release}%{?1:+%{1}}\
-Provides: kernel-drm-nouveau = 16\
 Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
-Requires(pre): linux-firmware >= 20150904-56.git6ebf5d57\
+Requires(pre): ((linux-firmware >= 20150904-56.git6ebf5d57) if linux-firmware)\
+Recommends: linux-firmware\
 Requires(preun): systemd >= 200\
 Conflicts: xfsprogs < 4.3.0-1\
 Conflicts: xorg-x11-drv-vmmouse < 13.0.99\
@@ -1141,9 +1149,7 @@ AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} %{?with_kmod_btf} -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
-
-
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} --keep-section '.BTF' -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
 %{nil}
 
 #
@@ -1286,9 +1292,9 @@ The meta-package for the %{1} kernel\
 #
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
 #    %%define variant_summary The Linux kernel compiled for <configuration>
-#    %%kernel_variant_package [-n <pretty-name>] [-m] <subpackage>
+#    %%kernel_variant_package [-n <pretty-name>] [-m] [-o] <subpackage>
 #
-%define kernel_variant_package(n:m) \
+%define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
 Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
@@ -1296,7 +1302,7 @@ Provides: installonlypkg(kernel)\
 %if %{-m:1}%{!-m:0}\
 Requires: kernel-core-uname-r = %{KVERREL}\
 %endif\
-%{expand:%%kernel_reqprovconf}\
+%{expand:%%kernel_reqprovconf %{?1:%{1}} %{-o:%{-o}}}\
 %if %{?1:1} %{!?1:0} \
 %{expand:%%kernel_meta_package %{?1:%{1}}}\
 %endif\
@@ -1306,8 +1312,32 @@ Requires: kernel-core-uname-r = %{KVERREL}\
 %{expand:%%kernel_modules_extra_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}} %{-m:%{-m}}}\
 %if %{-m:0}%{!-m:1}\
 %{expand:%%kernel_modules_internal_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
+%if 0%{!?fedora:1}\
+%{expand:%%kernel_modules_partner_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
+%endif\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
 %endif\
+%{nil}
+
+#
+# This macro creates a kernel-<subpackage>-modules-partner package.
+#	%%kernel_modules_partner_package <subpackage> <pretty-name>
+#
+%define kernel_modules_partner_package() \
+%package %{?1:%{1}-}modules-partner\
+Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
+Group: System Environment/Kernel\
+Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}\
+Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
+Provides: kernel%{?1:-%{1}}-modules-partner = %{version}-%{release}%{?1:+%{1}}\
+Provides: installonlypkg(kernel-module)\
+Provides: kernel%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+AutoReq: no\
+AutoProv: yes\
+%description %{?1:%{1}-}modules-partner\
+This package provides kernel modules for the %{?2:%{2} }kernel package for Red Hat partners usage.\
 %{nil}
 
 # Now, each variant package.
@@ -1322,7 +1352,7 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 
 %if %{with_zfcpdump}
 %define variant_summary The Linux kernel compiled for zfcpdump usage
-%kernel_variant_package zfcpdump
+%kernel_variant_package -o zfcpdump
 %description zfcpdump-core
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
@@ -1699,8 +1729,6 @@ cd ..
 ###
 %build
 
-%global _lto_cflags %{nil}
-
 %if %{with_sparse}
 %define sparse_mflags    C=1
 %endif
@@ -1882,7 +1910,7 @@ BuildKernel() {
     # hmac sign the kernel for FIPS
     echo "Creating hmac file: $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac"
     ls -l $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
-    sha512hmac $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer | sed -e "s,$RPM_BUILD_ROOT,," > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
+    (cd $RPM_BUILD_ROOT/%{image_install_path} && sha512hmac $InstallName-$KernelVer) > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
     cp $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac $RPM_BUILD_ROOT/lib/modules/$KernelVer/.vmlinuz.hmac
 
     if [ $DoModules -eq 1 ]; then
@@ -2033,6 +2061,14 @@ BuildKernel() {
     cp -a scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/tracing
     rm -f $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts/spdxcheck.py
+
+%ifarch s390x
+    # CONFIG_EXPOLINE_EXTERN=y produces arch/s390/lib/expoline/expoline.o
+    # which is needed during external module build.
+    if [ -f arch/s390/lib/expoline/expoline.o ]; then
+      cp -a --parents arch/s390/lib/expoline/expoline.o $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
+    fi
+%endif
 
     # Files for 'make scripts' to succeed with kernel-devel.
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
@@ -2213,6 +2249,10 @@ BuildKernel() {
     %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $(realpath configs/mod-extra.list)
     # Identify modules in the kernel-modules-extras package
     %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE84} internal
+%if 0%{!?fedora:1}
+    # Identify modules in the kernel-modules-partner package
+    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE85} partner
+%endif
 
     #
     # Generate the kernel-core and kernel-modules files lists
@@ -2230,7 +2270,10 @@ BuildKernel() {
     xargs rm -rf < mod-extra.list
     # don't include anything going int kernel-modules-internal in the file lists
     xargs rm -rf < mod-internal.list
-
+%if 0%{!?fedora:1}
+    # don't include anything going int kernel-modules-partner in the file lists
+    xargs rm -rf < mod-partner.list
+%endif
 
     if [ $DoModules -eq 1 ]; then
     # Find all the module files and filter them out into the core and
@@ -2268,7 +2311,14 @@ BuildKernel() {
 
     # Cleanup
     rm System.map
-    cp -r restore/* lib/modules/$KernelVer/.
+    # Just "cp -r" can be very slow: here, it rewrites _existing files_
+    # with open(O_TRUNC). Many filesystems synchronously wait for metadata
+    # update for such file rewrites (seen in strace as final close syscall
+    # taking a long time). On a rotational disk, cp was observed to take
+    # more than 5 minutes on ext4 and more than 15 minutes (!) on xfs.
+    # With --remove-destination, we avoid this, and copying
+    # (with enough RAM to cache it) takes 5 seconds:
+    cp -r --remove-destination restore/* lib/modules/$KernelVer/.
     rm -rf restore
     popd
 
@@ -2279,6 +2329,9 @@ BuildKernel() {
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Variant:+-${Variant}}-core.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Variant:+-${Variant}}-modules-extra.list
     sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-internal.list >> ../kernel${Variant:+-${Variant}}-modules-internal.list
+%if 0%{!?fedora:1}
+    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-partner.list >> ../kernel${Variant:+-${Variant}}-modules-partner.list
+%endif
 
     # Cleanup
     rm -f $RPM_BUILD_ROOT/k-d.list
@@ -2286,6 +2339,9 @@ BuildKernel() {
     rm -f $RPM_BUILD_ROOT/module-dirs.list
     rm -f $RPM_BUILD_ROOT/mod-extra.list
     rm -f $RPM_BUILD_ROOT/mod-internal.list
+%if 0%{!?fedora:1}
+    rm -f $RPM_BUILD_ROOT/mod-partner.list
+%endif
 
 %if %{signmodules}
     if [ $DoModules -eq 1 ]; then
@@ -2392,7 +2448,7 @@ export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2579,6 +2635,12 @@ find . -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksa
 find . -type f ! -executable -exec install -m644 {} %{buildroot}%{_libexecdir}/ksamples/pktgen/{} \;
 popd
 popd
+# install vm selftests
+pushd tools/testing/selftests/vm
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
+popd
 # install drivers/net/mlxsw selftests
 pushd tools/testing/selftests/drivers/net/mlxsw
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
@@ -2638,6 +2700,10 @@ popd
 # a far more sophisticated hardlink implementation.
 # https://github.com/projectatomic/rpm-ostree/commit/58a79056a889be8814aa51f507b2c7a4dccee526
 #
+# The deletion of *.hardlink-temporary files is a temporary workaround
+# for this bug in the hardlink binary (fixed in util-linux 2.38):
+# https://github.com/util-linux/util-linux/issues/1602
+#
 %define kernel_devel_post() \
 %{expand:%%post %{?1:%{1}-}devel}\
 if [ -f /etc/sysconfig/kernel ]\
@@ -2655,8 +2721,23 @@ then\
     (cd /usr/src/kernels/%{KVERREL}%{?1:+%{1}} &&\
      /usr/bin/find . -type f | while read f; do\
        hardlink -c /usr/src/kernels/*%{?dist}.*/$f $f > /dev/null\
-     done)\
+     done;\
+     /usr/bin/find /usr/src/kernels -type f -name '*.hardlink-temporary' -delete\
+    )\
 fi\
+%{nil}
+
+#
+# This macro defines a %%post script for a kernel*-modules-partner package.
+# It also defines a %%postun script that does the same thing.
+#	%%kernel_modules_partner_post [<subpackage>]
+#
+%define kernel_modules_partner_post() \
+%{expand:%%post %{?1:%{1}-}modules-partner}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}\
+%{expand:%%postun %{?1:%{1}-}modules-partner}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}
 
 #
@@ -2735,6 +2816,9 @@ rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{
 %{expand:%%kernel_modules_post %{?-v*}}\
 %{expand:%%kernel_modules_extra_post %{?-v*}}\
 %{expand:%%kernel_modules_internal_post %{?-v*}}\
+%if 0%{!?fedora:1}\
+%{expand:%%kernel_modules_partner_post %{?-v*}}\
+%endif\
 %{expand:%%kernel_variant_posttrans %{?-v*}}\
 %{expand:%%post %{?-v*:%{-v*}-}core}\
 %{-r:\
@@ -2791,6 +2875,7 @@ fi
 %if %{with_headers}
 %files headers
 /usr/include/*
+%exclude %{_includedir}/cpufreq.h
 %endif
 
 %if %{with_cross_headers}
@@ -2890,6 +2975,9 @@ fi
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
 %config(noreplace) /etc/modprobe.d/*-blacklist.conf\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
+%if 0%{!?fedora:1}\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-partner.list %{?3:%{3}-}modules-partner}\
+%endif\
 %if %{with_debuginfo}\
 %ifnarch noarch\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
@@ -2932,6 +3020,9 @@ fi
 #
 #
 %changelog
+* Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.0-500.chinfo
+- 5.19.0 - pf1
+
 * Fri Jul 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.15-500.chinfo
 - 5.18.15 - pf5
 
@@ -3314,51 +3405,6 @@ fi
 * Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
 - 5.10.16 - pf13
 
-* Wed Feb 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.15-500.chinfo
-- 5.10.15 - pf12
-
-* Sun Feb 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.14-500.chinfo
-- 5.10.14 - pf12
-
-* Thu Feb 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.13-500.chinfo
-- 5.10.13 - pf11
-
-* Sat Jan 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.12-500.chinfo
-- 5.10.12 - pf11
-
-* Wed Jan 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.11-500.chinfo
-- 5.10.11 - pf10
-
-* Sat Jan 23 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.10-500.chinfo
-- 5.10.10 - pf10
-
-* Tue Jan 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.9-500.chinfo
-- 5.10.9 - pf9
-
-* Sun Jan 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.8-500.chinfo
-- 5.10.8 - pf9
-
-* Tue Jan 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.7-500.chinfo
-- 5.10.7 - pf7
-
-* Sat Jan 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.6-500.chinfo
-- 5.10.6 - pf7
-
-* Wed Jan 06 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.5-500.chinfo
-- 5.10.5 - pf6
-
-* Wed Dec 30 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.4-500.chinfo
-- 5.10.4 - pf4
-
-* Sat Dec 26 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.3-500.chinfo
-- 5.10.3 - pf3
-
-* Mon Dec 21 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.2-500.chinfo
-- 5.10.2 - pf2
-- stabilization sync
-
-* Mon Dec 14 2020 Phantom X <megaphantomx at hotmail dot com> - 5.10.1-500.chinfo
-- 5.10.1 - pf2
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

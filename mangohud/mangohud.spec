@@ -15,8 +15,8 @@
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
-Version:        0.6.7
-Release:        101%{?gver}%{?dist}
+Version:        0.6.8
+Release:        100%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -31,9 +31,8 @@ Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
 
-Patch10:        0001-system-nlohmann_json.patch
-Patch11:        0001-mangoapp-libdir-install.patch
 
+BuildRequires:  appstream
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  meson
@@ -90,7 +89,7 @@ cp -f -p %{S:3} bin/%{name}.in
   -Dmangoapp=true \
   -Dmangoapp_layer=true \
   -Dmangohudctl=true \
-  -Dinclude_doc=false \
+  -Dinclude_doc=true \
   -Dwith_nvml=disabled \
   -Dwith_xnvctrl=disabled \
   -Dwith_wayland=enabled \
@@ -104,19 +103,26 @@ cp -f -p %{S:3} bin/%{name}.in
 
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
+rm -rf %{buildroot}%{_datadir}/doc
+
 
 %files
 %license LICENSE
-%doc README.md bin/%{pkgname}.conf
+%doc README.md data/%{pkgname}.conf
 %{_bindir}/mango*
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
 %{_libdir}/%{name}/libMangoApp.so
+%{_datadir}/icons/hicolor/*/apps/*.svg
 %{_datadir}/vulkan/implicit_layer.d/*.json
-%{_mandir}/man1/%{name}.1*
+%{_mandir}/man1/mango*.1*
+%{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.8-100
+- 0.6.8
+
 * Fri May 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.7-101
 - Enable wayland-support
 - Enable MangoApp (system json patch)

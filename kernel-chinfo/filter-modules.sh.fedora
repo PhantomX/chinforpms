@@ -25,6 +25,8 @@ netdrvs="appletalk can dsa hamradio ieee802154 ppp slip usb wireless"
 
 ethdrvs="3com adaptec alteon amd aquantia atheros broadcom cadence calxeda chelsio cisco dec dlink emulex marvell mellanox neterion nvidia packetengines qlogic rdc sfc silan sis smsc stmicro sun tehuti ti wiznet xircom"
 
+cryptdrvs="bcm caam cavium chelsio hisilicon marvell qat"
+
 iiodrvs="accel light pressure proximity"
 
 iiocommondrvs="cros_ec_sensors"
@@ -104,6 +106,12 @@ done
 for eth in ${ethdrvs}
 do
 	filter_dir $1 drivers/net/ethernet/${eth}
+done
+
+# Filter the crypto drivers
+for crypt in ${cryptdrvs}
+do
+	filter_dir $1 drivers/crypto/${crypt}
 done
 
 # SCSI

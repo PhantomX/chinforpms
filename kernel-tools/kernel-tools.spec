@@ -24,13 +24,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 18
+%global base_sublevel 19
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 15
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -128,7 +128,8 @@ BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
 BuildRequires: asciidoc xmlto libcap-devel
-BuildRequires: opencsd-devel openssl-devel libbabeltrace-devel libtraceevent-devel
+BuildRequires: openssl-devel libbabeltrace-devel
+BuildRequires: libtracefs-devel libtraceevent-devel
 BuildRequires: libbpf-devel
 BuildRequires: clang llvm
 # Used to mangle unversioned shebangs to be Python 3
@@ -136,7 +137,13 @@ BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
-BuildRequires: libcap-devel pciutils-devel gettext ncurses-devel
+%ifarch aarch64
+BuildRequires: opencsd-devel >= 1.0.0
+%endif
+%ifarch i686 x86_64
+BuildRequires: libnl3-devel
+%endif
+BuildRequires: pciutils-devel gettext ncurses-devel
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 BuildRequires: rpm-build, elfutils
 %{?systemd_requires}
@@ -208,6 +215,16 @@ License: GPLv2
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
 
+%package -n rtla
+Summary: RTLA: Real-Time Linux Analysis tools 
+License: GPLv2
+%description -n rtla
+The rtla tool is a meta-tool that includes a set of commands that
+aims to analyze the real-time properties of Linux. But, instead of
+testing Linux as a black box, rtla leverages kernel tracing
+capabilities to provide precise information about the properties
+and root causes of unexpected results.
+
 
 %prep
 %setup -q -n kernel-%{kversion}%{?dist} -c
@@ -241,16 +258,19 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 %build
 cd linux-%{kversion}
 
+%ifarch aarch64
+%global perf_build_extra_opts CORESIGHT=1
+%endif
+
 %global perf_make \
-  make EXTRA_CFLAGS="%{build_cflags}" LDFLAGS="%{build_ldflags}" %{?cross_opts} V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 CORESIGHT=1 prefix=%{_prefix}
-%global perf_python3 -C tools/perf PYTHON=%{__python3}
+  make %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
-%{perf_make} JOBS=%{_smp_build_ncpus} %{perf_python3} all
+%{perf_make} JOBS=%{_smp_build_ncpus} all
 
 %global tools_make \
-  make CFLAGS="%{build_cflags} -Iinclude" LDFLAGS="%{build_ldflags}" HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}" V=1
+  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" make %{?make_opts}
 
 # cpupower
 # make sure version-gen.sh is executable.
@@ -273,6 +293,12 @@ chmod +x tools/power/cpupower/utils/version-gen.sh
    pushd tools/power/x86/turbostat
    %{tools_make}
    popd
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make}
+   popd
+   pushd tools/arch/x86/intel_sdsi
+   %{tools_make} CFLAGS="${CFLAGS}"
+   popd
 %endif
 pushd tools/thermal/tmon/
 %{tools_make}
@@ -283,9 +309,12 @@ popd
 pushd tools/gpio/
 %{tools_make}
 popd
+pushd tools/tracing/rtla
+%{tools_make}
+popd
 
 %global bpftool_make \
-  make EXTRA_CFLAGS="%{build_cflags}" EXTRA_LDFLAGS="%{build_ldflags}" DESTDIR=%{buildroot} V=1
+  make EXTRA_CFLAGS="${CFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" DESTDIR=%{buildroot} V=1
 
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -312,7 +341,7 @@ export LD=ld.bfd
 cd linux-%{kversion}
 
 # perf tool binary and supporting scripts/binaries
-%{perf_make} %{perf_python3} DESTDIR=%{buildroot} lib=%{_lib} install-bin install-traceevent-plugins
+%{perf_make} DESTDIR=%{buildroot} lib=%{_lib} install-bin
 # remove the 'trace' symlink.
 rm -f %{buildroot}%{_bindir}/trace
 
@@ -326,7 +355,7 @@ rm -rf %{buildroot}/usr/lib*/perf/examples
 rm -rf %{buildroot}/usr/lib*/perf/include/bpf/
 
 # python-perf extension
-%{perf_make} %{perf_python3} DESTDIR=%{buildroot} install-python_ext
+%{perf_make} DESTDIR=%{buildroot} install-python_ext
 
 # perf man pages (note: implicit rpm magic compresses them later)
 install -d %{buildroot}/%{_mandir}/man1
@@ -361,6 +390,12 @@ install -m644 %{SOURCE2001} %{buildroot}%{_sysconfdir}/sysconfig/cpupower
    pushd tools/power/x86/turbostat
    %{tools_make} DESTDIR=%{buildroot} install
    popd
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make} CFLAGS+="-D_GNU_SOURCE -Iinclude -I/usr/include/libnl3" DESTDIR=%{buildroot} install
+   popd
+   pushd tools/arch/x86/intel_sdsi
+   %{tools_make} DESTDIR=%{buildroot} install
+   popd
 %endif
 pushd tools/thermal/tmon
 %{tools_make} INSTALL_ROOT=%{buildroot} install
@@ -370,6 +405,16 @@ pushd tools/iio
 popd
 pushd tools/gpio
 %{tools_make} DESTDIR=%{buildroot} install
+popd
+pushd tools/tracing/rtla/
+%{tools_make} DESTDIR=%{buildroot} install
+rm -f %{buildroot}%{_bindir}/osnoise
+rm -f %{buildroot}%{_bindir}/timerlat
+(cd %{buildroot}
+
+        ln -sf rtla ./%{_bindir}/osnoise
+        ln -sf rtla ./%{_bindir}/timerlat
+)
 popd
 pushd tools/kvm/kvm_stat
 %{tools_make} INSTALL_ROOT=%{buildroot} install-tools
@@ -397,8 +442,7 @@ popd
 
 %files -n perf
 %{_bindir}/perf
-%dir %{_libdir}/traceevent
-%{_libdir}/traceevent/plugins/
+%exclude %{_libdir}/traceevent
 %{_libdir}/libperf-jvmti.so
 %{_libexecdir}/perf-core
 %{_datadir}/perf-core/
@@ -427,6 +471,8 @@ popd
 %{_mandir}/man8/x86_energy_perf_policy*
 %{_bindir}/turbostat
 %{_mandir}/man8/turbostat*
+%{_bindir}/intel-speed-select
+%{_sbindir}/intel_sdsi
 %endif
 %{_bindir}/tmon
 %{_bindir}/iio_event_monitor
@@ -478,11 +524,11 @@ popd
 %{_libdir}/pkgconfig/libperf.pc
 %{_includedir}/perf/core.h
 %{_includedir}/perf/cpumap.h
+%{_includedir}/perf/perf_dlfilter.h
 %{_includedir}/perf/event.h
 %{_includedir}/perf/evlist.h
 %{_includedir}/perf/evsel.h
 %{_includedir}/perf/mmap.h
-%{_includedir}/perf/perf_dlfilter.h
 %{_includedir}/perf/threadmap.h
 %{_mandir}/man3/libperf.3.gz
 %{_mandir}/man7/libperf-counting.7.gz
@@ -493,6 +539,18 @@ popd
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
 %license linux-%{kversion}/COPYING
+
+%files -n rtla
+%{_bindir}/rtla
+%{_bindir}/osnoise
+%{_bindir}/timerlat
+%{_mandir}/man1/rtla-osnoise-hist.1.gz
+%{_mandir}/man1/rtla-osnoise-top.1.gz
+%{_mandir}/man1/rtla-osnoise.1.gz
+%{_mandir}/man1/rtla-timerlat-hist.1.gz
+%{_mandir}/man1/rtla-timerlat-top.1.gz
+%{_mandir}/man1/rtla-timerlat.1.gz
+%{_mandir}/man1/rtla.1.gz
 
 
 %changelog
@@ -772,51 +830,3 @@ popd
 
 * Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500
 - 5.12.0
-
-* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.16-500
-- 5.11.16
-
-* Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.15-500
-- 5.11.15
-
-* Wed Apr 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.14-500
-- 5.11.14
-
-* Sat Apr 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.13-500
-- 5.11.13
-
-* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-500.chinfo
-- 5.11.12
-
-* Tue Mar 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.11-500.chinfo
-- 5.11.11
-
-* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.9-500.chinfo
-- 5.11.9
-
-* Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.8-500.chinfo
-- 5.11.8
-
-* Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.7-500.chinfo
-- 5.11.7
-
-* Thu Mar 11 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.6-500.chinfo
-- 5.11.6
-
-* Tue Mar 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.5-500.chinfo
-- 5.11.5
-
-* Sun Mar 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.4-500.chinfo
-- 5.11.4
-
-* Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.3-500.chinfo
-- 5.11.3
-
-* Fri Feb 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.2-500.chinfo
-- 5.11.2
-
-* Tue Feb 23 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.1-500.chinfo
-- 5.11.1
-
-* Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.0-500.chinfo
-- 5.11.0

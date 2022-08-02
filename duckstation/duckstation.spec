@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 5ad268f449b08f74058d3b32017d67f1dd2ae8c5
+%global commit efa4f5333b8d4d9532d5d2dc36b4edbef25200b5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220726
+%global date 20220801
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        58%{?gver}%{?dist}
+Release:        59%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -74,13 +74,15 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(tinyxml2)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
 BuildRequires:  vulkan-headers
@@ -145,7 +147,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cubeb discord-rpc fmt libchdr libFLAC libsamplerate lzma minizip msvc \
+  cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
   rapidjson tinyxml2 vulkan xxhash zlib
 
 %if 0%{?with_sysvulkan}
@@ -276,6 +278,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-59.20220801gitefa4f53
+- Update
+
 * Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-58.20220726git5ad268f
 - Update
 

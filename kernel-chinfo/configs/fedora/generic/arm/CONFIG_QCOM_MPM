@@ -1,1 +1,1 @@
-# CONFIG_QCOM_MPM is not set
+CONFIG_QCOM_MPM=m

@@ -21,7 +21,7 @@
 %define arches_systemtap_64bit  %{arches_64bit}
 %define arches_dmidecode        %{arches_x86}
 %if 0%{?fedora} >= 36
-    %define arches_xen              x86_64 aarch64
+%define arches_xen              x86_64 aarch64
 %endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
@@ -229,7 +229,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.5.0
+Version: 8.6.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -1375,18 +1375,12 @@ then
         # own the sockets again when it comes back up. Thus we must
         # do this particular ordering, so that we get libvirtd
         # running with socket activation in use
-        /bin/systemctl is-active libvirtd.service 1>/dev/null 2>&1
-        if test $? = 0
-        then
-            /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
-
-            /bin/systemctl try-restart \
-                    libvirtd.socket \
-                    libvirtd-ro.socket \
-                    libvirtd-admin.socket >/dev/null 2>&1 || :
-
-            /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
-        fi
+        /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
+        /bin/systemctl try-restart \
+                libvirtd.socket \
+                libvirtd-ro.socket \
+                libvirtd-admin.socket >/dev/null 2>&1 || :
+        /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
     fi
 fi
 
@@ -2139,6 +2133,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 8.6.0-100
+- 8.6.0
+
 * Fri Jul 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.5.0-100
 - 8.5.0
 

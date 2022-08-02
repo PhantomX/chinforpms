@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9541b15b539785a2687b8e157032f9b535d48522
+%global tkg_id fa119290e2967265e88e95da9e1beaee634ad32d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.14
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1334,7 +1334,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1039 -p1
 %endif
 %patch1040 -p1
-%patch1041 -p1
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -2949,6 +2948,9 @@ fi
 
 
 %changelog
+* Sun Jul 31 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-101
+- Remove upstream fixed patch
+
 * Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-100
 - 7.14
 

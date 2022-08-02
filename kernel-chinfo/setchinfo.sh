@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20220522
+# 20220801
 
 set -e
 
@@ -86,7 +86,6 @@ LRNG_TESTING_MENU
 LRU_GEN
 LRU_GEN_ENABLED
 LRU_GEN_STATS
-SENSORS_NCT6775_I2C
 "
 
 pfd="

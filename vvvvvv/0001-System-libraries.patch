@@ -4,14 +4,14 @@ Date: Thu, 28 Jul 2022 19:22:32 -0300
 Subject: [PATCH] System libraries
 
 ---
- desktop_version/CMakeLists.txt | 7 +++++
- 1 file changed, 7 insertions(+)
+ desktop_version/CMakeLists.txt | 6 +++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
 index 55a5318..4d272b6 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
-@@ -310,6 +310,13 @@ if(BUNDLE_DEPENDENCIES)
+@@ -310,6 +310,12 @@ if(BUNDLE_DEPENDENCIES)
      target_link_libraries(VVVVVV physfs-static tinyxml2-static lodepng-static faudio-static)
  else()
      find_package(utf8cpp CONFIG)
@@ -20,7 +20,6 @@ index 55a5318..4d272b6 100644
 +    pkg_search_module(FAUDIO REQUIRED IMPORTED_TARGET FAudio)
 +    add_library(faudio-shared INTERFACE)
 +    target_link_libraries(faudio-shared INTERFACE PkgConfig::FAUDIO)
-+    target_include_directories(faudio-shared INTERFACE PkgConfig::FAUDIO)
 +    add_library(FAudio ALIAS faudio-shared)
  
      target_link_libraries(VVVVVV physfs tinyxml2 utf8cpp lodepng-static FAudio)
