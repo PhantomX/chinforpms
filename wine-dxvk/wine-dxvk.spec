@@ -40,8 +40,8 @@
 %endif
 
 Name:           wine-%{pkgname}
-Version:        1.10.2
-Release:        101%{?gver}%{?dist}
+Version:        1.10.3
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -247,6 +247,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-100
+- 1.10.3
+
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.2-101
 - Reenable async
 

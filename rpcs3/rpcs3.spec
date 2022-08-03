@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 969b9eb89dfd409cee5fa1279e730cbef8d5a5ba
+%global commit c75b76ddf5738dd6128edd79e53fcc4ad40cd5bc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220702
+%global date 20220801
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -32,7 +32,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
-%global commit12 fc2a5d82f7434d7d03161275a764c051f970f41c
+%global commit12 06d0badec53710a4f572cf5642881ce570c5d274
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
@@ -44,7 +44,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 e722c15be860794179082a05d09e6a90dc77ccf0
+%global commit15 57aac1c50b45275c7a99eca32ad985998b292dc8
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.23
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -128,6 +128,11 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         %{vc_url}/rpcs3/pull/12413.patch#/%{name}-gh-pr12413.patch
+Patch1:         %{vc_url}/rpcs3/pull/12441.patch#/%{name}-gh-pr12441.patch
+Patch2:         %{vc_url}/rpcs3/pull/12443.patch#/%{name}-gh-pr12443.patch
+Patch3:         %{vc_url}/rpcs3/pull/12450.patch#/%{name}-gh-pr12450.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -352,6 +357,7 @@ popd
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
+  -DFAUDIO_INCLUDEDIR:PATH=%(pkg-config --variable includedir FAudio) \
   -DUSE_DISCORD_RPC:BOOL=OFF \
 %if 0%{?with_sysflatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
@@ -412,6 +418,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-2.20220801gitc75b76d
+- Bump
+- BR: FAudio
+
 * Sun Jul 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-1.20220702git969b9eb
 - 0.0.23
 
