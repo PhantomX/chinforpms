@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit c75b76ddf5738dd6128edd79e53fcc4ad40cd5bc
+%global commit 3e923b4993791ea8cd8b6dd9d9469dd62dfefad8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220801
+%global date 20220803
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.23
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -130,9 +130,7 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source99:       Makefile
 
 Patch0:         %{vc_url}/rpcs3/pull/12413.patch#/%{name}-gh-pr12413.patch
-Patch1:         %{vc_url}/rpcs3/pull/12441.patch#/%{name}-gh-pr12441.patch
 Patch2:         %{vc_url}/rpcs3/pull/12443.patch#/%{name}-gh-pr12443.patch
-Patch3:         %{vc_url}/rpcs3/pull/12450.patch#/%{name}-gh-pr12450.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -357,7 +355,6 @@ popd
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
-  -DFAUDIO_INCLUDEDIR:PATH=%(pkg-config --variable includedir FAudio) \
   -DUSE_DISCORD_RPC:BOOL=OFF \
 %if 0%{?with_sysflatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
@@ -418,6 +415,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Aug 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-3.20220803git3e923b4
+- Again
+
 * Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-2.20220801gitc75b76d
 - Bump
 - BR: FAudio

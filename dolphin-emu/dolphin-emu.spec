@@ -19,9 +19,9 @@
 %global enablejit 1
 %endif
 
-%global commit 1da24f66feab4d78a21ef795c7bd24b6d76cff8d
+%global commit b02653722d88577b059b51c8bb76add081158f04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220715
+%global date 20220803
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -75,6 +75,7 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 #https://github.com/dolphin-emu/dolphin/pull/8725
 Patch2:         0001-Update-to-soundtouch-2.3.1.patch
 Patch10:        0001-mgba-system-library-support.patch
+Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
@@ -98,7 +99,7 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(liblzma)
-BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(spng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(libusb)
@@ -114,7 +115,7 @@ BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
-BuildRequires:  pkgconfig(zlib)
+BuildRequires:  pkgconfig(zlib-ng)
 %if 0%{?with_llvm}
 BuildRequires:  llvm-devel
 %endif
@@ -255,8 +256,8 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext hidapi \
-  libiconv-* liblzma libpng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
-  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib zstd Vulkan
+  libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
+  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if 0%{?with_sysvulkan}
   rm -rf glslang
@@ -294,6 +295,7 @@ sed \
   %{?!enablejit:-DENABLE_GENERIC=ON} \
   -DUSE_SHARED_ENET:BOOL=ON \
   -DUSE_SHARED_MGBA:BOOL=ON \
+  -DUSE_SHARED_SPNG:BOOL=ON \
   -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
   -DENABLE_AUTOUPDATE:BOOL=OFF \
@@ -392,6 +394,8 @@ appstream-util validate-relax --nonet \
 %changelog
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-163.20220715git1da24f6
 - Update
+- BR: png -> spng
+- BR: zlib -> zlib-ng
 
 * Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-161.20220702gitd625c61
 - Bump

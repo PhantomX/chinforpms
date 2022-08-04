@@ -1,0 +1,134 @@
+From dd03b58dd38199d2600cc995e4955099801dd13a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 3 Aug 2022 22:19:34 -0300
+Subject: [PATCH] system library support
+
+---
+ CMakeLists.txt                              | 29 +++++++++++++++++++--
+ Source/Core/Common/Hash.cpp                 |  6 +++++
+ Source/Core/DiscIO/CompressedBlob.cpp       | 12 +++++++++
+ Source/Core/UpdaterCommon/UpdaterCommon.cpp |  4 +++
+ 4 files changed, 49 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 753d511..f5c0f19 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -54,6 +54,7 @@ endif()
+ 
+ option(USE_SHARED_ENET "Use shared libenet if found rather than Dolphin's soon-to-compatibly-diverge version" OFF)
+ option(USE_UPNP "Enables UPnP port mapping support" ON)
++option(USE_SHARED_LIBSPNG "Use shared libspng if found" ON)
+ option(ENABLE_NOGUI "Enable NoGUI frontend" ON)
+ option(ENABLE_QT "Enable Qt (Default)" ON)
+ option(ENABLE_LTO "Enables Link Time Optimization" OFF)
+@@ -411,6 +412,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+   find_library(IOB_LIBRARY IOBluetooth)
+   find_library(IOK_LIBRARY IOKit)
+   find_library(OPENGL_LIBRARY OpenGL)
++
++  # We don't want to use shared libpng.
++  set(USE_SHARED_LIBSPNG OFF)
+ endif()
+ 
+ if(ENABLE_LTO)
+@@ -782,7 +786,18 @@ else()
+   add_subdirectory(Externals/zstd)
+ endif()
+ 
+-add_subdirectory(Externals/zlib-ng)
++pkg_check_modules(ZLIBNG IMPORTED_TARGET zlib-ng)
++if (ZLIBNG_FOUND)
++  message(STATUS "Using shared zlib-ng")
++  add_library(zlibng-shared INTERFACE)
++  target_link_libraries(zlibng-shared INTERFACE PkgConfig::ZLIBNG)
++  add_library(ZLIB::ZLIB ALIAS zlibng-shared)
++  add_definitions(-DUSE_SHARED_ZLIBNG)
++else()
++  check_vendoring_approved(zlib-ng)
++  message(STATUS "Using static zlib-ng from Externals")
++  add_subdirectory(Externals/zlib-ng)
++endif()
+ 
+ pkg_check_modules(MINIZIP minizip-ng>=3.0.0)
+ if(MINIZIP_FOUND)
+@@ -807,7 +822,17 @@ else()
+   set(LZO lzo2)
+ endif()
+ 
+-add_subdirectory(Externals/libspng)
++if(USE_SHARED_LIBSPNG)
++  check_lib(SPNG libspng spng spng.h QUIET)
++endif()
++if (SPNG_FOUND)
++  message(STATUS "Using shared libspng")
++else()
++  check_vendoring_approved(libspng)
++  message(STATUS "Using static libspng from Externals")
++  add_subdirectory(Externals/libspng)
++  set(SPNG spng)
++endif()
+ 
+ # Using static FreeSurround from Externals
+ # There is no system FreeSurround library.
+diff --git a/Source/Core/Common/Hash.cpp b/Source/Core/Common/Hash.cpp
+index f11ac4d..01be9bc 100644
+--- a/Source/Core/Common/Hash.cpp
++++ b/Source/Core/Common/Hash.cpp
+@@ -5,7 +5,13 @@
+ 
+ #include <algorithm>
+ #include <cstring>
++#ifdef USE_SHARED_ZLIBNG
++#include <zlib-ng.h>
++#define adler32_z zng_adler32_z
++#define crc32_z zng_crc32_z
++#else
+ #include <zlib.h>
++#endif
+ 
+ #include "Common/BitUtils.h"
+ #include "Common/CPUDetect.h"
+diff --git a/Source/Core/DiscIO/CompressedBlob.cpp b/Source/Core/DiscIO/CompressedBlob.cpp
+index 056c2f4..4420a58 100644
+--- a/Source/Core/DiscIO/CompressedBlob.cpp
++++ b/Source/Core/DiscIO/CompressedBlob.cpp
+@@ -11,7 +11,19 @@
+ #include <utility>
+ #include <vector>
+ 
++#ifdef USE_SHARED_ZLIBNG
++#include <zlib-ng.h>
++#define z_stream zng_stream
++#define inflateInit zng_inflateInit
++#define inflateEnd zng_inflateEnd
++#define inflate zng_inflate
++#define deflateInit zng_deflateInit
++#define deflateEnd zng_deflateEnd
++#define deflateReset zng_deflateReset
++#define deflate zng_deflate
++#else
+ #include <zlib.h>
++#endif
+ 
+ #ifdef _WIN32
+ #include <windows.h>
+diff --git a/Source/Core/UpdaterCommon/UpdaterCommon.cpp b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
+index 6bbe5b9..837d71f 100644
+--- a/Source/Core/UpdaterCommon/UpdaterCommon.cpp
++++ b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
+@@ -10,7 +10,11 @@
+ #include <ed25519.h>
+ #include <mbedtls/base64.h>
+ #include <mbedtls/sha256.h>
++#ifdef USE_SHARED_ZLIBNG
++#include <zlib-ng.h>
++#else
+ #include <zlib.h>
++#endif
+ 
+ #include "Common/CommonPaths.h"
+ #include "Common/FileUtil.h"
+-- 
+2.37.1
+
