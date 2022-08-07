@@ -1,7 +1,7 @@
-%global commit 7b77b4e3b4ea732ed592ac15f000875f5d1f1daa
+%global commit bfc73b0b80a1da2b137b5da4a2fcf530ee3a9d7d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220722
-%global with_snapshot 0
+%global date 202200805
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -49,15 +49,15 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.3.0
-%global winevulkan 1.3.221
+%global winevulkan 1.3.224
 
-%global wineFAudio 22.06
+%global wineFAudio 22.08
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.13.1
-%global winempg123 1.29.3
+%global winempg123 1.30.2
 %global winepng 1.6.37
-%global winetiff 4.3.0
+%global winetiff 4.4.0
 %global winejxrlib 1.1
 %global winevkd3d 1.4
 %global winexml2 2.9.14
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.14
+%global wine_stagingver f2648a9a40cc7516ee4a469cca16778268053056
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fa119290e2967265e88e95da9e1beaee634ad32d
+%global tkg_id f0ca8a97e961d482926d82e2ddac52223d1ebbf5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -132,7 +132,7 @@
 %endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
-%global whq_murl  https://github.com/wine-mirror/wine
+%global whq_murl  https://gitlab.winehq.org/wine/wine
 %global whqs_url  https://source.winehq.org/patches/data
 %global valve_url https://github.com/ValveSoftware/wine
 
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.14
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -216,6 +216,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch100:       https://gitlab.winehq.org/rbernon/wine/-/merge_requests/2.patch#/%{name}-gl-rbernon-pr2.patch
 
 # mfplat things, again (remove when AAC support is added)
 Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
@@ -420,6 +421,16 @@ Patch408:       %{whq_url}/1dc4c94ed07336b0e7f4233cd22342a5898767eb#/%{name}-whq
 Patch409:       %{whq_url}/e5b06613f31b89a2a2e58e5963601e5ec6cf16e0#/%{name}-whq-revert-mfplat-e5b0661.patch
 Patch410:       %{whq_url}/6dc35196ae4a5afda6490abe585bc8d468f1ed2d#/%{name}-whq-revert-mfplat-6dc3519.patch
 Patch411:       %{whq_url}/901838504cef8c0bd494d27f191a4533b66dede3#/%{name}-whq-revert-mfplat-9018385.patch
+Patch412:       %{whq_url}/3dbb6c7470b7a54e078763501c0db38e4040b047#/%{name}-whq-revert-mfplat-3dbb6c7.patch
+Patch413:       %{whq_url}/180572129fb9ad5ca736ac1ba5d78094dc2c68db#/%{name}-whq-revert-mfplat-1805721.patch
+Patch414:       %{whq_url}/e5a512eb93663238f0ea85a19bdfec662b101134#/%{name}-whq-revert-mfplat-e5a512e.patch
+Patch415:       %{whq_url}/c806c4eed541a6b9e39b20fb2484edea4cf26eba#/%{name}-whq-revert-mfplat-c806c4e.patch
+Patch416:       %{whq_url}/6d64e40776886a264465a9a90e5f7c81797904cf#/%{name}-whq-revert-mfplat-6d64e40.patch
+Patch417:       %{whq_url}/b48fc2c2d64b7c8ae3c4a8d63bd5b3badff1c552#/%{name}-whq-revert-mfplat-b48fc2c.patch
+Patch418:       %{whq_url}/4a43312278c221d2ad313ded043d32d48338cb32#/%{name}-whq-revert-mfplat-4a43312.patch
+Patch419:       %{whq_url}/488c9c669c03b266047cc002d04ef012af5f525e#/%{name}-whq-revert-mfplat-488c9c6.patch
+Patch420:       %{whq_url}/efe0504f5f04a349473557e90a7484c4cac294c3#/%{name}-whq-revert-mfplat-efe0504.patch
+Patch421:       %{whq_url}/b95158b23ca884322a02be69826a58edb5e3923e#/%{name}-whq-revert-mfplat-b95158b.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -1077,6 +1088,18 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
+%patch100 -p1
+
+%patch421 -p1 -R
+%patch420 -p1 -R
+%patch419 -p1 -R
+%patch418 -p1 -R
+%patch417 -p1 -R
+%patch416 -p1 -R
+%patch415 -p1 -R
+%patch414 -p1 -R
+%patch413 -p1 -R
+%patch412 -p1 -R
 %patch411 -p1 -R
 %patch410 -p1 -R
 %patch409 -p1 -R
@@ -2948,6 +2971,9 @@ fi
 
 
 %changelog
+* Sun Aug 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-102.202200805gitbfc73b0
+- Snapshot
+
 * Sun Jul 31 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-101
 - Remove upstream fixed patch
 

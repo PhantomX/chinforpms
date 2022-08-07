@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        34%{?gver}%{?dist}
+Release:        35%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -30,6 +30,8 @@ Source0:        %{url}/archive/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+
+Patch0:         0001-dep-cubeb-Add-cubeb_get_backend_names.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -104,6 +106,9 @@ sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
 
 
 %changelog
+* Sun Aug 07 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-35.20220721gitdc511c6
+- Add cubeb_get_backend_names patch
+
 * Thu Aug 04 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-34.20220721gitdc511c6
 - Bump
 

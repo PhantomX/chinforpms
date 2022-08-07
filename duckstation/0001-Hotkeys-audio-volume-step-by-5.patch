@@ -1,4 +1,4 @@
-From 750270c0e8be1e8f8985a156e2ce25a432d5afe4 Mon Sep 17 00:00:00 2001
+From 87c5addfdd07bac0950a5a73c22c57ae68c4b25c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 20 Mar 2021 20:59:46 -0300
 Subject: [PATCH] Hotkeys: audio volume step by 5
@@ -8,10 +8,10 @@ Subject: [PATCH] Hotkeys: audio volume step by 5
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/frontend-common/common_host.cpp b/src/frontend-common/common_host.cpp
-index 931a509..30e4386 100644
+index 70bb7ba..5975304 100644
 --- a/src/frontend-common/common_host.cpp
 +++ b/src/frontend-common/common_host.cpp
-@@ -947,7 +947,7 @@ DEFINE_HOTKEY("AudioVolumeUp", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE("H
+@@ -935,7 +935,7 @@ DEFINE_HOTKEY("AudioVolumeUp", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE("H
    {
      g_settings.audio_output_muted = false;
  
@@ -19,8 +19,8 @@ index 931a509..30e4386 100644
 +    const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 5, 100);
      g_settings.audio_output_volume = volume;
      g_settings.audio_fast_forward_volume = volume;
-     // g_spu.GetOutputStream()->SetOutputVolume(volume);
-@@ -961,7 +961,7 @@ DEFINE_HOTKEY("AudioVolumeDown", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE(
+     g_spu.GetOutputStream()->SetOutputVolume(volume);
+@@ -950,7 +950,7 @@ DEFINE_HOTKEY("AudioVolumeDown", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE(
                  {
                    g_settings.audio_output_muted = false;
  
@@ -28,7 +28,7 @@ index 931a509..30e4386 100644
 +                  const s32 volume = std::max<s32>(System::GetAudioOutputVolume() - 5, 0);
                    g_settings.audio_output_volume = volume;
                    g_settings.audio_fast_forward_volume = volume;
-                   // g_spu.GetOutputStream()->SetOutputVolume(volume);
+                   g_spu.GetOutputStream()->SetOutputVolume(volume);
 -- 
 2.37.1
 

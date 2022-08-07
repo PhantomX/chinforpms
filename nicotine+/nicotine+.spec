@@ -13,7 +13,7 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.2
+Version:        3.2.3
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -66,7 +66,7 @@ that users want and/or need.
 %build
 # This fixes files installation below
 touch data/%{appdata_id}.desktop
-touch data/%{appdata_id}.metainfo.xml
+touch data/%{appdata_id}.appdata.xml
 
 %pyproject_wheel
 
@@ -89,7 +89,7 @@ rm -rf %{buildroot}%{_datadir}/doc
 %dnl GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appdata_id}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.appdata.xml
 
 
 %files -f %{cname}.lang -f %{pyproject_files}
@@ -97,13 +97,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 %doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
 %{_bindir}/%{cname}
 %{_datadir}/applications/%{appdata_id}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{appdata_id}*.*
-%{_datadir}/icons/hicolor/scalable/intl/nplus-*.svg
-%{_metainfodir}/%{appdata_id}.metainfo.xml
+%{_datadir}/icons/hicolor/*/*/*.{png,svg}
+%{_metainfodir}/%{appdata_id}.appdata.xml
 %{_mandir}/man1/%{cname}.1*
 
 
 %changelog
+* Sat Aug 06 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.3-100
+- 3.2.3
+
 * Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.2-100
 - 3.2.2
 
