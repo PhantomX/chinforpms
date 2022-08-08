@@ -107,9 +107,9 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f0ca8a97e961d482926d82e2ddac52223d1ebbf5
+%global tkg_id 050df676b54c5da19368f59cea5a59ed14391c53
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 44515b99f88351e444f8b9a5ab8dce8acba4b23c
+%global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.14
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -218,224 +218,9 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch100:       https://gitlab.winehq.org/rbernon/wine/-/merge_requests/2.patch#/%{name}-gl-rbernon-pr2.patch
 
-# mfplat things, again (remove when AAC support is added)
-Patch210:       %{whq_url}/f51b2ca8f7640dd0770a82c1e2c19caa65286eef#/%{name}-whq-revert-mfplat-f51b2ca.patch
-Patch211:       %{whq_url}/4d929972c341bff2da3616606b8cbeadf85dba26#/%{name}-whq-revert-mfplat-4d92997.patch
-Patch212:       %{whq_url}/34a55c7b96c97b178ea1ab519eb0e847096f2076#/%{name}-whq-revert-mfplat-34a55c7.patch
-Patch213:       %{whq_url}/d84d9054f5466212e122fac70265eae841438764#/%{name}-whq-revert-mfplat-d84d905.patch
-Patch214:       %{whq_url}/0052ffbfa0e7672278b3d5fcdb767d604fa0f565#/%{name}-whq-revert-mfplat-0052ffb.patch
-Patch215:       %{whq_url}/4dd187b2227767524825e51eddd14f206ffd03dd#/%{name}-whq-revert-mfplat-4dd187b.patch
-Patch216:       %{whq_url}/7da1828c4927faec011d1c15d2f3f9bbb43435b7#/%{name}-whq-revert-mfplat-7da1828.patch
-Patch217:       %{whq_url}/5144b27661fcd6705353d832e0383085f8afe842#/%{name}-whq-revert-mfplat-5144b27.patch
-Patch218:       %{whq_url}/28c9c138d2658a4c3252a94d45a1e8b7ac28be7f#/%{name}-whq-revert-mfplat-28c9c13.patch
-Patch219:       %{whq_url}/0c59cfc14e33a5706c1873151780d5b2dcc536ca#/%{name}-whq-revert-mfplat-0c59cfc.patch
-Patch220:       %{whq_url}/a4be9e85687f7a8d7476ee3d3ced80eeec720f57#/%{name}-whq-revert-mfplat-a4be9e8.patch
-Patch221:       %{whq_url}/d2f653a854ccd17688813d6b7f585acbfb45b9ba#/%{name}-whq-revert-mfplat-d2f653a.patch
-Patch222:       %{whq_url}/aa867c6cfba48a63179088ec6381c73488853659#/%{name}-whq-revert-mfplat-aa867c6.patch
-Patch223:       %{whq_url}/9196fee58349558593fd7edf4768b189c25f6293#/%{name}-whq-revert-mfplat-9196fee.patch
-Patch224:       %{whq_url}/227a1275b14a2ffd71a4d0c621cb655e3576ad02#/%{name}-whq-revert-mfplat-227a127.patch
-Patch225:       %{whq_url}/506963aaea8e3c6e4820884b3308da27f435e580#/%{name}-whq-revert-mfplat-506963a.patch
-Patch226:       %{name}-revert-mfplat-446bb1e.patch
-Patch227:       %{whq_url}/6a7428a0fae887cecf2e97b9cab9de9cf7811446#/%{name}-whq-revert-mfplat-6a7428a.patch
-Patch228:       %{name}-revert-mfplat-7a4aafd.patch
-Patch229:       %{whq_url}/6860e9ab29f4fbcfe35cb0519cfe94b94f54a36f#/%{name}-whq-revert-mfplat-6860e9a.patch
-Patch230:       %{name}-revert-mfplat-24e5467.patch
-Patch231:       %{whq_url}/6834fc5c9dd11026261aaa723d9df29d373ebdf5#/%{name}-whq-revert-mfplat-6834fc5.patch
-Patch232:       %{whq_url}/2d7c37da495cc25d14f5b2761a5d7e2a2111320a#/%{name}-whq-revert-mfplat-2d7c37d.patch
-Patch233:       %{whq_url}/dfce20f34322e4d4087edf0e5f065ae7a2493151#/%{name}-whq-revert-mfplat-dfce20f.patch
-Patch234:       %{whq_url}/648ea45b810f54e5da69a239a4198c3f48b4c7e2#/%{name}-whq-revert-mfplat-648ea45.patch
-Patch235:       %{whq_url}/3dd1aefc682adff082d2ae267a230f684dc1e9c4#/%{name}-whq-revert-mfplat-3dd1aef.patch
-Patch236:       %{whq_url}/f71c51cb19fd694ad9e169ecc37767a93bbe40aa#/%{name}-whq-revert-mfplat-f71c51c.patch
-Patch237:       %{whq_url}/651e4002ceeb9a15b11a184b5f47a732e26b7e00#/%{name}-whq-revert-mfplat-651e400.patch
-Patch238:       %{whq_url}/e4258d529342cc1dc486a136d0f715520b3dd5da#/%{name}-whq-revert-mfplat-e4258d5.patch
-Patch239:       %{whq_url}/aca4537c8645c991745f85ef883b97f84e4ba5cc#/%{name}-whq-revert-mfplat-aca4537.patch
-Patch240:       %{whq_url}/962b4325e5b9e97c1594e2ea03cb44659367912b#/%{name}-whq-revert-mfplat-962b432.patch
-Patch241:       %{whq_url}/606505e5643d8df2a23a2cc074fa9b6b2ae8b05f#/%{name}-whq-revert-mfplat-606505e.patch
-Patch242:       %{whq_url}/f38369416f6487013bf197d70420bd9feef7e485#/%{name}-whq-revert-mfplat-f383694.patch
-Patch243:       %{whq_url}/edef14126cbdb64dda218688a51b6e170cb4909b#/%{name}-whq-revert-mfplat-edef141.patch
-Patch244:       %{name}-revert-mfplat-7735b48.patch
-Patch245:       %{whq_url}/b5d6c5992092fd0c96deacbe892668aba6759f93#/%{name}-whq-revert-mfplat-b5d6c59.patch
-Patch246:       %{whq_url}/55282e0d0988b66809ddb58b9f3b7449f8284fc1#/%{name}-whq-revert-mfplat-55282e0.patch
-Patch247:       %{whq_url}/ebd2b7d7049e46b37caad7b0235064d1a7ec3104#/%{name}-whq-revert-mfplat-ebd2b7d.patch
-Patch248:       %{whq_url}/db41b2ae238da4a8f73060948e94b8bdc64f64bb#/%{name}-whq-revert-mfplat-db41b2a.patch
-Patch249:       %{whq_url}/5861379d6df87562753322e251261868943e91ca#/%{name}-whq-revert-mfplat-5861379.patch
-Patch250:       %{whq_url}/bcd39c5061768d6d9a822cb8f8effa715ca62972#/%{name}-whq-revert-mfplat-bcd39c5.patch
-Patch251:       %{whq_url}/3827f0487db5ad12f1beb7aabb4e6bbc278a8145#/%{name}-whq-revert-mfplat-3827f04.patch
-Patch252:       %{whq_url}/bffe90496c904a0f95242e1bbfd3709fb1ff5e5d#/%{name}-whq-revert-mfplat-bffe904.patch
-Patch253:       %{whq_url}/3b83fe637e8b1f0e0cbac1d53106718f56b6afdc#/%{name}-whq-revert-mfplat-3b83fe6.patch
-Patch254:       %{whq_url}/38b98c653680cd87ecd3060601a57f996c35272e#/%{name}-whq-revert-mfplat-38b98c6.patch
-Patch255:       %{whq_url}/8091f3a0b8463d41049ed4ade98c79f82c86ebbc#/%{name}-whq-revert-mfplat-8091f3a.patch
-Patch256:       %{whq_url}/90dc7f5b944192da4b7e2f4a3d5e687fe0c9cdd2#/%{name}-whq-revert-mfplat-90dc7f5.patch
-Patch257:       %{whq_url}/ed2c300d02acefa2aedd4333ff4a982137c1d4fe#/%{name}-whq-revert-mfplat-ed2c300.patch
-Patch258:       %{whq_url}/6f1b3cf975965e1383e5f5c802cebdc0f4956c2a#/%{name}-whq-revert-mfplat-6f1b3cf.patch
-Patch259:       %{whq_url}/ce9a42e8bda50fd5eb91c8dee78f310881d2c7e5#/%{name}-whq-revert-mfplat-ce9a42e.patch
-Patch260:       %{whq_url}/86e0a2489a7e82bff3eb751094661270a40a2167#/%{name}-whq-revert-mfplat-86e0a24.patch
-Patch261:       %{whq_url}/d7c4fa0d5724b7a89f5b80970e8f62efcc457f8c#/%{name}-whq-revert-mfplat-d7c4fa0.patch
-Patch262:       %{whq_url}/b52a48b97ecbb8f7aff187a7743647dfab0670ea#/%{name}-whq-revert-mfplat-b52a48b.patch
-Patch263:       %{whq_url}/3f1036b61b59e3a99ea6bf1f1d6984a878df6d7b#/%{name}-whq-revert-mfplat-3f1036b.patch
-Patch264:       %{whq_url}/a7c60623158b048244701f104ca4daeb739637a4#/%{name}-whq-revert-mfplat-a7c6062.patch
-Patch265:       %{whq_url}/e7a3cf7baf41419263ee24690501734602bf1c25#/%{name}-whq-revert-mfplat-e7a3cf7.patch
-Patch266:       %{whq_url}/4455f0c3546a07ee2069cda8df50ca9f271070e6#/%{name}-whq-revert-mfplat-4455f0c.patch
-Patch267:       %{whq_url}/9cc016ecb925d41f3835c07a02e23a5776a77517#/%{name}-whq-revert-mfplat-9cc016e.patch
-Patch268:       %{whq_url}/8c5207f6a7232c20ad12a0d3171185442faa1295#/%{name}-whq-revert-mfplat-8c5207f.patch
-Patch269:       %{whq_url}/3aaa953bd6f71c77a3d3ec34ab0f5155f67346db#/%{name}-whq-revert-mfplat-3aaa953.patch
-Patch270:       %{whq_url}/2298f04a1d40a008a843ac4b0573d1a3234d5f82#/%{name}-whq-revert-mfplat-2298f04.patch
-Patch271:       %{whq_url}/a7a90de929f3a37507a3f4d4231c778f79e5fa94#/%{name}-whq-revert-mfplat-a7a90de.patch
-Patch272:       %{whq_url}/64b96eec7d0aea470f897a3ed0ac9e1b3a680cc5#/%{name}-whq-revert-mfplat-64b96ee.patch
-Patch273:       %{whq_url}/ab1203999211209da4e737d9fc71581bea9a6bd1#/%{name}-whq-revert-mfplat-ab12039.patch
-Patch274:       %{name}-revert-mfplat-77c25c8.patch
-Patch275:       %{whq_url}/6e2ac3b6172dca128c83f21e10a89f4477025da0#/%{name}-whq-revert-mfplat-6e2ac3b.patch
-Patch276:       %{name}-revert-mfplat-29c67fb.patch
-Patch277:       %{whq_url}/1e3ae78a693f3ecb01012b19d06f76da16ee37d2#/%{name}-whq-revert-mfplat-1e3ae78.patch
-Patch278:       %{whq_url}/f46618e386dedfae2a95f48cb97a14c86cd2565b#/%{name}-whq-revert-mfplat-f46618e.patch
-Patch279:       %{whq_url}/7d28e8ec89254ba0fd4e7612c71f5479e82f9d2a#/%{name}-whq-revert-mfplat-7d28e8e.patch
-Patch280:       %{whq_url}/562d8c338dd975706a7611a1a899ab4a8a3a2911#/%{name}-whq-revert-mfplat-562d8c3.patch
-Patch281:       %{whq_url}/aacf6bcd0f0cb619906f4199d65a70eaf57ec5a8#/%{name}-whq-revert-mfplat-aacf6bc.patch
-Patch282:       %{whq_url}/7c20724b0d29cee02010a3114575315b9fc9d439#/%{name}-whq-revert-mfplat-7c20724.patch
-Patch283:       %{whq_url}/1933981760f50e86e91d15baeedd64bbdb5f2109#/%{name}-whq-revert-mfplat-1933981.patch
-Patch284:       %{whq_url}/f91f4348356285ede39915f0d10ffae11c4871e5#/%{name}-whq-revert-mfplat-f91f434.patch
-Patch285:       %{whq_url}/a4201aa6dec755ec824a0e8bb301ce2154e54ec5#/%{name}-whq-revert-mfplat-a4201aa.patch
-Patch286:       %{whq_url}/2cfcdc64625e36edca686d0e9249b38605bb7ede#/%{name}-whq-revert-mfplat-2cfcdc6.patch
-Patch287:       %{whq_url}/b1807751219e256867eaac5cc4d8b97a5482978f#/%{name}-whq-revert-mfplat-b180775.patch
-Patch288:       %{whq_url}/86bd6924568d47ac9446f3a04859a8960c5d3894#/%{name}-whq-revert-mfplat-86bd692.patch
-Patch289:       %{whq_url}/6f49156bbc763179feac35074f61a683ff4c5a7b#/%{name}-whq-revert-mfplat-6f49156.patch
-Patch290:       %{name}-revert-mfplat-e21fe9e.patch
-Patch291:       %{whq_url}/1a2cc84686b728af8836849cee2237e1390d1311#/%{name}-whq-revert-mfplat-1a2cc84.patch
-Patch292:       %{name}-revert-mfplat-573deb1.patch
-Patch293:       %{whq_url}/d90627784455bd77addd21e774b816162db2ef12#/%{name}-whq-revert-mfplat-d906277.patch
-Patch294:       %{whq_url}/7144bf27b9d1cffb22ab22782114ff2e5057cc20#/%{name}-whq-revert-mfplat-7144bf2.patch
-Patch295:       %{whq_url}/915d88e5e60aa08b377eca5c5cbeed6a3d2d4af5#/%{name}-whq-revert-mfplat-915d88e.patch
-Patch296:       %{whq_url}/0d956959fa61b770881c1545804fabd7e26edd90#/%{name}-whq-revert-mfplat-0d95695.patch
-Patch297:       %{whq_url}/0250e84bf17e287e15517329c01f6d0e346c0710#/%{name}-whq-revert-mfplat-0250e84.patch
-Patch298:       %{whq_url}/b18b7260a2fc7543f47febc3f97021f4dd67ba54#/%{name}-whq-revert-mfplat-b18b726.patch
-Patch299:       %{whq_url}/89d28156cf561afe0bc8692e611a96631af51433#/%{name}-whq-revert-mfplat-89d2815.patch
-Patch300:       %{whq_url}/bf6aa078a709d5afd0c11d1a4e01eb1094c0d09e#/%{name}-whq-revert-mfplat-bf6aa07.patch
-Patch301:       %{whq_url}/23fb8a6b49304a0b8ccf5a10e5bbd603691ba7bc#/%{name}-whq-revert-mfplat-23fb8a6.patch
-Patch302:       %{whq_url}/6eca6ad68644639ef54706363dcbb2d62962da8f#/%{name}-whq-revert-mfplat-6eca6ad.patch
-Patch303:       %{whq_url}/048e21d22e33fb8187532851dad6ce566592156b#/%{name}-whq-revert-mfplat-048e21d.patch
-Patch304:       %{whq_url}/1d7d3f58d6666e2a5793a79ea8a28476f961e9c2#/%{name}-whq-revert-mfplat-1d7d3f5.patch
-Patch305:       %{whq_url}/ce71f5a05f226b3f68328d4632cd78ac9440d073#/%{name}-whq-revert-mfplat-ce71f5a.patch
-Patch306:       %{whq_url}/d686663d22cb027fae7607acf3bae96ab34018f5#/%{name}-whq-revert-mfplat-d686663.patch
-Patch307:       %{whq_url}/ca10760d2e7ea4f8718741592fd639f589247e53#/%{name}-whq-revert-mfplat-ca10760.patch
-Patch308:       %{whq_url}/529efbb4c91365f2f555b3c09ffda946f3843f5d#/%{name}-whq-revert-mfplat-529efbb.patch
-Patch309:       %{whq_url}/fc2128d7fcd869b238932d50f034b8ff3e8be65c#/%{name}-whq-revert-mfplat-fc2128d.patch
-Patch310:       %{whq_url}/bd527c1946cc92dfeee072542815e71b2e3d1861#/%{name}-whq-revert-mfplat-bd527c1.patch
-Patch311:       %{whq_url}/b7fa00be65363132f1fd8686bfa0a81b394c0dba#/%{name}-whq-revert-mfplat-b7fa00b.patch
-Patch312:       %{whq_url}/bae7ac48bce5e0566b30a8dd3a766b343b5617a7#/%{name}-whq-revert-mfplat-bae7ac4.patch
-Patch313:       %{whq_url}/faf6f267aead1c2c1f59b051aa7bc12d25dc8941#/%{name}-whq-revert-mfplat-faf6f26.patch
-Patch314:       %{whq_url}/5db4b0cff96dae30643613a01d13b75196a00c25#/%{name}-whq-revert-mfplat-5db4b0c.patch
-Patch315:       %{whq_url}/2567ff497d40cbc43a1d5d766636b6dd77fc4618#/%{name}-whq-revert-mfplat-2567ff4.patch
-Patch316:       %{whq_url}/e3f226fde01d96c5e7799884ed4da5324adceca9#/%{name}-whq-revert-mfplat-e3f226f.patch
-Patch317:       %{whq_url}/68fa3f673633c138596b86ad2ed1befcd0cc63c5#/%{name}-whq-revert-mfplat-68fa3f6.patch
-Patch318:       %{whq_url}/5b04d18945c547144bf692f6418af5ec25315835#/%{name}-whq-revert-mfplat-5b04d18.patch
-Patch319:       %{whq_url}/f14018f7edecdff5784ee98e10f1defa6ee75040#/%{name}-whq-revert-mfplat-f14018f.patch
-Patch320:       %{whq_url}/5387718c6fbd36b7a6309122f4af68d475a344e8#/%{name}-whq-revert-mfplat-5387718.patch
-Patch321:       %{whq_url}/4c999efdfb6df56e48deec14444442415d8d1ae2#/%{name}-whq-revert-mfplat-4c999ef.patch
-Patch322:       %{whq_url}/411ef13e7c2bbc43afcfc8fe1a1e251b79a059be#/%{name}-whq-revert-mfplat-411ef13.patch
-Patch323:       %{whq_url}/0c2f1121cc8caa5815ea48ccbe7f891f6891f39e#/%{name}-whq-revert-mfplat-0c2f112.patch
-Patch324:       %{whq_url}/0416d2f167dc852fca9a41ecf398b32409665657#/%{name}-whq-revert-mfplat-0416d2f.patch
-Patch325:       %{whq_url}/50c20cf8cf7b9fb5caee39f55e339c0ff4a2c0d1#/%{name}-whq-revert-mfplat-50c20cf.patch
-Patch326:       %{whq_url}/32a72b3e78b6e258eba4a325d3d750f5311921c9#/%{name}-whq-revert-mfplat-32a72b3.patch
-Patch327:       %{whq_url}/16d93a32e3dcf5013dce8d6f2fbade8c8c0a4c53#/%{name}-whq-revert-mfplat-16d93a3.patch
-Patch328:       %{whq_url}/ea81a48259804c2ed0aa74d98e1362e5ad7f76ef#/%{name}-whq-revert-mfplat-ea81a48.patch
-Patch329:       %{name}-revert-mfplat-031747a.patch
-Patch330:       %{whq_url}/71b136384b208e85be362d523cc4cc7be9aff202#/%{name}-whq-revert-mfplat-71b1363.patch
-Patch331:       %{whq_url}/fb0f6b4be46032e2e38a804822eaccb772e5d9bb#/%{name}-whq-revert-mfplat-fb0f6b4.patch
-Patch332:       %{whq_url}/bee6d2049e2f2c3b87ab5bcc5458ff900ec42850#/%{name}-whq-revert-mfplat-bee6d20.patch
-Patch333:       %{whq_url}/e8bf5dcdf8cdbb365e9ca8703debdc2ae5f98279#/%{name}-whq-revert-mfplat-e8bf5dc.patch
-Patch334:       %{whq_url}/c39dbe1f31435e715cd10bdf83be864e00346699#/%{name}-whq-revert-mfplat-c39dbe1.patch
-Patch335:       %{whq_url}/ee7958bac7a176aa250cdcc23b9bb5c009204015#/%{name}-whq-revert-mfplat-ee7958b.patch
-Patch336:       %{whq_url}/21832ac226da7e31944df26bf02ff231d2a1a941#/%{name}-whq-revert-mfplat-21832ac.patch
-Patch337:       %{whq_url}/0892b92b56531aa3b1c67948bf0cd06152ed361e#/%{name}-whq-revert-mfplat-0892b92.patch
-Patch338:       %{whq_url}/2ae08f035fdb5665eab4cef6333344ace528c61e#/%{name}-whq-revert-mfplat-2ae08f0.patch
-Patch339:       %{whq_url}/7adcdb6ff8c6ac321a1f21bfa4123d08c3bc52d5#/%{name}-whq-revert-mfplat-7adcdb6.patch
-Patch340:       %{whq_url}/6abd8e23b8be24af194d97c2fa6bd9e9fed4b29a#/%{name}-whq-revert-mfplat-6abd8e2.patch
-Patch341:       %{whq_url}/8abbc0096da3b6e836d9b7559eb31a73f113bc2f#/%{name}-whq-revert-mfplat-8abbc00.patch
-Patch342:       %{whq_url}/99ce6e87a3b22c5602d7bbedd43bb40627b63321#/%{name}-whq-revert-mfplat-99ce6e8.patch
-Patch343:       %{whq_url}/c4c3912bad1c67bb70fd009eee18e0a58cdfe929#/%{name}-whq-revert-mfplat-c4c3912.patch
-Patch344:       %{whq_url}/f7ca5cfa27e433530f2725d44045ea5284fd332a#/%{name}-whq-revert-mfplat-f7ca5cf.patch
-Patch345:       %{whq_url}/24266121f1396a3b6ef4d40a7b35a0a31931539c#/%{name}-whq-revert-mfplat-2426612.patch
-Patch346:       %{whq_url}/9c711ba7488d78a91e133083567e56feb446a7c8#/%{name}-whq-revert-mfplat-9c711ba.patch
-Patch347:       %{whq_url}/7a8254fd05a2c7c89783d65cba544f2899611c73#/%{name}-whq-revert-mfplat-7a8254f.patch
-Patch348:       %{whq_url}/9f3eb4b7f04c0233d1e62d55c299362f2de4ca52#/%{name}-whq-revert-mfplat-9f3eb4b.patch
-Patch349:       %{whq_url}/240aff382def741f306783227d4d46d67e931a36#/%{name}-whq-revert-mfplat-240aff3.patch
-Patch350:       %{whq_url}/4f242f09c006e96f8518092b746648b2fdbd43f6#/%{name}-whq-revert-mfplat-4f242f0.patch
-Patch351:       %{name}-revert-mfplat-b38935f.patch
-Patch352:       %{whq_url}/f17b80105681c2c025d61fe98175c4b83da2d5d2#/%{name}-whq-revert-mfplat-f17b801.patch
-Patch353:       %{whq_url}/c40ab0f9a62f02b80fe7604d698db4aa3a8b7713#/%{name}-whq-revert-mfplat-c40ab0f.patch
-Patch354:       %{whq_url}/35f9b6f0b166300041fbc3cde09dbef44b855916#/%{name}-whq-revert-mfplat-35f9b6f.patch
-Patch355:       %{whq_url}/474d1824c474fa731885c76481fefddb6899d0df#/%{name}-whq-revert-mfplat-474d182.patch
-Patch356:       %{name}-revert-mfplat-57b3b29.patch
-Patch357:       %{whq_url}/b2828c1c8824d4c4bc83d8b2813c395bc0b04f5e#/%{name}-whq-revert-mfplat-b2828c1.patch
-Patch358:       %{whq_url}/2bbdd1eee680fc111df2f45e64611fd67030e87d#/%{name}-whq-revert-mfplat-2bbdd1e.patch
-Patch359:       %{whq_url}/6c110bd398de28613b34555ff2738e74191bb6cd#/%{name}-whq-revert-mfplat-6c110bd.patch
-Patch360:       %{whq_url}/ca0719f44077917f69d92a5cfc9f101806922149#/%{name}-whq-revert-mfplat-ca0719f.patch
-Patch361:       %{whq_url}/5dcf77d8d0d1676b806c1cc56706c3b738327e9c#/%{name}-whq-revert-mfplat-5dcf77d.patch
-Patch362:       %{whq_url}/d54b194550171726ebe7a926bcaf1688b91055de#/%{name}-whq-revert-mfplat-d54b194.patch
-Patch363:       %{whq_url}/d6af590a8078bb555996ab96dc8845d3d0a3259f#/%{name}-whq-revert-mfplat-d6af590.patch
-Patch364:       %{whq_url}/4edad99303b807f03c001b11d03a8b251f1bd214#/%{name}-whq-revert-mfplat-4edad99.patch
-Patch365:       %{whq_url}/c64775fd8b50c6d23da284460d7fe9ec5b41d9ab#/%{name}-whq-revert-mfplat-c64775f.patch
-Patch366:       %{whq_url}/fdb0f101888547285417cca54826a1c99c9f4099#/%{name}-whq-revert-mfplat-fdb0f10.patch
-Patch367:       %{whq_url}/81d04f9326c75c755bb0947b2521b955aedc2afa#/%{name}-whq-revert-mfplat-81d04f9.patch
-Patch368:       %{name}-revert-mfplat-b6a7a02.patch
-Patch369:       %{whq_url}/d33cb57e7d891ee9f01dcde3b6366095b4bcf8a1#/%{name}-whq-revert-mfplat-d33cb57.patch
-Patch370:       %{whq_url}/09b56e2f3631bebdd5581586465fcfe1556ff39f#/%{name}-whq-revert-mfplat-09b56e2.patch
-Patch371:       %{name}-revert-mfplat-5b178b2.patch
-Patch372:       %{whq_url}/41184e9de97599dacad00d80021c35f2010f9d0f#/%{name}-whq-revert-mfplat-41184e9.patch
-Patch373:       %{whq_url}/0d63116b27df2eb7c098625878b7182aaf83089b#/%{name}-whq-revert-mfplat-0d63116.patch
-Patch374:       %{whq_url}/433845277ba7a019737dad2050d51c7d38df9316#/%{name}-whq-revert-mfplat-4338452.patch
-Patch375:       %{whq_url}/fcabfeea8f79b610d5547ab2c0d05752f9279ff1#/%{name}-whq-revert-mfplat-fcabfee.patch
-Patch376:       %{whq_url}/496073d5062e8f286649696fe99d2e7c1460a35d#/%{name}-whq-revert-mfplat-496073d.patch
-Patch377:       %{whq_url}/fcb8edee6bcd0652cb43e1f59d967a59ba037940#/%{name}-whq-revert-mfplat-fcb8ede.patch
-Patch378:       %{whq_url}/e71fe80c3a29e08010aeac167d4f4f7db28aae95#/%{name}-whq-revert-mfplat-e71fe80.patch
-Patch379:       %{whq_url}/d7c3aac296031071e6eebc0420da16ed7bcfe823#/%{name}-whq-revert-mfplat-d7c3aac.patch
-Patch380:       %{whq_url}/d21fee129b4b04b85dc61824fe1a10c06da1a284#/%{name}-whq-revert-mfplat-d21fee1.patch
-Patch381:       %{whq_url}/98c9aff086461a4120c11b5e3afaf1b68095fef1#/%{name}-whq-revert-mfplat-98c9aff.patch
-Patch382:       %{whq_url}/90696fe884ed42cb58feae0fd53ad1f4d0281bc7#/%{name}-whq-revert-mfplat-90696fe.patch
-Patch383:       %{whq_url}/2e0a56257a15af8dee6ebad55f180591b1c1e18c#/%{name}-whq-revert-mfplat-2e0a562.patch
-Patch384:       %{whq_url}/2f83de8cffdc059fb9e3db9b86a9a98b1f299b03#/%{name}-whq-revert-mfplat-2f83de8.patch
-Patch385:       %{whq_url}/0a78a9f56d35e2c03913ea7a5dc8f98294f89ea8#/%{name}-whq-revert-mfplat-0a78a9f.patch
-Patch386:       %{name}-revert-mfplat-194e09b.patch
-Patch387:       %{whq_url}/963f76180b9ec05c65fb4e0bdee7d1e642379207#/%{name}-whq-revert-mfplat-963f761.patch
-Patch388:       %{whq_url}/a3b3708134a8956c79929764df7271b2a153f5f0#/%{name}-whq-revert-mfplat-a3b3708.patch
-Patch389:       %{whq_url}/b43e4a54e2ab646570bc2a08d0ebccd6e15e245b#/%{name}-whq-revert-mfplat-b43e4a5.patch
-Patch390:       %{whq_url}/4676273b888458f1d47f4a7823c9033dc4f3441d#/%{name}-whq-revert-mfplat-4676273.patch
-Patch391:       %{whq_url}/5981f2ed735a2a130dcc743ef9bb6d2ab0b33197#/%{name}-whq-revert-mfplat-5981f2e.patch
-Patch392:       %{whq_url}/568b4bc902857a4c1666fb5e83c85c1d4b2e1a71#/%{name}-whq-revert-mfplat-568b4bc.patch
-Patch393:       %{whq_url}/ec097bc1b0194c335dc5745cc5963c45d9682743#/%{name}-whq-revert-mfplat-ec097bc.patch
-Patch394:       %{whq_url}/7187965a75ca6abeb512a436bc7fcd84640591fd#/%{name}-whq-revert-mfplat-7187965.patch
-Patch395:       %{whq_url}/7e046aa49e70f97aac2adacc5c0bc5f55e52b2a3#/%{name}-whq-revert-mfplat-7e046aa.patch
-Patch396:       %{whq_url}/f5f741842287e1db81c85c2ed737ae086781ae58#/%{name}-whq-revert-mfplat-f5f7418.patch
-Patch397:       %{whq_url}/e15af49029189ef18497fd6da3fccd73f07a324b#/%{name}-whq-revert-mfplat-e15af49.patch
-Patch398:       %{whq_url}/51bd7f86b611242d0375fefa4fe66dda85fe485f#/%{name}-whq-revert-mfplat-51bd7f8.patch
-Patch399:       %{whq_url}/7b79e3a87b1e1a9478e92d6ea3b5973da4388a82#/%{name}-whq-revert-mfplat-7b79e3a.patch
-Patch400:       %{whq_url}/2db8a0a94efd3d45f2888c96f293670112414533#/%{name}-whq-revert-mfplat-2db8a0a.patch
-Patch401:       %{whq_url}/142e6e78619975bd064a73110b8999fc9fe7ae84#/%{name}-whq-revert-mfplat-142e6e7.patch
-Patch402:       %{whq_url}/fb513fcc0742390338a30e0df13111bf21de0920#/%{name}-whq-revert-mfplat-fb513fc.patch
-Patch403:       %{whq_url}/6c2b8fd3a4dadc0f6061c11e0bbc05326d504423#/%{name}-whq-revert-mfplat-6c2b8fd.patch
-Patch404:       %{whq_url}/177046a137635a697830f23406d84b72b588784d#/%{name}-whq-revert-mfplat-177046a.patch
-Patch405:       %{whq_url}/51835957d029d0b82f1a043e3e221f8b13ec2043#/%{name}-whq-revert-mfplat-5183595.patch
-Patch406:       %{whq_url}/a04e890f3751a3c324303b178f45444605351abb#/%{name}-whq-revert-mfplat-a04e890.patch
-Patch407:       %{whq_url}/493d60fb16a0f17c598ccc20bb837239eebcaa27#/%{name}-whq-revert-mfplat-493d60f.patch
-Patch408:       %{whq_url}/1dc4c94ed07336b0e7f4233cd22342a5898767eb#/%{name}-whq-revert-mfplat-1dc4c94.patch
-Patch409:       %{whq_url}/e5b06613f31b89a2a2e58e5963601e5ec6cf16e0#/%{name}-whq-revert-mfplat-e5b0661.patch
-Patch410:       %{whq_url}/6dc35196ae4a5afda6490abe585bc8d468f1ed2d#/%{name}-whq-revert-mfplat-6dc3519.patch
-Patch411:       %{whq_url}/901838504cef8c0bd494d27f191a4533b66dede3#/%{name}-whq-revert-mfplat-9018385.patch
-Patch412:       %{whq_url}/3dbb6c7470b7a54e078763501c0db38e4040b047#/%{name}-whq-revert-mfplat-3dbb6c7.patch
-Patch413:       %{whq_url}/180572129fb9ad5ca736ac1ba5d78094dc2c68db#/%{name}-whq-revert-mfplat-1805721.patch
-Patch414:       %{whq_url}/e5a512eb93663238f0ea85a19bdfec662b101134#/%{name}-whq-revert-mfplat-e5a512e.patch
-Patch415:       %{whq_url}/c806c4eed541a6b9e39b20fb2484edea4cf26eba#/%{name}-whq-revert-mfplat-c806c4e.patch
-Patch416:       %{whq_url}/6d64e40776886a264465a9a90e5f7c81797904cf#/%{name}-whq-revert-mfplat-6d64e40.patch
-Patch417:       %{whq_url}/b48fc2c2d64b7c8ae3c4a8d63bd5b3badff1c552#/%{name}-whq-revert-mfplat-b48fc2c.patch
-Patch418:       %{whq_url}/4a43312278c221d2ad313ded043d32d48338cb32#/%{name}-whq-revert-mfplat-4a43312.patch
-Patch419:       %{whq_url}/488c9c669c03b266047cc002d04ef012af5f525e#/%{name}-whq-revert-mfplat-488c9c6.patch
-Patch420:       %{whq_url}/efe0504f5f04a349473557e90a7484c4cac294c3#/%{name}-whq-revert-mfplat-efe0504.patch
-Patch421:       %{whq_url}/b95158b23ca884322a02be69826a58edb5e3923e#/%{name}-whq-revert-mfplat-b95158b.patch
-
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
-Patch900:        0001-staging-restore-mfplat-streaming-patchset.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
@@ -469,7 +254,8 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support6.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
-Patch1041:       %{tkg_url}/hotfixes/larger_def_heap/larger_def_heap.mypatch#/%{name}-tkg-larger_def_heap.patch
+Patch1041:       %{tkg_url}/hotfixes/mfplat/mfplat_714_mr575.mypatch#/%{name}-tkg-mfplat_714_mr575.patch
+Patch1042:       %{tkg_url}/hotfixes/mfplat/mfplat_714_mr582.mypatch#/%{name}-tkg-mfplat_714_mr582.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
@@ -482,7 +268,6 @@ Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.pa
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-proton-tkg-staging-update-to-NtUserGetDesktopWindow.patch
-Patch1304:       0001-winegstreamer-remove-last-WG_PARSER_EVENT_SEGMENT.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
 # Patch the patch
@@ -1090,237 +875,11 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 
 %patch100 -p1
 
-%patch421 -p1 -R
-%patch420 -p1 -R
-%patch419 -p1 -R
-%patch418 -p1 -R
-%patch417 -p1 -R
-%patch416 -p1 -R
-%patch415 -p1 -R
-%patch414 -p1 -R
-%patch413 -p1 -R
-%patch412 -p1 -R
-%patch411 -p1 -R
-%patch410 -p1 -R
-%patch409 -p1 -R
-%patch408 -p1 -R
-%patch407 -p1 -R
-%patch406 -p1 -R
-%patch405 -p1 -R
-%patch404 -p1 -R
-%patch403 -p1 -R
-%patch402 -p1 -R
-%patch401 -p1 -R
-%patch400 -p1 -R
-%patch399 -p1 -R
-%patch398 -p1 -R
-%patch397 -p1 -R
-%patch396 -p1 -R
-%patch395 -p1 -R
-%patch394 -p1 -R
-%patch393 -p1 -R
-%patch392 -p1 -R
-%patch391 -p1 -R
-%patch390 -p1 -R
-%patch389 -p1 -R
-%patch388 -p1 -R
-%patch387 -p1 -R
-%patch386 -p1 -R
-%patch385 -p1 -R
-%patch384 -p1 -R
-%patch383 -p1 -R
-%patch382 -p1 -R
-%patch381 -p1 -R
-%patch380 -p1 -R
-%patch379 -p1 -R
-%patch378 -p1 -R
-%patch377 -p1 -R
-%patch376 -p1 -R
-%patch375 -p1 -R
-%patch374 -p1 -R
-%patch373 -p1 -R
-%patch372 -p1 -R
-rm -f dlls/winegstreamer/color_convert.c
-%patch371 -p1 -R
-%patch370 -p1 -R
-%patch369 -p1 -R
-rm -f dlls/winegstreamer/resampler.c
-%patch368 -p1 -R
-%patch367 -p1 -R
-%patch366 -p1 -R
-%patch365 -p1 -R
-%patch364 -p1 -R
-%patch363 -p1 -R
-%patch362 -p1 -R
-%patch361 -p1 -R
-%patch360 -p1 -R
-%patch359 -p1 -R
-%patch358 -p1 -R
-%patch357 -p1 -R
-rm -f dlls/winegstreamer/wg_sample.c
-%patch356 -p1 -R
-%patch355 -p1 -R
-%patch354 -p1 -R
-%patch353 -p1 -R
-%patch352 -p1 -R
-rm -f dlls/winegstreamer/wg_allocator.c
-%patch351 -p1 -R
-%patch350 -p1 -R
-%patch349 -p1 -R
-%patch348 -p1 -R
-%patch347 -p1 -R
-%patch346 -p1 -R
-%patch345 -p1 -R
-%patch344 -p1 -R
-%patch343 -p1 -R
-%patch342 -p1 -R
-%patch341 -p1 -R
-%patch340 -p1 -R
-%patch339 -p1 -R
-%patch338 -p1 -R
-%patch337 -p1 -R
-%patch336 -p1 -R
-%patch335 -p1 -R
-%patch334 -p1 -R
-%patch333 -p1 -R
-%patch332 -p1 -R
-%patch331 -p1 -R
-%patch330 -p1 -R
-%patch329 -p1 -R
-rm -f dlls/qasf/tests/test.wmv
-rm -f dlls/qasf/tests/resource.rc
-%patch328 -p1 -R
-%patch327 -p1 -R
-%patch326 -p1 -R
-%patch325 -p1 -R
-%patch324 -p1 -R
-%patch323 -p1 -R
-%patch322 -p1 -R
-%patch321 -p1 -R
-%patch320 -p1 -R
-%patch319 -p1 -R
-%patch318 -p1 -R
-%patch317 -p1 -R
-%patch316 -p1 -R
-%patch315 -p1 -R
-%patch314 -p1 -R
-%patch313 -p1 -R
-%patch312 -p1 -R
-%patch311 -p1 -R
-%patch310 -p1 -R
-%patch309 -p1 -R
-%patch308 -p1 -R
-%patch307 -p1 -R
-%patch306 -p1 -R
-%patch305 -p1 -R
-%patch304 -p1 -R
-%patch303 -p1 -R
-%patch302 -p1 -R
-%patch301 -p1 -R
-%patch300 -p1 -R
-%patch299 -p1 -R
-%patch298 -p1 -R
-%patch297 -p1 -R
-%patch296 -p1 -R
-%patch295 -p1 -R
-%patch294 -p1 -R
-%patch293 -p1 -R
-%patch292 -p1 -R
-%patch291 -p1 -R
-%patch290 -p1 -R
-rm -f dlls/mf/tests/rgb32frame.bin
-%patch289 -p1 -R
-%patch288 -p1 -R
-%patch287 -p1 -R
-%patch286 -p1 -R
-%patch285 -p1 -R
-%patch284 -p1 -R
-%patch283 -p1 -R
-%patch282 -p1 -R
-%patch281 -p1 -R
-%patch280 -p1 -R
-%patch279 -p1 -R
-%patch278 -p1 -R
-%patch277 -p1 -R
-%patch276 -p1 -R
-%patch275 -p1 -R
-%patch274 -p1 -R
-rm -f dlls/mf/tests/audiodata.bin
-mv dlls/mf/tests/wmadecdata.bin dlls/mf/tests/wmadata.bin
-rm -f dlls/mf/tests/wmaencdata.bin
-%patch273 -p1 -R
-%patch272 -p1 -R
-%patch271 -p1 -R
-%patch270 -p1 -R
-%patch269 -p1 -R
-%patch268 -p1 -R
-%patch267 -p1 -R
-%patch266 -p1 -R
-%patch265 -p1 -R
-%patch264 -p1 -R
-%patch263 -p1 -R
-%patch262 -p1 -R
-%patch261 -p1 -R
-%patch260 -p1 -R
-%patch259 -p1 -R
-%patch258 -p1 -R
-%patch257 -p1 -R
-%patch256 -p1 -R
-%patch255 -p1 -R
-%patch254 -p1 -R
-%patch253 -p1 -R
-%patch252 -p1 -R
-%patch251 -p1 -R
-%patch250 -p1 -R
-%patch249 -p1 -R
-%patch248 -p1 -R
-%patch247 -p1 -R
-%patch246 -p1 -R
-%patch245 -p1 -R
-%patch244 -p1 -R
-%patch243 -p1 -R
-%patch242 -p1 -R
-%patch241 -p1 -R
-%patch240 -p1 -R
-%patch239 -p1 -R
-%patch238 -p1 -R
-%patch237 -p1 -R
-%patch236 -p1 -R
-%patch235 -p1 -R
-%patch234 -p1 -R
-%patch233 -p1 -R
-%patch232 -p1 -R
-%patch231 -p1 -R
-%patch230 -p1 -R
-rm -f dlls/winegstreamer/h264_decoder.c
-%patch229 -p1 -R
-%patch228 -p1 -R
-%patch227 -p1 -R
-rm -f dlls/mf/tests/nv12frame.bin
-%patch226 -p1 -R
-%patch225 -p1 -R
-%patch224 -p1 -R
-%patch223 -p1 -R
-%patch222 -p1 -R
-%patch221 -p1 -R
-%patch220 -p1 -R
-%patch219 -p1 -R
-%patch218 -p1 -R
-%patch217 -p1 -R
-%patch216 -p1 -R
-%patch215 -p1 -R
-%patch214 -p1 -R
-%patch213 -p1 -R
-%patch212 -p1 -R
-%patch211 -p1 -R
-%patch210 -p1 -R
-
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
-%patch900 -p1
 %patch901 -p1
 
 %patch1006 -p1
@@ -1340,9 +899,6 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 ./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
 
-# mfplat rerevert
-%patch386 -p1
-
 %patch1020 -p1
 %patch1021 -p1
 %patch1022 -p1
@@ -1357,6 +913,21 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1039 -p1
 %endif
 %patch1040 -p1
+%patch1041 -p1
+%patch1042 -p1
+
+for i in \
+  0001-winegstreamer-HACK-Use-a-different-gst-registry-file.patch \
+  0002-winegstreamer-HACK-Try-harder-to-register-winegstrea.patch \
+  0003-mfplat-Register-winegstreamer-interfaces-on-load.patch \
+  0008-winegstreamer-Allow-videoconvert-to-parallelize.patch \
+  0010-HACK-quartz-Keep-a-reference-on-the-IMediaPosition-i.patch \
+  0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch \
+  0087-winegstreamer-Use-unlimited-buffering-for-the-WM-rea.patch \
+  0088-HACK-winegstreamer-Report-streams-in-reverse-order-f.patch \
+;do
+    $patch_command -p1 -i patches/mfplat-streaming-support/$i
+done
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -1386,7 +957,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1300 -p1
 %patch1301 -p1
 %patch1302 -p1
-%patch1304 -p1
 %patch1305 -p1
 
 sed \
@@ -2492,8 +2062,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/winsta.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wintypes.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanui.%{winedll}
-%dnl #FIXME - remove when mfplat reverts are unneeded
-%{_libdir}/wine/%{winedlldir}/wmadmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmic.%{wineexe}
@@ -2971,6 +2539,9 @@ fi
 
 
 %changelog
+* Sun Aug 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-103.202200805gitbfc73b0
+- mfplat streaming updates
+
 * Sun Aug 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-102.202200805gitbfc73b0
 - Snapshot
 
