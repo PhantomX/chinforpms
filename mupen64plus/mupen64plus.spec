@@ -5,16 +5,16 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 49dd0bfc8f48afd04ddd1762ea9d9e89a85fc8a2
+%global commit f29984331b20de47fd1c2de776018fa40f50bac5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220218
+%global date 20220809
 %global with_snapshot 1
 
-%global commit1 af6af5b1fd4fdb435c836be15371dd047f395c4d
+%global commit1 df0770215f743f70244b09978c123a0a8b2a7d9d
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-audio-sdl
 
-%global commit2 cb421bbfa95c40d30dedbfcebdd907ca778b6de1
+%global commit2 9cbe63f8e80f4dfc6dcdd8408b51358d248a050e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-input-sdl
 
@@ -22,19 +22,19 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 %{name}-rom
 
-%global commit4 4bac3aeb98aff2d89095c59ec105aad721a16167
+%global commit4 aa0ea78030d3c2b80184a35bbb36909fd7a28e70
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 %{name}-rsp-hle
 
-%global commit5 b5f62979ed77e526877c9c67dbb8568a3511347c
+%global commit5 42546ab00b23a8052b9c974882628912609990c2
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 %{name}-ui-console
 
-%global commit6 f0c92d93a29633ca7d9bcbb93a79baaca1f3f353
+%global commit6 79809753e83180e6bbc3b5b3dc65120fef3e7a43
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 %{name}-video-glide64mk2
 
-%global commit7 8cd53f0272cd3cd44510a01fd0aedcb7e5df0790
+%global commit7 51582f9e62082f2937a17ac3acfaab08cb7f46ef
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 %{name}-video-rice
 
@@ -48,7 +48,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        111%{?gver}%{?dist}
+Release:        112%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -68,6 +68,8 @@ Source7:        %{vc_url}/%{name}-video-rice/archive/%{commit7}/%{srcname7}-%{sh
 %else
 Source0:        %{vc_url}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 %endif
+
+Patch10:        0001-Add-Vulkan-support.patch
 
 BuildRequires:  make
 BuildRequires:  boost-devel
@@ -135,6 +137,7 @@ for i in core rom ui-console audio-sdl input-sdl rsp-hle video-rice video-glide6
 done
 
 tar -xf %{S:0} -C source/%{name}-core --strip-components 1
+%patch10 -p1
 tar -xf %{S:1} -C source/%{name}-audio-sdl --strip-components 1
 tar -xf %{S:2} -C source/%{name}-input-sdl --strip-components 1
 tar -xf %{S:3} -C source/%{name}-rom --strip-components 1
@@ -207,6 +210,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-112.20220809gitf299843
+- Update
+- Vulkan updates from Logan McNaughton fork
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-111.20220218git49dd0bf
 - Bump
 

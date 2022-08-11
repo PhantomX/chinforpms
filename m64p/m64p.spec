@@ -1,7 +1,7 @@
 %global commit 85d0d3f79d01309829d2c052e0c6f8e301775e32
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220208
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -10,14 +10,14 @@
 %global sanitize 0
 
 Name:           m64p
-Version:        2022.2.7
-Release:        2%{?gver}%{?dist}
+Version:        2022.08.6
+Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
 # * mupen64plus-audio-sdl2 - GPLv2
 # * mupen64plus-input-raphnetraw - GPLv2
 License:        GPLv3 and (MIT or LGPLv3) and GPLv2
-URL:            https://github.com/loganmc10/%{name}
+URL:            https://github.com/%{name}/%{name}
 
 %if 0%{sanitize}
 %if 0%{?with_snapshot}
@@ -46,10 +46,10 @@ BuildRequires:  icoutils
 BuildRequires:  make
 BuildRequires:  mupen64plus-devel
 BuildRequires:  pkgconfig(hidapi-hidraw)
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5WebSockets)
-BuildRequires:  pkgconfig(Qt5Widgets)
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6WebSockets)
+BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
@@ -106,6 +106,9 @@ sed \
   -e 's|"../mupen64plus-core/src/api"|%{_includedir}/mupen64plus|g' \
   -e 's|-L/usr/local/lib ||g' \
   -e '/-no-pie/d' \
+  -e '/^QMAKE_CXXFLAGS/d' \
+  -e '/^QMAKE_CFLAGS/d' \
+  -e '/^QMAKE_LFLAGS/d' \
   -i mupen64plus-*/mupen64plus-*.pro
 
 sed -e '/^#include "config.h"/d' -i mupen64plus-input-raphnetraw/src/plugin_front.c
@@ -125,7 +128,7 @@ EOF
 icotool -x mupen64plus-gui/mupen64plus.ico
 
 cat > %{name}-env <<'EOF'
-export OPTFLAGS="%{optflags}"
+export OPTFLAGS="$CXXFLAGS"
 export V=1
 export LDCONFIG=/bin/true
 export PREFIX=/usr
@@ -139,12 +142,13 @@ EOF
 
 %build
 %set_build_flags
+export CXXFLAGS="$CXXFLAGS -fvisibility=hidden"
 source ./%{name}-env
 
 for i in mupen64plus-input-qt mupen64plus-gui ;do
   mkdir $i/build
   pushd $i/build
-    %{qmake_qt5} ../$i.pro
+    %{qmake_qt6} ../$i.pro
   popd
 done
 
@@ -205,6 +209,10 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.08.6-1
+- 2022.08.6
+- Qt6
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.2.7-2.20220208git85d0d3f
 - Fix for package_note_file
 

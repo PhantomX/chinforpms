@@ -1,6 +1,6 @@
 NAME = m64p
-VERSION ?= 85d0d3f79d01309829d2c052e0c6f8e301775e32
-SNAPSHOT ?= 1
+VERSION ?= 2022.08.6
+SNAPSHOT ?= 0
 SANITIZE ?= 1
 
 ifeq ($(SNAPSHOT),1)
@@ -22,7 +22,7 @@ clean:
 	rm -f ${NAME}-clean-${TARBALLVER}.tar.xz
 
 clone: clean
-	curl --location -O https://github.com/loganmc10/${NAME}/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz
+	curl --location -O https://github.com/${NAME}/${NAME}/archive/${DLSTR}/${NAME}-${TARBALLVER}.tar.gz
 	tar xf ${NAME}-${TARBALLVER}.tar.gz
 
 sanitize: clone

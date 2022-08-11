@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        9.2
+Version:        11.0
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -65,7 +65,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r categories eval guicfgs lang misc %{buildroot}%{_datadir}/%{name}/
+cp -r collections eval guicfgs lang misc %{buildroot}%{_datadir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -87,6 +87,9 @@ install -pm0644 misc/%{name}.svg \
 
 
 %changelog
+* Wed Aug 10 2022 Phantom X <megaphantomx at hotmail dot com> - 11.0-1
+- 11.0
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 9.2-1
 - 9.2
 

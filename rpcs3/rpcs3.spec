@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 3e923b4993791ea8cd8b6dd9d9469dd62dfefad8
+%global commit c75b76ddf5738dd6128edd79e53fcc4ad40cd5bc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220803
+%global date 20220801
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.23
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -128,9 +128,6 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
-
-Patch0:         %{vc_url}/rpcs3/pull/12413.patch#/%{name}-gh-pr12413.patch
-Patch2:         %{vc_url}/rpcs3/pull/12443.patch#/%{name}-gh-pr12443.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -415,6 +412,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Aug 10 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-4.20220801gitc75b76d
+- Revert to fix crashes
+
 * Wed Aug 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-3.20220803git3e923b4
 - Again
 

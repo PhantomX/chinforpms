@@ -64,7 +64,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.1.5
+Version:        22.2.0~rc2
 Release:        100%{?dist}
 
 License:        MIT
@@ -99,7 +99,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.109
+BuildRequires:  pkgconfig(libdrm) >= 2.4.110
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
@@ -671,6 +671,9 @@ popd
 
 
 %changelog
+* Wed Aug 10 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0~rc2-100
+- 22.2.0-rc2
+
 * Wed Aug 03 2022 Phantom X <megaphantomx at hotmail dot com> - 22.1.5-100
 - 22.1.5
 
