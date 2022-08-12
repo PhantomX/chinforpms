@@ -42,7 +42,7 @@ BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  icoutils
+BuildRequires:  librsvg2-tools
 BuildRequires:  make
 BuildRequires:  mupen64plus-devel
 BuildRequires:  pkgconfig(hidapi-hidraw)
@@ -60,6 +60,9 @@ Requires:       mupen64plus
 Requires:       mupen64plus-rsp-parallel%{?_isa}
 Requires:       mupen64plus-video-parallel%{?_isa}
 Requires:       vulkan-loader%{?_isa}
+
+Provides:       mupen64plus-gui%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
 
 %description
 %{summary}.
@@ -113,9 +116,9 @@ sed \
 
 sed -e '/^#include "config.h"/d' -i mupen64plus-input-raphnetraw/src/plugin_front.c
 
-cat > %{name}.desktop <<EOF
+cat > mupen64plus-gui.desktop <<EOF
 [Desktop Entry]
-Name=m64p
+Name=mupen64plus-gui
 Exec=mupen64plus-gui
 Terminal=false
 Type=Application
@@ -124,8 +127,6 @@ Comment=A frontend for Mupen64Plus
 Categories=Game;Emulator;Qt;
 Keywords=Emulator;Nintendo64;Mupen64plus;
 EOF
-
-icotool -x mupen64plus-gui/mupen64plus.ico
 
 cat > %{name}-env <<'EOF'
 export OPTFLAGS="$CXXFLAGS"
@@ -185,13 +186,13 @@ ln -s ../mupen64plus/mupen64plus-video-parallel.so %{buildroot}%{_libdir}/%{name
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
+  mupen64plus-gui.desktop
 
-for res in 16 24 32 48 256 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 mupen64plus_*_${res}x${res}x32.png \
-    ${dir}/%{name}.png
+  rsvg-convert mupen64plus-gui/mupen64plus.svg -h ${res} -w ${res} \
+    -o ${dir}/mupen64plus-gui.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
@@ -203,8 +204,8 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %doc mupen64plus-gui/README.md READMEdir/*
 %{_bindir}/mupen64plus-gui
 %{_libdir}/%{name}/*.so
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/applications/mupen64plus-gui.desktop
+%{_datadir}/icons/hicolor/*/apps/mupen64plus-gui.*
 %{_metainfodir}/%{name}.appdata.xml
 
 
