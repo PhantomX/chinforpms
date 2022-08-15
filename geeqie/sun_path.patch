@@ -19,7 +19,7 @@
 -	sun_path_len = MIN(strlen(path) + 1, UNIX_PATH_MAX);
 -	strncpy(addr.sun_path, path, sun_path_len);
 +
- 	if (bind(fd, (struct sockaddr*)&addr, sizeof(addr)) == -1 ||
+ 	if (bind(fd, (const struct sockaddr*)&addr, sizeof(addr)) == -1 ||
  	    listen(fd, REMOTE_SERVER_BACKLOG) == -1)
  		{
 @@ -302,7 +303,6 @@

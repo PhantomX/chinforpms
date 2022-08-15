@@ -1,7 +1,7 @@
 %global commit bfc73b0b80a1da2b137b5da4a2fcf530ee3a9d7d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 202200805
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver f2648a9a40cc7516ee4a469cca16778268053056
+%global wine_stagingver 7.15
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 050df676b54c5da19368f59cea5a59ed14391c53
+%global tkg_id 8fbab6f20b6d15a7313378ac76671be903611a34
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -148,8 +148,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.14
-Release:        103%{?gver}%{?dist}
+Version:        7.15
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -158,7 +158,7 @@ License:        LGPLv2+
 URL:            http://www.winehq.org/
 
 %if 0%{?with_snapshot}
-Source0:        %{whq_murl}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{whq_murl}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
 %if "%{verminor}" == "0"
 %global verx 1
@@ -216,7 +216,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch100:       https://gitlab.winehq.org/rbernon/wine/-/merge_requests/2.patch#/%{name}-gl-rbernon-pr2.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
@@ -254,8 +253,6 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support6.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
-Patch1041:       %{tkg_url}/hotfixes/mfplat/mfplat_714_mr575.mypatch#/%{name}-tkg-mfplat_714_mr575.patch
-Patch1042:       %{tkg_url}/hotfixes/mfplat/mfplat_714_mr582.mypatch#/%{name}-tkg-mfplat_714_mr582.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
@@ -873,8 +870,6 @@ patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
-%patch100 -p1
-
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -913,8 +908,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1039 -p1
 %endif
 %patch1040 -p1
-%patch1041 -p1
-%patch1042 -p1
 
 for i in \
   0001-winegstreamer-HACK-Use-a-different-gst-registry-file.patch \
@@ -2539,6 +2532,9 @@ fi
 
 
 %changelog
+* Sun Aug 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.15-100
+- 7.15
+
 * Sun Aug 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.14-103.202200805gitbfc73b0
 - mfplat streaming updates
 

@@ -13,7 +13,7 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        1.7.3
+Version:        2.0.1
 Release:        100%{?gver}%{?dist}
 
 URL:            https://www.geeqie.org
@@ -27,38 +27,35 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.x
 %endif
 
 Patch0:         sun_path.patch
-Patch10:        %{vc_url}/commit/35f9552fca47bbe17e31f7247d1f017186397b5e.patch#/%{name}-gh-35f9552.patch
-Patch11:        %{vc_url}/commit/1db6df57c7dce3703ca0da80668e12e8a6faef47.patch#/%{name}-gh-1db6df5.patch
-Patch12:        %{vc_url}/commit/97b1d0546e3c2e7ca18bbd3483087b02668f3df8.patch#/%{name}-gh-97b1d05.patch
-Patch13:        %{vc_url}/commit/aef9faa33fff7cfd796989cf0627181a3dbb5cec.patch#/%{name}-gh-aef9faa.patch
 
+
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  autoconf
-BuildRequires:  automake
-BuildRequires:  make
+BuildRequires:  meson >= 0.53.0
 BuildRequires:  gettext
-BuildRequires:  intltool
-BuildRequires:  libtool
 BuildRequires:  yelp-tools
 
 # for /usr/bin/appstream-util
 BuildRequires:  libappstream-glib
 
 BuildRequires:  pkgconfig(ddjvuapi)
+BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
+BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(exiv2)
 BuildRequires:  pkgconfig(lcms2)
-BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libopenjp2)
+BuildRequires:  pkgconfig(libraw)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libwebp)
 BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
-BuildRequires:  gnome-doc-utils
+# For xxd
+BuildRequires:  vim-common
 %if %{with map}
 BuildRequires:  pkgconfig(clutter-gtk-1.0)
 BuildRequires:  pkgconfig(champlain-0.12)
@@ -68,18 +65,11 @@ BuildRequires:  pkgconfig(champlain-0.12)
 #BuildRequires:  pkgconfig(libffmpegthumbnailer)
 
 # for the included plug-in scripts
-BuildRequires:  exiv2
-BuildRequires:  fbida
-BuildRequires:  ImageMagick
-BuildRequires:  zenity
 Requires:       exiv2
 Requires:       fbida
 Requires:       ImageMagick
+Requires:       perl-Image-ExifTool
 Requires:       zenity
-# at run-time, it is only displayed in menus, if ufraw executable is available
-%if 0%{?fedora}
-BuildRequires:  ufraw
-%endif
 
 
 %description
@@ -93,27 +83,14 @@ and zoom.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-# fix autoconf problem with missing version
-sed -r -i 's/m4_translit\(.*m4_newline\)/[%{version}%{?gver:+git%{date}-%{shortcommit}}]/' configure.ac
+echo '#!/bin/sh' > version.sh
+cat >> version.sh <<'EOF'
+version=$(head -1 NEWS)
+set -- $version
+printf '%s' "$2%{?gver:+git%{date}-%{shortcommit}}"
+EOF
 
-%if !%{with map}
-sed \
-  -e 's/clutter-1.0/clutter-1.0_disabled/g' \
-  -e 's/champlain-gtk-0.12/champlain-gtk-0.12_disabled/g' \
-  -i configure*
-%endif
-
-autoreconf -f -i ; intltoolize
-# guard against missing executables at (re)build-time,
-# these are needed by the plug-in scripts
-for f in exiftran exiv2 mogrify zenity ; do
-    type $f || exit -1
-done
-%if 0%{?fedora}
-for f in ufraw-batch ; do
-    type $f || exit -1
-done
-%endif
+sed -e 's|lua5.3|lua|g' -i meson.build
 
 
 %build
@@ -125,22 +102,22 @@ cflags=(
   -Wno-error=parentheses
   -Wno-deprecated-declarations
 )
+CFLAGS="$CFLAGS ${cflags[*]}"
 
-%configure \
-  --enable-lirc \
-%if !%{with map}
-  --disable-map \
-%endif
-  --with-readmedir=%{_pkgdocdir} CFLAGS="$CFLAGS ${cflags[*]}"
+%meson \
+  -Dgps-map=%{?with_map:enabled}%{!?with_map:disabled} \
+  -Dheif=disabled \
+  -Dspell=disabled \
+  -Dvideothumbnailer=disabled \
+  -Dgq_helpdir=%{_pkgdocdir} \
+%{nil}
 
-# this will fail w/o git repo structure
-touch ChangeLog ChangeLog.html
+%meson_build
 
-%make_build
 
 %install
 mkdir -p %{buildroot}%{_pkgdocdir}/html
-%make_install
+%meson_install
 
 # guard against missing HTML tree
 [ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] && exit 1
@@ -153,13 +130,18 @@ desktop-file-install \
     --delete-original \
     --dir %{buildroot}%{_datadir}/applications \
     --add-mime-type="image/jxl" \
-    --add-mime-type="image/svg;image/svg+xml;image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
+    --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
 
-%find_lang %name
+%find_lang %{name}
 
-mv %{buildroot}/usr/share/metainfo %{buildroot}%{_datadir}/appdata
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie.Geeqie.appdata.xml
+sed \
+  -e 's|_name>|name>|g' \
+  -e 's|_summary>|summary>|g' \
+  -e 's|_p>|p>|g' \
+  -e 's|<_p |<p |g' \
+  -i %{buildroot}%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
 
 %files -f %{name}.lang
 %doc %{_pkgdocdir}/
@@ -170,10 +152,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/org.geeqie
 %{_datadir}/%{name}/
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/*%{name}.desktop
-%{_datadir}/appdata/org.geeqie.Geeqie.appdata.xml
+%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
 
 
 %changelog
+* Sat Aug 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-100
+- 2.0.1
+- meson
+
 * Tue Apr 12 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3-100
 - 1.7.3
 - Rawhide sync

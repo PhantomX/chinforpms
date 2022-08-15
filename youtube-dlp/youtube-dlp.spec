@@ -4,7 +4,7 @@
 %global pkgname yt-dlp
 
 Name:           youtube-dlp
-Version:        2022.07.18
+Version:        2022.08.08
 Release:        1%{?dist}
 Summary:        A command-line program to download videos
 
@@ -16,7 +16,7 @@ Source1:        %{pkgname}.conf
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel
+BuildRequires:  python3-devel >= 3.7
 BuildRequires:  %{py3_dist pycrypto}
 BuildRequires:  %{py3_dist mutagen}
 BuildRequires:  %{py3_dist setuptools}
@@ -113,6 +113,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Sun Aug 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.08.08-1
+- 2022.08.08
+
 * Mon Jul 25 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.07.18-1
 - 2022.07.18
 
