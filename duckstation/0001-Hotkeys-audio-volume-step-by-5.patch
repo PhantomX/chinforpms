@@ -19,7 +19,7 @@ index 70bb7ba..5975304 100644
 +    const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 5, 100);
      g_settings.audio_output_volume = volume;
      g_settings.audio_fast_forward_volume = volume;
-     g_spu.GetOutputStream()->SetOutputVolume(volume);
+     SPU::GetOutputStream()->SetOutputVolume(volume);
 @@ -950,7 +950,7 @@ DEFINE_HOTKEY("AudioVolumeDown", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE(
                  {
                    g_settings.audio_output_muted = false;
@@ -28,7 +28,7 @@ index 70bb7ba..5975304 100644
 +                  const s32 volume = std::max<s32>(System::GetAudioOutputVolume() - 5, 0);
                    g_settings.audio_output_volume = volume;
                    g_settings.audio_fast_forward_volume = volume;
-                   g_spu.GetOutputStream()->SetOutputVolume(volume);
+                   SPU::GetOutputStream()->SetOutputVolume(volume);
 -- 
 2.37.1
 

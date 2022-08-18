@@ -1,3 +1,12 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3f1696ca1e6762e9774ecb4d0dedbc54dedb284d
+ 3f1696ca1e6762e9774ecb4d0dedbc54dedb284d drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7e71aedbf01514b3c8465e224532209c606c6a45
+ 7e71aedbf01514b3c8465e224532209c606c6a45 Bluetooth: hci_event: Fix vendor (unknown) opcode status handling
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a8c6f414c43838287e9b59923debd432dbe4c4c8
+ a8c6f414c43838287e9b59923debd432dbe4c4c8 Bluetooth: hci_sync: Fix resuming scan after suspend resume
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/4e3695b44c9dc069d2b3fbb530920e53094912fe
  4e3695b44c9dc069d2b3fbb530920e53094912fe arm64: config: Enable DRM_V3D
 

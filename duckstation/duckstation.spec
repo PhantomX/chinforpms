@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 4652c5faf1e8fa8275d765cc3a380783d67b2d5a
+%global commit fe67bea19ab8c0b206d0b935efa01cf76568ef6d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220810
+%global date 20220817
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        61%{?gver}%{?dist}
+Release:        62%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -97,6 +97,7 @@ Provides:       bundled(spirv-tools) = 0~git
 %endif
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 BuildRequires:  hicolor-icon-theme
 
@@ -186,6 +187,18 @@ cp -p %{S:2} .
 sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -i src/duckstation-qt/qthost.cpp %{name}.sh
 
+cat > %{name}-qt.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=DuckStation
+GenericName=PlayStation 1 Emulator
+Comment=Fast PlayStation 1 emulator
+Icon=%{name}-qt
+TryExec=%{name}-qt
+Exec=%{name}-qt %%f
+Categories=Game;Emulator;Qt;
+EOF
+
 
 %build
 %cmake \
@@ -234,12 +247,13 @@ ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  extras//linux-desktop-files/%{name}-qt.desktop
+  %{name}-qt.desktop
 
-for res in 16 32 48 64 128 256 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 extras/icons/icon-${res}px.png ${dir}/%{name}-qt.png
+  convert data/resources/images/duck.png -filter Lanczos -resize ${res}x${res} \
+    ${dir}/%{name}-qt.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}

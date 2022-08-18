@@ -1,1 +1,1 @@
-# CONFIG_FB_EFI is not set
+CONFIG_FB_EFI=y
