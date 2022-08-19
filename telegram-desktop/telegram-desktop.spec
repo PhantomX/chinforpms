@@ -20,7 +20,7 @@
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
 Name:           telegram-desktop
-Version:        4.1.0
+Version:        4.1.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -288,6 +288,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Aug 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-100
+- 4.1.1
+
 * Sun Aug 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.0-100
 - 4.1.0
 
