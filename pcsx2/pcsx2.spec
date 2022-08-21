@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3195
+Version:        1.7.3229
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -135,9 +135,8 @@ BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
-BuildRequires:  unzip
-BuildRequires:  zip
 
+Requires:       pcsx2_patches
 Requires:       joystick
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
@@ -151,7 +150,7 @@ Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = 0~git%{shortcommit11}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(simpleini) = %{simpleini_ver}
-Provides:       bundled(xbyak)
+Provides:       bundled(xbyak) = 0~git
 Provides:       bundled(xxhash) = %{xxhash_ver}
 
 
@@ -211,19 +210,6 @@ sed -i \
   -e '/PCSX2_GIT_TAG/s| ""| "v%{version}"|g' \
 %endif
   cmake/Pcsx2Utils.cmake
-
-mkdir cheats_ws_tmp
-pushd cheats_ws_tmp
-unzip -q ../bin/resources/cheats_ws.zip
-if ls *.PNACH >/dev/null 2>&1 ;then
-  rename PNACH pnach *.*
-  zip -9 -q ../cheats_ws_new.zip *.*
-fi
-popd
-if [ -f cheats_ws_new.zip ] ;then
-  touch --reference bin/resources/cheats_ws.zip cheats_ws_new.zip
-  mv -f cheats_ws_new.zip bin/resources/cheats_ws.zip
-fi
 
 
 %build
@@ -337,14 +323,16 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 %{_datadir}/PCSX2/resources/fonts
 %{_datadir}/PCSX2/resources/icons
 %{_datadir}/PCSX2/resources/shaders
-%{_datadir}/PCSX2/resources/cheats_ni.zip
-%{_datadir}/PCSX2/resources/cheats_ws.zip
 %{_datadir}/PCSX2/resources/GameIndex.yaml
 %{_datadir}/PCSX2/resources/cover-placeholder.png
 %{_datadir}/PCSX2/resources/game_controller_db.txt
 
 
 %changelog
+* Sat Aug 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3229-1
+- 1.7.3229
+- R: pcsx2_patches
+
 * Fri Aug 12 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3195-1
 - 1.7.3195
 

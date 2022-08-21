@@ -46,6 +46,7 @@ ms-teams
 -mupen64plus-extraplugins
 ninfs
 pcsx2
+pcsx2_patches
 ppsspp
 ps3dec
 psximager

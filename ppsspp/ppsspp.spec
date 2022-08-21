@@ -9,7 +9,7 @@
 
 %global commit ad59fe0fe83dc5e26a047dbd29b80b4679c4ee06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220727
+%global date 20220820
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -54,6 +54,10 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
+%global commit8 9776332f720c854ef26f325a0cf9e32c02115a9c
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global srcname8 %{name}-debugger
+
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
@@ -64,7 +68,7 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.13
+Version:        1.13.1
 Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -90,6 +94,7 @@ Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source8:        https://github.com/unknownbrackets/ppsspp-debugger/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source10:       %{name}.appdata.xml
 Source11:       Makefile
 
@@ -99,8 +104,6 @@ Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
-
-Patch10:        %{vc_url}/%{name}/pull/15736.patch#/%{name}-gh-pr15736.patch
 
 %if !0%{?with_sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -219,6 +222,7 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
+tar -xf %{SOURCE8} -C assets/debugger --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
@@ -447,6 +451,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Aug 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13.1-100.20220820gitad59fe0
+- 1.13.1
+
 * Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13-100.20220727gitad59fe0
 - 1.13
 

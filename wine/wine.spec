@@ -1,7 +1,7 @@
-%global commit bfc73b0b80a1da2b137b5da4a2fcf530ee3a9d7d
+%global commit 120ca2ff52d145faa925a41d494035842d47a967
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202200805
-%global with_snapshot 0
+%global date 202200819
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -60,8 +60,8 @@
 %global winetiff 4.4.0
 %global winejxrlib 1.1
 %global winevkd3d 1.4
-%global winexml2 2.9.14
-%global winexslt 1.1.35
+%global winexml2 2.10.0
+%global winexslt 1.1.36
 %global winezlib 1.2.12
 
 %global _default_patch_fuzz 2
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.15
+%global wine_stagingver fa8d0abc9dc3664d0b83593c84d444342bdacca3
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8fbab6f20b6d15a7313378ac76671be903611a34
+%global tkg_id 6869a88cfc76144c4c53cadb2ed2e88716dad498
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.15
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -250,7 +250,6 @@ Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.p
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 %dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patchg 
-Patch1038:       %{name}-win32u.implement_rudimentary_EnableMouseInPointer_support6.patch
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 
@@ -1749,6 +1748,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mfplat.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfplay.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfreadwrite.%{winedll}
+%{_libdir}/wine/%{winedlldir}/mfsrcsnk.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mgmtapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/midimap.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mlang.%{winedll}
