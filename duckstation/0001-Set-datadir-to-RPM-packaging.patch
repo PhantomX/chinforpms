@@ -1,17 +1,18 @@
-From 978a99540b90318f8b9b281942568fba003b5acd Mon Sep 17 00:00:00 2001
+From f0e7d1021d63ee3dbb66826bbdc7f10c62338760 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Tue, 17 Aug 2021 18:37:47 -0300
+Date: Mon, 22 Aug 2022 22:53:43 -0300
 Subject: [PATCH] Set datadir to RPM packaging
 
 ---
- src/duckstation-qt/qthost.cpp            | 23 ++---------------------
- 1 file changed, 2 insertions(+), 21 deletions(-)
+ src/duckstation-qt/qthost.cpp         | 2 +-
+ src/duckstation-qt/qttranslations.cpp | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
-index 2db9b27..760097c 100644
+index c6aad17..08a45fb 100644
 --- a/src/duckstation-qt/qthost.cpp
 +++ b/src/duckstation-qt/qthost.cpp
-@@ -259,7 +259,7 @@ void QtHost::SetResourcesDirectory()
+@@ -237,7 +237,7 @@ void QtHost::SetResourcesDirectory()
  {
  #ifndef __APPLE__
    // On Windows/Linux, these are in the binary directory.
@@ -20,34 +21,21 @@ index 2db9b27..760097c 100644
  #else
    // On macOS, this is in the bundle resources directory.
    EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
-@@ -438,26 +438,7 @@ void QtHost::InstallTranslator()
- {
+diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
+index f0bbff8..c8c9839 100644
+--- a/src/duckstation-qt/qttranslations.cpp
++++ b/src/duckstation-qt/qttranslations.cpp
+@@ -38,8 +38,8 @@ void QtHost::InstallTranslator()
    const QString language(QString::fromStdString(Host::GetBaseStringSettingValue("Main", "Language", "en")));
  
--  // install the base qt translation first
+   // install the base qt translation first
 -  const QString base_dir(QStringLiteral("%1/translations").arg(qApp->applicationDirPath()));
 -  const QString base_path(QStringLiteral("%1/qtbase_%2.qm").arg(base_dir).arg(language));
--  if (QFile::exists(base_path))
--  {
--    QTranslator* base_translator = new QTranslator(qApp);
--    if (!base_translator->load(base_path))
--    {
--      QMessageBox::warning(
--        nullptr, QStringLiteral("Translation Error"),
--        QStringLiteral("Failed to find load base translation file for '%1':\n%2").arg(language).arg(base_path));
--      delete base_translator;
--    }
--    else
--    {
--      m_translators.push_back(base_translator);
--      qApp->installTranslator(base_translator);
--    }
--  }
--
 +  const QString base_dir(QStringLiteral("_RPM_DATADIR_/translations"));
-   const QString path = QStringLiteral("%1/duckstation-qt_%3.qm").arg(base_dir).arg(language);
-   if (!QFile::exists(path))
++  const QString base_path(QStringLiteral("_RPM_QTTDIR_/qtbase_%1.qm").arg(language));
+   if (QFile::exists(base_path))
    {
+     QTranslator* base_translator = new QTranslator(qApp);
 -- 
-2.37.1
+2.37.2
 

@@ -159,20 +159,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ca2ba89c4ddea1d07489ab04dbdadb613a3a93e1
+%global pfcommit fa7cfd6b1477fb99c2f784351d4c834a03cfeee6
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash 10d603e081c3f984714221fad5c1b956
+%global pfcoprhash 9c088d1429d46ad0175184ba1ad6a7c7
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -184,10 +184,10 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 0
+%global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
-%global st_first_commit f7688b48ac46e9a669e279f1bc167722d5141eda
-%global st_last_commit 957a16c3e6e19777865c2d629408d8b4396d6a4b
+%global st_first_commit d49914ee4ec93d58d90a12275a814415c189059c
+%global st_last_commit bf44eed7f2fc9af74eb72f4bc415bdd3d11c4bed
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -202,7 +202,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id a5bf6c0b09ada9ba7e920eeed3a92b4bfb4cc86b
+%global opensuse_id 0140109009d7f816a99aa221c1f6ad6a546296a5
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -3020,6 +3020,9 @@ fi
 #
 #
 %changelog
+* Tue Aug 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.3-500.chinfo
+- 5.19.3 - pf3
+
 * Wed Aug 17 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.2-500.chinfo
 - 5.19.2 - pf2
 

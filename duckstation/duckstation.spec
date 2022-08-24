@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit fe67bea19ab8c0b206d0b935efa01cf76568ef6d
+%global commit 4f2da4213d1d2c69417392d15b27bb123ee9d297
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220817
+%global date 20220822
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        62%{?gver}%{?dist}
+Release:        63%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -74,6 +74,7 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(tinyxml2)
@@ -108,14 +109,15 @@ Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
+Suggests:       qt6-qttranslations
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
-Provides:       bundled(simpleini)
+Provides:       bundled(simpleini) = 0~git
 Provides:       bundled(stb) = %{stb_ver}
-Provides:       bundled(xbyak)
+Provides:       bundled(xbyak) = 0~git
 
 
 %description
@@ -149,7 +151,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 vulkan xxhash zlib
+  rapidjson tinyxml2 vulkan xxhash zlib zstd
 
 %if 0%{?with_sysvulkan}
   rm -rf glslang
@@ -167,6 +169,7 @@ popd
 rm -f CMakeModules/FindSDL2.cmake
 
 pushd src/%{name}-qt/translations
+mv %{name}-qt_es-es.ts %{name}-qt_es_ES.ts
 mv %{name}-qt_pt-br.ts %{name}-qt_pt_BR.ts
 mv %{name}-qt_pt-pt.ts %{name}-qt_pt_PT.ts
 mv %{name}-qt_zh-cn.ts %{name}-qt_zh_CN.ts
@@ -184,8 +187,10 @@ sed \
 
 cp -p %{S:2} .
 
-sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
-  -i src/duckstation-qt/qthost.cpp %{name}.sh
+sed \
+  -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
+  -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
+  -i src/duckstation-qt/qt{host,translations}.cpp %{name}.sh
 
 cat > %{name}-qt.desktop <<'EOF'
 [Desktop Entry]

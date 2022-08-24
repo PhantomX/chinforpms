@@ -10,7 +10,7 @@
 
 Name:           wps-office
 Version:        11.1.0.11664
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -51,6 +51,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libcurl.so*
 %global __requires_exclude %__requires_exclude|^libdatasourcereader.so*
 %global __requires_exclude %__requires_exclude|^libdocwriter.so*
+%global __requires_exclude %__requires_exclude|^libEGL.so*
 %global __requires_exclude %__requires_exclude|^libetapi.so*
 %global __requires_exclude %__requires_exclude|^libethtmlrw2.so*
 %global __requires_exclude %__requires_exclude|^libethtmrw.so*
@@ -67,6 +68,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libicui18n.so*
 %global __requires_exclude %__requires_exclude|^libicuuc.so*
 %global __requires_exclude %__requires_exclude|^libinkdata.so*
+%global __requires_exclude %__requires_exclude|^libIRLAS.so*
 %global __requires_exclude %__requires_exclude|^libjdecontrol.so*
 %global __requires_exclude %__requires_exclude|^libjpeg.so*
 %global __requires_exclude %__requires_exclude|^libjsapiservice.so*
@@ -91,6 +93,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libksolite.so*
 %global __requires_exclude %__requires_exclude|^libkso.so*
 %global __requires_exclude %__requires_exclude|^libksqlite3.so*
+%global __requires_exclude %__requires_exclude|^liblibsafec.so*
 %global __requires_exclude %__requires_exclude|^libmediacoder.so*
 %global __requires_exclude %__requires_exclude|^libmediaflash.so*
 %global __requires_exclude %__requires_exclude|^libmediaplayer.so*
@@ -127,6 +130,11 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libQt5GuiKso.so*
 %global __requires_exclude %__requires_exclude|^libQt5NetworkKso.so*
 %global __requires_exclude %__requires_exclude|^libQt5PrintSupportKso.so*
+%global __requires_exclude %__requires_exclude|^libQt5QmlKso.so*
+%global __requires_exclude %__requires_exclude|^libQt5QuickControls2Kso.so*
+%global __requires_exclude %__requires_exclude|^libQt5QuickKso.so*
+%global __requires_exclude %__requires_exclude|^libQt5QuickTemplates2Kso.so*
+%global __requires_exclude %__requires_exclude|^libQt5QuickWidgetsKso.so*
 %global __requires_exclude %__requires_exclude|^libQt5SvgKso.so*
 %global __requires_exclude %__requires_exclude|^libQt5WidgetsKso.so*
 %global __requires_exclude %__requires_exclude|^libQt5X11ExtrasKso.so*
@@ -339,6 +347,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Mon Aug 22 2022 - 1:11.1.0.11664-2
+- Fix requires_exclude
+
 * Thu Jul 28 2022 - 1:11.1.0.11664-1
 - 11.1.0.11664
 
