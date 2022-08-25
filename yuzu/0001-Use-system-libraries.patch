@@ -29,7 +29,7 @@ index eed57cc..62f9eb7 100755
      endforeach()
  endfunction()
  
--if(EXISTS ${PROJECT_SOURCE_DIR}/.gitmodules)
+-if(EXISTS ${PROJECT_SOURCE_DIR}/.gitmodules AND YUZU_CHECK_SUBMODULES)
 -    check_submodules_present()
 -endif()
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
