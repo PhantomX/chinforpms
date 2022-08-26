@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit bca833dad77c8bd6ebda22838d0d305d7c2c72ea
+%global commit daf43989fcefe8c8e5436909758fb70f4c5f788d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220819
+%global date 20220825
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.23
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -128,6 +128,9 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         %{vc_url}/%{name}/pull/12551.patch#/%{name}-gh-pr12551.patch
+Patch1:         %{vc_url}/%{name}/pull/12558.patch#/%{name}-gh-pr12558.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -169,16 +172,16 @@ BuildRequires:  ffmpeg-devel >= %{bundleffmpegver}
 %endif
 %else
 BuildRequires:  make
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(libva-drm)
+BuildRequires:  pkgconfig(libva-x11)
+Provides:       bundled(ffmpeg) = %{bundleffmpegver}
+%endif
 %if 0%{?with_syshidapi}
 BuildRequires:  pkgconfig(hidapi-hidraw) >= %{bundlehidapi}
 %else
 BuildRequires:  pkgconfig(libudev)
 Provides:       bundled(hidapi) = %{bundlehidapi}
-%endif
-BuildRequires:  pkgconfig(libva)
-BuildRequires:  pkgconfig(libva-drm)
-BuildRequires:  pkgconfig(libva-x11)
-Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)

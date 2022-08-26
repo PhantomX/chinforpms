@@ -1,4 +1,4 @@
-From 26dd457139d9d23abb932fe87aaaa6a47b8e10c6 Mon Sep 17 00:00:00 2001
+From cf44082612779564be0409c1edfbe6867e86e817 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Jul 2021 18:46:28 -0300
 Subject: [PATCH] Disable gtk-update-icon-cache execution
@@ -11,10 +11,10 @@ Subject: [PATCH] Disable gtk-update-icon-cache execution
  4 files changed, 15 deletions(-)
 
 diff --git a/lutris/gui/config/common.py b/lutris/gui/config/common.py
-index a38f7f4..4910d1c 100644
+index e85e4a4..ac07643 100644
 --- a/lutris/gui/config/common.py
 +++ b/lutris/gui/config/common.py
-@@ -554,9 +554,6 @@ class GameDialogCommon:
+@@ -513,9 +513,6 @@ class GameDialogCommon(Dialog):
              pixbuf.savev(dest_path, file_format, [], [])
              self._set_image(image_type)
  
@@ -25,10 +25,10 @@ index a38f7f4..4910d1c 100644
  
      def on_custom_image_reset_clicked(self, _widget, image_type):
 diff --git a/lutris/gui/lutriswindow.py b/lutris/gui/lutriswindow.py
-index 4cdbf5e..46bce79 100644
+index a422d11..394471c 100644
 --- a/lutris/gui/lutriswindow.py
 +++ b/lutris/gui/lutriswindow.py
-@@ -30,7 +30,6 @@ from lutris.services.lutris import LutrisBanner, LutrisIcon, LutrisService
+@@ -29,7 +29,6 @@ from lutris.services.lutris import LutrisService
  from lutris.util import datapath
  from lutris.util.jobs import AsyncCall
  from lutris.util.log import logger
@@ -36,19 +36,19 @@ index 4cdbf5e..46bce79 100644
  
  
  @GtkTemplate(ui=os.path.join(datapath.get(), "ui", "lutris-window.ui"))
-@@ -70,7 +69,6 @@ class LutrisWindow(Gtk.ApplicationWindow):  # pylint: disable=too-many-public-me
+@@ -66,7 +65,6 @@ class LutrisWindow(Gtk.ApplicationWindow):  # pylint: disable=too-many-public-me
              application=application,
              **kwargs
          )
 -        update_desktop_icons()
          load_icon_theme()
          self.application = application
-         self.window_x = settings.read_setting("window_x")
+         self.window_x, self.window_y = self.get_position()
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
-index d7c5b69..f361cf4 100644
+index 78a0882..444aa2a 100644
 --- a/lutris/util/linux.py
 +++ b/lutris/util/linux.py
-@@ -36,7 +36,6 @@ SYSTEM_COMPONENTS = {
+@@ -32,7 +32,6 @@ SYSTEM_COMPONENTS = {
          "lsi-steam",
          "fuser",
          "7z",
@@ -57,10 +57,10 @@ index d7c5b69..f361cf4 100644
          "xgamma",
          "ldconfig",
 diff --git a/lutris/util/system.py b/lutris/util/system.py
-index 61b292c..643c346 100644
+index 36cf117..2e5d44b 100644
 --- a/lutris/util/system.py
 +++ b/lutris/util/system.py
-@@ -363,15 +363,6 @@ def get_existing_parent(path):
+@@ -408,15 +408,6 @@ def get_existing_parent(path):
      return get_existing_parent(os.path.dirname(path))
  
  
@@ -77,5 +77,5 @@ index 61b292c..643c346 100644
      """Return the disk size in bytes of a folder"""
      total_size = 0
 -- 
-2.31.1
+2.37.2
 

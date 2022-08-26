@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 4
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -187,7 +187,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit d49914ee4ec93d58d90a12275a814415c189059c
-%global st_last_commit bf44eed7f2fc9af74eb72f4bc415bdd3d11c4bed
+%global st_last_commit 0b0649b1d27a768d37f23acf4d88e6e90cca7856
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
@@ -3020,6 +3020,9 @@ fi
 #
 #
 %changelog
+* Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500.chinfo
+- 5.19.4 - pf3
+
 * Tue Aug 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.3-500.chinfo
 - 5.19.3 - pf3
 

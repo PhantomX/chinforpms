@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 76bf57466851a5cffdc938273a86bcc2e654b985
+%global commit aa97a6d64fb47d3ce0febaa575b26d975dd916e4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220715
+%global date 20220825
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -38,7 +38,7 @@
 
 Name:           flycast
 Version:        1.1
-Release:        20%{?gver}%{?dist}
+Release:        21%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
