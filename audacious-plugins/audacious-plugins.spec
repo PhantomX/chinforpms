@@ -80,7 +80,7 @@ BuildRequires:  pkgconfig(ampache_browser_1)
 
 %{?with_gtk:BuildRequires: pkgconfig(gtk+-2.0)}
 
-%global __provides_exclude_from ^%{_libdir}/audacious/*\\.so$
+%global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
 
 %description
@@ -159,9 +159,9 @@ sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
     --disable-aac  \
     --disable-sndio \
     --disable-mms  \
-    --with-ffmpeg=none  \
+    --disable-ffaudio  \
     --enable-qt  \
-    %{?with_gtk:--enable-gtk}%{!?with_gtk:--disable-gtk} \
+    %{!?with_gtk:--disable-gtk} \
     --disable-rpath \
 %{nil}
 

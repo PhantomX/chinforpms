@@ -31,7 +31,7 @@ index 769e1f6..f0e4ed9 100644
 +# - 0 to automatically determine the number of threads to use
 +# - any positive number to enforce the thread count
 +
-+# dxvk.numAsyncCompilerThreads = 0
++# dxvk.numAsyncThreads = 0
 -- 
 2.35.1
 

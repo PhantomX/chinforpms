@@ -39,6 +39,8 @@ dccp_probe.ko
 diva_idi.ko
 divas.ko
 dlm.ko
+dln2-adc.ko
+dln2.ko
 ds1wm.ko
 ds2482.ko
 ds2490.ko
@@ -54,6 +56,7 @@ gf2k.ko
 gfs2.ko
 gigaset.ko
 girbil-sir.ko
+gpio-dln2.ko
 grip.ko
 grip_mp.ko
 guillemot.ko
@@ -67,6 +70,7 @@ hysdn.ko
 i2400m.ko
 i2400m-sdio.ko
 i2400m-usb.ko
+i2c-dln2.ko
 ieee802154.ko
 iforce.ko
 interact.ko
@@ -147,6 +151,7 @@ softing_cs.ko
 softing.ko
 spaceball.ko
 spaceorb.ko
+spi-dln2.ko
 stinger.ko
 sysv.ko
 tcp_bic.ko

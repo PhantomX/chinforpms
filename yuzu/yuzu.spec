@@ -64,11 +64,13 @@
 %if 0%{?with_ea}
 %global vc_name pineapple-src
 %global vc_url  %{vcea_url}
+%global repo ea
 %else
 %global vc_name %{name}
 %if 0%{?with_mainline}
 %global vc_name %{name}-mainline
 %global vc_url  %{vcm_url}
+%global repo mainline
 %endif
 %endif
 
@@ -77,7 +79,7 @@
 
 Name:           yuzu
 Version:        2918
-Release:        1%{?gver}%{?dist}
+Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPLv2

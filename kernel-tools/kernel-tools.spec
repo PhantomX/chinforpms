@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 4
+%global stable_update 5
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -127,7 +127,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
-BuildRequires: asciidoc xmlto libcap-devel
+BuildRequires: asciidoc libxslt-devel xmlto libcap-devel
 BuildRequires: openssl-devel libbabeltrace-devel
 BuildRequires: libtracefs-devel libtraceevent-devel
 BuildRequires: libbpf-devel
@@ -554,6 +554,9 @@ popd
 
 
 %changelog
+* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500.chinfo
+- 5.19.5
+
 * Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500
 - 5.19.4
 

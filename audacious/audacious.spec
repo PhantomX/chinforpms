@@ -46,6 +46,7 @@ Requires: audacious-plugins%{?_isa} >= %{aud_ver}
 Requires: hicolor-icon-theme
 # for icons such as 'go-next', 'go-previous'
 Requires: gnome-icon-theme
+Requires: qt5-qtsvg%{?_isa}
 
 # Skin packages can require this from xmms and all GUI compatible players
 Provides: xmms-gui
