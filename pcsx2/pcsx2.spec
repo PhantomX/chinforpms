@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3229
+Version:        1.7.3264
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -77,6 +77,7 @@ Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-Update-default-paths.patch
+Patch9:         0001-Install-qt-target.patch
 
 ExclusiveArch:  x86_64
 
@@ -321,6 +322,7 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 %dir %{_datadir}/PCSX2
 %dir %{_datadir}/PCSX2/resources
 %{_datadir}/PCSX2/resources/fonts
+%{_datadir}/PCSX2/resources/fullscreenui
 %{_datadir}/PCSX2/resources/icons
 %{_datadir}/PCSX2/resources/shaders
 %{_datadir}/PCSX2/resources/GameIndex.yaml
@@ -329,6 +331,9 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3264-1
+- 1.7.3264
+
 * Sat Aug 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3229-1
 - 1.7.3229
 - R: pcsx2_patches

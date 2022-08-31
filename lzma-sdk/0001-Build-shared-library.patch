@@ -1,4 +1,4 @@
-From 3b2f3479d501cec29cadb470a58f27a7fa00a764 Mon Sep 17 00:00:00 2001
+From 5c0aa3684bc89c8c769352c1974015a995c983a1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 09:38:07 -0300
 Subject: [PATCH] Build shared library
@@ -28,7 +28,7 @@ index c7a30fc..5864e67 100644
  
  #include "7zTypes.h"
 diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
-index 4d23297..ba3de69 100644
+index d418104..c3b7346 100644
 --- a/C/7zip_gcc_c.mak
 +++ b/C/7zip_gcc_c.mak
 @@ -7,12 +7,13 @@ MY_ASM = asmc
@@ -46,9 +46,9 @@ index 4d23297..ba3de69 100644
   -DNDEBUG -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  
  
-@@ -23,36 +24,6 @@ ifdef SystemDrive
- IS_MINGW = 1
- endif
+@@ -43,36 +44,6 @@ endif
+ 
+ LDFLAGS_STATIC = -DNDEBUG $(LDFLAGS_STATIC_2)
  
 -ifdef DEF_FILE
 -
@@ -83,7 +83,7 @@ index 4d23297..ba3de69 100644
  PROGPATH = $(O)/$(PROG)$(SHARED_EXT)
  PROGPATH_STATIC = $(O)/$(PROG)s$(SHARED_EXT)
  	
-@@ -89,7 +60,7 @@ endif
+@@ -116,7 +87,7 @@ endif
  
  
  
@@ -92,7 +92,7 @@ index 4d23297..ba3de69 100644
  
  
  ifdef IS_X64
-@@ -115,7 +86,7 @@ STATIC_TARGET=$(PROGPATH_STATIC)
+@@ -142,7 +113,7 @@ STATIC_TARGET=$(PROGPATH_STATIC)
  endif
  
  
@@ -101,7 +101,7 @@ index 4d23297..ba3de69 100644
  
  $(O):
  	$(MY_MKDIR) $(O)
-@@ -124,8 +95,8 @@ LFLAGS_ALL = -s $(MY_ARCH_2) $(LDFLAGS) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
+@@ -151,8 +122,8 @@ LFLAGS_ALL = -s $(MY_ARCH_2) $(LDFLAGS) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
  $(PROGPATH): $(OBJS)
  	$(CXX) -o $(PROGPATH) $(LFLAGS_ALL)
  
@@ -606,5 +606,5 @@ index 6ce77a0..2600cd1 100644
  
  include ../../7zip_gcc_c.mak
 -- 
-2.33.1
+2.37.2
 

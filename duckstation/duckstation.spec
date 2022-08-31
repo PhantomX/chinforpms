@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 4f2da4213d1d2c69417392d15b27bb123ee9d297
+%global commit 35f272b336667cffd35d149d9da6f85e958ddfa2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220822
+%global date 20220829
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        63%{?gver}%{?dist}
+Release:        64%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -175,6 +175,9 @@ mv %{name}-qt_pt-pt.ts %{name}-qt_pt_PT.ts
 mv %{name}-qt_zh-cn.ts %{name}-qt_zh_CN.ts
 popd
 
+sed \
+  -e '/ENABLE_DISCORD_PRESENCE/s| ON| OFF|g' \
+  -i CMakeLists.txt
 
 %if 0%{?with_snapshot}
 sed \

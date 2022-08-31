@@ -23,7 +23,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        22.00
+Version:        22.01
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -39,8 +39,6 @@ Source0:        %{name}-free-%{version}.tar.xz
 Source1:        Makefile
 
 Patch1:         0001-set-7zCon.sfx-path.patch
-# https://aur.archlinux.org/cgit/aur.git/tree/01-gcc-12.patch?h=7-zip
-Patch2:         01-gcc-12.patch
 
 %if %{with asm}
 %if "%{asmopt}" == "asmc"
@@ -131,6 +129,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-1
+- 22.01
+
 * Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 22.00-1
 - 22.00
 - Removed NASM patches 

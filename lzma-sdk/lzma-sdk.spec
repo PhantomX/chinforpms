@@ -7,7 +7,7 @@
 #global packver %%{ver}
 
 Name:           lzma-sdk%{?packver}
-Version:        22.00
+Version:        22.01
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -18,8 +18,6 @@ Source0:        %{url}/a/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
-# https://aur.archlinux.org/cgit/aur.git/tree/01-gcc-12.patch?h=7-zip
-Patch1:         01-gcc-12.patch
 
 %if %{with asm}
 ExclusiveArch:  x86_64
@@ -141,6 +139,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-100
+- 22.01
+
 * Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 22.00-100
 - 22.00
 - asmc support
