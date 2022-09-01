@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9220ce43e4f6dd18a6352ee1af4468997ddac116
+%global commit 420398c2c56ed962205ae2691c34159b85c78bbe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220823
+%global date 20220831
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        2918
+Version:        2926
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -249,7 +249,7 @@ sed \
 # https://github.com/pineappleEA/pineapple-src/issues/80
 rm -f src/core/network/network.h
 
-cp -f %{S:20} .
+cp -f %{S:20} dist/compatibility_list/
 
 
 %build
@@ -272,8 +272,6 @@ cp -f %{S:20} .
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
 %{nil}
-
-cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 
 %cmake_build
 

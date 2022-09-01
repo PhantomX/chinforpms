@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b9dfa5218351f6286e97beba802c14813735f255
+ b9dfa5218351f6286e97beba802c14813735f255 Revert "block: freeze the queue earlier in del_gendisk"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/3f1696ca1e6762e9774ecb4d0dedbc54dedb284d
  3f1696ca1e6762e9774ecb4d0dedbc54dedb284d drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 

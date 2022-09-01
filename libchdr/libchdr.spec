@@ -1,17 +1,17 @@
-%global commit 045f2a7f23f5ac10c0122f6f56e42023dfb71e2a
+%global commit 9882eeaaa2fc29dac3184056a92e8227f583e2e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220523
+%global date 20220817
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global drflac_ver 0.12.36
+%global drflac_ver 0.12.38
 
 Name:           libchdr
-Version:        0.1
-Release:        16%{?gver}%{?dist}
+Version:        0.2
+Release:        1%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD
@@ -87,6 +87,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2-1.20220817git9882eea
+- 0.2
+
 * Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-16.20220523git045f2a7
 - lzma-sdk rebuild
 

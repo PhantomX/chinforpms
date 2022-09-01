@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit daf43989fcefe8c8e5436909758fb70f4c5f788d
+%global commit b7599c0f3098e577405d7e8e49b878e2107e9be2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220825
+%global date 20220831
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.23
-Release:        9%{?gver}%{?dist}
+Release:        10%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -131,6 +131,8 @@ Source99:       Makefile
 
 Patch0:         %{vc_url}/%{name}/pull/12551.patch#/%{name}-gh-pr12551.patch
 Patch1:         %{vc_url}/%{name}/pull/12558.patch#/%{name}-gh-pr12558.patch
+Patch2:         %{vc_url}/%{name}/pull/12583.patch#/%{name}-gh-pr12583.patch
+Patch3:         %{vc_url}/%{name}/pull/12586.patch#/%{name}-gh-pr12586.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch

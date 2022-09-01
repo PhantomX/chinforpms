@@ -37,8 +37,8 @@
 %global volk_ver 131
 
 Name:           flycast
-Version:        1.1
-Release:        21%{?gver}%{?dist}
+Version:        2.0
+Release:        1%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1

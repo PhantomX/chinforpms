@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 5
+%global stable_update 6
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -554,7 +554,10 @@ popd
 
 
 %changelog
-* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500.chinfo
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.6-500
+- 5.19.6
+
+* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500
 - 5.19.5
 
 * Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500

@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,9 +170,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit fa7cfd6b1477fb99c2f784351d4c834a03cfeee6
+%global pfcommit 4e3ffdbc4820f26b8e3eb58e346fcd572ce4eca2
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash 9c088d1429d46ad0175184ba1ad6a7c7
+%global pfcoprhash 4cbc40e0f0771d71acb674f4d5a7865c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -184,7 +184,7 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 1
+%global pf_stable_extra 0
 %if 0%{?pf_stable_extra}
 %global st_first_commit d49914ee4ec93d58d90a12275a814415c189059c
 %global st_last_commit 1916ff079c77dc38275493cc18e22fe18532fb0f
@@ -984,7 +984,6 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 %global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2094: 0001-Revert-commit-536167d.patch
 
 %if !0%{?post_factum}
 
@@ -3022,6 +3021,9 @@ fi
 #
 #
 %changelog
+* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.6-500.chinfo
+- 5.19.6 - pf3
+
 * Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500.chinfo
 - 5.19.5 - pf3
 
