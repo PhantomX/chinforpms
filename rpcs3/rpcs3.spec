@@ -216,6 +216,7 @@ BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
+Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(spirv-tools) = 0~git%{shortcommit10}

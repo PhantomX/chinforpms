@@ -106,6 +106,8 @@ Requires:       coreutils
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
+Requires:       libGL%{?_isa}
+Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}

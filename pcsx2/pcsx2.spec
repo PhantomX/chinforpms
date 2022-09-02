@@ -130,6 +130,7 @@ BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
 BuildRequires:  fonts-rpm-macros
@@ -142,6 +143,8 @@ Requires:       joystick
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
+Requires:       libGL%{?_isa}
+Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
 
@@ -234,6 +237,8 @@ sed -i \
   -DXDG_STD:BOOL=TRUE \
   -DEGL_API:BOOL=TRUE \
   -DGLSL_API:BOOL=TRUE \
+  -DX11_API:BOOL=TRUE \
+  -DWAYLAND_API:BOOL=TRUE \
   -DCMAKE_BUILD_STRIP:BOOL=FALSE \
   -DPORTAUDIO_API:BOOL=FALSE \
   -DSDL2_API:BOOL=TRUE \

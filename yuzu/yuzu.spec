@@ -154,6 +154,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
+Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
