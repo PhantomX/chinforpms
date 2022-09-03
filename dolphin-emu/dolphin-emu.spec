@@ -19,9 +19,9 @@
 %global enablejit 1
 %endif
 
-%global commit dcdba11ded671acff679b9183e0c3e1e52502a0f
+%global commit 23902f99ae4ebd70d295b925e3cd9616cf571ea3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220809
+%global date 20220902
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -39,7 +39,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        164%{?gver}%{?dist}
+Release:        165%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -224,6 +224,7 @@ sed 's| this directory | %{name}/Sys/GC |g' \
 #Fix for minizip install path
 sed \
   -e 's|<mz_compat.h>|<minizip/mz_compat.h>|' \
+  -e 's|<mz_os.h>|<minizip/mz_os.h>|' \
   -i Source/Core/Common/MinizipUtil.h \
      Source/Core/UICommon/ResourcePack/ResourcePack.cpp \
      Source/Core/DiscIO/VolumeVerifier.cpp

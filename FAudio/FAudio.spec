@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        22.08
+Version:        22.09.01
 Release:        100%{?gver}%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -95,6 +95,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Fri Sep 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:22.09.01-100
+- 22.09.01
+
 * Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:22.08-100
 - 22.08
 

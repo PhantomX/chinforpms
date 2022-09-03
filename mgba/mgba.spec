@@ -1,6 +1,6 @@
-%global commit 0fea8d63fc9ade6aa15a9186559c0cc070c1d222
+%global commit c6b25f14a33695b71b55a4504949762d805af3c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220817
+%global date 20220901
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -12,9 +12,11 @@
 
 %global vc_url https://github.com/mgba-emu/mgba
 
+%global appname io.%{name}.mGBA
+
 Name:           mgba
 Version:        0.10.0
-Release:        0.21%{?gver}%{?dist}
+Release:        0.22%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -149,7 +151,7 @@ mv %{buildroot}%{_datadir}/doc/mGBA %{name}-docs
 
 
 %check
-desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
+desktop-file-validate %{buildroot}/%{_datadir}/applications/%{appname}.desktop
 
 
 %files sdl
@@ -162,8 +164,8 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}-qt.desktop
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}-qt
-%{_datadir}/applications/%{name}-qt.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.png
 %{_datadir}/%{name}/
 %{_mandir}/man6/%{name}-qt.6*
 
