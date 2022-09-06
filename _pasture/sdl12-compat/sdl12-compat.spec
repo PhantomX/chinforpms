@@ -1,6 +1,6 @@
-%global commit 3f496287f50f3ca14916cc6e0ab6f3b2a4548366
+%global commit 4d814ba89a6e87cd02e148d9d1504f77848e97dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220401
+%global date 20220903
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,7 +8,7 @@
 %endif
 
 Name:           sdl12-compat
-Version:        1.2.53
+Version:        1.2.54
 Release:        0.0%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
@@ -67,11 +67,9 @@ Obsoletes:      SDL-devel < 1.2.15-49
 Conflicts:      SDL-devel < 1.2.50
 Provides:       SDL-devel = %{version}
 Provides:       SDL-devel%{?_isa} = %{version}
-%if ! %{with static}
 # We don't provide the static library, but we want to replace SDL-static anyway
 Obsoletes:      SDL-static < 1.2.15-49
 Conflicts:      SDL-static < 1.2.50
-%endif
 # Add deps required to compile SDL apps
 ## For SDL_opengl.h
 Requires:       pkgconfig(gl)
@@ -120,7 +118,7 @@ rm -f %{buildroot}%{_libdir}/*.a
 
 %files
 %license LICENSE.txt
-%doc README.md BUGS.txt
+%doc README.md BUGS.md
 %{_libdir}/libSDL-1.2.so.*
 
 %files devel

@@ -1,14 +1,14 @@
 %global commit 63dad3ceb7a3d1dc2288a0df6b054a6ea244a8b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220714
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           xarchiver
-Version:        0.5.4.18
+Version:        0.5.4.19
 Release:        100%{?gver}%{?dist}
 Summary:        Desktop Environment independent archive manager
 
@@ -48,6 +48,7 @@ Requires:       lzip
 Requires:       lzop
 Requires:       p7zip
 Requires:       p7zip-plugins
+Requires:       squashfs-tools
 Requires:       tar
 Requires:       unar
 Requires:       unzip
@@ -55,6 +56,7 @@ Requires:       xdg-utils
 Requires:       xz
 Requires:       zip
 Requires:       zstd
+Recommends:     7zip
 
 %description
 Xarchiver is a Desktop Environment independent archiver front-end. All
@@ -113,6 +115,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Sat Sep 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.19-100
+- 0.5.4.19
+
 * Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.18-100.20220714git63dad3c
 - 0.5.4.18
 

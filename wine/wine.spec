@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 57a12e6845b175d78256803bec8bbc95b84bc931
+%global wine_stagingver 99fc74eb6cfd6eec9bfe7e8b1b971743ebc36e9e
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -149,7 +149,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.16
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -264,6 +264,7 @@ Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.pa
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-proton-tkg-staging-update-to-NtUserGetDesktopWindow.patch
+Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
 # Patch the patch
@@ -908,15 +909,13 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %endif
 %patch1040 -p1
 
+%patch1303 -p1
 for i in \
-  0001-winegstreamer-HACK-Use-a-different-gst-registry-file.patch \
-  0002-winegstreamer-HACK-Try-harder-to-register-winegstrea.patch \
-  0003-mfplat-Register-winegstreamer-interfaces-on-load.patch \
   0008-winegstreamer-Allow-videoconvert-to-parallelize.patch \
-  0010-HACK-quartz-Keep-a-reference-on-the-IMediaPosition-i.patch \
-  0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch \
-  0087-winegstreamer-Use-unlimited-buffering-for-the-WM-rea.patch \
-  0088-HACK-winegstreamer-Report-streams-in-reverse-order-f.patch \
+  0025-winegstreamer-Report-streams-backwards-in-media-sour.patch \
+  0038-winegstreamer-In-the-default-configuration-select-on.patch \
+  0042-winegstreamer-Unblock-wg_parser_get_next_read_offset.patch \
+  0043-winegstreamer-Update-offset-according-to-the-size-of.patch \
 ;do
     $patch_command -p1 -i patches/mfplat-streaming-support/$i
 done

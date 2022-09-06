@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit b7599c0f3098e577405d7e8e49b878e2107e9be2
+%global commit 64579eef7eac1e8ac1a7195878368bb58b9bef81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220831
+%global date 20220902
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -91,8 +91,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.23
-Release:        10%{?gver}%{?dist}
+Version:        0.0.24
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -131,8 +131,6 @@ Source99:       Makefile
 
 Patch0:         %{vc_url}/%{name}/pull/12551.patch#/%{name}-gh-pr12551.patch
 Patch1:         %{vc_url}/%{name}/pull/12558.patch#/%{name}-gh-pr12558.patch
-Patch2:         %{vc_url}/%{name}/pull/12583.patch#/%{name}-gh-pr12583.patch
-Patch3:         %{vc_url}/%{name}/pull/12586.patch#/%{name}-gh-pr12586.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -418,6 +416,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Sep 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.24-1.20220902git64579ee
+- 0.0.24
+
 * Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.23-5.20220811git7ff4509
 - Trying again
 
