@@ -338,7 +338,9 @@ Source31: kvm-x86.conf
 Source36: README.tests
 
 # Fix SGX assert
-Patch0001: 0001-target-i386-the-sgx_epc_get_section-stub-is-reachabl.patch
+Patch: 0001-target-i386-the-sgx_epc_get_section-stub-is-reachabl.patch
+Patch: 0001-tests-Disable-pci_virtio_vga-for-ppc64.patch
+Patch: 0010-Skip-iotests-entirely.patch
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: zlib-devel
@@ -504,6 +506,7 @@ Requires: %{name}-system-alpha = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-arm = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-avr = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-cris = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-loongarch64 = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-m68k = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-microblaze = %{epoch}:%{version}-%{release}
 Requires: %{name}-system-mips = %{epoch}:%{version}-%{release}
@@ -1170,17 +1173,17 @@ This package provides the QEMU system emulator for HPPA.
 
 
 %package system-loongarch64
-Summary: QEMU system emulator for LoongArch
+Summary: QEMU system emulator for LoongArch (LA64)
 Requires: %{name}-system-loongarch64-core = %{epoch}:%{version}-%{release}
 %{requires_all_modules}
 %description system-loongarch64
-This package provides the QEMU system emulator for LoongArch.
+This package provides the QEMU system emulator for Loongson boards.
 
 %package system-loongarch64-core
-Summary: QEMU system emulator for LoongArch
+Summary: QEMU system emulator for LoongArch (LA64)
 Requires: %{name}-common = %{epoch}:%{version}-%{release}
 %description system-loongarch64-core
-This package provides the QEMU system emulator for LoongArch.
+This package provides the QEMU system emulator for Loongson boards.
 
 
 %package system-m68k
@@ -1515,6 +1518,7 @@ mkdir -p %{static_builddir}
   --disable-user                   \\\
   --disable-vde                    \\\
   --disable-vdi                    \\\
+  --disable-vfio-user-server       \\\
   --disable-vhost-crypto           \\\
   --disable-vhost-kernel           \\\
   --disable-vhost-net              \\\
@@ -1526,6 +1530,7 @@ mkdir -p %{static_builddir}
   --disable-virtiofsd              \\\
   --disable-vnc                    \\\
   --disable-vnc-jpeg               \\\
+  --disable-png                    \\\
   --disable-vnc-sasl               \\\
   --disable-vte                    \\\
   --disable-vvfat                  \\\
@@ -1662,6 +1667,7 @@ run_configure \
   --enable-vhost-user-blk-server \
   --enable-vhost-vdpa \
   --enable-vnc \
+  --enable-png \
   --enable-vnc-sasl \
 %if %{enable_werror}
   --enable-werror \
@@ -2380,6 +2386,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-sh4*.stp
 %{_datadir}/systemtap/tapset/qemu-sparc*.stp
 %{_datadir}/systemtap/tapset/qemu-xtensa*.stp
+## chinforpms changes
 %exclude %{_datadir}/systemtap/tapset/qemu-*-static.stp
 
 

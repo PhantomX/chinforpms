@@ -159,20 +159,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d803574f1103990a1ce265d1156a30b732a40964
+%global pfcommit d5593bdf5f6cdbcb86ee0322de5080130864f0e1
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash 39b018257d07852db8797d7a87d111f7
+%global pfcoprhash da5b1b0de5cc032aff10b3bf77f28ec6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -202,7 +202,7 @@ Summary: The Linux kernel
 %global post_factum 0
 %endif
 
-%global opensuse_id 11a0be1a1b07fba1d0ad73d8ccb77c65e6cd9d2a
+%global opensuse_id 0330383fbb5a4dd8daf7eafdea1e816a49f0bed2
 
 %if 0%{?zen}
 %global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
@@ -974,7 +974,7 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/Revert-usb-typec-ucsi-add-a-common-function-ucsi_unr.patch#/openSUSE-Revert-usb-typec-ucsi-add-a-common-function-ucsi_unr.patch
+Patch1016: %{opensuse_url}/vduse-prevent-uninitialized-memory-accesses.patch#/openSUSE-vduse-prevent-uninitialized-memory-accesses.patch
 Patch1017: %{opensuse_url}/snd-hda-intel-iommu-workaround.patch#/openSUSE-snd-hda-intel-iommu-workaround.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
@@ -3021,6 +3021,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-500.chinfo
+- 5.19.8 - pf4
+
 * Mon Sep 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.7-500.chinfo
 - 5.19.7 - pf3
 

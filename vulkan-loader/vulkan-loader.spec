@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.3.226
+Version:        1.3.227
 Release:        1%{?dist}
 Summary:        Vulkan ICD desktop loader
 
@@ -101,6 +101,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.227-1
+- 1.3.227
+
 * Thu Sep 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.226-1
 - 1.3.226
 

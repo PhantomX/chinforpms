@@ -34,6 +34,7 @@ Subject: [PATCH] patch-5.19-redhat
  drivers/firmware/efi/secureboot.c                  |  38 +
  drivers/firmware/sysfb.c                           |  18 +-
  drivers/gpu/drm/drm_ioctl.c                        |   8 +-
+ drivers/gpu/drm/i915/display/intel_bios.c          |  46 +-
  drivers/gpu/drm/v3d/Kconfig                        |   5 +-
  drivers/gpu/drm/v3d/v3d_debugfs.c                  |  18 +-
  drivers/gpu/drm/v3d/v3d_drv.c                      |  12 +-
@@ -65,7 +66,7 @@ Subject: [PATCH] patch-5.19-redhat
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 61 files changed, 1729 insertions(+), 314 deletions(-)
+ 62 files changed, 1747 insertions(+), 342 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml b/Documentation/devicetree/bindings/gpu/brcm,bcm-v3d.yaml
 index e6485f7b046f..217c42874f41 100644
@@ -257,7 +258,7 @@ index 000000000000..733a26bd887a
 +
 +endmenu
 diff --git a/Makefile b/Makefile
-index cb68101ea070..da893ccb2025 100644
+index e361c6230e9e..2c6324eff16a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -376,10 +377,10 @@ index ce9826bce29b..948d18e59cf5 100644
  CONFIG_DRM_ETNAVIV=m
  CONFIG_DRM_MXSFB=m
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a5d1b561ed53..cd93c9041679 100644
+index 001eaba5a6b4..cc20aaacd741 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1145,7 +1145,7 @@ endchoice
+@@ -1162,7 +1162,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -388,7 +389,7 @@ index a5d1b561ed53..cd93c9041679 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1384,6 +1384,7 @@ config XEN
+@@ -1401,6 +1401,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -951,6 +952,100 @@ index 51fcf1298023..7f1097947731 100644
 
  	/* don't overflow userbuf */
  	len = strlen(value);
+diff --git a/drivers/gpu/drm/i915/display/intel_bios.c b/drivers/gpu/drm/i915/display/intel_bios.c
+index 0c5638f5b72b..a532958ad85f 100644
+--- a/drivers/gpu/drm/i915/display/intel_bios.c
++++ b/drivers/gpu/drm/i915/display/intel_bios.c
+@@ -332,18 +332,6 @@ static bool fixup_lfp_data_ptrs(const void *bdb, void *ptrs_block)
+ 	return validate_lfp_data_ptrs(bdb, ptrs);
+ }
+
+-static const void *find_fp_timing_terminator(const u8 *data, int size)
+-{
+-	int i;
+-
+-	for (i = 0; i < size - 1; i++) {
+-		if (data[i] == 0xff && data[i+1] == 0xff)
+-			return &data[i];
+-	}
+-
+-	return NULL;
+-}
+-
+ static int make_lfp_data_ptr(struct lvds_lfp_data_ptr_table *table,
+ 			     int table_size, int total_size)
+ {
+@@ -367,11 +355,22 @@ static void next_lfp_data_ptr(struct lvds_lfp_data_ptr_table *next,
+ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
+ 				    const void *bdb)
+ {
+-	int i, size, table_size, block_size, offset;
+-	const void *t0, *t1, *block;
++	int i, size, table_size, block_size, offset, fp_timing_size;
+ 	struct bdb_lvds_lfp_data_ptrs *ptrs;
++	const void *block;
+ 	void *ptrs_block;
+
++	/*
++	 * The hardcoded fp_timing_size is only valid for
++	 * modernish VBTs. All older VBTs definitely should
++	 * include block 41 and thus we don't need to
++	 * generate one.
++	 */
++	if (i915->vbt.version < 155)
++		return NULL;
++
++	fp_timing_size = 38;
++
+ 	block = find_raw_section(bdb, BDB_LVDS_LFP_DATA);
+ 	if (!block)
+ 		return NULL;
+@@ -380,17 +379,8 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
+
+ 	block_size = get_blocksize(block);
+
+-	size = block_size;
+-	t0 = find_fp_timing_terminator(block, size);
+-	if (!t0)
+-		return NULL;
+-
+-	size -= t0 - block - 2;
+-	t1 = find_fp_timing_terminator(t0 + 2, size);
+-	if (!t1)
+-		return NULL;
+-
+-	size = t1 - t0;
++	size = fp_timing_size + sizeof(struct lvds_dvo_timing) +
++		sizeof(struct lvds_pnp_id);
+ 	if (size * 16 > block_size)
+ 		return NULL;
+
+@@ -408,7 +398,7 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
+ 	table_size = sizeof(struct lvds_dvo_timing);
+ 	size = make_lfp_data_ptr(&ptrs->ptr[0].dvo_timing, table_size, size);
+
+-	table_size = t0 - block + 2;
++	table_size = fp_timing_size;
+ 	size = make_lfp_data_ptr(&ptrs->ptr[0].fp_timing, table_size, size);
+
+ 	if (ptrs->ptr[0].fp_timing.table_size)
+@@ -423,14 +413,14 @@ static void *generate_lfp_data_ptrs(struct drm_i915_private *i915,
+ 		return NULL;
+ 	}
+
+-	size = t1 - t0;
++	size = fp_timing_size + sizeof(struct lvds_dvo_timing) +
++		sizeof(struct lvds_pnp_id);
+ 	for (i = 1; i < 16; i++) {
+ 		next_lfp_data_ptr(&ptrs->ptr[i].fp_timing, &ptrs->ptr[i-1].fp_timing, size);
+ 		next_lfp_data_ptr(&ptrs->ptr[i].dvo_timing, &ptrs->ptr[i-1].dvo_timing, size);
+ 		next_lfp_data_ptr(&ptrs->ptr[i].panel_pnp_id, &ptrs->ptr[i-1].panel_pnp_id, size);
+ 	}
+
+-	size = t1 - t0;
+ 	table_size = sizeof(struct lvds_lfp_panel_name);
+
+ 	if (16 * (size + table_size) <= block_size) {
 diff --git a/drivers/gpu/drm/v3d/Kconfig b/drivers/gpu/drm/v3d/Kconfig
 index e973ec487484..ce62c5908e1d 100644
 --- a/drivers/gpu/drm/v3d/Kconfig
@@ -2891,7 +2986,7 @@ index 1e0041ec8132..5bcd047768b6 100644
  					       ARRAY_SIZE(power_domain_names),
  					       sizeof(*power->pd_xlate.domains),
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 68e9121c1878..ccd7566adb4b 100644
+index dfef85a18eb5..d733da254911 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5686,6 +5686,13 @@ static void hub_event(struct work_struct *work)
@@ -3090,7 +3185,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
 
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 7cb956d3abb2..12df96177187 100644
+index 2c320a8fe70d..e097bf4ce549 100644
 --- a/net/bluetooth/hci_event.c
 +++ b/net/bluetooth/hci_event.c
 @@ -3997,6 +3997,26 @@ static void hci_cmd_complete_evt(struct hci_dev *hdev, void *data,
@@ -3118,8 +3213,8 @@ index 7cb956d3abb2..12df96177187 100644
 +		*status = skb->data[0];
 +	}
 
- 	handle_cmd_cnt_and_timer(hdev, ev->ncmd);
-
+ 	if (i == ARRAY_SIZE(hci_cc_table)) {
+ 		/* Unknown opcode, assume byte 0 contains the status, so
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 01fab3d4f90b..2ae5dfc904f9 100755
 --- a/scripts/tags.sh

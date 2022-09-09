@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7879af7639a11a5388ef7e590e1b480ac79c29ef
+ 7879af7639a11a5388ef7e590e1b480ac79c29ef [PATCH] drm/i915/bios: Use hardcoded fp_timing size for generating  LFP data pointers
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b9dfa5218351f6286e97beba802c14813735f255
  b9dfa5218351f6286e97beba802c14813735f255 Revert "block: freeze the queue earlier in del_gendisk"
 
