@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 35f272b336667cffd35d149d9da6f85e958ddfa2
+%global commit 023900dc77228f92f595c99b9f51c8f31799cc1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220829
+%global date 20220909
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        64%{?gver}%{?dist}
+Release:        65%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -175,6 +175,8 @@ mv %{name}-qt_es-es.ts %{name}-qt_es_ES.ts
 mv %{name}-qt_pt-br.ts %{name}-qt_pt_BR.ts
 mv %{name}-qt_pt-pt.ts %{name}-qt_pt_PT.ts
 mv %{name}-qt_zh-cn.ts %{name}-qt_zh_CN.ts
+
+sed -e 's|[Cc]ubed|Cubeb|g' -i %{name}-qt_pt_BR.ts
 popd
 
 sed \

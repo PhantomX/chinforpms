@@ -1,10 +1,11 @@
-%global commit c6b25f14a33695b71b55a4504949762d805af3c4
+%global commit e87f7b7b6885c63ad35ac4f6d0cd4d74e1d36d70
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220901
+%global date 20220909
 %global with_snapshot 1
 
 # Enable ffmpeg support
-%bcond_with ffmpeg
+%bcond_without ffmpeg
+%bcond_with rpmfusion
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -16,7 +17,7 @@
 
 Name:           mgba
 Version:        0.10.0
-Release:        0.22%{?gver}%{?dist}
+Release:        0.23%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -62,8 +63,10 @@ BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
+%if %{with rpmfusion}
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
+%endif
 %endif
 %endif
 BuildRequires:  desktop-file-utils

@@ -13,7 +13,7 @@ index ddb79ee..17a4ecb 100644
 --- a/src/duckstation-qt/mainwindow.cpp
 +++ b/src/duckstation-qt/mainwindow.cpp
 @@ -52,7 +52,7 @@ static constexpr char DISC_IMAGE_FILTER[] = QT_TRANSLATE_NOOP(
-   "(*.ecm);;Media Descriptor Sidecar Images (*.mds);;PlayStation EBOOTs (*.pbp);;PlayStation Executables (*.exe "
+   "(*.ecm);;Media Descriptor Sidecar Images (*.mds);;PlayStation EBOOTs (*.pbp *.PBP);;PlayStation Executables (*.exe "
    "*.psexe *.ps-exe);;Portable Sound Format Files (*.psf *.minipsf);;Playlists (*.m3u)");
  
 -static const char* DEFAULT_THEME_NAME = "darkfusion";

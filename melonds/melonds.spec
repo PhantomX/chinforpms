@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 98903f80764c3be5c01ab149b50d1eb55fec4bfd
+%global commit 61de50069b2fb25afef665dd9a5c1eeb2976a26b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220727
+%global date 20220902
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -14,13 +14,14 @@
 %endif
 
 %global pkgname melonDS
+%global appname net.kuribo64.%{pkgname}
 %global vc_url  https://github.com/Arisotura/%{pkgname}
 
 %global fatfs_ver 86631
 
 Name:           melonds
 Version:        0.9.4
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -114,11 +115,11 @@ export LDFLAGS+=" -Wl,-z,noexecstack"
 %cmake_install
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/net.kuribo64.%{pkgname}.metainfo.xml
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/net.kuribo64.%{pkgname}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet \
   %{buildroot}%{_metainfodir}/*.metainfo.xml
 
@@ -127,9 +128,9 @@ appstream-util validate-relax --nonet \
 %doc README.md
 %license LICENSE*
 %{_bindir}/%{pkgname}
-%{_datadir}/applications/net.kuribo64.%{pkgname}.desktop
-%{_datadir}/icons/hicolor/*/apps/net.kuribo64.%{pkgname}.*
-%{_metainfodir}/*.metainfo.xml
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
