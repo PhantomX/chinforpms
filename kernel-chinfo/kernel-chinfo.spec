@@ -143,7 +143,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %global distro_build 200
@@ -984,6 +984,10 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 %global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2092: https://cgit.freedesktop.org/drm/drm/patch/?id=c9cad937c0c58618fe5b0310fd539a854dc1ae95#/kernel-git-drm-c9cad93.patch
+Patch2093: https://cgit.freedesktop.org/drm/drm/patch/?id=708d19d9f362766147cab79eccae60912c6d3068#/kernel-git-drm-708d19d.patch
+Patch2094: https://cgit.freedesktop.org/drm/drm/patch/?id=5e3f1e7729ec7a99e145e9d8ed58963d86cdfb98#/kernel-git-drm-5e3f1e7.patch
+Patch2095: https://cgit.freedesktop.org/drm/drm/patch/?id=6f2c8d5f16594a13295d153245e0bb8166db7ac9#/kernel-git-drm-6f2c8d5.patch
 
 %if !0%{?post_factum}
 

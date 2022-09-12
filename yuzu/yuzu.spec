@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2e9922a80b82b8eb10f3e99252befddc7a528716
+%global commit 049d25a15fba4ac45c07959e06846a5a94378c66
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220902
+%global date 20220910
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        2930
+Version:        2943
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -168,6 +168,9 @@ Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
 
+%if "%{?repo}"
+Provides:       %{name}%{?repo:-%{repo}}%{?_isa} = %{version}-%{release}
+%endif
 
 %description
 Yuzu is an open-source Nintendo Switch emulator written in C++.
