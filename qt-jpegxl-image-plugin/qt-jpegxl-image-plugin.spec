@@ -1,6 +1,6 @@
-%global commit 0c9951677f580bf96134639421820b15a241349f
+%global commit 26af559645c86ffc7629c10637834cbd293c9d3f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220414
+%global date 20220910
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           qt-jpegxl-image-plugin
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
 License:        GPLv3
@@ -21,8 +21,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-downgrade-libxl.patch
-
 
 BuildRequires:  cmake
 BuildRequires:  extra-cmake-modules
@@ -30,8 +28,6 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libjxl_threads)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt6Gui)
 
 
 %description
@@ -40,6 +36,7 @@ Qt plug-in to allow Qt and KDE based applications to read/write JXL images.
 
 %package -n qt5-jpegxl-image-plugin
 Summary:        JXL Qt5 plugin
+BuildRequires:  cmake(Qt5Gui)
 
 %description -n qt5-jpegxl-image-plugin
 Qt5 plug-in to allow Qt and KDE based applications to read/write JXL images.
@@ -47,6 +44,7 @@ Qt5 plug-in to allow Qt and KDE based applications to read/write JXL images.
 
 %package -n qt6-jpegxl-image-plugin
 Summary:        JXL Qt6 plugin
+BuildRequires:  cmake(Qt6Gui)
 
 %description -n qt6-jpegxl-image-plugin
 Qt6 plug-in to allow Qt and KDE based applications to read/write JXL images.
@@ -98,5 +96,8 @@ popd
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-2.20220910git26af559
+- Bump
+
 * Mon Apr 25 2022 Phantom X <megaphantomx at hotmail dot com> - 0-1.20220414git0c99516
 - Initial spec

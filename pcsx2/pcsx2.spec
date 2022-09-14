@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3291
+Version:        1.7.3307
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -176,7 +176,6 @@ mv 3rdparty/glad 3rdparty-temp/
 mv 3rdparty/glslang 3rdparty-temp/
 mv 3rdparty/imgui 3rdparty-temp/
 mv 3rdparty/jpgd 3rdparty-temp/
-mv 3rdparty/rapidyaml 3rdparty-temp/
 mv 3rdparty/simpleini 3rdparty-temp/
 mv 3rdparty/xbyak 3rdparty-temp/
 rm -rf 3rdparty/*
@@ -336,6 +335,9 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Wed Sep 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3307-1
+- 1.7.3307
+
 * Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3264-1
 - 1.7.3264
 

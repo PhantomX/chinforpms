@@ -14,12 +14,14 @@
 
 %bcond_with packagekit
 
+%global vc_url https://git.mate-desktop.org/%{name}
+
 Name:          engrampa
 Version:       %{branch}.0
 %if 0%{?rel_build}
-Release:       100%{?dist}
+Release:       101%{?dist}
 %else
-Release:       0.10%{?git_rel}%{?dist}
+Release:       0.11%{?git_rel}%{?dist}
 %endif
 Epoch:         1
 Summary:       MATE Desktop file archiver
@@ -31,7 +33,11 @@ URL:           http://mate-desktop.org
 # Source for release-builds.
 %{?rel_build:Source0:     http://pub.mate-desktop.org/releases/%{branch}/%{name}-%{version}.tar.xz}
 # Source for snapshot-builds.
-%{!?rel_build:Source0:    http://git.mate-desktop.org/%{name}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
+%{!?rel_build:Source0:    %{vc_url}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
+
+Patch0:        %{vc_url}/patch/?id=da64dd31f77a8082650d0904da19a21dfc400ae1#/%{name}-git-da64dd3.patch
+Patch1:        %{vc_url}/patch/?id=c0fadd464f227e7ebbfefd3fa54e578f1bb9998b#/%{name}-git-c0fadd4.patch
+Patch2:        %{vc_url}/patch/?id=073c06814e0dcbb7bbdcecb867fc8c15d3fdddfa#/%{name}-git-073c068.patch
 
 BuildRequires: gcc
 BuildRequires: make
@@ -125,6 +131,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.26.0-101
+- Rawhide sync
+
 * Thu Aug 19 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.26.0-100
 - 1.26.0
 

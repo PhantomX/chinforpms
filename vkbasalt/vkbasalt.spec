@@ -10,7 +10,7 @@
 %global pkgname vkBasalt
 
 Name:           vkbasalt
-Version:        0.3.2.5
+Version:        0.3.2.6
 Release:        1%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
 
@@ -68,6 +68,9 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.6-1
+- 0.3.2.6
+
 * Mon Feb 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0.3.2.5-1
 - 0.3.2.5
 

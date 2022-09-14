@@ -19,7 +19,7 @@
 
 Name:           winesync-kmod
 Version:        5.16.20
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPLv2
@@ -73,6 +73,9 @@ done
 
 
 %changelog
+* Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-2.20220513git9ac10c6
+- Bump
+
 * Tue May 03 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.20-1.20220421git50ed00e
 - 5.16.20
 

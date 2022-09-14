@@ -1,4 +1,4 @@
-From e165431f3237f8e138a36d0cc8a76ae3df521c7b Mon Sep 17 00:00:00 2001
+From a11cd53d4e556ad032bc27f194897c8150a67358 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 30 Mar 2022 08:33:19 -0300
 Subject: [PATCH] Use system qhexedit
@@ -8,7 +8,7 @@ Subject: [PATCH] Use system qhexedit
  1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a850281..d64e4e1 100644
+index 8f5cab5..a6f6ff9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -17,13 +17,13 @@ index a850281..d64e4e1 100644
  
 +option(USE_SYSTEM_QHEXEDIT "Dynamically link against system qhexedit" OFF)
 +
- project( blackchocobo VERSION 1.80.0 DESCRIPTION "Final Fantasy 7 Save Editor")
+ project( blackchocobo VERSION 1.13.0.0 DESCRIPTION "Final Fantasy 7 Save Editor")
  # Get the version from git if it's a git repository
  IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
-@@ -92,5 +94,11 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
+@@ -80,5 +82,11 @@ get_filename_component(_qt_bin_dir "${_qmake_executable}" DIRECTORY)
  add_subdirectory(deploy)
  add_subdirectory(icons)
- add_subdirectory(lang)
+ add_subdirectory(translations)
 +if(USE_SYSTEM_QHEXEDIT)
 +find_package(PkgConfig REQUIRED)
 +pkg_search_module(QHEXEDIT REQUIRED qhexedit2-qt6)
@@ -33,5 +33,5 @@ index a850281..d64e4e1 100644
 +endif()
  add_subdirectory(src)
 -- 
-2.35.1
+2.37.3
 

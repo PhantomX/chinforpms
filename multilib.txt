@@ -1,7 +1,8 @@
-adwaita-qt
+-adwaita-qt
 -amdgpu-pro-vulkan-driver
 -amdvlk-vulkan-driver
 -aom
+chinforpms-fake-packages
 chinforpms-rpm-config
 -compat-bison-36
 -compat-gcc-32
@@ -29,8 +30,8 @@ mangohud
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
-qt5ct
-qt6ct
+-qt5ct
+-qt6ct
 SDL1
 -sdl12-compat
 -sdlcl

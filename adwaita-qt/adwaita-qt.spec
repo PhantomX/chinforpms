@@ -1,6 +1,6 @@
-%global commit a736e89eb3fc0a711023771d6dbbe6011d122533
+%global commit 417df19a76bda852f17b28d33ae3c23f1da9e5d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220630
+%global date 20220713
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.4.2
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -32,15 +32,6 @@ Patch12:        0001-disable-overlay-scrolling.patch
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5DBus)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5X11Extras)
-BuildRequires:  cmake(Qt6Core)
-BuildRequires:  cmake(Qt6DBus)
-BuildRequires:  cmake(Qt6Gui)
-BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  pkgconfig(xcb)
 
 Obsoletes:      adwaita-qt4 < 1.1.90
@@ -55,6 +46,11 @@ Theme to let Qt applications fit nicely into Fedora Workstation
 
 %package -n adwaita-qt5
 Summary:        Adwaita Qt5 theme
+BuildRequires:  cmake(Qt5Core)
+BuildRequires:  cmake(Qt5DBus)
+BuildRequires:  cmake(Qt5Gui)
+BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt5X11Extras)
 Requires:       libadwaita-qt5%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n adwaita-qt5
@@ -77,6 +73,10 @@ developing applications that use libadwaita-qt5.
 
 %package -n adwaita-qt6
 Summary:        Adwaita Qt6 theme
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Widgets)
 Requires:       libadwaita-qt6%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n adwaita-qt6
@@ -161,6 +161,9 @@ popd
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.2-0.2.20220713git417df19
+- Bump
+
 * Mon Jul 04 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.2-0.1.20220630gita736e89
 - 1.4.2 snapshot
 

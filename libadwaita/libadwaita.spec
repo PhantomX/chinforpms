@@ -3,7 +3,7 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           libadwaita
-Version:        1.1.1
+Version:        1.2~rc
 Release:        100%{?dist}
 Summary:        Building blocks for modern GNOME applications
 
@@ -11,7 +11,7 @@ Epoch:          1
 
 License:        LGPLv2+
 URL:            https://gitlab.gnome.org/GNOME/libadwaita
-Source0:        https://download.gnome.org/sources/%{name}/%(echo %{version} | cut -d. -f-2)/%{name}-%{tarball_version}.tar.xz
+Source0:        https://download.gnome.org/sources/%{name}/%(echo %{version} | cut -d~ -f1 | cut -d. -f-2)/%{name}-%{tarball_version}.tar.xz
 Source1:        chinforpms-adwaita.css
 
 BuildRequires:  desktop-file-utils
@@ -113,6 +113,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.2~rc-100
+- 1.2.rc
+
 * Wed Jun 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1.1-100
 - 1.1.0
 

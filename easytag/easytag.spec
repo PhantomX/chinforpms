@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.4%{?gver}%{?dist}
+Release:        0.5%{?gver}%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -49,7 +49,6 @@ BuildRequires:  libxslt
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(id3tag)
-BuildRequires:  pkgconfig(libnautilus-extension)
 BuildRequires:  pkgconfig(libsoup-2.4)
 BuildRequires:  pkgconfig(opusfile)
 BuildRequires:  pkgconfig(speex)
@@ -65,18 +64,13 @@ BuildRequires:  yelp-tools
 %endif
 Recommends:     yelp
 
+# Obsoleted in F37
+Obsoletes:     easytag-nautilus < 2.4.3-16 
+
 %description
 EasyTAG is a utility for viewing, editing and writing the tags of MP4, MP3,
 MP2, FLAC, Ogg Opus, Ogg Speex, Ogg Vorbis, MusePack and Monkey's Audio files.
 
-%package nautilus
-Summary:        Nautilus extension for opening in EasyTAG
-License:        GPLv3+
-Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description nautilus
-Nautilus extension to add "Open with EasyTAG" to the Nautilus context menu, for
-easier access to EasyTAG when opening directories and audio files.
 
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
@@ -89,6 +83,7 @@ easier access to EasyTAG when opening directories and audio files.
   --disable-silent-rules \
   --disable-appdata-validate \
   --disable-schemas-compile \
+  --disable-nautilus-actions \
 %{nil}
 
 %make_build
@@ -121,13 +116,11 @@ make check
 %{_datadir}/glib-2.0/schemas/org.gnome.EasyTAG.gschema.xml
 %{_mandir}/man1/easytag.1*
 
-%files nautilus
-%license COPYING.GPL3
-%{_metainfodir}/easytag-nautilus.metainfo.xml
-%{_libdir}/nautilus/extensions-3.0/libnautilus-easytag.so
-
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.5.20220418git5f41323
+- Disable nautilus package
+
 * Mon Jun 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-0.4.20220418git5f41323
 - Bump
 

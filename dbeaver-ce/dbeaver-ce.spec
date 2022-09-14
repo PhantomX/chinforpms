@@ -8,7 +8,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        22.1.3
+Version:        22.2.0
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -105,6 +105,9 @@ done
 
 
 %changelog
+* Wed Sep 14 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-1
+- 22.2.0
+
 * Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 22.1.3-1
 - 22.1.3
 

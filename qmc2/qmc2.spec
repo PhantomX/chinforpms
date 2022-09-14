@@ -17,7 +17,7 @@
 %global vc_url https://github.com/qmc2/%{pkgname}
 
 Name:           qmc2
-Version:        0.242
+Version:        0.243
 Release:        100%{?gver}%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
@@ -37,14 +37,14 @@ Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Patch1:         %{name}-ini.patch
 
 Patch10:        0001-system-minizip-fix.patch
-%dnl Patch11:        0001-use-system-lzma-sdk.patch
+Patch11:        0001-use-system-lzma-sdk.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  minizip-devel
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
-%dnl BuildRequires:  pkgconfig(lzmasdk-c)
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
@@ -62,7 +62,6 @@ BuildRequires:  pkgconfig(Qt5Xml)
 BuildRequires:  pkgconfig(Qt5XmlPatterns)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(xmu)
-Provides:       bundled(lzma-sdk) = 16.04
 Provides:       PDF.js = 3f320f0b
 
 %description
@@ -90,21 +89,25 @@ the games"
 
 %prep
 %autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+
 #ensure system minizip and zlib are used
 rm -rf src/minizip
 rm -rf src/zlib
-%dnl rm -rf src/lzma
+rm -rf src/lzma
+
+#fix opening documentation from the menu
+sed -i s@doc/html/@doc/@ src/qmc2main.cpp
 
 
 %build
 %set_build_flags
 %make_build QMAKE=%{_qt5_qmake} \
   DISTCFG=1 CC_FLAGS="$CFLAGS" CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" \
-  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
+  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_SEVENZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
   CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
 %make_build arcade QMAKE=%{_qt5_qmake} \
   DISTCFG=1 CC_FLAGS="$CFLAGS" CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" \
-  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
+  L_FLAGS="$LDFLAGS" SYSTEM_MINIZIP=1 SYSTEM_SEVENZIP=1 SYSTEM_ZLIB=1 LIBARCHIVE=1 \
   CTIME=0 GITVERSION=true GIT_REV=%{git_rev}
 %make_build qchdman QMAKE=%{_qt5_qmake} \
   DISTCFG=1 CXX_FLAGS="$CXXFLAGS -I%{_includedir}/minizip" L_FLAGS="$LDFLAGS" \
@@ -164,6 +167,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.243-100
+- 0.243
+- System lzma-sdk
+
 * Sun Apr 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.242-100
 - 0.242
 

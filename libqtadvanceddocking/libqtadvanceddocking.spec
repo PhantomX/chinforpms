@@ -1,7 +1,7 @@
 %global pkgname Qt-Advanced-Docking-System
 
 Name:           libqtadvanceddocking
-Version:        3.8.2
+Version:        3.8.3
 Release:        1%{?dist}
 Summary:        Advanced Docking System for Qt
 
@@ -66,6 +66,9 @@ developing applications that use %{name}.
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.3-1
+- 3.8.3
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.2-1
 - 3.8.2
 

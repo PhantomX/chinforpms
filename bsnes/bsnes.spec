@@ -101,7 +101,7 @@ export options="${CXXFLAGS}"
   lto=true \
 %endif
 %{nil}
-exit 20
+
 
 %install
 mkdir -p %{buildroot}%{_bindir}

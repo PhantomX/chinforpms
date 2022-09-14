@@ -1,6 +1,6 @@
 Name:           fdk-aac
 Version:        2.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Fraunhofer FDK AAC Codec Library
 
 License:        FDK-AAC
@@ -69,6 +69,9 @@ echo -e "%{_libdir}/%{name}/ \n" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{nam
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.2-4
+- RPMFusion f36 release sync
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.2-3
 - RPMFusion f36 release sync
 

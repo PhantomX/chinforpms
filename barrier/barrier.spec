@@ -1,6 +1,6 @@
-%global commit dd8c2a1a386a59618949695c1ddcb96b04d0e123
+%global commit 653e4badeb88f61de901581667d4465d7b1e2d52
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210923
+%global date 20220204
 %global with_snapshot 1
 
 %global commit1 7d33fee11ec480beae4c28ad09ca56d974140a72
@@ -11,6 +11,10 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 gtest
 
+%global commit3 614bbe87b80435d87ab8791564370e0c1d13627d
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 gulrak-filesystem
+
 %bcond_without qt
 
 %if 0%{?with_snapshot}
@@ -19,7 +23,7 @@
 
 Name:           barrier
 Version:        2.4.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Share mouse and keyboard between multiple computers over the network
 
 License:        GPLv2
@@ -30,8 +34,9 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/google/googlemock/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/google/googletest/archive/%{commit2less}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        %{name}.appdata.xml
+Source2:        https://github.com/google/googletest/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/gulrak/filesystem/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source10:       %{name}.appdata.xml
 
 BuildRequires:  cmake3
 BuildRequires:  gcc-c++
@@ -58,6 +63,8 @@ BuildRequires:  pkgconfig(Qt5Widgets)
 Requires:       hicolor-icon-theme
 %endif
 
+Provides:       %{srcname3} = 0~git%{shortcommit3}
+
 %description
 Barrier is software that mimics the functionality of a KVM switch, which
 historically would allow you to use a single keyboard and mouse to control
@@ -72,8 +79,9 @@ screen, or by using a keypress to switch focus to a different system.
 
 tar -xf %{S:1} -C ext/gmock --strip-components 1
 tar -xf %{S:2} -C ext/gtest --strip-components 1
+tar -xf %{S:3} -C ext/gulrak-filesystem --strip-components 1
 
-cp -p %{S:3} %{name}.appdata.xml
+cp -p %{S:10} %{name}.appdata.xml
 sed -e 's|_VERSION_|%{?epoch:%{epoch}:}%{version}|g' -i %{name}.appdata.xml
 
 sed \

@@ -16,14 +16,14 @@ index 144c603..26738ce 100644
      Uint32 alpha_ticks = 0;
      SDL_JoystickID nJoystickID;
  
--    background_front = LoadTexture(screen, "controllermap.bmp", SDL_FALSE);
--    background_back = LoadTexture(screen, "controllermap_back.bmp", SDL_FALSE);
--    button = LoadTexture(screen, "button.bmp", SDL_TRUE);
--    axis = LoadTexture(screen, "axis.bmp", SDL_TRUE);
-+    background_front = LoadTexture(screen, "_RPM_DATADIR_/controllermap.bmp", SDL_FALSE);
-+    background_back = LoadTexture(screen, "_RPM_DATADIR_/controllermap_back.bmp", SDL_FALSE);
-+    button = LoadTexture(screen, "_RPM_DATADIR_/button.bmp", SDL_TRUE);
-+    axis = LoadTexture(screen, "_RPM_DATADIR_/axis.bmp", SDL_TRUE);
+-    background_front = LoadTexture(screen, "controllermap.bmp", SDL_FALSE, NULL, NULL);
+-    background_back = LoadTexture(screen, "controllermap_back.bmp", SDL_FALSE, NULL, NULL);
+-    button = LoadTexture(screen, "button.bmp", SDL_TRUE, NULL, NULL);
+-    axis = LoadTexture(screen, "axis.bmp", SDL_TRUE, NULL, NULL);
++    background_front = LoadTexture(screen, "_RPM_DATADIR_/controllermap.bmp", SDL_FALSE, NULL, NULL);
++    background_back = LoadTexture(screen, "_RPM_DATADIR_/controllermap_back.bmp", SDL_FALSE, NULL, NULL);
++    button = LoadTexture(screen, "_RPM_DATADIR_/button.bmp", SDL_TRUE, NULL, NULL);
++    axis = LoadTexture(screen, "_RPM_DATADIR_/axis.bmp", SDL_TRUE, NULL, NULL);
      SDL_RaiseWindow(window);
  
      /* scale for platforms that don't give you the window size you asked for. */

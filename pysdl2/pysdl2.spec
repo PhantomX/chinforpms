@@ -3,7 +3,7 @@
 %global pkgname py-sdl2
 
 Name:           pysdl2
-Version:        0.9.11
+Version:        0.9.14
 Release:        1%{?dist}
 Summary:        Python wrapper around the SDL2 library
 
@@ -80,6 +80,9 @@ rm -f sdl2/test/{audio_test,sdl2ext_font_test,sdlgfx_test,sdlmixer_test,version_
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.14-1
+- 0.9.14
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.11-1
 - 0.9.11
 - Disable check for the time

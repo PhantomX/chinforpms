@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6764264488488a97ddb60be07f59c0750cc173a7
+%global commit baecc18d8c5365af0dddb231bc8c0a9c03850bf6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220728
+%global date 20220910
 %global with_snapshot 1
 
 # Enable system boost
@@ -80,7 +80,7 @@
 
 Name:           citra
 Version:        0
-Release:        23%{?gver}%{?dist}
+Release:        24%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2

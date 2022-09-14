@@ -8,8 +8,8 @@
 %global pango_version 1.50.0
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
-%global wayland_protocols_version 1.23
-%global wayland_version 1.20.0
+%global wayland_protocols_version 1.25
+%global wayland_version 1.21.0
 %global epoxy_version 1.4
 
 %global bin_version 4.0.0
@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.6.7
+Version:        4.8.0
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -28,7 +28,13 @@ License:        LGPLv2+
 URL:            https://www.gtk.org
 
 Source0:        https://download.gnome.org/sources/gtk/%(echo %{version} | cut -d. -f-2)/gtk-%{version}.tar.xz
+Source1:        settings.ini
 Source2:        chinforpms-adwaita.css
+
+# Temporarily revert this until we figure out how to best restore
+# private requires that are needed for rpm automatic dep extraction.
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4756
+Patch0:         0001-Revert-Meson-Simplify-pkgconfig-file-generator.patch
 
 # Disable this @#$& by default
 Patch100:       0001-Disable-overlay-scrolling.patch
@@ -174,7 +180,6 @@ export CFLAGS+=' -fno-strict-aliasing -DG_DISABLE_CAST_CHECKS -DG_DISABLE_ASSERT
 %meson_install
 
 %find_lang gtk40
-%find_lang gtk40-properties
 
 %if !0%{?with_broadway}
 rm $RPM_BUILD_ROOT%{_mandir}/man1/gtk4-broadwayd.1*
@@ -182,6 +187,8 @@ rm $RPM_BUILD_ROOT%{_mandir}/man1/gtk4-broadwayd.1*
 
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gtk-4.0
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-4.0/modules
+
+install -p %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/gtk-4.0/
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
@@ -206,12 +213,13 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/glib-2.0/schemas/org.gtk.gtk4.Settings.FileChooser.gschema.xml
 %dir %{_datadir}/gtk-4.0
 %{_datadir}/gtk-4.0/emoji/
+%{_datadir}/gtk-4.0/settings.ini
 %if 0%{?with_broadway}
 %{_bindir}/gtk4-broadwayd
 %{_mandir}/man1/gtk4-broadwayd.1*
 %endif
 
-%files devel -f gtk40-properties.lang
+%files devel
 %{_libdir}/libgtk-4.so
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
@@ -237,27 +245,36 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_bindir}/gtk4-demo
 %{_bindir}/gtk4-demo-application
 %{_bindir}/gtk4-icon-browser
+%{_bindir}/gtk4-node-editor
 %{_bindir}/gtk4-print-editor
 %{_bindir}/gtk4-widget-factory
+%{_datadir}/applications/org.gtk.gtk4.NodeEditor.desktop
 %{_datadir}/applications/org.gtk.Demo4.desktop
 %{_datadir}/applications/org.gtk.IconBrowser4.desktop
 %{_datadir}/applications/org.gtk.PrintEditor4.desktop
 %{_datadir}/applications/org.gtk.WidgetFactory4.desktop
+%{_datadir}/icons/hicolor/*/apps/org.gtk.gtk4.NodeEditor*.svg
 %{_datadir}/icons/hicolor/*/apps/org.gtk.Demo4*.svg
 %{_datadir}/icons/hicolor/*/apps/org.gtk.IconBrowser4*.svg
 %{_datadir}/icons/hicolor/*/apps/org.gtk.PrintEditor4*.svg
 %{_datadir}/icons/hicolor/*/apps/org.gtk.WidgetFactory4*.svg
 %{_datadir}/glib-2.0/schemas/org.gtk.Demo4.gschema.xml
-%{_datadir}/metainfo/org.gtk.Demo4.appdata.xml
-%{_datadir}/metainfo/org.gtk.IconBrowser4.appdata.xml
-%{_datadir}/metainfo/org.gtk.PrintEditor4.appdata.xml
-%{_datadir}/metainfo/org.gtk.WidgetFactory4.appdata.xml
+%{_metainfodir}/org.gtk.gtk4.NodeEditor.appdata.xml
+%{_metainfodir}/org.gtk.Demo4.appdata.xml
+%{_metainfodir}/org.gtk.IconBrowser4.appdata.xml
+%{_metainfodir}/org.gtk.PrintEditor4.appdata.xml
+%{_metainfodir}/org.gtk.WidgetFactory4.appdata.xml
 %{_mandir}/man1/gtk4-demo.1*
 %{_mandir}/man1/gtk4-demo-application.1*
 %{_mandir}/man1/gtk4-icon-browser.1*
+%{_mandir}/man1/gtk4-node-editor.1*
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.0-100
+- 4.8.0
+- Rawhide sync
+
 * Fri Aug 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.7-100
 - 4.6.7
 

@@ -2,6 +2,7 @@
 chinforpms-rpm-config
 
 # 1
+asmc
 buildsys-build-chinforpms
 c-vtapi
 chinforpms-fake-packages
@@ -21,10 +22,8 @@ libvirt
 -libtgvoip
 libxspf
 lzlib
-lzma-sdk
 -mingw-headers
 p7zip
-pysdl2
 -python-iniherit
 -python-markdown-math
 -python-pyfavicon
@@ -42,18 +41,17 @@ xwit
 
 # 2
 -aom
-asmc
 -compat-gcc-32
 -dxil-spirv
 ff7tk
 -gstreamer1-plugins-base
 libadwaita
-libchdr
 libdeflate
 libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
+lzma-sdk
 -pygtk2
 -python-markups
 python-pynput
@@ -67,7 +65,9 @@ vulkan-loader
 xcftools
 
 # 3
+libchdr
 mesa
+vulkan-tools
 
 # 4
 7zip
@@ -104,13 +104,13 @@ claws-mail-themes
 cmdpack
 cpupower-gui
 cropgui
-curlew
+-curlew
 deluge
 devedeng
 discimagecreator
 disk-indicator
 -dosbox-staging
-dosbox-x
+-dosbox-x
 easytag
 -emojione-picker
 FAudio
@@ -125,9 +125,11 @@ fluxbox-chinfo-menu
 fss-parallel-tools
 eccedc
 engrampa
+fbpager
 gamemode
 -gamescope
 gcdemu
+geeqie
 -gespeaker
 gkrellm-cpupower
 gkrellm-leds
@@ -152,7 +154,7 @@ joy2key
 keepassxc
 kernel-tools
 krename
-kristall
+-kristall
 kse
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
@@ -162,7 +164,6 @@ libstrangle
 lutris
 lunzip
 -lzip
-m64py
 makeppf
 manaplus
 mangohud
@@ -192,6 +193,7 @@ orage
 perl-rename
 pev
 phantomjs
+pkgrip
 plzip
 protontricks
 -pspshrink
@@ -243,7 +245,7 @@ waterfox-tabmixplus
 waterfox-ublock-origin
 waterfox-useragent-switcher
 waterfox-noscript
-wiibafu
+-wiibafu
 wiimms-iso-tools
 -wimlib
 winesync
@@ -277,7 +279,6 @@ freac
 -freac-superfast-codecs
 jamesdsp
 m64p
-mupen64plus-rsp-cxd4
 mupen64plus-rsp-parallel
 mupen64plus-video-parallel
 -ortp

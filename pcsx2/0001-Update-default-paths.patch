@@ -1,22 +1,22 @@
-From a041cc9f352e832615b213eb5ec7b0df3caf768c Mon Sep 17 00:00:00 2001
+From bc279ea902e622984641096a55ea35fe693253ba Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 23 Jun 2022 09:39:45 -0300
+Date: Tue, 13 Sep 2022 22:50:54 -0300
 Subject: [PATCH] Update default paths
 
 ---
- pcsx2-qt/QtHost.cpp | 4 ++++
+ pcsx2/Frontend/CommonHost.cpp | 4 ++++
  1 file changed, 4 insertions(+)
 
-diff --git a/pcsx2-qt/QtHost.cpp b/pcsx2-qt/QtHost.cpp
-index e7e1805..719376d 100644
---- a/pcsx2-qt/QtHost.cpp
-+++ b/pcsx2-qt/QtHost.cpp
-@@ -163,7 +163,11 @@ void QtHost::SetResourcesDirectory()
+diff --git a/pcsx2/Frontend/CommonHost.cpp b/pcsx2/Frontend/CommonHost.cpp
+index 3048dd7..f093cc5 100644
+--- a/pcsx2/Frontend/CommonHost.cpp
++++ b/pcsx2/Frontend/CommonHost.cpp
+@@ -86,7 +86,11 @@ void CommonHost::SetResourcesDirectory()
  {
  #ifndef __APPLE__
  	// On Windows/Linux, these are in the binary directory.
 +#if defined(PCSX2_APP_DATADIR)
-+	EmuFolders::Resources = Path::Combine(Path::Combine(EmuFolders::AppRoot, PCSX2_APP_DATADIR), "resources");
++	EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, PCSX2_APP_DATADIR "/resources"));
 +#else
  	EmuFolders::Resources = Path::Combine(EmuFolders::AppRoot, "resources");
 +#endif
@@ -24,5 +24,5 @@ index e7e1805..719376d 100644
  	// On macOS, this is in the bundle resources directory.
  	EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
 -- 
-2.36.1
+2.37.3
 

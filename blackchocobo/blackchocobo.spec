@@ -1,6 +1,6 @@
-%global commit 7a63073e0beb9b8c83f75a64345255e9d120bed6
+%global commit 56c2db6fe903e0ee035fe4f3c451f99d7bff3e78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220324
+%global date 20220911
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,14 +10,16 @@
 # Enable system qhexedit
 %global with_qhexedit 0
 
-%global ff7tk_ver 0.82
+%global ff7tk_ver 0.83
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.80.0
+Version:        1.13.0.0
 Release:        1%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
+
+Epoch:          1
 
 License:        GPLv3
 URL:            http://www.blackchocobo.com/
@@ -119,10 +121,10 @@ done
 
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
-%find_lang bchoco --with-qt
+%find_lang %{name} --with-qt
 
 
-%files -f bchoco.lang
+%files -f %{name}.lang
 %license COPYING.txt
 %doc README.md
 %{_bindir}/%{name}
@@ -135,6 +137,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1.13.0.0-1.20220911git56c2db6
+- 1.13.0.0
+
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 1.80.0-1.20220324git7a63073
 - 1.80.0
 - Qt6

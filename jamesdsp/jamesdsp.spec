@@ -1,9 +1,9 @@
-%global commit a11f428284ec6ad3c3cd7336b0bd19304338ac5d
+%global commit 49994d2856b66e6c6a9a8752ac47dd338a45166c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220313
+%global date 20220908
 %global with_snapshot 1
 
-%global commit1 814a5941ed1e2568b54a07597451ef8b4dc91f98
+%global commit1 9492bb98691cc67e1c1145570bb522b7e6e18fba
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 EELEditor
 
@@ -28,8 +28,8 @@
 %global pkgname JDSP4Linux
 
 Name:           jamesdsp
-Version:        2.3
-Release:        3%{?gver}%{?dist}
+Version:        2.4
+Release:        1%{?gver}%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -270,6 +270,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4-1.20220908git49994d2
+- 2.4
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3-3.20220313gita11f428
 - Bump
 

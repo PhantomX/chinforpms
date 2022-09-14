@@ -1,189 +1,25 @@
-From e91d1ef1cba8a34b4c63c6ed3a0d042a47e0ebe3 Mon Sep 17 00:00:00 2001
+From c77c85a470e085cbc3668b6f7d9053366a2dbcc5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 17 Apr 2022 12:54:52 -0300
+Date: Tue, 13 Sep 2022 14:28:06 -0300
 Subject: [PATCH] system minizip fix
 
 ---
- src/arcade/imageprovider.h  | 2 +-
- src/collectionrebuilder.cpp | 5 +++--
- src/filesystemmodel.h       | 2 +-
- src/imagechecker.cpp        | 2 +-
- src/imagechecker.h          | 2 +-
- src/imagewidget.h           | 2 +-
- src/machinelist.cpp         | 2 +-
- src/options.cpp             | 2 +-
- src/qmc2main.cpp            | 2 +-
- src/romalyzer.cpp           | 9 +++++----
- src/softwarelist.h          | 2 +-
- 11 files changed, 17 insertions(+), 15 deletions(-)
+ src/arcade/imageprovider.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/arcade/imageprovider.h b/src/arcade/imageprovider.h
-index 7c7c1f0..47df702 100644
+index bee46ee..557521b 100644
 --- a/src/arcade/imageprovider.h
 +++ b/src/arcade/imageprovider.h
-@@ -22,7 +22,7 @@
- #define QMC2_ARCADE_IMAGE_FORMAT_INDEX_TGA     11
- #define QMC2_ARCADE_IMAGE_FORMAT_INDEX_ICO     12
+@@ -8,7 +8,7 @@
+ #include <QUuid>
+ #include <QQuickImageProvider>
  
--#include "../minizip/unzip.h"
+-#include "../minizip/mz_compat.h"
 +#include "mz_compat.h"
  #include "../sevenzipfile.h"
  #if defined(QMC2_ARCADE_LIBARCHIVE_ENABLED)
  #include "../archivefile.h"
-diff --git a/src/collectionrebuilder.cpp b/src/collectionrebuilder.cpp
-index 23f2d51..49b5527 100644
---- a/src/collectionrebuilder.cpp
-+++ b/src/collectionrebuilder.cpp
-@@ -17,8 +17,9 @@
- #include "collectionrebuilder.h"
- #include "settings.h"
- #include "options.h"
--#include "unzip.h"
--#include "zip.h"
-+#include "mz_compat.h"
-+#include "mz.h"
-+#include "zlib.h"
- #include "sevenzipfile.h"
- #if defined(QMC2_LIBARCHIVE_ENABLED)
- #include "archivefile.h"
-diff --git a/src/filesystemmodel.h b/src/filesystemmodel.h
-index eb5816f..3ab083f 100644
---- a/src/filesystemmodel.h
-+++ b/src/filesystemmodel.h
-@@ -21,7 +21,7 @@
- #endif
- 
- #include "macros.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #include "fileiconprovider.h"
- 
-diff --git a/src/imagechecker.cpp b/src/imagechecker.cpp
-index f2eaa07..3f88d3f 100644
---- a/src/imagechecker.cpp
-+++ b/src/imagechecker.cpp
-@@ -18,7 +18,7 @@
- #include "qmc2main.h"
- #include "options.h"
- #include "toolexec.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #include "softwarelist.h"
- #include "macros.h"
-diff --git a/src/imagechecker.h b/src/imagechecker.h
-index 3d85073..75eb17e 100644
---- a/src/imagechecker.h
-+++ b/src/imagechecker.h
-@@ -13,7 +13,7 @@
- #include "ui_imagechecker.h"
- #include "imagewidget.h"
- #include "softwareimagewidget.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #if defined(QMC2_LIBARCHIVE_ENABLED)
- #include "archivefile.h"
-diff --git a/src/imagewidget.h b/src/imagewidget.h
-index 73c0e84..264f52a 100644
---- a/src/imagewidget.h
-+++ b/src/imagewidget.h
-@@ -10,7 +10,7 @@
- #include <QAction>
- #include <QStringList>
- 
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #if defined(QMC2_LIBARCHIVE_ENABLED)
- #include "archivefile.h"
-diff --git a/src/machinelist.cpp b/src/machinelist.cpp
-index f8a16b3..29a526d 100644
---- a/src/machinelist.cpp
-+++ b/src/machinelist.cpp
-@@ -40,7 +40,7 @@
- #include "miniwebbrowser.h"
- #include "romalyzer.h"
- #include "macros.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #include "demomode.h"
- #include "deviceconfigurator.h"
-diff --git a/src/options.cpp b/src/options.cpp
-index 2340068..442ce0b 100644
---- a/src/options.cpp
-+++ b/src/options.cpp
-@@ -34,7 +34,7 @@
- #include "machinelist.h"
- #include "imagechecker.h"
- #include "macros.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "keyseqscan.h"
- #include "romalyzer.h"
- #include "romstatusexport.h"
-diff --git a/src/qmc2main.cpp b/src/qmc2main.cpp
-index b0a41c3..7ea18b2 100644
---- a/src/qmc2main.cpp
-+++ b/src/qmc2main.cpp
-@@ -59,7 +59,7 @@
- #include "romstatusexport.h"
- #include "componentsetup.h"
- #include "miniwebbrowser.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #include "downloaditem.h"
- #include "embedder.h"
-diff --git a/src/romalyzer.cpp b/src/romalyzer.cpp
-index aa7c89f..537f76b 100644
---- a/src/romalyzer.cpp
-+++ b/src/romalyzer.cpp
-@@ -27,8 +27,9 @@
- #include "machinelist.h"
- #include "softwarelist.h"
- #include "macros.h"
--#include "unzip.h"
--#include "zip.h"
-+#include "mz_compat.h"
-+#include "mz.h"
-+#include "zlib.h"
- #include "sevenzipfile.h"
- #if defined(QMC2_LIBARCHIVE_ENABLED)
- #include "archivefile.h"
-@@ -535,7 +536,7 @@ void ROMAlyzer::showEvent(QShowEvent *e)
- 	if ( index > QMC2_ROMALYZER_RT_FOLDERS )
- 		index = QMC2_ROMALYZER_RT_FOLDERS;
- 	comboBoxSetRewriterReproductionType->setCurrentIndex(index);
--	spinBoxSetRewriterZipLevel->setValue(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterZipLevel", Z_DEFAULT_COMPRESSION).toInt());
-+	spinBoxSetRewriterZipLevel->setValue(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterZipLevel", MZ_COMPRESS_LEVEL_DEFAULT).toInt());
- 	checkBoxSetRewriterUniqueCRCs->setChecked(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterUniqueCRCs", false).toBool());
- 	comboBoxSetRewriterLibArchiveDeflate->setCurrentIndex(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterLibArchiveDeflate", true).toBool() ? 0 : 1);
- 	checkBoxSetRewriterAddZipComment->setChecked(qmc2Config->value(QMC2_FRONTEND_PREFIX + m_settingsKey + "/SetRewriterAddZipComment", true).toBool());
-@@ -3642,7 +3643,7 @@ bool ROMAlyzer::writeAllZipData(QString fileName, QMap<QString, QByteArray> *fil
- 			QByteArray data = it.value();
- 			if ( writeLog )
- 				log(tr("set rewriter: deflating '%1' (uncompressed size: %2)").arg(file).arg(humanReadable(data.length())));
--			if ( zipOpenNewFileInZip(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, Z_DEFLATED, spinBoxSetRewriterZipLevel->value()) == ZIP_OK ) {
-+			if ( zipOpenNewFileInZip(zip, file.toUtf8().constData(), &zipInfo, file.toUtf8().constData(), file.length(), 0, 0, 0, MZ_COMPRESS_METHOD_DEFLATE, spinBoxSetRewriterZipLevel->value()) == ZIP_OK ) {
- 				quint64 bytesWritten = 0;
- 				progressBarFileIO->setInvertedAppearance(true);
- 				progressBarFileIO->setRange(0, data.length());
-diff --git a/src/softwarelist.h b/src/softwarelist.h
-index a718514..c0b15d9 100644
---- a/src/softwarelist.h
-+++ b/src/softwarelist.h
-@@ -15,7 +15,7 @@
- #include <QWidgetAction>
- 
- #include "ui_softwarelist.h"
--#include "unzip.h"
-+#include "mz_compat.h"
- #include "sevenzipfile.h"
- #include "swlistexport.h"
- #include "imagewidget.h"
 -- 
-2.35.1
+2.37.3
 

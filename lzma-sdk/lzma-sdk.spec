@@ -8,7 +8,7 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        22.01
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPLv2
@@ -60,7 +60,15 @@ for f in .h .c .cpp .dsw .dsp .java .cs .txt makefile; do
 done
 
 # correct end-of-line encoding
-find . -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.txt' \) -exec sed 's/\r//' -i {} ';'
+find . \
+  -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.txt' \) \
+  -exec sed 's/\r//' -i {} ';'
+
+# Modify booleans to prevent conflict
+find . \
+  -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.cpp' \) \
+  -exec sed 's|False\b|False7z|g;s|True\b|True7z|g' -i {} ';'
+
 
 install -p -m 0644 %{SOURCE1} .
 
@@ -139,6 +147,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-101
+- Modify booleans to prevent conflict
+
 * Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-100
 - 22.01
 

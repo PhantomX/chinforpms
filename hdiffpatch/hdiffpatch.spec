@@ -1,6 +1,6 @@
-%global commit 1efd5dc6238f78e1960997a2d9d7a08390c9ad22
+%global commit 81c34d4f1629dc7df17ebe21d4a269e2b7219c2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220520
+%global date 20220829
 %global with_snapshot 1
 
 %global commit1 51edeb63ec3f456f4950922c5011c326a062fbce
@@ -20,7 +20,7 @@
 
 Name:           hdiffpatch
 Version:        4.2.1
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT

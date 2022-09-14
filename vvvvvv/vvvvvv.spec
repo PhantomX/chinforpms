@@ -18,7 +18,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 tinyxml2
 
-%global commit5 22.07
+%global commit5 22.09.01
 %global srcname5 FAudio
 
 %global gver .%{date}git%{shortcommit}

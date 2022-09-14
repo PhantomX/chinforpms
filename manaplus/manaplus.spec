@@ -1,13 +1,15 @@
 Name:           manaplus
 Version:        2.1.3.17
 Epoch:          1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
 
 License:        GPLv2+
 URL:            http://manaplus.org/
 
 Source0:        http://download.evolonline.org/manaplus/download/%{version}/%{name}-%{version}.tar.xz
+
+Patch10:        0001-fix-build.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -49,7 +51,7 @@ serious effort to create an innovative free and open source MMORPG.
 TMW uses 2D graphics and aims to create a large and diverse interactive world.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
@@ -114,6 +116,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.3.17-103
+- Fix header include
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.3.17-102
 - 2.1.3.17
 

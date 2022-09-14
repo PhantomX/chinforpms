@@ -1,0 +1,41 @@
+From 28b9cbfc7fa1f80f339f9b36b09174a0aad4cbbf Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 13 Sep 2022 12:15:52 -0300
+Subject: [PATCH] fix build
+
+---
+ src/progs/dyecmd/client.cpp | 2 --
+ src/resources/wallpaper.cpp | 2 --
+ 2 files changed, 4 deletions(-)
+
+diff --git a/src/progs/dyecmd/client.cpp b/src/progs/dyecmd/client.cpp
+index 481b8c4..98d6aa0 100644
+--- a/src/progs/dyecmd/client.cpp
++++ b/src/progs/dyecmd/client.cpp
+@@ -88,9 +88,7 @@ PRAGMA48(GCC diagnostic pop)
+ #undef ERROR
+ #endif  // WIN32
+ 
+-#ifdef __clang__
+ #include <ctime>
+-#endif  // __clang__
+ 
+ #ifdef ANDROID
+ #ifndef USE_SDL2
+diff --git a/src/resources/wallpaper.cpp b/src/resources/wallpaper.cpp
+index 5604b9c..d679817 100644
+--- a/src/resources/wallpaper.cpp
++++ b/src/resources/wallpaper.cpp
+@@ -39,9 +39,7 @@
+ #include <sys/time.h>
+ #endif  // WIN32
+ 
+-#ifdef __clang__
+ #include <ctime>
+-#endif  // __clang__
+ 
+ #include "debug.h"
+ 
+-- 
+2.37.3
+

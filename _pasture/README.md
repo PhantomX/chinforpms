@@ -19,8 +19,10 @@ some seasonal packages too, these can return when needed
  * **bzrtp** - Unneeded
  * **compat-libva1** - linux-steam-integration
  * **cowsrevenge** - Do not have interest anymore
+ * **curlew** - Do not have interest anymore
  * **decaf-emu** - needs SSE4.1
  * **dosbox-staging** - Fedora included
+ * **dosbox-x** - Do not have interest anymore
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
  * **dxil-spirv** - Bundled with wine-vkd3d-proton
  * **emojione-picker** - python2
@@ -40,6 +42,7 @@ some seasonal packages too, these can return when needed
  * **hollywood** - Do not have interest anymore
  * **kBuild** - VirtualBox, Fedora included
  * **kepka** - Do not have interest anymore
+ * **kristall** - Do not have interest anymore
  * **ladspa-bs2b-plugins** - Do not have interest anymore
  * **libdca** - For i686 mock build
  * **libmms** - For i686 mock build
@@ -94,6 +97,7 @@ some seasonal packages too, these can return when needed
  * **vo-amrwbenc** - For i686 mock build
  * **waifu2x-converter-cpp** - Fedora included
  * **webp-pixbuf-loader** - Fedora included
+ * **wiibafu** - Do not have interest anymore
  * **wimlib** - Fedora included
  * **wine-d9vk** - wine-dxvk
  * **wine-dxup** - wine-dxvk

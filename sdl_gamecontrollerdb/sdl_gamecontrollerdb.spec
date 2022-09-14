@@ -1,6 +1,6 @@
-%global commit 276225a9eb98d8f745e515ca2339ae1cc8345b14
+%global commit 8b2d1a791c8e5004c736e5137699e8e97ae558c5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220830
+%global date 20220907
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}

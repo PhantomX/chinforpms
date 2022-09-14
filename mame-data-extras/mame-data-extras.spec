@@ -97,6 +97,7 @@ Source263:      %{samplelink}/zektor.zip
 BuildArch: noarch
 
 BuildRequires:  p7zip
+BuildRequires:  p7zip-plugins
 BuildRequires:  unzip
 Requires:       mame-data
 

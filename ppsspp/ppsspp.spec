@@ -331,6 +331,7 @@ popd
 
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DCMAKE_SKIP_RPATH:BOOL=ON \
 %if 0%{?with_egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \

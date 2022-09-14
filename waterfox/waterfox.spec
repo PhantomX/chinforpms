@@ -136,7 +136,7 @@ ExcludeArch: armv7hl
 Summary:        Waterfox %{channel} Web browser
 Name:           waterfox
 Version:        2022.08
-Release:        1%{?branch:.%{branch}}%{?gver}%{?dist}
+Release:        2%{?branch:.%{branch}}%{?gver}%{?dist}
 URL:            https://classic.waterfox.net
 License:        MPLv1.1 or GPLv2+ or LGPLv2+
 
@@ -197,6 +197,11 @@ Patch419:        https://hg.mozilla.org/mozilla-central/raw-rev/4723934741c5#/mo
 # Upstream updates/PRs/Reverts
 
 #Patch???:      %%{vc_url}/commit/commit.patch#/%%{name}-gh-commit.patch
+Patch450:       %{vc_url}/commit/b6078e2036773088a4a5a8883d7058f59d558b4d.patch#/%{name}-gh-b6078e2.patch
+Patch451:       %{vc_url}/commit/990a77e06e9b69110a189cabb531c43023dc251d.patch#/%{name}-gh-990a77e.patch
+Patch452:       %{vc_url}/commit/5703d785ff004b6a724ac592bd233d0398d21eef.patch#/%{name}-gh-5703d78.patch
+Patch453:       %{vc_url}/commit/3949fc4a825ca39c816d240d8912f163c232426d.patch#/%{name}-gh-3949fc4.patch
+Patch454:       %{vc_url}/commit/1f8c26a0ec9a914076654cb91a1bac57b181b37a.patch#/%{name}-gh-1f8c26a.patch
 
 # Debian patches
 Patch500:        mozilla-440908.patch
@@ -333,7 +338,7 @@ BuildRequires:  librsvg2
 BuildRequires:  (rust >= %{rust_build_min_ver} with rust < %{rust_build_min_nover})
 BuildRequires:  (cargo >= %{rust_build_min_ver} with cargo < %{rust_build_min_nover})
 %else
-BuildRequires:  rust
+BuildRequires:  rust >= 1.56
 BuildRequires:  cargo
 %endif
 
@@ -403,6 +408,12 @@ This package contains results of tests executed during build.
 %patch415 -p1 -b .mozilla-1238661
 %endif
 %patch419 -p1 -b .mozilla-1320560
+
+%patch450 -p1 -b .ghb6078e2
+%patch451 -p1 -b .gh990a77e
+%patch452 -p1 -b .gh5703d78
+%patch453 -p1 -b .gh3949fc4
+%patch454 -p1 -b .gh1f8c26a
 
 # Debian extension patch
 %patch500 -p1 -b .440908
@@ -481,6 +492,12 @@ done
 %endif
 
 ln -s media/test dom/test
+
+%if 0%{?system_hunspell}
+# Fix Fedora 37 build
+ln -s ../hunspell/glue/RemoteSpellCheckEngineChild.h \
+  extensions/spellcheck/src/RemoteSpellCheckEngineChild.h
+%endif
 
 cp %{SOURCE26} .
 sed -e 's|_BRANCH_|%{channel}|g' -i distribution.ini
@@ -941,7 +958,9 @@ install -p -c -m 644 LICENSE %{buildroot}/%{mozappdir}
 
 # Use the system hunspell dictionaries
 rm -rf %{buildroot}%{mozappdir}/dictionaries
-ln -s %{_datadir}/myspell %{buildroot}%{mozappdir}/dictionaries
+ln -s \
+  $(realpath -m --relative-to="%{mozappdir}" "%{_datadir}")/myspell \
+  %{buildroot}%{mozappdir}/dictionaries
 
 %if %{run_tests}
 # Add debuginfo for crash-stats.mozilla.com
@@ -1044,6 +1063,11 @@ fi
 #---------------------------------------------------------------------
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.08-2.classic
+- Upstream glibc 2.36 fix
+- Upstream rust fix
+- System spellchecker fix
+
 * Sun Aug 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.08-1.classic
 - 2022.08
 

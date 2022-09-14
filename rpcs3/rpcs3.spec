@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 60fc90bb8e8c04629521094a9c8fb2cad9955829
+%global commit 2807be7080ab71d5c542a2bef7323f9b43f192e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220908
+%global date 20220913
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.24
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -128,9 +128,6 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
-
-Patch0:         %{vc_url}/%{name}/pull/12614.patch#/%{name}-gh-pr12614.patch
-Patch1:         %{vc_url}/%{name}/pull/12628.patch#/%{name}-gh-pr12628.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -333,6 +330,7 @@ popd
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DCMAKE_SKIP_RPATH:BOOL=ON \
 %if %{with clang}
   -DCMAKE_C_COMPILER=%{_bindir}/clang \
   -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \

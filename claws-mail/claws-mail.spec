@@ -24,7 +24,7 @@
 
 Name:           claws-mail
 Version:        4.1.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -37,6 +37,8 @@ Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.
 %else
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
+
+Patch0:        %{vc_url};a=patch;h=1465ce9c0eb6151a3eaeebb10fd4ffa6db3d69db#/%{name}-git-1465ce9.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -733,6 +735,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.0-101.20220406git6848785
+- Perl 5.35.2 fix
+
 * Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.0-100.20220406git6848785
 - 4.1.0 gtk3tree update
 

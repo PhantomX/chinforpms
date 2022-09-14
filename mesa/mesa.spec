@@ -22,7 +22,7 @@
 %global platform_vulkan ,intel
 %endif
 
-%ifarch %{arm} aarch64
+%ifarch aarch64
 %if !0%{?rhel}
 %global with_etnaviv   1
 %global with_lima      1
@@ -37,7 +37,7 @@
 %global platform_vulkan ,broadcom,freedreno
 %endif
 
-%ifnarch %{arm} s390x
+%ifnarch s390x
 %if !0%{?rhel}
 %global with_r300 1
 %global with_r600 1
@@ -64,7 +64,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.1.7
+Version:        22.2.0~rc3
 Release:        100%{?dist}
 
 License:        MIT
@@ -406,6 +406,7 @@ export RANLIB="gcc-ranlib"
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
+  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
@@ -553,9 +554,10 @@ popd
 %{_libdir}/dri/crocus_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
-%ifarch %{arm} aarch64
+%ifarch aarch64
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/imx-drm_dri.so
+%{_libdir}/dri/imx-lcdif_dri.so
 %{_libdir}/dri/kirin_dri.so
 %{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
@@ -649,7 +651,7 @@ popd
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
-%ifarch %{arm} aarch64
+%ifarch aarch64
 %{_libdir}/libvulkan_broadcom.so
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
 %{_libdir}/libvulkan_freedreno.so
@@ -671,6 +673,10 @@ popd
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0~rc3-100
+- 22.2.0-rc3
+- Rawhide sync
+
 * Wed Aug 17 2022 Phantom X <megaphantomx at hotmail dot com> - 22.1.7-100
 - 22.1.7
 

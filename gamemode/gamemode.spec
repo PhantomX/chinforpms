@@ -9,7 +9,7 @@
 
 Name:           gamemode
 Version:        1.7
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
@@ -21,6 +21,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 %endif
+
+Patch0:         %{url}/commit/4934191b1928ef695c3e8af21e75781f8591745f.patch#/%{name}-gh-4934191.patch
 
 BuildRequires:  meson
 BuildRequires:  gcc
@@ -90,6 +92,9 @@ rm -f %{buildroot}%{_libdir}/*.a
 
 
 %changelog
+* Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-101
+- glibc 2.36 fix
+
 * Thu Jul 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-100
 - 1.7
 
