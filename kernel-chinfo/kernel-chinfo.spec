@@ -143,7 +143,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %global distro_build 200
@@ -159,20 +159,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d5593bdf5f6cdbcb86ee0322de5080130864f0e1
+%global pfcommit 7b7f91bf50b6d637ed40c4d05d8a153761127f2a
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash da5b1b0de5cc032aff10b3bf77f28ec6
+%global pfcoprhash 7445a1c703afc160ac6d2b653557364b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -194,19 +194,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-# Apply zen patches? (zen release number to enable, 0 to disable)
-# This is not well tested
-%global zen 0
-%if 0%{?zen}
-# Disable post_factum if zen is requested
-%global post_factum 0
-%endif
-
-%global opensuse_id 0330383fbb5a4dd8daf7eafdea1e816a49f0bed2
-
-%if 0%{?zen}
-%global extra_patch https://github.com/zen-kernel/zen-kernel/releases/download/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}/v%{major_ver}.%{base_sublevel}.%{?stable_update}-zen%{zen}.patch.xz
-%endif
+%global opensuse_id 0312ea1bbfa2eb1a7e76a37593b931761a89cf69
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -903,8 +891,7 @@ Source3001: kernel-local
 Source3011: kernel-local-cpu
 Source3012: kernel-local-cpu-native
 Source3013: kernel-local-pf
-Source3014: kernel-local-zen
-Source3015: kernel-local-cpu-generic
+Source3014: kernel-local-cpu-generic
 
 %if 0%{patchlist_changelog}
 Source3997: Patchlist.changelog
@@ -915,7 +902,7 @@ Source4002: gating.yaml
 
 # Here should be only the patches up to the upstream canonical Linus tree.
 
-%if 0%{?post_factum} || 0%{?zen}
+%if 0%{?post_factum}
 Source5000: %{extra_patch}
 %if 0%{?pf_stable_extra}
 Source5002: %{stable_extra_patch}
@@ -953,11 +940,6 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 %if !%{nopatches}
 
 Patch1: patch-%{kversion}-redhat.patch
-%if 0%{?post_factum}
-# Build fail when LRNG is enabled
-%dnl Patch2: 0001-patch-%{kversion}-revert2017f71.patch
-%dnl Patch3: 0002-patch-%{kversion}-revert0cc8e2f.patch
-%endif
 
 # empty final patch to facilitate testing of kernel patches
 # Patch999999: linux-kernel-test.patch
@@ -975,11 +957,11 @@ Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1016: %{opensuse_url}/vduse-prevent-uninitialized-memory-accesses.patch#/openSUSE-vduse-prevent-uninitialized-memory-accesses.patch
-Patch1017: %{opensuse_url}/snd-hda-intel-iommu-workaround.patch#/openSUSE-snd-hda-intel-iommu-workaround.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: 0001-fix-build-with-pahole-1.24.patch
 
 %global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
@@ -990,26 +972,13 @@ Patch2094: https://cgit.freedesktop.org/drm/drm/patch/?id=5e3f1e7729ec7a99e145e9
 Patch2095: https://cgit.freedesktop.org/drm/drm/patch/?id=6f2c8d5f16594a13295d153245e0bb8166db7ac9#/kernel-git-drm-6f2c8d5.patch
 
 %if !0%{?post_factum}
-
-#Patch3000: postfactum-merge-fixes.patch
-%if !0%{?zen}
-#Patch3001: %%{pf_url}/a6c083c2e4274c7e203c5ef989f568c6d5f945eb.patch#/pf-a6c083c.patch
-%endif
-
-#Patch3500: postfactum-merge-fixes-2.patch
-
-%if !0%{?zen}
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
-%global graysky2_id b9aeee77b2c3e76c1faeca297e4e4a448babaaee
-Source6000: https://github.com/graysky2/kernel_gcc_patch/raw/%{graysky2_id}/enable_additional_cpu_optimizations_for_gcc_v9.1+_kernel_v5.5+.patch
+%global graysky2_id bdef5292bba2493d46386840a8b5a824d534debc
+Source6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-5.17+.patch
 %endif
 
-%endif
-
-%if !0%{?zen}
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
-%endif
 
 # END OF PATCH DEFINITIONS
 
@@ -1592,7 +1561,7 @@ git commit -a -m "Stable update"
 
 git am %{patches}
 
-%if !0%{?post_factum} && !0%{?zen}
+%if !0%{?post_factum}
 $patch_command -i %{SOURCE6000}
 %endif
 
@@ -1642,7 +1611,7 @@ cat %{SOURCE3012} >> kernel-local
 echo 'CONFIG_NR_CPUS=%(nproc --all)' >> kernel-local
 %else
 %if %{with_generic}
-cat %{SOURCE3015} >> kernel-local
+cat %{SOURCE3014} >> kernel-local
 %else
 cat %{SOURCE3011} >> kernel-local
 %endif
@@ -1650,9 +1619,6 @@ cat %{SOURCE3011} >> kernel-local
 
 %if 0%{?post_factum}
 cat %{SOURCE3013} >> kernel-local
-%endif
-%if 0%{?zen}
-cat %{SOURCE3014} >> kernel-local
 %endif
 cp %{SOURCE80} .
 # merge.pl
@@ -3025,6 +2991,9 @@ fi
 #
 #
 %changelog
+* Thu Sep 15 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.9-500.chinfo
+- 5.19.9 - pf5
+
 * Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-500.chinfo
 - 5.19.8 - pf4
 

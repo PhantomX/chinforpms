@@ -14,7 +14,7 @@ citra
 czkawka
 dbeaver-ce
 -desmume
-discord
+-discord
 -dropboxd
 duckstation
 f5cli

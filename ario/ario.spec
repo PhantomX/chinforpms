@@ -1,11 +1,29 @@
+%global snapshot_rev 822
+%global date 20220325
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global sver .%{date}svn%{snapshot_rev}
+%endif
+
 Name:           ario
 Version:        1.6
-Release:        1%{?dist}
+Release:        2%{?sver}%{?dist}
 Summary:        Ario MPD Client
 
 License:        GPLv2+
 URL:            http://ario-player.sourceforge.net/index.php
-Source0:        https://downloads.sourceforge.net/ario-player/%{name}-%{version}.tar.gz
+
+%if 0%{?with_snapshot}
+# To regenerate a snapshot:
+# Use your regular webbrowser to open https://sourceforge.net/p/qmp3gain/code/ci/%%{snapshot_rev}/tarball
+# This triggers the SourceForge instructure to generate a snapshot
+# After that you can pull in the archive with:
+# spectool -g ario.spec
+Source0:        https://sourceforge.net/code-snapshots/svn/a/ar/%{name}-player/code/%{name}-player-code-r%{snapshot_rev}-trunk.zip#/%{name}-r%{snapshot_rev}.zip
+%else
+Source0:        https://downloads.sourceforge.net/%{name}-player/%{name}-%{version}.tar.gz
+%endif
 
 BuildRequires:  pkgconfig(avahi-client)
 BuildRequires:  pkgconfig(avahi-glib)
@@ -20,7 +38,9 @@ BuildRequires:  make
 BuildRequires:  desktop-file-utils
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
-#BuildRequires: autoconf automake libtool
+%if 0%{?with_snapshot}
+BuildRequires: autoconf automake libtool intltool
+%endif
 
 %description
 Ario is a GTK2 client for MPD (Music player daemon). The interface used to 
@@ -29,10 +49,14 @@ and faster.  It runs on Linux and Microsoft Windows
 
 
 %prep
-%autosetup
+%autosetup %{?sver:-n %{name}-player-code-r%{snapshot_rev}-trunk} -p1
 
 sed -i -e 's|<glib/gi18n\.h>|<glib.h>|g' src/ario-profiles.c
 sed -i -e 's|<glib/gslist\.h>|<glib.h>|g' src/ario-profiles.h
+
+sed -e 's|$srcdir/configure|true|g' -i ./autogen.sh
+%{?sver:./autogen.sh}
+
 
 %build
 %configure \
@@ -50,8 +74,14 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %install
 %make_install INSTALL="install -p"
 
-%find_lang ario
+%if 0%{?with_snapshot}
+mv %{buildroot}%{_libdir}/ario/*.so* %{buildroot}%{_libdir}/
+rm -f %{buildroot}%{_libdir}/*.so
+%endif
+
 find %{buildroot} -name '*.la' -delete
+
+%find_lang ario
 
 %check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
@@ -62,6 +92,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 %doc ChangeLog TODO AUTHORS
 %license COPYING
 %{_bindir}/ario
+%if 0%{?with_snapshot}
+%{_libdir}/*.so.*
+%endif
 %{_libdir}/ario
 %{_datadir}/applications/ario.desktop
 %{_datadir}/ario
@@ -69,6 +102,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 
 %changelog
+* Wed Sep 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.6-2.20220325svn822
+- Snapshot
+
 * Thu Dec 17 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.6-1
 - 1.6
 

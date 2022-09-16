@@ -279,6 +279,7 @@ BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: systemd-rpm-macros
+%{?sysusers_requires_compat}
 %if %{with_libxl}
 BuildRequires: xen-devel
 %endif

@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20220801
+# 20220915
 
 set -e
 
@@ -62,7 +62,7 @@ LRNG_COLLECTION_SIZE_8192
 LRNG_CONTINUOUS_COMPRESSION_DISABLED
 LRNG_CPU
 LRNG_DEV_IF
-LRNG_DFLT_DRNG_DRBG
+LRNG_DFLT_DRNG_CHACHA20
 LRNG_DFLT_DRNG_KCAPI
 LRNG_DRNG_SWITCH
 LRNG_IRQ_DFLT_TIMER_ES
@@ -81,6 +81,7 @@ LRNG_SWITCHABLE_CONTINUOUS_COMPRESSION
 LRNG_SWITCH_HASH
 LRNG_SWITCH_DRBG
 LRNG_SWITCH_DRNG
+LRNG_SWITCH_DRNG_CHACHA20
 LRNG_SWITCH_DRNG_KCAPI
 LRNG_TESTING_MENU
 LRU_GEN
@@ -108,47 +109,8 @@ pfy="
 RANDOM_DEFAULT_IMPL
 LRNG_COLLECTION_SIZE_1024
 LRNG_CONTINUOUS_COMPRESSION_ENABLED
-LRNG_DFLT_DRNG_CHACHA20
+LRNG_DFLT_DRNG_DRBG
 SCHED_BMQ
-USER_NS_UNPRIVILEGED
-"
-
-zen="
-CC_OPTIMIZE_HARDER
-RQ_NONE
-RQ_MC
-RQ_SMP
-DEFAULT_BFQ_SQ
-VHBA
-LOGO_ZEN_CLUT224
-LOGO_OLDZEN_CLUT224
-LOGO_ARCH_CLUT224
-LOGO_GENTOO_CLUT224
-LOGO_EXHERBO_CLUT224
-LOGO_SLACKWARE_CLUT224
-LOGO_DEBIAN_CLUT224
-LOGO_FEDORAGLOSSY_CLUT224
-LOGO_TITS_CLUT224
-LOGO_BSD_CLUT224
-LOGO_FBSD_CLUT224
-TP_SMAPI
-"
-
-zenv="
-NR_TTY_DEVICES=63
-"
-
-zeny="
-ZEN_INTERACTIVE
-SCHED_MUQSS
-SMT_NICE
-RQ_SMT
-IOSCHED_BFQ_SQ
-BFQ_SQ_GROUP_IOSCHED
-MQ_IOSCHED_BFQ
-MQ_BFQ_GROUP_IOSCHED
-LOGO_RANDOM
-LOGO_FEDORASIMPLE_CLUT224
 USER_NS_UNPRIVILEGED
 "
 
@@ -177,11 +139,11 @@ del(){
 
 main(){
   del
-  for i in ${default} ${pf} ${zen}
+  for i in ${default} ${pf}
   do
     echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
   done
-  for i in ${pfy} ${zeny}
+  for i in ${pfy}
   do
     echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
   done
@@ -193,7 +155,7 @@ main(){
   do
     echo "CONFIG_${i}=y" > "${DEBUG_DIR}/CONFIG_${i}"
   done
-  for i in ${pfv} ${zenv}
+  for i in ${pfv}
   do
     echo "CONFIG_${i}" > "${OUTPUT_DIR}/CONFIG_${i%%=*}"
   done
@@ -210,18 +172,7 @@ if [ -w "${OUTPUT_DIR}" ] ;then
       zenv=
       main
       ;;
-    zen)
-      pf=
-      pfd=
-      pfm=
-      pfv=
-      pfy=
-      main
-      ;;
     *)
-      zen=
-      zeny=
-      zenv=
       pf=
       pfd=
       pfm=

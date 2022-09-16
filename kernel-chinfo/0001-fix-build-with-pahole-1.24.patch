@@ -1,0 +1,27 @@
+From fb7406c094d8376dbd38e85616b34f8ab91974f7 Mon Sep 17 00:00:00 2001
+From: Fedora Kernel Team <kernel-team@fedoraproject.org>
+Date: Thu, 15 Sep 2022 10:39:17 -0300
+Subject: [PATCH] fix build with pahole 1.24
+
+https://www.spinics.net/lists/dwarves/msg01645.html
+---
+ scripts/pahole-flags.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
+index 0d99ef1..14e9f31 100755
+--- a/scripts/pahole-flags.sh
++++ b/scripts/pahole-flags.sh
+@@ -19,5 +19,9 @@ fi
+ if [ "${pahole_ver}" -ge "122" ]; then
+ 	extra_paholeopt="${extra_paholeopt} -j"
+ fi
++if [ "${pahole_ver}" -ge "124" ]; then
++	# see PAHOLE_HAS_LANG_EXCLUDE
++	extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_enum64"
++fi
+ 
+ echo ${extra_paholeopt}
+-- 
+2.37.3
+

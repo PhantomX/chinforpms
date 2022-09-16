@@ -26,6 +26,8 @@ Source6:        %{name}.firewalld
 ExclusiveArch:  x86_64
 
 BuildRequires:  systemd
+BuildRequires:  systemd-rpm-macros
+%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 %description

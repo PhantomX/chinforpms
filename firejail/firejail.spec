@@ -17,6 +17,7 @@ BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
 Requires:       xdg-dbus-proxy
+%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 

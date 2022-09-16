@@ -11,6 +11,7 @@ Source0:        %{pkgname}-sysusers.conf
 
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
+%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 

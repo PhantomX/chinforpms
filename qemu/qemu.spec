@@ -481,6 +481,9 @@ BuildRequires: fuse3-devel
 BuildRequires: SDL2_image-devel
 %endif
 
+BuildRequires: systemd-rpm-macros
+%{?sysusers_requires_compat}
+
 %if %{user_static}
 BuildRequires: glibc-static glib2-static zlib-static
 %if 0%{?fedora} >= 37

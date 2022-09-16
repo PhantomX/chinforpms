@@ -41,6 +41,7 @@ BuildRequires:  intltool
 BuildRequires:  %{py3_dist libtorrent}
 BuildRequires:  %{py3_dist wheel}
 BuildRequires:  systemd-rpm-macros
+%{?sysusers_requires_compat}
 
 ## add Requires to make into Meta package
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}

@@ -31,6 +31,8 @@ BuildRequires:  perl-interpreter
 BuildRequires:  perl-devel
 BuildRequires:  perl-generators
 BuildRequires:  perl-ExtUtils-Embed
+BuildRequires:  systemd-rpm-macros
+%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 Conflicts:      %{rname}

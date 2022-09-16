@@ -55,7 +55,7 @@ cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
 Name=XInput GUI
 Comment=A simple GUI for Xorg's Xinput tool
 Exec=%{name}
-Icon=image-missing
+Icon=input-keyboard
 Terminal=false
 Type=Application
 Categories=Settings;DesktopSettings;
