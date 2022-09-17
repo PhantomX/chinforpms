@@ -17,10 +17,6 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 60bea052a92cbb4a93b221002fdf04f0da3698e1
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 imgui
-
 %global sanitize 1
 %bcond_with     native
 
@@ -44,7 +40,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3307
+Version:        1.7.3316
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -67,7 +63,6 @@ Source0:        %{name}-clean-%{version}.tar.xz
 %endif
 Source1:        Makefile
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-common-build-as-static.patch
@@ -98,6 +93,7 @@ BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(libchdr)
+BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libsparsehash)
@@ -148,10 +144,9 @@ Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(cpuinfo) = 0~git
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
-Provides:       bundled(imgui) = 0~git%{shortcommit11}
+Provides:       bundled(imgui) = 0~git
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xbyak) = 0~git
@@ -171,7 +166,6 @@ this emulator anyway.
 
 mkdir 3rdparty-temp
 mv 3rdparty/include 3rdparty-temp/
-mv 3rdparty/cpuinfo 3rdparty-temp/
 mv 3rdparty/glad 3rdparty-temp/
 mv 3rdparty/glslang 3rdparty-temp/
 mv 3rdparty/imgui 3rdparty-temp/
@@ -185,7 +179,6 @@ rm -f common/src/Utilities/x86/MemcpyFast.cpp
 rm -rf .git
 
 tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1
-tar -xf %{S:11} -C 3rdparty/imgui/imgui --strip-components 1
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -335,6 +328,10 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Fri Sep 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3316-1
+- 1.7.3316
+- BR: libcpuinfo
+
 * Wed Sep 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3307-1
 - 1.7.3307
 

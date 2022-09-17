@@ -46,6 +46,7 @@ xwit
 ff7tk
 -gstreamer1-plugins-base
 libadwaita
+libcpuinfo
 libdeflate
 libqtadvanceddocking
 -libliftoff

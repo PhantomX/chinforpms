@@ -1,0 +1,32 @@
+From 6ba3a2463e54120486741309a9653e9453037a34 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 16 Sep 2022 16:22:16 -0300
+Subject: [PATCH] Versioned shared lib
+
+---
+ CMakeLists.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1df2814..4952226 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 3.5 FATAL_ERROR)
+ PROJECT(
+     cpuinfo
+     LANGUAGES C CXX
++    VERSION 0.0
+     )
+ 
+ # ---[ Options.
+@@ -221,6 +222,7 @@ IF(CMAKE_SYSTEM_NAME MATCHES "^(Windows|WindowsStore|CYGWIN|MSYS)$")
+   endif()
+ ENDIF()
+ SET_TARGET_PROPERTIES(cpuinfo PROPERTIES PUBLIC_HEADER include/cpuinfo.h)
++SET_TARGET_PROPERTIES(cpuinfo PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}" SOVERSION ${PROJECT_VERSION_MAJOR})
+ TARGET_INCLUDE_DIRECTORIES(cpuinfo BEFORE PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+ TARGET_INCLUDE_DIRECTORIES(cpuinfo BEFORE PRIVATE src)
+ TARGET_INCLUDE_DIRECTORIES(cpuinfo_internals BEFORE PUBLIC include src)
+-- 
+2.37.3
+

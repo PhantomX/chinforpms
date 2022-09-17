@@ -86,6 +86,8 @@ Patch0006: 0004-Revert-nouveau-no-modifier-the-invalid-modifier.patch
 Patch0007: 0005-Revert-nouveau-Use-DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEA.patch
 Patch0008: 0006-Revert-nouveau-Stash-supported-sector-layout-in-scre.patch
 
+Patch0050: https://gitlab.freedesktop.org/Venemo/mesa/-/commit/41066ef1cfcd0e38b292fcc851de23d55af38307.patch#/%{name}-gl-41066ef.patch
+
 
 BuildRequires:  meson >= 0.53
 BuildRequires:  gcc

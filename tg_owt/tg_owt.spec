@@ -1,4 +1,4 @@
-# shared/static conditional, good luck with not supported shared one
+# shared/static conditional, good luck with unsupported shared one
 %bcond_with static
 # Use bundled abseil-cpp
 %bcond_without absl
@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 a5fbc9123e056e611e69acf0ceb4252ddd838adb
+%global commit0 621f3da55331733bf0d1b223786b96b68c03dca1
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220811
+%global date 20220914
 
 %global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -30,7 +30,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        120%{?gver}%{?dist}
+Release:        121%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD

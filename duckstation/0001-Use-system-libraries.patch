@@ -13,7 +13,7 @@ diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
 index 3846d78..e129f80 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,23 +1,134 @@
+@@ -1,24 +1,144 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -139,6 +139,16 @@ index 3846d78..e129f80 100644
 +endif()
 +
  add_subdirectory(googletest)
++
++pkg_search_module(cpuinfo IMPORTED_TARGET libcpuinfo)
++if(cpuinfo_FOUND)
++  message(STATUS "Using the system cpuinfo")
++  add_library(cpuinfo-shared INTERFACE)
++  target_link_libraries(cpuinfo-shared INTERFACE PkgConfig::cpuinfo)
++  add_library(cpuinfo ALIAS cpuinfo-shared)
++else()
+ add_subdirectory(cpuinfo)
++endif()
  
  if(ENABLE_CUBEB)
 -  add_subdirectory(cubeb)

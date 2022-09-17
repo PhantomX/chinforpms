@@ -5,7 +5,7 @@ clog
 *.orig
 *.sign
 kernel-[234].*/
-enable_additional_cpu_optimizations_for_gcc_v*+_kernel_v*+.patch
+/more-uarches-for-kernel-*+.patch
 /agdf-*.patch
 /algodev-*.patch
 /kernel-git-*.patch

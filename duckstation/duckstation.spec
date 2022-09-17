@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 023900dc77228f92f595c99b9f51c8f31799cc1d
+%global commit b3d074a4807bd0fadd7af41555c4f29b1159dcd7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220909
+%global date 20220913
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,6 +20,7 @@
 
 %global vc_url  https://github.com/stenzek/%{name}
 
+%global cpuinfo_ver 0.1.33
 %global glad_ver 0.1.33
 %global imgui_ver 1.88
 %global md5_ver 1.6
@@ -28,7 +29,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        65%{?gver}%{?dist}
+Release:        66%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -71,6 +72,7 @@ BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(fmt) >= 8
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
+BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
@@ -152,7 +154,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
+  cpuinfo cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
   rapidjson tinyxml2 vulkan xxhash zlib zstd
 
 %if 0%{?with_sysvulkan}

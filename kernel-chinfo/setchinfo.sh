@@ -167,9 +167,6 @@ if [ -w "${OUTPUT_DIR}" ] ;then
       del
       ;;
     pf)
-      zen=
-      zeny=
-      zenv=
       main
       ;;
     *)

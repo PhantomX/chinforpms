@@ -14,9 +14,9 @@ index 6226953..44c2d41 100644
 @@ -1,4 +1,4 @@
 -add_library(imgui
 +add_library(imgui STATIC
- 	imgui/imconfig.h
- 	imgui/imgui.cpp
- 	imgui/imgui.h
+ 	include/imconfig.h
+ 	include/imgui.h
+ 	include/imgui_internal.h
 -- 
 2.34.1
 
