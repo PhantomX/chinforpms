@@ -19,8 +19,11 @@
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
+%global kf5ver 5.98.0
+%global kf5majmin %(echo %{kf5ver} | cut -d. -f1-2)
+
 Name:           telegram-desktop
-Version:        4.1.1
+Version:        4.2.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -46,6 +49,8 @@ URL:            https://github.com/telegramdesktop/%{appname}
 ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
+Source10:       http://download.kde.org/stable/frameworks/%{kf5majmin}/kcoreaddons-%{kf5ver}.tar.xz
+Source11:       https://invent.kde.org/frameworks/kcoreaddons/-/merge_requests/258.patch#/%{name}-gh-kcoreaddons-mr258.patch
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
@@ -61,7 +66,6 @@ Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-fix-gsl-header-warnings.patch
-Patch207:       0001-tgcalls-fix-build.patch
 Patch208:       0001-sane-background-and-text-colors.patch
 
 
@@ -121,6 +125,10 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 Requires:       qt6-qtimageformats%{?_isa}
 
+# kcoreaddons-qt6
+BuildRequires:  extra-cmake-modules >= %{kf5majmin}
+BuildRequires:  cmake(Qt6LinguistTools)
+
 %if %{with wayland}
 BuildRequires:  cmake(PlasmaWaylandProtocols) >= 1.6.0
 BuildRequires:  cmake(Qt6Concurrent)
@@ -168,6 +176,7 @@ Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 # Virtual provides for bundled libraries...
 Provides:       bundled(rlottie) = 0~git
 Provides:       bundled(libtgvoip) = 2.4.4
+Provides:       bundled(kf5-kcoreaddons) = %{kf5ver}
 
 
 %description
@@ -187,13 +196,16 @@ business messaging needs.
 # Unpacking Telegram Desktop source archive...
 %autosetup -n %{appname}-%{version}-full -p1
 
+tar -xf %{S:10}
+patch -F%{_default_patch_fuzz} %{_default_patch_flags} -p1 -d kcoreaddons-%{kf5ver} -i %{S:11}
+
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  -i cmake/external/rlottie/CMakeLists.txt
+  -i cmake/external/rlottie/CMakeLists.txt cmake/external/kcoreaddons/CMakeLists.txt
 
 rm -f Telegram/ThirdParty/libtgvoip/json11.*
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -214,14 +226,33 @@ sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
 
 sed \
   -e 's|${third_party_loc}/wayland-protocols/|${WaylandProtocols_DATADIR}/|g' \
-  -i Telegram/lib_ui/CMakeLists.txt Telegram/lib_waylandshells/waylandshells/xdg-shell/CMakeLists.txt \
+  -i Telegram/lib_ui/CMakeLists.txt \
   Telegram/lib_base/CMakeLists.txt Telegram/CMakeLists.txt
 
 sed \
   -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
   -i Telegram/CMakeLists.txt
 
+sed \
+  -e 's|find_library(DESKTOP_APP_KCOREADDONS_LIBRARIES.*|set(DESKTOP_APP_KCOREADDONS_LIBRARIES ${CMAKE_SOURCE_DIR}/kcoreaddons-build%{_libdir}/libKF5CoreAddons.a)|g' \
+  -e 's|/usr/local/include/KF${QT_VERSION_MAJOR}/KCoreAddons|${CMAKE_SOURCE_DIR}/kcoreaddons-build%{_includedir}/KF${QT_VERSION_MAJOR}/KCoreAddons|g' \
+  -i cmake/external/kcoreaddons/CMakeLists.txt
+
+
 %build
+pushd kcoreaddons-%{kf5ver}
+%cmake \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE:STRING="Release" \
+    -DBUILD_SHARED_LIBS:BOOL=OFF \
+    -DBUILD_TESTING:BOOL=OFF \
+    -DBUILD_WITH_QT6:BOOL=ON \
+    -DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.78.0 \
+%{nil}
+%cmake_build
+DESTDIR="../kcoreaddons-build" %__cmake --install "%{_vpath_builddir}"
+popd
+
 # Building Telegram Desktop using cmake...
 %cmake \
     -G Ninja \
@@ -288,6 +319,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-100
+- 4.2.0
+
 * Fri Aug 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-100
 - 4.1.1
 

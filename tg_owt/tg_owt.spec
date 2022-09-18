@@ -30,7 +30,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        121%{?gver}%{?dist}
+Release:        122%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -305,6 +305,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0-122.20220914git621f3da
+- Rebuild (abseil-cpp)
+
 * Fri May 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-119.20220508git10d5f4b
 - Last snapshot
 

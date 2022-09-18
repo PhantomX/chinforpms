@@ -1,5 +1,7 @@
 # Disable this. Local lto flags in use.
 %global _lto_cflags %{nil}
+# Breaks some games
+%global with_lto 0
 
 %ifnarch s390x
 %global with_hardware 1
@@ -54,7 +56,14 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global with_lto 0
+%global commit b47e856216e046b7e6571b2102df3fbc8600f353
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220916
+%global with_snapshot 1
+
+%if 0%{?with_snapshot}
+%global gver .%{date}git%{shortcommit}
+%endif
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
 %global ixit_url  https://github.com/iXit/Mesa-3D/commit
@@ -65,12 +74,17 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0~rc3
-Release:        100%{?dist}
+Release:        101%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
 
+%if 0%{?with_snapshot}
+Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+%else
 Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
+%endif
+
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
@@ -365,7 +379,7 @@ an overlay.
 
 
 %prep
-%autosetup -n %{name}-%{ver} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
 cp %{SOURCE1} docs/
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
@@ -675,6 +689,9 @@ popd
 
 
 %changelog
+* Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0~rc3-101.20220916gitb47e856
+- Staging snapshot
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0~rc3-100
 - 22.2.0-rc3
 - Rawhide sync
