@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,7 +170,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7b7f91bf50b6d637ed40c4d05d8a153761127f2a
+%global pfcommit 8209407dc4728e218270fcede1839127e3f89307
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
 %global pfcoprhash 7445a1c703afc160ac6d2b653557364b
 %if "%{pfcommit}" == "0"
@@ -961,7 +961,6 @@ Patch1016: %{opensuse_url}/vduse-prevent-uninitialized-memory-accesses.patch#/op
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: 0001-fix-build-with-pahole-1.24.patch
 
 %global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
@@ -2991,6 +2990,9 @@ fi
 #
 #
 %changelog
+* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.10-500.chinfo
+- 5.19.10 - pf5
+
 * Thu Sep 15 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.9-500.chinfo
 - 5.19.9 - pf5
 

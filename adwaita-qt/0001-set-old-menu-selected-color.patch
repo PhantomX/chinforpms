@@ -66,7 +66,7 @@ index 8eb7dcb..b5b24cd 100644
          if (tabPosition >= 0) {
 @@ -5171,13 +5174,13 @@ bool Style::drawMenuItemControl(const QStyleOption *option, QPainter *painter, c
              QPalette copy(palette);
-             copy.setColor(QPalette::Active, QPalette::WindowText, Colors::transparentize(copy.color(QPalette::Active, QPalette::WindowText), 0.55));
+             copy.setColor(QPalette::Active, QPalette::WindowText, acceleratorColor);
              copy.setColor(QPalette::Active, QPalette::HighlightedText, Colors::transparentize(copy.color(QPalette::Active, QPalette::HighlightedText), 0.55));
 -            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, QPalette::WindowText);
 +            drawItemText(painter, textRect, textFlags, copy, enabled, accelerator, role);

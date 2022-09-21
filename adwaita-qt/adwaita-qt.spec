@@ -1,7 +1,7 @@
 %global commit 417df19a76bda852f17b28d33ae3c23f1da9e5d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220713
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.4.2
-Release:        0.2%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 
 License:        LGPLv2+
 Summary:        Adwaita theme for Qt-based applications
@@ -161,6 +161,9 @@ popd
 
 
 %changelog
+* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.2-1
+- 1.4.2
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.2-0.2.20220713git417df19
 - Bump
 

@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.34
+%global classic_ver 3.24.34-2
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -231,8 +231,6 @@ patch_command appearance__smaller-statusbar.patch
 patch_command csd__clean-headerbar.patch
 patch_command csd__disabled-by-default.patch
 patch_command csd__server-side-shadow.patch
-# Crashes with glib2 >= 2.73
-#patch_command fixes__atk-bridge-errors.patch
 patch_command fixes__labels-wrapping.patch
 patch_command other__mnemonics-delay.patch
 patch_command other__remove_dead_keys_underline.patch

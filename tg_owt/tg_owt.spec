@@ -30,7 +30,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        122%{?gver}%{?dist}
+Release:        123%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -67,21 +67,11 @@ BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gio-unix-2.0)
-BuildRequires:  pkgconfig(libavcodec)
-BuildRequires:  pkgconfig(libavformat)
-BuildRequires:  pkgconfig(libavutil)
-BuildRequires:  pkgconfig(libswresample)
-BuildRequires:  pkgconfig(libswscale)
-%if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  ffmpeg-devel
-%endif
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(libswscale)
 #BuildRequires:  pkgconfig(openh264)
-BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
@@ -99,6 +89,27 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
+
+# Fedora now has a stripped ffmpeg. Make sure we're using the full version.
+# Telegram Desktop has major issues when built against ffmpeg 5.x:
+# https://bugzilla.rpmfusion.org/show_bug.cgi?id=6273
+# Upstream refuses to fix this issue:
+# https://github.com/telegramdesktop/tdesktop/issues/24855
+# https://github.com/telegramdesktop/tdesktop/issues/23899
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  compat-ffmpeg4-devel
+%else
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  pkgconfig(libswscale)
+%endif
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  openssl1.1-devel
+%else
+BuildRequires:  pkgconfig(openssl)
+%endif
 
 # dlopen
 Requires:       libdrm%{?_isa}
@@ -141,18 +152,11 @@ Requires:       pkgconfig(gio-2.0)
 Requires:       pkgconfig(glib-2.0)
 Requires:       pkgconfig(gobject-2.0)
 Requires:       pkgconfig(gio-unix-2.0)
-Requires:       pkgconfig(libavcodec)
-Requires:       pkgconfig(libavformat)
-Requires:       pkgconfig(libavutil)
-Requires:       pkgconfig(libswresample)
-Requires:       pkgconfig(libswscale)
 Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
 Requires:       pkgconfig(libpulse)
-Requires:       pkgconfig(libswscale)
 #Requires:       pkgconfig(openh264)
-Requires:       pkgconfig(openssl)
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
 Requires:       pkgconfig(vpx) >= 1.10.0
@@ -164,6 +168,20 @@ Requires:       pkgconfig(xfixes)
 Requires:       pkgconfig(xrender)
 Requires:       pkgconfig(xrandr)
 Requires:       pkgconfig(xtst)
+%if 0%{?fedora} && 0%{?fedora} >= 36
+Requires:       compat-ffmpeg4-devel
+%else
+Requires:       pkgconfig(libavcodec)
+Requires:       pkgconfig(libavformat)
+Requires:       pkgconfig(libavutil)
+Requires:       pkgconfig(libswresample)
+Requires:       pkgconfig(libswscale)
+%endif
+%if 0%{?fedora} && 0%{?fedora} >= 36
+Requires:       openssl1.1-devel
+%else
+BuildRequires:  pkgconfig(openssl)
+%endif
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if !%{with absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
@@ -305,6 +323,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Mon Sep 19 2022 Phantom X <megaphantomx at hotmail dot com> - 0-123.20220914git621f3da
+- RPMFusion sync
+
 * Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0-122.20220914git621f3da
 - Rebuild (abseil-cpp)
 

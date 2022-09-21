@@ -13,6 +13,8 @@
 %global da_url https://github.com/desktop-app
 
 # Enable or disable build with support...
+# https://github.com/telegramdesktop/tdesktop/issues/23899
+%bcond_without bundled_fonts
 %bcond_without wayland
 %bcond_without x11
 
@@ -24,26 +26,20 @@
 
 Name:           telegram-desktop
 Version:        4.2.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
 
+# Application and 3rd-party modules licensing:
 # * Telegram Desktop - GPLv3+ with OpenSSL exception -- main tarball;
+# * abseil-cpp - ASL 2.0
+# * tg_owt - BSD and ASL 2.0 -- static dependency or not;
 # * rlottie - LGPLv2+ -- static dependency;
-# * qt_functions.cpp - LGPLv3 -- build-time dependency.
-
-# tg_owt - BSD
-# abseil-cpp - ASL 2.0
-# libsrtp - BSD
-# libwebm - BSD
-# libyuv - BSD
-# openh264 - BSD
-# pffft - BSD
-# rnnoise - BSD
-# usrsctp - BSD
-
-License:        GPLv3+ and LGPLv2+ and LGPLv3 and BSD
+# * qt_functions.cpp - LGPLv3 -- build-time dependency;
+# * open-sans-fonts  - ASL 2.0 -- bundled font;
+# * vazirmatn-fonts - OFL -- bundled font.
+License:        GPLv3+ and BSD and ASL 2.0 and LGPLv2+ and LGPLv3 and OFL
 URL:            https://github.com/telegramdesktop/%{appname}
 
 ExclusiveArch:  x86_64 aarch64
@@ -83,18 +79,10 @@ BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(json11)
-BuildRequires:  pkgconfig(libavcodec)
-BuildRequires:  pkgconfig(libavformat)
-BuildRequires:  pkgconfig(libavutil)
-BuildRequires:  pkgconfig(libswresample)
-BuildRequires:  pkgconfig(libswscale)
-BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
-BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sigc++-2.0)
 BuildRequires:  pkgconfig(rnnoise)
@@ -145,11 +133,6 @@ BuildRequires:  pkgconfig(xcb-record)
 BuildRequires:  pkgconfig(xcb-screensaver)
 %endif
 
-# Fedora now has a stripped ffmpeg. Make sure we're using the full version.
-%if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  ffmpeg-devel
-%endif
-
 BuildRequires:  cmake(absl) >= 20211102
 BuildRequires:  cmake(tg_owt)
 BuildRequires:  pkgconfig(libjpeg)
@@ -157,12 +140,50 @@ BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
 Requires:       hicolor-icon-theme
-Requires:       open-sans-fonts
 Recommends:     libdrm%{?_isa}
 Recommends:     mesa-libgbm%{?_isa}
 Recommends:     mesa-libEGL%{?_isa}
 Recommends:     mesa-libGL%{?_isa}
-Recommends:     webkit2gtk3%{?_isa}
+
+%if %{with bundled_fonts}
+Provides:       bundled(open-sans-fonts) = 1.10
+Provides:       bundled(vazirmatn-fonts) = 27.2.2
+%else
+Requires:       open-sans-fonts
+Requires:       vazirmatn-fonts
+%endif
+
+%if 0%{?fedora} && 0%{?fedora} >= 37
+BuildRequires:  pkgconfig(webkit2gtk-5.0)
+Requires:       webkit2gtk5.0%{?_isa}
+%else
+BuildRequires:  pkgconfig(webkit2gtk-4.0)
+Requires:       webkit2gtk3%{?_isa}
+%endif
+
+# Telegram Desktop has major issues when built against ffmpeg 5.x:
+# https://bugzilla.rpmfusion.org/show_bug.cgi?id=6273
+# Upstream refuses to fix this issue:
+# https://github.com/telegramdesktop/tdesktop/issues/24855
+# https://github.com/telegramdesktop/tdesktop/issues/23899
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  compat-ffmpeg4-devel
+%else
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  pkgconfig(libswscale)
+%endif
+
+# Video calls doesn't work when built against openssl 3.0:
+# https://github.com/telegramdesktop/tdesktop/issues/24698
+%if 0%{?fedora} && 0%{?fedora} >= 36
+BuildRequires:  openssl1.1-devel
+%else
+BuildRequires:  pkgconfig(libcrypto)
+BuildRequires:  pkgconfig(openssl)
+%endif
 
 # Telegram Desktop can use native open/save dialogs with XDG portals.
 Recommends:     xdg-desktop-portal%{?_isa}
@@ -263,7 +284,11 @@ popd
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+%if %{with bundled_fonts}
+    -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
+%else
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
+%endif
     -DDESKTOP_APP_QT6:BOOL=ON \
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
@@ -319,6 +344,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Mon Sep 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-101
+- RPMFusion sync
+
 * Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-100
 - 4.2.0
 

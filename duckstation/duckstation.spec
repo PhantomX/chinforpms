@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit b3d074a4807bd0fadd7af41555c4f29b1159dcd7
+%global commit 3dcd90188536b94badfbaed40e87bebeb1d2664e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220913
+%global date 20220918
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,7 +20,6 @@
 
 %global vc_url  https://github.com/stenzek/%{name}
 
-%global cpuinfo_ver 0.1.33
 %global glad_ver 0.1.33
 %global imgui_ver 1.88
 %global md5_ver 1.6
@@ -29,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        66%{?gver}%{?dist}
+Release:        67%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -50,6 +49,7 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
+Patch7:         0001-format-security.patch
 
 
 ExclusiveArch:  x86_64 armv7l aarch64

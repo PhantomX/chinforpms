@@ -59,7 +59,7 @@
 %global commit b47e856216e046b7e6571b2102df3fbc8600f353
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220916
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -73,8 +73,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.0~rc3
-Release:        101%{?gver}%{?dist}
+Version:        22.2.0
+Release:        100%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -689,6 +689,9 @@ popd
 
 
 %changelog
+* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-100
+- 22.2.0
+
 * Sat Sep 17 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0~rc3-101.20220916gitb47e856
 - Staging snapshot
 
