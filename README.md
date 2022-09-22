@@ -25,6 +25,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **deluge** - Updated, no GConf support
  * **devedeng** - Boolean dependencies for video players and disc burners
  * **easytag** - Tests
+ * **eiciel-gtk3** - GTK3 eiciel without nautilus plugin
  * **engrampa** - Split caja extension
  * **FAudio** - Tests
  * **fdk-aac** - For i686 mock build

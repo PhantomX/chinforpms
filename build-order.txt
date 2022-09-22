@@ -113,6 +113,7 @@ disk-indicator
 -dosbox-staging
 -dosbox-x
 easytag
+eiciel-gtk3
 -emojione-picker
 FAudio
 -FAudio-noreverb

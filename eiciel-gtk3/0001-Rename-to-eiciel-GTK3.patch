@@ -1,0 +1,337 @@
+From 0d13c46a19e3ae2afa3123ca072dd68fbe2e26fe Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 21 Sep 2022 15:48:47 -0300
+Subject: [PATCH] Rename to eiciel-GTK3
+
+---
+ img/install_icons.sh                    |  4 +--
+ man/eiciel.1                            | 14 +++-----
+ meson.build                             | 47 +++++++------------------
+ meson_options.txt                       |  4 ---
+ src/eiciel.desktop.in                   |  6 ++--
+ src/eiciel_container.cpp                |  8 ++---
+ src/eiciel_standalone.cpp               | 10 +++---
+ src/org.roger-ferrer.Eiciel.appdata.xml | 15 ++++----
+ 8 files changed, 40 insertions(+), 68 deletions(-)
+
+diff --git a/img/install_icons.sh b/img/install_icons.sh
+index 21cb580..b7ba986 100644
+--- a/img/install_icons.sh
++++ b/img/install_icons.sh
+@@ -5,6 +5,6 @@ hicolor_iconsdir="$2"
+ 
+ for icon_size in 16 24 32 48 64 96;
+ do
+-    ${INSTALL_DATA} -D "${MESON_SOURCE_ROOT}/img/icon_eiciel_${icon_size}.png" "${MESON_INSTALL_DESTDIR_PREFIX}/${hicolor_iconsdir}/${icon_size}x${icon_size}/apps/eiciel.png";
++    ${INSTALL_DATA} -D "${MESON_SOURCE_ROOT}/img/icon_eiciel_${icon_size}.png" "${MESON_INSTALL_DESTDIR_PREFIX}/${hicolor_iconsdir}/${icon_size}x${icon_size}/apps/eiciel-gtk3.png";
+ done
+-${INSTALL_DATA} -D "${MESON_SOURCE_ROOT}/img/icon_eiciel.svg" "${MESON_INSTALL_DESTDIR_PREFIX}/${hicolor_iconsdir}/scalable/apps/eiciel.svg"
++${INSTALL_DATA} -D "${MESON_SOURCE_ROOT}/img/icon_eiciel.svg" "${MESON_INSTALL_DESTDIR_PREFIX}/${hicolor_iconsdir}/scalable/apps/eiciel-gtk3.svg"
+diff --git a/man/eiciel.1 b/man/eiciel.1
+index 785d656..aef92d3 100644
+--- a/man/eiciel.1
++++ b/man/eiciel.1
+@@ -1,19 +1,15 @@
+ .\" Process this file with
+ .\" groff -man -Tascii foo.1
+ .\"
+-.TH EICIEL 1
++.TH EICIEL-GTK3 1
+ .SH NAME
+-eiciel \- GNOME ACL file permissions editor
++eiciel-gtk3 \- GNOME ACL file permissions editor
+ .SH SYNOPSIS
+-.B eiciel
++.B eiciel-gtk3
+ .SH DESCRIPTION
+-.B eiciel
+-is a graphical editor of file ACLs for the GNOME environment. In order to do something useful with it, you will need ACL support in your system and in your filesystems.
++.B eiciel-gtk3
++is a graphical editor of file ACLs for the GNOME environment.
+ 
+-Currently only Linux 2.6 (or a patched 2.4, see below) and FreeBSD 5.x are supported.  Maybe in the future other systems may be supported as well.
+-
+-.B eiciel
+-also adds a page in the Nautilus file properties dialog that you can reach by right-clicking over a file.
+ .SH BUGS
+ Don't doubt to report bugs to the author :)
+ .SH AUTHOR
+diff --git a/meson.build b/meson.build
+index 786b6e6..20898b3 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1,11 +1,11 @@
+ # Eiciel
+-project('eiciel', 'cpp',
++project('eiciel-gtk3', 'cpp',
+   version : '0.9.13.1',
+   meson_version : '>=0.54',
+   license: 'GPL2+',
+   default_options: ['cpp_std=c++11'])
+ 
+-package_name = 'eiciel'
++package_name = 'eiciel-gtk3'
+ email = 'rofirrim@gmail.com'
+ 
+ conf_data = configuration_data()
+@@ -20,15 +20,13 @@ conf_data.set_quoted('PKGDATADIR', pkgdatadir)
+ # This ignores translations but otherwise it seems impossible to tell
+ # yelp where to find the help, specially if installed in a nonstandard
+ # location.
+-eicieldocdir = get_option('datadir') / 'gnome' / 'help' / 'eiciel' / 'C'
++eicieldocdir = get_option('datadir') / 'gnome' / 'help' / 'eiciel-gtk3' / 'C'
+ abs_eicieldocdir =  get_option('prefix') / eicieldocdir
+ conf_data.set_quoted('EICIELDOCDIR', abs_eicieldocdir)
+ 
+ # Dependencies
+ gtkmm3 = dependency('gtkmm-3.0', version: '>= 3.0.0')
+ giomm = dependency('giomm-2.4', version: '>= 2.50.0')
+-libnautilus_extensions3 = dependency('libnautilus-extension',
+-                                     version: '>= 3.0.0')
+ thread_dep = dependency('threads')
+ 
+ # Compiler
+@@ -41,6 +39,9 @@ conf_data.set('HAVE_SYS_ACL_H', has_sys_acl_h)
+ has_acl_libacl_h = compiler.has_header('acl/libacl.h')
+ conf_data.set('HAVE_ACL_LIBACL_H', has_acl_libacl_h)
+ 
++has_sys_xattr_h = compiler.has_header('sys/xattr.h')
++conf_data.set('HAVE_SYS_XATTR_H', has_sys_xattr_h)
++
+ has_xattr_h = compiler.has_header('attr/xattr.h')
+ conf_data.set('HAVE_ATTR_XATTR_H', has_xattr_h)
+ 
+@@ -57,10 +58,6 @@ has_acl_get_perm_np = compiler.has_function('acl_get_perm_np',
+                                             dependencies: libacl)
+ conf_data.set('HAVE_ACL_GET_PERM_NP', has_acl_get_perm_np)
+ 
+-has_nautilus_extension_h = compiler.has_header('nautilus/nautilus-extension.h',
+-         dependencies: [libnautilus_extensions3, gtkmm3])
+-conf_data.set('HAVE_NAUTILUS_NAUTILUS_EXTENSION_H', has_nautilus_extension_h)
+-
+ # Internationalization
+ i18n = import('i18n')
+ subdir('po')
+@@ -125,36 +122,17 @@ standalone_sources += [
+   'src/eiciel_container.cpp'
+ ]
+ 
+-executable('eiciel',
++executable('eiciel-gtk3',
+   standalone_sources,
+   install : true,
+-  dependencies : [gtkmm3, giomm, libnautilus_extensions3, libacl, thread_dep])
+-
+-
+-# Plugin for nautilus
+-plugin_sources = common_sources
+-plugin_sources += ['src/eiciel_nautilus_page.hpp',
+-                   'src/eiciel_nautilus_page.cpp']
+-
+-nautilusextensiondir = get_option('nautilus-extension-dir')
+-if nautilusextensiondir == ''
+-  r = run_command(pkg_config.path(), '--variable=extensiondir',
+-                  'libnautilus-extension')
+-  nautilusextensiondir = r.stdout().strip()
+-endif
+-
+-shared_module('eiciel-nautilus',
+-  plugin_sources,
+-  install : true,
+-  install_dir : nautilusextensiondir,
+-  dependencies : [gtkmm3, giomm, libnautilus_extensions3, libacl, thread_dep])
++  dependencies : [gtkmm3, giomm, libacl, thread_dep])
+ 
+ # Desktop file
+ desktop_file_data = configuration_data()
+ desktop_file_data.set('DSK_VERSION', '1.1')
+ desktop_file_data.set('DSK_bindir', get_option('prefix') / get_option('bindir'))
+ desktop_file_data.set('DSK_pkgdatadir', pkgdatadir)
+-desktop_file = configure_file(output: 'org.roger-ferrer.Eiciel.desktop',
++desktop_file = configure_file(output: 'org.roger_ferrer.Eiciel_GTK3.desktop',
+         input: 'src/eiciel.desktop.in',
+         configuration: desktop_file_data)
+ 
+@@ -164,7 +142,7 @@ install_data(desktop_file,
+ 
+ # Appdata
+ appdatadir = get_option('datadir') / 'metainfo'
+-install_data('src/org.roger-ferrer.Eiciel.appdata.xml',
++install_data('src/org.roger_ferrer.Eiciel_GTK3.appdata.xml',
+              install_dir : appdatadir)
+ 
+ # Images
+@@ -190,7 +168,7 @@ meson.add_install_script('img/install_icons.sh',
+         install_program.path(),
+         hicolor_iconsdir)
+ 
+-install_man('man/eiciel.1')
++install_man('man/eiciel-gtk3.1')
+ 
+ # Documents
+ install_data(
+@@ -207,7 +185,7 @@ install_data(
+   'doc/C/xattr.page',
+   install_dir : eicieldocdir)
+ 
+-eicieldocfiguresdir = get_option('datadir') / 'gnome' / 'help' / 'eiciel' / 'C' / 'figures'
++eicieldocfiguresdir = get_option('datadir') / 'gnome' / 'help' / 'eiciel-gtk3' / 'C' / 'figures'
+ 
+ install_data(
+   'doc/C/figures/acl_entry.png',
+@@ -234,7 +212,6 @@ install_data(
+ summary(
+   {
+     'bindir': get_option('prefix') / get_option('bindir'),
+-    'nautilus-extension-dir': nautilusextensiondir
+   },
+   section: 'Directories')
+ 
+diff --git a/meson_options.txt b/meson_options.txt
+index c32b6b9..b565ad9 100644
+--- a/meson_options.txt
++++ b/meson_options.txt
+@@ -2,7 +2,3 @@ option('user-attributes',
+     type : 'feature',
+     value : 'enabled',
+     description : 'Enables support for editing extended user attributes')
+-option('nautilus-extension-dir',
+-    type: 'string',
+-    value : '',
+-    description: 'Override nautilus extension installation directory, otherwise it will be auto-detected')
+diff --git a/src/eiciel.desktop.in b/src/eiciel.desktop.in
+index 3cb669b..3723c6f 100644
+--- a/src/eiciel.desktop.in
++++ b/src/eiciel.desktop.in
+@@ -1,13 +1,13 @@
+ [Desktop Entry]
+-Name=Eiciel
++Name=Eiciel-GTK3
+ GenericName=Access control list editor
+ GenericName[ca]=Editor de llistes de control d'accés
+ GenericName[es]=Editor de listas de control de acceso
+ Comment=View or change ACL and User Extended Attributes on files and directories
+ Comment[ca]=Visualitza o canvia la llista de control d'accés i els atributs d'usuari en fitxers i directoris
+ Comment[es]=Visualiza o cambia la lista de control de acceso y los atributos de usuario en ficheros y directorios
+-Exec=@DSK_bindir@/eiciel
+-Icon=eiciel
++Exec=eiciel-gtk3
++Icon=eiciel-gtk3
+ Terminal=false
+ Type=Application
+ Categories=GTK;GNOME;System;FileTools;
+diff --git a/src/eiciel_container.cpp b/src/eiciel_container.cpp
+index 18f9889..c351301 100644
+--- a/src/eiciel_container.cpp
++++ b/src/eiciel_container.cpp
+@@ -29,10 +29,10 @@ EicielContainer::EicielContainer()
+     , _help(Gtk::Stock::HELP)
+     , _about(_("About..."))
+ {
+-    set_title("Eiciel");
++    set_title("Eiciel-GTK3");
+     set_border_width(4);
+ 
+-    set_default_icon_name("eiciel");
++    set_default_icon_name("eiciel-gtk3");
+ 
+     add(_main_container);
+ 
+@@ -88,7 +88,7 @@ void EicielContainer::show_help()
+     GError* error = NULL;
+ 
+ #ifdef USING_GNOME2
+-    gnome_help_display("eiciel", NULL, &error);
++    gnome_help_display("eiciel-gtk3", NULL, &error);
+ #else
+     gtk_show_uri_on_window(this->gobj(), "ghelp:" EICIELDOCDIR, GDK_CURRENT_TIME,
+         &error);
+@@ -180,7 +180,7 @@ EicielAboutBox::EicielAboutBox(Gtk::Window& parent)
+     : Gtk::Dialog(_("About..."), parent, true)
+     ,
+ #endif
+-    _title("<span size=\"xx-large\"><b>Eiciel " PACKAGE_VERSION
++    _title("<span size=\"xx-large\"><b>Eiciel-GTK3 " PACKAGE_VERSION
+            "</b></span>")
+     , _author("<small>Copyright © 2004-2020 Roger Ferrer Ibáñez</small>")
+ {
+diff --git a/src/eiciel_standalone.cpp b/src/eiciel_standalone.cpp
+index 883cc66..642f548 100644
+--- a/src/eiciel_standalone.cpp
++++ b/src/eiciel_standalone.cpp
+@@ -27,16 +27,16 @@ int main(int argc, char* argv[])
+ {
+ #ifdef ENABLE_NLS
+     setlocale(LC_ALL, "");
+-    bindtextdomain("eiciel", DATADIR "/locale");
+-    textdomain("eiciel");
++    bindtextdomain("eiciel-gtk3", DATADIR "/locale");
++    textdomain("eiciel-gtk3");
+ 
+     // We want translations in UTF-8
+-    bind_textdomain_codeset("eiciel", "UTF-8");
++    bind_textdomain_codeset("eiciel-gtk3", "UTF-8");
+ #endif
+ #ifdef USING_GNOME2
+     GnomeProgram* my_app;
+     my_app = gnome_program_init(PACKAGE, VERSION, LIBGNOME_MODULE, argc, argv,
+-        GNOME_PARAM_HUMAN_READABLE_NAME, "Eiciel",
++        GNOME_PARAM_HUMAN_READABLE_NAME, "Eiciel-GTK3",
+         GNOME_PARAM_APP_DATADIR, DATADIR, NULL);
+ #else
+     bool version_called = false;
+@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
+     version_entry.set_short_name('v');
+     version_entry.set_description(_("Print version information"));
+ 
+-    Glib::OptionGroup main_group("Eiciel", _("Access control list editor"));
++    Glib::OptionGroup main_group("Eiciel-GTK3", _("Access control list editor"));
+     main_group.add_entry(version_entry, version_called);
+     Glib::OptionGroup gtk_group(gtk_get_option_group(TRUE));
+ 
+diff --git a/src/org.roger-ferrer.Eiciel.appdata.xml b/src/org.roger-ferrer.Eiciel.appdata.xml
+index 7814f5e..c506a98 100644
+--- a/src/org.roger-ferrer.Eiciel.appdata.xml
++++ b/src/org.roger-ferrer.Eiciel.appdata.xml
+@@ -1,29 +1,32 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <!-- Copyright 2018 Roger Ferrer <rofirrim@gmail.com> -->
+ <component type="desktop-application">
+-    <id>org.roger-ferrer.Eiciel</id>
++    <id>org.roger-ferrer.Eiciel_GTK3</id>
+     <metadata_license>CC0-1.0</metadata_license>
+     <project_license>GPL-2.0+</project_license>
+-    <name>Eiciel</name>
++    <name>Eiciel-GTK3</name>
+     <summary>Tool to manipulate ACL entries</summary>
+     <description>
+         <p>
+-            Eiciel is a standalone tool and a Nautilus plugin to graphically
++            Eiciel-GTK3 is a standalone tool to graphically
+             edit Access Control Lists (ACL) of your files. ACLs allow to set
+             more fine-grained permissions than the traditional Unix permissions
+             of user, group, other (UGO permissions).
+         </p>
+         <p>
+-            Eiciel also allows to edit the extended attributes of files and
++            Eiciel-GTK3 also allows to edit the extended attributes of files and
+             directories if the filesystem supports it.
+         </p>
+         <p>
+             Not all filesystems support ACLs and extended attributes. And even for
+             those supporting them, they must be enabled (by the system administrator)
+-            before using Eiciel.
++            before using Eiciel-GTK3.
++        </p>
++        <p>
++            This is the GTK3 release, without Nautilus plugin support.
+         </p>
+     </description>
+-    <launchable type="desktop-id">org.roger-ferrer.Eiciel.desktop</launchable>
++    <launchable type="desktop-id">org.roger_ferrer.Eiciel_GTK3.desktop</launchable>
+  <screenshots>
+   <screenshot type="default" width="1168" height="657">http://rofi.roger-ferrer.org/eiciel/gfx/shots/screenshot-appdata.png</screenshot>
+  </screenshots>
+-- 
+2.37.3
+

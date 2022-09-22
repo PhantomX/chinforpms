@@ -53,6 +53,9 @@
 %bcond_with valgrind
 %endif
 
+# Enable patent encumbered video codecs
+%global with_videocodecs 0
+
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
@@ -74,7 +77,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -422,7 +425,9 @@ export RANLIB="gcc-ranlib"
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
+%if 0%{?with_videocodecs}
   -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+%endif
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
@@ -689,6 +694,9 @@ popd
 
 
 %changelog
+* Wed Sep 21 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-101
+- Disable video codecs
+
 * Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-100
 - 22.2.0
 

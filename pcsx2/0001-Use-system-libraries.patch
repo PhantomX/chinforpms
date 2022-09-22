@@ -1,16 +1,16 @@
-From e275cbb2d79007761976c7e2ee2a01a57c59b1f6 Mon Sep 17 00:00:00 2001
+From 913169853b9e803f125d5771424c21c302ab6d4d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 39 +++++++++++++++++++++++++++-----------
+ cmake/SearchForStuff.cmake | 38 ++++++++++++++++++++++++++------------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
- 3 files changed, 30 insertions(+), 13 deletions(-)
+ 3 files changed, 28 insertions(+), 14 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index d44ec3c..507100a 100644
+index 109d8ee..f6e761a 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -208,11 +208,10 @@ endif()
@@ -29,17 +29,15 @@ index d44ec3c..507100a 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -236,8 +235,16 @@ if(QT_BUILD)
- 	find_optional_system_library(SDL2 3rdparty/sdl2 2.0.22)
+@@ -240,8 +239,13 @@ if(NOT WIN32 AND QT_BUILD)
+ 	find_package(CURL REQUIRED)
  endif()
  
-+if(WIN32)
- add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
+-add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
 -add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
-+endif()
-+
 +check_lib(CHDR libchdr)
 +if(NOT CHDR_FOUND)
++	add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
 +	add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
 +else()
 +	alias_library(chdr-static PkgConfig::CHDR)
@@ -47,7 +45,7 @@ index d44ec3c..507100a 100644
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -251,7 +258,13 @@ endif()
+@@ -255,7 +259,13 @@ endif()
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
@@ -62,7 +60,7 @@ index d44ec3c..507100a 100644
  
  if(USE_OPENGL)
  	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
-@@ -259,12 +272,16 @@ endif()
+@@ -263,12 +273,16 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -84,10 +82,10 @@ index d44ec3c..507100a 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index 0b535a3..43d1dad 100644
+index 8d6e2b3..ee654ee 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
-@@ -134,7 +134,7 @@ endif()
+@@ -138,7 +138,7 @@ endif()
  
  if(USE_VULKAN)
  	target_link_libraries(common PUBLIC
