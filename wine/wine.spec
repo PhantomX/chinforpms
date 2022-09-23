@@ -865,8 +865,6 @@ This package adds the opencl driver for wine.
 %prep
 %setup -q -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
 
-patch_command='patch -F%{_default_patch_fuzz} %{_default_patch_flags}'
-
 %patch511 -p1 -b.cjk
 %patch599 -p1
 
@@ -916,7 +914,7 @@ for i in \
   0038-winegstreamer-In-the-default-configuration-select-on.patch \
   0043-winegstreamer-Update-offset-according-to-the-size-of.patch \
 ;do
-    $patch_command -p1 -i patches/mfplat-streaming-support/$i
+  %{__scm_apply_patch -p1} -i patches/mfplat-streaming-support/$i
 done
 %if 0%{?fshack}
 %if 0%{?vulkanup}

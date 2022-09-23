@@ -30,21 +30,21 @@ This package is based on Debian dfsg, so some features are missing. See
 README.Debian.
 
 %prep
-%setup -q -a 1
+%autosetup -N -a 1
 
-patch_command='patch -p1 -F1 -s'
-${patch_command} -p1 -i debian/patches/build-hardening.patch
+patch_command='%{__scm_apply_patch -p1 -q}'
+${patch_command} -i debian/patches/build-hardening.patch
 %if %{with_ghostdriver}
-${patch_command} -p1 -i debian/patches/build-no-ghostdriver.patch
+${patch_command} -i debian/patches/build-no-ghostdriver.patch
 %endif
-${patch_command} -p1 -i debian/patches/build-qt-components.patch
-${patch_command} -p1 -i debian/patches/build-qt55-evaluateJavaScript.patch
-${patch_command} -p1 -i debian/patches/build-qt55-no-websecurity.patch
-${patch_command} -p1 -i debian/patches/build-qt55-print.patch
-${patch_command} -p1 -i debian/patches/build-qtpath.patch
-${patch_command} -p1 -i debian/patches/unlock-qt.patch
+${patch_command} -i debian/patches/build-qt-components.patch
+${patch_command} -i debian/patches/build-qt55-evaluateJavaScript.patch
+${patch_command} -i debian/patches/build-qt55-no-websecurity.patch
+${patch_command} -i debian/patches/build-qt55-print.patch
+${patch_command} -i debian/patches/build-qtpath.patch
+${patch_command} -i debian/patches/unlock-qt.patch
 
-%patch0 -p1
+#patch0 -p1
 
 2to3 --write --nobackups .
 

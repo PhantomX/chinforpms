@@ -25,8 +25,8 @@
 %global kf5majmin %(echo %{kf5ver} | cut -d. -f1-2)
 
 Name:           telegram-desktop
-Version:        4.2.0
-Release:        101%{?dist}
+Version:        4.2.1
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -46,7 +46,6 @@ ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
 Source10:       http://download.kde.org/stable/frameworks/%{kf5majmin}/kcoreaddons-%{kf5ver}.tar.xz
-Source11:       https://invent.kde.org/frameworks/kcoreaddons/-/merge_requests/258.patch#/%{name}-gh-kcoreaddons-mr258.patch
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
@@ -64,6 +63,9 @@ Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-fix-gsl-header-warnings.patch
 Patch208:       0001-sane-background-and-text-colors.patch
 
+Patch1000:      https://invent.kde.org/frameworks/kcoreaddons/-/merge_requests/258.patch#/%{name}-gh-kcoreaddons-mr258.patch
+# https://github.com/telegramdesktop/tdesktop/issues/25073
+Patch1001:      https://github.com/ilya-fedin/cmake_helpers/commit/6bcdd3fa3618038b1824a2f772543d9db48e8b27.patch#/%{name}-gh-cmake_helpers-6bcdd3f.patch
 
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
@@ -215,10 +217,13 @@ business messaging needs.
 
 %prep
 # Unpacking Telegram Desktop source archive...
-%autosetup -n %{appname}-%{version}-full -p1
+%autosetup -N -n %{appname}-%{version}-full
+%autopatch -p1 -M 999
 
-tar -xf %{S:10}
-patch -F%{_default_patch_fuzz} %{_default_patch_flags} -p1 -d kcoreaddons-%{kf5ver} -i %{S:11}
+mkdir -p Telegram/ThirdParty/kcoreaddons
+tar -xf %{S:10} -C Telegram/ThirdParty/kcoreaddons --strip-components 1
+%patch1000 -p1 -d Telegram/ThirdParty/kcoreaddons
+%patch1001 -p1 -d cmake
 
 cp -p %{S:20} thunar-sendto-%{launcher}.desktop
 
@@ -254,26 +259,19 @@ sed \
   -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
   -i Telegram/CMakeLists.txt
 
+# https://github.com/telegramdesktop/tdesktop/issues/25073#issuecomment-1253908867
 sed \
-  -e 's|find_library(DESKTOP_APP_KCOREADDONS_LIBRARIES.*|set(DESKTOP_APP_KCOREADDONS_LIBRARIES ${CMAKE_SOURCE_DIR}/kcoreaddons-build%{_libdir}/libKF5CoreAddons.a)|g' \
-  -e 's|/usr/local/include/KF${QT_VERSION_MAJOR}/KCoreAddons|${CMAKE_SOURCE_DIR}/kcoreaddons-build%{_includedir}/KF${QT_VERSION_MAJOR}/KCoreAddons|g' \
-  -i cmake/external/kcoreaddons/CMakeLists.txt
+  -e 's|<KUrlMimeData>|<kurlmimedata.h>|g' \
+  -e 's|<KShell>|<kshell.h>|g' \
+  -e 's|<KSandbox>|<ksandbox.h>|g' \
+  -i Telegram/lib_base/base/platform/linux/base_url_scheme_linux.cpp \
+     Telegram/SourceFiles/platform/linux/specific_linux.cpp \
+     Telegram/SourceFiles/mtproto/session_private.cpp \
+     Telegram/SourceFiles/core/utils.h \
+     Telegram/SourceFiles/core/update_checker.cpp
 
 
 %build
-pushd kcoreaddons-%{kf5ver}
-%cmake \
-    -G Ninja \
-    -DCMAKE_BUILD_TYPE:STRING="Release" \
-    -DBUILD_SHARED_LIBS:BOOL=OFF \
-    -DBUILD_TESTING:BOOL=OFF \
-    -DBUILD_WITH_QT6:BOOL=ON \
-    -DEXCLUDE_DEPRECATED_BEFORE_AND_AT=5.78.0 \
-%{nil}
-%cmake_build
-DESTDIR="../kcoreaddons-build" %__cmake --install "%{_vpath_builddir}"
-popd
-
 # Building Telegram Desktop using cmake...
 %cmake \
     -G Ninja \
@@ -344,6 +342,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.1-100
+- 4.2.1
+
 * Mon Sep 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-101
 - RPMFusion sync
 

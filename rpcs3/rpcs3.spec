@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 3581c5b078e17a91c5b953c1b6451ed88e742a2b
+%global commit dd8a337b1477c86a827761a37c9d3a3c82642441
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220921
+%global date 20220922
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.24
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -206,7 +206,6 @@ BuildRequires:  cmake(Qt5MultimediaWidgets)
 BuildRequires:  cmake(Qt5Svg)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  qt5-qtbase-private-devel
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info

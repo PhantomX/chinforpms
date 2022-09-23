@@ -3,6 +3,7 @@
 %global date 20220406
 %global with_snapshot 0
 
+%bcond_with check
 %bcond_with keeshare
 %bcond_with yubikey
 
@@ -70,6 +71,7 @@ BuildRequires:  minizip-devel
 %if %{with yubikey}
 BuildRequires:  libyubikey-devel
 BuildRequires:  ykpers-devel
+Provides:       bundled(ykcore)
 %endif
 Requires:       hicolor-icon-theme
 
@@ -97,7 +99,7 @@ fi
 %cmake \
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
-  -DWITH_TESTS:BOOL=OFF \
+  %{!?with_check:-DWITH_TESTS:BOOL=OFF} \
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
   -DWITH_XC_BROWSER:BOOL=ON \
@@ -107,7 +109,7 @@ fi
   -DWITH_XC_KEESHARE:BOOL=ON \
   -DWITH_XC_KEESHARE_SECURE:BOOL=ON \
 %endif
-  -DWITH_XC_YUBIKEY:BOOL=%{?_with_yubikey:ON}%{!?_with_yubikey:OFF} \
+  %{?_with_yubikey:-DWITH_XC_YUBIKEY:BOOL=ON} \
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
 
@@ -123,10 +125,17 @@ desktop-file-edit \
   --add-mime-type="application/x-keepassxc" \
   %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
-#install appdata files
+%find_lang %{name} --with-qt
+
+
+%check
+%if %{with check}
+# 'testcli' fails with "Subprocess aborted" in Koji and local mock
+%ctest --exclude-regex testcli
+%endif
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
-%find_lang %{name} --with-qt
 
 %files -f %{name}.lang
 %license COPYING LICENSE*

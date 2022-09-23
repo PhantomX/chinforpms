@@ -54,7 +54,7 @@
 %endif
 
 # Enable patent encumbered video codecs
-%global with_videocodecs 0
+%bcond_with videocodecs
 
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay

@@ -1386,7 +1386,7 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='patch -p1 -F1 -s'
+patch_command='%{__scm_apply_patch -p1 -q}'
 
 # First we unpack the kernel tarball.
 # If this isn't the first make prep, we use links to the existing clean tarball

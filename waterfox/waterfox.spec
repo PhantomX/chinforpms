@@ -466,7 +466,7 @@ rm -f _patches/patch-z-bug1355143
 rm -f _patches/patch-z-bug1392739
 rm -f _patches/patch-z-bug1461619
 
-patchcommand='patch -p0 -s -i'
+patchcommand='%{__scm_apply_patch -p0 -q} -F2 -i'
 
 # Patch batch
 for i in _patches/patch-{bug{??????,???????},revert-bug*,z-*} ;do

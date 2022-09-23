@@ -219,7 +219,7 @@ the functionality of the installed %{name} package.
 %autosetup -n gtk+-%{version} -p1 -a 1
 
 patch_command(){
-  patch -p1 -F1 -s -i %{classic_dir}/$1
+  %{__scm_apply_patch -p1 -q} -i %{classic_dir}/$1
 }
 patch_command appearance__buttons-menus-icons.patch
 patch_command appearance__disable-backdrop.patch

@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
 Version:        2.28.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          1
 
@@ -63,7 +63,6 @@ BuildRequires:  cmake(Qt5WebKitWidgets)
 BuildRequires:  cmake(Qt5Xml)
 # I think due to custom sqlcipher plugin -- rex
 BuildRequires:  qt5-qtbase-private-devel
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 
 BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(sqlcipher)
@@ -83,6 +82,7 @@ categorize them, and build reports of them.
 
 %package libs
 Summary:        Runtime libraries for %{name}
+%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description libs
 %{summary}.
@@ -150,6 +150,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-101
+- Rebuild (qt5)
+
 * Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-100
 - 2.28.0
 
