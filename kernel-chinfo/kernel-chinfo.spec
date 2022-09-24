@@ -159,7 +159,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -170,9 +170,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8209407dc4728e218270fcede1839127e3f89307
+%global pfcommit 59f0ccb417b4716e7498a4821c1e7054e5a73d6b
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash 7445a1c703afc160ac6d2b653557364b
+%global pfcoprhash e87111331869ce3634b482bb38b7d3fc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2990,6 +2990,9 @@ fi
 #
 #
 %changelog
+* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-500.chinfo
+- 5.19.11 - pf5
+
 * Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.10-500.chinfo
 - 5.19.10 - pf5
 

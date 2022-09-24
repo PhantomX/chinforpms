@@ -1,7 +1,7 @@
 %global commit f5b92137257b9564dca623ee9578c49b4495e220
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220916
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1d75f6950a02a5214b0a58eae715bdbf97ba2b3b
+%global wine_stagingver 7.18
 %global wine_stg_url https://github.com/wine-staging/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 329977b55486eb9a2d5fe380bae6577195b0bf17
+%global tkg_id d7b3f5632f0fc0afbd3fbadb0f35d5c17b072d47
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -148,8 +148,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.17
-Release:        101%{?gver}%{?dist}
+Version:        7.18
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1584,6 +1584,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/cryptdll.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptext.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptnet.%{winedll}
+%{_libdir}/wine/%{winedlldir}/cryptowinrt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptsp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptui.%{winedll}
 %{_libdir}/wine/%{winesodir}/ctapi32.so
@@ -1966,6 +1967,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/tdh.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tdi.%{winesys}
 %{_libdir}/wine/%{winedlldir}/traffic.%{winedll}
+%{_libdir}/wine/%{winedlldir}/threadpoolwinrt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tzres.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ucrtbase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/uianimation.%{winedll}
@@ -2528,6 +2530,9 @@ fi
 
 
 %changelog
+* Sat Sep 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.18-100
+- 7.18
+
 * Sat Sep 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.17-100
 - 7.17
 

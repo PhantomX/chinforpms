@@ -1,5 +1,5 @@
 Name:           steamtinkerlaunch
-Version:        11.0
+Version:        11.11
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
@@ -87,6 +87,9 @@ install -pm0644 misc/%{name}.svg \
 
 
 %changelog
+* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 11.11-1
+- 11.11
+
 * Wed Aug 10 2022 Phantom X <megaphantomx at hotmail dot com> - 11.0-1
 - 11.0
 
