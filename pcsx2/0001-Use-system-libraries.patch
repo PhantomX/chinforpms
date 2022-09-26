@@ -4,7 +4,7 @@ Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 38 ++++++++++++++++++++++++++------------
+ cmake/SearchForStuff.cmake | 44 +++++++++++++++++++++++++++-----------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
  3 files changed, 28 insertions(+), 14 deletions(-)
@@ -45,7 +45,19 @@ index 109d8ee..f6e761a 100644
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -255,7 +259,13 @@ endif()
+@@ -257,13 +261,25 @@ endif()
+ # permissive mode, which breaks other parts of PCSX2. So, we'll just create a target here
+ # for now.
+ #add_subdirectory(3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float EXCLUDE_FROM_ALL)
++find_package(FastFloat)
++if(FastFloat_FOUND)
++	message(STATUS "Using the system fast_float")
++	alias_library(fast_float FastFloat::fast_float)
++else()
+ add_library(fast_float INTERFACE)
+ target_include_directories(fast_float INTERFACE 3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float/include)
++endif()
+ 
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
@@ -60,7 +72,7 @@ index 109d8ee..f6e761a 100644
  
  if(USE_OPENGL)
  	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
-@@ -263,12 +273,16 @@ endif()
+@@ -271,12 +287,16 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)

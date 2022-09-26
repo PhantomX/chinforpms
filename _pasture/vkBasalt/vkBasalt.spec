@@ -7,9 +7,7 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global pkgname vkBasalt
-
-Name:           vkbasalt
+Name:           vkBasalt
 Version:        0.3.2.6
 Release:        1%{?gver}%{?dist}
 Summary:        A vulkan post processing layer
@@ -18,9 +16,9 @@ License:        zlib
 URL:            https://github.com/DadSchoorse/vkBasalt
 
 %if 0%{?with_snapshot}
-Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/releases/download/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  gcc
@@ -32,8 +30,9 @@ BuildRequires:  spirv-headers-devel
 BuildRequires:  vulkan-headers
 BuildRequires:  pkgconfig(x11)
 Requires:       vulkan-loader%{?_isa}
+Suggests:       goverlay
 
-Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       vkbasalt%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
@@ -42,7 +41,7 @@ games.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 
 %build
@@ -56,15 +55,19 @@ games.
 %install
 %meson_install
 
-mkdir -p %{buildroot}%{_datadir}/%{pkgname}
+mkdir -p %{buildroot}%{_datadir}/%{name}
+
+mkdir -p %{buildroot}%{_sysconfdir}
+install -pm0644 config/%{name}.conf %{buildroot}%{_sysconfdir}/
 
 
 %files
 %license LICENSE
-%doc README.md config/vkBasalt.conf
-%{_libdir}/%{name}/lib%{name}.so
-%dir %{_datadir}/%{pkgname}
-%{_datadir}/vulkan/implicit_layer.d/%{pkgname}.json
+%doc README.md
+%config(noreplace) %{_sysconfdir}/%{name}.conf
+%{_libdir}/vkbasalt/
+%dir %{_datadir}/%{name}
+%{_datadir}/vulkan/implicit_layer.d/%{name}.json
 
 
 %changelog

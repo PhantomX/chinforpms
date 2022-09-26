@@ -25,7 +25,7 @@
 %global kf5majmin %(echo %{kf5ver} | cut -d. -f1-2)
 
 Name:           telegram-desktop
-Version:        4.2.1
+Version:        4.2.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -342,6 +342,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sun Sep 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.2-100
+- 4.2.2
+
 * Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.1-100
 - 4.2.1
 
