@@ -10,7 +10,7 @@
 
 Name:           cdrtools
 Version:        3.02~a09
-Release:        2%{?dist}
+Release:        3%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
@@ -108,6 +108,10 @@ rm -fr %{buildroot}%{_mandir}/man5
 # Install documents directly from the files section
 rm -fr %{buildroot}%{_docdir}
 
+rename .8 .1 %{buildroot}%{_mandir}/man8/*.8
+mv %{buildroot}%{_mandir}/man8/*.1 %{buildroot}%{_mandir}/man1/
+rm -rf %{buildroot}%{_mandir}/man8
+
 # Move libraries to the appropriate place on 64 bit arches
 if [ %{_libdir} != %{_prefix}/lib ]; then 
     mkdir -p %{buildroot}%{_libdir}
@@ -120,25 +124,31 @@ chmod 755 %{buildroot}%{_libdir}/lib*.so* \
 # Renaming for alternatives
 for i in cdrecord readcd cdda2wav ;do
   mv %{buildroot}%{_bindir}/$i %{buildroot}%{_bindir}/%{name}-$i
-  ln -sf %{name}-$i %{buildroot}%{_bindir}/$i
+  touch %{buildroot}%{_bindir}/$i
   mv %{buildroot}%{_mandir}/man1/$i.1 %{buildroot}%{_mandir}/man1/%{name}-$i.1
-  ln -sf %{name}-$i.1 %{buildroot}%{_mandir}/man1/$i.1
+  touch %{buildroot}%{_mandir}/man1/$i.1
 done
 
 rm -f %{buildroot}%{_bindir}/dvdrecord
 ln -sf %{name}-cdrecord %{buildroot}%{_bindir}/%{name}-dvdrecord
-ln -sf %{name}-cdrecord %{buildroot}%{_bindir}/dvdrecord
+touch %{buildroot}%{_bindir}/dvdrecord
 ln -sf %{name}-cdrecord.1 %{buildroot}%{_mandir}/man1/%{name}-dvdrecord.1
 
 mv %{buildroot}%{_bindir}/mkisofs %{buildroot}%{_bindir}/%{name}-mkisofs
-ln -sf %{name}-mkisofs %{buildroot}%{_bindir}/mkisofs
+touch %{buildroot}%{_bindir}/mkisofs
 
 rm -f %{buildroot}%{_bindir}/mkhybrid
 ln -sf %{name}-mkisofs %{buildroot}%{_bindir}/%{name}-mkhybrid
-ln -sf %{name}-mkisofs %{buildroot}%{_bindir}/mkhybrid
+touch %{buildroot}%{_bindir}/mkhybrid
 
+mv %{buildroot}%{_mandir}/man1/mkisofs.1 %{buildroot}%{_mandir}/man1/%{name}-mkisofs.1
+touch %{buildroot}%{_mandir}/man1/mkisofs.1
 
-%post -n cdrecord
+rm -f %{buildroot}%{_mandir}/man1/mkhybrid.1
+ln -sf %{name}-mkisofs.1 %{buildroot}%{_mandir}/man1/%{name}-mkhybrid.1
+touch %{buildroot}%{_mandir}/man1/mkhybrid.1
+
+%posttrans -n cdrecord
 for i in cdrecord readcd cdda2wav ;do
   link=`readlink %{_bindir}/$i`
   if [ "$link" == "%{_bindir}/%{name}-$i" ]; then
@@ -159,7 +169,7 @@ if [ "$link" == "%{name}-cdrecord.1.gz" ]; then
 fi
 
 %{_sbindir}/alternatives --install %{_bindir}/cdrecord cdrecord \
-          %{_bindir}/%{name}-cdrecord 50 \
+          %{_bindir}/%{name}-cdrecord 60 \
   --slave %{_mandir}/man1/cdrecord.1.gz cdrecord-cdrecordman \
           %{_mandir}/man1/%{name}-cdrecord.1.gz \
   --slave %{_bindir}/dvdrecord cdrecord-dvdrecord \
@@ -171,30 +181,42 @@ fi
   --slave %{_mandir}/man1/readcd.1.gz cdrecord-readcdman \
           %{_mandir}/man1/%{name}-readcd.1.gz
 
-%preun -n cdrecord
+%postun -n cdrecord
 if [ $1 = 0 ]; then
   %{_sbindir}/alternatives --remove cdrecord %{_bindir}/%{name}-cdrecord
 fi
 
 
-%post -n mkisofs
+%posttrans -n mkisofs
 link=`readlink %{_bindir}/mkisofs`
 if [ "$link" == "%{name}-cdrecord" ]; then
   rm -f %{_bindir}/mkisofs
 fi
+link=`readlink %{_mandir}/man1/mkisofs.1.gz`
+if [ "$link" == "%{name}-mkisofs.1.gz" ]; then
+  rm -f %{_mandir}/man1/%{name}-mkisofs.1.gz
+fi
+link=`readlink %{_mandir}/man1/mkhybrid.1.gz`
+if [ "$link" == "%{name}-mkisofs.1.gz" ]; then
+  rm -f %{_mandir}/man1/%{name}-mkhybrid.1.gz
+fi
 
 %{_sbindir}/alternatives --install %{_bindir}/mkisofs mkisofs \
-  %{_bindir}/%{name}-mkisofs 50 \
+  %{_bindir}/%{name}-mkisofs 60 \
   --slave %{_bindir}/mkhybrid mkisofs-mkhybrid \
-          %{_bindir}/%{name}-mkisofs
+          %{_bindir}/%{name}-mkisofs \
+  --slave %{_mandir}/man1/mkisofs.1.gz mkisofs-mkisofsman \
+          %{_mandir}/man1/%{name}-mkisofs.1.gz \
+  --slave %{_mandir}/man1/mkhybrid.1.gz mkisofs-mkhybridman \
+          %{_mandir}/man1/%{name}-mkisofs.1.gz
 
-%preun -n mkisofs
+%postun -n mkisofs
 if [ $1 = 0 ]; then
-  %{_sbindir}/alternatives --remove mkisofs %{_bindir}/genisoimage
+  %{_sbindir}/alternatives --remove mkisofs %{_bindir}/%{name}-mkisofs
 fi
 
 
-%post -n cdda2wav
+%posttrans -n cdda2wav
 link=`readlink %{_bindir}/cdda2wav`
 if [ "$link" == "%{name}-cdda2wav" ]; then
   rm -f %{_bindir}/%{name}-cdda2wav
@@ -205,11 +227,11 @@ if [ "$link" == "%{name}-cdda2wav.1.gz" ]; then
 fi
 
 %{_sbindir}/alternatives --install %{_bindir}/cdda2wav cdda2wav \
-%{_bindir}/%{name}-cdda2wav 50 \
+%{_bindir}/%{name}-cdda2wav 60 \
   --slave %{_mandir}/man1/cdda2wav.1.gz cdda2wav-cdda2wavman \
-          %{_mandir}/man1/%{name}-cdda2wav.1.gz 
+          %{_mandir}/man1/%{name}-cdda2wav.1.gz
 
-%preun -n cdda2wav
+%postun -n cdda2wav
 if [ $1 = 0 ]; then
   %{_sbindir}/alternatives --remove cdda2wav %{_bindir}/%{name}-cdda2wav
 fi
@@ -250,7 +272,12 @@ fi
 %{_bindir}/isodump
 %{_bindir}/isovfy
 %{_bindir}/isodebug
-%{_mandir}/man8/*
+%{_mandir}/man1/devdump.*
+%{_mandir}/man1/iso*.*
+%{_mandir}/man1/%{name}-mkhybrid.*
+%{_mandir}/man1/%{name}-mkisofs.*
+%ghost %{_mandir}/man1/mkhybrid.*
+%ghost %{_mandir}/man1/mkisofs.*
 %{_prefix}/lib/siconv/*
 
 %files -n cdda2wav
@@ -275,6 +302,9 @@ fi
 
 
 %changelog
+* Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-3
+- Fix alternatives priority
+
 * Thu Mar 19 2020 Phantom X <megaphantomx at bol dot com dot br> - 11:3.02~a09-2
 - Fix build
 

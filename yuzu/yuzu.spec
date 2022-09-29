@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7e939deb745ce394c6ba5bb0f9fddeb389019d06
+%global commit 189c89d2e7ef98e68efe8a7daded01f3c05f569f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220919
+%global date 20220926
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        2966
+Version:        2974
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -248,6 +248,11 @@ sed \
   -e 's|@GIT_BRANCH@|main|g' \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
+  -e 's|@BUILD_DATE@|%(date +%F)|g' \
+%if 0%{?with_ea}
+  -e 's|@TITLE_BAR_FORMAT_IDLE@|yuzu Early Access %{version}|g' \
+  -e 's,@TITLE_BAR_FORMAT_RUNNING@,yuzu Early Access %{version} | {3},g' \
+%endif
   -i src/common/scm_rev.cpp.in
 
 # https://github.com/pineappleEA/pineapple-src/issues/80

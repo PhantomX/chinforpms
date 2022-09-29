@@ -8,21 +8,23 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit baecc18d8c5365af0dddb231bc8c0a9c03850bf6
+%global commit 030ecaa83c825bf4c91915d629adca2dadb9aaac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220910
+%global date 20220924
 %global with_snapshot 1
 
 # Enable system boost
 %bcond_without boost
 # Enable ffmpeg support
 %bcond_without ffmpeg
+# Enable system fmt
+%bcond_without fmt
 # Disable Qt build
 %bcond_without qt
 # Enable advanced simd, ssse3+
 %bcond_with  adv_simd
 
-%global commit1 c4e3767e265808590986d5db6ca1b5532a7f3d13
+%global commit1 dc001fa935d71b4b77f263fce405c9dbdfcbfe28
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 Catch
 
@@ -30,15 +32,15 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 9f88f234a180a5e8d5620b4803c971fb6dc2d9f2
+%global commit3 460617901965ef7cd73cfbcf289fe367bf11c99e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 cc09f1a6798c085c325569ef466bcdcffdc266d4
+%global commit4 a33701196adfad74917046096bf5a2aa0ab0bb50
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 1e80a47dffbda813604f0913e2ad68c7054c14e4
+%global commit5 5e1d9e2625842dddb3f9c086a50f22e4f45dfc2b
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 inih
 
@@ -58,15 +60,15 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
-%global commit10 31d9704fdcca0b68fb9656d4764fa0fb60e460c2
+%global commit10 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit10 %(c=%{commit9}; echo ${c:0:7})
 %global srcname10 lodepng
 
-%global commit11 e12ef06218596b52d9b5d6e1639484866a8e7067
+%global commit11 66937ea62d126a92b5057e3fd9ceac7c44daf4f5
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 ext-boost
 
-%global commit12 6e27aa4c8671e183f11e327a2e1f556c64fdc4a9
+%global commit12 e12ef06218596b52d9b5d6e1639484866a8e7067
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cpp-jwt
 
@@ -80,7 +82,7 @@
 
 Name:           citra
 Version:        0
-Release:        24%{?gver}%{?dist}
+Release:        25%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -94,7 +96,9 @@ Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source1:        https://github.com/philsquared/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%if !%{with fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
 Source5:        https://github.com/benhoyt/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -110,7 +114,6 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Disable-telemetry-initial-dialog.patch
-Patch2:         0001-fix-system-boost-detection.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -128,6 +131,11 @@ BuildRequires:  pkgconfig(libavcodec)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
 %endif
+%endif
+%if %{with fmt}
+BuildRequires:  cmake(fmt)
+%else
+Provides:       bundled(fmt) = 0~git%{shortcommit4}
 %endif
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
@@ -151,7 +159,6 @@ Provides:       bundled(catch) = 0~git%{shortcommit1}
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
-Provides:       bundled(fmt) = 0~git%{shortcommit4}
 Provides:       bundled(inih) = 0~git%{shortcommit5}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
@@ -181,10 +188,12 @@ This is the Qt frontend.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-tar -xf %{S:1} -C externals/catch --strip-components 1
+tar -xf %{S:1} -C externals/catch2 --strip-components 1
 tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
+%if !%{with fmt}
 tar -xf %{S:4} -C externals/fmt --strip-components 1
+%endif
 tar -xf %{S:5} -C externals/inih/inih --strip-components 1
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
@@ -202,11 +211,13 @@ pushd externals
 %if !%{with boost}
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
-cp -p catch/LICENSE.txt LICENSE.catch
+cp -p catch2/LICENSE.txt LICENSE.catch2
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+%if !%{with fmt}
 cp -p fmt/LICENSE.rst LICENSE.fmt.rst
+%endif
 cp -p inih/inih/LICENSE.txt LICENSE.inih.md
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
@@ -221,7 +232,9 @@ rm -f externals/json/json.hpp
 ln -sf %{_includedir}/nlohmann/json.hpp \
   externals/json/json.hpp
 
+%if !%{with fmt}
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
+%endif
 
 sed \
   -e 's/-Wfatal-errors\b//g' \
@@ -265,6 +278,7 @@ export TRAVIS_TAG="%{version}-%{release}"
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
+  -DUSE_SYSTEM_SDL2:BOOL=ON \
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif

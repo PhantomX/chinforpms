@@ -1,26 +1,26 @@
-From b5fe79f2ea2bd24e0c3f8f2355abdaffd2ec908b Mon Sep 17 00:00:00 2001
+From 26f83cd97bdfd86f0e25a81acbd3f2deba654f70 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt           |  2 --
- externals/CMakeLists.txt | 26 +++++++++++++++++++++++---
- 2 files changed, 23 insertions(+), 5 deletions(-)
+ externals/CMakeLists.txt | 36 +++++++++++++++++++++++++++++++++---
+ 2 files changed, 33 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4a3cedc..52078f1 100644
+index 5f40ab2..7197f9b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -6,7 +6,6 @@ if (${CMAKE_VERSION} VERSION_GREATER_EQUAL 3.15)
- endif ()
+@@ -9,7 +9,6 @@ endif()
+ 
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
 -include(DownloadExternals)
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -71,7 +70,6 @@ function(check_submodules_present)
+@@ -95,7 +94,6 @@ function(check_submodules_present)
          endif()
      endforeach()
  endfunction()
@@ -29,10 +29,10 @@ index 4a3cedc..52078f1 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 99b5310..748ae3f 100644
+index e4b53f7..ca742ae 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -6,7 +6,6 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+@@ -6,10 +6,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
  endif()
  
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
@@ -40,17 +40,48 @@ index 99b5310..748ae3f 100644
  include(ExternalProject)
  
  # Boost
-@@ -80,17 +79,38 @@ target_include_directories(SoundTouch INTERFACE ./soundtouch/include)
- add_subdirectory(teakra EXCLUDE_FROM_ALL)
++if (NOT USE_SYSTEM_BOOST)
+ set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
+ set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
+ set(Boost_NO_SYSTEM_PATHS ON)
+@@ -20,6 +20,7 @@ target_include_directories(boost SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
+ file(GLOB boost_serialization_SRC "${CMAKE_SOURCE_DIR}/externals/boost/libs/serialization/src/*.cpp")
+ add_library(boost_serialization STATIC ${boost_serialization_SRC})
+ target_link_libraries(boost_serialization PUBLIC boost)
++endif()
+ 
+ # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
+ 
+@@ -47,7 +48,15 @@ if (ARCHITECTURE_x86_64 OR ARCHITECTURE_ARM64)
+ endif()
+ 
+ # libfmt
++find_package(fmt 9.1)
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++  add_library(fmt-shared INTERFACE)
++  target_link_libraries(fmt-shared INTERFACE fmt::fmt)
++  add_library(fmt::fmt ALIAS fmt-shared)
++else()
+ add_subdirectory(fmt)
++endif()
+ 
+ # getopt
+ if (MSVC)
+@@ -85,20 +94,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
+ endif()
  
  # Zstandard
 +pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
 +if(ZSTD_FOUND)
-+  message(STATUS "Using the system enet")
++  message(STATUS "Using the system zstd")
 +  add_library(zstd-shared INTERFACE)
 +  target_link_libraries(zstd-shared INTERFACE PkgConfig::ZSTD)
 +  add_library(libzstd_static ALIAS zstd-shared)
 +else()
+ set(ZSTD_LEGACY_SUPPORT OFF)
+ set(ZSTD_BUILD_PROGRAMS OFF)
+ set(ZSTD_BUILD_SHARED OFF)
  add_subdirectory(zstd/build/cmake EXCLUDE_FROM_ALL)
  target_include_directories(libzstd_static INTERFACE $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/externals/zstd/lib>)
 +endif()
@@ -82,5 +113,5 @@ index 99b5310..748ae3f 100644
  
  # DiscordRPC
 -- 
-2.37.1
+2.37.3
 

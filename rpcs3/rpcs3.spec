@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit dd8a337b1477c86a827761a37c9d3a3c82642441
+%global commit 8170b91f7686f72edef1f1cefbc81d7cc506f06f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220922
+%global date 20220928
 %global with_snapshot 1
 
 %global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
@@ -56,7 +56,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
-%global commit18 5521155be5c869b0b760e1dec86c41cdbb7a75c0
+%global commit18 9b52b6c39ae9f0759fbce7dd0db4b3290d6ebc56
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 llvm
 
@@ -68,7 +68,7 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
-%global commit21 615616cb5549a34bdf288c04bc1b94bd7a65c396
+%global commit21 06c5c7ed0bd987a918cf88caafb094f22cdd1721
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.24
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2

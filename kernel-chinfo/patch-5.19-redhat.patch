@@ -22,7 +22,6 @@ Subject: [PATCH] patch-5.19-redhat
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
- block/genhd.c                                      |   3 +-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
@@ -503,27 +502,6 @@ index bd6c6fd373ae..3333b08a778d 100644
 
  	reserve_initrd();
 
-diff --git a/block/genhd.c b/block/genhd.c
-index 278227ba1d53..e0675772178b 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -623,7 +623,6 @@ void del_gendisk(struct gendisk *disk)
- 	 * Prevent new I/O from crossing bio_queue_enter().
- 	 */
- 	blk_queue_start_drain(q);
--	blk_mq_freeze_queue_wait(q);
-
- 	if (!(disk->flags & GENHD_FL_HIDDEN)) {
- 		sysfs_remove_link(&disk_to_dev(disk)->kobj, "bdi");
-@@ -647,6 +646,8 @@ void del_gendisk(struct gendisk *disk)
- 	pm_runtime_set_memalloc_noio(disk_to_dev(disk), false);
- 	device_del(disk_to_dev(disk));
-
-+	blk_mq_freeze_queue_wait(q);
-+
- 	blk_throtl_cancel_bios(disk->queue);
-
- 	blk_sync_queue(q);
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c

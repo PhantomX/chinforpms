@@ -59,10 +59,10 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit b47e856216e046b7e6571b2102df3fbc8600f353
+%global commit 94c771bcdb74de1a7e2feb1570d3f83cfd7fe56b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220916
-%global with_snapshot 0
+%global date 20220928
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -77,7 +77,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -102,8 +102,9 @@ Patch0005: 0003-Revert-nouveau-Use-format-modifiers-in-buffer-alloca.patch
 Patch0006: 0004-Revert-nouveau-no-modifier-the-invalid-modifier.patch
 Patch0007: 0005-Revert-nouveau-Use-DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEA.patch
 Patch0008: 0006-Revert-nouveau-Stash-supported-sector-layout-in-scre.patch
-
-Patch0050: https://gitlab.freedesktop.org/Venemo/mesa/-/commit/41066ef1cfcd0e38b292fcc851de23d55af38307.patch#/%{name}-gl-41066ef.patch
+# Patches from Karol Herbst to fix Nouveau multithreading:
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/10752
+Patch0009: nouveau-multithreading-fixes.patch
 
 
 BuildRequires:  meson >= 0.53
@@ -196,6 +197,7 @@ Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 Summary:        Mesa libGL runtime libraries
 Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-glx%{?_isa} >= 1:1.3.2
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libGL
 %{summary}.
@@ -214,6 +216,7 @@ Recommends:     gl-manpages
 %package libEGL
 Summary:        Mesa libEGL runtime libraries
 Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libEGL
 %{summary}.
@@ -274,6 +277,7 @@ Requires:       %{name}-libOSMesa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 Summary:        Mesa gbm runtime library
 Provides:       libgbm
 Provides:       libgbm%{?_isa}
+Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libgbm
 %{summary}.

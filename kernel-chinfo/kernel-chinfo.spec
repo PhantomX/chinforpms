@@ -159,20 +159,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 59f0ccb417b4716e7498a4821c1e7054e5a73d6b
+%global pfcommit 81691136191394fce4b240d28cb47b7945c617ee
 %global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash e87111331869ce3634b482bb38b7d3fc
+%global pfcoprhash 563e3209764d09ebe55fae2447b8e60b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -194,7 +194,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 0312ea1bbfa2eb1a7e76a37593b931761a89cf69
+%global opensuse_id 2d94a9f9168213ef64ab7c1191f7e85d1d18663e
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -957,9 +957,10 @@ Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1016: %{opensuse_url}/vduse-prevent-uninitialized-memory-accesses.patch#/openSUSE-vduse-prevent-uninitialized-memory-accesses.patch
+Patch1017: %{opensuse_url}/watchdog-wdat_wdt-fix-min-max-timer-value.patch#/openSUSE-watchdog-wdat_wdt-fix-min-max-timer-value.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
-%global patchwork_xdg_url https://patchwork.freedesktop.org
+%global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
 %global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
@@ -969,6 +970,8 @@ Patch2092: https://cgit.freedesktop.org/drm/drm/patch/?id=c9cad937c0c58618fe5b03
 Patch2093: https://cgit.freedesktop.org/drm/drm/patch/?id=708d19d9f362766147cab79eccae60912c6d3068#/kernel-git-drm-708d19d.patch
 Patch2094: https://cgit.freedesktop.org/drm/drm/patch/?id=5e3f1e7729ec7a99e145e9d8ed58963d86cdfb98#/kernel-git-drm-5e3f1e7.patch
 Patch2095: https://cgit.freedesktop.org/drm/drm/patch/?id=6f2c8d5f16594a13295d153245e0bb8166db7ac9#/kernel-git-drm-6f2c8d5.patch
+Patch2096: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
+Patch2097: %{patchwork_xdg_url}/504643/mbox/#/patchwork-v3-drm-amdgpu-Fix-VRAM-BO-swap-issue.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
@@ -2990,6 +2993,9 @@ fi
 #
 #
 %changelog
+* Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500.chinfo
+- 5.19.12 - pf6
+
 * Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-500.chinfo
 - 5.19.11 - pf5
 
