@@ -59,7 +59,7 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 94c771bcdb74de1a7e2feb1570d3f83cfd7fe56b
+%global commit 897e382d9d374cdd25f87eda9e031e68e621807a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220928
 %global with_snapshot 1

@@ -32,7 +32,7 @@ index cfd61db..8bec848 100644
 +        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
      if(keys.contains("kde"))
          m_ui->dialogComboBox->addItem("KDE", "kde");
- 
+     if (keys.contains("xdgdesktopportal"))
 -- 
 2.32.0
 

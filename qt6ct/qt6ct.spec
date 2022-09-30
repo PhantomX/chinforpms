@@ -12,8 +12,8 @@
 
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
-Version:        0.5
-Release:        104%{?gver}%{?dist}
+Version:        0.6
+Release:        100%{?gver}%{?dist}
 
 # The entire source code is under BSD-2-Clause License
 License: BSD
@@ -36,8 +36,8 @@ BuildRequires:  qt6-qtbase-devel
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  qt6-linguist
 BuildRequires:  pkgconfig(xkbcommon)
-BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 Requires:       qt6-qtsvg
 
 %description
@@ -114,6 +114,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Thu Sep 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6-100
+- 0.6
+
 * Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 0.5-104
 - Rebuild (qt6)
 
