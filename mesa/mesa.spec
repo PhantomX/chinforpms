@@ -53,15 +53,12 @@
 %bcond_with valgrind
 %endif
 
-# Enable patent encumbered video codecs
-%bcond_with videocodecs
-
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 897e382d9d374cdd25f87eda9e031e68e621807a
+%global commit 9d1f0e8c82911cb62f17a4a87e02b799e5ce2b81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220928
+%global date 20220929
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -77,7 +74,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -245,6 +242,15 @@ Summary:        Mesa-based OMX drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description omx-drivers
+%{summary}.
+%endif
+
+%if 0%{?with_vaapi}
+%package        vaapi-drivers
+Summary:        Mesa-based VAAPI drivers
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description vaapi-drivers
 %{summary}.
 %endif
 
@@ -429,9 +435,6 @@ export RANLIB="gcc-ranlib"
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
-%if 0%{?with_videocodecs}
-  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
-%endif
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \
@@ -615,13 +618,6 @@ popd
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
 %endif
-%{_libdir}/dri/nouveau_drv_video.so
-%if 0%{?with_r600}
-%{_libdir}/dri/r600_drv_video.so
-%endif
-%if 0%{?with_radeonsi}
-%{_libdir}/dri/radeonsi_drv_video.so
-%endif
 %endif
 %if 0%{?with_opencl}
 %dir %{_libdir}/gallium-pipe
@@ -652,6 +648,18 @@ popd
 %files omx-drivers
 %{_libdir}/bellagio/libomx_mesa.so
 %endif
+
+%if 0%{?with_vaapi}
+%files vaapi-drivers
+%{_libdir}/dri/nouveau_drv_video.so
+%if 0%{?with_r600}
+%{_libdir}/dri/r600_drv_video.so
+%endif
+%if 0%{?with_radeonsi}
+%{_libdir}/dri/radeonsi_drv_video.so
+%endif
+%endif
+
 %if 0%{?with_vdpau}
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
@@ -698,6 +706,10 @@ popd
 
 
 %changelog
+* Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-103.20220929git9d1f0e8
+- Snapshot
+- Split vaapi package
+
 * Wed Sep 21 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-101
 - Disable video codecs
 

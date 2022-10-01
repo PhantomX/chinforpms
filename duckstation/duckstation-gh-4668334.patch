@@ -1,0 +1,22 @@
+From 466833451668904549dd4652ee52116505be14c1 Mon Sep 17 00:00:00 2001
+From: Connor McLaughlin <stenzek@gmail.com>
+Date: Mon, 26 Sep 2022 20:46:17 +1000
+Subject: [PATCH] GameDatabase: Make unknown controller types non-fatal
+
+---
+ src/core/game_database.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/game_database.cpp b/src/core/game_database.cpp
+index 9e78200df..07c9f8688 100644
+--- a/src/core/game_database.cpp
++++ b/src/core/game_database.cpp
+@@ -829,7 +829,7 @@ bool GameDatabase::ParseJsonEntry(Entry* entry, const rapidjson::Value& value)
+         if (!ctype.has_value())
+         {
+           Log_WarningPrintf("Invalid controller type '%s'", controller.GetString());
+-          return false;
++          continue;
+         }
+ 
+         if (first)

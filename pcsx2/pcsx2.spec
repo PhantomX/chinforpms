@@ -17,6 +17,10 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
+%global commit11 31f8788fe0e694e99db7ce138d45a655c556fa96
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 rcheevos
+
 %global sanitize 1
 %bcond_with     native
 
@@ -40,11 +44,11 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3337
+Version:        1.7.3348
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPLv3 and LGPLv3+
+License:        GPLv3 and LGPLv3+ and MIT
 URL:            https://github.com/PCSX2/pcsx2
 
 %if 0%{sanitize}
@@ -63,6 +67,7 @@ Source0:        %{name}-clean-%{version}.tar.xz
 %endif
 Source1:        Makefile
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       https://github.com/RetroAchievements/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-common-build-as-static.patch
@@ -149,6 +154,8 @@ Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = 0~git
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
+Provides:       bundled(raintegration) = 0.0
+Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xbyak) = 0~git
 Provides:       bundled(xxhash) = %{xxhash_ver}
@@ -171,6 +178,8 @@ mv 3rdparty/glad 3rdparty-temp/
 mv 3rdparty/glslang 3rdparty-temp/
 mv 3rdparty/imgui 3rdparty-temp/
 mv 3rdparty/jpgd 3rdparty-temp/
+mv 3rdparty/rainterface 3rdparty-temp/
+mv 3rdparty/rcheevos 3rdparty-temp/
 mv 3rdparty/simpleini 3rdparty-temp/
 mv 3rdparty/xbyak 3rdparty-temp/
 rm -rf 3rdparty/*
@@ -180,6 +189,7 @@ rm -f common/src/Utilities/x86/MemcpyFast.cpp
 rm -rf .git
 
 tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1
+tar -xf %{S:11} -C 3rdparty/rcheevos/rcheevos --strip-components 1
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -191,6 +201,8 @@ sed -i 's/\r//' pcsx2/Docs/License.txt
 
 pushd 3rdparty
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
+cp -p rainterface/LICENSE LICENSE.rainterface
+cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p xbyak/xbyak/COPYRIGHT COPYRIGHT.xbyak
 popd
@@ -323,12 +335,17 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 %{_datadir}/PCSX2/resources/fullscreenui
 %{_datadir}/PCSX2/resources/icons
 %{_datadir}/PCSX2/resources/shaders
+%{_datadir}/PCSX2/resources/sounds
 %{_datadir}/PCSX2/resources/GameIndex.yaml
 %{_datadir}/PCSX2/resources/cover-placeholder.png
 %{_datadir}/PCSX2/resources/game_controller_db.txt
 
 
 %changelog
+* Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3348-1
+- 1.7.3348
+- rcheevos
+
 * Fri Sep 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3316-1
 - 1.7.3316
 - BR: libcpuinfo

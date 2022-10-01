@@ -9,9 +9,9 @@
 
 %global with_sysvulkan 0
 
-%global commit 78b4fbb5152a5cae569d1f2424ec635832ffdcd0
+%global commit 37d579c6527d8480941768a1d929713f4bb85358
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220924
+%global date 20220926
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +28,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        68%{?gver}%{?dist}
+Release:        69%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -51,6 +51,7 @@ Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-format-security.patch
 
+Patch100:       %{vc_url}/commit/466833451668904549dd4652ee52116505be14c1.patch#/%{name}-gh-4668334.patch
 
 ExclusiveArch:  x86_64 armv7l aarch64
 
