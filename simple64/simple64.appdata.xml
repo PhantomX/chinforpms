@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>m64p.desktop</id>
-  <name>m64p</name>
+  <id>simple64-gui.desktop</id>
+  <name>simple64</name>
   <summary>Custom plugins and Qt5 GUI for Mupen64Plus</summary>
   <developer_name>Logan (loganmc10)</developer_name>
   <description>
   <p>
-   m64p is a set of custom plugins and Qt5 GUI for Mupen64Plus.
+   simple64 is a set of custom plugins and Qt5 GUI for Mupen64Plus.
   </p>
 </description>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>GPL-3.0</project_license>
-  <url type="bugtracker">https://github.com/loganmc10/m64p/issues</url>
-  <url type="homepage">https://github.com/loganmc10/m64p</url>
+  <url type="bugtracker">https://github.com/simple64/simple64/issues</url>
+  <url type="homepage">https://github.com/simple64/simple64</url>
   <updatecontact>megaphantomx at hotmail at com</updatecontact>
 </component>

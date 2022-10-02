@@ -2,9 +2,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 30f0c7a886c46e2cfe40120f8ee51d91f27f7c6f
+%global commit 0c3a00727fc7de28a29f1acc3d1e6ee094d5cbc8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220807
+%global date 20220914
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -13,20 +13,20 @@
 
 %global pkgname  parallel-rsp
 
-Name:           mupen64plus-rsp-parallel
+Name:           simple64-rsp-parallel
 Version:        0
-Release:        0.3%{?gver}%{?dist}
-Summary:        paraLLEl-RDP RSP plugin for Mupen64Plus emulator
+Release:        0.4%{?gver}%{?dist}
+Summary:        paraLLEl-RDP RSP plugin for Mupen64Plus/simple64 emulator
 
 License:        (MIT or LGPLv3)
-URL:            https://github.com/loganmc10/%{pkgname}
+URL:            https://github.com/simple64/%{pkgname}
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/releases/download/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
-Source1:        https://github.com/loganmc10/parallel-rdp-standalone/raw/master/README.md
+Source1:        https://github.com/simple64/parallel-rdp-standalone/raw/master/README.md
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -36,8 +36,11 @@ BuildRequires:  mupen64plus-devel
 BuildRequires:  pkgconfig(lightning)
 Requires:       mupen64plus%{?_isa} >= 2.5.9
 
+Obsoletes:      mupen64plus-rsp-parallel < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       mupen64plus-rsp-parallel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
 %description
-This is a the paraLLEl-RDP RSP plugin for Mupen64Plus emulator.
+This is a the paraLLEl-RDP RSP plugin for Mupen64Plus/simple64 emulator.
 
 
 %prep
@@ -74,6 +77,9 @@ install -pm0755 %{__cmake_builddir}/%{name}.so %{buildroot}%{_libdir}/mupen64plu
 
 
 %changelog
+* Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.4.20220914git0c3a007
+- Rename
+
 * Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 0-0.3.20220807git30f0c7a
 - Bump
 

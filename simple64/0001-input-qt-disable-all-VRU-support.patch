@@ -5,13 +5,13 @@ Subject: [PATCH] input-qt: disable all VRU support
 
 Only when building against upstream mupen64plus.
 ---
- mupen64plus-input-qt/main.cpp | 24 ++++++++++++++++++++++++
+ simple64-input-qt/main.cpp | 24 ++++++++++++++++++++++++
  1 file changed, 24 insertions(+)
 
-diff --git a/mupen64plus-input-qt/main.cpp b/mupen64plus-input-qt/main.cpp
+diff --git a/simple64-input-qt/main.cpp b/simple64-input-qt/main.cpp
 index fdc556c..6a75cdb 100644
---- a/mupen64plus-input-qt/main.cpp
-+++ b/mupen64plus-input-qt/main.cpp
+--- a/simple64-input-qt/main.cpp
++++ b/simple64-input-qt/main.cpp
 @@ -27,7 +27,9 @@
  #include "m64p_plugin.h"
  #include "main.h"

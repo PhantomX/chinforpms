@@ -227,6 +227,7 @@ sdl-jstest
 -sdlcl
 -shaderc
 skrooge
+simple64
 smtube
 -snx
 -snxvpn
@@ -280,9 +281,8 @@ dolphin-emu
 freac
 -freac-superfast-codecs
 jamesdsp
-m64p
-mupen64plus-rsp-parallel
-mupen64plus-video-parallel
+-mupen64plus-rsp-parallel
+-mupen64plus-video-parallel
 -ortp
 vkbasalt
 whdd

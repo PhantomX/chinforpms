@@ -44,6 +44,7 @@ mame-data-extras
 mame-data-icons
 mame-data-roms
 melonds
+mesa-drivers-freeworld
 -ms-teams
 -mupen64plus-extraplugins
 mupen64plus-rsp-cxd4

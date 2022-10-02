@@ -53,6 +53,9 @@
 %bcond_with valgrind
 %endif
 
+# Enable patent encumbered video codecs acceleration
+%bcond_with videocodecs
+
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
@@ -435,6 +438,9 @@ export RANLIB="gcc-ranlib"
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
+%if 0%{?with_videocodecs}
+  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+%endif
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=enabled \

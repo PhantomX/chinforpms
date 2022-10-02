@@ -33,7 +33,7 @@ BuildRequires:  %{py3_dist pysdl2}
 BuildRequires:  python3-qt5-devel
 BuildRequires:  qt5-linguist
 BuildRequires:  ImageMagick
-Requires:       mupen64plus
+Requires:       mupen64plus-libs
 Requires:       python3-qt5
 Requires:       %{py3_dist pysdl2}
 Requires:       SDL2

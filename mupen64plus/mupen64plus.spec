@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f29984331b20de47fd1c2de776018fa40f50bac5
+%global commit 2ac8682c60e7df3581b9167fa67d47e263d2b9da
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220809
+%global date 20220930
 %global with_snapshot 1
 
 %global commit1 df0770215f743f70244b09978c123a0a8b2a7d9d
@@ -48,7 +48,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        112%{?gver}%{?dist}
+Release:        113%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -95,6 +95,8 @@ Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
 
+Provides:       %{srcname5}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
 Provides:       bundled(xxhash) = %{xxhash_ver}
 
 
@@ -111,6 +113,7 @@ Summary:        %{summary}
 Provides:       lib%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       lib%{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      lib%{name} < 2.5
+Requires:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libs
 The %{name}-libs package contains the dynamic libraries needed for %{name} and
@@ -127,6 +130,20 @@ Obsoletes:      %{name}-libs-devel < 2.5
 %description devel
 The %{name}-devel package contains the development files libraries needed for 
 plugins building.
+
+
+%package plugins
+Summary:        %{summary}
+Provides:       %{srcname1}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname2}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname3}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname4}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname6}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname7}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description plugins
+The %{name}-plugins package contains default plugins for %{name}.
+
 
 %prep
 %if 0%{?with_snapshot}
@@ -187,12 +204,12 @@ chmod +x %{buildroot}%{_libdir}/lib%{name}.so.*
 chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
 
 rm -f %{buildroot}%{_datadir}/%{name}/font.ttf
-ln -sf ../fonts/dejavu/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/font.ttf
+ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/font.ttf
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files
-%license test/doc/gpl-license test/doc/LICENSES-*
+%license test/doc/gpl-license
 %doc test/doc/README-* test/doc/RELEASE-*
 %{_bindir}/%{name}
 %{_libdir}/%{name}/
@@ -207,6 +224,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files devel
 %{_includedir}/%{name}/*.h
+
+%files plugins
+%license test/doc/gpl-license test/doc/LICENSES-*
+%{_libdir}/%{name}/*.so
 
 
 %changelog

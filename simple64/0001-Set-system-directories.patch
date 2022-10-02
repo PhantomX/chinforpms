@@ -5,14 +5,14 @@ Subject: [PATCH] Set system directories
 
 https://aur.archlinux.org/cgit/aur.git/tree/030-m64p-fix-paths.patch?h=m64p
 ---
- mupen64plus-gui/mainwindow.cpp     | 11 ++++++-----
- mupen64plus-gui/settingsdialog.cpp |  2 +-
+ simple64-gui/mainwindow.cpp     | 11 ++++++-----
+ simple64-gui/settingsdialog.cpp |  2 +-
  2 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/mupen64plus-gui/mainwindow.cpp b/mupen64plus-gui/mainwindow.cpp
+diff --git a/simple64-gui/mainwindow.cpp b/simple64-gui/mainwindow.cpp
 index 00cb0f4..ceefc06 100644
---- a/mupen64plus-gui/mainwindow.cpp
-+++ b/mupen64plus-gui/mainwindow.cpp
+--- a/simple64-gui/mainwindow.cpp
++++ b/simple64-gui/mainwindow.cpp
 @@ -4,6 +4,7 @@
  #include <QCloseEvent>
  #include <QActionGroup>
@@ -26,7 +26,7 @@ index 00cb0f4..ceefc06 100644
      QString pluginPath = PLUGIN_DIR_PATH;
  #else
 -    QString pluginPath = QCoreApplication::applicationDirPath();
-+    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/simple64");
  #endif
      QDir PluginDir(pluginPath);
      PluginDir.setFilter(QDir::Files);
@@ -35,7 +35,7 @@ index 00cb0f4..ceefc06 100644
  
      if (!settings->contains("configDirPath"))
 -        settings->setValue("configDirPath", "$CONFIG_PATH$");
-+        settings->setValue("configDirPath", QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QStringLiteral(u"/mupen64plus"));
++        settings->setValue("configDirPath", QStandardPaths::writableLocation(QStandardPaths::ConfigLocation) + QStringLiteral(u"/simple64"));
  
  #ifdef CONFIG_DIR_PATH
      settings->setValue("configDirPath", CONFIG_DIR_PATH);
@@ -62,20 +62,20 @@ index 00cb0f4..ceefc06 100644
      QString pluginPath = PLUGIN_DIR_PATH;
  #else
 -    QString pluginPath = QCoreApplication::applicationDirPath();
-+    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/simple64");
  #endif
      QString file_path;
      QString plugin_path;
-diff --git a/mupen64plus-gui/settingsdialog.cpp b/mupen64plus-gui/settingsdialog.cpp
+diff --git a/simple64-gui/settingsdialog.cpp b/simple64-gui/settingsdialog.cpp
 index 9d12ae6..3c197c5 100644
---- a/mupen64plus-gui/settingsdialog.cpp
-+++ b/mupen64plus-gui/settingsdialog.cpp
+--- a/simple64-gui/settingsdialog.cpp
++++ b/simple64-gui/settingsdialog.cpp
 @@ -58,7 +58,7 @@ void SettingsDialog::initStuff()
  #ifdef PLUGIN_DIR_PATH
      QString pluginPath = PLUGIN_DIR_PATH;
  #else
 -    QString pluginPath = QCoreApplication::applicationDirPath();
-+    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/m64p");
++    QString pluginPath = QStringLiteral(u"_RPM_LIBDIR_/simple64");
  #endif
      QDir PluginDir(pluginPath);
      QStringList Filter;

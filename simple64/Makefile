@@ -1,5 +1,5 @@
-NAME = m64p
-VERSION ?= 2022.08.6
+NAME = simple64
+VERSION ?= 2022.09.6
 SNAPSHOT ?= 0
 SANITIZE ?= 1
 
@@ -28,9 +28,6 @@ clone: clean
 sanitize: clone
 ifeq ($(SANITIZE),1)
 	rm -f $(DIRNAME)/*.exe
-	rm -rf $(DIRNAME)/mupen64plus-core
-	rm -rf $(DIRNAME)/parallel-rdp-standalone
-	rm -rf $(DIRNAME)/parallel-rsp
 	rm -f $(DIRNAME)/mupen64plus-gui/discord/*.{dylib,so,dll}
 	rm -f $(DIRNAME)/mupen64plus-input-qt/vosk/*.{dylib,so,dll}
 	rm -rf .git
