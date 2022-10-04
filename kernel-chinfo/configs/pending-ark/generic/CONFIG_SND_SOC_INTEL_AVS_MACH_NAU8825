@@ -1,0 +1,18 @@
+# Symbol: SND_SOC_INTEL_AVS_MACH_NAU8825 [=n]
+# Type  : tristate
+# Defined at sound/soc/intel/avs/boards/Kconfig:59
+#   Prompt: nau8825 I2S board
+#   Depends on: SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] && SND_SOC_INTEL_AVS [=m] && I2C [=y] && (MFD_INTEL_LPSS [=y] || COMPILE_TEST [=n])
+#   Location:
+#     Main menu
+#       -> Device Drivers
+#         -> Sound card support (SOUND [=m])
+#           -> Advanced Linux Sound Architecture (SND [=m])
+#             -> ALSA for SoC audio support (SND_SOC [=m])
+#               -> Intel AVS driver (SND_SOC_INTEL_AVS [=m])
+#                 -> Intel AVS Machine drivers
+# Selects: SND_SOC_NAU8825 [=m]
+# 
+# 
+# 
+# CONFIG_SND_SOC_INTEL_AVS_MACH_NAU8825 is not set

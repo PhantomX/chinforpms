@@ -1,0 +1,19 @@
+# Symbol: SND_SOC_WSA883X [=n]
+# Type  : tristate
+# Defined at sound/soc/codecs/Kconfig:1997
+#   Prompt: WSA883X Codec
+#   Depends on: SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] && SOUNDWIRE [=m]
+#   Location:
+#     Main menu
+#       -> Device Drivers
+#         -> Sound card support (SOUND [=m])
+#           -> Advanced Linux Sound Architecture (SND [=m])
+#             -> ALSA for SoC audio support (SND_SOC [=m])
+#               -> CODEC drivers
+# Selects: REGMAP_SOUNDWIRE [=m]
+# Implied by [n]:
+#   - SND_SOC_ALL_CODECS [=n] && SOUND [=m] && !UML && SND [=m] && SND_SOC [=m] && COMPILE_TEST [=n]
+# 
+# 
+# 
+# CONFIG_SND_SOC_WSA883X is not set

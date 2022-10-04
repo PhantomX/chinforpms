@@ -228,7 +228,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.7.0
+Version: 8.8.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -298,6 +298,7 @@ BuildRequires: libblkid-devel >= 2.17
 BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
 BuildRequires: libpciaccess-devel >= 0.10.9
+BuildRequires: systemd-rpm-macros
 BuildRequires: yajl-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
@@ -382,7 +383,7 @@ BuildRequires: wireshark-devel
 %endif
 
 %if %{with_libssh}
-BuildRequires: libssh-devel >= 0.7.0
+BuildRequires: libssh-devel >= 0.8.1
 %endif
 
 BuildRequires: rpcgen
@@ -578,9 +579,9 @@ Requires: util-linux
 Requires: /usr/bin/qemu-img
 %endif
 %if !%{with_storage_rbd}
-Obsoletes: libvirt-daemon-driver-storage-rbd < %{version}-%{release}
+Obsoletes: libvirt-daemon-driver-storage-rbd < 5.2.0
 %endif
-Obsoletes: libvirt-daemon-driver-storage-sheepdog < %{version}-%{release}
+Obsoletes: libvirt-daemon-driver-storage-sheepdog < 8.8.0
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
@@ -1174,7 +1175,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/%{name}.spec)
            -Dstorage_disk=enabled \
            -Dstorage_mpath=enabled \
            %{?arg_storage_rbd} \
-           -Dstorage_sheepdog=disabled \
            %{?arg_storage_gluster} \
            %{?arg_storage_zfs} \
            -Dstorage_vstorage=disabled \
@@ -2386,6 +2386,9 @@ exit 0
 
 
 %changelog
+* Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 8.8.0-100
+- 8.8.0
+
 * Thu Sep 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.7.0-100
 - 8.7.0
 

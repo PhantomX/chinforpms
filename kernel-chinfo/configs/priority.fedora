@@ -20,9 +20,9 @@ ORDER=common fedora pending-fedora custom-overrides
 EMPTY=s390x-zfcpdump
 
 # x86_64
-x86_64=generic:generic-x86:generic-x86-x86_64
-x86_64-debug=generic:generic-x86:generic-x86-x86_64:debug:debug-x86-x86_64
-x86_64-kgcov=generic:generic-x86:generic-x86-x86_64:kgcov
+x86_64=generic:generic-x86
+x86_64-debug=generic:generic-x86:debug:debug-x86
+x86_64-kgcov=generic:generic-x86:kgcov
 
 # ppc64le
 ppc64le=generic:generic-powerpc

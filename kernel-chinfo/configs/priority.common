@@ -1,8 +1,9 @@
+# DO NOT ERASE THIS FILE.  IT IS USED BY THE evaluate_configs SCRIPT.
 ORDER=common ark fedora
 
 # x86_64
-x86_64=generic:generic-x86:generic-x86-x86_64
-x86_64-debug=generic:generic-x86:generic-x86-x86_64:debug:debug-x86-x86_64
+x86_64=generic:generic-x86
+x86_64-debug=generic:generic-x86:debug:debug-x86
 
 # ppc64le
 ppc64le=generic:generic-powerpc

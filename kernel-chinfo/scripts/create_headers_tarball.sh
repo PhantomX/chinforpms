@@ -23,7 +23,7 @@ if [ ! -f "$PKGLOC/${HEADERSSPEC}" ]; then
 fi
 
 # Kernel version information taken from kernel.spec and change to prepared sources directory
-MAJORVER='5'
+MAJORVER='6'
 RELEASED="$(grep "%global released_kernel" ${KERNELSPEC}| cut -d ' ' -f 3)"
 BASERELEASE="$(grep "%global baserelease" ${KERNELSPEC}| cut -d ' ' -f 3)"
 BASE="$(grep "%define base_sublevel" ${KERNELSPEC}| cut -d ' ' -f 3)"

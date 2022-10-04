@@ -1,1 +1,1 @@
-# CONFIG_CROS_EC is not set
+CONFIG_CROS_EC=m

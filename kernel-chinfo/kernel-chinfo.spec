@@ -16,6 +16,9 @@
 # Speep up packaging, no rpaths to search here
 %global __brp_check_rpaths %{nil}
 
+# Disable kernel-rpm-macros, speed up packaging, but no ksyms provides
+%bcond_with rpm_macros
+
 # Option to enable compiling with clang instead of gcc.
 %bcond_with toolchain_clang
 
@@ -148,31 +151,31 @@ Summary: The Linux kernel
 
 %global distro_build 200
 
-%define major_ver 5
+%define major_ver 6
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 19
+%define base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 81691136191394fce4b240d28cb47b7945c617ee
-%global pf_first_commit 3d7cb6b04c3f3115719235cc6866b10326de34cd
-%global pfcoprhash 563e3209764d09ebe55fae2447b8e60b
+%global pfcommit e2a50ae101a3191f89b8433cf27b551c4e590bce
+%global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
+%global pfcoprhash 86691e6f3595681c3c0777b67afdee76
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -194,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 2d94a9f9168213ef64ab7c1191f7e85d1d18663e
+%global opensuse_id 47c5c190085ac244fbca316e6944df1bf3c64167
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -667,6 +670,9 @@ BuildRequires: patchutils
 %endif
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
+%if %{with rpm_macros}
+BuildRequires: kernel-rpm-macros
+%endif
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
@@ -686,7 +692,7 @@ BuildRequires: sparse
 BuildRequires: openssl-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm
+BuildRequires: clang llvm fuse-devel
 %ifnarch %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -956,22 +962,17 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/vduse-prevent-uninitialized-memory-accesses.patch#/openSUSE-vduse-prevent-uninitialized-memory-accesses.patch
-Patch1017: %{opensuse_url}/watchdog-wdat_wdt-fix-min-max-timer-value.patch#/openSUSE-watchdog-wdat_wdt-fix-min-max-timer-value.patch
+Patch1016: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%global tkg_id 927978d34a91484490dcf43b2dff95535ffc1161
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/5.19/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%global tkg_id f59fe9875440ce1a3da9c5d6281d5212b82cc2ef
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2092: https://cgit.freedesktop.org/drm/drm/patch/?id=c9cad937c0c58618fe5b0310fd539a854dc1ae95#/kernel-git-drm-c9cad93.patch
-Patch2093: https://cgit.freedesktop.org/drm/drm/patch/?id=708d19d9f362766147cab79eccae60912c6d3068#/kernel-git-drm-708d19d.patch
-Patch2094: https://cgit.freedesktop.org/drm/drm/patch/?id=5e3f1e7729ec7a99e145e9d8ed58963d86cdfb98#/kernel-git-drm-5e3f1e7.patch
-Patch2095: https://cgit.freedesktop.org/drm/drm/patch/?id=6f2c8d5f16594a13295d153245e0bb8166db7ac9#/kernel-git-drm-6f2c8d5.patch
-Patch2096: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
-Patch2097: %{patchwork_xdg_url}/504643/mbox/#/patchwork-v3-drm-amdgpu-Fix-VRAM-BO-swap-issue.patch
+Patch2092: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
+Patch2093: %{patchwork_xdg_url}/504643/mbox/#/patchwork-v3-drm-amdgpu-Fix-VRAM-BO-swap-issue.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
@@ -1068,7 +1069,7 @@ It provides the kernel source files common to all builds.
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
-Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3
+Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -1683,6 +1684,18 @@ RHJOBS=%{?_smp_build_ncpus} PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${rpm
 cp %{SOURCE82} .
 RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
 
+# We may want to override files from the primary target in case of building
+# against a flavour of it (eg. centos not rhel), thus override it here if
+# necessary
+if [ "%{primary_target}" == "rhel" ]; then
+%if 0%{?centos}
+  echo "Updating scripts/sources to centos version"
+  RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh centos
+%else
+  echo "Not updating scripts/sources to centos version"
+%endif
+fi
+
 # end of kernel config
 %endif
 
@@ -1814,6 +1827,9 @@ BuildKernel() {
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
     find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
+
+    # Remove large intermediate files we no longer need to save space
+    rm -f vmlinux.o .tmp_vmlinux.btf
 
     # Start installing the results
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
@@ -2423,6 +2439,13 @@ pushd tools/testing/selftests
 # doesn't seem possible to do in the install section.
 %{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
+# If we re building only tools without kernel, we need to generate config
+# headers and prepare tree for modules building. The modules_prepare target
+# will cover both.
+if [ ! -f include/generated/autoconf.h ]; then
+   %{make} %{?_smp_mflags} modules_prepare
+fi
+
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
 for dir in bpf bpf/no_alu32 bpf/progs; do
@@ -2656,6 +2679,13 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/netfilter/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
 popd
+
+# install memfd selftests
+pushd tools/testing/selftests/memfd
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+popd
 %endif
 
 ###
@@ -2701,19 +2731,6 @@ fi\
 %{nil}
 
 #
-# This macro defines a %%post script for a kernel*-modules-partner package.
-# It also defines a %%postun script that does the same thing.
-#	%%kernel_modules_partner_post [<subpackage>]
-#
-%define kernel_modules_partner_post() \
-%{expand:%%post %{?1:%{1}-}modules-partner}\
-/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%{nil}\
-%{expand:%%postun %{?1:%{1}-}modules-partner}\
-/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%{nil}
-
-#
 # This macro defines a %%post script for a kernel*-modules-extra package.
 # It also defines a %%postun script that does the same thing.
 #    %%kernel_modules_extra_post [<subpackage>]
@@ -2736,6 +2753,19 @@ fi\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}modules-internal}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}
+
+#
+# This macro defines a %%post script for a kernel*-modules-partner package.
+# It also defines a %%postun script that does the same thing.
+#	%%kernel_modules_partner_post [<subpackage>]
+#
+%define kernel_modules_partner_post() \
+%{expand:%%post %{?1:%{1}-}modules-partner}\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%{nil}\
+%{expand:%%postun %{?1:%{1}-}modules-partner}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}
 
@@ -2777,6 +2807,10 @@ fi\
 %endif\
 rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" ]]; then\
+    ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.gz" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz"\
+    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.gz" \
+fi\
 %{nil}
 
 #
@@ -2993,6 +3027,9 @@ fi
 #
 #
 %changelog
+* Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500.chinfo
+- 6.0.0 - pf1
+
 * Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500.chinfo
 - 5.19.12 - pf6
 
@@ -3257,162 +3294,6 @@ fi
 
 * Tue Aug 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-500.chinfo
 - 5.14.0 - pf2
-
-* Thu Aug 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.13-500.chinfo
-- 5.13.13 - pf7
-
-* Wed Aug 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.12-500.chinfo
-- 5.13.12 - pf6
-
-* Tue Aug 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.11-500.chinfo
-- 5.13.11 - pf6
-
-* Thu Aug 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.10-500.chinfo
-- 5.13.10 - pf5
-
-* Sun Aug 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.9-500.chinfo
-- 5.13.9 - pf5
-
-* Wed Aug 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.8-500.chinfo
-- 5.13.8 - pf4
-
-* Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.7-500.chinfo
-- 5.13.7 - pf4
-
-* Wed Jul 28 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.6-500.chinfo
-- 5.13.6 - pf4
-
-* Sun Jul 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.5-500.chinfo
-- 5.13.5 - pf4
-
-* Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.4-500.chinfo
-- 5.13.4 - pf3
-
-* Mon Jul 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.3-500.chinfo
-- 5.13.3 - pf3
-
-* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.2-500.chinfo
-- 5.13.2 - pf3
-- stabilization sync
-
-* Wed Jul 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.1-500.chinfo
-- 5.13.1 - pf2
-
-* Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500.chinfo
-- 5.13.0 - pf1
-- ark sync
-
-* Fri Jun 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.13-501.chinfo
-- pf update
-
-* Wed Jun 23 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.13-500.chinfo
-- 5.12.13 - pf6
-
-* Fri Jun 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.12-500.chinfo
-- 5.12.12 - pf6
-
-* Wed Jun 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.11-500.chinfo
-- 5.12.11 - pf6
-
-* Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.10-500.chinfo
-- 5.12.10 - pf4
-
-* Thu Jun 03 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.9-500.chinfo
-- 5.12.9 - pf4
-
-* Fri May 28 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.8-500.chinfo
-- 5.12.8 - pf4
-
-* Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.7-500.chinfo
-- 5.12.7 - pf4
-
-* Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.6-500.chinfo
-- 5.12.6 - pf3
-
-* Thu May 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-501.chinfo
-- pf sync, BFQ crash fix
-
-* Wed May 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-500.chinfo
-- 5.12.5 - pf3
-
-* Fri May 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.4-500.chinfo
-- 5.12.4 - pf2
-
-* Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.3-500.chinfo
-- 5.12.3 - pf2
-
-* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.2-500.chinfo
-- 5.12.2 - pf2
-- stabilization sync
-
-* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.1-500.chinfo
-- 5.12.1 - pf2
-
-* Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500.chinfo
-- 5.12.0 - pf1
-- Rawhide sync
-
-* Wed Apr 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.16-500.chinfo
-- 5.11.16 - pf8
-
-* Sun Apr 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.15-501.chinfo
-- pf sync
-
-* Fri Apr 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.15-500.chinfo
-- 5.11.15 - pf8
-
-* Wed Apr 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.14-500.chinfo
-- 5.11.14 - pf6
-
-* Sat Apr 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.13-500.chinfo
-- 5.11.13 - pf6
-
-* Thu Apr 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-501.chinfo
-- Update patchsets
-
-* Wed Apr 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.12-500.chinfo
-- 5.11.12 - pf6
-
-* Tue Mar 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.11-500.chinfo
-- 5.11.11 - pf6
-
-* Thu Mar 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.10-500.chinfo
-- 5.11.10 - pf6
-
-* Wed Mar 24 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.9-500.chinfo
-- 5.11.9 - pf5
-
-* Sat Mar 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.8-500.chinfo
-- 5.11.8 - pf5
-
-* Wed Mar 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.7-500.chinfo
-- 5.11.7 - pf4
-
-* Thu Mar 11 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.6-500.chinfo
-- 5.11.6 - pf4
-
-* Tue Mar 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.5-500.chinfo
-- 5.11.5 - pf4
-
-* Sun Mar 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.4-500.chinfo
-- 5.11.4 - pf3
-
-* Thu Mar 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.3-500.chinfo
-- 5.11.3 - pf3
-
-* Fri Feb 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.2-500.chinfo
-- 5.11.2 - pf3
-- f34 sync
-
-* Tue Feb 23 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.1-500.chinfo
-- 5.11.1 - pf3
-- Added futex2 patch
-
-* Mon Feb 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.11.0-500.chinfo
-- 5.11.0 - pf0
-
-* Sat Feb 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.10.16-500.chinfo
-- 5.10.16 - pf13
 
 
 ###

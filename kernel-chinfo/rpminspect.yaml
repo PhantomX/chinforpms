@@ -1,6 +1,14 @@
 # additional rpminspect configuration for this branch
 
 ---
+inspections:
+    upstream: off
+
+badfuncs:
+    ignore:
+        - /usr/libexec/ksamples/*
+        - /usr/libexec/kselftests/*
+
 emptyrpm:
     expected_empty:
         - kernel
@@ -16,3 +24,8 @@ emptyrpm:
         - kernel-zfcpdump
         - kernel-zfcpdump-devel-matched
         - kernel-zfcpdump-modules
+
+patches:
+    ignore_list:
+        - linux-kernel-test.patch
+        - patch-%%SPECKVERSION%%.%%SPECKPATCHLEVEL%%-redhat.patch

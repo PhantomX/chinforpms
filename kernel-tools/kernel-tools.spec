@@ -19,33 +19,36 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define major_ver 5
+%global base_major 6
 
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 19
+%global base_sublevel 0
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
 %global stable_base %{stable_update}
 %endif
-%global rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
+%global rpmversion %{base_major}.%{base_sublevel}.%{stable_update}
 
 ## The not-released-kernel case ##
 %else
 # The next upstream release sublevel (base_sublevel+1)
-%global upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+# %global upstream_sublevel %(echo $((%{base_sublevel} + 1)))
+%global upstream_sublevel 0
+%global upstream_major 6
+
 # The rc snapshot level
 %global rcrev 0
 # Set rpm version accordingly
-%global rpmversion %{major_ver}.%{upstream_sublevel}.0
+%global rpmversion %{upstream_major}.%{upstream_sublevel}.0
 %endif
 # Nb: The above rcrev values automagically define Patch00 and Patch01 below.
 
@@ -68,7 +71,7 @@
 %endif
 
 # The kernel tarball/base version
-%global kversion %{major_ver}.%{base_sublevel}
+%global kversion %{base_major}.%{base_sublevel}
 %global KVERREL %{version}-%{release}.%{_target_cpu}
 
 # perf needs this
@@ -81,7 +84,7 @@ URL:            http://www.kernel.org/
 Version:        %{rpmversion}
 Release:        %{pkg_release}
 
-Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
+Source0: https://cdn.kernel.org/pub/linux/kernel/v%{base_major}.x/linux-%{kversion}.tar.xz
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -91,18 +94,15 @@ Source2001: cpupower.config
 
 # For a stable release kernel
 %if 0%{?stable_base}
-Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/patch-%{major_ver}.%{base_sublevel}.%{stable_base}.xz
+Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{base_major}.x/patch-%{base_major}.%{base_sublevel}.%{stable_base}.xz
 %else
 # non-released_kernel case
 # These are automagically defined by the rcrev value set up
 # near the top of this spec file.
 %if 0%{?rcrev}
-Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
+Source5000: patch-%{upstream_major}.%{upstream_sublevel}-rc%{rcrev}.xz
 %endif
 %endif
-
-# rpmlint cleanup
-Patch6: 0002-perf-Don-t-make-sourced-script-executable.patch
 
 
 # Extra
@@ -127,7 +127,7 @@ BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: zlib-devel binutils-devel newt-devel python3-docutils perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-devel java-devel
-BuildRequires: asciidoc libxslt-devel xmlto libcap-devel
+BuildRequires: asciidoc libxslt-devel xmlto libcap-devel python3-setuptools
 BuildRequires: openssl-devel libbabeltrace-devel
 BuildRequires: libtracefs-devel libtraceevent-devel
 BuildRequires: libbpf-devel
@@ -240,7 +240,7 @@ cd linux-%{kversion}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 
-%patch6 -p1
+%dnl %patch1 -p1
 
 # END OF PATCH APPLICATIONS
 
@@ -554,6 +554,9 @@ popd
 
 
 %changelog
+* Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500
+- 6.0.0
+
 * Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500
 - 5.19.12
 
@@ -784,85 +787,3 @@ popd
 
 * Tue Aug 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-500
 - 5.14.0
-
-* Thu Aug 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.13-500
-- 5.13.13
-
-* Wed Aug 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.12-500
-- 5.13.12
-
-* Sun Aug 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.11-500
-- 5.13.11
-
-* Thu Aug 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.10-500
-- 5.13.10
-
-* Sun Aug 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.9-500
-- 5.13.9
-
-* Wed Aug 04 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.8-500
-- 5.13.8
-
-* Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.7-500
-- 5.13.7
-
-* Wed Jul 28 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.6-500
-- 5.13.6
-
-* Sun Jul 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.5-500
-- 5.13.5
-
-* Tue Jul 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.4-500
-- 5.13.4
-
-* Mon Jul 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.3-500
-- 5.13.3
-
-* Wed Jul 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.2-500
-- 5.13.2
-
-* Tue Jun 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.13.0-500
-- 5.13.0
-- Rawhide sync
-
-* Fri Jun 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.13-500
-- 5.12.13
-
-* Fri Jun 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.12-500
-- 5.12.12
-
-* Wed Jun 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.11-500
-- 5.12.11
-
-* Thu Jun 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.10-500
-- 5.12.10
-
-* Thu Jun 03 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.9-500
-- 5.12.9
-
-* Fri May 28 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.8-500
-- 5.12.8
-
-* Wed May 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.7-500
-- 5.12.7
-
-* Sat May 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.6-500
-- 5.12.6
-
-* Wed May 19 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.5-500
-- 5.12.5
-
-* Fri May 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.4-500
-- 5.12.4
-
-* Wed May 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.3-500
-- 5.12.3
-
-* Fri May 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.2-500
-- 5.12.2
-
-* Sun May 02 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.1-500
-- 5.12.1
-
-* Mon Apr 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.12.0-500
-- 5.12.0
