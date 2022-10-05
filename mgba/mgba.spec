@@ -1,6 +1,6 @@
-%global commit e87f7b7b6885c63ad35ac4f6d0cd4d74e1d36d70
+%global commit a56bfab48e1ef8e9280a11191b3fd4f2f502d2f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220909
+%global date 20221004
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -17,7 +17,7 @@
 
 Name:           mgba
 Version:        0.10.0
-Release:        0.23%{?gver}%{?dist}
+Release:        0.24%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0
@@ -30,6 +30,7 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
+Patch1:         0001-vfs-lzma-update-bool-for-lzma-sdk.patch
 
 
 BuildRequires:  cmake
@@ -43,7 +44,7 @@ BuildRequires:  pkgconfig(epoxy)
 BuildRequires:  pkgconfig(inih)
 BuildRequires:  pkgconfig(libedit)
 BuildRequires:  pkgconfig(libelf)
-BuildRequires:  pkgconfig(lzmasdk-c)
+BuildRequires:  pkgconfig(lzmasdk-c) >= 22.01
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  libzip-tools

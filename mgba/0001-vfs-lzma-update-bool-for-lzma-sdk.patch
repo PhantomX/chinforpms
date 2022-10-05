@@ -1,0 +1,25 @@
+From 242d658d81c3babea09ce15ef9ce788a4e75f093 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 4 Oct 2022 23:14:00 -0300
+Subject: [PATCH] vfs-lzma: update bool for lzma-sdk
+
+---
+ src/util/vfs/vfs-lzma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/util/vfs/vfs-lzma.c b/src/util/vfs/vfs-lzma.c
+index caa7f34..1bb4c56 100644
+--- a/src/util/vfs/vfs-lzma.c
++++ b/src/util/vfs/vfs-lzma.c
+@@ -90,7 +90,7 @@ struct VDir* VDirOpen7z(const char* path, int flags) {
+ 	vd->allocTempImp.Free = SzFreeTemp;
+ 
+ 	FileInStream_CreateVTable(&vd->archiveStream);
+-	LookToRead2_CreateVTable(&vd->lookStream, False);
++	LookToRead2_CreateVTable(&vd->lookStream, False7z);
+ 
+ 	vd->lookStream.realStream = &vd->archiveStream.vt;
+ 	vd->lookStream.buf = malloc(BUFFER_SIZE);
+-- 
+2.37.3
+

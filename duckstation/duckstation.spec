@@ -7,11 +7,12 @@
 
 %global with_nogui 0
 
+%global with_sysspirv 0
 %global with_sysvulkan 0
 
-%global commit 37d579c6527d8480941768a1d929713f4bb85358
+%global commit ab1422b69026befb96b8cef9748c8ec2017c6aa1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220926
+%global date 20221004
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -28,7 +29,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        69%{?gver}%{?dist}
+Release:        70%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -49,9 +50,6 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
-Patch7:         0001-format-security.patch
-
-Patch100:       %{vc_url}/commit/466833451668904549dd4652ee52116505be14c1.patch#/%{name}-gh-4668334.patch
 
 ExclusiveArch:  x86_64 armv7l aarch64
 
@@ -70,7 +68,7 @@ BuildRequires:  cmake(RapidJSON)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
-BuildRequires:  pkgconfig(fmt) >= 8
+BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
@@ -89,8 +87,10 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
-BuildRequires:  vulkan-headers
 %if 0%{?with_sysvulkan}
+BuildRequires:  vulkan-headers
+%endif
+%if 0%{?with_sysspirv}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
@@ -156,9 +156,17 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 vulkan xxhash zlib zstd
+  rapidjson tinyxml2 xxhash zlib zstd
 
 %if 0%{?with_sysvulkan}
+  mkdir -p ../src/vulkan
+  mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
+  rm -rf vulkan 
+%else
+  sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i CMakeLists.txt
+%endif
+
+%if 0%{?with_sysspirv}
   rm -rf glslang
 %else
   sed -e 's|SPIRV-Tools|SPIRV-Tools_disabled|g' -i CMakeLists.txt

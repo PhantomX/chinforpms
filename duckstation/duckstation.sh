@@ -23,4 +23,4 @@ do
 done < <(find inputprofiles -type f)
 popd >/dev/null 2>&1
 
-exec "/usr/bin/$(basename "$0").bin" "$@"
+exec "${BASH_SOURCE[0]}.bin" "$@"

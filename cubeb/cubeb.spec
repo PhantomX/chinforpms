@@ -1,6 +1,6 @@
-%global commit 4783607ecc09e9493677a9c4e3db95f78d87409a
+%global commit 6b474ee4045561f65eb5a720205307db809812b4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220906
+%global date 20220930
 %global with_snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        36%{?gver}%{?dist}
+Release:        37%{?gver}%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -70,6 +70,8 @@ rm -rf src/android
 rm -rf subprojects/speex
 
 sed -i -e "/^\[!/d" -e "/INSTALL.md/d" README.md
+
+sed -e '/TYPE DOC/d' -i CMakeLists.txt
 
 
 %build

@@ -7,7 +7,7 @@
 %global with_hardware 1
 %global with_vulkan_hw 1
 %global with_vdpau 1
-%global with_vaapi 1
+%global with_va 1
 %if !0%{?rhel}
 %global with_nine 1
 %global with_omx 1
@@ -59,9 +59,9 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 9d1f0e8c82911cb62f17a4a87e02b799e5ce2b81
+%global commit d4d47ef6efa91a4f28b01fa0cd3f17f0442455b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220929
+%global date 20221004
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -77,7 +77,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -151,7 +151,7 @@ BuildRequires:  flex
 %if 0%{?with_vdpau}
 BuildRequires:  pkgconfig(vdpau) >= 1.1
 %endif
-%if 0%{?with_vaapi}
+%if 0%{?with_va}
 BuildRequires:  pkgconfig(libva) >= 1.8.0
 %endif
 %if 0%{?with_omx}
@@ -188,7 +188,6 @@ BuildRequires:  /usr/bin/pathfix.py
 %package filesystem
 Summary:        Mesa driver filesystem
 Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      mesa-dri-filesystem < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
 %{summary}.
@@ -248,12 +247,12 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 %{summary}.
 %endif
 
-%if 0%{?with_vaapi}
-%package        vaapi-drivers
+%if 0%{?with_va}
+%package        va-drivers
 Summary:        Mesa-based VAAPI drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description vaapi-drivers
+%description va-drivers
 %{summary}.
 %endif
 
@@ -432,7 +431,7 @@ export RANLIB="gcc-ranlib"
   -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
   -Dgallium-xvmc=disabled \
   -Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
-  -Dgallium-va=%{?with_vaapi:enabled}%{!?with_vaapi:disabled} \
+  -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
@@ -655,8 +654,8 @@ popd
 %{_libdir}/bellagio/libomx_mesa.so
 %endif
 
-%if 0%{?with_vaapi}
-%files vaapi-drivers
+%if 0%{?with_va}
+%files va-drivers
 %{_libdir}/dri/nouveau_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
@@ -712,6 +711,9 @@ popd
 
 
 %changelog
+* Wed Oct 05 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-104.20221004gitd4d47ef
+- Rawhide sync
+
 * Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-103.20220929git9d1f0e8
 - Snapshot
 - Split vaapi package

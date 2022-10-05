@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 61de50069b2fb25afef665dd9a5c1eeb2976a26b
+%global commit aa9a6ceed57613627b30c34aa718d5d7d751746a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220902
+%global date 20221004
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        9%{?gver}%{?dist}
+Release:        10%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -40,7 +40,8 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
-Patch10:        %{vc_url}/pull/1402.patch#/%{name}-gh-pr1402.patch
+Patch10:        %{name}-pr1402.patch
+Patch11:        %{vc_url}/pull/1485.patch#/%{name}-gh-pr1485.patch
 
 ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64
 
@@ -50,6 +51,7 @@ BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6OpenGL)

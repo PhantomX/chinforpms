@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a6c95465297e2e856322469a2e31e2cffd9d5244
+%global commit 362391b9d88ad819fc862f96ff6640087acf7765
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220911
+%global date 20221004
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -30,11 +30,11 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %global with_smallffmpeg 1
 
-%global commit1 36ad6b19b22de2075a01a4f0c765e3ef514dc38f
+%global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 3ad7ddb9eb2af898dce8c4b5e9a28b77b3f7ddd7
+%global commit2 cea6dd17be4ea045946dc991ef0bca91f9005345
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -42,7 +42,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 7885552b208493a6a0f21663770c446c3ba65576
+%global commit4 b4335f04fa62c1b4f7833c70fbb15505b6772274
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -54,9 +54,9 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
-%global commit8 9776332f720c854ef26f325a0cf9e32c02115a9c
+%global commit8 3f1c185ab414e764c694b8171d1c4d8c5c437517
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 %{name}-debugger
+%global srcname8 filesystem
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -69,7 +69,7 @@
 
 Name:           ppsspp
 Version:        1.13.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -94,7 +94,7 @@ Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
-Source8:        https://github.com/unknownbrackets/ppsspp-debugger/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source10:       %{name}.appdata.xml
 Source11:       Makefile
 
@@ -222,7 +222,7 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
-tar -xf %{SOURCE8} -C assets/debugger --strip-components 1
+tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}

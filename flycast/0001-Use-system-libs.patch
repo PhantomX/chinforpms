@@ -1,23 +1,23 @@
-From 67dfeb7ac55da705448b28292f6b995bbfa40091 Mon Sep 17 00:00:00 2001
+From ebe564de1872aa0c579064faca161f1f12ffddf2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 67 +++++++++++++++++++++++++++++++----
+ CMakeLists.txt                | 74 ++++++++++++++++++++++++++++++++---
  core/archive/7zArchive.cpp    |  7 ++++
  core/archive/7zArchive.h      |  5 +++
- core/archive/archive.cpp      |  4 +++
- core/rend/vulkan/compiler.cpp |  4 +++
- core/rend/vulkan/shaders.h    |  4 +++
- 6 files changed, 85 insertions(+), 6 deletions(-)
+ core/archive/archive.cpp      |  4 ++
+ core/rend/vulkan/compiler.cpp |  4 ++
+ core/rend/vulkan/shaders.h    |  4 ++
+ 6 files changed, 92 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 78981cb..dc7a4b3 100644
+index 6575bd4..0f50766 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,9 @@ option(LIBRETRO "Build libretro core" OFF)
- option(USE_OPENGL "Use Open GL API" ON)
+ option(USE_OPENGL "Use OpenGL API" ON)
  option(USE_VIDEOCORE "RPI: use the legacy Broadcom GLES libraries" OFF)
  option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
 +option(USE_HOST_CHDR "Use host libchdr" OFF)
@@ -26,7 +26,7 @@ index 78981cb..dc7a4b3 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -280,20 +283,44 @@ if(USE_OPENMP)
+@@ -282,16 +285,40 @@ if(USE_OPENMP)
      endif()
  endif()
  
@@ -49,8 +49,8 @@ index 78981cb..dc7a4b3 100644
 +if(NOT glm_FOUND)
  option(BUILD_SHARED_LIBS "Build shared library" OFF)
  add_subdirectory(core/deps/glm)
- target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
 +endif()
+ target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
  
 -if(USE_VULKAN)
 +if(USE_HOST_SPIRV)
@@ -66,14 +66,19 @@ index 78981cb..dc7a4b3 100644
 +    target_link_libraries(${PROJECT_NAME} PRIVATE glslang-shared)
 +else()
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
+ 	option(SKIP_GLSLANG_INSTALL "Skip installation" ON)
+ 	option(ENABLE_SPVREMAPPER "Enables building of SPVRemapper" OFF)
+@@ -299,8 +326,8 @@ if(USE_VULKAN)
+ 	option(ENABLE_HLSL "Enables HLSL input support" OFF)
+ 	option(ENABLE_PCH "Enables Precompiled header" OFF)
  	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
 -	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
  endif()
-+	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
++target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -344,9 +371,17 @@ if(NOT LIBRETRO)
+@@ -356,9 +383,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -92,7 +97,7 @@ index 78981cb..dc7a4b3 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
      target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -358,7 +393,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -370,7 +405,6 @@ if(NOT WITH_SYSTEM_ZLIB)
      get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -100,7 +105,7 @@ index 78981cb..dc7a4b3 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
      pkg_check_modules(AO IMPORTED_TARGET ao)
      if(AO_FOUND)
-@@ -585,8 +619,25 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -597,8 +631,25 @@ target_sources(${PROJECT_NAME} PRIVATE
          core/deps/picotcp/stack/pico_stack.c
          core/deps/picotcp/stack/pico_tree.c)
  
@@ -126,7 +131,7 @@ index 78981cb..dc7a4b3 100644
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
  if(NOT LIBRETRO)
  	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
-@@ -632,9 +683,13 @@ if(LIBRETRO)
+@@ -644,9 +695,13 @@ if(LIBRETRO)
  		shell/libretro/vmu_xhair.cpp)
  endif()
  
@@ -142,6 +147,21 @@ index 78981cb..dc7a4b3 100644
          core/archive/archive.cpp
          core/archive/archive.h
          core/archive/rzip.cpp
+@@ -1068,7 +1123,14 @@ if(NOT LIBRETRO)
+ endif()
+ 
+ if(USE_VULKAN)
++	find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h)
++	if(vulkan_INCLUDE_DIRS)
++		message(STATUS "Using the system vulkan-headers")
++		add_library(vulkan-shared INTERFACE)
++		add_library(Vulkan::Headers ALIAS vulkan-shared)
++	else()
+ 	add_subdirectory(core/deps/Vulkan-Headers)
++	endif()
+ 	target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
+ 
+ 	add_library(VulkanMemoryAllocator INTERFACE)
 diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
 index 9a74502..d743695 100644
 --- a/core/archive/7zArchive.cpp
@@ -208,7 +228,7 @@ index 904839a..615011d 100644
  	Archive *zip_archive = new ZipArchive();
  	if (zip_archive->Open(base_path.c_str()) || zip_archive->Open((base_path + ".zip").c_str()) || zip_archive->Open((base_path + ".ZIP").c_str()))
 diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
-index ea644b4..8bac74e 100644
+index 4687a61..22cbdfe 100644
 --- a/core/rend/vulkan/compiler.cpp
 +++ b/core/rend/vulkan/compiler.cpp
 @@ -19,7 +19,11 @@

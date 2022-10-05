@@ -1,13 +1,31 @@
-From 5f3bd86a38bdf01cc3e1f1bba65eca1327a69755 Mon Sep 17 00:00:00 2001
+From 2532e3cefcd8ccf37e8e8ad58e583b3bcccc0f99 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 15 Jul 2022 19:31:43 -0300
 Subject: [PATCH] gcc: ignore -Wmaybe-uninitialized
 
 ---
+ src/input_common/input_poller.cpp           | 6 ++++++
  src/video_core/gpu_thread.cpp               | 6 ++++++
  src/yuzu/configuration/configure_system.cpp | 6 ++++++
- 2 files changed, 12 insertions(+)
+ 3 files changed, 18 insertions(+)
 
+diff --git a/src/input_common/input_poller.cpp b/src/input_common/input_poller.cpp
+index 75705b6..9e57d98 100755
+--- a/src/input_common/input_poller.cpp
++++ b/src/input_common/input_poller.cpp
+@@ -7,6 +7,12 @@
+ #include "input_common/input_engine.h"
+ #include "input_common/input_poller.h"
+ 
++#ifdef __GNUC__
++#ifndef __clang__
++#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
++#endif
++#endif
++
+ namespace InputCommon {
+ 
+ class DummyInput final : public Common::Input::InputDevice {
 diff --git a/src/video_core/gpu_thread.cpp b/src/video_core/gpu_thread.cpp
 index 0ee1777..f8770da 100755
 --- a/src/video_core/gpu_thread.cpp
@@ -26,10 +44,10 @@ index 0ee1777..f8770da 100755
  
  /// Runs the GPU thread
 diff --git a/src/yuzu/configuration/configure_system.cpp b/src/yuzu/configuration/configure_system.cpp
-index ecebb0f..8b49bf0 100755
+index bc9d9d7..1eef8e9 100755
 --- a/src/yuzu/configuration/configure_system.cpp
 +++ b/src/yuzu/configuration/configure_system.cpp
-@@ -15,6 +15,12 @@
+@@ -14,6 +14,12 @@
  #include "yuzu/configuration/configuration_shared.h"
  #include "yuzu/configuration/configure_system.h"
  
@@ -43,5 +61,5 @@ index ecebb0f..8b49bf0 100755
      : QWidget(parent), ui{std::make_unique<Ui::ConfigureSystem>()}, system{system_} {
      ui->setupUi(this);
 -- 
-2.37.1
+2.37.3
 

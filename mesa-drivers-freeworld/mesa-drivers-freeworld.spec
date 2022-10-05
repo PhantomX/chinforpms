@@ -15,9 +15,9 @@
 %bcond_with valgrind
 %endif
 
-%global commit 9d1f0e8c82911cb62f17a4a87e02b799e5ce2b81
+%global commit d4d47ef6efa91a4f28b01fa0cd3f17f0442455b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220929
+%global date 202201004
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -33,7 +33,7 @@ Name:           mesa-drivers-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Epoch:          100
 
@@ -96,19 +96,19 @@ BuildRequires:  pkgconfig(libzstd)
 %{summary}.
 
 
-%package -n     mesa-vaapi-drivers-freeworld
+%package -n     mesa-va-drivers-freeworld
 Summary:        Mesa-based VAAPI drivers - freeworld
-Obsoletes:      mesa-vaapi-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       mesa-vaapi-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-va-drivers < %{?epoch:%{epoch}:}
+Provides:       mesa-va-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mesa-filesystem%{?_isa} >= %{version}
 
-%description -n mesa-vaapi-drivers-freeworld
+%description -n mesa-va-drivers-freeworld
 %{summary}.
 
 
 %package -n     mesa-vdpau-drivers-freeworld
 Summary:        Mesa-based VDPAU drivers- freeworld
-Obsoletes:      mesa-vdpau-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-vdpau-drivers < %{?epoch:%{epoch}:}
 Provides:       mesa-vdpau-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mesa-filesystem%{?_isa} >= %{version}
 
@@ -167,7 +167,7 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}
 
 
-%files -n mesa-vaapi-drivers-freeworld
+%files -n mesa-va-drivers-freeworld
 %{_libdir}/dri/nouveau_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
@@ -190,5 +190,8 @@ rm -rf %{buildroot}%{_datadir}
 
 
 %changelog
+* Wed Oct 05 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.0-101.202201004gitd4d47ef
+- Rename vaapi to va
+
 * Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.0-100.20220929git9d1f0e8
 - Initial spec

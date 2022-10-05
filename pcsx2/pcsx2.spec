@@ -44,7 +44,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3348
+Version:        1.7.3369
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -256,6 +256,7 @@ sed -i \
   -DUSE_LTO:BOOL=FALSE \
   -DUSE_VTUNE:BOOL=FALSE \
   -DCUBEB_API:BOOL=TRUE \
+  -DUSE_DISCORD_PRESENCE:BOOL=FALSE \
   -DUSE_SYSTEM_YAML:BOOL=TRUE \
   -DUSE_SYSTEM_ZSTD:BOOL=TRUE \
   -DDISABLE_PCSX2_WRAPPER:BOOL=TRUE \

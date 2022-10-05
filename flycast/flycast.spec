@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit aa97a6d64fb47d3ce0febaa575b26d975dd916e4
+%global commit 7da0549b8c742c8efd3df5f0ed26e93b822b56c1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220825
+%global date 20221004
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -18,11 +18,28 @@
 %global srcname1 LuaBridge
 
 %global commit2 d2657e1267d2ce9399bcc6b9c5b01b465db057b1
-%global shortcommit2 %(c=%{commit1}; echo ${c:0:7})
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
+%global commit3 c896e2f920273bfee852da9cca2a356bc1c2031e
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 Vulkan-Headers
+
+%global commit4 a6bfc237255a6bac1513f7c1ebde6d8aed6b5191
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 VulkanMemoryAllocator
+
+%global commit5 10423ec659d301a0ff2daac8bbf38980abf27590
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 glslang
+
+%global commit6 37afa119a904d81a3495e6ef9c03151feff56349
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 volk
+
 # Enable system spirv (broken)
-%global with_spirv 0
+%global with_sysspirv 0
+%global with_sysvulkan 0
 # Build with x11 instead SDL
 %global with_x11 0
 
@@ -34,11 +51,10 @@
 %global libelf_ver 1.0
 %global nowide_ver 0.0.0
 %global stb_ver 2.25
-%global volk_ver 131
 
 Name:           flycast
 Version:        2.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -53,16 +69,19 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+%if !%{?with_sysvulkan}
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+%endif
+Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%if !%{?with_sysspirv}
+Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+%endif
+Source6:        https://github.com/zeux/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-
-Patch10:        %{url}/commit/7f9d9b81aaaa1e2c58c93732997c4ad3745e888c.patch#/%{name}-gh-7f9d9b8.patch
-Patch11:        %{url}/commit/4f206d2773a09942669b2263032deba6657dc69a.patch#/%{name}-gh-4f206d2.patch
-Patch12:        %{url}/commit/ab791d1b9c9ae48801a0961d48ee27804fcb0e13.patch#/%{name}-gh-ab791d1.patch
-Patch13:        %{url}/commit/9d17fc15a38b7d07d9a0fb12f08649c5720e137f.patch#/%{name}-gh-9d17fc1.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -77,10 +96,10 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
-%if 0%{?with_spirv}
+%if 0%{?with_sysspirv}
 BuildRequires:  pkgconfig(glslang)
 %else
-Provides:       bundled(glslang) = git~0
+Provides:       bundled(glslang) = git~0%{shortcommit5}
 %endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
@@ -96,9 +115,12 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
+%if 0%{?with_sysvulkan}
+BuildRequires:  vulkan-headers >= 1.3.224.1
+%endif
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
-Requires:       vulkan-loader%{?_isa}
+Requires:       vulkan-loader%{?_isa} >= 1.3.224.1
 
 Provides:       bundled(breakpad) = 0~git%{shortcommit2}
 Provides:       bundled(chdpsr)
@@ -109,7 +131,7 @@ Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(vixl)
-Provides:       bundled(volk) = %{volk_ver}
+Provides:       bundled(volk) = 0~git%{shortcommit6}
 Provides:       bundled(xbyak)
 
 
@@ -122,23 +144,28 @@ Provides:       bundled(xbyak)
 
 rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xxHash,zlib}
 
-%if 0%{?with_spirv}
-rm -rf core/deps/glslang
-%endif
-
-tar -xf %{S:1} -C core/deps/luabridge/ --strip-components 1
-tar -xf %{S:2} -C core/deps/breakpad/ --strip-components 1
-
-find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
-
 pushd core/deps
-cp -p breakpad/LICENSE LICENSE.breakpad
+tar -xf %{S:1} -C luabridge/ --strip-components 1
+tar -xf %{S:2} -C breakpad/ --strip-components 1
+%if !0%{?with_sysvulkan}
+tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
+sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i ../../CMakeLists.txt
+%endif
+tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
+%if !0%{?with_sysspirv}
+tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
+%endif
+tar -xf %{S:6} -C volk/ --strip-components 1
+
+cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/COPYING COPYING.nowide
 cp -p picotcp/COPYING COPYING.picotcp
 cp -p volk/LICENSE.md LICENSE.volk.md
 cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
 popd
+
+find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd core/deps/breakpad
 sed -e '/" -Werror"/d' -i configure.ac
@@ -187,7 +214,7 @@ export CXXFLAGS+=" ${EXTRA_CFLAGS}"
 %endif
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
-%if 0%{?with_spirv}
+%if 0%{?with_sysspirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
 %endif
   -DCMAKE_BUILD_TYPE:STRING=Release \
