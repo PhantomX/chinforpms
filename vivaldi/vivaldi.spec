@@ -14,14 +14,16 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        5.4.2753.51
+Version:        5.5.2805.32
 Release:        1%{?dist}
 Summary:        Web browser
 
 License:        Proprietary and others, see https://www.vivaldi.com/
 URL:            https://vivaldi.com/
-Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.x86_64.rpm
+Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.%{_arch}.rpm
 Source1:        eula.txt
+
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
@@ -34,6 +36,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
+Suggests:       vivaldi-ffmpeg-codecs
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -143,6 +146,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Oct 05 2022 - 5.5.2805.32-1
+- 5.5.2805.32
+
 * Fri Sep 16 2022 - 5.4.2753.51-1
 - 5.4.2753.51
 

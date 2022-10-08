@@ -1,0 +1,25 @@
+From f20d6fedd4f2459c0477dad1f3df0530db705347 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Oct 2022 15:23:42 -0300
+Subject: [PATCH] Load versioned library
+
+---
+ simple64-gui/osal/osal_preproc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/simple64-gui/osal/osal_preproc.h b/simple64-gui/osal/osal_preproc.h
+index 9bde7c1..072c2b3 100644
+--- a/simple64-gui/osal/osal_preproc.h
++++ b/simple64-gui/osal/osal_preproc.h
+@@ -59,7 +59,7 @@
+ 
+   #include <limits.h>  // for PATH_MAX
+ 
+-  #define OSAL_DEFAULT_DYNLIB_FILENAME "libmupen64plus.so"
++  #define OSAL_DEFAULT_DYNLIB_FILENAME "libmupen64plus.so.2"
+   #define OSAL_DIR_SEPARATOR           '/'
+   #define OSAL_CURRENT_DIR             "./"
+   #define OSAL_DLL_EXTENSION           ".so"
+-- 
+2.37.3
+

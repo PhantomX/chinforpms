@@ -78,6 +78,7 @@ vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
 vivaldi
+vivaldi-ffmpeg-codecs
 vvvvvv
 vvvvvv-data
 -wine-freeworld

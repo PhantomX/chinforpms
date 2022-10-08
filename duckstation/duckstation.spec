@@ -51,7 +51,7 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 
-ExclusiveArch:  x86_64 armv7l aarch64
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

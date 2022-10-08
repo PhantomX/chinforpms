@@ -1,79 +1,15 @@
-From 9b417cdf841dc6730410c601427da02466a0c9ff Mon Sep 17 00:00:00 2001
+From e2a9e75b0c96c42a7e35dd2502898891f7e6469a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 1 Oct 2022 17:59:06 -0300
 Subject: [PATCH] Rename library and directories
 
 ---
- mupen64plus-core/projects/unix/Makefile          | 16 ++++++++--------
- mupen64plus-core/src/api/config.c                |  2 +-
- mupen64plus-core/src/main/rom.c                  |  2 +-
- mupen64plus-core/src/osal/files_unix.c           | 16 ++++++++--------
- mupen64plus-core/tools/regtests/daily-tests.cfg  |  2 +-
- .../tools/regtests/regression-video.py           |  4 ++--
- simple64-gui/osal/osal_preproc.h                 |  6 +++---
- simple64-input-qt/osal/osal_preproc.h            |  6 +++---
- 8 files changed, 27 insertions(+), 27 deletions(-)
+ mupen64plus-core/src/api/config.c      |  2 +-
+ mupen64plus-core/src/main/rom.c        |  2 +-
+ mupen64plus-core/src/osal/files_unix.c | 16 ++++++++--------
+ simple64-gui/osal/osal_preproc.h       |  6 +++---
+ 4 files changed, 13 insertions(+), 13 deletions(-)
 
-diff --git a/mupen64plus-core/projects/unix/Makefile b/mupen64plus-core/projects/unix/Makefile
-index 0579886..194e994 100755
---- a/mupen64plus-core/projects/unix/Makefile
-+++ b/mupen64plus-core/projects/unix/Makefile
-@@ -198,8 +198,8 @@ endif
- 
- # set special flags per-system
- ifeq ($(OS), FREEBSD)
--  TARGET = libmupen64plus$(POSTFIX).so.2.0.0
--  SONAME = libmupen64plus$(POSTFIX).so.2
-+  TARGET = libsimple64$(POSTFIX).so.2.0.0
-+  SONAME = libsimple64$(POSTFIX).so.2
-   LDFLAGS += -Wl,-Bsymbolic -shared -Wl,-export-dynamic -Wl,-soname,$(SONAME)
-   LDLIBS += -L${LOCALBASE}/lib -lc
-   ifeq ($(ARCH_DETECTED), 64BITS)
-@@ -209,8 +209,8 @@ ifeq ($(OS), FREEBSD)
-   endif
- endif
- ifeq ($(OS), LINUX)
--  TARGET = libmupen64plus$(POSTFIX).so.2.0.0
--  SONAME = libmupen64plus$(POSTFIX).so.2
-+  TARGET = libsimple64$(POSTFIX).so.2.0.0
-+  SONAME = libsimple64$(POSTFIX).so.2
-   LDFLAGS += -Wl,-Bsymbolic -shared -Wl,-export-dynamic -Wl,-soname,$(SONAME)
-   LDLIBS += -ldl
-   # only export api symbols
-@@ -224,7 +224,7 @@ endif
- ifeq ($(OS), OSX)
-   OSX_SDK_PATH = $(shell xcrun --sdk macosx --show-sdk-path)
- 
--  TARGET = libmupen64plus$(POSTFIX).dylib
-+  TARGET = libsimple64$(POSTFIX).dylib
-   LDFLAGS += -framework CoreFoundation -dynamiclib
-   LDLIBS += -ldl
-   ifeq ($(ARCH_DETECTED), 64BITS)
-@@ -252,7 +252,7 @@ ifeq ($(OS), OSX)
-   endif
- endif
- ifeq ($(OS), MINGW)
--  TARGET = mupen64plus$(POSTFIX).dll
-+  TARGET = simple64$(POSTFIX).dll
-   ifeq ($(CC), clang)
-     LDFLAGS += -shared -Wl,-export-all-symbols
-   else
-@@ -507,13 +507,13 @@ ifeq ($(PREFIX),)
-   PREFIX := /usr/local
- endif
- ifeq ($(SHAREDIR),)
--  SHAREDIR := $(PREFIX)/share/mupen64plus
-+  SHAREDIR := $(PREFIX)/share/simple64
- endif
- ifeq ($(LIBDIR),)
-   LIBDIR := $(PREFIX)/lib
- endif
- ifeq ($(INCDIR),)
--  INCDIR := $(PREFIX)/include/mupen64plus
-+  INCDIR := $(PREFIX)/include/simple64
- endif
- 
- # list of required source files for compilation
 diff --git a/mupen64plus-core/src/api/config.c b/mupen64plus-core/src/api/config.c
 index cff288d..7ca6ae0 100644
 --- a/mupen64plus-core/src/api/config.c
@@ -164,82 +100,16 @@ index 22133d7..548d6f4 100644
      if (rval == 0)
          return retpath;
  
-diff --git a/mupen64plus-core/tools/regtests/daily-tests.cfg b/mupen64plus-core/tools/regtests/daily-tests.cfg
-index 3306d96..8d03fb6 100644
---- a/mupen64plus-core/tools/regtests/daily-tests.cfg
-+++ b/mupen64plus-core/tools/regtests/daily-tests.cfg
-@@ -57,7 +57,7 @@ speedbuild2test2name = 64-bit Old Dynarec
- speedbuild2test2options = --emumode 2
- {Core Library}
- url = https://github.com/mupen64plus/mupen64plus-core
--outputfiles = libmupen64plus.so.2
-+outputfiles = libsimple64.so.2
- testbuilds = 32-bit build on 64-bit system, LIRC build, No Assembly build, Debug Info build, R4300 Debugger build
- testbuildparams = all BITS=32, all LIRC=1, all NO_ASM=1, all DEBUG=1 DBG_CORE=1 DBG_COUNT=1 DBG_COMPARE=1 DBG_PROFILE=1, all DEBUGGER=1
- {Console UI}
-diff --git a/mupen64plus-core/tools/regtests/regression-video.py b/mupen64plus-core/tools/regtests/regression-video.py
-index b0afb4b..3660a39 100755
---- a/mupen64plus-core/tools/regtests/regression-video.py
-+++ b/mupen64plus-core/tools/regtests/regression-video.py
-@@ -355,7 +355,7 @@ class RegTester:
-                         continue
-                 # construct the command line
-                 exepath = os.path.join(self.bindir, "mupen64plus")
--                exeparms = [ "--corelib", os.path.join(self.bindir, "libmupen64plus.so.2") ]
-+                exeparms = [ "--corelib", os.path.join(self.bindir, "libsimple64.so.2") ]
-                 exeparms += [ "--testshots",  ",".join(shotlist) ]
-                 exeparms += [ "--sshotdir", os.path.join(self.screenshotdir, videoname) ]
-                 exeparms += [ "--plugindir", self.bindir ]
-@@ -407,7 +407,7 @@ class RegTester:
-         for (gameName, gameFilename, numFrames) in testGames:
-             # construct the command line
-             exepath = os.path.join(self.bindir, "mupen64plus")
--            exeparms = [ "--corelib", os.path.join(self.bindir, "libmupen64plus.so.2") ]
-+            exeparms = [ "--corelib", os.path.join(self.bindir, "libsimple64.so.2") ]
-             exeparms += [ "--testshots",  ("%i" % numFrames) ]
-             exeparms += [ "--sshotdir", self.screenshotdir ]
-             exeparms += [ "--plugindir", self.bindir ]
 diff --git a/simple64-gui/osal/osal_preproc.h b/simple64-gui/osal/osal_preproc.h
-index 7edc343..7239ee2 100644
+index 072c2b3..4d7decd 100644
 --- a/simple64-gui/osal/osal_preproc.h
 +++ b/simple64-gui/osal/osal_preproc.h
 @@ -33,7 +33,7 @@
    #ifndef PATH_MAX
      #define PATH_MAX 2048
    #endif
--  #define OSAL_DEFAULT_DYNLIB_FILENAME "mupen64plus.dll"
-+  #define OSAL_DEFAULT_DYNLIB_FILENAME "simple64.dll"
-   #define OSAL_DIR_SEPARATOR           '\\'
-   #define OSAL_CURRENT_DIR             ".\\"
-   #define OSAL_DLL_EXTENSION           ".dll"
-@@ -43,7 +43,7 @@
- 
-   #include <limits.h>  // for PATH_MAX
- 
--  #define OSAL_DEFAULT_DYNLIB_FILENAME "libmupen64plus.dylib"
-+  #define OSAL_DEFAULT_DYNLIB_FILENAME "libsimple64.dylib"
-   #define OSAL_DIR_SEPARATOR           '/'
-   #define OSAL_CURRENT_DIR             "./"
-   #define OSAL_DLL_EXTENSION           ".dylib"
-@@ -59,7 +59,7 @@
- 
-   #include <limits.h>  // for PATH_MAX
- 
--  #define OSAL_DEFAULT_DYNLIB_FILENAME "libmupen64plus.so.2"
-+  #define OSAL_DEFAULT_DYNLIB_FILENAME "libsimple64.so.2"
-   #define OSAL_DIR_SEPARATOR           '/'
-   #define OSAL_CURRENT_DIR             "./"
-   #define OSAL_DLL_EXTENSION           ".so"
-diff --git a/simple64-input-qt/osal/osal_preproc.h b/simple64-input-qt/osal/osal_preproc.h
-index 7edc343..7239ee2 100644
---- a/simple64-input-qt/osal/osal_preproc.h
-+++ b/simple64-input-qt/osal/osal_preproc.h
-@@ -33,7 +33,7 @@
-   #ifndef PATH_MAX
-     #define PATH_MAX 2048
-   #endif
--  #define OSAL_DEFAULT_DYNLIB_FILENAME "mupen64plus.dll"
-+  #define OSAL_DEFAULT_DYNLIB_FILENAME "simple64.dll"
+-  #define OSAL_DEFAULT_DYNLIB_FILENAME "libmupen64plus.dll"
++  #define OSAL_DEFAULT_DYNLIB_FILENAME "libsimple64.dll"
    #define OSAL_DIR_SEPARATOR           '\\'
    #define OSAL_CURRENT_DIR             ".\\"
    #define OSAL_DLL_EXTENSION           ".dll"

@@ -80,11 +80,7 @@ BuildRequires:  nasm
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
-%if 0%{?fedora} >= 30
 BuildRequires:  minizip-compat-devel
-%else
-BuildRequires:  minizip-devel
-%endif
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(sdl2)

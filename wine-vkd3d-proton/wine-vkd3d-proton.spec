@@ -5,31 +5,36 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
+%global with_sysspirv 0
 %global with_sysvulkan 1
 
 # Need be set for release builds too
 %global commit d00d035321c9f817e058985e32fe6876ba746de6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220726
+%global date 20221007
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 9f2fd6356c14376ab5b88518d6dd4e6787084525
+%global commit1 05bcc02248faeb9f938e7fc49977eb88815a3a74
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 98340ec500e92a534dc8384d5c45d2f488e40f6a
+%global commit2 fb27bbf3077f92cc1a8a55777bce2810a94079cf
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 b3ff97d0feafd2b7ca72aec7215cfc3d0998fb79
+%global commit3 210a80013067672b52847ec7aa70ff78b2f4d77e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 245d25ce8c3337919dc7916d0e62e31a0d8748ab
+%global commit4 5177b119bbdf463b7b909855a83230253c2d8b68
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
+
+%global commit5 87d5b782bec60822aa878941e6b13c0a9a954c9b
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 SPIRV-Headers
 
 %{?mingw_package_header}
 
@@ -56,7 +61,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        9%{?gver}%{?dist}
+Release:        10%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -73,6 +78,9 @@ Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcomm
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %if !0%{?with_sysvulkan}
 Source4:        %{kg_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
+%if !0%{?with_sysspirv}
+Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
 Source10:        README.%{pkgname}-mingw
@@ -97,8 +105,13 @@ BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
-BuildRequires:  pkgconfig(vulkan) >= 1.3.213
+BuildRequires:  pkgconfig(vulkan) >= 1.3.228
+%if 0%{?with_sysspirv}
 BuildRequires:  spirv-headers-devel >= 1.5.4
+%endif
+%if %{?with_sysvulkan}
+BuildRequires:  vulkan-headers >= 1.3.228
+%endif
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 
@@ -143,6 +156,11 @@ tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-compone
 %if !0%{?with_sysvulkan}
 tar -xf %{S:4} -C subprojects/Vulkan-Headers --strip-components 1
 %endif
+%if !0%{?with_sysspirv}
+tar -xf %{S:5} -C subprojects/SPIRV-Headers --strip-components 1
+rm -rf subprojects/dxil-spirv/third_party/spirv-headers
+ln -sf ../../../subprojects/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
+%endif
 
 find -type f -name '*.h' -exec chmod -x {} ';'
 
@@ -152,6 +170,7 @@ ln -sf %{_includedir}/vulkan \
   subprojects/Vulkan-Headers/include/vulkan
 %endif
 
+%if 0%{?with_sysspirv}
 mkdir -p subprojects/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
   subprojects/SPIRV-Headers/include/spirv
@@ -159,6 +178,7 @@ ln -sf %{_includedir}/spirv \
 mkdir -p subprojects/dxil-spirv/third_party/spirv-headers/include/
 ln -sf %{_includedir}/spirv \
   subprojects/dxil-spirv/third_party/spirv-headers/include/spirv
+%endif
 
 sed \
   -e 's|"unknown"|"%{shortcommit3}"|' \
@@ -274,6 +294,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Oct 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-10.20221007gitd00d035
+- Use bundled SPIRV-Headers for now
+
 * Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-9.20220726gitd00d035
 - Bump
 

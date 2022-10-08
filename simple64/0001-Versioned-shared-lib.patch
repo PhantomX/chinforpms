@@ -1,0 +1,32 @@
+From cc268d8cd6f6cdd2cb69e428f210ea63d0d2bacb Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Oct 2022 15:36:58 -0300
+Subject: [PATCH] Versioned shared lib
+
+---
+ mupen64plus-core/CMakeLists.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/mupen64plus-core/CMakeLists.txt b/mupen64plus-core/CMakeLists.txt
+index ef006d2..2e8e033 100644
+--- a/mupen64plus-core/CMakeLists.txt
++++ b/mupen64plus-core/CMakeLists.txt
+@@ -1,6 +1,6 @@
+ cmake_minimum_required(VERSION 3.20)
+ 
+-project(mupen64plus LANGUAGES C)
++project(mupen64plus LANGUAGES C VERSION 2.0.0)
+ 
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+@@ -127,6 +127,7 @@ endif (UNIX)
+ set_property(TARGET mupen64plus PROPERTY C_VISIBILITY_PRESET hidden)
+ set_property(TARGET mupen64plus PROPERTY CXX_VISIBILITY_PRESET hidden)
+ set_property(TARGET mupen64plus PROPERTY VISIBILITY_INLINES_HIDDEN ON)
++set_target_properties(mupen64plus PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION ${PROJECT_VERSION_MAJOR})
+ target_compile_options(mupen64plus PRIVATE -march=x86-64-v3 -fno-semantic-interposition)
+ target_link_options(mupen64plus PRIVATE -march=x86-64-v3 -fno-semantic-interposition -Wl,-Bsymbolic -Wl,-Bsymbolic-functions)
+ target_link_directories(mupen64plus PRIVATE ${SDL_NET_LIBRARY_DIRS})
+-- 
+2.37.3
+

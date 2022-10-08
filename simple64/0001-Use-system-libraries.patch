@@ -1,0 +1,64 @@
+From 918bbd1c71a741f0f65b38ee5066592c21dc3131 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Oct 2022 12:58:20 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ mupen64plus-core/CMakeLists.txt | 27 ++++++++++++++++++++++-----
+ 1 file changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/mupen64plus-core/CMakeLists.txt b/mupen64plus-core/CMakeLists.txt
+index 2e8e033..edf17f2 100644
+--- a/mupen64plus-core/CMakeLists.txt
++++ b/mupen64plus-core/CMakeLists.txt
+@@ -24,8 +24,6 @@ pkg_check_modules(SDL_NET REQUIRED SDL2_net)
+ include_directories(
+     src
+     subprojects/md5
+-    subprojects/xxhash
+-    subprojects/minizip
+     subprojects/xdelta
+     ${SDL2_INCLUDE_DIRS}
+ )
+@@ -105,9 +103,6 @@ add_library(mupen64plus SHARED
+     src/plugin/dummy_rsp.c
+     src/main/netplay.c
+     subprojects/md5/md5.c
+-    subprojects/minizip/ioapi.c
+-    subprojects/minizip/unzip.c
+-    subprojects/minizip/zip.c
+ )
+ 
+ if (WIN32)
+@@ -124,6 +119,28 @@ if (UNIX)
+     )
+ endif (UNIX)
+ 
++pkg_check_modules(minizip IMPORTED_TARGET minizip)
++if(minizip_FOUND)
++  message(STATUS "Using the system minizip")
++  target_link_libraries(mupen64plus PRIVATE PkgConfig::minizip)
++else()
++  include_directories(subprojects/minizip)
++  target_sources(mupen64plus PRIVATE
++      subprojects/minizip/ioapi.c
++      subprojects/minizip/unzip.c
++      subprojects/minizip/zip.c
++  )
++endif()
++
++pkg_check_modules(xxhash IMPORTED_TARGET libxxhash)
++if(xxhash_FOUND)
++  message(STATUS "Using the system libxxhash")
++  target_link_libraries(mupen64plus PRIVATE PkgConfig::xxhash)
++else()
++  include_directories(subprojects/xxhash)
++endif()
++
++
+ set_property(TARGET mupen64plus PROPERTY C_VISIBILITY_PRESET hidden)
+ set_property(TARGET mupen64plus PROPERTY CXX_VISIBILITY_PRESET hidden)
+ set_property(TARGET mupen64plus PROPERTY VISIBILITY_INLINES_HIDDEN ON)
+-- 
+2.37.3
+
