@@ -20,9 +20,9 @@
 %global enablejit 1
 %endif
 
-%global commit 4b6086b20a95183f453c5957104536f84a510077
+%global commit 333ede5416217cf88ea210e284cfb4f76d49e0f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221004
+%global date 20221009
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -40,7 +40,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        167%{?gver}%{?dist}
+Release:        168%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1

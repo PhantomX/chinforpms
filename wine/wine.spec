@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 37ab7ea444cb5215ee402652c56f5dddfccf598f
+%global tkg_id 97dec067447ffc844d85869c24f30635176a0039
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -125,6 +125,8 @@
 %global fastsync 1
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
+# Shared gpu resources
+%global sharedgpures 0
 %global vulkanup 0
 
 %if 0%{?fshack}
@@ -255,6 +257,11 @@ Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_C
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
+
+Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
+Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup.patch#/%{name}-tkg-sharedgpures-fixup.patch
+Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences-fshack.patch#/%{name}-tkg-sharedgpures-fences-fshack.patch
+Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -924,6 +931,15 @@ done
 %else
 %if 0%{?vulkanup}
 %patch1028 -p1
+%endif
+%endif
+%if 0%{?sharedgpures}
+%patch1060 -p1
+%patch1061 -p1
+%if 0%{?fshack}
+%patch1062 -p1
+%else
+%patch1063 -p1
 %endif
 %endif
 %patch1029 -p1
@@ -1937,6 +1953,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdocvw.%{winedll}
 %{_libdir}/wine/%{winedlldir}/schedsvc.%{winedll}
+%if 0%{?sharedgpures}
+%{_libdir}/wine/%{winedlldir}/sharedgpures.%{winesys}
+%endif
 %{_libdir}/wine/%{winedlldir}/shell32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shfolder.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shlwapi.%{winedll}

@@ -19,7 +19,7 @@
 
 Name:           gtk4
 Version:        4.8.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        GTK graphical user interface library
 
 Epoch:          1

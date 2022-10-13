@@ -9,7 +9,7 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit d00d035321c9f817e058985e32fe6876ba746de6
+%global commit c42f24a2b0da37f03758f1ab97f3fa98b082c2e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221007
 %global with_snapshot 1
@@ -294,7 +294,7 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
-* Fri Oct 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-10.20221007gitd00d035
+* Fri Oct 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-10.20221007gitc42f24a
 - Use bundled SPIRV-Headers for now
 
 * Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-9.20220726gitd00d035

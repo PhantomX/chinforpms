@@ -18,7 +18,7 @@
 %global commit d4d47ef6efa91a4f28b01fa0cd3f17f0442455b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 202201004
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -32,8 +32,8 @@
 Name:           mesa-drivers-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.0
-Release:        101%{?gver}%{?dist}
+Version:        22.2.1
+Release:        100%{?gver}%{?dist}
 
 Epoch:          100
 
@@ -190,6 +190,9 @@ rm -rf %{buildroot}%{_datadir}
 
 
 %changelog
+* Wed Oct 12 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.1-100
+- 22.2.1
+
 * Wed Oct 05 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.0-101.202201004gitd4d47ef
 - Rename vaapi to va
 

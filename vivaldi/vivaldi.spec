@@ -14,7 +14,7 @@
 %global pkgrel 1
 
 Name:           vivaldi
-Version:        5.5.2805.32
+Version:        5.5.2805.35
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -36,7 +36,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Suggests:       vivaldi-ffmpeg-codecs
+Suggests:       vivaldi-ffmpeg-codecs >= 106.0.5249.12
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -146,6 +146,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Oct 10 2022 - 5.5.2805.35-1
+- 5.5.2805.35
+
 * Wed Oct 05 2022 - 5.5.2805.32-1
 - 5.5.2805.32
 
