@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id>io.github.simple64.simple64.desktop</id>
+  <id>io.github.simple64.simple64</id>
   <name>simple64</name>
   <summary>Custom plugins and Qt5 GUI for Mupen64Plus</summary>
   <developer_name>Logan (loganmc10)</developer_name>

@@ -30,14 +30,12 @@ Subject: [PATCH] patch-6.0-redhat
  drivers/nvme/host/multipath.c                      |  19 ++--
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
- drivers/scsi/stex.c                                |  17 +--
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- include/scsi/scsi_cmnd.h                           |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
  net/ipv4/fib_semantics.c                           |   8 +-
@@ -1177,36 +1175,6 @@ index 4944798e75b5..079a29ef1bf2 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
-diff --git a/drivers/scsi/stex.c b/drivers/scsi/stex.c
-index e6420f2127ce..8def242675ef 100644
---- a/drivers/scsi/stex.c
-+++ b/drivers/scsi/stex.c
-@@ -665,16 +665,17 @@ static int stex_queuecommand_lck(struct scsi_cmnd *cmd)
- 		return 0;
- 	case PASSTHRU_CMD:
- 		if (cmd->cmnd[1] == PASSTHRU_GET_DRVVER) {
--			struct st_drvver ver;
-+			const struct st_drvver ver = {
-+				.major = ST_VER_MAJOR,
-+				.minor = ST_VER_MINOR,
-+				.oem = ST_OEM,
-+				.build = ST_BUILD_VER,
-+				.signature[0] = PASSTHRU_SIGNATURE,
-+				.console_id = host->max_id - 1,
-+				.host_no = hba->host->host_no,
-+			};
- 			size_t cp_len = sizeof(ver);
-
--			ver.major = ST_VER_MAJOR;
--			ver.minor = ST_VER_MINOR;
--			ver.oem = ST_OEM;
--			ver.build = ST_BUILD_VER;
--			ver.signature[0] = PASSTHRU_SIGNATURE;
--			ver.console_id = host->max_id - 1;
--			ver.host_no = hba->host->host_no;
- 			cp_len = scsi_sg_copy_from_buffer(cmd, &ver, cp_len);
- 			if (sizeof(ver) == cp_len)
- 				cmd->result = DID_OK << 16;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index bbab424b0d55..ed86042fb57b 100644
 --- a/drivers/usb/core/hub.c
@@ -1358,19 +1326,6 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/include/scsi/scsi_cmnd.h b/include/scsi/scsi_cmnd.h
-index bac55decf900..7d3622db38ed 100644
---- a/include/scsi/scsi_cmnd.h
-+++ b/include/scsi/scsi_cmnd.h
-@@ -201,7 +201,7 @@ static inline unsigned int scsi_get_resid(struct scsi_cmnd *cmd)
- 	for_each_sg(scsi_sglist(cmd), sg, nseg, __i)
-
- static inline int scsi_sg_copy_from_buffer(struct scsi_cmnd *cmd,
--					   void *buf, int buflen)
-+					   const void *buf, int buflen)
- {
- 	return sg_copy_from_buffer(scsi_sglist(cmd), scsi_sg_count(cmd),
- 				   buf, buflen);
 diff --git a/init/Kconfig b/init/Kconfig
 index 532362fcfe31..30d547537ea0 100644
 --- a/init/Kconfig

@@ -1,7 +1,7 @@
-%global commit 31197b3d4f2ee55c84a2ae5c71995e2c5dad91c8
+%global commit 6694c1b25376026572539e99743949615aa75368
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211107
-%global with_snapshot 0
+%global date 20221007
+%global with_snapshot 1
 
 %bcond_with map
 
@@ -14,7 +14,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPLv2+
@@ -27,6 +27,7 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.x
 %endif
 
 Patch0:         sun_path.patch
+Patch1:         0001-Fix-lua-linking-with-C.patch
 
 
 BuildRequires:  gcc
@@ -51,7 +52,7 @@ BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libraw)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(libwebp)
-BuildRequires:  pkgconfig(lua)
+BuildRequires:  pkgconfig(lua) >= 5.3
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
 # For xxd
@@ -70,6 +71,8 @@ Requires:       fbida
 Requires:       ImageMagick
 Requires:       perl-Image-ExifTool
 Requires:       zenity
+Suggests:       jxl-pixbuf-loader
+Suggests:       xcf-pixbuf-loader
 
 
 %description
@@ -131,16 +134,11 @@ desktop-file-install \
     --dir %{buildroot}%{_datadir}/applications \
     --add-mime-type="image/jxl" \
     --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
+    --add-mime-type="image/x-xcf;image/x-compressed-xcf" \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %find_lang %{name}
 
-sed \
-  -e 's|_name>|name>|g' \
-  -e 's|_summary>|summary>|g' \
-  -e 's|_p>|p>|g' \
-  -e 's|<_p |<p |g' \
-  -i %{buildroot}%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
 
 %files -f %{name}.lang
@@ -150,12 +148,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Gee
 %{_prefix}/lib/%{name}/
 %{_mandir}/man1/%{name}.1*
 %{_datadir}/%{name}/
+%{_datadir}/icons/hicolor/*/*/*%{name}*
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/*%{name}.desktop
 %{_metainfodir}/org.geeqie.Geeqie.appdata.xml
 
 
 %changelog
+* Fri Oct 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-101.20221007git6694c1b
+- Snapshot to fix some issues
+
 * Sat Aug 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-100
 - 2.0.1
 - meson

@@ -257,10 +257,12 @@ wxmp3gain
 wxmp3val
 -ueberzug
 uksmd
+unshield
 -v4l-utils
 winetricks
 xarchiver
 xboxdrv
+xcf-pixbuf-loader
 xdgmenumaker
 xfce4-notes-plugin
 xfwm4
