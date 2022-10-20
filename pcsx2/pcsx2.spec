@@ -39,12 +39,13 @@
 %endif
 
 %global glad_ver 0.1.25
+%global gsl_ver 4.0.0
 %global jpgc_ver 1.05
 %global simpleini_ver 4.17
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3401
+Version:        1.7.3462
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -151,6 +152,7 @@ Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(gsl) = %{gsl_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = 0~git
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}

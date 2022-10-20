@@ -13,8 +13,10 @@
 
 %global pkgrel 1
 
+%global ffmpegcodec 106.0.5249.12
+
 Name:           vivaldi
-Version:        5.5.2805.35
+Version:        5.5.2805.38
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -36,7 +38,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Suggests:       vivaldi-ffmpeg-codecs >= 106.0.5249.12
+Suggests:       vivaldi-ffmpeg-codecs >= %{ffmpegcodec}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -55,6 +57,13 @@ Vivaldi web browser.
 %setup -c -T
 
 rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+
+FCVER="$(grep ^FFMPEG_VERSION_DEB= opt/vivaldi/update-ffmpeg | cut -d= -f2 | cut -d- -f1)"
+if [ "${FCVER}" != "%{ffmpegcodec}" ] ;then
+  echo "Version mismatch. You have ${FCVER} in ffmpegcodec instead %{ffmpegcodec}"
+  echo "Edit ffmpegcodec and try again"
+  exit 1
+fi
 
 cp %{S:1} .
 
@@ -146,6 +155,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Oct 19 2022 - 5.5.2805.38-1
+- 5.5.2805.38
+
 * Mon Oct 10 2022 - 5.5.2805.35-1
 - 5.5.2805.35
 
