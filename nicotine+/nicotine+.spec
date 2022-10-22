@@ -13,7 +13,7 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.5
+Version:        3.2.6
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -41,7 +41,6 @@ BuildRequires:  %{py3_dist pytest}
 #BuildRequires:  xorg-x11-server-Xvfb
 Requires:       gdbm
 Requires:       gtk3
-Requires:       libappindicator-gtk3
 Requires:       %{py3_dist pygobject}
 Requires:       hicolor-icon-theme
 Recommends:     gspell
@@ -103,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-100
+- 3.2.6
+
 * Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-100
 - 3.2.5
 

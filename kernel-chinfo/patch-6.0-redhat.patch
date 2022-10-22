@@ -21,7 +21,6 @@ Subject: [PATCH] patch-6.0-redhat
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/drm_ioctl.c                        |   8 +-
  drivers/hid/hid-rmi.c                              |  64 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -602,25 +601,6 @@ index 1f276f108cc9..7039ad9bdf7f 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/drm_ioctl.c b/drivers/gpu/drm/drm_ioctl.c
-index 8faad23dc1d8..ca2a6e6101dc 100644
---- a/drivers/gpu/drm/drm_ioctl.c
-+++ b/drivers/gpu/drm/drm_ioctl.c
-@@ -472,7 +472,13 @@ EXPORT_SYMBOL(drm_invalid_op);
-  */
- static int drm_copy_field(char __user *buf, size_t *buf_len, const char *value)
- {
--	int len;
-+	size_t len;
-+
-+	/* don't attempt to copy a NULL pointer */
-+	if (WARN_ONCE(!value, "BUG: the value to copy was not set!")) {
-+		*buf_len = 0;
-+		return 0;
-+	}
-
- 	/* don't overflow userbuf */
- 	len = strlen(value);
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 311eee599ce9..2460c6bd46f8 100644
 --- a/drivers/hid/hid-rmi.c

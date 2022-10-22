@@ -162,20 +162,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a6f67c036964a02c6f7182b4611b33eec585481e
+%global pfcommit 7a9cbac6d7f8882479d0ebe197f205c3830a371a
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash 371e8800a850ce07da216bcaede2158e
+%global pfcoprhash 41ded4b823b3f4231c14ca2bece63c4d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 94ab0efe4974370734cc9b5717719c19eb4e2c26
+%global opensuse_id 48205dbf3dba6ae42b7292e451248dc3d5e731ae
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -972,7 +972,6 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
-Patch2093: %{patchwork_xdg_url}/504643/mbox/#/patchwork-v3-drm-amdgpu-Fix-VRAM-BO-swap-issue.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
@@ -2346,9 +2345,11 @@ BuildKernel() {
 
     ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
+%if 0%{?fedora} > 37
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+%endif
 %endif
 
     # prune junk from kernel-devel
@@ -3027,6 +3028,9 @@ fi
 #
 #
 %changelog
+* Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.3-500.chinfo
+- 6.0.2 - pf3
+
 * Sat Oct 15 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.2-500.chinfo
 - 6.0.2 - pf3
 

@@ -1,7 +1,7 @@
 %global commit d47f31be54ed1c2d44fdba5a23d56664d4427350
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220923
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global with_python  0
 
@@ -23,8 +23,8 @@
 %global vc_url  https://git.claws-mail.org/?p=claws.git
 
 Name:           claws-mail
-Version:        4.1.0
-Release:        102%{?gver}%{?dist}
+Version:        4.1.1
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -635,6 +635,7 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
+%{_libdir}/claws-mail/plugins/web_extensions/fancy*
 #%%{_metainfodir}/claws-mail-fancy.metainfo.xml
 %endif
 
@@ -733,6 +734,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-100
+- 4.1.1
+
 * Sun Sep 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.0-102.20220923gitd47f31b
 - gtk3 branch
 

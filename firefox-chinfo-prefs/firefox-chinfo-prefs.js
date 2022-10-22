@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
-lockPref("chinfo.cfg.version", "20220613");
+lockPref("chinfo.cfg.version", "20221021");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -83,6 +83,7 @@ pref("privacy.userContext.ui.enabled", true);
 pref("toolkit.cosmeticAnimations.enabled", false);
 pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
 pref("widget.gtk.overlay-scrollbars.enabled", false);
+pref("widget.use-xdg-desktop-portal.file-picker", 2);
 
 // Proton
 // Defaults for now, use https://github.com/Aris-t2/CustomCSSforFx/ to fix
