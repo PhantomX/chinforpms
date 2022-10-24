@@ -153,9 +153,10 @@ ipager
 ipsbehead
 jdupes
 joy2key
+kdocker
 keepassxc
 kernel-tools
-krename
+-krename
 -kristall
 kse
 -ladspa-bs2b-plugins

@@ -6,10 +6,21 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit aa1fe3b9d01b2ecb6425602801c1ebe9be75b390
+%global commit ae764333f486ec40dd70079bdb05dd43fd4d03c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220917
+%global date 20221021
 %global with_snapshot 1
+
+%global with_sysspirv 0
+%global with_sysvulkan 1
+
+%global commit5 0bcc624926a25a2a273d07877fd25a6ff5ba1cfb
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 SPIRV-Headers
+
+%global commit6 715673702f5b18ffb8e5832e67cf731468d32ac6
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 Vulkan-Headers
 
 %{?mingw_package_header}
 
@@ -29,7 +40,7 @@
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global dxvk_async 1
+%global dxvk_async 0
 
 %global winecommonver 5.3
 
@@ -39,9 +50,11 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global kg_url https://github.com/KhronosGroup
+
 Name:           wine-%{pkgname}
 Version:        1.10.3
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -60,11 +73,17 @@ Source3:        %{name}-README-chinforpms
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
 
-
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async%{?asyncpatch}.patch#/%{name}-sporif-dxvk-async%{?asyncpatch}.patch
 Patch201:       0001-dxvk.conf-async-options.patch
 Source4:        %{sporif_url}/README.md#/README.async.md
+%endif
+
+%if !0%{?with_sysspirv}
+Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+%endif
+%if !0%{?with_sysvulkan}
+Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
 
 ExclusiveArch:  %{ix86} x86_64
@@ -87,6 +106,12 @@ BuildRequires:  mingw32-headers >= 8.0
 BuildRequires:  mingw32-winpthreads-static >= 8.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%if 0%{?with_sysspirv}
+BuildRequires:  spirv-headers-devel >= 1.5.5
+%endif
+%if %{?with_sysvulkan}
+BuildRequires:  vulkan-headers >= 1.3.225
+%endif
 
 # glslangValidator
 BuildRequires:  glslang
@@ -141,6 +166,18 @@ cp %{S:4} README.async.md
 %endif
 
 cp %{S:1} README.%{pkgname}
+
+%if 0%{?with_sysspirv}
+ln -s %{_includedir}/spirv include/spirv/include/spirv
+%else
+tar -xf %{S:5} -C include/spirv --strip-components 1
+%endif
+%if 0%{?with_sysvulkan}
+mkdir -p include/vulkan/include
+ln -s %{_includedir}/vulkan include/vulkan/include/vulkan
+%else
+tar -xf %{S:6} -C include/vulkan --strip-components 1
+%endif
 
 cp -p %{S:2} .
 cp -p %{S:3} README.chinforpms
@@ -247,6 +284,10 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Oct 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-103.20221021gitae76433
+- Master snapshot
+- Disable async, as it seems to be unneeded now
+
 * Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-100
 - 1.10.3
 

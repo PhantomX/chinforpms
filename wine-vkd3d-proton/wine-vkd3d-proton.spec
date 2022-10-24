@@ -9,14 +9,14 @@
 %global with_sysvulkan 1
 
 # Need be set for release builds too
-%global commit c42f24a2b0da37f03758f1ab97f3fa98b082c2e0
+%global commit 27072cd556232ae81c6af78530aa5948c46269a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221007
+%global date 20221020
 %global with_snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 05bcc02248faeb9f938e7fc49977eb88815a3a74
+%global commit1 2166bc7ea0ceb2d7ff6d787d9b007f7eb7d4aaa8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -61,7 +61,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT

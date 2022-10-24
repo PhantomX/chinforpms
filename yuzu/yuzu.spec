@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b7ceb92a695822229883f3a215bda7b571f4f13c
+%global commit 0af3e1b4e099639d63a41ed7aed247901a461a02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221004
+%global date 20221022
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        3024
+Version:        3045
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 

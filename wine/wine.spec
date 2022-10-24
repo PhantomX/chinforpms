@@ -1,6 +1,6 @@
-%global commit 03f5f72c13aea7f677d1a2bb7f96f00eb4490d26
+%global commit 329664392e94e937ca788fcfc641a283fac97758
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221017
+%global date 20221021
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -96,8 +96,8 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.19
-%global wine_stg_url https://github.com/wine-staging/wine-staging
+%global wine_stagingver 1f500db5b7831e19502e892216cce4c38f236c9d
+%global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
 %global stpkgver %{wine_stagingver}
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 529adf13333e638debdf30020177400dc440bf23
+%global tkg_id f6c3a233c973a065ae1ab193bae1016d240dde47
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,7 +151,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.19
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -220,7 +220,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
 # wine staging patches for wine-staging
-Source900:       %{wine_stg_url}/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
