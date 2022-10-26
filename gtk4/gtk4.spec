@@ -18,8 +18,8 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.8.1
-Release:        101%{?dist}
+Version:        4.8.2
+Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
 Epoch:          1
@@ -271,6 +271,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Tue Oct 25 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.2-100
+- 4.8.2
+
 * Fri Sep 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.1-100
 - 4.8.1
 

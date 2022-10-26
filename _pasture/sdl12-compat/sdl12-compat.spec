@@ -1,15 +1,15 @@
 %global commit 4d814ba89a6e87cd02e148d9d1504f77848e97dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220903
-%global with_snapshot 1
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
 Name:           sdl12-compat
-Version:        1.2.54
-Release:        0.0%{?gver}%{?dist}
+Version:        1.2.60
+Release:        1%{?gver}%{?dist}
 Summary:        SDL 1.2 runtime compatibility library using SDL 2.0
 
 # mp3 decoder code is MIT-0/PD
@@ -20,7 +20,7 @@ URL:            https://github.com/libsdl-org/%{name}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/release-%{version}/%{name}-%{version}.tar.gz
 %endif
 
 # Multilib aware-header stub
@@ -90,11 +90,7 @@ this layer.
 
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup -n %{name}-%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:release-%{version}} -p1
 
 
 %build

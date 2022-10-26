@@ -1,4 +1,4 @@
-From ebe564de1872aa0c579064faca161f1f12ffddf2 Mon Sep 17 00:00:00 2001
+From 39e1c9a2c94cf83741d0ebcbbe580fd1266821f8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libs
@@ -13,7 +13,7 @@ Subject: [PATCH] Use system libs
  6 files changed, 92 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6575bd4..0f50766 100644
+index 366b7c1..2b1358c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,9 @@ option(LIBRETRO "Build libretro core" OFF)
@@ -26,13 +26,13 @@ index 6575bd4..0f50766 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -282,16 +285,40 @@ if(USE_OPENMP)
-     endif()
+@@ -303,16 +306,40 @@ if(USE_OPENMP)
+ 	endif()
  endif()
  
 +find_package(PkgConfig)
 +
-+pkg_search_module(XXHASH IMPORTED_TARGET libxxhash)
++pkg_search_module(XXHASH IMPORTED_TARGET GLOBAL libxxhash)
 +if(XXHASH_FOUND)
 +    message(STATUS "Using system xxhash")
 +    add_library(xxhash-shared INTERFACE)
@@ -54,8 +54,8 @@ index 6575bd4..0f50766 100644
  
 -if(USE_VULKAN)
 +if(USE_HOST_SPIRV)
-+    pkg_search_module(GLSLANG REQUIRED IMPORTED_TARGET glslang)
-+    pkg_search_module(SPIRV REQUIRED IMPORTED_TARGET spirv)
++    pkg_search_module(GLSLANG REQUIRED IMPORTED_TARGET GLOBAL glslang)
++    pkg_search_module(SPIRV REQUIRED IMPORTED_TARGET GLOBAL spirv)
 +    message(STATUS "Using host glslang/spirv")
 +    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_HOST_SPIRV)
 +    add_library(glslang-shared INTERFACE)
@@ -68,7 +68,7 @@ index 6575bd4..0f50766 100644
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
  	option(SKIP_GLSLANG_INSTALL "Skip installation" ON)
  	option(ENABLE_SPVREMAPPER "Enables building of SPVRemapper" OFF)
-@@ -299,8 +326,8 @@ if(USE_VULKAN)
+@@ -320,8 +347,8 @@ if(USE_VULKAN)
  	option(ENABLE_HLSL "Enables HLSL input support" OFF)
  	option(ENABLE_PCH "Enables Precompiled header" OFF)
  	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
@@ -78,12 +78,12 @@ index 6575bd4..0f50766 100644
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -356,9 +383,17 @@ if(NOT LIBRETRO)
+@@ -377,9 +404,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
 +if(USE_HOST_CHDR)
-+    pkg_search_module(CHDR REQUIRED IMPORTED_TARGET libchdr)
++    pkg_search_module(CHDR REQUIRED IMPORTED_TARGET GLOBAL libchdr)
 +    message(STATUS "Using host libchdr")
 +    add_library(chdr-static INTERFACE)
 +    target_compile_definitions(chdr-static INTERFACE USE_HOST_CHDR)
@@ -96,18 +96,18 @@ index 6575bd4..0f50766 100644
 +target_link_libraries(${PROJECT_NAME} PRIVATE chdr-static)
  
  if(NOT WITH_SYSTEM_ZLIB)
-     target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -370,7 +405,6 @@ if(NOT WITH_SYSTEM_ZLIB)
-     get_target_property(ZLIB_LIBRARY zlib LOCATION)
+ 	target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
+@@ -391,7 +426,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+ 	get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
 -find_package(PkgConfig)
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
-     pkg_check_modules(AO IMPORTED_TARGET ao)
-     if(AO_FOUND)
-@@ -597,8 +631,25 @@ target_sources(${PROJECT_NAME} PRIVATE
-         core/deps/picotcp/stack/pico_stack.c
-         core/deps/picotcp/stack/pico_tree.c)
+ 	pkg_check_modules(AO IMPORTED_TARGET ao)
+ 	if(AO_FOUND)
+@@ -618,8 +652,25 @@ target_sources(${PROJECT_NAME} PRIVATE
+ 		core/deps/picotcp/stack/pico_stack.c
+ 		core/deps/picotcp/stack/pico_tree.c)
  
 +if(USE_HOST_CHDR AND NOT USE_HOST_LZMA)
 +  message(STATUS "Host chdr enabled without shared lzma, disabling 7zip support")
@@ -116,7 +116,7 @@ index 6575bd4..0f50766 100644
 +endif()
 +
 +if (USE_HOST_LZMA)
-+  pkg_search_module(LZMA REQUIRED IMPORTED_TARGET lzmasdk-c)
++  pkg_search_module(LZMA REQUIRED IMPORTED_TARGET GLOBAL lzmasdk-c)
 +  if(LZMA_FOUND)
 +    message(STATUS "Using host lzmasdk")
 +    target_compile_definitions(${PROJECT_NAME} PRIVATE USE_HOST_LZMA)
@@ -131,23 +131,23 @@ index 6575bd4..0f50766 100644
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
  if(NOT LIBRETRO)
  	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
-@@ -644,9 +695,13 @@ if(LIBRETRO)
+@@ -665,9 +716,13 @@ if(LIBRETRO)
  		shell/libretro/vmu_xhair.cpp)
  endif()
  
 -target_sources(${PROJECT_NAME} PRIVATE
 +if(NOT DISABLE_7ZIP)
 +  target_sources(${PROJECT_NAME} PRIVATE
-         core/archive/7zArchive.cpp
--        core/archive/7zArchive.h
-+        core/archive/7zArchive.h)
+ 		core/archive/7zArchive.cpp
+-		core/archive/7zArchive.h
++		core/archive/7zArchive.h)
 +endif()
 +
 +target_sources(${PROJECT_NAME} PRIVATE
-         core/archive/archive.cpp
-         core/archive/archive.h
-         core/archive/rzip.cpp
-@@ -1068,7 +1123,14 @@ if(NOT LIBRETRO)
+ 		core/archive/archive.cpp
+ 		core/archive/archive.h
+ 		core/archive/rzip.cpp
+@@ -1089,7 +1144,14 @@ if(NOT LIBRETRO)
  endif()
  
  if(USE_VULKAN)
@@ -228,7 +228,7 @@ index 904839a..615011d 100644
  	Archive *zip_archive = new ZipArchive();
  	if (zip_archive->Open(base_path.c_str()) || zip_archive->Open((base_path + ".zip").c_str()) || zip_archive->Open((base_path + ".ZIP").c_str()))
 diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
-index 4687a61..22cbdfe 100644
+index 8c017b3..1485a13 100644
 --- a/core/rend/vulkan/compiler.cpp
 +++ b/core/rend/vulkan/compiler.cpp
 @@ -19,7 +19,11 @@
@@ -260,5 +260,5 @@ index f58ac0d..2ef9b1f 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.37.3
+2.38.1
 
