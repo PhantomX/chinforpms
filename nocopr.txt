@@ -64,6 +64,7 @@ rpcs3
 rustdesk
 rustdesk-server
 rusty-psn
+ryujinx
 snes9x
 softmaker-office
 -soulseekqt

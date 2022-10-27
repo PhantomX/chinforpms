@@ -4,8 +4,8 @@ set -e
 
 DUCKSTATIONDIR="_RPM_DATADIR_"
 
-if [[ "${XDG_CONFIG_HOME}" ]] ;then
-  DUCKSTATIONHOME="${XDG_CONFIG_HOME}/duckstation"
+if [[ "${XDG_DATA_HOME}" ]] ;then
+  DUCKSTATIONHOME="${XDG_DATA_HOME}/duckstation"
 else
   DUCKSTATIONHOME="${HOME}/.local/share/duckstation"
 fi

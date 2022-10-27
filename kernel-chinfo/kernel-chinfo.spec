@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7a9cbac6d7f8882479d0ebe197f205c3830a371a
+%global pfcommit dd12b151d69b363075725ab28cacdfcc26ad9010
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash 41ded4b823b3f4231c14ca2bece63c4d
+%global pfcoprhash 66ef5b110e1f0b063144ca8810acda76
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 48205dbf3dba6ae42b7292e451248dc3d5e731ae
+%global opensuse_id df34d127a487178d57a4d0e6874c7c92df78e490
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -3028,6 +3028,9 @@ fi
 #
 #
 %changelog
+* Wed Oct 26 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.5-500.chinfo
+- 6.0.5 - pf3
+
 * Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.3-500.chinfo
 - 6.0.2 - pf3
 
