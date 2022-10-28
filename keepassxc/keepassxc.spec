@@ -16,8 +16,8 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.1
-Release:        101%{?gver}%{?dist}
+Version:        2.7.3
+Release:        100%{?gver}%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Oct 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.3-100
+- 2.7.3
+
 * Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-101
 - Rebuild (qt5)
 

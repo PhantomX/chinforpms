@@ -18,7 +18,6 @@ Source1:        %{vc_url}/%{appname}/raw/%{vc_id}/LICENSE.txt
 Source2:        %{vc_url}/%{appname}/raw/%{vc_id}/README.md
 Source3:        %{vc_url}/%{appname}/raw/%{vc_id}/distribution/linux/%{name}.desktop
 Source4:        %{vc_url}/%{appname}/raw/%{vc_id}/distribution/linux/%{name}-logo.svg
-Source5:        %{appname}.sh
 
 ExclusiveArch:  x86_64
 

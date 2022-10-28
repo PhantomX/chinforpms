@@ -12,7 +12,7 @@
 %global commit 27072cd556232ae81c6af78530aa5948c46269a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221020
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -60,8 +60,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.6
-Release:        11%{?gver}%{?dist}
+Version:        2.7
+Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -294,6 +294,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Oct 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.7-1
+- 2.7
+
 * Fri Oct 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2.6-10.20221007gitc42f24a
 - Use bundled SPIRV-Headers for now
 

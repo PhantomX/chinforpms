@@ -26,6 +26,8 @@ libvorbis-aotuv
 libstrangle
 -linux-steam-integration
 mangohud
+mesa
+mesa-libGL-xlib
 -mingw-crt
 -mingw-headers
 -mingw-w64-tools
