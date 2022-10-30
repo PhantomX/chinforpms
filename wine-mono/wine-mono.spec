@@ -22,8 +22,8 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        7.3.0
-Release:        101%{?dist}
+Version:        7.4.0
+Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
 License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
@@ -177,6 +177,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Fri Oct 28 2022 Phantom X <megaphantomx at hotmail dot com> - 7.4.0-100
+- 7.4.0
+
 * Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 7.3.0-101
 - Debug fixes
 

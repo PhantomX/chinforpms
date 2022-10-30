@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit dd12b151d69b363075725ab28cacdfcc26ad9010
+%global pfcommit 86b11d17e0502389778326f7b17e66034cb87bd2
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash 66ef5b110e1f0b063144ca8810acda76
+%global pfcoprhash b23f1c34c38ca66456e1a310726b279b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id df34d127a487178d57a4d0e6874c7c92df78e490
+%global opensuse_id 7359656e16c5fb0cf358bc75890037b4d7164011
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -968,7 +968,7 @@ Patch1016: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%global tkg_id f59fe9875440ce1a3da9c5d6281d5212b82cc2ef
+%global tkg_id a380d532bc85013c120b1d689a07367afc0e026b
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
@@ -3028,6 +3028,9 @@ fi
 #
 #
 %changelog
+* Sat Oct 29 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.6-500.chinfo
+- 6.0.6 - pf3
+
 * Wed Oct 26 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.5-500.chinfo
 - 6.0.5 - pf3
 

@@ -44,10 +44,10 @@ Subject: [PATCH] patch-6.0-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 42 files changed, 555 insertions(+), 192 deletions(-)
+ 43 files changed, 527 insertions(+), 200 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 62a7398c8d06..a4d699f4c09d 100644
+index 3193969f1eb3..f6857e4cdb25 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -62,7 +62,7 @@ index 62a7398c8d06..a4d699f4c09d 100644
  # to get the ordering right.
  #
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 11ecf09aadc8..5d91c8c3cd49 100644
+index 87badeae3181..2ec7919034d8 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1387,9 +1387,9 @@ config HIGHMEM
@@ -78,10 +78,10 @@ index 11ecf09aadc8..5d91c8c3cd49 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 3795eb5ba1cd..55d299a03150 100644
+index 1ce7685ad5de..101f1d767658 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1199,7 +1199,7 @@ endchoice
+@@ -1182,7 +1182,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -90,7 +90,7 @@ index 3795eb5ba1cd..55d299a03150 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1438,6 +1438,7 @@ config XEN
+@@ -1421,6 +1421,7 @@ config XEN
  config FORCE_MAX_ZONEORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -377,7 +377,7 @@ index 8d151e332584..bd29fe4ddbf3 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index aa6d109fac08..a606fcc42649 100644
+index e4080ad96089..e050d2f8dbe5 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -31,6 +31,7 @@
@@ -388,7 +388,7 @@ index aa6d109fac08..a606fcc42649 100644
 
  #include <asm/early_ioremap.h>
 
-@@ -866,40 +867,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -864,40 +865,101 @@ int efi_mem_type(unsigned long phys_addr)
  }
  #endif
 
@@ -985,7 +985,7 @@ index 3a808146b50f..c1a3f3057921 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 59e4b188fc71..9c6bfc02e6a1 100644
+index 8d5a7ae19844..f3939183c346 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1052,7 +1052,7 @@ index 59e4b188fc71..9c6bfc02e6a1 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index b9cf17cbbbd5..9aa33fc59f67 100644
+index 6ef497c75a16..c019294e1058 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1088,7 +1088,7 @@ index b9cf17cbbbd5..9aa33fc59f67 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -872,8 +878,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -871,8 +877,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1099,7 +1099,7 @@ index b9cf17cbbbd5..9aa33fc59f67 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a0bf9560cf67..2a226be9b32a 100644
+index 1bdf714dcd9e..10e45b82466c 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -844,6 +844,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -1174,7 +1174,7 @@ index bbab424b0d55..ed86042fb57b 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index 4459794b65db..79735fc77198 100644
+index d2b84c2fec39..3498d72b62ec 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -43,6 +43,8 @@
@@ -1227,7 +1227,7 @@ index 4459794b65db..79735fc77198 100644
 
  /*
   * Variable Attributes
-@@ -1104,13 +1119,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1107,13 +1122,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const char *call);
  extern unsigned long efi_call_virt_save_flags(void);
 
@@ -1378,7 +1378,7 @@ index e137cf15aae9..2ed2341f7967 100755
  # Use make KBUILD_ABS_SRCTREE=1 {tags|cscope}
  # to force full paths for a non-O= build
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index b78753d27d8e..f0b37800431a 100644
+index 093894a640dc..1c43a9462b4b 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -73,7 +73,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,

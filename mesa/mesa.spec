@@ -755,11 +755,11 @@ popd
 * Sat May 07 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.3-100
 - 22.0.3
 
-* Fri Apr 22 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.2-100
-- 22.0.2
-
 * Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-101
 - Rebuild (llvm)
+
+* Fri Apr 22 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.2-100
+- 22.0.2
 
 * Wed Mar 30 2022 Phantom X <megaphantomx at hotmail dot com> - 22.0.1-100
 - 22.0.1

@@ -6,7 +6,7 @@
 %global vc_url  https://github.com/%{appname}
 
 Name:           ryujinx
-Version:        1.1.328
+Version:        1.1.335
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
