@@ -9,18 +9,18 @@
 
 %ifarch aarch64
 %global parch arm64
-%global pkgid 620417259
+%global pkgid 623268466
 %else
 %global parch amd64
-%global pkgid 620282966
+%global pkgid 623257277
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
-%global pkgdistro 0ubuntu0.18.04.1
+%global pkgdistro 2ubuntu0.18.04
 
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        106.0.5249.12
+Version:        106.0.5249.30
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -57,6 +57,9 @@ install -pm0755 usr/lib/chromium-browser/libffmpeg.so %{buildroot}%{vivaldi_dir}
 
 
 %changelog
+* Mon Oct 31 2022 - 106.0.5249.30-1
+- 106.0.5249.30
+
 * Wed Oct 05 2022 - 106.0.5249.12-1
 - Initial spec
 
