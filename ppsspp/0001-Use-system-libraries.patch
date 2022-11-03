@@ -1,4 +1,4 @@
-From ed028215d740cee950b4565935c86a0072329c38 Mon Sep 17 00:00:00 2001
+From 8ff9d2a9bfd4aa0d5f443930031a3120a9c36c3a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -25,10 +25,10 @@ zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
  17 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index bc81d9b..479b3b5 100644
+index b9084be..3bb5f90 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -163,6 +163,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
+@@ -170,6 +170,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
  option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)
  option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
@@ -36,7 +36,7 @@ index bc81d9b..479b3b5 100644
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
  option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
  option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1360,11 +1361,30 @@ add_library(xbrz STATIC
+@@ -1372,11 +1373,30 @@ add_library(xbrz STATIC
  )
  include_directories(ext/xbrz)
  
@@ -68,7 +68,7 @@ index bc81d9b..479b3b5 100644
  set(CoreExtra)
  set(CoreExtraLibs)
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index 4c66642..8e15ba7 100644
+index 8368c83..2e393af 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,7 @@
@@ -81,7 +81,7 @@ index 4c66642..8e15ba7 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 511aeee..18c4d7d 100644
+index ab0e10a..17a5533 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -20,7 +20,7 @@
@@ -94,18 +94,18 @@ index 511aeee..18c4d7d 100644
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index e7f3011..a0d6b24 100644
+index 8b2e427..113f4be 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  // Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
  // #define JPEG_DEBUG
  #ifdef JPEG_DEBUG
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
+ #include "Common/File/FileUtil.h"
+ #include "Common/StringUtils.h"
  #endif
- 
- struct u24_be {
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
 index 66608fc..43cc7a4 100644
 --- a/Core/MIPS/IR/IRJit.cpp
@@ -120,7 +120,7 @@ index 66608fc..43cc7a4 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index b85b336..cf600fe 100644
+index f5b11ca..ed74d3d 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -133,7 +133,7 @@ index b85b336..cf600fe 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 2c4e11b..1a6d874 100644
+index 09e9771..a8dacd3 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -23,7 +23,7 @@
@@ -146,12 +146,12 @@ index 2c4e11b..1a6d874 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/TextureReplacer.cpp b/Core/TextureReplacer.cpp
-index fb6b436..e8ab2ab 100644
+index dcd413f..bfdfd68 100644
 --- a/Core/TextureReplacer.cpp
 +++ b/Core/TextureReplacer.cpp
-@@ -22,7 +22,7 @@
- #include <memory>
- #include <png.h>
+@@ -27,7 +27,7 @@
+ #include "ext/libzip/zip.h"
+ #endif
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
@@ -159,7 +159,7 @@ index fb6b436..e8ab2ab 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 13fd62a..fceae1b 100644
+index d7559c0..d938a4c 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -185,7 +185,7 @@ index d778807..5105c0d 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 2563825..5d35f8e 100644
+index 486ad94..25be3c6 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -38,7 +38,7 @@
@@ -198,7 +198,7 @@ index 2563825..5d35f8e 100644
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 3a06c3b..90e04c8 100644
+index a280c7c..a240533 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
 @@ -34,7 +34,7 @@
@@ -211,7 +211,7 @@ index 3a06c3b..90e04c8 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 928854f..eb00a64 100644
+index 9584955..7b47ba2 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -224,7 +224,7 @@ index 928854f..eb00a64 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index d11e92b..7bace4d 100644
+index d536bed..27800cb 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -237,7 +237,7 @@ index d11e92b..7bace4d 100644
  #include "Common/Data/Text/I18n.h"
  #include "Common/Math/math_util.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 8b4ba9d..efb9408 100644
+index dee7a11..aa0ee41 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -250,7 +250,7 @@ index 8b4ba9d..efb9408 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 5aca43f..aa6e1bf 100644
+index 7faf3b6..5be90a5 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -23,7 +23,7 @@
@@ -263,7 +263,7 @@ index 5aca43f..aa6e1bf 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index c8f8a3f..4107c3d 100644
+index d40bdaf..b7586c9 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -4,7 +4,7 @@
@@ -276,5 +276,5 @@ index c8f8a3f..4107c3d 100644
  #include "Core/MemMap.h"
  #include "Core/Reporting.h"
 -- 
-2.37.3
+2.38.1
 

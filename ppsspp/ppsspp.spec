@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 362391b9d88ad819fc862f96ff6640087acf7765
+%global commit 92cd3fa5cc7397248b8b7b4ee9576b89e2befd91
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221004
+%global date 20221102
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -42,7 +42,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 b4335f04fa62c1b4f7833c70fbb15505b6772274
+%global commit4 6719edebaae03330ee5441d9b28280672edf00d5
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -69,7 +69,7 @@
 
 Name:           ppsspp
 Version:        1.13.2
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 

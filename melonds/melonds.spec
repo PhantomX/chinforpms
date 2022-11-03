@@ -4,7 +4,7 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit aa9a6ceed57613627b30c34aa718d5d7d751746a
+%global commit 4ef2e1f4ccc2f8046b74b8562c8ee8ef5d33d0b0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221004
 %global with_snapshot 1
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.4
-Release:        10%{?gver}%{?dist}
+Release:        11%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -40,7 +40,6 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
-Patch10:        %{name}-pr1402.patch
 Patch11:        %{vc_url}/pull/1485.patch#/%{name}-gh-pr1485.patch
 
 ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64

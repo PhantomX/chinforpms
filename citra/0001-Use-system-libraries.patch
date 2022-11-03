@@ -1,4 +1,4 @@
-From 26f83cd97bdfd86f0e25a81acbd3f2deba654f70 Mon Sep 17 00:00:00 2001
+From 925f003ffee0e5cdec6e8fed151c8e3be8aa05d3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
@@ -9,7 +9,7 @@ Subject: [PATCH] Use system libraries
  2 files changed, 33 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5f40ab2..7197f9b 100644
+index 4667558..d8df53d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -9,7 +9,6 @@ endif()
@@ -29,7 +29,7 @@ index 5f40ab2..7197f9b 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index e4b53f7..ca742ae 100644
+index c2385c4..11a8409 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -6,10 +6,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -52,9 +52,9 @@ index e4b53f7..ca742ae 100644
  
  # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
  
-@@ -47,7 +48,15 @@ if (ARCHITECTURE_x86_64 OR ARCHITECTURE_ARM64)
- endif()
+@@ -33,7 +34,15 @@ add_subdirectory(cryptopp)
  
+ # fmt and Xbyak need to be added before dynarmic
  # libfmt
 +find_package(fmt 9.1)
 +if(fmt_FOUND)
@@ -66,9 +66,9 @@ index e4b53f7..ca742ae 100644
  add_subdirectory(fmt)
 +endif()
  
- # getopt
- if (MSVC)
-@@ -85,20 +94,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
+ # Xbyak
+ if (ARCHITECTURE_x86_64)
+@@ -88,20 +97,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
  endif()
  
  # Zstandard
@@ -113,5 +113,5 @@ index e4b53f7..ca742ae 100644
  
  # DiscordRPC
 -- 
-2.37.3
+2.38.1
 

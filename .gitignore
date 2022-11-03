@@ -53,6 +53,7 @@ geany_run_script.sh
 *.oxt
 *.exe
 *.msi
+*.nupkg
 *.vbox-extpack
 *.plasmoid
 *.jar

@@ -5,14 +5,14 @@
 %global __strip /bin/true
 
 %global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 7
+%global snaprev 11
 
 %global app_name Authy
 
 Name:           authy
 # Version from application info
 Version:        2.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Two factor authentication desktop application
 
 License:        Unknown
@@ -48,6 +48,13 @@ additional layer of security.
 %prep
 %setup -c -T
 unsquashfs -n -d %{name} %{S:0}
+
+RVER="$(strings %{name}/resources/app.asar |grep '"version": "' | tail -n1 | cut -d\" -f 4 )"
+if [ "${RVER}" != "%{version}" ] ;then
+  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{version} "
+  echo "Edit Version and try again"
+  exit 1
+fi
 
 find %{name}/ -name '*.so*' | xargs chmod +x
 
@@ -105,6 +112,9 @@ done
 
 
 %changelog
+* Wed Nov 02 2022 - 2.2.1-2
+- Fix snap revision
+
 * Thu Jul 28 2022 - 2.2.1-1
 - 2.2.1
 

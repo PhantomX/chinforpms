@@ -1,6 +1,6 @@
-%global commit 2cea9e6d70fecaba150b29d0bea72df5c731e20a
+%global commit b8c7196dd9da7a56b78b43395a19f78ec57c0c0b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221016
+%global date 20221101
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -17,7 +17,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.1%{?gver}%{?dist}
+Release:        0.2%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPLv2.0

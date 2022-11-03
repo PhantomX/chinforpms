@@ -20,14 +20,18 @@
 %global enablejit 1
 %endif
 
-%global commit 892ab87e65eb54d57746104a2404552d57a02e42
+%global commit 0210d115c22a1c5745c76eaefe38b5d0af3247f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221016
+%global date 20221102
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Cross
+
+%global commit3 c351692490513cdb0e5a2c925aaf7ea4a9b672f4
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 VulkanMemoryAllocator
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -40,7 +44,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        169%{?gver}%{?dist}
+Release:        170%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -67,6 +71,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 
 %if 0%{?with_sysvulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -268,6 +273,7 @@ rm -rf \
 %endif
 
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
+tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson

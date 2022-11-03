@@ -1,6 +1,6 @@
-%global commit 329664392e94e937ca788fcfc641a283fac97758
+%global commit 7be72ce2a708ec88aa2362352f37db30529251c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221021
+%global date 20221101
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -48,7 +48,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.3
-%global winemono  7.3.0
+%global winemono  7.4.0
 %global winevulkan 1.3.230
 
 %global wineFAudio 22.08
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1f500db5b7831e19502e892216cce4c38f236c9d
+%global wine_stagingver bd2608b12c2df62b137a7ea72f4e79b529ba1ca7
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f6c3a233c973a065ae1ab193bae1016d240dde47
+%global tkg_id 198006cdebd3607d7b24f3aae12056433812ccd3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -150,8 +150,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.19
-Release:        101%{?gver}%{?dist}
+Version:        7.20
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -917,9 +917,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1303 -p1
 for i in \
   0008-winegstreamer-Allow-videoconvert-to-parallelize.patch \
-  0025-winegstreamer-Report-streams-backwards-in-media-sour.patch \
-  0038-winegstreamer-In-the-default-configuration-select-on.patch \
-  0043-winegstreamer-Update-offset-according-to-the-size-of.patch \
 ;do
   %{__scm_apply_patch -p1} -i patches/mfplat-streaming-support/$i
 done
@@ -1095,9 +1092,6 @@ unset PKG_CONFIG_PATH
  --with-mingw \
 %else
  --without-mingw \
-%endif
-%if 0%{?wine_staging}
- --with-xattr \
 %endif
  --disable-tests \
  --without-oss \
@@ -2549,6 +2543,9 @@ fi
 
 
 %changelog
+* Wed Nov 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.20-100.20221101git7be72ce
+- 7.20
+
 * Tue Oct 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.19-100.20221017git03f5f72
 - 7.19
 

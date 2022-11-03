@@ -19,12 +19,12 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit 363e0a40e57a1b9094fa776469df3a01ecaf6a4c
+%global commit a00f9e42115527aa9654870f194cf2c64329f2ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221019
+%global date 20221101
 %global with_snapshot 1
 
-%global commit10 7826e1941eab1aa66fbe84c48b95921bff402a96
+%global commit10 5e61ea2098220059e89523f1f47b0bcd8c33b89a
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Tools
 
@@ -36,7 +36,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 adbf0d3106b26daa237b10b9bf72b1af7c31092d
+%global commit13 10423ec659d301a0ff2daac8bbf38980abf27590
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -52,7 +52,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 4995a2f2723c401eb0ea3e10c81298906bf1422b
+%global commit17 b2a156e1c0434bc8c99aaebba1c7be98be7ac580
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
@@ -91,8 +91,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.24
-Release:        10%{?gver}%{?dist}
+Version:        0.0.25
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -413,6 +413,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.25-1.20221101gita00f9e4
+- 0.0.25
+
 * Sat Sep 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.24-1.20220902git64579ee
 - 0.0.24
 

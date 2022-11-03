@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7d18e36566c949de835c106375eb591a6e1683cd
+%global commit a93d7a8d3ab02e3ba72013cbf92d5cae84d555d3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221001
+%global date 20221028
 %global with_snapshot 1
 
 # Enable system boost
@@ -32,7 +32,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 460617901965ef7cd73cfbcf289fe367bf11c99e
+%global commit3 3946dcf005c6e8f3d91cfb0bc5debfd0446daa39
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -56,7 +56,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
-%global commit9 c306b8e5786eeeb87b8925a8af5c3bf057ff5a90
+%global commit9 48457bfa0ded67bb4ae2d4c141c36b35469257ee
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
@@ -82,7 +82,7 @@
 
 Name:           citra
 Version:        0
-Release:        26%{?gver}%{?dist}
+Release:        27%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -305,6 +305,9 @@ cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 
 %install
 %cmake_install
+
+rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_datadir}/cmake
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 

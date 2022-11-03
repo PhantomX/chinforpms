@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3462
+Version:        1.7.3512
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -327,7 +327,7 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 %files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
 %endif
 %license COPYING* 3rdparty/{COPYRIGHT,LICENSE}.*
-%doc README.md bin/docs/Configuration_Guide.pdf bin/docs/PCSX2_FAQ.pdf
+%doc README.md bin/docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
 %{_datadir}/applications/PCSX2.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png

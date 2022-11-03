@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 4de9076b49abb33177bf67511499aeeee9dbfd60
+%global commit c15f446ffc9120310a698faddec755a9a0e9ea29
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221022
+%global date 20221031
 %global with_snapshot 1
 
 # Disable LTO. Crash.
