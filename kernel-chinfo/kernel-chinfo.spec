@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 6
+%define stable_update 7
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 86b11d17e0502389778326f7b17e66034cb87bd2
+%global pfcommit d2c2086264860edbef5c7d2a8106094286708bf8
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash b23f1c34c38ca66456e1a310726b279b
+%global pfcoprhash fca7d9aaddf38eaf520addd15428849d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 7359656e16c5fb0cf358bc75890037b4d7164011
+%global opensuse_id 286383cfa14a93136c51ce0c64d5d86ec9ed7b17
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -963,7 +963,9 @@ Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1016: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-
+Patch1017: %{opensuse_url}/KVM-x86-emulator-introduce-emulator_recalc_and_set_m.patch#/openSUSE-KVM-x86-emulator-introduce-emulator_recalc_and_set_m.patch
+Patch1018: %{opensuse_url}/KVM-x86-emulator-update-the-emulation-mode-after-rsm.patch#/openSUSE-KVM-x86-emulator-update-the-emulation-mode-after-rsm.patch
+  
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -2345,12 +2347,12 @@ BuildKernel() {
 
     ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-%if 0%{?fedora} > 37
+%dnl %if 0%{?fedora} > 37
 %ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
 %endif
-%endif
+%dnl %endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
@@ -3028,6 +3030,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.7-500.chinfo
+- 6.0.7 - pf3
+
 * Sat Oct 29 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.6-500.chinfo
 - 6.0.6 - pf3
 

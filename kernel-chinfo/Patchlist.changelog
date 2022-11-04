@@ -1,5 +1,20 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/bf2bceedcc5d66c041165b4db6aea032fd7f4b5c
+ bf2bceedcc5d66c041165b4db6aea032fd7f4b5c drm/simpledrm: Only advertise formats that are supported
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7ab8e0d8b46b7f768e37f8ff39ccae2ecc897396
+ 7ab8e0d8b46b7f768e37f8ff39ccae2ecc897396 disable enum64 BTF in fedora rawhide
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3f98e8c4ff4856388d73a2dd727241fc05dc717f
+ 3f98e8c4ff4856388d73a2dd727241fc05dc717f drm/vc4: hdmi: Fix HSM clock too low on Pi4
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1dc36385281ea0ffa70f6fd94f21a85e69b89062
  1dc36385281ea0ffa70f6fd94f21a85e69b89062 phy: rockchip-inno-usb2: Return zero after otg sync
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/79fb41cd79f56f42eef3981f8f22fdcd17374298
+ 79fb41cd79f56f42eef3981f8f22fdcd17374298 drm/vc4: hdmi: Check the HSM rate at runtime_resume
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/79fe71195290bdc3120f709120ccdc1e568f8b60
+ 79fe71195290bdc3120f709120ccdc1e568f8b60 drm/vc4: hdmi: Enforce the minimum rate at runtime_resume
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b1071e87929d0dd926a791aa3a2b7fac639b00ea
  b1071e87929d0dd926a791aa3a2b7fac639b00ea drm/i915/bios: Use hardcoded fp_timing size for generating LFP data pointers

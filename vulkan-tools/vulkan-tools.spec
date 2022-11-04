@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.3.231
+Version:        1.3.233
 Release:        100%{?dist}
 Summary:        Vulkan tools
 
@@ -50,6 +50,7 @@ Vulkan tools
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
   -DGLSLANG_INSTALL_DIR=%{_prefix} \
+  -DVULKAN_HEADERS_INSTALL_DIR=%{_prefix} \
 %{nil}
 
 %cmake3_build
@@ -84,6 +85,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.233-100
+- 1.3.233
+
 * Fri Oct 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.231-100
 - 1.3.231
 

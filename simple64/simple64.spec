@@ -19,7 +19,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           simple64
-Version:        2022.10.3
+Version:        2022.11.1
 Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
@@ -192,7 +192,8 @@ sed \
 %endif
 
 sed \
-  -e 's|-march=x86-64-v3 ||g' \
+  -e '/-march=x86-64-v3 -Ofast)/d' \
+  -e 's|-march=x86-64-v3 -Ofast ||g' \
   -i */CMakeLists.txt
 
 sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i parallel-rsp/rsp_jit.hpp
@@ -298,6 +299,9 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 
 
 %changelog
+* Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.11.1-1
+- 2022.11.1
+
 * Fri Oct 07 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.10.3-1
 - 2022.10.3
 - All cmake now

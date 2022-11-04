@@ -31,7 +31,7 @@ index 00cb0f4..ceefc06 100644
      QDir PluginDir(pluginPath);
      PluginDir.setFilter(QDir::Files);
 @@ -374,7 +375,7 @@ MainWindow::MainWindow(QWidget *parent) :
-     updatePIF(ui);
+     updateGB(ui);
  
      if (!settings->contains("configDirPath"))
 -        settings->setValue("configDirPath", "$CONFIG_PATH$");
