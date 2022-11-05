@@ -228,7 +228,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.8.0
+Version: 8.9.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -273,7 +273,7 @@ Requires: libvirt-libs = %{version}-%{release}
 # listed against each sub-RPM
 BuildRequires: python3-docutils
 BuildRequires: gcc
-BuildRequires: meson >= 0.54.0
+BuildRequires: meson >= 0.56.0
 BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter
@@ -475,7 +475,11 @@ Requires: dbus
 # For uid creation during pre
 Requires(pre): shadow-utils
 # Needed by /usr/libexec/libvirt-guests.sh script.
+%if 0%{?fedora} >= 37
+Requires: gettext-runtime
+%else
 Requires: gettext
+%endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
@@ -902,6 +906,15 @@ Obsoletes: libvirt-bash-completion < 7.3.0
 %description client
 The client binaries needed to access the virtualization
 capabilities of recent versions of Linux (and other OSes).
+
+%package client-qemu
+Summary: Additional client side utilities for QEMU
+Requires: %{name}-libs = %{version}-%{release}
+Requires: python3-libvirt >= 3.7.0
+
+%description client-qemu
+The additional client binaries are used to interact
+with some QEMU specific features of libvirt.
 
 %package libs
 Summary: Client side libraries
@@ -2170,6 +2183,11 @@ exit 0
 
 %{_datadir}/bash-completion/completions/virsh
 
+%if %{with_qemu}
+%files client-qemu
+%{_mandir}/man1/virt-qemu-qmp-proxy.1*
+%{_bindir}/virt-qemu-qmp-proxy
+%endif
 
 %files libs -f %{name}.lang
 %license COPYING COPYING.LESSER
@@ -2386,6 +2404,9 @@ exit 0
 
 
 %changelog
+* Sat Nov 05 2022 Phantom X <megaphantomx at hotmail dot com> - 8.9.0-100
+- 8.9.0
+
 * Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 8.8.0-100
 - 8.8.0
 
