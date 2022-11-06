@@ -8,6 +8,6 @@ index d8c623a..e5b6833 100644
  
 -set_target_properties(Telegram PROPERTIES AUTOMOC ON)
 +set_target_properties(Telegram PROPERTIES AUTOMOC ON SKIP_BUILD_RPATH ON)
- target_prepare_qrc(Telegram)
  
  target_link_libraries(Telegram
+ PRIVATE

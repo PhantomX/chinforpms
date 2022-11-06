@@ -24,7 +24,7 @@
 %global kf5ver 3c1d4a
 
 Name:           telegram-desktop
-Version:        4.2.4
+Version:        4.3.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -68,9 +68,9 @@ BuildRequires:  cmake(tl-expected)
 
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gio-2.0)
-BuildRequires:  pkgconfig(giomm-2.4)
+BuildRequires:  pkgconfig(giomm-2.68)
 BuildRequires:  pkgconfig(glib-2.0)
-BuildRequires:  pkgconfig(glibmm-2.4)
+BuildRequires:  pkgconfig(glibmm-2.68)
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(jemalloc)
@@ -80,7 +80,7 @@ BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(opus)
-BuildRequires:  pkgconfig(sigc++-2.0)
+BuildRequires:  pkgconfig(sigc++-3.0)
 BuildRequires:  pkgconfig(rnnoise)
 
 BuildRequires:  cmake
@@ -320,6 +320,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
 
 
 %changelog
+* Sat Nov 05 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.0-100
+- 4.3.0
+
 * Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.4-100
 - 4.2.4
 

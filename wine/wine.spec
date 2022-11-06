@@ -1,6 +1,6 @@
-%global commit 7be72ce2a708ec88aa2362352f37db30529251c4
+%global commit 9d1175a4649706d8d46a7bd8d5aa291b6528bfc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221101
+%global date 20221104
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -49,7 +49,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.230
+%global winevulkan 1.3.233
 
 %global wineFAudio 22.08
 %global winegsm 1.0.19
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 198006cdebd3607d7b24f3aae12056433812ccd3
+%global tkg_id 16fc2d97518aebb979010e8efc4f375ce54073f5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,7 +151,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.20
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -226,7 +226,8 @@ Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
-Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+%dnl Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch1002:       FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
 Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
@@ -915,11 +916,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1040 -p1
 
 %patch1303 -p1
-for i in \
-  0008-winegstreamer-Allow-videoconvert-to-parallelize.patch \
-;do
-  %{__scm_apply_patch -p1} -i patches/mfplat-streaming-support/$i
-done
 %if 0%{?fshack}
 %if 0%{?vulkanup}
 %patch1027 -p1
@@ -2028,6 +2024,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.devices.enumeration.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.gaming.ui.gamebar.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.speech.%{winedll}
