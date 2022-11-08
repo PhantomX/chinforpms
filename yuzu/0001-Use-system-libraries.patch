@@ -1,4 +1,4 @@
-From d27db56353a654ea355d6965df33beebd9d57ad8 Mon Sep 17 00:00:00 2001
+From f3cbbf33782a172e70ae78e81c1bc6f1b7c6c4a6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -7,14 +7,14 @@ FindMBETLS.cmake from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                           |  4 ---
- externals/CMakeLists.txt                 | 34 ++++++++++++++++++++----
- externals/find-modules/FindMBEDTLS.cmake | 23 ++++++++++++++++
- 3 files changed, 52 insertions(+), 9 deletions(-)
+ CMakeLists.txt                           |  1 -
+ externals/CMakeLists.txt                 | 28 +++++++++++++++++++++++-
+ externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++
+ 3 files changed, 50 insertions(+), 2 deletions(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index eed57cc..62f9eb7 100755
+index 8efbe61..95b96e6 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -6,7 +6,6 @@ cmake_minimum_required(VERSION 3.15)
@@ -25,18 +25,8 @@ index eed57cc..62f9eb7 100755
  include(CMakeDependentOption)
  
  project(yuzu)
-@@ -81,9 +80,6 @@ function(check_submodules_present)
-     endforeach()
- endfunction()
- 
--if(EXISTS ${PROJECT_SOURCE_DIR}/.gitmodules AND YUZU_CHECK_SUBMODULES)
--    check_submodules_present()
--endif()
- configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
-                ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
-                COPYONLY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 6d04ace..fe7842b 100755
+index 746dd11..937d56b 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -3,7 +3,6 @@
@@ -47,12 +37,10 @@ index 6d04ace..fe7842b 100755
  
  # xbyak
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
-@@ -34,8 +33,19 @@ add_subdirectory(glad)
+@@ -33,8 +32,19 @@ add_subdirectory(glad)
  add_subdirectory(inih)
  
  # mbedtls
--add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
--target_include_directories(mbedtls PUBLIC ./mbedtls/include)
 +if(NOT APPLE)
 +  find_package(MBEDTLS)
 +endif()
@@ -63,13 +51,13 @@ index 6d04ace..fe7842b 100755
 +  target_include_directories(mbedtls-shared INTERFACE "${MBEDTLS_INCLUDE_DIRS}")
 +  add_library(mbedtls ALIAS mbedtls-shared)
 +else()
-+  add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
-+  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
+ add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
+ target_include_directories(mbedtls PUBLIC ./mbedtls/include)
 +endif()
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -75,13 +85,26 @@ if (YUZU_USE_EXTERNAL_SDL2)
+@@ -74,13 +84,29 @@ if (YUZU_USE_EXTERNAL_SDL2)
  endif()
  
  # ENet
@@ -86,14 +74,15 @@ index 6d04ace..fe7842b 100755
  
  # Cubeb
  if(ENABLE_CUBEB)
--    set(BUILD_TESTS OFF CACHE BOOL "")
--    add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +    find_package(cubeb)
 +    if(cubeb_FOUND)
 +      message(STATUS "Using the system cubeb")
++      add_library(cubeb INTERFACE)
++      target_link_libraries(cubeb INTERFACE cubeb::cubeb)
++      add_library(3rdparty::cubeb ALIAS cubeb)
 +    else()
-+      set(BUILD_TESTS OFF CACHE BOOL "")
-+      add_subdirectory(cubeb EXCLUDE_FROM_ALL)
+     set(BUILD_TESTS OFF CACHE BOOL "")
+     add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +    endif()
  endif()
  
@@ -128,5 +117,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.37.1
+2.38.1
 

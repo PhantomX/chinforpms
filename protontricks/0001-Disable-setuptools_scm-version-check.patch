@@ -1,19 +1,19 @@
-From 10915eb845af63cd7ee5db5fb60f36348ff5538a Mon Sep 17 00:00:00 2001
+From ead06d57cbb5b545d87fb5d43fe9cb55f4fcc77f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 09:07:50 -0300
 Subject: [PATCH] Disable setuptools_scm version check
 
 ---
- pyproject.toml       | 4 +---
+ pyproject.toml       | 7 +------
  requirements_dev.txt | 1 -
- setup.py             | 3 ---
- 3 files changed, 1 insertion(+), 7 deletions(-)
+ setup.cfg            | 2 --
+ 3 files changed, 1 insertion(+), 9 deletions(-)
 
 diff --git a/pyproject.toml b/pyproject.toml
-index 0bc4247..8d91941 100644
+index 8b963cc..8d91941 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
-@@ -1,8 +1,6 @@
+@@ -1,11 +1,6 @@
  [build-system]
  requires = [
      "setuptools",
@@ -23,6 +23,9 @@ index 0bc4247..8d91941 100644
 +    "wheel"
  ]
  build-backend = "setuptools.build_meta"
+-
+-[tool.setuptools_scm]
+-write_to = "src/protontricks/_version.py"
 diff --git a/requirements_dev.txt b/requirements_dev.txt
 index 2dd3d35..8a7523c 100644
 --- a/requirements_dev.txt
@@ -31,20 +34,19 @@ index 2dd3d35..8a7523c 100644
  pytest>=6.0
  pytest-cov>=2.10
 -setuptools-scm
-diff --git a/setup.py b/setup.py
-index d10780c..854816d 100644
---- a/setup.py
-+++ b/setup.py
-@@ -16,9 +16,6 @@ URL = "https://github.com/Matoking/protontricks"
+diff --git a/setup.cfg b/setup.cfg
+index 79f1e23..3e6b6bd 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -29,8 +29,6 @@ include_package_data = True
+ install_requires =
+     setuptools  # Required for pkg_resources
+     vdf>=3.2
+-setup_requires =
+-    setuptools-scm
+ python_requires = >=3.6
  
- setup(
-     name="protontricks",
--    use_scm_version={
--        "write_to": "src/protontricks/_version.py"
--    },
-     description=DESCRIPTION,
-     long_description=LONG_DESCRIPTION,
-     data_files=[
+ [options.entry_points]
 -- 
-2.35.1
+2.38.1
 

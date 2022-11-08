@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f1eae7d2d572599b84842ec8c677f76846611a07
+%global commit 9b08ac8a80778d5d9e84e4d29c734f62a06b39dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221102
+%global date 20221106
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -24,8 +24,7 @@
 # Disable Qt build
 %bcond_without qt
 
-%if !0%{?with_ea}
-%global commit1 5ad1d02351bf4fee681a3d701d210b419f41a505
+%global commit1 2d4602a6516c67d547000d4c80bcc5f74976abdd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
@@ -46,13 +45,16 @@
 %global srcname5 SPIRV-Headers
 
 %global commit6 305a7abcb9b4e9e349843c6d563212e6c1bbbf21
-%global shortcommit6 %(c=%{commit5}; echo ${c:0:6})
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
 %global srcname6 cpp-httplib
+
+%global commit7 e12ef06218596b52d9b5d6e1639484866a8e7067
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
+%global srcname7 cpp-jwt
 
 %global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
-%endif
 
 %global glad_ver 0.1.29
 
@@ -60,6 +62,7 @@
 
 %global vcm_url   https://github.com/yuzu-emu
 %global vcea_url  https://github.com/pineappleEA
+%global ext_url  %{vcm_url}
 
 %if 0%{?with_ea}
 %global vc_name pineapple-src
@@ -78,7 +81,7 @@
 
 
 Name:           yuzu
-Version:        3076
+Version:        3097
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -86,17 +89,18 @@ License:        GPLv2
 URL:            https://yuzu-emu.org
 
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
-%if !0%{?with_ea}
+%dnl %if !0%{?with_ea}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/ReinUsesLisp/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        https://github.com/benhoyt/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source2:        https://github.com/benhoyt/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source3:        https://github.com/ReinUsesLisp/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/herumi/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %if !%{with mbedtls}
-Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
-%endif
+%dnl %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
@@ -164,6 +168,7 @@ Provides:       bundled(inih) = 0~git%{?shortcommit2}
 Provides:       bundled(xbyak) = 0~git%{?shortcommit3}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
+Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
 %if !%{with mbedtls}
 Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
@@ -188,32 +193,41 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{vc_name}-%{commit} -p1
+%autosetup -n %{vc_name}-%{commit} -N -p1
 
 %if 0%{?with_ea}
 pushd externals
-rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL Vulkan-Headers
+rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
 popd
-%else
+find \( -name '*.c*' -or -name '*.h*' -or -name '*.cmake' \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.qrc' -or -name '*.qss' -or -name '*.theme' -or -name '*.ts' \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.desktop' -or -name '*.txt' -or -name '*.xml' \) -exec sed -i 's/\r$//' {} \;
+find \( -iname '*license*' -or -name '*COPYRIGHT*' -or -iname '*README*' \) -exec sed -i 's/\r$//' {} \;
+%endif
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
+mkdir -p externals/inih/inih
 tar -xf %{S:2} -C externals/inih/inih --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:4} -C externals/xbyak --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
+tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
 %if !%{with mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
-%endif
+
+
+%autopatch -p1
 
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
 
 pushd externals
 cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
+cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 %if !%{with mbedtls}
