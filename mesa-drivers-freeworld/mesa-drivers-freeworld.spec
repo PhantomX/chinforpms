@@ -32,7 +32,7 @@
 Name:           mesa-drivers-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.2
+Version:        22.2.3
 Release:        100%{?gver}%{?dist}
 
 Epoch:          100
@@ -190,6 +190,9 @@ rm -rf %{buildroot}%{_datadir}
 
 
 %changelog
+* Wed Nov 09 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.3-100
+- 22.2.3
+
 * Wed Oct 19 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.2-100
 - 22.2.2
 

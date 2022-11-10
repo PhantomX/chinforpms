@@ -10,7 +10,7 @@
 
 Name:           wps-office
 Version:        11.1.0.11664
-Release:        2%{?dist}
+Release:        3%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
@@ -211,9 +211,18 @@ sed \
   -e '/^gBinPath=/s|=.*|=%{_libdir}/%{name}|g' \
   -e 's|/opt/kingsoft/wps-office|%{_libdir}/%{name}|g' \
   -e '/^main/igofficedir="${gInstallPath}/office6"' \
-  -e '/^main/iLD_LIBRARY_PATH="${gofficedir}:${gofficedir}/addons/cef:${gofficedir}/addons/kcef:${gofficedir}/addons/krecentfile${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"' \
+  -e '/^main/ild_dirs="${gofficedir}"' \
+  -e '/^main/iLD_LIBRARY_PATH="${ld_dirs}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"' \
   -e '/^main/iexport LD_LIBRARY_PATH' \
   -i usr/bin/*
+
+pushd opt/kingsoft/%{name}/office6/addons
+  for dir in * ;do
+    sed \
+      -e "/^LD_LIBRARY_PATH=/ild_dirs=\"\${ld_dirs}:\${gofficedir}/addons/${dir}\"" \
+      -i ../../../../../usr/bin/*
+  done
+popd
 
 sed -e '/^X-DBUS-/d' -e '/^X-KDE-/d' -e '/^InitialPreference/d' \
   -e 's| 2019||g' -e '/^Icon/s|2019||g' \
@@ -253,6 +262,7 @@ rm -fv %{buildroot}%{progdir}/office6/librpcwppapi.so
 rm -fv %{buildroot}%{progdir}/office6/librpcwpsapi.so
 rm -fv %{buildroot}%{progdir}/office6/addons/cef/libcairo.so*
 rm -fv %{buildroot}%{progdir}/office6/addons/cef/libpng*.so*
+rm -fv %{buildroot}%{progdir}/office6/addons/cef/libz.so*
 
 for i in \
   libtcmalloc libswscale libswresample libssl libpng12 libjpeg \
@@ -347,6 +357,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Tue Nov 08 2022 - 1:11.1.0.11664-3
+- More rpath fixes
+
 * Mon Aug 22 2022 - 1:11.1.0.11664-2
 - Fix requires_exclude
 
