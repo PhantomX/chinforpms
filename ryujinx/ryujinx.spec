@@ -1,20 +1,22 @@
 %global with_bin 0
 %global with_local_dotnet 1
 
+%global debug_package %{nil}
 %global _build_id_links none
-%undefine _debugsource_packages
+%global __strip /bin/true
+
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit f82309fa2dd46d4339e0709ab835d927fd25361b
+%global commit a6a67a2b7add9a9dc8c4f0bab730957b8ebaf6e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221102
+%global date 20221110
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global local_dotnet_ver 6.0.402
-%global local_dotnet_url_id d3e46476-4494-41b7-a628-c517794c5a6a/6066215f6c0a18b070e8e6e8b715de0b
+%global local_dotnet_ver 7.0.100
+%global local_dotnet_url_id 253e5af8-41aa-48c6-86f1-39a51b44afdc/5bb2cb9380c5b1a7f0153e0a2775727b
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
@@ -22,7 +24,7 @@
 %global gtksharp_ver 3.22.25.128
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.16.1
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 6.0.10
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.0
 %global microsoft_codeanalysis_analyzers_ver 3.3.3
 %global microsoft_codeanalysis_common_ver 4.2.0
 %global microsoft_codeanalysis_csharp_ver 4.2.0
@@ -31,7 +33,7 @@
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 3.1.1
 %global microsoft_identitymodel_ver 6.25.0
-%global microsoft_netcore_app_runtime_linux_x64_ver 6.0.10
+%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.0.0
@@ -217,7 +219,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.337
+Version:        1.1.340
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -458,7 +460,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 %if !%{?with_bin}
 %if !%{?with_local_dotnet}
-BuildRequires:  dotnet >= 6.0.110
+BuildRequires:  dotnet >= 7.0.100
 %endif
 BuildRequires:  libicu-devel
 BuildRequires:  pkgconfig(zlib)

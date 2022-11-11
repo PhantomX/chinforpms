@@ -29,11 +29,11 @@
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
-Name:           mesa-drivers-freeworld
+Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.2.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 Epoch:          100
 
@@ -45,6 +45,8 @@ Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pk
 %else
 Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
+Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
+Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
 
 BuildRequires:  meson >= 0.53
 BuildRequires:  gcc
@@ -96,23 +98,27 @@ BuildRequires:  pkgconfig(libzstd)
 %{summary}.
 
 
-%package -n     mesa-va-drivers-freeworld
+%package -n     %{pkgname}-va-drivers-freeworld
 Summary:        Mesa-based VAAPI drivers - freeworld
-Obsoletes:      mesa-va-drivers < %{?epoch:%{epoch}:}
-Provides:       mesa-va-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       mesa-filesystem%{?_isa} >= %{version}
+Obsoletes:      %{pkgname}-va-drivers < %{?epoch:%{epoch}:}
+Provides:       %{pkgname}-va-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-va-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
+Enhances:       %{pkgname}%{?_isa}
 
-%description -n mesa-va-drivers-freeworld
+%description -n %{pkgname}-va-drivers-freeworld
 %{summary}.
 
 
-%package -n     mesa-vdpau-drivers-freeworld
+%package -n     %{pkgname}-vdpau-drivers-freeworld
 Summary:        Mesa-based VDPAU drivers- freeworld
-Obsoletes:      mesa-vdpau-drivers < %{?epoch:%{epoch}:}
-Provides:       mesa-vdpau-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       mesa-filesystem%{?_isa} >= %{version}
+Obsoletes:      %{pkgname}-vdpau-drivers < %{?epoch:%{epoch}:}
+Provides:       %{pkgname}-vdpau-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-vdpau-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
+Enhances:       %{pkgname}%{?_isa}
 
-%description -n mesa-vdpau-drivers-freeworld
+%description -n %{pkgname}-vdpau-drivers-freeworld
 %{summary}.
 
 
@@ -166,8 +172,14 @@ rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}
 
+# install Appdata files
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm0644 %{S:2} %{buildroot}%{_metainfodir}
+install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
-%files -n mesa-va-drivers-freeworld
+
+%files -n %{pkgname}-va-drivers-freeworld
+%license docs/license.rst
 %{_libdir}/dri/nouveau_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
@@ -175,8 +187,10 @@ rm -rf %{buildroot}%{_datadir}
 %if 0%{?with_radeonsi}
 %{_libdir}/dri/radeonsi_drv_video.so
 %endif
+%{_metainfodir}/org.mesa3d.vaapi.freeworld.metainfo.xml
 
-%files -n mesa-vdpau-drivers-freeworld
+%files -n %{pkgname}-vdpau-drivers-freeworld
+%license docs/license.rst
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %if 0%{?with_r300}
 %{_libdir}/vdpau/libvdpau_r300.so.1*
@@ -187,9 +201,13 @@ rm -rf %{buildroot}%{_datadir}
 %if 0%{?with_radeonsi}
 %{_libdir}/vdpau/libvdpau_radeonsi.so.1*
 %endif
+%{_metainfodir}/org.mesa3d.vdpau.freeworld.metainfo.xml
 
 
 %changelog
+* Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.3-101
+- RPMFusion sync
+
 * Wed Nov 09 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.3-100
 - 22.2.3
 

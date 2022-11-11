@@ -162,18 +162,18 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d2c2086264860edbef5c7d2a8106094286708bf8
+%global pfcommit 9ebf347a2b34269db040e78020608a1112769b24
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
 %global pfcoprhash fca7d9aaddf38eaf520addd15428849d
 %if "%{pfcommit}" == "0"
@@ -963,9 +963,7 @@ Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-
 Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
 Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
 Patch1016: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1017: %{opensuse_url}/KVM-x86-emulator-introduce-emulator_recalc_and_set_m.patch#/openSUSE-KVM-x86-emulator-introduce-emulator_recalc_and_set_m.patch
-Patch1018: %{opensuse_url}/KVM-x86-emulator-update-the-emulation-mode-after-rsm.patch#/openSUSE-KVM-x86-emulator-update-the-emulation-mode-after-rsm.patch
-  
+
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
@@ -974,6 +972,7 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2092: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
+Patch2093: %{patchwork_xdg_url}/509532/mbox/#/patchwork-drm-amdgpu-workaround-for-TLB-seq-race.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
@@ -3030,6 +3029,9 @@ fi
 #
 #
 %changelog
+* Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.8-500.chinfo
+- 6.0.8 - pf5
+
 * Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.7-500.chinfo
 - 6.0.7 - pf3
 

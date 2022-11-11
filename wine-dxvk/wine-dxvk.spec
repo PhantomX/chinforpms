@@ -9,7 +9,7 @@
 %global commit ae764333f486ec40dd70079bdb05dd43fd4d03c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221021
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global with_sysspirv 0
 %global with_sysvulkan 1
@@ -18,7 +18,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 715673702f5b18ffb8e5832e67cf731468d32ac6
+%global commit6 98f440ce6868c94f5ec6e198cc1adda4760e8849
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
 
@@ -53,8 +53,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        1.10.3
-Release:        103%{?gver}%{?dist}
+Version:        2.0
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -110,7 +110,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
 %if %{?with_sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.225
+BuildRequires:  vulkan-headers >= 1.3.231
 %endif
 
 # glslangValidator
@@ -284,6 +284,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.0-100
+- 2.0
+
 * Sat Oct 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.10.3-103.20221021gitae76433
 - Master snapshot
 - Disable async, as it seems to be unneeded now
