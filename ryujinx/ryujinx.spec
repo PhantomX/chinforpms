@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit a6a67a2b7add9a9dc8c4f0bab730957b8ebaf6e8
+%global commit eebc39228db4663e03fa73306e725424f7ce1273
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221110
+%global date 20221112
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -219,7 +219,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.340
+Version:        1.1.343
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -448,7 +448,7 @@ Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 %endif
 
 %if !%{?with_bin}
-Patch0:         %{vc_url}/Ryujinx/pull/3815.patch#/%{name}-gh-pr3815.patch
+Patch0:         %{name}-pr3815.patch
 Patch10:        0001-Save-logs-in-ApplicationData-directory.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 %endif
@@ -505,9 +505,9 @@ mkdir dotnetbin
 tar xvf %{S:199} -C dotnetbin
 %endif
 
-mkdir nuget_cache
+mkdir -p nuget/{cache,packages}
 install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} %{nuget_files5} \
-  nuget_cache/
+  nuget/cache/
 
 sed \
   -e 's|_RPM_GCDB_|%{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt|g' \
@@ -535,7 +535,8 @@ export \
 dotnet restore \
   -maxcpucount:%{_smp_build_ncpus} \
   --runtime linux-x64 \
-  --source "$(pwd)/nuget_cache" \
+  --packages "$(pwd)/nuget/packages" \
+  --source "$(pwd)/nuget/cache" \
   %{appname} \
 %{nil}
 

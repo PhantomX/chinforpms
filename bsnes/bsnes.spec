@@ -92,8 +92,8 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 %build
 %set_build_flags
-export flags="$CFLAGS"
-export options="${CXXFLAGS}"
+export flags="$CXXFLAGS"
+export options="$LDFLAGS"
 
 %make_build -C %{name} target=%{name} verbose \
   build=performance local=false hiro=%{toolkit} \

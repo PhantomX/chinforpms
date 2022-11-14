@@ -1,0 +1,59 @@
+From ec7abfa8af9d552f8e3fb70240c790fed8a965a1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 13 Nov 2022 09:55:54 -0300
+Subject: [PATCH] Optional tests
+
+---
+ CMakeLists.txt           | 2 ++
+ externals/CMakeLists.txt | 2 ++
+ src/CMakeLists.txt       | 3 +++
+ 3 files changed, 7 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 710f3fc..9a529a3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -50,6 +50,8 @@ option(USE_SYSTEM_BOOST "Use the system Boost libs (instead of the bundled ones)
+ 
+ CMAKE_DEPENDENT_OPTION(ENABLE_FDK "Use FDK AAC decoder" OFF "NOT ENABLE_FFMPEG_AUDIO_DECODER;NOT ENABLE_MF" OFF)
+ 
++option(CITRA_TESTS "Compile tests" ON)
++
+ if(NOT EXISTS ${PROJECT_SOURCE_DIR}/.git/hooks/pre-commit)
+     message(STATUS "Copying pre-commit hook")
+     file(COPY hooks/pre-commit
+diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
+index c2385c4..00147ed 100644
+--- a/externals/CMakeLists.txt
++++ b/externals/CMakeLists.txt
+@@ -23,10 +23,12 @@ target_link_libraries(boost_serialization PUBLIC boost)
+ 
+ # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
+ 
++if (CITRA_TESTS)
+ # Catch2
+ set(CATCH_INSTALL_DOCS OFF)
+ set(CATCH_INSTALL_EXTRAS OFF)
+ add_subdirectory(catch2)
++endif()
+ 
+ # Crypto++
+ add_subdirectory(cryptopp)
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 488f92f..1069df0 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -147,7 +147,10 @@ add_subdirectory(video_core)
+ add_subdirectory(audio_core)
+ add_subdirectory(network)
+ add_subdirectory(input_common)
++
++if (CITRA_TESTS)
+ add_subdirectory(tests)
++endif()
+ 
+ if (ENABLE_SDL2)
+     add_subdirectory(citra)
+-- 
+2.38.1
+

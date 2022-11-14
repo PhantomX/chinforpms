@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a93d7a8d3ab02e3ba72013cbf92d5cae84d555d3
+%global commit 94d0399876cde32e1b56411e5a0ab3e590a40044
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221028
+%global date 20221113
 %global with_snapshot 1
 
 # Enable system boost
@@ -21,18 +21,16 @@
 %bcond_without fmt
 # Disable Qt build
 %bcond_without qt
+# Build tests
+%bcond_with tests
 # Enable advanced simd, ssse3+
 %bcond_with  adv_simd
-
-%global commit1 dc001fa935d71b4b77f263fce405c9dbdfcbfe28
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 Catch
 
 %global commit2 f2102243e6fdd48c0b2a393a0993cca228f20573
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 3946dcf005c6e8f3d91cfb0bc5debfd0446daa39
+%global commit3 45bc7a82de5fab362ad01268a08e7eaa689ae2c2
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -82,7 +80,7 @@
 
 Name:           citra
 Version:        0
-Release:        27%{?gver}%{?dist}
+Release:        28%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -93,7 +91,6 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        https://github.com/philsquared/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %if !%{with fmt}
@@ -112,8 +109,9 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
-Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Disable-telemetry-initial-dialog.patch
+Patch10:        0001-Optional-tests.patch
+Patch11:        0001-Use-system-libraries.patch
+Patch12:        0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -131,6 +129,9 @@ BuildRequires:  pkgconfig(libavcodec)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
 %endif
+%endif
+%if %{with tests}
+BuildRequires:  pkgconfig(catch2) >= 3.1.0
 %endif
 %if %{with fmt}
 BuildRequires:  cmake(fmt)
@@ -151,11 +152,11 @@ BuildRequires:  cmake(Qt5LinguistTools)
 BuildRequires:  cmake(Qt5Multimedia)
 BuildRequires:  cmake(Qt5Widgets)
 %endif
+BuildRequires:  cmake(tsl-robin-map)
 
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
-Provides:       bundled(catch) = 0~git%{shortcommit1}
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
@@ -188,7 +189,6 @@ This is the Qt frontend.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-tar -xf %{S:1} -C externals/catch2 --strip-components 1
 tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 %if !%{with fmt}
@@ -205,13 +205,14 @@ tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 
+rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd externals
 %if !%{with boost}
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
-cp -p catch2/LICENSE.txt LICENSE.catch2
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
@@ -231,6 +232,8 @@ popd
 rm -f externals/json/json.hpp
 ln -sf %{_includedir}/nlohmann/json.hpp \
   externals/json/json.hpp
+
+rm -rf externals/teakra/externals/catch/
 
 %if !%{with fmt}
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
@@ -291,11 +294,15 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DCRYPTOPP_DISABLE_SSSE3:BOOL=ON \
 %endif
   -DENABLE_WEB_SERVICE:BOOL=ON \
+  %{!?_with_tests:-DCITRA_TESTS:BOOL=OFF} \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
+  -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
+  -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
-  -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
+  -DDYNARMIC_TESTS=OFF \
+  -DTEAKRA_BUILD_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
 cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
@@ -332,6 +339,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-28.20221113git94d0399
+- Optional tests and control Catch dependency
+
 * Sun Jul 31 2022 Phantom X <megaphantomx at hotmail dot com> - 0-23.20220728git6764264
 - Update
 

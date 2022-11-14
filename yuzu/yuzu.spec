@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ca0b9fc44b490c1c0e9e1ee3e71a76ef2ed062b3
+%global commit e49dd26070754b446976dee4e5903f2d832883c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221107
+%global date 20221113
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -23,8 +23,10 @@
 %bcond_with mbedtls
 # Disable Qt build
 %bcond_without qt
+# Build tests
+%bcond_with tests
 
-%global commit1 2d4602a6516c67d547000d4c80bcc5f74976abdd
+%global commit1 424fdb5c5026ec5bdd7553271190397f63fb503e
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
@@ -36,7 +38,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
-%global commit4 c306b8e5786eeeb87b8925a8af5c3bf057ff5a90
+%global commit4 348e3e548ebac06d243e5881caec8440e249f65f
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 xbyak
 
@@ -81,7 +83,7 @@
 
 
 Name:           yuzu
-Version:        3098
+Version:        3118
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -123,6 +125,9 @@ BuildRequires:  libappstream-glib
 %if %{with boost}
 BuildRequires:  boost-devel >= 1.76.0
 %endif
+%if %{with tests}
+BuildRequires:  pkgconfig(catch2) >= 2.13.7
+%endif
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
@@ -149,9 +154,12 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Multimedia)
 BuildRequires:  pkgconfig(Qt5OpenGL)
+BuildRequires:  pkgconfig(Qt5WebEngineCore)
+BuildRequires:  pkgconfig(Qt5WebEngineWidgets)
 BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
+BuildRequires:  cmake(tsl-robin-map)
 BuildRequires:  vulkan-headers
 BuildRequires:  pkgconfig(zlib)
 
@@ -219,6 +227,7 @@ tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
 
+rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 
 %autopatch -p1
 
@@ -286,14 +295,19 @@ cp -f %{S:20} dist/compatibility_list/
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DYUZU_TESTS:BOOL=OFF \
+  -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
+  %{!?_with_tests:-DYUZU_TESTS:BOOL=OFF} \
   -DENABLE_WEB_SERVICE:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
+  -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
+  -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
+  -DDYNARMIC_TESTS=OFF \
 %{nil}
 
 %cmake_build
@@ -331,6 +345,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 3118-1.20221113gite49dd26.ea
+- Enable WebEngine applet
+
 * Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 2897-1.20220811git7ce78aa
 - 2897 ea
 

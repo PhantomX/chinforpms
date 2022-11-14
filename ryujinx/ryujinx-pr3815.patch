@@ -1,0 +1,91 @@
+From a98346af3085992b24da92bbf94121851834cc87 Mon Sep 17 00:00:00 2001
+From: Mary <mary@mary.zone>
+Date: Mon, 31 Oct 2022 15:43:52 +0100
+Subject: [PATCH] Fix Fedora support
+
+For some reasons, my fresh installation of Fedora 36 (KDE) doesn't have a
+symlink for libX11.so.
+
+This commit fixes this by trying to import the library with its major
+version or fallback to the normal way.
+---
+ Ryujinx.Ava/Ryujinx.Ava.csproj |  2 +-
+ Ryujinx/Program.cs             | 28 +++++++++++++++++++++++++++-
+ Ryujinx/Ryujinx.csproj         |  2 +-
+ 3 files changed, 29 insertions(+), 3 deletions(-)
+
+diff --git a/Ryujinx.Ava/Ryujinx.Ava.csproj b/Ryujinx.Ava/Ryujinx.Ava.csproj
+index 3b4d8cf..d36fa62 100644
+--- a/Ryujinx.Ava/Ryujinx.Ava.csproj
++++ b/Ryujinx.Ava/Ryujinx.Ava.csproj
+@@ -36,7 +36,7 @@
+     <PackageReference Include="Silk.NET.Vulkan" Version="2.10.1" />
+     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.10.1" />
+     <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.10.1" />
+-    <PackageReference Include="SPB" Version="0.0.4-build27" />
++    <PackageReference Include="SPB" Version="0.0.4-build28" />
+     <PackageReference Include="SharpZipLib" Version="1.3.3" />
+     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+   </ItemGroup>
+diff --git a/Ryujinx/Program.cs b/Ryujinx/Program.cs
+index a91f9aa..298f336 100644
+--- a/Ryujinx/Program.cs
++++ b/Ryujinx/Program.cs
+@@ -29,7 +29,9 @@ namespace Ryujinx
+ 
+         public static string ConfigurationPath { get; set; }
+ 
+-        [DllImport("libX11")]
++        private const string X11LibraryName = "libX11";
++
++        [DllImport(X11LibraryName)]
+         private extern static int XInitThreads();
+ 
+         [DllImport("user32.dll", SetLastError = true)]
+@@ -37,6 +39,30 @@ namespace Ryujinx
+ 
+         private const uint MB_ICONWARNING = 0x30;
+ 
++        static Program()
++        {
++            if (OperatingSystem.IsLinux())
++            {
++                NativeLibrary.SetDllImportResolver(typeof(Program).Assembly, (name, assembly, path) =>
++                {
++                    if (name != X11LibraryName)
++                    {
++                        return IntPtr.Zero;
++                    }
++
++                    if (!NativeLibrary.TryLoad("libX11.so.6", assembly, path, out IntPtr result))
++                    {
++                        if (!NativeLibrary.TryLoad("libX11.so", assembly, path, out result))
++                        {
++                            return IntPtr.Zero;
++                        }
++                    }
++
++                    return result;
++                });
++            }
++        }
++
+         static void Main(string[] args)
+         {
+             Version = ReleaseInformations.GetVersion();
+diff --git a/Ryujinx/Ryujinx.csproj b/Ryujinx/Ryujinx.csproj
+index 23f5d15..58b1555 100644
+--- a/Ryujinx/Ryujinx.csproj
++++ b/Ryujinx/Ryujinx.csproj
+@@ -25,7 +25,7 @@
+     <PackageReference Include="Ryujinx.Graphics.Nvdec.Dependencies" Version="5.0.1-build10" Condition="'$(RuntimeIdentifier)' != 'linux-x64' AND '$(RuntimeIdentifier)' != 'osx-x64'" />
+     <PackageReference Include="Ryujinx.Audio.OpenAL.Dependencies" Version="1.21.0.1" Condition="'$(RuntimeIdentifier)' != 'linux-x64' AND '$(RuntimeIdentifier)' != 'osx-x64'" />
+     <PackageReference Include="OpenTK.Graphics" Version="4.7.2" />
+-    <PackageReference Include="SPB" Version="0.0.4-build27" />
++    <PackageReference Include="SPB" Version="0.0.4-build28" />
+     <PackageReference Include="SharpZipLib" Version="1.3.3" />
+     <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
+   </ItemGroup>
+-- 
+2.38.1
+
