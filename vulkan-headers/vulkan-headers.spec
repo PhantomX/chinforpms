@@ -1,6 +1,6 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.3.233
+Version:        1.3.234
 Release:        100%{?dist}
 Summary:        Vulkan Header files and API registry
 
@@ -18,6 +18,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar
 %endif
 
 BuildRequires:  cmake3
+BuildRequires:  gcc
 BuildRequires:  make
 BuildArch:      noarch
 
@@ -49,10 +50,14 @@ Vulkan Header files and API registry
 %{_includedir}/vk_video/
 %{_includedir}/vulkan/
 %dir %{_datadir}/vulkan/
+%{_datadir}/cmake/VulkanHeaders/
 %{_datadir}/vulkan/registry/
 
 
 %changelog
+* Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.234-100
+- 1.3.234
+
 * Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.233-100
 - 1.3.233
 

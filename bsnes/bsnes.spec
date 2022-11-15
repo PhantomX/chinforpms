@@ -4,16 +4,16 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit e5809740a5ff6da20938da4051cd211849ddf11b
+%global commit 717606dda9ad05a636e901c0f4f443fe088ff2c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210906
+%global date 20221103
 %global with_snapshot 1
 
 %ifarch x86_64
 %global build_with_lto    1
 %endif
 
-%global with_gtk2 1
+%global with_gtk2 0
 %global with_libao 0
 %global with_openal 0
 
@@ -30,7 +30,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
@@ -78,15 +78,17 @@ October 14th, 2004. It focuses on performance, features, and ease of use.
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
-sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
+sed -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
+
+sed -e 's|-O[23] ||g' -i nall/GNUmakefile
 
 sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 %if !0%{?with_ao}
-  sed -e "/ruby +=/s|audio.ao\b||" -i ruby/GNUmakefile
+  sed -e "/pkg_check/s|audio.ao\b||" -i ruby/GNUmakefile
 %endif
 %if !0%{?with_openal}
-  sed -e "/ruby +=/s|audio.openal\b||" -i ruby/GNUmakefile
+  sed -e "/pkg_check/s|audio.openal\b||" -i ruby/GNUmakefile
 %endif
 
 

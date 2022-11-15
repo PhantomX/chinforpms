@@ -60,10 +60,8 @@ BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(gl)
 %if 0%{?with_gtk2}
 BuildRequires:  pkgconfig(gtk+-2.0)
-BuildRequires:  pkgconfig(gtksourceview-2.0)
 %else
 BuildRequires:  pkgconfig(gtk+-3.0)
-BuildRequires:  pkgconfig(gtksourceview-3.0)
 %endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)

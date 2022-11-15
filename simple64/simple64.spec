@@ -7,10 +7,6 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-# Use external mupen64plus
-# Disabled by default, as it not the same
-%bcond_with mupen64plus
-
 %global sanitize 0
 
 %global md5_ver 1.4
@@ -20,7 +16,7 @@
 
 Name:           simple64
 Version:        2022.11.2
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
 # * mupen64plus - GPLv2 and LGPLv2
@@ -68,17 +64,19 @@ BuildRequires:  pkgconfig(Qt6WebSockets)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
+# libs
+BuildRequires:  minizip-compat-devel
+BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(SDL2_net)
+# plugins
+BuildRequires:  pkgconfig(hidapi-hidraw)
+BuildRequires:  pkgconfig(lightning)
+BuildRequires:  vulkan-headers
+Requires:       vulkan-loader%{?_isa}
 
+Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
-%if %{with mupen64plus}
-BuildRequires:  mupen64plus-devel
-Requires:       mupen64plus-libs
-Requires:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-%else
-Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
 
 Obsoletes:      m64p < %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -86,38 +84,15 @@ Provides:       m64p%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       mupen64plus-gui%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-gui%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-
-%description
-%{summary}.
-
-This build do not have VRU support.
-
-
-%if %{without mupen64plus}
-%package libs
-Summary:        %{summary}
-BuildRequires:  minizip-compat-devel
-BuildRequires:  pkgconfig(libpng)
-BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(SDL2_net)
-Requires:       dejavu-sans-fonts
-Requires:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       lib%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       lib%{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(oglft) = %{oglft_ver}
 
-%description libs
-The %{name}-libs package contains the dynamic libraries needed for %{name} and
-plugins.
-%endif
-
-%package plugins
-Summary:        %{summary}
-BuildRequires:  pkgconfig(hidapi-hidraw)
-BuildRequires:  pkgconfig(lightning)
-BuildRequires:  vulkan-headers
-Requires:       vulkan-loader%{?_isa}
+Obsoletes:      %{name}-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-rsp-parallel < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-video-parallel < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-audio-sdl2 = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -126,8 +101,11 @@ Provides:       %{name}-input-raphnetraw  = %{?epoch:%{epoch}:}%{version}-%{rele
 Provides:       %{name}-rsp-parallel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-video-parallel = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description plugins
-The %{name}-plugins package contains default plugins for %{name}.
+
+%description
+%{summary}.
+
+This build do not have VRU support.
 
 
 %prep
@@ -280,25 +258,18 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 %license LICENSE LICENSEdir/*
 %doc %{name}-gui/README.md READMEdir/*
 %{_bindir}/%{name}-gui
+%{_libdir}/lib%{name}.so.*
+%{_libdir}/%{name}/*.so
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/%{appname}.appdata.xml
-%if %{without mupen64plus}
 %{_datadir}/%{name}/
-%endif
-
-%if %{without mupen64plus}
-%files libs
-%license LICENSE
-%{_libdir}/lib%{name}.so.*
-%endif
-
-%files plugins
-%license LICENSE
-%{_libdir}/%{name}/*.so
 
 
 %changelog
+* Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.11.2-2
+- Unsplit package
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.11.2-1
 - 2022.11.2
 

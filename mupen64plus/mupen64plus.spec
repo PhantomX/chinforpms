@@ -1,5 +1,4 @@
 #undefine _hardened_build
-%global _legacy_common_support 1
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
@@ -48,7 +47,7 @@
 
 Name:           mupen64plus
 Version:        2.5.9
-Release:        113%{?gver}%{?dist}
+Release:        114%{?gver}%{?dist}
 Summary:        A Nintendo 64 Emulator
 
 Epoch:          1
@@ -69,7 +68,7 @@ Source7:        %{vc_url}/%{name}-video-rice/archive/%{commit7}/%{srcname7}-%{sh
 Source0:        %{vc_url}/%{name}-core/releases/download/%{version}/%{name}-bundle-src-%{version}.tar.gz
 %endif
 
-Patch10:        0001-Add-Vulkan-support.patch
+ExcludeArch:    s390x
 
 BuildRequires:  make
 BuildRequires:  boost-devel
@@ -82,18 +81,31 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  minizip-compat-devel
 BuildRequires:  pkgconfig(libpng)
-BuildRequires:  pkgconfig(lirc)
+#BuildRequires:  pkgconfig(lirc)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(zlib)
-Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
 
+Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:       %{srcname1}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname2}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname3}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname4}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{srcname5}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname6}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{srcname7}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(xxhash) = %{xxhash_ver}
+
+Conflicts:      %{name}-qt
+Conflicts:      %{name}-cli
 
 
 %description
@@ -104,41 +116,15 @@ plugins for audio, graphical rendering (RDP), signal co-processor (RSP), and
 input. There are 3 OpenGL video plugins included: glN64, RiceVideoLinux, and
 Glide64.
 
-%package libs
-Summary:        %{summary}
-Provides:       lib%{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       lib%{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      lib%{name} < 2.5
-Requires:       %{name}-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description libs
-The %{name}-libs package contains the dynamic libraries needed for %{name} and
-plugins.
-
 %package devel
 Summary:        %{summary}
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       lib%{name}-devel = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       lib%{name}-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      lib%{name}-devel < 2.5
-Obsoletes:      %{name}-libs-devel < 2.5
 
 %description devel
 The %{name}-devel package contains the development files libraries needed for 
 plugins building.
-
-
-%package plugins
-Summary:        %{summary}
-Provides:       %{srcname1}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{srcname2}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{srcname3}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{srcname4}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{srcname6}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{srcname7}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description plugins
-The %{name}-plugins package contains default plugins for %{name}.
 
 
 %prep
@@ -150,7 +136,6 @@ for i in core rom ui-console audio-sdl input-sdl rsp-hle video-rice video-glide6
 done
 
 tar -xf %{S:0} -C source/%{name}-core --strip-components 1
-%patch10 -p1
 tar -xf %{S:1} -C source/%{name}-audio-sdl --strip-components 1
 tar -xf %{S:2} -C source/%{name}-input-sdl --strip-components 1
 tar -xf %{S:3} -C source/%{name}-rom --strip-components 1
@@ -160,6 +145,8 @@ tar -xf %{S:6} -C source/%{name}-video-glide64mk2 --strip-components 1
 tar -xf %{S:7} -C source/%{name}-video-rice --strip-components 1
 
 tar xf source/%{name}-core/tools/m64p_helper_scripts.tar.gz
+
+%autopatch -p1
 
 %else
 %autosetup -n %{name}-bundle-src-%{version}
@@ -182,9 +169,15 @@ export LIBDIR=%{_libdir}
 export INCDIR=%{_includedir}/%{name}
 export SHAREDIR=%{_datadir}/%{name}
 export MANDIR=%{_mandir}
-export LIRC=1
+export LIRC=0
 export PIC=1
 export PIE=1
+%ifarch %{arm}
+export NEON=1 VFP_HARD=1
+%endif
+%ifarch %{arm} aarch64 ppc ppc64 ppc64le
+export NO_SSE=1
+%endif
 EOF
 
 source ./%{name}-env
@@ -199,6 +192,8 @@ source ./%{name}-env
 chmod +x %{buildroot}%{_libdir}/lib%{name}.so.*
 chmod +x %{buildroot}%{_libdir}/%{name}/%{name}-*.so
 
+ln -sf libmupen64plus.so.2 %{buildroot}%{_libdir}/libmupen64plus.so
+
 rm -f %{buildroot}%{_datadir}/%{name}/font.ttf
 ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/font.ttf
 
@@ -208,25 +203,22 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %license test/doc/gpl-license
 %doc test/doc/README-* test/doc/RELEASE-*
 %{_bindir}/%{name}
+%{_libdir}/lib%{name}.so.*
 %{_libdir}/%{name}/
 %{_mandir}/man6/%{name}.*
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
-%files libs
-%license test/doc/lgpl-license
-%{_libdir}/lib%{name}.so.*
-
 %files devel
 %{_includedir}/%{name}/*.h
-
-%files plugins
-%license test/doc/gpl-license test/doc/LICENSES-*
-%{_libdir}/%{name}/*.so
+%{_libdir}/lib%{name}.so
 
 
 %changelog
+* Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-114.20220930git2ac8682
+- Fedora sync
+
 * Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.9-112.20220809gitf299843
 - Update
 - Vulkan updates from Logan McNaughton fork

@@ -1,7 +1,7 @@
 %global commit 9d1175a4649706d8d46a7bd8d5aa291b6528bfc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221104
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -51,18 +51,18 @@
 %global winemono  7.4.0
 %global winevulkan 1.3.233
 
-%global wineFAudio 22.08
+%global wineFAudio 22.11
 %global winegsm 1.0.19
 %global winejpeg 9e
-%global winelcms2 2.13.1
+%global winelcms2 2.14
 %global winempg123 1.30.2
-%global winepng 1.6.37
+%global winepng 1.6.38
 %global winetiff 4.4.0
 %global winejxrlib 1.1
 %global winevkd3d 1.5
-%global winexml2 2.10.0
-%global winexslt 1.1.36
-%global winezlib 1.2.12
+%global winexml2 2.10.3
+%global winexslt 1.1.37
+%global winezlib 1.2.13
 
 %global _default_patch_fuzz 2
 
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver bd2608b12c2df62b137a7ea72f4e79b529ba1ca7
+%global wine_stagingver 7.21
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 16fc2d97518aebb979010e8efc4f375ce54073f5
+%global tkg_id 4a85820bf344384ecae162a81a441bcee4620b87
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -150,8 +150,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.20
-Release:        101%{?gver}%{?dist}
+Version:        7.21
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -247,7 +247,7 @@ Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{
 Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default-staging.patch#/%{name}-tkg-proton-win10-default-staging.patch
+Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
@@ -271,7 +271,6 @@ Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.pa
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
-Patch1302:       0001-proton-tkg-staging-update-to-NtUserGetDesktopWindow.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
@@ -345,7 +344,6 @@ BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  pkgconfig(odbc)
-BuildRequires:  pkgconfig(openal)
 BuildRequires:  opencl-headers
 BuildRequires:  openldap-devel
 BuildRequires:  pkgconfig(osmesa)
@@ -390,7 +388,6 @@ Requires:       wine-cms(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-openal(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-opencl(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw32-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
@@ -411,7 +408,6 @@ Requires:       wine-cms(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-openal(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-opencl(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       wine-mono = %winemono
@@ -428,7 +424,6 @@ Requires:       wine-cms = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mesa-dri-drivers
 Requires:       samba-winbind-clients
@@ -441,7 +436,6 @@ Requires:       wine-cms(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-ldap(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-twain(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-pulseaudio(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-openal(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-opencl(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       mingw64-wine-gecko = %winegecko
 Requires:       mesa-dri-drivers(aarch-64)
@@ -578,6 +572,10 @@ Provides:       wine-wow = %{?epoch:%{epoch}:}%{version}-%{release}
 # removed as of 6.21
 Obsoletes:      wine-capi < %{?epoch:%{epoch}:}6.20-101
 Provides:       wine-capi = %{?epoch:%{epoch}:}%{version}-%{release}
+
+# removed as of 7.21
+Obsoletes:      wine-openal < %{?epoch:%{epoch}:}7.21-100
+Provides:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description core
 Wine core package includes the basic wine stuff needed by all other packages.
@@ -856,13 +854,6 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 %description alsa
 This package adds an alsa driver for wine.
 
-%package openal
-Summary: Openal support for wine
-Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description openal
-This package adds an openal driver for wine.
-
 %package opencl
 Summary: OpenCL support for wine
 Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -883,7 +874,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 
 %patch901 -p1
 
-%patch1006 -p1
+%dnl #FIXME needs rebase %patch1006 -p1
 %patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
@@ -935,14 +926,14 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1063 -p1
 %endif
 %endif
-%patch1029 -p1
+%dnl #FIXME needs rebase %patch1029 -p1
 %patch1031 -p1
 %if 0%{?fastsync}
 %patch1050 -p1
 %patch1051 -p1
 %endif
 %patch1032 -p1
-%dnl #FIXME breaks something %patch1034 -p1
+%patch1034 -p1
 %dnl #FIXME needs rebase %patch1035 -p1
 %dnl #FIXME needs rebase %patch1036 -p1
 %dnl #FIXME needs rebase %patch1037 -p1
@@ -953,7 +944,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 
 %patch1300 -p1
 %patch1301 -p1
-%patch1302 -p1
 %patch1305 -p1
 
 sed \
@@ -1544,6 +1534,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/adsldpc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/advapi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/advpack.%{winedll}
+%if 0%{?wine_staging}
+%{_libdir}/wine/%{winedlldir}/audioses.%{winedll}
+%endif
 %{_libdir}/wine/%{winedlldir}/amsi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/amstream.%{winedll}
 %{_libdir}/wine/%{winedlldir}/apisetschema.%{winedll}
@@ -1569,6 +1562,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/cabinet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cards.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cdosys.%{winedll}
+%{_libdir}/wine/%{winedlldir}/certutil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cfgmgr32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/chcp.%{winecom}
 %{_libdir}/wine/%{winedlldir}/clock.%{wineexe}
@@ -1938,6 +1932,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/sensapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/serialui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/setupapi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/setx.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/sfc_os.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
@@ -2101,10 +2096,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/d3d8.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d8thk.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d9.%{winedll}
-%{_libdir}/wine/%{winesodir}/opengl32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/opengl32.dll
-%endif
+%{_libdir}/wine/%{winesodir}/opengl32.so
+%{_libdir}/wine/%{winedlldir}/opengl32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wined3d.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winexinput.%{winesys}
 %{_libdir}/wine/%{winesodir}/dnsapi.so
@@ -2528,18 +2521,15 @@ fi
 %{_libdir}/wine/%{winesodir}/winealsa.so
 %{_libdir}/wine/%{winedlldir}/winealsa.%{winedrv}
 
-%files openal
-%{_libdir}/wine/%{winesodir}/openal32.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/openal32.dll
-%endif
-
 %files opencl
 %{_libdir}/wine/%{winesodir}/opencl.so
 %{_libdir}/wine/%{winedlldir}/opencl.%{winedll}
 
 
 %changelog
+* Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.21-100
+- 7.21
+
 * Wed Nov 02 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.20-100.20221101git7be72ce
 - 7.20
 
