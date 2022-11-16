@@ -1,6 +1,6 @@
-%global commit 9dbf930d0c24bba760223cb63f35390781a17f2a
+%global commit 1340ac1de39a86a3e368428503580fc132a2b9eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210419
+%global date 20220916
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,7 +8,7 @@
 %endif
 
 Name:           cropgui
-Version:        0.5
+Version:        0.6
 Release:        1%{?gver}%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
@@ -27,6 +27,7 @@ BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+BuildRequires:  /usr/bin/pathfix.py
 Requires:       ImageMagick
 Requires:       gtk3
 Requires:       libjpeg-turbo-utils
@@ -44,6 +45,10 @@ cropgui is a a GTK GUI for lossless JPEG cropping
 
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
+
+sed -e '1{/env/d;}' -i filechooser.py
+
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" cropgtk.py
 
 sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i cropgtk.py
 
@@ -85,6 +90,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Nov 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6-1.20220916git1340ac1
+- 0.6
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5-1.20210419git9dbf930
 - 0.5
 

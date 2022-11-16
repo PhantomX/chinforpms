@@ -1,6 +1,6 @@
-%global commit 68ca8c31a99ce6262b57bb99f34319ea8a9df30b
+%global commit b73026aa5b090f98c6d5d4d064c1c4c4b62e011a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220808
+%global date 20221115
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           winetricks
 Version:        20220411
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 Summary:        Work around common problems in Wine
 

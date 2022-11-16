@@ -1,7 +1,7 @@
-%global commit 9d1175a4649706d8d46a7bd8d5aa291b6528bfc4
+%global commit a8c1d5c108fc57e4d78e9db126f395c89083a83d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221104
-%global with_snapshot 0
+%global date 20221114
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -96,7 +96,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.21
+%global wine_stagingver 5088fc67ba6de777dfa724946ecbc969545788ec
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -107,7 +107,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4a85820bf344384ecae162a81a441bcee4620b87
+%global tkg_id 9fe1aa5db1cd661149715bd4c0e13f77cdca083d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,7 +151,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.21
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -242,7 +242,7 @@ Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fs
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1026:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out.mypatch#/%{name}-tkg-remove_hooks_that_time_out.patch
+Patch1026:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
