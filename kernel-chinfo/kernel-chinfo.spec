@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9ebf347a2b34269db040e78020608a1112769b24
+%global pfcommit 57cb2ef136ccf3a19ec1147cf482e633fb6faa4b
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash fca7d9aaddf38eaf520addd15428849d
+%global pfcoprhash 2545d88f2a52ed3106e0c1e4b03e6063
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 286383cfa14a93136c51ce0c64d5d86ec9ed7b17
+%global opensuse_id 3e12b42aee17c1d13e5bcec89d4c50def5760ebd
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -971,8 +971,6 @@ Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_nat
 %global tkg_id a380d532bc85013c120b1d689a07367afc0e026b
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2092: %{patchwork_xdg_url}/503091/mbox/#/patchwork-drm-amdgpu-Fix-the-lpfn-checking-condition-in-drm-buddy.patch
-Patch2093: %{patchwork_xdg_url}/509532/mbox/#/patchwork-drm-amdgpu-workaround-for-TLB-seq-race.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
@@ -3029,6 +3027,9 @@ fi
 #
 #
 %changelog
+* Wed Nov 16 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.9-500.chinfo
+- 6.0.9 - pf5
+
 * Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.8-500.chinfo
 - 6.0.8 - pf5
 

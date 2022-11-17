@@ -1,3 +1,33 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0ca565fc9cc218255dbee7dd5b13e24caa89e264
+ 0ca565fc9cc218255dbee7dd5b13e24caa89e264 PCI/PM: Always disable PTM for all devices during suspend
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d252cb1403a0c129739c47cc34f8012cc68ad3ff
+ d252cb1403a0c129739c47cc34f8012cc68ad3ff PCI/PTM: Consolidate PTM interface declarations
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/e9f470095cfe434d44103d2852cf2d7b0166f27c
+ e9f470095cfe434d44103d2852cf2d7b0166f27c PCI/PTM: Reorder functions in logical order
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d7d8a6a6ba0c9ecd540a879591f230589f7d4615
+ d7d8a6a6ba0c9ecd540a879591f230589f7d4615 PCI/PTM: Preserve RsvdP bits in PTM Control register
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/22de605c6ba5c3b5daa44bb3ff756cc0d48583e1
+ 22de605c6ba5c3b5daa44bb3ff756cc0d48583e1 PCI/PTM: Move pci_ptm_info() body into its only caller
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/60a99d0e61dc826fdcc99fa821c36291c320822f
+ 60a99d0e61dc826fdcc99fa821c36291c320822f PCI/PTM: Add pci_suspend_ptm() and pci_resume_ptm()
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/8ec77ade17e49ecaada21143a8940009ee2009dd
+ 8ec77ade17e49ecaada21143a8940009ee2009dd PCI/PTM: Separate configuration and enable
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/556acb9f02a6fe5e04eee30d9431980955f9687c
+ 556acb9f02a6fe5e04eee30d9431980955f9687c PCI/PTM: Add pci_upstream_ptm() helper
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/9778d298fa711edd16407e56c41718849b75da9d
+ 9778d298fa711edd16407e56c41718849b75da9d PCI/PTM: Cache PTM Capability offset
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/03928964c7af719ea1e4ee7bd5681800543c6ed6
+ 03928964c7af719ea1e4ee7bd5681800543c6ed6 Fix up vc4 merge for Pi4
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/bf2bceedcc5d66c041165b4db6aea032fd7f4b5c
  bf2bceedcc5d66c041165b4db6aea032fd7f4b5c drm/simpledrm: Only advertise formats that are supported
 
@@ -9,6 +39,12 @@
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1dc36385281ea0ffa70f6fd94f21a85e69b89062
  1dc36385281ea0ffa70f6fd94f21a85e69b89062 phy: rockchip-inno-usb2: Return zero after otg sync
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/79fb41cd79f56f42eef3981f8f22fdcd17374298
+ 79fb41cd79f56f42eef3981f8f22fdcd17374298 drm/vc4: hdmi: Check the HSM rate at runtime_resume
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/79fe71195290bdc3120f709120ccdc1e568f8b60
+ 79fe71195290bdc3120f709120ccdc1e568f8b60 drm/vc4: hdmi: Enforce the minimum rate at runtime_resume
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/b1071e87929d0dd926a791aa3a2b7fac639b00ea
  b1071e87929d0dd926a791aa3a2b7fac639b00ea drm/i915/bios: Use hardcoded fp_timing size for generating LFP data pointers
