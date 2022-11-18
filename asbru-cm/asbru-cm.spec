@@ -12,8 +12,8 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           asbru-cm
-Version:        6.3.3
-Release:        2%{?gver}%{?dist}
+Version:        6.4.0
+Release:        1%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPLv3+
@@ -25,9 +25,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
-
-Patch0:         %{vc_url}/commit/61372995970756c913e11ff26e63990fbabb50ef.patch#/%{name}-gh-6137299.patch
-Patch1:         %{vc_url}/commit/1c06e77e20dae449eae29ebf7c629c33ced101c5.patch#/%{name}-gh-1c06e77.patch
 
 BuildArch:      noarch
 
@@ -80,6 +77,7 @@ Requires:       vte291 >= 0.62
 Requires:       ftp
 Requires:       telnet
 Requires:       bash
+Suggests:       libappindicator-gtk3
 Suggests:       perl(X11::GUITest)
 Suggests:       tigervnc-server-minimal
 
@@ -157,10 +155,13 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
-* Fri Jul 15 2022 Phantom X - 6.3.3-2
+* Thu Nov 17 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-1
+- 6.4.0
+
+* Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-2
 - perl-Crypt-CBC 3.04 fix
 
-* Wed May 25 2022 Phantom X - 6.3.3-1
+* Wed May 25 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-1
 - 6.3.3
 
 * Mon Apr 11 2022 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-0.2.20220409git1407195

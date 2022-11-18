@@ -7,9 +7,10 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit eebc39228db4663e03fa73306e725424f7ce1273
+%global commit 33a4d7d1badbebd2dc05114ef17c85678baed843
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221112
+%global date 20221117
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -219,7 +220,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.343
+Version:        1.1.355
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -448,7 +449,6 @@ Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 %endif
 
 %if !%{?with_bin}
-Patch0:         %{name}-pr3815.patch
 Patch10:        0001-Save-logs-in-ApplicationData-directory.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 %endif
