@@ -6,13 +6,13 @@
 %global commit 35525d174940281251fb33490ebb66c6223f9f3b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221111
-%global with_snapshot 1
+%global with_snapshot 0
 
 %bcond_with rust
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 5a5ffc0c78b0e255f54b15d2480f617d5cbc33ec
+%global commit1 468666e2ac575bed1fd75559e1eee70d684c3d4c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -62,8 +62,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.1.6
-Release:        0.1%{?gver}%{?dist}
+Version:        0.1.9
+Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPLv3 and (MIT or LGPLv3) and GPLv2
@@ -223,6 +223,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Nov 20 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.9-1
+- 0.1.9
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-0.1.20221111git35525d1
 - Initial spec
 

@@ -24,7 +24,7 @@ index 6bd028a..a40d09c 100644
 @@ -1016,6 +1016,7 @@ static void update_net_wm_fullscreen_monitors( struct x11drv_win_data *data )
  void update_net_wm_states( struct x11drv_win_data *data )
  {
-     DWORD i, style, ex_style, new_state = 0;
+     UINT i, style, ex_style, new_state = 0;
 +    unsigned long net_wm_bypass_compositor = 0;
  
      if (!data->managed) return;

@@ -76,7 +76,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.4
+Version:        22.3.0~rc3
 Release:        100%{?gver}%{?dist}
 
 License:        MIT
@@ -93,12 +93,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-# Patches from Karol Herbst to fix Nouveau multithreading:
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/10752
-Patch0009: nouveau-multithreading-fixes.patch
 
-
-BuildRequires:  meson >= 0.53
+BuildRequires:  meson >= 0.61.4
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -153,7 +149,11 @@ BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm-devel >= 11.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
+BuildRequires:  bindgen
+BuildRequires:  rust-packaging
 BuildRequires:  pkgconfig(libclc)
+BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  pkgconfig(LLVMSPIRVLib)
 %endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
@@ -420,12 +420,14 @@ export RANLIB="gcc-ranlib"
   -Dgallium-drivers=swrast,virgl \
 %endif
   -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
-  -Dgallium-xvmc=disabled \
   -Dgallium-omx=%{?with_omx:bellagio}%{!?with_omx:disabled} \
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
+%if 0%{?with_opencl}
+  -Dgallium-rusticl=true -Dllvm=enabled -Drust_std=2021 \
+%endif 
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
 %if 0%{?with_videocodecs}
@@ -498,7 +500,7 @@ popd
 %files libEGL-devel
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/eglmesaext.h
-%{_includedir}/EGL/eglextchromium.h
+%{_includedir}/EGL/eglext_angle.h
 
 %files libglapi
 %{_libdir}/libglapi.so.0
@@ -540,9 +542,12 @@ popd
 %if 0%{?with_opencl}
 %files libOpenCL
 %{_libdir}/libMesaOpenCL.so.*
+%{_libdir}/libRusticlOpenCL.so.*
 %{_sysconfdir}/OpenCL/vendors/mesa.icd
+%{_sysconfdir}/OpenCL/vendors/rusticl.icd
 %files libOpenCL-devel
 %{_libdir}/libMesaOpenCL.so
+%{_libdir}/libRusticlOpenCL.so
 %endif
 
 %if 0%{?with_nine}
@@ -648,6 +653,7 @@ popd
 %if 0%{?with_va}
 %files va-drivers
 %{_libdir}/dri/nouveau_drv_video.so
+%{_libdir}/dri/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
 %endif
@@ -659,6 +665,7 @@ popd
 %if 0%{?with_vdpau}
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
+%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %if 0%{?with_r300}
 %{_libdir}/vdpau/libvdpau_r300.so.1*
 %endif
@@ -702,6 +709,10 @@ popd
 
 
 %changelog
+* Sat Nov 19 2022 Phantom X <megaphantomx at hotmail dot com> - 22.3.0~rc3-100
+- 22.3.0~rc3
+- Rawhide sync
+
 * Thu Nov 17 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.4-100
 - 22.2.4
 

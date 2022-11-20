@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3532
+Version:        1.7.3589
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -161,6 +161,7 @@ Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xbyak) = 0~git
 Provides:       bundled(xxhash) = %{xxhash_ver}
+Provides:       bundled(zydis) = 0~git
 
 
 %description
@@ -184,6 +185,7 @@ mv 3rdparty/rainterface 3rdparty-temp/
 mv 3rdparty/rcheevos 3rdparty-temp/
 mv 3rdparty/simpleini 3rdparty-temp/
 mv 3rdparty/xbyak 3rdparty-temp/
+mv 3rdparty/zydis 3rdparty-temp/
 rm -rf 3rdparty/*
 mv 3rdparty-temp/* 3rdparty/
 rm -rf tools
@@ -207,6 +209,7 @@ cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p xbyak/xbyak/COPYRIGHT COPYRIGHT.xbyak
+cp -p zydis/LICENSE LICENSE.zydis
 popd
 
 #Remove fedora incompatible values

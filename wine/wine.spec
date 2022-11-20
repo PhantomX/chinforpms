@@ -1,6 +1,6 @@
-%global commit a8c1d5c108fc57e4d78e9db126f395c89083a83d
+%global commit 5d1820c40bd93e6810f072a39745ee739ba99b81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221114
+%global date 20221118
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -57,6 +57,7 @@
 %global winelcms2 2.14
 %global winempg123 1.30.2
 %global winepng 1.6.38
+%global wineopenldap 2.5.13
 %global winetiff 4.4.0
 %global winejxrlib 1.1
 %global winevkd3d 1.5
@@ -96,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 5088fc67ba6de777dfa724946ecbc969545788ec
+%global wine_stagingver bf51996097d927b1acc1e0f0ebd9c478b825e0fb
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -151,7 +152,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.21
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -345,7 +346,6 @@ BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  pkgconfig(odbc)
 BuildRequires:  opencl-headers
-BuildRequires:  openldap-devel
 BuildRequires:  pkgconfig(osmesa)
 BuildRequires:  pkgconfig(sane-backends)
 BuildRequires:  pkgconfig(sdl2)
@@ -552,18 +552,19 @@ Recommends:     gstreamer1-plugins-ugly
 %endif
 %endif
 
-Provides:       gsm = %{winegsm}
-Provides:       libFAudio = %{wineFAudio}
-Provides:       libjpeg = %{winejpeg}
-Provides:       lcms2 = %{winelcms2}
-Provides:       mpg123 = %{winempg123}
-Provides:       libpng = %{winepng}
-Provides:       libtiff = %{winetiff}
-Provides:       jxrlib = %{winejxrlib}
-Provides:       libxml2 = %{winexml2}
-Provides:       libxslt = %{winexslt}
-Provides:       libvkd3d = %{winevkd3d}
-Provides:       zlib = %{winezlib}
+Provides:       bundled(gsm) = %{winegsm}
+Provides:       bundled(libFAudio) = %{wineFAudio}
+Provides:       bundled(libjpeg) = %{winejpeg}
+Provides:       bundled(lcms2) = %{winelcms2}
+Provides:       bundled(mpg123) = %{winempg123}
+Provides:       bundled(libpng) = %{winepng}
+Provides:       bundled(libtiff) = %{winetiff}
+Provides:       bundled(jxrlib) = %{winejxrlib}
+Provides:       bundled(libxml2) = %{winexml2}
+Provides:       bundled(libxslt) = %{winexslt}
+Provides:       bundled(libvkd3d) = %{winevkd3d}
+Provides:       bundled(openldap) = %{wineopenldap}
+Provides:       bundled(zlib) = %{winezlib}
 
 # removed as of 1.7.35
 Obsoletes:      wine-wow < 1.7.35
@@ -2470,7 +2471,6 @@ fi
 
 # ldap subpackage
 %files ldap
-%{_libdir}/wine/%{winesodir}/wldap32.so
 %{_libdir}/wine/%{winedlldir}/wldap32.%{winedll}
 
 # cms subpackage

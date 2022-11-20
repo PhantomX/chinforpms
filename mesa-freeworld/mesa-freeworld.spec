@@ -17,7 +17,7 @@
 
 %global commit d4d47ef6efa91a4f28b01fa0cd3f17f0442455b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202201004
+%global date 20221004
 %global with_snapshot 0
 
 %if 0%{?with_snapshot}
@@ -32,7 +32,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.4
+Version:        22.3.0~rc3
 Release:        100%{?gver}%{?dist}
 
 Epoch:          100
@@ -130,14 +130,14 @@ Enhances:       %{pkgname}%{?_isa}
   -Dplatforms=x11 \
   -Ddri3=enabled \
   -Dosmesa=false \
-  -Dgallium-drivers=nouveau%{?with_r300:,r300}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
+  -Dgallium-drivers=virgl,nouveau%{?with_r300:,r300}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
   -Dgallium-vdpau=enabled \
-  -Dgallium-xvmc=disabled \
   -Dgallium-omx=disabled \
   -Dgallium-va=enabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
   -Dgallium-opencl=disabled \
+  -Dgallium-rusticl=false \
   -Dvulkan-drivers="" \
   -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
   -Dshared-glapi=enabled \
@@ -181,6 +181,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 %files -n %{pkgname}-va-drivers-freeworld
 %license docs/license.rst
 %{_libdir}/dri/nouveau_drv_video.so
+%{_libdir}/dri/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
 %endif
@@ -192,6 +193,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 %files -n %{pkgname}-vdpau-drivers-freeworld
 %license docs/license.rst
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
+%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %if 0%{?with_r300}
 %{_libdir}/vdpau/libvdpau_r300.so.1*
 %endif
@@ -205,6 +207,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sat Nov 19 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.3.0~rc3-100
+- 22.3.0~rc3
+
 * Thu Nov 17 2022 Phantom X <megaphantomx at hotmail dot com> - 100:22.2.4-100
 - 22.2.4
 

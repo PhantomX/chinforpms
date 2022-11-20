@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 33a4d7d1badbebd2dc05114ef17c85678baed843
+%global commit 69ced3a6e8636cfe7ea2f7333dd7cb4512def241
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221117
+%global date 20221119
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -220,7 +220,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.355
+Version:        1.1.365
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

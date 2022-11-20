@@ -26,7 +26,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.2.4
+Version:        22.3.0~rc3
 Release:        1%{?gver}%{?dist}
 
 License:        MIT
@@ -129,12 +129,12 @@ export RANLIB="gcc-ranlib"
   -Ddri3=disabled \
   -Dgallium-drivers=swrast \
   -Dgallium-vdpau=disabled \
-  -Dgallium-xvmc=disabled \
   -Dgallium-omx=disabled \
   -Dgallium-va=disabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
   -Dgallium-opencl=disabled \
+  -Dgallium-rusticl=false \
   -Ddri-drivers="" \
   -Dvulkan-drivers="" \
   -Dshared-glapi=enabled \
@@ -188,6 +188,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Sat Nov 19 2022 Phantom X <megaphantomx at hotmail dot com> - 22.3.0~rc3-1
+- 22.3.0~rc3
+
 * Thu Nov 17 2022 Phantom X <megaphantomx at hotmail dot com> - 22.2.4-1
 - 22.2.4
 

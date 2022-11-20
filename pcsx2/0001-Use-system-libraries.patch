@@ -1,4 +1,4 @@
-From 913169853b9e803f125d5771424c21c302ab6d4d Mon Sep 17 00:00:00 2001
+From 81273bd3ac2f9f310745c3e86c1e66f7894e3c32 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -7,13 +7,13 @@ Subject: [PATCH] Use system libraries
  cmake/SearchForStuff.cmake | 44 +++++++++++++++++++++++++++-----------
  common/CMakeLists.txt      |  2 +-
  pcsx2/CDVD/ChdFileReader.h |  2 +-
- 3 files changed, 28 insertions(+), 14 deletions(-)
+ 3 files changed, 34 insertions(+), 14 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 109d8ee..f6e761a 100644
+index 385e933..650be7b 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -208,11 +208,10 @@ endif()
+@@ -214,11 +214,10 @@ endif()
  
  find_optional_system_library(fmt 3rdparty/fmt/fmt 7.1.3)
  find_optional_system_library(ryml 3rdparty/rapidyaml/rapidyaml 0.4.0)
@@ -29,7 +29,7 @@ index 109d8ee..f6e761a 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -240,8 +239,13 @@ if(NOT WIN32 AND QT_BUILD)
+@@ -257,8 +256,13 @@ if(NOT WIN32 AND QT_BUILD)
  	find_package(CURL REQUIRED)
  endif()
  
@@ -45,7 +45,7 @@ index 109d8ee..f6e761a 100644
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -257,13 +261,25 @@ endif()
+@@ -274,27 +278,43 @@ endif()
  # permissive mode, which breaks other parts of PCSX2. So, we'll just create a target here
  # for now.
  #add_subdirectory(3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float EXCLUDE_FROM_ALL)
@@ -62,17 +62,18 @@ index 109d8ee..f6e761a 100644
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 -add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
-+
+ add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
+ 
 +check_lib(CPUINFO libcpuinfo)
 +if(NOT CPUINFO_FOUND)
 +	add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
 +else()
 +	alias_library(cpuinfo PkgConfig::CPUINFO)
 +endif()
- 
++
  if(USE_OPENGL)
  	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
-@@ -271,12 +287,16 @@ endif()
+ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -94,10 +95,10 @@ index 109d8ee..f6e761a 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index 8d6e2b3..ee654ee 100644
+index b612273..1e73399 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
-@@ -138,7 +138,7 @@ endif()
+@@ -144,7 +144,7 @@ endif()
  
  if(USE_VULKAN)
  	target_link_libraries(common PUBLIC
@@ -120,5 +121,5 @@ index 785e457..935b6bf 100644
  
  class ChdFileReader : public ThreadedFileReader
 -- 
-2.37.3
+2.38.1
 
