@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 92cd3fa5cc7397248b8b7b4ee9576b89e2befd91
+%global commit 5efa2e259648f6727412147b0b348f2e1b2311c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221102
+%global date 20221120
 %global with_snapshot 1
 
 # Disable ffmpeg support
@@ -69,7 +69,7 @@
 
 Name:           ppsspp
 Version:        1.13.2
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -179,13 +179,10 @@ Provides:       bundled(xbrz)
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
 
-%if %{with qt}
 Provides:       %{name}-qt = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-qt < %{?epoch:%{epoch}:}%{version}-%{release}
-%else
 Provides:       %{name}-sdl = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-sdl < %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
 
 
 %description
@@ -383,25 +380,25 @@ popd
 
 
 %install
+%cmake_install
 
-mkdir -p %{buildroot}%{_bindir}
+rm -f %{buildroot}/usr/share/applications/*.desktop
+
 %if %{with qt}
-  install -pm0755 %{_vpath_builddir}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
+  mv %{buildroot}%{_bindir}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
 %else
-  install -pm0755 %{_vpath_builddir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
+  mv %{buildroot}%{_bindir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 %endif
 
 install -pm0755 ext/native/tools/%{_vpath_builddir}/{atlastool,zimtool} \
   %{buildroot}%{_bindir}/
 
-mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{_vpath_builddir}/assets %{buildroot}%{_datadir}/%{name}/
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 
 %if %{with qt}
-  install -pm 644 Qt/languages/* %{buildroot}%{_datadir}/%{name}/assets/lang/
+  install -pm 644 Qt/languages/*.ts %{buildroot}%{_datadir}/%{name}/assets/lang/
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
@@ -419,12 +416,6 @@ desktop-file-install --mode 0644 \
   --remove-key="X-Window-Icon" \
   %{name}.desktop
 
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
-cp -r icons/hicolor/* %{buildroot}%{_datadir}/icons/hicolor/
-
-install -pm0644 icons/icon-512.svg \
-  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
@@ -434,7 +425,7 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %doc README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/*
+%{_datadir}/mime/packages/*.xml
 %{_metainfodir}/*.xml
 
 
@@ -442,6 +433,7 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %doc README.md
 %license LICENSE.TXT
 %{_datadir}/%{name}/
+%{_datadir}/icons/hicolor/*/apps/*
 
 
 %files tools
@@ -452,6 +444,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Nov 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13.2-103.20221120git5efa2e2
+- %%cmake_install
+
 * Sun Sep 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13.2-100.20220911gita6c9546
 - 1.13.2
 

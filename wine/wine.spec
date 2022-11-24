@@ -272,6 +272,7 @@ Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.pa
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
+Patch1302:       0001-staging-update-nvapi-and-nvencodeapi-autoconf.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
 
@@ -288,6 +289,7 @@ ExclusiveArch:  %{ix86}
 
 BuildRequires:  bison
 BuildRequires:  flex
+BuildRequires:  git-core
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  make
@@ -863,7 +865,7 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 This package adds the opencl driver for wine.
 
 %prep
-%setup -q -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
+%autosetup -S git_am -N -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
 
 %patch511 -p1 -b.cjk
 %patch599 -p1
@@ -945,6 +947,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 
 %patch1300 -p1
 %patch1301 -p1
+%patch1302 -p1
 %patch1305 -p1
 
 sed \
@@ -996,6 +999,10 @@ sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
 
 cp -p %{SOURCE50} ./dlls/winevulkan/vk-%{winevulkan}.xml
 
+find . \( -name "*.orig" -o -name "*.cjk" \) -delete
+
+git add .
+./tools/make_makefiles
 ./dlls/winevulkan/make_vulkan
 ./tools/make_requests
 ./tools/make_specfiles
@@ -2163,14 +2170,18 @@ fi
 %ifarch x86_64 aarch64
 %{_libdir}/wine/%{winedlldir}/nvapi64.%{winedll}
 %{_libdir}/wine/%{winesodir}/nvencodeapi64.dll.so
+%exclude %{_libdir}/wine/%{winesodir}/nvencodeapi.dll.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/nvencodeapi64.dll
+%exclude %{_libdir}/wine/%{winedlldir}/nvencodeapi.dll
 %endif
 %else
 %{_libdir}/wine/%{winedlldir}/nvapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/nvencodeapi.dll.so
+%exclude %{_libdir}/wine/%{winesodir}/nvencodeapi64.dll.so
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/nvencodeapi.dll
+%exclude %{_libdir}/wine/%{winedlldir}/nvencodeapi64.dll
 %endif
 %endif
 %endif
