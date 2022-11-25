@@ -10,9 +10,9 @@
 %global with_sysspirv 0
 %global with_sysvulkan 0
 
-%global commit b2dcb417c10f0e3bf9b834acd8203d6b7e76f471
+%global commit 11559c18e3f3a1b19991cc7d5b841d7c7b8e8cf2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221115
+%global date 20221123
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -29,7 +29,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        75%{?gver}%{?dist}
+Release:        76%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -41,7 +41,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        org.%{name}.DuckStation.metainfo.xml
-Source2:        %{name}.sh
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -203,12 +202,10 @@ sed \
   -i src/scmversion/gen_scmversion.sh
 %endif
 
-cp -p %{S:2} .
-
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
-  -i src/duckstation-qt/qt{host,translations}.cpp %{name}.sh
+  -i src/duckstation-qt/qt{host,translations}.cpp
 
 cat > %{name}-qt.desktop <<'EOF'
 [Desktop Entry]
@@ -239,16 +236,14 @@ EOF
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt.bin
-install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}-qt
+install -pm0755 %{__cmake_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
 
 %if 0%{?with_nogui}
-install -pm0755 %{__cmake_builddir}/bin/%{name}-nogui %{buildroot}%{_bindir}/%{name}-nogui.bin
-install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}-nogui
+install -pm0755 %{__cmake_builddir}/bin/%{name}-nogui %{buildroot}%{_bindir}/%{name}-nogui
 %endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{__cmake_builddir}/bin/{inputprofiles,resources,translations} \
+cp -r %{__cmake_builddir}/bin/{resources,translations} \
   %{buildroot}%{_datadir}/%{name}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
@@ -315,6 +310,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Nov 25 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-76.20221123git11559c1
+- Remove unneeded wrapper
+
 * Wed Aug 10 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-61.20220810git4652c5f
 - Bump
 

@@ -76,7 +76,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.3.0~rc3
+Version:        22.3.0~rc4
 Release:        100%{?gver}%{?dist}
 
 License:        MIT
@@ -709,6 +709,9 @@ popd
 
 
 %changelog
+* Thu Nov 24 2022 Phantom X <megaphantomx at hotmail dot com> - 22.3.0~rc4-100
+- 22.3.0-rc4
+
 * Sat Nov 19 2022 Phantom X <megaphantomx at hotmail dot com> - 22.3.0~rc3-100
 - 22.3.0~rc3
 - Rawhide sync
