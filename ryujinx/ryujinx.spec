@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 567c64e149f1ec3487dea34abdffc7bfa2f55400
+%global commit cb22629ac1048960e4f318dedc43ba498debb9b3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221123
+%global date 20221126
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -99,9 +99,9 @@
 %global runtime_unix_system_runtime_extensions_ver 4.3.0
 %global ryujinx_audio_openal_dependencies_ver 1.21.0.1
 %global ryujinx_graphics_nvdec_dependencies_ver 5.0.1-build10
-%global ryujinx_sdl2_cs_ver 2.0.22-build20
+%global ryujinx_sdl2_cs_ver 2.24.2-build21
 %global shaderc_net_ver 0.1.0
-%global sharpziplib_ver 1.3.3
+%global sharpziplib_ver 1.4.1
 %global silk_net_core_ver 2.10.1
 %global silk_net_vulkan_ver 2.10.1
 %global silk_net_vulkan_extensions_ext_ver 2.10.1
@@ -220,7 +220,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.373
+Version:        1.1.391
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

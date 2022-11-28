@@ -65,7 +65,6 @@ BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  qt6-qtbase-private-devel
-%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(gl)

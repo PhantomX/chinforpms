@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
 # Telegram Desktop's constants...
-%global appname tdesktop
-%global launcher telegramdesktop
+%global appname org.telegram.desktop
+%global srcname tdesktop
 
 # Telegram API tokens...
 # https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
@@ -24,7 +24,7 @@
 %global kf5ver 3c1d4a
 
 Name:           telegram-desktop
-Version:        4.3.1
+Version:        4.3.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -39,11 +39,11 @@ Epoch:          1
 # * open-sans-fonts  - ASL 2.0 -- bundled font;
 # * vazirmatn-fonts - OFL -- bundled font.
 License:        GPLv3+ and BSD and ASL 2.0 and LGPLv2+ and LGPLv3 and OFL
-URL:            https://github.com/telegramdesktop/%{appname}
+URL:            https://github.com/telegramdesktop/%{srcname}
 
 ExclusiveArch:  x86_64 aarch64
 
-Source0:        %{url}/releases/download/v%{version}/%{appname}-%{version}-full.tar.gz
+Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
@@ -133,6 +133,7 @@ BuildRequires:  cmake(absl) >= 20211102
 BuildRequires:  cmake(tg_owt)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(protobuf)
+BuildRequires:  pkgconfig(protobuf-lite)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
 Requires:       hicolor-icon-theme
@@ -211,13 +212,13 @@ business messaging needs.
 
 %prep
 # Unpacking Telegram Desktop source archive...
-%autosetup -N -n %{appname}-%{version}-full
+%autosetup -N -n %{srcname}-%{version}-full
 %autopatch -p1 -M 999
 
-cp -p %{S:20} thunar-sendto-%{launcher}.desktop
+cp -p %{S:20} thunar-sendto-%{name}.desktop
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{Catch,GSL,QR,SPMediaKeyTap,dispatch,expected,fcitx-qt5,hime,hunspell,jemalloc,lz4,materialdecoration,minizip,nimf,plasma-wayland-protocols,qt5ct,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{GSL,QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,minizip,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i cmake/external/rlottie/CMakeLists.txt cmake/external/kcoreaddons/CMakeLists.txt
@@ -232,12 +233,7 @@ find Telegram -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
-# Patching QR-Code...
-%if 0%{?fedora} && 0%{?fedora} >= 35
-sed -e 's/QrCode\.hpp/qrcodegen\.hpp/g' -i {cmake/external/qr_code_generator/CMakeLists.txt,Telegram/lib_qr/qr/qr_generate.cpp}
-%endif
-
-sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{launcher}.desktop
+sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{appname}.desktop
 
 sed \
   -e 's|${third_party_loc}/wayland-protocols/|${WaylandProtocols_DATADIR}/|g' \
@@ -278,7 +274,6 @@ sed \
 %else
     -DDESKTOP_APP_DISABLE_X11_INTEGRATION:BOOL=ON \
 %endif
-    -DTDESKTOP_LAUNCHER_BASENAME=%{launcher} \
     -DWaylandProtocols_DATADIR:PATH=%{_datadir}/wayland-protocols \
     -DPLASMA_WAYLAND_PROTOCOLS_DIR:PATH=%{_datadir}/plasma-wayland-protocols \
 %{nil}
@@ -295,31 +290,37 @@ desktop-file-edit \
   --set-key=Exec \
   --set-value="%{_bindir}/%{name} -- %u" \
   --remove-key=Version \
-  %{buildroot}%{_datadir}/applications/%{launcher}.desktop
+  %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 # sendto
 mkdir -p "%{buildroot}%{_datadir}/Thunar/sendto"
 desktop-file-install \
   --dir="%{buildroot}%{_datadir}/Thunar/sendto" \
-  thunar-sendto-%{launcher}.desktop
+  thunar-sendto-%{name}.desktop
 
 
 %check
-appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{launcher}.metainfo.xml"
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{launcher}.desktop
+appstream-util validate-relax --nonet "%{buildroot}%{_metainfodir}/%{appname}.metainfo.xml"
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %files
 %doc README.md changelog.txt
 %license LICENSE LEGAL
 %{_bindir}/%{name}
-%{_datadir}/applications/%{launcher}.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
-%{_datadir}/Thunar/sendto/thunar-sendto-%{launcher}.desktop
-%{_metainfodir}/%{launcher}.metainfo.xml
+%{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
+* Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.4-100
+- 4.3.4
+
+* Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.4-100
+- 4.3.4
+
 * Tue Nov 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
 - 4.3.1
 

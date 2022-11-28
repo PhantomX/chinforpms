@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1f43e53a8296af7698bbb3a99f3911f2b1676675
+%global commit 6b5fbca567ffdd33438cd87acf38d709f3e4ff3e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221122
+%global date 20221127
 
 %global with_ea 1
 %if !0%{?with_ea}

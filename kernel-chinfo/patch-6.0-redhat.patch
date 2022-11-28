@@ -41,8 +41,10 @@ Subject: [PATCH] patch-6.0-redhat
  include/linux/pci.h                                |   3 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ include/net/neighbour.h                            |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
+ net/core/neighbour.c                               |  58 ++--
  net/ipv4/fib_semantics.c                           |   8 +-
  scripts/pahole-flags.sh                            |   3 +
  scripts/tags.sh                                    |   2 +
@@ -51,10 +53,10 @@ Subject: [PATCH] patch-6.0-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 47 files changed, 762 insertions(+), 362 deletions(-)
+ 49 files changed, 793 insertions(+), 391 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index a234f16783ed..4cf0f80ced16 100644
+index 4f7da26fef78..ce8f093a79f1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -262,10 +264,10 @@ index dabe45eba055..82cf1ddf25d6 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 42cec8120f18..c6dc77dba6b6 100644
+index adfeb5770efd..9ed777d8512f 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1752,6 +1752,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1753,6 +1753,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 
@@ -1208,10 +1210,10 @@ index b9cf17cbbbd5..9aa33fc59f67 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index a0bf9560cf67..2a226be9b32a 100644
+index 70555022cb44..66c4f089d175 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -844,6 +844,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -854,6 +854,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1219,7 +1221,7 @@ index a0bf9560cf67..2a226be9b32a 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -880,6 +881,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -890,6 +891,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1950,6 +1952,19 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 3827a6b395fd..bce6b228cf56 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -83,7 +83,7 @@ struct neigh_parms {
+ 	struct rcu_head rcu_head;
+
+ 	int	reachable_time;
+-	int	qlen;
++	u32	qlen;
+ 	int	data[NEIGH_VAR_DATA_MAX];
+ 	DECLARE_BITMAP(data_state, NEIGH_VAR_DATA_MAX);
+ };
 diff --git a/init/Kconfig b/init/Kconfig
 index 532362fcfe31..30d547537ea0 100644
 --- a/init/Kconfig
@@ -1986,6 +2001,111 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 84755db81e9d..35f5a3125808 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -307,7 +307,31 @@ static int neigh_del_timer(struct neighbour *n)
+ 	return 0;
+ }
+
+-static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
++static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
++						   int family)
++{
++	switch (family) {
++	case AF_INET:
++		return __in_dev_arp_parms_get_rcu(dev);
++	case AF_INET6:
++		return __in6_dev_nd_parms_get_rcu(dev);
++	}
++	return NULL;
++}
++
++static void neigh_parms_qlen_dec(struct net_device *dev, int family)
++{
++	struct neigh_parms *p;
++
++	rcu_read_lock();
++	p = neigh_get_dev_parms_rcu(dev, family);
++	if (p)
++		p->qlen--;
++	rcu_read_unlock();
++}
++
++static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net,
++			       int family)
+ {
+ 	struct sk_buff_head tmp;
+ 	unsigned long flags;
+@@ -321,13 +345,7 @@ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
+ 		struct net_device *dev = skb->dev;
+
+ 		if (net == NULL || net_eq(dev_net(dev), net)) {
+-			struct in_device *in_dev;
+-
+-			rcu_read_lock();
+-			in_dev = __in_dev_get_rcu(dev);
+-			if (in_dev)
+-				in_dev->arp_parms->qlen--;
+-			rcu_read_unlock();
++			neigh_parms_qlen_dec(dev, family);
+ 			__skb_unlink(skb, list);
+ 			__skb_queue_tail(&tmp, skb);
+ 		}
+@@ -409,7 +427,8 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
+ 	write_lock_bh(&tbl->lock);
+ 	neigh_flush_dev(tbl, dev, skip_perm);
+ 	pneigh_ifdown_and_unlock(tbl, dev);
+-	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL);
++	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
++			   tbl->family);
+ 	if (skb_queue_empty_lockless(&tbl->proxy_queue))
+ 		del_timer_sync(&tbl->proxy_timer);
+ 	return 0;
+@@ -1621,13 +1640,8 @@ static void neigh_proxy_process(struct timer_list *t)
+
+ 		if (tdif <= 0) {
+ 			struct net_device *dev = skb->dev;
+-			struct in_device *in_dev;
+
+-			rcu_read_lock();
+-			in_dev = __in_dev_get_rcu(dev);
+-			if (in_dev)
+-				in_dev->arp_parms->qlen--;
+-			rcu_read_unlock();
++			neigh_parms_qlen_dec(dev, tbl->family);
+ 			__skb_unlink(skb, &tbl->proxy_queue);
+
+ 			if (tbl->proxy_redo && netif_running(dev)) {
+@@ -1821,7 +1835,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
+ 	cancel_delayed_work_sync(&tbl->managed_work);
+ 	cancel_delayed_work_sync(&tbl->gc_work);
+ 	del_timer_sync(&tbl->proxy_timer);
+-	pneigh_queue_purge(&tbl->proxy_queue, NULL);
++	pneigh_queue_purge(&tbl->proxy_queue, NULL, tbl->family);
+ 	neigh_ifdown(tbl, NULL);
+ 	if (atomic_read(&tbl->entries))
+ 		pr_crit("neighbour leakage\n");
+@@ -3542,18 +3556,6 @@ static int proc_unres_qlen(struct ctl_table *ctl, int write,
+ 	return ret;
+ }
+
+-static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
+-						   int family)
+-{
+-	switch (family) {
+-	case AF_INET:
+-		return __in_dev_arp_parms_get_rcu(dev);
+-	case AF_INET6:
+-		return __in6_dev_nd_parms_get_rcu(dev);
+-	}
+-	return NULL;
+-}
+-
+ static void neigh_copy_dflt_parms(struct net *net, struct neigh_parms *p,
+ 				  int index)
+ {
 diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
 index 2dc97583d279..e9a7f70a54df 100644
 --- a/net/ipv4/fib_semantics.c

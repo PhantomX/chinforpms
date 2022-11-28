@@ -19,12 +19,12 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit a00f9e42115527aa9654870f194cf2c64329f2ef
+%global commit 8b934abcf21b75ba1fa38b8b6ec087b53dbb64f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221101
+%global date 202211261
 %global with_snapshot 1
 
-%global commit10 5e61ea2098220059e89523f1f47b0bcd8c33b89a
+%global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Tools
 
@@ -36,7 +36,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 10423ec659d301a0ff2daac8bbf38980abf27590
+%global commit13 5755de46b07e4374c05fb1081f65f7ae1f8cca81
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -44,7 +44,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 57aac1c50b45275c7a99eca32ad985998b292dc8
+%global commit15 44f81f8bc082319cebf0e37df8470aa5748c1355
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -52,7 +52,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 b2a156e1c0434bc8c99aaebba1c7be98be7ac580
+%global commit17 85a1ed200d50660786c1a88d9166e871123cce39
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.25
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPLv2
@@ -154,6 +154,7 @@ BuildRequires:  cmake(LLVM)
 %endif
 %if 0%{?with_sysflatbuffers}
 BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
+BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
 %else
 Provides:       bundled(flatbuffers) = %{bundleflatbuffers}
 %endif
@@ -309,6 +310,8 @@ sed \
   -e '/set(CMAKE_CXX_FLAGS/d' \
   -e '/set(CMAKE_C_FLAGS/d' \
   -i CMakeLists.txt
+
+sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
 
 %build

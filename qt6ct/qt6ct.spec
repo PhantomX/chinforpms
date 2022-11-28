@@ -12,7 +12,7 @@
 
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
-Version:        0.6
+Version:        0.7
 Release:        100%{?gver}%{?dist}
 
 # The entire source code is under BSD-2-Clause License
@@ -114,6 +114,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 0.7-100
+- 0.7
+
 * Thu Sep 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6-100
 - 0.6
 

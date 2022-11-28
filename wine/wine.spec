@@ -1,7 +1,7 @@
 %global commit 5d1820c40bd93e6810f072a39745ee739ba99b81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221118
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -49,7 +49,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.233
+%global winevulkan 1.3.235
 
 %global wineFAudio 22.11
 %global winegsm 1.0.19
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver bf51996097d927b1acc1e0f0ebd9c478b825e0fb
+%global wine_stagingver 7.22
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9fe1aa5db1cd661149715bd4c0e13f77cdca083d
+%global tkg_id 0e06f46076f34a14472b0054c27e8434d876ede5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.21
-Release:        102%{?gver}%{?dist}
+Version:        7.22
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -260,10 +260,9 @@ Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_C
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
 
-Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup.patch#/%{name}-tkg-sharedgpures-fixup.patch
-Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences-fshack.patch#/%{name}-tkg-sharedgpures-fences-fshack.patch
-Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
+Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fshack.patch#/%{name}-tkg-sharedgpures-fences-fshack.patch
+Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures.patch#/%{name}-tkg-sharedgpures-fences.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -947,7 +946,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 
 %patch1300 -p1
 %patch1301 -p1
-%patch1302 -p1
+%dnl %patch1302 -p1
 %patch1305 -p1
 
 sed \
@@ -1865,14 +1864,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/ntdll.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntdsapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntprint.%{winedll}
-%if 0%{?wine_staging}
-%{_libdir}/wine/%{winesodir}/nvcuda.dll.so
-%{_libdir}/wine/%{winesodir}/nvcuvid.dll.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/nvcuda.dll
-%{_libdir}/wine/%{winedlldir}/nvcuvid.dll
-%endif
-%endif
 %{_libdir}/wine/%{winedlldir}/objsel.%{winedll}
 %{_libdir}/wine/%{winesodir}/odbc32.so
 %{_libdir}/wine/%{winedlldir}/odbc32.%{winedll}
@@ -2029,6 +2020,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.ui.gamebar.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.media.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.speech.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.networking.%{winedll}
@@ -2060,6 +2052,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/winhttp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wininet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winmm.%{winedll}
+%{_libdir}/wine/%{winedlldir}/winprint.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winnls32.%{winedll}
 %{_libdir}/wine/%{winesodir}/winspool.so
 %{_libdir}/wine/%{winedlldir}/winspool.%{winedrv}
@@ -2161,12 +2154,20 @@ fi
 %{_libdir}/wine/%{winedlldir}/xinput1_3.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xinput1_4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xinput9_1_0.%{winedll}
+%{_libdir}/wine/%{winedlldir}/xinputuap.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xmllite.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xolehlp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xpsprint.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xpssvcs.%{winedll}
 
+%if 0
 %if 0%{?wine_staging}
+%{_libdir}/wine/%{winesodir}/nvcuda.dll.so
+%{_libdir}/wine/%{winesodir}/nvcuvid.dll.so
+%if 0%{?wine_mingw}
+%{_libdir}/wine/%{winedlldir}/nvcuda.dll
+%{_libdir}/wine/%{winedlldir}/nvcuvid.dll
+%endif
 %ifarch x86_64 aarch64
 %{_libdir}/wine/%{winedlldir}/nvapi64.%{winedll}
 %{_libdir}/wine/%{winesodir}/nvencodeapi64.dll.so
@@ -2182,6 +2183,7 @@ fi
 %if 0%{?wine_mingw}
 %{_libdir}/wine/%{winedlldir}/nvencodeapi.dll
 %exclude %{_libdir}/wine/%{winedlldir}/nvencodeapi64.dll
+%endif
 %endif
 %endif
 %endif
@@ -2538,6 +2540,9 @@ fi
 
 
 %changelog
+* Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.22-100
+- 7.22
+
 * Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.21-100
 - 7.21
 
