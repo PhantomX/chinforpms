@@ -10,15 +10,16 @@
 %global with_sysspirv 0
 %global with_sysvulkan 0
 
-%global commit 11559c18e3f3a1b19991cc7d5b841d7c7b8e8cf2
+%global commit b881c7e7c4e8f5ca41cbd722306a205818ff93ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221123
+%global date 20221129
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%global appname org.%{name}.DuckStation
 %global vc_url  https://github.com/stenzek/%{name}
 
 %global glad_ver 0.1.33
@@ -29,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        76%{?gver}%{?dist}
+Release:        77%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -40,7 +41,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        org.%{name}.DuckStation.metainfo.xml
+Source1:        %{appname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -206,13 +207,13 @@ sed \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i src/duckstation-qt/qt{host,translations}.cpp
 
-cat > %{name}-qt.desktop <<'EOF'
+cat > %{appname}.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Name=DuckStation
 GenericName=PlayStation 1 Emulator
 Comment=Fast PlayStation 1 emulator
-Icon=%{name}-qt
+Icon=%{appname}
 TryExec=%{name}-qt
 Exec=%{name}-qt %%f
 Categories=Game;Emulator;Qt;
@@ -264,22 +265,22 @@ ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}-qt.desktop
+  %{appname}.desktop
 
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert data/resources/images/duck.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{name}-qt.png
+    ${dir}/%{appname}.png
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/org.%{name}.DuckStation.metainfo.xml
+install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 %find_lang %{name}-qt --with-qt
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet \
   %{buildroot}%{_metainfodir}/*.metainfo.xml
 
@@ -288,8 +289,8 @@ appstream-util validate-relax --nonet \
 %doc README.md
 %license LICENSE dep/LICENSE.* dep/COPYRIGHT.*
 %{_bindir}/%{name}-qt*
-%{_datadir}/applications/%{name}-qt.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}-qt.*
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/*.metainfo.xml
 
 

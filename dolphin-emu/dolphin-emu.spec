@@ -20,9 +20,16 @@
 %global enablejit 1
 %endif
 
-%global commit 0210d115c22a1c5745c76eaefe38b5d0af3247f9
+# Minizip package name, f38 uses minizip-ng
+%if 0%{?fedora} > 37
+%global minizippkg minizip-ng
+%else
+%global minizippkg minizip
+%endif
+
+%global commit 44f8b8c1007f2ead8530d53c4aca3df8fee6d6af
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221102
+%global date 20221127
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -44,7 +51,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        170%{?gver}%{?dist}
+Release:        171%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -98,7 +105,7 @@ BuildRequires:  pkgconfig(bzip2)
 %if 0%{?with_egl}
 BuildRequires:  pkgconfig(egl)
 %endif
-BuildRequires:  pkgconfig(fmt) >= 8.1.0
+BuildRequires:  pkgconfig(fmt) >= 9.1.0
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
@@ -127,7 +134,7 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel >= 2.28.0
-BuildRequires:  minizip-devel
+BuildRequires:  %{minizippkg}-devel
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  vulkan-headers
