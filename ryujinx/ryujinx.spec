@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit cb22629ac1048960e4f318dedc43ba498debb9b3
+%global commit ce92e8cd043c6beeca6969920bc5e3b8eff5f57a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221126
+%global date 20221201
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
-%global discordrichpresence_ver 1.0.175
+%global discordrichpresence_ver 1.1.3.18
 %global gtksharp_ver 3.22.25.128
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.17.0
@@ -32,7 +32,7 @@
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
-%global microsoft_extensions_dependencymodel_ver 3.1.1
+%global microsoft_extensions_dependencymodel_ver 6.0.0
 %global microsoft_identitymodel_ver 6.25.0
 %global microsoft_netcore_app_runtime_linux_x64_ver 7.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
@@ -48,13 +48,9 @@
 %global netstandard_library_ver 1.6.0
 %global netstandard_library_ver2 2.0.0
 %global netstandard_library_ver3 2.0.3
-%global newtonsoft_json_ver 12.0.2
-%global opentk_core_ver 4.7.2
-%global opentk_graphics_ver 4.7.2
-%global opentk_mathematics_ver 4.7.2
-%global opentk_openal_ver 4.7.2
-%global opentk_redist_glfw_ver 3.3.7.25
-%global opentk_windowing_graphicslibraryframework_ver 4.7.2
+%global newtonsoft_json_ver 13.0.1
+%global opentk_ver 4.7.5
+%global opentk_redist_glfw_ver 3.3.8.30
 %global pangosharp_ver %{gtksharp_ver}
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
@@ -102,10 +98,7 @@
 %global ryujinx_sdl2_cs_ver 2.24.2-build21
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.1
-%global silk_net_core_ver 2.10.1
-%global silk_net_vulkan_ver 2.10.1
-%global silk_net_vulkan_extensions_ext_ver 2.10.1
-%global silk_net_vulkan_extensions_khr_ver 2.10.1
+%global silk_net_ver 2.16.0
 %global sixlabors_fonts_ver 1.0.0-beta0013
 %global sixlabors_imagesharp_ver 1.0.4
 %global sixlabors_imagesharp_drawing_ver 1.0.0-beta11
@@ -115,7 +108,7 @@
 %global system_buffers_ver2 4.3.0
 %global system_buffers_ver3 4.5.1
 %global system_codedom_ver 4.4.0
-%global system_codedom_ver2 6.0.0
+%global system_codedom_ver2 7.0.0
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
@@ -142,8 +135,8 @@
 %global system_io_filesystem_primitives_ver2 4.3.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 6.0.0
-%global system_memory_ver 4.5.3
+%global system_management_ver 7.0.0
+%global system_memory_ver 4.5.5
 %global system_memory_ver2 4.5.4
 %global system_net_http_ver 4.1.0
 %global system_net_nameresolution_ver 4.3.0
@@ -200,7 +193,8 @@
 %global system_text_encoding_ver2 4.3.0
 %global system_text_encoding_codepages_ver 6.0.0
 %global system_text_encoding_extensions_ver 4.0.11
-%global system_text_json_ver 4.7.0
+%global system_text_encodings_web_ver 6.0.0
+%global system_text_json_ver 6.0.0
 %global system_text_json_ver2 4.7.2
 %global system_text_regularexpressions_ver 4.1.0
 %global system_threading_ver 4.0.11
@@ -220,7 +214,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.391
+Version:        1.1.407
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -276,12 +270,12 @@ Source234:      %{nuget_url}/netstandard.library.%{netstandard_library_ver}.nupk
 Source235:      %{nuget_url}/netstandard.library.%{netstandard_library_ver2}.nupkg
 Source236:      %{nuget_url}/netstandard.library.%{netstandard_library_ver3}.nupkg
 Source237:      %{nuget_url}/newtonsoft.json.%{newtonsoft_json_ver}.nupkg
-Source238:      %{nuget_url}/opentk.core.%{opentk_core_ver}.nupkg
-Source239:      %{nuget_url}/opentk.graphics.%{opentk_graphics_ver}.nupkg
-Source240:      %{nuget_url}/opentk.mathematics.%{opentk_mathematics_ver}.nupkg
-Source241:      %{nuget_url}/opentk.openal.%{opentk_openal_ver}.nupkg
+Source238:      %{nuget_url}/opentk.core.%{opentk_ver}.nupkg
+Source239:      %{nuget_url}/opentk.graphics.%{opentk_ver}.nupkg
+Source240:      %{nuget_url}/opentk.mathematics.%{opentk_ver}.nupkg
+Source241:      %{nuget_url}/opentk.openal.%{opentk_ver}.nupkg
 Source242:      %{nuget_url}/opentk.redist.glfw.%{opentk_redist_glfw_ver}.nupkg
-Source243:      %{nuget_url}/opentk.windowing.graphicslibraryframework.%{opentk_windowing_graphicslibraryframework_ver}.nupkg
+Source243:      %{nuget_url}/opentk.windowing.graphicslibraryframework.%{opentk_ver}.nupkg
 Source244:      %{nuget_url}/pangosharp.%{gtksharp_ver}.nupkg
 Source245:      %{nuget_url}/runtime.any.system.collections.%{runtime_any_system_collections_ver}.nupkg
 Source246:      %{nuget_url}/runtime.any.system.diagnostics.tools.%{runtime_any_system_diagnostics_tools_ver}.nupkg
@@ -329,10 +323,10 @@ Source287:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.%{ryujinx_graph
 Source288:      %{nuget_url}/ryujinx.sdl2-cs.%{ryujinx_sdl2_cs_ver}.nupkg
 Source289:      %{nuget_url}/shaderc.net.%{shaderc_net_ver}.nupkg
 Source290:      %{nuget_url}/sharpziplib.%{sharpziplib_ver}.nupkg
-Source291:      %{nuget_url}/silk.net.core.%{silk_net_core_ver}.nupkg
-Source292:      %{nuget_url}/silk.net.vulkan.%{silk_net_vulkan_ver}.nupkg
-Source293:      %{nuget_url}/silk.net.vulkan.extensions.ext.%{silk_net_vulkan_extensions_ext_ver}.nupkg
-Source294:      %{nuget_url}/silk.net.vulkan.extensions.khr.%{silk_net_vulkan_extensions_khr_ver}.nupkg
+Source291:      %{nuget_url}/silk.net.core.%{silk_net_ver}.nupkg
+Source292:      %{nuget_url}/silk.net.vulkan.%{silk_net_ver}.nupkg
+Source293:      %{nuget_url}/silk.net.vulkan.extensions.ext.%{silk_net_ver}.nupkg
+Source294:      %{nuget_url}/silk.net.vulkan.extensions.khr.%{silk_net_ver}.nupkg
 Source295:      %{nuget_url}/sixlabors.fonts.%{sixlabors_fonts_ver}.nupkg
 Source296:      %{nuget_url}/sixlabors.imagesharp.%{sixlabors_imagesharp_ver}.nupkg
 Source297:      %{nuget_url}/sixlabors.imagesharp.drawing.%{sixlabors_imagesharp_drawing_ver}.nupkg
@@ -440,12 +434,13 @@ Source398:      %{nuget_url}/system.threading.threadpool.%{system_threading_thre
 Source399:      %{nuget_url}/system.threading.timer.%{system_threading_timer_ver}.nupkg
 Source400:      %{nuget_url}/system.xml.readerwriter.%{system_xml_readerwriter_ver}.nupkg
 Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nupkg
+Source402:      %{nuget_url}/system.text.encodings.web.%{system_text_encodings_web_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
 %global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
-%global nuget_files5 %{SOURCE400} %{SOURCE401}
+%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402}
 %endif
 
 %if !%{?with_bin}

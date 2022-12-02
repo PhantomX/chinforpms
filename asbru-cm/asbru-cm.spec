@@ -1,7 +1,7 @@
-%global commit 14071958b4e1364216d6bd00001dd080f6a66e69
+%global commit 8dce5689a0d733d9e3329ad6de2ca0c93e0fc3e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220409
-%global with_snapshot 0
+%global date 20221112
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -12,7 +12,7 @@
 %global vc_url  https://github.com/%{name}/%{name}
 
 Name:           asbru-cm
-Version:        6.4.0
+Version:        6.4.1
 Release:        1%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
@@ -155,6 +155,12 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Thu Dec 01 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-1.20221112git8dce568
+- 6.4.2
+
+* Fri Nov 25 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-1
+- 6.4.1
+
 * Thu Nov 17 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-1
 - 6.4.0
 

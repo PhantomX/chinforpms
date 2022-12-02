@@ -228,7 +228,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 8.9.0
+Version: 8.10.0
 Release: 100%{?dist}
 License: LGPLv2+
 URL: https://libvirt.org/
@@ -444,6 +444,12 @@ Summary: Server side daemon and supporting files for libvirt library
 
 # The client side, i.e. shared libs are in a subpackage
 Requires: %{name}-libs = %{version}-%{release}
+
+# The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
+# but not every deployment wants to use libvirt-guests service. Using
+# Recommends here will install libvirt-client by default (if available), but
+# RPM won't complain if the package is unavailable, masked, or removed later.
+Recommends: %{name}-client = %{version}-%{release}
 
 # netcat is needed on the server side so that clients that have
 # libvirt < 6.9.0 can connect, but newer versions will prefer
@@ -1921,6 +1927,10 @@ exit 0
 
 %if %{with_firewalld_zone}
 %{_prefix}/lib/firewalld/zones/libvirt.xml
+%{_prefix}/lib/firewalld/zones/libvirt-routed.xml
+%{_prefix}/lib/firewalld/policies/libvirt-routed-in.xml
+%{_prefix}/lib/firewalld/policies/libvirt-routed-out.xml
+%{_prefix}/lib/firewalld/policies/libvirt-to-host.xml
 %endif
 
 %files daemon-driver-nodedev
@@ -2186,7 +2196,9 @@ exit 0
 %if %{with_qemu}
 %files client-qemu
 %{_mandir}/man1/virt-qemu-qmp-proxy.1*
+%{_mandir}/man1/virt-qemu-sev-validate.1*
 %{_bindir}/virt-qemu-qmp-proxy
+%{_bindir}/virt-qemu-sev-validate
 %endif
 
 %files libs -f %{name}.lang
@@ -2404,6 +2416,9 @@ exit 0
 
 
 %changelog
+* Thu Dec 01 2022 Phantom X <megaphantomx at hotmail dot com> - 8.10.0-100
+- 8.10.0
+
 * Sat Nov 05 2022 Phantom X <megaphantomx at hotmail dot com> - 8.9.0-100
 - 8.9.0
 
