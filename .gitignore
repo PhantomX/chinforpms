@@ -80,6 +80,7 @@ geany_run_script.sh
 *.sha512sum
 
 *.asc
+*.key
 *.sig
 *.sign
 

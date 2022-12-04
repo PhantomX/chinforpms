@@ -1,34 +1,20 @@
-From cf44082612779564be0409c1edfbe6867e86e817 Mon Sep 17 00:00:00 2001
+From a93af31ff030be86ff8a9904ea165b0f89232b12 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Jul 2021 18:46:28 -0300
 Subject: [PATCH] Disable gtk-update-icon-cache execution
 
 ---
- lutris/gui/config/common.py | 3 ---
- lutris/gui/lutriswindow.py  | 2 --
- lutris/util/linux.py        | 1 -
- lutris/util/system.py       | 9 ---------
+ lutris/gui/lutriswindow.py | 2 --
+ lutris/services/base.py    | 3 ---
+ lutris/util/linux.py       | 1 -
+ lutris/util/system.py      | 9 ---------
  4 files changed, 15 deletions(-)
 
-diff --git a/lutris/gui/config/common.py b/lutris/gui/config/common.py
-index e85e4a4..ac07643 100644
---- a/lutris/gui/config/common.py
-+++ b/lutris/gui/config/common.py
-@@ -513,9 +513,6 @@ class GameDialogCommon(Dialog):
-             pixbuf.savev(dest_path, file_format, [], [])
-             self._set_image(image_type)
- 
--            if image_type == "icon":
--                system.update_desktop_icons()
--
-         dialog.destroy()
- 
-     def on_custom_image_reset_clicked(self, _widget, image_type):
 diff --git a/lutris/gui/lutriswindow.py b/lutris/gui/lutriswindow.py
-index a422d11..394471c 100644
+index c157a41..218aacd 100644
 --- a/lutris/gui/lutriswindow.py
 +++ b/lutris/gui/lutriswindow.py
-@@ -29,7 +29,6 @@ from lutris.services.lutris import LutrisService
+@@ -30,7 +30,6 @@ from lutris.services.lutris import LutrisService
  from lutris.util import datapath
  from lutris.util.jobs import AsyncCall
  from lutris.util.log import logger
@@ -36,7 +22,7 @@ index a422d11..394471c 100644
  
  
  @GtkTemplate(ui=os.path.join(datapath.get(), "ui", "lutris-window.ui"))
-@@ -66,7 +65,6 @@ class LutrisWindow(Gtk.ApplicationWindow):  # pylint: disable=too-many-public-me
+@@ -67,7 +66,6 @@ class LutrisWindow(Gtk.ApplicationWindow):  # pylint: disable=too-many-public-me
              application=application,
              **kwargs
          )
@@ -44,6 +30,20 @@ index a422d11..394471c 100644
          load_icon_theme()
          self.application = application
          self.window_x, self.window_y = self.get_position()
+diff --git a/lutris/services/base.py b/lutris/services/base.py
+index 6f30466..03108f9 100644
+--- a/lutris/services/base.py
++++ b/lutris/services/base.py
+@@ -49,9 +49,6 @@ class LutrisIcon(LutrisBanner):
+     def custom_media_storage_size(self):
+         return (128, 128)
+ 
+-    def update_desktop(self):
+-        system.update_desktop_icons()
+-
+ 
+ class LutrisCoverart(ServiceMedia):
+     service = 'lutris'
 diff --git a/lutris/util/linux.py b/lutris/util/linux.py
 index 78a0882..444aa2a 100644
 --- a/lutris/util/linux.py
@@ -57,10 +57,10 @@ index 78a0882..444aa2a 100644
          "xgamma",
          "ldconfig",
 diff --git a/lutris/util/system.py b/lutris/util/system.py
-index 36cf117..2e5d44b 100644
+index ad34d6c..4605e8f 100644
 --- a/lutris/util/system.py
 +++ b/lutris/util/system.py
-@@ -408,15 +408,6 @@ def get_existing_parent(path):
+@@ -454,15 +454,6 @@ def get_existing_parent(path):
      return get_existing_parent(os.path.dirname(path))
  
  
@@ -77,5 +77,5 @@ index 36cf117..2e5d44b 100644
      """Return the disk size in bytes of a folder"""
      total_size = 0
 -- 
-2.37.2
+2.38.1
 

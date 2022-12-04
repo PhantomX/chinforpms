@@ -10,7 +10,8 @@
 %global parch i386
 %endif
 
-%global pkgrel 1042
+%global pkgrel 1058
+%global repo https://shop.softmaker.com/repo
 
 Name:           softmaker-office
 Version:        2021
@@ -20,7 +21,8 @@ Summary:        SoftMaker Office %{version} for Linux
 
 License:        Proprietary
 URL:            http://www.softmaker.de
-Source0:        https://shop.softmaker.com/repo/rpm/%{parch}/RPMS/%{name}-%{version}-%{pkgrel}.%{parch}.rpm
+Source0:        %{repo}/rpm/%{parch}/RPMS/%{name}-%{version}-%{pkgrel}.%{parch}.rpm
+Source1:        %{repo}/linux-repo-public.key
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -169,6 +171,9 @@ install -pm0644 mime/%{name}-%{version}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Fri Dec 02 2022 - 1:2021-1.1058
+- 2021-1058
+
 * Mon Jan 10 2022 - 1:2021-1.1042
 - 2021-1042
 

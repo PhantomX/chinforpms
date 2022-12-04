@@ -41,11 +41,11 @@ Subject: [PATCH] patch-6.0-redhat
  include/linux/pci.h                                |   3 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- include/net/neighbour.h                            |   2 +-
+ include/net/sock.h                                 |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
- net/core/neighbour.c                               |  58 ++--
  net/ipv4/fib_semantics.c                           |   8 +-
+ net/l2tp/l2tp_core.c                               |  19 +-
  scripts/pahole-flags.sh                            |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
@@ -53,10 +53,10 @@ Subject: [PATCH] patch-6.0-redhat
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  tools/testing/selftests/net/fib_nexthops.sh        |   5 +
- 49 files changed, 793 insertions(+), 391 deletions(-)
+ 49 files changed, 776 insertions(+), 369 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 4f7da26fef78..ce8f093a79f1 100644
+index 9fecb094c28a..43753e41fb51 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1096,7 +1096,7 @@ index 3a808146b50f..c1a3f3057921 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index ed47c256dbd2..2af613f7353f 100644
+index 01c36284e542..2a5fd205863b 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -250,6 +250,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1952,21 +1952,21 @@ index 7bd0c490703d..7779eaf1ffa1 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/include/net/neighbour.h b/include/net/neighbour.h
-index 3827a6b395fd..bce6b228cf56 100644
---- a/include/net/neighbour.h
-+++ b/include/net/neighbour.h
-@@ -83,7 +83,7 @@ struct neigh_parms {
- 	struct rcu_head rcu_head;
-
- 	int	reachable_time;
--	int	qlen;
-+	u32	qlen;
- 	int	data[NEIGH_VAR_DATA_MAX];
- 	DECLARE_BITMAP(data_state, NEIGH_VAR_DATA_MAX);
- };
+diff --git a/include/net/sock.h b/include/net/sock.h
+index f6e6838c82df..03a4ebe3ccc8 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -323,7 +323,7 @@ struct sk_filter;
+   *	@sk_tskey: counter to disambiguate concurrent tstamp requests
+   *	@sk_zckey: counter to order MSG_ZEROCOPY notifications
+   *	@sk_socket: Identd and reporting IO signals
+-  *	@sk_user_data: RPC layer private data
++  *	@sk_user_data: RPC layer private data. Write-protected by @sk_callback_lock.
+   *	@sk_frag: cached page frag
+   *	@sk_peek_off: current peek_offset value
+   *	@sk_send_head: front of stuff to transmit
 diff --git a/init/Kconfig b/init/Kconfig
-index 532362fcfe31..30d547537ea0 100644
+index d1d779d6ba43..b3d83b0eb539 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
 @@ -1678,7 +1678,7 @@ config AIO
@@ -2001,111 +2001,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 84755db81e9d..35f5a3125808 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -307,7 +307,31 @@ static int neigh_del_timer(struct neighbour *n)
- 	return 0;
- }
-
--static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
-+static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
-+						   int family)
-+{
-+	switch (family) {
-+	case AF_INET:
-+		return __in_dev_arp_parms_get_rcu(dev);
-+	case AF_INET6:
-+		return __in6_dev_nd_parms_get_rcu(dev);
-+	}
-+	return NULL;
-+}
-+
-+static void neigh_parms_qlen_dec(struct net_device *dev, int family)
-+{
-+	struct neigh_parms *p;
-+
-+	rcu_read_lock();
-+	p = neigh_get_dev_parms_rcu(dev, family);
-+	if (p)
-+		p->qlen--;
-+	rcu_read_unlock();
-+}
-+
-+static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net,
-+			       int family)
- {
- 	struct sk_buff_head tmp;
- 	unsigned long flags;
-@@ -321,13 +345,7 @@ static void pneigh_queue_purge(struct sk_buff_head *list, struct net *net)
- 		struct net_device *dev = skb->dev;
-
- 		if (net == NULL || net_eq(dev_net(dev), net)) {
--			struct in_device *in_dev;
--
--			rcu_read_lock();
--			in_dev = __in_dev_get_rcu(dev);
--			if (in_dev)
--				in_dev->arp_parms->qlen--;
--			rcu_read_unlock();
-+			neigh_parms_qlen_dec(dev, family);
- 			__skb_unlink(skb, list);
- 			__skb_queue_tail(&tmp, skb);
- 		}
-@@ -409,7 +427,8 @@ static int __neigh_ifdown(struct neigh_table *tbl, struct net_device *dev,
- 	write_lock_bh(&tbl->lock);
- 	neigh_flush_dev(tbl, dev, skip_perm);
- 	pneigh_ifdown_and_unlock(tbl, dev);
--	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL);
-+	pneigh_queue_purge(&tbl->proxy_queue, dev ? dev_net(dev) : NULL,
-+			   tbl->family);
- 	if (skb_queue_empty_lockless(&tbl->proxy_queue))
- 		del_timer_sync(&tbl->proxy_timer);
- 	return 0;
-@@ -1621,13 +1640,8 @@ static void neigh_proxy_process(struct timer_list *t)
-
- 		if (tdif <= 0) {
- 			struct net_device *dev = skb->dev;
--			struct in_device *in_dev;
-
--			rcu_read_lock();
--			in_dev = __in_dev_get_rcu(dev);
--			if (in_dev)
--				in_dev->arp_parms->qlen--;
--			rcu_read_unlock();
-+			neigh_parms_qlen_dec(dev, tbl->family);
- 			__skb_unlink(skb, &tbl->proxy_queue);
-
- 			if (tbl->proxy_redo && netif_running(dev)) {
-@@ -1821,7 +1835,7 @@ int neigh_table_clear(int index, struct neigh_table *tbl)
- 	cancel_delayed_work_sync(&tbl->managed_work);
- 	cancel_delayed_work_sync(&tbl->gc_work);
- 	del_timer_sync(&tbl->proxy_timer);
--	pneigh_queue_purge(&tbl->proxy_queue, NULL);
-+	pneigh_queue_purge(&tbl->proxy_queue, NULL, tbl->family);
- 	neigh_ifdown(tbl, NULL);
- 	if (atomic_read(&tbl->entries))
- 		pr_crit("neighbour leakage\n");
-@@ -3542,18 +3556,6 @@ static int proc_unres_qlen(struct ctl_table *ctl, int write,
- 	return ret;
- }
-
--static struct neigh_parms *neigh_get_dev_parms_rcu(struct net_device *dev,
--						   int family)
--{
--	switch (family) {
--	case AF_INET:
--		return __in_dev_arp_parms_get_rcu(dev);
--	case AF_INET6:
--		return __in6_dev_nd_parms_get_rcu(dev);
--	}
--	return NULL;
--}
--
- static void neigh_copy_dflt_parms(struct net *net, struct neigh_parms *p,
- 				  int index)
- {
 diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
 index 2dc97583d279..e9a7f70a54df 100644
 --- a/net/ipv4/fib_semantics.c
@@ -2128,6 +2023,71 @@ index 2dc97583d279..e9a7f70a54df 100644
  		nh = fib_info_nh(fi, 0);
  		if (cfg->fc_encap) {
  			if (fib_encap_match(net, cfg->fc_encap_type,
+diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
+index 7499c51b1850..754fdda8a5f5 100644
+--- a/net/l2tp/l2tp_core.c
++++ b/net/l2tp/l2tp_core.c
+@@ -1150,8 +1150,10 @@ static void l2tp_tunnel_destruct(struct sock *sk)
+ 	}
+
+ 	/* Remove hooks into tunnel socket */
++	write_lock_bh(&sk->sk_callback_lock);
+ 	sk->sk_destruct = tunnel->old_sk_destruct;
+ 	sk->sk_user_data = NULL;
++	write_unlock_bh(&sk->sk_callback_lock);
+
+ 	/* Call the original destructor */
+ 	if (sk->sk_destruct)
+@@ -1469,16 +1471,18 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock = sockfd_lookup(tunnel->fd, &ret);
+ 		if (!sock)
+ 			goto err;
+-
+-		ret = l2tp_validate_socket(sock->sk, net, tunnel->encap);
+-		if (ret < 0)
+-			goto err_sock;
+ 	}
+
++	sk = sock->sk;
++	write_lock(&sk->sk_callback_lock);
++
++	ret = l2tp_validate_socket(sk, net, tunnel->encap);
++	if (ret < 0)
++		goto err_sock;
++
+ 	tunnel->l2tp_net = net;
+ 	pn = l2tp_pernet(net);
+
+-	sk = sock->sk;
+ 	sock_hold(sk);
+ 	tunnel->sock = sk;
+
+@@ -1504,7 +1508,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+
+ 		setup_udp_tunnel_sock(net, sock, &udp_cfg);
+ 	} else {
+-		sk->sk_user_data = tunnel;
++		rcu_assign_sk_user_data(sk, tunnel);
+ 	}
+
+ 	tunnel->old_sk_destruct = sk->sk_destruct;
+@@ -1518,6 +1522,7 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 	if (tunnel->fd >= 0)
+ 		sockfd_put(sock);
+
++	write_unlock(&sk->sk_callback_lock);
+ 	return 0;
+
+ err_sock:
+@@ -1525,6 +1530,8 @@ int l2tp_tunnel_register(struct l2tp_tunnel *tunnel, struct net *net,
+ 		sock_release(sock);
+ 	else
+ 		sockfd_put(sock);
++
++	write_unlock(&sk->sk_callback_lock);
+ err:
+ 	return ret;
+ }
 diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
 index 0d99ef17e4a5..81c8e082ec57 100755
 --- a/scripts/pahole-flags.sh

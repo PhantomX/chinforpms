@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c4246557e987f942c11afdafc40847b539aaa3ca
+ c4246557e987f942c11afdafc40847b539aaa3ca drm/i915: fix TLB invalidation for Gen12 video and compute engines
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/912e643eb5e75f90732fb463ee49eb9e87b73e68
+ 912e643eb5e75f90732fb463ee49eb9e87b73e68 l2tp: Serialize access to sk_user_data with sk_callback_lock
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/22cf453b7de6d2bbee993bb3bc097cade3946a11
  22cf453b7de6d2bbee993bb3bc097cade3946a11 net: neigh: decrement the family specific qlen
 

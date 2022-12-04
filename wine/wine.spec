@@ -1,7 +1,7 @@
-%global commit 5d1820c40bd93e6810f072a39745ee739ba99b81
+%global commit 0fe562b4ae3f66f9c0e29ab8f27a4abf2ac78501
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221118
-%global with_snapshot 0
+%global date 20221203
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7.22
+%global wine_stagingver cc4bced66e9a9ff9535af16b619f015535e6f4f7
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0e06f46076f34a14472b0054c27e8434d876ede5
+%global tkg_id b53a106d956966a0b087379b00b9d21ce2a3da34
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -152,7 +152,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.22
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -234,6 +234,7 @@ Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
 Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1008:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -887,6 +888,7 @@ gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
 %patch1004 -p1
 %patch1005 -p1
 %patch1007 -p1
+%patch1008 -p1
 
 %patch5000 -p1
 
@@ -1734,6 +1736,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/l3codeca.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/light.%{winemsstyles}
 %{_libdir}/wine/%{winedlldir}/loadperf.%{winedll}
+%{_libdir}/wine/%{winesodir}/localspl.so
 %{_libdir}/wine/%{winedlldir}/localspl.%{winedll}
 %{_libdir}/wine/%{winedlldir}/localui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/lodctr.%{wineexe}
