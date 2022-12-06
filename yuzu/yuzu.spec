@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 37e45db75180ffc03e43fb967f9ac113b772faa5
+%global commit 4a88ba80f396f67198e7098249118c304bb4b8d1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221201
+%global date 20221205
 
 %global with_ea 1
 %if !0%{?with_ea}
@@ -19,6 +19,8 @@
 
 # Enable system boost
 %bcond_without boost
+# Enable system dynarmic
+%bcond_without dynarmic
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -30,19 +32,11 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
-%global commit2 1e80a47dffbda813604f0913e2ad68c7054c14e4
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 inih
-
-%global commit3 aa292d56650bc28f2b2d75973fab2e61d0136f9c
+%global commit3 d7ad93a88864bda94e282e95028f90b5784e4d20
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
-%global commit4 348e3e548ebac06d243e5881caec8440e249f65f
-%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
-%global srcname4 xbyak
-
-%global commit5 a3fdfe81465d57efc97cfd28ac6c8190fb31a6c8
+%global commit5 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -83,7 +77,7 @@
 
 
 Name:           yuzu
-Version:        3173
+Version:        3188
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -92,10 +86,10 @@ URL:            https://yuzu-emu.org
 
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
 %dnl %if !0%{?with_ea}
+%if !%{with dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/benhoyt/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+%endif
 Source3:        https://github.com/ReinUsesLisp/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        https://github.com/herumi/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -129,25 +123,33 @@ BuildRequires:  boost-devel >= 1.76.0
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
+%if %{with dynarmic}
+BuildRequires:  cmake(dynarmic) >= 6.2.4
+%else
+BuildRequires:  cmake(tsl-robin-map)
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
+%endif
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
-BuildRequires:  pkgconfig(fmt) >= 8.0.1
+BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
 %endif
-BuildRequires:  pkgconfig(libenet)
+BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
 BuildRequires:  mbedtls >= 2.6.10
+%else
+Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
-BuildRequires:  pkgconfig(opus)
+BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
 BuildRequires:  pkgconfig(Qt5Core)
@@ -159,8 +161,8 @@ BuildRequires:  pkgconfig(Qt5WebEngineWidgets)
 BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
-BuildRequires:  cmake(tsl-robin-map)
-BuildRequires:  vulkan-headers
+BuildRequires:  cmake(xbyak)
+BuildRequires:  vulkan-headers >= 1.3.213
 BuildRequires:  pkgconfig(zlib)
 
 BuildRequires:  hicolor-icon-theme
@@ -169,17 +171,11 @@ BuildRequires:  shared-mime-info
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
-Provides:       bundled(inih) = 0~git%{?shortcommit2}
-Provides:       bundled(xbyak) = 0~git%{?shortcommit3}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
-%if !%{with mbedtls}
-Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
-%endif
 
 %if "%{?repo}"
 Provides:       %{name}%{?repo:-%{repo}}%{?_isa} = %{version}-%{release}
@@ -205,7 +201,7 @@ This is the Qt frontend.
 
 %if 0%{?with_ea}
 pushd externals
-rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers
+rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* inih libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
@@ -215,19 +211,17 @@ find \( -name '*.qrc' -or -name '*.qss' -or -name '*.theme' -or -name '*.ts' \) 
 find \( -name '*.desktop' -or -name '*.txt' -or -name '*.xml' \) -exec sed -i 's/\r$//' {} \;
 find \( -iname '*license*' -or -name '*COPYRIGHT*' -or -iname '*README*' \) -exec sed -i 's/\r$//' {} \;
 %endif
+%if !%{with dynarmic}
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
-mkdir -p externals/inih/inih
-tar -xf %{S:2} -C externals/inih/inih --strip-components 1
+rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+%endif
 tar -xf %{S:3} -C externals/sirit --strip-components 1
-tar -xf %{S:4} -C externals/xbyak --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
 %if !%{with mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
-
-rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 
 %autopatch -p1
 
@@ -237,14 +231,14 @@ find . -type f -name '*.sh' -exec chmod +x {} ';'
 pushd externals
 cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
-cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+%if !%{with dynarmic}
+%cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+%endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 %if !%{with mbedtls}
 cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p sirit/LICENSE.txt LICENSE.sirit
-cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
-sed -e 's/\r//' -i COPYRIGHT.xbyak
 popd
 
 %if !%{with mbedtls}
@@ -253,9 +247,11 @@ sed \
   -i externals/CMakeLists.txt
 %endif
 
+%if !%{with dynarmic}
 sed \
   -e '/-pedantic-errors/d' \
   -i externals/dynarmic/CMakeLists.txt
+%endif
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
@@ -302,12 +298,14 @@ cp -f %{S:20} dist/compatibility_list/
   -DENABLE_WEB_SERVICE:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
+%if !%{with dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
   -DDYNARMIC_TESTS=OFF \
+%endif
 %{nil}
 
 %cmake_build
@@ -345,6 +343,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 3188-1.20221205git4a88ba8.ea
+- System dynarmic, inih and xbyak
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 3118-1.20221113gite49dd26.ea
 - Enable WebEngine applet
 

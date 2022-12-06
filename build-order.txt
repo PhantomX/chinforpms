@@ -63,6 +63,7 @@ qcodeeditor
 rapidyaml
 -spirv-tools
 vulkan-loader
+xbyak
 xcftools
 
 # 3

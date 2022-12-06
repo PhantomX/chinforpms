@@ -1,0 +1,13 @@
+diff --git a/test/noexception.cpp b/test/noexception.cpp
+index 04a6dbc..9793133 100644
+--- a/test/noexception.cpp
++++ b/test/noexception.cpp
+@@ -100,7 +100,7 @@ int main()
+ {
+ 	test1();
+ 	test2();
+-	test3();
++	//	test3();
+ 	test4();
+ 	if (g_err) {
+ 		printf("err %d/%d\n", g_err, g_test);
