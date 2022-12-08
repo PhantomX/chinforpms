@@ -15,6 +15,8 @@
 
 # Enable system boost
 %bcond_without boost
+# Enable system dynarmic
+%bcond_without dynarmic
 # Enable ffmpeg support
 %bcond_without ffmpeg
 # Enable system fmt
@@ -38,10 +40,6 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 5e1d9e2625842dddb3f9c086a50f22e4f45dfc2b
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 inih
-
 %global commit6 fd69de1a1b960ec296cc67d32257b0f9e2d89ac6
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 nihstro
@@ -54,12 +52,8 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
-%global commit9 48457bfa0ded67bb4ae2d4c141c36b35469257ee
-%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
-%global srcname9 xbyak
-
 %global commit10 18964554bc769255401942e0e6dfd09f2fab2093
-%global shortcommit10 %(c=%{commit9}; echo ${c:0:7})
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 lodepng
 
 %global commit11 66937ea62d126a92b5057e3fd9ceac7c44daf4f5
@@ -80,7 +74,7 @@
 
 Name:           citra
 Version:        0
-Release:        29%{?gver}%{?dist}
+Release:        30%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPLv2
@@ -92,15 +86,15 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+%if !%{with dynarmic}
 Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%endif
 %if !%{with fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
-Source5:        https://github.com/benhoyt/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
-Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %if !%{with boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
@@ -124,6 +118,12 @@ BuildRequires:  boost-devel >= 1.71.0
 Provides:       bundled(boost) = 0~git%{shortcommit11}
 %endif
 BuildRequires:  cmake(cubeb)
+%if %{with dynarmic}
+BuildRequires:  cmake(dynarmic) >= 6.4.0
+%else
+BuildRequires:  cmake(tsl-robin-map)
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
+%endif
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 %if 0%{?fedora} && 0%{?fedora} >= 36
@@ -138,6 +138,7 @@ BuildRequires:  cmake(fmt)
 %else
 Provides:       bundled(fmt) = 0~git%{shortcommit4}
 %endif
+BuildRequires:  pkgconfig(INIReader)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(libenet)
@@ -152,19 +153,16 @@ BuildRequires:  cmake(Qt5LinguistTools)
 BuildRequires:  cmake(Qt5Multimedia)
 BuildRequires:  cmake(Qt5Widgets)
 %endif
-BuildRequires:  cmake(tsl-robin-map)
+BuildRequires:  cmake(xbyak)
 
 BuildRequires:  hicolor-icon-theme
 BuildRequires:  shared-mime-info
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
-Provides:       bundled(dynarmic) = 0~git%{shortcommit3}
-Provides:       bundled(inih) = 0~git%{shortcommit5}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
-Provides:       bundled(xbyak) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 
@@ -190,22 +188,21 @@ This is the Qt frontend.
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1
+%if !%{with dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
+rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+%endif
 %if !%{with fmt}
 tar -xf %{S:4} -C externals/fmt --strip-components 1
 %endif
-tar -xf %{S:5} -C externals/inih/inih --strip-components 1
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
-tar -xf %{S:9} -C externals/xbyak --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 %if !%{with boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
-
-rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -215,17 +212,17 @@ cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
+%if !%{with dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+%endif
 %if !%{with fmt}
 cp -p fmt/LICENSE.rst LICENSE.fmt.rst
 %endif
-cp -p inih/inih/LICENSE.txt LICENSE.inih.md
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
 cp -p teakra/LICENSE LICENSE.teakra
-cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
-sed -e 's/\r//' -i COPYRIGHT.xbyak LICENSE.cpp-jwt
+sed -e 's/\r//' -i LICENSE.cpp-jwt
 popd
 
 
@@ -242,7 +239,10 @@ sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
 sed \
   -e 's/-Wfatal-errors\b//g' \
   -e '/-pedantic-errors/d' \
-  -i externals/teakra/CMakeLists.txt externals/dynarmic/CMakeLists.txt
+%if !%{with dynarmic}
+  -i externals/dynarmic/CMakeLists.txt
+%endif
+  -i externals/teakra/CMakeLists.txt
 
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
@@ -296,12 +296,14 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_WEB_SERVICE:BOOL=ON \
   %{!?_with_tests:-DCITRA_TESTS:BOOL=OFF} \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
+%if !%{with dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
   -DDYNARMIC_TESTS=OFF \
+%endif
   -DTEAKRA_BUILD_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
@@ -339,6 +341,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0-30.20221124gitd117132
+- System dynarmic, inih and xbyak
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0-28.20221113git94d0399
 - Optional tests and control Catch dependency
 

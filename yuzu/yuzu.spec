@@ -124,7 +124,7 @@ BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.2.4
+BuildRequires:  cmake(dynarmic) >= 6.4.0
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
@@ -132,6 +132,7 @@ Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 9
+BuildRequires:  pkgconfig(INIReader)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)

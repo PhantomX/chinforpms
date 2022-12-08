@@ -1,12 +1,14 @@
-From a9643e7f56464e9a5745b8e82c98c46dc1e7a462 Mon Sep 17 00:00:00 2001
+From 892730c16d12620579abda7530f7945a1f874fe4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt           |  2 --
- externals/CMakeLists.txt | 44 +++++++++++++++++++++++++++++++++++++---
- 2 files changed, 41 insertions(+), 5 deletions(-)
+ CMakeLists.txt            |  2 --
+ externals/CMakeLists.txt  | 68 +++++++++++++++++++++++++++++++++++++--
+ src/citra/config.cpp      |  2 +-
+ src/common/CMakeLists.txt |  9 ++++--
+ 4 files changed, 73 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 9a529a3..1a02952 100644
@@ -29,7 +31,7 @@ index 9a529a3..1a02952 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 00147ed..7af4bac 100644
+index 00147ed..5ad791e 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -6,10 +6,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -44,7 +46,7 @@ index 00147ed..7af4bac 100644
  set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_NO_SYSTEM_PATHS ON)
-@@ -20,22 +20,39 @@ target_include_directories(boost SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
+@@ -20,38 +20,71 @@ target_include_directories(boost SYSTEM INTERFACE ${Boost_INCLUDE_DIR})
  file(GLOB boost_serialization_SRC "${CMAKE_SOURCE_DIR}/externals/boost/libs/serialization/src/*.cpp")
  add_library(boost_serialization STATIC ${boost_serialization_SRC})
  target_link_libraries(boost_serialization PUBLIC boost)
@@ -84,7 +86,55 @@ index 00147ed..7af4bac 100644
  
  # Xbyak
  if (ARCHITECTURE_x86_64)
-@@ -90,20 +107,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
++  find_package(xbyak 6)
++  if(xbyak_FOUND)
++    message(STATUS "Using the system xbyak")
++    add_library(xbyak-shared INTERFACE)
++    target_link_libraries(xbyak-shared INTERFACE xbyak::xbyak)
++    add_library(xbyak ALIAS xbyak-shared)
++  else()
+     add_library(xbyak INTERFACE)
+     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/xbyak/include)
+     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/xbyak/xbyak DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/xbyak/include)
+     target_include_directories(xbyak SYSTEM INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/xbyak/include)
+     target_compile_definitions(xbyak INTERFACE XBYAK_NO_OP_NAMES)
++  endif()
+ endif()
+ 
+ # Dynarmic
+ if (ARCHITECTURE_x86_64 OR ARCHITECTURE_arm64)
++  find_package(dynarmic 6.4.0)
++  if(dynarmic_FOUND)
++    message(STATUS "Using the system dynarmic")
++    add_library(dynarmic-shared INTERFACE)
++    target_link_libraries(dynarmic-shared INTERFACE dynarmic::dynarmic)
++    add_library(dynarmic ALIAS dynarmic-shared)
++  else()
+     set(DYNARMIC_TESTS OFF)
+     set(DYNARMIC_NO_BUNDLED_FMT ON)
+     set(DYNARMIC_FRONTENDS "A32")
+     add_subdirectory(dynarmic)
++  endif()
+ endif()
+ 
+ # getopt
+@@ -63,7 +96,15 @@ endif()
+ add_subdirectory(glad)
+ 
+ # inih
++pkg_check_modules(inih IMPORTED_TARGET INIReader)
++if(inih_FOUND)
++  message(STATUS "Using the system inih")
++  add_library(inih-shared INTERFACE)
++  target_link_libraries(inih-shared INTERFACE PkgConfig::inih)
++  add_library(inih ALIAS inih-shared)
++else()
+ add_subdirectory(inih)
++endif()
+ 
+ # MicroProfile
+ add_library(microprofile INTERFACE)
+@@ -90,20 +131,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
  endif()
  
  # Zstandard
@@ -128,6 +178,40 @@ index 00147ed..7af4bac 100644
  endif()
  
  # DiscordRPC
+diff --git a/src/citra/config.cpp b/src/citra/config.cpp
+index eaa5aeb..2e6b437 100644
+--- a/src/citra/config.cpp
++++ b/src/citra/config.cpp
+@@ -7,7 +7,7 @@
+ #include <sstream>
+ #include <unordered_map>
+ #include <SDL.h>
+-#include <inih/cpp/INIReader.h>
++#include <INIReader.h>
+ #include "citra/config.h"
+ #include "citra/default_ini.h"
+ #include "common/file_util.h"
+diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
+index e4f8b25..df21810 100644
+--- a/src/common/CMakeLists.txt
++++ b/src/common/CMakeLists.txt
+@@ -130,9 +130,14 @@ if(ARCHITECTURE_x86_64)
+             x64/cpu_detect.cpp
+ 
+             x64/cpu_detect.h
+-            x64/xbyak_abi.h
+-            x64/xbyak_util.h
+     )
++  if(NOT TARGET xbyak::xbyak)
++    target_sources(common
++        PRIVATE
++             x64/xbyak_abi.h
++             x64/xbyak_util.h
++    )
++  endif()
+ elseif(ARCHITECTURE_arm64)
+     target_sources(common
+         PRIVATE
 -- 
 2.38.1
 

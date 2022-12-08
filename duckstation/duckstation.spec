@@ -10,9 +10,9 @@
 %global with_sysspirv 0
 %global with_sysvulkan 0
 
-%global commit b881c7e7c4e8f5ca41cbd722306a205818ff93ac
+%global commit 84c966502d526754fb74b98f737627ae0de00521
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221129
+%global date 20221206
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        77%{?gver}%{?dist}
+Release:        78%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -82,6 +82,7 @@ BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
@@ -121,7 +122,6 @@ Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = 0~git
 Provides:       bundled(stb) = %{stb_ver}
-Provides:       bundled(xbyak) = 0~git
 
 
 %description
@@ -155,7 +155,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 xxhash zlib zstd
+  rapidjson tinyxml2 xbyak xxhash zlib zstd
 
 %if 0%{?with_sysvulkan}
   mkdir -p ../src/vulkan
@@ -174,7 +174,6 @@ rm -rf \
 cp -p imgui/LICENSE.txt LICENSE.glslang
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
-cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
 
 popd
 
@@ -287,7 +286,7 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}-qt.lang
 %doc README.md
-%license LICENSE dep/LICENSE.* dep/COPYRIGHT.*
+%license LICENSE dep/LICENSE.*
 %{_bindir}/%{name}-qt*
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
@@ -297,7 +296,7 @@ appstream-util validate-relax --nonet \
 %if %{?with_nogui}
 %files nogui
 %doc README.md
-%license LICENSE dep/LICENSE.* dep/COPYRIGHT.*
+%license LICENSE dep/LICENSE.*
 %{_bindir}/%{name}-nogui*
 %endif
 

@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3650
+Version:        1.7.3687
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -103,6 +103,7 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
+BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
@@ -110,7 +111,6 @@ BuildRequires:  pkgconfig(libzip) >= 1.8.0
 BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
-#BuildRequires:  pkgconfig(portaudio-2.0)
 BuildRequires:  cmake(ryml) >= 0.4.1
 %if %{with qt}
 BuildRequires:  cmake(Qt6Core)
@@ -133,6 +133,7 @@ BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
 BuildRequires:  fonts-rpm-macros
@@ -158,7 +159,6 @@ Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(raintegration) = 0.0
 Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
-Provides:       bundled(xbyak) = 0~git
 Provides:       bundled(xxhash) = %{xxhash_ver}
 Provides:       bundled(zydis) = 0~git
 
@@ -183,7 +183,6 @@ mv 3rdparty/jpgd 3rdparty-temp/
 mv 3rdparty/rainterface 3rdparty-temp/
 mv 3rdparty/rcheevos 3rdparty-temp/
 mv 3rdparty/simpleini 3rdparty-temp/
-mv 3rdparty/xbyak 3rdparty-temp/
 mv 3rdparty/zydis 3rdparty-temp/
 rm -rf 3rdparty/*
 mv 3rdparty-temp/* 3rdparty/
@@ -207,7 +206,6 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
-cp -p xbyak/xbyak/COPYRIGHT COPYRIGHT.xbyak
 cp -p zydis/LICENSE LICENSE.zydis
 popd
 
@@ -244,14 +242,9 @@ sed -i \
   -DQT_BUILD:BOOL=TRUE \
 %endif
   -DXDG_STD:BOOL=TRUE \
-  -DEGL_API:BOOL=TRUE \
-  -DGLSL_API:BOOL=TRUE \
   -DX11_API:BOOL=TRUE \
   -DWAYLAND_API:BOOL=TRUE \
   -DCMAKE_BUILD_STRIP:BOOL=FALSE \
-  -DPORTAUDIO_API:BOOL=FALSE \
-  -DSDL2_API:BOOL=TRUE \
-  -DEXTRA_PLUGINS:BOOL=FALSE \
 %if 0%{with native}
   -DDISABLE_ADVANCE_SIMD:BOOL=FALSE \
 %else
@@ -347,6 +340,10 @@ rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
 
 
 %changelog
+* Wed Dec 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3687-1
+- 1.7.3687
+- BR: xbyak
+
 * Sat Oct 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1.7.3348-1
 - 1.7.3348
 - rcheevos

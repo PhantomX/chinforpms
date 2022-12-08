@@ -2,7 +2,7 @@
 
 Name:           vulkan-tools
 Version:        1.3.236
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Vulkan tools
 
 License:        ASL 2.0
@@ -59,7 +59,7 @@ Vulkan tools
 %install
 %cmake3_install
 
-for bin in vkcube vkcubepp vulkaninfo ;do
+for bin in vkcube{,-wayland} vkcubepp vulkaninfo ;do
   mv %{buildroot}%{_bindir}/${bin}{,%{__isa_bits}}
 
 cat >> %{buildroot}%{_bindir}/${bin} <<EOF
@@ -85,6 +85,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.236-101
+- Multilib vkcube-wayland
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.236-100
 - 1.3.236
 

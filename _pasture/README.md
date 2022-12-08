@@ -96,6 +96,7 @@ some seasonal packages too, these can return when needed
  * **VirtualBox-kmod** - VirtualBox
  * **vo-amrwbenc** - For i686 mock build
  * **waifu2x-converter-cpp** - Fedora included
+ * **waterfox** - Do not have interest anymore
  * **webp-pixbuf-loader** - Fedora included
  * **wiibafu** - Do not have interest anymore
  * **wimlib** - Fedora included

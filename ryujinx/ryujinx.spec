@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit ce92e8cd043c6beeca6969920bc5e3b8eff5f57a
+%global commit 1f3b860f0601074b2d459bef316c9b910a233096
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221201
+%global date 20221207
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -22,18 +22,16 @@
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.1.3.18
-%global gtksharp_ver 3.22.25.128
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.17.0
 %global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.0
 %global microsoft_codeanalysis_analyzers_ver 3.3.3
-%global microsoft_codeanalysis_common_ver 4.2.0
-%global microsoft_codeanalysis_csharp_ver 4.2.0
+%global microsoft_codeanalysis_ver 4.4.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 6.25.0
+%global microsoft_identitymodel_ver 6.25.1
 %global microsoft_netcore_app_runtime_linux_x64_ver 7.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
@@ -43,7 +41,7 @@
 %global microsoft_win32_primitives_ver 4.0.1
 %global microsoft_win32_primitives_ver2 4.3.0
 %global microsoft_win32_registry_ver 4.5.0
-%global microsoft_win32_systemevents_ver 6.0.0
+%global microsoft_win32_systemevents_ver 7.0.0
 %global msgpack_cli_ver 1.0.1
 %global netstandard_library_ver 1.6.0
 %global netstandard_library_ver2 2.0.0
@@ -51,7 +49,7 @@
 %global newtonsoft_json_ver 13.0.1
 %global opentk_ver 4.7.5
 %global opentk_redist_glfw_ver 3.3.8.30
-%global pangosharp_ver %{gtksharp_ver}
+%global pangosharp_ver %{ryujinx_gtksharp_ver}
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
 %global runtime_any_system_diagnostics_tracing_ver 4.3.0
@@ -95,6 +93,9 @@
 %global runtime_unix_system_runtime_extensions_ver 4.3.0
 %global ryujinx_audio_openal_dependencies_ver 1.21.0.1
 %global ryujinx_graphics_nvdec_dependencies_ver 5.0.1-build10
+%global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
+%global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
+%global ryujinx_gtksharp_ver 3.24.24.59-ryujinx
 %global ryujinx_sdl2_cs_ver 2.24.2-build21
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.1
@@ -112,7 +113,7 @@
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
-%global system_collections_immutable_ver 5.0.0
+%global system_collections_immutable_ver 6.0.0
 %global system_console_ver 4.0.0
 %global system_diagnostics_debug_ver 4.0.11
 %global system_diagnostics_debug_ver2 4.3.0
@@ -120,12 +121,12 @@
 %global system_diagnostics_tools_ver 4.0.1
 %global system_diagnostics_tracing_ver 4.1.0
 %global system_diagnostics_tracing_ver2 4.3.0
-%global system_drawing_common_ver 6.0.0
+%global system_drawing_common_ver 7.0.0
 %global system_globalization_ver 4.0.11
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
 %global system_globalization_extensions_ver 4.0.1
-%global system_identitymodel_tokens_jwt_ver 6.25.0
+%global system_identitymodel_tokens_jwt_ver 6.25.1
 %global system_io_ver 4.1.0
 %global system_io_ver2 4.3.0
 %global system_io_compression_ver 4.1.0
@@ -214,7 +215,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.407
+Version:        1.1.448
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -232,21 +233,21 @@ Source0:        %{vc_url}/%{appname}/archive/%{commit}/%{appname}-%{shortcommit}
 %if 0%{?with_local_dotnet}
 Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
 %endif
-Source200:      %{nuget_url}/atksharp.%{gtksharp_ver}.nupkg
-Source201:      %{nuget_url}/cairosharp.%{gtksharp_ver}.nupkg
+Source200:      %{nuget_url}/ryujinx.atksharp.%{ryujinx_gtksharp_ver}.nupkg
+Source201:      %{nuget_url}/ryujinx.cairosharp.%{ryujinx_gtksharp_ver}.nupkg
 Source202:      %{nuget_url}/concentus.%{concentus_ver}.nupkg
 Source203:      %{nuget_url}/crc32.net.%{crc32_net_ver}.nupkg
 Source204:      %{nuget_url}/discordrichpresence.%{discordrichpresence_ver}.nupkg
-Source205:      %{nuget_url}/gdksharp.%{gtksharp_ver}.nupkg
-Source206:      %{nuget_url}/giosharp.%{gtksharp_ver}.nupkg
-Source207:      %{nuget_url}/glibsharp.%{gtksharp_ver}.nupkg
-Source208:      %{nuget_url}/gtksharp.%{gtksharp_ver}.nupkg
+Source205:      %{nuget_url}/ryujinx.gdksharp.%{ryujinx_gtksharp_ver}.nupkg
+Source206:      %{nuget_url}/ryujinx.giosharp.%{ryujinx_gtksharp_ver}.nupkg
+Source207:      %{nuget_url}/ryujinx.glibsharp.%{ryujinx_gtksharp_ver}.nupkg
+Source208:      %{nuget_url}/ryujinx.gtksharp.%{ryujinx_gtksharp_ver}.nupkg
 Source209:      %{nuget_url}/gtksharp.dependencies.%{gtksharp_dependencies_ver}.nupkg
 Source210:      %{nuget_url}/libhac.%{libhac_ver}.nupkg
 Source211:      %{nuget_url}/microsoft.aspnetcore.app.runtime.linux-x64.%{microsoft_aspnetcore_app_runtime_linux_x64_ver}.nupkg
 Source212:      %{nuget_url}/microsoft.codeanalysis.analyzers.%{microsoft_codeanalysis_analyzers_ver}.nupkg
-Source213:      %{nuget_url}/microsoft.codeanalysis.common.%{microsoft_codeanalysis_common_ver}.nupkg
-Source214:      %{nuget_url}/microsoft.codeanalysis.csharp.%{microsoft_codeanalysis_csharp_ver}.nupkg
+Source213:      %{nuget_url}/microsoft.codeanalysis.common.%{microsoft_codeanalysis_ver}.nupkg
+Source214:      %{nuget_url}/microsoft.codeanalysis.csharp.%{microsoft_codeanalysis_ver}.nupkg
 Source215:      %{nuget_url}/microsoft.csharp.%{microsoft_csharp_ver}.nupkg
 Source216:      %{nuget_url}/microsoft.csharp.%{microsoft_csharp_ver2}.nupkg
 Source217:      %{nuget_url}/microsoft.dotnet.platformabstractions.%{microsoft_dotnet_platformabstractions_ver}.nupkg
@@ -276,7 +277,7 @@ Source240:      %{nuget_url}/opentk.mathematics.%{opentk_ver}.nupkg
 Source241:      %{nuget_url}/opentk.openal.%{opentk_ver}.nupkg
 Source242:      %{nuget_url}/opentk.redist.glfw.%{opentk_redist_glfw_ver}.nupkg
 Source243:      %{nuget_url}/opentk.windowing.graphicslibraryframework.%{opentk_ver}.nupkg
-Source244:      %{nuget_url}/pangosharp.%{gtksharp_ver}.nupkg
+Source244:      %{nuget_url}/ryujinx.pangosharp.%{ryujinx_gtksharp_ver}.nupkg
 Source245:      %{nuget_url}/runtime.any.system.collections.%{runtime_any_system_collections_ver}.nupkg
 Source246:      %{nuget_url}/runtime.any.system.diagnostics.tools.%{runtime_any_system_diagnostics_tools_ver}.nupkg
 Source247:      %{nuget_url}/runtime.any.system.diagnostics.tracing.%{runtime_any_system_diagnostics_tracing_ver}.nupkg
@@ -435,12 +436,14 @@ Source399:      %{nuget_url}/system.threading.timer.%{system_threading_timer_ver
 Source400:      %{nuget_url}/system.xml.readerwriter.%{system_xml_readerwriter_ver}.nupkg
 Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nupkg
 Source402:      %{nuget_url}/system.text.encodings.web.%{system_text_encodings_web_ver}.nupkg
+Source403:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.osx.%{ryujinx_graphics_nvdec_dependencies_osx_ver}.nupkg
+Source404:      %{nuget_url}/ryujinx.graphics.vulkan.dependencies.moltenvk.%{ryujinx_graphics_vulkan_dependencies_moltenvk_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
 %global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
-%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402}
+%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404}
 %endif
 
 %if !%{?with_bin}

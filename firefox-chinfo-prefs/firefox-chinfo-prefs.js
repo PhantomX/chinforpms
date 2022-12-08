@@ -4,14 +4,14 @@
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
-lockPref("chinfo.cfg.version", "20221021");
+pref("chinfo.cfg.version", "20221207");
 
 // etc
 pref("accessibility.force_disabled", 1);
-pref("beacon.enabled", false);
 pref("browser.aboutwelcome.enabled", false);
 pref("browser.bookmarks.showRecentlyBookmarked", false);
 pref("browser.cache.offline.enable", false);
+pref("browser.compactmode.show", true);
 pref("browser.download.always_ask_before_handling_new_types", true);
 pref("browser.download.folderList", 1);
 pref("browser.download.hide_plugins_without_extensions", false);
@@ -55,7 +55,6 @@ pref("browser.urlbar.update2.tabToComplete", false);
 pref("browser.urlbar.usepreloadedtopurls.enabled", false);
 pref("browser.xul.error_pages.expert_bad_cert", true);
 pref("dom.allow_cut_copy", false);
-pref("dom.disable_open_during_load", true);
 //pref("dom.IntersectionObserver.enabled", false);
 // "change click dblclick mouseup pointerup notificationclick reset submit touchend"
 pref("dom.popup_allowed_events", "click dblclick");
@@ -176,7 +175,6 @@ pref("browser.region.network.url", "");
 pref("browser.region.update.enabled", false);
 
 // Developer tools
-pref("devtools.chrome.enabled", false);
 pref("devtools.debugger.remote-enabled", false);
 pref("devtools.webide.enabled", false);
 pref("devtools.webide.adbAddonURL", "");
@@ -198,7 +196,6 @@ pref("media.gmp-widevinecdm.visible", false);
 pref("media.gmp-widevinecdm.enabled", false);
 
 // No ads downloads
-pref("browser.newtab.preload", false);
 pref("browser.newtabpage.activity-stream.feeds.section.highlights", false);
 pref("browser.newtabpage.activity-stream.feeds.snippets", false);
 pref("browser.newtabpage.activity-stream.migrationExpired", true);

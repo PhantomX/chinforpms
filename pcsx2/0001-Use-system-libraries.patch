@@ -1,16 +1,21 @@
-From 81273bd3ac2f9f310745c3e86c1e66f7894e3c32 Mon Sep 17 00:00:00 2001
+From ea70082188c3f0c2949d9dda0108482d2d5c68ca Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake | 44 +++++++++++++++++++++++++++-----------
- common/CMakeLists.txt      |  2 +-
- pcsx2/CDVD/ChdFileReader.h |  2 +-
- 3 files changed, 34 insertions(+), 14 deletions(-)
+ cmake/SearchForStuff.cmake                    | 50 ++++++++++++++-----
+ common/CMakeLists.txt                         |  2 +-
+ pcsx2/CDVD/ChdFileReader.h                    |  2 +-
+ pcsx2/CMakeLists.txt                          |  7 ++-
+ pcsx2/GS/MultiISA.cpp                         |  2 +-
+ .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
+ pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
+ .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
+ 8 files changed, 51 insertions(+), 20 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 385e933..650be7b 100644
+index c2f9aa6..fd3f74e 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -214,11 +214,10 @@ endif()
@@ -45,7 +50,7 @@ index 385e933..650be7b 100644
  
  if(USE_NATIVE_TOOLS)
  	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -274,27 +278,43 @@ endif()
+@@ -274,27 +278,49 @@ endif()
  # permissive mode, which breaks other parts of PCSX2. So, we'll just create a target here
  # for now.
  #add_subdirectory(3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float EXCLUDE_FROM_ALL)
@@ -56,6 +61,12 @@ index 385e933..650be7b 100644
 +else()
  add_library(fast_float INTERFACE)
  target_include_directories(fast_float INTERFACE 3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float/include)
++endif()
++
++find_package(xbyak)
++if(xbyak_FOUND)
++	message(STATUS "Using the system xbyak")
++	alias_library(xbyak xbyak::xbyak)
 +endif()
  
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
@@ -95,7 +106,7 @@ index 385e933..650be7b 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index b612273..1e73399 100644
+index 4925935..5c45017 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
 @@ -144,7 +144,7 @@ endif()
@@ -120,6 +131,80 @@ index 785e457..935b6bf 100644
  #include <vector>
  
  class ChdFileReader : public ThreadedFileReader
+diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
+index 6838ce3..94f0185 100644
+--- a/pcsx2/CMakeLists.txt
++++ b/pcsx2/CMakeLists.txt
+@@ -1772,9 +1772,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+ 	${CMAKE_BINARY_DIR}/pcsx2
+ 	${CMAKE_BINARY_DIR}/common/include/
+ 	"${CMAKE_SOURCE_DIR}/3rdparty/jpgd/"
+-	"${CMAKE_SOURCE_DIR}/3rdparty/xbyak/"
+ )
+ 
++if(TARGET xbyak::xbyak)
++	target_link_libraries(PCSX2_FLAGS INTERFACE xbyak::xbyak)
++else()
++	target_include_directories(PCSX2_FLAGS INTERFACE "${CMAKE_SOURCE_DIR}/3rdparty/xbyak/xbyak")
++endif()
++
+ if(COMMAND target_precompile_headers)
+ 	message("Using precompiled headers.")
+ 	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)
+diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
+index e5e572e..43f13ca 100644
+--- a/pcsx2/GS/MultiISA.cpp
++++ b/pcsx2/GS/MultiISA.cpp
+@@ -15,7 +15,7 @@
+ 
+ #include "PrecompiledHeader.h"
+ #include "MultiISA.h"
+-#include <xbyak/xbyak_util.h>
++#include <xbyak_util.h>
+ 
+ #ifdef _WIN32
+ #define strcasecmp _stricmp
+diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
+index 46b70d2..76d2bf2 100644
+--- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
++++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
+@@ -19,7 +19,7 @@
+ #include "GS/Renderers/Common/GSFunctionMap.h"
+ #include "GS/GSUtil.h"
+ #include "GS/MultiISA.h"
+-#include <xbyak/xbyak.h>
++#include <xbyak.h>
+ 
+ #if defined(_M_AMD64) || defined(_WIN64)
+ #define RegLong Xbyak::Reg64
+diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
+index 055aeb1..e52eff3 100644
+--- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
++++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
+@@ -15,8 +15,8 @@
+ 
+ #pragma once
+ 
+-#include "xbyak/xbyak.h"
+-#include "xbyak/xbyak_util.h"
++#include "xbyak.h"
++#include "xbyak_util.h"
+ #include "GS/MultiISA.h"
+ 
+ /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
+diff --git a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
+index 29b03bb..0ece382 100644
+--- a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
++++ b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
+@@ -18,7 +18,7 @@
+ #include "GSScanlineEnvironment.h"
+ #include "GS/GSUtil.h"
+ #include "GS/MultiISA.h"
+-#include <xbyak/xbyak.h>
++#include <xbyak.h>
+ 
+ MULTI_ISA_UNSHARED_START
+ 
 -- 
 2.38.1
 

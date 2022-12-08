@@ -6,10 +6,10 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit ae764333f486ec40dd70079bdb05dd43fd4d03c8
+%global commit 858452a0bdb8def9c1f93b103026e71835a8df1f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221021
-%global with_snapshot 0
+%global date 20221206
+%global with_snapshot 1
 
 %global with_sysspirv 0
 %global with_sysvulkan 1
@@ -21,6 +21,10 @@
 %global commit6 98f440ce6868c94f5ec6e198cc1adda4760e8849
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
+
+%global commit7 3b2e9f6b76aa8d0c413c93202e93816517d781bd
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 libdisplay-info
 
 %{?mingw_package_header}
 
@@ -54,7 +58,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -85,6 +89,7 @@ Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcomm
 %if !0%{?with_sysvulkan}
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
+Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}tar.gz
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -178,6 +183,7 @@ ln -s %{_includedir}/vulkan include/vulkan/include/vulkan
 %else
 tar -xf %{S:6} -C include/vulkan --strip-components 1
 %endif
+tar -xf %{S:7} -C subprojects/libdisplay-info --strip-components 1
 
 cp -p %{S:2} .
 cp -p %{S:3} README.chinforpms

@@ -1,6 +1,6 @@
-%global commit ff26eb04d0fe18356985d968119429d6012e7d75
+%global commit e607703392145343e8aca42be052121c0b7bd1c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221004
+%global date 20221205
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        49%{?gver}%{?dist}
+Release:        50%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
