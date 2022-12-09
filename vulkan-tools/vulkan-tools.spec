@@ -1,8 +1,8 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.3.236
-Release:        101%{?dist}
+Version:        1.3.237
+Release:        100%{?dist}
 Summary:        Vulkan tools
 
 License:        ASL 2.0
@@ -85,6 +85,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.237-100
+- 1.3.237
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.236-101
 - Multilib vkcube-wayland
 

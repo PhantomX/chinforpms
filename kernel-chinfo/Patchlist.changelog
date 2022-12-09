@@ -61,9 +61,6 @@
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/85410346efac67acc97d156063d5ec39bf985124
  85410346efac67acc97d156063d5ec39bf985124 scsi: stex: Properly zero out the passthrough command structure
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/dce543dfaac7d80c338ed21ccd2543aaf5d7b85a
- dce543dfaac7d80c338ed21ccd2543aaf5d7b85a ipv4: Handle attempt to delete multipath route when fib_info contains an nh reference
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/0988b1d9ca90040134efda1f36af93a0b90d42b2
  0988b1d9ca90040134efda1f36af93a0b90d42b2 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 

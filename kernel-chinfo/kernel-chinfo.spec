@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 11
+%define stable_update 12
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 498d0bbf2d338a0e41c6537a4962ab78640a7518
+%global pfcommit 27aca716c708102bd7a4bb2037ad4e8dda185d80
 %global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash c394eeb7235ec232574075f3d4557fd5
+%global pfcoprhash 9506f1c42758727c9d28b15597ebb7b6
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,12 +197,12 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 10046187131527c2cbbe96b69afa2f1a3458e8fe
+%global opensuse_id 523a28391cc881ac34d76adabac8ee282f6e1013
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %define stablerev %{stable_update}
-%define stable_base %{stable_update}
+%define stable_base %{stabUP  le_update}
 %endif
 %define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
 
@@ -3027,6 +3027,9 @@ fi
 #
 #
 %changelog
+* Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.12-500.chinfo
+- 6.0.12 - pf6
+
 * Fri Dec 02 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.11-500.chinfo
 - 6.0.11 - pf6
 

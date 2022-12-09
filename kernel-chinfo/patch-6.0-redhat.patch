@@ -44,7 +44,6 @@ Subject: [PATCH] patch-6.0-redhat
  include/net/sock.h                                 |   2 +-
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
- net/ipv4/fib_semantics.c                           |   8 +-
  net/l2tp/l2tp_core.c                               |  19 +-
  scripts/pahole-flags.sh                            |   3 +
  scripts/tags.sh                                    |   2 +
@@ -52,7 +51,6 @@ Subject: [PATCH] patch-6.0-redhat
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- tools/testing/selftests/net/fib_nexthops.sh        |   5 +
  49 files changed, 776 insertions(+), 369 deletions(-)
 
 diff --git a/Makefile b/Makefile
@@ -2001,28 +1999,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index 2dc97583d279..e9a7f70a54df 100644
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -888,13 +888,13 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
- 		return 1;
- 	}
-
-+	/* cannot match on nexthop object attributes */
-+	if (fi->nh)
-+		return 1;
-+
- 	if (cfg->fc_oif || cfg->fc_gw_family) {
- 		struct fib_nh *nh;
-
--		/* cannot match on nexthop object attributes */
--		if (fi->nh)
--			return 1;
--
- 		nh = fib_info_nh(fi, 0);
- 		if (cfg->fc_encap) {
- 			if (fib_encap_match(net, cfg->fc_encap_type,
 diff --git a/net/l2tp/l2tp_core.c b/net/l2tp/l2tp_core.c
 index 7499c51b1850..754fdda8a5f5 100644
 --- a/net/l2tp/l2tp_core.c
@@ -2190,19 +2166,3 @@ index 4b95de24bc8d..10047790e96e 100644
  #ifdef CONFIG_PERF_EVENTS
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
-diff --git a/tools/testing/selftests/net/fib_nexthops.sh b/tools/testing/selftests/net/fib_nexthops.sh
-index d5a0dd548989..ee5e98204d3d 100755
---- a/tools/testing/selftests/net/fib_nexthops.sh
-+++ b/tools/testing/selftests/net/fib_nexthops.sh
-@@ -1223,6 +1223,11 @@ ipv4_fcnal()
- 	log_test $rc 0 "Delete nexthop route warning"
- 	run_cmd "$IP route delete 172.16.101.1/32 nhid 12"
- 	run_cmd "$IP nexthop del id 12"
-+
-+	run_cmd "$IP nexthop add id 21 via 172.16.1.6 dev veth1"
-+	run_cmd "$IP ro add 172.16.101.0/24 nhid 21"
-+	run_cmd "$IP ro del 172.16.101.0/24 nexthop via 172.16.1.7 dev veth1 nexthop via 172.16.1.8 dev veth1"
-+	log_test $? 2 "Delete multipath route with only nh id based entry"
- }
-
- ipv4_grp_fcnal()

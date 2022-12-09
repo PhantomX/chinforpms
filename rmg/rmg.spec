@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 468666e2ac575bed1fd75559e1eee70d684c3d4c
+%global commit1 ba9a52483052248b67c324e3fd0e073b807bbea4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -36,15 +36,15 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 mupen64plus-input-raphnetraw
 
-%global commit7 dccbb2bf87192e49354c216abdd5ac9f66152a65
+%global commit7 9d71074f6b71750e99ad06a713f28a9c32ad15cb
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 2973f5351b6326ca588b60521522df34ed7a426e
+%global commit8 ff47414c2bd6e572872e9148b2f3e1dbc83e5fee
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
-%global commit9 80c3458041c498f0503313c8aa0f69d751bd63fb
+%global commit9 693f607728aca78d94ba5d45b0ce119b4ccbcd8c
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
@@ -62,7 +62,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.1.9
+Version:        0.2.4
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -103,6 +103,7 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Svg)
 BuildRequires:  pkgconfig(samplerate)
+BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
@@ -196,6 +197,7 @@ sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
   -DNO_GIT_CLONE:BOOL=ON \
   -DPORTABLE_INSTALL:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DDISCORD_RPC:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -223,6 +225,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.4-1
+- 0.2.4
+
 * Sun Nov 20 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.9-1
 - 0.1.9
 

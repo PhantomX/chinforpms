@@ -15,8 +15,8 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           simple64
-Version:        2022.11.2
-Release:        2%{?gver}%{?dist}
+Version:        2022.12.2
+Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
 # * mupen64plus - GPLv2 and LGPLv2
@@ -267,6 +267,9 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 
 
 %changelog
+* Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.12.2-1
+- 2022.12.2
+
 * Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.11.2-2
 - Unsplit package
 
