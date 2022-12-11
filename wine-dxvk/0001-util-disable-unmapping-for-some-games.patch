@@ -1,0 +1,24 @@
+From 7104ada2715ce6c4f3bdaa415b3b026f114236eb Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 11 Dec 2022 18:27:39 -0300
+Subject: [PATCH] [util] disable unmapping for some games
+
+---
+ src/util/config/config.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/util/config/config.cpp b/src/util/config/config.cpp
+index 14439d6..9cad8b6 100644
+--- a/src/util/config/config.cpp
++++ b/src/util/config/config.cpp
+@@ -548,6 +548,7 @@ namespace dxvk {
+     /* BlazBlue Centralfiction                  */
+     { R"(\\BBCF\.exe$)", {{
+       { "d3d9.floatEmulation",              "Strict" },
++      { "d3d9.textureMemory",                "0"   },
+     }} },
+     /* Resident Evil games using MT Framework   */
+     { R"(\\(rerev|re0hd|bhd)\.exe$)", {{
+-- 
+2.38.1
+

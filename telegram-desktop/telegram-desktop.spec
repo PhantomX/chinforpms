@@ -24,7 +24,7 @@
 %global kf5ver 3c1d4a
 
 Name:           telegram-desktop
-Version:        4.4.0
+Version:        4.4.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -45,6 +45,8 @@ ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch10:        %{url}/commit/9c27271571e7a535de8eb410c30c070fe67778f3.patch#/%{name}-gh-9c27271.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -315,6 +317,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Dec 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.1-100
+- 4.4.1
+
 * Wed Dec 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.0-100
 - 4.4.0
 

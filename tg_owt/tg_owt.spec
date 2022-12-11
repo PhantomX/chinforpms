@@ -7,17 +7,21 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 621f3da55331733bf0d1b223786b96b68c03dca1
+%global commit0 e39bec7c9bdc8dbf09323d47e27013f9cc75d3a5
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20220914
+%global date 20221209
 
-%global commit1 ad890067f661dc747a975bc55ba3767fe30d4452
+%global commit1 00950840d1c9bcbb3eb6ebc5aac5793e71166c8b
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
 %global commit2 21fc8ef30415a635e7351ffa0e5d5367943d4a94
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 crc32c
+
+%global commit3 8c0b94e793a66495e0b1f34a5eb26bd7dc672db0
+%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
+%global srcname3 abseil-cpp
 
 %global absl_ver 39f46fa
 %global libsrtp_ver 94ac00d
@@ -30,7 +34,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        123%{?gver}%{?dist}
+Release:        124%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -50,14 +54,14 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/google/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-
-Patch10:        0001-gcc-12-build-fix.patch
 %if !%{with absl}
-Patch100:       0001-fix-build-with-bundled-absl.patch
+Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
+Patch1000:      0001-fix-build-with-bundled-absl.patch
+
 %if %{with absl}
-BuildRequires:  cmake(absl) >= 20211102
+BuildRequires:  cmake(absl) >= 20220623
 %endif
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(egl)
@@ -215,7 +219,8 @@ Requires:       cmake(absl)
 %{summary}.
 
 %prep
-%autosetup -n %{name}-%{commit0} -p1
+%autosetup -N -n %{name}-%{commit0} -p1
+%autopatch -p1 -M 999
 
 tar -xf %{S:1} -C src/third_party/libyuv
 tar -xf %{S:2} -C src/third_party/crc32c/src --strip-components 1
@@ -225,7 +230,11 @@ mkdir legal
 cp -f -p src/third_party/rnnoise/COPYING legal/LICENSE.rnnoise
 cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
 %endif
-%if !%{with absl}
+%if %{with absl}
+sed -e '/libabsl.cmake/d' -i CMakeLists.txt
+%else
+%patch1000 -p1
+tar -xf %{S:3} -C src/third_party/abseil-cpp --strip-components 1
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif

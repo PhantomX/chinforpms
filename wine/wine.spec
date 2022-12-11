@@ -1,7 +1,7 @@
 %global commit 0fe562b4ae3f66f9c0e29ab8f27a4abf2ac78501
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221203
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -49,18 +49,18 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.235
+%global winevulkan 1.3.237
 
 %global wineFAudio 22.11
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.14
-%global winempg123 1.30.2
-%global winepng 1.6.38
+%global winempg123 1.31.1
+%global winepng 1.6.39
 %global wineopenldap 2.5.13
 %global winetiff 4.4.0
 %global winejxrlib 1.1
-%global winevkd3d 1.5
+%global winevkd3d 1.6
 %global winexml2 2.10.3
 %global winexslt 1.1.37
 %global winezlib 1.2.13
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cc4bced66e9a9ff9535af16b619f015535e6f4f7
+%global wine_stagingver 8.0-rc1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b53a106d956966a0b087379b00b9d21ce2a3da34
+%global tkg_id ee366e08bf2a6608813ab77b88f8c8ec742f1ca7
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.22
-Release:        101%{?gver}%{?dist}
+Version:        8.0~rc1
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2076,6 +2076,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/wlanapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmphoto.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wnaspi32.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wofutil.%{winedll}
 %ifarch x86_64
 %{_libdir}/wine/%{winedlldir}/wow64.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wow64cpu.%{winedll}
@@ -2543,6 +2544,9 @@ fi
 
 
 %changelog
+* Sun Dec 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc1-100
+- 8.0-rc1
+
 * Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:7.22-100
 - 7.22
 

@@ -6,9 +6,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 858452a0bdb8def9c1f93b103026e71835a8df1f
+%global commit c55c09368b8e7d878cbe602b6d380ba0d1e6e1b3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221206
+%global date 20221211
 %global with_snapshot 1
 
 %global with_sysspirv 0
@@ -58,7 +58,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.0
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -76,6 +76,7 @@ Source3:        %{name}-README-chinforpms
 
 Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
+Patch102:       0001-util-disable-unmapping-for-some-games.patch
 
 %if 0%{?dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async%{?asyncpatch}.patch#/%{name}-sporif-dxvk-async%{?asyncpatch}.patch

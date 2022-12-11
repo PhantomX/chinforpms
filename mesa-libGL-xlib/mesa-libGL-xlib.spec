@@ -9,10 +9,10 @@
 %bcond_with valgrind
 %endif
 
-%global commit d4d47ef6efa91a4f28b01fa0cd3f17f0442455b8
+%global commit 02d23a79bec6dd80ade097d079b7057e46dec864
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221004
-%global with_snapshot 0
+%global date 20221209
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -27,7 +27,7 @@ Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.3.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
