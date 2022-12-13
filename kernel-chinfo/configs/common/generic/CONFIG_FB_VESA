@@ -1,1 +1,1 @@
-CONFIG_FB_VESA=y
+# CONFIG_FB_VESA is not set

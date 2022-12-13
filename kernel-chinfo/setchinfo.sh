@@ -6,7 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20220915
+# 20221212
+# 6.1
+# pf1
 
 set -e
 
@@ -84,9 +86,6 @@ LRNG_SWITCH_DRNG
 LRNG_SWITCH_DRNG_CHACHA20
 LRNG_SWITCH_DRNG_KCAPI
 LRNG_TESTING_MENU
-LRU_GEN
-LRU_GEN_ENABLED
-LRU_GEN_STATS
 "
 
 pfd="

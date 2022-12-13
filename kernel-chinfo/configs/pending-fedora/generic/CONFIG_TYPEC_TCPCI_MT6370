@@ -1,0 +1,16 @@
+# Symbol: TYPEC_TCPCI_MT6370 [=n]
+# Type  : tristate
+# Defined at drivers/usb/typec/tcpm/Kconfig:38
+#   Prompt: MediaTek MT6370 Type-C driver
+#   Depends on: USB_SUPPORT [=y] && TYPEC [=m] && TYPEC_TCPM [=m] && TYPEC_TCPCI [=m] && MFD_MT6370 [=m]
+#   Location:
+#     -> Device Drivers
+#       -> USB support (USB_SUPPORT [=y])
+#         -> USB Type-C Support (TYPEC [=m])
+#           -> USB Type-C Port Controller Manager (TYPEC_TCPM [=m])
+#             -> Type-C Port Controller Interface driver (TYPEC_TCPCI [=m])
+#               -> MediaTek MT6370 Type-C driver (TYPEC_TCPCI_MT6370 [=n])
+# 
+# 
+# 
+# CONFIG_TYPEC_TCPCI_MT6370 is not set

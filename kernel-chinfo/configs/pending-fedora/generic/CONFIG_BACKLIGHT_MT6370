@@ -1,0 +1,15 @@
+# Symbol: BACKLIGHT_MT6370 [=n]
+# Type  : tristate
+# Defined at drivers/video/backlight/Kconfig:271
+#   Prompt: MediaTek MT6370 Backlight Driver
+#   Depends on: HAS_IOMEM [=y] && BACKLIGHT_CLASS_DEVICE [=y] && MFD_MT6370 [=m]
+#   Location:
+#     -> Device Drivers
+#       -> Graphics support
+#         -> Backlight & LCD device support
+#           -> Lowlevel Backlight controls (BACKLIGHT_CLASS_DEVICE [=y])
+#             -> MediaTek MT6370 Backlight Driver (BACKLIGHT_MT6370 [=n])
+# 
+# 
+# 
+# CONFIG_BACKLIGHT_MT6370 is not set

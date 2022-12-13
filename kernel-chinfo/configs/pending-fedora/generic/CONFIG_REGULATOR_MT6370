@@ -1,0 +1,13 @@
+# Symbol: REGULATOR_MT6370 [=n]
+# Type  : tristate
+# Defined at drivers/regulator/Kconfig:835
+#   Prompt: MT6370 SubPMIC Regulator
+#   Depends on: REGULATOR [=y] && MFD_MT6370 [=m]
+#   Location:
+#     -> Device Drivers
+#       -> Voltage and Current Regulator Support (REGULATOR [=y])
+#         -> MT6370 SubPMIC Regulator (REGULATOR_MT6370 [=n])
+# 
+# 
+# 
+# CONFIG_REGULATOR_MT6370 is not set

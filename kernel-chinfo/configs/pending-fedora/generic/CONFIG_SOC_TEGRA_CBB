@@ -1,0 +1,13 @@
+# Symbol: SOC_TEGRA_CBB [=y]
+# Type  : tristate
+# Defined at drivers/soc/tegra/Kconfig:165
+#   Prompt: Tegra driver to handle error from CBB
+#   Depends on: ARCH_TEGRA_194_SOC [=y] || ARCH_TEGRA_234_SOC [=y]
+#   Location:
+#     Main menu
+#       -> Device Drivers
+#         -> SOC (System On Chip) specific Drivers
+# 
+# 
+# 
+CONFIG_SOC_TEGRA_CBB=y

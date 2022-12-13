@@ -24,13 +24,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 0
+%global base_sublevel 1
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -554,6 +554,9 @@ popd
 
 
 %changelog
+* Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500
+- 6.1.0
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.12-500
 - 6.0.12
 
@@ -778,45 +781,3 @@ popd
 
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.0-500
 - 5.15.0
-
-* Wed Oct 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.15-500
-- 5.14.15
-
-* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.14-500
-- 5.14.14
-
-* Sun Oct 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.13-500
-- 5.14.13
-
-* Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.12-500
-- 5.14.12
-
-* Sat Oct 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.11-500
-- 5.14.11
-
-* Thu Oct 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.10-500
-- 5.14.10
-
-* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.9-500
-- 5.14.9
-
-* Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.8-500
-- 5.14.8
-
-* Wed Sep 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.7-500
-- 5.14.7
-
-* Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.6-500
-- 5.14.6
-
-* Wed Sep 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.4-500
-- 5.14.4
-
-* Sun Sep 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.3-500
-- 5.14.3
-
-* Wed Sep 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.2-500
-- 5.14.2
-
-* Tue Aug 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-500
-- 5.14.0

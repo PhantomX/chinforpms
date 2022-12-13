@@ -6,7 +6,7 @@
 # Include Fedora files
 %global include_fedora 1
 # Include RHEL files
-%global include_rhel 1
+%global include_rhel 0
 # Provide Patchlist.changelog file
 %global patchlist_changelog 1
 
@@ -156,26 +156,26 @@ Summary: The Linux kernel
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%define base_sublevel 0
+%define base_sublevel 1
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 12
+%define stable_update 0
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 27aca716c708102bd7a4bb2037ad4e8dda185d80
-%global pf_first_commit 4fe89d07dcc2804c8b562f6c7896a45643d34b2f
-%global pfcoprhash 9506f1c42758727c9d28b15597ebb7b6
+%global pfcommit 63d3991f29418b4841d370e6c64278b4ed4a654f
+%global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
+%global pfcoprhash f4dc793d47d25de4a02379681912d34b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 523a28391cc881ac34d76adabac8ee282f6e1013
+%global opensuse_id d1335c09a0de8a57f191955e8ae17cc68ce4f580
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -959,17 +959,15 @@ Patch1: patch-%{kversion}-redhat.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/dm-mpath-leastpending-path-update#/openSUSE-dm-mpath-leastpending-path-update.patch
-Patch1014: %{opensuse_url}/dm-table-switch-to-readonly#/openSUSE-dm-table-switch-to-readonly.patch
-Patch1015: %{opensuse_url}/dm-mpath-no-partitions-feature#/openSUSE-dm-mpath-no-partitions-feature.patch
-Patch1016: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%global tkg_id a380d532bc85013c120b1d689a07367afc0e026b
+%global tkg_id ce12bdcc7f425a05438721d793650a15b2fd7b95
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 
 %if !0%{?post_factum}
@@ -1624,7 +1622,7 @@ cat %{SOURCE3013} >> kernel-local
 cp %{SOURCE80} .
 # merge.pl
 cp %{SOURCE3000} .
-FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
+VERSION=%{rpmversion} ./generate_all_configs.sh %{primary_target} %{debugbuildsenabled}
 
 
 # Merge in any user-provided local config option changes
@@ -2429,15 +2427,6 @@ InitBuildVars
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
 %{make} %{?_smp_mflags} headers_install
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ || true
-
-# Prevent bpf selftests to build bpftool repeatedly:
-export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
-
-pushd tools/testing/selftests
-# We need to install here because we need to call make with ARCH set which
-# doesn't seem possible to do in the install section.
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing" SKIP_TARGETS="" INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # If we re building only tools without kernel, we need to generate config
 # headers and prepare tree for modules building. The modules_prepare target
@@ -2445,6 +2434,22 @@ pushd tools/testing/selftests
 if [ ! -f include/generated/autoconf.h ]; then
    %{make} %{?_smp_mflags} modules_prepare
 fi
+
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
+
+# Prevent bpf selftests to build bpftool repeatedly:
+export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
+
+pushd tools/testing/selftests
+# We need to install here because we need to call make with ARCH set which
+# doesn't seem possible to do in the install section.
+%if %{selftests_must_build}
+  force_targets="FORCE_TARGETS=1"
+%else
+  force_targets=""
+%endif
+
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -3027,6 +3032,9 @@ fi
 #
 #
 %changelog
+* Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500.chinfo
+- 6.1.0 - pf1
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.12-500.chinfo
 - 6.0.12 - pf6
 
@@ -3276,58 +3284,6 @@ fi
 
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.0-500.chinfo
 - 5.15.0 - pf1
-
-* Wed Oct 27 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.15-500.chinfo
-- 5.14.15 - pf7
-
-* Wed Oct 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.14-500.chinfo
-- 5.14.14 - pf7
-
-* Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.13-500.chinfo
-- 5.14.13 - pf6
-
-* Wed Oct 13 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.12-500.chinfo
-- 5.14.12 - pf6
-
-* Sat Oct 09 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.11-500.chinfo
-- 5.14.11 - pf5
-
-* Thu Oct 07 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.10-500.chinfo
-- 5.14.10 - pf5
-
-* Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.9-500.chinfo
-- 5.14.9 - pf5
-
-* Sun Sep 26 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.8-500.chinfo
-- 5.14.8 - pf4
-
-* Wed Sep 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.7-500.chinfo
-- 5.14.7 - pf3
-
-* Sat Sep 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.6-500.chinfo
-- 5.14.6 - pf3
-
-* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.5-500.chinfo
-- 5.14.5 - pf3
-
-* Wed Sep 15 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.4-500.chinfo
-- 5.14.4 - pf3
-
-* Sun Sep 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.3-500.chinfo
-- 5.14.3 - pf2
-
-* Fri Sep 10 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.2-500.chinfo
-- 5.14.2 - pf2
-
-* Fri Sep 03 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.1-500.chinfo
-- 5.14.1 - pf2
-
-* Wed Sep 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-501.chinfo
-- Revert to old futex2 implementation
-
-* Tue Aug 31 2021 Phantom X <megaphantomx at hotmail dot com> - 5.14.0-500.chinfo
-- 5.14.0 - pf2
-
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

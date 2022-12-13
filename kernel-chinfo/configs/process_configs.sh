@@ -269,7 +269,6 @@ function process_config()
 	then
 		echo "Found misconfigured config items in ${arch} ${variant}, please set them to an appropriate value" >> .errors"${count}"
 		cat .warnings"${count}" >> .errors"${count}"
-		rm .warnings"${count}"
 	fi
 	rm .warnings"${count}"
 

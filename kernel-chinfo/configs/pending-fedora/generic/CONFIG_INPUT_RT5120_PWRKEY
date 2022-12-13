@@ -1,0 +1,15 @@
+# Symbol: INPUT_RT5120_PWRKEY [=n]
+# Type  : tristate
+# Defined at drivers/input/misc/Kconfig:912
+#   Prompt: RT5120 PMIC power key support
+#   Depends on: INPUT [=y] && INPUT_MISC [=y] && (MFD_RT5120 [=m] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> Input device support
+#         -> Generic input layer (needed for keyboard, mouse, ...) (INPUT [=y])
+#           -> Miscellaneous devices (INPUT_MISC [=y])
+#             -> RT5120 PMIC power key support (INPUT_RT5120_PWRKEY [=n])
+# 
+# 
+# 
+# CONFIG_INPUT_RT5120_PWRKEY is not set

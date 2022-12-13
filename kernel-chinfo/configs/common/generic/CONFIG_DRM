@@ -1,1 +1,1 @@
-CONFIG_DRM=m
+CONFIG_DRM=y

@@ -13,9 +13,9 @@ OUTPUT_DIR="$PWD"
 SCRIPT_DIR=$(dirname "$SCRIPT")
 
 if [ -z "$2" ]; then
-	cat "$OUTPUT_DIR"/flavors > "$OUTPUT_DIR"/.flavors
+	cat "$SCRIPT_DIR"/flavors > "$SCRIPT_DIR"/.flavors
 else
-	echo "$2" > "$OUTPUT_DIR"/.flavors
+	echo "$2" > "$SCRIPT_DIR"/.flavors
 fi
 
 # shellcheck disable=SC2015
@@ -32,7 +32,7 @@ set nounset
 cleanup()
 {
 	rm -f config-*
-	rm -f "$OUTPUT_DIR"/.flavors
+	rm -f "$SCRIPT_DIR"/.flavors
 }
 
 die()
@@ -53,7 +53,8 @@ function combine_config_layer()
 		return
 	fi
 
-	cat "$dir"/CONFIG_* > "$file"
+	# avoid picking up editor backup files
+	cat $(ls -1 "$dir"/CONFIG_* | grep -v "~$") > "$file"
 }
 
 function merge_configs()
@@ -88,7 +89,7 @@ function merge_configs()
 
 			test -n "$skip_if_missing" && test ! -e "$cfile" && continue
 
-			if ! perl merge.pl "$cfile" config-merging."$count" > config-merged."$count"; then
+			if ! ./merge.py "$cfile" config-merging."$count" > config-merged."$count"; then
 				die "Failed to merge $cfile"
 			fi
 			mv config-merged."$count" config-merging."$count"
@@ -171,6 +172,6 @@ function build_flavor()
 while read -r line
 do
 	build_flavor "$line"
-done < "$OUTPUT_DIR"/.flavors
+done < "$SCRIPT_DIR"/.flavors
 
 cleanup
