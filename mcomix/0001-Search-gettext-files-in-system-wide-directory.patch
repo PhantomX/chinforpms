@@ -1,0 +1,71 @@
+From 24e1af5eba8d110890c512d4ef30470b233408c1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 14 Dec 2022 00:11:38 -0300
+Subject: [PATCH] Search gettext files in system-wide directory
+
+---
+ mcomix/i18n.py | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/mcomix/i18n.py b/mcomix/i18n.py
+index 1c812d9..9168fd7 100644
+--- a/mcomix/i18n.py
++++ b/mcomix/i18n.py
+@@ -6,6 +6,7 @@ import locale
+ import os
+ import pkgutil
+ import sys
++import sysconfig
+ 
+ try:
+     import chardet
+@@ -71,13 +72,22 @@ def install_gettext():
+     # Initialize default locale
+     locale.setlocale(locale.LC_ALL, '')
+ 
++    lang_identifiers = []
+     if preferences.prefs['language'] != 'auto':
+         lang = preferences.prefs['language']
+-        lang_identifiers = [ lang ]
++        if lang not in ('en', 'en_US'):
++            # .mo is not needed for english
++            lang_identifiers.append(lang)
+     else:
+         # Get the user's current locale
+         lang = portability.get_default_locale()
+-        lang_identifiers = gettext._expand_lang(lang)
++        for s in gettext._expand_lang(lang):
++            lang = s.split('.')[0]
++            if lang in ('en', 'en_US'):
++                # .mo is not needed for english
++                continue
++            if lang not in lang_identifiers:
++                lang_identifiers.append(lang)
+ 
+     # Make sure GTK uses the correct language.
+     os.environ['LANGUAGE'] = lang
+@@ -86,15 +96,14 @@ def install_gettext():
+ 
+     # Search for .mo files manually, since gettext doesn't support packaged resources
+     for lang in lang_identifiers:
+-        resource = os.path.join('messages', lang, 'LC_MESSAGES', '%s.mo' % domain)
++        resource = os.path.join(sysconfig.get_config_var('datarootdir'),
++                                'locale', lang, 'LC_MESSAGES', '%s.mo' % domain)
+         try:
+-            translation_content = pkgutil.get_data('mcomix', resource)
+-        except FileNotFoundError:
+-            pass
+-        else:
+-            fp = io.BytesIO(translation_content)
+-            translation = gettext.GNUTranslations(fp)
++            with open(resource, mode = 'rb') as fp:
++                translation = gettext.GNUTranslations(fp)
+             break
++        except IOError:
++            log.error('locale file: %s not found.', resource)
+ 
+     else:
+         translation = gettext.NullTranslations()
+-- 
+2.38.1
+

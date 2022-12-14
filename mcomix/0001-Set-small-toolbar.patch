@@ -1,0 +1,25 @@
+From ee62c10e3e03e86846af0acab6d18ebedc6731f2 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 14 Dec 2022 00:18:25 -0300
+Subject: [PATCH] Set small toolbar
+
+---
+ mcomix/main.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mcomix/main.py b/mcomix/main.py
+index 1b15818..f92cd6d 100644
+--- a/mcomix/main.py
++++ b/mcomix/main.py
+@@ -118,7 +118,7 @@ class MainWindow(Gtk.Window):
+         self.toolbar.set_focus_child(
+             self.uimanager.get_widget('/Tool/expander'))
+         self.toolbar.set_style(Gtk.ToolbarStyle.ICONS)
+-        self.toolbar.set_icon_size(Gtk.IconSize.LARGE_TOOLBAR)
++        self.toolbar.set_icon_size(Gtk.IconSize.SMALL_TOOLBAR)
+ 
+         for img in self.images:
+             self._main_layout.put(img, 0, 0)
+-- 
+2.38.1
+

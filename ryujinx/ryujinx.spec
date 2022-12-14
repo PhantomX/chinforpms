@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 1f3b860f0601074b2d459bef316c9b910a233096
+%global commit df758eddd1d61f776415422dc4dd1fa8a776719c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221207
+%global date 20221212
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -41,7 +41,6 @@
 %global microsoft_win32_primitives_ver 4.0.1
 %global microsoft_win32_primitives_ver2 4.3.0
 %global microsoft_win32_registry_ver 4.5.0
-%global microsoft_win32_systemevents_ver 7.0.0
 %global msgpack_cli_ver 1.0.1
 %global netstandard_library_ver 1.6.0
 %global netstandard_library_ver2 2.0.0
@@ -92,7 +91,7 @@
 %global runtime_unix_system_private_uri_ver 4.3.0
 %global runtime_unix_system_runtime_extensions_ver 4.3.0
 %global ryujinx_audio_openal_dependencies_ver 1.21.0.1
-%global ryujinx_graphics_nvdec_dependencies_ver 5.0.1-build10
+%global ryujinx_graphics_nvdec_dependencies_ver 5.0.1-build13
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_gtksharp_ver 3.24.24.59-ryujinx
@@ -121,7 +120,6 @@
 %global system_diagnostics_tools_ver 4.0.1
 %global system_diagnostics_tracing_ver 4.1.0
 %global system_diagnostics_tracing_ver2 4.3.0
-%global system_drawing_common_ver 7.0.0
 %global system_globalization_ver 4.0.11
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
@@ -138,7 +136,6 @@
 %global system_linq_expressions_ver 4.1.0
 %global system_management_ver 7.0.0
 %global system_memory_ver 4.5.5
-%global system_memory_ver2 4.5.4
 %global system_net_http_ver 4.1.0
 %global system_net_nameresolution_ver 4.3.0
 %global system_net_primitives_ver 4.0.11
@@ -215,7 +212,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.448
+Version:        1.1.468
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -265,7 +262,7 @@ Source228:      %{nuget_url}/microsoft.netcore.targets.%{microsoft_netcore_targe
 Source229:      %{nuget_url}/microsoft.win32.primitives.%{microsoft_win32_primitives_ver}.nupkg
 Source230:      %{nuget_url}/microsoft.win32.primitives.%{microsoft_win32_primitives_ver2}.nupkg
 Source231:      %{nuget_url}/microsoft.win32.registry.%{microsoft_win32_registry_ver}.nupkg
-Source232:      %{nuget_url}/microsoft.win32.systemevents.%{microsoft_win32_systemevents_ver}.nupkg
+Source232:      %{nuget_url}/ryujinx.graphics.vulkan.dependencies.moltenvk.%{ryujinx_graphics_vulkan_dependencies_moltenvk_ver}.nupkg
 Source233:      %{nuget_url}/msgpack.cli.%{msgpack_cli_ver}.nupkg
 Source234:      %{nuget_url}/netstandard.library.%{netstandard_library_ver}.nupkg
 Source235:      %{nuget_url}/netstandard.library.%{netstandard_library_ver2}.nupkg
@@ -349,7 +346,7 @@ Source312:      %{nuget_url}/system.diagnostics.diagnosticsource.%{system_diagno
 Source313:      %{nuget_url}/system.diagnostics.tools.%{system_diagnostics_tools_ver}.nupkg
 Source314:      %{nuget_url}/system.diagnostics.tracing.%{system_diagnostics_tracing_ver}.nupkg
 Source315:      %{nuget_url}/system.diagnostics.tracing.%{system_diagnostics_tracing_ver2}.nupkg
-Source316:      %{nuget_url}/system.drawing.common.%{system_drawing_common_ver}.nupkg
+Source316:      %{nuget_url}/system.text.encodings.web.%{system_text_encodings_web_ver}.nupkg
 Source317:      %{nuget_url}/system.globalization.%{system_globalization_ver}.nupkg
 Source318:      %{nuget_url}/system.globalization.%{system_globalization_ver2}.nupkg
 Source319:      %{nuget_url}/system.globalization.calendars.%{system_globalization_calendars_ver}.nupkg
@@ -366,7 +363,6 @@ Source329:      %{nuget_url}/system.linq.%{system_linq_ver}.nupkg
 Source330:      %{nuget_url}/system.linq.expressions.%{system_linq_expressions_ver}.nupkg
 Source331:      %{nuget_url}/system.management.%{system_management_ver}.nupkg
 Source332:      %{nuget_url}/system.memory.%{system_memory_ver}.nupkg
-Source333:      %{nuget_url}/system.memory.%{system_memory_ver2}.nupkg
 Source334:      %{nuget_url}/system.net.http.%{system_net_http_ver}.nupkg
 Source335:      %{nuget_url}/system.net.nameresolution.%{system_net_nameresolution_ver}.nupkg
 Source336:      %{nuget_url}/system.net.primitives.%{system_net_primitives_ver}.nupkg
@@ -435,15 +431,12 @@ Source398:      %{nuget_url}/system.threading.threadpool.%{system_threading_thre
 Source399:      %{nuget_url}/system.threading.timer.%{system_threading_timer_ver}.nupkg
 Source400:      %{nuget_url}/system.xml.readerwriter.%{system_xml_readerwriter_ver}.nupkg
 Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nupkg
-Source402:      %{nuget_url}/system.text.encodings.web.%{system_text_encodings_web_ver}.nupkg
-Source403:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.osx.%{ryujinx_graphics_nvdec_dependencies_osx_ver}.nupkg
-Source404:      %{nuget_url}/ryujinx.graphics.vulkan.dependencies.moltenvk.%{ryujinx_graphics_vulkan_dependencies_moltenvk_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
-%global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
+%global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
-%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404}
+%global nuget_files5 %{SOURCE400} %{SOURCE401}
 %endif
 
 %if !%{?with_bin}
