@@ -157,7 +157,7 @@ Summary:        A compatibility layer for windows applications
 
 Epoch:          1
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 URL:            http://www.winehq.org/
 
 %if 0%{?with_snapshot}

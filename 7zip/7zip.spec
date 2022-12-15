@@ -27,7 +27,7 @@ Version:        22.01
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
-License:        LGPLv2+ and BSD and Public Domain
+License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
 URL:            https://www.7-zip.org
 
 %if 0%{sanitize}

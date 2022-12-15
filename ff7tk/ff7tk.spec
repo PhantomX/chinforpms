@@ -14,7 +14,7 @@ Version:        0.83.0.0
 Release:        1%{?gver}%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
-License:        LGPLv3+
+License:        LGPL-3.0-or-later
 URL:            https://github.com/sithlord48/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

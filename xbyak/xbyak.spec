@@ -7,7 +7,7 @@ Summary:        A C++ JIT assembler for x86
 
 Epoch:          1
 
-License:        License:        BSD-3-Clause
+License:        BSD-3-Clause
 URL:            https://github.com/herumi/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
