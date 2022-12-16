@@ -26,14 +26,14 @@
 
 set -e
 
-ver=20220324
+ver=20221215
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
 datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
 dlls="d3d12"
-nodlls="dxgi"
+nodlls=""
 
 wineext=dll
 

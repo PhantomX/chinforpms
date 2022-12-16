@@ -16,7 +16,7 @@
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 2166bc7ea0ceb2d7ff6d787d9b007f7eb7d4aaa8
+%global commit1 babf511d4cc7466b970dec82db35b5cacf6acfec
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -28,11 +28,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 5177b119bbdf463b7b909855a83230253c2d8b68
+%global commit4 b7a86d3b2bf8fbe73fcd40df9ec62a5966e9db89
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 87d5b782bec60822aa878941e6b13c0a9a954c9b
+%global commit5 1d31a100405cf8783ca7a31e31cdd727c9fc54c3
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -60,12 +60,12 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.7
+Version:        2.8
 Release:        1%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 URL:            https://github.com/HansKristian-Work/%{pkgname}
 
 %if 0%{?with_snapshot}
@@ -198,6 +198,8 @@ cp %{S:10} README.%{pkgname}
 
 cp %{S:11} .
 
+cp -p subprojects/dxil-spirv/LICENSE.MIT LICENSE.MIT.dxil-spirv
+
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
@@ -248,7 +250,6 @@ meson \
   --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
-  -Denable_d3d12=true \
   %{_vpath_builddir}${i} \
 %{nil}
 
@@ -259,7 +260,7 @@ done
 
 %install
 
-for dll in d3d12 libvkd3d-proton-utils-3 ;do
+for dll in d3d12 ;do
 
   case ${dll} in
     d3d12)
@@ -284,7 +285,7 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %files
-%license COPYING LICENSE
+%license COPYING LICENSE*
 %doc README.md README.%{pkgname}
 %{_bindir}/winevkd3dcfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
@@ -294,6 +295,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Dec 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2.8-1
+- 2.8
+
 * Thu Oct 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.7-1
 - 2.7
 
