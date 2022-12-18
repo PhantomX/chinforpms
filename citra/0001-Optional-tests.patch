@@ -19,9 +19,9 @@ index 710f3fc..9a529a3 100644
  
 +option(CITRA_TESTS "Compile tests" ON)
 +
- if(NOT EXISTS ${PROJECT_SOURCE_DIR}/.git/hooks/pre-commit)
-     message(STATUS "Copying pre-commit hook")
-     file(COPY hooks/pre-commit
+ if (CITRA_USE_PRECOMPILED_HEADERS)
+     if (MSVC AND CCACHE)
+         # buildcache does not properly cache PCH files, leading to compilation errors.
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
 index c2385c4..00147ed 100644
 --- a/externals/CMakeLists.txt

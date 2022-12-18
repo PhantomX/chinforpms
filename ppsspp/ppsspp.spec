@@ -10,7 +10,7 @@
 %global commit 5efa2e259648f6727412147b0b348f2e1b2311c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221120
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Disable ffmpeg support
 %bcond_without ffmpeg
@@ -68,18 +68,18 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.13.2
-Release:        103%{?gver}%{?dist}
+Version:        1.14
+Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD and GPLv2+
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later
 URL:            http://www.ppsspp.org/
-%if 0%{?with_snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+
+%if !0%{?with_snapshot}
+Source0:        %{vc_url}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %else
-Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/unknownbrackets/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
@@ -95,6 +95,7 @@ Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcn
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+%endif
 Source10:       %{name}.appdata.xml
 Source11:       Makefile
 
@@ -194,6 +195,7 @@ recompilers (dynarecs).
 %package        data
 Summary:        Data files of %{name}
 BuildArch:      noarch
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description data
 Data files of %{name}.
@@ -209,6 +211,7 @@ Additional tools files for %{name}.
 %prep
 %autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
+%if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
 %if %{with ffmpeg}
 %if !0%{?with_sysffmpeg}
@@ -220,10 +223,11 @@ tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
+%endif
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
-rm -rf ext/{libpng,libzip,vulkan,zlib,zstd}*
+rm -rf ext/{discord-rpc,libpng,libzip,vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
@@ -244,12 +248,11 @@ cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
 popd
 
-%if 0%{?with_snapshot}
 sed -i \
-  -e "/GIT_VERSION/s|unknown|%{version}-%{release}|g" \
+  -e '/set(GIT_VERSION\b /s|".*"|"%{version}-%{release}"|g' \
+  -e '/find_package/s|Git|\0_disabled|g' \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}-%{release}\"|g" \
   git-version.cmake
-%endif
 
 sed \
   -e 's|"unknown"|"%{shortcommit7}"|' \
@@ -444,6 +447,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Dec 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.14-100
+- 1.14
+
 * Sun Nov 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.13.2-103.20221120git5efa2e2
 - %%cmake_install
 

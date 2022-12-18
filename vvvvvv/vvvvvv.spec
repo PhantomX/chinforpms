@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 8ca53fa5d2ebf5acda41fd85a889f1190120d1f6
+%global commit c177f456f4c7cce7be964eabe945daed13b8d7b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220705
+%global date 20221211
 
 %global with_systinyxml 0
 
@@ -27,7 +27,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:

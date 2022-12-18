@@ -19,9 +19,9 @@
 %global with_syshidapi 0
 %global bundlehidapi 0.12.0
 
-%global commit b0e376ae76907bd7594554727e0186239a6d9a99
+%global commit baa2768a6980a015117d3df001f33faa34e1eb57
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221208
+%global date 20221217
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -92,10 +92,10 @@
 
 Name:           rpcs3
 Version:        0.0.25
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://rpcs3.net/
 
 %if 0%{?with_snapshot}
@@ -131,7 +131,6 @@ Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
-Patch12:        0001-ffmpeg-5.1.2-fix.patch
 
 ExclusiveArch:  x86_64
 

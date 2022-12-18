@@ -38,7 +38,7 @@ index b9084be..3bb5f90 100644
  option(USE_ASAN "Use address sanitizer" OFF)
 @@ -1372,11 +1373,30 @@ add_library(xbrz STATIC
  )
- include_directories(ext/xbrz)
+ target_include_directories(xbrz PRIVATE ext/xbrz)
  
 +if(USE_SYSTEM_XXHASH)
 +	find_path(XXHASH_INCLUDE_DIR xxhash.h)
@@ -62,7 +62,7 @@ index b9084be..3bb5f90 100644
  	ext/xxhash.c
  	ext/xxhash.h
  )
- include_directories(ext/xxhash)
+ target_include_directories(xxhash PRIVATE ext/xxhash)
 +endif()
  
  set(CoreExtra)

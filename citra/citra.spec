@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 06a9f69d88253c916b1fc4e8b62ca50f9e04f032
+%global commit ae3d50f71f6feee0e5a2c17fe1cb565c255b7b51
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221213
+%global date 20221217
 %global with_snapshot 1
 
 # Enable system boost
@@ -74,7 +74,7 @@
 
 Name:           citra
 Version:        0
-Release:        31%{?gver}%{?dist}
+Release:        32%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only
@@ -103,8 +103,6 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
-Patch0:         %{vc_url}/%{name}/pull/6219.patch#/%{name}-gh-pr6219.patch
-Patch1:         %{vc_url}/%{name}/pull/6220.patch#/%{name}-gh-pr6220.patch
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
 
 Patch10:        0001-Optional-tests.patch

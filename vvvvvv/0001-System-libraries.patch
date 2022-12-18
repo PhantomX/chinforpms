@@ -20,7 +20,7 @@ index 55a5318..4d291d6 100644
 +    target_link_libraries(faudio-shared INTERFACE FAudio::FAudio)
 +    add_library(FAudio ALIAS faudio-shared)
 +
-     target_link_libraries(VVVVVV physfs tinyxml2 utf8cpp lodepng-static FAudio)
+     target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 utf8cpp FAudio)
  endif()
  
 -- 

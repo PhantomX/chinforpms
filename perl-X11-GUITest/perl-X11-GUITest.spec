@@ -1,11 +1,16 @@
+%global pkgname X11-GUITest
+
 %global use_x11_tests 1
-Name:           perl-X11-GUITest
+Name:           perl-%{pkgname}
 Version:        0.28
 Release:        21%{?dist}
 Summary:        Provides GUI testing/interaction routines
-License:        GPLv2+
-URL:            https://metacpan.org/release/X11-GUITest
-Source0:        https://cpan.metacpan.org/modules/by-module/X11/X11-GUITest-%{version}.tar.gz
+
+License:        GPL-2.0-or-later
+URL:            https://metacpan.org/release/%{pkgname}
+
+Source0:        https://cpan.metacpan.org/modules/by-module/X11/%{pkgname}-%{version}.tar.gz
+
 BuildRequires:  gcc
 BuildRequires:  libX11-devel
 BuildRequires:  libXext-devel
@@ -39,19 +44,20 @@ applications; which have been built upon the X library or toolkits (i.e.,
 GTK+, Xt, Qt, Motif, etc.) that "wrap" the X library's functionality.
 
 %prep
-%setup -q -n X11-GUITest-%{version}
+%autosetup -n %{pkgname}-%{version}
 
 %build
-%{__perl} Makefile.PL INSTALLDIRS=vendor OPTIMIZE="$RPM_OPT_FLAGS"
-make %{?_smp_mflags}
+%{__perl} Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
+%make_build
 
 %install
-make pure_install DESTDIR=$RPM_BUILD_ROOT
+make pure_install DESTDIR=%{buildroot}
 
-find $RPM_BUILD_ROOT -type f -name .packlist -exec rm -f {} \;
-find $RPM_BUILD_ROOT -type f -name '*.bs' -size 0 -exec rm -f {} \;
+find %{buildroot} -type f -name .packlist -exec rm -f {} ';'
+find %{buildroot} -type f -name '*.bs' -a -size 0 -exec rm -f {} ';'
+find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null ';'
+%{_fixperms} %{buildroot}/*
 
-%{_fixperms} $RPM_BUILD_ROOT/*
 
 %check
 %if %{use_x11_tests}

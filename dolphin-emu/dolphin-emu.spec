@@ -27,9 +27,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 44f8b8c1007f2ead8530d53c4aca3df8fee6d6af
+%global commit c440781ce7612c4e368e76638ab4a0cfb289bb34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221127
+%global date 20221208
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -51,7 +51,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        171%{?gver}%{?dist}
+Release:        172%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -69,7 +69,7 @@ Url:            https://dolphin-emu.org/
 #dolphin-5.0/Source/Core/VideoBackends/Software/Clipper.cpp
 #dolphin-5.0/Source/Core/AudioCommon/aldlist.cpp
 ##Any code in Externals has a license break down in Externals/licenses.md
-License:        GPLv2+ and LGPLv2+ and BSD and MIT and zlib
+License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND MIT AND Zlib
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz

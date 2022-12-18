@@ -58,6 +58,7 @@ lzma-sdk
 python-pynput
 -python-yoyo-migrations
 -perl-Gtk3
+perl-LWP-UserAgent-Cached
 perl-X11-GUITest
 qcodeeditor
 rapidyaml
@@ -198,6 +199,7 @@ orage
 perl-rename
 pev
 phantomjs
+pipe-viewer
 pkgrip
 plzip
 protontricks
