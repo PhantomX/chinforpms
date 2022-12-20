@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5488e0bf3dec842a7ef742deeba73adb04a8414f
+%global commit 43d091361ed6b400a68911147fd5fe524ccecf34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221111
+%global date 20221125
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -29,7 +29,7 @@ Summary:        A Nintendo DS emulator
 # teakra - MIT
 # tiny-AES - Unlicense
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://melonds.kuribo64.net/
 
 %if 0%{?with_snapshot}

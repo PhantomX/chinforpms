@@ -5,7 +5,7 @@ Version:        1.3.237
 Release:        100%{?dist}
 Summary:        Vulkan tools
 
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Tools
 
 %if 0%{?with_sdk}

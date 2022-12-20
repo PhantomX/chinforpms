@@ -1,0 +1,12 @@
+diff -up vmware-horizon-client-2209.8.7.0.20616018-3.x86_64/usr/systemd/system/ftscanhv.service.orig vmware-horizon-client-2209.8.7.0.20616018-3.x86_64/usr/systemd/system/ftscanhv.service
+--- vmware-horizon-client-2209.8.7.0.20616018-3.x86_64/usr/systemd/system/ftscanhv.service.orig	2022-10-12 09:09:59.000000000 +0200
++++ vmware-horizon-client-2209.8.7.0.20616018-3.x86_64/usr/systemd/system/ftscanhv.service	2022-11-03 13:36:39.303777815 +0100
+@@ -6,7 +6,7 @@ After=local-fs.target network-online.tar
+ WantedBy=multi-user.target
+  
+ [Service]
+-Type=idle
++Type=simple
+ TimeoutSec=10
+ Restart=always
+ ExecStart=/usr/lib/vmware/view/bin/ftscanhvd -D

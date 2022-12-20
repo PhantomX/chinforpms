@@ -80,6 +80,7 @@ vasm
 -VirtualBox-guest-additions-iso
 vivaldi
 vivaldi-ffmpeg-codecs
+vmware-horizon-client
 vvvvvv
 vvvvvv-data
 -wine-freeworld

@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c15f446ffc9120310a698faddec755a9a0e9ea29
+%global commit 1dd006d846350e96a46949f1e07a900206ae7194
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221031
+%global date 20221216
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -33,10 +33,6 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
-%global commit6 37afa119a904d81a3495e6ef9c03151feff56349
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
-%global srcname6 volk
-
 # Enable system spirv (broken)
 %global with_sysspirv 0
 %global with_sysvulkan 0
@@ -54,13 +50,13 @@
 
 Name:           flycast
 Version:        2.0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
 
 # ggpo - MIT
-License:        GPLv2 and BSD
+License:        GPL-2.0-only AND BSD-3-Clause
 URL:            https://github.com/flyinghead/%{name}
 
 %if 0%{?with_snapshot}
@@ -77,7 +73,6 @@ Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/
 %if !%{?with_sysspirv}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
-Source6:        https://github.com/zeux/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 
 Patch1:         0001-Use-system-libs.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -93,6 +88,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
@@ -131,8 +127,6 @@ Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(vixl)
-Provides:       bundled(volk) = 0~git%{shortcommit6}
-Provides:       bundled(xbyak)
 
 
 %description
@@ -142,7 +136,7 @@ Provides:       bundled(xbyak)
 %prep
 %autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
 
-rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xxHash,zlib}
+rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xbyak,xxHash,zlib}
 
 pushd core/deps
 tar -xf %{S:1} -C luabridge/ --strip-components 1
@@ -156,13 +150,10 @@ tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
-tar -xf %{S:6} -C volk/ --strip-components 1
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/COPYING COPYING.nowide
 cp -p picotcp/COPYING COPYING.picotcp
-cp -p volk/LICENSE.md LICENSE.volk.md
-cp -p xbyak/COPYRIGHT COPYRIGHT.xbyak
 popd
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'

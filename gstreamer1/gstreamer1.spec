@@ -16,11 +16,11 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.20.4
+Version:        1.20.5
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 URL:            http://gstreamer.freedesktop.org/
 %if 0%{?gitrel}
 # git clone git://anongit.freedesktop.org/gstreamer/gstreamer
@@ -227,6 +227,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Tue Dec 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1.20.5-100
+- 1.20.5
+
 * Sun Oct 16 2022 Phantom X <megaphantomx at hotmail dot com> - 1.20.4-100
 - 1.20.4
 

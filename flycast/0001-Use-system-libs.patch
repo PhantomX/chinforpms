@@ -1,19 +1,19 @@
-From 39e1c9a2c94cf83741d0ebcbbe580fd1266821f8 Mon Sep 17 00:00:00 2001
+From 5f6e05db0ae397a7ffacc6f7664122d404cd3261 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libs
 
 ---
- CMakeLists.txt                | 74 ++++++++++++++++++++++++++++++++---
- core/archive/7zArchive.cpp    |  7 ++++
+ CMakeLists.txt                | 82 ++++++++++++++++++++++++++++++++---
+ core/archive/7zArchive.cpp    |  7 +++
  core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 ++
  core/rend/vulkan/compiler.cpp |  4 ++
  core/rend/vulkan/shaders.h    |  4 ++
- 6 files changed, 92 insertions(+), 6 deletions(-)
+ 6 files changed, 100 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 366b7c1..2b1358c 100644
+index 87bc605..10c635d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,6 +20,9 @@ option(LIBRETRO "Build libretro core" OFF)
@@ -26,7 +26,7 @@ index 366b7c1..2b1358c 100644
  
  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/shell/cmake")
  
-@@ -303,16 +306,40 @@ if(USE_OPENMP)
+@@ -319,16 +322,40 @@ if(USE_OPENMP)
  	endif()
  endif()
  
@@ -68,7 +68,7 @@ index 366b7c1..2b1358c 100644
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
  	option(SKIP_GLSLANG_INSTALL "Skip installation" ON)
  	option(ENABLE_SPVREMAPPER "Enables building of SPVRemapper" OFF)
-@@ -320,8 +347,8 @@ if(USE_VULKAN)
+@@ -336,8 +363,8 @@ if(USE_VULKAN)
  	option(ENABLE_HLSL "Enables HLSL input support" OFF)
  	option(ENABLE_PCH "Enables Precompiled header" OFF)
  	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
@@ -78,7 +78,7 @@ index 366b7c1..2b1358c 100644
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -377,9 +404,17 @@ if(NOT LIBRETRO)
+@@ -393,9 +420,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -97,7 +97,7 @@ index 366b7c1..2b1358c 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
  	target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -391,7 +426,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -407,7 +442,6 @@ if(NOT WITH_SYSTEM_ZLIB)
  	get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -105,7 +105,7 @@ index 366b7c1..2b1358c 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
  	pkg_check_modules(AO IMPORTED_TARGET ao)
  	if(AO_FOUND)
-@@ -618,8 +652,25 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -634,8 +668,25 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -131,7 +131,7 @@ index 366b7c1..2b1358c 100644
  target_sources(${PROJECT_NAME} PRIVATE core/deps/libelf/elf32.cpp core/deps/libelf/elf64.cpp core/deps/libelf/elf.cpp)
  if(NOT LIBRETRO)
  	target_sources(${PROJECT_NAME} PRIVATE core/deps/imgui/imgui.cpp core/deps/imgui/imgui_demo.cpp core/deps/imgui/imgui_draw.cpp core/deps/imgui/imgui_widgets.cpp)
-@@ -665,9 +716,13 @@ if(LIBRETRO)
+@@ -681,9 +732,13 @@ if(LIBRETRO)
  		shell/libretro/vmu_xhair.cpp)
  endif()
  
@@ -147,10 +147,10 @@ index 366b7c1..2b1358c 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1089,7 +1144,14 @@ if(NOT LIBRETRO)
- endif()
+@@ -1116,7 +1171,14 @@ if(USE_VULKAN)
+ 		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_MACOS_MVK)
+ 	endif()
  
- if(USE_VULKAN)
 +	find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h)
 +	if(vulkan_INCLUDE_DIRS)
 +		message(STATUS "Using the system vulkan-headers")
@@ -162,6 +162,22 @@ index 366b7c1..2b1358c 100644
  	target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
  
  	add_library(VulkanMemoryAllocator INTERFACE)
+@@ -1322,7 +1384,15 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*|arm64.*)" OR CMAKE_OSX_
+ 	set(KNOWN_ARCHITECTURE_DETECTED ON)
+ endif()
+ if(CMAKE_SYSTEM_PROCESSOR MATCHES "i686.*|i386.*|x86.*|amd64.*|x86_64.*|AMD64.*" OR CMAKE_OSX_ARCHITECTURES MATCHES "x86_64")
++	find_package(xbyak 6)
++	if(xbyak_FOUND)
++		message(STATUS "Using the system xbyak")
++		add_library(xbyak-shared INTERFACE)
++		target_link_libraries(xbyak-shared INTERFACE xbyak::xbyak)
++		add_library(xbyak::xbyak ALIAS xbyak-shared)
++	else()
+ 	add_subdirectory(core/deps/xbyak EXCLUDE_FROM_ALL)
++	endif()
+ 	target_link_libraries(${PROJECT_NAME} PRIVATE xbyak::xbyak)
+ 	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+ 		target_sources(${PROJECT_NAME} PRIVATE
 diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
 index 9a74502..d743695 100644
 --- a/core/archive/7zArchive.cpp
@@ -260,5 +276,5 @@ index f58ac0d..2ef9b1f 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.38.1
+2.39.0
 

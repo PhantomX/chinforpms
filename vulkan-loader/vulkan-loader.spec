@@ -1,11 +1,11 @@
 %global with_sdk 0
 
 Name:           vulkan-loader
-Version:        1.3.237
+Version:        1.3.238
 Release:        100%{?dist}
 Summary:        Vulkan ICD desktop loader
 
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Loader
 
 %if 1%(echo %{version} | cut -d. -f4) != 1
@@ -101,6 +101,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Tue Dec 20 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.238-100
+- 1.3.238
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.237-100
 - 1.3.237
 

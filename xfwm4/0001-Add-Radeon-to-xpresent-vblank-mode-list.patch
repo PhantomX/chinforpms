@@ -13,8 +13,8 @@ diff --git a/src/compositor.c b/src/compositor.c
 index fce5178..07e9dc0 100644
 --- a/src/compositor.c
 +++ b/src/compositor.c
-@@ -1117,12 +1117,8 @@ check_glx_renderer (ScreenInfo *screen_info)
- #if HAVE_PRESENT_EXTENSION
+@@ -1146,12 +1146,8 @@ check_glx_renderer (ScreenInfo *screen_info)
+ #ifdef HAVE_PRESENT_EXTENSION
      const char *prefer_xpresent[] = {
          "Intel",
 -        /* Cannot add AMD and Radeon until the fix for

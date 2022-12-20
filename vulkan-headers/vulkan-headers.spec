@@ -1,10 +1,10 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.3.237
+Version:        1.3.238
 Release:        100%{?dist}
 Summary:        Vulkan Header files and API registry
 
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://github.com/KhronosGroup/Vulkan-Headers
 
 %if 1%(echo %{version} | cut -d. -f4) != 1
@@ -55,6 +55,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Mon Dec 19 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.238-100
+- 1.3.238
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.237-100
 - 1.3.237
 

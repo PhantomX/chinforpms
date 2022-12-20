@@ -3,11 +3,11 @@
 %global vc_url https://gitlab.xfce.org/xfce/%{name}
 
 Name:           xfwm4
-Version:        4.16.1
-Release:        101%{?dist}
+Version:        4.18.0
+Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.xfce.org/
 #VCS git:git://git.xfce.org/xfce/xfwm4
 Source0:        https://archive.xfce.org/src/xfce/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2
@@ -88,6 +88,9 @@ done
 
 
 %changelog
+* Mon Dec 19 2022 Phantom X <megaphantomx at hotmail dot com> - 4.18.0-100
+- 4.18.0
+
 * Mon Aug 16 2021 Phantom X <megaphantomx at hotmail dot com> - 4.16.1-101
 - Add experimental patch to force window decorations from xfce#552
 

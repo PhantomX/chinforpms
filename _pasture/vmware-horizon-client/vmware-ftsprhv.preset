@@ -1,0 +1,7 @@
+# Also see:
+# New wiki:
+# https://docs.fedoraproject.org/en-US/packaging-guidelines/DefaultServices/
+# Old wiki:
+# https://fedoraproject.org/wiki/Starting_services_by_default
+
+enable ftsprhv.service

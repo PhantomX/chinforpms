@@ -24,13 +24,7 @@
 %global sanitize 1
 %bcond_with     native
 
-%bcond_without  qt
-
-%if %{with qt}
 %global appbin %{name}-qt
-%else
-%global appbin %{name}
-%endif
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
@@ -45,11 +39,11 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3687
+Version:        1.7.3735
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPLv3 and LGPLv3+ and MIT
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT
 URL:            https://github.com/PCSX2/pcsx2
 
 %if 0%{sanitize}
@@ -112,7 +106,6 @@ BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(ryml) >= 0.4.1
-%if %{with qt}
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
@@ -122,11 +115,6 @@ BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
-%else
-BuildRequires:  wxGTK3-devel
-%endif
-BuildRequires:  pkgconfig(samplerate)
-# use SDL that depends wxGTK
 BuildRequires:  pkgconfig(sdl2) >= 2.0.22
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
@@ -238,9 +226,7 @@ sed -i \
   -DDISABLE_BUILD_DATE:BOOL=TRUE \
   -DPACKAGE_MODE:BOOL=TRUE \
   -DBUILD_REPLAY_LOADERS:BOOL=FALSE \
-%if %{with qt}
   -DQT_BUILD:BOOL=TRUE \
-%endif
   -DXDG_STD:BOOL=TRUE \
   -DX11_API:BOOL=TRUE \
   -DWAYLAND_API:BOOL=TRUE \
@@ -308,19 +294,12 @@ desktop-file-edit \
 #strip extra copy of icon file, Wrong place for fedora
 rm -rf %{buildroot}/usr/share/pixmaps
 
-%if %{with qt}
 # No localization for Qt GUI yet
 rm -rf %{buildroot}%{_datadir}/PCSX2/resources/locale
-%else
-%find_lang pcsx2_Iconized
-%find_lang pcsx2_Main
-%endif
+%dnl %find_lang pcsx2_Iconized
+%dnl %find_lang pcsx2_Main
 
-%if %{with qt}
 %files
-%else
-%files -f pcsx2_Iconized.lang -f pcsx2_Main.lang
-%endif
 %license COPYING* 3rdparty/{COPYRIGHT,LICENSE}.*
 %doc README.md bin/docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
