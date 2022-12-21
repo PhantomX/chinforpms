@@ -36,15 +36,15 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 mupen64plus-input-raphnetraw
 
-%global commit7 9d71074f6b71750e99ad06a713f28a9c32ad15cb
+%global commit7 88c3f64d64811c7407d1f54502012fa67c67ebe8
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 ff47414c2bd6e572872e9148b2f3e1dbc83e5fee
+%global commit8 27a64b83559c7f0ef89de79996fc9d1702637da9
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
-%global commit9 693f607728aca78d94ba5d45b0ce119b4ccbcd8c
+%global commit9 471253703c0e1fc84454708d5dd7bba2743ee66a
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
@@ -62,11 +62,11 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.2.4
+Version:        0.2.5
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
-License:        GPLv3 and (MIT or LGPLv3) and GPLv2
+License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only
 URL:            https://github.com/Rosalie241/RMG
 
 %if %{with_snapshot}
@@ -76,7 +76,7 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{mupen64_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{mupen64_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        %{mupen64_url}/%{srcname3}/archive/%{commit3}/%{srcname2}-%{shortcommit3}.tar.gz
+Source3:        %{mupen64_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        %{vc_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/raphnet/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
@@ -99,9 +99,11 @@ BuildRequires:  minizip-compat-devel
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Svg)
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6OpenGL)
+BuildRequires:  pkgconfig(Qt6Svg)
+BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(sdl2)
@@ -225,6 +227,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Dec 20 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-1
+- 0.2.5
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.4-1
 - 0.2.4
 
