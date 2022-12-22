@@ -5,7 +5,7 @@ Version:        1.12
 Release:        1%{?dist}
 Summary:        Renames multiple files using Perl regular expressions
 
-License:        (GPL-1.0-or-later OR Artistic-1.0-Perl)
+License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/dist/rename
 
 Source0:        https://cpan.metacpan.org/authors/id/P/PE/PEDERST/%{pkgname}-%{version}.tar.gz

@@ -5,7 +5,7 @@ Version:        0.08
 Release:        1%{?dist}
 Summary:        LWP::UserAgent with simple caching mechanism
 
-License:        (GPL-1.0-or-later OR Artistic-1.0-Perl)
+License:        GPL-1.0-or-later OR Artistic-1.0-Perl
 URL:            https://metacpan.org/dist/%{pkgname}
 
 Source0:        https://cpan.metacpan.org/authors/id/O/OL/OLEG/%{pkgname}-%{version}.tar.gz

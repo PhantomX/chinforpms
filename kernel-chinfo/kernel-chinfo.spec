@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 63d3991f29418b4841d370e6c64278b4ed4a654f
+%global pfcommit 06bc137f5e9a03424ab07bafb55dc7b59fc56b6f
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash f4dc793d47d25de4a02379681912d34b
+%global pfcoprhash 6b3fdf84181d2b84e4f0ba4af668d062
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id d1335c09a0de8a57f191955e8ae17cc68ce4f580
+%global opensuse_id ab10a112debd048481eeb4d1d93a7b2366be6072
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -960,6 +960,10 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1014: %{opensuse_url}/mm-mremap-fix-mremap-expanding-vma-with-addr-inside-.patch#/openSUSE-mm-mremap-fix-mremap-expanding-vma-with-addr-inside-.patch
+Patch1015: %{opensuse_url}/io_uring-net-ensure-compat-import-handlers-clear-fre.patch#/openSUSE-io_uring-net-ensure-compat-import-handlers-clear-fre.patch
+Patch1016: %{opensuse_url}/tcp-Add-TIME_WAIT-sockets-in-bhash2.patch#/openSUSE-tcp-Add-TIME_WAIT-sockets-in-bhash2.patch
+Patch1017: %{opensuse_url}/NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch#/openSUSE-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -3032,6 +3036,9 @@ fi
 #
 #
 %changelog
+* Wed Dec 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.1-500.chinfo
+- 6.1.1 - pf1
+
 * Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500.chinfo
 - 6.1.0 - pf1
 

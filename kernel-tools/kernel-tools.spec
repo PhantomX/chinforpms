@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 0
+%global stable_update 1
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -79,7 +79,7 @@
 
 Name:           kernel-tools
 Summary:        Assortment of tools for the Linux kernel
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://www.kernel.org/
 Version:        %{rpmversion}
 Release:        %{pkg_release}
@@ -554,6 +554,9 @@ popd
 
 
 %changelog
+* Wed Dec 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500
+- 6.1.1
+
 * Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500
 - 6.1.0
 
