@@ -1,6 +1,6 @@
-%global commit 17e5ff74308f41ab662d46f684db2c6023a4a16b
+%global commit d059dd1cd0770e9c63da33562f6bcba4ef52846b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221216
+%global date 20221222
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 32c64aa429d0c45786b907132daa3723fcfba21f
+%global wine_stagingver 3a1f2a42bb62a609ed4a988c82a70a5c20f32df1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0~rc1
-Release:        101%{?gver}%{?dist}
+Version:        8.0~rc2
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -221,7 +221,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 
 # wine staging patches for wine-staging
-Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.gz
+Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
@@ -873,7 +873,7 @@ This package adds the opencl driver for wine.
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
-gzip -dc %{SOURCE900} | tar -xf - --strip-components=1
+tar -xf %{SOURCE900} --strip-components=1
 
 %patch901 -p1
 
@@ -2544,6 +2544,9 @@ fi
 
 
 %changelog
+* Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc2-100.20221222gitd059dd1
+- 8.0-rc2
+
 * Sun Dec 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc1-100
 - 8.0-rc1
 

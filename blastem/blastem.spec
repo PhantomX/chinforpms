@@ -15,7 +15,7 @@ Version:        0.6.3
 Release:        0.12%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 

@@ -19,7 +19,7 @@ index 1e4b35b..fa7d5c3 100644
 -  std::snprintf(stream_name, sizeof(stream_name), "%p", this);
 +  char stream_name[] = "DuckStation AudioStream";
  
-   rv = cubeb_stream_init(m_context, &stream, stream_name, nullptr, nullptr, nullptr, &params, latency_frames,
+   rv = cubeb_stream_init(m_context, &stream, stream_name, nullptr, nullptr, selected_device, &params, latency_frames,
                           &CubebAudioStream::DataCallback, StateCallback, this);
 -- 
 2.37.1

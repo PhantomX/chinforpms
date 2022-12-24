@@ -1,6 +1,6 @@
-%global commit e607703392145343e8aca42be052121c0b7bd1c9
+%global commit b71769507f36456314e1c9411526370bf82cbc02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221205
+%global date 20221221
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        50%{?gver}%{?dist}
+Release:        51%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
 License:        zlib and MIT
@@ -21,6 +21,8 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
+
+Patch0:         0001-Add-Xbox-360-Controller-for-Windows-GUID.patch
 
 BuildArch:      noarch
 
@@ -52,6 +54,9 @@ install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0-51.20221221gitb717695
+- Add extra GUID patch
+
 * Wed Jul 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0-47.20220706git23501da
 - Last database
 

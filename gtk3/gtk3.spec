@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver e5b28eb032ff2356f836c7a93efa9da5a191c3b1
+%global classic_ver 3.24.36
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -34,22 +34,19 @@
 %global vc_url https://gitlab.gnome.org/GNOME/gtk/-
 
 Name:           gtk3
-Version:        3.24.35
+Version:        3.24.36
 Release:        100%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
 
-License:        LGPLv2+
-URL: http://www.gtk.org
+License:        LGPL-2.0-or-later
+URL:            http://www.gtk.org
+
 Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
-
-Source10:       wayland-cursor-meson.build 
-
-Patch0:         %{vc_url}/commit/4bdfb11d1fe844f1ae9c89b55092e410ed46d5a0.patch#/%{name}-gl-4bdfb11.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -222,8 +219,6 @@ the functionality of the installed %{name} package.
 %prep
 %autosetup -n gtk+-%{version} -p1 -a 1
 
-cp -p %{S:10} gdk/wayland/cursor/meson.build
-
 patch_command(){
   %{__scm_apply_patch -p1 -q} -i %{classic_dir}/$1
 }
@@ -318,7 +313,7 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 %files -f gtk30.lang
 %license COPYING
-%doc AUTHORS NEWS README README-classic.md README.chinforpms
+%doc NEWS README.md README-classic.md README.chinforpms
 %{_bindir}/gtk-query-immodules-3.0*
 %{_bindir}/gtk-launch
 %{_libdir}/libgtk-3.so.*
@@ -414,6 +409,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.36-100
+- 3.24.36
+
 * Thu Nov 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.35-100
 - 3.24.35
 

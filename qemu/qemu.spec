@@ -8,7 +8,7 @@
 %global libfdt_version 1.6.0
 %global libseccomp_version 2.4.0
 %global libusbx_version 1.0.23
-%global meson_version 0.58.2
+%global meson_version 0.61.3
 %global usbredir_version 0.7.1
 %global ipxe_version 20200823-5.git4bd064de
 
@@ -307,16 +307,17 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
-Summary: QEMU is a FAST! processor emulator
-Name: qemu
+Summary:        QEMU is a FAST! processor emulator
+Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version: 7.1.0
-Release: 100%{?dist}
-Epoch: 2
-License: GPLv2 and BSD and MIT and CC-BY
-URL: http://www.qemu.org/
+Version:        7.2.0
+Release:        100%{?dist}
+Epoch:          2
 
-Source0: http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
+License:        GPL-2.0-only AND GPL-2.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND CC-BY-SA-4.0 
+URL:            http://www.qemu.org/
+
+Source0:        http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
 
 Source10: qemu-guest-agent.service
 Source11: 99-qemu-guest-agent.rules
@@ -1411,6 +1412,7 @@ mkdir -p %{static_builddir}
   --disable-auth-pam               \\\
   --disable-avx2                   \\\
   --disable-avx512f                \\\
+  --disable-blkio                  \\\
   --disable-block-drv-whitelist-in-tools \\\
   --disable-bochs                  \\\
   --disable-bpf                    \\\
@@ -1444,6 +1446,7 @@ mkdir -p %{static_builddir}
   --disable-glusterfs              \\\
   --disable-gnutls                 \\\
   --disable-gtk                    \\\
+  --disable-gtk-clipboard          \\\
   --disable-guest-agent            \\\
   --disable-guest-agent-msi        \\\
   --disable-hax                    \\\
@@ -1499,6 +1502,7 @@ mkdir -p %{static_builddir}
   --disable-slirp-smbd             \\\
   --disable-smartcard              \\\
   --disable-snappy                 \\\
+  --disable-sndio                  \\\
   --disable-sparse                 \\\
   --disable-spice                  \\\
   --disable-spice-protocol         \\\
@@ -1644,7 +1648,7 @@ run_configure \
 %endif
   --enable-seccomp \
   --enable-selinux \
-  --enable-slirp=system \
+  --enable-slirp \
   --enable-slirp-smbd \
   --enable-snappy \
   --enable-system \
@@ -2750,6 +2754,9 @@ popd
 
 
 %changelog
+* Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.2.0-100
+- 7.2.0
+
 * Thu Sep 01 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.1.0-100
 - 7.1.0
 

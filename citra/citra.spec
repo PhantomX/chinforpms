@@ -77,7 +77,7 @@ Version:        0
 Release:        32%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
-License:        GPL-2.0-only
+License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
 URL:            https://citra-emu.org
 
 %if 0%{?with_snapshot}
@@ -86,17 +86,17 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-%if !%{with dynarmic}
+%if %{without dynarmic}
 Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
-%if !%{with fmt}
+%if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-%if !%{with boost}
+%if %{without boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
 Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
@@ -190,18 +190,18 @@ This is the Qt frontend.
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1
-%if !%{with dynarmic}
+%if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 %endif
-%if !%{with fmt}
+%if %{without fmt}
 tar -xf %{S:4} -C externals/fmt --strip-components 1
 %endif
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
-%if !%{with boost}
+%if %{without boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
@@ -209,15 +209,15 @@ tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd externals
-%if !%{with boost}
+%if %{without boost}
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
-%if !%{with dynarmic}
+%if %{without dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
-%if !%{with fmt}
+%if %{without fmt}
 cp -p fmt/LICENSE.rst LICENSE.fmt.rst
 %endif
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
@@ -234,14 +234,14 @@ ln -sf %{_includedir}/nlohmann/json.hpp \
 
 rm -rf externals/teakra/externals/catch/
 
-%if !%{with fmt}
+%if %{without fmt}
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
 %endif
 
 sed \
   -e 's/-Wfatal-errors\b//g' \
   -e '/-pedantic-errors/d' \
-%if !%{with dynarmic}
+%if %{without dynarmic}
   -i externals/dynarmic/CMakeLists.txt
 %endif
   -i externals/teakra/CMakeLists.txt
@@ -249,7 +249,7 @@ sed \
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
-%if !%{with adv_simd}
+%if %{without adv_simd}
   sed \
     -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSSE3|\0_DISABLED|g' \
     -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSE4.|\0_DISABLED|g' \
@@ -292,13 +292,13 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_FFMPEG_AUDIO_DECODER:BOOL=ON \
   -DENABLE_FFMPEG_VIDEO_DUMPER:BOOL=ON \
 %endif
-%if !%{with adv_simd}
+%if %{without adv_simd}
   -DCRYPTOPP_DISABLE_SSSE3:BOOL=ON \
 %endif
   -DENABLE_WEB_SERVICE:BOOL=ON \
-  %{!?_with_tests:-DCITRA_TESTS:BOOL=OFF} \
+  %{!?with_tests:-DCITRA_TESTS:BOOL=OFF} \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-%if !%{with dynarmic}
+%if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \

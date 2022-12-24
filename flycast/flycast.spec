@@ -34,10 +34,10 @@
 %global srcname5 glslang
 
 # Enable system spirv (broken)
-%global with_sysspirv 0
-%global with_sysvulkan 0
+%bcond_with sysspirv
+%bcond_with sysvulkan
 # Build with x11 instead SDL
-%global with_x11 0
+%bcond_with x11
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -56,7 +56,7 @@ Summary:        Sega Dreamcast emulator
 Epoch:          1
 
 # ggpo - MIT
-License:        GPL-2.0-only AND BSD-3-Clause
+License:        GPL-2.0-only AND BSD-3-Clause AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
 %if 0%{?with_snapshot}
@@ -65,12 +65,12 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%if !%{?with_sysvulkan}
+%if %{without sysvulkan}
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
 Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-%if !%{?with_sysspirv}
+%if %{without sysspirv}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
@@ -92,7 +92,7 @@ BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 BuildRequires:  pkgconfig(glslang)
 %else
 Provides:       bundled(glslang) = git~0%{shortcommit5}
@@ -104,14 +104,14 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(lzmasdk-c)
-%if 0%{?with_x11}
+%if %{with x11}
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(x11)
 %else
 BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 BuildRequires:  vulkan-headers >= 1.3.224.1
 %endif
 Requires:       hicolor-icon-theme
@@ -200,12 +200,12 @@ export CXXFLAGS+=" ${EXTRA_CFLAGS}"
 
 %cmake \
   -GNinja \
-%if 0%{?with_x11}
+%if %{with x11}
   -DSDL2_FOUND:BOOL=OFF \
 %endif
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
 %endif
   -DCMAKE_BUILD_TYPE:STRING=Release \

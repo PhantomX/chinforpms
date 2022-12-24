@@ -7,12 +7,12 @@
 
 %global with_nogui 0
 
-%global with_sysspirv 0
-%global with_sysvulkan 0
+%bcond_with sysspirv
+%bcond_with sysvulkan
 
-%global commit 84c966502d526754fb74b98f737627ae0de00521
+%global commit 928dd0e6656ef76ea54b380ec356f872e5e92c42
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221206
+%global date 20221221
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -30,11 +30,11 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        78%{?gver}%{?dist}
+Release:        79%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPLv3
+License:        GPL-3.0-only AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -87,10 +87,10 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 BuildRequires:  vulkan-headers
 %endif
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
@@ -119,6 +119,7 @@ Suggests:       qt6-qttranslations
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
+Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = 0~git
 Provides:       bundled(stb) = %{stb_ver}
@@ -157,7 +158,7 @@ rm -rf \
   cpuinfo cubeb discord-rpc fmt libchdr libFLAC soundtouch lzma minizip msvc \
   rapidjson tinyxml2 xbyak xxhash zlib zstd
 
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
   mkdir -p ../src/vulkan
   mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
   rm -rf vulkan 
@@ -165,13 +166,14 @@ rm -rf \
   sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i CMakeLists.txt
 %endif
 
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
   rm -rf glslang
 %else
   sed -e 's|SPIRV-Tools|SPIRV-Tools_disabled|g' -i CMakeLists.txt
   cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
-cp -p imgui/LICENSE.txt LICENSE.glslang
+cp -p imgui/LICENSE.txt LICENSE.imgui
+cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
 

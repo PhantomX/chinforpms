@@ -15,7 +15,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           simple64
-Version:        2022.12.2
+Version:        2022.12.4
 Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
@@ -24,7 +24,7 @@ Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 # * rsp-parallel - MIT or LGPLv3
 # * simple64-audio-sdl2 - GPLv2
 # * simple64-input-raphnetraw - GPLv2
-License:        GPLv3 and (MIT or LGPLv3) and GPLv2
+License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only
 URL:            https://github.com/%{name}/%{name}
 
 %if 0%{sanitize}
@@ -46,10 +46,9 @@ Source1:        %{appname}.appdata.xml
 Patch0:         0001-Set-system-directories.patch
 Patch1:         0001-input-qt-disable-all-VRU-support.patch
 Patch2:         0001-Load-versioned-library.patch
-
-Patch900:       0001-Rename-library-and-directories.patch
-Patch901:       0001-Versioned-shared-lib.patch
-Patch902:       0001-Use-system-libraries.patch
+Patch3:         0001-Rename-library-and-directories.patch
+Patch4:         0001-Versioned-shared-lib.patch
+Patch5:         0001-Use-system-libraries.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -113,13 +112,6 @@ This build do not have VRU support.
 %autopatch -p1 -M 500
 
 rm -f *.exe
-%if %{with mupen64plus}
-rm -rf mupen64plus-core
-%else
-%patch900 -p1
-%patch901 -p1
-%patch902 -p1
-%endif
 rm -rf parallel-rdp-standalone/vulkan-headers
 rm -f %{name}-gui/discord/*.{dylib,so,dll}
 rm -f %{name}-input-qt/vosk/*.{dylib,so,dll}
@@ -129,7 +121,7 @@ rm -rf mupen64plus-core/subprojects/{minizip,xxhash}
 cp %{S:1} .
 
 mkdir LICENSEdir READMEdir
-for i in %{name}-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standalone,rsp} %{!?_with_mupen64plus:mupen64plus-core} ;do
+for i in %{name}-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standalone,rsp} mupen64plus-core ;do
   if [ -f $i/LICENSES ] ;then
     cp -p $i/LICENSES LICENSEdir/LICENSES.$i
   fi
@@ -144,7 +136,7 @@ for i in %{name}-{audio-sdl2,gui,input-{qt,raphnetraw}} parallel-{rdp-standalone
   fi
 done
 
-for i in %{name}-input-raphnetraw parallel-rdp-standalone %{!?_with_mupen64plus:mupen64plus-core} ;do
+for i in %{name}-input-raphnetraw parallel-rdp-standalone mupen64plus-core ;do
   if [ -f $i/README.md ] ;then
     cp -p $i/README.md READMEdir/README.$i.md
   fi
@@ -155,19 +147,10 @@ sed -e 's|_RPM_LIBDIR_|%{_libdir}|g' \
 
 echo '#define GUI_VERSION "%{commit}"' > %{name}-gui/version.h
 
-%if %{with mupen64plus}
-sed \
-  -e 's|../mupen64plus-core/src/api|%{_includedir}/mupen64plus|g' \
-  -i parallel-{rdp-standalone,rsp}/CMakeLists.txt \
-     %{name}-{audio-sdl2,input-{raphnetraw,qt}}
-
-sed -e '/^#include "config.h"/d' -i %{name}-input-raphnetraw/src/plugin_front.c
-%else
 sed \
   -e 's|DNO_ASM|\0 -DSHAREDIR="${SHARE_INSTALL_PREFIX}/%{name}"|g' \
   -e 's|mupen64plus|%{name}|g' \
   -i mupen64plus-core/CMakeLists.txt
-%endif
 
 sed \
   -e '/-march=x86-64-v3 -Ofast)/d' \
@@ -189,7 +172,7 @@ Keywords=Emulator;Nintendo64;Mupen64plus;%{name};
 EOF
 
 %build
-build_list="$(echo %{?!_with_mupen64plus:mupen64plus-core} %{name}-gui %{name}-{audio-sdl2,input-{raphnetraw,qt}} parallel-{rdp-standalone,rsp})"
+build_list="$(echo mupen64plus-core %{name}-gui %{name}-{audio-sdl2,input-{raphnetraw,qt}} parallel-{rdp-standalone,rsp})"
 for i in $build_list ;do
 pushd $i
 %cmake \
@@ -215,10 +198,8 @@ install -pm0755 %{name}-gui/%{__cmake_builddir}/%{name}-gui %{buildroot}%{_bindi
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
 
-%if %{without mupen64plus}
 cp -a mupen64plus-core/%{__cmake_builddir}/lib%{name}.so.* %{buildroot}%{_libdir}/
 chmod +x %{buildroot}%{_libdir}/*.so.*
-%endif
 
 for i in %{name}-audio-sdl2 %{name}-input-{raphnetraw,qt} ;do
   install -pm0755 $i/%{__cmake_builddir}/$i.so %{buildroot}%{_libdir}/%{name}/
@@ -227,12 +208,10 @@ done
 install -pm0755 parallel-rdp-standalone/%{__cmake_builddir}/%{name}-video-parallel.so %{buildroot}%{_libdir}/%{name}/
 install -pm0755 parallel-rsp/%{__cmake_builddir}/%{name}-rsp-parallel.so %{buildroot}%{_libdir}/%{name}/
 
-%if %{without mupen64plus}
 mkdir -p %{buildroot}%{_datadir}/%{name}
 install -pm0644 mupen64plus-core/data/mupencheat.txt %{buildroot}%{_datadir}/%{name}/
 install -pm0644 mupen64plus-core/data/mupen64plus.ini %{buildroot}%{_datadir}/%{name}/%{name}.ini
 ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{name}/font.ttf
-%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -267,6 +246,9 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 
 
 %changelog
+* Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.12.4-1
+- 2022.12.4
+
 * Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.12.2-1
 - 2022.12.2
 

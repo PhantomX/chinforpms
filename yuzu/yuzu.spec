@@ -8,12 +8,12 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 4a88ba80f396f67198e7098249118c304bb4b8d1
+%global commit 79ff2722d6a062d2e52d0077a9775e1bfc50b40e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221205
+%global date 20221222
 
-%global with_ea 1
-%if !0%{?with_ea}
+%bcond_without ea
+%if %{without ea}
 %global with_mainline 1
 %endif
 
@@ -60,7 +60,7 @@
 %global vcea_url  https://github.com/pineappleEA
 %global ext_url  %{vcm_url}
 
-%if 0%{?with_ea}
+%if %{with ea}
 %global vc_name pineapple-src
 %global vc_url  %{vcea_url}
 %global repo ea
@@ -77,16 +77,16 @@
 
 
 Name:           yuzu
-Version:        3188
+Version:        3242
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
-License:        GPLv2
+License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
 
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
-%dnl %if !0%{?with_ea}
-%if !%{with dynarmic}
+%dnl %if %{without ea}
+%if %{without dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %endif
 Source3:        https://github.com/ReinUsesLisp/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
@@ -103,6 +103,7 @@ Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 Patch0:         0001-Use-system-libraries.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
+Patch4:         %{vcm_url}/%{name}/pull/9497.patch#/%{name}-gh-pr9497.patch
 
 Patch10:        0001-boost-build-fix.patch
 Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
@@ -163,7 +164,7 @@ BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
 BuildRequires:  cmake(xbyak)
-BuildRequires:  vulkan-headers >= 1.3.213
+BuildRequires:  vulkan-headers >= 1.3.238
 BuildRequires:  pkgconfig(zlib)
 
 BuildRequires:  hicolor-icon-theme
@@ -200,7 +201,7 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{vc_name}-%{commit} -N -p1
 
-%if 0%{?with_ea}
+%if %{with ea}
 pushd externals
 rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* inih libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers
 %if %{with mbedtls}
@@ -212,7 +213,7 @@ find \( -name '*.qrc' -or -name '*.qss' -or -name '*.theme' -or -name '*.ts' \) 
 find \( -name '*.desktop' -or -name '*.txt' -or -name '*.xml' \) -exec sed -i 's/\r$//' {} \;
 find \( -iname '*license*' -or -name '*COPYRIGHT*' -or -iname '*README*' \) -exec sed -i 's/\r$//' {} \;
 %endif
-%if !%{with dynarmic}
+%if %{without dynarmic}
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 %endif
@@ -220,7 +221,7 @@ tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
-%if !%{with mbedtls}
+%if %{without mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
 
@@ -232,23 +233,23 @@ find . -type f -name '*.sh' -exec chmod +x {} ';'
 pushd externals
 cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
-%if !%{with dynarmic}
+%if %{without dynarmic}
 %cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
-%if !%{with mbedtls}
+%if %{without mbedtls}
 cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p sirit/LICENSE.txt LICENSE.sirit
 popd
 
-%if !%{with mbedtls}
+%if %{without mbedtls}
 sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
   -i externals/CMakeLists.txt
 %endif
 
-%if !%{with dynarmic}
+%if %{without dynarmic}
 sed \
   -e '/-pedantic-errors/d' \
   -i externals/dynarmic/CMakeLists.txt
@@ -296,11 +297,11 @@ cp -f %{S:20} dist/compatibility_list/
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?_with_tests:-DYUZU_TESTS:BOOL=OFF} \
+  %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
   -DENABLE_WEB_SERVICE:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-%if !%{with dynarmic}
+%if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \

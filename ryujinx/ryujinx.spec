@@ -7,24 +7,26 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit df758eddd1d61f776415422dc4dd1fa8a776719c
+%global commit f906eb06c28880c20160cb4a969e3f6fddb3029b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221212
+%global date 20221221
+%if !0%{?with_bin}
 %global with_snapshot 1
+%endif
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global local_dotnet_ver 7.0.100
-%global local_dotnet_url_id 253e5af8-41aa-48c6-86f1-39a51b44afdc/5bb2cb9380c5b1a7f0153e0a2775727b
+%global local_dotnet_ver 7.0.101
+%global local_dotnet_url_id 7fe73a07-575d-4cb4-b2d3-c23d89e5085f/d8b2b7e1c0ed99c1144638d907c6d152
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.1.3.18
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.17.0
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.0
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.1
 %global microsoft_codeanalysis_analyzers_ver 3.3.3
 %global microsoft_codeanalysis_ver 4.4.0
 %global microsoft_csharp_ver 4.5.0
@@ -32,7 +34,7 @@
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
 %global microsoft_identitymodel_ver 6.25.1
-%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.0
+%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.1
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.0.0
@@ -212,7 +214,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.468
+Version:        1.1.488
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -478,7 +480,7 @@ and consistent builds.
 
 %prep
 %if 0%{?with_bin}
-%setup -q -c
+%autosetup -c
 %else
 %autosetup -n %{appname}-%{commit} -p1
 %endif

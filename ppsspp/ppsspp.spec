@@ -12,23 +12,20 @@
 %global date 20221120
 %global with_snapshot 0
 
-# Disable ffmpeg support
-%bcond_without ffmpeg
 # Enable Qt build
 %bcond_with qt
 # Enable EGL/GLESV2 (currently only working with Qt build)
-%global with_egl 0
+%bcond_with egl
 
 # Enable system ffmpeg
-%global with_sysffmpeg 1
 %if 0%{?fedora} && 0%{?fedora} >= 36
-%global with_sysffmpeg 0
+%bcond_with sysffmpeg
+%else
+%bcond_without sysffmpeg
 %endif
-%if !0%{?with_sysffmpeg}
 %global bundleffmpegver 3.0.2
-%endif
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%global with_smallffmpeg 1
+%bcond_without smallffmpeg
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -73,7 +70,7 @@ Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later%{!?with_sysffmpeg: AND GPL-3.0-or-later}
 URL:            http://www.ppsspp.org/
 
 %if !0%{?with_snapshot}
@@ -81,15 +78,13 @@ Source0:        %{vc_url}/%{name}/releases/download/v%{version}/%{name}-%{versio
 %else
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/unknownbrackets/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%if %{with ffmpeg}
-%if !0%{?with_sysffmpeg}
-%if 0%{?with_smallffmpeg}
+%if %{without sysffmpeg}
+%if %{with smallffmpeg}
 Source2:        %{srcname2}-nobin-%{shortcommit2}.tar.xz
 %else
 Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%endif
 %endif
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
@@ -106,7 +101,7 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 # https://github.com/hrydgard/ppsspp/issues/8823
@@ -118,7 +113,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 %if %{with ffmpeg}
-%if 0%{?with_sysffmpeg}
+%if %{with sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -133,7 +128,7 @@ Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
-%if 0%{?with_egl}
+%if %{with egl}
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(glesv2)
 %else
@@ -213,11 +208,9 @@ Additional tools files for %{name}.
 
 %if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
-%if %{with ffmpeg}
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
-%endif
 %endif
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
@@ -233,12 +226,11 @@ rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
-%if %{with ffmpeg}
-%if !0%{?with_sysffmpeg}
+%if %{with sysffmpeg}
+rm -rf ffmpeg
+%else
 cp -p ffmpeg/LICENSE.md ext/LICENSE.ffmpeg.md
 %endif
-%endif
-
 pushd ext
 cp -p armips/LICENSE.txt LICENSE.armips
 cp -p cityhash/COPYING COPYING.cityhash
@@ -279,8 +271,7 @@ sed \
   -e 's| -O3 | |g' \
   -i ext/armips/ext/tinyformat/Makefile
 
-%if %{with ffmpeg}
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
@@ -294,7 +285,6 @@ rm -rf wiiu
 
 popd
 %endif
-%endif
 
 
 %build
@@ -305,8 +295,7 @@ pushd ext/native/tools
 
 popd
 
-%if %{with ffmpeg}
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 pushd ffmpeg
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
@@ -327,22 +316,17 @@ sed \
 make install
 popd
 %endif
-%endif
 
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
-%if 0%{?with_egl}
+%if %{with egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
 %endif
   -DOpenGL_GL_PREFERENCE=GLVND \
-%if %{with ffmpeg}
-%if 0%{?with_sysffmpeg}
+%if %{with sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
-%endif
-%else
-  -DUSE_FFMPEG:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \

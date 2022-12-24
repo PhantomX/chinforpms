@@ -110,7 +110,7 @@ fi
   -DWITH_XC_KEESHARE:BOOL=ON \
   -DWITH_XC_KEESHARE_SECURE:BOOL=ON \
 %endif
-  %{?_with_yubikey:-DWITH_XC_YUBIKEY:BOOL=ON} \
+  %{?with_yubikey:-DWITH_XC_YUBIKEY:BOOL=ON} \
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
 

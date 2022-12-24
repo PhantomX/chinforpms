@@ -8,20 +8,20 @@
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 # Enable system ffmpeg
-%global with_sysffmpeg 1
+%bcond_without sysffmpeg
 %global bundleffmpegver 4.2.1
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%global with_smallffmpeg 1
+%bcond_without smallffmpeg
 # Enable system flatbuffers
-%global with_sysflatbuffers 0
+%bcond_with sysflatbuffers
 %global bundleflatbuffers 2.0.6
 # Enable system hidapi (disabled, bundled have modifications)
-%global with_syshidapi 0
+%bcond_with syshidapi
 %global bundlehidapi 0.12.0
 
-%global commit baa2768a6980a015117d3df001f33faa34e1eb57
+%global commit 5b95cfda40a3d6a033da80ada57a34ae6e20b593
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221217
+%global date 20221222
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -92,10 +92,10 @@
 
 Name:           rpcs3
 Version:        0.0.25
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
-License:        GPL-2.0-only
+License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
 URL:            https://rpcs3.net/
 
 %if 0%{?with_snapshot}
@@ -107,7 +107,7 @@ Source10:       %{kg_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortc
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
-%if !0%{?with_syshidapi}
+%if %{without syshidapi}
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
@@ -117,14 +117,14 @@ Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortc
 Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
-%if !0%{?with_sysffmpeg}
-%if 0%{?with_smallffmpeg}
+%if %{without sysffmpeg}
+%if %{with smallffmpeg}
 Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
 %else
 Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %endif
 %endif
-%if !0%{?with_sysflatbuffers}
+%if %{without sysflatbuffers}
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
@@ -159,7 +159,7 @@ Provides:       bundled(flatbuffers) = %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
-%if 0%{?with_sysffmpeg}
+%if %{with sysffmpeg}
 BuildRequires:  pkgconfig(libavcodec) >= %{bundleffmpegver}
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -252,7 +252,7 @@ sed -e 's|${GIT_EXECUTABLE}|true|g' \
 
 cp -p llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
 %endif
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
 
 cp -p 3rdparty/ffmpeg/LICENSE.md 3rdparty/LICENSE.ffmpeg.md
@@ -274,13 +274,13 @@ sed \
 popd
 %endif
 
-%if !0%{?with_syshidapi}
+%if %{without syshidapi}
 tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
-cp -p 3rdparty/hidapi/hidapi/LICENSE.txt LICENSE.hidapi
+cp -p 3rdparty/hidapi/hidapi/LICENSE.txt 3rdparty/LICENSE.hidapi
 sed -e 's|hidapi_FOUND|hidapi_DISABLED|g' -i 3rdparty/CMakeLists.txt
 %endif
 
-%if !0%{?with_sysflatbuffers}
+%if %{without sysflatbuffers}
 tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
 cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
 %endif
@@ -316,7 +316,7 @@ sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 %build
 %set_build_flags
 
-%if !0%{?with_sysffmpeg}
+%if %{without sysffmpeg}
 pushd 3rdparty/ffmpeg
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
@@ -363,7 +363,7 @@ popd
   -DHIDAPI_INCLUDEDIR:PATH=%{_includedir}/hidapi \
 %endif
   -DUSE_SYSTEM_CURL:BOOL=ON \
-%if 0%{?with_sysffmpeg}
+%if %{with sysffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \

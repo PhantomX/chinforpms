@@ -1,0 +1,6 @@
+# Using _sourcedir makes the spec much more readable IMO.
+# The Fedora wiki complaint is pretty obscure too.
+addFilter(r'use-of-RPM_SOURCE_DIR')
+
+# This is a virtual Provides: that should not contain any version info
+addFilter(r'unversioned-explicit-provides vhostuser-backend\(fs\)')

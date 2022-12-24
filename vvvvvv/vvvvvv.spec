@@ -4,7 +4,7 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221211
 
-%global with_systinyxml 0
+%bcond_with systinyxml
 
 %global commit2 5601b8272a6850b7c5d693dd0c0e16da50be8d8d
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -18,7 +18,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 tinyxml2
 
-%global commit5 22.09.01
+%global commit5 22.12
 %global srcname5 FAudio
 
 %global gver .%{date}git%{shortcommit}
@@ -57,7 +57,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(FAudio)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(physfs)
-%if 0%{?with_systinyxml}
+%if %{with systinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %endif
 BuildRequires:  utf8cpp-devel
@@ -69,7 +69,7 @@ Requires:       sdl_gamecontrollerdb
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = 0~git%{shortcommit2}
 #Provides:       bundled(physfs) = 0~git%%{shortcommit3}
-%if !0%{?with_systinyxml}
+%if %{without systinyxml}
 Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
 
@@ -84,7 +84,7 @@ Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 tar -xf %{S:2} -C third_party/lodepng --strip-components 1
 tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
 
-%if !%{?with_systinyxml}
+%if %{without systinyxml}
 tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
 sed \
   -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \

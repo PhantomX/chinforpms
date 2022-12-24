@@ -10,10 +10,10 @@
 
 %bcond_without ffmpeg
 %bcond_with rpmfusion
-%global with_egl 1
-%global with_llvm 0
-%global with_sysvulkan 0
-%global with_unittests 0
+%bcond_without egl
+%bcond_with llvm
+%bcond_with sysvulkan
+%bcond_with unittests
 
 #JIT is only supported on x86_64 and aarch64:
 %ifarch x86_64 aarch64
@@ -80,7 +80,7 @@ Source1:        %{name}.appdata.xml
 Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
@@ -102,7 +102,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(bluez)
 BuildRequires:  pkgconfig(bzip2)
-%if 0%{?with_egl}
+%if %{with egl}
 BuildRequires:  pkgconfig(egl)
 %endif
 BuildRequires:  pkgconfig(fmt) >= 9.1.0
@@ -129,7 +129,7 @@ BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib-ng)
-%if 0%{?with_llvm}
+%if %{with llvm}
 BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
@@ -150,7 +150,7 @@ BuildRequires:  ffmpeg-devel
 %endif
 %endif
 %endif
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
@@ -253,7 +253,7 @@ sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
   `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
   -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
 
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
   sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
     -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
   sed \
@@ -275,7 +275,7 @@ rm -rf \
   libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
   rm -rf glslang
 %endif
 
@@ -316,16 +316,16 @@ sed \
   -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
   -DENABLE_AUTOUPDATE:BOOL=OFF \
-%if !%{with ffmpeg}
+%if %{without ffmpeg}
   -DENCODE_FRAMEDUMPS:BOOL=OFF \
 %endif
-%if !0%{?with_egl}
+%if %{without egl}
   -DENABLE_EGL:BOOL=OFF \
 %endif
-%if !0%{?with_llvm}
+%if %{without llvm}
   -DENABLE_LLVM:BOOL=OFF \
 %endif
-%if !0%{?with_unittests}
+%if %{without unittests}
   -DENABLE_TESTS:BOOL=OFF \
 %endif
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
@@ -365,7 +365,7 @@ install -p -D -m 0644 %{SOURCE1} \
 %find_lang %{name}
 
 %check
-%if 0%{?with_unittests}
+%if %{with unittests}
 %cmake_build --target unittests
 %endif
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop

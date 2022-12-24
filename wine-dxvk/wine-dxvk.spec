@@ -6,13 +6,14 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit c55c09368b8e7d878cbe602b6d380ba0d1e6e1b3
+%global commit 12901b52f19ea1d3eece450a009f4602b5f2adc3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221211
+%global date 20221219
 %global with_snapshot 1
 
-%global with_sysspirv 0
-%global with_sysvulkan 1
+%bcond_with sysspirv
+%bcond_without sysvulkan
+%bcond_with dxvk_async
 
 %global commit5 0bcc624926a25a2a273d07877fd25a6ff5ba1cfb
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -44,8 +45,6 @@
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global dxvk_async 0
-
 %global winecommonver 5.3
 
 %global pkgname dxvk
@@ -58,11 +57,11 @@
 
 Name:           wine-%{pkgname}
 Version:        2.0
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
-License:        zlib
+License:        Zlib AND MIT%{!?with_sysvulkan: AND Apache-2.0}
 URL:            https://github.com/doitsujin/%{pkgname}
 
 %if 0%{?with_snapshot}
@@ -78,16 +77,16 @@ Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.pat
 Patch101:       0001-util-Another-missing-weeb-games.patch
 Patch102:       0001-util-disable-unmapping-for-some-games.patch
 
-%if 0%{?dxvk_async}
+%if %{with dxvk_async}
 Patch200:       %{sporif_url}/dxvk-async%{?asyncpatch}.patch#/%{name}-sporif-dxvk-async%{?asyncpatch}.patch
 Patch201:       0001-dxvk.conf-async-options.patch
 Source4:        %{sporif_url}/README.md#/README.async.md
 %endif
 
-%if !0%{?with_sysspirv}
+%if %{without sysspirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
-%if !0%{?with_sysvulkan}
+%if %{without sysvulkan}
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
 Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}tar.gz
@@ -112,7 +111,7 @@ BuildRequires:  mingw32-headers >= 8.0
 BuildRequires:  mingw32-winpthreads-static >= 8.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
 %if %{?with_sysvulkan}
@@ -158,7 +157,7 @@ package or when debugging this package.
 
 
 %prep
-%if 0%{?dxvk_async}
+%if %{with dxvk_async}
 %setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
 %patch100 -p1
 %patch101 -p1
@@ -173,18 +172,22 @@ cp %{S:4} README.async.md
 
 cp %{S:1} README.%{pkgname}
 
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 ln -s %{_includedir}/spirv include/spirv/include/spirv
 %else
 tar -xf %{S:5} -C include/spirv --strip-components 1
+cp -p include/spirv/LICENSE LICENSE.spirv
 %endif
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 mkdir -p include/vulkan/include
+ln -s %{_includedir}/vk_video include/vulkan/include/vk_video
 ln -s %{_includedir}/vulkan include/vulkan/include/vulkan
 %else
 tar -xf %{S:6} -C include/vulkan --strip-components 1
+cp -p include/vulkan/LICENSE.txt LICENSE.vulkan
 %endif
 tar -xf %{S:7} -C subprojects/libdisplay-info --strip-components 1
+cp -p subprojects/libdisplay-info/LICENSE LICENSE.libdisplay-info
 
 cp -p %{S:2} .
 cp -p %{S:3} README.chinforpms
@@ -278,9 +281,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %files
-%license LICENSE
+%license LICENSE LICENSE.*
 %doc README.chinforpms README.md README.dxvk dxvk.conf
-%if 0%{?dxvk_async}
+%if %{with dxvk_async}
 %doc README.async.md
 %endif
 %{_bindir}/wine%{pkgname}cfg

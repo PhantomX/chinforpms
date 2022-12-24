@@ -5,9 +5,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ec1f1176653692d898afb8004dc6e585b246f85c
+%global commit 7a2083b6032fa989b45087fc0c013db4f9e38885
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211205
+%global date 20221211
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -20,10 +20,10 @@
 
 Name:           dynarmic
 Version:        6.4.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        An ARM dynamic recompiler
 
-License:        0BSD
+License:        0BSD AND MIT
 URL:            https://github.com/merryhime/%{name}
 
 %if 0%{?with_snapshot}
