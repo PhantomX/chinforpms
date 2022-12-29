@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 ba9a52483052248b67c324e3fd0e073b807bbea4
+%global commit1 3b6523edd467eb9224310e0862005c7e5ae9c290
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -36,15 +36,15 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 mupen64plus-input-raphnetraw
 
-%global commit7 88c3f64d64811c7407d1f54502012fa67c67ebe8
+%global commit7 158e74d4ec1c818289cd19c3a05e498c3ceff758
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 27a64b83559c7f0ef89de79996fc9d1702637da9
+%global commit8 7bbde56cf08ff96108efb592848e5b6eaac293c9
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
-%global commit9 471253703c0e1fc84454708d5dd7bba2743ee66a
+%global commit9 88d3626362e41aa9b011fca1f65e1c1237ddb3b2
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
@@ -62,7 +62,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.2.5
+Version:        0.2.7
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -229,6 +229,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Dec 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.7-1
+- 0.2.7
+
 * Tue Dec 20 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.5-1
 - 0.2.5
 

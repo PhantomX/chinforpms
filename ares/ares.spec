@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 1622ac00a58954f46c583a0b3d5828963339cd00
+%global commit 92bf0c6669999ddb6921488261007a991b15842d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221111
+%global date 20221227
 %global with_snapshot 1
 
 %ifarch x86_64
@@ -31,7 +31,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        130.1
+Version:        131
 Release:        1%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
@@ -186,5 +186,8 @@ done
 
 
 %changelog
+* Thu Dec 29 2022 Phantom X <megaphantomx at hotmail dot com> - 131-1.20221227git92bf0c6
+- 131
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 130.1-1.20221111git1622ac0
 - Initial spec

@@ -1,6 +1,6 @@
-%global commit 01e7d622e415ce8557dbfe7fbbc953c56680ba88
+%global commit 9efc66d3c8b72af5a31f962b9ee5d0d71d231c04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221212
+%global date 20221226
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           mcomix
 Version:        2.1.0
-Release:        0.1%{?gver}%{?dist}
+Release:        1%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 License:        GPLv2+
@@ -123,6 +123,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Dec 27 2022 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-1.20221226git9efc66d
+- 2.1.0
+
 * Wed Dec 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-0.1.20221212git01e7d62
 - Initial spec
 

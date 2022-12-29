@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 79ff2722d6a062d2e52d0077a9775e1bfc50b40e
+%global commit 9a6ba6cbdcb663e0d17cff878eedb7bbe5659e8f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221222
+%global date 20221226
 
 %bcond_without ea
 %if %{without ea}
@@ -77,7 +77,7 @@
 
 
 Name:           yuzu
-Version:        3242
+Version:        3256
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -103,7 +103,6 @@ Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 Patch0:         0001-Use-system-libraries.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
-Patch4:         %{vcm_url}/%{name}/pull/9497.patch#/%{name}-gh-pr9497.patch
 
 Patch10:        0001-boost-build-fix.patch
 Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
