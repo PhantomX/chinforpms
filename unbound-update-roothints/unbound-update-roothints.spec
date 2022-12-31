@@ -3,7 +3,7 @@ Version:        1.2
 Release:        1%{?dist}
 Summary:        Updates unbound root-hints file
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/PhantomX
 
 BuildArch:      noarch

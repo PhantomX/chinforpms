@@ -6,7 +6,7 @@ Version:        5
 Release:        1%{?dist}
 Summary:        A package to obsolete and provides packages
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/PhantomX/chinforpms
 Source0:        README
 

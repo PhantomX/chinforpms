@@ -3,7 +3,7 @@ Version:        20221207
 Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/PhantomX
 Source0:        %{name}.js
 

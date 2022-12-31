@@ -12,7 +12,7 @@ Version:        0
 Release:        3%{?gver}%{?dist}
 Summary:        'Now Playing' information via notify-send and mpc 
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/vehk/mpdnotify
 %if 0%{?with_snapshot}
 Source0:        https://github.com/vehk/mpdnotify/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

@@ -5,7 +5,7 @@ Version:        3.4
 Release:        1%{?dist}
 Summary:        Vollection of simple routines to call some X11 functions
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://packages.debian.org/unstable/x11/xwit
 Source0:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}.orig.tar.gz
 Source1:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}-%{debpatchver}.debian.tar.xz

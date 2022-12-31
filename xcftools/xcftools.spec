@@ -5,10 +5,9 @@ Version:        1.0.7
 Release:        20%{?dist}
 Summary:        Command-line tools for extracting information from XCF files
 
-Group:          Applications/Multimedia
-License:        Public Domain
-
+License:        LicenseRef-Fedora-Public-Domain
 URL:            http://henning.makholm.net/software
+
 Source0:        http://henning.makholm.net/%{name}/%{name}-%{version}.tar.gz
 Source1:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}-%{debpatchver}.debian.tar.xz
 

@@ -29,7 +29,7 @@ Summary:        A Nintendo DS emulator
 # teakra - MIT
 # tiny-AES - Unlicense
 
-License:        GPL-3.0-only
+License:        GPL-3.0-only AND MIT AND LicenseRef-Fedora-Public-Domain AND Unlicense
 URL:            http://melonds.kuribo64.net/
 
 %if 0%{?with_snapshot}

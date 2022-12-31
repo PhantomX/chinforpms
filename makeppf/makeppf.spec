@@ -3,9 +3,9 @@ Version:        3.0
 Release:        1%{?dist}
 Summary:        PPF (Playstation Patch File) v3.0 creation tool
 
-License:        Public Domain
-
+License:        LicenseRef-Fedora-Public-Domain
 URL:            http://ftp.netbsd.org/pub/pkgsrc/current/pkgsrc/emulators/applyppf/
+
 Source0:        http://ftp.netbsd.org/pub/pkgsrc/distfiles/%{name}3_src.zip
 Source1:        README
 

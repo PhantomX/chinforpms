@@ -10,7 +10,7 @@ Summary:        Locale data for Brazilian Portuguese, with iso8601 dates
 # affect the license of the GNU C Library as a whole.  It does not
 # exempt you from the conditions of the license if your use would
 # otherwise be governed by that license.
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/PhantomX/chinforpms
 
 Source0:        README

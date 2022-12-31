@@ -5,7 +5,7 @@ Version:        1
 Release:        1%{?dist}
 Summary:        f5vpn filesytem layout
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 
 Source0:        %{pkgname}-sysusers.conf
 

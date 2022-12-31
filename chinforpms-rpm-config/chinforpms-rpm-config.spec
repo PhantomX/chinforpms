@@ -3,7 +3,7 @@ Version:        7
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
-License:        Public Domain
+License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/PhantomX/chinforpms
 
 Source0:        macros.chinforpms
