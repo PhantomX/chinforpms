@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 06bc137f5e9a03424ab07bafb55dc7b59fc56b6f
+%global pfcommit 8469ffe777f3f541a11a15daf4d4a77bbd880ac1
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash 6b3fdf84181d2b84e4f0ba4af668d062
+%global pfcoprhash 9f66007cbe1e03f41e5296a552a2cfc8
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id ab10a112debd048481eeb4d1d93a7b2366be6072
+%global opensuse_id e71748d44896da2c218a153173fa0504f34836bc
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -961,7 +961,6 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 Patch1014: %{opensuse_url}/mm-mremap-fix-mremap-expanding-vma-with-addr-inside-.patch#/openSUSE-mm-mremap-fix-mremap-expanding-vma-with-addr-inside-.patch
-Patch1015: %{opensuse_url}/io_uring-net-ensure-compat-import-handlers-clear-fre.patch#/openSUSE-io_uring-net-ensure-compat-import-handlers-clear-fre.patch
 Patch1016: %{opensuse_url}/tcp-Add-TIME_WAIT-sockets-in-bhash2.patch#/openSUSE-tcp-Add-TIME_WAIT-sockets-in-bhash2.patch
 Patch1017: %{opensuse_url}/NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch#/openSUSE-NFSD-fix-use-after-free-in-__nfs42_ssc_open.patch
 
@@ -3036,6 +3035,9 @@ fi
 #
 #
 %changelog
+* Sat Dec 31 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.2-500.chinfo
+- 6.1.2 - pf1
+
 * Wed Dec 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.1-500.chinfo
 - 6.1.1 - pf1
 

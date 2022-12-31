@@ -21,32 +21,29 @@
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
-%global kf5ver 3c1d4a
+%global kf5ver 4f35c8d
 
 Name:           telegram-desktop
-Version:        4.4.1
+Version:        4.5.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
 
 # Application and 3rd-party modules licensing:
-# * Telegram Desktop - GPLv3+ with OpenSSL exception -- main tarball;
-# * abseil-cpp - ASL 2.0
-# * tg_owt - BSD and ASL 2.0 -- static dependency or not;
-# * rlottie - LGPLv2+ -- static dependency;
-# * qt_functions.cpp - LGPLv3 -- build-time dependency;
-# * open-sans-fonts  - ASL 2.0 -- bundled font;
+# * Telegram Desktop - GPL-3.0-or-later with OpenSSL exception -- main tarball;
+# * tg_owt - BSD-3-Clause and Apache-2.0 -- static dependency or not;
+# * rlottie - LGPL-2.1-or-later -- static dependency;
+# * qt_functions.cpp - LGPL-3.0-only -- build-time dependency;
+# * open-sans-fonts  - Apache-2.0 -- bundled font;
 # * vazirmatn-fonts - OFL -- bundled font.
-License:        GPLv3+ and BSD and ASL 2.0 and LGPLv2+ and LGPLv3 and OFL
+License:        GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-3.0-only AND OFL-1.1
 URL:            https://github.com/telegramdesktop/%{srcname}
 
 ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
-
-Patch10:        %{url}/commit/9c27271571e7a535de8eb410c30c070fe67778f3.patch#/%{name}-gh-9c27271.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -317,6 +314,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Dec 31 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.0-100
+- 4.5.0
+
 * Sun Dec 11 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.1-100
 - 4.4.1
 

@@ -564,7 +564,7 @@ diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index bb1f423f4ace..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
-@@ -321,19 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
+@@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
  {
  	struct rmi_data *hdata = hid_get_drvdata(hdev);
  	struct rmi_device *rmi_dev = hdata->xport.rmi_dev;
@@ -573,6 +573,8 @@ index bb1f423f4ace..efc96776f761 100644
  	if (!(test_bit(RMI_STARTED, &hdata->flags)))
  		return 0;
 
+-	pm_wakeup_event(hdev->dev.parent, 0);
+-
 -	local_irq_save(flags);
 -
  	rmi_set_attn_data(rmi_dev, data[1], &data[2], size - 2);
@@ -584,7 +586,7 @@ index bb1f423f4ace..efc96776f761 100644
  	return 1;
  }
 
-@@ -589,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
+@@ -591,56 +582,6 @@ static const struct rmi_transport_ops hid_rmi_ops = {
  	.reset		= rmi_hid_reset,
  };
 
@@ -641,7 +643,7 @@ index bb1f423f4ace..efc96776f761 100644
  static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
  {
  	struct rmi_data *data = NULL;
-@@ -711,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
+@@ -713,18 +654,11 @@ static int rmi_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
  	mutex_init(&data->page_mutex);
 
