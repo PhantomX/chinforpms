@@ -1,0 +1,32 @@
+From 5f454a230dba1327e97ee89895e2a70e6aa729b0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 3 Jan 2023 18:40:09 -0300
+Subject: [PATCH] Set datadir to RPM packaging
+
+---
+ pcsx2/Frontend/CommonHost.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/pcsx2/Frontend/CommonHost.cpp b/pcsx2/Frontend/CommonHost.cpp
+index 9da1daf..5fa753b 100644
+--- a/pcsx2/Frontend/CommonHost.cpp
++++ b/pcsx2/Frontend/CommonHost.cpp
+@@ -130,7 +130,7 @@ void CommonHost::SetResourcesDirectory()
+ {
+ #ifndef __APPLE__
+ 	// On Windows/Linux, these are in the binary directory.
+-	EmuFolders::Resources = Path::Combine(EmuFolders::AppRoot, "resources");
++	EmuFolders::Resources = "_RPM_DATADIR_/resources";
+ #else
+ 	// On macOS, this is in the bundle resources directory.
+ 	EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
+@@ -542,4 +542,4 @@ std::string CommonHost::GetRichPresenceString()
+ 	return rich_presence_string;
+ }
+ 
+-#endif
+\ No newline at end of file
++#endif
+-- 
+2.39.0
+

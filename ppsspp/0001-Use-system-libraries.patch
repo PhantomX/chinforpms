@@ -235,7 +235,7 @@ index d536bed..27800cb 100644
 +#include "xxhash.h"
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
- #include "Common/Math/math_util.h"
+ #include "Common/LogReporting.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
 index dee7a11..aa0ee41 100644
 --- a/UI/CwCheatScreen.cpp

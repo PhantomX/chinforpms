@@ -1,4 +1,4 @@
-From ea70082188c3f0c2949d9dda0108482d2d5c68ca Mon Sep 17 00:00:00 2001
+From d61ea27af31187590f36c3013afa160a315a0e22 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -6,7 +6,7 @@ Subject: [PATCH] Use system libraries
 ---
  cmake/SearchForStuff.cmake                    | 50 ++++++++++++++-----
  common/CMakeLists.txt                         |  2 +-
- pcsx2/CDVD/ChdFileReader.h                    |  2 +-
+ pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
  pcsx2/CMakeLists.txt                          |  7 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
@@ -15,10 +15,10 @@ Subject: [PATCH] Use system libraries
  8 files changed, 51 insertions(+), 20 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index c2f9aa6..fd3f74e 100644
+index ea84fd6..20bf80d 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -214,11 +214,10 @@ endif()
+@@ -122,11 +122,10 @@ endif()
  
  find_optional_system_library(fmt 3rdparty/fmt/fmt 7.1.3)
  find_optional_system_library(ryml 3rdparty/rapidyaml/rapidyaml 0.4.0)
@@ -34,7 +34,7 @@ index c2f9aa6..fd3f74e 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -257,8 +256,13 @@ if(NOT WIN32 AND QT_BUILD)
+@@ -168,35 +167,62 @@ if(NOT WIN32 AND QT_BUILD)
  	find_package(CURL REQUIRED)
  endif()
  
@@ -48,9 +48,8 @@ index c2f9aa6..fd3f74e 100644
 +	alias_library(chdr-static PkgConfig::CHDR)
 +endif()
  
- if(USE_NATIVE_TOOLS)
- 	add_subdirectory(tools/bin2cpp EXCLUDE_FROM_ALL)
-@@ -274,27 +278,49 @@ endif()
+ # rapidyaml includes fast_float as a submodule, saves us pulling it in directly.
+ # Normally, we'd just pull in the cmake project, and link to it, but... it seems to enable
  # permissive mode, which breaks other parts of PCSX2. So, we'll just create a target here
  # for now.
  #add_subdirectory(3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float EXCLUDE_FROM_ALL)
@@ -106,10 +105,10 @@ index c2f9aa6..fd3f74e 100644
  endif()
  
 diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index 4925935..5c45017 100644
+index a74cfd2..ed70f5f 100644
 --- a/common/CMakeLists.txt
 +++ b/common/CMakeLists.txt
-@@ -144,7 +144,7 @@ endif()
+@@ -150,7 +150,7 @@ endif()
  
  if(USE_VULKAN)
  	target_link_libraries(common PUBLIC
@@ -118,28 +117,29 @@ index 4925935..5c45017 100644
  	)
  	target_sources(common PRIVATE
  		Vulkan/ShaderCache.cpp
-diff --git a/pcsx2/CDVD/ChdFileReader.h b/pcsx2/CDVD/ChdFileReader.h
-index 785e457..935b6bf 100644
---- a/pcsx2/CDVD/ChdFileReader.h
-+++ b/pcsx2/CDVD/ChdFileReader.h
-@@ -15,7 +15,7 @@
- 
- #pragma once
- #include "ThreadedFileReader.h"
+diff --git a/pcsx2/CDVD/ChdFileReader.cpp b/pcsx2/CDVD/ChdFileReader.cpp
+index 0dd5c74..519c88b 100644
+--- a/pcsx2/CDVD/ChdFileReader.cpp
++++ b/pcsx2/CDVD/ChdFileReader.cpp
+@@ -25,7 +25,7 @@
+ #pragma clang diagnostic push
+ #pragma clang diagnostic ignored "-Wunused-function"
+ #endif
 -#include "libchdr/chd.h"
 +#include "chd.h"
- #include <vector>
- 
- class ChdFileReader : public ThreadedFileReader
+ #ifdef __clang__
+ #pragma clang diagnostic pop
+ #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 6838ce3..94f0185 100644
+index dde6f5c..b2f8222 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1772,9 +1772,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1219,10 +1219,15 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	${CMAKE_BINARY_DIR}/pcsx2
  	${CMAKE_BINARY_DIR}/common/include/
  	"${CMAKE_SOURCE_DIR}/3rdparty/jpgd/"
 -	"${CMAKE_SOURCE_DIR}/3rdparty/xbyak/"
+ 	"${FFMPEG_INCLUDE_DIRS}"
  )
  
 +if(TARGET xbyak::xbyak)
@@ -165,25 +165,25 @@ index e5e572e..43f13ca 100644
  #ifdef _WIN32
  #define strcasecmp _stricmp
 diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
-index 46b70d2..76d2bf2 100644
+index 3221c72..7341ccb 100644
 --- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
-@@ -19,7 +19,7 @@
- #include "GS/Renderers/Common/GSFunctionMap.h"
- #include "GS/GSUtil.h"
- #include "GS/MultiISA.h"
+@@ -23,7 +23,7 @@
+ #ifdef _WIN32
+ #include "common/RedtapeWindows.h"
+ #endif
 -#include <xbyak/xbyak.h>
 +#include <xbyak.h>
  
  #if defined(_M_AMD64) || defined(_WIN64)
  #define RegLong Xbyak::Reg64
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index 055aeb1..e52eff3 100644
+index 8b01522..59fe278 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-@@ -15,8 +15,8 @@
- 
- #pragma once
+@@ -23,8 +23,8 @@
+ #define XBYAK_NO_OP_NAMES
+ #endif
  
 -#include "xbyak/xbyak.h"
 -#include "xbyak/xbyak_util.h"
@@ -193,18 +193,18 @@ index 055aeb1..e52eff3 100644
  
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
 diff --git a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
-index 29b03bb..0ece382 100644
+index 6382e9c..7b09c96 100644
 --- a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
-@@ -18,7 +18,7 @@
- #include "GSScanlineEnvironment.h"
- #include "GS/GSUtil.h"
- #include "GS/MultiISA.h"
+@@ -22,7 +22,7 @@
+ #ifdef _WIN32
+ #include "common/RedtapeWindows.h"
+ #endif
 -#include <xbyak/xbyak.h>
 +#include <xbyak.h>
  
  MULTI_ISA_UNSHARED_START
  
 -- 
-2.38.1
+2.39.0
 

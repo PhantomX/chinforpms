@@ -53,6 +53,7 @@
 %global srcname8 mbedtls
 
 %global glad_ver 0.1.29
+%global vkh_ver 1.3.238
 
 %global gver .%{date}git%{shortcommit}
 
@@ -163,7 +164,7 @@ BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
 BuildRequires:  cmake(xbyak)
-BuildRequires:  vulkan-headers >= 1.3.238
+BuildRequires:  vulkan-headers >= %{vkh_ver}
 BuildRequires:  pkgconfig(zlib)
 
 BuildRequires:  hicolor-icon-theme
@@ -292,6 +293,7 @@ cp -f %{S:20} dist/compatibility_list/
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \

@@ -1,6 +1,6 @@
-%global commit 6d78ecd87906996c6c07b1f5ddfb6ce46d906134
+%global commit acba156e6fffd94233c7f1f4cdcf1425bea6796a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220912
+%global date 20221229
 
 %global gver .%{date}git%{shortcommit}
 
@@ -9,7 +9,7 @@ Version:        %{date}
 Release:        1%{?gver}%{?dist}
 Summary:        PCSX2 emulator patches
 
-License:        GPLv3 and LGPLv3+
+License:        GPL-3.0-only AND LGPL-3.0-or-later
 URL:            https://github.com/PCSX2/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

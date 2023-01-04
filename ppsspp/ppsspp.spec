@@ -31,7 +31,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 cea6dd17be4ea045946dc991ef0bca91f9005345
+%global commit2 98973e62e0653fcac12f277838ff3d76e786722b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -65,7 +65,7 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.14
+Version:        1.14.4
 Release:        100%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -431,6 +431,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Jan 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.4-100
+- 1.14.4
+
 * Sun Dec 18 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.14-100
 - 1.14
 
