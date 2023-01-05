@@ -20,13 +20,12 @@ Subject: [PATCH] patch-6.1-redhat
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
- drivers/hid/hid-rmi.c                              |  64 -----------
+ drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
- fs/overlayfs/file.c                                |   1 +
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -34,15 +33,16 @@ Subject: [PATCH] patch-6.1-redhat
  include/linux/security.h                           |   5 +
  init/Kconfig                                       |   2 +-
  kernel/module/signing.c                            |   9 +-
+ scripts/pahole-flags.sh                            |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 35 files changed, 450 insertions(+), 175 deletions(-)
+ 35 files changed, 452 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 7307ae6c2ef7..36f8cf8b5097 100644
+index a69d14983a48..ddaa7fccb596 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -18,6 +18,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -141,7 +141,7 @@ index ab19ddb09d65..d463ec57b218 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 216fee7144ee..55e817aa000d 100644
+index 892609cde4a2..ad9aa11ba3a0 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -207,10 +207,10 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 1cc4647f78b8..016d488cabc3 100644
+index c2c786eb95ab..4e3aa80cd5cf 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
-@@ -137,6 +137,7 @@ struct acpi_irq_parse_one_ctx {
+@@ -138,6 +138,7 @@ struct acpi_irq_parse_one_ctx {
  	unsigned int index;
  	unsigned long *res_flags;
  	struct irq_fwspec *fwspec;
@@ -218,7 +218,7 @@ index 1cc4647f78b8..016d488cabc3 100644
  };
 
  /**
-@@ -210,7 +211,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -211,7 +212,8 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  		return AE_CTRL_TERMINATE;
  	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
  		eirq = &ares->data.extended_irq;
@@ -228,7 +228,7 @@ index 1cc4647f78b8..016d488cabc3 100644
  			return AE_OK;
  		if (ctx->index >= eirq->interrupt_count) {
  			ctx->index -= eirq->interrupt_count;
-@@ -246,8 +248,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
+@@ -247,8 +249,19 @@ static acpi_status acpi_irq_parse_one_cb(struct acpi_resource *ares,
  static int acpi_irq_parse_one(acpi_handle handle, unsigned int index,
  			      struct irq_fwspec *fwspec, unsigned long *flags)
  {
@@ -325,7 +325,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
 
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 49a1707693c9..8296a943611e 100644
+index d5ee52be176d..79e8fd5fbb06 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -336,7 +336,7 @@ index 49a1707693c9..8296a943611e 100644
  #include <linux/delay.h>
 
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5510,8 +5511,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5514,8 +5515,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
 
@@ -561,7 +561,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index bb1f423f4ace..efc96776f761 100644
+index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -906,7 +906,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 65a3b3d886dc..911b64ce9889 100644
+index 959d895fc1df..ced88384a6ee 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -917,7 +917,7 @@ index 65a3b3d886dc..911b64ce9889 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2818,6 +2819,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
+@@ -2834,6 +2835,27 @@ u32 iommu_sva_get_pasid(struct iommu_sva *handle)
  }
  EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
 
@@ -998,18 +998,6 @@ index bbab424b0d55..ed86042fb57b 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/fs/overlayfs/file.c b/fs/overlayfs/file.c
-index a1a22f58ba18..dd688a842b0b 100644
---- a/fs/overlayfs/file.c
-+++ b/fs/overlayfs/file.c
-@@ -96,6 +96,7 @@ static int ovl_change_flags(struct file *file, unsigned int flags)
-
- 	spin_lock(&file->f_lock);
- 	file->f_flags = (file->f_flags & ~OVL_SETFL_MASK) | flags;
-+	file->f_iocb_flags = iocb_flags(file);
- 	spin_unlock(&file->f_lock);
-
- 	return 0;
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7603fc58c47c..1099e99286c6 100644
 --- a/include/linux/efi.h
@@ -1179,6 +1167,18 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/scripts/pahole-flags.sh b/scripts/pahole-flags.sh
+index 0d99ef17e4a5..81c8e082ec57 100755
+--- a/scripts/pahole-flags.sh
++++ b/scripts/pahole-flags.sh
+@@ -20,4 +20,7 @@ if [ "${pahole_ver}" -ge "122" ]; then
+ 	extra_paholeopt="${extra_paholeopt} -j"
+ fi
+
++# temporary workaround to disable enum64
++extra_paholeopt="${extra_paholeopt} --skip_encoding_btf_enum64"
++
+ echo ${extra_paholeopt}
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index e137cf15aae9..2ed2341f7967 100755
 --- a/scripts/tags.sh

@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c1862b27b603f8acf8ef8b64ae2f8650fd2ad267
+ c1862b27b603f8acf8ef8b64ae2f8650fd2ad267 disable enum64 BTF in fedora rawhide
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/00ba5833900e339ae56530fd79f2120bf0c757d8
  00ba5833900e339ae56530fd79f2120bf0c757d8 ovl: update ->f_iocb_flags when ovl_change_flags() modifies ->f_flags
 
@@ -84,3 +87,4 @@
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/659a0b456b6e519cc82f35993cf9fd4cd365bc26
  659a0b456b6e519cc82f35993cf9fd4cd365bc26 [initial commit] Add Red Hat variables in the top level makefile
+
