@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.8.14
+Version:        3.8.15
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -54,12 +54,8 @@ find opt/%{app_name}/ -name '*.so*' | xargs chmod +x
 
 chrpath --delete opt/%{app_name}/%{name}
 
-%build
 
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
+cat > %{name}.wrapper <<'EOF'
 #!/usr/bin/bash
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
@@ -74,11 +70,18 @@ fi
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+EORF
+
+
+%build
+
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{app_name}/{%{name},locales,resources,swiftshader,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
@@ -117,6 +120,9 @@ done
 
 
 %changelog
+* Thu Jan 05 2023 Phantom X - 3.8.15-1
+- 3.8.15
+
 * Mon Dec 05 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.14-1
 - 3.8.14
 

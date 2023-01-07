@@ -5,14 +5,14 @@
 %global __strip /bin/true
 
 %global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 11
+%global snaprev 12
 
 %global app_name Authy
 
 Name:           authy
 # Version from application info
-Version:        2.2.1
-Release:        2%{?dist}
+Version:        2.2.2
+Release:        1%{?dist}
 Summary:        Two factor authentication desktop application
 
 License:        Unknown
@@ -60,12 +60,7 @@ find %{name}/ -name '*.so*' | xargs chmod +x
 
 chrpath --delete %{name}/%{name}
 
-%build
-
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
+cat > %{name}.wrapper <<'EOF'
 #!/usr/bin/bash
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
@@ -80,8 +75,15 @@ fi
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+EORF
+
+
+%build
+
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp %{name}/{%{name},locales,resources,swiftshader,*.{bin,dat,pak,so}} \
@@ -112,6 +114,9 @@ done
 
 
 %changelog
+* Sat Jan 07 2023 - 2.2.2-1
+- 2.2.2
+
 * Wed Nov 02 2022 - 2.2.1-2
 - Fix snap revision
 

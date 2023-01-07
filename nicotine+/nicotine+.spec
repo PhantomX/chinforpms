@@ -13,13 +13,13 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.7
+Version:        3.2.8
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 #   (see pynicotine/geoip/README.md)
 # - some icons are LPGPLv3+, GPLv3+ and MIT (see img/CREDITS.md) 
-License:        GPLv3+ and CC-BY-SA and LGPLv3+ and MIT
+License:        GPL-3.0-or-later AND CC-BY-SA-4.0 AND LGPL-3.0-or-later AND MIT
 URL:            https://www.nicotine-plus.org/
 
 %if 0%{?with_snapshot}
@@ -102,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 3.2.8-100
+- 3.2.8
+
 * Thu Dec 01 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.7-100
 - 3.2.7
 

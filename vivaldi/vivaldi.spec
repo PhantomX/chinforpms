@@ -17,7 +17,7 @@
 
 Name:           vivaldi
 Version:        5.6.2867.50
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Web browser
 
 License:        Proprietary and others, see https://www.vivaldi.com/
@@ -74,12 +74,7 @@ chrpath --delete opt/%{name}/%{name}-bin
 mv usr/share/applications/%{name}{-%{channel},}.desktop
 sed -e 's|%{name}-%{channel}|%{name}|g' -i usr/share/applications/%{name}.desktop
 
-
-%build
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
+cat > %{name}.wrapper <<'EOF'
 #!/usr/bin/bash
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
@@ -93,9 +88,15 @@ fi
 
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}/${APP_NAME}" --password-store=basic "${APP_USER_FLAGS}" "$@"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
+EORF
+
+
+%build
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak,so}} \
@@ -155,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Jan 06 2023 - 5.6.2867.50-2
+- Fix userflags parsing in wrapper
+
 * Tue Dec 20 2022 - 5.6.2867.50-1
 - 5.6.2867.50
 
