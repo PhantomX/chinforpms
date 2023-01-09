@@ -19,9 +19,9 @@
 %bcond_with syshidapi
 %global bundlehidapi 0.12.0
 
-%global commit 6c74274502cfce3f4b643ad67ea92e4f93c4951d
+%global commit df718bcb0f2b7be809bf48b6059be7322fc17202
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221225
+%global date 20230107
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -36,11 +36,11 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 5755de46b07e4374c05fb1081f65f7ae1f8cca81
+%global commit13 10423ec659d301a0ff2daac8bbf38980abf27590
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 c2aa9dd37c7b401b918fd56e18a3bac7f8f00ec2
+%global commit14 a3ce1299312ee48c2c0db58ffc059c1438436ad8
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
@@ -91,8 +91,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.25
-Release:        6%{?gver}%{?dist}
+Version:        0.0.26
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -415,6 +415,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.26-1.20230107gitdf718bc
+- 0.0.26
+
 * Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.25-1.20221101gita00f9e4
 - 0.0.25
 

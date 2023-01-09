@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 3b6523edd467eb9224310e0862005c7e5ae9c290
+%global commit1 92c769af87ac2f369303bbd8c98842cbc154fa9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -62,7 +62,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.2.7
+Version:        0.2.9
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -229,6 +229,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2.9-1
+- 0.2.9
+
 * Thu Dec 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.2.7-1
 - 0.2.7
 

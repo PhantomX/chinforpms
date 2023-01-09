@@ -1,4 +1,4 @@
-From dd03b58dd38199d2600cc995e4955099801dd13a Mon Sep 17 00:00:00 2001
+From a1580c9fa29a1730c83a9a14ab82b18b20eda0ad Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 3 Aug 2022 22:19:34 -0300
 Subject: [PATCH] system library support
@@ -11,7 +11,7 @@ Subject: [PATCH] system library support
  4 files changed, 49 insertions(+), 2 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 753d511..f5c0f19 100644
+index dcebb4e..e21d635 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,6 +54,7 @@ endif()
@@ -32,7 +32,7 @@ index 753d511..f5c0f19 100644
  endif()
  
  if(ENABLE_LTO)
-@@ -782,7 +786,18 @@ else()
+@@ -789,7 +793,18 @@ else()
    add_subdirectory(Externals/zstd)
  endif()
  
@@ -52,7 +52,7 @@ index 753d511..f5c0f19 100644
  
  pkg_check_modules(MINIZIP minizip-ng>=3.0.0)
  if(MINIZIP_FOUND)
-@@ -807,7 +822,17 @@ else()
+@@ -814,7 +829,17 @@ else()
    set(LZO lzo2)
  endif()
  
@@ -72,13 +72,13 @@ index 753d511..f5c0f19 100644
  # Using static FreeSurround from Externals
  # There is no system FreeSurround library.
 diff --git a/Source/Core/Common/Hash.cpp b/Source/Core/Common/Hash.cpp
-index f11ac4d..01be9bc 100644
+index e6b421e..612128f 100644
 --- a/Source/Core/Common/Hash.cpp
 +++ b/Source/Core/Common/Hash.cpp
-@@ -5,7 +5,13 @@
- 
- #include <algorithm>
+@@ -7,7 +7,13 @@
+ #include <bit>
  #include <cstring>
+ 
 +#ifdef USE_SHARED_ZLIBNG
 +#include <zlib-ng.h>
 +#define adler32_z zng_adler32_z
@@ -90,7 +90,7 @@ index f11ac4d..01be9bc 100644
  #include "Common/BitUtils.h"
  #include "Common/CPUDetect.h"
 diff --git a/Source/Core/DiscIO/CompressedBlob.cpp b/Source/Core/DiscIO/CompressedBlob.cpp
-index 056c2f4..4420a58 100644
+index 139a1e6..bf487cb 100644
 --- a/Source/Core/DiscIO/CompressedBlob.cpp
 +++ b/Source/Core/DiscIO/CompressedBlob.cpp
 @@ -11,7 +11,19 @@
@@ -114,10 +114,10 @@ index 056c2f4..4420a58 100644
  #ifdef _WIN32
  #include <windows.h>
 diff --git a/Source/Core/UpdaterCommon/UpdaterCommon.cpp b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
-index 6bbe5b9..837d71f 100644
+index 6fdb963..4f6d8de 100644
 --- a/Source/Core/UpdaterCommon/UpdaterCommon.cpp
 +++ b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
-@@ -10,7 +10,11 @@
+@@ -11,7 +11,11 @@
  #include <ed25519.h>
  #include <mbedtls/base64.h>
  #include <mbedtls/sha256.h>
@@ -130,5 +130,5 @@ index 6bbe5b9..837d71f 100644
  #include "Common/CommonFuncs.h"
  #include "Common/CommonPaths.h"
 -- 
-2.37.1
+2.39.0
 

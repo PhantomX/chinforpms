@@ -74,7 +74,7 @@ Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
-Patch1:         0001-Use-system-libs.patch
+Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 

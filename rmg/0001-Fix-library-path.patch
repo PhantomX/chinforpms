@@ -30,7 +30,7 @@ index 7074646..de6a608 100644
 @@ -124,7 +124,7 @@ std::string CoreGetCoreDirectory(void)
      directory = "Core";
  #else // Not Portable
-     directory = CORE_INSTAlL_PREFIX;
+     directory = CORE_INSTALL_PREFIX;
 -    directory += "/lib/RMG/Core";
 +    directory += "/_LIBDIR_/RMG/Core";
  #endif // PORTABLE_INSTALL
@@ -39,7 +39,7 @@ index 7074646..de6a608 100644
 @@ -136,7 +136,7 @@ std::string CoreGetPluginDirectory(void)
      directory = "Plugin";
  #else // Not Portable
-     directory = CORE_INSTAlL_PREFIX;
+     directory = CORE_INSTALL_PREFIX;
 -    directory += "/lib/RMG/Plugin";
 +    directory += "/_LIBDIR_/RMG/Plugin";
  #endif // PORTABLE_INSTALL

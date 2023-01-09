@@ -9,9 +9,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3558d224a8266636ac1e87eade2d81fd453473af
+%global commit 7c92e0817c727ea006a5cccce9e1a366da25642b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221021
+%global date 20230107
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,20 +19,19 @@
 %endif
 
 # Enable EGL/GLESV2
-%global with_egl 0
-
-# Enable system libchdr
-%global with_libchdr 1
+%bcond_with egl
 
 %global pkgname Kronos
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
 Version:        2.3.1
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
-License:        GPLv2+
+# junzip - Public Domain
+# nanovg - BSD-3-Clause
+License:        GPL-2.0-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
 URL:            http://fcare.github.io/
 
 %if 0%{?with_snapshot}
@@ -41,7 +40,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-libchdr-system-libraries.patch
+Patch0:         0001-Use-system-libraries.patch
 
 
 BuildRequires:  cmake3
@@ -49,7 +48,7 @@ BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
-%if 0%{?with_egl}
+%if %{with egl}
 BuildRequires:  pkgconfig(glesv2)
 %else
 BuildRequires:  pkgconfig(gl)
@@ -57,13 +56,7 @@ BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xmu)
 %endif
-%if 0%{?with_libchdr}
 BuildRequires:  pkgconfig(libchdr)
-%else
-BuildRequires:  pkgconfig(flac)
-BuildRequires:  pkgconfig(lzmasdk-c)
-BuildRequires:  pkgconfig(zlib)
-%endif
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(sdl2)
 #BuildRequires:  cmake(OpenAL)
@@ -72,6 +65,7 @@ BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5Multimedia)
 BuildRequires:  cmake(Qt5OpenGL)
 BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 
 %description
@@ -84,11 +78,7 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 rm -rf win_template
 rm -rf yabause/.vs
 
-%if 0%{?with_libchdr}
 rm -rf yabause/src/tools/libchdr/*
-%else
-rm -rf yabause/src/tools/libchdr/deps/{flac,lzma,zlib}*
-%endif
 
 cp -p yabause/{COPYING,AUTHORS,README} .
 
@@ -117,11 +107,8 @@ sed \
   -S yabause \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DYAB_PORTS=qt \
-%if 0%{?with_egl}
+%if %{with egl}
   -DYAB_FORCE_GLES31:BOOL=ON \
-%endif
-%if !0%{?with_libchdr}
-  -DUSE_SYSTEM_CHDR:BOOL=OFF \
 %endif
   -DYAB_OPTIMIZATION=-O%{?with_optim}%{!?with_optim:2} \
   -DYAB_NETWORK:BOOL=ON \

@@ -1,7 +1,7 @@
 From 5f6e05db0ae397a7ffacc6f7664122d404cd3261 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
-Subject: [PATCH] Use system libs
+Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt                | 82 ++++++++++++++++++++++++++++++++---

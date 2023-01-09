@@ -27,9 +27,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit c440781ce7612c4e368e76638ab4a0cfb289bb34
+%global commit 1af8602530c693522c2b1a544130537e05938d08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221208
+%global date 20230108
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -39,6 +39,10 @@
 %global commit3 c351692490513cdb0e5a2c925aaf7ea4a9b672f4
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
+
+%global commit4 d87512353495e7760e7fda7566a05beef7627d8f
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 implot
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -51,7 +55,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        172%{?gver}%{?dist}
+Release:        173%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -69,7 +73,7 @@ Url:            https://dolphin-emu.org/
 #dolphin-5.0/Source/Core/VideoBackends/Software/Clipper.cpp
 #dolphin-5.0/Source/Core/AudioCommon/aldlist.cpp
 ##Any code in Externals has a license break down in Externals/licenses.md
-License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND MIT AND Zlib
+License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND BSD-3-Clause AND MIT AND Zlib
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
@@ -79,6 +83,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
 Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        https://github.com/epezent/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 
 %if %{with sysvulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -189,6 +194,7 @@ Provides:       bundled(gtest) = 1.9.0
 #My best guess is that this is 2.6.6, as dolphin does not specify
 Provides:       bundled(bochs) = 2.6.6
 Provides:       bundled(FatFS) = 86631
+Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
 
 
@@ -281,6 +287,7 @@ rm -rf \
 
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
+tar -xf %{S:4} -C implot/implot --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson

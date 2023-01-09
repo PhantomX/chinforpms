@@ -1,7 +1,7 @@
 %global commit d059dd1cd0770e9c63da33562f6bcba4ef52846b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221222
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 3a1f2a42bb62a609ed4a988c82a70a5c20f32df1
+%global wine_stagingver 8.0-rc3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 497b9a59eaf575eda87087fc932f49eab1c3bf94
+%global tkg_id e92591515e0ad50df1ac5b1a5871710a15032184
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,7 +151,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0~rc2
+Version:        8.0~rc3
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -282,7 +282,12 @@ Patch5000:      0001-chinforpms-message.patch
 # END of staging patches
 
 %if !0%{?no64bit}
+%if 0%{fedora} > 36
 ExclusiveArch:  %{ix86} x86_64 aarch64
+%else
+# Fedora 36 Clang doesn't build PE binaries on ARM at the moment
+ExclusiveArch:  %{ix86} x86_64
+%endif
 %else
 ExclusiveArch:  %{ix86}
 %endif
@@ -1106,22 +1111,21 @@ export PATH="$(pwd)/bin:$PATH"
 
 # setup for alternatives usage
 %ifarch x86_64 aarch64
+%ifarch aarch64
+mv %{buildroot}%{_bindir}/wine %{buildroot}%{_bindir}/wine64
+mv %{buildroot}%{_bindir}/wine-preloader %{buildroot}%{_bindir}/wine64-preloader
+%endif
 mv %{buildroot}%{_bindir}/wineserver %{buildroot}%{_bindir}/wineserver64
 %endif
 %ifarch %{ix86} %{arm}
 mv %{buildroot}%{_bindir}/wine %{buildroot}%{_bindir}/wine32
 mv %{buildroot}%{_bindir}/wineserver %{buildroot}%{_bindir}/wineserver32
-# do not ship typelibs in 32-bit packages
-# https://www.winehq.org/pipermail/wine-devel/2020-June/167283.html
-rm -f %{buildroot}%{_includedir}/wine/windows/*.tlb 
 %endif
-%ifnarch %{arm} aarch64 x86_64
+%ifnarch aarch64 x86_64
 mv %{buildroot}%{_bindir}/wine-preloader %{buildroot}%{_bindir}/wine32-preloader
 %endif
 touch %{buildroot}%{_bindir}/wine
-%ifnarch %{arm}
 touch %{buildroot}%{_bindir}/wine-preloader
-%endif
 touch %{buildroot}%{_bindir}/wineserver
 
 # remove rpath
@@ -1377,23 +1381,16 @@ fi
 %{_sbindir}/alternatives --install %{_bindir}/wineserver \
   wineserver %{_bindir}/wineserver64 20
 %else
-%ifnarch %{arm}
 %{_sbindir}/alternatives --install %{_bindir}/wine \
   wine %{_bindir}/wine32 20 \
   --slave %{_bindir}/wine-preloader wine-preloader %{_bindir}/wine32-preloader
 %{_sbindir}/alternatives --install %{_bindir}/wineserver \
   wineserver %{_bindir}/wineserver32 10
-%else
-%{_sbindir}/alternatives --install %{_bindir}/wine \
-  wine %{_bindir}/wine32 20
-%{_sbindir}/alternatives --install %{_bindir}/wineserver \
-  wineserver %{_bindir}/wineserver32 10
-%endif
 %endif
 
 %postun core
 if [ $1 -eq 0 ] ; then
-%ifarch x86_64 aarch64 aarch64
+%ifarch x86_64 aarch64
   %{_sbindir}/alternatives --remove wine %{_bindir}/wine64
   %{_sbindir}/alternatives --remove wineserver %{_bindir}/wineserver64
 %else
@@ -1444,9 +1441,7 @@ fi
 
 %ifarch %{ix86} %{arm}
 %{_bindir}/wine32
-%ifnarch %{arm}
 %{perms_pldr} %{_bindir}/wine32-preloader
-%endif
 %{perms_srv} %{_bindir}/wineserver32
 %config %{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
 %endif
@@ -1461,9 +1456,7 @@ fi
 %endif
 
 %ghost %{_bindir}/wine
-%ifnarch %{arm}
 %ghost %{_bindir}/wine-preloader
-%endif
 %ghost %{_bindir}/wineserver
 
 %dir %{_libdir}/wine
@@ -2544,6 +2537,9 @@ fi
 
 
 %changelog
+* Sun Jan 08 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc3-100
+- 8.0-rc3
+
 * Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc2-100.20221222gitd059dd1
 - 8.0-rc2
 
