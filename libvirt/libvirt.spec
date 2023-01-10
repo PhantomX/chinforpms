@@ -230,7 +230,7 @@ Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 8.10.0
 Release: 100%{?dist}
-License: LGPLv2+
+License: LGPL-2.1-or-later AND GPL-2.0-or-later
 URL: https://libvirt.org/
 
 %if %(echo %{version} | grep -q "\.0$"; echo $?) == 1

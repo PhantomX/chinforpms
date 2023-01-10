@@ -3,7 +3,7 @@ Version:        0.39.0
 Release:        100%{?dist}
 Summary:        A perl script for managing file archives of various types
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://www.nongnu.org/atool/
 
 Source0:        http://savannah.nongnu.org/download/%{name}/%{name}-%{version}.tar.gz

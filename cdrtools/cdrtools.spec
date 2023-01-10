@@ -14,7 +14,7 @@ Release:        3%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
-License:        CDDL and GPLv2 and BSD
+License:        CDDL AND GPL-2.0-only AND BSD-2-Clause AND LGPL-2.1-only
 URL:            http://cdrtools.sourceforge.net/private/cdrecord.html
 
 %if 0%(echo %{version} | grep -q '~a' ; echo $?) == 0

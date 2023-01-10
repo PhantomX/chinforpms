@@ -1,6 +1,6 @@
-%global commit a4b6f868c21741b5925c318033f8df71a7f1598b
+%global commit 2a26a15347767c8f343cc8d03b74028e1be25799
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211208
+%global date 20220529
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,13 +11,13 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
 # 7-zip and p7zip - LGPLv2
 # Zopfli - Apache 2.0
-License:        ISC and and LGPLv2 and ASL 2.0
+License:        ISC AND LGPL-2.1-or-later AND Apache-2.0
 URL:            https://github.com/unknownbrackets/%{name}
 
 %if 0%{?with_snapshot}
@@ -34,6 +34,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  libdeflate-devel
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libuv)
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake(zopfli) >= %{zopfli_ver}
 

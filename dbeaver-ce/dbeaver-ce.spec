@@ -8,11 +8,11 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        22.3.0
+Version:        22.3.2
 Release:        1%{?dist}
 Summary:        Free database tool
 
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://dbeaver.io
 
 Source0:        %{vc_url}/releases/download/%{version}/%{name}-%{version}-linux.gtk.%{_arch}-nojdk.tar.gz
@@ -105,6 +105,9 @@ done
 
 
 %changelog
+* Mon Jan 09 2023 Phantom X <megaphantomx at hotmail dot com> - 22.3.2-1
+- 22.3.2
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 22.3.0-1
 - 22.3.0
 

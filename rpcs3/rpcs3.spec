@@ -19,9 +19,9 @@
 %bcond_with syshidapi
 %global bundlehidapi 0.12.0
 
-%global commit df718bcb0f2b7be809bf48b6059be7322fc17202
+%global commit 18966d424c304870f4abe0cac4f13ee342567d2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230107
+%global date 20230109
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -92,7 +92,7 @@
 
 Name:           rpcs3
 Version:        0.0.26
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0

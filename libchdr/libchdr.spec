@@ -14,7 +14,7 @@ Version:        0.2
 Release:        4%{?gver}%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
-License:        BSD
+License:        BSD-3-Clause AND (Unlicense OR MIT-0)
 URL:            https://github.com/rtissera/%{name}
 
 %if 0%{?with_snapshot}

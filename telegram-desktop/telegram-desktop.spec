@@ -24,7 +24,7 @@
 %global kf5ver 4f35c8d
 
 Name:           telegram-desktop
-Version:        4.5.2
+Version:        4.5.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -150,8 +150,8 @@ Requires:       vazirmatn-fonts
 %endif
 
 %if 0%{?fedora} && 0%{?fedora} >= 37
-BuildRequires:  pkgconfig(webkit2gtk-5.0)
-Requires:       webkit2gtk5.0%{?_isa}
+BuildRequires:  pkgconfig(webkit2gtk-4.1)
+Requires:       webkit2gtk4.1%{?_isa}
 %else
 BuildRequires:  pkgconfig(webkit2gtk-4.0)
 Requires:       webkit2gtk3%{?_isa}
@@ -314,6 +314,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Mon Jan 09 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.3-100
+- 4.5.3
+
 * Wed Jan 04 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.2-100
 - 4.5.2
 

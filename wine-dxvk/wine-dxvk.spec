@@ -6,9 +6,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 12901b52f19ea1d3eece450a009f4602b5f2adc3
+%global commit 0342a25e61ca855ed958076607ffa415d3372618
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221219
+%global date 20230109
 %global with_snapshot 1
 
 %bcond_with sysspirv
@@ -23,7 +23,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
 
-%global commit7 3b2e9f6b76aa8d0c413c93202e93816517d781bd
+%global commit7 d39344f466caae0495ebac4d49b03a886d83ba3a
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
@@ -57,7 +57,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.0
-Release:        103%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 

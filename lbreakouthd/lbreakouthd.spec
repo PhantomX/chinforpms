@@ -1,9 +1,9 @@
 Name:           lbreakouthd
-Version:        1.0.10
+Version:        1.1.1
 Release:        1%{?dist}
 Summary:        A breakout-style arcade game
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://lgames.sourceforge.net/
 
 Source0:        https://downloads.sourceforge.net/lgames/%{name}-%{version}.tar.gz
@@ -89,6 +89,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Tue Jan 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-1
+- 1.1.1
+
 * Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.10-1
 - 1.0.10
 
