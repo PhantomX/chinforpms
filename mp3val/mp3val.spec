@@ -3,8 +3,9 @@ Version:        0.1.8
 Release:        1%{?dist}
 Summary:        A free software tool to validate and fix MPEG audio files
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://mp3val.sourceforge.net/
+
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.tar.gz
 
 Patch01:        mp3val-0.1.8-gcc5.patch
@@ -19,11 +20,11 @@ audio files' integrity. It can be useful for finding corrupted files.
 MP3val is also able to fix most of the problems.
 
 %prep
-%setup -q -n %{name}-%{version}-src
+%autosetup -n %{name}-%{version}-src -N
 
 %{__sed} -i -e 's/\r//' Makefile.* *.cpp *.h
 
-%patch01
+%autopatch
 
 %{__sed} -i \
   -e "s|^CXXFLAGS=|CXXFLAGS?=|g" \

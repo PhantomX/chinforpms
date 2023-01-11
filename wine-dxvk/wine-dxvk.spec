@@ -6,9 +6,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 0342a25e61ca855ed958076607ffa415d3372618
+%global commit 8011a40843c5dbdc62c4d65bff27c5f6337fcf97
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230110
 %global with_snapshot 1
 
 %bcond_with sysspirv
@@ -57,7 +57,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.0
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -89,7 +89,7 @@ Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcomm
 %if %{without sysvulkan}
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
-Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}tar.gz
+Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 
 ExclusiveArch:  %{ix86} x86_64
 
