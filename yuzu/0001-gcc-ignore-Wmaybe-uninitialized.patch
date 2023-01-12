@@ -57,9 +57,9 @@ index bc9d9d7..1eef8e9 100755
 +#endif
 +#endif
 +
- ConfigureSystem::ConfigureSystem(Core::System& system_, QWidget* parent)
-     : QWidget(parent), ui{std::make_unique<Ui::ConfigureSystem>()}, system{system_} {
-     ui->setupUi(this);
+ constexpr std::array<u32, 7> LOCALE_BLOCKLIST{
+     // pzzefezrpnkzeidfej
+     // thhsrnhutlohsternp
 -- 
 2.37.3
 

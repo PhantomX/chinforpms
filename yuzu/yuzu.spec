@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f0f683f47565d15c2870eaef8f4efbe29d839682
+%global commit 215bc2b1281692370da6e572394b6d76f1c887f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221229
+%global date 20230111
 
 %bcond_without ea
 %if %{without ea}
@@ -32,7 +32,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
-%global commit3 d7ad93a88864bda94e282e95028f90b5784e4d20
+%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        3262
+Version:        3307
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -90,7 +90,7 @@ Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}
 %if %{without dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %endif
-Source3:        https://github.com/ReinUsesLisp/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{ext_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz

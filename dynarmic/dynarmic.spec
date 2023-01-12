@@ -5,9 +5,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7a2083b6032fa989b45087fc0c013db4f9e38885
+%global commit 9af4b970d302389829448a30608c7cb4fce9b662
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221211
+%global date 20230106
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -19,8 +19,8 @@
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.4.0
-Release:        2%{?gver}%{?dist}
+Version:        6.4.3
+Release:        1%{?gver}%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
@@ -97,6 +97,9 @@ rm -rf externals/{catch,fmt,robin-map,xbyak}
 
 
 %changelog
+* Thu Jan 12 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-1.20230106git9af4b97
+- 6.4.3
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-1.20211205gitec1f117
 - Initial spec
 
