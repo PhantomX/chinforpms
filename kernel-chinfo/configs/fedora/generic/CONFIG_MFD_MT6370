@@ -1,1 +1,1 @@
-CONFIG_MFD_MT6370=m
+# CONFIG_MFD_MT6370 is not set

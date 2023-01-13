@@ -1,7 +1,7 @@
-%global commit d059dd1cd0770e9c63da33562f6bcba4ef52846b
+%global commit 047118247ce489a7138428c8b2cd5692ed04337e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221222
-%global with_snapshot 0
+%global date 20230112
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e92591515e0ad50df1ac5b1a5871710a15032184
+%global tkg_id c1d3f8e2e59ed1aa038636d191d896f2f581f987
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -152,7 +152,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.0~rc3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -235,6 +235,7 @@ Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT
 Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
 Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1008:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
+Patch1009:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -894,6 +895,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch1005 -p1
 %patch1007 -p1
 %patch1008 -p1
+%patch1009 -p1
 
 %patch5000 -p1
 
