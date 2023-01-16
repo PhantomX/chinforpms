@@ -1,7 +1,7 @@
 %global commit 047118247ce489a7138428c8b2cd5692ed04337e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230112
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.0-rc3
+%global wine_stagingver 8.0-rc4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c1d3f8e2e59ed1aa038636d191d896f2f581f987
+%global tkg_id 9d1de539161018217fbf4b503a14d211230fac2e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0~rc3
-Release:        101%{?gver}%{?dist}
+Version:        8.0~rc4
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -226,7 +226,6 @@ Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-stag
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-Patch1000:       %{tkg_url}/proton/use_clock_monotonic/use_clock_monotonic.patch#/%{name}-tkg-use_clock_monotonic.patch
 %dnl Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1002:       FS_bypass_compositor.patch
 Patch1003:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
@@ -260,7 +259,6 @@ Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GP
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
-Patch1051:       %{tkg_url}/misc/fastsync/fastsync-clock_monotonic-fixup.patch#/%{name}-tkg-fastsync-clock_monotonic-fixup.patch
 
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup.patch#/%{name}-tkg-sharedgpures-fixup.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fshack.patch#/%{name}-tkg-sharedgpures-fences-fshack.patch
@@ -884,7 +882,6 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch901 -p1
 
 %dnl #FIXME needs rebase %patch1006 -p1
-%patch1000 -p1
 %if !0%{?fshack}
 %patch1002 -p1
 %if 0%{?childwindow}
@@ -941,7 +938,6 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1031 -p1
 %if 0%{?fastsync}
 %patch1050 -p1
-%patch1051 -p1
 %endif
 %patch1032 -p1
 %patch1034 -p1
@@ -2539,6 +2535,9 @@ fi
 
 
 %changelog
+* Sun Jan 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc4-100
+- 8.0-rc4
+
 * Sun Jan 08 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc3-100
 - 8.0-rc3
 

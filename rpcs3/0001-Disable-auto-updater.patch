@@ -1,0 +1,48 @@
+From 55184d43f61a099e5da54f330dee14ef14c0c8d4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 15 Jan 2023 04:15:05 -0300
+Subject: [PATCH] Disable auto-updater
+
+---
+ rpcs3/rpcs3qt/main_window.cpp    | 2 ++
+ rpcs3/rpcs3qt/update_manager.cpp | 4 ++++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/rpcs3/rpcs3qt/main_window.cpp b/rpcs3/rpcs3qt/main_window.cpp
+index 54723a5..5e01d56 100644
+--- a/rpcs3/rpcs3qt/main_window.cpp
++++ b/rpcs3/rpcs3qt/main_window.cpp
+@@ -258,6 +258,7 @@ bool main_window::Init([[maybe_unused]] bool with_cli_boot)
+ 		}
+ 	});
+ 
++#if 0
+ #if defined(_WIN32) || defined(__linux__)
+ 	if (const auto update_value = m_gui_settings->GetValue(gui::m_check_upd_start).toString(); update_value != gui::update_off)
+ 	{
+@@ -265,6 +266,7 @@ bool main_window::Init([[maybe_unused]] bool with_cli_boot)
+ 		const bool auto_accept   = !in_background && update_value == gui::update_auto;
+ 		m_updater.check_for_updates(true, in_background, auto_accept, this);
+ 	}
++#endif
+ #endif
+ 
+ 	// Disable vsh if not present.
+diff --git a/rpcs3/rpcs3qt/update_manager.cpp b/rpcs3/rpcs3qt/update_manager.cpp
+index a0b93b8..be926de 100644
+--- a/rpcs3/rpcs3qt/update_manager.cpp
++++ b/rpcs3/rpcs3qt/update_manager.cpp
+@@ -87,6 +87,10 @@ void update_manager::check_for_updates(bool automatic, bool check_only, bool aut
+ 
+ bool update_manager::handle_json(bool automatic, bool check_only, bool auto_accept, const QByteArray& data)
+ {
++	update_log.error("Auto-updater has been disabled by packager");
++	QMessageBox::warning(m_parent, tr("Auto-updater"), tr("Auto-updater has been disabled by packager."));
++	return false;
++
+ 	const QJsonObject json_data = QJsonDocument::fromJson(data).object();
+ 	const int return_code       = json_data["return_code"].toInt(-255);
+ 
+-- 
+2.39.0
+

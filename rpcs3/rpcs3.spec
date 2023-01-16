@@ -13,15 +13,17 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without smallffmpeg
 # Enable system flatbuffers
-%bcond_with sysflatbuffers
-%global bundleflatbuffers 2.0.6
-# Enable system hidapi (disabled, bundled have modifications)
-%bcond_with syshidapi
+%bcond_without sysflatbuffers
+%global bundleflatbuffers 2.0.8
+# Enable system hidapi
+%bcond_without syshidapi
 %global bundlehidapi 0.12.0
+# Enable system yaml-cpp (need -fexceptions support)
+%bcond_with sysyamlcpp
 
-%global commit 18966d424c304870f4abe0cac4f13ee342567d2e
+%global commit e6a75974446aad0f97aecd685e700747f8954dfa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230115
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -92,7 +94,7 @@
 
 Name:           rpcs3
 Version:        0.0.26
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -111,7 +113,9 @@ Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortc
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+%if %{without sysyamlcpp}
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%endif
 Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %if %{with llvm_submod}
 Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
@@ -131,6 +135,7 @@ Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
+Patch12:        0001-Disable-auto-updater.patch
 
 ExclusiveArch:  x86_64
 
@@ -174,10 +179,10 @@ BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(libva-x11)
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
-%if 0%{?with_syshidapi}
+BuildRequires:  pkgconfig(libudev)
+%if %{with syshidapi}
 BuildRequires:  pkgconfig(hidapi-hidraw) >= %{bundlehidapi}
 %else
-BuildRequires:  pkgconfig(libudev)
 Provides:       bundled(hidapi) = %{bundlehidapi}
 %endif
 BuildRequires:  pkgconfig(libcurl)
@@ -194,6 +199,11 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(x11)
+%if %{with sysyamlcpp}
+BuildRequires:  cmake(yaml-cpp)
+%else
+Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
+%endif
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers >= 1.2.198
 
@@ -219,7 +229,6 @@ Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
-Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
 %if %{with llvm_submod}
 Provides:       bundled(llvm) = 0~git%{shortcommit18}
 %endif
@@ -237,7 +246,6 @@ tar -xf %{S:11} -C 3rdparty/SoundTouch/soundtouch --strip-components 1
 tar -xf %{S:12} -C 3rdparty/asmjit/asmjit --strip-components 1
 tar -xf %{S:13} -C 3rdparty/glslang/glslang --strip-components 1
 tar -xf %{S:15} -C 3rdparty/wolfssl/wolfssl --strip-components 1
-tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
 tar -xf %{S:17} -C 3rdparty/SPIRV/SPIRV-Headers --strip-components 1
 %if %{with llvm_submod}
 tar -xf %{S:18} -C llvm --strip-components 1
@@ -285,6 +293,12 @@ tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
 cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
 %endif
 
+%if %{without sysyamlcpp}
+tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
+cp -p 3rdparty/yaml-cpp/yaml-cpp/LICENSE 3rdparty/LICENSE.yaml-cpp
+sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
+%endif
+
 pushd 3rdparty
 cp -p stblib/LICENSE LICENSE.stb
 cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
@@ -292,7 +306,6 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
 cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
-cp -p yaml-cpp/yaml-cpp/LICENSE LICENSE.yaml-cpp
 popd
 
 %if 0%{?with_snapshot}
@@ -351,16 +364,13 @@ popd
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
 %endif
   -DWITH_LLVM:BOOL=ON \
-%if !%{with llvm_submod}
+%if %{without llvm_submod}
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \
-%if 0%{?with_sysflatbuffers}
+%if %{with sysflatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
-%endif
-%if 0%{?with_syshidapi}
-  -DHIDAPI_INCLUDEDIR:PATH=%{_includedir}/hidapi \
 %endif
   -DUSE_SYSTEM_CURL:BOOL=ON \
 %if %{with sysffmpeg}

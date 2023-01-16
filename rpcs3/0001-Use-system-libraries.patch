@@ -1,38 +1,53 @@
-From ca7708824efe025b3c2d47051b26aec9c1970ed5 Mon Sep 17 00:00:00 2001
+From 09bda5e6998f374d3e3e2fcbf0362a0ab9ea8b24 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+ 3rdparty/CMakeLists.txt         | 25 +++++++++++++++++++++++++
+ rpcs3/Input/ds4_pad_handler.cpp |  4 ++++
+ 2 files changed, 29 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 3d84d3f..4893749 100644
+index b15d591..d210c4d 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
 @@ -73,7 +73,15 @@ endif()
  
  
  # hidapi
--add_subdirectory(hidapi)
-+find_package(hidapi)
++pkg_check_modules(hidapi IMPORTED_TARGET hidapi-hidraw)
 +if(hidapi_FOUND)
 +	message(STATUS "Using the system hidapi")
 +	add_library(3rdparty_hidapi INTERFACE)
-+	target_include_directories(3rdparty_hidapi SYSTEM INTERFACE ${HIDAPI_INCLUDEDIR})
-+	target_link_libraries(3rdparty_hidapi INTERFACE hidapi::hidraw)
++	target_compile_definitions(3rdparty_hidapi INTERFACE USE_SYSTEM_HIDAPI)
++	target_link_libraries(3rdparty_hidapi INTERFACE PkgConfig::hidapi udev)
 +else()
-+	add_subdirectory(hidapi)
+ add_subdirectory(hidapi)
 +endif()
  
  
  # Vulkan
-@@ -134,7 +142,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
+@@ -82,7 +90,15 @@ add_subdirectory(SPIRV EXCLUDE_FROM_ALL)
+ 
+ 
+ # yaml-cpp
++find_package(yaml-cpp)
++if(yaml-cpp_FOUND)
++	message(STATUS "Using the system yaml-cpp")
++	add_library(yaml-cpp_shared INTERFACE)
++	target_link_libraries(yaml-cpp_shared INTERFACE yaml-cpp)
++	add_library(3rdparty::yaml-cpp ALIAS yaml-cpp_shared)
++else()
+ add_subdirectory(yaml-cpp)
++endif()
+ 
+ 
+ # xxHash
+@@ -134,7 +150,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
  add_subdirectory(discord-rpc)
  
  # Cubeb
--add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +find_package(cubeb)
 +if(cubeb_FOUND)
 +	message(STATUS "Using the system cubeb")
@@ -40,12 +55,12 @@ index 3d84d3f..4893749 100644
 +	target_link_libraries(cubeb INTERFACE cubeb::cubeb)
 +	add_library(3rdparty::cubeb ALIAS cubeb)
 +else()
-+	add_subdirectory(cubeb EXCLUDE_FROM_ALL)
+ add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +endif()
  
  # SoundTouch
  add_subdirectory(SoundTouch EXCLUDE_FROM_ALL)
-@@ -234,6 +250,7 @@ if(USE_FAUDIO)
+@@ -234,6 +258,7 @@ if(USE_FAUDIO)
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
@@ -53,6 +68,21 @@ index 3d84d3f..4893749 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
+diff --git a/rpcs3/Input/ds4_pad_handler.cpp b/rpcs3/Input/ds4_pad_handler.cpp
+index 8cd8340..221187e 100644
+--- a/rpcs3/Input/ds4_pad_handler.cpp
++++ b/rpcs3/Input/ds4_pad_handler.cpp
+@@ -4,6 +4,10 @@
+ 
+ LOG_CHANNEL(ds4_log, "DS4");
+ 
++#ifdef USE_SYSTEM_HIDAPI
++#define hid_write_control hid_write
++#endif
++
+ constexpr id_pair SONY_DS4_ID_0 = {0x054C, 0xBA0};
+ constexpr id_pair SONY_DS4_ID_1 = {0x054C, 0x5C4};
+ constexpr id_pair SONY_DS4_ID_2 = {0x054C, 0x09CC};
 -- 
-2.37.1
+2.39.0
 

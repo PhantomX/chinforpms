@@ -59,10 +59,10 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 02d23a79bec6dd80ade097d079b7057e46dec864
+%global commit 6cac735d521ea404da26f2f5221ec4f48b198e7f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221209
-%global with_snapshot 0
+%global date 20230113
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -77,7 +77,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        22.3.3
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -93,6 +93,7 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
+Patch10:        %{vc_url}/-/merge_requests/20714.patch#/%{name}-gl-pr20714.patch
 
 BuildRequires:  meson >= 0.61.4
 BuildRequires:  gcc
