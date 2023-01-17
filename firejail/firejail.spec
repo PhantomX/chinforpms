@@ -1,9 +1,9 @@
 Name:           firejail
-Version:        0.9.70
+Version:        0.9.72
 Release:        1%{?dist}
 Summary:        Linux namespaces sandbox program
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://firejail.wordpress.com/
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
 Source1:        README.suid
@@ -36,8 +36,8 @@ chmod -x contrib/*.py
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" contrib/*.py
 
 sed \
-  -e '/$(DOCDIR)/d' \
-  -i Makefile.in
+  -e '/$(docdir)/d' \
+  -i Makefile
 
 %build
 %configure \
@@ -65,7 +65,7 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 %files
 %license COPYING
-%doc README* RELNOTES contrib
+%doc README* RELNOTES contrib etc/templates/*
 %config(noreplace) %{_sysconfdir}/%{name}
 %attr(4750,root,%{name}) %{_bindir}/%{name}
 %{_bindir}/firecfg
@@ -80,6 +80,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Tue Jan 17 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.72-1
+- 0.9.72
+
 * Fri Jun 10 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.70-1
 - 0.9.70
 
