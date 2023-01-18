@@ -1,20 +1,20 @@
-From 659f435a7970be1b8d3cac6992a1ea0f34ecc320 Mon Sep 17 00:00:00 2001
+From 4d4bad4f61afb8bb2810ca16f776f9f8138c86c2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                    | 149 +++++++++++++++++++++++++-
- src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++
+ dep/CMakeLists.txt                    | 158 +++++++++++++++++++++++++-
+ src/common/vulkan/shader_compiler.cpp | 129 +++++++++++++++++++++
  src/core/CMakeLists.txt               |   6 +-
  src/core/texture_replacements.cpp     |   2 +
- 4 files changed, 282 insertions(+), 4 deletions(-)
+ 4 files changed, 291 insertions(+), 4 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 181d113..d311770 100644
+index 2dcbc33..b84c3cc 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,25 +1,168 @@
+@@ -1,26 +1,178 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -130,7 +130,7 @@ index 181d113..d311770 100644
 +find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h)
 +if(vulkan_INCLUDE_DIRS)
 +  message(STATUS "Using the system vulkan-headers")
-+ add_library(vulkan-shared INTERFACE)
++  add_library(vulkan-shared INTERFACE)
 +  add_library(vulkan-headers ALIAS vulkan-shared)
 +else()
  add_subdirectory(vulkan)
@@ -163,6 +163,16 @@ index 181d113..d311770 100644
 +  add_library(cpuinfo ALIAS cpuinfo-shared)
 +else()
  add_subdirectory(cpuinfo)
++endif()
++
++
++find_package(FastFloat)
++if(FastFloat_FOUND)
++  message(STATUS "Using the system fast_float")
++  add_library(fast_float INTERFACE)
++  target_link_libraries(fast_float INTERFACE FastFloat::fast_float)
++else()
+ add_subdirectory(fast_float)
 +endif()
 +
 +find_package(xbyak)
@@ -350,10 +360,10 @@ index 664cb96..e35334f 100644
  {
    return CompileShaderToSPV(EShLangVertex, "vs", source_code);
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index 29c4b22..5d000a1 100644
+index 31f4d44..e1d93b5 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -149,7 +149,11 @@ if(ENABLE_VULKAN)
+@@ -150,7 +150,11 @@ if(ENABLE_VULKAN)
  endif()
  
  if(${CPU_ARCH} STREQUAL "x64")

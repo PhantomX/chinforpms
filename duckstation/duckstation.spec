@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit 6a7407565a61fb470a495cc98068db729b8f1e4f
+%global commit 53fffb1de2239ff41294d16c1edd6313a9a87c2d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230117
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        80%{?gver}%{?dist}
+Release:        81%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -67,6 +67,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  pkgconfig(egl)
+BuildRequires:  cmake(FastFloat)
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libchdr)
@@ -157,7 +158,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 xbyak xxhash zlib zstd
+  rapidjson tinyxml2 xbyak xxhash zlib zstd fast_float googletest
 
 %if %{with sysvulkan}
   mkdir -p ../src/vulkan

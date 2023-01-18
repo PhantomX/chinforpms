@@ -40,7 +40,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.3877
+Version:        1.7.3917
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -63,6 +63,7 @@ Patch4:         0001-glslang-build-as-static.patch
 Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
+Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 
 ExclusiveArch:  x86_64
 
@@ -159,23 +160,25 @@ this emulator anyway.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-mkdir 3rdparty-temp
-mv 3rdparty/demangler 3rdparty-temp/
-mv 3rdparty/include 3rdparty-temp/
-mv 3rdparty/glad 3rdparty-temp/
-mv 3rdparty/glslang 3rdparty-temp/
-mv 3rdparty/imgui 3rdparty-temp/
-mv 3rdparty/jpgd 3rdparty-temp/
-mv 3rdparty/rainterface 3rdparty-temp/
-mv 3rdparty/rcheevos 3rdparty-temp/
-mv 3rdparty/simpleini 3rdparty-temp/
-mv 3rdparty/zydis 3rdparty-temp/
-rm -rf 3rdparty/*
-mv 3rdparty-temp/* 3rdparty/
 rm -rf .git
 
-tar -xf %{S:10} -C 3rdparty/glslang/glslang --strip-components 1
-tar -xf %{S:11} -C 3rdparty/rcheevos/rcheevos --strip-components 1
+pushd 3rdparty
+rm -rf \
+  cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg fmt GL gtest libchdr libjpeg \
+  libpng libzip lzma qt rapidjson rapidyaml sdl2 soundtouch vulkan-headers wil \
+  xbyak xz zlib zstd
+
+tar -xf %{S:10} -C glslang/glslang --strip-components 1
+tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
+
+cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
+cp -p rainterface/LICENSE LICENSE.rainterface
+cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
+cp -p simpleini/LICENCE.txt LICENSE.simpleini
+cp -p zydis/LICENSE LICENSE.zydis
+popd
+
+
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -184,15 +187,6 @@ chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
 # Remove DOS encoding errors in txt files
 sed -i 's/\r//' pcsx2/Docs/GPL.txt
 sed -i 's/\r//' pcsx2/Docs/License.txt
-
-pushd 3rdparty
-cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
-cp -p rainterface/LICENSE LICENSE.rainterface
-cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
-cp -p simpleini/LICENCE.txt LICENSE.simpleini
-cp -p zydis/LICENSE LICENSE.zydis
-popd
-
 
 %if 0%{?with_snapshot}
 sed -i \
