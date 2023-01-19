@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ae3d50f71f6feee0e5a2c17fe1cb565c255b7b51
+%global commit 9c6035f254642fd569370efc5ffafc79cca4fc7f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221217
+%global date 20230115
 %global with_snapshot 1
 
 # Enable system boost
@@ -25,10 +25,8 @@
 %bcond_without qt
 # Build tests
 %bcond_with tests
-# Enable advanced simd, ssse3+
-%bcond_with  adv_simd
 
-%global commit2 f2102243e6fdd48c0b2a393a0993cca228f20573
+%global commit2 511806c0eba8ba5b5cedd4b4a814e96df92864a6
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
@@ -39,6 +37,10 @@
 %global commit4 a33701196adfad74917046096bf5a2aa0ab0bb50
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
+
+%global commit5 15798ac9c2611d5c7f9ba832e2c9159bdd8945f2
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 cryptopp-cmake
 
 %global commit6 fd69de1a1b960ec296cc67d32257b0f9e2d89ac6
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
@@ -74,7 +76,7 @@
 
 Name:           citra
 Version:        0
-Release:        32%{?gver}%{?dist}
+Release:        33%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -92,6 +94,7 @@ Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{sr
 %if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
+Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
@@ -105,8 +108,8 @@ Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
 
-Patch10:        0001-Optional-tests.patch
-Patch11:        0001-Use-system-libraries.patch
+Patch10:        0001-Use-system-libraries.patch
+Patch11:        0001-Optional-tests.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
@@ -189,7 +192,9 @@ This is the Qt frontend.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-tar -xf %{S:2} -C externals/cryptopp/cryptopp --strip-components 1
+mkdir -p externals/cryptopp
+tar -xf %{S:2} -C externals/cryptopp --strip-components 1
+tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
@@ -213,7 +218,7 @@ pushd externals
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
-cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
+%dnl cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
 %if %{without dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
@@ -248,13 +253,6 @@ sed \
 
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
-
-%if %{without adv_simd}
-  sed \
-    -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSSE3|\0_DISABLED|g' \
-    -e '/check_cxx_compiler_flag/s|CRYPTOPP_HAS_MSSE4.|\0_DISABLED|g' \
-    -i externals/cryptopp/CMakeLists.txt
-%endif
 
 %if 0%{?with_snapshot}
   sed \
@@ -292,9 +290,7 @@ export TRAVIS_TAG="%{version}-%{release}"
   -DENABLE_FFMPEG_AUDIO_DECODER:BOOL=ON \
   -DENABLE_FFMPEG_VIDEO_DUMPER:BOOL=ON \
 %endif
-%if %{without adv_simd}
-  -DCRYPTOPP_DISABLE_SSSE3:BOOL=ON \
-%endif
+  -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
   -DENABLE_WEB_SERVICE:BOOL=ON \
   %{!?with_tests:-DCITRA_TESTS:BOOL=OFF} \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \

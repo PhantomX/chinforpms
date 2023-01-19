@@ -5,15 +5,15 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1dd006d846350e96a46949f1e07a900206ae7194
+%global commit 92fa4c041d3e51ac08d7d5b94435fbb5182ba8f4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221216
+%global date 20230113
 %global with_snapshot 1
 
 # Disable LTO. Crash.
 %global _lto_cflags %{nil}
 
-%global commit1 36c0c62815f9f6bf43c81a3977502cd3996302a0
+%global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 LuaBridge
 
@@ -21,7 +21,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
-%global commit3 c896e2f920273bfee852da9cca2a356bc1c2031e
+%global commit3 b75e5a02b6933caf86c5822d019067b335492c85
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 Vulkan-Headers
 
@@ -29,13 +29,13 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
-%global commit5 10423ec659d301a0ff2daac8bbf38980abf27590
+%global commit5 77551c429f86c0e077f26552b7c1c0f12a9f235e
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
 # Enable system spirv (broken)
 %bcond_with sysspirv
-%bcond_with sysvulkan
+%bcond_without sysvulkan
 # Build with x11 instead SDL
 %bcond_with x11
 
@@ -50,7 +50,7 @@
 
 Name:           flycast
 Version:        2.0
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -65,10 +65,10 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%if %{without sysvulkan}
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-%endif
+%if %{without sysvulkan}
 Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%endif
 Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %if %{without sysspirv}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
@@ -112,7 +112,7 @@ BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
 %if %{with sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.224.1
+BuildRequires:  vulkan-headers >= 1.3.236
 %endif
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
@@ -136,17 +136,17 @@ Provides:       bundled(vixl)
 %prep
 %autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
 
-rm -rf core/deps/{glm,libzip,lzma,miniupnpc,oboe,SDL2-*,xbyak,xxHash,zlib}
-
 pushd core/deps
+rm -rf glm libzip lzma miniupnpc oboe SDL xbyak xxHash zlib
+
 tar -xf %{S:1} -C luabridge/ --strip-components 1
 tar -xf %{S:2} -C breakpad/ --strip-components 1
-%if !0%{?with_sysvulkan}
+%if %{without sysvulkan}
 tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
 sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i ../../CMakeLists.txt
 %endif
 tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
-%if !0%{?with_sysspirv}
+%if %{without sysspirv}
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
@@ -192,12 +192,6 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 
 
 %build
-%set_build_flags
-export LDFLAGS+=" -Wl,--sort-common"
-EXTRA_CFLAGS="-D NDEBUG -frename-registers -ftree-vectorize -fno-operator-names"
-export CFLAGS+=" ${EXTRA_CFLAGS}"
-export CXXFLAGS+=" ${EXTRA_CFLAGS}"
-
 %cmake \
   -GNinja \
 %if %{with x11}
