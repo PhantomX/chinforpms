@@ -1,21 +1,20 @@
-From d61ea27af31187590f36c3013afa160a315a0e22 Mon Sep 17 00:00:00 2001
+From 63393fc0dc660cb4bd707d7179d4ab4b1bbef01f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 50 ++++++++++++++-----
- common/CMakeLists.txt                         |  2 +-
+ cmake/SearchForStuff.cmake                    | 50 ++++++++++++++++---
  pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
  pcsx2/CMakeLists.txt                          |  7 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 8 files changed, 51 insertions(+), 20 deletions(-)
+ 7 files changed, 54 insertions(+), 15 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index ea84fd6..20bf80d 100644
+index ea84fd6..22e3ed2 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -122,11 +122,10 @@ endif()
@@ -34,7 +33,7 @@ index ea84fd6..20bf80d 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -168,35 +167,62 @@ if(NOT WIN32 AND QT_BUILD)
+@@ -168,35 +167,70 @@ if(NOT WIN32 AND QT_BUILD)
  	find_package(CURL REQUIRED)
  endif()
  
@@ -87,36 +86,27 @@ index ea84fd6..20bf80d 100644
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
--	add_subdirectory(3rdparty/vulkan-headers EXCLUDE_FROM_ALL)
- endif()
- 
- if(CUBEB_API)
--	add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
--	target_compile_options(cubeb PRIVATE "-w")
--	target_compile_options(speex PRIVATE "-w")
-+	find_package(cubeb)
-+	if(cubeb_FOUND)
-+		message(STATUS "Using the system cubeb")
++	find_package(VulkanHeaders)
++	if(VulkanHeaders_FOUND)
++		message(STATUS "Using the system vulkan-headers")
++		alias_library(vulkan-headers Vulkan::Headers)
 +	else()
-+		add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
-+		target_compile_options(cubeb PRIVATE "-w")
-+		target_compile_options(speex PRIVATE "-w")
+ 	add_subdirectory(3rdparty/vulkan-headers EXCLUDE_FROM_ALL)
 +	endif()
  endif()
  
-diff --git a/common/CMakeLists.txt b/common/CMakeLists.txt
-index a74cfd2..ed70f5f 100644
---- a/common/CMakeLists.txt
-+++ b/common/CMakeLists.txt
-@@ -150,7 +150,7 @@ endif()
+ if(CUBEB_API)
++	find_package(cubeb)
++	if(cubeb_FOUND)
++		message(STATUS "Using the system cubeb")
++		alias_library(cubeb cubeb::cubeb)
++	else()
+ 	add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
+ 	target_compile_options(cubeb PRIVATE "-w")
+ 	target_compile_options(speex PRIVATE "-w")
++	endif()
+ endif()
  
- if(USE_VULKAN)
- 	target_link_libraries(common PUBLIC
--		Vulkan-Headers glslang
-+		glslang
- 	)
- 	target_sources(common PRIVATE
- 		Vulkan/ShaderCache.cpp
 diff --git a/pcsx2/CDVD/ChdFileReader.cpp b/pcsx2/CDVD/ChdFileReader.cpp
 index 0dd5c74..519c88b 100644
 --- a/pcsx2/CDVD/ChdFileReader.cpp
@@ -131,10 +121,10 @@ index 0dd5c74..519c88b 100644
  #pragma clang diagnostic pop
  #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index dde6f5c..b2f8222 100644
+index 140e036..3c16d0e 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1219,10 +1219,15 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1217,10 +1217,15 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	${CMAKE_BINARY_DIR}/pcsx2
  	${CMAKE_BINARY_DIR}/common/include/
  	"${CMAKE_SOURCE_DIR}/3rdparty/jpgd/"
@@ -206,5 +196,5 @@ index 6382e9c..7b09c96 100644
  MULTI_ISA_UNSHARED_START
  
 -- 
-2.39.0
+2.39.1
 

@@ -147,14 +147,15 @@ index 6e58227..77a9ff8 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1155,7 +1210,14 @@ if(USE_VULKAN)
+@@ -1155,7 +1210,15 @@ if(USE_VULKAN)
  		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_MACOS_MVK)
  	endif()
  
-+	find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h)
-+	if(vulkan_INCLUDE_DIRS)
++	find_package(VulkanHeaders)
++	if(VulkanHeaders_FOUND)
 +		message(STATUS "Using the system vulkan-headers")
 +		add_library(vulkan-shared INTERFACE)
++		target_link_libraries(vulkan-shared INTERFACE Vulkan::Headers)
 +		add_library(Vulkan::Headers ALIAS vulkan-shared)
 +	else()
  	add_subdirectory(core/deps/Vulkan-Headers)

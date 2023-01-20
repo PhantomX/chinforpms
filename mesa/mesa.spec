@@ -59,9 +59,9 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 6cac735d521ea404da26f2f5221ec4f48b198e7f
+%global commit 41648b0e3f132e86e18d9f504f2e86f9260bfef5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230113
+%global date 20230119
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -76,8 +76,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        22.3.3
-Release:        101%{?gver}%{?dist}
+Version:        23.0.0~rc2
+Release:        100%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -94,6 +94,7 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        %{vc_url}/-/merge_requests/20714.patch#/%{name}-gl-pr20714.patch
+Patch50:        0001-rustcl-disable-valgrind-support-for-the-time.patch
 
 BuildRequires:  meson >= 0.61.4
 BuildRequires:  gcc
@@ -710,6 +711,9 @@ popd
 
 
 %changelog
+* Thu Jan 19 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc2-100.20230119git41648b0
+- 23.0.0-rc2
+
 * Wed Jan 11 2023 Phantom X <megaphantomx at hotmail dot com> - 22.3.3-100
 - 22.3.3
 

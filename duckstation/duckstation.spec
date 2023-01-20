@@ -90,7 +90,7 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
 %if %{with sysvulkan}
-BuildRequires:  vulkan-headers
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
 %endif
 %if %{with sysspirv}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
@@ -158,14 +158,14 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 xbyak xxhash zlib zstd fast_float googletest
+  rapidjson tinyxml2 xbyak xxhash zlib zstd fast_float
 
 %if %{with sysvulkan}
   mkdir -p ../src/vulkan
   mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
-  rm -rf vulkan 
+  rm -rf vulkan
 %else
-  sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i CMakeLists.txt
+  sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 
 %if %{with sysspirv}

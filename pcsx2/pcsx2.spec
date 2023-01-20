@@ -21,7 +21,12 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 rcheevos
 
+%global commit12 9f4c61a31435a7a90a314fc68aeb386c92a09c0f
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 Vulkan-Headers
+
 %bcond_with     native
+%bcond_without  sysvulkan
 
 %global appbin %{name}-qt
 %global appres PCSX2
@@ -54,6 +59,9 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       https://github.com/RetroAchievements/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+%if %{without sysvulkan}
+Source12:        https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%endif
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -121,7 +129,9 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers
+%if %{with sysvulkan}
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
+%endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
 BuildRequires:  libaio-devel
@@ -165,11 +175,16 @@ rm -rf .git
 pushd 3rdparty
 rm -rf \
   cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg fmt GL gtest libchdr libjpeg \
-  libpng libzip lzma qt rapidjson rapidyaml sdl2 soundtouch vulkan-headers wil \
+  libpng libzip lzma qt rapidjson rapidyaml sdl2 soundtouch wil \
   xbyak xz zlib zstd
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
 tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
+
+%if %{without sysvulkan}
+tar -xf %{S:12} -C vulkan-headers --strip-components 1
+sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+%endif
 
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p rainterface/LICENSE LICENSE.rainterface

@@ -112,7 +112,7 @@ BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
 %if %{with sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.236
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
 %endif
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
@@ -143,7 +143,7 @@ tar -xf %{S:1} -C luabridge/ --strip-components 1
 tar -xf %{S:2} -C breakpad/ --strip-components 1
 %if %{without sysvulkan}
 tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
-sed -e '/vulkan_INCLUDE_DIRS/s|vulkan.h|vulkan.h_disabled|g' -i ../../CMakeLists.txt
+sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../../CMakeLists.txt
 %endif
 tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
 %if %{without sysspirv}

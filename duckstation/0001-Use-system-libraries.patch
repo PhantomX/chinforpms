@@ -14,7 +14,7 @@ diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
 index 2dcbc33..b84c3cc 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,26 +1,178 @@
+@@ -1,26 +1,182 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -127,10 +127,11 @@ index 2dcbc33..b84c3cc 100644
  add_subdirectory(imgui)
  add_subdirectory(simpleini)
 +
-+find_path(vulkan_INCLUDE_DIRS vulkan/vulkan.h)
-+if(vulkan_INCLUDE_DIRS)
++find_package(VulkanHeaders)
++if(VulkanHeaders_FOUND)
 +  message(STATUS "Using the system vulkan-headers")
 +  add_library(vulkan-shared INTERFACE)
++  target_link_libraries(vulkan-shared INTERFACE Vulkan::Headers)
 +  add_library(vulkan-headers ALIAS vulkan-shared)
 +else()
  add_subdirectory(vulkan)
@@ -149,6 +150,9 @@ index 2dcbc33..b84c3cc 100644
 +find_package(tinyxml2)
 +if(tinyxml2_FOUND)
 +  message(STATUS "Using the system tinyxml2")
++  add_library(tinyxml2-shared INTERFACE)
++  target_link_libraries(tinyxml2-shared INTERFACE tinyxml2::tinyxml2)
++  add_library(tinyxml2 ALIAS tinyxml2-shared)
 +else()
  add_subdirectory(tinyxml2)
 +endif()

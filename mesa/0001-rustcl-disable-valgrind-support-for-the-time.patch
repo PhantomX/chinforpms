@@ -1,0 +1,33 @@
+From 7d066d4df6cefc9570d0c1d035fa8780a8ada802 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 19 Jan 2023 17:53:22 -0300
+Subject: [PATCH] rustcl: disable valgrind support for the time
+
+https://gitlab.freedesktop.org/mesa/mesa/-/issues/7688
+---
+ src/gallium/frontends/rusticl/meson.build | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gallium/frontends/rusticl/meson.build b/src/gallium/frontends/rusticl/meson.build
+index 5bfa6fa..cfaf482 100644
+--- a/src/gallium/frontends/rusticl/meson.build
++++ b/src/gallium/frontends/rusticl/meson.build
+@@ -192,6 +192,7 @@ rusticl_mesa_bindings_inline_wrapper = static_library(
+   c_args : [
+     pre_args,
+     cl_c_args,
++    '-UHAVE_VALGRIND',
+   ],
+   dependencies: [
+     idep_nir_headers,
+@@ -212,6 +213,7 @@ rusticl_mesa_bindings_rs = rust.bindgen(
+   c_args : [
+     rusticl_bindgen_c_args,
+     pre_args,
++    '-UHAVE_VALGRIND',
+   ],
+   args : [
+     rusticl_bindgen_args,
+-- 
+2.39.1
+
