@@ -105,7 +105,6 @@ Provides:       bundled(spirv-tools) = 0~git
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
-BuildRequires:  hicolor-icon-theme
 
 Requires:       coreutils
 Requires:       google-roboto-fonts

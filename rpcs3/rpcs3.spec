@@ -21,9 +21,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit e6a75974446aad0f97aecd685e700747f8954dfa
+%global commit ac2b2d82d26cc832133e6a4af6f99a6c89376d06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230115
+%global date 20230120
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -94,7 +94,7 @@
 
 Name:           rpcs3
 Version:        0.0.26
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -205,7 +205,7 @@ BuildRequires:  cmake(yaml-cpp)
 Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
 %endif
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers >= 1.2.198
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.224
 
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Concurrent)
@@ -217,8 +217,8 @@ BuildRequires:  cmake(Qt5Svg)
 BuildRequires:  cmake(Qt5Widgets)
 BuildRequires:  qt5-qtbase-private-devel
 
-BuildRequires:  hicolor-icon-theme
-BuildRequires:  shared-mime-info
+Requires:       hicolor-icon-theme
+Requires:       shared-mime-info
 
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}

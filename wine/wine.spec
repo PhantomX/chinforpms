@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.0-rc4
+%global wine_stagingver 8.0-rc5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9d1de539161018217fbf4b503a14d211230fac2e
+%global tkg_id 7dde8e6bbbb510a6a1b7a36e2d692f7d6edbb551
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,7 +127,7 @@
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %global fshack 0
 # Shared gpu resources
-%global sharedgpures 0
+%global sharedgpures 1
 %global vulkanup 0
 
 %if 0%{?fshack}
@@ -151,7 +151,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0~rc4
+Version:        8.0~rc5
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -248,21 +248,22 @@ Patch1026:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_ti
 Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
 Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
+Patch1030:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
 Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-%dnl Patch1038:       %{tkg_url}/hotfixes/proton_fs_hack_staging/win32u.implement_rudimentary_EnableMouseInPointer_support4.mypatch#/%{name}-tkg-win32u.implement_rudimentary_EnableMouseInPointer_support4.patchg 
 Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
-Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup.patch#/%{name}-tkg-sharedgpures-fixup.patch
-Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fshack.patch#/%{name}-tkg-sharedgpures-fences-fshack.patch
-Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures.patch#/%{name}-tkg-sharedgpures-fences.patch
+Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
+Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
+Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
+Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -907,8 +908,8 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %endif
 %patch1024 -p1
 %patch1025 -p1
+%patch1030 -p1
 %patch1026 -p1
-%dnl %patch1038 -p1
 %if 0%{?childwindow}
 %patch1039 -p1
 %endif
@@ -928,11 +929,8 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %if 0%{?sharedgpures}
 %patch1060 -p1
 %patch1061 -p1
-%if 0%{?fshack}
 %patch1062 -p1
-%else
 %patch1063 -p1
-%endif
 %endif
 %dnl #FIXME needs rebase %patch1029 -p1
 %patch1031 -p1
@@ -940,7 +938,7 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1050 -p1
 %endif
 %patch1032 -p1
-%patch1034 -p1
+%dnl #FIXME see bugzilla %patch1034 -p1
 %dnl #FIXME needs rebase %patch1035 -p1
 %dnl #FIXME needs rebase %patch1036 -p1
 %dnl #FIXME needs rebase %patch1037 -p1
@@ -2535,6 +2533,10 @@ fi
 
 
 %changelog
+* Fri Jan 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc5-100
+- 8.0-rc5
+- Shared GPU resources patchset
+
 * Sun Jan 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc4-100
 - 8.0-rc4
 

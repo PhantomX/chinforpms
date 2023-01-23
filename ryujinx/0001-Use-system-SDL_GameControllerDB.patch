@@ -15,7 +15,7 @@ index fbf2b64..344632b 100644
  
                  SDL_EventState(SDL_EventType.SDL_CONTROLLERSENSORUPDATE, SDL_DISABLE);
  
--                string gamepadDbPath = Path.Combine(ReleaseInformations.GetBaseApplicationDirectory(), "SDL_GameControllerDB.txt");
+-                string gamepadDbPath = Path.Combine(ReleaseInformation.GetBaseApplicationDirectory(), "SDL_GameControllerDB.txt");
 +                string gamepadDbPath = "_RPM_GCDB_";
  
                  if (File.Exists(gamepadDbPath))

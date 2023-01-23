@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 215bc2b1281692370da6e572394b6d76f1c887f8
+%global commit 12cf930e7b3cc3f0df72ca090b8328cce0854547
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230111
+%global date 20230121
 
 %bcond_without ea
 %if %{without ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        3307
+Version:        3322
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -163,12 +163,12 @@ BuildRequires:  pkgconfig(Qt5WebEngineWidgets)
 BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
+BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(xbyak)
-BuildRequires:  vulkan-headers >= %{vkh_ver}
 BuildRequires:  pkgconfig(zlib)
 
-BuildRequires:  hicolor-icon-theme
-BuildRequires:  shared-mime-info
+Requires:       hicolor-icon-theme
+Requires:       shared-mime-info
 
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}

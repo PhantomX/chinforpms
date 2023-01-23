@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 09c9686498c7c987c94f33c79732c7592045e035
+%global commit ad6ff6ce99619bb320cc7517768bca603f11a75c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230121
 %if !0%{?with_bin}
 %global with_snapshot 1
 %endif
@@ -18,23 +18,23 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
-%global local_dotnet_ver 7.0.101
-%global local_dotnet_url_id 7fe73a07-575d-4cb4-b2d3-c23d89e5085f/d8b2b7e1c0ed99c1144638d907c6d152
+%global local_dotnet_ver 7.0.102
+%global local_dotnet_url_id c646b288-5d5b-4c9c-a95b-e1fad1c0d95d/e13d71d48b629fe3a85f5676deb09e2d
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.1.3.18
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.17.0
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.1
-%global microsoft_codeanalysis_analyzers_ver 3.3.3
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.2
+%global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_ver 4.4.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 6.25.1
-%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.1
+%global microsoft_identitymodel_ver 6.26.0
+%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.2
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.0.0
@@ -97,7 +97,7 @@
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_gtksharp_ver 3.24.24.59-ryujinx
-%global ryujinx_sdl2_cs_ver 2.24.2-build21
+%global ryujinx_sdl2_cs_ver 2.26.1-build23
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.1
 %global silk_net_ver 2.16.0
@@ -126,7 +126,7 @@
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
 %global system_globalization_extensions_ver 4.0.1
-%global system_identitymodel_tokens_jwt_ver 6.25.1
+%global system_identitymodel_tokens_jwt_ver 6.26.0
 %global system_io_ver 4.1.0
 %global system_io_ver2 4.3.0
 %global system_io_compression_ver 4.1.0
@@ -194,6 +194,7 @@
 %global system_text_encoding_codepages_ver 6.0.0
 %global system_text_encoding_extensions_ver 4.0.11
 %global system_text_encodings_web_ver 6.0.0
+%global system_text_encodings_web_ver2 4.7.2
 %global system_text_json_ver 6.0.0
 %global system_text_json_ver2 4.7.2
 %global system_text_regularexpressions_ver 4.1.0
@@ -214,7 +215,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.530
+Version:        1.1.592
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -226,7 +227,7 @@ Source0:        %{vc_url}/release-channel-master/releases/download/%{version}/%{
 Source1:        %{vc_url}/%{appname}/raw/%{commit}/LICENSE.txt
 Source2:        %{vc_url}/%{appname}/raw/%{commit}/README.md
 Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.desktop
-Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}-logo.svg
+Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
 Source0:        %{vc_url}/%{appname}/archive/%{commit}/%{appname}-%{shortcommit}.tar.gz
 %if 0%{?with_local_dotnet}
@@ -365,6 +366,7 @@ Source329:      %{nuget_url}/system.linq.%{system_linq_ver}.nupkg
 Source330:      %{nuget_url}/system.linq.expressions.%{system_linq_expressions_ver}.nupkg
 Source331:      %{nuget_url}/system.management.%{system_management_ver}.nupkg
 Source332:      %{nuget_url}/system.memory.%{system_memory_ver}.nupkg
+Source333:      %{nuget_url}/system.text.encodings.web.%{system_text_encodings_web_ver2}.nupkg
 Source334:      %{nuget_url}/system.net.http.%{system_net_http_ver}.nupkg
 Source335:      %{nuget_url}/system.net.nameresolution.%{system_net_nameresolution_ver}.nupkg
 Source336:      %{nuget_url}/system.net.primitives.%{system_net_primitives_ver}.nupkg
@@ -436,7 +438,7 @@ Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
-%global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
+%global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
 %global nuget_files5 %{SOURCE400} %{SOURCE401}
 %endif
@@ -491,7 +493,9 @@ cp -p %{S:1} %{S:2} %{S:3} %{S:4} .
 
 %else
 
-cp distribution/linux/*.{desktop,svg} distribution/legal/THIRDPARTY.md .
+cp distribution/linux/*.desktop distribution/legal/THIRDPARTY.md .
+mv distribution/misc/Logo.svg %{name}-Logo.svg
+cp -a distribution/linux/mime .
 
 %if 0%{?with_local_dotnet}
 mkdir dotnetbin
@@ -509,6 +513,7 @@ sed \
 
 cat > %{appname}.sh <<'EOF'
 #!/usr/bin/bash
+export DOTNET_EnableAlternateStackCheck=1
 exec "%{_libdir}/%{name}/%{appname}" "$@"
 EOF
 
@@ -577,18 +582,23 @@ install -pm0755 %{appname}.sh %{buildroot}%{_bindir}/%{appname}
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
+  --set-key=Exec \
+  --set-value="%{appname} %%f" \
+  %{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
-install -pm0644 %{name}-logo.svg \
-  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
+install -pm0644 %{name}-Logo.svg \
+  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{appname}.svg
 
 for res in 16 22 24 32 36 48 64 72 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  rsvg-convert %{name}-logo.svg -h ${res} -w ${res} \
-    -o ${dir}/%{name}.png
+  rsvg-convert %{name}-Logo.svg -h ${res} -w ${res} \
+    -o ${dir}/%{appname}.png
 done
+
+mkdir -p %{buildroot}%{_datadir}/mime/packages
+install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %files
@@ -601,8 +611,9 @@ done
 %{_libdir}/%{name}/*.txt
 %{_libdir}/%{name}/Logs
 %endif
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
+%{_datadir}/mime/packages/%{appname}.xml
 
 
 %changelog

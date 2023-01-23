@@ -63,7 +63,8 @@ BuildRequires:  pkgconfig(slirp)
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-BuildRequires:  hicolor-icon-theme
+
+Requires:       hicolor-icon-theme
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 

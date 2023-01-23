@@ -160,8 +160,8 @@ BuildRequires:  cmake(Qt5Widgets)
 %endif
 BuildRequires:  cmake(xbyak)
 
-BuildRequires:  hicolor-icon-theme
-BuildRequires:  shared-mime-info
+Requires:       hicolor-icon-theme
+Requires:       shared-mime-info
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
