@@ -15,7 +15,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           simple64
-Version:        2022.12.4
+Version:        2023.01.1
 Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
@@ -115,6 +115,7 @@ rm -f *.exe
 rm -rf parallel-rdp-standalone/vulkan-headers
 rm -f %{name}-gui/discord/*.{dylib,so,dll}
 rm -f %{name}-input-qt/vosk/*.{dylib,so,dll}
+rm -rf parallel-rsp/lightning
 
 rm -rf mupen64plus-core/subprojects/{minizip,xxhash}
 
@@ -153,11 +154,16 @@ sed \
   -i mupen64plus-core/CMakeLists.txt
 
 sed \
-  -e '/-march=x86-64-v3 -Ofast)/d' \
-  -e 's|-march=x86-64-v3 -Ofast ||g' \
+  -e '/-Ofast/s|^|#|g' \
+  -e '/-march=x86-64-v3/s|^|#|g' \
   -i */CMakeLists.txt
 
 sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i parallel-rsp/rsp_jit.hpp
+
+sed \
+  -e '/HIDAPI_LIBRARY_DIRS/iinclude_directories(${HIDAPI_INCLUDE_DIRS})' \
+  -i simple64-input-raphnetraw/CMakeLists.txt
+
 
 cat > %{appname}.desktop <<EOF
 [Desktop Entry]
@@ -246,6 +252,9 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 
 
 %changelog
+* Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 2023.01.1-1
+- 2023.01.1
+
 * Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 2022.12.4-1
 - 2022.12.4
 

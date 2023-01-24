@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 92c769af87ac2f369303bbd8c98842cbc154fa9c
+%global commit1 cd22443e93c9ee53d2274920ba6904530a79e0c3
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -40,17 +40,21 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 7bbde56cf08ff96108efb592848e5b6eaac293c9
+%global commit8 cb6e6cb73363a5787c41b0dc1454631e6073b407
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
-%global commit9 88d3626362e41aa9b011fca1f65e1c1237ddb3b2
+%global commit9 48abaa5e082add7848e6f98648111c69c4a71632
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
 %global commit10 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 mupen64plus-input-gca
+
+%global commit11 d7c8516a4b848c0291e3d75b627c0843f515f591
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 imgui
 
 %if %{with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -62,11 +66,11 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.2.9
+Version:        0.3.0
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
-License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only
+License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
 URL:            https://github.com/Rosalie241/RMG
 
 %if %{with_snapshot}
@@ -84,6 +88,7 @@ Source7:        https://github.com/ghostlydark/%{srcname7}/archive/%{commit7}/%{
 Source8:        https://github.com/gonetz/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        %{vc_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 %{?with_rust:Source10: https://github.com/amatho/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz}
+Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Patch10:        0001-Fix-library-path.patch
 
@@ -101,6 +106,7 @@ BuildRequires:  minizip-compat-devel
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(lightning)
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6OpenGL)
@@ -119,6 +125,7 @@ Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(mupen64plus) = 0~git%{shortcommit1}
+Provides:       bundled(imgui) = 0~git%{shortcommit11}
 
 %global __provides_exclude_from ^%{_libdir}/%{pkgname}/.*
 
@@ -131,7 +138,7 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
 for i in \
   %{srcname1} %{srcname2} %{srcname3} %{srcname4} %{srcname5} \
-  %{srcname6} %{srcname7} %{srcname8} %{srcname9}
+  %{srcname6} %{srcname7} %{srcname8} %{srcname9} %{srcname11}
 do
   mkdir -p %{__cmake_builddir}/Source/3rdParty/$i
 done
@@ -148,6 +155,7 @@ tar -xf %{S:6} -C %{srcname6} --strip-components 1
 tar -xf %{S:7} -C %{srcname7} --strip-components 1
 tar -xf %{S:8} -C %{srcname8} --strip-components 1
 tar -xf %{S:9} -C %{srcname9} --strip-components 1
+tar -xf %{S:11} -C %{srcname11} --strip-components 1
 
 rm -rf parallel-rdp-standalone/vulkan-headers
 
@@ -167,31 +175,36 @@ for i in GLideN64 %{name}-{core,{input-{qt,raphnetraw}},rsp-hle} parallel-{rdp-s
 done
 
 cp -p "angrylion-rdp-plus/MAME License.txt" ../../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
-
+cp -p imgui/LICENSE.txt ../../../LICENSEdir/LICENSE.imgui
 
 ln -s angrylion-rdp-plus mupen64plus-video-angrylion-plus
 ln -s GLideN64 mupen64plus-video-GLideN64
 ln -s parallel-rdp-standalone mupen64plus-video-parallel
 ln -s parallel-rsp mupen64plus-rsp-parallel
-popd
 
 %if %{with rust}
-mkdir -p %{__cmake_builddir}/Source/3rdParty/%{srcname10}
-tar -xf %{S:10} -C %{__cmake_builddir}/Source/3rdParty/%{srcname10} --strip-components 1
+mkdir -p %{srcname10}
+tar -xf %{S:10} -C %{srcname10} --strip-components 1
 %else
-sed -e 's| cargo|\0_disabled|g' -i Source/3rdParty/CMakeLists.txt
+sed -e 's| cargo|\0_disabled|g' -i ../../../Source/3rdParty/CMakeLists.txt
 %endif
-
-sed \
-  -e '/Git /d' \
-  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --tags --always|echo \"%{version}-%{release}\"|g" \
-  -i CMakeLists.txt
 
 sed \
   -e '/find_package\(Git\)/d' \
   -e '/GIT_BRANCH/s|unknown|main|g' \
   -e '/GIT_COMMIT_HASH/s|unknown|%{shortcommit7}|g' \
-  -i %{__cmake_builddir}/Source/3rdParty/angrylion-rdp-plus/git-version.cmake
+  -i angrylion-rdp-plus/git-version.cmake
+
+rm -rf parallel-rsp/lightning
+sed -e '/PARALLEL_RSP_BAKED_LIGHTNING/s|ON|OFF|' -i parallel-rsp/CMakeLists.txt
+sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i parallel-rsp/rsp_jit.hpp
+
+popd
+
+sed \
+  -e '/Git /d' \
+  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --tags --always|echo \"%{version}-%{release}\"|g" \
+  -i CMakeLists.txt
 
 sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
 
@@ -200,6 +213,7 @@ sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
 %cmake \
   -DNO_GIT_CLONE:BOOL=ON \
   -DPORTABLE_INSTALL:BOOL=OFF \
+  -DUPDATER:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DDISCORD_RPC:BOOL=OFF \
 %{nil}
@@ -229,6 +243,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.0-1
+- 0.3.0
+
 * Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2.9-1
 - 0.2.9
 

@@ -10,7 +10,7 @@
 %global parch i386
 %endif
 
-%global pkgrel 1058
+%global pkgrel 1060
 %global repo https://shop.softmaker.com/repo
 
 Name:           softmaker-office
@@ -171,6 +171,9 @@ install -pm0644 mime/%{name}-%{version}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Mon Jan 23 2023 - 1:2021-1.1060
+- 2021-1060
+
 * Fri Dec 02 2022 - 1:2021-1.1058
 - 2021-1058
 
