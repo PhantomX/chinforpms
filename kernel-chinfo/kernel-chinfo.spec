@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit d8bf95e139c14fe49db076d4c581f99f126ecc94
+%global pfcommit fe357641f6670accec945f7a9179b0cbd52f403f
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash 353cce25e502b87f81479132660e68db
+%global pfcoprhash 459e5378a697d1a57a1cc3ffd98a52bc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 872045c995c0ea6c9b968cf79d4889feb3879209
+%global opensuse_id 2d8f09a5397c8e0feb09e520b8657b12427b8e9a
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -962,6 +962,10 @@ Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentiall
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 Patch1014: %{opensuse_url}/0001-Revert-mm-compaction-fix-set-skip-in-fast_find_migra.patch#/openSUSE-0001-Revert-mm-compaction-fix-set-skip-in-fast_find_migra.patch
 Patch1015: %{opensuse_url}/0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch#/openSUSE-0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch
+Patch1016: %{opensuse_url}/ACPICA-include-acpi-acpixf.h-Fix-indentation.patch#/openSUSE-ACPICA-include-acpi-acpixf.h-Fix-indentation.patch
+Patch1017: %{opensuse_url}/ACPICA-Allow-address_space_handler-Install-and-_REG-.patch#/openSUSE-ACPICA-Allow-address_space_handler-Install-and-_REG-.patch
+Patch1018: %{opensuse_url}/ACPI-EC-Fix-EC-address-space-handler-unregistration.patch#/openSUSE-ACPI-EC-Fix-EC-address-space-handler-unregistration.patch
+Patch1019: %{opensuse_url}/ACPI-EC-Fix-ECDT-probe-ordering-issues.patch#/openSUSE-ACPI-EC-Fix-ECDT-probe-ordering-issues.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -3034,6 +3038,9 @@ fi
 #
 #
 %changelog
+* Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.8-500.chinfo
+- 6.1.8 - pf4
+
 * Wed Jan 18 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.7-500.chinfo
 - 6.1.7 - pf4
 

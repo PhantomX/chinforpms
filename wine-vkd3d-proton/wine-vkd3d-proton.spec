@@ -210,7 +210,7 @@ mesonarray(){
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
 
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -mno-avx2"
+TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error"
 
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \

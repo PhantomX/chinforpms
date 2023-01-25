@@ -9,7 +9,7 @@
 %global commit d020f4451a3f6fb98ec36590f767f44e85dd51dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230120
-%global with_snapshot 1
+%global with_snapshot 0
 
 %bcond_with sysspirv
 %bcond_without sysvulkan
@@ -30,7 +30,7 @@
 %{?mingw_package_header}
 
 # Disable sse3 flags
-%bcond_without sse3
+%bcond_without nosse3
 
 %global libext %{nil}
 %global cfname win
@@ -56,8 +56,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.0
-Release:        107%{?gver}%{?dist}
+Version:        2.1
+Release:        100%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -210,7 +210,7 @@ TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
 
 TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error -mno-avx -mno-avx2"
+TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error"
 
 export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-m64//' \
@@ -233,7 +233,7 @@ TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
 sed \
   -e "/-DNOMINMAX/a\  '$TEMP_CFLAGS'," \
   -e "/static-libstdc++/a\  '$TEMP_LDFLAGS'," \
-%if %{without sse3}
+%if %{without nosse3}
   -e "/-msse3/d" \
 %endif
   -i meson.build
@@ -294,6 +294,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-100
+- 2.1
+
 * Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.0-100
 - 2.0
 
