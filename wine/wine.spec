@@ -1,7 +1,7 @@
-%global commit 047118247ce489a7138428c8b2cd5692ed04337e
+%global commit be57ebe01581f709b0e52a29304668eaaf6f0634
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230112
-%global with_snapshot 0
+%global date 20230124
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.0-rc5
+%global wine_stagingver 484054b204a683fcaf5a5a0de9d27366ae60d7a5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 7dde8e6bbbb510a6a1b7a36e2d692f7d6edbb551
+%global tkg_id c70ae1085ebca6a1f554a355ab276542a5927f33
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,7 +151,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0~rc5
+Version:        8.0
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -1017,7 +1017,7 @@ autoreconf -f
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
 
-export CFLAGS="$CFLAGS -ftree-vectorize -mno-avx -mno-avx2"
+export CFLAGS="$CFLAGS -ftree-vectorize"
 
 %ifarch aarch64
 %global toolchain clang
@@ -2029,15 +2029,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/winehid.%{winesys}
 %{_libdir}/wine/%{winedlldir}/winemapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/winevulkan.so
-%if 0%{?fshack}
-%{_libdir}/wine/%{winesodir}/winevulkan.dll.so
-%else
 %{_libdir}/wine/%{winedlldir}/winevulkan.%{winedll}
-%endif
 %{_libdir}/wine/%{winesodir}/wineusb.so
-%if 0%{?wine_mingw}
-%{_libdir}/wine/%{winedlldir}/wineusb.sys
-%endif
+%{_libdir}/wine/%{winedlldir}/wineusb.%{winesys}
 %{_libdir}/wine/%{winesodir}/winex11.so
 %{_libdir}/wine/%{winedlldir}/winex11.%{winedrv}
 %{_libdir}/wine/%{winedlldir}/wing32.%{winedll}
@@ -2101,15 +2095,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/xactengine2_4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_7.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_9.%{winedll}
-%if 0%{?wine_staging}
-#{_libdir}/wine/%%{winesodir}/xactengine2_1.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_2.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_3.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_5.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_6.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_8.dll.so
-#{_libdir}/wine/%%{winesodir}/xactengine2_10.dll.so
-%endif
 %{_libdir}/wine/%{winedlldir}/xactengine3_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine3_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine3_2.%{winedll}
@@ -2533,6 +2518,9 @@ fi
 
 
 %changelog
+* Wed Jan 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0-100.20230124gitbe57ebe
+- 8.0
+
 * Fri Jan 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0~rc5-100
 - 8.0-rc5
 - Shared GPU resources patchset
