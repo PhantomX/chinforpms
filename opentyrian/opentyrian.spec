@@ -1,6 +1,6 @@
-%global commit a874e4e037f5898b1f2de28cb42edd08bf466d9a
+%global commit 9750f8cfab738d0ea08ccb8d8752b95f5c09df07
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200718
+%global date 20230111
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,11 +9,12 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/%{name}/%{name}
+
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
@@ -21,7 +22,7 @@ Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-sr
 %endif
 
 Patch0:         %{name}-wild.patch
-Patch1:         0001-Add-Makefile-option-to-disable-initial-mouse-grab.patch
+
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -40,7 +41,7 @@ employed to fight Microsol and save the galaxy.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-chmod -x CREDITS
+sed -e '/\$(docdir)/d' -i Makefile
 
 
 %build
@@ -50,36 +51,25 @@ export CFLAGS+=" -pedantic -Wall -Wextra -Wno-missing-field-initializers"
   prefix="%{_prefix}" \
   gamesdir="%{_datadir}" \
   VCS_IDREV="(echo %{version}-%{release})" \
-  WITH_GRAB_MOUSE=false \
   STRIP=/bin/true \
 %{nil}
 
 %install
+%make_install \
+  prefix="%{_prefix}" \
+  gamesdir="%{_datadir}" \
+%{nil}
+
 mkdir -p %{buildroot}%{_datadir}/tyrian
 
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name} %{buildroot}%{_bindir}/
 
-mkdir -p %{buildroot}%{_mandir}/man6
-install -pm0644 linux/man/%{name}.6 %{buildroot}%{_mandir}/man6/
-
-mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install --mode 0644 \
-  --dir %{buildroot}%{_datadir}/applications \
-  --remove-category="Application" \
-  linux/%{name}.desktop
-
-for res in 22 24 32 48 128 ;do
-  dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
-  mkdir -p ${dir}
-  install -pm0644 linux/icons/tyrian-${res}.png \
-    ${dir}/%{name}.png
-done
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
 %license COPYING
-%doc CREDITS README NEWS
+%doc README NEWS
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png

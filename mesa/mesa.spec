@@ -59,9 +59,9 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 41648b0e3f132e86e18d9f504f2e86f9260bfef5
+%global commit 406ef423b9e9c0541d032ecf1a5dab812ef7600e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230119
+%global date 20230126
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -76,7 +76,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0~rc2
+Version:        23.0.0~rc3
 Release:        100%{?gver}%{?dist}
 
 License:        MIT
@@ -93,7 +93,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-Patch10:        %{vc_url}/-/merge_requests/20714.patch#/%{name}-gl-pr20714.patch
 Patch50:        0001-rustcl-disable-valgrind-support-for-the-time.patch
 
 BuildRequires:  meson >= 0.61.4
@@ -227,6 +226,9 @@ Provides:       libEGL-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+%if 0%{?with_va}
+Recommends:     %{name}-va-drivers%{?_isa}
+%endif
 
 %description dri-drivers
 %{summary}.
@@ -711,6 +713,9 @@ popd
 
 
 %changelog
+* Thu Jan 26 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc3-100.20230126git406ef42
+- 23.0.0-rc3
+
 * Thu Jan 19 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc2-100.20230119git41648b0
 - 23.0.0-rc2
 

@@ -9,9 +9,9 @@
 %bcond_with valgrind
 %endif
 
-%global commit 41648b0e3f132e86e18d9f504f2e86f9260bfef5
+%global commit 406ef423b9e9c0541d032ecf1a5dab812ef7600e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230119
+%global date 20230126
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -26,7 +26,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0~rc2
+Version:        23.0.0~rc3
 Release:        1%{?gver}%{?dist}
 
 License:        MIT
@@ -38,7 +38,7 @@ Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pk
 Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
 
-BuildRequires:  meson >= 0.53
+BuildRequires:  meson >= 0.61.4
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -188,6 +188,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Thu Jan 26 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc3-1.20230126git406ef42
+- 23.0.0-rc3
+
 * Thu Jan 19 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc2-1.20230119git41648b0
 - 23.0.0-rc2
 
