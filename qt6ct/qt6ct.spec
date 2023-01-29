@@ -13,11 +13,10 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.7
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 
-# The entire source code is under BSD-2-Clause License
-License: BSD
-Url:     https://github.com/trialuser02/qt6ct
+License:        BSD-2-Clause
+Url:            https://github.com/trialuser02/qt6ct
 
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

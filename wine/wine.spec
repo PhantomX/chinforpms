@@ -1,6 +1,6 @@
-%global commit be57ebe01581f709b0e52a29304668eaaf6f0634
+%global commit 4e5fab6214d9304004369d50b6c73b8d88cf46d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230124
+%global date 20230127
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -49,7 +49,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.237
+%global winevulkan 1.3.240
 
 %global wineFAudio 22.11
 %global winegsm 1.0.19
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 484054b204a683fcaf5a5a0de9d27366ae60d7a5
+%global wine_stagingver 33879905f2ee0fd1145dbc494d176a5cb06f9d32
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c70ae1085ebca6a1f554a355ab276542a5927f33
+%global tkg_id 5c29b84ac27dde14356995fc9c3c761dc81f721b
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -152,12 +152,12 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.0
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
 
-License:        LGPL-2.1-or-later
+License:        LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND libtiff AND MIT AND OLDAP-2.8 AND Zlib
 URL:            http://www.winehq.org/
 
 %if 0%{?with_snapshot}
@@ -264,6 +264,8 @@ Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patc
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
 Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
+Patch1064:       0001-sharedgpures-fixup.patch
+Patch1065:       0001-sharedgpures-fixup-2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -930,7 +932,9 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1060 -p1
 %patch1061 -p1
 %patch1062 -p1
+%patch1064 -p1
 %patch1063 -p1
+%patch1065 -p1
 %endif
 %dnl #FIXME needs rebase %patch1029 -p1
 %patch1031 -p1
@@ -1761,6 +1765,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msado15.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msadp32.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/msasn1.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msauddecmft.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mscat32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mscoree.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mscorwks.%{winedll}
@@ -1786,6 +1791,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msisip.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msisys.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/msls31.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msmpeg2vdec.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msnet32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mspatcha.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msports.%{winedll}
@@ -2020,6 +2026,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32k.%{winesys}
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
 %endif
+%{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
 %{_libdir}/wine/%{winesodir}/winebus.so
