@@ -89,7 +89,7 @@ index ea84fd6..22e3ed2 100644
 +	find_package(VulkanHeaders)
 +	if(VulkanHeaders_FOUND)
 +		message(STATUS "Using the system vulkan-headers")
-+		alias_library(vulkan-headers Vulkan::Headers)
++		alias_library(Vulkan-Headers Vulkan::Headers)
 +	else()
  	add_subdirectory(3rdparty/vulkan-headers EXCLUDE_FROM_ALL)
 +	endif()

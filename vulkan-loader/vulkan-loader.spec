@@ -23,7 +23,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake3
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
-BuildRequires:  vulkan-headers >= %{version}
+BuildRequires:  cmake(VulkanHeaders) >= %{version}
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-server)

@@ -1,4 +1,4 @@
-From 564f4500654d902f34bb215d52bfb1868b55d430 Mon Sep 17 00:00:00 2001
+From 803232addd165e4e42888d860139cb3ea767e2bf Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -14,22 +14,22 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cee7209..1f8cb60 100755
+index 8896fe0..ddb62e6 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.22)
- 
+@@ -8,7 +8,6 @@ project(yuzu)
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
+ 
 -include(DownloadExternals)
  include(CMakeDependentOption)
+ include(CTest)
  
- project(yuzu)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index dfd40cb..9d9045b 100755
+index 8532fd7..4139842 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -31,8 +31,19 @@ if (NOT TARGET inih::INIReader)
+@@ -34,8 +34,19 @@ if (NOT TARGET inih::INIReader)
  endif()
  
  # mbedtls
@@ -79,5 +79,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.39.0
+2.39.1
 

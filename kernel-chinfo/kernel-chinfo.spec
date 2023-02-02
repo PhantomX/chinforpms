@@ -162,20 +162,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 8
+%define stable_update 9
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit fe357641f6670accec945f7a9179b0cbd52f403f
+%global pfcommit ffa18bbfa1eb297d93cda51138d0f0f594f0d943
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash 459e5378a697d1a57a1cc3ffd98a52bc
+%global pfcoprhash dc07ef5afa87ea4272f2fba39b57f81c
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 2d8f09a5397c8e0feb09e520b8657b12427b8e9a
+%global opensuse_id 79d6a7016f66236be6f1dc99917b0d7ba8407028
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -947,6 +947,10 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 
 Patch1: patch-%{kversion}-redhat.patch
 
+%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
+
+Patch900: %{ark_url}/d37d701b5ab6bf4cbcd9b301e08d4cbb502fecd1.patch#/kernel-ark-commit-d37d701.patch
+
 # empty final patch to facilitate testing of kernel patches
 # Patch999999: linux-kernel-test.patch
 
@@ -960,7 +964,6 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/0001-Revert-mm-compaction-fix-set-skip-in-fast_find_migra.patch#/openSUSE-0001-Revert-mm-compaction-fix-set-skip-in-fast_find_migra.patch
 Patch1015: %{opensuse_url}/0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch#/openSUSE-0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch
 Patch1016: %{opensuse_url}/ACPICA-include-acpi-acpixf.h-Fix-indentation.patch#/openSUSE-ACPICA-include-acpi-acpixf.h-Fix-indentation.patch
 Patch1017: %{opensuse_url}/ACPICA-Allow-address_space_handler-Install-and-_REG-.patch#/openSUSE-ACPICA-Allow-address_space_handler-Install-and-_REG-.patch
@@ -3038,6 +3041,9 @@ fi
 #
 #
 %changelog
+* Wed Feb 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.9-500.chinfo
+- 6.1.9 - pf5
+
 * Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.8-500.chinfo
 - 6.1.8 - pf4
 

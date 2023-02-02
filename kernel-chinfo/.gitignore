@@ -9,6 +9,7 @@ kernel-[234].*/
 /agdf-*.patch
 /algodev-*.patch
 /configs/.flavors
+/kernel-ark-*.patch
 /kernel-git-*.patch
 /kernel-stable-*.patch
 /patchwork-*.patch
