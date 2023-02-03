@@ -1,4 +1,4 @@
-From 8c4060e80d27861f0fd4d573f39aebf929ac98af Mon Sep 17 00:00:00 2001
+From 50901e5520062b261d9ac986b5313af93dc6579a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Sep 2021 22:40:06 -0300
 Subject: [PATCH] System data file
@@ -8,19 +8,19 @@ Subject: [PATCH] System data file
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/desktop_version/src/FileSystemUtils.cpp b/desktop_version/src/FileSystemUtils.cpp
-index ab51697..dd44ba5 100644
+index 7d72fd4..2fb0ca7 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
-@@ -154,7 +154,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
-     else
+@@ -245,7 +245,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath, char* langD
+     mkdir(levelDir, 0777);
+     vlog_info("Level directory: %s", levelDir);
+ 
+-    basePath = SDL_GetBasePath();
++    basePath = "_RPM_DATA_DIR_/VVVVVV/";
+ 
+     if (basePath == NULL)
      {
-         SDL_snprintf(output, sizeof(output), "%s%s",
--            basePath,
-+            "_RPM_DATA_DIR_/VVVVVV/",
-             "data.zip"
-         );
-     }
-@@ -176,7 +176,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath)
+@@ -288,7 +288,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath, char* langD
          return 0;
      }
  
@@ -30,5 +30,5 @@ index ab51697..dd44ba5 100644
      {
          vlog_info("gamecontrollerdb.txt not found!");
 -- 
-2.37.1
+2.39.1
 

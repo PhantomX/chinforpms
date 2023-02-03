@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit c177f456f4c7cce7be964eabe945daed13b8d7b6
+%global commit 113fbb0fdb5ea2d9b901dda5aa5b2f780afc9618
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221211
+%global date 20230202
 
 %bcond_with systinyxml
 
@@ -18,7 +18,11 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 tinyxml2
 
-%global commit5 22.12
+%global commit6 b541b1181b30cb7180cf997485c16b2dc27ac28e
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 c-hashmap
+
+%global commit5 23.02
 %global srcname5 FAudio
 
 %global gver .%{date}git%{shortcommit}
@@ -27,14 +31,14 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
-# * S1 (lodepng) - zlib -- static dependency;
-# * S2 (utf8cpp) - Boost -- static dependency;
-# * S3 (tinyxml2) - zlib -- static dependency, if with_systinyxml 0;
-License:        VVVVVV
+# * S1 (lodepng) - Zlib -- static dependency;
+# * S4 (tinyxml2) - zlib -- static dependency, if with_systinyxml 0;
+# * S6 (c-hashmap) - BSD-3-Clause -- static dependency, if with_systinyxml 0;
+License:        VVVVVV AND Zlib AND BSD-3-Clause
 
 URL:            https://github.com/TerryCavanagh/%{pkgname}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -43,6 +47,7 @@ Source2:        https://github.com/lvandeve/%{srcname2}/archive/%{commit2}/%{src
 Source3:        https://github.com/icculus/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/leethomason/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/FNA-XNA/FAudio/archive/%{commit5}/%{srcname5}-%{commit5}.tar.gz
+Source6:        https://github.com/Mashpoe/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 
 Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
@@ -72,7 +77,7 @@ Provides:       bundled(lodepng) = 0~git%{shortcommit2}
 %if %{without systinyxml}
 Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
-
+Provides:       bundled(c-hashmap) = 0~git%{shortcommit6}
 
 %description
 %{pkgname} is a %{summary}.
@@ -95,8 +100,10 @@ cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
 %endif
 
 tar -xf %{S:5} -C third_party/FAudio \*/src/stb\*.h --strip-components 1
+tar -xf %{S:6} -C third_party/c-hashmap --strip-components 1
 
 cp -p third_party/lodepng/LICENSE LICENSE.lodepng
+cp -p third_party/c-hashmap/LICENSE LICENSE.c-hashmap
 
 cp -p desktop_version/README.md README_desktop.md
 
@@ -127,7 +134,17 @@ sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.c
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
-mkdir -p %{buildroot}%{_datadir}/%{pkgname}
+mkdir -p %{buildroot}%{_datadir}/%{pkgname}/{fonts,lang}
+
+pushd desktop_version
+for f in $(find fonts lang/*/ -print | sed -e '/\.\/$/d') ; do
+  if [ -d ${f} ] ; then
+    install -dm 755 %{buildroot}%{_datadir}/%{pkgname}/${f}
+  else
+    install -pm 644 ${f} %{buildroot}%{_datadir}/%{pkgname}/${f}
+  fi
+done
+popd
 
 mkdir -p %{buildroot}%{_datadir}/applications
 cat > %{buildroot}%{_datadir}/applications/%{pkgname}.desktop <<'EOF'
@@ -161,9 +178,14 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 %{_datadir}/applications/%{pkgname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{pkgname}.png
 %dir %{_datadir}/%{pkgname}
+%{_datadir}/%{pkgname}/fonts
+%{_datadir}/%{pkgname}/lang
 
 
 %changelog
+* Thu Feb 02 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-8.20230202git113fbb0
+- Add fonts and lang files
+
 * Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4-6.20220705git8ca53fa
 - Update
 - BR: FAudio, instead SDL2_mixer
