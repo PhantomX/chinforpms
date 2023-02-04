@@ -1,7 +1,7 @@
 %global commit 4e5fab6214d9304004369d50b6c73b8d88cf46d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230127
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 33879905f2ee0fd1145dbc494d176a5cb06f9d32
+%global wine_stagingver 8.1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 5c29b84ac27dde14356995fc9c3c761dc81f721b
+%global tkg_id 6b4947e9a43e10272c3c844cb4939e5d7f97dc16
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0
-Release:        101%{?gver}%{?dist}
+Version:        8.1
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -224,6 +224,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
 
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
+Patch902:        0001-staging-update-patchinstall.py-to-python3.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 %dnl Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
@@ -250,7 +251,6 @@ Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.
 Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
 Patch1030:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
 Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
@@ -264,8 +264,6 @@ Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patc
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
 Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
-Patch1064:       0001-sharedgpures-fixup.patch
-Patch1065:       0001-sharedgpures-fixup-2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -883,6 +881,7 @@ This package adds the opencl driver for wine.
 tar -xf %{SOURCE900} --strip-components=1
 
 %patch901 -p1
+%patch902 -p1
 
 %dnl #FIXME needs rebase %patch1006 -p1
 %if !0%{?fshack}
@@ -899,8 +898,8 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch5000 -p1
 
-sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
-./patches/patchinstall.sh DESTDIR="`pwd`" --all %{?wine_staging_opts}
+sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
+./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %patch1020 -p1
 %patch1021 -p1
@@ -932,16 +931,13 @@ sed -e 's|autoreconf -f|true|g' -i ./patches/patchinstall.sh
 %patch1060 -p1
 %patch1061 -p1
 %patch1062 -p1
-%patch1064 -p1
 %patch1063 -p1
-%patch1065 -p1
 %endif
 %dnl #FIXME needs rebase %patch1029 -p1
 %patch1031 -p1
 %if 0%{?fastsync}
 %patch1050 -p1
 %endif
-%patch1032 -p1
 %dnl #FIXME see bugzilla %patch1034 -p1
 %dnl #FIXME needs rebase %patch1035 -p1
 %dnl #FIXME needs rebase %patch1036 -p1
@@ -2525,6 +2521,9 @@ fi
 
 
 %changelog
+* Fri Feb 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.1-100
+- 8.1
+
 * Wed Jan 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.0-100.20230124gitbe57ebe
 - 8.0
 
