@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 cd22443e93c9ee53d2274920ba6904530a79e0c3
+%global commit1 fc8edd980a844d11fde64c719591090d09185264
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -40,7 +40,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 cb6e6cb73363a5787c41b0dc1454631e6073b407
+%global commit8 263a7bd2ca81759ece98209bd282a6c1173a129f
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
@@ -66,7 +66,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.0
+Version:        0.3.1
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -224,6 +224,8 @@ sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
 %install
 %cmake_install
 
+chmod +x %{buildroot}%{_libdir}/%{pkgname}/*/*.so
+
 ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{pkgname}/font.ttf
 
 %check
@@ -243,6 +245,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-1
+- 0.3.1
+
 * Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.0-1
 - 0.3.0
 

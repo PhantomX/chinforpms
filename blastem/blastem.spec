@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 31fc1186ffbb
-%global date 20221030
+%global commit 3e0d463eb9b3
+%global date 20230205
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,7 +12,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.12%{?gver}%{?dist}
+Release:        0.13%{?gver}%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
@@ -20,6 +20,7 @@ URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  icoutils
 BuildRequires:  gcc
 BuildRequires:  make
@@ -45,7 +46,7 @@ TMMS support and menu.bin is not included.
 
 rm -rf zlib android
 
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c vgmplay.c zip.c
+sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
@@ -60,6 +61,17 @@ sed \
 
 icotool -x icons/windows.ico
 
+cat > %{name}.desktop <<'EOF'
+[Desktop Entry]
+Name=BlastEm
+Comment=Genesis/MegaDrive emulator
+Exec=%{name}
+Icon=%{name}
+Terminal=false
+Type=Application
+Categories=Game;Emulator;
+EOF
+
 
 %build
 %set_build_flags
@@ -73,7 +85,7 @@ icotool -x icons/windows.ico
 mkdir -p %{buildroot}%{_bindir}
 install -m0755 %{name} %{buildroot}%{_bindir}/
 
-for i in dis zdis vgmplay termhelper ;do
+for i in dis zdis termhelper ;do
   install -pm0755 $i %{buildroot}%{_bindir}/%{name}-$i
 done
 
@@ -85,16 +97,9 @@ install -pm0644 shaders/*.glsl %{buildroot}%{_datadir}/%{name}/shaders/
 ln -sf ../SDL_GameControllerDB/gamecontrollerdb.txt %{buildroot}%{_datadir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<'EOF'
-[Desktop Entry]
-Name=BlastEm
-Comment=Genesis/MegaDrive emulator
-Exec=%{name}
-Icon=%{name}
-Terminal=false
-Type=Application
-Categories=Game;Emulator;
-EOF
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
 
 for res in 16 32 48 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps

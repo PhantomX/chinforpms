@@ -15,7 +15,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           simple64
-Version:        2023.01.1
+Version:        2023.01.2
 Release:        1%{?gver}%{?dist}
 Summary:        Custom plugins and Qt5 GUI for Mupen64Plus
 
@@ -252,6 +252,9 @@ install -pm 0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/%{appname}.a
 
 
 %changelog
+* Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 2023.01.2-1
+- 2023.01.2
+
 * Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 2023.01.1-1
 - 2023.01.1
 
