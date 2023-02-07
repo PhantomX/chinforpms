@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 9
+%define stable_update 10
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ffa18bbfa1eb297d93cda51138d0f0f594f0d943
+%global pfcommit da8ba07dc78175c835bf5698d5567c88860ab6f7
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash dc07ef5afa87ea4272f2fba39b57f81c
+%global pfcoprhash b6e2b7a64e9af06f47c96f6a7a920046
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -948,8 +948,6 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 Patch1: patch-%{kversion}-redhat.patch
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
-
-Patch900: %{ark_url}/d37d701b5ab6bf4cbcd9b301e08d4cbb502fecd1.patch#/kernel-ark-commit-d37d701.patch
 
 # empty final patch to facilitate testing of kernel patches
 # Patch999999: linux-kernel-test.patch
@@ -3041,6 +3039,9 @@ fi
 #
 #
 %changelog
+* Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.10-500.chinfo
+- 6.1.10 - pf5
+
 * Wed Feb 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.9-500.chinfo
 - 6.1.9 - pf5
 

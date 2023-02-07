@@ -1,8 +1,14 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d37d701b5ab6bf4cbcd9b301e08d4cbb502fecd1
+ d37d701b5ab6bf4cbcd9b301e08d4cbb502fecd1 x86/mm: Randomize per-cpu entry area
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/1595d8197147ac3b439c1334527eb2a5cec86095
  1595d8197147ac3b439c1334527eb2a5cec86095 KVM: VMX: Execute IBPB on emulated VM-exit when guest has IBRS
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/811fe0e4dcfd86a0db5135d3bfef4936794efdb6
  811fe0e4dcfd86a0db5135d3bfef4936794efdb6 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d4af335232ef0ad6d4036fa33a823cc1683d635c
+ d4af335232ef0ad6d4036fa33a823cc1683d635c brcmfmac: Prefer DT board type over DMI board type
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/c1862b27b603f8acf8ef8b64ae2f8650fd2ad267
  c1862b27b603f8acf8ef8b64ae2f8650fd2ad267 disable enum64 BTF in fedora rawhide
