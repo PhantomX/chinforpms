@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit 29bc13a124697056615263daefb75669ce051048
+%global commit 55e0e7ffbea9143f7809a926cf11c6986971881a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230130
+%global date 20230207
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        82%{?gver}%{?dist}
+Release:        83%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org

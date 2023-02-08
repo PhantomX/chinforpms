@@ -1,4 +1,4 @@
-From 3452d2ff985c1fdec62069d67677f606f37eceb1 Mon Sep 17 00:00:00 2001
+From 4d330037b7da80cf896d57ad7f7f383a33fb08b3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 17 Aug 2021 18:39:56 -0300
 Subject: [PATCH] Revert Qt: Make dark fusion the default theme
@@ -9,18 +9,18 @@ This reverts commit 5cf16133cbb15eedfc3d61293daa8971ecfe3f18
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/duckstation-qt/mainwindow.cpp b/src/duckstation-qt/mainwindow.cpp
-index ddb79ee..17a4ecb 100644
+index 74389cf..c11b5f7 100644
 --- a/src/duckstation-qt/mainwindow.cpp
 +++ b/src/duckstation-qt/mainwindow.cpp
-@@ -52,7 +52,7 @@ static constexpr char DISC_IMAGE_FILTER[] = QT_TRANSLATE_NOOP(
-   "(*.ecm);;Media Descriptor Sidecar Images (*.mds);;PlayStation EBOOTs (*.pbp *.PBP);;PlayStation Executables (*.exe "
-   "*.psexe *.ps-exe);;Portable Sound Format Files (*.psf *.minipsf);;Playlists (*.m3u)");
- 
--static const char* DEFAULT_THEME_NAME = "darkfusion";
-+static const char* DEFAULT_THEME_NAME = "default";
+@@ -66,7 +66,7 @@ static constexpr char DISC_IMAGE_FILTER[] = QT_TRANSLATE_NOOP(
+ #ifdef __APPLE__
+ const char* DEFAULT_THEME_NAME = "";
+ #else
+-const char* DEFAULT_THEME_NAME = "darkfusion";
++const char* DEFAULT_THEME_NAME = "default";
+ #endif
  
  MainWindow* g_main_window = nullptr;
- static QString s_unthemed_style_name;
 -- 
-2.37.1
+2.39.1
 
