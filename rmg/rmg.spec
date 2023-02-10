@@ -12,7 +12,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 fc8edd980a844d11fde64c719591090d09185264
+%global commit1 7ee312cb282a7794c62d5d284bf93151c585dd1f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -24,7 +24,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 mupen64plus-rsp-hle
 
-%global commit4 e67cee3131651c3e48343294d94fa68a6f8ec14c
+%global commit4 cfeea3a0f89ba5bc4265acb75778e1267ed1e424
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 parallel-rsp
 
@@ -66,7 +66,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.1
+Version:        0.3.3
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -91,6 +91,7 @@ Source9:        %{vc_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcomm
 Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Patch10:        0001-Fix-library-path.patch
+Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -119,6 +120,7 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
 Requires:       dejavu-sans-fonts
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -208,6 +210,8 @@ sed \
 
 sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
 
+sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i Source/RMG-Input/main.cpp
+
 
 %build
 %cmake \
@@ -245,6 +249,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Fri Feb 10 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.3-1
+- 0.3.3
+- R: sdl_gamecontrollerdb
+
 * Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-1
 - 0.3.1
 

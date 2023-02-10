@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit ae12429a0dee340dc4451987a6bc5848adad4d6d
+%global commit a2e0580992873ec3913fd1ef09f22f368fe44b3b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221022
+%global date 20230204
 %global with_snapshot 1
 
 %global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
@@ -24,7 +24,7 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.6%{?gver}%{?dist}
+Release:        0.7%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other

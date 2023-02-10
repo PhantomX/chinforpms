@@ -162,7 +162,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 10
+%define stable_update 11
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -173,9 +173,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit da8ba07dc78175c835bf5698d5567c88860ab6f7
+%global pfcommit 29706ec8257afdbc8bbf4be6e84232c461b28eaa
 %global pf_first_commit 830b3c68c1fb1e9176028d02ef86f3cf76aa2476
-%global pfcoprhash b6e2b7a64e9af06f47c96f6a7a920046
+%global pfcoprhash 293aa576c9088a0759e02c5229f6ef74
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -197,7 +197,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 79d6a7016f66236be6f1dc99917b0d7ba8407028
+%global opensuse_id 16a496469fdf2cd15d6a56bbe289ba346d761f5f
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -962,7 +962,6 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1015: %{opensuse_url}/0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch#/openSUSE-0001-mm-mremap-fix-mremap-expanding-for-vma-s-with-vm_ops.patch
 Patch1016: %{opensuse_url}/ACPICA-include-acpi-acpixf.h-Fix-indentation.patch#/openSUSE-ACPICA-include-acpi-acpixf.h-Fix-indentation.patch
 Patch1017: %{opensuse_url}/ACPICA-Allow-address_space_handler-Install-and-_REG-.patch#/openSUSE-ACPICA-Allow-address_space_handler-Install-and-_REG-.patch
 Patch1018: %{opensuse_url}/ACPI-EC-Fix-EC-address-space-handler-unregistration.patch#/openSUSE-ACPI-EC-Fix-EC-address-space-handler-unregistration.patch
@@ -3039,6 +3038,9 @@ fi
 #
 #
 %changelog
+* Thu Feb 09 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.11-500.chinfo
+- 6.1.11 - pf5
+
 * Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.10-500.chinfo
 - 6.1.10 - pf5
 
