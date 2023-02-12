@@ -1,0 +1,76 @@
+From 6bd755c7e1d4a383d0882e11b51ae281acf679ed Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 11 Feb 2023 18:08:51 -0300
+Subject: [PATCH] qt6: enable qthotkey
+
+Qt6 do not have external X11Extras, so depend on private_headers for the time
+---
+ src/qthotkey/gui.cc      | 8 ++++++++
+ src/qthotkey/meson.build | 2 +-
+ src/qthotkey/plugin.cc   | 8 ++++++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/src/qthotkey/gui.cc b/src/qthotkey/gui.cc
+index 7862a4e..0abe5b1 100644
+--- a/src/qthotkey/gui.cc
++++ b/src/qthotkey/gui.cc
+@@ -38,13 +38,21 @@
+ #include "gui.h"
+ #include "plugin.h"
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#define USE_QT6
++#endif
++
+ #include <QtCore/QMap>
+ #include <QtCore/QStringList>
+ #include <QtGui/QKeyEvent>
+ #include <QtGui/QMouseEvent>
+ #include <QtWidgets/QApplication>
+ #include <QtWidgets/QStyle>
++#ifdef USE_QT6
++#include <QtGui/private/qtx11extras_p.h>
++#else
+ #include <QtX11Extras/QX11Info>
++#endif
+ 
+ #include <libaudcore/i18n.h>
+ #include <libaudcore/preferences.h>
+diff --git a/src/qthotkey/meson.build b/src/qthotkey/meson.build
+index e7298d4..54c370a 100644
+--- a/src/qthotkey/meson.build
++++ b/src/qthotkey/meson.build
+@@ -1,5 +1,5 @@
+ if get_option('qt6')
+-  qtx11extras_dep = dependency('qt6', version: qt_req, required: false, modules: ['X11Extras'])
++  qtx11extras_dep = dependency('qt6', version: qt_req, required: false, private_headers: true, modules: ['Core', 'Gui', 'Widgets'])
+ else
+   qtx11extras_dep = dependency('qt5', version: qt_req, required: false, modules: ['X11Extras'])
+ endif
+diff --git a/src/qthotkey/plugin.cc b/src/qthotkey/plugin.cc
+index b258b4a..25cc17d 100644
+--- a/src/qthotkey/plugin.cc
++++ b/src/qthotkey/plugin.cc
+@@ -38,11 +38,19 @@
+ #include "plugin.h"
+ #include "gui.h"
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
++#define USE_QT6
++#endif
++
+ #include <QtCore/QAbstractNativeEventFilter>
+ #include <QtCore/QCoreApplication>
+ #include <QtCore/QString>
+ #include <QtCore/QTimer>
++#ifdef USE_QT6
++#include <QtGui/private/qtx11extras_p.h>
++#else
+ #include <QtX11Extras/QX11Info>
++#endif
+ 
+ #include <libaudcore/drct.h>
+ #include <libaudcore/hook.h>
+-- 
+2.39.1
+

@@ -1,7 +1,7 @@
-%global commit d47f31be54ed1c2d44fdba5a23d56664d4427350
+%global commit 8d176a20c6424d9c5c97e6866ef80795dab0909a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220923
-%global with_snapshot 0
+%global date 20230208
+%global with_snapshot 1
 
 %global with_python  0
 
@@ -13,6 +13,7 @@
 %global gver .%{date}git%{shortcommit}
 %global with_autotools 1
 %global extra_ver 999
+%global src_hash f04fe0c5d47297984c08c9dbf34f46f1
 %else
 %global extra_ver 0
 %endif
@@ -24,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -33,10 +34,13 @@ URL:            http://claws-mail.org
 %global pluginapi %{version}.%{extra_ver}
 
 %if 0%{?with_snapshot}
-Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
+%dnl Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
+# Tarball generation disabled from webgit, source obtained with Makefile
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.xz/%{src_hash}/%{name}-%{shortcommit}.tar.xz
 %else
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
+Source1:        Makefile
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -441,7 +445,7 @@ exporting of your meetings or all your calendars.
 
 
 %prep
-%autosetup %{?gver:-n claws-%{shortcommit}} -p1
+%autosetup %{?gver:-n claws-%{commit}} -p1
 
 %if 0%{?with_snapshot}
 echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
@@ -635,7 +639,7 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
-%{_libdir}/claws-mail/plugins/web_extensions/fancy*
+%{_libdir}/claws-mail/web_extensions/fancy*
 #%%{_metainfodir}/claws-mail-fancy.metainfo.xml
 %endif
 

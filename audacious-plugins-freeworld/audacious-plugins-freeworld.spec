@@ -4,38 +4,52 @@
 %endif
 %{?aud_plugin_dep}
 
+# build with qt6 instead 5
+%bcond_without qt6
+
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
+
+%global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
+
 Name:           audacious-plugins-freeworld
-Version:        4.2
+# If beta, use "~" instead "-", as ~beta1
+Version:        4.3~beta1
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
-License:        GPLv3
-URL:            http://audacious-media-player.org/
-Source0:        http://distfiles.audacious-media-player.org/audacious-plugins-%{version}.tar.bz2
+Epoch:          1
 
-BuildRequires:  audacious-devel >= %{version}
+# Minimum audacious/audacious-plugins version in inter-package dependencies.
+%global aud_ver 4.3
+
+License:        BSD-2-Clause
+URL:            http://audacious-media-player.org/
+
+Source0:        http://distfiles.audacious-media-player.org/audacious-plugins-%{tar_ver}.tar.bz2
+
+BuildRequires:  audacious-devel >= %{aud_ver}
 BuildRequires:  gcc-c++
-BuildRequires:  make
-BuildRequires:  zlib-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  taglib-devel >= 1.4
-BuildRequires:  libmms-devel
+BuildRequires:  meson
 BuildRequires:  gettext
-BuildRequires:  libbinio-devel
-BuildRequires:  dbus-devel >= 0.60
-BuildRequires:  dbus-glib-devel >= 0.60
-# ffaudio plugin
-BuildRequires:  faad2-devel
+BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(dbus-glib-1)
+BuildRequires:  pkgconfig(faad2)
+BuildRequires:  pkgconfig(libbinio)
+BuildRequires:  pkgconfig(libmms)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
+BuildRequires:  pkgconfig(taglib)
+BuildRequires:  pkgconfig(zlib)
 BuildRequires:  ffmpeg-devel
+
 # we need to have configure detect atleast one audio output to make it happy
-BuildRequires:  alsa-lib-devel
+BuildRequires:  pkgconfig(alsa)
 
 # require all the plugins
 Requires:       %{name}-aac%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-mms%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-ffaudio%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%global __provides_exclude_from ^%{_libdir}/audacious/*\\.so$
+%global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
 
 %description
@@ -49,7 +63,7 @@ This package contains additional plugins for the Audacious media player.
 %package        aac
 Summary:        AAC playback plugin for Audacious
 %{?aud_plugin_dep}
-Requires:       audacious-plugins%{?_isa} >= %{version}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 %description    aac
 Audacious is a media player that currently uses a skinned
@@ -62,7 +76,7 @@ This is the plugin needed to play AAC audio files.
 %package        ffaudio
 Summary:        FFMpeg/FAAD2 based input plugin for Audacious
 %{?aud_plugin_dep}
-Requires:       audacious-plugins%{?_isa} >= %{version}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 %description ffaudio
 FFMpeg/FAAD2 based input plugin for Audacious.
@@ -71,7 +85,7 @@ FFMpeg/FAAD2 based input plugin for Audacious.
 %package        mms
 Summary:        MMS stream plugin for Audacious
 %{?aud_plugin_dep}
-Requires:       audacious-plugins%{?_isa} >= %{version}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 %description    mms
 Audacious is a media player that currently uses a skinned
@@ -82,32 +96,37 @@ This is the plugin needed to access MMS streams.
 
 
 %prep
-%setup -q -n audacious-plugins-%{version}
-sed -i '\,^.SILENT:,d' buildsys.mk.in
-sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
+%setup -q -n audacious-plugins-%{tar_ver}
 
 
 %build
-%configure \
-        --disable-rpath \
-        --disable-qt \
-        --disable-vorbis \
-        --disable-neon \
-        --disable-flac \
-        --disable-wavpack \
-        --disable-mpg123 \
+%meson \
+  -Dgtk=false \
+  -Dqt=false \
+  -Daac=true \
+  -Dffaudio=true \
+  -Dmms=true \
+  -Dflac=false \
+  -Dmpg123=false \
+  -Dneon=false \
+  -Dopus=false \
+  -Dvorbis=false \
+  -Dopenmpt=false \
+  -Dsndio=false \
+  -Dwavpack=false \
 %{nil}
 
-%make_build -C src/aac
-%make_build -C src/ffaudio
-%make_build -C src/mms
+
+%ninja_build -C %{_vpath_builddir} src/aac/aac-raw.so
+%ninja_build -C %{_vpath_builddir} src/ffaudio/ffaudio.so
+%ninja_build -C %{_vpath_builddir} src/mms/mms.so
 
 
 %install
-%make_install -C src/aac
-%make_install -C src/ffaudio
-%make_install -C src/mms
-find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
+mkdir -p %{buildroot}%{_libdir}/audacious/{Input,Transport}
+install -pm0755 %{_vpath_builddir}/src/aac/aac-raw.so %{buildroot}%{_libdir}/audacious/Input/
+install -pm0755 %{_vpath_builddir}/src/ffaudio/ffaudio.so %{buildroot}%{_libdir}/audacious/Input/
+install -pm0755 %{_vpath_builddir}/src/mms/mms.so %{buildroot}%{_libdir}/audacious/Transport/
 
 
 %files
@@ -126,6 +145,9 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 
 
 %changelog
+* Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3~beta1-100
+- 4.3-beta1
+
 * Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
 - 4.2
 

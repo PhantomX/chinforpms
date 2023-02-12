@@ -102,6 +102,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
+BuildRequires:  ffmpeg-devel
 %endif
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  openssl1.1-devel
@@ -174,6 +175,7 @@ Requires:       pkgconfig(libavformat)
 Requires:       pkgconfig(libavutil)
 Requires:       pkgconfig(libswresample)
 Requires:       pkgconfig(libswscale)
+Requires:       ffmpeg-devel
 %endif
 %if 0%{?fedora} && 0%{?fedora} >= 36
 Requires:       openssl1.1-devel

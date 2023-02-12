@@ -4,11 +4,13 @@ alarm                         GPLv2+
 albumart                      BSD
 alsa                          BSD
 amidi-plug                    GPLv2+
+ampache                       GPLv3
 aosd                          GPLv2+
-asx                           GPLv2+
+asx                           BSD
 asx3                          BSD
 audpl                         BSD
 blur_scope                    GPLv2+
+bitcrusher                    MIT
 bs2b                          GPLv2+
 cairo-spectrum                MIT
 cdaudio-ng                    GPLv3
@@ -28,7 +30,7 @@ gl-spectrum                   GPLv2+
 gnomeshortcuts                GPLv2+
 gtkui                         BSD
 hotkey                        GPLv2+
-jack                          LGPLv2+
+jack                          BSD
 ladspa                        BSD
 lirc                          GPLv2+
 lyricwiki                     MIT
@@ -44,9 +46,11 @@ notify                        GPLv3+
 oss4
 pls                           GPLv3
 psf                           BSD
+pipewire                      BSD
 pulse_audio                   GPLv2+
+opus                          BSD
 resample                      BSD
-scrobbler
+qtaudio                       BSD
 scrobbler2                    GPLv3
 sdlout                        BSD
 search-tool                   BSD

@@ -1,18 +1,27 @@
 # build with GTK+2
 %bcond_without gtk
+# build with GTK+3 instead 2
+%bcond_without gtk3
+# build with qt6 instead 5
+%bcond_without qt6
 
-Name:            audacious
-Version:         4.2
-Release:         100%{?dist}
+%{?with_gtk3:%global gtk_ver 3}%{!?with_gtk3: %global gtk_ver 2}
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global tar_ver %{version}
+%global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
+
+Name:           audacious
+# If beta, use "~" instead "-", as ~beta1
+Version:        4.3~beta1
+Release:        100%{?dist}
+Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.2
+%global aud_ver 4.3
 
 # Audacious Generic Plugin API is defined in audacious-libs subpackage.
 
-License:        BSD
+License:        BSD-2-Clause AND BSD-3-Clause
 Summary:        Advanced audio player
 URL:            http://audacious-media-player.org/
 
@@ -25,31 +34,31 @@ BuildRequires:  gcc-c++
 BuildRequires:  gettext
 
 BuildRequires:  desktop-file-utils
-BuildRequires:  make
+BuildRequires:  meson >= 0.57
 
-%{?with_gtk:BuildRequires: pkgconfig(gtk+-2.0)}
+%{?with_gtk:BuildRequires: pkgconfig(gtk+-%{gtk_ver}.0)}
 BuildRequires:  pkgconfig(glib-2.0)
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Widgets)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Gui)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Widgets)
 
 # The automatic SONAME dependency is not enough
 # during version upgrades.
-Requires: audacious-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       audacious-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # For compatibility with the plugin API implemented by the player,
 # a minimum version of the base plugins package is strictly required.
-Requires: audacious-plugins%{?_isa} >= %{aud_ver}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 # Audacious stores its own icon(s) in the hicolor tree
 # and updates the icon cache.
-Requires: hicolor-icon-theme
+Requires:       hicolor-icon-theme
 # for icons such as 'go-next', 'go-previous'
-Requires: gnome-icon-theme
-Requires: qt5-qtsvg%{?_isa}
+Requires:       gnome-icon-theme
+Requires:       qt%{qt_ver}-qtsvg%{?_isa}
 
 # Skin packages can require this from xmms and all GUI compatible players
-Provides: xmms-gui
+Provides:       xmms-gui
 
 %description
 Audacious is an advanced audio player. It is free, lightweight, currently
@@ -78,10 +87,10 @@ Library files for the Audacious audio player.
 
 
 %package devel
-Summary: Development files for the Audacious audio player
-Requires: %{name}-libs%{?_isa} = %{version}-%{release}
-Requires: glib2-devel%{?_isa}
-%{?with_gtk:Requires: gtk2-devel%{?_isa}}
+Summary:        Development files for the Audacious audio player
+Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       pkgconfig(glib-2.0)
+%{?with_gtk:BuildRequires: pkgconfig(gtk+-%{gtk_ver}.0)}
 
 %description devel
 Files needed when building software for the Audacious audio player.
@@ -96,38 +105,26 @@ api=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION[ ]\+' src/libaudcore/plugin.h | s
 api_min=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION_MIN' src/libaudcore/plugin.h | sed 's!.*_AUD_PLUGIN_VERSION_MIN[ ]*\([0-9]\+\).*!\1!')
 [ "${api_min}" == "%{aud_plugin_api_min}" ] || exit -1
 
-sed -i '\,^.SILENT:,d' buildsys.mk.in
-sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
-
 
 %build
-#rm -rf _bin
-#mkdir _bin
-#ln -s /usr/bin/moc-qt5 _bin/moc
-#export PATH=$PATH:$(pwd)/_bin
-
-%configure  \
-    %{?with_gtk:--enable-gtk}%{!?with_gtk:--disable-gtk} \
-    --with-buildstamp="chinforpms package"  \
-    --disable-silent-rules \
-    --disable-rpath \
-    --disable-dependency-tracking \
+%meson \
+  %{?with_gtk:-Dgtk=true%{?with_gtk3: -Dgtk3=true}}%{!?with_gtk:-Dgtk=false} \
+  %{?with_qt6:-Dqt6=true} \
+  -Dbuildstamp="chinforpms package" \
 %{nil}
 
-%make_build
+%meson_build
 
 
 %install
-%make_install INSTALL="install -p"
-find %{buildroot} -type f -name "*.la" -delete
+%meson_install
+
+install -D -m0644 contrib/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 %find_lang %{name}
 
-desktop-file-install  \
-    --dir %{buildroot}%{_datadir}/applications  \
-    %{buildroot}%{_datadir}/applications/audacious.desktop
-
-install -D -m0644 contrib/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
@@ -142,8 +139,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_metainfodir}/%{name}.appdata.xml
 
 %files libs
-# license file included in this subpkg
-# for Fedora Licensing Guidelines change (2010-07-07)
 %license COPYING
 %{_libdir}/*.so.*
 
@@ -157,6 +152,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3~beta1-100
+- 4.3-beta1
+- meson
+- Qt6 and Gtk3
+
 * Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
 - 4.2
 

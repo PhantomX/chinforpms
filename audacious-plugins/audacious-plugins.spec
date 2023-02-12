@@ -1,5 +1,12 @@
 # build with GTK+2
 %bcond_without gtk
+# build with GTK+3 instead 2
+%bcond_without gtk3
+# build with qt6 instead 5
+%bcond_without qt6
+
+%{?with_gtk3:%global gtk_ver 3}%{!?with_gtk3: %global gtk_ver 2}
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global aud_plugin_api %(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION[ ]\\+' %{_includedir}/libaudcore/plugin.h 2>/dev/null | sed 's!.*_AUD_PLUGIN_VERSION[ ]*\\([0-9]\\+\\).*!\\1!')
 %if 0%{aud_plugin_api} > 0
@@ -7,78 +14,93 @@
 %endif
 %{?aud_plugin_dep}
 
-Name:           audacious-plugins
-Version:        4.2
-Release:        100%{?dist}
+%global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
 
-%global tar_ver %{version}
+Name:           audacious-plugins
+# If beta, use "~" instead "-", as ~beta1
+Version:        4.3~beta1
+Release:        100%{?dist}
+Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.2
+%global aud_ver 4.3
 
 Summary: Plugins for the Audacious audio player
-URL: http://audacious-media-player.org/
+URL:            http://audacious-media-player.org/
 
 # list of license per plugin in README.licences
-License: GPLv2+ and LGPLv2+ and GPLv3 and MIT and BSD
+License:        BSD-2-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-only AND MIT AND BSD-3-Clause
 
-Source0: http://distfiles.audacious-media-player.org/%{name}-%{tar_ver}.tar.bz2
-Source3: README.licenses
+Source0:        http://distfiles.audacious-media-player.org/%{name}-%{tar_ver}.tar.bz2
+Source3:        README.licenses
 # for optional packages
-Source100: audacious-plugins-amidi.metainfo.xml
-Source101: audacious-plugins-exotic.metainfo.xml
-Source102: audacious-plugins-jack.metainfo.xml
+Source100:      audacious-plugins-amidi.metainfo.xml
+Source101:      audacious-plugins-exotic.metainfo.xml
+Source102:      audacious-plugins-jack.metainfo.xml
 
 # Fedora customization
 Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
 # Fedora customization: add default system-wide module_path
 Patch2:         audacious-plugins-3.6-ladspa.patch
+# chinforpms customization: qt6 private headers for qhotkey
+Patch10:        0001-qt6-enable-qthotkey.patch
 
 BuildRequires:  gcc-c++
-BuildRequires:  make
+BuildRequires:  meson
 BuildRequires:  audacious-devel >= %{aud_ver}
 BuildRequires:  gettext-devel
-BuildRequires:  neon-devel
-BuildRequires:  jack-audio-connection-kit-devel
-BuildRequires:  libsamplerate-devel
-BuildRequires:  soxr-devel
-BuildRequires:  alsa-lib-devel
-BuildRequires:  pulseaudio-libs-devel
-BuildRequires:  libsndfile-devel
-BuildRequires:  wavpack-devel
-BuildRequires:  libsidplayfp-devel
-BuildRequires:  libmodplug-devel
-BuildRequires:  libogg-devel libvorbis-devel
-BuildRequires:  flac-devel
-BuildRequires:  fluidsynth-devel
-BuildRequires:  libcdio-devel
-BuildRequires:  libcdio-paranoia-devel
-BuildRequires:  libcue-devel
-BuildRequires:  SDL-devel
-BuildRequires:  lirc-devel
-BuildRequires:  libcddb-devel
-BuildRequires:  libmtp-devel
-BuildRequires:  libxml2-devel
-BuildRequires:  libnotify-devel
-BuildRequires:  libbs2b-devel
-BuildRequires:  curl-devel
-BuildRequires:  pkgconfig(dbus-1) pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(adplug)
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(dbus-glib-1)
+BuildRequires:  pkgconfig(flac)
+BuildRequires:  pkgconfig(fluidsynth)
+BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libbinio)
-BuildRequires:  pkgconfig(libopenmpt)
+BuildRequires:  pkgconfig(libbs2b)
+BuildRequires:  pkgconfig(libcddb)
+BuildRequires:  pkgconfig(libcdio)
+BuildRequires:  pkgconfig(libcdio_paranoia)
+BuildRequires:  pkgconfig(libcue)
+BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(libmpg123)
+BuildRequires:  pkgconfig(libmtp)
+BuildRequires:  pkgconfig(libnotify)
+BuildRequires:  pkgconfig(libopenmpt)
+BuildRequires:  pkgconfig(libpipewire-0.3)
+BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(libsidplayfp)
+BuildRequires:  pkgconfig(libspa-0.2)
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(lirc)
+BuildRequires:  pkgconfig(neon)
+BuildRequires:  pkgconfig(ogg)
+BuildRequires:  pkgconfig(opus)
+BuildRequires:  pkgconfig(opusfile)
+BuildRequires:  pkgconfig(samplerate)
+BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sndfile)
+BuildRequires:  pkgconfig(soxr)
+BuildRequires:  pkgconfig(wavpack)
+BuildRequires:  pkgconfig(vorbis)
 BuildRequires:  lame-devel
 
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  pkgconfig(Qt5Multimedia)
-BuildRequires:  pkgconfig(Qt5Network)
-BuildRequires:  pkgconfig(Qt5OpenGL)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Gui)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Widgets)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Network)
+BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGL)
+%if %{with qt6}
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
+%else
+BuildRequires:  pkgconfig(Qt%{qt_ver}Multimedia)
 BuildRequires:  pkgconfig(Qt5X11Extras)
+%endif
 BuildRequires:  pkgconfig(ampache_browser_1)
 
-%{?with_gtk:BuildRequires: pkgconfig(gtk+-2.0)}
+%{?with_gtk:BuildRequires: pkgconfig(gtk+-%{gtk_ver}.0)}
 
 %global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
@@ -88,10 +110,10 @@ This package provides essential plugins for the Audacious audio player.
 
 
 %package jack
-Summary: Audacious output plugin for Jack Audio Connection Kit
-License: LGPLv2+
+Summary:        Audacious output plugin for Jack Audio Connection Kit
+License:        BSD-2-Clause
 %{?aud_plugin_dep}
-Requires: audacious-plugins%{?_isa} >= %{aud_ver}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 %description jack
 This package provides an Audacious output plugin that uses the
@@ -99,13 +121,13 @@ Jack Audio Connection Kit (JACK) sound service.
 
 
 %package exotic
-Summary: Optional niche market plugins for Audacious 
+Summary:        Optional niche market plugins for Audacious 
 # list of license per plugin in README.licences
-License: GPLv2+ and LGPLv2+ and GPLv3 and MIT and BSD
+License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause
 %{?aud_plugin_dep}
-Requires: audacious-plugins%{?_isa} >= %{aud_ver}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 # src/console/ for console.so input plugin in -exotic subpackage
-Provides: bundled(game-music-emu) = 0.5.5
+Provides:       bundled(game-music-emu) = 0.5.5
 
 %description exotic
 This package provides optional plugins for Audacious, which do not aim
@@ -118,10 +140,10 @@ emulation, Nintendo DS Sound Format 2SF.
 
 
 %package amidi
-Summary: Audacious input plugin for MIDI
-License: GPLv2+
+Summary:        Audacious input plugin for MIDI
+License:        GPL-2.0-or-later
 %{?aud_plugin_dep}
-Requires: audacious-plugins%{?_isa} >= %{aud_ver}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
 %description amidi
 This package provides AMIDI-Plug, a modular MIDI music player, as an
@@ -136,47 +158,45 @@ do
     sed -i -e 's!__RPM_LIBDIR__!%{_libdir}!g' $i
     sed -i -e 's!__RPM_LIB__!%{_lib}!g' $i
 done
-grep -q -s __RPM_LIB * -R && exit 1
-
-sed -i '\,^.SILENT:,d' buildsys.mk.in
-sed -i 's!MAKE} -s!MAKE} !' buildsys.mk.in
+if grep -q __RPM_LIB src/ladspa/plugin.cc ;then
+  exit 1
+fi
 
 
 %build
 # Enforce availability of the audacious(plugin-api) dependency.
 %{!?aud_plugin_dep:echo 'No audacious(plugin-api) dependency!' && exit -1}
 
-%configure  \
-    --enable-vorbis  \
-    --enable-flac  \
-    --enable-neon  \
-    --enable-ampache \
-    --enable-mpg123 \
-    --enable-filewriter-mp3 \
-    --enable-openmpt \
-    --enable-streamtuner \
-    --enable-qthotkey \
-    --disable-aac  \
-    --disable-sndio \
-    --disable-mms  \
-    --disable-ffaudio  \
-    --enable-qt  \
-    %{!?with_gtk:--disable-gtk} \
-    --disable-rpath \
+%meson \
+  %{?with_gtk:-Dgtk=true%{?with_gtk3: -Dgtk3=true}}%{!?with_gtk:-Dgtk=false} \
+  %{?with_qt6:-Dqt6=true} \
+  -Dampache=true \
+  -Dfilewriter-mp3=true \
+  -Dflac=true \
+  -Dmpg123=true \
+  -Dneon=true \
+  -Dopus=true \
+  -Dvorbis=true \
+  -Dopenmpt=true \
+  -Dstreamtuner=true \
+  -Daac=false  \
+  -Dffaudio=false \
+  -Dsndio=false \
+  -Dmms=false \
 %{nil}
 
-%make_build
+%meson_build
 
 
 %install
-%make_install INSTALL="install -p"
-%find_lang %{name}
-
+%meson_install
 
 mkdir -p %{buildroot}%{_metainfodir}
 install -p -m0644 %{SOURCE100} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE101} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
+
+%find_lang %{name}
 
 
 %files -f %{name}.lang
@@ -206,7 +226,6 @@ install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Effect/stereo.so
 %{_libdir}/audacious/Effect/voice_removal.so
 %dir %{_libdir}/audacious/General/
-%{_libdir}/audacious/General/alarm.so
 %{_libdir}/audacious/General/albumart-qt.so
 %{_libdir}/audacious/General/ampache.so
 %{_libdir}/audacious/General/cd-menu-items.so
@@ -231,6 +250,7 @@ install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Input/metronom.so
 %{_libdir}/audacious/Input/modplug.so
 %{_libdir}/audacious/Input/openmpt.so
+%{_libdir}/audacious/Input/opus.so
 %{_libdir}/audacious/Input/sndfile.so
 %{_libdir}/audacious/Input/tonegen.so
 %{_libdir}/audacious/Input/vorbis.so
@@ -239,8 +259,9 @@ install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Output/alsa.so
 %{_libdir}/audacious/Output/filewriter.so
 %{_libdir}/audacious/Output/oss4.so
+%{_libdir}/audacious/Output/pipewire.so
 %{_libdir}/audacious/Output/pulse_audio.so
-%{_libdir}/audacious/Output/qtaudio.so
+%{!?with_qt6:%{_libdir}/audacious/Output/qtaudio.so}
 %{_libdir}/audacious/Output/sdlout.so
 %dir %{_libdir}/audacious/Visualization/
 %{_libdir}/audacious/Visualization/blur_scope-qt.so
@@ -288,6 +309,9 @@ install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3~beta1-100
+- 4.3-beta1
+
 * Sat Jul 30 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2-100
 - 4.2
 
