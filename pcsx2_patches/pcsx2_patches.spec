@@ -1,6 +1,6 @@
-%global commit 1b6e1170312771c09c553672786b6baf94fbe90b
+%global commit 74643b377a6490a8bf64a11da44c09d0d9aa79e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230121
+%global date 20230203
 
 %global gver .%{date}git%{shortcommit}
 

@@ -21,9 +21,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 18ab42dc8342b23da4ef1964803f8fe13c5c852d
+%global commit 3a68b7ac0d6ba46b40fea81a9619e497b3772eaf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230128
+%global date 20230213
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -42,11 +42,11 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 a3ce1299312ee48c2c0db58ffc059c1438436ad8
+%global commit14 ecf1b62882c1b6ca1da445fa94ee8dae42cf5961
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 44f81f8bc082319cebf0e37df8470aa5748c1355
+%global commit15 4fbd4fd36a21efd9d1a7e17aba390e91c78693b1
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -94,7 +94,7 @@
 
 Name:           rpcs3
 Version:        0.0.26
-Release:        5%{?gver}%{?dist}
+Release:        6%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0

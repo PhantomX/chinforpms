@@ -1,4 +1,4 @@
-From d6eae51f9df0ac1d87fd05c03facb92ae0793d9c Mon Sep 17 00:00:00 2001
+From 670011aece4a264ea796d08824ccbdcffd0eb449 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 14 Dec 2020 19:05:24 -0300
 Subject: [PATCH] New Aspect ratio mode for RESHDP - Force fitting 4:3
@@ -7,12 +7,12 @@ From https://github.com/MoArtis/dolphin, MoArtis <mathieuphilippe.dev@gmail.com>
 ---
  Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp | 2 +-
  Source/Core/DolphinQt/HotkeyScheduler.cpp               | 3 +++
- Source/Core/VideoCommon/RenderBase.cpp                  | 5 +++++
+ Source/Core/VideoCommon/Present.cpp                     | 5 +++++
  Source/Core/VideoCommon/VideoConfig.h                   | 1 +
  4 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
-index cc5fbb3..c6ce412 100644
+index 27a2c16..f5881c7 100644
 --- a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
 +++ b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
 @@ -57,7 +57,7 @@ void GeneralWidget::CreateWidgets()
@@ -25,10 +25,10 @@ index cc5fbb3..c6ce412 100644
    m_adapter_combo = new ToolTipComboBox;
    m_enable_vsync = new GraphicsBool(tr("V-Sync"), Config::GFX_VSYNC);
 diff --git a/Source/Core/DolphinQt/HotkeyScheduler.cpp b/Source/Core/DolphinQt/HotkeyScheduler.cpp
-index 1377dd6..ae9154a 100644
+index 1e390c3..bbc2acc 100644
 --- a/Source/Core/DolphinQt/HotkeyScheduler.cpp
 +++ b/Source/Core/DolphinQt/HotkeyScheduler.cpp
-@@ -385,6 +385,9 @@ void HotkeyScheduler::Run()
+@@ -406,6 +406,9 @@ void HotkeyScheduler::Run()
          case AspectMode::AnalogWide:
            OSD::AddMessage("Force 16:9");
            break;
@@ -38,11 +38,11 @@ index 1377dd6..ae9154a 100644
          case AspectMode::Auto:
          default:
            OSD::AddMessage("Auto");
-diff --git a/Source/Core/VideoCommon/RenderBase.cpp b/Source/Core/VideoCommon/RenderBase.cpp
-index 9437990..1ebe693 100644
---- a/Source/Core/VideoCommon/RenderBase.cpp
-+++ b/Source/Core/VideoCommon/RenderBase.cpp
-@@ -564,6 +564,11 @@ float Renderer::CalculateDrawAspectRatio() const
+diff --git a/Source/Core/VideoCommon/Present.cpp b/Source/Core/VideoCommon/Present.cpp
+index 181dfea..9037697 100644
+--- a/Source/Core/VideoCommon/Present.cpp
++++ b/Source/Core/VideoCommon/Present.cpp
+@@ -245,6 +245,11 @@ float Presenter::CalculateDrawAspectRatio() const
  {
    const auto aspect_mode = g_ActiveConfig.aspect_mode;
  
@@ -55,10 +55,10 @@ index 9437990..1ebe693 100644
    if (aspect_mode == AspectMode::Stretch)
      return (static_cast<float>(m_backbuffer_width) / static_cast<float>(m_backbuffer_height));
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index dacb286..36d540c 100644
+index 1e5e2f6..9904ea5 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
-@@ -31,6 +31,7 @@ enum class AspectMode : int
+@@ -25,6 +25,7 @@ enum class AspectMode : int
    AnalogWide,
    Analog,
    Stretch,
@@ -67,5 +67,5 @@ index dacb286..36d540c 100644
  
  enum class StereoMode : int
 -- 
-2.29.2
+2.39.1
 

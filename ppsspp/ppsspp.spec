@@ -7,10 +7,10 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5efa2e259648f6727412147b0b348f2e1b2311c4
+%global commit 86a19cebfd22222363ccc16d4609c471093b434a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221120
-%global with_snapshot 0
+%global date 20230213
+%global with_snapshot 1
 
 # Enable Qt build
 %bcond_with qt
@@ -39,15 +39,19 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 6719edebaae03330ee5441d9b28280672edf00d5
+%global commit4 7bd1ec93d4586985ba1ef420b43b5e620f68695e
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit6 dc11adde23c455a24e13dd54de9b4ede8bdd7db8
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
-%global srcname6 %{name}-glslang
+%global commit5 c74a85d64a64594fab865c8fd86865be8ac2bf87
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 cpu_features
 
-%global commit7 29632959d21a0b3e128c174a49de159dd2b107d1
+%global commit6 77551c429f86c0e077f26552b7c1c0f12a9f235e
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 glslang
+
+%global commit7 c77b09b57c27837dc2d41aa371ed3d236ce9ce47
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -66,11 +70,11 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later%{!?with_sysffmpeg: AND GPL-3.0-or-later}
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0%{!?with_sysffmpeg: AND GPL-3.0-or-later}
 URL:            http://www.ppsspp.org/
 
 %if !0%{?with_snapshot}
@@ -87,7 +91,8 @@ Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcomm
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source6:        %{vc_url}/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source5:        https://github.com/google/cpu_features/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        https://github.com/KhronosGroup/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
@@ -162,6 +167,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(armips) = 0~git%{shortcommit4}
 Provides:       bundled(cityhash)
+Provides:       bundled(cpu_features) = 0~git%{shortcommit5}
 Provides:       bundled(gason)
 Provides:       bundled(glslang) = 0~git%{shortcommit6}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
@@ -213,6 +219,7 @@ tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 %endif
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
+tar -xf %{SOURCE5} -C ext/cpu_features --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
@@ -234,6 +241,7 @@ cp -p ffmpeg/LICENSE.md ext/LICENSE.ffmpeg.md
 pushd ext
 cp -p armips/LICENSE.txt LICENSE.armips
 cp -p cityhash/COPYING COPYING.cityhash
+cp -p cpu_features/LICENSE LICENSE.cpu_features
 cp -p gason/LICENSE LICENSE.gason
 cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
@@ -368,6 +376,9 @@ popd
 
 %install
 %cmake_install
+
+rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_libdir}
 
 rm -f %{buildroot}/usr/share/applications/*.desktop
 

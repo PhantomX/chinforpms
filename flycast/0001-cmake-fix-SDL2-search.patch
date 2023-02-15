@@ -1,0 +1,25 @@
+From 28fb2eda4aa4abadced637d6ce4245059618de6b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 13 Feb 2023 19:13:40 -0300
+Subject: [PATCH] cmake: fix SDL2 search
+
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e0804c5..3e9d3c2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -383,7 +383,7 @@ if(NOT LIBRETRO)
+ 	endif()
+ 
+ 	if(NOT ANDROID AND NOT IOS)
+-		if(NOT APPLE AND (NOT UNIX OR CMAKE_SYSTEM_NAME MATCHES "(FreeBSD|OpenBSD|NetBSD)"))
++		if(NOT APPLE AND (UNIX OR CMAKE_SYSTEM_NAME MATCHES "(FreeBSD|OpenBSD|NetBSD)"))
+ 			find_package(SDL2)
+ 		endif()
+ 		if(NOT SDL2_FOUND)
+-- 
+2.39.1
+

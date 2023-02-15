@@ -1,6 +1,8 @@
-%global commit 9df06383b575c0fad5fc4a2846bcb65cfcdd99c9
+%global _lto_cflags %{nil}
+
+%global commit 033efff86e52621968ebbf6523b7ab8c2269e07c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230213
 %global with_snapshot 1
 
 # Enable ffmpeg support
@@ -17,7 +19,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.6%{?gver}%{?dist}
+Release:        0.7%{?gver}%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0
@@ -42,6 +44,7 @@ BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
 BuildRequires:  pkgconfig(inih)
+BuildRequires:  pkgconfig(json-c)
 BuildRequires:  pkgconfig(libedit)
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(lzmasdk-c) >= 22.01
@@ -133,8 +136,6 @@ sed -e 's|BUILD_UPDATER ON|BUILD_UPDATER OFF|g' -i CMakeLists.txt
 
 
 %build
-%global _lto_cflags %{nil}
-
 %cmake \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DSKIP_GIT:BOOL=ON \

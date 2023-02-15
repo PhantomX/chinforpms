@@ -1,4 +1,4 @@
-From 5d570cb47b06821c49f0b7b4ae40f60ad9338049 Mon Sep 17 00:00:00 2001
+From 4a0915765d8ae0775f966c9ed00328a99894c905 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 15 Dec 2020 20:16:49 -0300
 Subject: [PATCH] Use system libraries
@@ -10,10 +10,10 @@ Subject: [PATCH] Use system libraries
  3 files changed, 34 insertions(+), 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fce2657..4274345 100644
+index 32551c6..ad9f177 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -61,6 +61,7 @@ if(NOT LIBMGBA_ONLY)
+@@ -59,6 +59,7 @@ if(NOT LIBMGBA_ONLY)
  	set(M_CORE_GBA ON CACHE BOOL "Build Game Boy Advance core")
  	set(M_CORE_GB ON CACHE BOOL "Build Game Boy core")
  	set(USE_LZMA ON CACHE BOOL "Whether or not to enable 7-Zip support")
@@ -21,7 +21,7 @@ index fce2657..4274345 100644
  	set(USE_DISCORD_RPC ON CACHE BOOL "Whether or not to enable Discord RPC support")
  	set(ENABLE_SCRIPTING ON CACHE BOOL "Whether or not to enable scripting support")
  	set(BUILD_QT ON CACHE BOOL "Build Qt frontend")
-@@ -104,7 +105,6 @@ else()
+@@ -102,7 +103,6 @@ else()
  	endif()
  endif()
  
@@ -29,7 +29,7 @@ index fce2657..4274345 100644
  set(CORE_VFS_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-mem.c ${CMAKE_CURRENT_SOURCE_DIR}/src/util/vfs/vfs-fifo.c)
  set(VFS_SRC)
  include_directories(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src ${CMAKE_CURRENT_BINARY_DIR}/include)
-@@ -471,6 +471,8 @@ set(WANT_ZLIB ${USE_ZLIB})
+@@ -488,6 +488,8 @@ set(WANT_ZLIB ${USE_ZLIB})
  set(WANT_PNG ${USE_PNG})
  set(WANT_SQLITE3 ${USE_SQLITE3})
  set(USE_CMOCKA ${BUILD_SUITE})
@@ -38,7 +38,7 @@ index fce2657..4274345 100644
  
  if(DEFINED VCPKG_TARGET_TRIPLET)
  	find_feature(USE_FFMPEG "FFMPEG")
-@@ -490,6 +492,14 @@ find_feature(USE_CMOCKA "cmocka")
+@@ -507,6 +509,14 @@ find_feature(USE_CMOCKA "cmocka")
  find_feature(USE_SQLITE3 "SQLite3|sqlite3")
  find_feature(USE_ELF "libelf")
  find_feature(ENABLE_PYTHON "PythonLibs")
@@ -53,7 +53,7 @@ index fce2657..4274345 100644
  
  # Features
  add_subdirectory(src/debugger)
-@@ -672,10 +682,9 @@ elseif(USE_ZLIB)
+@@ -691,10 +701,9 @@ elseif(USE_ZLIB)
  	endif()
  endif()
  
@@ -65,7 +65,7 @@ index fce2657..4274345 100644
  	set(LZMA_SRC
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zAlloc.c
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zArcIn.c
-@@ -697,7 +706,7 @@ if (USE_LZMA)
+@@ -716,7 +725,7 @@ if (USE_LZMA)
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zFile.c
  		${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/lzma/7zStream.c)
  	list(APPEND VFS_SRC ${LZMA_SRC})
@@ -74,7 +74,7 @@ index fce2657..4274345 100644
  endif()
  
  if(USE_EPOXY)
-@@ -742,6 +751,20 @@ if (USE_DISCORD_RPC)
+@@ -765,6 +774,20 @@ if (USE_DISCORD_RPC)
  	include_directories(AFTER ${CMAKE_CURRENT_SOURCE_DIR}/src/third-party/discord-rpc/include)
  endif()
  
@@ -94,7 +94,7 @@ index fce2657..4274345 100644
 +
  if(ENABLE_SCRIPTING)
  	list(APPEND ENABLES SCRIPTING)
- 	if(NOT USE_LUA VERSION_LESS 5.1)
+ 	find_feature(USE_JSON_C "json-c")
 diff --git a/src/util/configuration.c b/src/util/configuration.c
 index dbcefef..30fcf9d 100644
 --- a/src/util/configuration.c
@@ -132,5 +132,5 @@ index a094c18..caa7f34 100644
  #define BUFFER_SIZE 0x2000
  
 -- 
-2.36.1
+2.39.1
 

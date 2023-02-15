@@ -1,38 +1,20 @@
-From a1580c9fa29a1730c83a9a14ab82b18b20eda0ad Mon Sep 17 00:00:00 2001
+From a2b809243b4e4f24795dbe1133c45cbea69d4c20 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 3 Aug 2022 22:19:34 -0300
 Subject: [PATCH] system library support
 
 ---
- CMakeLists.txt                              | 29 +++++++++++++++++++--
- Source/Core/Common/Hash.cpp                 |  6 +++++
- Source/Core/DiscIO/CompressedBlob.cpp       | 12 +++++++++
- Source/Core/UpdaterCommon/UpdaterCommon.cpp |  4 +++
- 4 files changed, 49 insertions(+), 2 deletions(-)
+ CMakeLists.txt                              | 13 ++++++++++++-
+ Source/Core/Common/Hash.cpp                 |  6 ++++++
+ Source/Core/DiscIO/CompressedBlob.cpp       | 12 ++++++++++++
+ Source/Core/UpdaterCommon/UpdaterCommon.cpp |  4 ++++
+ 4 files changed, 34 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dcebb4e..e21d635 100644
+index 2cc8594..a5c4ca6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -54,6 +54,7 @@ endif()
- 
- option(USE_SHARED_ENET "Use shared libenet if found rather than Dolphin's soon-to-compatibly-diverge version" OFF)
- option(USE_UPNP "Enables UPnP port mapping support" ON)
-+option(USE_SHARED_LIBSPNG "Use shared libspng if found" ON)
- option(ENABLE_NOGUI "Enable NoGUI frontend" ON)
- option(ENABLE_QT "Enable Qt (Default)" ON)
- option(ENABLE_LTO "Enables Link Time Optimization" OFF)
-@@ -411,6 +412,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-   find_library(IOB_LIBRARY IOBluetooth)
-   find_library(IOK_LIBRARY IOKit)
-   find_library(OPENGL_LIBRARY OpenGL)
-+
-+  # We don't want to use shared libpng.
-+  set(USE_SHARED_LIBSPNG OFF)
- endif()
- 
- if(ENABLE_LTO)
-@@ -789,7 +793,18 @@ else()
+@@ -775,7 +775,18 @@ else()
    add_subdirectory(Externals/zstd)
  endif()
  
@@ -50,27 +32,8 @@ index dcebb4e..e21d635 100644
 +  add_subdirectory(Externals/zlib-ng)
 +endif()
  
- pkg_check_modules(MINIZIP minizip-ng>=3.0.0)
+ pkg_check_modules(MINIZIP minizip>=3.0.0)
  if(MINIZIP_FOUND)
-@@ -814,7 +829,17 @@ else()
-   set(LZO lzo2)
- endif()
- 
--add_subdirectory(Externals/libspng)
-+if(USE_SHARED_LIBSPNG)
-+  check_lib(SPNG libspng spng spng.h QUIET)
-+endif()
-+if (SPNG_FOUND)
-+  message(STATUS "Using shared libspng")
-+else()
-+  check_vendoring_approved(libspng)
-+  message(STATUS "Using static libspng from Externals")
-+  add_subdirectory(Externals/libspng)
-+  set(SPNG spng)
-+endif()
- 
- # Using static FreeSurround from Externals
- # There is no system FreeSurround library.
 diff --git a/Source/Core/Common/Hash.cpp b/Source/Core/Common/Hash.cpp
 index e6b421e..612128f 100644
 --- a/Source/Core/Common/Hash.cpp
@@ -130,5 +93,5 @@ index 6fdb963..4f6d8de 100644
  #include "Common/CommonFuncs.h"
  #include "Common/CommonPaths.h"
 -- 
-2.39.0
+2.39.1
 

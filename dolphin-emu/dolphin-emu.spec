@@ -27,9 +27,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 1af8602530c693522c2b1a544130537e05938d08
+%global commit 9d139ea84e426a0829fcb7c8bd1959f341427349
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230108
+%global date 20230213
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -55,7 +55,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        173%{?gver}%{?dist}
+Release:        174%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -92,7 +92,6 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 #Update soundtouch:
 #https://github.com/dolphin-emu/dolphin/pull/8725
 Patch2:         0001-Update-to-soundtouch-2.3.1.patch
-Patch10:        0001-mgba-system-library-support.patch
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -318,8 +317,6 @@ sed \
   -DXXHASH_FOUND:BOOL=ON \
   %{?!enablejit:-DENABLE_GENERIC=ON} \
   -DUSE_SHARED_ENET:BOOL=ON \
-  -DUSE_SHARED_MGBA:BOOL=ON \
-  -DUSE_SHARED_SPNG:BOOL=ON \
   -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
   -DENABLE_AUTOUPDATE:BOOL=OFF \

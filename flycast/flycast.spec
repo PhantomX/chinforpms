@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5875eda4d0f34fd334de2c00ff42efc7913e3bc2
+%global commit 645f41352326e8661260f98b69dc4e150369a0c5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230131
+%global date 20230213
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -29,13 +29,13 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
-%global commit5 77551c429f86c0e077f26552b7c1c0f12a9f235e
+%global commit5 10423ec659d301a0ff2daac8bbf38980abf27590
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
 # Enable system spirv (broken)
 %bcond_with sysspirv
-%bcond_without sysvulkan
+%bcond_with sysvulkan
 # Build with x11 instead SDL
 %bcond_with x11
 
@@ -50,7 +50,7 @@
 
 Name:           flycast
 Version:        2.0
-Release:        6%{?gver}%{?dist}
+Release:        7%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -77,6 +77,7 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+Patch4:         0001-cmake-fix-SDL2-search.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake

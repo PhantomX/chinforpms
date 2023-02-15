@@ -7,9 +7,9 @@
 
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit f8beeeb7d3dca796d05a2ab1d7a8f1af3b7e3fb5
+%global commit 052b23c83c3a58afdd63c3d5a7655be482f1c739
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230207
+%global date 20230213
 %if !0%{?with_bin}
 %global with_snapshot 1
 %endif
@@ -33,7 +33,7 @@
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 6.26.0
+%global microsoft_identitymodel_ver 6.26.1
 %global microsoft_netcore_app_runtime_linux_x64_ver 7.0.2
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
@@ -126,7 +126,7 @@
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
 %global system_globalization_extensions_ver 4.0.1
-%global system_identitymodel_tokens_jwt_ver 6.26.0
+%global system_identitymodel_tokens_jwt_ver 6.26.1
 %global system_io_ver 4.1.0
 %global system_io_ver2 4.3.0
 %global system_io_compression_ver 4.1.0
@@ -215,7 +215,7 @@
 
 Name:           ryujinx
 # https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-Version:        1.1.603
+Version:        1.1.618
 Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
