@@ -6,13 +6,15 @@
 %global _build_id_links none
 %global _no_recompute_build_ids 1
 
-%global cart   23FQ3
-%global yymm   2209
-%global ver    8.7.0
-%global rel    20616018
+%global cart   23FQ4
+%global yymm   2212.1
+%global pdfver %(echo %{yymm} | tr -d '.' )
+%global pdfiver %(echo %{yymm} | cut -d. -f1 )
+%global ver    8.8.1
+%global rel    21219348
 %global fver   %{yymm}-%{ver}-%{rel}
-%global s4br_ver 15.0.0.0
-%global s4br_bld 20450170
+%global s4br_ver 16.0.0.0
+%global s4br_bld 20864211
 %ifarch x86_64
 %global mark64 ()(64bit)
 %global vhc_arch x64
@@ -23,7 +25,7 @@
 
 Name:           vmware-horizon-client
 Version:        %{yymm}.%{ver}.%{rel}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Remote access client for VMware Horizon
 
 License:        VMware
@@ -31,8 +33,8 @@ URL:            https://www.vmware.com/products/horizon.html
 
 # https://customerconnect.vmware.com/en/downloads/info/slug/desktop_end_user_computing/vmware_horizon_clients/horizon_8
 Source0:        https://download3.vmware.com/software/CART%{cart}_LIN_%{yymm}_TARBALL/VMware-Horizon-Client-Linux-%{yymm}-%{ver}-%{rel}.tar.gz
-Source1:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/rn/vmware-horizon-client-for-linux-%{yymm}-release-notes/vmware-horizon-client-for-linux-%{yymm}-release-notes.pdf
-Source2:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/horizon-client-linux-installation.pdf
+Source1:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/rn/vmware-horizon-client-for-linux-%{pdfver}-release-notes/vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
+Source2:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{pdfiver}/horizon-client-linux-installation.pdf
 Source10:       usbarb.rules
 Source11:       vmware-usbarbitrator.service
 Source14:       vmware-usbarbitrator.preset
@@ -455,7 +457,7 @@ fi
 
 %files -f vmware-view.lang
 %license doc/open_source_licenses.txt
-%doc vmware-horizon-client-for-linux-%{yymm}-release-notes.pdf
+%doc vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
 %doc horizon-client-linux-installation.pdf
 %dir %{_sysconfdir}/vmware
 %config %{_sysconfdir}/vmware/bootstrap
@@ -595,6 +597,9 @@ fi
 
 
 %changelog
+* Fri Feb 17 2023 - 2212.1.8.8.1.21219348-1
+- 2212.1
+
 * Mon Dec 19 2022 - 2209.8.7.0.20616018-2
 - chinforpms release
 - %%{_prefix}/lib -> %%{_libdir}

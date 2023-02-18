@@ -40,11 +40,11 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 263a7bd2ca81759ece98209bd282a6c1173a129f
+%global commit8 71dcb55a398a5c4d2bdbfa9fc15b90f301f77a6b
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
-%global commit9 48abaa5e082add7848e6f98648111c69c4a71632
+%global commit9 2c2226517c4c8929e08ec944654867e26efe0cf5
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
@@ -66,7 +66,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.3
+Version:        0.3.5
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -249,6 +249,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat Feb 18 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.5-1
+- 0.3.5
+
 * Fri Feb 10 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.3-1
 - 0.3.3
 - R: sdl_gamecontrollerdb
