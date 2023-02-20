@@ -24,7 +24,7 @@
 %global kf5ver 4f35c8d
 
 Name:           telegram-desktop
-Version:        4.6.2
+Version:        4.6.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -45,6 +45,7 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
+Patch0:         %{url}/commit/f71e7812e66d9ab347ce6a138997b7e338849caf.patch#/%{name}-gh-f71e781.patch
 Patch100:       %{name}-build-fix.patch
 
 # Do not mess input text
@@ -57,7 +58,6 @@ Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
-Patch206:       0001-fix-gsl-header-warnings.patch
 Patch208:       0001-sane-background-and-text-colors.patch
 
 BuildRequires:  cmake(Microsoft.GSL)
@@ -314,6 +314,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.4-100
+- 4.6.4
+
 * Fri Feb 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.2-100
 - 4.6.2
 

@@ -1,4 +1,4 @@
-From 7e9cb7710b520f25e7b822eabfaa9692aefd6837 Mon Sep 17 00:00:00 2001
+From 871dade63b11f8353e1448302cc93c6747c47ee0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 13 Nov 2022 18:23:10 -0300
 Subject: [PATCH] Fix library path
@@ -9,10 +9,10 @@ Subject: [PATCH] Fix library path
  2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7f7a004..b3fdf77 100644
+index 8880e2d..1ee5794 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -32,8 +32,8 @@ if (PORTABLE_INSTALL)
+@@ -66,8 +66,8 @@ if (PORTABLE_INSTALL)
      set(INSTALL_DESKTOP_FILE OFF)
  else()
      set(RMG_INSTALL_PATH "bin")
@@ -24,27 +24,27 @@ index 7f7a004..b3fdf77 100644
      set(INSTALL_DESKTOP_FILE ON)
      set(APPDATA_INSTALL_PATH "share/metainfo/")
 diff --git a/Source/RMG-Core/Directories.cpp b/Source/RMG-Core/Directories.cpp
-index 7074646..de6a608 100644
+index c4bbf55..fbab1bf 100644
 --- a/Source/RMG-Core/Directories.cpp
 +++ b/Source/RMG-Core/Directories.cpp
-@@ -124,7 +124,7 @@ std::string CoreGetCoreDirectory(void)
-     directory = "Core";
- #else // Not Portable
-     directory = CORE_INSTALL_PREFIX;
--    directory += "/lib/RMG/Core";
-+    directory += "/_LIBDIR_/RMG/Core";
+@@ -138,7 +138,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
+     else
+     {
+         directory = CORE_INSTALL_PREFIX;
+-        directory += "/lib/RMG/Core";
++        directory += "/_LIBDIR_/RMG/Core";
+     }
  #endif // PORTABLE_INSTALL
      return directory;
- }
-@@ -136,7 +136,7 @@ std::string CoreGetPluginDirectory(void)
-     directory = "Plugin";
- #else // Not Portable
-     directory = CORE_INSTALL_PREFIX;
--    directory += "/lib/RMG/Plugin";
-+    directory += "/_LIBDIR_/RMG/Plugin";
+@@ -157,7 +157,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
+     else
+     {
+         directory = CORE_INSTALL_PREFIX;
+-        directory += "/lib/RMG/Plugin";
++        directory += "/_LIBDIR_/RMG/Plugin";
+     }
  #endif // PORTABLE_INSTALL
      return directory;
- }
 -- 
-2.38.1
+2.39.2
 

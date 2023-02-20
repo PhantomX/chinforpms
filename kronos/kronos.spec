@@ -9,9 +9,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5eecaf3ebf620eaf373c453d9844bfef89c42b6d
+%global commit 1930e4b243c1ea21c510f194ba4ca66c5eb24581
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230109
+%global date 20230216
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -25,8 +25,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.3.1
-Release:        5%{?gver}%{?dist}
+Version:        2.5.0
+Release:        1%{?gver}%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -41,7 +41,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
-
+Patch1:         0001-Revert-Implement-erase-write-limits-on-OpenGL-core.patch
 
 BuildRequires:  cmake3
 BuildRequires:  make
@@ -138,6 +138,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-1.20230216git1930e4b
+- 2.5.0
+
 * Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-2.20220316git9dff05e
 - Snapshot
 

@@ -28,10 +28,6 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 parallel-rsp
 
-%global commit5 e6b23e127ca3d3b21cd715751c32deae5adccee6
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 mupen64plus-input-qt
-
 %global commit6 86112413e98a8648edb11d199673cc24d5799af8
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 mupen64plus-input-raphnetraw
@@ -66,7 +62,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.5
+Version:        0.3.6
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -82,7 +78,6 @@ Source1:        %{mupen64_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shor
 Source2:        %{mupen64_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{mupen64_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        %{vc_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/raphnet/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/ghostlydark/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/gonetz/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
@@ -116,6 +111,7 @@ BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
 Requires:       dejavu-sans-fonts
@@ -139,7 +135,7 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 %autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 for i in \
-  %{srcname1} %{srcname2} %{srcname3} %{srcname4} %{srcname5} \
+  %{srcname1} %{srcname2} %{srcname3} %{srcname4} \
   %{srcname6} %{srcname7} %{srcname8} %{srcname9} %{srcname11}
 do
   mkdir -p %{__cmake_builddir}/Source/3rdParty/$i
@@ -152,7 +148,6 @@ tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C %{srcname2} --strip-components 1
 tar -xf %{S:3} -C %{srcname3} --strip-components 1
 tar -xf %{S:4} -C %{srcname4} --strip-components 1
-tar -xf %{S:5} -C %{srcname5} --strip-components 1
 tar -xf %{S:6} -C %{srcname6} --strip-components 1
 tar -xf %{S:7} -C %{srcname7} --strip-components 1
 tar -xf %{S:8} -C %{srcname8} --strip-components 1
@@ -232,6 +227,8 @@ chmod +x %{buildroot}%{_libdir}/%{pkgname}/*/*.so
 
 ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{pkgname}/font.ttf
 
+mkdir -p %{buildroot}%{_datadir}/%{pkgname}/Styles
+
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
@@ -249,6 +246,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.6-1
+- 0.3.6
+
 * Sat Feb 18 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.5-1
 - 0.3.5
 
