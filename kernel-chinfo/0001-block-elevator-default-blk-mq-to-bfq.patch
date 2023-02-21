@@ -1,4 +1,4 @@
-From e0a4dd2070ed92999a5902be49e0f88065e8f618 Mon Sep 17 00:00:00 2001
+From ceec4b7cb6acaf9ed6741946a485a474c22d6edf Mon Sep 17 00:00:00 2001
 From: Fedora Kernel Team <kernel-team@fedoraproject.org>
 Date: Mon, 10 Jan 2022 08:44:35 -0300
 Subject: [PATCH] block, elevator: default blk-mq to bfq
@@ -9,10 +9,10 @@ blk-mq do not have proper Kconfig selector, so change it here
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/block/elevator.c b/block/elevator.c
-index 19a78d5..64fac73 100644
+index adee58e..4b21058 100644
 --- a/block/elevator.c
 +++ b/block/elevator.c
-@@ -628,7 +628,7 @@ static inline bool elv_support_iosched(struct request_queue *q)
+@@ -561,7 +561,7 @@ static inline bool elv_support_iosched(struct request_queue *q)
  }
  
  /*
@@ -21,15 +21,15 @@ index 19a78d5..64fac73 100644
   * queues or mq-deadline is not available, default to "none".
   */
  static struct elevator_type *elevator_get_default(struct request_queue *q)
-@@ -640,7 +640,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
+@@ -573,7 +573,7 @@ static struct elevator_type *elevator_get_default(struct request_queue *q)
  	    !blk_mq_is_shared_tags(q->tag_set->flags))
  		return NULL;
  
--	return elevator_get(q, "mq-deadline", false);
-+	return elevator_get(q, "bfq", false);
+-	return elevator_find_get(q, "mq-deadline");
++	return elevator_find_get(q, "bfq");
  }
  
  /*
 -- 
-2.34.1
+2.39.2
 

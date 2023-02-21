@@ -1,7 +1,7 @@
 %global commit 9070f0d572e36645f5e5764ef40472f158513d48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230210
-%global with_snapshot 1
+%global with_snapshot 0
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 87f3369577d3a74d2abac16a1442e6b983679a0f
+%global wine_stagingver 8.2
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id cd5c1e14bd0b6bac34068fe88737bdd47f1d13b2
+%global tkg_id fd53a4b8971368025614bb12e54f982e87cddb3c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -151,8 +151,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.1
-Release:        101%{?gver}%{?dist}
+Version:        8.2
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -351,7 +351,6 @@ BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
-BuildRequires:  pkgconfig(odbc)
 BuildRequires:  opencl-headers
 BuildRequires:  pkgconfig(osmesa)
 BuildRequires:  pkgconfig(sane-backends)
@@ -490,7 +489,6 @@ Requires:       libpcap(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
 Requires:       samba-libs(x86-32)
-Requires:       unixODBC(x86-32)
 Requires:       SDL2(x86-32)
 Requires:       vulkan-loader(x86-32)
 %if 0%{?wine_staging}
@@ -523,7 +521,6 @@ Requires:       libpcap(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
 Requires:       samba-libs(x86-64)
-Requires:       unixODBC(x86-64)
 Requires:       SDL2(x86-64)
 Requires:       vulkan-loader(x86-64)
 %if 0%{?wine_staging}
@@ -550,7 +547,6 @@ Requires:       libXrender
 Requires:       libpcap
 Requires:       mesa-libOSMesa
 Requires:       libv4l
-Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan-loader
 %if 0%{?wine_staging}
@@ -2525,6 +2521,9 @@ fi
 
 
 %changelog
+* Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.2-100
+- 8.2
+
 * Fri Feb 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.1-100
 - 8.1
 

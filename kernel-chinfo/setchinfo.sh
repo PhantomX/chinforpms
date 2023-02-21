@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230214
-# 6.1
-# pf6
+# 20230220
+# 6.2
+# pf2
 
 set -e
 

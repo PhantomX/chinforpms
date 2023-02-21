@@ -24,13 +24,13 @@
 # base_sublevel is the kernel version we're starting with and patching
 # on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
 # which yields a base_sublevel of 0.
-%global base_sublevel 1
+%global base_sublevel 2
 
 ## If this is a released kernel ##
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 12
+%global stable_update 0
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -309,6 +309,10 @@ popd
 pushd tools/gpio/
 %{tools_make}
 popd
+# build VM tools
+pushd tools/vm/
+%{tools_make} slabinfo page_owner_sort
+popd
 pushd tools/tracing/rtla
 %{tools_make}
 popd
@@ -322,6 +326,9 @@ popd
 pushd tools/lib/perf
 make V=1 prefix=%{_prefix} libdir=%{_libdir}
 popd
+
+# BPF samples
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
 # Build the docs
 pushd tools/kvm/kvm_stat/
@@ -426,6 +433,19 @@ pushd tools/lib/perf
 make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} V=1 install install_headers
 popd
 
+# install bpf samples
+pushd samples/bpf
+install -d %{buildroot}%{_libexecdir}/ksamples/bpf
+find -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksamples/bpf \;
+install -m755 *.sh %{buildroot}%{_libexecdir}/ksamples/bpf
+# test_lwt_bpf.sh compiles test_lwt_bpf.c when run; this works only from the
+# kernel tree. Just remove it.
+rm %{buildroot}%{_libexecdir}/ksamples/bpf/test_lwt_bpf.sh
+install -m644 *_kern.o %{buildroot}%{_libexecdir}/ksamples/bpf || true
+install -m644 tcp_bpf.readme %{buildroot}%{_libexecdir}/ksamples/bpf
+popd
+
+
 ###
 ### scripts
 ###
@@ -442,7 +462,6 @@ popd
 
 %files -n perf
 %{_bindir}/perf
-%exclude %{_libdir}/traceevent
 %{_libdir}/libperf-jvmti.so
 %{_libexecdir}/perf-core
 %{_datadir}/perf-core/
@@ -495,6 +514,7 @@ popd
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
+%{_includedir}/powercap.h
 
 %files -n bpftool
 %{_sbindir}/bpftool
@@ -511,6 +531,7 @@ popd
 %{_mandir}/man8/bpftool-struct_ops.8.gz
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
+%{_libexecdir}/ksamples
 %license linux-%{kversion}/COPYING
 
 %files -n libperf
@@ -522,6 +543,8 @@ popd
 %{_libdir}/libperf.a
 %{_libdir}/libperf.so
 %{_libdir}/pkgconfig/libperf.pc
+%{_includedir}/internal/*.h
+%{_includedir}/perf/bpf_perf.h
 %{_includedir}/perf/core.h
 %{_includedir}/perf/cpumap.h
 %{_includedir}/perf/perf_dlfilter.h
@@ -554,6 +577,9 @@ popd
 
 
 %changelog
+* Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.0-500
+- 6.2.0
+
 * Tue Feb 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.12-500
 - 6.1.12
 
@@ -781,39 +807,3 @@ popd
 
 * Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500
 - 5.16.0
-
-* Wed Jan 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.15.13-500
-- 5.15.13
-
-* Wed Dec 29 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.12-500
-- 5.15.12
-
-* Wed Dec 22 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.11-500
-- 5.15.11
-
-* Fri Dec 17 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.10-500
-- 5.15.10
-
-* Tue Dec 14 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.8-500
-- 5.15.8
-
-* Wed Dec 08 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.7-500
-- 5.15.7
-
-* Wed Dec 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.6-500
-- 5.15.6
-
-* Thu Nov 25 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.5-500
-- 5.15.5
-
-* Sun Nov 21 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.4-500
-- 5.15.4
-
-* Thu Nov 18 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.3-500
-- 5.15.3
-
-* Fri Nov 12 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.2-500
-- 5.15.2
-
-* Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 5.15.0-500
-- 5.15.0

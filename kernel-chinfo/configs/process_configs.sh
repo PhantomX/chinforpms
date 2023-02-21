@@ -387,13 +387,13 @@ do
 done
 
 KVERREL="$(test -n "$1" && echo "-$1" || echo "")"
-FLAVOR="$(test -n "$2" && echo "-$2" || echo "-ark")"
+FLAVOR="$(test -n "$2" && echo "-$2" || echo "-redhat")"
 # shellcheck disable=SC2015
 RHJOBS="${RHJOBS:-$(nproc --all)}"
 SCRIPT=$(readlink -f "$0")
 SCRIPT_DIR=$(dirname "$SCRIPT")
 
-# Config options for RHEL should target the pending-ark directory, not pending-common.
+# Config options for RHEL should target the pending-redhat directory, not pending-common.
 if [ "$FLAVOR" = "-rhel" ]
 then
 	FLAVOR="-ark"

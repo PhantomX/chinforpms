@@ -113,6 +113,11 @@ function merge_configs()
 	esac
 
 	sort config-merging."$count" >> "$name"
+
+	if [ -n "$ENABLE_WERROR" ]; then
+	       sed -i "1,$$s|# CONFIG_WERROR is not set|CONFIG_WERROR=y|g" "$name"
+	fi
+
 	rm -f config-merged."$count" config-merging."$count"
 	echo "Building $name complete"
 }

@@ -1,2 +1,0 @@
-# https://bugzilla.redhat.com/show_bug.cgi?id=1644253
-CONFIG_MEM_SOFT_DIRTY=y

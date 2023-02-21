@@ -453,7 +453,7 @@ fix_broken_arches() { # uses ORDER, crows, columns, and configmap
 	done
 }
 
-# compare the common, fedora, and ark configs.
+# compare the common, fedora, and rhel configs.
 # By default this function uses the priority.common file
 fix_common() { # uses cfgs, CONFIG, and ORDER
 	local index
@@ -467,12 +467,12 @@ fix_common() { # uses cfgs, CONFIG, and ORDER
 
 	# the priority.common array is
 	#	common configs
-	#	ark configs
+	#	rhel configs
 	#	fedora configs
 	for index in $(seq 0 $(((crows * columns) - 1)))
 	do
 		# this string is the concatenation of the
-		# common, ark, and fedora config values
+		# common, rhel, and fedora config values
 		value=$(for order in $(seq 0 $((numorder -1)))
 		do
 			echo -n "${cfgs[$(( (order * crows * columns) + index))]}"
@@ -539,7 +539,7 @@ fix_common() { # uses cfgs, CONFIG, and ORDER
 			x=$(((index % columns) + 4))
 			$DEBUG && echo "($x,$y) $index"
 
-			# remove the existing ark and fedora configs
+			# remove the existing rhel and fedora configs
 			configentry="$(echo "$configmap" | sed "${y}q;d" | cut -d " " -f "$x" | tr "-" "/")/$CONFIG"
 			for order in $ORDER
 			do

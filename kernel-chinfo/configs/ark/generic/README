@@ -1,4 +1,0 @@
-Place config options in this directory that you want applied to all kernel
-variants. These options are the basis of all RHEL kernels. You can
-override them with arch and/or debug specific options placed in
-subdirectories of this directory or under the debug/ hierarchy.

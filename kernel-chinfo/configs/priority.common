@@ -1,5 +1,5 @@
 # DO NOT ERASE THIS FILE.  IT IS USED BY THE evaluate_configs SCRIPT.
-ORDER=common ark fedora
+ORDER=common fedora
 
 # x86_64
 x86_64=generic:generic-x86
