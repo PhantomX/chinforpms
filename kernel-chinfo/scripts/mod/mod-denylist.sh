@@ -127,17 +127,6 @@ fi
 
 popd
 
-# If we're signing modules, we can't leave the .mod files for the .ko files
-# we've moved in .tmp_versions/.  Remove them so the Kbuild 'modules_sign'
-# target doesn't try to sign a non-existent file.  This is kinda ugly, but
-# so are the modules-* packages.
-
-while IFS= read -r mod
-do
-  modfile=$(basename "$mod" | sed -e 's/.ko/.mod/')
-  rm .tmp_versions/"$modfile"
-done < "$Dir"/dep2.list
-
 if [ -z "$Dest" ]; then
 	sed -e "s|^.|${ModDir}|g" "$Dir"/dep2.list > "$RpmDir/$ListName"
 	echo "./$RpmDir/$ListName created."

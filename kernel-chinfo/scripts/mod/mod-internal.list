@@ -13,6 +13,7 @@ drm_dp_mst_helper_test
 drm_format_helper_test
 drm_format_test
 drm_framebuffer_test
+drm_kunit_helpers
 drm_mm_test
 drm_plane_helper_test
 drm_rect_test
@@ -44,10 +45,12 @@ refscale
 resource_kunit
 rocker
 scftorture
+siphash_kunit
 slub_kunit
 soc-topology-test
 soc-utils-test
 stackinit_kunit
+strscpy_kunit
 sysctl-test
 test_bits
 test_bpf

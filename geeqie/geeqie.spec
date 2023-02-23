@@ -1,6 +1,6 @@
-%global commit 6694c1b25376026572539e99743949615aa75368
+%global commit cd72fa8cf4c85a1af8f66320d48dbee00ad16ec5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221007
+%global date 20230220
 %global with_snapshot 1
 
 %bcond_with map
@@ -14,7 +14,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPLv2+
@@ -28,6 +28,7 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.x
 
 Patch0:         sun_path.patch
 Patch1:         0001-Fix-lua-linking-with-C.patch
+Patch2:         0001-Add-missing-DEBUG_FILEDATA-conditional.patch
 
 
 BuildRequires:  gcc
@@ -92,8 +93,6 @@ version=$(head -1 NEWS)
 set -- $version
 printf '%s' "$2%{?gver:+git%{date}-%{shortcommit}}"
 EOF
-
-sed -e 's|lua5.3|lua|g' -i meson.build
 
 
 %build

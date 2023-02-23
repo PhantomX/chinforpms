@@ -150,7 +150,7 @@ gpa
 gtk3-nocsd
 hdiffpatch
 -hollywood
-htop
+-htop
 image-analyzer
 ipager
 ipsbehead
@@ -187,7 +187,7 @@ mozilla-gnotifier
 mp3val
 mpdnotify
 -mps-youtube
-mupen64plus
+-mupen64plus
 NetworkManager-f5vpn
 nicotine+
 nvtop

@@ -40,7 +40,7 @@ irpf2022
 -kepka
 lbreakouthd
 kronos
-m64py
+-m64py
 mame-data-extras
 mame-data-icons
 mame-data-roms
@@ -48,14 +48,14 @@ melonds
 mesa-freeworld
 -ms-teams
 -mupen64plus-extraplugins
-mupen64plus-rsp-cxd4
+-mupen64plus-rsp-cxd4
 ninfs
 pcsx2
 pcsx2_patches
 ppsspp
 ps3dec
 psximager
-pysdl2
+-pysdl2
 python-haccrypto
 python-pyctr
 -reicast

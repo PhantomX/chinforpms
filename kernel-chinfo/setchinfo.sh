@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230220
+# 20230222
 # 6.2
 # pf2
 
@@ -70,6 +70,7 @@ SCHED_TIMESLICE=4
 "
 
 pfy="
+IO_URING
 RANDOM_DEFAULT_IMPL
 SCHED_BMQ
 USER_NS_UNPRIVILEGED
