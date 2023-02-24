@@ -59,9 +59,9 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 07b9046128367d8a35d75f3c9f9a373a48783698
+%global commit 8b9b246a2f835638af2c5e33ba4cb716a5f3ac8c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230216
+%global date 20230222
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -76,7 +76,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0~rc5
+Version:        23.0.0
 Release:        100%{?gver}%{?dist}
 
 License:        MIT
@@ -712,6 +712,9 @@ popd
 
 
 %changelog
+* Thu Feb 23 2023 Phantom X - 23.0.0-100.20230222git8b9b246
+- 23.0.0
+
 * Fri Feb 17 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0~rc5-100.20230216git07b9046
 - 23.0.0-rc5
 
