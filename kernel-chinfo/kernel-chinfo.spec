@@ -188,7 +188,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 0
+%define stable_update 1
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -199,9 +199,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 9cc6e0f5adee0e79d6b8216e7266fca030703a34
+%global pfcommit 7bfdeb26d8dcda9e79394ffe28bfb2f2c1a3ddd6
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash fc96066b91738331a508b1bc1115e27b
+%global pfcoprhash 2caa5ab3321c192bb258acbdf5c3d247
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -2937,7 +2937,11 @@ fi\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}modules-core}\
+%if %{efiuki}\
 rm -f /lib/modules/%{KVERREL}%{?1:+%{1}}/modules.*\
+%else\
+/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
+%endif\
 %{nil}
 
 # This macro defines a %%posttrans script for a kernel package.
@@ -3205,6 +3209,9 @@ fi
 #
 #
 %changelog
+* Sat Feb 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-500.chinfo
+- 6.2.1 - pf2
+
 * Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.0-500.chinfo
 - 6.2.0 - pf1
 

@@ -30,7 +30,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        126%{?gver}%{?dist}
+Release:        127%{?gver}%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -88,22 +88,12 @@ BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
 
-# Fedora now has a stripped ffmpeg. Make sure we're using the full version.
-# Telegram Desktop has major issues when built against ffmpeg 5.x:
-# https://bugzilla.rpmfusion.org/show_bug.cgi?id=6273
-# Upstream refuses to fix this issue:
-# https://github.com/telegramdesktop/tdesktop/issues/24855
-# https://github.com/telegramdesktop/tdesktop/issues/23899
-%if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  compat-ffmpeg4-devel
-%else
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
-%endif
 %if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  openssl1.1-devel
 %else
@@ -329,6 +319,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0-127.20230105git5098730
+- ffmpeg 5.1
+
 * Sat Dec 31 2022 Phantom X <megaphantomx at hotmail dot com> - 0-125.20221230git1eab2d7
 - External crc32c
 

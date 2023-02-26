@@ -2,17 +2,17 @@
 %global __strip /bin/true
 
 %global cheatver 0245
-%global historyver 251
-%global infover 0251
+%global historyver 252
+%global infover 0252
 
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.251
+Version:        0.252
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
-License:        Freely redistributable without restriction
+License:        LicenseRef-Fedora-UltraPermissive
 URL:            http://mamedev.org
 
 # http://cheat.retrogames.com/
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Sat Feb 25 2023 Phantom X <megaphantomx at hotmail dot com> - 0.252-1
+- 0.252
+
 * Mon Jan 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.251-1
 - 0.251
 

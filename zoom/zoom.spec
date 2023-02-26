@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        5.12.0.4682
+Version:        5.13.7.683
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -34,15 +34,18 @@ Provides:       bundled(qt) = 5.12.10
 
 %global __requires_exclude ^libfaac1.so.*
 %global __requires_exclude %__requires_exclude|^libaomagent.so.*
+%global __requires_exclude %__requires_exclude|^libav\(codec|util\).so.*
 %global __requires_exclude %__requires_exclude|^libcef.so.*
 %global __requires_exclude %__requires_exclude|^libclDNN64.so.*
 %global __requires_exclude %__requires_exclude|^libfdkaac2.*.so.*
 %global __requires_exclude %__requires_exclude|^libicu.*.so.*
 %global __requires_exclude %__requires_exclude|^libEGL.so
+%global __requires_exclude %__requires_exclude|^libffmpeg.so
 %global __requires_exclude %__requires_exclude|^libGLESv2.so
 %global __requires_exclude %__requires_exclude|^libmkldnn.so
 %global __requires_exclude %__requires_exclude|^libmpg123.so
 %global __requires_exclude %__requires_exclude|^libOpenCL.so.*
+%global __requires_exclude %__requires_exclude|^libswresample.so.*
 %global __requires_exclude %__requires_exclude|^libQt.*.so.*
 
 
@@ -146,6 +149,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Fri Feb 24 2023 - 5.13.7.683-1
+- 5.13.7.683
+
 * Wed Oct 05 2022 - 5.12.0.4682-1
 - 5.12.0.4682
 

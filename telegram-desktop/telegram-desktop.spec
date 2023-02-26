@@ -24,7 +24,7 @@
 %global kf5ver 4f35c8d
 
 Name:           telegram-desktop
-Version:        4.6.4
+Version:        4.6.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -45,7 +45,6 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch0:         %{url}/commit/f71e7812e66d9ab347ce6a138997b7e338849caf.patch#/%{name}-gh-f71e781.patch
 Patch100:       %{name}-build-fix.patch
 
 # Do not mess input text
@@ -157,20 +156,11 @@ BuildRequires:  pkgconfig(webkit2gtk-4.0)
 Requires:       webkit2gtk3%{?_isa}
 %endif
 
-# Telegram Desktop has major issues when built against ffmpeg 5.x:
-# https://bugzilla.rpmfusion.org/show_bug.cgi?id=6273
-# Upstream refuses to fix this issue:
-# https://github.com/telegramdesktop/tdesktop/issues/24855
-# https://github.com/telegramdesktop/tdesktop/issues/23899
-%if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  compat-ffmpeg4-devel
-%else
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-%endif
 
 # Video calls doesn't work when built against openssl 3.0:
 # https://github.com/telegramdesktop/tdesktop/issues/24698
@@ -314,6 +304,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.5-100
+- 4.6.5
+
 * Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.4-100
 - 4.6.4
 
