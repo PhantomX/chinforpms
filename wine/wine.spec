@@ -1,7 +1,7 @@
-%global commit 9070f0d572e36645f5e5764ef40472f158513d48
+%global commit 3fb2a5d55e948670222170075f0054a2aabf8d7e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230210
-%global with_snapshot 0
+%global date 20230224
+%global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
@@ -97,7 +97,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.2
+%global wine_stagingver 7b0d44f8873aa9eec58716057b36d8d060fc04c3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,7 +108,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fd53a4b8971368025614bb12e54f982e87cddb3c
+%global tkg_id 0b211231a12ec9356b5b314e9861ef3041c4999d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -152,7 +152,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.2
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -341,6 +341,7 @@ BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpcap)
+BuildRequires:  pkgconfig(libpcsclite)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  librsvg2
@@ -1296,9 +1297,6 @@ desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE300}
 
-mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d/
-echo "%{_libdir}/wine/%{winesodir}" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
-
 # install Tahoma font for system package
 install -p -m 0755 -d %{buildroot}%{_datadir}/fonts/wine-tahoma-fonts
 pushd %{buildroot}%{_datadir}/fonts/wine-tahoma-fonts
@@ -1435,13 +1433,11 @@ fi
 %{_bindir}/wine32
 %{perms_pldr} %{_bindir}/wine32-preloader
 %{perms_srv} %{_bindir}/wineserver32
-%config %{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
 %endif
 
 %ifarch x86_64 aarch64
 %{_bindir}/wine64
 %{perms_srv} %{_bindir}/wineserver64
-%config %{_sysconfdir}/ld.so.conf.d/wine-%{_arch}.conf
 %endif
 %ifarch x86_64 aarch64
 %{perms_pldr} %{_bindir}/wine64-preloader
@@ -1516,8 +1512,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/wmplayer.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wscript.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/uninstaller.%{wineexe}
-
-%{_libdir}/wine/%{winesodir}/libwine.so.1*
 
 %{_libdir}/wine/%{winedlldir}/acledit.%{winedll}
 %{_libdir}/wine/%{winedlldir}/aclui.%{winedll}
@@ -2055,6 +2049,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/wmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmvcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/spoolss.%{winedll}
+%{_libdir}/wine/%{winesodir}/winscard.so
 %{_libdir}/wine/%{winedlldir}/winscard.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wintab32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wintrust.%{winedll}

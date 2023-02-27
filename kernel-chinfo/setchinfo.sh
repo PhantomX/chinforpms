@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230222
+# 20230226
 # 6.2
 # pf2
 
@@ -54,13 +54,14 @@ RHEL_DIFFERENCES
 
 pf="
 CC_OPTIMIZE_FOR_PERFORMANCE_O3
-DDCCI
 "
 
 pfd="
 "
 
 pfm="
+BACKLIGHT_DDCCI
+DDCCI
 TCP_CONG_BBR2
 V4L2_LOOPBACK
 "
@@ -70,8 +71,6 @@ SCHED_TIMESLICE=4
 "
 
 pfy="
-IO_URING
-RANDOM_DEFAULT_IMPL
 SCHED_BMQ
 USER_NS_UNPRIVILEGED
 "

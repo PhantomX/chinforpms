@@ -1,6 +1,6 @@
-%global commit b73026aa5b090f98c6d5d4d064c1c4c4b62e011a
+%global commit a7e8a7308b09c0ff64920de5b51306b71cb27c45
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221115
+%global date 20230224
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -8,12 +8,12 @@
 %endif
 
 Name:           winetricks
-Version:        20220411
-Release:        102%{?gver}%{?dist}
+Version:        20230212
+Release:        100%{?gver}%{?dist}
 
 Summary:        Work around common problems in Wine
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 URL:            https://github.com/Winetricks/%{name}
 
 %if 0%{?with_snapshot}
@@ -76,6 +76,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 20230212-100.20230224gita7e8a73
+- 20230212
+
 * Mon Aug 15 2022 Phantom X <megaphantomx at hotmail dot com> - 20220411-101.20220808git68ca8c3
 - Snapshot
 

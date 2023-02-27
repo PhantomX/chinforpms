@@ -172,7 +172,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 500
+%global baserelease 501
 %global fedora_build %{baserelease}
 
 %global distro_build 200
@@ -199,9 +199,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7bfdeb26d8dcda9e79394ffe28bfb2f2c1a3ddd6
+%global pfcommit e42950276d2da282adc86a19b7294e94ca232aa4
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash 2caa5ab3321c192bb258acbdf5c3d247
+%global pfcoprhash ce8695fdbd600eaa8a2e8b8830f791c9
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -257,85 +257,85 @@ Summary: The Linux kernel
 # --without <opt> in the rpmbuild command, or by forcing these values to 0.
 #
 # standard kernel
-%define with_up        %{?_without_up:        0} %{?!_without_up:        1}
+%define with_up        %{?_without_up:0} %{?!_without_up:1}
 # kernel PAE (only valid for ARM (lpae))
-%define with_pae       %{?_without_pae:       0} %{?!_without_pae:       1}
+%define with_pae       %{?_without_pae:0} %{?!_without_pae:1}
 # kernel-debug
-%define with_debug     %{?_without_debug:     0} %{?!_without_debug:     1}
+%define with_debug     %{?_without_debug:0} %{?!_without_debug:1}
 %define with_debug     0
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
-%define with_zfcpdump  %{?_without_zfcpdump:  0} %{?!_without_zfcpdump:  1}
+%define with_zfcpdump  %{?_without_zfcpdump:0} %{?!_without_zfcpdump:1}
 # kernel-doc
-%define with_doc       %{?_without_doc:       0} %{?!_without_doc:       1}
+%define with_doc       %{?_without_doc:0} %{?!_without_doc:1}
 # kernel-headers
-%define with_headers   %{?_without_headers:   0} %{?!_without_headers:   1}
-%define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:   1}
+%define with_headers   %{?_without_headers:0} %{?!_without_headers:1}
+%define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:1}
 # kernel-debuginfo
-%define with_debuginfo %{?_without_debuginfo: 0} %{?!_without_debuginfo: 1}
+%define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
 # kernel-abi-stablelists
-%define with_kernel_abi_stablelists %{?_without_kernel_abi_whitelists: 0} %{?!_without_kernel_abi_whitelists: 1}
+%define with_kernel_abi_stablelists %{?_without_kernel_abi_whitelists:0} %{?!_without_kernel_abi_whitelists:1}
 %define with_kernel_abi_stablelists 0
 # internal samples and selftests
-%define with_selftests %{?_without_selftests: 0} %{?!_without_selftests: 1}
+%define with_selftests %{?_without_selftests:0} %{?!_without_selftests:1}
 #
 # Additional options for user-friendly one-off kernel building:
 #
 # Only build the base kernel (--with baseonly):
-%define with_baseonly  %{?_with_baseonly:     1} %{?!_with_baseonly:     0}
+%define with_baseonly  %{?_with_baseonly:1} %{?!_with_baseonly:0}
 # Only build the pae kernel (--with paeonly):
-%define with_paeonly   %{?_with_paeonly:      1} %{?!_with_paeonly:      0}
+%define with_paeonly   %{?_with_paeonly:1} %{?!_with_paeonly:0}
 # Only build the debug kernel (--with dbgonly):
-%define with_dbgonly   %{?_with_dbgonly:      1} %{?!_with_dbgonly:      0}
+%define with_dbgonly   %{?_with_dbgonly:1} %{?!_with_dbgonly:0}
 %define with_dbgonly   0
 # Control whether we perform a compat. check against published ABI.
-%define with_kabichk   %{?_without_kabichk:   0} %{?!_without_kabichk:   1}
+%define with_kabichk   %{?_without_kabichk:0} %{?!_without_kabichk:1}
 # Temporarily disable kabi checks until RC.
 %define with_kabichk 0
 # Control whether we perform a compat. check against DUP ABI.
-%define with_kabidupchk %{?_with_kabidupchk:  1} %{?!_with_kabidupchk:   0}
+%define with_kabidupchk %{?_with_kabidupchk:1} %{?!_with_kabidupchk:0}
 #
 # Control whether to run an extensive DWARF based kABI check.
 # Note that this option needs to have baseline setup in SOURCE300.
-%define with_kabidwchk %{?_without_kabidwchk: 0} %{?!_without_kabidwchk: 1}
-%define with_kabidw_base %{?_with_kabidw_base: 1} %{?!_with_kabidw_base: 0}
+%define with_kabidwchk %{?_without_kabidwchk:0} %{?!_without_kabidwchk:1}
+%define with_kabidw_base %{?_with_kabidw_base:1} %{?!_with_kabidw_base:0}
 #
 # Control whether to install the vdso directories.
-%define with_vdso_install %{?_without_vdso_install: 0} %{?!_without_vdso_install: 1}
+%define with_vdso_install %{?_without_vdso_install:0} %{?!_without_vdso_install:1}
 #
 # should we do C=1 builds with sparse
-%define with_sparse    %{?_with_sparse:       1} %{?!_with_sparse:       0}
+%define with_sparse    %{?_with_sparse:1} %{?!_with_sparse:0}
 #
 # Cross compile requested?
-%define with_cross    %{?_with_cross:         1} %{?!_with_cross:        0}
+%define with_cross    %{?_with_cross:1} %{?!_with_cross:0}
 #
 # build a release kernel on rawhide
-%define with_release   %{?_with_release:      1} %{?!_with_release:      0}
+%define with_release   %{?_with_release:1} %{?!_with_release:0}
 
 # verbose build, i.e. no silent rules and V=1
-%define with_verbose %{?_with_verbose:        1} %{?!_with_verbose:      0}
+%define with_verbose %{?_with_verbose:1} %{?!_with_verbose:0}
 
 #
 # check for mismatched config options
-%define with_configchecks %{?_without_configchecks:        0} %{?!_without_configchecks:        1}
+%define with_configchecks %{?_without_configchecks:0} %{?!_without_configchecks:1}
 
 #
 # gcov support
-%define with_gcov %{?_with_gcov: 1}%{?!_with_gcov: 0}
+%define with_gcov %{?_with_gcov:1}%{?!_with_gcov:0}
 
 #
 # ipa_clone support
-%define with_ipaclones %{?_without_ipaclones: 0} %{?!_without_ipaclones: 1}
+%define with_ipaclones %{?_without_ipaclones:0} %{?!_without_ipaclones:1}
 
 # Want to build a vanilla kernel build without any non-upstream patches?
-%define with_vanilla %{?_with_vanilla: 1} %{?!_with_vanilla: 0}
+%define with_vanilla %{?_with_vanilla:1} %{?!_with_vanilla:0}
 
 ### CPU optimizations
 ### with native take precedence, next is generic, then one set in kernel-local-cpu
 # Use kernel-local-cpu-native (CONFIG_MNATIVE=y)
-%global with_native  %{?_with_native:     1} %{?!_with_native:     0}
+%global with_native  %{?_with_native:1} %{?!_with_native:0}
 
 # Use kernel-local-cpu-generic (CONFIG_GENERIC_CPU=y)
-%global with_generic %{?_with_generic:     1} %{?!_with_generic:     0}
+%global with_generic %{?_with_generic:1} %{?!_with_generic:0}
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -1863,7 +1863,7 @@ InitBuildVars() {
 
     # add kpatch flags for base kernel
     if [ "$Variant" == "" ]; then
-        KCFLAGS="$KCFLAGS %{?kpatch_kcflags}"
+        KCFLAGS="$KCFLAGS%{?kpatch_kcflags: %{kpatch_kcflags}}"
     fi
 }
 
@@ -3209,6 +3209,9 @@ fi
 #
 #
 %changelog
+* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-501.chinfo
+- 6.2.1 - pf2
+
 * Sat Feb 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-500.chinfo
 - 6.2.1 - pf2
 

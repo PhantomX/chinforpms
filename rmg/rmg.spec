@@ -3,10 +3,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 35525d174940281251fb33490ebb66c6223f9f3b
+%global commit e10ac1086f0bb43367cb358185c3ad3c9a2a41ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221111
-%global with_snapshot 0
+%global date 20230225
+%global with_snapshot 1
 
 %bcond_with rust
 
@@ -36,7 +36,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 71dcb55a398a5c4d2bdbfa9fc15b90f301f77a6b
+%global commit8 1f4d04f43b53739bc9b128ab5577d20e3d60ed6a
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
@@ -62,7 +62,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.7
+Version:        0.3.8
 Release:        1%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -246,6 +246,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.8-1.20230225gite10ac10
+- 0.3.8
+
 * Thu Feb 23 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.7-1
 - 0.3.7
 

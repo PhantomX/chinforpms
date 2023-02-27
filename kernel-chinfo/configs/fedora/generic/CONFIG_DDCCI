@@ -1,1 +1,1 @@
-# CONFIG_DDCCI is not set
+CONFIG_DDCCI=m
