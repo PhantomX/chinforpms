@@ -1,7 +1,17 @@
-diff -up qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3 qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp
---- qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3	2018-12-19 13:44:04.000000000 -0200
-+++ qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp	2018-12-21 08:28:41.361705527 -0200
-@@ -50,6 +50,7 @@ AppearancePage::AppearancePage(QWidget *
+From 98adb11067cd238b21b6c5a21a48f9036db37e1c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 28 Feb 2023 17:04:47 -0300
+Subject: [PATCH] set gtk3 as default dialog style
+
+---
+ src/qt5ct/appearancepage.cpp | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/qt5ct/appearancepage.cpp b/src/qt5ct/appearancepage.cpp
+index b96a0ac..c47f7f2 100644
+--- a/src/qt5ct/appearancepage.cpp
++++ b/src/qt5ct/appearancepage.cpp
+@@ -48,6 +48,7 @@ AppearancePage::AppearancePage(QWidget *parent) :
  {
      m_ui->setupUi(this);
      QStringList keys = QStyleFactory::keys();
@@ -9,8 +19,8 @@ diff -up qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3 qt5ct-0.37-gtk3/src/q
      keys.removeAll("qt5ct-style"); //hide qt5ct proxy style
      m_ui->styleComboBox->addItems(keys);
  
-@@ -86,10 +87,10 @@ AppearancePage::AppearancePage(QWidget *
- #else
+@@ -80,10 +81,10 @@ AppearancePage::AppearancePage(QWidget *parent) :
+ 
      keys = QPlatformThemeFactory::keys();
      m_ui->dialogComboBox->addItem(tr("Default"), "default");
 -    if(keys.contains("gtk2") || keys.contains("qt5gtk2"))
@@ -22,4 +32,7 @@ diff -up qt5ct-0.37-gtk3/src/qt5ct/appearancepage.cpp.gtk3 qt5ct-0.37-gtk3/src/q
 +        m_ui->dialogComboBox->addItem("GTK2", "gtk2");
      if(keys.contains("kde"))
          m_ui->dialogComboBox->addItem("KDE", "kde");
- #endif
+     if (keys.contains("xdgdesktopportal"))
+-- 
+2.39.2
+

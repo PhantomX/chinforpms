@@ -1,6 +1,6 @@
 Name:           qt5ct
-Version:        1.5
-Release:        106%{?dist}
+Version:        1.7
+Release:        100%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -9,7 +9,7 @@ Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.
 Source1:        README.gtk3
 Source2:        60-%{name}.sh
 
-Patch0:         %{name}-gtk3-dialogs.patch
+Patch0:         0001-set-gtk3-as-default-dialog-style.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -55,6 +55,7 @@ popd
 pushd %{name}-%{version}-gtk3
 %{qmake_qt5}
 
+ln -sf ../../../%{name}-%{version}/src/qt5ct-common/libqt5ct-common.so src/qt5ct-common/
 %make_build sub-src-qt5ct-all
 popd
 
@@ -63,6 +64,8 @@ make install -C %{name}-%{version}-gtk3/src/qt5ct INSTALL_ROOT=%{buildroot}
 mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
 
 make install -C %{name}-%{version} INSTALL_ROOT=%{buildroot}
+
+rm -fv %{buildroot}%{_libdir}/lib%{name}-common.so
 
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
 install -pm0755 60-%{name}.sh \
@@ -90,6 +93,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %license COPYING
 %doc AUTHORS ChangeLog README README.gtk3
 %{_bindir}/%{name}*
+%{_libdir}/lib%{name}-common.so.*
 %{_datadir}/applications/%{name}*.desktop
 %dir %{_datadir}/%{name}/
 %{_datadir}/%{name}/colors/
@@ -100,6 +104,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Tue Feb 28 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7-100
+- 1.7
+- lib%%{name}-common.so.*
+
 * Wed Jan 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1.5-106
 - Rebuild (qt5)
 
