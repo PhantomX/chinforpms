@@ -21,9 +21,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 3a68b7ac0d6ba46b40fea81a9619e497b3772eaf
+%global commit 0178b20983aa6b9930d0b5fb69bd1837325ada02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230213
+%global date 20230301
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -93,8 +93,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.26
-Release:        6%{?gver}%{?dist}
+Version:        0.0.27
+Release:        1%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -190,6 +190,7 @@ BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  pkgconfig(tinfo)
@@ -241,12 +242,26 @@ written in C++.
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-tar -xf %{S:10} -C 3rdparty/SPIRV/SPIRV-Tools --strip-components 1
-tar -xf %{S:11} -C 3rdparty/SoundTouch/soundtouch --strip-components 1
-tar -xf %{S:12} -C 3rdparty/asmjit/asmjit --strip-components 1
-tar -xf %{S:13} -C 3rdparty/glslang/glslang --strip-components 1
-tar -xf %{S:15} -C 3rdparty/wolfssl/wolfssl --strip-components 1
-tar -xf %{S:17} -C 3rdparty/SPIRV/SPIRV-Headers --strip-components 1
+pushd 3rdparty
+rm -rf \
+  7z/src cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
+  MoltenVK OpenAL/libs pugixml XAudio2Redist xxHash
+
+tar -xf %{S:10} -C SPIRV/SPIRV-Tools --strip-components 1
+tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
+tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
+tar -xf %{S:13} -C glslang/glslang --strip-components 1
+tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
+tar -xf %{S:17} -C SPIRV/SPIRV-Headers --strip-components 1
+
+cp -p stblib/LICENSE LICENSE.stb
+cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
+cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
+cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
+cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
+cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
+popd
+
 %if %{with llvm_submod}
 tar -xf %{S:18} -C llvm --strip-components 1
 
@@ -280,33 +295,32 @@ sed \
   -i linux_*.sh
 
 popd
+%else
+rm -rf 3rdparty/ffmpeg
 %endif
 
 %if %{without syshidapi}
 tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
 cp -p 3rdparty/hidapi/hidapi/LICENSE.txt 3rdparty/LICENSE.hidapi
 sed -e 's|hidapi_FOUND|hidapi_DISABLED|g' -i 3rdparty/CMakeLists.txt
+%else
+rm -rf 3rdparty/hidapi
 %endif
 
 %if %{without sysflatbuffers}
 tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
 cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
+%else
+rm -rf 3rdparty/flatbuffers
 %endif
 
 %if %{without sysyamlcpp}
 tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
 cp -p 3rdparty/yaml-cpp/yaml-cpp/LICENSE 3rdparty/LICENSE.yaml-cpp
 sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
+%else
+rm -rf 3rdparty/yaml-cpp
 %endif
-
-pushd 3rdparty
-cp -p stblib/LICENSE LICENSE.stb
-cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
-cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
-cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
-cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
-cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
-popd
 
 %if 0%{?with_snapshot}
   sed \
@@ -425,6 +439,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Mar 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-1.20230301git0178b20
+- 0.0.27
+- BR: miniupnpc
+
 * Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.26-1.20230107gitdf718bc
 - 0.0.26
 

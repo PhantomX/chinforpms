@@ -20,6 +20,7 @@
 
 %define arches_systemtap_64bit  %{arches_64bit}
 %define arches_dmidecode        %{arches_x86}
+%define arches_dmidecode        %{arches_x86}
 %if 0%{?fedora} >= 36
 %define arches_xen              x86_64 aarch64
 %endif
@@ -228,7 +229,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.0.0
+Version: 9.1.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -277,7 +278,6 @@ BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
-BuildRequires: systemd-rpm-macros
 %{?sysusers_requires_compat}
 %if %{with_libxl}
 BuildRequires: xen-devel
@@ -296,8 +296,8 @@ BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
 BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
-BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: systemd-rpm-macros
+BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
 %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
@@ -437,19 +437,25 @@ Summary: Server side daemon and supporting files for libvirt library
 
 # The client side, i.e. shared libs are in a subpackage
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+
+%description daemon
+Server side daemon required to manage the virtualization capabilities
+of recent versions of Linux. Requires a hypervisor specific sub-RPM
+for specific drivers.
+
+%package daemon-common
+Summary: Files and utilities used by daemons
+Requires: libvirt-libs = %{version}-%{release}
 # The libvirt-guests.sh script requires virsh from libvirt-client subpackage,
 # but not every deployment wants to use libvirt-guests service. Using
 # Recommends here will install libvirt-client by default (if available), but
 # RPM won't complain if the package is unavailable, masked, or removed later.
 Recommends: libvirt-client = %{version}-%{release}
-# netcat is needed on the server side so that clients that have
-# libvirt < 6.9.0 can connect, but newer versions will prefer
-# virt-ssh-helper. Making this a Recommends means that it gets
-# installed by default, but can still be removed if compatibility
-# with old clients is not required
-Recommends: /usr/bin/nc
-# for modprobe of pci devices
-Requires: module-init-tools
 # for /sbin/ip
 Requires: iproute
 # for /sbin/tc
@@ -461,9 +467,6 @@ Requires: dmidecode
 %endif
 # For service management
 Requires(post): /usr/bin/systemctl
-%if %{with_numad}
-Requires: numad
-%endif
 # libvirtd depends on 'messagebus' service
 Requires: dbus
 # For uid creation during pre
@@ -480,15 +483,50 @@ Obsoletes: libvirt-admin < 7.3.0
 Provides: libvirt-admin = %{version}-%{release}
 Obsoletes: libvirt-bash-completion < 7.3.0
 
-%description daemon
-Server side daemon required to manage the virtualization capabilities
-of recent versions of Linux. Requires a hypervisor specific sub-RPM
-for specific drivers.
+%description daemon-common
+Miscellaneous files and utilities used by other libvirt daemons
+
+%package daemon-lock
+Summary: Server side daemon for managing locks
+Requires: libvirt-libs = %{version}-%{release}
+
+%description daemon-lock
+Server side daemon used to manage locks held against virtual machine
+resources
+
+%package daemon-plugin-lockd
+Summary: lockd client plugin for virtlockd
+Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+
+%description daemon-plugin-lockd
+A client-side plugin that implements disk locking using POSIX fcntl advisory
+locks via communication with the virtlockd daemon
+
+%package daemon-log
+Summary: Server side daemon for managing logs
+Requires: libvirt-libs = %{version}-%{release}
+
+%description daemon-log
+Server side daemon used to manage logs from virtual machine consoles
+
+%package daemon-proxy
+Summary: Server side daemon providing libvirtd proxy
+Requires: libvirt-libs = %{version}-%{release}
+# netcat is needed on the server side so that clients that have
+# libvirt < 6.9.0 can connect, but newer versions will prefer
+# virt-ssh-helper. Making this a Recommends means that it gets
+# installed by default, but can still be removed if compatibility
+# with old clients is not required
+Recommends: /usr/bin/nc
+
+%description daemon-proxy
+Server side daemon providing functionality previously provided by
+the monolithic libvirtd
 
 %package daemon-config-network
 Summary: Default configuration files for the libvirtd daemon
 
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description daemon-config-network
@@ -497,7 +535,6 @@ Default configuration files for setting up NAT based networking
 %package daemon-config-nwfilter
 Summary: Network filter configuration files for the libvirtd daemon
 
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 
 %description daemon-config-nwfilter
@@ -505,7 +542,7 @@ Network filter configuration files for cleaning guest traffic
 
 %package daemon-driver-network
 Summary: Network driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
 Requires: iptables
@@ -517,7 +554,7 @@ bridge capabilities.
 
 %package daemon-driver-nwfilter
 Summary: Nwfilter driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: iptables
 Requires: ebtables
@@ -529,12 +566,14 @@ iptables and ip6tables capabilities
 
 %package daemon-driver-nodedev
 Summary: Nodedev driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # needed for device enumeration
 Requires: systemd >= 185
 # For managing persistent mediated devices
 Requires: mdevctl
+# for modprobe of pci devices
+Requires: module-init-tools
 
 %description daemon-driver-nodedev
 The nodedev driver plugin for the libvirtd daemon, providing
@@ -543,7 +582,7 @@ capabilities.
 
 %package daemon-driver-interface
 Summary: Interface driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 %if %{with_netcf}
 Requires: netcf-libs >= 0.2.2
@@ -555,7 +594,7 @@ an implementation of the host network interface APIs.
 
 %package daemon-driver-secret
 Summary: Secret driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-secret
@@ -564,7 +603,7 @@ an implementation of the secret key APIs.
 
 %package daemon-driver-storage-core
 Summary: Storage driver plugin including base backends for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: nfs-utils
 # For mkfs
@@ -715,7 +754,8 @@ parted and more.
 %if %{with_qemu}
 %package daemon-driver-qemu
 Summary: QEMU driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: /usr/bin/qemu-img
 # For image compression
@@ -725,6 +765,9 @@ Requires: lzop
 Requires: xz
 Requires: systemd-container
 Requires: swtpm-tools
+%if %{with_numad}
+Requires: numad
+%endif
 %if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
 Recommends: passt
 %endif
@@ -738,11 +781,16 @@ QEMU
 %if %{with_lxc}
 %package daemon-driver-lxc
 Summary: LXC driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 # There really is a hard cross-driver dependency here
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: systemd-container
+# for modprobe of nbd driver
+Requires: module-init-tools
+%if %{with_numad}
+Requires: numad
+%endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
@@ -753,7 +801,7 @@ the Linux kernel
 %if %{with_vbox}
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 
 %description daemon-driver-vbox
@@ -765,7 +813,7 @@ VirtualBox
 %if %{with_libxl}
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
-Requires: libvirt-daemon = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Obsoletes: libvirt-daemon-driver-xen < 4.3.0
 
@@ -779,7 +827,15 @@ Libxl
 %package daemon-qemu
 Summary: Server side daemon & driver required to run QEMU guests
 
+%if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+%else
 Requires: libvirt-daemon = %{version}-%{release}
+%endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -798,7 +854,15 @@ capabilities of the QEMU TCG emulators
 %package daemon-kvm
 Summary: Server side daemon & driver required to run KVM guests
 
+%if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-log = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+%else
 Requires: libvirt-daemon = %{version}-%{release}
+%endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -817,7 +881,12 @@ capabilities of the KVM hypervisor
 %package daemon-lxc
 Summary: Server side daemon & driver required to run LXC guests
 
+%if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+%else
 Requires: libvirt-daemon = %{version}-%{release}
+%endif
 Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -835,7 +904,14 @@ capabilities of LXC
 %package daemon-xen
 Summary: Server side daemon & driver required to run XEN guests
 
+%if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-lock = %{version}-%{release}
+Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+%else
 Requires: libvirt-daemon = %{version}-%{release}
+%endif
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -854,7 +930,12 @@ capabilities of XEN
 %package daemon-vbox
 Summary: Server side daemon & driver required to run VirtualBox guests
 
+%if %{with_modular_daemons}
+Requires: libvirt-daemon-common = %{version}-%{release}
+Requires: libvirt-daemon-proxy = %{version}-%{release}
+%else
 Requires: libvirt-daemon = %{version}-%{release}
+%endif
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -885,6 +966,8 @@ capabilities of recent versions of Linux (and other OSes).
 Summary: Additional client side utilities for QEMU
 Requires: libvirt-libs = %{version}-%{release}
 Requires: python3-libvirt >= 3.7.0
+Requires: python3-cryptography
+Requires: python3-lxml
 
 %description client-qemu
 The additional client binaries are used to interact
@@ -931,15 +1014,16 @@ Requires: pkgconfig
 Include header files & development libraries for the libvirt C library.
 
 %if %{with_sanlock}
-%package lock-sanlock
+%package daemon-plugin-sanlock
 Summary: Sanlock lock manager plugin for QEMU driver
 Requires: sanlock >= 2.4
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
-Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
+Obsoletes: libvirt-lock-sanlock < 9.1.0
+Provides: libvirt-lock-sanlock = %{version}-%{release}
 
-%description lock-sanlock
+%description daemon-plugin-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
 driver
 %endif
@@ -972,7 +1056,6 @@ MinGW Windows libvirt virtualization library.
 %endif
 
 %prep
-
 %autosetup -S git_am
 
 %build
@@ -1126,7 +1209,6 @@ exit 1
 %define who   %{?packager}%{!?packager:Unknown}
 %define arg_packager -Dpackager="%{who}, %{when}, %{where}"
 %define arg_packager_version -Dpackager_version="%{release}"
-
 %define arg_selinux_mount -Dselinux_mount="/sys/fs/selinux"
 
 # place macros above and build commands below this comment
@@ -1413,43 +1495,19 @@ fi \
 %define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
 
 %pre daemon
-%libvirt_sysconfig_pre libvirtd virtproxyd virtlogd virtlockd libvirt-guests
-# 'libvirt' group is just to allow password-less polkit access to
-# libvirtd. The uid number is irrelevant, so we use dynamic allocation
-# described at the above link.
-%sysusers_create_compat %{SOURCE1}
-exit 0
+%libvirt_sysconfig_pre libvirtd
 
 %post daemon
-%libvirt_daemon_systemd_post_priv virtlogd
-%libvirt_daemon_systemd_post_priv virtlockd
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post_inet virtproxyd
-%else
+%if ! %{with_modular_daemons}
 %libvirt_daemon_systemd_post_inet libvirtd
 %endif
-
-%systemd_post libvirt-guests.service
-
 %libvirt_daemon_schedule_restart libvirtd
 
 %preun daemon
-%systemd_preun libvirt-guests.service
-
 %libvirt_daemon_systemd_preun_inet libvirtd
-%libvirt_daemon_systemd_preun_inet virtproxyd
-%libvirt_daemon_systemd_preun_priv virtlogd
-%libvirt_daemon_systemd_preun_priv virtlockd
-
-%postun daemon
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlockd.service virtlogd.service >/dev/null 2>&1 || :
-fi
-%systemd_postun libvirt-guests.service
 
 %posttrans daemon
-%libvirt_sysconfig_posttrans libvirtd virtproxyd virtlogd virtlockd libvirt-guests
+%libvirt_sysconfig_posttrans libvirtd
 if test %libvirt_daemon_needs_restart libvirtd
 then
     # See if user has previously modified their install to
@@ -1484,6 +1542,76 @@ then
 fi
 
 %libvirt_daemon_finish_restart libvirtd
+
+%pre daemon-common
+%libvirt_sysconfig_pre libvirt-guests
+# 'libvirt' group is just to allow password-less polkit access to libvirt
+# daemons. The uid number is irrelevant, so we use dynamic allocation.
+%sysusers_create_compat %{SOURCE1}
+exit 0
+
+%post daemon-common
+%systemd_post libvirt-guests.service
+
+%preun daemon-common
+%systemd_preun libvirt-guests.service
+
+%postun daemon-common
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+%systemd_postun libvirt-guests.service
+
+%posttrans daemon-common
+%libvirt_sysconfig_posttrans libvirt-guests
+
+%pre daemon-lock
+%libvirt_sysconfig_pre virtlockd
+
+%post daemon-lock
+%libvirt_daemon_systemd_post_priv virtlockd
+
+%preun daemon-lock
+%libvirt_daemon_systemd_preun_priv virtlockd
+
+%postun daemon-lock
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
+fi
+
+%posttrans daemon-lock
+%libvirt_sysconfig_posttrans virtlockd
+
+%pre daemon-log
+%libvirt_sysconfig_pre virtlogd
+
+%post daemon-log
+%libvirt_daemon_systemd_post_priv virtlogd
+
+%preun daemon-log
+%libvirt_daemon_systemd_preun_priv virtlogd
+
+%postun daemon-log
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
+fi
+
+%posttrans daemon-log
+%libvirt_sysconfig_posttrans virtlogd
+
+%pre daemon-proxy
+%libvirt_sysconfig_pre virtproxyd
+
+%post daemon-proxy
+%if %{with_modular_daemons}
+%libvirt_daemon_systemd_post_inet virtproxyd
+%endif
+
+%preun daemon-proxy
+%libvirt_daemon_systemd_preun_inet virtproxyd
+
+%posttrans daemon-proxy
+%libvirt_sysconfig_posttrans virtproxyd
 
 %pre daemon-driver-network
 %libvirt_sysconfig_pre virtnetworkd
@@ -1742,35 +1870,26 @@ exit 0
 %doc libvirt-docs/*
 
 %files daemon
-## chinforpms changes
-%{_sysusersdir}/libvirt.conf
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirtd.socket
 %{_unitdir}/libvirtd-ro.socket
 %{_unitdir}/libvirtd-admin.socket
 %{_unitdir}/libvirtd-tcp.socket
 %{_unitdir}/libvirtd-tls.socket
-%{_unitdir}/virtproxyd.service
-%{_unitdir}/virtproxyd.socket
-%{_unitdir}/virtproxyd-ro.socket
-%{_unitdir}/virtproxyd-admin.socket
-%{_unitdir}/virtproxyd-tcp.socket
-%{_unitdir}/virtproxyd-tls.socket
-%{_unitdir}/virt-guest-shutdown.target
-%{_unitdir}/virtlogd.service
-%{_unitdir}/virtlogd.socket
-%{_unitdir}/virtlogd-admin.socket
-%{_unitdir}/virtlockd.service
-%{_unitdir}/virtlockd.socket
-%{_unitdir}/virtlockd-admin.socket
-%{_unitdir}/libvirt-guests.service
 %config(noreplace) %{_sysconfdir}/libvirt/libvirtd.conf
-%config(noreplace) %{_sysconfdir}/libvirt/virtproxyd.conf
-%config(noreplace) %{_sysconfdir}/libvirt/virtlogd.conf
-%config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
-%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-libvirtd.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/libvirtd
+%{_datadir}/augeas/lenses/libvirtd.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
+%attr(0755, root, root) %{_sbindir}/libvirtd
+%{_mandir}/man8/libvirtd.8*
+
+%files daemon-common
+## chinforpms changes
+%{_sysusersdir}/libvirt.conf
+%{_unitdir}/virt-guest-shutdown.target
+%{_unitdir}/libvirt-guests.service
+%config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
 %dir %{_datadir}/libvirt/
 %ghost %dir %{_rundir}/libvirt/
 %ghost %dir %{_rundir}/libvirt/common/
@@ -1781,44 +1900,63 @@ exit 0
 %dir %attr(0711, root, root) %{_localstatedir}/cache/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
-%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
-%attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
-%{_datadir}/augeas/lenses/libvirtd.aug
-%{_datadir}/augeas/lenses/tests/test_libvirtd.aug
-%{_datadir}/augeas/lenses/virtlogd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlogd.aug
-%{_datadir}/augeas/lenses/virtlockd.aug
-%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
-%{_datadir}/augeas/lenses/virtproxyd.aug
-%{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
-%{_datadir}/augeas/lenses/libvirt_lockd.aug
-%if %{with_qemu}
-%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
-%endif
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 %attr(0755, root, root) %{_bindir}/virt-ssh-helper
-%attr(0755, root, root) %{_sbindir}/libvirtd
-%attr(0755, root, root) %{_sbindir}/virtproxyd
-%attr(0755, root, root) %{_sbindir}/virtlogd
-%attr(0755, root, root) %{_sbindir}/virtlockd
 %attr(0755, root, root) %{_libexecdir}/libvirt-guests.sh
 %{_mandir}/man1/virt-admin.1*
 %{_mandir}/man1/virt-host-validate.1*
 %{_mandir}/man8/virt-ssh-helper.8*
 %{_mandir}/man8/libvirt-guests.8*
-%{_mandir}/man8/libvirtd.8*
-%{_mandir}/man8/virtlogd.8*
-%{_mandir}/man8/virtlockd.8*
-%{_mandir}/man8/virtproxyd.8*
 %{_bindir}/virt-host-validate
 %{_bindir}/virt-admin
 %{_datadir}/bash-completion/completions/virt-admin
+
+%files daemon-lock
+%{_unitdir}/virtlockd.service
+%{_unitdir}/virtlockd.socket
+%{_unitdir}/virtlockd-admin.socket
+%config(noreplace) %{_sysconfdir}/libvirt/virtlockd.conf
+%{_datadir}/augeas/lenses/virtlockd.aug
+%{_datadir}/augeas/lenses/tests/test_virtlockd.aug
+%{_datadir}/augeas/lenses/libvirt_lockd.aug
+%if %{with_qemu}
+%{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
+%endif
+%attr(0755, root, root) %{_sbindir}/virtlockd
+%{_mandir}/man8/virtlockd.8*
+
+%files daemon-plugin-lockd
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
+%attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
+
+%files daemon-log
+%{_unitdir}/virtlogd.service
+%{_unitdir}/virtlogd.socket
+%{_unitdir}/virtlogd-admin.socket
+%config(noreplace) %{_sysconfdir}/libvirt/virtlogd.conf
+%{_datadir}/augeas/lenses/virtlogd.aug
+%{_datadir}/augeas/lenses/tests/test_virtlogd.aug
+%attr(0755, root, root) %{_sbindir}/virtlogd
+%{_mandir}/man8/virtlogd.8*
+
+%files daemon-proxy
+%{_unitdir}/virtproxyd.service
+%{_unitdir}/virtproxyd.socket
+%{_unitdir}/virtproxyd-ro.socket
+%{_unitdir}/virtproxyd-admin.socket
+%{_unitdir}/virtproxyd-tcp.socket
+%{_unitdir}/virtproxyd-tls.socket
+%config(noreplace) %{_sysconfdir}/libvirt/virtproxyd.conf
+%{_datadir}/augeas/lenses/virtproxyd.aug
+%{_datadir}/augeas/lenses/tests/test_virtproxyd.aug
+%attr(0755, root, root) %{_sbindir}/virtproxyd
+%{_mandir}/man8/virtproxyd.8*
 
 %files daemon-config-network
 %dir %{_datadir}/libvirt/networks/
@@ -2102,13 +2240,14 @@ exit 0
 %endif
 
 %if %{with_sanlock}
-%files lock-sanlock
-    %if %{with_qemu}
+%files daemon-plugin-sanlock
+%if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-sanlock.conf
-    %endif
-    %if %{with_libxl}
+%endif
+%if %{with_libxl}
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-sanlock.conf
-    %endif
+%endif
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
@@ -2210,7 +2349,7 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
 
 %if %{with_mingw}
-%files -n mingw32-libvirt
+%files -n mingw32-libvirt -f mingw32-libvirt.lang
 %dir %{mingw32_sysconfdir}/libvirt/
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt-admin.conf
@@ -2241,7 +2380,6 @@ exit 0
 %{mingw32_datadir}/libvirt/api/libvirt-admin-api.xml
 %{mingw32_datadir}/libvirt/cpu_map/*.xml
 %{mingw32_datadir}/libvirt/test-screenshot.png
-%{mingw32_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 %dir %{mingw32_includedir}/libvirt
 %{mingw32_includedir}/libvirt/libvirt.h
 %{mingw32_includedir}/libvirt/libvirt-common.h
@@ -2268,8 +2406,7 @@ exit 0
 %{mingw32_mandir}/man1/virt-pki-validate.1*
 %{mingw32_mandir}/man7/virkey*.7*
 
-
-%files -n mingw64-libvirt
+%files -n mingw64-libvirt -f mingw64-libvirt.lang
 %dir %{mingw64_sysconfdir}/libvirt/
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt.conf
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt-admin.conf
@@ -2300,7 +2437,6 @@ exit 0
 %{mingw64_datadir}/libvirt/api/libvirt-admin-api.xml
 %{mingw64_datadir}/libvirt/cpu_map/*.xml
 %{mingw64_datadir}/libvirt/test-screenshot.png
-%{mingw64_datadir}/locale/*/LC_MESSAGES/libvirt.mo
 %dir %{mingw64_includedir}/libvirt
 %{mingw64_includedir}/libvirt/libvirt.h
 %{mingw64_includedir}/libvirt/libvirt-common.h
@@ -2330,6 +2466,9 @@ exit 0
 
 
 %changelog
+* Wed Mar 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.1.0-100
+- 9.1.0
+
 * Mon Jan 16 2023 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
 - 9.0.0
 - Upstream sync

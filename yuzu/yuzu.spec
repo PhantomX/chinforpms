@@ -1,4 +1,4 @@
-# Disable LTO. Crash.
+# Selective LTO.
 %global _lto_cflags %{nil}
 %undefine _hardened_build
 %undefine _cmake_shared_libs
@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit fa3f443accc819847764d34583bac7da95e7a53e
+%global commit 2410bb5f17d50893c44a0f7226e331342eb07384
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230213
+%global date 20230301
 
 %bcond_without ea
 %if %{without ea}
@@ -40,7 +40,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 305a7abcb9b4e9e349843c6d563212e6c1bbbf21
+%global commit6 6d963fbe8d415399d65e94db7910bbd22fe3741c
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        3396
+Version:        3429
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -290,6 +290,7 @@ cp -f %{S:20} dist/compatibility_list/
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
+  -DYUZU_ENABLE_LTO:BOOL=ON \
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
