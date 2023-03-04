@@ -172,7 +172,7 @@ Summary: The Linux kernel
 # For non-released -rc kernels, this will be appended after the rcX and
 # gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
 #
-%global baserelease 501
+%global baserelease 500
 %global fedora_build %{baserelease}
 
 %global distro_build 200
@@ -188,20 +188,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 1
+%define stable_update 2
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e42950276d2da282adc86a19b7294e94ca232aa4
+%global pfcommit 727a3d3ead614f4aa9baf9acb1f8b0233cc97afc
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash ce8695fdbd600eaa8a2e8b8830f791c9
+%global pfcoprhash 040fcf344f4ef89ad68291353f2f41ba
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -783,7 +783,11 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
+%if 0%{?fedora} > 37
+# The UKI code was introduced in Fedora 38 and is not needed by
+# earlier versions.  This wrapper can be removed in Fedora 41.
 BuildRequires: systemd-boot-unsigned
+%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
@@ -2937,11 +2941,7 @@ fi\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}modules-core}\
-%if %{efiuki}\
 rm -f /lib/modules/%{KVERREL}%{?1:+%{1}}/modules.*\
-%else\
-/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%endif\
 %{nil}
 
 # This macro defines a %%posttrans script for a kernel package.
@@ -3209,6 +3209,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-500.chinfo
+- 6.2.2 - pf3
+
 * Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-501.chinfo
 - 6.2.1 - pf2
 

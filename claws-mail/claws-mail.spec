@@ -1,6 +1,6 @@
-%global commit 8d176a20c6424d9c5c97e6866ef80795dab0909a
+%global commit e2e7f63c6a0a762dd8d823eb29ad850e665317ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230208
+%global date 20230224
 %global with_snapshot 1
 
 %global with_python  0
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPLv3+
@@ -63,30 +63,9 @@ Provides:       %{name}-plugins-python = %{?epoch:%{epoch}:}%{version}-%{release
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  flex, bison
-BuildRequires:  glib2-devel >= 2.36.0
-BuildRequires:  gtk3-devel >= 3.24.0
-BuildRequires:  gnutls-devel
-BuildRequires:  libgcrypt-devel
-BuildRequires:  openldap-devel >= 2.0.7
-BuildRequires:  enchant-devel
-%if !0%{?rhel}
-%ifnarch s390 s390x
-BuildRequires:  pilot-link-devel
-%endif
-%endif
-BuildRequires:  bzip2-devel
-BuildRequires:  gpgme-devel >= 1.0.1
-BuildRequires:  desktop-file-utils startup-notification-devel
+BuildRequires:  desktop-file-utils
 BuildRequires:  pkgconfig
 BuildRequires:  gettext gettext-devel
-BuildRequires:  libetpan-devel >= 1.4.1
-%if !0%{?rhel}
-BuildRequires:  compface-devel
-%endif
-BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
-BuildRequires:  libSM-devel
-BuildRequires:  NetworkManager-libnm-devel
-BuildRequires:  dbus-glib-devel
 %if 0%{?with_autotools}
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -97,29 +76,54 @@ BuildRequires:  make
 BuildRequires:  docbook-utils docbook-utils-pdf
 %endif
 
-BuildRequires:  curl-devel
-BuildRequires:  libxml2-devel expat-devel
-BuildRequires:  libidn-devel
-BuildRequires:  libarchive-devel
-BuildRequires:  libytnef-devel
-BuildRequires:  ghostscript
-BuildRequires:  gumbo-parser-devel
-BuildRequires:  poppler-glib-devel
-%if 0%{with_fancy}
-BuildRequires:  webkit2gtk3-devel
-BuildRequires:  libsoup-devel
+%if !0%{?rhel}
+BuildRequires:  compface-devel
 %endif
+BuildRequires:  pkgconfig(cairo) >= 1.0.0
+BuildRequires:  pkgconfig(dbus-1) >= 0.60
+BuildRequires:  pkgconfig(dbus-glib-1) >= 0.60
+BuildRequires:  pkgconfig(enchant-2) >= 2.0.0
+BuildRequires:  pkgconfig(expat)
+BuildRequires:  pkgconfig(glib-2.0) >= 2.36.0
+BuildRequires:  pkgconfig(gnutls)
+BuildRequires:  pkgconfig(gpg-error)
+BuildRequires:  pkgconfig(gpgme) >= 1.0.1
+BuildRequires:  pkgconfig(gtk+-3.0) >= 3.24.0
+BuildRequires:  pkgconfig(gumbo)
+BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(ldap) >= 2.0.7
+BuildRequires:  pkgconfig(libcanberra-gtk3) >= 0.6
+BuildRequires:  pkgconfig(libcurl)
+# actually 1.9.1 with TLS SNI patches, which are integrated into 1.9.2
+BuildRequires:  pkgconfig(libetpan) >= 1.9.2
+BuildRequires:  pkgconfig(libgcrypt)
+BuildRequires:  pkgconfig(libgdata) >= 0.17.2
+BuildRequires:  pkgconfig(libical) >= 2.0
+BuildRequires:  pkgconfig(libidn)
+BuildRequires:  pkgconfig(libnm)
 # fix #496149
-BuildRequires:  libnotify-devel
-%if 0%{?with_python}
-BuildRequires:  python3 python3-devel python3-gobject-devel
+BuildRequires:  pkgconfig(libnotify)
+BuildRequires:  pkgconfig(librsvg-2.0) >= 2.39.0
+BuildRequires:  pkgconfig(libstartup-notification-1.0) >= 0.5
+BuildRequires:  pkgconfig(libxml-2.0)
+BuildRequires:  pkgconfig(libytnef)
+%if !0%{?rhel}
+%ifnarch s390 s390x
+BuildRequires:  pkgconfig(pilot-link)
 %endif
-BuildRequires:  libcanberra-devel
-# this is an optional subpackage not pulled in by libcanberra-devel
-BuildRequires:  libcanberra-gtk3
-BuildRequires:  libgdata-devel >= 0.6.4
-BuildRequires:  libical-devel
-BuildRequires:  librsvg2-devel
+%endif
+BuildRequires:  pkgconfig(poppler-glib) >= 0.12.0
+BuildRequires:  pkgconfig(sm)
+%if 0%{with_fancy}
+BuildRequires:  pkgconfig(webkit2gtk-4.1)
+%endif
+BuildRequires:  perl-devel perl-generators perl(ExtUtils::Embed)
+%if 0%{?with_python}
+BuildRequires:  python3 python3-devel pkgconfig(pygobject-3.0)
+%endif
+
+# for TLS SNI capable libetpan
+Requires: libetpan%{?_isa} >= 1.9.2
 
 # provide plugin api version (see /usr/include/claws-mail/common/version.h)
 Provides:       claws-mail(plugin-api)%{?_isa} = %pluginapi
@@ -503,7 +507,6 @@ EOF
 %if !0%{?with_python}
            --disable-python-plugin \
 %endif
-           --enable-appdata \
 %{nil}
 
 # guard for pluginapi
@@ -574,7 +577,6 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %{_mandir}/man1/*
 %{_datadir}/applications/*
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-#%%{_metainfodir}/claws-mail.appdata.xml
 
 %files devel
 %{_includedir}/claws-mail/
@@ -586,28 +588,18 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 %files plugins-acpi-notifier
 %{_libdir}/claws-mail/plugins/acpi_notifier*
-#%%{_metainfodir}/claws-mail-acpi_notifier.metainfo.xml
-
 
 %files plugins-archive
 %{_libdir}/claws-mail/plugins/archive*
-#%%{_metainfodir}/claws-mail-archive.metainfo.xml
-
 
 %files plugins-attachwarner
 %{_libdir}/claws-mail/plugins/attachwarner*
-#%%{_metainfodir}/claws-mail-attachwarner.metainfo.xml
-
 
 %files plugins-address-keeper
 %{_libdir}/claws-mail/plugins/address_keeper*
-#%%{_metainfodir}/claws-mail-address_keeper.metainfo.xml
-
 
 %files plugins-att-remover
 %{_libdir}/claws-mail/plugins/att_remover*
-#%%{_metainfodir}/claws-mail-att_remover.metainfo.xml
-
 
 %files plugins-bogofilter
 %{_libdir}/claws-mail/plugins/bogofilter.so
@@ -617,124 +609,80 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %if !0%{?rhel}
 %files plugins-bsfilter
 %{_libdir}/claws-mail/plugins/bsfilter*
-#%%{_metainfodir}/claws-mail-bsfilter.metainfo.xml
 %endif
-
 
 %files plugins-clamd
 %{_libdir}/claws-mail/plugins/clamd*
-#%%{_metainfodir}/claws-mail-clamd.metainfo.xml
-
 
 %files plugins-dillo
 %{_libdir}/claws-mail/plugins/dillo*
-#%%{_datadir}/_metainfodir/claws-mail-dillo.metainfo.xml
-
 
 %files plugins-litehtml
 %{_libdir}/claws-mail/plugins/litehtml*
-#%%{_datadir}/appdata/claws-mail-litehtml.metainfo.xml
-
 
 %if 0%{with_fancy}
 %files plugins-fancy
 %{_libdir}/claws-mail/plugins/fancy*
 %{_libdir}/claws-mail/web_extensions/fancy*
-#%%{_metainfodir}/claws-mail-fancy.metainfo.xml
 %endif
-
 
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
-#%%{_metainfodir}/claws-mail-fetchinfo.metainfo.xml
-
 
 %files plugins-gdata
 %{_libdir}/claws-mail/plugins/gdata*
-#%%{_metainfodir}/claws-mail-gdata.metainfo.xml
-
 
 %files plugins-keyword-warner
 %{_libdir}/claws-mail/plugins/keyword_warner*
-%dnl %{_metainfodir}/claws-mail-keyword-warner.metainfo.xml
-
 
 %files plugins-mailmbox
 %{_libdir}/claws-mail/plugins/mailmbox*
-#%%{_metainfodir}/claws-mail-mailmbox.metainfo.xml
-
 
 %files plugins-managesieve
 %{_libdir}/claws-mail/plugins/managesieve.so
 
-
 %files plugins-newmail
 %{_libdir}/claws-mail/plugins/newmail.so
-#%%{_metainfodir}/claws-mail-newmail.metainfo.xml
-
 
 %files plugins-notification
 %{_libdir}/claws-mail/plugins/notification.so
-#%%{_metainfodir}/claws-mail-notification.metainfo.xml
-
 
 %files plugins-pdf-viewer
 %{_libdir}/claws-mail/plugins/pdf_viewer.so
-#%%{_metainfodir}/claws-mail-pdf_viewer.metainfo.xml
-
 
 %files plugins-perl
 %{_libdir}/claws-mail/plugins/perl.so
-#%%{_metainfodir}/claws-mail-perl.metainfo.xml
-
 
 %files plugins-pgp
 %{_libdir}/claws-mail/plugins/pgp*.so
 %{_libdir}/claws-mail/plugins/pgp*.deps
-#%%{_metainfodir}/claws-mail-pgp*.metainfo.xml
-
 
 %if 0%{?with_python}
 %files plugins-python
 %{_libdir}/claws-mail/plugins/python*
-#%%{_metainfodir}/claws-mail-python.metainfo.xml
 %endif
-
 
 %files plugins-libravatar
 %{_libdir}/claws-mail/plugins/libravatar*
-#%%{_metainfodir}/claws-mail-libravatar.metainfo.xml
-
 
 %files plugins-rssyl
 %{_libdir}/claws-mail/plugins/rssyl*
-#%%{_metainfodir}/claws-mail-rssyl.metainfo.xml
-
 
 %files plugins-smime
 %{_libdir}/claws-mail/plugins/smime.so
 %{_libdir}/claws-mail/plugins/smime.deps
-#%%{_metainfodir}/claws-mail-smime.metainfo.xml
-
 
 %files plugins-spamassassin
 %{_libdir}/claws-mail/plugins/spamassassin.so
-#%%{_metainfodir}/claws-mail-spamassassin.metainfo.xml
-
 
 %files plugins-spam-report
 %{_libdir}/claws-mail/plugins/spamreport.so
-#%%{_metainfodir}/claws-mail-spam_report.metainfo.xml
-
 
 %files plugins-tnef
 %{_libdir}/claws-mail/plugins/tnef*
-#%%{_metainfodir}/claws-mail-tnef_parse.metainfo.xml
-
 
 %files plugins-vcalendar
 %{_libdir}/claws-mail/plugins/vcalendar*
-#%%{_metainfodir}/claws-mail-vcalendar.metainfo.xml
 
 
 %changelog

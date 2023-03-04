@@ -6,14 +6,13 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 2263dcad954742d7415defec956219fb111d38bf
+%global commit 1acf88510928bec61e85d507791bc89ca67d734f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230131
+%global date 20230302
 %global with_snapshot 1
 
 %bcond_with sysspirv
 %bcond_without sysvulkan
-%bcond_with dxvk_async
 
 %global commit5 0bcc624926a25a2a273d07877fd25a6ff5ba1cfb
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -39,12 +38,6 @@
 
 %global winedll dll%{?libext}
 
-%global sporif_id cef9106da692b6f5faa5a8194019b4f58de13e89
-%global sporif_url https://github.com/Sporif/dxvk-async/raw/%{sporif_id}
-%global asyncpatch -af418dc
-
-%global valve_url https://github.com/ValveSoftware/dxvk
-
 %global winecommonver 5.3
 
 %global pkgname dxvk
@@ -54,10 +47,11 @@
 %endif
 
 %global kg_url https://github.com/KhronosGroup
+%global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
 Version:        2.1
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -73,15 +67,7 @@ Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
-Patch100:       %{valve_url}/commit/01352d5441b3c27b20b4126243e1f83b230e8e7d.patch#/%{name}-valve-01352d5.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
-Patch102:       0001-util-disable-unmapping-for-some-games.patch
-
-%if %{with dxvk_async}
-Patch200:       %{sporif_url}/dxvk-async%{?asyncpatch}.patch#/%{name}-sporif-dxvk-async%{?asyncpatch}.patch
-Patch201:       0001-dxvk.conf-async-options.patch
-Source4:        %{sporif_url}/README.md#/README.async.md
-%endif
 
 %if %{without sysspirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
@@ -157,18 +143,7 @@ package or when debugging this package.
 
 
 %prep
-%if %{with dxvk_async}
-%setup -q -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}}
-%patch100 -p1
-%patch101 -p1
-
-%patch200 -p1
-%patch201 -p1
-
-cp %{S:4} README.async.md
-%else
 %autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
-%endif
 
 cp %{S:1} README.%{pkgname}
 
@@ -283,9 +258,6 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %files
 %license LICENSE LICENSE.*
 %doc README.chinforpms README.md README.dxvk dxvk.conf
-%if %{with dxvk_async}
-%doc README.async.md
-%endif
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
