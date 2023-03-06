@@ -13,7 +13,7 @@
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.8
+Version:        3.2.9
 Release:        100%{?gver}%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -102,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Sun Mar 05 2023 Phantom X <megaphantomx at hotmail dot com> - 3.2.9-100
+- 3.2.9
+
 * Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 3.2.8-100
 - 3.2.8
 

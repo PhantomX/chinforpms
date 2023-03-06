@@ -4,7 +4,7 @@
 
 %global with_tracker 0
 
-%global glib2_version 2.66.0
+%global glib2_version 2.72.0
 %global pango_version 1.50.0
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.8.3
+Version:        4.10.0
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -171,7 +171,6 @@ export CFLAGS+=' -fno-strict-aliasing -DG_DISABLE_CAST_CHECKS -DG_DISABLE_ASSERT
         -Dcolord=enabled \
         -Dgtk_doc=true \
         -Dman-pages=true \
-        -Dinstall-tests=false \
 %{nil}
 
 %meson_build
@@ -271,6 +270,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Sun Mar 05 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.0-100
+- 4.10.0
+
 * Thu Dec 22 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.3-100
 - 4.8.3
 
