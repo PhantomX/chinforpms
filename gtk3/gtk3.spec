@@ -23,7 +23,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.37
+%global classic_ver 3.24.37-2
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -35,7 +35,7 @@
 
 Name:           gtk3
 Version:        3.24.37
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          1
@@ -233,6 +233,7 @@ patch_command csd__clean-headerbar.patch
 patch_command csd__disabled-by-default.patch
 patch_command csd__server-side-shadow.patch
 patch_command fixes__labels-wrapping.patch
+patch_command fixes__wayland_dialogs_header_setting.patch
 patch_command other__mnemonics-delay.patch
 patch_command other__remove_dead_keys_underline.patch
 patch_command popovers__color-chooser.patch
@@ -409,6 +410,9 @@ gtk-query-immodules-3.0-%{__isa_bits} --update-cache &>/dev/null || :
 
 
 %changelog
+* Tue Mar 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.37-101
+- classic update
+
 * Fri Mar 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.37-100
 - 3.24.37
 

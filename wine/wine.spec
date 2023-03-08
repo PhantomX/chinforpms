@@ -1,6 +1,6 @@
-%global commit 3fb2a5d55e948670222170075f0054a2aabf8d7e
+%global commit 50f5f9af1c27c4380a7489596d20d8048f003365
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230224
+%global date 20230307
 %global with_snapshot 1
 
 # Compiling the preloader fails with hardening enabled
@@ -49,7 +49,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.240
+%global winevulkan 1.3.242
 
 %global wineFAudio 22.11
 %global winegsm 1.0.19
@@ -64,6 +64,7 @@
 %global winexml2 2.10.3
 %global winexslt 1.1.37
 %global winezlib 1.2.13
+%global winezydis 4.0.0
 
 %global _default_patch_fuzz 2
 
@@ -97,7 +98,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7b0d44f8873aa9eec58716057b36d8d060fc04c3
+%global wine_stagingver aa366375633c6c5f6e0f015d64f9b228d2ccf548
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -108,9 +109,9 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0b211231a12ec9356b5b314e9861ef3041c4999d
+%global tkg_id cb9ac3cac38560098c4ad9c2a592f173c858ad07
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 948dfb8dc7e1eb576449e5b59abbd589ca36099f
+%global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -121,7 +122,7 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%global childwindow 0
+%global childwindow 1
 # fastsync/winesync
 %global fastsync 1
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -151,8 +152,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.2
-Release:        101%{?gver}%{?dist}
+Version:        8.3
+Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -226,15 +227,9 @@ Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-stag
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-%dnl Patch1002:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
-Patch1002:       FS_bypass_compositor.patch
-Patch1003:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
-Patch1004:       %{tkg_url}/misc/steam/steam.patch#/%{name}-tkg-steam.patch
-Patch1005:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
-Patch1006:       %{tkg_url}/hotfixes/syscall_emu/protonify_stg_syscall_emu-009.mystagingpatch#/%{name}-tkg-protonify_stg_syscall_emu-009.patch
-Patch1007:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1008:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
-Patch1009:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+%dnl Patch1000:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
+Patch1000:       FS_bypass_compositor.patch
+Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
@@ -242,21 +237,24 @@ Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_po
 Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1024:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
-Patch1025:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1026:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
-Patch1027:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan.patch#/%{name}-tkg-proton-winevulkan.patch
-Patch1028:       %{tkg_url}/proton/proton-winevulkan/proton-winevulkan-nofshack.patch#/%{name}-tkg-proton-winevulkan-nofshack.patch
-Patch1029:       %{tkg_url}/hotfixes/syscall_emu/rdr2.patch#/%{name}-tkg-rdr2.patch
-Patch1030:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
-Patch1031:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1032:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
+Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
+Patch1025:       %{tkg_url}/misc/childwindow/OPWR-proton.patch#/%{name}-tkg-OPWR-proton.patch
+Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
+Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
+Patch1028:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
+Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
+Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
+Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
+Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
+Patch1033:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
-Patch1039:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
-Patch1040:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
+Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1039:       %{tkg_url}/hotfixes/ow2/1148-staging.mypatch#/%{name}-tkg-1148-staging.patch
+Patch1040:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
+Patch1041:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -274,7 +272,7 @@ Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-update-nvapi-and-nvencodeapi-autoconf.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
-Patch1305:       0001-mfplat-custom-fixes-from-proton.patch
+Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -569,6 +567,7 @@ Provides:       bundled(libxslt) = %{winexslt}
 Provides:       bundled(libvkd3d) = %{winevkd3d}
 Provides:       bundled(openldap) = %{wineopenldap}
 Provides:       bundled(zlib) = %{winezlib}
+Provides:       bundled(zydis) = %{winezydis}
 
 # removed as of 1.7.35
 Obsoletes:      wine-wow < 1.7.35
@@ -879,18 +878,10 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch901 -p1
 
-%dnl #FIXME needs rebase %patch1006 -p1
 %if !0%{?fshack}
-%patch1002 -p1
-%if 0%{?childwindow}
-%patch1003 -p1
+%patch1000 -p1
 %endif
-%endif
-%patch1004 -p1
-%patch1005 -p1
-%patch1007 -p1
-%patch1008 -p1
-%patch1009 -p1
+%patch1001 -p1
 
 %patch5000 -p1
 
@@ -903,25 +894,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if 0%{?fshack}
 %patch1023 -p1
 %endif
+%if 0%{?childwindow}
 %patch1024 -p1
 %patch1025 -p1
-%patch1030 -p1
-%patch1026 -p1
-%if 0%{?childwindow}
-%patch1039 -p1
-%endif
-%patch1040 -p1
-
-%patch1303 -p1
-%if 0%{?fshack}
-%if 0%{?vulkanup}
-%patch1027 -p1
-%endif
-%patch1090 -p1
-%else
-%if 0%{?vulkanup}
-%patch1028 -p1
-%endif
 %endif
 %if 0%{?sharedgpures}
 %patch1060 -p1
@@ -929,16 +904,25 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch1062 -p1
 %patch1063 -p1
 %endif
-%dnl #FIXME needs rebase %patch1029 -p1
-%patch1031 -p1
+%patch1026 -p1
+%patch1027 -p1
+%patch1028 -p1
+%patch1029 -p1
 %if 0%{?fastsync}
 %patch1050 -p1
 %endif
+%patch1030 -p1
+%patch1031 -p1
 %patch1032 -p1
-%dnl #FIXME see bugzilla %patch1034 -p1
+%patch1033 -p1
+%dnl #FIXME see bugzilla (Elder Scrolls Online crash) %patch1034 -p1
 %dnl #FIXME needs rebase %patch1035 -p1
 %dnl #FIXME needs rebase %patch1036 -p1
 %dnl #FIXME needs rebase %patch1037 -p1
+%patch1038 -p1
+%patch1039 -p1
+%patch1040 -p1
+%patch1041 -p1
 
 %patch1089 -p1
 %patch1091 -p1 -R
@@ -947,7 +931,8 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch1300 -p1
 %patch1301 -p1
 %dnl %patch1302 -p1
-%patch1305 -p1
+%patch1303 -p1
+%patch1304 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2015,6 +2000,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32k.%{winesys}
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
 %endif
+%{_libdir}/wine/%{winedlldir}/windows.perception.stub.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
@@ -2516,6 +2502,10 @@ fi
 
 
 %changelog
+* Tue Mar 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.3-100.20230307git50f5f9a
+- 8.3
+- tkg sync and cleanup
+
 * Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.2-100
 - 8.2
 
