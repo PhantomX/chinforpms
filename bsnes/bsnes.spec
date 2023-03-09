@@ -4,24 +4,19 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 717606dda9ad05a636e901c0f4f443fe088ff2c8
+%global commit 5cefce5c08f74cfc80eee3f82a32d846144e5277
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221103
+%global date 20230308
 %global with_snapshot 1
 
-%ifarch x86_64
-%global build_with_lto    1
-%endif
+%bcond_with gtk2
+%bcond_with libao
+%bcond_with openal
 
-%global with_gtk2 0
-%global with_libao 0
-%global with_openal 0
-
-%if 0%{?with_gtk2}
+%if %{with gtk2}
 %global toolkit gtk2
 %else
 %global toolkit gtk3
-%global build_with_lto    0
 %endif
 
 %if 0%{?with_snapshot}
@@ -30,7 +25,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
@@ -48,18 +43,18 @@ BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
-%if 0%{?with_libao}
+%if %{with libao}
 BuildRequires:  pkgconfig(ao)
 %endif
 BuildRequires:  pkgconfig(gl)
-%if 0%{?with_gtk2}
+%if %{with gtk2}
 BuildRequires:  pkgconfig(gtk+-2.0)
 %else
 BuildRequires:  pkgconfig(gtk+-3.0)
 %endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
-%if 0%{?with_openal}
+%if %{with openal}
 BuildRequires:  pkgconfig(openal)
 %endif
 BuildRequires:  pkgconfig(sdl2)
@@ -84,10 +79,10 @@ sed -e 's|-O[23] ||g' -i nall/GNUmakefile
 
 sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
-%if !0%{?with_ao}
+%if %{without libao}
   sed -e "/pkg_check/s|audio.ao\b||" -i ruby/GNUmakefile
 %endif
-%if !0%{?with_openal}
+%if %{without openal}
   sed -e "/pkg_check/s|audio.openal\b||" -i ruby/GNUmakefile
 %endif
 
@@ -99,9 +94,7 @@ export options="$LDFLAGS"
 
 %make_build -C %{name} target=%{name} verbose \
   build=performance local=false hiro=%{toolkit} \
-%if 0%{?build_with_lto}
   lto=true \
-%endif
 %{nil}
 
 

@@ -7,21 +7,16 @@
 %global commit 92bf0c6669999ddb6921488261007a991b15842d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221227
-%global with_snapshot 1
+%global with_snapshot 0
 
-%ifarch x86_64
-%global build_with_lto    1
-%endif
+%bcond_with gtk2
+%bcond_with libao
+%bcond_with openal
 
-%global with_gtk2 0
-%global with_libao 0
-%global with_openal 0
-
-%if 0%{?with_gtk2}
+%if %{with gtk2}
 %global toolkit gtk2
 %else
 %global toolkit gtk3
-%global build_with_lto    0
 %endif
 
 %if 0%{?with_snapshot}
@@ -31,7 +26,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        131
+Version:        132
 Release:        1%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
@@ -54,11 +49,11 @@ BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(alsa)
-%if 0%{?with_libao}
+%if %{with libao}
 BuildRequires:  pkgconfig(ao)
 %endif
 BuildRequires:  pkgconfig(gl)
-%if 0%{?with_gtk2}
+%if %{with gtk2}
 BuildRequires:  pkgconfig(gtk+-2.0)
 %else
 BuildRequires:  pkgconfig(gtk+-3.0)
@@ -66,7 +61,7 @@ BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libchdr)
-%if 0%{?with_openal}
+%if %{with openal}
 BuildRequires:  pkgconfig(openal)
 %endif
 BuildRequires:  pkgconfig(sdl2)
@@ -101,10 +96,10 @@ sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 
 sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
-%if !0%{?with_ao}
+%if %{without libao}
   sed -e "/ruby +=/s|audio.ao\b||" -i ruby/GNUmakefile
 %endif
-%if !0%{?with_openal}
+%if %{without openal}
   sed -e "/ruby +=/s|audio.openal\b||" -i ruby/GNUmakefile
 %endif
 
@@ -114,12 +109,10 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 export flags="$CXXFLAGS $(pkg-config --cflags libchdr)"
 export options="$LDFLAGS $(pkg-config --libs libchdr)"
 
-for build in mia desktop-ui genius ; do
+for build in mia desktop-ui tools/genius ; do
 %make_build -C $build verbose \
   build=optimized local=false system_chdr=true hiro=%{toolkit} \
-%if 0%{?build_with_lto}
   lto=true \
-%endif
 %{nil}
 done
 
@@ -127,7 +120,7 @@ done
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 desktop-ui/out/%{name} %{buildroot}%{_bindir}/
-install -pm0755 genius/out/genius %{buildroot}%{_bindir}/
+install -pm0755 tools/genius/out/genius %{buildroot}%{_bindir}/
 install -pm0755 mia/out/mia %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/
@@ -147,7 +140,7 @@ desktop-file-install \
 
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  genius/data/genius.desktop
+  tools/genius/data/genius.desktop
 
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
@@ -155,12 +148,12 @@ desktop-file-install \
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/{256x256,scalable}/apps
 install -pm0644 desktop-ui/resource/%{name}.png \
-  genius/data/genius.png \
+  tools/genius/data/genius.png \
   mia/resource/mia.png \
   %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/
 
 install -pm0644 \
-  genius/data/genius.svg \
+  tools/genius/data/genius.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
 
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
@@ -186,6 +179,9 @@ done
 
 
 %changelog
+* Wed Mar 08 2023 Phantom X <megaphantomx at hotmail dot com> - 132-1
+- 132
+
 * Thu Dec 29 2022 Phantom X <megaphantomx at hotmail dot com> - 131-1.20221227git92bf0c6
 - 131
 
