@@ -2,13 +2,13 @@
 
 %global __jar_repack %{nil}
 
-%global pkgyear 2022
+%global pkgyear 2023
 %global pkgname IRPF%{pkgyear}
 
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.8
+Version:        1.0
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -39,7 +39,7 @@ unzip irpf.jar IRPF-Licenses.txt
 unzip lib-modulos/irpf_icones.jar icones/RFB.png
 mv icones/RFB.png .
 
-rm -rf exec.{bat,sh} Execute.txt icones
+rm -rf *.exe exec.{bat,sh} Execute.txt icones .install4j
 
 find -type f -exec chmod 0644 '{}' ';'
 
@@ -104,8 +104,5 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 
 
 %changelog
-* Fri Mar 10 2023 - 1.8-1
-- 1.8
-
-* Mon Mar 07 2022 - 1.0-1
+* Fri Mar 10 2023 - 1.0-1
 - Initial spec
