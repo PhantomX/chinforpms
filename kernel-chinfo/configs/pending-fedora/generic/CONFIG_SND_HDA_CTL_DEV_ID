@@ -1,0 +1,15 @@
+# Symbol: SND_HDA_CTL_DEV_ID [=n]
+# Type  : bool
+# Defined at sound/pci/hda/Kconfig:305
+#   Prompt: Use the device identifier field for controls
+#   Depends on: SOUND [=m] && !UML && SND [=m] && SND_HDA [=m] && SND_HDA_INTEL [=m]
+#   Location:
+#     -> Device Drivers
+#       -> Sound card support (SOUND [=m])
+#         -> Advanced Linux Sound Architecture (SND [=m])
+#           -> HD-Audio
+#             -> Use the device identifier field for controls (SND_HDA_CTL_DEV_ID [=n])
+# 
+# 
+# 
+# CONFIG_SND_HDA_CTL_DEV_ID is not set

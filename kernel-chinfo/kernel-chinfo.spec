@@ -188,20 +188,20 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 2
+%define stable_update 3
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 727a3d3ead614f4aa9baf9acb1f8b0233cc97afc
+%global pfcommit a9098ff589068d52bd826c3954760d6efe5d5e9c
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash 040fcf344f4ef89ad68291353f2f41ba
+%global pfcoprhash fe00dfa509375b7e6bf81846d42715cd
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 89e27851f72a9025c71bfb1a4edc9748cfbed036
+%global opensuse_id ef7db203f7b3ad3cf5097c01f3bba30c93fd714d
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -789,7 +789,7 @@ BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 %endif
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev >= 252-1
+BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
@@ -3209,6 +3209,9 @@ fi
 #
 #
 %changelog
+* Fri Mar 10 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.3-500.chinfo
+- 6.2.2 - pf4
+
 * Fri Mar 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-500.chinfo
 - 6.2.2 - pf3
 
