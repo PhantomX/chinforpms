@@ -203,6 +203,7 @@ pipe-viewer
 pkgrip
 plzip
 protontricks
+ps3iso-tools
 -pspshrink
 psxmemcardmgr
 pulsemixer

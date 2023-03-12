@@ -34,15 +34,16 @@ Subject: [PATCH] patch-6.2-redhat
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/signing.c                            |   9 +-
+ net/wireless/sme.c                                 |  31 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 35 files changed, 980 insertions(+), 177 deletions(-)
+ 36 files changed, 985 insertions(+), 203 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index f26824f367a9..540a8364178e 100644
+index 1a1d63f2a9ed..eaa3abdb6864 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,10 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -73,10 +74,10 @@ index 43c7773b89ae..2c1db1cb5528 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index c5ccca26a408..4cacdb4ab764 100644
+index ddfd35c86bda..2b69e42dff58 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1234,7 +1234,7 @@ endchoice
+@@ -1233,7 +1233,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -85,7 +86,7 @@ index c5ccca26a408..4cacdb4ab764 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
-@@ -1473,6 +1473,7 @@ config XEN
+@@ -1472,6 +1472,7 @@ config XEN
  config ARCH_FORCE_MAX_ORDER
  	int
  	default "14" if ARM64_64K_PAGES
@@ -106,10 +107,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index fbd646dbf440..23ca9cdb2438 100644
+index bcf03939e6fe..3773e027b034 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2568,3 +2568,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2520,3 +2520,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -699,7 +700,7 @@ index 84e7ba5314d3..efc96776f761 100644
  	data->xport.ops = &hid_rmi_ops;
 
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 1cc052979e01..c817bc0a90c5 100644
+index 77bca6932f01..27f5455aef6c 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -9,6 +9,7 @@
@@ -710,7 +711,7 @@ index 1cc052979e01..c817bc0a90c5 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2210,6 +2211,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2216,6 +2217,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
 
@@ -727,7 +728,7 @@ index 1cc052979e01..c817bc0a90c5 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
 
  static struct amba_driver etm4x_amba_driver = {
-@@ -2243,6 +2254,11 @@ static int __init etm4x_init(void)
+@@ -2249,6 +2260,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
 
@@ -739,7 +740,7 @@ index 1cc052979e01..c817bc0a90c5 100644
  	ret = etm4_pm_setup();
 
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2269,6 +2285,9 @@ static int __init etm4x_init(void)
+@@ -2275,6 +2291,9 @@ static int __init etm4x_init(void)
 
  static void __exit etm4x_exit(void)
  {
@@ -942,7 +943,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 5f6a85aea501..3b1e9faa9c2d 100644
+index f8100067502f..e0823c45e2fa 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -953,7 +954,7 @@ index 5f6a85aea501..3b1e9faa9c2d 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2793,6 +2794,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2813,6 +2814,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -982,7 +983,7 @@ index 5f6a85aea501..3b1e9faa9c2d 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 285acc4aaccc..a7056957e7dd 100644
+index 494fa46f5767..27bc8dd45ad8 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1017,10 +1018,10 @@ index 285acc4aaccc..a7056957e7dd 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 9eca403af2a8..ebe803d4ad4d 100644
+index 97a0f8faea6e..d837548d2024 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5735,6 +5735,13 @@ static void hub_event(struct work_struct *work)
+@@ -5734,6 +5734,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
 
@@ -1711,8 +1712,78 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/net/wireless/sme.c b/net/wireless/sme.c
+index 4f813e346a8b..696c6ac76948 100644
+--- a/net/wireless/sme.c
++++ b/net/wireless/sme.c
+@@ -285,15 +285,6 @@ void cfg80211_conn_work(struct work_struct *work)
+ 	wiphy_unlock(&rdev->wiphy);
+ }
+
+-static void cfg80211_step_auth_next(struct cfg80211_conn *conn,
+-				    struct cfg80211_bss *bss)
+-{
+-	memcpy(conn->bssid, bss->bssid, ETH_ALEN);
+-	conn->params.bssid = conn->bssid;
+-	conn->params.channel = bss->channel;
+-	conn->state = CFG80211_CONN_AUTHENTICATE_NEXT;
+-}
+-
+ /* Returned bss is reference counted and must be cleaned up appropriately. */
+ static struct cfg80211_bss *cfg80211_get_conn_bss(struct wireless_dev *wdev)
+ {
+@@ -311,7 +302,10 @@ static struct cfg80211_bss *cfg80211_get_conn_bss(struct wireless_dev *wdev)
+ 	if (!bss)
+ 		return NULL;
+
+-	cfg80211_step_auth_next(wdev->conn, bss);
++	memcpy(wdev->conn->bssid, bss->bssid, ETH_ALEN);
++	wdev->conn->params.bssid = wdev->conn->bssid;
++	wdev->conn->params.channel = bss->channel;
++	wdev->conn->state = CFG80211_CONN_AUTHENTICATE_NEXT;
+ 	schedule_work(&rdev->conn_work);
+
+ 	return bss;
+@@ -603,12 +597,7 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
+ 	wdev->conn->params.ssid_len = wdev->u.client.ssid_len;
+
+ 	/* see if we have the bss already */
+-	bss = cfg80211_get_bss(wdev->wiphy, wdev->conn->params.channel,
+-			       wdev->conn->params.bssid,
+-			       wdev->conn->params.ssid,
+-			       wdev->conn->params.ssid_len,
+-			       wdev->conn_bss_type,
+-			       IEEE80211_PRIVACY(wdev->conn->params.privacy));
++	bss = cfg80211_get_conn_bss(wdev);
+
+ 	if (prev_bssid) {
+ 		memcpy(wdev->conn->prev_bssid, prev_bssid, ETH_ALEN);
+@@ -619,7 +608,6 @@ static int cfg80211_sme_connect(struct wireless_dev *wdev,
+ 	if (bss) {
+ 		enum nl80211_timeout_reason treason;
+
+-		cfg80211_step_auth_next(wdev->conn, bss);
+ 		err = cfg80211_conn_do_work(wdev, &treason);
+ 		cfg80211_put_bss(wdev->wiphy, bss);
+ 	} else {
+@@ -1497,15 +1485,6 @@ int cfg80211_connect(struct cfg80211_registered_device *rdev,
+ 	} else {
+ 		if (WARN_ON(connkeys))
+ 			return -EINVAL;
+-
+-		/* connect can point to wdev->wext.connect which
+-		 * can hold key data from a previous connection
+-		 */
+-		connect->key = NULL;
+-		connect->key_len = 0;
+-		connect->key_idx = 0;
+-		connect->crypto.cipher_group = 0;
+-		connect->crypto.n_ciphers_pairwise = 0;
+ 	}
+
+ 	wdev->connect_keys = connkeys;
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index e137cf15aae9..2ed2341f7967 100755
+index 0d045182c08c..8606325b0ec2 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -1785,10 +1856,10 @@ index a79b985e917e..772a69bf43ec 100644
 
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index d1571900a8c7..9e6be637ab68 100644
+index 174afa4fad81..7ee7bcef4313 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -2705,6 +2705,12 @@ int security_locked_down(enum lockdown_reason what)
+@@ -2706,6 +2706,12 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
 

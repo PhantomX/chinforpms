@@ -116,7 +116,9 @@ Summary: The Linux kernel
 %endif
 
 %ifarch x86_64
-%global efiuki 0
+%if 0%{?fedora} > 36
+%global efiuki 1
+%endif
 %else
 %global efiuki 0
 %endif
@@ -188,7 +190,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 3
+%define stable_update 5
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -199,9 +201,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a9098ff589068d52bd826c3954760d6efe5d5e9c
+%global pfcommit 58b8a57ed0a5e7297846aab778b6aa59c560a9da
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash fe00dfa509375b7e6bf81846d42715cd
+%global pfcoprhash 3e89a9be8334af1aa8edc5ba7dc36b3b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -783,11 +785,7 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
-%if 0%{?fedora} > 37
-# The UKI code was introduced in Fedora 38 and is not needed by
-# earlier versions.  This wrapper can be removed in Fedora 41.
 BuildRequires: systemd-boot-unsigned
-%endif
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev
 # For TPM operations in UKI initramfs
@@ -985,6 +983,9 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 %endif
 %endif
 
+%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
+%global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
+
 ## Patches needed for building this package
 
 ## compile fixes
@@ -992,8 +993,6 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 %if !%{nopatches}
 
 Patch1: patch-%{kversion}-redhat.patch
-
-%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
 
 # empty final patch to facilitate testing of kernel patches
 # Patch999999: linux-kernel-test.patch
@@ -3209,8 +3208,11 @@ fi
 #
 #
 %changelog
+* Sat Mar 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.4-500.chinfo
+- 6.2.5 - pf4
+
 * Fri Mar 10 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.3-500.chinfo
-- 6.2.2 - pf4
+- 6.2.3 - pf4
 
 * Fri Mar 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-500.chinfo
 - 6.2.2 - pf3

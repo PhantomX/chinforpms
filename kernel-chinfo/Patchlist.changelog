@@ -1,3 +1,21 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/d2fdc4eb94179d410f628f7f56a6740d6d7f6540
+ d2fdc4eb94179d410f628f7f56a6740d6d7f6540 Revert "wifi: cfg80211: Fix use after free for wext"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/a95fa0b4dd6a8a8aa27d72c95cd8fc522f420996
+ a95fa0b4dd6a8a8aa27d72c95cd8fc522f420996 iommu/amd: Do not identity map v2 capable device when snp is enabled
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/50c9147bec083a83e10799bb127c4e730c24ba11
+ 50c9147bec083a83e10799bb127c4e730c24ba11 iommu: Attach device group to old domain in error path
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3a4e60e72603ce11dd24f8dec42c0e4c4339b1b7
+ 3a4e60e72603ce11dd24f8dec42c0e4c4339b1b7 iommu/amd: Improve page fault error reporting
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/70ec5b043f0debccfae70b702f7741a9e07ef42e
+ 70ec5b043f0debccfae70b702f7741a9e07ef42e iommu/amd: Skip attach device domain is same as new domain
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/42eaef1e4db25a79c5f24219373de3fff6591a6a
+ 42eaef1e4db25a79c5f24219373de3fff6591a6a iommu/amd: Fix error handling for pdev_pri_ats_enable()
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/807d6b912b28183332ea9e78afaf9bc2f47559dd
  807d6b912b28183332ea9e78afaf9bc2f47559dd drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
 
