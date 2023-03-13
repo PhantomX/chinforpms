@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 645f41352326e8661260f98b69dc4e150369a0c5
+%global commit 8ca89ead0ebcb20da7d5d9b5b0bccf8f4b58bbd5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230213
+%global date 20230312
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -17,7 +17,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 LuaBridge
 
-%global commit2 d2657e1267d2ce9399bcc6b9c5b01b465db057b1
+%global commit2 4c3d5fce1a4fef4decfbfeaf20f3746ecd209775
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
@@ -50,13 +50,14 @@
 
 Name:           flycast
 Version:        2.0
-Release:        7%{?gver}%{?dist}
+Release:        8%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
 
 # ggpo - MIT
-License:        GPL-2.0-only AND BSD-3-Clause AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+# libelf - BSD-2-Clause
+License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
 %if 0%{?with_snapshot}
@@ -77,7 +78,6 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-Patch4:         0001-cmake-fix-SDL2-search.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -200,6 +200,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 %endif
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
+  -DUSE_HOST_SDL:BOOL=ON \
 %if %{with sysspirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
 %endif

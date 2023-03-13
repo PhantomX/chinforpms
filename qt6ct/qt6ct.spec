@@ -12,8 +12,8 @@
 
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
-Version:        0.7
-Release:        101%{?gver}%{?dist}
+Version:        0.8
+Release:        100%{?gver}%{?dist}
 
 License:        BSD-2-Clause
 Url:            https://github.com/trialuser02/qt6ct
@@ -71,6 +71,7 @@ pushd %{name}-%{srcver}-gtk3
 lrelease-qt6 src/qt6ct/translations/*.ts
 %{qmake_qt6}
 
+ln -sf ../../../%{name}-%{version}/src/qt6ct-common/libqt6ct-common.so src/qt6ct-common/
 %make_build sub-src-qt6ct-all
 popd
 
@@ -79,6 +80,8 @@ make install -C %{name}-%{srcver}-gtk3/src/qt6ct INSTALL_ROOT=%{buildroot}
 mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
 
 make install -C %{name}-%{srcver} INSTALL_ROOT=%{buildroot}
+
+rm -fv %{buildroot}%{_libdir}/lib%{name}-common.so
 
 mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
 install -pm0755 60-%{name}.sh \
@@ -101,6 +104,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %doc AUTHORS README ChangeLog README.gtk3
 %license COPYING
 %{_bindir}/%{name}*
+%{_libdir}/lib%{name}-common.so.*
 %{_qt6_plugindir}/platformthemes/libqt6ct.so
 %{_qt6_plugindir}/styles/libqt6ct-style.so
 %{_datadir}/applications/%{name}*.desktop
@@ -113,6 +117,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 0.8-100
+- 0.8
+
 * Sun Nov 27 2022 Phantom X <megaphantomx at hotmail dot com> - 0.7-100
 - 0.7
 

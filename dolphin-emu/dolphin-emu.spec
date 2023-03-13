@@ -9,7 +9,6 @@
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %bcond_without ffmpeg
-%bcond_with rpmfusion
 %bcond_without egl
 %bcond_with llvm
 %bcond_with sysvulkan
@@ -27,9 +26,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 9d139ea84e426a0829fcb7c8bd1959f341427349
+%global commit 019bde6afcca8ff10953421a9c52a68f3d9ca8aa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230213
+%global date 20230312
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -55,7 +54,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        174%{?gver}%{?dist}
+Release:        175%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -148,11 +147,6 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
-%if %{with rpmfusion}
-%if 0%{?fedora} && 0%{?fedora} >= 36
-BuildRequires:  ffmpeg-devel
-%endif
-%endif
 %endif
 %if %{with sysvulkan}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0

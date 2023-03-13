@@ -21,9 +21,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 0178b20983aa6b9930d0b5fb69bd1837325ada02
+%global commit cf5346c263111760752cabb94767c07c501207c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230301
+%global date 20230312
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -94,7 +94,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -154,7 +154,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(FAudio)
 %if !%{with llvm_submod}
-BuildRequires:  cmake(LLVM)
+BuildRequires:  cmake(LLVM) >= 13.0.0
 %endif
 %if 0%{?with_sysflatbuffers}
 BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}

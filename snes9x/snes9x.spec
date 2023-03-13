@@ -1,15 +1,15 @@
 %undefine _cmake_shared_libs
 
-%global commit a2e0580992873ec3913fd1ef09f22f368fe44b3b
+%global commit cc0a87711a7a208cabefc9fd1dbb90e31fe51684
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230204
+%global date 20230312
 %global with_snapshot 1
 
-%global commit10 a6ce49ca242019410abc5c359ed2c57e48e59883
+%global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 bcf6a2430e99e8fc24f9f266e99316905e6d5134
+%global commit11 6d41bb9c557c5a0eec61ffba1f775dc5f717a8f7
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -24,10 +24,10 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.7%{?gver}%{?dist}
+Release:        0.8%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
-License:        Other
+License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0
 URL:            http://www.snes9x.com/
 
 %if 0%{?with_snapshot}
@@ -65,13 +65,14 @@ BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
 BuildRequires:   minizip-devel
-BuildRequires:   vulkan-headers
+BuildRequires:   cmake(VulkanHeaders)
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
 %endif
 BuildRequires:   desktop-file-utils
 BuildRequires:   libappstream-glib
 Requires:        hicolor-icon-theme
+Requires:        vulkan-loader%{?_isa}
 
 Provides:        bundled(glslang) = 0~git%{shortcommit11}
 Provides:        bundled(spirv-cross) = 0~git%{shortcommit10}
@@ -182,6 +183,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Mon Mar 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.8.20230312gitcc0a877
+- Vulkan support
+
 * Mon May 09 2022 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.4.20220430git8c0a4a4
 - Bump
 

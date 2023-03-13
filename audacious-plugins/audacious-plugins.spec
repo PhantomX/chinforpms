@@ -14,11 +14,13 @@
 %endif
 %{?aud_plugin_dep}
 
+%global vc_url https://github.com/audacious-media-player/%{name}
+
 %global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3~beta1
+Version:        4.3
 Release:        100%{?dist}
 Epoch:          1
 
@@ -37,13 +39,13 @@ Source3:        README.licenses
 Source100:      audacious-plugins-amidi.metainfo.xml
 Source101:      audacious-plugins-exotic.metainfo.xml
 Source102:      audacious-plugins-jack.metainfo.xml
+Source103:      audacious-plugins-ffaudio.metainfo.xml
 
 # Fedora customization
 Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
+Patch1:         %{vc_url}/commit/cbbd7743f7137f6a7434e93ef46151af0228a041.patch#/%{name}-gh-cbbd774.patch
 # Fedora customization: add default system-wide module_path
 Patch2:         audacious-plugins-3.6-ladspa.patch
-# chinforpms customization: qt6 private headers for qhotkey
-Patch10:        0001-qt6-enable-qthotkey.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  meson
@@ -85,6 +87,10 @@ BuildRequires:  pkgconfig(soxr)
 BuildRequires:  pkgconfig(wavpack)
 BuildRequires:  pkgconfig(vorbis)
 BuildRequires:  lame-devel
+# ffaudio / ffmpeg
+BuildRequires:  pkgconfig(libavcodec) >= 56.60.100
+BuildRequires:  pkgconfig(libavformat) >= 56.40.101
+BuildRequires:  pkgconfig(libavutil) >= 54.31.100 
 
 BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Gui)
@@ -93,7 +99,6 @@ BuildRequires:  pkgconfig(Qt%{qt_ver}Network)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGL)
 %if %{with qt6}
 BuildRequires:  qt6-qtbase-private-devel
-%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 %else
 BuildRequires:  pkgconfig(Qt%{qt_ver}Multimedia)
 BuildRequires:  pkgconfig(Qt5X11Extras)
@@ -149,6 +154,17 @@ Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 This package provides AMIDI-Plug, a modular MIDI music player, as an
 input plugin for Audacious.
 
+%package ffaudio
+Summary:        FFmpeg input plugin for Audacious
+License:        BSD-2-Clause
+%{?aud_plugin_dep}
+Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
+Obsoletes:      audacious-plugins-freeworld-ffaudio < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       audacious-plugins-freeworld-ffaudio = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description ffaudio
+This package provides FFmpeg as an input plugin for Audacious.
+
 
 %prep
 %autosetup -n %{name}-%{tar_ver} -p1
@@ -180,7 +196,7 @@ fi
   -Dopenmpt=true \
   -Dstreamtuner=true \
   -Daac=false  \
-  -Dffaudio=false \
+  -Dffaudio=true \
   -Dsndio=false \
   -Dmms=false \
 %{nil}
@@ -195,6 +211,7 @@ mkdir -p %{buildroot}%{_metainfodir}
 install -p -m0644 %{SOURCE100} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE101} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
+install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 %find_lang %{name}
 
@@ -307,8 +324,16 @@ install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
 #%%{_libdir}/audacious/Input/amidi-plug/
 %{_metainfodir}/%{name}-amidi.metainfo.xml
 
+%files ffaudio
+%{_libdir}/audacious/Input/ffaudio.so
+%{_metainfodir}/%{name}-ffaudio.metainfo.xml
+
 
 %changelog
+* Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3-100
+- 4.3
+- Rawhide sync
+
 * Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3~beta1-100
 - 4.3-beta1
 

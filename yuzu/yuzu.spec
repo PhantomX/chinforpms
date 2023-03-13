@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1d866e0d6142b65e0c216e84e95bfbf9751a6a86
+%global commit 1d9cd8d5e7fff040c6bb438f8d9c619c2e430763
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230305
+%global date 20230312
 
 %bcond_without ea
 %if %{without ea}
@@ -78,7 +78,7 @@
 
 
 Name:           yuzu
-Version:        3437
+Version:        3451
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -108,7 +108,7 @@ Patch3:         0001-appstream-validate.patch
 Patch10:        0001-boost-build-fix.patch
 Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
 Patch12:        0001-gcc-ignore-Wmaybe-uninitialized.patch
-Patch20:        %{vcm_url}/yuzu/pull/9904.patch#/%{name}-gh-pr9904.patch
+Patch20:        %{vcm_url}/yuzu/pull/9943.patch#/%{name}-gh-pr9943.patch
 
 ExclusiveArch:  x86_64
 

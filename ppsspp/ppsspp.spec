@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 86a19cebfd22222363ccc16d4609c471093b434a
+%global commit caab66bc187642d8cee74a8c6f37c6fe9cf3749b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230213
+%global date 20230312
 %global with_snapshot 1
 
 # Enable Qt build
@@ -51,7 +51,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 glslang
 
-%global commit7 c77b09b57c27837dc2d41aa371ed3d236ce9ce47
+%global commit7 4212eef67ed0ca048cb726a6767185504e7695e5
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SPIRV-Cross
 
@@ -70,7 +70,7 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        101%{?gver}%{?dist}
+Release:        102%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 

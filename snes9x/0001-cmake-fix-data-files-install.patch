@@ -12,8 +12,8 @@ index a2de6bb..6785cbf 100644
 --- a/gtk/CMakeLists.txt
 +++ b/gtk/CMakeLists.txt
 @@ -20,8 +20,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
- set(CMAKE_INSTALL_DATADIR "snes9x" CACHE STRING "cheats.bml directory")
- set(CMAKE_INSTALL_LOCALEDIR locale CACHE STRING "Locale directory")
+     set(CMAKE_BUILD_TYPE "Release" CACHE STRING "One of: Debug Release RelWithDebInfo MinSizeRel" FORCE)
+ endif(NOT CMAKE_BUILD_TYPE)
  
 -string(APPEND DATADIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_DATADIR})
 -string(APPEND LOCALEDIR ${CMAKE_INSTALL_PREFIX} "/" ${CMAKE_INSTALL_DATAROOTDIR} "/" ${CMAKE_INSTALL_LOCALEDIR})

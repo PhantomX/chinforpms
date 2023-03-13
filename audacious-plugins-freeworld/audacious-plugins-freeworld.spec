@@ -13,7 +13,7 @@
 
 Name:           audacious-plugins-freeworld
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3~beta1
+Version:        4.3
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
 Epoch:          1
@@ -39,7 +39,6 @@ BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
 BuildRequires:  pkgconfig(taglib)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  ffmpeg-devel
 
 # we need to have configure detect atleast one audio output to make it happy
 BuildRequires:  pkgconfig(alsa)
@@ -47,7 +46,6 @@ BuildRequires:  pkgconfig(alsa)
 # require all the plugins
 Requires:       %{name}-aac%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-mms%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       %{name}-ffaudio%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
@@ -73,15 +71,6 @@ BMP.
 This is the plugin needed to play AAC audio files.
 
 
-%package        ffaudio
-Summary:        FFMpeg/FAAD2 based input plugin for Audacious
-%{?aud_plugin_dep}
-Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
-
-%description ffaudio
-FFMpeg/FAAD2 based input plugin for Audacious.
-
-
 %package        mms
 Summary:        MMS stream plugin for Audacious
 %{?aud_plugin_dep}
@@ -104,7 +93,7 @@ This is the plugin needed to access MMS streams.
   -Dgtk=false \
   -Dqt=false \
   -Daac=true \
-  -Dffaudio=true \
+  -Dffaudio=false \
   -Dmms=true \
   -Dflac=false \
   -Dmpg123=false \
@@ -118,14 +107,12 @@ This is the plugin needed to access MMS streams.
 
 
 %ninja_build -C %{_vpath_builddir} src/aac/aac-raw.so
-%ninja_build -C %{_vpath_builddir} src/ffaudio/ffaudio.so
 %ninja_build -C %{_vpath_builddir} src/mms/mms.so
 
 
 %install
 mkdir -p %{buildroot}%{_libdir}/audacious/{Input,Transport}
 install -pm0755 %{_vpath_builddir}/src/aac/aac-raw.so %{buildroot}%{_libdir}/audacious/Input/
-install -pm0755 %{_vpath_builddir}/src/ffaudio/ffaudio.so %{buildroot}%{_libdir}/audacious/Input/
 install -pm0755 %{_vpath_builddir}/src/mms/mms.so %{buildroot}%{_libdir}/audacious/Transport/
 
 
@@ -135,16 +122,15 @@ install -pm0755 %{_vpath_builddir}/src/mms/mms.so %{buildroot}%{_libdir}/audacio
 %license COPYING
 %{_libdir}/audacious/Input/aac-raw.so
 
-%files ffaudio
-%license COPYING
-%{_libdir}/audacious/Input/ffaudio.so
-
 %files mms
 %license COPYING
 %{_libdir}/audacious/Transport/mms.so
 
 
 %changelog
+* Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3-100
+- 4.3
+
 * Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3~beta1-100
 - 4.3-beta1
 
