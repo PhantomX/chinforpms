@@ -14,7 +14,7 @@ Summary:        Desktop Environment independent archive manager
 
 Epoch:          1
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://github.com/ib/%{name}
 
 %if 0%{?with_snapshot}

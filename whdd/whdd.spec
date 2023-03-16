@@ -5,7 +5,7 @@ Version:        3.0.1
 Release:        1%{?dist}
 Summary:        HDD diagnostic and data recovery tool 
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://whdd.github.io
 
 Source0:        https://github.com/%{name}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz

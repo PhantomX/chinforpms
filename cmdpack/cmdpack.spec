@@ -12,7 +12,7 @@ Version:        1.06
 Release:        2%{?gver}%{?dist}
 Summary:        Collection of command line utilities, most for emulation or disk images
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/chungy/%{name}
 
 %if 0%{?with_snapshot}

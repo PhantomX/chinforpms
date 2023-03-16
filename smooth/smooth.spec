@@ -1,11 +1,14 @@
+%global systemlibs systemlibbz2,systemlibcpuid,systemlibcurl,systemlibfribidi,systemlibiconv
+%global systemlibs %{systemlibs},systemlibjpeg,systemlibpng,systemlibwebp,systemlibxml2,systemzlib
+
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           smooth
-Version:        0.9.9
+Version:        0.9.10
 Release:        1%{?dist}
 Summary:        An object oriented C++ class library
 
-License:        Artistic 2.0
+License:        Artistic-2.0
 URL:            http://www.smooth-project.org/
 
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{ver}.tar.gz
@@ -17,9 +20,11 @@ BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(fribidi)
 BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(libcpuid)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libwebp)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(pangocairo)
 BuildRequires:  pkgconfig(xmu)
@@ -43,6 +48,8 @@ development with %{name} library.
 %prep
 %autosetup -n %{name}-%{ver} -p1
 
+rm -rf libraries/*/
+
 sed -e 's/\r//' -i Readme.md Copying doc/reference/dtds/*.dtd
 
 sed \
@@ -53,12 +60,21 @@ sed \
 
 %build
 %set_build_flags
-
-%make_build prefix=/usr libdir=%{_libdir}
+export CXXFLAGS+=" -std=c++11"
+%make_build \
+  config=%{systemlibs} \
+  prefix=/usr \
+  libdir=%{_libdir} \
+%{nil}
 
 
 %install
-%make_install prefix=/usr libdir=%{_libdir}
+export CXXFLAGS+=" -std=c++11"
+%make_install \
+  config=%{systemlibs} \
+  prefix=/usr \
+  libdir=%{_libdir} \
+%{nil}
 
 chmod +x %{buildroot}%{_libdir}/*.so.*
 
@@ -77,6 +93,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.10-1
+- 0.9.10
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.9-1
 - 0.9.9
 

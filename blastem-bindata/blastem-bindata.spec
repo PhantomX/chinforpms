@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 9209858b2f74
-%global date 20220326
+%global commit d30ea441b92e
+%global date 20230309
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -12,16 +12,17 @@
 
 Name:           %{pkgname}-bindata
 Version:        0.6.3
-Release:        0.4%{?gver}%{?dist}
+Release:        0.5%{?gver}%{?dist}
 Summary:        Blastem binary support files
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://www.retrodev.com/%{pkgname}/
 Source0:        https://www.retrodev.com/repos/%{pkgname}/archive/%{commit}.tar.bz2#/%{pkgname}-%{commit}.tar.bz2
 
 BuildArch:      noarch
 
 BuildRequires:  make
+BuildRequires:  ImageMagick
 BuildRequires:  python3-pillow
 BuildRequires:  vasm
 BuildRequires:  xcftools
@@ -60,6 +61,9 @@ install -pm0644 menu.bin tmss.md %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20230309hgd30ea441b92e
+- BR: ImageMagick
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.4.20220326hg9209858b2f74
 - Rebump
 

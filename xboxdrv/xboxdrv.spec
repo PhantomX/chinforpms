@@ -16,7 +16,7 @@ Version:        0.8.8
 Release:        108%{?gver}%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://xboxdrv.gitlab.io
 
 %if 0%{?with_snapshot}

@@ -12,7 +12,7 @@ Version:        0.3.1
 Release:        2%{?gver}%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/IvanFon/%{name}
 
 %if 0%{?with_snapshot}

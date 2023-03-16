@@ -1,6 +1,6 @@
-%global commit de2fa78ebb431db98489e78603e4f77c1f6c5c57
+%global commit eb4a6674bfe9cf91b63b9817412ae5f6862c8432
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220914
+%global date 20230214
 %global with_snapshot 1
 
 %global commit1 1.6.1
@@ -19,10 +19,10 @@
 
 Name:           cpuinfo
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        CPU INFOrmation library
 
-License:        BSD
+License:        BSD-2-Clause
 URL:            https://github.com/pytorch/%{name}
 
 %if 0%{?with_snapshot}
@@ -110,16 +110,6 @@ cp deps/clog/LICENSE LICENSE.clog
 %install
 %cmake_install
 
-# Rename library
-mv %{buildroot}%{_libdir}/libclog.a \
-   %{buildroot}%{_libdir}/libclog-%{name}.a
-
-sed \
-  -e 's|libclog\.a|libclog-%{name}.a|g' \
-  -i %{buildroot}%{_libdir}/cmake/%{name}/%{name}-targets-noconfig.cmake
-
-mv %{buildroot}%{_includedir}/%{name}/clog.h %{buildroot}%{_includedir}/%{name}/clog-%{name}.h
-
 pushd %{buildroot}%{_bindir}
 for i in * ;do
  mv ${i} %{name}-${i}
@@ -136,7 +126,6 @@ popd
 %license LICENSE*
 %{_includedir}/%{name}
 %{_libdir}/lib%{name}.so
-%{_libdir}/libclog-%{name}.a
 %{_libdir}/cmake/%{name}
 %{_libdir}/pkgconfig/*.pc
 
@@ -146,5 +135,8 @@ popd
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0-2.20230214giteb4a667
+- Remove clog
+
 * Fri Sep 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0-1.20220914gitde2fa78
 - Initial spec

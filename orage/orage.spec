@@ -8,7 +8,7 @@ Version:        4.12.1
 Release:        100%{?dist}
 Summary:        Time-managing application for Xfce4
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.xfce.org/
 
 Source0:        https://archive.xfce.org/src/apps/%{name}/%{xfceversion}/%{name}-%{version}.tar.bz2

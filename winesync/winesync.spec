@@ -13,7 +13,7 @@ Version:        5.16.20
 Release:        2%{?gver}%{?dist}
 Summary:        Wine synchronization primitive driver
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://repo.or.cz/linux/zf.git/shortlog/refs/heads/winesync4
 
 Source0:        %{vc_url}/%{commit}:/Documentation/userspace-api/winesync.rst#/winesync.rst_%{shortcommit}

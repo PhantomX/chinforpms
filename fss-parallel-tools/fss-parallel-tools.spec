@@ -3,7 +3,7 @@ Version:        1.49
 Release:        3%{?dist}
 Summary:        Parallel tar, rm and cp utilities
 
-License:        UPL
+License:        UPL-1.0
 URL:            https://blogs.oracle.com/cloud-infrastructure/post/announcing-parallel-file-tools-for-file-storage
 
 # src.rpm as source, because Oracle...

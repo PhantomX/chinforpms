@@ -1,0 +1,50 @@
+From b1bf5ed43276f7d432894506ef204005083cb998 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Mar 2023 15:49:02 -0300
+Subject: [PATCH] multilib fixes
+
+---
+ taglib-config.cmake | 7 +------
+ taglib.pc.cmake     | 3 ++-
+ 2 files changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/taglib-config.cmake b/taglib-config.cmake
+index ec0834a..2efcc85 100644
+--- a/taglib-config.cmake
++++ b/taglib-config.cmake
+@@ -23,11 +23,6 @@ if test -z "$prefix"; then
+ else
+   includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
+ fi
+-if test -z "$exec_prefix"; then
+-  libdir=@CMAKE_INSTALL_FULL_LIBDIR@
+-else
+-  libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+-fi
+ 
+ flags=""
+ 
+@@ -39,7 +34,7 @@ while test $# -gt 0
+ do
+   case $1 in
+     --libs)
+-	  flags="$flags -L$libdir -ltag @ZLIB_LIBRARIES_FLAGS@"
++	  flags="$flags -ltag"
+ 	  ;;
+     --cflags)
+ 	  flags="$flags -I$includedir -I$includedir/taglib"
+diff --git a/taglib.pc.cmake b/taglib.pc.cmake
+index 3800f07..1c3236d 100644
+--- a/taglib.pc.cmake
++++ b/taglib.pc.cmake
+@@ -7,5 +7,6 @@ Name: TagLib
+ Description: Audio meta-data library
+ Requires:
+ Version: @TAGLIB_LIB_VERSION_STRING@
+-Libs: -L${libdir} -ltag @ZLIB_LIBRARIES_FLAGS@
++Libs: -L${libdir} -ltag
++Libs.private: @ZLIB_LIBRARIES_FLAGS@
+ Cflags: -I${includedir} -I${includedir}/taglib
+-- 
+2.39.2
+

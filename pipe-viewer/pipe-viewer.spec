@@ -43,7 +43,6 @@ BuildRequires:  perl(Parallel::ForkManager) >= 2.02
 BuildRequires:  perl(Term::ReadLine::Gnu)
 BuildRequires:  perl(Unicode::GCString)
 
-Requires:       perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:       perl(JSON::XS)
 Requires:       perl(LWP::UserAgent::Cached)
 Requires:       perl(Parallel::ForkManager) >= 2.02

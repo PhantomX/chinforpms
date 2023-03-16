@@ -1,12 +1,13 @@
 %undefine _annotated_build
 %undefine _auto_set_build_flags
+%define _fortify_level 0
 %undefine _hardened_build
 %global _default_patch_fuzz 2
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global with_sysspirv 0
-%global with_sysvulkan 1
+%bcond_with sysspirv
+%bcond_without sysvulkan
 
 # Need be set for release builds too
 %global commit 27072cd556232ae81c6af78530aa5948c46269a9
@@ -61,11 +62,11 @@
 
 Name:           wine-%{pkgname}
 Version:        2.8
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
-License:        LGPL-2.1-or-later
+License:        LGPL-2.1-or-later AND MIT
 URL:            https://github.com/HansKristian-Work/%{pkgname}
 
 %if 0%{?with_snapshot}
@@ -76,10 +77,10 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%if !0%{?with_sysvulkan}
+%if %{without sysvulkan}
 Source4:        %{kg_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
-%if !0%{?with_sysspirv}
+%if %{without sysspirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
@@ -106,10 +107,10 @@ BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
 BuildRequires:  pkgconfig(vulkan) >= 1.3.228
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 BuildRequires:  spirv-headers-devel >= 1.5.4
 %endif
-%if %{?with_sysvulkan}
+%if %{with sysvulkan}
 BuildRequires:  vulkan-headers >= 1.3.228
 %endif
 BuildRequires:  gcc
@@ -153,10 +154,10 @@ package or when debugging this package.
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
 tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-components 1
-%if !0%{?with_sysvulkan}
+%if %{without sysvulkan}
 tar -xf %{S:4} -C subprojects/Vulkan-Headers --strip-components 1
 %endif
-%if !0%{?with_sysspirv}
+%if %{without sysspirv}
 tar -xf %{S:5} -C subprojects/SPIRV-Headers --strip-components 1
 rm -rf subprojects/dxil-spirv/third_party/spirv-headers
 ln -sf ../../../subprojects/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
@@ -164,13 +165,15 @@ ln -sf ../../../subprojects/SPIRV-Headers subprojects/dxil-spirv/third_party/spi
 
 find -type f -name '*.h' -exec chmod -x {} ';'
 
-%if 0%{?with_sysvulkan}
+%if %{with sysvulkan}
 mkdir -p subprojects/Vulkan-Headers/include
 ln -sf %{_includedir}/vulkan \
   subprojects/Vulkan-Headers/include/vulkan
+ln -sf %{_includedir}/vk_video \
+  subprojects/Vulkan-Headers/include/vk_video
 %endif
 
-%if 0%{?with_sysspirv}
+%if %{with sysspirv}
 mkdir -p subprojects/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
   subprojects/SPIRV-Headers/include/spirv
@@ -208,7 +211,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'`"
 
 TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error"
 
@@ -295,6 +298,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.8-2
+- Fix build with system vulkan headers
+
 * Thu Dec 15 2022 Phantom X <megaphantomx at hotmail dot com> - 2.8-1
 - 2.8
 

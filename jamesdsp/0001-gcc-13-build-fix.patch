@@ -1,0 +1,37 @@
+From 9e9a02711eb21efa9e47348afc4e607182a682a5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Mar 2023 22:38:18 -0300
+Subject: [PATCH] gcc 13 build fix
+
+---
+ src/audio/base/IOutputDevice.h        | 1 +
+ src/audio/pulseaudio/PulseDataTypes.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/audio/base/IOutputDevice.h b/src/audio/base/IOutputDevice.h
+index 9829a7d..38178bb 100644
+--- a/src/audio/base/IOutputDevice.h
++++ b/src/audio/base/IOutputDevice.h
+@@ -2,6 +2,7 @@
+ #define IOUTPUTDEVICE_H
+ 
+ #include <string>
++#include <cstdint>
+ 
+ class IOutputDevice
+ {
+diff --git a/src/audio/pulseaudio/PulseDataTypes.h b/src/audio/pulseaudio/PulseDataTypes.h
+index 4a6ef00..cd197bb 100644
+--- a/src/audio/pulseaudio/PulseDataTypes.h
++++ b/src/audio/pulseaudio/PulseDataTypes.h
+@@ -2,6 +2,7 @@
+ #define PULSEDATATYPES_H
+ 
+ #include <string>
++#include <cstdint>
+ 
+ struct myServerInfo {
+     std::string server_name;
+-- 
+2.39.2
+

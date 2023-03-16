@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        7
+Version:        8
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -41,6 +41,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 8-1
+- Undefine _include_frame_pointers
+
 * Thu Sep 30 2021 Phantom X <megaphantomx at hotmail dot com> - 7-1
 - _gcc_lto_cflags future proof fix
 

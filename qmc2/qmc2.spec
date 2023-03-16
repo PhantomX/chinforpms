@@ -24,7 +24,7 @@ Summary:        M.A.M.E. Catalog / Launcher II
 #PDF.js is ASL 2.0
 #data/js/pdfjs/web/l10n.js is MIT
 #everything else is GPLv2
-License:        GPLv2 and ASL 2.0 and MIT
+License:        GPL-2.0-only AND Apache-2.0 AND MIT
 URL:            http://qmc2.batcom-it.net
 
 %if 0%{?with_snapshot}

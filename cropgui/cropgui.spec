@@ -1,6 +1,6 @@
-%global commit 1340ac1de39a86a3e368428503580fc132a2b9eb
+%global commit ef48fc2425a054d9186b7a9321414bf953f9e863
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220916
+%global date 20230112
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,10 +9,10 @@
 
 Name:           cropgui
 Version:        0.6
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://github.com/jepler/cropgui/
 
 %if 0%{?with_snapshot}

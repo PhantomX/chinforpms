@@ -16,7 +16,7 @@ Version:        0.9.13.1
 Release:        1%{?gver}%{?dist}
 Summary:        Graphical editor for ACLs and xattr
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://rofi.roger-ferrer.org/eiciel
 
 %if 0%{?with_snapshot}

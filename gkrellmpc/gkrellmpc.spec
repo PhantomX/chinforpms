@@ -6,7 +6,7 @@ Version:        0.1~beta10
 Release:        4%{?dist}
 Summary:        GKrellM plugin to control MPD
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://mpd.wikia.com/wiki/Client:GKrellMPC
 
 Source0:        http://mina.naguib.ca/dist/%{name}-%{ver}.tar.gz

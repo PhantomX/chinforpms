@@ -1,11 +1,13 @@
+%define _python_dist_allow_version_zero 1
+
 %bcond_with tests
 
 Name:           protontricks
-Version:        1.9.2
+Version:        1.10.2
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/Matoking/protontricks
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
@@ -68,6 +70,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-launch.deskto
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1.10.2-1
+- 1.10.2
+
 * Mon Nov 07 2022 Phantom X <megaphantomx at hotmail dot com> - 1.9.2-1
 - 1.9.2
 

@@ -11,7 +11,7 @@ Name:           adwaita-qt
 Version:        1.4.2
 Release:        2%{?gver}%{?dist}
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later
 Summary:        Adwaita theme for Qt-based applications
 
 Epoch:          1

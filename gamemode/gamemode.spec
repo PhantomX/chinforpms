@@ -13,7 +13,7 @@ Release:        101%{?gver}%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
-License:        BSD
+License:        BSD-3-Clause
 URL:            https://github.com/FeralInteractive/%{name}
 
 %if 0%{?with_snapshot}

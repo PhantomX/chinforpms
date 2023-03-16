@@ -9,7 +9,7 @@ Version:        1.1.6
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://www.freac.org/
 
 Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz

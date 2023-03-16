@@ -3,6 +3,8 @@
 %global date 20230307
 %global with_snapshot 1
 
+%define _fortify_level 0
+
 # Compiling the preloader fails with hardening enabled
 %undefine _hardened_build
 
@@ -997,7 +999,7 @@ autoreconf -f
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error"
+export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'` -Wno-error"
 
 export CFLAGS="$CFLAGS -ftree-vectorize"
 

@@ -8,7 +8,7 @@
 
 Name:           qcodeeditor
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Qt Code Editor Widget
 
 License:        MIT
@@ -44,6 +44,8 @@ developing applications that use %{name}.
 %prep
 %autosetup -n %{pkgname}-%{commit} -p1
 
+sed -e '/-ansi/d' -i CMakeLists.txt
+
 %build
 %cmake
 %cmake_build
@@ -64,5 +66,8 @@ developing applications that use %{name}.
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0-2.20200205gitdc644d4
+- Remove ansi from cmake compiler flags
+
 * Mon Dec 13 2021 Phantom X <megaphantomx at hotmail dot com> - 0-1.20200205gitdc644d4
 - Initial spec

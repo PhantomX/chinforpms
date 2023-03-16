@@ -9,7 +9,7 @@ Version:        0
 Release:        2%{?gver}%{?dist}
 Summary:        Script to move windows from one monitor to the next
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/vanaoff/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

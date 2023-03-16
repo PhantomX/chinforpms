@@ -14,7 +14,7 @@ Version:        20171024
 Release:        4%{?gver}%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.alister.eu/jazz/oj/
 
 %global vc_url  https://github.com/AlisterT/%{name}

@@ -16,7 +16,7 @@ Version:        3.04a
 Release:        2%{?gver}%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://wit.wiimm.de/
 
 %if 0%{?with_snapshot}

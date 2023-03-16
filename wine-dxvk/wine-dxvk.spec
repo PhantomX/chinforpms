@@ -1,5 +1,6 @@
 %undefine _annotated_build
 %undefine _auto_set_build_flags
+%define _fortify_level 0
 %undefine _hardened_build
 %undefine _package_note_file
 %global _default_patch_fuzz 2
@@ -181,7 +182,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'`"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'`"
 
 TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
 

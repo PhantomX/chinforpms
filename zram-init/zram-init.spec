@@ -12,7 +12,7 @@ Version:        11.1
 Release:        1%{?gver}%{?dist}
 Summary:        A wrapper script for the zram kernel module
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/vaeth/%{name}
 
 %if 0%{?with_snapshot}

@@ -1,6 +1,6 @@
-%global commit 1f6ac163ec919970de1d9882f264dfafce5909bb
+%global commit 3fe11badeb2edd2ded758ccca7e78fce6a7077e3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220720
+%global date 20230315
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -18,11 +18,11 @@
 %endif
 
 Name:           asmc
-Version:        2.34.15
+Version:        2.34.25
 Release:        1%{?gver}%{?dist}
 Summary:        Asmc Macro Assembler
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/nidud/asmc
 
 ExclusiveArch:  %{ix86} x86_64
@@ -106,6 +106,9 @@ install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.34.25-1.20230315git3fe11ba
+- 2.34.25
+
 * Tue Aug 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.34.15-1.20220720git1f6ac16
 - 2.34.15
 

@@ -20,7 +20,7 @@ Release:        100%{?gver}%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
-License:        LGPLv2 and (LGPLv2+ or CPL)
+License:        LGPL-2.1-only and (LGPL-2.1-or-later OR CPL-1.0) AND GPL-2.0-only
 URL:            http://p7zip.sourceforge.net/
 
 %if 0%{sanitize}

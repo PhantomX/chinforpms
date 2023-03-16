@@ -15,7 +15,7 @@ Version:        0.9.1
 Release:        1%{?gver}%{?dist}
 Summary:        PSX Memory Card Manager
 
-License:        GPLv3
+License:        GPL-2.0-only
 URL:            https://www.raphnet.net/programmation/psxmemcardmgr/index_en.php
 
 %if 0%{?with_snapshot}

@@ -6,7 +6,7 @@ Version:        0.1
 Release:        2%{?dist}
 Summary:        Some themes for the GNU Krell Monitor
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.muhri.net/gkrellm/
 Source0:        http://www.muhri.net/gkrellm/%{pkgname}.tar.gz
 

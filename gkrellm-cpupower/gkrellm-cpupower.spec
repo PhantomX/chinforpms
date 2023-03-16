@@ -6,7 +6,7 @@ Version:        0.1.6
 Release:        3%{?dist}
 Summary:        Gkrellm plugin for manipulating CPU frequency
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/sainsaar/gkrellm2-cpupower
 Source0:        https://github.com/sainsaar/gkrellm2-cpupower/tarball/%{version}#/%{pkgname}-%{version}.tar.gz
 

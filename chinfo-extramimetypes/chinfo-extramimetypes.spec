@@ -3,7 +3,7 @@ Version:        11.3
 Release:        1%{?dist}
 Summary:        Extra mimetypes for DEs
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/PhantomX/%{name}
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 

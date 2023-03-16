@@ -1,11 +1,11 @@
 %global pkgname Qt-Advanced-Docking-System
 
 Name:           libqtadvanceddocking
-Version:        3.8.3
+Version:        4.0.2
 Release:        1%{?dist}
 Summary:        Advanced Docking System for Qt
 
-License:        LGPLv2.1
+License:        LGPL-2.1-only
 URL:            https://github.com/githubuser0xFFFF/%{pkgname}
 
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -66,6 +66,9 @@ developing applications that use %{name}.
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 4.0.2-1
+- 4.0.2
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 3.8.3-1
 - 3.8.3
 

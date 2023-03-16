@@ -1,15 +1,16 @@
 Name:           manaplus
 Version:        2.1.3.17
 Epoch:          1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        OpenSource 2D MMORPG client for Evol Online and The Mana World
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://manaplus.org/
 
 Source0:        http://download.evolonline.org/manaplus/download/%{version}/%{name}-%{version}.tar.xz
 
 Patch10:        0001-fix-build.patch
+Patch11:        0001-gcc-13-build-fix.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -116,6 +117,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.3.17-104
+- gcc 13 build fix
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.3.17-103
 - Fix header include
 

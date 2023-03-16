@@ -1,0 +1,37 @@
+From 44ec45c875abce71a1937e918310340c551645e5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Mar 2023 18:22:22 -0300
+Subject: [PATCH] gcc 13 build
+
+---
+ adriconf/Utils/PCIDatabaseQueryInterface.h | 3 ++-
+ adriconf/ValueObject/GPUInfo.h             | 1 +
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/adriconf/Utils/PCIDatabaseQueryInterface.h b/adriconf/Utils/PCIDatabaseQueryInterface.h
+index 635f27e..763b414 100644
+--- a/adriconf/Utils/PCIDatabaseQueryInterface.h
++++ b/adriconf/Utils/PCIDatabaseQueryInterface.h
+@@ -2,6 +2,7 @@
+ #define ADRICONF_PCIDATABASEQUERYINTERFACE_H
+ 
+ #include <glibmm/ustring.h>
++#include <cstdint>
+ 
+ class PCIDatabaseQueryInterface {
+ public:
+diff --git a/adriconf/ValueObject/GPUInfo.h b/adriconf/ValueObject/GPUInfo.h
+index e761c7d..54fba7b 100644
+--- a/adriconf/ValueObject/GPUInfo.h
++++ b/adriconf/ValueObject/GPUInfo.h
+@@ -7,6 +7,7 @@
+ #include <glibmm/ustring.h>
+ #include <map>
+ #include <memory>
++#include <cstdint>
+ 
+ class GPUInfo {
+     private:
+-- 
+2.39.2
+

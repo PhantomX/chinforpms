@@ -12,7 +12,7 @@ URL:            https://www.libsdl.org/
 # The license in the file src/stdlib/SDL_qsort.c is bad, but author relicensed
 # it to zlib on 2016-02-21,
 # <https://www.mccaughan.org.uk/software/qsort.c-1.14>, bug #1381888.
-License:       LGPLv2+
+License:        LGPL-2.1-or-later
 
 # Source: %%{url}/release/%%{pkgname}-%%{version}.tar.gz
 # To create the repackaged archive use ./repackage.sh %%{version}

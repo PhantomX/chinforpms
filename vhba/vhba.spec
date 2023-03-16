@@ -6,7 +6,7 @@ Version:        20211218
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.xz
 Source1:        vhba.udev

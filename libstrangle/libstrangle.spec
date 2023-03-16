@@ -5,7 +5,7 @@ Version:        0.1.1
 Release:        1%{?dist}
 Summary:        Frame rate limiter
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://gitlab.com/torkel104/%{name}
 Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 

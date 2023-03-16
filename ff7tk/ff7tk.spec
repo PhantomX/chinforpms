@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit f9fba5e4915518fb1747d924b2efe0d891a6bb5a
+%global commit 9bb33102503c3c8987f04cbe148fe7277bef3d15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220911
+%global date 20230314
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,7 +10,7 @@
 %endif
 
 Name:           ff7tk
-Version:        0.83.0.0
+Version:        0.83.2.0
 Release:        1%{?gver}%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
@@ -59,8 +59,7 @@ rm -rf .git
 
 sed \
   -e 's|FIND_PACKAGE(Git)|FIND_PACKAGE(Git_disabled)|g' \
-  -e 's|share/pkgconfig|${CMAKE_INSTALL_LIBDIR}/pkgconfig|g' \
-  -e '/share\/licenses/d' \
+  -e '/\/licenses\//d' \
   -i CMakeLists.txt
 
 sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeLists.txt
@@ -97,6 +96,9 @@ sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeL
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.83.2.0-1.20230314git9bb3310
+- 0.83.2.0
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.83.0.0-1.20220911gitf9fba5e
 - 0.83.0.0
 

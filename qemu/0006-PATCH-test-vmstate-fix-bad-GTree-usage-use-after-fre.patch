@@ -1,0 +1,43 @@
+From 930def8769940600dd7dd587ec2accd4a8b6e1f8 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
+Date: Mon, 27 Feb 2023 16:02:51 +0000
+Subject: [PATCH 6/7] [PATCH] test-vmstate: fix bad GTree usage, use-after-free
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+According to g_tree_foreach() documentation:
+"The tree may not be modified while iterating over it (you can't
+add/remove items)."
+
+Fixes: 9a85e4b8f6 ("migration: Support gtree migration")
+Cc: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+---
+ tests/unit/test-vmstate.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/tests/unit/test-vmstate.c b/tests/unit/test-vmstate.c
+index 541bb4f63e..36b253eb67 100644
+--- a/tests/unit/test-vmstate.c
++++ b/tests/unit/test-vmstate.c
+@@ -1074,7 +1074,6 @@ static gboolean diff_tree(gpointer key, gpointer value, gpointer data)
+     struct match_node_data d = {tp->tree2, key, value};
+ 
+     g_tree_foreach(tp->tree2, tp->match_node, &d);
+-    g_tree_remove(tp->tree1, key);
+     return false;
+ }
+ 
+@@ -1084,7 +1083,7 @@ static void compare_trees(GTree *tree1, GTree *tree2,
+     struct tree_cmp_data tp = {tree1, tree2, function};
+ 
+     g_tree_foreach(tree1, diff_tree, &tp);
+-    assert(g_tree_nnodes(tree1) == 0);
++    g_tree_destroy(g_tree_ref(tree1));
+     assert(g_tree_nnodes(tree2) == 0);
+ }
+ 
+-- 
+2.37.3
+

@@ -12,7 +12,7 @@ Version:        0.9.2
 Release:        1%{?gver}%{?dist}
 Summary:        A front-end (GUI) for mednafen emulator
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/AmatCoder/%{name}
 
 %if 0%{?with_snapshot}

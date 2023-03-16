@@ -1,6 +1,6 @@
-%global commit 56c2db6fe903e0ee035fe4f3c451f99d7bff3e78
+%global commit c1821f7ad689035fa102d33767f4acd89ca8d6e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220911
+%global date 20230307
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,18 +10,20 @@
 # Enable system qhexedit
 %global with_qhexedit 0
 
+%global appname io.github.sithlord48.%{name}
+
 %global ff7tk_ver 0.83
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
 Version:        1.13.0.0
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 Epoch:          1
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://www.blackchocobo.com/
 
 %if 0%{?with_snapshot}
@@ -106,20 +108,16 @@ rm -rf %{buildroot}%{_datadir}/menu
 desktop-file-edit \
   --set-key=Exec \
   --set-value="%{name}" \
-  %{buildroot}%{_datadir}/applications/org.sithlord48.%{name}.desktop
-
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
-ln -s ../../../../pixmaps/%{name}.png \
-  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/%{name}.png
+  %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 for res in 16 24 32 48 64 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert deploy/%{name}.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{name}.png
+    ${dir}/%{appname}.png
 done
 
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 %find_lang %{name} --with-qt
 
@@ -131,9 +129,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %dir %{_datadir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/*.metainfo.xml
 %{_datadir}/mime/packages/*.xml
-%{_datadir}/pixmaps/*.png
 
 
 %changelog

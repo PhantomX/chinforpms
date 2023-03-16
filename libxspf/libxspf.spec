@@ -3,7 +3,7 @@ Version:        1.2.0
 Release:        1%{?dist}
 Summary:        XSPF playlist handling library
 
-License:        BSD
+License:        BSD-3-Clause
 URL:            http://libspiff.sourceforge.net/
 Source0:        https://downloads.sourceforge.net/libspiff/%{name}-%{version}.tar.gz
 

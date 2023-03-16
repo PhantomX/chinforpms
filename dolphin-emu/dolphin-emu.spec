@@ -26,9 +26,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 019bde6afcca8ff10953421a9c52a68f3d9ca8aa
+%global commit 91fca0783edc73d5f027cb4e151b319f03ee5ce4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230315
 %global with_snapshot 1
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -54,7 +54,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        175%{?gver}%{?dist}
+Release:        176%{?gver}%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -94,6 +94,8 @@ Patch2:         0001-Update-to-soundtouch-2.3.1.patch
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
+
+Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-%{srcname3}-gh-29d492b.patch
 
 
 BuildRequires:  gcc
@@ -226,7 +228,8 @@ This package provides the data files for dolphin-emu.
 ####################################################
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autopatch -M 500 -p1
 
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
@@ -281,6 +284,8 @@ rm -rf \
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:4} -C implot/implot --strip-components 1
+
+%patch900 -p1 -d VulkanMemoryAllocator
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson
@@ -407,6 +412,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-176.20230315git91fca07
+- gcc 13 build fix
+
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-163.20220715git1da24f6
 - Update
 - BR: png -> spng

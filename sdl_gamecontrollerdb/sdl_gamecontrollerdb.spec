@@ -14,7 +14,7 @@ Version:        0
 Release:        55%{?gver}%{?dist}
 Summary:        A database of game controller mappings
 
-License:        zlib and MIT
+License:        Zlib AND MIT
 URL:            https://github.com/gabomdq/%{pkgname}
 %if 0%{?with_snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz

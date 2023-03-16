@@ -1,7 +1,7 @@
 %global commit 81c34d4f1629dc7df17ebe21d4a269e2b7219c2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220829
-%global with_snapshot 1
+%global with_snapshot 0
 
 %global commit1 51edeb63ec3f456f4950922c5011c326a062fbce
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -19,8 +19,8 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.2.1
-Release:        2%{?gver}%{?dist}
+Version:        4.5.2
+Release:        1%{?gver}%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -94,11 +94,11 @@ EOF
 
 %build
 %set_build_flags
-%make_build
+%make_build VCD=0
 
 
 %install
-%make_install BINDIR=%{_bindir} LIBDIR=%{_libdir} INCDIR=%{_includedir}
+%make_install BINDIR=%{_bindir} LIBDIR=%{_libdir} INCDIR=%{_includedir} VCD=0
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
@@ -121,6 +121,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 4.5.2-1
+- 4.5.2
+
 * Tue Jun 21 2022 Phantom X <megaphantomx at hotmail dot com> - 4.2.1-1.20220520git1efd5dc
 - 4.2.1
 

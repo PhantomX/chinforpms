@@ -9,7 +9,7 @@ Version:        1.1
 Release:        1.a%{?gver}%{?dist}
 Summary:        Fast linux alternative for decrypting PS3/PSP pkgs
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/qwikrazor87/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

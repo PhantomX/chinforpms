@@ -3,7 +3,7 @@ Version:        1.0
 Release:        1%{?dist}
 Summary:        Password cracker for zip archives
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://oldhome.schmorp.de/marc/%{name}.html
 
 Source0:        http://oldhome.schmorp.de/marc/data/%{name}-%{version}.tar.gz

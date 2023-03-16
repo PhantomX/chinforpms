@@ -5,7 +5,7 @@ Version:            1.7.6
 Release:            1%{?dist}
 Summary:            Sends virtual input commands
 
-License:            LGPLv3
+License:            LGPL-3.0-only
 URL:                https://pypi.org/project/pynput
 
 Source0:            %{pypi_source}

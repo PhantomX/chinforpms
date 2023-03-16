@@ -7,7 +7,7 @@ Summary:        A CD/DVD-ROM image access library
 
 Epoch:          1
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 

@@ -1,3 +1,7 @@
+# Disable https://fedoraproject.org/wiki/Changes/fno-omit-frame-pointer
+# chinforpms don't need this
+%_include_frame_pointers %{nil}
+
 # Set fixed cpu jobs instead auto
 %_gcc_lto_cflags %(grep '^%%_gcc_lto_cflags' /usr/lib/rpm/redhat/macros | cut -d'-' -f2- \\
  | sed 's/^flto=auto /-flto=%{_smp_build_ncpus} /')
@@ -15,4 +19,6 @@
 
 %_native_flags_x86_64 %(grep '^optflags: x86_64' /usr/lib/rpm/redhat/rpmrc \\
  | cut -d' ' -f4- | sed -e 's/%%{__cflags_arch_x86_64}/%(echo %{__cflags_arch_x86_64})/' \\
+ | sed -e 's/%%{_frame_pointers_cflags}/%(echo %{_frame_pointers_cflags})/' \\
+ | sed -e 's/%%{_frame_pointers_cflags_x86_64}/%(echo %{_frame_pointers_cflags_x86_64})/' \\
  %{?_native_flags:| sed -e 's/-mtune=generic/-march=native -mtune=native/'})

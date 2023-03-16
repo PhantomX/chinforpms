@@ -8,10 +8,10 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        22.01
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        SDK for lzma compression
 
-License:        LGPLv2
+License:        LGPL-2.1-only
 URL:            https://www.7-zip.org
 
 Source0:        %{url}/a/lzma%{ver}.7z
@@ -147,6 +147,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 22.01-102
+- Add XZ symbols
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-101
 - Modify booleans to prevent conflict
 

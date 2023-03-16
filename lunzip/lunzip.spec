@@ -3,7 +3,7 @@ Version:        1.13
 Release:        1%{?dist}
 Summary:        Decompressor for lzip files
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.nongnu.org/lzip/%{name}.html
 
 Source0:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz

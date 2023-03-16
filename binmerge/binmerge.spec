@@ -12,7 +12,7 @@ Version:        1.0
 Release:        2%{?gver}%{?dist}
 Summary:        Tool to merge multiple bin/cue tracks into one
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/putnam/%{name}
 
 %if 0%{?with_snapshot}

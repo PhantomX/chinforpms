@@ -5,7 +5,7 @@ Version:        2.32.0
 Release:        22%{?dist}
 Summary:        Themes for GNOME
 
-License: LGPLv2 and GPLv2
+License:        LGPL-2.1-only AND GPL-2.0-only
 URL:            http://download.gnome.org/sources/gnome-themes
 
 #VCS: git:git://git.gnome.org/gnome-themes

@@ -26,7 +26,7 @@ Release:       0.11%{?git_rel}%{?dist}
 Epoch:         1
 Summary:       MATE Desktop file archiver
 
-License:       GPLv2+ and LGPLv2+
+License:       GPL-2.0-or-later AND LGPL-2.0-or-later
 URL:           http://mate-desktop.org
 
 # for downloading the tarball use 'spectool -g -R engrampa.spec'

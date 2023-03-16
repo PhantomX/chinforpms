@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7bc9c467e64c373fd366282769229b76379659ac
+ 7bc9c467e64c373fd366282769229b76379659ac wifi: cfg80211: Fix use after free for wext
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/d2fdc4eb94179d410f628f7f56a6740d6d7f6540
  d2fdc4eb94179d410f628f7f56a6740d6d7f6540 Revert "wifi: cfg80211: Fix use after free for wext"
 

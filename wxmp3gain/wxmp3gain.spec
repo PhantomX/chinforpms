@@ -3,7 +3,7 @@ Version:        4.0
 Release:        1%{?dist}
 Summary:        Free front-end for the MP3gain
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://%{name}.sourceforge.io
 
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}-src.tar.gz

@@ -3,7 +3,7 @@ Version:        3.0.8
 Release:        1%{?dist}
 Summary:        Disables the client side decoration of Gtk+ 3
 
-License:        LGPLv2.1
+License:        LGPL-2.1-only
 URL:            https://github.com/ZaWertun/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz

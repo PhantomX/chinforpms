@@ -5,7 +5,7 @@ Version:        3.2.5
 Release:        1%{?dist}
 Summary:        CDEmu CLI client
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://cdemu.sourceforge.io/
 Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 

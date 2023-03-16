@@ -19,7 +19,7 @@ Summary:        GNOME frontend for the MPD
 Version:        11.8.90
 Release:        100%{?gver}%{?dist}
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://gmpclient.org/
 
 %if 0%{?with_snapshot}

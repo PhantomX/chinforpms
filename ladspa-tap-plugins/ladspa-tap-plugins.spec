@@ -6,7 +6,7 @@ Version:        1.0.1
 Release:        101%{?dist}
 Summary:        Tom's Audio Processing plugin
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://tomscii.sig7.se/%{pkgname}/
 
 Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz

@@ -3,7 +3,7 @@ Summary:        Graphical user interface for GnuPG
 Version:        0.10.0
 Release:        2%{?dist}
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://www.gnupg.org/related_software/gpa/
 Source0:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2
 Source1:        https://gnupg.org/ftp/gcrypt/%{name}/%{name}-%{version}.tar.bz2.sig

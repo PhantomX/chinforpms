@@ -14,7 +14,7 @@ Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
 
-License:        zlib
+License:        Zlib
 URL:            https://fna-xna.github.io/
 
 %global vc_url  https://github.com/FNA-XNA/%{name}

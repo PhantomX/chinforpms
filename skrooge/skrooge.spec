@@ -5,7 +5,7 @@ Release:        103%{?dist}
 
 Epoch:          1
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://skrooge.org
 Source0:        https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 

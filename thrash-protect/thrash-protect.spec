@@ -3,7 +3,7 @@ Version:        0.14.1
 Release:        1%{?dist}
 Summary:        Simple-Stupid user-space program protecting a linux host from thrashing
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/tobixen/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 

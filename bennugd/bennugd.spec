@@ -8,7 +8,7 @@ Version:        1.0.0
 Release:        2%{?sver}%{?dist}
 Summary:        A programming language to create games
 
-License:        zlib
+License:        Zlib
 URL:            https://www.bennugd.org
 
 # To regenerate a snapshot:

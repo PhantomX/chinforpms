@@ -165,6 +165,7 @@
 
 %define evr %{epoch}:%{version}-%{release}
 
+%define requires_block_blkio Requires: %{name}-block-blkio = %{evr}
 %define requires_block_curl Requires: %{name}-block-curl = %{evr}
 %define requires_block_dmg Requires: %{name}-block-dmg = %{evr}
 %if %{have_block_gluster}
@@ -254,6 +255,7 @@
 %endif
 
 %global requires_all_modules \
+%{requires_block_blkio} \
 %{requires_block_curl} \
 %{requires_block_dmg} \
 %{requires_block_gluster} \
@@ -311,7 +313,7 @@ Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
 Version:        7.2.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          2
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND CC-BY-SA-4.0 
@@ -333,7 +335,19 @@ Source36: README.tests
 
 # Fix SGX assert
 Patch: 0001-target-i386-the-sgx_epc_get_section-stub-is-reachabl.patch
-Patch: 0001-tests-Disable-pci_virtio_vga-for-ppc64.patch
+Patch: 0002-tests-Disable-pci_virtio_vga-for-ppc64.patch
+# Fix compat with kernel-headers >= 6.1
+Patch: 0003-Revert-linux-user-add-more-compat-ioctl-definitions.patch
+Patch: 0004-Revert-linux-user-fix-compat-with-glibc-2.36-sys-mou.patch
+# Fix virtio-blk-pci detect-zeroes=unmap (RHBZ#2173357)
+Patch: 0005-block-fix-detect-zeroes-with-BDRV_REQ_REGISTERED_BUF.patch
+# Fix build with glib2 2.75.3
+# https://bugzilla.redhat.com/show_bug.cgi?id=2173639
+# https://gitlab.com/qemu-project/qemu/-/issues/1518
+# Patch is NOT UPSTREAM.
+Patch: 0006-PATCH-test-vmstate-fix-bad-GTree-usage-use-after-fre.patch
+# Fix one of the tests.  Sent upstream 2023-02-27.
+Patch: 0007-tests-Ensure-TAP-version-is-printed-before-other-mes.patch
 Patch: 0010-Skip-iotests-entirely.patch
 
 BuildRequires: meson >= %{meson_version}
@@ -398,6 +412,7 @@ BuildRequires: pkgconfig(gbm)
 BuildRequires: perl-Test-Harness
 BuildRequires: libslirp-devel
 BuildRequires: libbpf-devel
+BuildRequires: libblkio-devel
 
 
 # Fedora specific
@@ -605,6 +620,16 @@ the functionality of the installed %{name} package
 
 Install this package if you want access to the avocado_qemu
 tests, or qemu-iotests.
+
+
+%package  block-blkio
+Summary: QEMU blkio block driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description block-blkio
+This package provides the additional blkio block driver for QEMU.
+
+Install this package if you want to access disks over vhost-user-blk, vdpa-blk,
+and other transports using the libblkio library.
 
 
 %package  block-curl
@@ -1594,6 +1619,7 @@ run_configure \
 %ifarch %{ix86} x86_64
   --enable-avx2 \
 %endif
+  --enable-blkio \
   --enable-bpf \
   --enable-cap-ng \
   --enable-capstone \
@@ -2211,6 +2237,8 @@ popd
 %{testsdir}
 %{_libdir}/%{name}/accel-qtest-*.so
 
+%files block-blkio
+%{_libdir}/%{name}/block-blkio.so 
 %files block-curl
 %{_libdir}/%{name}/block-curl.so
 %files block-iscsi
@@ -2754,6 +2782,9 @@ popd
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2:7.2.0-101
+- Rawhide sync
+
 * Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 2:7.2.0-100
 - 7.2.0
 

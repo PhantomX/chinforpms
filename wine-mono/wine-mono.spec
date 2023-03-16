@@ -7,7 +7,7 @@
 
 %?mingw_package_header
 
-%global with_bin 1
+%bcond_without bin
 #Set to 1 to download sources from github
 %global with_gh 0
 
@@ -26,7 +26,7 @@ Version:        7.4.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
-License:        GPLv2 and LGPLv2 and MIT and BSD and MS-PL and MPLv1.1
+License:        GPL-2.0-only AND LGPL-2.0-only and MIT AND BSD-1-Clause AND MS-PL AND MPL-1.1 AND Zlib
 URL:            http://wiki.winehq.org/Mono
 
 %if 0%{?with_gh}
@@ -34,7 +34,7 @@ URL:            http://wiki.winehq.org/Mono
 %else
 %global dl_url  https://dl.winehq.org/wine/%{name}/%{version}
 %endif
-%if 0%{?with_bin}
+%if %{with bin}
 Source0:        %{dl_url}/%{name}-%{version}-x86.tar.xz
 %else
 Source0:        %{dl_url}/%{name}-%{version}-src.tar.xz
@@ -49,7 +49,7 @@ Patch0:         %{name}-build-static.patch
 BuildArch:      noarch
 ExcludeArch:    %{power64} s390x s390
 
-%if 0%{?with_bin}
+%if %{with bin}
 BuildRequires:  mingw-filesystem-base
 %else
 # 64
@@ -99,7 +99,7 @@ Windows Mono library required for Wine.
 
 %prep
 %setup -q
-%if 0%{?with_bin}
+%if %{with bin}
 cp -p %{S:1} %{S:2} .
 
 tar xvf %{S:0}
@@ -123,7 +123,7 @@ sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/
 
 
 %build
-%if !0%{?with_bin}
+%if %{without bin}
 export BTLS_CFLAGS="-fPIC"
 export CPPFLAGS_FOR_BTLS="-fPIC"
 # Disable LLVM compiler as we do not ship a full, updated MinGW environment. Use GCC instead.
@@ -135,7 +135,7 @@ echo "ENABLE_DOTNET_CORE_WPFGFX=0" >> user-config.make
 
 %install
 mkdir -p %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
-%if 0%{?with_bin}
+%if %{with bin}
 
 cp -r %{name}-%{version}/* %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/
 
@@ -169,7 +169,7 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 %files
 %license COPYING
 %doc README
-%if !0%{?with_bin}
+%if %{without bin}
 %license mono-LICENSE mono-COPYING.LIB mono-basic-LICENSE mono-mcs*
 %doc mono-basic-README
 %endif

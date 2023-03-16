@@ -1,6 +1,6 @@
-%global commit bb05d981dbb3a39dd583d03a429a06e7a8c871c2
+%global commit bef4f0ad46b9115fddfce976e1a5adfcdeff3580
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202209013
+%global date 20230309
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,11 +10,11 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20220909
-Release:        1%{?gver}%{?dist}
+Version:        20230309
+Release:        0%{?gver}%{?dist}
 Summary:        Disc and disk image creation tool 
 
-License:        ASL 2.0
+License:        Apache-2.0
 
 URL:            https://github.com/saramibreak/%{pkgname}
 
@@ -58,9 +58,8 @@ find %{pkgname} -type f \( -name '*.c*' -o -name '*.h*' \) -exec sed -e 's/\r//'
 sed -e 's|-O2||g' -i %{pkgname}/makefile
 
 sed \
-  -e 's|_RPM_DATA_DIR_|%{_datadir}/%{pkgname}|g' \
   -e 's|_RPM_BIN_DIR_|%{_bindir}|g' \
-  -i %{pkgname}/{get,xml}.cpp
+  -i %{pkgname}/get.cpp
 
 %build
 %set_build_flags

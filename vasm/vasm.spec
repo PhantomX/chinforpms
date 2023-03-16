@@ -63,6 +63,7 @@ for cpu in %{cpu_list}; do
 done
 
 install -pm0755 vobjdump %{buildroot}%{_bindir}/
+strip --strip-unneeded %{buildroot}%{_bindir}/vobjdump
 
 %files
 %doc builddoc/*

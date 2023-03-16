@@ -8,7 +8,7 @@ Version:        1.9.0
 Release:        102%{?dist}
 Summary:        Notes plugin for the Xfce panel
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://docs.xfce.org/panel-plugins/%{name}
 Source0:        https://archive.xfce.org/src/panel-plugins/%{name}/%{minor_version}/%{name}-%{version}.tar.bz2
 

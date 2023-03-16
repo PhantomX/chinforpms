@@ -3,7 +3,7 @@ Version:        0.3
 Release:        1%{?dist}
 Summary:        Utility to remove the SNES ROM header requirement from IPS patches
 
-License:        BSD
+License:        BSD-2-Clause
 URL:            https://github.com/heuripedes/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz

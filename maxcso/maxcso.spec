@@ -1,6 +1,6 @@
-%global commit 2a26a15347767c8f343cc8d03b74028e1be25799
+%global commit 528c69bf5ef616f4319c62b6aed34cd0c59a48c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220529
+%global date 20230212
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -11,7 +11,7 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        4%{?gver}%{?dist}
+Release:        5%{?gver}%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC

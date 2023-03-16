@@ -3,7 +3,7 @@ Version:        1.10
 Release:        1%{?dist}
 Summary:        Multi-threaded compressor using the lzip file format
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.nongnu.org/lzip/%{name}.html
 
 Source0:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz

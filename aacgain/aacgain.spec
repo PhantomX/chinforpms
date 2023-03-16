@@ -22,7 +22,7 @@ Version:        2.0.0
 Release:        1%{?gver}%{?dist}
 Summary:        Normalizes the volume of digital music AAC files
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://aacgain.altosdesign.com/
 
 %if 0%{?with_snapshot}

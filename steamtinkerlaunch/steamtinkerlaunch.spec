@@ -1,9 +1,9 @@
 Name:           steamtinkerlaunch
-Version:        11.11
+Version:        12.12
 Release:        1%{?dist}
 Summary:        Wrapper script for Steam custom launch options
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/frostworx/steamtinkerlaunch
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -87,6 +87,9 @@ install -pm0644 misc/%{name}.svg \
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 12.12-1
+- 12.12
+
 * Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 11.11-1
 - 11.11
 

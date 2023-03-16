@@ -6,7 +6,7 @@ Release:        100%{?dist}
 Summary:        YouTube browser for SMPlayer
 Epoch:          1
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://www.smtube.org
 %dnl Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.bz2

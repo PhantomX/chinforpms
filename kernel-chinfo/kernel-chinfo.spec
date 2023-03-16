@@ -116,12 +116,14 @@ Summary: The Linux kernel
 %endif
 
 %ifarch x86_64
-%if 0%{?fedora} > 36
 %global efiuki 1
-%endif
 %else
 %global efiuki 0
 %endif
+%if 0%{?fedora} < 37
+%global efiuki 0
+%endif
+
 
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
@@ -190,7 +192,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 5
+%define stable_update 6
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -201,9 +203,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 58b8a57ed0a5e7297846aab778b6aa59c560a9da
+%global pfcommit 4ee087d62efcee619a3e3eb0da87385b21e7a0ff
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash 3e89a9be8334af1aa8edc5ba7dc36b3b
+%global pfcoprhash 2f92706ef825774cb6508d1fae40f285
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -225,7 +227,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id ef7db203f7b3ad3cf5097c01f3bba30c93fd714d
+%global opensuse_id 25f042898924612664b5481f189d4ee28d87f337
 
 # Set rpm version accordingly
 %if 0%{?stable_update}
@@ -3208,7 +3210,10 @@ fi
 #
 #
 %changelog
-* Sat Mar 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.4-500.chinfo
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.6-500.chinfo
+- 6.2.6 - pf4
+
+* Sat Mar 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.5-500.chinfo
 - 6.2.5 - pf4
 
 * Fri Mar 10 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.3-500.chinfo

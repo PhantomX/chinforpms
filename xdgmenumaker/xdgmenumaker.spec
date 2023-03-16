@@ -3,7 +3,7 @@ Version:        2.0
 Release:        1%{?dist}
 Summary:        Generates application menus using xdg information
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://www.salixos.org/wiki/index.php/Xdgmenumaker
 Source0:        https://github.com/gapan/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 

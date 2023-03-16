@@ -3,7 +3,7 @@ Version:        2.26.3
 Release:        1%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 
-License:        zlib and MIT
+License:        Zlib AND MIT
 URL:            http://www.libsdl.org
 Source0:        %{url}/release/SDL2-%{version}.tar.gz
 

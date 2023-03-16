@@ -3,7 +3,7 @@ Version:        3.2.5
 Release:        100%{?dist}
 Summary:        A libMirage-based CD/DVD-ROM image analyzer
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            ttps://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 

@@ -1,4 +1,4 @@
-From cc97708fdbeae13290e05080c90544d5f5430d9e Mon Sep 17 00:00:00 2001
+From 36b535c9bfffcac87db2adfd3d6c4fd13e7d12b1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 13 Dec 2021 15:23:51 -0300
 Subject: [PATCH] cmake: library fixes
@@ -8,11 +8,11 @@ Subject: [PATCH] cmake: library fixes
  1 file changed, 8 insertions(+), 13 deletions(-)
 
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index dea76a0..0f8baf8 100644
+index ba62e48..db2f4f5 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -74,9 +74,10 @@ set_target_properties(qtadvanceddocking PROPERTIES
-     CXX_STANDARD_REQUIRED ON
+@@ -85,9 +85,10 @@ set_target_properties(qtadvanceddocking PROPERTIES
+     AUTORCC ON
      CXX_EXTENSIONS OFF
      VERSION ${VERSION_SHORT}
 +    SOVERSION ${PROJECT_VERSION_MAJOR}
@@ -22,8 +22,8 @@ index dea76a0..0f8baf8 100644
 +    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/lib${LIB_SUFFIX}"
      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${ads_PlatformDir}/bin"
  )
- include(CMakePackageConfigHelpers)
-@@ -86,30 +87,24 @@ write_basic_package_version_file(
+ if(QT_VERSION_MAJOR STREQUAL "5")
+@@ -107,30 +108,24 @@ write_basic_package_version_file(
      COMPATIBILITY SameMajorVersion
  )
  install(FILES ${ads_HEADERS}
@@ -61,5 +61,5 @@ index dea76a0..0f8baf8 100644
  
  target_include_directories(qtadvanceddocking PUBLIC
 -- 
-2.37.3
+2.39.2
 

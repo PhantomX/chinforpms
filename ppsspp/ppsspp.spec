@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit caab66bc187642d8cee74a8c6f37c6fe9cf3749b
+%global commit c31b4be69053017e627911fa1eca562a5755b8e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230314
 %global with_snapshot 1
 
 # Enable Qt build
@@ -70,7 +70,7 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        102%{?gver}%{?dist}
+Release:        104%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -105,6 +105,7 @@ Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
+Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 
 %if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -162,10 +163,10 @@ BuildRequires:  cmake(Qt5OpenGL)
 
 Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
-Requires:       google-roboto-condensed-fonts
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(armips) = 0~git%{shortcommit4}
+Provides:       bundled(basisu_transcoder)
 Provides:       bundled(cityhash)
 Provides:       bundled(cpu_features) = 0~git%{shortcommit5}
 Provides:       bundled(gason)
@@ -197,6 +198,8 @@ recompilers (dynarecs).
 Summary:        Data files of %{name}
 BuildArch:      noarch
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       google-roboto-condensed-fonts
+Requires:       sdl_gamecontrollerdb
 
 %description data
 Data files of %{name}.
@@ -227,7 +230,7 @@ tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
-rm -rf ext/{discord-rpc,libpng,libzip,vulkan,zlib,zstd}*
+rm -rf ext/{discord-rpc,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
@@ -391,6 +394,10 @@ rm -f %{buildroot}/usr/share/applications/*.desktop
 install -pm0755 ext/native/tools/%{_vpath_builddir}/{atlastool,zimtool} \
   %{buildroot}%{_bindir}/
 
+rm -f %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
+ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
+  %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
+
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
@@ -406,6 +413,8 @@ desktop-file-install --mode 0644 \
   --set-value="%{name}" \
   --set-key="StartupNotify" \
   --set-value="false" \
+  --set-key="StartupWMClass" \
+  --set-value="PPSSPP" \
   --add-category="Game" \
   --add-category="Emulator" \
   --set-icon="%{name}" \
@@ -442,6 +451,10 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Mar 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.4-104.20230314gitc31b4be
+- Patch to change font scaling
+- R: sdl_gamecontrollerdb
+
 * Tue Jan 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.4-100
 - 1.14.4
 

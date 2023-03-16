@@ -3,7 +3,7 @@ Version:        0.9.64
 Release:        1%{?dist}
 Summary:        GUI tools for firejail
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://firejail.wordpress.com/
 Source0:        https://downloads.sourceforge.net/firejail/%{name}-%{version}.tar.xz
 

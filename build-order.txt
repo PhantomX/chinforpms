@@ -46,7 +46,7 @@ xwit
 ff7tk
 -gstreamer1-plugins-base
 libadwaita
-libcpuinfo
+cpuinfo
 libdeflate
 libqtadvanceddocking
 -libliftoff
@@ -84,9 +84,9 @@ applyppf
 ario
 asbru-cm
 atool
--audacious
+audacious
 -authenticator
-barrier
+-barrier
 -bashdb
 -bcg729
 -bcmatroska2
@@ -106,7 +106,7 @@ chinfo-extramimetypes
 claws-mail
 claws-mail-themes
 cmdpack
-cpupower-gui
+-cpupower-gui
 cropgui
 -curlew
 deluge
@@ -152,6 +152,7 @@ hdiffpatch
 -hollywood
 -htop
 image-analyzer
+input-leap
 ipager
 ipsbehead
 jdupes
@@ -167,7 +168,7 @@ ladspa-tap-plugins
 libstrangle
 -liveprogide
 -linux-steam-integration
-lutris
+-lutris
 lunzip
 -lzip
 makeppf
@@ -182,13 +183,13 @@ mgba
 -mingw-w64-tools
 -mingw-winpthreads
 move-to-next-monitor
-mozilla-gnotifier
+-mozilla-gnotifier
 -mozilla-keepassxc-browser
 mp3val
 mpdnotify
 -mps-youtube
 -mupen64plus
-NetworkManager-f5vpn
+-NetworkManager-f5vpn
 nicotine+
 nvtop
 openjazz
@@ -223,7 +224,7 @@ qt6ct
 radeon-profile
 radeon-profile-daemon
 -rclone
-retext
+-retext
 rmg
 rust-u4pak
 SDL1
@@ -234,7 +235,7 @@ sdl-jstest
 -sdlcl
 -shaderc
 skrooge
-simple64
+-simple64
 smtube
 -snx
 -snxvpn
@@ -293,7 +294,7 @@ jamesdsp
 -mupen64plus-rsp-parallel
 -mupen64plus-video-parallel
 -ortp
-vkbasalt
+-vkbasalt
 whdd
 wine
 

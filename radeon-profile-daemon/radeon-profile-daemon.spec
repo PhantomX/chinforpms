@@ -3,7 +3,7 @@ Version:        20190603
 Release:        1%{?dist}
 Summary:        Daemon for radeon-profile GUI 
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/marazmista/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz

@@ -19,7 +19,7 @@ Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://wiki.gnome.org/Apps/EasyTAG
 
 %if 0%{?with_snapshot}

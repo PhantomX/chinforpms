@@ -11,7 +11,7 @@ Version:        0.0.1
 Release:        31%{?gver}%{?dist}
 Summary:        XCF (GIMP) image loader for GTK+ applications
 
-License:        LGPLv2+
+License:        LGPL-2.0-or-later
 URL:            https://github.com/StephaneDelcroix/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

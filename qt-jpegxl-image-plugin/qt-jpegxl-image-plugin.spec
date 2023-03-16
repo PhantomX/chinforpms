@@ -1,6 +1,6 @@
-%global commit 26af559645c86ffc7629c10637834cbd293c9d3f
+%global commit 66ac0de3b51903a9ceb293eb5b6eaf4cb29d2911
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220910
+%global date 20230119
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,10 +9,10 @@
 
 Name:           qt-jpegxl-image-plugin
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://github.com/novomesk/%{name}
 
 %if 0%{?with_snapshot}
@@ -26,7 +26,7 @@ BuildRequires:  cmake
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  pkgconfig(libjxl)
+BuildRequires:  pkgconfig(libjxl) >= 0.7
 BuildRequires:  pkgconfig(libjxl_threads)
 
 

@@ -3,7 +3,7 @@ Version:        1.6.3
 Release:        2%{?dist}
 Summary:        Translate joystick movements into equivalent keystrokes
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://sourceforge.net/projects/joy2key
 Source0:        https://gentoo.osuosl.org/distfiles/%{name}-%{version}.tar.bz2
 

@@ -23,8 +23,9 @@ Version:        1.31.0
 Release:        100%{?unstable:.%{unstable}}%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
+
 #mednafen is a monstrosity build out of many emulators hence the colourful licensing
-License:        GPLv2+ and BSD and ISC and LGPLv2+ and MIT and zlib 
+License:        GPL-2.0-or-later AND BSD-3-Clause AND ISC AND LGPL-2.0-or-later AND MIT AND Zlib
 URL:            https://mednafen.github.io
 
 Source0:        https://mednafen.github.io/releases/files/%{name}-%{version}%{?unstable:-%{unstable}}.tar.xz

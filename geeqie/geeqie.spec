@@ -17,7 +17,7 @@ Version:        2.0.1
 Release:        102%{?gver}%{?dist}
 
 URL:            https://www.geeqie.org
-License:        GPLv2+
+License:        GPL-2.0-or-later
 
 %if 0%{?with_snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

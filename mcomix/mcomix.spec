@@ -12,7 +12,7 @@ Version:        2.1.0
 Release:        1%{?gver}%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://mcomix.sourceforge.net/
 
 %if 0%{?with_snapshot}

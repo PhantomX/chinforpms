@@ -8,11 +8,11 @@
 %endif
 
 Name:           libeatmydata
-Version:        130
+Version:        131
 Release:        1%{?gver}%{?dist}
 Summary:        Library and utilities designed to disable fsync and friends
 
-License:        GPLv3
+License:        GPL-3.0-only
 
 URL:            https://www.flamingspork.com/projects/%{name}
 
@@ -70,6 +70,9 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 131-1
+- 131
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 130-1
 - 130
 

@@ -585,7 +585,7 @@ index 6ce77a0..2600cd1 100644
  
  include ../../../CPP/7zip/LzmaDec_gcc.mak
  
-@@ -16,6 +18,19 @@ OBJS = \
+@@ -16,6 +18,26 @@ OBJS = \
    $O/LzmaEnc.o \
    $O/LzmaUtil.o \
    $O/Threads.o \
@@ -602,6 +602,13 @@ index 6ce77a0..2600cd1 100644
 +  $O/7zDec.o \
 +  $O/Lzma2Dec.o \
 +  $O/Lzma2Enc.o \
++  $O/Sha256.o \
++  $O/Sha256Opt.o \
++  $O/Xz.o \
++  $O/XzCrc64.o \
++  $O/XzCrc64Opt.o \
++  $O/XzDec.o \
++  $O/XzEnc.o
  
  
  include ../../7zip_gcc_c.mak

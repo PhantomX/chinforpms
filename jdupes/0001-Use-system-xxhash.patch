@@ -1,23 +1,24 @@
-From adfad030e0ddfaefdba401835557d94a429a16c1 Mon Sep 17 00:00:00 2001
+From 445a79c325649a19fd3c60a1125269caf8b0bb73 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 21 Feb 2021 10:16:49 -0300
 Subject: [PATCH] Use system xxhash
 
 ---
- Makefile | 7 +++----
+ Makefile | 8 ++++----
  jdupes.c | 2 +-
  jdupes.h | 2 +-
- 3 files changed, 5 insertions(+), 6 deletions(-)
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index afebf3e..2b1eed0 100644
+index bc08be2..3cafc6e 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -152,20 +152,19 @@ INSTALL_DATA    = $(INSTALL) -m 0644
+@@ -182,20 +182,20 @@ INSTALL_DATA    = $(INSTALL) -m 0644
  OBJS += jdupes.o jody_paths.o jody_sort.o jody_win_unicode.o jody_strtoepoch.o string_malloc.o oom.o
  OBJS += jody_cacheinfo.o
  OBJS += act_deletefiles.o act_linkfiles.o act_printmatches.o act_summarize.o act_printjson.o
--OBJS += xxhash.o
+-OBJS += xxhash.o jody_hash.o
++OBJS += jody_hash.o
  OBJS += $(ADDITIONAL_OBJECTS)
  
  all: $(PROGRAM_NAME)
@@ -38,31 +39,31 @@ index afebf3e..2b1eed0 100644
  winres.o: winres.rc winres.manifest.xml
  	./tune_winres.sh
 diff --git a/jdupes.c b/jdupes.c
-index 6b3737e..c4baefd 100644
+index b1faa1a..fbc98c1 100644
 --- a/jdupes.c
 +++ b/jdupes.c
 @@ -42,7 +42,7 @@
- #include <time.h>
  #include <sys/time.h>
  #include "jdupes.h"
--#include "xxhash.h"
-+#include <xxhash.h>
- #include "oom.h"
- #ifdef ENABLE_DEDUPE
- #include <sys/utsname.h>
+ #ifndef USE_JODY_HASH
+- #include "xxhash.h"
++ #include <xxhash.h>
+ #else
+  #include "jody_hash.h"
+ #endif
 diff --git a/jdupes.h b/jdupes.h
-index 38c0469..d6606dd 100644
+index 3b435a9..6578bc4 100644
 --- a/jdupes.h
 +++ b/jdupes.h
 @@ -32,7 +32,7 @@ extern "C" {
- #include "jody_sort.h"
  #include "version.h"
  
+ #ifndef USE_JODY_HASH
 -#include "xxhash.h"
 +#include <xxhash.h>
- 
- /* Set hash type (change this if swapping in a different hash function) */
-  typedef XXH64_hash_t jdupes_hash_t;
+ #else
+ #include "jody_hash.h"
+ #endif /* USE_JODY_HASH */
 -- 
-2.29.2
+2.39.2
 

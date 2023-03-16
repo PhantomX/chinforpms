@@ -5,7 +5,7 @@ Summary:        A program to create video DVDs and CDs (VCD, sVCD or CVD)
 
 Epoch:          1
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://www.rastersoft.com/programas/devede.html
 Source0:        https://gitlab.com/rastersoft/%{name}/-/archive/%{version}/%{name}-%{version}.tar.gz
 

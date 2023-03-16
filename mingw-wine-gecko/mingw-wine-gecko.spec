@@ -1,8 +1,8 @@
 %?mingw_package_header
 
-%global with_bin 1
+%bcond_without bin
 
-%if 0%{?with_bin}
+%if %{with bin}
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
@@ -18,15 +18,15 @@ Version:        2.47.3
 Release:        100%{?dist}
 Summary:        Gecko library required for Wine
 
-License:        MPLv1.1 or GPLv2+ or LGPLv2+
+License:        MPL-1.1 OR GPL-2.0-or-later or LGPL-2.1-or-later
 URL:            http://wiki.winehq.org/Gecko
-%if 0%{?with_bin}
+%if %{with bin}
 Source0:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86_64.tar.xz
 Source1:        https://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-x86.tar.xz
 %else
 Source0:        http://dl.winehq.org/wine/wine-gecko/%{version}/%{msiname}-%{version}-src.tar.xz
 %endif
-%if !0%{?with_bin}
+%if %{without bin}
 # https://bugs.winehq.org/show_bug.cgi?id=52455
 Source2:        https://github.com/libffi/libffi/releases/download/v3.4.2/libffi-3.4.2.tar.gz
 %endif
@@ -45,7 +45,7 @@ BuildArch:      noarch
 # We will adopt the same arch support that wine does.
 ExclusiveArch:  %{ix86} x86_64 %{arm} aarch64
 
-%if 0%{?with_bin}
+%if %{with bin}
 BuildRequires:  mingw-filesystem-base
 %else
 # 64
@@ -104,7 +104,7 @@ Windows Gecko library required for Wine.
 %{?mingw_debug_package}
 
 %prep
-%if 0%{?with_bin}
+%if %{with bin}
 %setup -q -T -c -n %{name}-%{version}
 
 mkdir -p %{msiname}-%{version}-{x86,x86_64}/dist/
@@ -144,7 +144,7 @@ sed -i 's,$WINE cabarc.exe -r -m mszip N $cabfile msi/files,$WINE cabarc.exe -r 
 
 
 %build
-%if !0%{?with_bin}
+%if %{without bin}
 cd %{msiname}-%{version}
 # setup build options...
 echo "mk_add_options MOZ_MAKE_FLAGS=%{_smp_mflags}" >> wine/mozconfig-common

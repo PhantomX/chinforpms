@@ -3,16 +3,16 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit e10ac1086f0bb43367cb358185c3ad3c9a2a41ee
+%global commit 6353be1599236eb2146067888436f366ca1475f1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230225
+%global date 20230312
 %global with_snapshot 1
 
 %bcond_with rust
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 7ee312cb282a7794c62d5d284bf93151c585dd1f
+%global commit1 d4f3e12db0609158c7b4e0beef2bb950aad0ccb9
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -63,7 +63,7 @@
 
 Name:           rmg
 Version:        0.3.8
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -87,6 +87,9 @@ Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{sr
 
 Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
+
+Patch900:       0001-angrylion-rdp-plus-gcc-13-build-fix.patch
+Patch901:       0001-parallel-rsp-gcc-13-build-fix.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -132,7 +135,8 @@ Provides:       bundled(imgui) = 0~git%{shortcommit11}
 Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autopatch -M 500 -p1
 
 for i in \
   %{srcname1} %{srcname2} %{srcname3} %{srcname4} \
@@ -173,6 +177,9 @@ done
 
 cp -p "angrylion-rdp-plus/MAME License.txt" ../../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
 cp -p imgui/LICENSE.txt ../../../LICENSEdir/LICENSE.imgui
+
+%patch900 -p1 -d angrylion-rdp-plus
+%patch901 -p1 -d parallel-rsp
 
 ln -s angrylion-rdp-plus mupen64plus-video-angrylion-plus
 ln -s GLideN64 mupen64plus-video-GLideN64

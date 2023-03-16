@@ -1,29 +1,32 @@
-From 994318387ed4ede9589f72cd1a2465ebc692ab8e Mon Sep 17 00:00:00 2001
+From cf0141e381c85536da865915e2c472c65aa38968 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 23 Feb 2022 11:18:27 -0300
 Subject: [PATCH] Disable fuse support
 
 No dependencies in Fedora
 ---
- Cargo.toml  | 10 +---------
- src/main.rs |  8 ++++----
- 2 files changed, 5 insertions(+), 13 deletions(-)
+ Cargo.toml            | 10 +---------
+ src/bin/u4pak/main.rs |  6 +++---
+ src/lib.rs            |  2 +-
+ 3 files changed, 5 insertions(+), 13 deletions(-)
 
 diff --git a/Cargo.toml b/Cargo.toml
-index 4940d28..a812d7f 100644
+index e3790c2..4f297dd 100644
 --- a/Cargo.toml
 +++ b/Cargo.toml
-@@ -14,17 +14,9 @@ crossbeam-channel = "0.5"
+@@ -22,7 +22,7 @@ crossbeam-channel = "0.5"
  crossbeam-utils = "0.8"
- num_cpus = "1.0"
+ num_cpus = "1.13.1"
  # OpenSSL's SHA-1 implementation is much faster than the one in rust-crypto
 -openssl = { version = "0.10", features = ["vendored"] }
 +openssl = "0.10"
- terminal_size = "0.1.16"
- 
+ terminal_size = "0.1.17"
+ aes = "0.7.5"
+ base64 = "0.13.0"
+@@ -32,11 +32,3 @@ env_logger = "0.9.0"
  [target.'cfg(target_os = "linux")'.dependencies]
  # for sendfile() and fuse support
- libc = "0.2.94"
+ libc = "0.2.113"
 -
 -# FUSE might work on other OSes too (like macOS and BSD), but I don't use
 -# anything other than Linux (testing Windows binaries through wine).
@@ -32,40 +35,48 @@ index 4940d28..a812d7f 100644
 -cntr-fuse = { version = "0.4" }
 -
 -daemonize = { version = "0.4.1" }
-diff --git a/src/main.rs b/src/main.rs
-index eaf46a5..6e8a1cc 100644
---- a/src/main.rs
-+++ b/src/main.rs
-@@ -65,9 +65,9 @@ pub mod io;
- pub mod reopen;
+diff --git a/src/bin/u4pak/main.rs b/src/bin/u4pak/main.rs
+index 1058abf..97702d5 100644
+--- a/src/bin/u4pak/main.rs
++++ b/src/bin/u4pak/main.rs
+@@ -36,7 +36,7 @@ use list::{list, ListOptions, ListStyle};
  pub mod args;
+ pub mod io;
  
--#[cfg(target_os="linux")]
-+#[cfg(target_os="disabled")]
- pub mod mount;
--#[cfg(target_os="linux")]
-+#[cfg(target_os="disabled")]
- pub use mount::{mount, MountOptions};
+-#[cfg(target_os = "linux")]
++#[cfg(target_os = "disabled")]
+ pub use u4pak::mount::{mount, MountOptions};
  
  fn get_paths<'a>(args: &'a clap::ArgMatches) -> Result<Option<Vec<&'a str>>> {
-@@ -525,7 +525,7 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
+@@ -487,7 +487,7 @@ fn make_app<'a, 'b>() -> App<'a, 'b> {
                      \tu4pak pack Archive.pak Some\\Folder\n\
                      ")));
  
 -    #[cfg(target_os = "linux")]
 +    #[cfg(target_os = "disabled")]
-     let app = app.subcommand(SubCommand::with_name("mount")
-         .alias("m")
-         .about("Mount package as read-only filesystem")
-@@ -836,7 +836,7 @@ fn run(matches: &ArgMatches) -> Result<()> {
-                 thread_count,
-             })?;
+     let app = app.subcommand(
+         SubCommand::with_name("mount")
+             .alias("m")
+@@ -924,7 +924,7 @@ fn run(matches: &ArgMatches) -> Result<()> {
+                 },
+             )?;
          }
 -        #[cfg(target_os = "linux")]
 +        #[cfg(target_os = "disabled")]
          ("mount", Some(args)) => {
-             let foreground   = args.is_present("foreground");
-             let debug        = args.is_present("debug");
+             let foreground = args.is_present("foreground");
+             let debug = args.is_present("debug");
+diff --git a/src/lib.rs b/src/lib.rs
+index 6e68b8d..57b3e6b 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -23,5 +23,5 @@ pub mod check;
+ pub mod reopen;
+ pub mod walkdir;
+ 
+-#[cfg(target_os = "linux")]
++#[cfg(target_os = "disabled")]
+ pub mod mount;
 -- 
-2.35.1
+2.39.2
 

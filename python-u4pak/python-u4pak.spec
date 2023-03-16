@@ -11,7 +11,7 @@ Version:        0
 Release:        2%{?gver}%{?dist}
 Summary:        Unreal Engine 4 .pak archive tool
 
-License:        BSD
+License:        BSD-1-Clause
 URL:            https://github.com/panzi/%{pkgname}
 
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz

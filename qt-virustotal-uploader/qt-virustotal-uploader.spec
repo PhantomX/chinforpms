@@ -12,7 +12,7 @@ Version:        1.3
 Release:        1%{?gver}%{?dist}
 Summary:        VirusTotal uploader
 
-License:        ASL 2.0 
+License:        Apache-2.0
 URL:            https://www.virustotal.com/
 %if 0%{?with_snapshot}
 Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz

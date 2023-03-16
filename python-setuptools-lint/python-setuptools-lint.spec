@@ -5,7 +5,7 @@ Version:        0.6.0
 Release:        12%{?dist}
 Summary:        This package expose pylint as a lint command into setup.py
 
-License:        BSD
+License:        BSD-3-Clause
 URL:            https://github.com/johnnoone/setuptools-pylint
 Source0:        %{pypi_source}
 

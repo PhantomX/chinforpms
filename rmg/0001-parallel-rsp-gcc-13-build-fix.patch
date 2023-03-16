@@ -1,0 +1,31 @@
+From bd1abfae6dfd23e87709cd4e519ff33cd2396c07 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Mar 2023 23:29:08 -0300
+Subject: [PATCH] parallel-rsp: gcc 13 build fix
+
+---
+ rsp_disasm.hpp | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/rsp_disasm.hpp b/rsp_disasm.hpp
+index 22c464b..a5133e2 100644
+--- a/rsp_disasm.hpp
++++ b/rsp_disasm.hpp
+@@ -2,6 +2,7 @@
+ #define RSP_DISASM_HPP_
+ 
+ #include <string>
++#include <cstdint>
+ 
+ namespace RSP
+ {
+@@ -9,4 +10,4 @@ std::string disassemble(uint32_t pc, uint32_t instr);
+ const char *register_name(unsigned reg_index);
+ }
+ 
+-#endif
+\ No newline at end of file
++#endif
+-- 
+2.39.2
+

@@ -5,7 +5,7 @@ Version:        3.2.6
 Release:        1%{?dist}
 Summary:        Gtk3-based CDEmu client
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 

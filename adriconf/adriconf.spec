@@ -1,12 +1,14 @@
 Name:           adriconf
 Version:        2.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Advanced DRI Configurator
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://gitlab.freedesktop.org/mesa/%{name}
 
 Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
+
+Patch0:         0001-gcc-13-build.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -87,6 +89,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedeskto
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-2
+- gcc 13 fix
+
 * Wed Apr 06 2022 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-1
 - 2.5.0
 - BR: -boost

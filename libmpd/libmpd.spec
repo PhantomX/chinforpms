@@ -16,7 +16,7 @@ Name:           libmpd
 Version:        11.8.90
 Release:        100%{?gver}%{?dist}
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 Url:            http://gmpc.wikia.com/wiki/Gnome_Music_Player_Client
 
 %if 0%{?with_snapshot}

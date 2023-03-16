@@ -7,7 +7,7 @@ Summary:        GNOME Extra Themes
 
 Epoch:          1
 
-License:        LGPLv2+
+License:        LGPL-2.1-only
 URL:            https://gitlab.gnome.org/GNOME/gnome-themes-extra
 Source0:        https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
 Source1:        gtkrc

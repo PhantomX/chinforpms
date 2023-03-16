@@ -18,7 +18,7 @@ Version:        0.81
 Release:        2%{?gver}%{?dist}
 Summary:        PE file analysis toolkit
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://pev.sourceforge.net/
 
 %if 0%{?with_snapshot}

@@ -16,7 +16,7 @@ Version:        6.4.1
 Release:        1%{?gver}%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            https://asbru-cm.net
 
 %if 0%{?with_snapshot}

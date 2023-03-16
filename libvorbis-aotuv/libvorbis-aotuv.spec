@@ -5,7 +5,7 @@ Summary:        The Vorbis General Audio Compression Codec - aoTuV optimized
 Version:        1.3.7
 Release:        1%{?dist}
 
-License:        BSD
+License:        BSD-3-Clause
 
 URL:            https://www.xiph.org/
 Source:         https://downloads.xiph.org/releases/vorbis/%{pkgname}-%{version}.tar.xz

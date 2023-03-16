@@ -1,4 +1,5 @@
 %undefine _auto_set_build_flags
+%define _fortify_level 0
 %undefine _hardened_build
 %undefine _package_note_file
 
@@ -100,7 +101,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=2//'` -Wno-error -mno-avx -mno-avx2"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'` -Wno-error -mno-avx -mno-avx2"
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"

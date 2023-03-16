@@ -12,7 +12,7 @@ Version:        0.2.1
 Release:        0.2%{?gver}%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            https://gitlab.com/sdl-jstest/sdl-jstest
 
 %if 0%{?with_snapshot}

@@ -3,7 +3,7 @@ Version:        20200824
 Release:        2%{?dist}
 Summary:        Simple application to read current clocks of ATi Radeon cards
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/marazmista/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz

@@ -3,7 +3,7 @@ Version:        1.3.0
 Release:        1%{?dist}
 Summary:        A side-action adventure game
 
-License:        BSD
+License:        BSD-2-Clause
 URL:            https://gitlab.com/coringao/%{name}
 Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 Source1:        %{name}.appdata.xml

@@ -1,6 +1,6 @@
-%global commit 56226ce2fe2fe7eb605e86781049636af3258534
+%global commit abbef80868dfe5b58c1849f3a2cf6d238067a0f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220225
+%global date 20230309
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -10,8 +10,8 @@
 %global pkgname EccEdc
 
 Name:           eccedc
-Version:        20200126
-Release:        2%{?gver}%{?dist}
+Version:        20230309
+Release:        1%{?gver}%{?dist}
 Summary:        Checks or fix user data of the 2048 byte per sector of CD by using ecc/edc
 
 License:        GPLv3
@@ -65,6 +65,9 @@ install -pm0755 %{pkgname}/%{pkgname}_linux.out %{buildroot}%{_bindir}/%{pkgname
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230309-1.20230309gitabbef80
+- 20230309
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 20200126-2.20220225git56226ce
 - Snapshot
 

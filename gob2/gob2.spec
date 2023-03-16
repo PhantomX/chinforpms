@@ -3,7 +3,7 @@ Name:           gob2
 Version:        2.0.20
 Release:        100%{?dist}
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 Url:            http://www.5z.com/jirka/gob.html
 
 Source0:        http://ftp.5z.com/pub/gob/gob2-%{version}.tar.gz

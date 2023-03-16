@@ -29,7 +29,7 @@
 
 Name:           jamesdsp
 Version:        2.4
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -37,7 +37,7 @@ Summary:        An audio effect processor for PipeWire clients
 # qcustomplot: GPLv3
 # qtcsv: MIT
 # qtpromise: MIT
-License:        GPLv3 and MIT
+License:        GPL-3.0-only AND MIT
 URL:            https://github.com/Audio4Linux/%{pkgname}
 
 %if 0%{?with_snapshot}
@@ -51,6 +51,7 @@ Source13:       %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcomm
 Source14:       %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 
 Patch0:         0001-use-shared-libraries.patch
+Patch1:         0001-gcc-13-build-fix.patch
 
 
 BuildRequires:  desktop-file-utils
@@ -270,6 +271,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-2.20220908git49994d2
+- gcc 13 build fix
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4-1.20220908git49994d2
 - 2.4
 

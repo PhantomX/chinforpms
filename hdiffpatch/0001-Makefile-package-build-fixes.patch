@@ -1,14 +1,14 @@
-From acc1480e72a1fae727cd474d39f1ba281db314da Mon Sep 17 00:00:00 2001
+From dc0bcc869fde9309840ab541f3782d3140c05aba Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 17 Mar 2022 13:53:39 -0300
 Subject: [PATCH] Makefile: package build fixes
 
 ---
- Makefile | 68 +++++++++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 52 insertions(+), 16 deletions(-)
+ Makefile | 70 +++++++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 54 insertions(+), 16 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 722fcc9..83440e6 100644
+index edd92dd..b20c053 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -3,10 +3,10 @@ DIR_DIFF := 1
@@ -24,7 +24,7 @@ index 722fcc9..83440e6 100644
  MD5      := 1
  STATIC_CPP := 0
  # used clang?
-@@ -31,6 +31,15 @@ ifeq ($(BZIP2),0)
+@@ -33,6 +33,15 @@ ifeq ($(BZIP2),0)
    endif
  endif
  
@@ -40,26 +40,42 @@ index 722fcc9..83440e6 100644
  HDIFF_OBJ  := 
  HPATCH_OBJ := \
      libHDiffPatch/HPatch/patch.o \
-@@ -51,7 +60,7 @@ ifeq ($(BSD),0)
- else
+@@ -55,7 +64,7 @@ else
  	HPATCH_OBJ += bsdiff_wrapper/bspatch_wrapper.o
  endif
+ 
 -MD5_PATH := ../libmd5
 +MD5_PATH := libmd5
  ifeq ($(DIR_DIFF),0)
  else
    ifeq ($(MD5),0)
-@@ -60,8 +69,7 @@ else
-   endif
+@@ -65,8 +74,7 @@ else
  endif
+ 
  LZMA_PATH := ../lzma/C
 -ifeq ($(LZMA),0)
 -else # https://www.7-zip.org  https://github.com/sisong/lzma
 +ifeq ($(LZMA),1) # https://www.7-zip.org  https://github.com/sisong/lzma
    HPATCH_OBJ += $(LZMA_PATH)/LzmaDec.o \
-   				$(LZMA_PATH)/Lzma2Dec.o 
-   ifeq ($(ARM64ASM),0)
-@@ -175,7 +183,7 @@ endif
+   				$(LZMA_PATH)/Lzma2Dec.o \
+   				$(LZMA_PATH)/CpuArch.o \
+@@ -96,6 +104,7 @@ else
+   HDIFF_OBJ  += vcdiff_wrapper/vcdiff_wrapper.o
+   ifeq ($(LZMA),0)
+   else
++    ifeq ($(LZMA),1)
+ 	HPATCH_OBJ+=$(LZMA_PATH)/7zCrc.o \
+ 				$(LZMA_PATH)/7zCrcOpt.o \
+ 				$(LZMA_PATH)/Bra.o \
+@@ -109,6 +118,7 @@ else
+ 				$(LZMA_PATH)/XzCrc64Opt.o \
+ 				$(LZMA_PATH)/XzDec.o
+ 	HDIFF_OBJ +=$(LZMA_PATH)/XzEnc.o
++    endif
+   endif
+ endif
+ 
+@@ -208,7 +218,7 @@ endif
  
  
  DEF_FLAGS := \
@@ -68,7 +84,7 @@ index 722fcc9..83440e6 100644
      -D_IS_NEED_ALL_CompressPlugin=0 \
      -D_IS_NEED_DEFAULT_CompressPlugin=0 \
      -D_IS_NEED_ALL_ChecksumPlugin=0 \
-@@ -201,6 +209,9 @@ else
+@@ -234,6 +244,9 @@ else
  	ifeq ($(BZIP2),1)
          DEF_FLAGS += -I$(BZ2_PATH)
  	endif
@@ -78,7 +94,7 @@ index 722fcc9..83440e6 100644
  endif
  ifeq ($(ZLIB),0)
  else
-@@ -208,6 +219,9 @@ else
+@@ -241,6 +254,9 @@ else
  	ifeq ($(ZLIB),1)
          DEF_FLAGS += -I$(ZLIB_PATH)
  	endif
@@ -88,26 +104,29 @@ index 722fcc9..83440e6 100644
  endif
  ifeq ($(DIR_DIFF),0)
    DEF_FLAGS += -D_IS_NEED_DIR_DIFF_PATCH=0
-@@ -231,11 +245,17 @@ else
+@@ -269,7 +285,7 @@ else
  endif
  ifeq ($(LZMA),0)
  else
 -  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2 -I$(LZMA_PATH)
 +  DEF_FLAGS += -D_CompressPlugin_lzma -D_CompressPlugin_lzma2
-   ifeq ($(ARM64ASM),0)
+   ifeq ($(VCD),0)
+   else
+     DEF_FLAGS += -D_CompressPlugin_7zXZ -DUSE_CRC_EMU
+@@ -278,6 +294,12 @@ else
    else
      DEF_FLAGS += -D_LZMA_DEC_OPT
    endif
-+	ifeq ($(LZMA),1)
-+      DEF_FLAGS += -I$(LZMA_PATH)
-+	endif
-+	ifeq ($(LZMA),2)
-+      DEF_FLAGS += $(shell pkg-config --cflags-only-I lzmasdk-c)
-+	endif
++  ifeq ($(LZMA),1)
++    DEF_FLAGS += -I$(LZMA_PATH)
++  endif
++  ifeq ($(LZMA),2)
++    DEF_FLAGS += $(shell pkg-config --cflags-only-I lzmasdk-c)
++  endif
  endif
  ifeq ($(ZSTD),0)
  else
-@@ -244,6 +264,9 @@ else
+@@ -286,6 +308,9 @@ else
        DEF_FLAGS += -DZSTD_DISABLE_ASM -DZSTD_HAVE_WEAK_SYMBOLS=0 -DZSTD_TRACE=0 \
  	    -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common -I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
  	endif
@@ -117,7 +136,7 @@ index 722fcc9..83440e6 100644
  endif
  
  ifeq ($(MT),0)
-@@ -264,6 +287,9 @@ endif
+@@ -306,6 +331,9 @@ endif
  ifeq ($(BZIP2),2)
    PATCH_LINK += -lbz2		# link bzip2
  endif
@@ -127,7 +146,7 @@ index 722fcc9..83440e6 100644
  ifeq ($(ZSTD),2)
    PATCH_LINK += -lzstd		# link zstd
  endif
-@@ -295,15 +321,15 @@ CXXFLAGS += $(DEF_FLAGS)
+@@ -337,15 +365,15 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
  
  .PHONY: all install clean
  
@@ -149,7 +168,7 @@ index 722fcc9..83440e6 100644
  
  ifeq ($(OS),Windows_NT) # mingw?
    RM := del /Q /F
-@@ -312,17 +338,27 @@ else
+@@ -354,17 +382,27 @@ else
    RM := rm -f
    DEL_HDIFF_OBJ := $(HDIFF_OBJ)
  endif
@@ -181,5 +200,5 @@ index 722fcc9..83440e6 100644
  uninstall:
  	$(RM)  $(INSTALL_BIN)/hdiffz  $(INSTALL_BIN)/hpatchz
 -- 
-2.36.1
+2.39.2
 

@@ -6,8 +6,9 @@ Version:        20140629
 Release:        2%{?dist}
 Summary:        Claws Mail's themes
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            http://www.claws-mail.org/themes.php
+
 Source0:        http://www.claws-mail.org/themes/%{name}-%{version}.tar.gz
 Source1:        http://www.claws-mail.org/themes/png/claws-mail-theme_clawsola-%{clawsolaver}.tar.gz
 Source2:        http://www.claws-mail.org/themes/png/claws-mail-theme_Coons_Blue.tar.gz

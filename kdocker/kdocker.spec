@@ -7,7 +7,7 @@ Summary:        Dock any application in the system tray
 Version:        5.4
 Release:        1%{?dist}
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://github.com/user-none/%{project}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz

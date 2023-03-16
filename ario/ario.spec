@@ -11,7 +11,7 @@ Version:        1.6
 Release:        2%{?sver}%{?dist}
 Summary:        Ario MPD Client
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            http://ario-player.sourceforge.net/index.php
 
 %if 0%{?with_snapshot}

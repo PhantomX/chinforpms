@@ -11,7 +11,7 @@ Version:        1.0.6a
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://www.freac.org/
 
 %if 0%{sanitize}

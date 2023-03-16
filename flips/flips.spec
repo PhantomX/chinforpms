@@ -18,7 +18,7 @@ Version:        1.40
 Release:        5%{?gver}%{?dist}
 Summary:        A patcher for IPS and BPS files
 
-License:        GPL-3.0-or-later+
+License:        GPL-3.0-or-later
 URL:            https://github.com/Alcaro/Flips
 
 %if 0%{?with_snapshot}

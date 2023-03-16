@@ -4,10 +4,10 @@
 #bcond_without doc
 %global apidocdir __api-doc_fedora
 
-%global commit 47342f6974ac0faccabd8c8b7d00fdfcd483d086
+%global commit a31356e330674640a07bef7d71d08242cae8e9bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200327
-%global with_snapshot 0
+%global date 20221221
+%global with_snapshot 1
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -15,12 +15,12 @@
 
 Name:           taglib
 Summary:        Audio Meta-Data Library
-Version:        1.12
-Release:        101%{?gver}%{?dist}
+Version:        1.13
+Release:        100%{?gver}%{?dist}
 
 Epoch:          1
 
-License:        LGPLv2 or MPLv1.1
+License:        LGPL-2.1-only OR MPL-1.1
 URL:            https://taglib.org/
 
 %global vc_url  https://github.com/%{name}/%{name}
@@ -31,9 +31,7 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.g
 %endif
 
 # http://bugzilla.redhat.com/343241
-Patch102:       taglib-1.12-multilib.patch
-
-Patch111:       %{vc_url}/pull/932.patch#/%{name}-gh-pull932.patch
+Patch102:       0001-multilib-fixes.patch
 
 
 BuildRequires:  gcc
@@ -138,6 +136,9 @@ test "$(pkg-config --modversion taglib_c)" = "%{version}"
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.13-100.20221221gita31356e
+- 1.13
+
 * Thu Sep 02 2021 Phantom X <megaphantomx at hotmail dot com> - 1:1.12-101
 - Rawhide sync
 

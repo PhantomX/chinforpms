@@ -1,31 +1,31 @@
-From e5cd3bb1edb74c7825ac79833cd3ac3357f9ac2a Mon Sep 17 00:00:00 2001
+From c202425456e83d73b5cba9a6621888d39f89bc0c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
 
-zstd bits borrowed from dolphin-emu https://github.com/dolphin-emu/dolphin
 ---
- CMakeLists.txt                        | 20 ++++++++++++++++++++
- Common/Data/Collections/Hashmaps.h    |  2 +-
- Core/Debugger/DisassemblyManager.cpp  |  2 +-
- Core/HLE/sceJpeg.cpp                  |  2 +-
- Core/MIPS/IR/IRJit.cpp                |  2 +-
- Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
- Core/MIPS/MIPSAnalyst.cpp             |  2 +-
- Core/Util/PPGeDraw.cpp                |  2 +-
- GPU/Common/TextureDecoder.cpp         |  2 +-
- GPU/Common/TextureReplacer.cpp        |  2 +-
- GPU/D3D11/TextureCacheD3D11.cpp       |  2 +-
- GPU/Directx9/TextureCacheDX9.cpp      |  2 +-
- GPU/GLES/TextureCacheGLES.cpp         |  2 +-
- GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
- UI/CwCheatScreen.cpp                  |  2 +-
- Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
- Windows/Debugger/CtrlMemView.cpp      |  2 +-
- 17 files changed, 36 insertions(+), 16 deletions(-)
+ CMakeLists.txt                            | 20 ++++++++++++++++++++
+ Common/Data/Collections/Hashmaps.h        |  2 +-
+ Core/Debugger/DisassemblyManager.cpp      |  2 +-
+ Core/HLE/sceJpeg.cpp                      |  2 +-
+ Core/MIPS/IR/IRJit.cpp                    |  2 +-
+ Core/MIPS/JitCommon/JitBlockCache.cpp     |  2 +-
+ Core/MIPS/MIPSAnalyst.cpp                 |  2 +-
+ Core/Util/PPGeDraw.cpp                    |  2 +-
+ GPU/Common/TextureDecoder.cpp             |  2 +-
+ GPU/Common/TextureReplacer.cpp            |  2 +-
+ GPU/D3D11/TextureCacheD3D11.cpp           |  2 +-
+ GPU/Directx9/TextureCacheDX9.cpp          |  2 +-
+ GPU/GLES/TextureCacheGLES.cpp             |  2 +-
+ GPU/Vulkan/TextureCacheVulkan.cpp         |  2 +-
+ UI/CwCheatScreen.cpp                      |  2 +-
+ Windows/Debugger/CtrlDisAsmView.cpp       |  2 +-
+ Windows/Debugger/CtrlMemView.cpp          |  2 +-
+ ext/basis_universal/basisu_transcoder.cpp |  2 +-
+ 18 files changed, 37 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9056de3..36136c1 100644
+index 36dbf12..26d4e6e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -163,6 +163,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
@@ -36,7 +36,7 @@ index 9056de3..36136c1 100644
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
  option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
  option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1405,11 +1406,30 @@ add_library(xbrz STATIC
+@@ -1427,11 +1428,30 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -172,20 +172,20 @@ index a12be66..b70a9fb 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 1a073f4..279f1d7 100644
+index 57ab5b7..419b6bd 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
-@@ -22,7 +22,7 @@
- #include <memory>
+@@ -23,7 +23,7 @@
  #include <png.h>
  
+ #include "ext/basis_universal/basisu_transcoder.h"
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
  
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index d23b41d..888aa3c 100644
+index ffdf94c..df1de2b 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -37,7 +37,7 @@
@@ -224,7 +224,7 @@ index b5d8fdd..973e7e7 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 20a8345..72dc75e 100644
+index 7f60c27..5fba16d 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -275,6 +275,19 @@ index f4eb61d..0b0c67a 100644
  #include "Core/Config.h"
  #include "Core/MemMap.h"
  #include "Core/Reporting.h"
+diff --git a/ext/basis_universal/basisu_transcoder.cpp b/ext/basis_universal/basisu_transcoder.cpp
+index b5bef83..ac49b5d 100644
+--- a/ext/basis_universal/basisu_transcoder.cpp
++++ b/ext/basis_universal/basisu_transcoder.cpp
+@@ -155,7 +155,7 @@
+    // If BASISD_SUPPORT_KTX2_ZSTD is 0, UASTC files compressed with Zstd cannot be loaded.
+ 	#if BASISD_SUPPORT_KTX2_ZSTD
+ 		// We only use two Zstd API's: ZSTD_decompress() and ZSTD_isError()
+-		#include "../zstd/lib/zstd.h"
++		#include "zstd.h"
+ 	#endif
+ #endif
+ 
 -- 
 2.39.2
 

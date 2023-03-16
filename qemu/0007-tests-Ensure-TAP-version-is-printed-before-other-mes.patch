@@ -1,0 +1,42 @@
+From 4021e0a116b568c312b864dfc27dfeed3317538a Mon Sep 17 00:00:00 2001
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Mon, 27 Feb 2023 17:37:10 +0000
+Subject: [PATCH 7/7] tests: Ensure TAP version is printed before other
+ messages
+
+These two tests were failing with this error:
+
+  stderr:
+  TAP parsing error: version number must be on the first line
+  [...]
+  Unknown TAP version. The first line MUST be `TAP version <int>`. Assuming version 12.
+
+This can be fixed by ensuring we always call g_test_init first in the
+body of main.
+
+Thanks: Daniel Berrange, for diagnosing the problem
+Signed-off-by: Richard W.M. Jones <rjones@redhat.com>
+---
+ tests/qtest/rtl8139-test.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/tests/qtest/rtl8139-test.c b/tests/qtest/rtl8139-test.c
+index 8fa3313cc3..90bb616974 100644
+--- a/tests/qtest/rtl8139-test.c
++++ b/tests/qtest/rtl8139-test.c
+@@ -196,9 +196,10 @@ int main(int argc, char **argv)
+ {
+     int ret;
+ 
+-    qtest_start("-device rtl8139");
+-
+     g_test_init(&argc, &argv, NULL);
++
++    qtest_start("-device rtl8139");
++
+     qtest_add_func("/rtl8139/nop", nop);
+     qtest_add_func("/rtl8139/timer", test_init);
+ 
+-- 
+2.37.3
+

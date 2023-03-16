@@ -3,7 +3,7 @@ Version:        2.0.1
 Release:        1%{?dist}
 Summary:        Qt based MPD client
 
-License:        GPLv2+
+License:        GPL-2.0-or-later
 URL:            https://github.com/ChaoticEnigma/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz

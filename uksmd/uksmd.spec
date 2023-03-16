@@ -12,7 +12,7 @@ Version:        0
 Release:        4%{?gver}%{?dist}
 
 Summary:        Userspace KSM helper daemon
-License:        GPLv3
+License:        GPL-3.0-only
 
 URL:            https://gitlab.com/post-factum/%{name}
 

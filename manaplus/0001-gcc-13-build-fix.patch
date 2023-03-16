@@ -1,0 +1,37 @@
+From 0735c48c96b864c74bc08c32eb76b62ec82b65d7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 15 Mar 2023 20:00:54 -0300
+Subject: [PATCH] gcc 13 build fix
+
+---
+ src/net/ea/chatrecv.h  | 1 +
+ src/net/ea/traderecv.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/net/ea/chatrecv.h b/src/net/ea/chatrecv.h
+index 2c860b1..677cb64 100644
+--- a/src/net/ea/chatrecv.h
++++ b/src/net/ea/chatrecv.h
+@@ -34,6 +34,7 @@
+ 
+ #include <string>
+ #include <queue>
++#include <cstdint>
+ #ifndef __time_t_defined
+ #include <sys/time.h>
+ #endif  // __time_t_defined
+diff --git a/src/net/ea/traderecv.h b/src/net/ea/traderecv.h
+index 03e2c94..86a6fe6 100644
+--- a/src/net/ea/traderecv.h
++++ b/src/net/ea/traderecv.h
+@@ -33,6 +33,7 @@
+ #endif  // defined(__GXX_EXPERIMENTAL_CXX0X__)
+ 
+ #include <string>
++#include <cstdint>
+ 
+ namespace Net
+ {
+-- 
+2.39.2
+

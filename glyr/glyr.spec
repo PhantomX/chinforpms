@@ -12,7 +12,7 @@ Version:        1.0.10
 Release:        1%{?gver}%{?dist}
 Summary:        A search engine for music related metadata
 
-License:        LGPLv3
+License:        LGPL-3.0-only
 URL:            https://github.com/sahib/glyr
 
 %if 0%{?with_snapshot}

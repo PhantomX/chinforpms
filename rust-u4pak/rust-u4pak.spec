@@ -13,11 +13,11 @@
 %global crate u4pak
 
 Name:           rust-%{crate}
-Version:        1.3.0
+Version:        1.4.0
 Release:        1%{?gver}%{?dist}
 Summary:        Unreal Engine 4 .pak archive tool
 
-License:        MPLv2.0
+License:        MPL-2.0
 URL:            https://github.com/panzi/rust-%{crate}
 
 %if 0%{?with_snapshot}
@@ -45,7 +45,7 @@ License:        MPLv2.0
 
 %files       -n %{crate}
 %license LICENSE.txt
-%doc README.md
+%doc README.adoc
 %{_bindir}/%{crate}
 
 %prep
@@ -71,6 +71,9 @@ rm -rf %{buildroot}%{cargo_registry}
 %endif
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1.4.0-1
+- 1.4.0
+
 * Wed Feb 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1.3.0-1
 - Initial spec
 

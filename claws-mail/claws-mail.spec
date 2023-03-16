@@ -3,7 +3,7 @@
 %global date 20230224
 %global with_snapshot 1
 
-%global with_python  0
+%global with_python  1
 
 %global with_fancy 1
 
@@ -25,10 +25,10 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        102%{?gver}%{?dist}
+Release:        103%{?gver}%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
-License:        GPLv3+
+License:        GPL-3.0-or-later
 URL:            http://claws-mail.org
 
 %global pluginapi %{version}.%{extra_ver}
@@ -42,6 +42,7 @@ Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
+Patch1:         %{name}-4.1.1-litehtml.patch
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
 
@@ -459,41 +460,6 @@ echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
 NOCONFIGURE=1 ./autogen.sh
 %endif
 
-# change DEFAULT_INC_PATH for the optional external "inc" tool to match
-# Fedora's "nmh" package // unimportant fix, but add a grep guard, too
-sed -i -e 's!\"/usr/bin/mh/inc\"!\"/usr/bin/inc\"!g' src/common/defs.h
-grep DEFAULT_INC_PATH src/common/defs.h || exit -1
-
-# avoid relinking with several shared libs used by libperl
-# when linking with libperl
-grep 'PERL_LDFLAGS *=' configure || exit -1
-sed -i 's!\(PERL_LDFLAGS *=\).*$!\1-lperl!g' configure
-
-%if 0%{?with_python}
-# a really ugly hack to have the Python plug-in dlopen the versioned
-# run-time lib, with grep guards so we don't need a patch
-#
-# ensure that the definition exists
-grep 'PYTHON_SHARED_LIB=.*\.so\"$' configure || exit -1
-# append .1.0
-sed -i 's!\(PYTHON_SHARED_LIB=.*\.so\)\"$!\1.1.0\"!' configure
-# ensure that the definition no longer ends with .so"
-grep 'PYTHON_SHARED_LIB=.*\.so\"$' configure && exit -1
-# ensure that the code that uses it is still there
-grep 'dlopen.*PYTHON_SHARED_LIB' src/plugins/python/* -R || exit -1
-%endif
-
-%if 0%{?fedora}
-cat << EOF > README.Fedora
-Firefox and Claws Mail
-
-    Be sure to set the TMPDIR environment variable, so both applications
-    always use the same directory for temporary files. Else the directory
-    would vary depending on whether or not Claws Mail is launched as mailer
-    from within Firefox. [ https://bugzilla.redhat.com/956380 ]
-EOF
-%endif
-
 
 %build
 %configure \
@@ -564,9 +530,6 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %doc ABOUT-NLS AUTHORS NEWS README RELEASE_NOTES TODO
 %if !0%{with_snapshot}
 %doc ChangeLog
-%endif
-%if 0%{?fedora}
-%doc README.Fedora
 %endif
 %if 0%{build_manual}
 %doc _tmp_manual/manual
@@ -686,6 +649,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-103.20230224gite2e7f63
+- Rawhide sync
+- Reenable python
+
 * Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-100
 - 4.1.1
 

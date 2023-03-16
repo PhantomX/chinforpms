@@ -7,7 +7,7 @@ Release:        103%{?dist}
 
 Epoch:          1
 
-License:        GPL+
+License:        GPL-1.0-or-later
 # There is no official upstream yet
 Source0:        http://src.fedoraproject.org/repo/pkgs/%{name}/%{name}-%{version}.tar.bz2/%{src_hash}/%{name}-%{version}.tar.bz2
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/Bluecurve-classic.tar.bz2/b0a34d7a0af0e0c1786f7d459a94b9ee/Bluecurve-classic.tar.bz2

@@ -7,7 +7,7 @@ Version:        5.5.2
 Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
-License:        GPLv3+
+License:        GPL-3.0-or-later
 
 URL:            https://keystore-explorer.org
 

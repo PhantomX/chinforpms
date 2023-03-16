@@ -2,7 +2,7 @@
 
 Name:           buildsys-build-%{repo}
 Epoch:          11
-Version:        37
+Version:        38
 Release:        1%{?dist}
 Summary:        Tools and files used by the %{repo} buildsys 
 
@@ -77,6 +77,9 @@ sed -i 's|^default_prefix=.*|default_prefix=%{_datadir}/%{name}/|'  \
 
 
 %changelog
+* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 11:38-1
+- Bump for 38
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 11:37-1
 - Bump for 37
 

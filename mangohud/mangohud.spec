@@ -7,16 +7,20 @@
 %global gver .%{date}git%{shortcommit}
 %endif
 
+%bcond_with app
+%bcond_with sysvulkan
+
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 
 %global imgui_ver 1.81
+%global vulkan_ver 1.2.158
 
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
 
 Name:           mangohud
 Version:        0.6.8
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -30,6 +34,12 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
 Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
+%if %{without sysvulkan}
+Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan_ver}.tar.gz#/Vulkan-Headers-%{vulkan_ver}.tar.gz
+Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/get_patch#/vulkan-headers_%{vulkan_ver}-2-wrap.zip
+%endif
+
+Patch0:         0001-gcc-13-build-fix.patch
 
 
 BuildRequires:  appstream
@@ -51,7 +61,11 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  python3
 BuildRequires:  python3-mako
 BuildRequires:  unzip
-BuildRequires:  vulkan-headers
+%if %{with sysvulkan}
+BuildRequires:  cmake(VulkanHeaders) >= %{vulkan_ver}
+%else
+Provides:       bundled(vulkan-headers) = %{vulkan_ver}
+%endif
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
 Requires:       vulkan-loader%{?_isa}
@@ -73,6 +87,10 @@ improvements, temperature reporting, and logging capabilities.
 
 tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/
+%if %{without sysvulkan}
+tar xf %{S:12} -C subprojects/
+unzip %{S:13} -d subprojects/
+%endif
 
 rm -f include/nvml.h
 
@@ -85,9 +103,9 @@ cp -f -p %{S:3} bin/%{name}.in
   -Dappend_libdir_mangohud=true \
   -Dglibcxx_asserts=false \
   -Duse_system_spdlog=enabled \
-  -Duse_system_vulkan=enabled \
-  -Dmangoapp=true \
-  -Dmangoapp_layer=true \
+  -Duse_system_vulkan=%{?with_sysvulkan:enabled}%{!?with_sysvulkan:disabled} \
+  -Dmangoapp=%{?with_app:true}%{!?with_app:false} \
+  -Dmangoapp_layer=%{?with_app:true}%{!?with_app:false} \
   -Dmangohudctl=true \
   -Dinclude_doc=true \
   -Dwith_nvml=disabled \
@@ -112,7 +130,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_bindir}/mango*
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
+%if %{with app}
 %{_libdir}/%{name}/libMangoApp.so
+%endif
 %{_datadir}/icons/hicolor/*/apps/*.svg
 %{_datadir}/vulkan/implicit_layer.d/*.json
 %{_mandir}/man1/mango*.1*
@@ -120,6 +140,10 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.8-101
+- gcc 13 build fix
+- Use bundled vulkan-headers and disable app for the time
+
 * Tue Aug 02 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.8-100
 - 0.6.8
 

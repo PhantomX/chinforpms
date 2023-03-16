@@ -12,12 +12,13 @@ Version:        0.9.3
 Release:        0.2%{?gver}%{?dist}
 Summary:        MP3Gain GUI front end
 
-License:        GPLv3
+License:        GPL-3.0-only
 URL:            http://sourceforge.net/projects/qmp3gain/
 
 %if 0%{?with_snapshot}
 # To regenerate a snapshot:
 # Use your regular webbrowser to open https://sourceforge.net/p/qmp3gain/code/ci/%%{commit}/tarball
+
 # This triggers the SourceForge instructure to generate a snapshot
 # After that you can pull in the archive with:
 # spectool -g qmp3gain.spec
