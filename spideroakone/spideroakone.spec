@@ -15,16 +15,18 @@
 
 # Do no blame SpiderOak devs if setting 1 in these
 # Set to 1 to use system libs
-%global with_curl 0
 %global with_dbusmenuqt 0
 %global with_ffi 0
 %global with_python 0
+%if 0%{?with_python}
+%global with_curl 0
 %global with_pillow 0
 %global with_pyqt 0
+%endif
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -36,7 +38,6 @@ ExclusiveArch:  x86_64
 
 BuildRequires:  binutils
 BuildRequires:  patchelf
-BuildRequires:  python2-rpm-macros
 BuildRequires:  systemd
 BuildRequires:  ImageMagick
 BuildRequires:  desktop-file-utils
@@ -53,6 +54,7 @@ BuildRequires:  dbusmenu-qt%{?_isa}
 BuildRequires:  libffi%{?_isa}
 %endif
 %if 0%{?with_python}
+BuildRequires:  python2-rpm-macros
 BuildRequires:  python2.7%{?_isa}
 Requires:       python2.7%{?_isa}
 %endif
@@ -287,6 +289,9 @@ done
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-11
+- Fix python switch
+
 * Wed Mar 30 2022 - 3:7.5.0-10
 - with_ffi 0
 

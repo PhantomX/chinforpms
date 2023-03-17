@@ -1,8 +1,8 @@
 %global srcname haccrypto
 
 Name:           python-%{srcname}
-Version:        0.1.1
-Release:        2%{?dist}
+Version:        0.1.2
+Release:        1%{?dist}
 Summary:        Nintendo Switch XTSN crypto for Python
 
 License:        MIT
@@ -10,6 +10,7 @@ URL:            https://github.com/luigoalma/%{srcname}
 
 Source0:        %{url}/archive/v%{version}/%{srcname}-%{version}.tar.gz
 
+Patch0:         0001-gcc-13-build-fix.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  gcc
@@ -52,6 +53,9 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.2-1
+- 0.1.2
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-2
 - BR: gcc
 - BR: gcc-c++

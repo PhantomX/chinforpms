@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8ca89ead0ebcb20da7d5d9b5b0bccf8f4b58bbd5
+%global commit 17ab0aba26fd5e52449d0649570af21647de4746
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230313
 %global with_snapshot 1
 
 # Disable LTO. Crash.
@@ -50,7 +50,7 @@
 
 Name:           flycast
 Version:        2.0
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -78,6 +78,8 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+
+Patch900:       0001-breakpad-gcc-13-build-fix.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -135,7 +137,8 @@ Provides:       bundled(vixl)
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -N -p1
+%autopatch -M 500 -p1
 
 pushd core/deps
 rm -rf glm libzip lzma miniupnpc oboe SDL xbyak xxHash zlib
@@ -160,6 +163,7 @@ popd
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd core/deps/breakpad
+%patch900 -p1
 sed -e '/" -Werror"/d' -i configure.ac
 autoreconf -if
 popd

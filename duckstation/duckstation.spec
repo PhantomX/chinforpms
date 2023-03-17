@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit 55e0e7ffbea9143f7809a926cf11c6986971881a
+%global commit 3bbce19df29ccabd26aef7d8afa09ec63df98ccf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230207
+%global date 20230316
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        83%{?gver}%{?dist}
+Release:        84%{?gver}%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -50,6 +50,7 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
+Patch7:         0001-gcc-13-build-fix.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -312,6 +313,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1-84.20230316git3bbce19
+- gcc 13 build fix
+
 * Fri Nov 25 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1-76.20221123git11559c1
 - Remove unneeded wrapper
 

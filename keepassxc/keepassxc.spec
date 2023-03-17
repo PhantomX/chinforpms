@@ -67,7 +67,7 @@ BuildRequires:  qt5-linguist
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  readline-devel
 %if %{with keeshare}
-BuildRequires:  minizip-devel
+BuildRequires:  minizip-ng-devel
 %endif
 %if %{with yubikey}
 BuildRequires:  libyubikey-devel

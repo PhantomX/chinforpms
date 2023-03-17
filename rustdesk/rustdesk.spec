@@ -12,7 +12,7 @@ Version:        1.1.9
 Release:        1%{?dist}
 Summary:        A remote desktop software
 
-License:        AGPLv3
+License:        AGPL-3.0-only
 URL:            https://rustdesk.com/
 
 Source0:        %{vc_url}/releases/download/%{version}/%{name}-%{version}-fedora28-centos8.rpm

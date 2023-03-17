@@ -25,7 +25,7 @@ Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-rpm-build-fixes.patch
-
+Patch1:         0001-gcc-13-build-fix.patch
 
 BuildRequires:  make
 BuildRequires:  gcc

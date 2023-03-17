@@ -4,10 +4,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 92bf0c6669999ddb6921488261007a991b15842d
+%global commit be869f9772bbc4d9e13c481b31adfd50080a0a03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221227
-%global with_snapshot 0
+%global date 20230316
+%global with_snapshot 1
 
 %bcond_with gtk2
 %bcond_with libao
@@ -27,7 +27,7 @@
 
 Name:           ares
 Version:        132
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPLv3 and BSD
@@ -40,6 +40,7 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
+Patch0:         0001-gcc-13-build-fix.patch
 # https://aur.archlinux.org/cgit/aur.git/tree/ares-paths.patch?h=ares-emu
 Patch10:        ares-paths.patch
 Patch11:        0001-Use-system-libraries.patch
@@ -80,11 +81,7 @@ ares is a multi-system emulator with an uncompromising focus on
 accuracy and code readability.
 
 %prep
-%if 0%{?with_snapshot}
-%autosetup -n %{name}-%{commit} -p1
-%else
-%autosetup %{name}-%{version} -p1
-%endif
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
 
 rm -rf thirdparty/{libchdr,MoltenVK}
 
@@ -179,6 +176,9 @@ done
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 132-2.20230316gitbe869f9
+- gcc 13 build fix
+
 * Wed Mar 08 2023 Phantom X <megaphantomx at hotmail dot com> - 132-1
 - 132
 

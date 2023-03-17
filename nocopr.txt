@@ -2,6 +2,7 @@ aacgain
 -alac_decoder
 -amdgpu-pro-vulkan-driver
 ares
+audacious-plugins-freeworld
 authy
 bandwhich
 bh-fonts
@@ -24,7 +25,7 @@ f5vpn-filesystem
 -FAudio-freeworld
 flycast
 -freac-superfast-codecs-freeworld
-gens-gs
+-gens-gs
 gflash-player
 glow
 -gstreamer1-plugins-ugly
@@ -32,11 +33,12 @@ hactool
 hakuneko-desktop
 -higan
 -irpf2017
-irpf2018
+-irpf2018
 irpf2019
 irpf2020
 irpf2021
 irpf2022
+irpf2023
 -kepka
 lbreakouthd
 kronos

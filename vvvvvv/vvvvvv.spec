@@ -1,10 +1,10 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 113fbb0fdb5ea2d9b901dda5aa5b2f780afc9618
+%global commit 4398861d50ef3ac187de3355685c83ac5984de7d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230202
+%global date 20230315
 
-%bcond_with systinyxml
+%bcond_without systinyxml
 
 %global commit2 5601b8272a6850b7c5d693dd0c0e16da50be8d8d
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -18,7 +18,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 tinyxml2
 
-%global commit6 b541b1181b30cb7180cf997485c16b2dc27ac28e
+%global commit6 b4ca16d59f90b7ba9aa5a53ae72e34f92ed3e35d
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
@@ -31,7 +31,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -65,7 +65,7 @@ BuildRequires:  pkgconfig(physfs)
 %if %{with systinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %endif
-BuildRequires:  utf8cpp-devel
+BuildRequires:  cmake(utf8cpp)
 
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
@@ -183,6 +183,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-9.20230315git4398861
+- Build with system tinyxml2
+
 * Thu Feb 02 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-8.20230202git113fbb0
 - Add fonts and lang files
 

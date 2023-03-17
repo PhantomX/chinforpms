@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit cc0a87711a7a208cabefc9fd1dbb90e31fe51684
+%global commit d45bf0689a97c600d1c4cc6c66d2f26eac8b7512
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230315
 %global with_snapshot 1
 
 %global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
@@ -24,7 +24,7 @@
 
 Name:           snes9x
 Version:        1.61
-Release:        0.8%{?gver}%{?dist}
+Release:        0.9%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0
@@ -42,6 +42,9 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 # Fix CFLAGS usage in CLI version
 Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-cmake-fix-data-files-install.patch
+Patch2:         0001-gcc-13-build-fix.patch
+
+Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-VulkanMemoryAllocator-29d492b.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -64,7 +67,7 @@ BuildRequires:   pkgconfig(xv)
 BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
-BuildRequires:   minizip-devel
+BuildRequires:   minizip-ng-devel
 BuildRequires:   cmake(VulkanHeaders)
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
@@ -96,7 +99,11 @@ This package contains a graphical user interface using GTK+.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?gver:-n %{name}-%{commit}} -N -p1
+%autopatch -M 500 -p1
+
+%patch900 -p1 -d external/VulkanMemoryAllocator-Hpp
+
 %{?gver:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
 %{?gver:tar -xf %{S:11} -C external/glslang --strip-components 1}
 

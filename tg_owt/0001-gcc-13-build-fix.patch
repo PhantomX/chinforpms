@@ -1,0 +1,37 @@
+From 6265a7a1fb9549bbdb1b7718053bb863ac1e11da Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 16 Mar 2023 10:33:13 -0300
+Subject: [PATCH] gcc 13 build fix
+
+---
+ src/modules/audio_processing/transient/file_utils.h | 1 +
+ src/rtc_base/third_party/base64/base64.h            | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/src/modules/audio_processing/transient/file_utils.h b/src/modules/audio_processing/transient/file_utils.h
+index b748337..687ebce 100644
+--- a/src/modules/audio_processing/transient/file_utils.h
++++ b/src/modules/audio_processing/transient/file_utils.h
+@@ -12,6 +12,7 @@
+ #define MODULES_AUDIO_PROCESSING_TRANSIENT_FILE_UTILS_H_
+ 
+ #include <string.h>
++#include <cstdint>
+ 
+ #include "rtc_base/system/file_wrapper.h"
+ 
+diff --git a/src/rtc_base/third_party/base64/base64.h b/src/rtc_base/third_party/base64/base64.h
+index 4190a79..a191b76 100644
+--- a/src/rtc_base/third_party/base64/base64.h
++++ b/src/rtc_base/third_party/base64/base64.h
+@@ -13,6 +13,7 @@
+ #define RTC_BASE_THIRD_PARTY_BASE64_BASE64_H_
+ 
+ #include <string>
++#include <cstdint>
+ #include <vector>
+ 
+ #include "absl/strings/string_view.h"
+-- 
+2.39.2
+

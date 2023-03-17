@@ -1,0 +1,24 @@
+From 4f1ad9329d033fa54fbfb8a4fb9f48b09bd8c443 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 16 Mar 2023 17:09:19 -0300
+Subject: [PATCH] breakpad: gcc 13 build fix
+
+---
+ src/client/linux/handler/minidump_descriptor.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/client/linux/handler/minidump_descriptor.h b/src/client/linux/handler/minidump_descriptor.h
+index c7e4f2b..f30ce91 100644
+--- a/src/client/linux/handler/minidump_descriptor.h
++++ b/src/client/linux/handler/minidump_descriptor.h
+@@ -34,6 +34,7 @@
+ #include <sys/types.h>
+ 
+ #include <string>
++#include <cstdint>
+ 
+ #include "client/linux/handler/microdump_extra_info.h"
+ #include "common/using_std_string.h"
+-- 
+2.40.0
+

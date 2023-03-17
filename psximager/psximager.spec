@@ -3,7 +3,7 @@ Version:        2.0
 Release:        3%{?dist}
 Summary:        A collection of tools for dumping PSX images
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            https://github.com/cebix/psximager
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 

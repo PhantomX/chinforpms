@@ -279,11 +279,11 @@ xinput-gui
 -yad
 youtube-dlp
 -ytfzf
+zenity
 zram-init
 
 # 5
--audacious-plugins
--audacious-plugins-freeworld
+audacious-plugins
 -belle-sip
 -belr
 -bzrtp

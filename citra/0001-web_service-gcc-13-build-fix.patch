@@ -1,0 +1,26 @@
+From 6151ad3fa84f97d812d8d3479fcc701c2fc8fb04 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 16 Mar 2023 19:54:58 -0300
+Subject: [PATCH] web_service: gcc 13 build fix
+
+This will break soon, but...
+---
+ src/web_service/verify_login.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/web_service/verify_login.cpp b/src/web_service/verify_login.cpp
+index ca4b43b..b431158 100644
+--- a/src/web_service/verify_login.cpp
++++ b/src/web_service/verify_login.cpp
+@@ -22,7 +22,7 @@ bool VerifyLogin(const std::string& host, const std::string& username, const std
+         return username.empty();
+     }
+ 
+-    return username == *iter;
++    //return username == *iter;
+ }
+ 
+ } // namespace WebService
+-- 
+2.40.0
+

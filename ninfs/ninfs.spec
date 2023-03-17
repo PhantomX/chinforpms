@@ -9,7 +9,7 @@
 
 %global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 
-%global haccryptover 0.1.1
+%global haccryptover 0.1
 %global pyctrver 0.5.1
 
 Name:           ninfs
@@ -31,7 +31,7 @@ Patch0:         0001-Remove-desktop-file-command-line-parameter.patch
 BuildArch:      noarch
 
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist haccrypto} = %{haccryptover}
+BuildRequires:  %{py3_dist haccrypto} >= %{haccryptover}
 BuildRequires:  %{py3_dist pyctr} = %{pyctrver}
 BuildRequires:  %{py3_dist pycryptodomex} >= 3.10.1
 BuildRequires:  %{py3_dist pypng} >= 0.0.21

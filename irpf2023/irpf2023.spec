@@ -8,7 +8,7 @@
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.0
+Version:        1.1
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -104,5 +104,8 @@ rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
 
 
 %changelog
+* Thu Mar 16 2023 - 1.1-1
+- 1.1
+
 * Fri Mar 10 2023 - 1.0-1
 - Initial spec

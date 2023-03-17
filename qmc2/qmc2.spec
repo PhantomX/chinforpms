@@ -41,7 +41,7 @@ Patch11:        0001-use-system-lzma-sdk.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
-BuildRequires:  minizip-devel
+BuildRequires:  minizip-ng-devel
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(lzmasdk-c)

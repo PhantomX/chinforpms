@@ -2,7 +2,7 @@
 
 Name:           libstrangle
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Frame rate limiter
 
 License:        GPL-3.0-only
@@ -12,7 +12,7 @@ Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 Patch10:         0001-look-for-libvulkan.so.1.patch
 Patch11:         0001-look-for-libdl.so.2.patch
 Patch12:         0001-makefile-rpm-packaging.patch
-
+Patch13:         0001-gcc-13-build-fix.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -51,6 +51,9 @@ rm -rf %{buildroot}%{_sysconfdir}
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-2
+- gcc 13 build fix
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-1
 - 0.1.1
 

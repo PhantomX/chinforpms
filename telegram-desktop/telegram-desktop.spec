@@ -21,10 +21,17 @@
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
+# Workaround to GCC 13 lambda mangling conflict:
+# RHBZ: https://bugzilla.redhat.com/show_bug.cgi?id=2168862
+# GCC: https://gcc.gnu.org/PR107897
+%if 0%{?fedora} && 0%{?fedora} >= 38
+%global _distro_extra_cxxflags %{?_distro_extra_cxxflags} -fabi-compat-version=0
+%endif
+
 %global kf5ver 4f35c8d
 
 Name:           telegram-desktop
-Version:        4.6.10
+Version:        4.6.11
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -57,6 +64,7 @@ Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
+Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 Patch208:       0001-sane-background-and-text-colors.patch
 
 BuildRequires:  cmake(Microsoft.GSL)
@@ -304,6 +312,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.11-100
+- 4.6.11
+- RPMFusion sync
+
 * Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.10-100
 - 4.6.10
 

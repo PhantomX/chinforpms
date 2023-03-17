@@ -1,28 +1,31 @@
-From 735b032d6b1e9a09d8f59d064ccceb5a0e62544a Mon Sep 17 00:00:00 2001
+From 3c44ba4bf06af7711f7fcf37ffc3669b4e9fb767 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 28 Jul 2022 19:22:32 -0300
 Subject: [PATCH] System libraries
 
 ---
- desktop_version/CMakeLists.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+ desktop_version/CMakeLists.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index 55a5318..4d291d6 100644
+index ce3fe90..9278b92 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
-@@ -311,6 +311,11 @@ if(BUNDLE_DEPENDENCIES)
+@@ -343,6 +343,14 @@ if(BUNDLE_DEPENDENCIES)
+     target_link_libraries(VVVVVV ${STATIC_LIBRARIES})
  else()
      find_package(utf8cpp CONFIG)
- 
++    add_library(utf8cpp-shared INTERFACE)
++    target_link_libraries(utf8cpp-shared INTERFACE utf8cpp)
++    add_library(utf8cpp ALIAS utf8cpp-shared)
++
 +    find_package(FAudio CONFIG)
 +    add_library(faudio-shared INTERFACE)
 +    target_link_libraries(faudio-shared INTERFACE FAudio::FAudio)
 +    add_library(FAudio ALIAS faudio-shared)
-+
+ 
      target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 utf8cpp FAudio)
  endif()
- 
 -- 
-2.37.1
+2.39.2
 

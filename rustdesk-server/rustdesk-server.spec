@@ -12,7 +12,7 @@ Version:        1.1.6
 Release:        1%{?dist}
 Summary:        RustDesk server program
 
-License:        AGPLv3
+License:        AGPL-3.0-only
 URL:            https://rustdesk.com/
 
 Source0:        %{vc_url}/releases/download/%{version}/%{name}-linux-x64.zip

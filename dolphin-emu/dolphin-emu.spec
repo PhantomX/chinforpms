@@ -95,7 +95,7 @@ Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
-Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-%{srcname3}-gh-29d492b.patch
+Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-%{srcname3}-29d492b.patch
 
 
 BuildRequires:  gcc

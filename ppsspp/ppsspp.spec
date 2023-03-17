@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c31b4be69053017e627911fa1eca562a5755b8e6
+%global commit 2f1441eceb0027c4c383ed90013be000496e403e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230314
+%global date 20230316
 %global with_snapshot 1
 
 # Enable Qt build
@@ -70,7 +70,7 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        104%{?gver}%{?dist}
+Release:        105%{?gver}%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -106,6 +106,9 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
+Patch7:         0001-gcc-13-build-fix.patch
+
+Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-VulkanMemoryAllocator-29d492b.patch
 
 %if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -213,7 +216,8 @@ Additional tools files for %{name}.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autopatch -M 500 -p1
 
 %if 0%{?with_snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
@@ -235,6 +239,8 @@ rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
+
+%patch900 -p2 -d ext/vma
 
 %if %{with sysffmpeg}
 rm -rf ffmpeg

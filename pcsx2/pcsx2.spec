@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4224
+Version:        1.7.4235
 Release:        1%{?gver}%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -197,7 +197,7 @@ popd
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
-  pcsx2/Docs/Configuration_Guide/Configuration_Guide.md bin/docs/PCSX2.1
+  pcsx2/Docs/Configuration_Guide/Configuration_Guide.md
 
 # Remove DOS encoding errors in txt files
 sed -i 's/\r//' pcsx2/Docs/GPL.txt
@@ -292,9 +292,6 @@ desktop-file-install \
   --set-value="%{appbin}" \
   .github/workflows/scripts/linux/%{appbin}.desktop
 
-mkdir -p %{buildroot}%{_mandir}/man1
-install -pm0644 bin/docs/%{appres}.1 %{buildroot}%{_mandir}/man1/
-
 
 # No localization for Qt GUI yet
 rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
@@ -307,7 +304,6 @@ rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
 %{perms_pcsx2} %{_bindir}/%{appbin}
 %{_datadir}/applications/%{appbin}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appres}.png
-%{_mandir}/man1/%{appres}.*
 %dir %{_datadir}/%{appres}
 %dir %{_datadir}/%{appres}/resources
 %{_datadir}/%{appres}/resources/fonts

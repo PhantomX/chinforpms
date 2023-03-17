@@ -94,7 +94,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        2%{?gver}%{?dist}
+Release:        3%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -136,6 +136,8 @@ Source99:       Makefile
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
+
+Patch900:       0001-llvm-gcc-13-build-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -240,7 +242,8 @@ written in C++.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?gver:-n %{name}-%{commit}} -N -p1
+%autopatch -M 500 -p1
 
 pushd 3rdparty
 rm -rf \
@@ -264,6 +267,8 @@ popd
 
 %if %{with llvm_submod}
 tar -xf %{S:18} -C llvm --strip-components 1
+
+%patch900 -p1 -d llvm
 
 mkdir ittapi
 tar -xf %{S:19} -C ittapi --strip-components 1
@@ -439,6 +444,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-3.20230312gitcf5346c
+- gcc 13 build fix
+
 * Thu Mar 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-1.20230301git0178b20
 - 0.0.27
 - BR: miniupnpc

@@ -1,0 +1,25 @@
+From 8d1ca1a920babe9dae18ddd9a71377c095635e38 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 16 Mar 2023 12:35:12 -0300
+Subject: [PATCH] gcc 13 build fix
+
+---
+ src/vulkan/overlay.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/vulkan/overlay.cpp b/src/vulkan/overlay.cpp
+index 34d72e1..6bc4e13 100644
+--- a/src/vulkan/overlay.cpp
++++ b/src/vulkan/overlay.cpp
+@@ -38,6 +38,8 @@
+ 
+ #include "config.h"
+ #include "limiter.h"
++#include <cstdint>
++#include <cstdio>
+ 
+ typedef void* hkey_t;
+ 
+-- 
+2.39.2
+

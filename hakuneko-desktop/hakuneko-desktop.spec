@@ -56,7 +56,7 @@ chrpath --delete usr/lib/%{name}/%{real_name}
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
+cat > %{buildroot}%{_bindir}/%{name} <<'EORF'
 #!/usr/bin/bash
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
@@ -81,7 +81,7 @@ fi
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec "${APP_PATH}/%{real_name}" "${APP_USER_FLAGS}" "$@"
-EOF
+EORF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}

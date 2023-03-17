@@ -8,9 +8,9 @@
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2cbf6fbb171086d6fd890bb0e6ea8e2fddaa3811
+%global commit 27c280534d6ed9cc4c41bba01c5bdcc9bf024235
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230316
 %global with_snapshot 1
 
 # Enable system boost
@@ -76,7 +76,7 @@
 
 Name:           citra
 Version:        0
-Release:        36%{?gver}%{?dist}
+Release:        37%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -106,6 +106,7 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
+Patch0:         0001-web_service-gcc-13-build-fix.patch
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
 
 Patch10:        0001-Use-system-libraries.patch
@@ -339,6 +340,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0-37.20230316git27c2805
+- gcc 13 build fix
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 0-30.20221124gitd117132
 - System dynarmic, inih and xbyak
 

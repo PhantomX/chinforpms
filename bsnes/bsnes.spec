@@ -25,7 +25,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        8%{?gver}%{?dist}
+Release:        9%{?gver}%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
