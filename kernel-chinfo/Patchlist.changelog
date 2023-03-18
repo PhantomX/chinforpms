@@ -1,3 +1,15 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/14005bf69741499a3df8cb2e74c0dc99c37e9438
+ 14005bf69741499a3df8cb2e74c0dc99c37e9438 NFS: Correct timing for assigning access cache timestamp
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/b7c0075f41aa13dc0ed14938e56f5d68e2956c21
+ b7c0075f41aa13dc0ed14938e56f5d68e2956c21 usb: ucsi: Fix ucsi->connector race
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4e622b7d9003916c4aa60cc08fa035b18e4f3a4e
+ 4e622b7d9003916c4aa60cc08fa035b18e4f3a4e usb: ucsi_acpi: Increase the command completion timeout
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/28d667bc40d7af758a6968e29f8a93be531696ab
+ 28d667bc40d7af758a6968e29f8a93be531696ab usb: ucsi: Fix NULL pointer deref in ucsi_connector_change()
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/7bc9c467e64c373fd366282769229b76379659ac
  7bc9c467e64c373fd366282769229b76379659ac wifi: cfg80211: Fix use after free for wext
 

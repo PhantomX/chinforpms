@@ -6,9 +6,11 @@
 # Enable to build versioned package
 #global packver %%{ver}
 
+%global sisong_url https://github.com/sisong/lzma
+
 Name:           lzma-sdk%{?packver}
 Version:        22.01
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -18,6 +20,9 @@ Source0:        %{url}/a/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
+
+Patch10:        %{sisong_url}/commit/e0b2bff6c64607fba64f60d12c692fcbad53a8ea.patch#/%{name}-gh-sisong-e0b2bff.patch
+Patch11:        %{sisong_url}/commit/af82ecb1dc06f65c367debebdda8aad10ba7ad3e.patch#/%{name}-gh-sisong-af82ecb.patch
 
 %if %{with asm}
 ExclusiveArch:  x86_64
@@ -147,6 +152,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 22.01-103
+- Add sisong additions for HDiffPatch
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 22.01-102
 - Add XZ symbols
 

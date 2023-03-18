@@ -2,22 +2,32 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%bcond_with     clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+%bcond_with     native
 # Enable system ffmpeg
-%bcond_without sysffmpeg
+%bcond_without  sysffmpeg
 %global bundleffmpegver 4.2.1
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%bcond_without smallffmpeg
+%bcond_without  smallffmpeg
 # Enable system flatbuffers
-%bcond_without sysflatbuffers
+%bcond_without  sysflatbuffers
 %global bundleflatbuffers 2.0.8
 # Enable system hidapi
-%bcond_without syshidapi
+%bcond_without  syshidapi
 %global bundlehidapi 0.12.0
+# Fail with system llvm
+%bcond_with     sysllvm
+%global bundlellvm 13.0.0
+
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
@@ -74,15 +84,6 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
-%bcond_with     clang
-%bcond_with     native
-# Fail with system llvm
-%bcond_without  llvm_submod
-
-%if %{with clang}
-%global toolchain clang
-%endif
-
 %global stb_ver 2.27
 
 %if 0%{?with_snapshot}
@@ -117,7 +118,7 @@ Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{sr
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
 Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
-%if %{with llvm_submod}
+%if %{without sysllvm}
 Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
@@ -155,14 +156,14 @@ BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(FAudio)
-%if !%{with llvm_submod}
-BuildRequires:  cmake(LLVM) >= 13.0.0
+%if %{with sysllvm}
+BuildRequires:  cmake(LLVM) >= %{bundlellvm}
+%else
+Provides:       bundled(llvm) = %{bundlellvm}~git%{shortcommit18}
 %endif
-%if 0%{?with_sysflatbuffers}
+%if %{with sysflatbuffers}
 BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
 BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
-%else
-Provides:       bundled(flatbuffers) = %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
@@ -179,13 +180,13 @@ BuildRequires:  make
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(libva-x11)
-Provides:       bundled(ffmpeg) = %{bundleffmpegver}
+Provides:       bundled(ffmpeg) = %{bundleffmpegver}~git%{shortcommit20}
 %endif
 BuildRequires:  pkgconfig(libudev)
 %if %{with syshidapi}
 BuildRequires:  pkgconfig(hidapi-hidraw) >= %{bundlehidapi}
 %else
-Provides:       bundled(hidapi) = %{bundlehidapi}
+Provides:       bundled(hidapi) = %{bundlehidapi}~git%{shortcommit14}
 %endif
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
@@ -232,9 +233,6 @@ Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
-%if %{with llvm_submod}
-Provides:       bundled(llvm) = 0~git%{shortcommit18}
-%endif
 
 %description
 RPCS3 is a multi-platform open-source Sony PlayStation 3 emulator and debugger
@@ -265,7 +263,7 @@ cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
 
-%if %{with llvm_submod}
+%if %{without sysllvm}
 tar -xf %{S:18} -C llvm --strip-components 1
 
 %patch900 -p1 -d llvm
@@ -364,26 +362,13 @@ popd
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
-%if %{with clang}
-  -DCMAKE_C_COMPILER=%{_bindir}/clang \
-  -DCMAKE_CXX_COMPILER=%{_bindir}/clang++ \
-  -DCMAKE_AR=%{_bindir}/llvm-ar \
-  -DCMAKE_RANLIB=%{_bindir}/llvm-ranlib \
-  -DCMAKE_LINKER=%{_bindir}/llvm-ld \
-  -DCMAKE_OBJDUMP=%{_bindir}/llvm-objdump \
-  -DCMAKE_NM=%{_bindir}/llvm-nm \
-%else
-  -DCMAKE_AR=%{_bindir}/gcc-ar \
-  -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
-  -DCMAKE_NM=%{_bindir}/gcc-nm \
-%endif
 %if 0%{with native}
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=ON \
 %else
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
 %endif
   -DWITH_LLVM:BOOL=ON \
-%if %{without llvm_submod}
+%if %{with sysllvm}
   -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \

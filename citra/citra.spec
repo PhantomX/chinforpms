@@ -3,14 +3,19 @@
 %undefine _cmake_shared_libs
 %undefine _hardened_build
 
+%bcond_without clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 27c280534d6ed9cc4c41bba01c5bdcc9bf024235
+%global commit a2fd43deaba82a95010c767e2ca613d9470d621c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230316
+%global date 20230317
 %global with_snapshot 1
 
 # Enable system boost
@@ -76,7 +81,7 @@
 
 Name:           citra
 Version:        0
-Release:        37%{?gver}%{?dist}
+Release:        38%{?gver}%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -106,7 +111,6 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
-Patch0:         0001-web_service-gcc-13-build-fix.patch
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
 
 Patch10:        0001-Use-system-libraries.patch
@@ -114,9 +118,15 @@ Patch11:        0001-Optional-tests.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+BuildRequires:  llvm
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  desktop-file-utils
 %if %{with boost}
 BuildRequires:  boost-devel >= 1.71.0
@@ -276,6 +286,7 @@ export TRAVIS_TAG="%{version}-%{release}"
 %endif
 
 %cmake \
+  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
@@ -340,6 +351,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 0-38.20230317gita2fd43d
+- clang optional support
+- R: ninja-build
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0-37.20230316git27c2805
 - gcc 13 build fix
 

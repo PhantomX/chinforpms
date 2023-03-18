@@ -20,7 +20,7 @@
 
 Name:           hdiffpatch
 Version:        4.5.2
-Release:        1%{?gver}%{?dist}
+Release:        2%{?gver}%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -94,11 +94,11 @@ EOF
 
 %build
 %set_build_flags
-%make_build VCD=0
+%make_build
 
 
 %install
-%make_install BINDIR=%{_bindir} LIBDIR=%{_libdir} INCDIR=%{_includedir} VCD=0
+%make_install BINDIR=%{_bindir} LIBDIR=%{_libdir} INCDIR=%{_includedir}
 
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
@@ -121,6 +121,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 4.5.2-2
+- Enable vcdiff compress
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 4.5.2-1
 - 4.5.2
 

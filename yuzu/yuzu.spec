@@ -3,14 +3,19 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%bcond_without clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1d9cd8d5e7fff040c6bb438f8d9c619c2e430763
+%global commit 7ddcf90738ccab10e96279fe983098a08c45184e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230315
 
 %bcond_without ea
 %if %{without ea}
@@ -78,7 +83,7 @@
 
 
 Name:           yuzu
-Version:        3451
+Version:        3459
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
@@ -108,14 +113,19 @@ Patch3:         0001-appstream-validate.patch
 Patch10:        0001-boost-build-fix.patch
 Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
 Patch12:        0001-gcc-ignore-Wmaybe-uninitialized.patch
-Patch20:        %{vcm_url}/yuzu/pull/9943.patch#/%{name}-gh-pr9943.patch
 
 ExclusiveArch:  x86_64
 
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+BuildRequires:  llvm
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 %if %{with boost}
@@ -280,18 +290,21 @@ sed \
 # https://github.com/pineappleEA/pineapple-src/issues/80
 rm -f src/core/network/network.h
 
+sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
+
 cp -f %{S:20} dist/compatibility_list/
 
 
 %build
 %cmake \
+  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  %{!?with_clang:-DYUZU_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-  -DYUZU_ENABLE_LTO:BOOL=ON \
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
@@ -349,6 +362,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 3459-1.20230315git7ddcf90.ea
+- clang optional support
+- R: ninja-build
+
 * Tue Dec 06 2022 Phantom X <megaphantomx at hotmail dot com> - 3188-1.20221205git4a88ba8.ea
 - System dynarmic, inih and xbyak
 
