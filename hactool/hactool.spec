@@ -1,4 +1,4 @@
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
 # Enable system mbedtls (needs old release, with cmac builtin support)
 %bcond_with mbedtls

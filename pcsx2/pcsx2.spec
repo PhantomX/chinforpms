@@ -5,7 +5,7 @@
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %global commit 2d08d3dc9495135f5488f74cd7a1849b99d12d0a

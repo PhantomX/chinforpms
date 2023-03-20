@@ -10,7 +10,7 @@
 %bcond_with app
 %bcond_with sysvulkan
 
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
 %global imgui_ver 1.81
 %global vulkan_ver 1.2.158

@@ -1,12 +1,14 @@
 Name:           pipe-viewer
 Version:        0.4.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
 License:        Artistic-2.0
 URL:            https://github.com/trizen/%{name}
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+
+Patch0:         %{url}/commit/1f212c450e8b1525128440aa6fc9c1a59b85d68e.patch#/%{name}-gh-1f212c4.patch
 
 BuildArch:      noarch
 
@@ -128,6 +130,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Mon Mar 20 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.5-2
+- Add upstream commit
+
 * Sat Feb 11 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.5-1
 - 0.4.5
 

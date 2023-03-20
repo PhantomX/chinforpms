@@ -10,12 +10,12 @@
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %(echo "%{optflags}" | sed -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//')
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7ddcf90738ccab10e96279fe983098a08c45184e
+%global commit 6cdaf3355901c74f79b40104db054f41b58176d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230315
+%global date 20230319
 
 %bcond_without ea
 %if %{without ea}
@@ -83,11 +83,11 @@
 
 
 Name:           yuzu
-Version:        3459
+Version:        3466
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
-License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
 
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
