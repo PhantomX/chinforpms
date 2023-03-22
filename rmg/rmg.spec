@@ -178,8 +178,8 @@ done
 cp -p "angrylion-rdp-plus/MAME License.txt" ../../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
 cp -p imgui/LICENSE.txt ../../../LICENSEdir/LICENSE.imgui
 
-%patch900 -p1 -d angrylion-rdp-plus
-%patch901 -p1 -d parallel-rsp
+%patch -P 900 -p1 -d angrylion-rdp-plus
+%patch -P 901 -p1 -d parallel-rsp
 
 ln -s angrylion-rdp-plus mupen64plus-video-angrylion-plus
 ln -s GLideN64 mupen64plus-video-GLideN64

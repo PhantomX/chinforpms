@@ -107,7 +107,7 @@ chmod -R g-w %{name}-%{version}
 
 %else
 
-%patch0 -p1 -b.static
+%patch -P 0 -p1 -b.static
 
 
 # Fix all Python shebangs

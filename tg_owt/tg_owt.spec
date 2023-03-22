@@ -223,7 +223,7 @@ cp -f -p src/third_party/rnnoise/README.chromium legal/README.rnnoise
 %if %{with absl}
 sed -e '/libabsl.cmake/d' -i CMakeLists.txt
 %else
-%patch1000 -p1
+%patch -P 1000 -p1
 tar -xf %{S:3} -C src/third_party/abseil-cpp --strip-components 1
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp

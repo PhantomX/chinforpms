@@ -163,7 +163,7 @@ popd
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd core/deps/breakpad
-%patch900 -p1
+%patch -P 900 -p1
 sed -e '/" -Werror"/d' -i configure.ac
 autoreconf -if
 popd

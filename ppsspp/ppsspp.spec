@@ -240,7 +240,7 @@ rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
-%patch900 -p2 -d ext/vma
+%patch -P 900 -p2 -d ext/vma
 
 %if %{with sysffmpeg}
 rm -rf ffmpeg

@@ -1,6 +1,6 @@
-%global commit 50f5f9af1c27c4380a7489596d20d8048f003365
+%global commit fd99bd4e247a879e8cb186212d1dc66268aa0888
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230307
+%global date 20230320
 %global with_snapshot 1
 
 %define _fortify_level 0
@@ -53,14 +53,14 @@
 %global winemono  7.4.0
 %global winevulkan 1.3.242
 
-%global wineFAudio 22.11
+%global wineFAudio 23.03
 %global winegsm 1.0.19
 %global winejpeg 9e
-%global winelcms2 2.14
+%global winelcms2 2.15
 %global winempg123 1.31.1
 %global winepng 1.6.39
-%global wineopenldap 2.5.13
-%global winetiff 4.4.0
+%global wineopenldap 2.5.14
+%global winetiff 4.5.0
 %global winejxrlib 1.1
 %global winevkd3d 1.6
 %global winexml2 2.10.3
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver aa366375633c6c5f6e0f015d64f9b228d2ccf548
+%global wine_stagingver cd4d265f07ff5ad3ac088e47e8060d534b54ecb5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id cb9ac3cac38560098c4ad9c2a592f173c858ad07
+%global tkg_id 5b6cce4952889f71da7425c69c7793fb2ea8fbe6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -154,7 +154,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.3
+Version:        8.4
 Release:        100%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -358,6 +358,7 @@ BuildRequires:  pkgconfig(sane-backends)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(systemd)
 BuildRequires:  pkgconfig(vulkan)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xcursor)
@@ -870,71 +871,71 @@ This package adds the opencl driver for wine.
 %prep
 %autosetup -S git_am -N -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
 
-%patch511 -p1 -b.cjk
-%patch599 -p1
+%patch -P 511 -p1 -b.cjk
+%patch -P 599 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 tar -xf %{SOURCE900} --strip-components=1
 
-%patch901 -p1
+%patch -P 901 -p1
 
 %if !0%{?fshack}
-%patch1000 -p1
+%patch -P 1000 -p1
 %endif
-%patch1001 -p1
+%patch -P 1001 -p1
 
-%patch5000 -p1
+%patch -P 5000 -p1
 
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
-%patch1020 -p1
-%patch1021 -p1
-%patch1022 -p1
+%patch -P 1020 -p1
+%patch -P 1021 -p1
+%patch -P 1022 -p1
 %if 0%{?fshack}
-%patch1023 -p1
+%patch -P 1023 -p1
 %endif
 %if 0%{?childwindow}
-%patch1024 -p1
-%patch1025 -p1
+%patch -P 1024 -p1
+%patch -P 1025 -p1
 %endif
 %if 0%{?sharedgpures}
-%patch1060 -p1
-%patch1061 -p1
-%patch1062 -p1
-%patch1063 -p1
+%patch -P 1060 -p1
+%patch -P 1061 -p1
+%patch -P 1062 -p1
+%patch -P 1063 -p1
 %endif
-%patch1026 -p1
-%patch1027 -p1
-%patch1028 -p1
-%patch1029 -p1
+%patch -P 1026 -p1
+%patch -P 1027 -p1
+%patch -P 1028 -p1
+%patch -P 1029 -p1
 %if 0%{?fastsync}
-%patch1050 -p1
+%patch -P 1050 -p1
 %endif
-%patch1030 -p1
-%patch1031 -p1
-%patch1032 -p1
-%patch1033 -p1
+%patch -P 1030 -p1
+%patch -P 1031 -p1
+%patch -P 1032 -p1
+%patch -P 1033 -p1
 %dnl #FIXME see bugzilla (Elder Scrolls Online crash) %patch1034 -p1
-%dnl #FIXME needs rebase %patch1035 -p1
-%dnl #FIXME needs rebase %patch1036 -p1
-%dnl #FIXME needs rebase %patch1037 -p1
-%patch1038 -p1
-%patch1039 -p1
-%patch1040 -p1
-%patch1041 -p1
+%dnl #FIXME needs rebase %patch -P 1035 -p1
+%dnl #FIXME needs rebase %patch -P 1036 -p1
+%dnl #FIXME needs rebase %patch -P 1037 -p1
+%patch -P 1038 -p1
+%patch -P 1039 -p1
+%patch -P 1040 -p1
+%patch -P 1041 -p1
 
-%patch1089 -p1
-%patch1091 -p1 -R
-%patch1092 -p1
+%patch -P 1089 -p1
+%patch -P 1091 -p1 -R
+%patch -P 1092 -p1
 
-%patch1300 -p1
-%patch1301 -p1
-%dnl %patch1302 -p1
-%patch1303 -p1
-%patch1304 -p1
+%patch -P 1300 -p1
+%patch -P 1301 -p1
+%dnl %patch -P 1302 -p1
+%patch -P 1303 -p1
+%patch -P 1304 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2013,10 +2014,12 @@ fi
 %{_libdir}/wine/%{winedlldir}/winegstreamer.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winehid.%{winesys}
 %{_libdir}/wine/%{winedlldir}/winemapi.%{winedll}
-%{_libdir}/wine/%{winesodir}/winevulkan.so
-%{_libdir}/wine/%{winedlldir}/winevulkan.%{winedll}
 %{_libdir}/wine/%{winesodir}/wineusb.so
 %{_libdir}/wine/%{winedlldir}/wineusb.%{winesys}
+%{_libdir}/wine/%{winesodir}/winevulkan.so
+%{_libdir}/wine/%{winedlldir}/winevulkan.%{winedll}
+%{_libdir}/wine/%{winesodir}/winewayland.so
+%{_libdir}/wine/%{winedlldir}/winewayland.%{winedrv}
 %{_libdir}/wine/%{winesodir}/winex11.so
 %{_libdir}/wine/%{winedlldir}/winex11.%{winedrv}
 %{_libdir}/wine/%{winedlldir}/wing32.%{winedll}
@@ -2504,6 +2507,9 @@ fi
 
 
 %changelog
+* Tue Mar 21 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.4-100.20230320gitfd99bd4
+- 8.4
+
 * Tue Mar 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.3-100.20230307git50f5f9a
 - 8.3
 - tkg sync and cleanup

@@ -285,7 +285,7 @@ tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:4} -C implot/implot --strip-components 1
 
-%patch900 -p1 -d VulkanMemoryAllocator
+%patch -P 900 -p1 -d VulkanMemoryAllocator
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson

@@ -52,7 +52,7 @@ pushd %{name}-%{srcver}-gtk3
 
 cp -a COPYING AUTHORS ChangeLog README ../
 
-%patch0 -p1 -b.gtk3
+%patch -P 0 -p1 -b.gtk3
 popd
 
 cp -p %{S:1} .

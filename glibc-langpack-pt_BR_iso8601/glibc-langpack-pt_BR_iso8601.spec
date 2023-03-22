@@ -33,7 +33,7 @@ applications. This is an addition to the original language.
 %setup -c -T
 cp -p %{_datadir}/i18n/locales/pt_BR .
 
-%patch0 -p1
+%patch -P 0 -p1
 
 cp -p %{S:0} .
 

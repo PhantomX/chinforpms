@@ -119,7 +119,7 @@ cp -p %{S:3} %{S:4} %{S:5} %{msiname}-%{version}/
 %setup -q -c -n %{msiname}-%{version}
 cd %{msiname}-%{version}
 
-%patch0 -p0
+%patch -P 0 -p0
 pushd wine-gecko-%{version}/python/virtualenv/
 rm -rf ./*
 gzip -dc %{SOURCE1} | tar -xf - --strip-components=1
@@ -128,8 +128,8 @@ pushd js/src/ctypes/libffi
 rm -rf ./*
 gzip -dc %{SOURCE2} | tar -xf - --strip-components=1
 popd
-%patch1 -p1
-%patch2 -p1
+%patch -P 1 -p1
+%patch -P 2 -p1
 
 # fix nsprpub cross compile detection
 sed -i 's,cross_compiling=.*$,cross_compiling=yes,' nsprpub/configure

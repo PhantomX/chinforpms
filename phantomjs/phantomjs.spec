@@ -45,7 +45,7 @@ ${patch_command} -i debian/patches/build-qt55-print.patch
 ${patch_command} -i debian/patches/build-qtpath.patch
 ${patch_command} -i debian/patches/unlock-qt.patch
 
-%patch0 -p1
+%patch -P 0 -p1
 
 2to3 --write --nobackups .
 

@@ -266,7 +266,7 @@ popd
 %if %{without sysllvm}
 tar -xf %{S:18} -C llvm --strip-components 1
 
-%patch900 -p1 -d llvm
+%patch -P 900 -p1 -d llvm
 
 mkdir ittapi
 tar -xf %{S:19} -C ittapi --strip-components 1

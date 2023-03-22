@@ -25,7 +25,7 @@ A Gkrellm2 plugin for displaying and manipulating CPU frequency.
 %setup -q -a 0 -c
 %{__mv} */* .
 
-%patch0
+%patch -P 0
 
 sed -i \
   -e 's|-O2 -Wall|$(CFLAGS)|g' \

@@ -102,7 +102,7 @@ This package contains a graphical user interface using GTK+.
 %autosetup %{?gver:-n %{name}-%{commit}} -N -p1
 %autopatch -M 500 -p1
 
-%patch900 -p1 -d external/VulkanMemoryAllocator-Hpp
+%patch -P 900 -p1 -d external/VulkanMemoryAllocator-Hpp
 
 %{?gver:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
 %{?gver:tar -xf %{S:11} -C external/glslang --strip-components 1}
