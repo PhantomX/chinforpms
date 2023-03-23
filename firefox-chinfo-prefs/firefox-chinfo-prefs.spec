@@ -1,6 +1,6 @@
 Name:           firefox-chinfo-prefs
 Version:        20221207
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
 License:        LicenseRef-Fedora-Public-Domain
@@ -22,15 +22,18 @@ Requires:       firefox
 
 %install
 
-mkdir -p %{buildroot}%{_sysconfdir}/firefox/pref
-install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/pref/chinfo.js
+mkdir -p %{buildroot}%{_sysconfdir}/firefox/defaults/pref
+install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/defaults/pref/chinfo.js
 
 
 %files
-%config(noreplace) %{_sysconfdir}/firefox/pref/chinfo.js
+%config(noreplace) %{_sysconfdir}/firefox/defaults/pref/chinfo.js
 
 
 %changelog
+* Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 20221207-2
+- Move to new directory
+
 * Wed Dec 07 2022 Phantom X <megaphantomx at hotmail dot com> - 20221207-1
 - 20221207
 - Removed waterfox

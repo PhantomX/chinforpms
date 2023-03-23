@@ -18,11 +18,7 @@
 %bcond_with egl
 
 # Enable system ffmpeg
-%if 0%{?fedora} && 0%{?fedora} >= 36
 %bcond_with sysffmpeg
-%else
-%bcond_without sysffmpeg
-%endif
 %global bundleffmpegver 3.0.2
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without smallffmpeg
@@ -128,9 +124,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
-%endif
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif

@@ -96,9 +96,7 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
-%endif
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(liblzma)
@@ -265,13 +263,8 @@ rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto-Regular.ttf
 
-%if 0%{?fedora} && 0%{?fedora} >= 36
 ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/RobotoMono-Medium.ttf
-%else
-ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
-  %{buildroot}%{_datadir}/%{appres}/resources/fonts/RobotoMono-Medium.ttf
-%endif
 
 # Install icon
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps

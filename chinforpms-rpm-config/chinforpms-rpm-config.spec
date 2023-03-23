@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        9
+Version:        10
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 BuildRequires:  redhat-rpm-config
 Requires:       redhat-rpm-config
-Requires:       sed
+Requires:       coreutils
 
 
 %description
@@ -41,6 +41,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 10-1
+- Remove sed requirement
+
 * Sat Mar 18 2023 Phantom X <megaphantomx at hotmail dot com> - 9-1
 - Simplify macros
 

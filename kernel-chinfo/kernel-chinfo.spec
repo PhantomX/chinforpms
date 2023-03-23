@@ -120,9 +120,6 @@ Summary: The Linux kernel
 %else
 %global efiuki 0
 %endif
-%if 0%{?fedora} < 37
-%global efiuki 0
-%endif
 
 
 %if %{zipmodules}
@@ -192,7 +189,7 @@ Summary: The Linux kernel
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%define stable_update 7
+%define stable_update 8
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
@@ -203,9 +200,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 647169927620834d2dcd504947f9e45af06db9a1
+%global pfcommit a16e807128d716c507632e9e980d5e0ba35e5700
 %global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
-%global pfcoprhash 79b99e8bc81c7a4b0e9f0ef79d5220d4
+%global pfcoprhash 75d2f4a7c27e0097a74b844c8f6b54cc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
 %else
@@ -3210,6 +3207,9 @@ fi
 #
 #
 %changelog
+* Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.8-500.chinfo
+- 6.2.8 - pf5
+
 * Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.7-500.chinfo
 - 6.2.7 - pf5
 

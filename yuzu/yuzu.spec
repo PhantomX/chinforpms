@@ -148,9 +148,7 @@ BuildRequires:  pkgconfig(INIReader)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
-%endif
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)

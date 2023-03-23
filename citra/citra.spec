@@ -142,9 +142,7 @@ Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel
-%endif
 %endif
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 3.1.0

@@ -257,13 +257,8 @@ rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto-Regular.ttf
 
-%if 0%{?fedora} && 0%{?fedora} >= 36
 ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
-%else
-ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
-  %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
-%endif
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \

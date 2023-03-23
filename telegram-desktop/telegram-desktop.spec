@@ -156,13 +156,8 @@ Requires:       open-sans-fonts
 Requires:       vazirmatn-fonts
 %endif
 
-%if 0%{?fedora} && 0%{?fedora} >= 37
 BuildRequires:  pkgconfig(webkit2gtk-4.1)
 Requires:       webkit2gtk4.1%{?_isa}
-%else
-BuildRequires:  pkgconfig(webkit2gtk-4.0)
-Requires:       webkit2gtk3%{?_isa}
-%endif
 
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
@@ -172,12 +167,7 @@ BuildRequires:  pkgconfig(libswscale)
 
 # Video calls doesn't work when built against openssl 3.0:
 # https://github.com/telegramdesktop/tdesktop/issues/24698
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  openssl1.1-devel
-%else
-BuildRequires:  pkgconfig(libcrypto)
-BuildRequires:  pkgconfig(openssl)
-%endif
 
 # Telegram Desktop can use native open/save dialogs with XDG portals.
 Recommends:     xdg-desktop-portal%{?_isa}

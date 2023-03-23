@@ -21,9 +21,7 @@
 %define arches_systemtap_64bit  %{arches_64bit}
 %define arches_dmidecode        %{arches_x86}
 %define arches_xen              %{arches_x86} aarch64
-%if 0%{?fedora} >= 36
 %define arches_xen              x86_64 aarch64
-%endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
 %define arches_zfs              %{arches_x86} %{power64} %{arm}
@@ -352,7 +350,7 @@ BuildRequires: libssh2-devel >= 1.3.0
 %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
 %endif
-%if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
+%if %{?fedora} || (0%{?rhel} >= 9)
 BuildRequires: passt
 %endif
 %if %{with_esx}
@@ -472,11 +470,7 @@ Requires: dbus
 # For uid creation during pre
 Requires(pre): shadow-utils
 # Needed by /usr/libexec/libvirt-guests.sh script.
-%if 0%{?fedora} >= 37
 Requires: gettext-runtime
-%else
-Requires: gettext
-%endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
@@ -768,7 +762,7 @@ Requires: swtpm-tools
 %if %{with_numad}
 Requires: numad
 %endif
-%if (0%{?fedora} >= 36) || (0%{?rhel} >= 9)
+%if %{?fedora} || (0%{?rhel} >= 9)
 Recommends: passt
 %endif
 

@@ -502,11 +502,7 @@ BuildRequires: systemd-rpm-macros
 
 %if %{user_static}
 BuildRequires: glibc-static glib2-static zlib-static
-%if 0%{?fedora} >= 37
 BuildRequires: pcre2-static
-%else
-BuildRequires: pcre-static
-%endif
 %endif
 
 # Requires for the Fedora 'qemu' metapackage

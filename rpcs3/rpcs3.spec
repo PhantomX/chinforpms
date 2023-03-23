@@ -31,9 +31,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit cf5346c263111760752cabb94767c07c501207c4
+%global commit 7e6cc02e093738dda8b20f3383240f6b7eaa2e0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
+%global date 20230321
 %global with_snapshot 1
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -95,7 +95,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        3%{?gver}%{?dist}
+Release:        4%{?gver}%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -133,6 +133,9 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         %{vc_url}/%{name}/pull/13562.patch#/%{name}-gh-pr13562.patch
+Patch1:         %{vc_url}/%{name}/pull/13560.patch#/%{name}-gh-pr13560.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -172,9 +175,7 @@ BuildRequires:  pkgconfig(libavcodec) >= %{bundleffmpegver}
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  ffmpeg-devel >= %{bundleffmpegver}
-%endif
 %else
 BuildRequires:  make
 BuildRequires:  pkgconfig(libva)

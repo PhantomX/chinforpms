@@ -282,12 +282,7 @@ Patch5000:      0001-chinforpms-message.patch
 # END of staging patches
 
 %if !0%{?no64bit}
-%if 0%{fedora} > 36
 ExclusiveArch:  %{ix86} x86_64 aarch64
-%else
-# Fedora 36 Clang doesn't build PE binaries on ARM at the moment
-ExclusiveArch:  %{ix86} x86_64
-%endif
 %else
 ExclusiveArch:  %{ix86}
 %endif

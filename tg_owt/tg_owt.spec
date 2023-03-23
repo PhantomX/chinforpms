@@ -95,11 +95,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
-%if 0%{?fedora} && 0%{?fedora} >= 36
 BuildRequires:  openssl1.1-devel
-%else
-BuildRequires:  pkgconfig(openssl)
-%endif
 
 # dlopen
 Requires:       libdrm%{?_isa}
@@ -158,21 +154,13 @@ Requires:       pkgconfig(xfixes)
 Requires:       pkgconfig(xrender)
 Requires:       pkgconfig(xrandr)
 Requires:       pkgconfig(xtst)
-%if 0%{?fedora} && 0%{?fedora} >= 36
-Requires:       compat-ffmpeg4-devel
-%else
 Requires:       pkgconfig(libavcodec)
 Requires:       pkgconfig(libavformat)
 Requires:       pkgconfig(libavutil)
 Requires:       pkgconfig(libswresample)
 Requires:       pkgconfig(libswscale)
 Requires:       ffmpeg-devel
-%endif
-%if 0%{?fedora} && 0%{?fedora} >= 36
 Requires:       openssl1.1-devel
-%else
-BuildRequires:  pkgconfig(openssl)
-%endif
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if !%{with absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
