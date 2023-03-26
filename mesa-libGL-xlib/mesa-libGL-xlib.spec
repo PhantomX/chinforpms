@@ -1,7 +1,4 @@
-# Disable this. Local lto flags in use.
-%global _lto_cflags %{nil}
-# Breaks some games
-%global with_lto 0
+%dnl %global _lto_cflags %{nil}
 
 %ifarch %{valgrind_arches}
 %bcond_without valgrind
@@ -9,10 +6,10 @@
 %bcond_with valgrind
 %endif
 
-%global commit 0c622c766a365908d0a7d5eaf782c686f379f275
+%global commit 032a428fac08f67828d2939f72073ed27b7bae46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230315
-%global with_snapshot 1
+%global date 20230323
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -26,8 +23,8 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0
-Release:        2%{?gver}%{?dist}
+Version:        23.0.1
+Release:        1%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -38,7 +35,7 @@ Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pk
 Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
 
-BuildRequires:  meson >= 0.61.4
+BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -106,24 +103,6 @@ exec env LD_PRELOAD="${LD_PRELOAD}" "$@"
 EOF
 
 %build
-%if 0%{?with_lto}
-%set_build_flags
-MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
-MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
-
-export CFLAGS+=" $MESA_COMMON_FLAGS"
-export FCFLAGS="$CFLAGS"
-export FFLAGS="$CFLAGS"
-export CXXFLAGS+=" $MESA_COMMON_FLAGS"
-export LDFLAGS+=" $MESA_LTO_FLAGS"
-
-export CC=gcc
-export CXX=g++
-export AR="gcc-ar"
-export NM="gcc-nm"
-export RANLIB="gcc-ranlib"
-%endif
-
 %meson \
   -Dplatforms=x11 \
   -Ddri3=disabled \
@@ -188,6 +167,12 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Sat Mar 25 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.1-1
+- 23.0.1
+
+* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0-3.20230323git032a428
+- Reenable LTO
+
 * Thu Feb 23 2023 Phantom X - 23.0.0-1
 - 23.0.0
 

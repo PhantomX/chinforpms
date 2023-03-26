@@ -1,0 +1,26 @@
+From 7a51f1e1080f82eada1b78f57f952975b75f189b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 24 Mar 2023 17:19:22 -0300
+Subject: [PATCH] Revert "CMakeLists: Update boost to 1.81.0"
+
+This reverts commit 877e8991c783c7f439091141ca45e5c7786cab16.
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 61c95444f..6932b6fab 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -210,7 +210,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+ # =======================================================================
+ 
+ # Enforce the search mode of non-required packages for better and shorter failure messages
+-find_package(Boost 1.81.0 REQUIRED context)
++find_package(Boost 1.73.0 REQUIRED context)
+ find_package(enet 1.3 MODULE)
+ find_package(fmt 9 REQUIRED)
+ find_package(inih 52 MODULE COMPONENTS INIReader)
+-- 
+2.40.0
+

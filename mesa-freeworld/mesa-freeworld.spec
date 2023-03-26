@@ -1,5 +1,5 @@
 # Disable this, like mesa full package.
-%global _lto_cflags %{nil}
+%dnl %global _lto_cflags %{nil}
 
 %ifnarch s390x
 %if !0%{?rhel}
@@ -15,10 +15,10 @@
 %bcond_with valgrind
 %endif
 
-%global commit 0c622c766a365908d0a7d5eaf782c686f379f275
+%global commit 032a428fac08f67828d2939f72073ed27b7bae46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230315
-%global with_snapshot 1
+%global date 20230323
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -32,8 +32,8 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0
-Release:        101%{?gver}%{?dist}
+Version:        23.0.1
+Release:        100%{?gver}%{?dist}
 
 Epoch:          100
 
@@ -48,7 +48,7 @@ Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
 
-BuildRequires:  meson >= 0.61.4
+BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -207,6 +207,12 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sat Mar 25 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.0.1-100
+- 23.0.1
+
+* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.0.0-102.20230323git032a428
+- Reenable LTO
+
 * Thu Feb 23 2023 Phantom X - 100:23.0.0-100
 - 23.0.0
 

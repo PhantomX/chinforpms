@@ -16,6 +16,7 @@
 %global commit 6cdaf3355901c74f79b40104db054f41b58176d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230319
+%global with_snapshot 0
 
 %bcond_without ea
 %if %{without ea}
@@ -60,20 +61,28 @@
 %global glad_ver 0.1.29
 %global vkh_ver 1.3.238
 
+%if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
+%else
+%global shortcommit 0
+%endif
 
 %global vcm_url   https://github.com/yuzu-emu
 %global vcea_url  https://github.com/pineappleEA
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
+%global vc_version 3472
 %global vc_name pineapple-src
+%global vc_tarball EA
 %global vc_url  %{vcea_url}
 %global repo ea
 %else
 %global vc_name %{name}
 %if 0%{?with_mainline}
+%global vc_version 1380
 %global vc_name %{name}-mainline
+%global vc_tarball mainline-0
 %global vc_url  %{vcm_url}
 %global repo mainline
 %endif
@@ -83,14 +92,19 @@
 
 
 Name:           yuzu
-Version:        3466
+Version:        %{vc_version}
 Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
 
+%if 0%{?with_snapshot}
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{vc_url}/%{vc_name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
+%endif
+
 %dnl %if %{without ea}
 %if %{without dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
@@ -107,6 +121,7 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
+Patch1:         0001-Revert-CMakeLists-Update-boost-to-1.81.0.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
 
@@ -208,7 +223,7 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{vc_name}-%{commit} -N -p1
+%autosetup -n %{vc_name}-%{?gver:%{commit}}%{!?gver:%{vc_tarball}-%{version}} -N -p1
 
 %if %{with ea}
 pushd externals
@@ -360,6 +375,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 3472-1.ea
+- 3472 ea
+- Tag release support
+
 * Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 3459-1.20230315git7ddcf90.ea
 - clang optional support
 - R: ninja-build

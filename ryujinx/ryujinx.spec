@@ -9,6 +9,8 @@
 %global commit da073fce6127243fcd93b736cde951c4e835e508
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230314
+%global with_snapshot 1
+
 %if %{without bin}
 %global with_snapshot 0
 %endif
@@ -215,8 +217,8 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.677
-Release:        0%{?gver}%{?dist}
+Version:        1.1.680
+Release:        1%{?gver}%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
 License:        MIT
@@ -628,6 +630,9 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
+* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.680-1
+- 1.1.680 tag release
+
 * Tue Nov 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.335-2
 - Support build from source
 

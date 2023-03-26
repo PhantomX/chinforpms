@@ -1,7 +1,5 @@
-# Disable this. Local lto flags in use.
-%global _lto_cflags %{nil}
-# Breaks some games
-%global with_lto 0
+# Can break some games
+%dnl %global _lto_cflags %{nil}
 
 %ifnarch s390x
 %global with_hardware 1
@@ -59,10 +57,10 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 0c622c766a365908d0a7d5eaf782c686f379f275
+%global commit 032a428fac08f67828d2939f72073ed27b7bae46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230315
-%global with_snapshot 1
+%global date 20230323
+%global with_snapshot 0
 
 %if 0%{?with_snapshot}
 %global gver .%{date}git%{shortcommit}
@@ -76,8 +74,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.0
-Release:        101%{?gver}%{?dist}
+Version:        23.0.1
+Release:        100%{?gver}%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -395,24 +393,6 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   src/vulkan/overlay-layer/mesa-overlay-control.py
 
 %build
-%if 0%{?with_lto}
-%set_build_flags
-MESA_LTO_FLAGS="-flto=%{_smp_build_ncpus} -ffat-lto-objects -flto-odr-type-merging"
-MESA_COMMON_FLAGS="-falign-functions=32 -fno-semantic-interposition $MESA_LTO_FLAGS"
-
-export CFLAGS+=" $MESA_COMMON_FLAGS"
-export FCFLAGS="$CFLAGS"
-export FFLAGS="$CFLAGS"
-export CXXFLAGS+=" $MESA_COMMON_FLAGS"
-export LDFLAGS+=" $MESA_LTO_FLAGS"
-
-export CC=gcc
-export CXX=g++
-export AR="gcc-ar"
-export NM="gcc-nm"
-export RANLIB="gcc-ranlib"
-%endif
-
 %meson \
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
@@ -712,6 +692,12 @@ popd
 
 
 %changelog
+* Sat Mar 25 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.1-100
+- 23.0.1
+
+* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.0-102.20230323git032a428
+- Reenable LTO
+
 * Thu Feb 23 2023 Phantom X - 23.0.0-100.20230222git8b9b246
 - 23.0.0
 

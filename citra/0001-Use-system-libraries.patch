@@ -47,7 +47,7 @@ index 12831f3..8fa154b 100644
  set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_NO_SYSTEM_PATHS ON)
 @@ -22,11 +22,20 @@ add_library(boost_serialization STATIC ${boost_serialization_SRC})
- target_link_libraries(boost_serialization PUBLIC boost)
+ target_link_libraries(boost_iostreams PUBLIC boost)
  
  # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
 +endif()
@@ -208,7 +208,7 @@ index 43b1e1b..1078ae6 100644
 +
  create_target_directory_groups(common)
  
- target_link_libraries(common PUBLIC fmt::fmt microprofile Boost::boost Boost::serialization)
+ target_link_libraries(common PUBLIC fmt::fmt microprofile Boost::boost Boost::serialization Boost::iostreams)
 -- 
 2.39.1
 

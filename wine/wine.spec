@@ -1,6 +1,6 @@
-%global commit fd99bd4e247a879e8cb186212d1dc66268aa0888
+%global commit bf9d15e3b1a29f73fedda0c34547a9b29d5e2789
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230320
+%global date 20230324
 %global with_snapshot 1
 
 %define _fortify_level 0
@@ -62,7 +62,7 @@
 %global wineopenldap 2.5.14
 %global winetiff 4.5.0
 %global winejxrlib 1.1
-%global winevkd3d 1.6
+%global winevkd3d 1.7
 %global winexml2 2.10.3
 %global winexslt 1.1.37
 %global winezlib 1.2.13
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver cd4d265f07ff5ad3ac088e47e8060d534b54ecb5
+%global wine_stagingver 7bcf1f63583affc8eae157f463da241eb312464d
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -155,7 +155,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.4
-Release:        100%{?gver}%{?dist}
+Release:        101%{?gver}%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -229,7 +229,6 @@ Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-stag
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
-%dnl Patch1000:       %{tkg_url}/proton/valve_proton_fullscreen_hack/FS_bypass_compositor.patch#/%{name}-tkg-FS_bypass_compositor.patch
 Patch1000:       FS_bypass_compositor.patch
 Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
