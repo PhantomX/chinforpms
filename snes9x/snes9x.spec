@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit b9395814aee48447c2a0b7d4fb1bbb50fece8e27
+%global commit afe8dd9f01eb01ee34e4532d44843c43a3795bc6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230323
+%global date 20230329
 %global with_snapshot 1
 
 %global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
@@ -23,8 +23,8 @@
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
-Version:        1.61
-Release:        0.10%{?gver}%{?dist}
+Version:        1.62.2
+Release:        1%{?gver}%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0
@@ -190,6 +190,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %changelog
+* Wed Mar 29 2023 Phantom X <megaphantomx at hotmail dot com> - 1.62.2-1.20230329gitafe8dd9
+- 1.62.2
+
 * Mon Mar 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1.61-0.8.20230312gitcc0a877
 - Vulkan support
 

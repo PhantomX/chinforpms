@@ -72,7 +72,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3472
+%global vc_version 3485
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -80,7 +80,7 @@
 %else
 %global vc_name %{name}
 %if 0%{?with_mainline}
-%global vc_version 1380
+%global vc_version 1386
 %global vc_name %{name}-mainline
 %global vc_tarball mainline-0
 %global vc_url  %{vcm_url}
@@ -121,7 +121,7 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
 Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Revert-CMakeLists-Update-boost-to-1.81.0.patch
+Patch1:         0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
 Patch2:         0001-Disable-telemetry-initial-dialog.patch
 Patch3:         0001-appstream-validate.patch
 
@@ -280,13 +280,6 @@ sed \
 %endif
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
-
-%if %{with boost}
-sed \
-  -e '/Boost/s|CONFIG ||g' \
-  -e '/Boost/s| headers||g' \
-  -i CMakeLists.txt
-%endif
 
 sed \
   -e 's|@GIT_REV@|%{commit}|g' \
