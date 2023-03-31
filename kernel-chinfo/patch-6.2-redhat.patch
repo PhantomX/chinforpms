@@ -27,9 +27,7 @@ Subject: [PATCH] patch-6.2-redhat
  drivers/iommu/iommu.c                              |  22 +
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
- drivers/usb/typec/ucsi/ucsi.c                      |  33 +-
- drivers/usb/typec/ucsi/ucsi_acpi.c                 |   2 +-
- fs/nfs/dir.c                                       |   2 +-
+ drivers/usb/typec/ucsi/ucsi.c                      |  22 +++++++++-------------
  include/linux/efi.h                                |  22 +-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -1038,13 +1036,13 @@ index 97a0f8faea6e..d837548d2024 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/drivers/usb/typec/ucsi/ucsi.c b/drivers/usb/typec/ucsi/ucsi.c
-index 1cf8947c6d66..086b50968983 100644
+index 8cbbb00..086b509 100644
 --- a/drivers/usb/typec/ucsi/ucsi.c
 +++ b/drivers/usb/typec/ucsi/ucsi.c
 @@ -1039,9 +1039,8 @@ static struct fwnode_handle *ucsi_find_fwnode(struct ucsi_connector *con)
  	return NULL;
  }
-
+ 
 -static int ucsi_register_port(struct ucsi *ucsi, int index)
 +static int ucsi_register_port(struct ucsi *ucsi, struct ucsi_connector *con)
  {
@@ -1058,33 +1056,20 @@ index 1cf8947c6d66..086b50968983 100644
  	INIT_LIST_HEAD(&con->partner_tasks);
 -	con->num = index + 1;
  	con->ucsi = ucsi;
-
+ 
  	cap->fwnode = ucsi_find_fwnode(con);
-@@ -1204,8 +1202,8 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
+@@ -1204,7 +1202,7 @@ static int ucsi_register_port(struct ucsi *ucsi, int index)
   */
  static int ucsi_init(struct ucsi *ucsi)
  {
 -	struct ucsi_connector *con;
--	u64 command;
 +	struct ucsi_connector *con, *connector;
-+	u64 command, ntfy;
+ 	u64 command, ntfy;
  	int ret;
  	int i;
-
-@@ -1217,8 +1215,8 @@ static int ucsi_init(struct ucsi *ucsi)
+@@ -1235,16 +1233,16 @@ static int ucsi_init(struct ucsi *ucsi)
  	}
-
- 	/* Enable basic notifications */
--	ucsi->ntfy = UCSI_ENABLE_NTFY_CMD_COMPLETE | UCSI_ENABLE_NTFY_ERROR;
--	command = UCSI_SET_NOTIFICATION_ENABLE | ucsi->ntfy;
-+	ntfy = UCSI_ENABLE_NTFY_CMD_COMPLETE | UCSI_ENABLE_NTFY_ERROR;
-+	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
- 	ret = ucsi_send_command(ucsi, command, NULL, 0);
- 	if (ret < 0)
- 		goto err_reset;
-@@ -1235,31 +1233,33 @@ static int ucsi_init(struct ucsi *ucsi)
- 	}
-
+ 
  	/* Allocate the connectors. Released in ucsi_unregister() */
 -	ucsi->connector = kcalloc(ucsi->cap.num_connectors + 1,
 -				  sizeof(*ucsi->connector), GFP_KERNEL);
@@ -1094,7 +1079,7 @@ index 1cf8947c6d66..086b50968983 100644
  		ret = -ENOMEM;
  		goto err_reset;
  	}
-
+ 
  	/* Register all connectors */
  	for (i = 0; i < ucsi->cap.num_connectors; i++) {
 -		ret = ucsi_register_port(ucsi, i);
@@ -1103,27 +1088,21 @@ index 1cf8947c6d66..086b50968983 100644
  		if (ret)
  			goto err_unregister;
  	}
-
- 	/* Enable all notifications */
--	ucsi->ntfy = UCSI_ENABLE_NTFY_ALL;
--	command = UCSI_SET_NOTIFICATION_ENABLE | ucsi->ntfy;
-+	ntfy = UCSI_ENABLE_NTFY_ALL;
-+	command = UCSI_SET_NOTIFICATION_ENABLE | ntfy;
- 	ret = ucsi_send_command(ucsi, command, NULL, 0);
+@@ -1256,11 +1254,12 @@ static int ucsi_init(struct ucsi *ucsi)
  	if (ret < 0)
  		goto err_unregister;
-
+ 
 +	ucsi->connector = connector;
-+	ucsi->ntfy = ntfy;
+ 	ucsi->ntfy = ntfy;
  	return 0;
-
+ 
  err_unregister:
 -	for (con = ucsi->connector; con->port; con++) {
 +	for (con = connector; con->port; con++) {
  		ucsi_unregister_partner(con);
  		ucsi_unregister_altmodes(con, UCSI_RECIPIENT_CON);
  		ucsi_unregister_port_psy(con);
-@@ -1268,10 +1268,7 @@ static int ucsi_init(struct ucsi *ucsi)
+@@ -1269,10 +1268,7 @@ static int ucsi_init(struct ucsi *ucsi)
  		typec_unregister_port(con->port);
  		con->port = NULL;
  	}
@@ -1135,39 +1114,6 @@ index 1cf8947c6d66..086b50968983 100644
  err_reset:
  	memset(&ucsi->cap, 0, sizeof(ucsi->cap));
  	ucsi_reset_ppm(ucsi);
-diff --git a/drivers/usb/typec/ucsi/ucsi_acpi.c b/drivers/usb/typec/ucsi/ucsi_acpi.c
-index ce0c8ef80c04..62206a6b8ea7 100644
---- a/drivers/usb/typec/ucsi/ucsi_acpi.c
-+++ b/drivers/usb/typec/ucsi/ucsi_acpi.c
-@@ -78,7 +78,7 @@ static int ucsi_acpi_sync_write(struct ucsi *ucsi, unsigned int offset,
- 	if (ret)
- 		goto out_clear_bit;
-
--	if (!wait_for_completion_timeout(&ua->complete, HZ))
-+	if (!wait_for_completion_timeout(&ua->complete, 5 * HZ))
- 		ret = -ETIMEDOUT;
-
- out_clear_bit:
-diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index f7e4a88d5d92..e28dd6475e39 100644
---- a/fs/nfs/dir.c
-+++ b/fs/nfs/dir.c
-@@ -3089,7 +3089,6 @@ static void nfs_access_add_rbtree(struct inode *inode,
- 		else
- 			goto found;
- 	}
--	set->timestamp = ktime_get_ns();
- 	rb_link_node(&set->rb_node, parent, p);
- 	rb_insert_color(&set->rb_node, root_node);
- 	list_add_tail(&set->lru, &nfsi->access_cache_entry_lru);
-@@ -3114,6 +3113,7 @@ void nfs_access_add_cache(struct inode *inode, struct nfs_access_entry *set,
- 	cache->fsgid = cred->fsgid;
- 	cache->group_info = get_group_info(cred->group_info);
- 	cache->mask = set->mask;
-+	cache->timestamp = ktime_get_ns();
-
- 	/* The above field assignments must be visible
- 	 * before this item appears on the lru.  We cannot easily
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 98598bd1d2fa..34a6233fabaf 100644
 --- a/include/linux/efi.h
