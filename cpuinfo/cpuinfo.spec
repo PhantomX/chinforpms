@@ -1,7 +1,7 @@
 %global commit eb4a6674bfe9cf91b63b9817412ae5f6862c8432
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230214
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit1 1.6.1
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -13,19 +13,19 @@
 
 %bcond_without tests
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           cpuinfo
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        CPU INFOrmation library
 
 License:        BSD-2-Clause
 URL:            https://github.com/pytorch/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -63,7 +63,7 @@ The %{name}-tools package contains tools binaries for testing %{name} library.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %if %{with tests}
 mkdir -p deps/{googlebenchmark,%{srcname2}}

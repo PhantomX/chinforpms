@@ -11,7 +11,7 @@
 %global commit 2d08d3dc9495135f5488f74cd7a1849b99d12d0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220308
-%global with_snapshot 0
+%bcond_with snapshot
 
 %global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -33,8 +33,8 @@
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global glad_ver 0.1.25
@@ -46,13 +46,13 @@
 
 Name:           pcsx2
 Version:        1.7.4272
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT
 URL:            https://github.com/PCSX2/pcsx2
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -166,7 +166,7 @@ this emulator anyway.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf .git
 
@@ -201,7 +201,7 @@ chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
 sed -i 's/\r//' pcsx2/Docs/GPL.txt
 sed -i 's/\r//' pcsx2/Docs/License.txt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed -i \
   -e '/PCSX2_GIT_REV/s| ""| "v%{version}-git%{shortcommit}"|g' \
 %else

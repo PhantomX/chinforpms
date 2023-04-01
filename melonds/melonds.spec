@@ -7,10 +7,10 @@
 %global commit 4ba7a2c5e6f6209eb240d37a4b0c780f618f8836
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230302
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname melonDS
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        4%{?gver}%{?dist}
+Release:        4%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -32,7 +32,7 @@ Summary:        A Nintendo DS emulator
 License:        GPL-3.0-only AND MIT AND LicenseRef-Fedora-Public-Domain AND Unlicense
 URL:            http://melonds.kuribo64.net/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -79,7 +79,7 @@ Provides:       bundled(tiny-AES-c)
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 cp -p src/fatfs/LICENSE.txt LICENSE.fatfs
 cp -p src/teakra/LICENSE LICENSE.teakra

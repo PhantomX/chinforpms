@@ -1,17 +1,17 @@
 %global commit 528c69bf5ef616f4319c62b6aed34cd0c59a48c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230212
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global zopfli_ver 1.0.3
 
 Name:           maxcso
 Version:        1.13.0
-Release:        5%{?gver}%{?dist}
+Release:        5%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
@@ -20,7 +20,7 @@ Summary:        Fast cso compressor
 License:        ISC AND LGPL-2.1-or-later AND Apache-2.0
 URL:            https://github.com/unknownbrackets/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -45,7 +45,7 @@ uses multiple algorithms for best compression ratio.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf lz4 libdeflate libuv zlib zopfli
 

@@ -29,7 +29,7 @@
 %global commit 91fca0783edc73d5f027cb4e151b319f03ee5ce4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230315
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -43,8 +43,8 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global distributor chinforpms
@@ -54,7 +54,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        176%{?gver}%{?dist}
+Release:        176%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -74,7 +74,7 @@ Url:            https://dolphin-emu.org/
 ##Any code in Externals has a license break down in Externals/licenses.md
 License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND BSD-3-Clause AND MIT AND Zlib
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -228,7 +228,7 @@ This package provides the data files for dolphin-emu.
 ####################################################
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 500 -p1
 
 #Allow building with cmake macro
@@ -300,7 +300,7 @@ sed \
   -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
   -i CMakeLists.txt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed \
   -e 's|GIT_FOUND|GIT_DISABLED|g' \
   -i CMakeLists.txt
@@ -335,7 +335,7 @@ sed \
   -DDISTRIBUTOR='%{distributor}' \
   -DDOLPHIN_WC_REVISION:STRING=%{release} \
   -DDOLPHIN_WC_DESCRIBE:STRING=%{version} \
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   -DDOLPHIN_WC_BRANCH:STRING=master \
 %endif
 %{nil}

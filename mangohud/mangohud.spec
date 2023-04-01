@@ -1,10 +1,10 @@
 %global commit 5f51f3f1ed357c2887bb7e2c05aea6a091f01840
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200802
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %bcond_with app
@@ -20,13 +20,13 @@
 
 Name:           mangohud
 Version:        0.6.8
-Release:        101%{?gver}%{?dist}
+Release:        101%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
 URL:            %{vc_url}/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
@@ -83,7 +83,7 @@ improvements, temperature reporting, and logging capabilities.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/

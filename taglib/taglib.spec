@@ -7,16 +7,16 @@
 %global commit a31356e330674640a07bef7d71d08242cae8e9bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221221
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           taglib
 Summary:        Audio Meta-Data Library
 Version:        1.13
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -24,7 +24,7 @@ License:        LGPL-2.1-only OR MPL-1.1
 URL:            https://taglib.org/
 
 %global vc_url  https://github.com/%{name}/%{name}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -72,7 +72,7 @@ Files needed when building software with %{name}.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build

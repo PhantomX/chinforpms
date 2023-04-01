@@ -1,22 +1,22 @@
 %global commit 01cca2e77f9bf9f1432be04f876f287eb78297fe
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230311
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname SDL_GameControllerDB
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        55%{?gver}%{?dist}
+Release:        55%{?dist}
 Summary:        A database of game controller mappings
 
 License:        Zlib AND MIT
 URL:            https://github.com/gabomdq/%{pkgname}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -36,7 +36,7 @@ SDL_GameControllerDB is a community source database of game controller mappings
 to be used with SDL2 Game Controller functionality.
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" duplicates.py
 

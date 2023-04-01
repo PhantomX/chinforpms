@@ -18,10 +18,10 @@
 %global commit 032a428fac08f67828d2939f72073ed27b7bae46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230323
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname mesa
@@ -33,14 +33,14 @@ Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.0.1
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 Epoch:          100
 
 License:        MIT
 URL:            http://www.mesa3d.org
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
@@ -123,7 +123,7 @@ Enhances:       %{pkgname}%{?_isa}
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 %build
 %meson \

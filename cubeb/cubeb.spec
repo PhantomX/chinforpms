@@ -1,7 +1,7 @@
 %global commit dbc60333f54246cf75253c65989e08d0b8c60e7b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221214
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -11,19 +11,19 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 sanitizers-cmake
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           cubeb
 Version:        0.2
-Release:        39%{?gver}%{?dist}
+Release:        39%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
 URL:            https://github.com/mozilla/cubeb
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{name}-%{version}.tar.gz
@@ -61,7 +61,7 @@ development against %{name} libraries.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 tar -xf %{S:1} -C %{srcname1} --strip-components 1
 tar -xf %{S:2} -C cmake/%{srcname2} --strip-components 1

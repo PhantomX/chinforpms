@@ -1,23 +1,23 @@
 %global commit b88fc0130e7c9b5a8e5e86c51a69c8d3c9fd0c1b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210901
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
 Version:        3.3.3
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/AntiMicroX/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -62,7 +62,7 @@ do not have any form of built-in gamepad support.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 find src -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 

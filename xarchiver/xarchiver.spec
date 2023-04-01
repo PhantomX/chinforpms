@@ -1,15 +1,15 @@
 %global commit 63dad3ceb7a3d1dc2288a0df6b054a6ea244a8b6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220714
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           xarchiver
 Version:        0.5.4.20
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        Desktop Environment independent archive manager
 
 Epoch:          1
@@ -17,7 +17,7 @@ Epoch:          1
 License:        GPL-2.0-or-later
 URL:            https://github.com/ib/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -67,7 +67,7 @@ command line programs at runtime.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 touch AUTHORS INSTALL NEWS
 autoreconf -ivf

@@ -1,10 +1,10 @@
 %global commit 66898891a02379896b4ef3d732ac220f08f9469d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220208
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
@@ -14,13 +14,13 @@
 
 Name:           ninfs
 Version:        2.0~a9
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
 License:        MIT
 URL:            https://github.com/ihaveamac/ninfs
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
@@ -49,7 +49,7 @@ card contents, and you can browse and copy out just the files that you need.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 %generate_buildrequires
 %pyproject_buildrequires -r

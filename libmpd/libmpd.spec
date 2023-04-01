@@ -1,10 +1,10 @@
 %global commit 2c8b59595174a77b6c027ddf0558b151a6c42997
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20141207
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vermm %%(echo %{version} | cut -d. -f-2)
@@ -14,12 +14,12 @@
 Summary:        Music Player Daemon Library
 Name:           libmpd
 Version:        11.8.90
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 License:        GPL-2.0-or-later
 Url:            http://gmpc.wikia.com/wiki/Gnome_Music_Player_Client
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://download.sarine.nl/Programs/gmpc/%{vermm}/%{name}-%{version}.tar.gz
@@ -30,7 +30,7 @@ Patch0:         libmpd-11.8.17-strndup.patch
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(glib-2.0) >= 2.16
 BuildRequires:  make
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -50,9 +50,9 @@ libmpd-devel is a sub-package which contains header files and static libraries
 for developing program with libmpd.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?gver:NOCONFIGURE=1 ./autogen.sh}
+%{?with_snapshot:NOCONFIGURE=1 ./autogen.sh}
 
 
 %build

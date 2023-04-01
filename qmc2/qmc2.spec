@@ -1,13 +1,13 @@
 %global commit 9186ba6c6fc370874d16a9743246f6871b4ab2f3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220417
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 %global git_rev v%{version}g%{shortcommit}
 %else
 %global git_rev 0
@@ -18,7 +18,7 @@
 
 Name:           qmc2
 Version:        0.243
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -27,7 +27,7 @@ Summary:        M.A.M.E. Catalog / Launcher II
 License:        GPL-2.0-only AND Apache-2.0 AND MIT
 URL:            http://qmc2.batcom-it.net
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -88,7 +88,7 @@ the games"
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 #ensure system minizip and zlib are used
 rm -rf src/minizip

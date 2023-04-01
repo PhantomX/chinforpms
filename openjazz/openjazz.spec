@@ -1,24 +1,24 @@
 %global commit b8bb91495631078fb795ec627bb6286b1041158c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200422
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global binname OpenJazz
 
 Name:           openjazz
 Version:        20171024
-Release:        4%{?gver}%{?dist}
+Release:        4%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
 License:        GPL-2.0-or-later
 URL:            http://www.alister.eu/jazz/oj/
 
 %global vc_url  https://github.com/AlisterT/%{name}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -31,7 +31,7 @@ BuildRequires:  perl-podlators
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(sdl)
 BuildRequires:  pkgconfig(zlib)
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 BuildRequires:  autoconf
 BuildRequires:  automake
 %endif
@@ -42,7 +42,7 @@ Requires:       hicolor-icon-theme
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p0
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
 
 pod2man -r "%{binname} %{version}" unix/%{binname}.6.pod > %{binname}.6
 
@@ -56,7 +56,7 @@ cd ${HOME}/.local/share/%{name}
 exec %{_bindir}/%{binname}.bin "$@"
 EOF
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed -e '/AC_INIT/s|\[0\]|[%{version}]|g' -i configure.ac
 autoreconf -ivf
 %endif

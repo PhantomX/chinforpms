@@ -1,21 +1,21 @@
 %global commit 2b0f02b3c2fbcd76bc6d1fd680217c73f6ac5752
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180709
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           xinput-gui
 Version:        0.3.1
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
 License:        GPL-3.0-only
 URL:            https://github.com/IvanFon/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -39,7 +39,7 @@ them faster and more user-friendly.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build

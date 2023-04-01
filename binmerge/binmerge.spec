@@ -1,21 +1,21 @@
 %global commit 7218522aac721f6b0dcc2efc1b38f7d286979c7a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210703
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           binmerge
 Version:        1.0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Tool to merge multiple bin/cue tracks into one
 
 License:        GPL-2.0-only
 URL:            https://github.com/putnam/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -31,7 +31,7 @@ BuildRequires:  /usr/bin/pathfix.py
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}
 

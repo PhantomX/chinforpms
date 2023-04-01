@@ -4,8 +4,8 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global with_snapshot 0
-%if 0%{?with_snapshot}
+%bcond_with snapshot
+%if %{with snapshot}
 %global channel snapshot
 %else
 %global channel stable

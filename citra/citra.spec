@@ -16,7 +16,7 @@
 %global commit 5317c00c45ad6b128a2649f3b1b399bd323a1ed4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230324
-%global with_snapshot 1
+%bcond_without snapshot
 
 # Enable system boost
 %bcond_without boost
@@ -73,21 +73,21 @@
 
 %global cpphttplibver b251668
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/citra-emu
 
 Name:           citra
 Version:        0
-Release:        39%{?gver}%{?dist}
+Release:        39%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
 URL:            https://citra-emu.org
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -199,7 +199,7 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 mkdir -p externals/cryptopp
 tar -xf %{S:2} -C externals/cryptopp --strip-components 1
@@ -263,7 +263,7 @@ sed \
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   sed \
     -e 's|@GIT_REV@|%{commit}|g' \
     -e 's|@GIT_BRANCH@|HEAD|g' \
@@ -276,7 +276,7 @@ cp -f %{S:20} .
 
 
 %build
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 export CI=true
 export TRAVIS=true
 export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly

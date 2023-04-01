@@ -9,10 +9,10 @@
 %global commit 27e1737950d80edee38802833786ee378c920358
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210327
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %ifarch %{ix86}
@@ -30,7 +30,7 @@
 
 Name:           wine-nine
 Version:        0.9
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -38,7 +38,7 @@ Epoch:          2
 License:        LGPLv2+
 URL:            https://github.com/iXit/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -89,7 +89,7 @@ Provides:       d3d9-nine.dll.so%{?_isa} = %{?epoch:%{epoch}:}%{version}
 %{summary} and tool to setting it.
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i tools/cross-wine*.in
 

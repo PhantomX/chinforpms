@@ -2,13 +2,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200205
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname QCodeEditor
 
 Name:           qcodeeditor
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Qt Code Editor Widget
 
 License:        MIT

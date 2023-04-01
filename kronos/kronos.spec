@@ -12,10 +12,10 @@
 %global commit 1930e4b243c1ea21c510f194ba4ca66c5eb24581
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230216
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Enable EGL/GLESV2
@@ -26,7 +26,7 @@
 
 Name:           kronos
 Version:        2.5.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -34,7 +34,7 @@ Summary:        A Sega Saturn emulator
 License:        GPL-2.0-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
 URL:            http://fcare.github.io/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -73,7 +73,7 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 rm -rf win_template
 rm -rf yabause/.vs

@@ -1,7 +1,7 @@
 %global commit e2e7f63c6a0a762dd8d823eb29ad850e665317ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230224
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global with_python  1
 
@@ -9,8 +9,8 @@
 
 %{!?with_autotools:%global with_autotools 0}
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %global with_autotools 1
 %global extra_ver 999
 %global src_hash f04fe0c5d47297984c08c9dbf34f46f1
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        103%{?gver}%{?dist}
+Release:        103%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -33,7 +33,7 @@ URL:            http://claws-mail.org
 
 %global pluginapi %{version}.%{extra_ver}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 %dnl Source0:        %{vc_url};a=snapshot;h=%{commit};sf=tgz#/%{name}-%{shortcommit}.tar.gz
 # Tarball generation disabled from webgit, source obtained with Makefile
 Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.xz/%{src_hash}/%{name}-%{shortcommit}.tar.xz
@@ -450,9 +450,9 @@ exporting of your meetings or all your calendars.
 
 
 %prep
-%autosetup %{?gver:-n claws-%{commit}} -p1
+%autosetup %{?with_snapshot:-n claws-%{commit}} -p1
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
 %endif
 

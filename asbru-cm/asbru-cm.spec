@@ -1,10 +1,10 @@
 %global commit 8dce5689a0d733d9e3329ad6de2ca0c93e0fc3e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221112
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global _bashcompletiondir %(pkg-config --variable=completionsdir bash-completion)
@@ -13,13 +13,13 @@
 
 Name:           asbru-cm
 Version:        6.4.1
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPL-3.0-or-later
 URL:            https://asbru-cm.net
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
@@ -88,7 +88,7 @@ remote terminal sessions and automating repetitive tasks.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 sed -r -e "s|\\\$RealBin[ ]*\.[ ]*'|'%{_datadir}/%{name}/lib|g" -i lib/asbru_conn
 sed -r -e "s|\\\$RealBin,|'%{_datadir}/%{name}/lib',|g" -i lib/asbru_conn

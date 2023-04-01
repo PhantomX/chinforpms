@@ -1,21 +1,21 @@
 %global commit b91acc4b369eff0972202acb17f45f5e2728e490
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200726
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           zram-init
 Version:        11.1
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A wrapper script for the zram kernel module
 
 License:        GPL-2.0-only
 URL:            https://github.com/vaeth/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -43,7 +43,7 @@ and init support.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 cp %{S:1} COPYING
 

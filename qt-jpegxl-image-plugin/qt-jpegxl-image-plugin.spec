@@ -1,21 +1,21 @@
 %global commit 66ac0de3b51903a9ceb293eb5b6eaf4cb29d2911
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230119
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           qt-jpegxl-image-plugin
 Version:        0
-Release:        4%{?gver}%{?dist}
+Release:        4%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
 License:        GPL-3.0-only
 URL:            https://github.com/novomesk/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -51,7 +51,7 @@ Qt6 plug-in to allow Qt and KDE based applications to read/write JXL images.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build

@@ -1,20 +1,20 @@
 %global commit 5ef9e1880c107bbe41b919d26410abc3a8e6ecb9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20160501
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           qt-virustotal-uploader
 Version:        1.3
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        VirusTotal uploader
 
 License:        Apache-2.0
 URL:            https://www.virustotal.com/
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -37,7 +37,7 @@ Requires:       hicolor-icon-theme
 %{summary}.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed \
   -e 's|/usr/local/include/ $$(HOME)/local/include/|%{_includedir}/c-vtapi|g' \

@@ -2,13 +2,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210921
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname u4pak
 
 Name:           python-%{pkgname}
 Version:        0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Unreal Engine 4 .pak archive tool
 
 License:        BSD-1-Clause

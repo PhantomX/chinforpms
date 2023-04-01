@@ -3,13 +3,13 @@
 %global commit fe8b436b41244fd52ac001dcad319aef327d238d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230306
-%global with_snapshot 1
+%bcond_without snapshot
 
 # Enable ffmpeg support
 %bcond_without ffmpeg
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url https://github.com/mgba-emu/mgba
@@ -18,13 +18,13 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.8%{?gver}%{?dist}
+Release:        0.8%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0
 URL:            http://mgba.io
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -113,11 +113,11 @@ mGBA with Qt5 frontend.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:r%{version}} -p1
 
 rm -rf src/third-party/{discord-rpc,inih,libpng,lzma,sqlite3,zlib}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed -i \
   -e 's|${GIT_COMMIT}|%{commit}|g' \
   -e 's|${GIT_COMMIT_SHORT}|%{shortcommit}|g' \

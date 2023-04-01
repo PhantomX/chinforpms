@@ -2,11 +2,11 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20161009
 
-%global gver .%{date}git%{shortcommit}
+%global gver .%{date}git%{shortcommit}%{?dist}
 
 Name:           gogextract
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Script for unpacking GOG Linux installers
 
 License:        MIT

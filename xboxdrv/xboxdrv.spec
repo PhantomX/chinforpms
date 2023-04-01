@@ -1,10 +1,10 @@
 %global commit 7f2251bc1b6c8ac6b81f0cfcc6a9a4894899ee28
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200226
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global gl_url  https://gitlab.com/xboxdrv/xboxdrv
@@ -13,13 +13,13 @@
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        108%{?gver}%{?dist}
+Release:        108%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPL-3.0-or-later
 URL:            https://xboxdrv.gitlab.io
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{glc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://xboxdrv.gitlab.io/%{name}-linux-%{version}.tar.bz2
@@ -77,7 +77,7 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:linux-%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:linux-%{version}} -p1
 
 pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   examples/responsecurve-generator.py \

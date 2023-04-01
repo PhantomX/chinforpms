@@ -1,21 +1,21 @@
 %global commit 9750f8cfab738d0ea08ccb8d8752b95f5c09df07
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230111
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           opentyrian
 Version:        2.1
-Release:        8%{?gver}%{?dist}
+Release:        8%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPL-2.0-only
 URL:            https://github.com/%{name}/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-src.tar.gz
@@ -39,7 +39,7 @@ employed to fight Microsol and save the galaxy.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed -e '/\$(docdir)/d' -i Makefile
 

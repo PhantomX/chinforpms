@@ -1,24 +1,24 @@
 %global commit abbef80868dfe5b58c1849f3a2cf6d238067a0f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230309
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname EccEdc
 
 Name:           eccedc
 Version:        20230309
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Checks or fix user data of the 2048 byte per sector of CD by using ecc/edc
 
 License:        GPLv3
 
 URL:            https://github.com/saramibreak/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -41,7 +41,7 @@ edc (user data is all zero).
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 find %{pkgname} -type f \( -name '*.c*' -o -name '*.h*' \) -exec sed -e 's/\r//' -i {} ';'
 

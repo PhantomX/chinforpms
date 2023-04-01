@@ -1,10 +1,10 @@
 %global commit 3fe11badeb2edd2ded758ccca7e78fce6a7077e3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230315
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Use provided binary for first time bootstrap
@@ -19,7 +19,7 @@
 
 Name:           asmc
 Version:        2.34.25
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
 License:        GPL-2.0-only
@@ -27,7 +27,7 @@ URL:            https://github.com/nidud/asmc
 
 ExclusiveArch:  %{ix86} x86_64
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -43,7 +43,7 @@ BuildRequires:  gcc
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed \
   -e 's|gcc |\0$(CFLAGS) |' \

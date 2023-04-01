@@ -60,10 +60,10 @@
 %global commit 032a428fac08f67828d2939f72073ed27b7bae46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230323
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
@@ -75,12 +75,12 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.0.1
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
@@ -385,7 +385,7 @@ an overlay.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 cp %{SOURCE1} docs/
 

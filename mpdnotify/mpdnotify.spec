@@ -1,20 +1,20 @@
 %global commit 36e3ac8380e87193351fa3e1b061358b0a200fce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20171127
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           mpdnotify
 Version:        0
-Release:        3%{?gver}%{?dist}
+Release:        3%{?dist}
 Summary:        'Now Playing' information via notify-send and mpc 
 
 License:        LicenseRef-Fedora-Public-Domain
 URL:            https://github.com/vehk/mpdnotify
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        https://github.com/vehk/mpdnotify/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://github.com/vehk/mpdnotify/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -30,7 +30,7 @@ mpdnotify is a simple bash script that uses notify-send and mpc to create
 notifications about what song is currently playing in mpd.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 # Search links too
 sed -e '/^    cover=/s|-type f|\0 -o -type l|g' -i.orig %{name}

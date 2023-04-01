@@ -1,21 +1,21 @@
 %global commit aafbdb1ed3e687583037ba55ae88b1210d6ce98b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180715
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           sdl-jstest
 Version:        0.2.1
-Release:        0.2%{?gver}%{?dist}
+Release:        0.2%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
 License:        GPL-3.0-only
 URL:            https://gitlab.com/sdl-jstest/sdl-jstest
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        %{url}/-/archive/%{name}-%{version}.tar.gz#/%{name}-%{version}.tar.bz2
@@ -42,9 +42,9 @@ you want to test your SDL_LINUX_JOYSTICK configuration.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed -i \
   -e '/Git REQUIRED/d' \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe.*$|echo \"%{version}-%{release}\"|g" \

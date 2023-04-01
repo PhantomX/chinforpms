@@ -3,15 +3,15 @@
 %global commit 9bb33102503c3c8987f04cbe148fe7277bef3d15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230314
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           ff7tk
 Version:        0.83.2.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
 License:        LGPL-3.0-or-later

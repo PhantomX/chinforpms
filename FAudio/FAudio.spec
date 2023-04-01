@@ -1,15 +1,15 @@
 %global commit 7eca833536c3e938a67f35bae57d7436c00f0875
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210707
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           FAudio
 Version:        23.02
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
 Epoch:          1
@@ -18,7 +18,7 @@ License:        Zlib
 URL:            https://fna-xna.github.io/
 
 %global vc_url  https://github.com/FNA-XNA/%{name}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -60,7 +60,7 @@ Development files for the FAudio library.
 
 
 %prep
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 %autosetup -n %{name}-%{commit} -p1
 %else
 %autosetup -p1

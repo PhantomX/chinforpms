@@ -1,22 +1,22 @@
 %global commit 5163c01d24684a1ab535f2b4c9f8df02718a15ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200901
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           gamemode
 Version:        1.7
-Release:        101%{?gver}%{?dist}
+Release:        101%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
 License:        BSD-3-Clause
 URL:            https://github.com/FeralInteractive/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
@@ -48,7 +48,7 @@ The %{name}-devel package contains the development files libraries needed for
 application integration with %{name}.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf subprojects/inih-*
 

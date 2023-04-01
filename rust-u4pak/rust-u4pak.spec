@@ -4,23 +4,23 @@
 %global commit 458eb6d53c21f38dfad8592720fe2acf86965210
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220213
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global crate u4pak
 
 Name:           rust-%{crate}
 Version:        1.4.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Unreal Engine 4 .pak archive tool
 
 License:        MPL-2.0
 URL:            https://github.com/panzi/rust-%{crate}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -49,7 +49,7 @@ License:        MPLv2.0
 %{_bindir}/%{crate}
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 %cargo_prep
 
 %generate_buildrequires

@@ -1,8 +1,8 @@
 %global snapshot_rev 822
 %global date 20220325
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 %global sver .%{date}svn%{snapshot_rev}
 %endif
 
@@ -14,7 +14,7 @@ Summary:        Ario MPD Client
 License:        GPL-2.0-or-later
 URL:            http://ario-player.sourceforge.net/index.php
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 # To regenerate a snapshot:
 # Use your regular webbrowser to open https://sourceforge.net/p/qmp3gain/code/ci/%%{snapshot_rev}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
@@ -38,7 +38,7 @@ BuildRequires:  make
 BuildRequires:  desktop-file-utils
 #BuildRequires: gettext
 #BuildRequires: perl(XML::Parser)
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 BuildRequires: autoconf automake libtool intltool
 %endif
 
@@ -74,7 +74,7 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 %install
 %make_install INSTALL="install -p"
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 mv %{buildroot}%{_libdir}/ario/*.so* %{buildroot}%{_libdir}/
 rm -f %{buildroot}%{_libdir}/*.so
 %endif
@@ -92,7 +92,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 %doc ChangeLog TODO AUTHORS
 %license COPYING
 %{_bindir}/ario
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 %{_libdir}/*.so.*
 %endif
 %{_libdir}/ario

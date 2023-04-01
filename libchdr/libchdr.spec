@@ -1,23 +1,23 @@
 %global commit fec8ab94212cc65d9d9a62cb3da924f5830c04b0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230220
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global drflac_ver 0.12.39
 
 Name:           libchdr
 Version:        0.2
-Release:        5%{?gver}%{?dist}
+Release:        5%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
 URL:            https://github.com/rtissera/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -50,7 +50,7 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf deps/{lzma,zlib}*
 

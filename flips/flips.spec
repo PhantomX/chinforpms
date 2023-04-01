@@ -1,27 +1,27 @@
 %global commit dc7f76416e2fca9f4a861a1b967caf6aa15813c1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211114
-%global with_snapshot 1
+%bcond_without snapshot
 
 %ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    1
 %endif
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname Flips
 
 Name:           flips
 Version:        1.40
-Release:        5%{?gver}%{?dist}
+Release:        5%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPL-3.0-or-later
 URL:            https://github.com/Alcaro/Flips
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -57,7 +57,7 @@ This packages provides the GTK+ frontend.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 sed \
   -e 's|<binary>flips</binary>|<binary>%{name}-gtk</binary>|' \

@@ -16,7 +16,7 @@
 %global commit 6cdaf3355901c74f79b40104db054f41b58176d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230319
-%global with_snapshot 0
+%bcond_with snapshot
 
 %bcond_without ea
 %if %{without ea}
@@ -61,8 +61,8 @@
 %global glad_ver 0.1.29
 %global vkh_ver 1.3.238
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %else
 %global shortcommit 0
 %endif
@@ -99,7 +99,7 @@ Summary:        A Nintendo Switch Emulator
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{vc_name}/archive/%{commit}/%{vc_name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{vc_name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
@@ -223,7 +223,7 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{vc_name}-%{?gver:%{commit}}%{!?gver:%{vc_tarball}-%{version}} -N -p1
+%autosetup -n %{vc_name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{vc_tarball}-%{version}} -N -p1
 
 %if %{with ea}
 pushd externals

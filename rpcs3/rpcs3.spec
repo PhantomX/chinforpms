@@ -34,7 +34,7 @@
 %global commit 7e6cc02e093738dda8b20f3383240f6b7eaa2e0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230321
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -86,8 +86,8 @@
 
 %global stb_ver 2.27
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/RPCS3
@@ -95,13 +95,13 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        4%{?gver}%{?dist}
+Release:        4%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
 URL:            https://rpcs3.net/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -241,7 +241,7 @@ written in C++.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -N -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -M 500 -p1
 
 pushd 3rdparty
@@ -326,7 +326,7 @@ sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
 rm -rf 3rdparty/yaml-cpp
 %endif
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   sed \
     -e '/find_packages/s|Git|\0_DISABLED|g' \
     -e '/RPCS3_GIT_VERSION/s|local_build|%{shortcommit}|g' \

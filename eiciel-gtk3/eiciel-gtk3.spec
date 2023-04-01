@@ -1,10 +1,10 @@
 %global commit 2b5401034a6087050985bef6336f5686e9ae239c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220315
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global appname org.roger_ferrer.Eiciel_GTK3
@@ -13,13 +13,13 @@
 
 Name:           %{pkgname}-gtk3
 Version:        0.9.13.1
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Graphical editor for ACLs and xattr
 
 License:        GPL-2.0-or-later
 URL:            http://rofi.roger-ferrer.org/eiciel
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        http://rofi.roger-ferrer.org/%{pkgname}/files/%{pkgname}-%{version}.tar.bz2
@@ -44,7 +44,7 @@ This is the GTK3 release, without Nautilus plugin support.
 
 
 %prep
-%autosetup %{?gver:-n %{pkgname}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{pkgname}-%{commit}} -p1
 
 rm -f src/eiciel_nautilus_page.*
 mv src/org.roger-ferrer.Eiciel.appdata.xml src/%{appname}.appdata.xml

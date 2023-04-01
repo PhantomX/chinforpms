@@ -1,27 +1,27 @@
 %global commit 2d6337beb6fa8be83d9164b45b53fd3b3300fb34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220203
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit1 5f44724e8fcdebf8a6b9fd009543c9dcfae4ea32
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libpe
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/merces
 
 Name:           pev
 Version:        0.81
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        PE file analysis toolkit
 
 License:        GPL-2.0-only
 URL:            https://pev.sourceforge.net/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{vc_url}/libpe/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %else
@@ -58,9 +58,9 @@ The libpe-devel package contains the development files libraries needed for
 plugins building.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?gver:tar xf %{S:1} -C lib/libpe --strip-components 1}
+%{?with_snapshot:tar xf %{S:1} -C lib/libpe --strip-components 1}
 
 %build
 

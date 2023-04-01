@@ -2,13 +2,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20090221
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global src_hash 58400d2750f1a4a726b95f8c375eb97c
 
 Name:           fbpager
 Version:        0.1.5
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A pager for fluxbox
 
 License:        MIT

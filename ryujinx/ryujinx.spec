@@ -9,14 +9,14 @@
 %global commit da073fce6127243fcd93b736cde951c4e835e508
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230314
-%global with_snapshot 1
+%bcond_without snapshot
 
 %if %{without bin}
-%global with_snapshot 0
+%bcond_with snapshot
 %endif
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %else
 %global shortcommit 0
 %endif
@@ -218,7 +218,7 @@
 
 Name:           ryujinx
 Version:        1.1.687
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
 License:        MIT
@@ -231,7 +231,7 @@ Source2:        %{vc_url}/%{appname}/raw/%{commit}/README.md
 Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.desktop
 Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{appname}/archive/%{commit}/%{appname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{appname}/archive/%{version}/%{appname}-%{version}.tar.gz
@@ -489,7 +489,7 @@ and consistent builds.
 %if %{with bin}
 %autosetup -c
 %else
-%autosetup -n %{appname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{appname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 %endif
 
 %if %{with bin}

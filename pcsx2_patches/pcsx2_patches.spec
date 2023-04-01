@@ -2,11 +2,11 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230301
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           pcsx2_patches
 Version:        %{date}
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later

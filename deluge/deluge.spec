@@ -1,17 +1,17 @@
 %global commit 5f6f65a06500e12f378e7918289e1d82954c1bd6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211123
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
 Version:        2.1.1
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -19,7 +19,7 @@ Epoch:          1
 License:        GPLv3 with exceptions
 URL:            http://deluge-torrent.org/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        https://git.deluge-torrent.org/deluge/snapshot/deluge-%{commit}.tar.bz2#/deluge-%{shortcommit}.tar.bz2
 %else
 Source0:        http://download.deluge-torrent.org/source/%{vermm}/%{name}-%{version}.tar.xz
@@ -135,9 +135,9 @@ BuildRequires: systemd
 Files for the Deluge daemon
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?gver:echo "%{version}" > RELEASE-VERSION}
+%{?with_snapshot:echo "%{version}" > RELEASE-VERSION}
 
 find -name '*~' -delete
 

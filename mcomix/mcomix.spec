@@ -1,21 +1,21 @@
 %global commit 9efc66d3c8b72af5a31f962b9ee5d0d71d231c04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221226
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           mcomix
 Version:        2.1.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 License:        GPL-2.0-or-later
 URL:            https://mcomix.sourceforge.net/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 # To regenerate a snapshot:
 # Use your regular webbrowser to open https://sourceforge.net/p/mcomix/git/ci/%%{commit}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
@@ -50,7 +50,7 @@ MComix is a user-friendly, customizable image viewer.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-git-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-git-%{commit}} -p1
 
 cp -f %{S:1} mime/comicthumb
 

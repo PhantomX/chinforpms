@@ -2,13 +2,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180108
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global         loaders_dir %(pkg-config --variable gdk_pixbuf_moduledir gdk-pixbuf-2.0)
 
 Name:           xcf-pixbuf-loader
 Version:        0.0.1
-Release:        31%{?gver}%{?dist}
+Release:        31%{?dist}
 Summary:        XCF (GIMP) image loader for GTK+ applications
 
 License:        LGPL-2.0-or-later

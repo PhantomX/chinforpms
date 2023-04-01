@@ -1,21 +1,21 @@
 %global commit e178184cfd86f3fce0882a24ec425c163ac5964b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180519
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           cmdpack
 Version:        1.06
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Collection of command line utilities, most for emulation or disk images
 
 License:        GPL-3.0-only
 URL:            https://github.com/chungy/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -34,7 +34,7 @@ BuildRequires:  make
 images.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 cp -p %{S:1} %{S:2} .
 

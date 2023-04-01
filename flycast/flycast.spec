@@ -8,7 +8,7 @@
 %global commit 17ab0aba26fd5e52449d0649570af21647de4746
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230313
-%global with_snapshot 1
+%bcond_without snapshot
 
 # Disable LTO. Crash.
 %global _lto_cflags %{nil}
@@ -39,8 +39,8 @@
 # Build with x11 instead SDL
 %bcond_with x11
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global imgui_ver 1.80
@@ -50,7 +50,7 @@
 
 Name:           flycast
 Version:        2.0
-Release:        9%{?gver}%{?dist}
+Release:        9%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -60,7 +60,7 @@ Epoch:          1
 License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
@@ -137,7 +137,7 @@ Provides:       bundled(vixl)
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:r%{version}} -N -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:r%{version}} -N -p1
 %autopatch -M 500 -p1
 
 pushd core/deps
@@ -186,7 +186,7 @@ sed \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   sed \
     -e 's|${GIT_EXECUTABLE} rev-parse --short HEAD|echo "%{shortcommit}"|g' \
     -i CMakeLists.txt

@@ -1,7 +1,7 @@
 %global commit 49994d2856b66e6c6a9a8752ac47dd338a45166c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220908
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit1 9492bb98691cc67e1c1145570bb522b7e6e18fba
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -19,8 +19,8 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 LiquidEqualizerWidget
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/ThePBone
@@ -29,7 +29,7 @@
 
 Name:           jamesdsp
 Version:        2.4
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -40,7 +40,7 @@ Summary:        An audio effect processor for PipeWire clients
 License:        GPL-3.0-only AND MIT
 URL:            https://github.com/Audio4Linux/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -132,7 +132,7 @@ Common %{name} files.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 tar -xf %{S:11} -C src/subprojects/%{srcname1} --strip-components 1
 tar -xf %{S:12} -C src/subprojects/%{srcname2} --strip-components 1
@@ -164,7 +164,7 @@ sed \
   -i lib%{name}/lib%{name}.pro
 
 sed \
-  -e 's|$$system(git describe --tags --long --always)|%{version}%{?gver:-g%{shortcommit}}|g' \
+  -e 's|$$system(git describe --tags --long --always)|%{version}%{?with_snapshot:-g%{shortcommit}}|g' \
   -i src/src.pro
 
 cat > %{name}.desktop <<EOF

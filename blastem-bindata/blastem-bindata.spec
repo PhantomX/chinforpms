@@ -2,17 +2,17 @@
 
 %global commit d30ea441b92e
 %global date 20230309
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}hg%{commit}
+%if %{with snapshot}
+%global dist .%{date}hg%{commit}
 %endif
 
 %global pkgname blastem
 
 Name:           %{pkgname}-bindata
 Version:        0.6.3
-Release:        0.5%{?gver}%{?dist}
+Release:        0.5%{?dist}
 Summary:        Blastem binary support files
 
 License:        GPL-3.0-only

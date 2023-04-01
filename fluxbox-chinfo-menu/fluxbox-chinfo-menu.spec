@@ -1,20 +1,20 @@
 %global commit 0d9bd8671fa98d68912528638fdd6398d96b6aba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           fluxbox-chinfo-menu
 Version:        5.1.0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPL-3.0-only
 URL:            https://github.com/PhantomX/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -35,7 +35,7 @@ Requires:       xterm
 %{summary}.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %build
 %cmake \

@@ -1,10 +1,10 @@
 %global commit 90b9f4538d0bf1af2816bb7e094ec323ff104e66
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211001
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %global srcver %{commit}
 %else
 %global srcver %{version}
@@ -13,12 +13,12 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.8
-Release:        101%{?gver}%{?dist}
+Release:        101%{?dist}
 
 License:        BSD-2-Clause
 Url:            https://github.com/trialuser02/qt6ct
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz

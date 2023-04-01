@@ -1,20 +1,20 @@
 %global commit 3d14c360734c0defef9a9c2206046331464e372b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20190402
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           pulsemixer
 Version:        1.5.1
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
 URL:            https://github.com/GeorgeFilipkin/pulsemixer
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -35,7 +35,7 @@ Requires:       pulseaudio-daemon
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %build
 %py3_build

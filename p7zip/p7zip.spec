@@ -1,7 +1,7 @@
 %global commit 79aac5226bdad25efda22095445ad7c4e0d9a06f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210328
-%global with_snapshot 0
+%bcond_with snapshot
 
 %if 0%{?rhel} && ! 0%{?epel}
 %bcond_with gui
@@ -10,13 +10,13 @@
 %endif
 %global sanitize 0
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           p7zip
 Version:        17.04
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        Very high compression ratio file archiver
 
 # Files under C/Compress/Lzma/ are dual LGPL or CPL
@@ -24,14 +24,14 @@ License:        LGPL-2.1-only and (LGPL-2.1-or-later OR CPL-1.0) AND GPL-2.0-onl
 URL:            http://p7zip.sourceforge.net/
 
 %if 0%{sanitize}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 %else
 # Use Makefile to download
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{name}-free-%{shortcommit}.tar.xz
 %else
 Source0:        %{name}-free-%{version}.tar.xz
@@ -99,7 +99,7 @@ This package contains the p7zip manual documentation and some code
 contributions.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %if 0%{sanitize}
   rm -rf CPP/7zip/{Archive,Compress,Crypto,CMAKE,QMAKE}/Rar*

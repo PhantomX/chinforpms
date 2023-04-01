@@ -2,11 +2,11 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220309
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           ps3iso-utils
 Version:        0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        PS3 ISO Utilities
 
 License:        GPL-3.0-or-later

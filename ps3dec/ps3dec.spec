@@ -2,13 +2,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20181216
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname PS3Dec
 
 Name:           ps3dec
 Version:        5
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        ISO encryptor/decryptor for PS3 disc images
 
 License:        WTFPL

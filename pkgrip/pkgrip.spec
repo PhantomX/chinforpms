@@ -2,11 +2,11 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180711
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           pkgrip
 Version:        1.1
-Release:        1.a%{?gver}%{?dist}
+Release:        1.a%{?dist}
 Summary:        Fast linux alternative for decrypting PS3/PSP pkgs
 
 License:        GPL-3.0-only

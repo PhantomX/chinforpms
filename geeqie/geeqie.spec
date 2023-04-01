@@ -1,12 +1,12 @@
 %global commit cd72fa8cf4c85a1af8f66320d48dbee00ad16ec5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230220
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_with map
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/BestImageViewer/%{name}
@@ -14,12 +14,12 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        102%{?gver}%{?dist}
+Release:        102%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 %dnl Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -85,13 +85,13 @@ and zoom.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 echo '#!/bin/sh' > version.sh
 cat >> version.sh <<'EOF'
 version=$(head -1 NEWS)
 set -- $version
-printf '%s' "$2%{?gver:+git%{date}-%{shortcommit}}"
+printf '%s' "$2%{?with_snapshot:+git%{date}-%{shortcommit}}"
 EOF
 
 

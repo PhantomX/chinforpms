@@ -1,10 +1,10 @@
 %global commit 28e1441f356afb9eb2538c82ebbd392c2a8686ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200215
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Build appindicator support
@@ -17,12 +17,12 @@
 Name:           gmpc
 Summary:        GNOME frontend for the MPD
 Version:        11.8.90
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 License:        GPL-2.0-or-later
 URL:            http://gmpclient.org/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        http://download.sarine.nl/Programs/gmpc/%{vermm}/%{name}-%{version}.tar.gz
@@ -52,7 +52,7 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xspf)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vala
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -81,10 +81,10 @@ Requires: pkgconfig
 This package includes header files necessary for developing gmpc plugins.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?gver:sed -e 's|`git rev-parse --short master`|%{shortcommit}|g' -i src/Makefile.am}
-%{?gver:NOCONFIGURE=1 ./autogen.sh}
+%{?with_snapshot:sed -e 's|`git rev-parse --short master`|%{shortcommit}|g' -i src/Makefile.am}
+%{?with_snapshot:NOCONFIGURE=1 ./autogen.sh}
 
 
 %build

@@ -10,7 +10,7 @@
 %global commit 306919047bffb3d8f30159c219722741728904e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230327
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_with sysspirv
 %bcond_without sysvulkan
@@ -43,8 +43,8 @@
 
 %global pkgname dxvk
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global kg_url https://github.com/KhronosGroup
@@ -52,14 +52,14 @@
 
 Name:           wine-%{pkgname}
 Version:        2.1
-Release:        105%{?gver}%{?dist}
+Release:        105%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        Zlib AND MIT%{!?with_sysvulkan: AND Apache-2.0}
 URL:            https://github.com/doitsujin/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -144,7 +144,7 @@ package or when debugging this package.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 cp %{S:1} README.%{pkgname}
 

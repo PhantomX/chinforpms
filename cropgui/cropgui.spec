@@ -1,21 +1,21 @@
 %global commit ef48fc2425a054d9186b7a9321414bf953f9e863
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230112
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           cropgui
 Version:        0.6
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPL-2.0-or-later
 URL:            https://github.com/jepler/cropgui/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -44,7 +44,7 @@ cropgui is a a GTK GUI for lossless JPEG cropping
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed -e '1{/env/d;}' -i filechooser.py
 

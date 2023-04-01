@@ -10,7 +10,7 @@
 %global commit 2f1441eceb0027c4c383ed90013be000496e403e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230316
-%global with_snapshot 1
+%bcond_without snapshot
 
 # Enable Qt build
 %bcond_with qt
@@ -55,8 +55,8 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/hrydgard
@@ -66,14 +66,14 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        105%{?gver}%{?dist}
+Release:        105%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
 License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0%{!?with_sysffmpeg: AND GPL-3.0-or-later}
 URL:            http://www.ppsspp.org/
 
-%if !0%{?with_snapshot}
+%if %{without snapshot}
 Source0:        %{vc_url}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %else
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -210,10 +210,10 @@ Additional tools files for %{name}.
 
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 500 -p1
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
 %if %{without sysffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1

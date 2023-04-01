@@ -6,7 +6,7 @@
 %global commit 6353be1599236eb2146067888436f366ca1475f1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230312
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_with rust
 
@@ -53,7 +53,7 @@
 %global srcname11 imgui
 
 %if %{with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname RMG
@@ -63,7 +63,7 @@
 
 Name:           rmg
 Version:        0.3.8
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -135,7 +135,7 @@ Provides:       bundled(imgui) = 0~git%{shortcommit11}
 Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -N -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 500 -p1
 
 for i in \

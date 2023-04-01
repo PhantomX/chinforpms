@@ -1,14 +1,14 @@
 %global commit 5916a8f8dd93eb6a5de544caedd7a9d8e9a3b1ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220406
-%global with_snapshot 0
+%bcond_with snapshot
 
 %bcond_with check
 %bcond_with keeshare
 %bcond_with yubikey
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global appname org.%{name}.KeePassXC
@@ -17,7 +17,7 @@
 
 Name:           keepassxc
 Version:        2.7.4
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
@@ -26,7 +26,7 @@ Epoch:          1
 License:        BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND OFL-1.1 AND LicenseRef-Fedora-Public-Domain
 URL:            https://keepassxc.org/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
@@ -83,9 +83,9 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 if [ ! -e .gitrev ] ;then
   echo "%{shortcommit}" > .gitrev
 fi

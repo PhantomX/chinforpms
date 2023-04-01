@@ -1,7 +1,7 @@
 %global commit 0421ca2b5f9a50bc2408b983eb8c807aebaf0f2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200102
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit1 baf67bb94d5772373bf2d2e9801e8c4d4df46f36
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -11,21 +11,21 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mp4v2
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/dgilman
 
 Name:           aacgain
 Version:        2.0.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Normalizes the volume of digital music AAC files
 
 License:        GPL-2.0-only
 URL:            http://aacgain.altosdesign.com/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -53,7 +53,7 @@ making the normalization process reversable.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 pushd 3rdparty
 sed \

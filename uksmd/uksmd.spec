@@ -1,28 +1,28 @@
-%global commit e1d4b12d22fd710f0155d75585940f0d439f1544
+%global commit 779017a3dc5f5951811bffdae6f3634e5cba91fa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211019
-%global with_snapshot 1
+%global date 20230204
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           uksmd
 Version:        0
-Release:        4%{?gver}%{?dist}
+Release:        5%{?dist}
 
 Summary:        Userspace KSM helper daemon
 License:        GPL-3.0-only
 
-URL:            https://gitlab.com/post-factum/%{name}
+URL:            https://codeberg.org/pf-kernel/%{name}
 
-%if 0%{?with_snapshot}
-Source0:        %{url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+%if %{with snapshot}
+Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
+Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %endif
 
-BuildRequires:  make
+BuildRequires:  meson
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(libprocps)
 BuildRequires:  pkgconfig(libcap-ng)
@@ -40,21 +40,15 @@ pf-kernel (https://gitlab.com/post-factum/pf-kernel/).
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup -n %{name} -p1
 
 
 %build
-%set_build_flags
-%make_build \
-  CFLAGS="$CFLAGS -fno-plt" \
-  LDFLAGS="$LDFLAGS $(pkg-config --libs libprocps libcap-ng)"
-
+%meson
+%meson_build
 
 %install
-%make_install PREFIX=%{_prefix}
-
-mkdir -p %{buildroot}%{_unitdir}
-install -pm0644 distro/%{name}.service %{buildroot}%{_unitdir}/
+%meson_install
 
 
 %post
@@ -75,6 +69,11 @@ install -pm0644 distro/%{name}.service %{buildroot}%{_unitdir}/
 
 
 %changelog
+* Fri Mar 31 2023 Phantom X <megaphantomx at hotmail dot com> - 0-5.20230204git779017a
+- Bump
+- meson
+- New URL
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0-4.20211019gite1d4b12
 - Bump
 

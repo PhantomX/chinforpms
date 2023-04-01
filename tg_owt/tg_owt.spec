@@ -26,11 +26,11 @@
 
 %global cvc_url https://chromium.googlesource.com
 
-%global gver .%{date}git%{shortcommit0}
+%global dist .%{date}git%{shortcommit0}
 
 Name:           tg_owt
 Version:        0
-Release:        128%{?gver}%{?dist}
+Release:        128%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD

@@ -13,10 +13,10 @@
 %global commit 3bbce19df29ccabd26aef7d8afa09ec63df98ccf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230316
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global appname org.%{name}.DuckStation
@@ -30,13 +30,13 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        84%{?gver}%{?dist}
+Release:        84%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
 License:        GPL-3.0-only AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -152,7 +152,7 @@ This package provides the data files for duckstation.
 ####################################################
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 ###Remove Bundled:
 pushd dep
@@ -196,7 +196,7 @@ sed \
   -e '/ENABLE_DISCORD_PRESENCE/s| ON| OFF|g' \
   -i CMakeLists.txt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 sed \
   -e 's|${HASH}|%{commit}|g' \
   -e 's|${BRANCH}|master|g' \

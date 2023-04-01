@@ -7,7 +7,7 @@
 %global commit 5cefce5c08f74cfc80eee3f82a32d846144e5277
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230308
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_with gtk2
 %bcond_with libao
@@ -19,20 +19,20 @@
 %global toolkit gtk3
 %endif
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           bsnes
 Version:        115
-Release:        9%{?gver}%{?dist}
+Release:        9%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPLv3 and BSD
 
 URL:            https://github.com/%{name}-emu/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -69,7 +69,7 @@ October 14th, 2004. It focuses on performance, features, and ease of use.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 

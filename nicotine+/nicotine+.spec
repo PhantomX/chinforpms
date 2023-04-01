@@ -1,10 +1,10 @@
 %global commit 11edbc6625c6962c491afc1b00e8dbc01c2246ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211226
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global cname  nicotine
@@ -14,7 +14,7 @@
 
 Name:           nicotine+
 Version:        3.2.9
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 #   (see pynicotine/geoip/README.md)
@@ -22,7 +22,7 @@ Summary:        A graphical client for the SoulSeek peer-to-peer system
 License:        GPL-3.0-or-later AND CC-BY-SA-4.0 AND LGPL-3.0-or-later AND MIT
 URL:            https://www.nicotine-plus.org/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -56,7 +56,7 @@ that users want and/or need.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 %generate_buildrequires
 %pyproject_buildrequires -r

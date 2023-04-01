@@ -1,15 +1,15 @@
 %global commit 3807292acee096459a73732f663544916d9eb0e5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230102
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           adwaita-qt
 Version:        1.4.2
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 
 License:        LGPL-2.1-or-later
 Summary:        Adwaita theme for Qt-based applications
@@ -18,7 +18,7 @@ Epoch:          1
 
 Url:            https://github.com/MartinBriza/adwaita-qt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -98,7 +98,7 @@ developing applications that use libadwaita-qt6.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %build
 

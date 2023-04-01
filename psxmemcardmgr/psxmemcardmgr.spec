@@ -1,10 +1,10 @@
 %global commit 9c2868c0dcd18e28b3c2ecc64195218e61b90986
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210714
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global binname psxcardmgr
@@ -12,13 +12,13 @@
 
 Name:           psxmemcardmgr
 Version:        0.9.1
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        PSX Memory Card Manager
 
 License:        GPL-2.0-only
 URL:            https://www.raphnet.net/programmation/psxmemcardmgr/index_en.php
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -39,7 +39,7 @@ data to and from a real memory card is also possible.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build

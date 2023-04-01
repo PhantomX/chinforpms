@@ -1,22 +1,22 @@
 %global commit f1cd763715e991e341d15da599d1877fd5040ce0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230130
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           c-vtapi
 Version:        0.1
-Release:        3%{?gver}%{?dist}
+Release:        3%{?dist}
 Summary:        VirusTotal C API library
 
 License:        Apache-2.0
 URL:            https://www.virustotal.com/
 
 %global vc_url  https://github.com/VirusTotal/%{name}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -43,7 +43,7 @@ development with VirusTotal API integration.
 %{summary}.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 autoreconf -ivf
 

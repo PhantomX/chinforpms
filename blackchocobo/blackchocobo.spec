@@ -1,10 +1,10 @@
 %global commit c1821f7ad689035fa102d33767f4acd89ca8d6e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230307
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Enable system qhexedit
@@ -18,7 +18,7 @@
 
 Name:           blackchocobo
 Version:        1.13.0.0
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 Epoch:          1
@@ -26,7 +26,7 @@ Epoch:          1
 License:        GPL-3.0-only
 URL:            http://www.blackchocobo.com/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -68,7 +68,7 @@ Converting Save Formats to PC or PSX. With it you can even export your ps3 saves
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf .git
 
@@ -80,7 +80,7 @@ sed \
   -e '/licenses\/blackchocobo\//d' \
   -i src/CMakeLists.txt
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   sed \
     -e 's|${CMAKE_PROJECT_VERSION_TWEAK}|%{shortcommit}|g' \
     -i CMakeLists.txt

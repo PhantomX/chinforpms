@@ -25,13 +25,13 @@
 %global commit5 23.02
 %global srcname5 FAudio
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname VVVVVV
 
 Name:           vvvvvv
 Version:        2.4
-Release:        9%{?gver}%{?dist}
+Release:        9%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:

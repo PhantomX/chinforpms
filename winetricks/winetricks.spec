@@ -1,22 +1,22 @@
 %global commit a7e8a7308b09c0ff64920de5b51306b71cb27c45
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230224
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           winetricks
 Version:        20230212
-Release:        100%{?gver}%{?dist}
+Release:        100%{?dist}
 
 Summary:        Work around common problems in Wine
 
 License:        LGPL-2.1-or-later
 URL:            https://github.com/Winetricks/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -48,7 +48,7 @@ or tweak various Wine settings individually.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed -i -e s:steam:: -e s:flash:: tests/*
 

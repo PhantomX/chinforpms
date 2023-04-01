@@ -13,7 +13,7 @@
 %global commit 27072cd556232ae81c6af78530aa5948c46269a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221020
-%global with_snapshot 0
+%bcond_with snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -54,22 +54,22 @@
 
 %global pkgname vkd3d-proton
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
 Version:        2.8
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
 License:        LGPL-2.1-or-later AND MIT
 URL:            https://github.com/HansKristian-Work/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -149,7 +149,7 @@ package or when debugging this package.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1

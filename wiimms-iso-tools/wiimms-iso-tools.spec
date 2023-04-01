@@ -3,23 +3,23 @@
 %global commit e58ce7463bc8829c46bcba52e8232f550e49c17c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210418
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url https://github.com/Wiimm/%{name}
 
 Name:           wiimms-iso-tools
 Version:        3.04a
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPL-2.0-or-later
 URL:            http://wit.wiimm.de/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://download.wiimm.de/source/%{name}/%{name}.source-%{version}.txz
@@ -51,7 +51,7 @@ Wiimms ISO Tools is a set of command line tools to manipulate Wii and GameCube
 ISO images and WBFS containers.
 
 %prep
-%autosetup -n %{name}%{?gver:-%{commit}}%{!?gver:.source-%{version}} -p1
+%autosetup -n %{name}%{?with_snapshot:-%{commit}}%{!?with_snapshot:.source-%{version}} -p1
 
 rm -rf project/src/{libbz2,crypto} setup/*.exe
 

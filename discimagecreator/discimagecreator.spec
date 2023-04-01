@@ -1,24 +1,24 @@
 %global commit bef4f0ad46b9115fddfce976e1a5adfcdeff3580
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230309
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
 Version:        20230309
-Release:        0%{?gver}%{?dist}
+Release:        0%{?dist}
 Summary:        Disc and disk image creation tool 
 
 License:        Apache-2.0
 
 URL:            https://github.com/saramibreak/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
@@ -43,7 +43,7 @@ CD and GD, it can dump considering a drive + CD (=combined) offset.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 rm -f Release_ANSI/E_WISE*
 rm -f Release_ANSI/*.exe

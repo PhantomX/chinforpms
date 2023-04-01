@@ -8,10 +8,10 @@
 %global commit ffc3dce9b122c82c68dc337f280fa2ab1522c317
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230117
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global mcl_ver 0.1.11
@@ -20,13 +20,13 @@
 
 Name:           dynarmic
 Version:        6.4.5
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
 URL:            https://github.com/merryhime/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -62,7 +62,7 @@ with %{name}.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 rm -rf externals/{catch,fmt,robin-map,xbyak}
 

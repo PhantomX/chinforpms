@@ -1,14 +1,14 @@
 %global commit 81c34d4f1629dc7df17ebe21d4a269e2b7219c2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220829
-%global with_snapshot 0
+%bcond_with snapshot
 
 %global commit1 51edeb63ec3f456f4950922c5011c326a062fbce
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libmd5
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global md5_ver 1.6
@@ -20,13 +20,13 @@
 
 Name:           hdiffpatch
 Version:        4.5.2
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
 URL:            https://github.com/sisong/%{pkgname}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -68,7 +68,7 @@ lib%{name} usage.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 mkdir libmd5
 tar -xf %{S:1} -C libmd5 --strip-components 1

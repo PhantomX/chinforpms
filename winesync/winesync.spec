@@ -4,13 +4,13 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220503
 
-%global gver .%{date}git%{shortcommit}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           winesync
 Version:        5.16.20
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Wine synchronization primitive driver
 
 License:        GPL-2.0-only

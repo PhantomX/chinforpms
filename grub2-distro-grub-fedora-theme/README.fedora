@@ -1,0 +1,8 @@
+To use this theme, edit /etc/sysconfig/grub or /etc/default/grub to include:
+GRUB_THEME="/boot/grub2/themes/distro-grub-fedora/theme.txt"
+and comment-out line:
+GRUB_TERMINAL_OUTPUT="console"
+
+Then, run 
+grub2-mkconfig -o /boot/grub2/grub.cfg
+

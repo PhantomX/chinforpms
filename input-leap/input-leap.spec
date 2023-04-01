@@ -1,23 +1,23 @@
 %global commit 68aac94193a721e4c20512434cf6ab40a2dd89a0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230130
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_without qt
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           input-leap
 Version:        2.4.0
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only
 URL:            https://github.com/%{name}/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -58,7 +58,7 @@ computers.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed \
   -e 's|<id></id>|<id>%{name}.desktop</id>|g' \
@@ -84,7 +84,7 @@ sed \
   -DINPUTLEAP_BUILD_GUI:BOOL=OFF \
 %endif
   -DINPUTLEAP_USE_EXTERNAL_GTEST:BOOL=ON \
-%if 0%{?with_snapshot}
+%if %{with snapshot}
   -DINPUTLEAP_VERSION_STAGE:STRING=snapshot \
   -DINPUTLEAP_REVISION="%{shortcommit}" \
   -DINPUTLEAP_BUILD_NUMBER="%{shortcommit}" \

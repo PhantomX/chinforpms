@@ -1,21 +1,21 @@
 %global commit 3df20bd653ebf8fed7fe52a7988409f017958817
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20191108
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           glyr
 Version:        1.0.10
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A search engine for music related metadata
 
 License:        LGPL-3.0-only
 URL:            https://github.com/sahib/glyr
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -55,7 +55,7 @@ The %{name}-devel package contains the development files libraries for libglyr.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed \
   -e '/GCC_ONLY_OPT/s|-s||g' \

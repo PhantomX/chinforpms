@@ -1,15 +1,15 @@
 %global commit df7ddeb0345104f25b5b7bb154bc6a008c8c8404
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180519
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           libeatmydata
 Version:        131
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Library and utilities designed to disable fsync and friends
 
 License:        GPL-3.0-only
@@ -17,7 +17,7 @@ License:        GPL-3.0-only
 URL:            https://www.flamingspork.com/projects/%{name}
 
 %global vc_url https://github.com/stewartsmith/%{name}
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
@@ -40,7 +40,7 @@ this software no longer crash safe.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 if ! [ -x ./configure ] ;then
   autoreconf -ivf

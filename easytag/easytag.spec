@@ -1,10 +1,10 @@
 %global commit 5f4132329a77ddc1ec1851d01152d60150a04cde
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220418
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global majorminor %%(echo %{version} | cut -d. -f1-2)
@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.5%{?gver}%{?dist}
+Release:        0.5%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1
@@ -22,7 +22,7 @@ Epoch:          1
 License:        GPL-2.0-or-later
 URL:            https://wiki.gnome.org/Apps/EasyTAG
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        https://download.gnome.org/sources/%{name}/%{majorminor}/%{name}-%{version}.tar.xz
@@ -55,7 +55,7 @@ BuildRequires:  pkgconfig(speex)
 BuildRequires:  pkgconfig(taglib)
 BuildRequires:  pkgconfig(vorbisfile)
 BuildRequires:  pkgconfig(wavpack)
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -73,9 +73,9 @@ MP2, FLAC, Ogg Opus, Ogg Speex, Ogg Vorbis, MusePack and Monkey's Audio files.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?gver:NOCONFIGURE=1 ./autogen.sh}
+%{?with_snapshot:NOCONFIGURE=1 ./autogen.sh}
 
 
 %build

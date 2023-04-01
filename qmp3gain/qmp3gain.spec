@@ -1,21 +1,21 @@
 %global commit 499c2b16402dcb18136b24c8f9fa5887547eba74
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220727
-%global with_snapshot 1
+%bcond_without snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           qmp3gain
 Version:        0.9.3
-Release:        0.2%{?gver}%{?dist}
+Release:        0.2%{?dist}
 Summary:        MP3Gain GUI front end
 
 License:        GPL-3.0-only
 URL:            http://sourceforge.net/projects/qmp3gain/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 # To regenerate a snapshot:
 # Use your regular webbrowser to open https://sourceforge.net/p/qmp3gain/code/ci/%%{commit}/tarball
 
@@ -49,7 +49,7 @@ Graphical user interface front end supporting MP3Gain engine which analyzes and
 losslessly adjusts mp3 files to a specified target volume.
 
 %prep
-%autosetup %{?gver:-n %{name}-code-%{commit}}%{!?gver:-c} -p1
+%autosetup %{?with_snapshot:-n %{name}-code-%{commit}}%{!?with_snapshot:-c} -p1
 
 sed \
   -e 's/^QHPQCH.commands =/\0 xvfb-run/g' \

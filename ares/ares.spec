@@ -7,7 +7,7 @@
 %global commit be869f9772bbc4d9e13c481b31adfd50080a0a03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230316
-%global with_snapshot 1
+%bcond_without snapshot
 
 %bcond_with gtk2
 %bcond_with libao
@@ -19,22 +19,22 @@
 %global toolkit gtk3
 %endif
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
 Version:        132
-Release:        2%{?gver}%{?dist}
+Release:        2%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPLv3 and BSD
 
 URL:            https://ares-emu.net/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -81,7 +81,7 @@ ares is a multi-system emulator with an uncompromising focus on
 accuracy and code readability.
 
 %prep
-%autosetup -n %{name}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 rm -rf thirdparty/{libchdr,MoltenVK}
 

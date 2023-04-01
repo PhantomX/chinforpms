@@ -1,21 +1,21 @@
 %global commit 8cc6e65aca08f0c6c94444594f6289d8a3702e1e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200307
-%global with_snapshot 0
+%bcond_with snapshot
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           mednaffe
 Version:        0.9.2
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        A front-end (GUI) for mednafen emulator
 
 License:        GPL-3.0-only
 URL:            https://github.com/AmatCoder/%{name}
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.gz
@@ -36,7 +36,7 @@ Mednaffe is a front-end (GUI) for mednafen emulator.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build

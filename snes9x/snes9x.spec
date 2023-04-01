@@ -3,7 +3,7 @@
 %global commit afe8dd9f01eb01ee34e4532d44843c43a3795bc6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230329
-%global with_snapshot 1
+%bcond_without snapshot
 
 %global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -15,8 +15,8 @@
 
 %bcond_with portaudio
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global vc_url  https://github.com/snes9xgit/%{name}
@@ -24,13 +24,13 @@
 
 Name:           snes9x
 Version:        1.62.2
-Release:        1%{?gver}%{?dist}
+Release:        1%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0
 URL:            http://www.snes9x.com/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
@@ -99,13 +99,13 @@ This package contains a graphical user interface using GTK+.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -N -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -M 500 -p1
 
 %patch -P 900 -p1 -d external/VulkanMemoryAllocator-Hpp
 
-%{?gver:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
-%{?gver:tar -xf %{S:11} -C external/glslang --strip-components 1}
+%{?with_snapshot:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
+%{?with_snapshot:tar -xf %{S:11} -C external/glslang --strip-components 1}
 
 # Remove bundled libs
 rm -rf unzip
