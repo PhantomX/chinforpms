@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        23.02
+Version:        23.04
 Release:        100%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -95,6 +95,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Sun Apr 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:23.04-100
+- 23.04
+
 * Thu Feb 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:23.02-100
 - 23.02
 

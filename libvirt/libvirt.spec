@@ -227,7 +227,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.1.0
+Version: 9.2.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -235,7 +235,7 @@ URL: https://libvirt.org/
 %if %(echo %{version} | grep -q "\.0$"; echo $?) == 1
     %define mainturl stable_updates/
 %endif
-Source0: https://libvirt.org/sources/%{?mainturl}libvirt-%{version}.tar.xz
+Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source1: libvirt-sysusers.conf
 Source2: libvirt-qemu-sysusers.conf
 
@@ -764,6 +764,7 @@ Requires: numad
 %endif
 %if %{?fedora} || (0%{?rhel} >= 9)
 Recommends: passt
+Recommends: passt-selinux
 %endif
 
 %description daemon-driver-qemu
@@ -2460,6 +2461,9 @@ exit 0
 
 
 %changelog
+* Sat Apr 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.2.0-100
+- 9.2.0
+
 * Wed Mar 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.1.0-100
 - 9.1.0
 
