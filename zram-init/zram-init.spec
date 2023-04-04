@@ -3,6 +3,8 @@
 %global date 20200726
 %bcond_with snapshot
 
+BuildArch: noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -24,8 +26,6 @@ Source1:        https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
 Source2:        %{name}.sysconfig
 
 Patch100:       0001-systemd-environment-file-support.patch
-
-BuildArch: noarch
 
 %{?systemd_requires}
 BuildRequires:  make

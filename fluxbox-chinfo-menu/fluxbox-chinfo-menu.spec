@@ -2,6 +2,8 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -19,8 +21,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-BuildArch:      noarch
 
 BuildRequires:  cmake
 BuildRequires:  make

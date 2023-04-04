@@ -3,6 +3,8 @@
 %global date 20230224
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -21,8 +23,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-BuildArch:      noarch
 
 # need arch-specific wine, not available everywhere:
 # - adopted from wine.spec

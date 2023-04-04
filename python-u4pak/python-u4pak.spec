@@ -2,6 +2,8 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20210921
 
+BuildArch:      noarch
+
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname u4pak
@@ -17,8 +19,6 @@ URL:            https://github.com/panzi/%{pkgname}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 # Extracted from %%{name}.py
 Source1:        LICENSE
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
 

@@ -2,6 +2,8 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180509
 
+BuildArch:      noarch
+
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           move-to-next-monitor
@@ -13,8 +15,6 @@ License:        GPL-3.0-only
 URL:            https://github.com/vanaoff/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-
-BuildArch:      noarch
 
 BuildRequires:  /usr/bin/pathfix.py
 Requires:       xdotool

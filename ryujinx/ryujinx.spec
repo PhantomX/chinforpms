@@ -9,10 +9,11 @@
 %global commit da073fce6127243fcd93b736cde951c4e835e508
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230314
-%bcond_without snapshot
 
 %if %{without bin}
 %bcond_with snapshot
+%else
+%bcond_without snapshot
 %endif
 
 %if %{with snapshot}
@@ -217,7 +218,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.687
+Version:        1.1.694
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

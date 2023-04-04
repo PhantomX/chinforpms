@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4272
+Version:        1.7.4326
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -150,7 +150,6 @@ Provides:       bundled(gsl) = %{gsl_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
-Provides:       bundled(raintegration) = 0.0
 Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xxhash) = %{xxhash_ver}
@@ -173,7 +172,7 @@ rm -rf .git
 pushd 3rdparty
 rm -rf \
   cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg fmt GL gtest libchdr libjpeg \
-  libpng libzip lzma qt rapidjson rapidyaml sdl2 soundtouch wil \
+  libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 soundtouch wil \
   xbyak xz zlib zstd
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
@@ -185,7 +184,7 @@ sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.
 %endif
 
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
-cp -p rainterface/LICENSE LICENSE.rainterface
+#cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p zydis/LICENSE LICENSE.zydis

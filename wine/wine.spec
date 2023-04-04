@@ -1,7 +1,7 @@
 %global commit bf9d15e3b1a29f73fedda0c34547a9b29d5e2789
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230324
-%global with_snapshot 1
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.3
 %global winemono  7.4.0
-%global winevulkan 1.3.242
+%global winevulkan 1.3.246
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7bcf1f63583affc8eae157f463da241eb312464d
+%global wine_stagingver 8.5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 5b6cce4952889f71da7425c69c7793fb2ea8fbe6
+%global tkg_id 46c5fe58b9ef39044c9238f3ce82928db41b9b2e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -124,16 +124,15 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%global childwindow 1
+%bcond_without childwindow
 # fastsync/winesync
-%global fastsync 1
+%bcond_without fastsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
-%global fshack 0
+%bcond_with fshack
 # Shared gpu resources
-%global sharedgpures 1
-%global vulkanup 0
+%bcond_without sharedgpures
 
-%if 0%{?fshack}
+%if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %endif
 
@@ -144,8 +143,8 @@
 
 %global staging_banner Chinforpms Staging
 
-%if 0%{?with_snapshot}
-%global gver .%{date}git%{shortcommit}
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
@@ -154,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.4
-Release:        101%{?gver}%{?dist}
+Version:        8.5
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -163,7 +162,7 @@ Epoch:          1
 License:        LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND libtiff AND MIT AND OLDAP-2.8 AND Zlib
 URL:            http://www.winehq.org/
 
-%if 0%{?with_snapshot}
+%if %{with snapshot}
 Source0:        %{whq_murl}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
 %if "%{verminor}" == "0"
@@ -253,9 +252,10 @@ Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.p
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1039:       %{tkg_url}/hotfixes/ow2/1148-staging.mypatch#/%{name}-tkg-1148-staging.patch
-Patch1040:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
-Patch1041:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
+Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1041:       0001-proton-win10-default-fixup-1.patch
+Patch1042:       0001-proton-win10-default-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -263,6 +263,8 @@ Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patc
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
 Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
+Patch1064:       0001-sharedgpufences-fences-fixup-1.patch
+Patch1065:       0001-sharedgpufences-fences-fixup-2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -358,7 +360,7 @@ BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xcursor)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xfixes)
-%if 0%{?childwindow}
+%if %{with childwindow}
 BuildRequires:  pkgconfig(xpresent)
 %endif
 BuildRequires:  pkgconfig(xi)
@@ -475,7 +477,7 @@ Requires:       libXcursor(x86-32)
 Requires:       libXfixes(x86-32)
 Requires:       libXi(x86-32)
 Requires:       libXinerama(x86-32)
-%if 0%{?childwindow}
+%if %{with childwindow}
 Requires:       libXpresent(x86-32)
 %endif
 Requires:       libXrandr(x86-32)
@@ -507,7 +509,7 @@ Requires:       libXcursor(x86-64)
 Requires:       libXfixes(x86-64)
 Requires:       libXi(x86-64)
 Requires:       libXinerama(x86-64)
-%if 0%{?childwindow}
+%if %{with childwindow}
 Requires:       libXpresent(x86-64)
 %endif
 Requires:       libXrandr(x86-64)
@@ -536,7 +538,7 @@ Requires:       gstreamer1-plugins-good
 Requires:       libgcrypt
 Requires:       libXcursor
 Requires:       libXfixes
-%if 0%{?childwindow}
+%if %{with childwindow}
 Requires:       libXpresent
 %endif
 Requires:       libXrender
@@ -863,7 +865,7 @@ Requires: wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
 This package adds the opencl driver for wine.
 
 %prep
-%autosetup -S git_am -N -n %{name}-%{?gver:%{commit}}%{!?gver:%{ver}}
+%autosetup -S git_am -N -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}}
 
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
@@ -875,7 +877,7 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 901 -p1
 
-%if !0%{?fshack}
+%if %{without fshack}
 %patch -P 1000 -p1
 %endif
 %patch -P 1001 -p1
@@ -888,27 +890,31 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1020 -p1
 %patch -P 1021 -p1
 %patch -P 1022 -p1
-%if 0%{?fshack}
+%if %{with fshack}
 %patch -P 1023 -p1
 %endif
-%if 0%{?childwindow}
+%if %{with childwindow}
 %patch -P 1024 -p1
 %patch -P 1025 -p1
 %endif
-%if 0%{?sharedgpures}
+%if %{with sharedgpures}
 %patch -P 1060 -p1
 %patch -P 1061 -p1
 %patch -P 1062 -p1
+%patch -P 1064 -p1
 %patch -P 1063 -p1
+%patch -P 1065 -p1
 %endif
 %patch -P 1026 -p1
 %patch -P 1027 -p1
 %patch -P 1028 -p1
 %patch -P 1029 -p1
-%if 0%{?fastsync}
+%if %{with fastsync}
 %patch -P 1050 -p1
 %endif
+%patch -P 1041 -p1
 %patch -P 1030 -p1
+%patch -P 1042 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
 %patch -P 1033 -p1
@@ -919,7 +925,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1038 -p1
 %patch -P 1039 -p1
 %patch -P 1040 -p1
-%patch -P 1041 -p1
 
 %patch -P 1089 -p1
 %patch -P 1091 -p1 -R
@@ -963,12 +968,12 @@ fi
 
 cp -p %{SOURCE3} README.FEDORA
 cp -p %{SOURCE6} README.chinforpms
-%if 0%{?fshack}
+%if %{with fshack}
 cat README.chinforpms %{SOURCE7} >> README.chinforpms.fshack
 touch -r README.chinforpms README.chinforpms.fshack
 mv -f README.chinforpms.fshack README.chinforpms
 %endif
-%if 0%{?fastsync}
+%if %{with fastsync}
 cat README.chinforpms %{SOURCE8} >> README.chinforpms.fastsync
 touch -r README.chinforpms README.chinforpms.fastsync
 mv -f README.chinforpms.fastsync README.chinforpms
@@ -1652,6 +1657,7 @@ fi
 %{_libdir}/wine/%{winesodir}/gphoto2.so
 %{_libdir}/wine/%{winedlldir}/gphoto2.%{wineds}
 %{_libdir}/wine/%{winedlldir}/gpkcsp.%{winedll}
+%{_libdir}/wine/%{winedlldir}/graphicscapture.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hal.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hh.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/hhctrl.%{wineocx}
@@ -1906,7 +1912,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdocvw.%{winedll}
 %{_libdir}/wine/%{winedlldir}/schedsvc.%{winedll}
-%if 0%{?sharedgpures}
+%if %{with sharedgpures}
 %{_libdir}/wine/%{winedlldir}/sharedgpures.%{winesys}
 %endif
 %{_libdir}/wine/%{winedlldir}/shell32.%{winedll}
@@ -2501,6 +2507,9 @@ fi
 
 
 %changelog
+* Mon Apr 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.5-100
+- 8.5
+
 * Tue Mar 21 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.4-100.20230320gitfd99bd4
 - 8.4
 

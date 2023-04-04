@@ -3,6 +3,8 @@
 %global date 20211123
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -30,8 +32,6 @@ Patch0:         0001-Disable-GConf2-magnet-registering.patch
 Patch1:         0001-Disable-new-release-check-by-default.patch
 
 %global vc_url  https://git.deluge-torrent.org/deluge/patch
-
-BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib

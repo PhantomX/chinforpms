@@ -1,6 +1,8 @@
-%global commit b49b724e5efe47601cd8aa6133b53ee1c4c52c77
+%global commit 0c21ad28466e355b9ade5f4468ba5b5af3791be4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230301
+%global date 20230401
+
+BuildArch:      noarch
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -14,8 +16,6 @@ URL:            https://github.com/PCSX2/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/PCSX2/pcsx2/raw/e3eae7fbe83aad3952e3ed6a8e56fc016b51a9c3/COPYING.GPLv3
-
-BuildArch:      noarch
 
 BuildRequires:  zip
 

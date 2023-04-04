@@ -3,6 +3,8 @@
 %global date 20190402
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -22,8 +24,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 # Change volume step from 10 to 5
 Patch0:         0001-Decrease-volume-step_big-to-5.patch
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist setuptools}

@@ -3,6 +3,8 @@
 %global date 20180709
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -20,8 +22,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist setuptools}

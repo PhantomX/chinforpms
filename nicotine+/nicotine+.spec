@@ -3,6 +3,8 @@
 %global date 20211226
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -27,8 +29,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
-
-BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext

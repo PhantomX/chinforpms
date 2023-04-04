@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
 #
-# Copyright 2018-2022 Phantom X, Goiania, Brazil.
+# Copyright 2018-2023 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,13 +26,13 @@
 
 set -e
 
-ver=20221215
+ver=20230403
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
 datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
-dlls="d3d12"
+dlls="d3d12 d3d12core"
 nodlls=""
 
 wineext=dll

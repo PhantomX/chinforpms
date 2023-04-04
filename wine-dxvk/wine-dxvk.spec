@@ -43,6 +43,8 @@
 
 %global pkgname dxvk
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -79,8 +81,6 @@ Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcomm
 Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 
 ExclusiveArch:  %{ix86} x86_64
-
-BuildArch:      noarch
 
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
 BuildRequires:  mingw64-filesystem >= 95

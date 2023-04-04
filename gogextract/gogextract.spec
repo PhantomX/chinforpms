@@ -2,6 +2,8 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20161009
 
+BuildArch:      noarch
+
 %global gver .%{date}git%{shortcommit}%{?dist}
 
 Name:           gogextract
@@ -13,8 +15,6 @@ License:        MIT
 URL:            https://github.com/Yepoleb/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-
-BuildArch:      noarch
 
 BuildRequires:  /usr/bin/pathfix.py
 

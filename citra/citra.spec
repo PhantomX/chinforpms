@@ -3,7 +3,7 @@
 %undefine _cmake_shared_libs
 %undefine _hardened_build
 
-%bcond_without clang
+%bcond_with clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -13,15 +13,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5317c00c45ad6b128a2649f3b1b399bd323a1ed4
+%global commit 041252ba368e476d924089096acacd6536842828
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230324
+%global date 20230402
 %bcond_without snapshot
 
 # Enable system boost
 %bcond_without boost
 # Enable system dynarmic
-%bcond_without dynarmic
+%bcond_with dynarmic
 # Enable ffmpeg support
 %bcond_without ffmpeg
 # Enable system fmt
@@ -35,7 +35,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 7a926d689bcc1cc39dd26d5bba379dffcc6815a3
+%global commit3 b3a92ab54dadd26a0c2a87d2677b80249d2e1a5a
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -81,7 +81,7 @@
 
 Name:           citra
 Version:        0
-Release:        39%{?dist}
+Release:        40%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -112,6 +112,7 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
+Patch3:         0001-general-fixes-for-gcc-13.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Optional-tests.patch
@@ -207,6 +208,7 @@ tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
 %if %{without fmt}
 tar -xf %{S:4} -C externals/fmt --strip-components 1
@@ -256,7 +258,7 @@ sed \
   -e 's/-Wfatal-errors\b//g' \
   -e '/-pedantic-errors/d' \
 %if %{without dynarmic}
-  -i externals/dynarmic/CMakeLists.txt
+  -i externals/dynarmic/CMakeLists.txt \
 %endif
   -i externals/teakra/CMakeLists.txt
 
@@ -324,6 +326,7 @@ cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 %cmake_install
 
 rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_libdir}
 rm -rf %{buildroot}%{_datadir}/cmake
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop

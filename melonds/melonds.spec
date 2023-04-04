@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 4ba7a2c5e6f6209eb240d37a4b0c780f618f8836
+%global commit 350292fb3c4037f90ba53f72e3d7cf08a7b3e196
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230302
+%global date 20230403
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -54,12 +54,18 @@ BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6OpenGL)
 BuildRequires:  cmake(Qt6OpenGLWidgets)
+BuildRequires:  extra-cmake-modules
+BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(slirp)
+BuildRequires:  pkgconfig(wayland-egl)
+BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(x11)
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib

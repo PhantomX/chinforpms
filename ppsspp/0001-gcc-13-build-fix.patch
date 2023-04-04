@@ -1,4 +1,4 @@
-From 19528b562754569a1f5f669757c6e854fd3c8843 Mon Sep 17 00:00:00 2001
+From 618ac76bd78de11e5b8c6b98c9d6a01a98212a1d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 16 Mar 2023 16:59:46 -0300
 Subject: [PATCH] gcc 13 build fix
@@ -8,8 +8,9 @@ Subject: [PATCH] gcc 13 build fix
  Common/Data/Format/IniFile.h   | 1 +
  Common/GPU/OpenGL/GLFeatures.h | 1 +
  Common/Net/NetBuffer.h         | 1 +
+ Common/System/System.h         | 1 +
  Core/Reporting.h               | 1 +
- 5 files changed, 5 insertions(+)
+ 6 files changed, 6 insertions(+)
 
 diff --git a/Common/Data/Format/IniFile.cpp b/Common/Data/Format/IniFile.cpp
 index 91c042d..2eeb196 100644
@@ -58,6 +59,18 @@ index 6247aca..656a4e0 100644
 +#include <cstdint>
  
  namespace net {
+ 
+diff --git a/Common/System/System.h b/Common/System/System.h
+index 420fb54..002bdf6 100644
+--- a/Common/System/System.h
++++ b/Common/System/System.h
+@@ -3,6 +3,7 @@
+ #include <string>
+ #include <vector>
+ #include <functional>
++#include <cstdint>
+ 
+ // Platform integration
  
 diff --git a/Core/Reporting.h b/Core/Reporting.h
 index 211267c..1d25425 100644

@@ -3,7 +3,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_without clang
+%bcond_with clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -59,20 +59,14 @@
 %global srcname8 mbedtls
 
 %global glad_ver 0.1.29
-%global vkh_ver 1.3.238
-
-%if %{with snapshot}
-%global dist .%{date}git%{shortcommit}%{?dist}
-%else
-%global shortcommit 0
-%endif
+%global vkh_ver 1.3.246
 
 %global vcm_url   https://github.com/yuzu-emu
 %global vcea_url  https://github.com/pineappleEA
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3485
+%global vc_version 3497
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -88,12 +82,19 @@
 %endif
 %endif
 
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%else
+%global shortcommit 0
+%endif
+%global dist %{?repo:.%{repo}}%{?dist}
+
 %global appname org.yuzu_emu.%{name}
 
 
 Name:           yuzu
 Version:        %{vc_version}
-Release:        1%{?gver}%{?repo:.%{repo}}%{?dist}
+Release:        1%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -120,14 +121,15 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
-Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
-Patch2:         0001-Disable-telemetry-initial-dialog.patch
-Patch3:         0001-appstream-validate.patch
+Patch0:         %{vcm_url}/yuzu/pull/10022.patch#/%{name}-gh-pr10022.patch
 
-Patch10:        0001-boost-build-fix.patch
-Patch11:        0001-nvflinger.cpp-ignore-Wconversion.patch
-Patch12:        0001-gcc-ignore-Wmaybe-uninitialized.patch
+Patch10:        0001-Use-system-libraries.patch
+Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
+Patch12:        0001-Disable-telemetry-initial-dialog.patch
+Patch13:        0001-appstream-validate.patch
+Patch14:        0001-boost-build-fix.patch
+Patch15:        0001-nvflinger.cpp-ignore-Wconversion.patch
+Patch16:        0001-gcc-ignore-Wmaybe-uninitialized.patch
 
 ExclusiveArch:  x86_64
 
@@ -151,7 +153,7 @@ BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.4.0
+BuildRequires:  cmake(dynarmic) >= 6.4.6
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
@@ -240,6 +242,7 @@ find \( -iname '*license*' -or -name '*COPYRIGHT*' -or -iname '*README*' \) -exe
 %if %{without dynarmic}
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
@@ -368,6 +371,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Apr 03 2023 Phantom X <megaphantomx at hotmail dot com> - 3497-1.ea
+- Build with gcc again
+
 * Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 3472-1.ea
 - 3472 ea
 - Tag release support

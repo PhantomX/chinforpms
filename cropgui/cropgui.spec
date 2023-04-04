@@ -3,6 +3,8 @@
 %global date 20230112
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -22,8 +24,6 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Set-data-files-to-datadir.patch
-
-BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick

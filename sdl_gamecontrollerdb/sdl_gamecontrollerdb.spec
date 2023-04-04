@@ -3,6 +3,8 @@
 %global date 20230311
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -23,8 +25,6 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Add-Xbox-360-Controller-for-Windows-GUID.patch
-
-BuildArch:      noarch
 
 BuildRequires:  /usr/bin/pathfix.py
 

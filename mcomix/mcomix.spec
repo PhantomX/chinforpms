@@ -3,6 +3,8 @@
 %global date 20221226
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -29,8 +31,6 @@ Source1:        https://github.com/multiSnow/mcomix3/raw/cb63d286a0357af45b2b5de
 
 Patch0:         0001-Search-gettext-files-in-system-wide-directory.patch
 Patch1:         0001-Set-small-toolbar.patch
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel >= 3.8
 BuildRequires:  /usr/bin/pathfix.py

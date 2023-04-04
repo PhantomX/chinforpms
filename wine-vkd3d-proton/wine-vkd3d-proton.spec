@@ -2,7 +2,6 @@
 %undefine _auto_set_build_flags
 %define _fortify_level 0
 %undefine _hardened_build
-%global _default_patch_fuzz 2
 # Disable LTO
 %global _lto_cflags %{nil}
 
@@ -10,18 +9,18 @@
 %bcond_without sysvulkan
 
 # Need be set for release builds too
-%global commit 27072cd556232ae81c6af78530aa5948c46269a9
+%global commit 42e3adc29f5b522161e20d08a1dd230b650c59bb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221020
-%bcond_with snapshot
+%global date 20230331
+%bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 babf511d4cc7466b970dec82db35b5cacf6acfec
+%global commit1 f767c3c81b2904dcb7de371ffdb00bdf7d86a6c8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 fb27bbf3077f92cc1a8a55777bce2810a94079cf
+%global commit2 e150e716ff57dd69cf31d45344121f10de8925af
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
@@ -29,11 +28,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 b7a86d3b2bf8fbe73fcd40df9ec62a5966e9db89
+%global commit4 bd6443d28f2ebecedfb839b52d612011ba623d14
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 1d31a100405cf8783ca7a31e31cdd727c9fc54c3
+%global commit5 aa331ab0ffcb3a67021caa1a0c1c9017712f2f31
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -48,11 +47,11 @@
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global dxvk_async 1
-
 %global winecommonver 5.3
 
 %global pkgname vkd3d-proton
+
+BuildArch:      noarch
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -62,7 +61,7 @@
 
 Name:           wine-%{pkgname}
 Version:        2.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -89,7 +88,6 @@ Source11:        winevkd3dcfg
 
 ExclusiveArch:  %{ix86} x86_64
 
-BuildArch:      noarch
 
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
 BuildRequires:  mingw64-filesystem >= 95
@@ -263,14 +261,14 @@ done
 
 %install
 
-for dll in d3d12 ;do
+for dll in d3d12 d3d12core ;do
 
   case ${dll} in
-    d3d12)
-      dlldir=${dll}
-      ;;
     libvkd3d-proton-utils*)
       dlldir=vkd3d-utils
+      ;;
+    d3d12*)
+      dlldir=${dll}
       ;;
   esac
 
@@ -298,6 +296,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Apr 04 2023 Phantom X <megaphantomx at hotmail dot com> - 2.8-3.20230331git42e3adc
+- Add d3d12core new library
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.8-2
 - Fix build with system vulkan headers
 

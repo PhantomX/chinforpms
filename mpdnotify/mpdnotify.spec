@@ -3,6 +3,8 @@
 %global date 20171127
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -20,9 +22,8 @@ Source0:        https://github.com/vehk/mpdnotify/archive/%{commit}/%{name}-%{sh
 Source0:        https://github.com/vehk/mpdnotify/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-BuildArch:      noarch
-
-Requires:       mpc libnotify
+Requires:       libnotify
+Requires:       mpc
 #Requires:       ImageMagick
 
 %description

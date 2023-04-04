@@ -3,6 +3,8 @@
 %global date 20220208
 %bcond_with snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -27,8 +29,6 @@ Source0:        %{url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
 Patch0:         0001-Remove-desktop-file-command-line-parameter.patch
-
-BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist haccrypto} >= %{haccryptover}

@@ -3,6 +3,8 @@
 %global date 20221112
 %bcond_without snapshot
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -25,8 +27,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
 Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
-
-BuildArch:      noarch
 
 BuildRequires:  pkgconfig(bash-completion)
 BuildRequires:  desktop-file-utils
