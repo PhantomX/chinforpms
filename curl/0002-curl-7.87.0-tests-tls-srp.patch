@@ -1,0 +1,54 @@
+From 34ba217b433f222f486a42f2157866ab40dba221 Mon Sep 17 00:00:00 2001
+From: Daniel Stenberg <daniel@haxx.se>
+Date: Wed, 15 Feb 2023 15:04:07 +0100
+Subject: [PATCH] tests: make sure gnuserv-tls has SRP support before using it
+
+Reported-by: fundawang on github
+Fixes #10522
+Closes #10524
+
+Upstream-commit: 2fdc1d816ebf3c77f43068103bec1b3a3767881a
+Signed-off-by: Kamil Dudka <kdudka@redhat.com>
+---
+ tests/runtests.pl |  2 +-
+ tests/sshhelp.pm  | 11 ++++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/tests/runtests.pl b/tests/runtests.pl
+index f49e385..d2e0e52 100755
+--- a/tests/runtests.pl
++++ b/tests/runtests.pl
+@@ -5373,7 +5373,7 @@ sub startservers {
+         elsif($what eq "httptls") {
+             if(!$httptlssrv) {
+                 # for now, we can't run http TLS-EXT tests without gnutls-serv
+-                return "no gnutls-serv";
++                return "no gnutls-serv (with SRP support)";
+             }
+             if($torture && $run{'httptls'} &&
+                !responsive_httptls_server($verbose, "IPv4")) {
+diff --git a/tests/sshhelp.pm b/tests/sshhelp.pm
+index 2d419c1..0c553da 100644
+--- a/tests/sshhelp.pm
++++ b/tests/sshhelp.pm
+@@ -408,7 +408,16 @@ sub find_sshkeygen {
+ # Find httptlssrv (gnutls-serv) and return canonical filename
+ #
+ sub find_httptlssrv {
+-    return find_exe_file_hpath($httptlssrvexe);
++    my $p = find_exe_file_hpath($httptlssrvexe);
++    my @o = `$p -l`;
++    my $found;
++    for(@o) {
++        if(/Key exchange: SRP/) {
++            $found = 1;
++            last;
++        }
++    }
++    return $p if($found);
+ }
+ 
+ 
+-- 
+2.39.2
+

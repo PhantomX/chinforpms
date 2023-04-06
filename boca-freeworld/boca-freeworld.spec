@@ -7,17 +7,19 @@
 
 %global pkgname boca
 
+%global vc_url https://github.com/enzo1982/BoCA
+
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           %{pkgname}-freeworld
-Version:        1.0.6a
+Version:        1.0.7
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac - freeworld codecs
 
-License:        GPLv2
+License:        GPL-2.0-only
 URL:            http://www.freac.org/
 
-Source0:        https://downloads.sourceforge.net/bonkenc/%{pkgname}-%{ver}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  gcc-c++
 BuildRequires:  make
@@ -49,6 +51,9 @@ sed \
   -i Makefile runtime/Makefile Makefile-commands
 
 sed -e 's|/lib/|/%{_lib}/|g' -i runtime/common/utilities.cpp
+
+sed -e 's| $(OFLAGS)||g' -i components/decoder/alac/alac/Makefile
+
 
 %build
 %set_build_flags
@@ -93,6 +98,9 @@ rm -f %{buildroot}%{_libdir}/*.so
 
 
 %changelog
+* Thu Apr 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1.0.7-1
+- 1.0.7
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.6a-1
 - 1.0.6a
 

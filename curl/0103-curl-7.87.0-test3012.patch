@@ -1,0 +1,52 @@
+From 0d0a256c8e7f6261d49e1bdd583c04c0e5dfe706 Mon Sep 17 00:00:00 2001
+From: Kamil Dudka <kdudka@redhat.com>
+Date: Wed, 11 Jan 2023 08:53:05 +0100
+Subject: [PATCH] test3012: disable valgrind
+
+valgrind reports a call to memcpy() with overlapping blocks by mistake:
+```
+test 3012...[--output-dir with -J]
+../libtool --mode=execute /usr/bin/valgrind --tool=memcheck --quiet --leak-check=yes --suppressions=../../tests/valgrind.supp --num-callers=16 --log-file=log/valgrind3012 ../src/curl --trace-ascii log/trace3012 --trace-time http://127.0.0.1:35981/this/is/the/3012 -OJ --output-dir /root/rpmbuild/BUILD/curl-7.86.0/build-minimal/tests/log >log/stdout3012 2>log/stderr3012
+CMD (0): ../libtool --mode=execute /usr/bin/valgrind --tool=memcheck --quiet --leak-check=yes --suppressions=../../tests/valgrind.supp --num-callers=16 --log-file=log/valgrind3012 ../src/curl --trace-ascii log/trace3012 --trace-time http://127.0.0.1:35981/this/is/the/3012 -OJ --output-dir /root/rpmbuild/BUILD/curl-7.86.0/build-minimal/tests/log >log/stdout3012 2>log/stderr3012
+ valgrind ERROR ==496584== Source and destination overlap in memcpy_chk(0x54ad1a0, 0x54ad1a1, 11)
+==496584==    at 0x484C332: __memcpy_chk (vg_replace_strmem.c:1741)
+==496584==    by 0x118FDB: UnknownInlinedFun (string_fortified.h:36)
+==496584==    by 0x118FDB: UnknownInlinedFun (tool_cb_hdr.c:301)
+==496584==    by 0x118FDB: tool_header_cb (tool_cb_hdr.c:173)
+==496584==    by 0x489907B: chop_write.lto_priv.0 (sendf.c:620)
+==496584==    by 0x489CDD1: UnknownInlinedFun (http.c:4449)
+==496584==    by 0x489CDD1: UnknownInlinedFun (transfer.c:633)
+==496584==    by 0x489CDD1: Curl_readwrite (transfer.c:1219)
+==496584==    by 0x488C116: multi_runsingle (multi.c:2404)
+==496584==    by 0x488F491: curl_multi_perform (multi.c:2682)
+==496584==    by 0x486A9DA: UnknownInlinedFun (easy.c:663)
+==496584==    by 0x486A9DA: UnknownInlinedFun (easy.c:753)
+==496584==    by 0x486A9DA: curl_easy_perform (easy.c:772)
+==496584==    by 0x114B28: UnknownInlinedFun (tool_operate.c:2406)
+==496584==    by 0x114B28: UnknownInlinedFun (tool_operate.c:2594)
+==496584==    by 0x114B28: UnknownInlinedFun (tool_operate.c:2706)
+==496584==    by 0x114B28: main (tool_main.c:284)
+```
+
+Bug: https://bugzilla.redhat.com/2143040
+---
+ tests/data/test3012 | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/tests/data/test3012 b/tests/data/test3012
+index 1889c93..ea43a49 100644
+--- a/tests/data/test3012
++++ b/tests/data/test3012
+@@ -56,5 +56,9 @@ Accept: */*
+ <file name="log/MMM%TESTNUMBERMMM">
+ -foo-
+ </file>
++
++<valgrind>
++disable
++</valgrind>
+ </verify>
+ </testcase>
+-- 
+2.39.0
+

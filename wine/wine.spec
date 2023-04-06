@@ -1,7 +1,7 @@
-%global commit bf9d15e3b1a29f73fedda0c34547a9b29d5e2789
+%global commit b5bc026798c127d5bb4c471d94f7fb5e32b4861c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230324
-%bcond_with snapshot
+%global date 20230405
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.5
+%global wine_stagingver 9d5115a9ee3ec86c47412c30dff1c7d67f0be51d
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 46c5fe58b9ef39044c9238f3ce82928db41b9b2e
+%global tkg_id 01b9a633b4448d133463c819aed498fdb70f4e30
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.5
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -221,6 +221,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch600:       https://gitlab.winehq.org/afrantzis/wine/-/commit/40cf73ebf6417d15c8469760be0c0e248e0e20c0.patch#/%{name}-gl-afrantzis-40cf73e.patch
+Patch601:       https://gitlab.winehq.org/afrantzis/wine/-/commit/93391931f14a6fd4ffdb8b75337a261bcfaaf56e.patch#/%{name}-gl-afrantzis-9339193.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -263,8 +265,6 @@ Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patc
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
 Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
-Patch1064:       0001-sharedgpufences-fences-fixup-1.patch
-Patch1065:       0001-sharedgpufences-fences-fixup-2.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -870,6 +870,9 @@ This package adds the opencl driver for wine.
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
 
+%patch -P 600 -p1
+%patch -P 601 -p1
+
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -901,9 +904,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1060 -p1
 %patch -P 1061 -p1
 %patch -P 1062 -p1
-%patch -P 1064 -p1
 %patch -P 1063 -p1
-%patch -P 1065 -p1
 %endif
 %patch -P 1026 -p1
 %patch -P 1027 -p1

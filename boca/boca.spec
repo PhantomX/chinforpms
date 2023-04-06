@@ -4,10 +4,12 @@
 
 %global systemlibs systemlibexpat,systemliburiparser,systemlibxspf,systemzlib
 
+%global vc_url https://github.com/enzo1982/BoCA
+
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           boca
-Version:        1.0.6a
+Version:        1.0.7
 Release:        1%{?dist}
 Summary:        Component development kit for fre:ac
 
@@ -15,7 +17,7 @@ License:        GPL-2.0-only
 URL:            http://www.freac.org/
 
 %if 0%{sanitize}
-Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %else
 # Use Makefile do download
 Source0:        %{name}-free-%{ver}.tar.xz
@@ -60,10 +62,10 @@ development with %{name} library.
 %if 0%{sanitize}
 %autosetup -n %{name}-%{ver} -p1
 
-for i in aiff alac au bonk cdrip faad2 fdkaac mac voc wave wma ;do
+for i in aiff alac au bonk cdrip faad2 fdkaac mac mediafoundation twinvq voc wave wma ;do
   rm -rf components/decoder/$i
 done
-for i in bonk coreaudio coreaudioconnect faac fdkaac voaacenc wave wma ;do
+for i in bonk coreaudio coreaudioconnect faac fdkaac mac twinvq voaacenc wave wma ;do
   rm -rf components/encoder/$i
 done
 %else
@@ -116,6 +118,9 @@ chmod +x %{buildroot}%{_libdir}/boca/*.so*
 
 
 %changelog
+* Thu Apr 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1.0.7-1
+- 1.0.7
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.6a-1
 - 1.0.6a
 

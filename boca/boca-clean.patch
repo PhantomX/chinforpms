@@ -1,15 +1,15 @@
-From 4ba93d776a2871e3e15696135cb541335cb54857 Mon Sep 17 00:00:00 2001
+From 674d631ed446fa5a1b4bf1b3229ba498c9adee72 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 3 Mar 2022 07:59:41 -0300
 Subject: [PATCH] clean nonfree components
 
 ---
  components/decoder/Makefile | 2 +-
- components/encoder/Makefile | 6 +-----
- 2 files changed, 2 insertions(+), 6 deletions(-)
+ components/encoder/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/components/decoder/Makefile b/components/decoder/Makefile
-index 87cf83b..2ca4dbe 100644
+index 6a7fd90..8307719 100644
 --- a/components/decoder/Makefile
 +++ b/components/decoder/Makefile
 @@ -4,7 +4,7 @@ BOCA_PATH = ../..
@@ -19,25 +19,21 @@ index 87cf83b..2ca4dbe 100644
 -FOLDERS = alac cuesheet faad2 fdkaac flac mac mpg123 opus sndfile speex vorbis
 +FOLDERS = cuesheet flac mpg123 opus sndfile speex vorbis
  
- ifneq ($(BUILD_OSX),True)
- 	FOLDERS += lame mad
+ ifeq ($(BUILD_UNIX),True)
+ ifneq ($(BUILD_HAIKU),True)
 diff --git a/components/encoder/Makefile b/components/encoder/Makefile
-index 922c5ba..26f0a4a 100644
+index e8d9233..a039695 100644
 --- a/components/encoder/Makefile
 +++ b/components/encoder/Makefile
-@@ -4,11 +4,7 @@ BOCA_PATH = ../..
+@@ -4,7 +4,7 @@ BOCA_PATH = ../..
  
  include $(dir $(firstword $(MAKEFILE_LIST)))/$(BOCA_PATH)/Makefile-options
  
 -FOLDERS = fdkaac flac lame mac meh opus sndfile speex vorbis
--
--ifneq ($(BUILD_OSX),True)
--	FOLDERS += faac voaacenc
--endif
 +FOLDERS = flac lame meh opus sndfile speex vorbis
  
  ifeq ($(USE_WINE),True)
  	FOLDERS += coreaudioconnect
 -- 
-2.35.1
+2.40.0
 

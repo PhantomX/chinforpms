@@ -1,6 +1,8 @@
-%global commit cd72fa8cf4c85a1af8f66320d48dbee00ad16ec5
+%global _lto_cflags %{nil}
+
+%global commit 62c1ecbfe8e8d710a2c15b3440b5f86926b9fea2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230220
+%global date 20230402
 %bcond_without snapshot
 
 %bcond_with map
@@ -14,7 +16,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        102%{?dist}
+Release:        103%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -29,6 +31,7 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.x
 Patch0:         sun_path.patch
 Patch1:         0001-Fix-lua-linking-with-C.patch
 Patch2:         0001-Add-missing-DEBUG_FILEDATA-conditional.patch
+Patch3:         0001-rcfile-fix-build.patch
 
 
 BuildRequires:  gcc
@@ -133,6 +136,7 @@ desktop-file-install \
     --dir %{buildroot}%{_datadir}/applications \
     --add-mime-type="image/jxl" \
     --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
+    --add-mime-type="image/x-dds" \
     --add-mime-type="image/x-xcf;image/x-compressed-xcf" \
     %{buildroot}%{_datadir}/applications/%{name}.desktop
 
@@ -154,6 +158,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Gee
 
 
 %changelog
+* Wed Apr 05 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-103.20230402git62c1ecb
+- Add dds mimetype to desktop file
+
 * Fri Oct 14 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-101.20221007git6694c1b
 - Snapshot to fix some issues
 

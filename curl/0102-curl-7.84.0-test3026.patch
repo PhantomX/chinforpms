@@ -1,0 +1,71 @@
+From 279b990727a1fd3e2828fbbd80581777e4200b67 Mon Sep 17 00:00:00 2001
+From: Kamil Dudka <kdudka@redhat.com>
+Date: Mon, 27 Jun 2022 16:50:57 +0200
+Subject: [PATCH] test3026: disable valgrind
+
+It fails on x86_64 with:
+```
+ Use --max-threads=INT to specify a larger number of threads
+ and rerun valgrind
+ valgrind: the 'impossible' happened:
+    Max number of threads is too low
+ host stacktrace:
+ ==174357==    at 0x58042F5A: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x58043087: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x580432EF: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x58043310: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x58099E77: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x580E67E9: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x5809D59D: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x5809901A: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x5809B0B6: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ ==174357==    by 0x580E4050: ??? (in /usr/libexec/valgrind/memcheck-amd64-linux)
+ sched status:
+   running_tid=1
+ Thread 1: status = VgTs_Runnable syscall 56 (lwpid 174357)
+ ==174357==    at 0x4A07816: clone (in /usr/lib64/libc.so.6)
+ ==174357==    by 0x4A08720: __clone_internal (in /usr/lib64/libc.so.6)
+ ==174357==    by 0x4987ACF: create_thread (in /usr/lib64/libc.so.6)
+ ==174357==    by 0x49885F6: pthread_create@@GLIBC_2.34 (in /usr/lib64/libc.so.6)
+ ==174357==    by 0x1093B5: test.part.0 (lib3026.c:64)
+ ==174357==    by 0x492454F: (below main) (in /usr/lib64/libc.so.6)
+ client stack range: [0x1FFEFFC000 0x1FFF000FFF] client SP: 0x1FFEFFC998
+ valgrind stack range: [0x1002BAA000 0x1002CA9FFF] top usage: 11728 of 1048576
+[...]
+```
+---
+ tests/data/test3026     | 3 +++
+ tests/libtest/lib3026.c | 4 ++--
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/tests/data/test3026 b/tests/data/test3026
+index fb80cc8..01f2ba5 100644
+--- a/tests/data/test3026
++++ b/tests/data/test3026
+@@ -41,5 +41,8 @@ none
+ <errorcode>
+ 0
+ </errorcode>
++<valgrind>
++disable
++</valgrind>
+ </verify>
+ </testcase>
+diff --git a/tests/libtest/lib3026.c b/tests/libtest/lib3026.c
+index 43fe335..70cd7a4 100644
+--- a/tests/libtest/lib3026.c
++++ b/tests/libtest/lib3026.c
+@@ -147,8 +147,8 @@ int test(char *URL)
+     results[i] = CURL_LAST; /* initialize with invalid value */
+     res = pthread_create(&tids[i], NULL, run_thread, &results[i]);
+     if(res) {
+-      fprintf(stderr, "%s:%d Couldn't create thread, errno %d\n",
+-              __FILE__, __LINE__, res);
++      fprintf(stderr, "%s:%d Couldn't create thread, i=%u, errno %d\n",
++              __FILE__, __LINE__, i, res);
+       tid_count = i;
+       test_failure = -1;
+       goto cleanup;
+-- 
+2.37.1
+

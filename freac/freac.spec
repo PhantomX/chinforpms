@@ -2,19 +2,19 @@
 
 %global appname org.%{name}.%{name}
 
+%global vc_url https://github.com/enzo1982/%{name}
+
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           freac
-Version:        1.1.6
+Version:        1.1.7
 Release:        1%{?dist}
 Summary:        A free audio converter and CD ripper
 
 License:        GPL-2.0-only
 URL:            http://www.freac.org/
 
-Source0:        https://downloads.sourceforge.net/bonkenc/%{name}-%{ver}.tar.gz
-
-Patch0:         0001-appdata-fix-ampersand-character.patch
+Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -93,6 +93,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Apr 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.7-1
+- 1.1.7
+
 * Thu Mar 03 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.6-1
 - 1.1.6
 
