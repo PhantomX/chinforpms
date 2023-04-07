@@ -30,7 +30,7 @@
 %if 0%{?released_kernel}
 
 # Do we have a -stable update to apply?
-%global stable_update 9
+%global stable_update 10
 # Set rpm version accordingly
 %if 0%{?stable_update}
 %global stablerev %{stable_update}
@@ -155,7 +155,7 @@ and the supporting documentation.
 
 %package -n perf
 Summary:        Performance monitoring for the Linux kernel
-License:        GPLv2
+License:        GPL-2.0-only
 
 %description -n perf
 This package contains the perf tool, which enables performance monitoring
@@ -175,7 +175,7 @@ Summary: %{python_perf_sum}
 
 %package -n kernel-tools-libs
 Summary:        Libraries for the kernels-tools
-License:        GPLv2
+License:        GPL-2.0-only
 
 %description -n kernel-tools-libs
 This package contains the libraries built from the tools/ directory
@@ -183,7 +183,7 @@ from the kernel source.
 
 %package -n kernel-tools-libs-devel
 Summary:        Assortment of tools for the Linux kernel
-License:        GPLv2
+License:        GPL-2.0-only
 Requires:       kernel-tools = %{version}-%{release}
 Provides:       cpupowerutils-devel = 1:009-0.6.p1
 Obsoletes:      cpupowerutils-devel < 1:009-0.6.p1
@@ -196,28 +196,31 @@ the kernel source.
 
 %package -n bpftool
 Summary:        Inspection and simple manipulation of eBPF programs and maps
-License:        GPLv2
+License:        GPL-2.0-only
 
 %description -n bpftool
 This package contains the bpftool, which allows inspection and simple
 manipulation of eBPF programs and maps.
 
 %package -n libperf
-Summary: The perf library from kernel source
-License: GPLv2
+Summary:        The perf library from kernel source
+License:        GPL-2.0-only
+
 %description -n libperf
 This package contains the kernel source perf library.
 
 %package -n libperf-devel
-Summary: Developement files for the perf library from kernel source
-License: GPLv2
+Summary:        Developement files for the perf library from kernel source
+License:        GPL-2.0-only
+
 %description -n libperf-devel
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
 
 %package -n rtla
-Summary: RTLA: Real-Time Linux Analysis tools 
-License: GPLv2
+Summary:        RTLA: Real-Time Linux Analysis tools 
+License:        GPL-2.0-only
+
 %description -n rtla
 The rtla tool is a meta-tool that includes a set of commands that
 aims to analyze the real-time properties of Linux. But, instead of
@@ -577,6 +580,9 @@ popd
 
 
 %changelog
+* Thu Apr 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.10-500
+- 6.2.10
+
 * Thu Mar 30 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.9-500
 - 6.2.9
 
