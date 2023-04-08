@@ -1,0 +1,26 @@
+PROJECT := vbrfix
+
+PREFIX ?= /usr
+BINDIR = $(PREFIX)/bin
+
+CXXFLAGS ?= -O2 -Wnon-virtual-dtor -Wno-long-long -Wundef -Wall -W -Wpointer-arith -Wmissing-prototypes -Wwrite-strings -Wcast-align -Wconversion
+CXXFLAGS += -ansi -D_XOPEN_SOURCE=500 -D_DEFAULT_SOURCE -Wcast-align -Wconversion
+
+.PHONY: clean
+
+INCLUDE = -I ./vbrfixc
+
+all: vbrfix
+
+.cpp.o:
+	$(CXX) $(INCLUDE) -c $(CXXFLAGS) -o $@ $<
+
+vbrfix: main.o vbrfix.o
+	$(CXX) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+
+install:
+	mkdir -p $(DESTDIR)$(BINDIR)
+	$(INSTALL) -pm0755 $(PROJECT) $(DESTDIR)$(BINDIR)/$(PROJECT)
+
+clean:
+	rm -f *.o vbrfix

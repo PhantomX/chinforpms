@@ -245,6 +245,7 @@ steamtinkerlaunch
 thrash-protect
 tyrian-data
 unbound-update-roothints
+vbrfix
 vhba
 vhba-kmod
 -vkd3d

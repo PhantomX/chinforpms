@@ -1,0 +1,25 @@
+From ad1ef9416ff3a334ce25ae023e34853542697ead Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Apr 2023 23:43:08 -0300
+Subject: [PATCH] format security
+
+---
+ vbrfixc/vbrfix.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vbrfixc/vbrfix.cpp b/vbrfixc/vbrfix.cpp
+index 3c91e62..1bbd3d9 100755
+--- a/vbrfixc/vbrfix.cpp
++++ b/vbrfixc/vbrfix.cpp
+@@ -40,7 +40,7 @@ void VbrFix::clearMp3Info(){
+ }
+ void VbrFix::logFile(const char* s){//log file info not tested yet
+   if(log==NULL)return;
+-  fprintf(log,s);fprintf(log,"\n");
++  fprintf(log,"%s",s);fprintf(log,"\n");
+   fflush(log);
+ }
+ void VbrFix::startWriting(){
+-- 
+2.40.0
+

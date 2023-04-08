@@ -312,8 +312,8 @@ Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release}
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        7.2.0
-Release:        101%{?dist}
+Version:        7.2.1
+Release:        100%{?dist}
 Epoch:          2
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND CC-BY-SA-4.0 
@@ -339,8 +339,6 @@ Patch: 0002-tests-Disable-pci_virtio_vga-for-ppc64.patch
 # Fix compat with kernel-headers >= 6.1
 Patch: 0003-Revert-linux-user-add-more-compat-ioctl-definitions.patch
 Patch: 0004-Revert-linux-user-fix-compat-with-glibc-2.36-sys-mou.patch
-# Fix virtio-blk-pci detect-zeroes=unmap (RHBZ#2173357)
-Patch: 0005-block-fix-detect-zeroes-with-BDRV_REQ_REGISTERED_BUF.patch
 # Fix build with glib2 2.75.3
 # https://bugzilla.redhat.com/show_bug.cgi?id=2173639
 # https://gitlab.com/qemu-project/qemu/-/issues/1518
@@ -2778,6 +2776,9 @@ popd
 
 
 %changelog
+* Fri Apr 07 2023 Phantom X <megaphantomx at hotmail dot com> - 2:7.2.1-100
+- 7.2.1
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2:7.2.0-101
 - Rawhide sync
 
