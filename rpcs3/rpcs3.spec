@@ -24,16 +24,16 @@
 # Enable system hidapi
 %bcond_without  syshidapi
 %global bundlehidapi 0.12.0
-# Fail with system llvm
-%bcond_with     sysllvm
-%global bundlellvm 13.0.0
+# Enable system llvm
+%bcond_without  sysllvm
+%global bundlellvm 16.0
 
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 7e6cc02e093738dda8b20f3383240f6b7eaa2e0a
+%global commit f0e36c63653d30edaae21b76c8b48a0b7fd236c1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230321
+%global date 20230408
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -56,7 +56,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 4fbd4fd36a21efd9d1a7e17aba390e91c78693b1
+%global commit15 979707380c677dfa65e3ba48f19e149773a4a32d
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -68,7 +68,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
-%global commit18 9b52b6c39ae9f0759fbce7dd0db4b3290d6ebc56
+%global commit18 08d094a0e457360ad8b94b017d2dc277e697ca76
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 llvm
 
@@ -95,7 +95,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -119,7 +119,7 @@ Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortc
 %endif
 Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %if %{without sysllvm}
-Source18:       %{vc_url}/llvm-mirror/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source18:       https://github.com/llvm/llvm-project/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %if %{without sysffmpeg}
@@ -134,14 +134,12 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/13562.patch#/%{name}-gh-pr13562.patch
+Patch0:         %{vc_url}/%{name}/pull/13562/commits/e8d87a8b23a6aae77d94f28316478274062ab345.patch#/%{name}-gh-pr13562.patch
 Patch1:         %{vc_url}/%{name}/pull/13560.patch#/%{name}-gh-pr13560.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
-
-Patch900:       0001-llvm-gcc-13-build-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -265,9 +263,7 @@ cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
 
 %if %{without sysllvm}
-tar -xf %{S:18} -C llvm --strip-components 1
-
-%patch -P 900 -p1 -d llvm
+tar -xf %{S:18} -C 3rdparty/llvm/llvm --strip-components 1
 
 mkdir ittapi
 tar -xf %{S:19} -C ittapi --strip-components 1
@@ -275,10 +271,11 @@ mkdir -p %{__cmake_builddir}/3rdparty/llvm_build
 ln -s ../../../ittapi %{__cmake_builddir}/3rdparty/llvm_build/ittapi
 
 sed -e 's|${GIT_EXECUTABLE}|true|g' \
-  -i llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
+  -i 3rdparty/llvm/llvm/llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
 
-cp -p llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
+cp -p 3rdparty/llvm/llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
 %endif
+
 %if %{without sysffmpeg}
 tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
 
@@ -369,8 +366,8 @@ popd
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
 %endif
   -DWITH_LLVM:BOOL=ON \
-%if %{with sysllvm}
-  -DBUILD_LLVM_SUBMODULE:BOOL=OFF \
+%if %{without sysllvm}
+  -DBUILD_LLVM:BOOL=ON \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \
@@ -430,6 +427,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Apr 08 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-5.20230408gitf0e36c6
+- System llvm is now supported, so use it
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-3.20230312gitcf5346c
 - gcc 13 build fix
 

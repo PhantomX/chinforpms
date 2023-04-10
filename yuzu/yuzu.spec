@@ -66,7 +66,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3497
+%global vc_version 3503
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -120,8 +120,6 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 %dnl %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
-
-Patch0:         %{vcm_url}/yuzu/pull/10022.patch#/%{name}-gh-pr10022.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
