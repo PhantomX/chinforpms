@@ -13,15 +13,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 041252ba368e476d924089096acacd6536842828
+%global commit 2a2ee8bc968232058fe77a06e95d4f3fa1b851e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230402
+%global date 20230411
 %bcond_without snapshot
 
 # Enable system boost
 %bcond_without boost
 # Enable system dynarmic
-%bcond_with dynarmic
+%bcond_without dynarmic
 # Enable ffmpeg support
 %bcond_without ffmpeg
 # Enable system fmt
@@ -81,7 +81,7 @@
 
 Name:           citra
 Version:        0
-Release:        40%{?dist}
+Release:        41%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -136,7 +136,7 @@ Provides:       bundled(boost) = 0~git%{shortcommit11}
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.4.0
+BuildRequires:  cmake(dynarmic) >= 6.4.6
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
@@ -265,12 +265,15 @@ sed \
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
+sed -e '/find_package/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
+
 %if %{with snapshot}
   sed \
     -e 's|@GIT_REV@|%{commit}|g' \
     -e 's|@GIT_BRANCH@|HEAD|g' \
     -e 's|@GIT_DESC@|%{shortcommit}|g' \
     -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
+    -e 's|@BUILD_DATE@|%(date +%F)|g' \
     -i src/common/scm_rev.cpp.in
 %endif
 
@@ -280,9 +283,9 @@ cp -f %{S:20} .
 %build
 %if %{with snapshot}
 export CI=true
-export TRAVIS=true
-export TRAVIS_REPO_SLUG=%{name}/%{name}-nightly
-export TRAVIS_TAG="%{version}-%{release}"
+export GITHUB_ACTIONS=true
+export GITHUB_REF_NAME=%{name}/%{name}-nightly
+export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %endif
 
 %cmake \

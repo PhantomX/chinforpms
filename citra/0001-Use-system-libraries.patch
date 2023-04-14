@@ -79,7 +79,7 @@ index 12831f3..8fa154b 100644
 +  add_library(fmt::fmt ALIAS fmt-shared)
 +else()
  option(FMT_INSTALL "" ON)
- add_subdirectory(fmt)
+ add_subdirectory(fmt EXCLUDE_FROM_ALL)
 +endif()
  
  # Xbyak
@@ -91,7 +91,7 @@ index 12831f3..8fa154b 100644
 +    target_link_libraries(xbyak-shared INTERFACE xbyak::xbyak)
 +    add_library(xbyak ALIAS xbyak-shared)
 +  else()
-     add_subdirectory(xbyak)
+     add_subdirectory(xbyak EXCLUDE_FROM_ALL)
 +  endif()
  endif()
  
@@ -106,7 +106,7 @@ index 12831f3..8fa154b 100644
 +  else()
      set(DYNARMIC_TESTS OFF)
      set(DYNARMIC_FRONTENDS "A32")
-     add_subdirectory(dynarmic)
+     add_subdirectory(dynarmic EXCLUDE_FROM_ALL)
 +  endif()
  endif()
  

@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD
@@ -104,6 +104,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7-101
+- Rebuild (qt5)
+
 * Tue Feb 28 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7-100
 - 1.7
 - lib%%{name}-common.so.*

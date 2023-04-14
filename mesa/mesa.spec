@@ -57,10 +57,10 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 032a428fac08f67828d2939f72073ed27b7bae46
+%global commit 7d0aee96e7fa0d87efe319db0a6ccd8871949d76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230323
-%bcond_with snapshot
+%global date 20230413
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -75,7 +75,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.0.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -223,7 +223,13 @@ Provides:       libEGL-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Summary:        Mesa-based DRI drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
-Recommends:     %{name}-va-drivers%{?_isa}
+%global major %(echo %{version} | cut -d. -f1)
+%global minor %(echo %{version} | cut -d. -f2)
+%global minor_next %(v="%{minor}"; echo $((++v)))
+# Do not require the exact full version but rather the matching
+# major.minor of the mesa release in order to allow for alternative
+# providers from other repos to slightly lag behind.
+Recommends:     (%{name}-va-drivers%{?_isa} >= %{?epoch:%{epoch}:}%{major}.%{minor} with %{name}-va-drivers%{?_isa} < %{?epoch:%{epoch}:}%{major}.%{minor_next})
 %endif
 
 %description dri-drivers
@@ -692,6 +698,9 @@ popd
 
 
 %changelog
+* Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.2-101.20230413git7d0aee9
+- Rebuild (llvm)
+
 * Fri Apr 07 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.2-100
 - 23.0.2
 

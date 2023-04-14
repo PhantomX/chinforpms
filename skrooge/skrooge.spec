@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.28.0
-Release:        103%{?dist}
+Version:        2.29.0
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -61,6 +61,7 @@ BuildRequires:  cmake(Qt5Sql)
 BuildRequires:  cmake(Qt5Svg)
 BuildRequires:  cmake(Qt5WebKitWidgets)
 BuildRequires:  cmake(Qt5Xml)
+BuildRequires:  cmake(Qt5XmlPatterns)
 # I think due to custom sqlcipher plugin -- rex
 BuildRequires:  qt5-qtbase-private-devel
 
@@ -137,8 +138,8 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 %{_kf5_datadir}/kxmlgui5/skrooge_*/
 
 %files libs
-%{_kf5_qtplugindir}/skg*.so
-%{_kf5_qtplugindir}/skrooge*.so
+%{_kf5_qtplugindir}/skg_gui/sk*.so
+%{_kf5_qtplugindir}/skrooge/*/skrooge*.so
 %{_kf5_qtplugindir}/grantlee/*/grantlee_skgfilters.so
 %{_kf5_qtplugindir}/sqldrivers/libskgsqlcipher.so
 %{_kf5_qtplugindir}/designer/libskgbankgui*.so*
@@ -150,6 +151,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.29.0-100
+- 2.29.0
+
 * Wed Jan 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-103
 - Rebuild (qt5)
 
