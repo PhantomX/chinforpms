@@ -31,9 +31,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit f0e36c63653d30edaae21b76c8b48a0b7fd236c1
+%global commit 44b3709d1db4bde19615786fbd097bb991c4f8e2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230408
+%global date 20230415
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -95,7 +95,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -134,7 +134,6 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/13562/commits/e8d87a8b23a6aae77d94f28316478274062ab345.patch#/%{name}-gh-pr13562.patch
 Patch1:         %{vc_url}/%{name}/pull/13560.patch#/%{name}-gh-pr13560.patch
 
 Patch10:        0001-Use-system-libraries.patch
@@ -240,7 +239,7 @@ written in C++.
 
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
-%autopatch -M 500 -p1
+%autopatch -M 499 -p1
 
 pushd 3rdparty
 rm -rf \

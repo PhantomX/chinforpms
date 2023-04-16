@@ -11,6 +11,7 @@ blastem-bindata
 boca-freeworld
 bsnes
 cdrtools
+chinforpms-fake-packages
 citra
 -cowsrevenge
 czkawka

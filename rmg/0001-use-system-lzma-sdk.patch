@@ -1,0 +1,73 @@
+From c2d3505c267af537f0b81c98684a35c82c761f53 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 15 Apr 2023 15:18:54 -0300
+Subject: [PATCH] use system lzma-sdk
+
+---
+ CMakeLists.txt                 |  1 -
+ Source/RMG-Core/CMakeLists.txt | 11 +++++++++++
+ Source/RMG-Core/Rom.cpp        | 14 +++++++-------
+ 3 files changed, 18 insertions(+), 8 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7981dd0..5929394 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -77,7 +77,6 @@ else()
+ endif()
+ 
+ add_subdirectory(Source/3rdParty)
+-add_subdirectory(Source/3rdParty/7-Zip)
+ 
+ add_subdirectory(Source/RMG-Core)
+ add_subdirectory(Source/RMG)
+diff --git a/Source/RMG-Core/CMakeLists.txt b/Source/RMG-Core/CMakeLists.txt
+index c4b64e0..b8aa452 100644
+--- a/Source/RMG-Core/CMakeLists.txt
++++ b/Source/RMG-Core/CMakeLists.txt
+@@ -13,6 +13,17 @@ if (WIN32)
+     pkg_check_modules(ICONV REQUIRED iconv)
+ endif(WIN32)
+ 
++pkg_check_modules(SEVENZIP IMPORTED_TARGET lzmasdk-c)
++if(SEVENZIP_FOUND)
++    message(STATUS "Using system lzmasdk")
++    add_library(sevenzip-shared INTERFACE)
++    target_link_libraries(sevenzip-shared INTERFACE PkgConfig::SEVENZIP)
++    add_library(7Zip ALIAS sevenzip-shared)
++else()
++    add_subdirectory(../3rdParty/7-Zip)
++    target_include_directories(RMG-Core ../3rdParty/7-Zip/C)
++endif()
++
+ configure_file(Config.hpp.in Config.hpp)
+ 
+ set(RMG_CORE_SOURCES
+diff --git a/Source/RMG-Core/Rom.cpp b/Source/RMG-Core/Rom.cpp
+index 276a673..549af2a 100644
+--- a/Source/RMG-Core/Rom.cpp
++++ b/Source/RMG-Core/Rom.cpp
+@@ -17,13 +17,13 @@
+ #include "osal/osal_files.hpp"
+ 
+ // 7-Zip includes
+-#include "../3rdParty/7-Zip/C/7zTypes.h"
+-#include "../3rdParty/7-Zip/C/7z.h"
+-#include "../3rdParty/7-Zip/C/7zAlloc.h"
+-#include "../3rdParty/7-Zip/C/7zBuf.h"
+-#include "../3rdParty/7-Zip/C/7zCrc.h"
+-#include "../3rdParty/7-Zip/C/7zFile.h"
+-#include "../3rdParty/7-Zip/C/7zVersion.h"
++#include "7zTypes.h"
++#include "7z.h"
++#include "7zAlloc.h"
++#include "7zBuf.h"
++#include "7zCrc.h"
++#include "7zFile.h"
++#include "7zVersion.h"
+ 
+ #include <string>
+ #include <unzip.h>
+-- 
+2.40.0
+

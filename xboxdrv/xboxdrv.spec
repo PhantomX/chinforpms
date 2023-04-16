@@ -35,7 +35,7 @@ Source4:        org.seul.Xboxdrv.service
 Source5:        org.seul.xboxdrvctl.policy
 Source6:        org.seul.xboxdrv.policy
 
-%if !%{?with_snapshot}
+%if %{without snapshot}
 # Fix 60 seconds delay
 Patch1:         %{gl_url}/-/merge_requests/262.patch#/%{name}-gl-262.patch
 # Fix "pure virtual function called" crash and related hang

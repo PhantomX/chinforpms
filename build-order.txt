@@ -5,7 +5,6 @@ chinforpms-rpm-config
 asmc
 buildsys-build-chinforpms
 c-vtapi
-chinforpms-fake-packages
 -compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601

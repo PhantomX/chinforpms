@@ -1,4 +1,3 @@
--adwaita-qt
 -amdgpu-pro-vulkan-driver
 -amdvlk-vulkan-driver
 -aom
@@ -7,7 +6,6 @@ chinforpms-rpm-config
 -compat-bison-36
 -compat-gcc-32
 -dxil-spirv
--FAudio
 -FAudio-freeworld
 -FAudio-noreverb
 gamemode
@@ -32,8 +30,6 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
--qt5ct
--qt6ct
 SDL1
 -sdl12-compat
 -sdlcl
@@ -45,10 +41,10 @@ taglib
 -vkd3d
 vulkan-headers
 vulkan-loader
+vulkan-tools
 -webp-pixbuf-loader
 wine
 -wine-d9vk - no mingw
-wine-dxvk - no mingw
 -wine-freeworld
 wine-nine
 winesync

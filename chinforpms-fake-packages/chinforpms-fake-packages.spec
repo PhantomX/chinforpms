@@ -42,6 +42,8 @@ Obsoletes:      xdg-desktop-portal-kde < %{fakeepoch}:%{fakever}-%{release}
 This package exists to obsolete and provides other packages that chinforpms don't
 like, but are dependencies to good ones.
 
+Only use this if you don't like flatpak and know what you're doing.
+
 
 %prep
 %autosetup -c -T

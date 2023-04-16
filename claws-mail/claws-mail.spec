@@ -528,7 +528,7 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %files -f claws-mail.lang
 %license COPYING
 %doc ABOUT-NLS AUTHORS NEWS README RELEASE_NOTES TODO
-%if !0%{with_snapshot}
+%if %{without snapshot}
 %doc ChangeLog
 %endif
 %if 0%{build_manual}

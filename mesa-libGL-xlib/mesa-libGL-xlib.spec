@@ -9,7 +9,7 @@
 %global commit 7d0aee96e7fa0d87efe319db0a6ccd8871949d76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230413
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -23,8 +23,8 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.2
-Release:        2%{?dist}
+Version:        23.1.0~rc1
+Release:        1%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -114,7 +114,6 @@ EOF
   -Dgallium-nine=false \
   -Dgallium-opencl=disabled \
   -Dgallium-rusticl=false \
-  -Ddri-drivers="" \
   -Dvulkan-drivers="" \
   -Dshared-glapi=enabled \
   -Dgles1=disabled \
@@ -130,6 +129,9 @@ EOF
   -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
+  -Dlmsensors=disabled \
+  -Dlibunwind=disabled \
+  -Dandroid-libbacktrace=disabled \
   %{nil}
 
 %meson_build
@@ -167,6 +169,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Sat Apr 15 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.0~rc1-1
+- 23.1.0-rc1
+
 * Fri Apr 07 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.2-1
 - 23.0.2
 

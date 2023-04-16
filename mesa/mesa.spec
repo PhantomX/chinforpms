@@ -60,7 +60,7 @@
 %global commit 7d0aee96e7fa0d87efe319db0a6ccd8871949d76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230413
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -74,8 +74,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.0.2
-Release:        101%{?dist}
+Version:        23.1.0~rc1
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -143,7 +143,7 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm-devel >= 11.0.0
+BuildRequires:  llvm-devel >= 13.0.0
 %if 0%{?with_opencl}
 BuildRequires:  clang-devel
 BuildRequires:  bindgen
@@ -437,6 +437,8 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
+  -Dlibunwind=disabled \
+  -Dandroid-libbacktrace=disabled \
   %{nil}
 
 %meson_build
@@ -655,9 +657,6 @@ popd
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
-%if 0%{?with_r300}
-%{_libdir}/vdpau/libvdpau_r300.so.1*
-%endif
 %if 0%{?with_r600}
 %{_libdir}/vdpau/libvdpau_r600.so.1*
 %endif
@@ -698,6 +697,9 @@ popd
 
 
 %changelog
+* Sat Apr 15 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.0~rc1-100
+- 23.1.0-rc1
+
 * Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.2-101.20230413git7d0aee9
 - Rebuild (llvm)
 

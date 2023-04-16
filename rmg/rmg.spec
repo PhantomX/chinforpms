@@ -1,12 +1,13 @@
 %undefine _cmake_shared_libs
 
+%define _fortify_level 2
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
 %global commit 6353be1599236eb2146067888436f366ca1475f1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230312
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with rust
 
@@ -36,7 +37,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 1f4d04f43b53739bc9b128ab5577d20e3d60ed6a
+%global commit8 0fee30d010d1feda7d343654871b3dfd05ccab70
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
@@ -52,7 +53,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
-%if %{with_snapshot}
+%if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
@@ -62,14 +63,14 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.8
-Release:        2%{?dist}
+Version:        0.3.9
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
 URL:            https://github.com/Rosalie241/RMG
 
-%if %{with_snapshot}
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
@@ -87,6 +88,7 @@ Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{sr
 
 Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
+Patch12:        0001-use-system-lzma-sdk.patch
 
 Patch900:       0001-angrylion-rdp-plus-gcc-13-build-fix.patch
 Patch901:       0001-parallel-rsp-gcc-13-build-fix.patch
@@ -106,6 +108,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(lightning)
+BuildRequires:  pkgconfig(lzmasdk-c) >= 22.01
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6OpenGL)
@@ -205,6 +208,8 @@ sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i parallel-rsp/rsp_jit.hpp
 
 popd
 
+rm -rf Source/3rdParty/7-Zip
+
 sed \
   -e '/Git /d' \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --tags --always|echo \"%{version}-%{release}\"|g" \
@@ -253,6 +258,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat Apr 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-1
+- 0.3.9
+
 * Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.8-1.20230225gite10ac10
 - 0.3.8
 
