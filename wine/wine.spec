@@ -1,7 +1,7 @@
 %global commit b5bc026798c127d5bb4c471d94f7fb5e32b4861c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230405
-%bcond_without snapshot
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -49,7 +49,7 @@
 %endif
 %global no64bit   0
 %global winefastsync 5.16
-%global winegecko 2.47.3
+%global winegecko 2.47.4
 %global winemono  7.4.0
 %global winevulkan 1.3.246
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9d5115a9ee3ec86c47412c30dff1c7d67f0be51d
+%global wine_stagingver 8.6.1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 414f260333f4f0a05c152d17b03a9d67f980b112
+%global tkg_id a141028d8d19d2218b42eee2702f4fab27710750
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -130,7 +130,7 @@
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
-%bcond_without sharedgpures
+%bcond_with sharedgpures
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -153,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.5
-Release:        101%{?dist}
+Version:        8.6
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -221,8 +221,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch600:       https://gitlab.winehq.org/afrantzis/wine/-/commit/40cf73ebf6417d15c8469760be0c0e248e0e20c0.patch#/%{name}-gl-afrantzis-40cf73e.patch
-Patch601:       https://gitlab.winehq.org/afrantzis/wine/-/commit/93391931f14a6fd4ffdb8b75337a261bcfaaf56e.patch#/%{name}-gl-afrantzis-9339193.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -867,9 +865,6 @@ This package adds the opencl driver for wine.
 
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
-
-%patch -P 600 -p1
-%patch -P 601 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2504,6 +2499,10 @@ fi
 
 
 %changelog
+* Sun Apr 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.6-100
+- 8.6
+- Disable shared GPU resources, it needs rebase
+
 * Mon Apr 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.5-100
 - 8.5
 

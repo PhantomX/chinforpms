@@ -14,7 +14,7 @@
 %global vc_url  https://sourceforge.net/p/wine/wine-gecko
 
 Name:           mingw-wine-gecko
-Version:        2.47.3
+Version:        2.47.4
 Release:        100%{?dist}
 Summary:        Gecko library required for Wine
 
@@ -183,6 +183,9 @@ cp -rp %{msiname}-%{version}-x86_64/dist/%{msiname}-%{version}-x86_64 \
 
 
 %changelog
+* Sun Apr 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.47.4-100
+- 2.47.4
+
 * Sat Jul 16 2022 Phantom X <megaphantomx at hotmail dot com> - 2.47.3-100
 - 2.47.3
 
