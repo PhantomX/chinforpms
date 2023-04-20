@@ -9,9 +9,9 @@
 
 %bcond_without bin
 #Set to 1 to download sources from github
-%global with_gh 0
+%global with_gh 1
 
-%if 0%{?with_bin}
+%if %{with bin}
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
@@ -22,7 +22,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        7.4.0
+Version:        7.4.1
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -177,6 +177,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Tue Apr 18 2023 Phantom X <megaphantomx at hotmail dot com> - 7.4.1-100
+- 7.4.1
+
 * Fri Oct 28 2022 Phantom X <megaphantomx at hotmail dot com> - 7.4.0-100
 - 7.4.0
 

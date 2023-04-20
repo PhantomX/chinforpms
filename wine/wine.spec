@@ -1,7 +1,7 @@
-%global commit b5bc026798c127d5bb4c471d94f7fb5e32b4861c
+%global commit 9e99c6f66d236101a084b6a3a24c98b5c8677fe5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230405
-%bcond_with snapshot
+%global date 20230418
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -50,7 +50,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  7.4.0
+%global winemono  7.4.1
 %global winevulkan 1.3.246
 
 %global wineFAudio 23.03
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.6.1
+%global wine_stagingver 566a2bcdfdfde47c7a30877222a4ebd31f74b33c
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.6
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -254,6 +254,8 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1041:       0001-proton-win10-fixup-1.patch
+Patch1042:       0001-proton-win10-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -264,8 +266,9 @@ Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patc
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
-Patch1091:       %{valve_url}/commit/8d5fed7770aca31075c29bd5b8306339798a8742.patch#/%{name}-valve-8d5fed7.patch
-Patch1092:       %{valve_url}/commit/3b176c060227854a40333c0ec5c634a2e9d39fd4.patch#/%{name}-valve-3b176c0.patch
+Patch1091:       %{valve_url}/commit/87a85d50c502f705eeaf7a9f3f4c9e54c707ae56.patch#/%{name}-valve-87a85d5.patch
+Patch1092:       %{valve_url}/commit/464a79989b5250a1aa9e6a6e54aa0a334cd523ff.patch#/%{name}-valve-464a799.patch
+Patch1093:       %{valve_url}/commit/6c79e9c21f553a7db9ee6b8f828d16b2e5312bcc.patch#/%{name}-valve-6c79e9c.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -906,7 +909,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{with fastsync}
 %patch -P 1050 -p1
 %endif
+%patch -P 1041 -p1
 %patch -P 1030 -p1
+%patch -P 1042 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
 %patch -P 1033 -p1
@@ -921,6 +926,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1089 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
+%patch -P 1093 -p1
 
 %patch -P 1300 -p1
 %patch -P 1301 -p1

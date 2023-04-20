@@ -1,0 +1,27 @@
+From c4f3be19da40f0a68c7067aa8bac085dcbc4f1dd Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Tue, 18 Apr 2023 19:50:33 -0300
+Subject: [PATCH] proton win10 fixup 1
+
+---
+ loader/wine.inf.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/loader/wine.inf.in b/loader/wine.inf.in
+index fdd190e..5ed3c29 100644
+--- a/loader/wine.inf.in
++++ b/loader/wine.inf.in
+@@ -2792,8 +2792,8 @@ HKLM,"System\CurrentControlSet\Services\Winsock2\Parameters\Protocol_Catalog9\Ca
+ 
+ [VersionInfo]
+ HKLM,%CurrentVersionNT%,"CurrentVersion",2,"6.3"
+-HKLM,%CurrentVersionNT%,"CurrentMajorVersionNumber",0x10003,10
+-HKLM,%CurrentVersionNT%,"CurrentMinorVersionNumber",0x10003,0
++HKLM,%CurrentVersionNT%,"CurrentMajorVersionNumber",0x10001,10
++HKLM,%CurrentVersionNT%,"CurrentMinorVersionNumber",0x10001,0
+ HKLM,%CurrentVersionNT%,"CurrentBuild",2,"18362"
+ HKLM,%CurrentVersionNT%,"CurrentBuildNumber",2,"18362"
+ HKLM,%CurrentVersionNT%,"CurrentType",2,"Multiprocessor Free"
+-- 
+2.40.0
+
