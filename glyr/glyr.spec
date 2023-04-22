@@ -42,7 +42,7 @@ Summary:        %{summary} library
 License:        LGPLv3
 
 %description libs
-The libpe package contains the dynamic libraries needed for %{name} and
+The %{name}-libs package contains the dynamic libraries needed for %{name} and
 applications.
 
 %package devel

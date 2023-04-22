@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5c1e66a910da687476840669dae9590a348573c7
+%global commit 6df907112a702c1a2c11f94ee34091848a1eea1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230404
+%global date 20230420
 %bcond_without snapshot
 
 # Enable Qt build
@@ -66,7 +66,7 @@
 
 Name:           ppsspp
 Version:        1.14.4
-Release:        107%{?dist}
+Release:        108%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -102,7 +102,6 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-Patch7:         0001-gcc-13-build-fix.patch
 
 Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-VulkanMemoryAllocator-29d492b.patch
 

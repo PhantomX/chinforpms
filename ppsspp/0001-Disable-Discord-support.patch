@@ -15,15 +15,15 @@ index c78e319..9e45cbe 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
 @@ -532,7 +532,9 @@ static ConfigSetting generalSettings[] = {
- 	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
- 	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
- 	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
+ 	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false, CfgFlag::DEFAULT),
+ 	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion, CfgFlag::DEFAULT),
+ 	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, CfgFlag::PER_GAME),
 +#ifdef ENABLE_DISCORD
- 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
+ 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, CfgFlag::DEFAULT),  // Or maybe it makes sense to have it per-game? Race conditions abound...
 +#endif
- 	ConfigSetting("UISound", &g_Config.bUISound, false, true, false),
+ 	ConfigSetting("UISound", &g_Config.bUISound, false, CfgFlag::DEFAULT),
  
- 	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, true, true),
+ 	ConfigSetting("AutoLoadSaveState", &g_Config.iAutoLoadSaveState, 0, CfgFlag::PER_GAME),
 diff --git a/Core/Config.h b/Core/Config.h
 index e682234..65e6dfe 100644
 --- a/Core/Config.h

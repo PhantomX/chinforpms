@@ -13,13 +13,13 @@ index f1805da..daad3b1 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
 @@ -394,7 +394,7 @@ static ConfigSetting generalSettings[] = {
- 	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, true),
- 	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, ""),
- 	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false),
--	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, true),
-+	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false),
- 	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion),
- 	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, true, true),
- 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, true, false),  // Or maybe it makes sense to have it per-game? Race conditions abound...
+ 	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, CfgFlag::DEFAULT),
+ 	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, "", CfgFlag::DEFAULT),
+ 	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false, CfgFlag::DEFAULT),
+-	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, true, CfgFlag::DEFAULT),
++	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false, CfgFlag::DEFAULT),
+ 	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion, CfgFlag::DEFAULT),
+ 	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, CfgFlag::PER_GAME),
+ 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, CfgFlag::DEFAULT),  // Or maybe it makes sense to have it per-game? Race conditions abound...
 -- 
 2.20.1

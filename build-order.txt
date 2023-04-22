@@ -37,6 +37,7 @@ vulkan-headers
 -webp-pixbuf-loader
 xwit
 -ytnef
+zarchive
 
 # 2
 -aom

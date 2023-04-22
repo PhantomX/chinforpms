@@ -1,6 +1,6 @@
 Name:           tush
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The Utility for SNES Headers
 
 License:        Unknown
@@ -13,7 +13,7 @@ Patch0:         0001-fix-OpenDialog-crash.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
-BuildRequires:  wxGTK3-devel
+BuildRequires:  wxGTK-devel >= 3.2
 Requires:       gnome-icon-theme
 
 
@@ -32,7 +32,7 @@ sed \
 
 
 %build
-%make_build -C src WXCONFIG=wx-config-3.0
+%make_build -C src WXCONFIG=wx-config-3.2
 
 
 %install
@@ -62,6 +62,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Apr 21 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-3
+- wxGTK 3.2
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-2
 - Fix for package_note_file
 

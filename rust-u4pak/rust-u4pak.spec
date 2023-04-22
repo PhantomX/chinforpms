@@ -39,7 +39,7 @@ BuildRequires:  rust-packaging
 
 %package     -n %{crate}
 Summary:        %{summary}
-License:        MPLv2.0
+License:        MPL-2.0
 
 %description -n %{crate} %{_description}
 

@@ -11,6 +11,7 @@ blastem-bindata
 boca-freeworld
 bsnes
 cdrtools
+cemu
 chinforpms-fake-packages
 citra
 -cowsrevenge
