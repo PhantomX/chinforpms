@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit be869f9772bbc4d9e13c481b31adfd50080a0a03
+%global commit b7da32113fab30fb6672a475822d5d3a5bf56d76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230316
+%global date 20230421
 %bcond_without snapshot
 
 %bcond_with gtk2
@@ -27,10 +27,10 @@
 
 Name:           ares
 Version:        132
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Multi-system emulator
 
-License:        GPLv3 and BSD
+License:        GPL-3.0-only AND BSD-2-Clause
 
 URL:            https://ares-emu.net/
 
@@ -100,6 +100,8 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
   sed -e "/ruby +=/s|audio.openal\b||" -i ruby/GNUmakefile
 %endif
 
+sed -e '/nall\/main.cpp/d' -i nall/main.hpp
+
 
 %build
 %set_build_flags
@@ -107,7 +109,7 @@ export flags="$CXXFLAGS $(pkg-config --cflags libchdr)"
 export options="$LDFLAGS $(pkg-config --libs libchdr)"
 
 for build in mia desktop-ui tools/genius ; do
-%make_build -C $build verbose \
+%make_build -C $build verbose compiler=g++ \
   build=optimized local=false system_chdr=true hiro=%{toolkit} \
   lto=true \
 %{nil}

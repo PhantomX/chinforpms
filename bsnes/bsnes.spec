@@ -28,7 +28,7 @@ Version:        115
 Release:        9%{?dist}
 Summary:        Nintendo SNES emulator
 
-License:        GPLv3 and BSD
+License:        GPL-3.0-only AND BSD-2-Clause
 
 URL:            https://github.com/%{name}-emu/%{name}
 

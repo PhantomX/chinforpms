@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2a2ee8bc968232058fe77a06e95d4f3fa1b851e7
+%global commit 9ba6a901936bb40e1b724dc3792c1bd2da80ec4c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230411
+%global date 20230422
 %bcond_without snapshot
 
 # Enable system boost
@@ -72,6 +72,7 @@
 %global srcname12 cpp-jwt
 
 %global cpphttplibver b251668
+%global glad_ver 0.1.36
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -81,7 +82,7 @@
 
 Name:           citra
 Version:        0
-Release:        41%{?dist}
+Release:        42%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -175,6 +176,7 @@ Requires:       shared-mime-info
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
+Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}

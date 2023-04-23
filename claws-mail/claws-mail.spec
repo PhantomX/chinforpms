@@ -1,6 +1,6 @@
-%global commit e2e7f63c6a0a762dd8d823eb29ad850e665317ff
+%global commit a9a16a253ed3865a51db5e306539d3494087dafd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230224
+%global date 20230419
 %bcond_without snapshot
 
 %global with_python  1
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -42,7 +42,6 @@ Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch1:         %{name}-4.1.1-litehtml.patch
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
 

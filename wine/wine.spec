@@ -1,6 +1,6 @@
-%global commit 9e99c6f66d236101a084b6a3a24c98b5c8677fe5
+%global commit d1c317720ab6a92811c013408844ffd9e581b2a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230418
+%global date 20230421
 %bcond_without snapshot
 
 %define _fortify_level 0
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 566a2bcdfdfde47c7a30877222a4ebd31f74b33c
+%global wine_stagingver 7f36a96808177be546771d41150c765f56d7a251
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.6
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
