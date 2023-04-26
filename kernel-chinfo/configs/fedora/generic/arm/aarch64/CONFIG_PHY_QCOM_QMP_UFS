@@ -1,0 +1,15 @@
+# Symbol: PHY_QCOM_QMP_UFS [=m]
+# Type  : tristate
+# Defined at drivers/phy/qualcomm/Kconfig:86
+#   Prompt: Qualcomm QMP UFS PHY Driver
+#   Depends on: PHY_QCOM_QMP [=m]
+#   Location:
+#     -> Device Drivers
+#       -> PHY Subsystem
+#         -> Qualcomm QMP PHY Drivers (PHY_QCOM_QMP [=m])
+#           -> Qualcomm QMP UFS PHY Driver (PHY_QCOM_QMP_UFS [=m])
+# Selects: GENERIC_PHY [=y]
+# 
+# 
+# 
+CONFIG_PHY_QCOM_QMP_UFS=m

@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 # This script merges together the hierarchy of CONFIG_* files under generic
-# and debug to form the necessary $PACKAGE_NAME<version>-<arch>-<variant>.config
+# and debug to form the necessary $SPECPACKAGE_NAME<version>-<arch>-<variant>.config
 # files for building RHEL kernels, based on the contents of a control file
 
 test -n "$RHTEST" && exit 0
 
-PACKAGE_NAME="${1:-kernel}" # defines the package name used
+SPECPACKAGE_NAME="${1:-kernel}" # defines the package name used
 
 SCRIPT=$(readlink -f "$0")
 OUTPUT_DIR="$PWD"
@@ -75,7 +75,7 @@ function merge_configs()
 	flavor=$4
 	count=$5
 
-	name=$OUTPUT_DIR/$PACKAGE_NAME-$archvar-$flavor.config
+	name=$OUTPUT_DIR/$SPECPACKAGE_NAME-$archvar-$flavor.config
 	echo "Building $name ... "
 	touch config-merging."$count" config-merged."$count"
 
@@ -136,7 +136,7 @@ function build_flavor()
 			empty=$(echo "$line" | cut -f2 -d"=")
 			for a in $empty
 			do
-				echo "# EMPTY" > "$OUTPUT_DIR/$PACKAGE_NAME-$a-$flavor".config
+				echo "# EMPTY" > "$OUTPUT_DIR/$SPECPACKAGE_NAME-$a-$flavor".config
 
 			done
 		elif [ "$(echo "$line" | grep -c "^ORDER")" -ne 0 ]; then

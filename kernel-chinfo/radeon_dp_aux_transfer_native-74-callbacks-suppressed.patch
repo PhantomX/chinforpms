@@ -1,0 +1,112 @@
+From patchwork Mon Nov  6 09:21:15 2017
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Jean Delvare <jdelvare@suse.de>
+X-Patchwork-Id: 10045863
+Return-Path: <dri-devel-bounces@lists.freedesktop.org>
+Received: from mail.wl.linuxfoundation.org (pdx-wl-mail.web.codeaurora.org
+	[172.30.200.125])
+	by pdx-korg-patchwork.web.codeaurora.org (Postfix) with ESMTP id
+	74EAA6032D for <patchwork-dri-devel@patchwork.kernel.org>;
+	Tue,  7 Nov 2017 08:16:19 +0000 (UTC)
+Received: from mail.wl.linuxfoundation.org (localhost [127.0.0.1])
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTP id 62DCF2870C
+	for <patchwork-dri-devel@patchwork.kernel.org>;
+	Tue,  7 Nov 2017 08:16:19 +0000 (UTC)
+Received: by mail.wl.linuxfoundation.org (Postfix, from userid 486)
+	id 5766A29DF5; Tue,  7 Nov 2017 08:16:19 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.3.1 (2010-03-16) on
+	pdx-wl-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-4.2 required=2.0 tests=BAYES_00, RCVD_IN_DNSWL_MED
+	autolearn=ham version=3.3.1
+Received: from gabe.freedesktop.org (gabe.freedesktop.org [131.252.210.177])
+	(using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.wl.linuxfoundation.org (Postfix) with ESMTPS id 5B2C02870C
+	for <patchwork-dri-devel@patchwork.kernel.org>;
+	Tue,  7 Nov 2017 08:16:18 +0000 (UTC)
+Received: from gabe.freedesktop.org (localhost [127.0.0.1])
+	by gabe.freedesktop.org (Postfix) with ESMTP id 5342E6E2B0;
+	Tue,  7 Nov 2017 08:16:17 +0000 (UTC)
+X-Original-To: dri-devel@lists.freedesktop.org
+Delivered-To: dri-devel@lists.freedesktop.org
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+	by gabe.freedesktop.org (Postfix) with ESMTPS id 60FF189AB7;
+	Mon,  6 Nov 2017 09:21:33 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (charybdis-ext.suse.de [195.135.220.254])
+	by mx2.suse.de (Postfix) with ESMTP id B9A0BAAC8;
+	Mon,  6 Nov 2017 09:21:31 +0000 (UTC)
+Date: Mon, 6 Nov 2017 10:21:15 +0100
+From: Jean Delvare <jdelvare@suse.de>
+To: amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: radeon_dp_aux_transfer_native: 74 callbacks suppressed
+Message-ID: <20171106102115.5929bed7@endymion>
+Organization: SUSE Linux
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
+MIME-Version: 1.0
+X-Mailman-Approved-At: Tue, 07 Nov 2017 08:16:16 +0000
+Cc: Alex Deucher <alexander.deucher@amd.com>
+X-BeenThere: dri-devel@lists.freedesktop.org
+X-Mailman-Version: 2.1.18
+Precedence: list
+List-Id: Direct Rendering Infrastructure - Development
+	<dri-devel.lists.freedesktop.org>
+List-Unsubscribe: <https://lists.freedesktop.org/mailman/options/dri-devel>,
+	<mailto:dri-devel-request@lists.freedesktop.org?subject=unsubscribe>
+List-Archive: <https://lists.freedesktop.org/archives/dri-devel>
+List-Post: <mailto:dri-devel@lists.freedesktop.org>
+List-Help: <mailto:dri-devel-request@lists.freedesktop.org?subject=help>
+List-Subscribe: <https://lists.freedesktop.org/mailman/listinfo/dri-devel>,
+	<mailto:dri-devel-request@lists.freedesktop.org?subject=subscribe>
+Errors-To: dri-devel-bounces@lists.freedesktop.org
+Sender: "dri-devel" <dri-devel-bounces@lists.freedesktop.org>
+X-Virus-Scanned: ClamAV using ClamSMTP
+
+Hi all,
+
+commit 92c177b7947d9c889ea7b024871445015ea74221
+Author: Lyude
+Date:   Wed Feb 22 16:34:53 2017 -0500
+
+    drm/radeon/dp_auxch: Ratelimit aux transfer debug messages
+
+does more harm than good in my opinion. Since this commit, I see
+several occurrences of the following message in my kernel log daily:
+
+radeon_dp_aux_transfer_native: 74 callbacks suppressed
+
+I never got to see the "callback" in question though, not even once, as
+this is a debug message which is off by default. Before the change, I
+would not get any such message in the kernel log (as I would expect
+when everything works as intended.)
+
+Does this debug message really have any practical value? If not, the
+easiest solution would be to simply drop it:
+
+
+I can resend this as a formal patch if you agree with this solution.
+
+The actual cause of the problem is that ___ratelimit() prints its
+message at KERN_WARNING level regardless of the level of the message
+being suppressed. This makes ratelimiting debug, info or notice
+messages awkward. Looks like a design overlook to me, maybe it should
+be fixed, but that's a much bigger and intrusive change than the
+proposal above.
+
+--- a/drivers/gpu/drm/radeon/radeon_dp_auxch.c
++++ b/drivers/gpu/drm/radeon/radeon_dp_auxch.c
+@@ -168,7 +168,10 @@ radeon_dp_aux_transfer_native(struct drm
+ 		goto done;
+ 	}
+ 	if (tmp & AUX_RX_ERROR_FLAGS) {
+-		drm_dbg_kms_ratelimited(dev, "dp_aux_ch flags not zero: %08x\n", tmp);
++		/*
++		 * aux transfers always fail with non-zero status flags when
++		 * there's nothing connected on the port
++		 */
+ 		ret = -EIO;
+ 		goto done;
+ 	}

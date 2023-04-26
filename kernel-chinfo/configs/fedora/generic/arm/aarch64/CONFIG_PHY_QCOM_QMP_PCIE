@@ -1,0 +1,15 @@
+# Symbol: PHY_QCOM_QMP_PCIE [=m]
+# Type  : tristate
+# Defined at drivers/phy/qualcomm/Kconfig:68
+#   Prompt: Qualcomm QMP PCIe PHY Driver
+#   Depends on: PHY_QCOM_QMP [=m] && (PCI [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> PHY Subsystem
+#         -> Qualcomm QMP PHY Drivers (PHY_QCOM_QMP [=m])
+#           -> Qualcomm QMP PCIe PHY Driver (PHY_QCOM_QMP_PCIE [=m])
+# Selects: GENERIC_PHY [=y]
+# 
+# 
+# 
+CONFIG_PHY_QCOM_QMP_PCIE=m

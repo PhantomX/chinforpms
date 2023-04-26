@@ -13,35 +13,25 @@ set -e
 VARIANT='-chinfo'
 VARIANTID="${VARIANT//-/.}"
 KERNELSPEC="kernel${VARIANT}.spec"
-HEADERSSPEC="kernel${VARIANT}-headers.spec"
+KERNELPKGNAME="kernel${VARIANT}"
+PKGLOC="${KERNELPKGNAME}-headers"
+HEADERSSPEC="${PKGLOC}.spec"
 CURRENTDIR="$(pwd)"
-PKGLOC="kernel${VARIANT}-headers"
+
 
 if [ ! -f "$PKGLOC/${HEADERSSPEC}" ]; then
 	echo "Missing checkout of kernel${VARIANT}-headers in $PKGLOC"
 	exit 1
 fi
-
 # Kernel version information taken from kernel.spec and change to prepared sources directory
-MAJORVER='6'
-RELEASED="$(grep "%global released_kernel" ${KERNELSPEC}| cut -d ' ' -f 3)"
-BASERELEASE="$(grep "%global baserelease" ${KERNELSPEC}| cut -d ' ' -f 3)"
-BASE="$(grep "%define base_sublevel" ${KERNELSPEC}| cut -d ' ' -f 3)"
-STABLE="$(grep "%define stable_update" ${KERNELSPEC}| cut -d ' ' -f 3)"
-RC="$(grep "%global rcrev" ${KERNELSPEC}| cut -d ' ' -f 3)"
-GITREV="$(grep "%define gitrev" ${KERNELSPEC}| cut -d ' ' -f 3)"
+SPECRPMVERSION="$(grep "%define specrpmversion" ${KERNELSPEC}| cut -d ' ' -f 3)"
+TARBALL_RELEASE="$(echo ${SPECRPMVERSION} | cut -d'.' -f-2)"
+BASERELEASE="$(grep "%define baserelease" ${KERNELSPEC} | cut -d ' ' -f 3)"
 BUILDID="$(grep "^%global buildid" ${KERNELSPEC}| cut -d ' ' -f 3)"
-if [ "$RELEASED" -eq 0 ]; then
-	# shellcheck disable=SC1083
-	cd "$(rpm -E %{_builddir})/kernel-$MAJORVER.$BASE.fc"??
-	NEWBASE=$((BASE+1))
-	KVER="$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.${BASERELEASE}${BUILDID}${VARIANTID}"
-	cd linux-"$MAJORVER.$NEWBASE.0-0.rc$RC.git$GITREV.${BASERELEASE}${BUILDID}${VARIANTID}.fc"*/
-else
-	# shellcheck disable=SC1083
-	cd "$(rpm -E %{_builddir})/kernel-$MAJORVER.$BASE.fc"??/linux-"$MAJORVER.$BASE.$STABLE-${BASERELEASE}${BUILDID}${VARIANTID}.fc"*/
-	KVER="$MAJORVER.$BASE.$STABLE-${BASERELEASE}${BUILDID}${VARIANTID}"
-fi
+SRCVERSION="${BASERELEASE}${BUILDID}${VARIANTID}"
+# shellcheck disable=SC1083
+cd "$(rpm -E %{_builddir})/kernel-$TARBALL_RELEASE/linux-$SPECRPMVERSION-${SRCVERSION}.fc"*/
+KVER="${SPECRPMVERSION}-${SRCVERSION}"
 
 # ARCH_LIST below has the default list of supported architectures
 # (the architectures names may be different from rpm, you list here the
@@ -63,7 +53,7 @@ find "$headers_dir" \
 	\( -name .install -o -name .check -o \
 	-name ..install.cmd -o -name ..check.cmd \) -print0 | xargs -0 rm -f
 
-TARBALL="$CURRENTDIR/$PKGLOC/kernel${VARIANT}-headers-$KVER.tar.xz"
+TARBALL="$CURRENTDIR/$PKGLOC/${PKGLOC}-$KVER.tar.xz"
 pushd "$headers_dir"
 	tar -Jcf "$TARBALL" -- *
 popd
@@ -73,18 +63,11 @@ echo wrote "$TARBALL"
 # Update kernel-headers.spec
 cd "$CURRENTDIR/$PKGLOC"/
 
-BASE=$BASE perl -p -i -e 's|%define base_sublevel.*|%define base_sublevel $ENV{"BASE"}|' ${HEADERSSPEC}
+SPECRPMVERSION=$SPECRPMVERSION perl -p -i -e 's|%define specrpmversion.*|%define specrpmversion $ENV{"SPECRPMVERSION"}|' ${HEADERSSPEC}
 BASERELEASE=$((BASERELEASE-1))
-BASERELEASE=${BASERELEASE} perl -p -i -e 's|%global baserelease.*|%global baserelease $ENV{"BASERELEASE"}|' ${HEADERSSPEC}
+BASERELEASE=${BASERELEASE} perl -p -i -e 's|%define baserelease.*|%define baserelease $ENV{"BASERELEASE"}|' ${HEADERSSPEC}
 
-if [ "$RELEASED" -eq 0 ]; then
-	[ -n "${BUILDID}" ] && sed -i -e "s/^# define buildid .local/%define buildid '${BUILDID}'/" ${HEADERSSPEC}
-	RC=$RC perl -p -i -e 's|%global rcrev.*|%global rcrev $ENV{"RC"}|' ${HEADERSSPEC}
-	GITREV=$GITREV perl -p -i -e 's|%define gitrev.*|%define gitrev $ENV{"GITREV"}|' ${HEADERSSPEC}
-	rpmdev-bumpspec -c "Linux v$MAJORVER.$NEWBASE-rc$RC.git$GITREV" ${HEADERSSPEC}
-else
-	STABLE=$STABLE perl -p -i -e 's|%define stable_update.*|%define stable_update $ENV{"STABLE"}|' ${HEADERSSPEC}
-	rpmdev-bumpspec -c "$MAJORVER.$BASE.$STABLE" ${HEADERSSPEC}
-fi
+rpmdev-bumpspec -c "$SPECRPMVERSION" ${HEADERSSPEC}
+
 echo "Modified $CURRENTDIR/$PKGLOC/${KERNELSPEC}"
 echo "Don't forget to upload the sources"

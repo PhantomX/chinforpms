@@ -11,4 +11,4 @@
 
 driverdirs="atm auxdisplay bcma bluetooth firewire fpga infiniband leds media memstick message mmc mtd nfc ntb pcmcia platform power ssb staging tty uio w1"
 
-singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit chcr rnbd-client rnbd-server mlx5_vdpa hid-playstation hid-nintendo mlx5-vfio-pci nvmem_u-boot-env"
+singlemods="ntb_netdev iscsi_ibft iscsi_boot_sysfs megaraid pmcraid qedi qla1280 9pnet_rdma rpcrdma nvmet-rdma nvme-rdma hid-picolcd hid-prodikeys hwpoison-inject target_core_user sbp_target cxgbit chcr rnbd-client rnbd-server mlx5_vdpa hid-playstation hid-nintendo mlx5-vfio-pci nvmem_u-boot-env intel-m10-bmc-pmci"

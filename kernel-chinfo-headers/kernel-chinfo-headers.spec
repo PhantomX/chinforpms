@@ -6,86 +6,29 @@
 #global buildid .chinfo
 
 %global variant -chinfo
-
-# baserelease defines which build revision of this kernel version we're
-# building.  We used to call this fedora_build, but the magical name
-# baserelease is matched by the rpmdev-bumpspec tool, which you should use.
-#
-# NOTE: baserelease must be > 0 or bad things will happen if you switch
-#       to a released kernel (released version will be < rc version)
-#
-# For non-released -rc kernels, this will be appended after the rcX and
-# gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
-#
-%global baserelease 500
-%global fedora_build %{baserelease}
-
-%define major_ver 6
-
-# base_sublevel is the kernel version we're starting with and patching
-# on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
-# which yields a base_sublevel of 0.
-%define base_sublevel 2
-
-## If this is a released kernel ##
-%if 0%{?released_kernel}
-
-# Do we have a -stable update to apply?
-%define stable_update 12
-# Set rpm version accordingly
-%if 0%{?stable_update}
-%define stablerev %{stable_update}
-%define stable_base %{stable_update}
-%endif
-%define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
-
-## The not-released-kernel case ##
-%else
-# The next upstream release sublevel (base_sublevel+1)
-%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-# The rc snapshot level
-%global rcrev 7
-# The git snapshot level
-%define gitrev 0
-# Set rpm version accordingly
-%define rpmversion %{major_ver}.%{upstream_sublevel}.0
-%endif
-
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
-# pkg_release is what we'll fill in for the rpm Release: field
-%if 0%{?released_kernel}
+%global package_name kernel%{?variant}
+%define specrpmversion 6.3.0
+%define specversion %{specrpmversion}
+%define patchversion %(echo %{specversion} | cut -d'.' -f-2)
+%define baserelease 500
+%define kversion %(echo %{specversion} | cut -d'.' -f1)
+%define srcversion %{baserelease}%{?buildid}%{?variantid}
 
-%define srcversion %{fedora_build}%{?buildid}%{?variantid}
-
-%else
-
-# non-released_kernel
-%if 0%{?rcrev}
-%define rctag .rc%rcrev
-%else
-%define rctag .rc0
-%endif
-%if 0%{?gitrev}
-%define gittag .git%gitrev
-%else
-%define gittag .git0
-%endif
-%define srcversion 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}
-
-%endif
+%global src_hash 00000000000000000000000000000000
 
 %define pkg_release %{?srcversion}%{?dist}
 
 # This package doesn't contain any binary, thus no debuginfo package is needed
 %global debug_package %{nil}
 
-Name: kernel%{?variant}-headers
+Name: %{package_name}-headers
 Summary: Header files for the Linux kernel for use by glibc
 
-License: GPLv2
+License: GPL-2.0-only
 URL: http://www.kernel.org/
-Version: %{rpmversion}
+Version: %{specrpmversion}
 Release: %{pkg_release}
 # This is a tarball with headers from the kernel, which should be created
 # using create_headers_tarball.sh provided in the kernel source package.
@@ -93,7 +36,7 @@ Release: %{pkg_release}
 # directory, or git kernel source repository, and do eg.:
 # For a RHEL package: (...)/create_headers_tarball.sh -m RHEL_RELEASE
 # For a Fedora package: kernel/scripts/create_headers_tarball.sh -r <release number>
-Source0: kernel%{?variant}-headers-%{rpmversion}-%{?srcversion}.tar.xz
+Source0: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{name}-%{specrpmversion}-%{srcversion}.tar.xz/%{src_hash}/%{name}-%{specrpmversion}-%{srcversion}.tar.xz
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
 %if "0%{?variant}"
@@ -181,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Tue Apr 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500.chinfo
+- 6.3.0
+
 * Thu Apr 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.12-500.chinfo
 - 6.2.12
 
@@ -417,51 +363,3 @@ done
 
 * Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500.chinfo
 - 5.17.0
-
-* Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500.chinfo
-- 5.16.16
-
-* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.15-500.chinfo
-- 5.16.15
-
-* Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.14-500.chinfo
-- 5.16.14
-
-* Wed Mar 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.13-500.chinfo
-- 5.16.13
-
-* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.12-500.chinfo
-- 5.16.12
-
-* Wed Feb 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.11-500.chinfo
-- 5.16.11
-
-* Wed Feb 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.10-500.chinfo
-- 5.16.10
-
-* Fri Feb 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.9-500.chinfo
-- 5.16.9
-
-* Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.8-500.chinfo
-- 5.16.8
-
-* Sat Feb 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.7-500.chinfo
-- 5.16.7
-
-* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.5-500.chinfo
-- 5.16.5
-
-* Sun Jan 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.4-500.chinfo
-- 5.16.4
-
-* Thu Jan 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.3-500.chinfo
-- 5.16.3
-
-* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.2-500.chinfo
-- 5.16.2
-
-* Mon Jan 17 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.1-500.chinfo
-- 5.16.1
-
-* Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500.chinfo
-- 5.16.0

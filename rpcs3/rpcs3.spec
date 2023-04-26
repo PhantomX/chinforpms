@@ -31,9 +31,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 6bf77166e18d6f202e9cf1ff0a72cbc49a5121f7
+%global commit 7feb13671abcfb191e06c0ec70147c08ca651e61
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230422
+%global date 20230425
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -95,7 +95,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0

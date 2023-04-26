@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230226
-# 6.2
-# pf2
+# 20230425
+# 6.3
+# pf1
 
 set -e
 
@@ -140,5 +140,5 @@ if [ -w "${OUTPUT_DIR}" ] ;then
       ;;
   esac
 
-  ./build_configs.sh
+  ./build_configs.sh kernel-chinfo
 fi

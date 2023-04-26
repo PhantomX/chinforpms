@@ -19,59 +19,21 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%global base_major 6
+%define specrpmversion 6.3.0
+%define specversion %{specrpmversion}
+%define patchversion %(echo %{specversion} | cut -d'.' -f-2)
+%define baserelease 500
+%define pkgrelease %{baserelease}
+%define kversion %(echo %{specversion} | cut -d'.' -f1)
+%define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
+# This is needed to do merge window version magic
+%define patchlevel %(echo %{specversion} | cut -d'.' -f2)
+%define stable_update %(echo %{specversion} | cut -d'.' -f3)
+%define specrelease %{pkgrelease}%{?buildid}%{?dist}
+%global src_hash 00000000000000000000000000000000
 
-# base_sublevel is the kernel version we're starting with and patching
-# on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
-# which yields a base_sublevel of 0.
-%global base_sublevel 2
+%define pkg_release %{specrelease}
 
-## If this is a released kernel ##
-%if 0%{?released_kernel}
-
-# Do we have a -stable update to apply?
-%global stable_update 12
-# Set rpm version accordingly
-%if 0%{?stable_update}
-%global stablerev %{stable_update}
-%global stable_base %{stable_update}
-%endif
-%global rpmversion %{base_major}.%{base_sublevel}.%{stable_update}
-
-## The not-released-kernel case ##
-%else
-# The next upstream release sublevel (base_sublevel+1)
-# %global upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-%global upstream_sublevel 0
-%global upstream_major 6
-
-# The rc snapshot level
-%global rcrev 0
-# Set rpm version accordingly
-%global rpmversion %{upstream_major}.%{upstream_sublevel}.0
-%endif
-# Nb: The above rcrev values automagically define Patch00 and Patch01 below.
-
-# pkg_release is what we'll fill in for the rpm Release: field
-%if 0%{?released_kernel}
-
-%global pkg_release %{fedora_build}%{?buildid}%{?dist}
-
-%else
-
-# non-released_kernel
-%if 0%{?rcrev}
-%global rctag .rc%rcrev
-%else
-%global rctag .rc0
-%endif
-%global gittag .git0
-%global pkg_release 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}%{?dist}
-
-%endif
-
-# The kernel tarball/base version
-%global kversion %{base_major}.%{base_sublevel}
 %global KVERREL %{version}-%{release}.%{_target_cpu}
 
 # perf needs this
@@ -81,10 +43,14 @@ Name:           kernel-tools
 Summary:        Assortment of tools for the Linux kernel
 License:        GPL-2.0-only
 URL:            http://www.kernel.org/
-Version:        %{rpmversion}
+Version:        %{specrpmversion}
 Release:        %{pkg_release}
 
-Source0: https://cdn.kernel.org/pub/linux/kernel/v%{base_major}.x/linux-%{kversion}.tar.xz
+%if 0%{?released_kernel}
+Source0: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/linux-%{tarfile_release}.tar.xz
+%else
+Source0: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/linux-%{tarfile_release}.tar.xz/%{src_hash}/linux-%{tarfile_release}.tar.xz
+%endif
 
 # Sources for kernel-tools
 Source2000: cpupower.service
@@ -230,9 +196,9 @@ and root causes of unexpected results.
 
 
 %prep
-%setup -q -n kernel-%{kversion}%{?dist} -c
+%setup -q -n kernel-%{tarfile_release} -c
 
-cd linux-%{kversion}
+cd linux-%{tarfile_release}
 
 # This is for patching either an -rc or stable
 %if 0%{?rcrev}
@@ -313,7 +279,7 @@ pushd tools/gpio/
 %{tools_make}
 popd
 # build VM tools
-pushd tools/vm/
+pushd tools/mm/
 %{tools_make} slabinfo page_owner_sort
 popd
 pushd tools/tracing/rtla
@@ -416,12 +382,19 @@ popd
 pushd tools/gpio
 %{tools_make} DESTDIR=%{buildroot} install
 popd
+# install VM tools
+pushd tools/mm/
+install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
+install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
+popd
 pushd tools/tracing/rtla/
 %{tools_make} DESTDIR=%{buildroot} install
+rm -f %{buildroot}%{_bindir}/hwnoise
 rm -f %{buildroot}%{_bindir}/osnoise
 rm -f %{buildroot}%{_bindir}/timerlat
 (cd %{buildroot}
 
+        ln -sf rtla ./%{_bindir}/hwnoise
         ln -sf rtla ./%{_bindir}/osnoise
         ln -sf rtla ./%{_bindir}/timerlat
 )
@@ -506,6 +479,8 @@ popd
 %{_bindir}/gpio-watch
 %{_mandir}/man1/kvm_stat*
 %{_bindir}/kvm_stat
+%{_bindir}/page_owner_sort
+%{_bindir}/slabinfo
 %license linux-%{kversion}/COPYING
 
 %files libs
@@ -568,8 +543,10 @@ popd
 
 %files -n rtla
 %{_bindir}/rtla
+%{_bindir}/hwnoise
 %{_bindir}/osnoise
 %{_bindir}/timerlat
+%{_mandir}/man1/rtla-hwnoise.1.gz
 %{_mandir}/man1/rtla-osnoise-hist.1.gz
 %{_mandir}/man1/rtla-osnoise-top.1.gz
 %{_mandir}/man1/rtla-osnoise.1.gz
@@ -580,6 +557,9 @@ popd
 
 
 %changelog
+* Mon Apr 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500
+- 6.3.0
+
 * Thu Apr 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.12-500
 - 6.2.12
 
@@ -798,48 +778,3 @@ popd
 
 * Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500
 - 5.17.0
-
-* Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500
-- 5.16.16
-
-* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.15-500
-- 5.16.15
-
-* Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.14-500
-- 5.16.14
-
-* Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.13-500
-- 5.16.13
-
-* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.12-500
-- 5.16.12
-
-* Wed Feb 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.11-500
-- 5.16.11
-
-* Wed Feb 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.10-500
-- 5.16.10
-
-* Fri Feb 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.9-500
-- 5.16.9
-
-* Sat Feb 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.7-500
-- 5.16.7
-
-* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.5-500
-- 5.16.5
-
-* Sun Jan 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.4-500
-- 5.16.4
-
-* Thu Jan 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.3-500
-- 5.16.3
-
-* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.2-500
-- 5.16.2
-
-* Sun Jan 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.1-500
-- 5.16.1
-
-* Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500
-- 5.16.0

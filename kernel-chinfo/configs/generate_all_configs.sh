@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Adjusts the configuration options to build the variants correctly
 
@@ -19,18 +19,19 @@ else
 	SECONDARY=fedora
 fi
 
-for i in kernel-*-"$FLAVOR".config; do
-	NEW=kernel-"$SPECVERSION"-$(echo "$i" | cut -d - -f2- | sed s/-"$FLAVOR"//)
-	#echo $NEW
+# The +1 is to remove the - at the end of the SPECPACKAGE_NAME string
+specpackage_name_len=$(("${#SPECPACKAGE_NAME}" + 1))
+for i in "${SPECPACKAGE_NAME}"*-"$FLAVOR".config; do
+	NEW="${SPECPACKAGE_NAME}"-"$SPECRPMVERSION"-$(echo ${i:$specpackage_name_len} | sed s/-"$FLAVOR"//)
 	mv "$i" "$NEW"
 done
 
 rm -f kernel-*-"$SECONDARY".config
 
 if [ "$DEBUGBUILDSENABLED" -eq 0 ]; then
-	for i in kernel-*debug*.config; do
+	for i in "${SPECPACKAGE_NAME}"-*debug*.config; do
 		base=$(echo "$i" | sed -r s/-?debug//g)
-		NEW=kernel-$(echo "$base" | cut -d - -f2-)
+		NEW="${SPECPACKAGE_NAME}"-$(echo "$base" | cut -d - -f2-)
 		mv "$i" "$NEW"
 	done
 fi

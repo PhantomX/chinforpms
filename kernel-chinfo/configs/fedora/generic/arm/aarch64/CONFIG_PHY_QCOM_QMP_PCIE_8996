@@ -1,0 +1,15 @@
+# Symbol: PHY_QCOM_QMP_PCIE_8996 [=m]
+# Type  : tristate
+# Defined at drivers/phy/qualcomm/Kconfig:77
+#   Prompt: Qualcomm QMP PCIe 8996 PHY Driver
+#   Depends on: PHY_QCOM_QMP [=m] && (PCI [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> PHY Subsystem
+#         -> Qualcomm QMP PHY Drivers (PHY_QCOM_QMP [=m])
+#           -> Qualcomm QMP PCIe 8996 PHY Driver (PHY_QCOM_QMP_PCIE_8996 [=m])
+# Selects: GENERIC_PHY [=y]
+# 
+# 
+# 
+CONFIG_PHY_QCOM_QMP_PCIE_8996=m

@@ -1,0 +1,15 @@
+# Symbol: PHY_QCOM_QMP_USB [=m]
+# Type  : tristate
+# Defined at drivers/phy/qualcomm/Kconfig:94
+#   Prompt: Qualcomm QMP USB PHY Driver
+#   Depends on: PHY_QCOM_QMP [=m]
+#   Location:
+#     -> Device Drivers
+#       -> PHY Subsystem
+#         -> Qualcomm QMP PHY Drivers (PHY_QCOM_QMP [=m])
+#           -> Qualcomm QMP USB PHY Driver (PHY_QCOM_QMP_USB [=m])
+# Selects: GENERIC_PHY [=y]
+# 
+# 
+# 
+CONFIG_PHY_QCOM_QMP_USB=m

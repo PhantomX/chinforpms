@@ -115,13 +115,6 @@ Summary: The Linux kernel
 %global zipmodules 1
 %endif
 
-%ifarch x86_64
-%global efiuki 1
-%else
-%global efiuki 0
-%endif
-
-
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.xz/'
 %endif
@@ -129,6 +122,7 @@ Summary: The Linux kernel
 #global buildid .chinfo
 
 %global variant -chinfo
+%global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %if 0%{?fedora}
 %define primary_target fedora
@@ -136,6 +130,13 @@ Summary: The Linux kernel
 %define primary_target rhel
 %endif
 
+#
+# genspec.sh variables
+#
+
+# kernel package name
+%global package_name kernel%{?variant}
+%global gemini 0
 # Include Fedora files
 %global include_fedora 1
 # Include RHEL files
@@ -156,60 +157,52 @@ Summary: The Linux kernel
 #  to build the base kernel using the debug configuration. (Specifying
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
+# define buildid .local
+%define specrpmversion 6.3.0
+%define specversion %{specrpmversion}
+%define patchversion %(echo %{specversion} | cut -d'.' -f-2)
+%define baserelease 500
+%define pkgrelease %{baserelease}
+%define kversion %(echo %{specversion} | cut -d'.' -f1)
+%define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
+# This is needed to do merge window version magic
+%define patchlevel %(echo %{specversion} | cut -d'.' -f2)
+%define stable_update %(echo %{specversion} | cut -d'.' -f3)
+# This allows pkg_release to have configurable %%{?dist} tag
+%define specrelease %{pkgrelease}%{?buildid}%{?variantid}%{?dist}
+# This defines the kabi tarball version
+%define kabiversion 6.3.0
+%global src_hash 00000000000000000000000000000000
 
-# baserelease defines which build revision of this kernel version we're
-# building.  We used to call this fedora_build, but the magical name
-# baserelease is matched by the rpmdev-bumpspec tool, which you should use.
+# If this variable is set to 1, a bpf selftests build failure will cause a
+# fatal kernel package build error
+%define selftests_must_build 0
+
 #
-# We used to have some extra magic weirdness to bump this automatically,
-# but now we don't.  Just use: rpmdev-bumpspec -c 'comment for changelog'
-# When changing base_sublevel below or going from rc to a final kernel,
-# reset this by hand to 1 (or to 0 and then use rpmdev-bumpspec).
-# scripts/rebase.sh should be made to do that for you, actually.
+# End of genspec.sh variables
 #
-# NOTE: baserelease must be > 0 or bad things will happen if you switch
-#       to a released kernel (released version will be < rc version)
-#
-# For non-released -rc kernels, this will be appended after the rcX and
-# gitX tags, so a 3 here would become part of release "0.rcX.gitX.3"
-#
-%global baserelease 500
-%global fedora_build %{baserelease}
 
-%global distro_build 200
-
-%define major_ver 6
-
-# base_sublevel is the kernel version we're starting with and patching
-# on top of -- for example, 3.1-rc7-git1 starts with a 3.0 base,
-# which yields a base_sublevel of 0.
-%define base_sublevel 2
-
-## If this is a released kernel ##
-%if 0%{?released_kernel}
-
-# Do we have a -stable update to apply?
-%define stable_update 12
+%define pkg_release %{specrelease}
 
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 89cef6bb172915b88b34e6254a4451437194ab79
-%global pf_first_commit c9c3395d5e3dcc6daee66c6908354d47bf98cb0c
+%global pfcommit 7289426f948f28b2e392d449b6b9da1245fe0406
+%global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
 %global pfcoprhash 50cb54f8a5ead6e9fb9484857594eded
 %if "%{pfcommit}" == "0"
-%global pfrange v%{major_ver}.%{base_sublevel}-%{pftag}
+%global pfrange v%{patchversion}-%{pftag}
 %else
 %global pfrange %(c=%{pfcommit}; echo ${c:0:7})
 %endif
-%global pfpatch pf-kernel-v%{major_ver}.%{base_sublevel}-%{pfrange}.pfpatch
-%dnl %global extra_patch https://codeberg.org/pf-kernel/linux/compare/v%{major_ver}.%{base_sublevel}...%{pfcommit}.diff#/%{pfpatch}
+%global pfpatch pf-kernel-v%{patchversion}-%{pfrange}.pfpatch
+%dnl %global extra_patch https://codeberg.org/pf-kernel/linux/compare/v%{patchversion}...%{pfcommit}.diff#/%{pfpatch}
 %global extra_patch https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{pfpatch}/%{pfcoprhash}/%{pfpatch}
 
 # Apply a patch range from stable repository, extending pf unmantained branches
@@ -220,34 +213,11 @@ Summary: The Linux kernel
 %global st_last_commit 1916ff079c77dc38275493cc18e22fe18532fb0f
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
-%global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{major_ver}.%{base_sublevel}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{major_ver}.%{base_sublevel}-%{short_st_first}-%{short_st_last}.patch
+%global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id eb3255dc68cbef0251aa7822ecd784935be8e9d6
-
-# Set rpm version accordingly
-%if 0%{?stable_update}
-%define stablerev %{stable_update}
-%define stable_base %{stabUP  le_update}
-%endif
-%define rpmversion %{major_ver}.%{base_sublevel}.%{stable_update}
-
-# The kernel tarball/base version
-%define kversion %{major_ver}.%{base_sublevel}
-
-## The not-released-kernel case ##
-%else
-# The next upstream release sublevel (base_sublevel+1)
-%define upstream_sublevel %(echo $((%{base_sublevel} + 1)))
-# The rc snapshot level
-%global rcrev 0
-# The git snapshot level
-%define gitrev 0
-# Set rpm version accordingly
-%define rpmversion %{major_ver}.%{upstream_sublevel}.0
-%endif
-# Nb: The above rcrev and gitrev values automagically define Patch00 and Patch01 below.
+%global opensuse_id aa7b6ec60eee5bf5b4ef23fb4b8c064cf7379e2b
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -271,6 +241,8 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:0} %{?!_without_headers:1}
 %define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:1}
+%define with_bpftool   %{?_without_bpftool:0} %{?!_without_bpftool:1}
+%define with_bpftool   0
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
 # kernel-abi-stablelists
@@ -330,6 +302,12 @@ Summary: The Linux kernel
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla:1} %{?!_with_vanilla:0}
 
+%ifarch x86_64
+%define with_efiuki %{?_without_efiuki:0} %{?!_without_efiuki:1}
+%else
+%define with_efiuki 0
+%endif
+
 ### CPU optimizations
 ### with native take precedence, next is generic, then one set in kernel-local-cpu
 # Use kernel-local-cpu-native (CONFIG_MNATIVE=y)
@@ -371,43 +349,6 @@ Summary: The Linux kernel
 %global with_ipaclones 0
 %endif
 
-%if 0%{!?nopatches:1}
-%define nopatches 0
-%endif
-
-%if %{with_vanilla}
-%define nopatches 1
-%endif
-
-%if %{nopatches}
-%global variant -vanilla
-%endif
-
-%global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
-
-# pkg_release is what we'll fill in for the rpm Release: field
-%if 0%{?released_kernel}
-
-%define pkg_release %{fedora_build}%{?buildid}%{?variantid}%{?dist}
-
-%else
-
-# non-released_kernel
-%if 0%{?rcrev}
-%define rctag .rc%rcrev
-%else
-%define rctag .rc0
-%endif
-%if 0%{?gitrev}
-%define gittag .git%gitrev
-%else
-%define gittag .git0
-%endif
-%define pkg_release 0%{?rctag}%{?gittag}.%{fedora_build}%{?buildid}%{?variantid}%{?dist}
-
-%endif
-
-
 # turn off debug kernel and kabichk for gcov builds
 %if %{with_gcov}
 %define with_debug 0
@@ -436,13 +377,21 @@ Summary: The Linux kernel
 %define make_target bzImage
 %define image_install_path boot
 
-%define KVERREL %{version}-%{release}.%{_target_cpu}
+%define KVERREL %{specversion}-%{release}.%{_target_cpu}
 %define KVERREL_RE %(echo %KVERREL | sed 's/+/[+]/g')
 %define hdrarch %_target_cpu
 %define asmarch %_target_cpu
 
-%if !%{debugbuildsenabled}
-%define with_debug 0
+%if 0%{!?nopatches:1}
+%define nopatches 0
+%endif
+
+%if %{with_vanilla}
+%define nopatches 1
+%endif
+
+%if %{with_release}
+%define debugbuildsenabled 1
 %endif
 
 %if !%{with_debuginfo}
@@ -497,6 +446,10 @@ Summary: The Linux kernel
 %define use_vdso 1
 %endif
 
+# selftests require bpftool to be built
+%if %{with_selftests}
+%define with_bpftool 1
+%endif
 
 %ifnarch noarch
 %define with_kernel_abi_stablelists 0
@@ -524,7 +477,7 @@ Summary: The Linux kernel
 %define with_cross_headers 0
 %define with_selftests 0
 %define with_debug 0
-%define all_arch_configs kernel-%{version}-*.config
+%define all_arch_configs %{name}-%{specrpmversion}-*.config
 %endif
 
 # sparse blows up on ppc
@@ -547,13 +500,13 @@ Summary: The Linux kernel
 %ifarch i686
 %define asmarch x86
 %define hdrarch i386
-%define all_arch_configs kernel-%{version}-i?86*.config
+%define all_arch_configs %{name}-%{specrpmversion}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
-%define all_arch_configs kernel-%{version}-x86_64*.config
+%define all_arch_configs %{name}-%{specrpmversion}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
@@ -564,19 +517,19 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define all_arch_configs kernel-%{version}-ppc64le*.config
+%define all_arch_configs %{name}-%{specrpmversion}-ppc64le*.config
 %endif
 
 %ifarch s390x
 %define asmarch s390
 %define hdrarch s390
-%define all_arch_configs kernel-%{version}-s390x.config
+%define all_arch_configs %{name}-%{specrpmversion}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch %{arm}
-%define all_arch_configs kernel-%{version}-arm*.config
+%define all_arch_configs %{name}-%{specrpmversion}-arm*.config
 %define skip_nonpae_vdso 1
 %define asmarch arm
 %define hdrarch arm
@@ -595,7 +548,7 @@ Summary: The Linux kernel
 %endif
 
 %ifarch aarch64
-%define all_arch_configs kernel-%{version}-aarch64*.config
+%define all_arch_configs %{name}-%{specrpmversion}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
 %define make_target vmlinuz.efi
@@ -665,10 +618,10 @@ Summary: The Linux kernel
 %define initrd_prereq  dracut >= 027
 
 
-Name: kernel%{?variant}
+Name: %{package_name}
 License: GPLv2 and Redistributable, no modification permitted
 URL: https://www.kernel.org/
-Version: %{rpmversion}
+Version: %{specrpmversion}
 Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
@@ -679,9 +632,9 @@ ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
 %endif
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
-Requires: kernel-core-uname-r = %{KVERREL}
-Requires: kernel-modules-uname-r = %{KVERREL}
-Requires: kernel-modules-core-uname-r = %{KVERREL}
+Requires: %{name}-core-uname-r = %{KVERREL}
+Requires: %{name}-modules-uname-r = %{KVERREL}
+Requires: %{name}-modules-core-uname-r = %{KVERREL}
 %endif
 
 
@@ -719,6 +672,10 @@ BuildRequires: sparse
 %if %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
 %endif
+%if %{with_bpftool}
+BuildRequires: python3-docutils
+BuildRequires: zlib-devel binutils-devel
+%endif
 %if %{with_selftests}
 BuildRequires: clang llvm-devel fuse-devel
 %ifnarch %{arm}
@@ -739,7 +696,11 @@ BuildConflicts: dwarves < 1.13
 %undefine _unique_debug_srcs
 %undefine _debugsource_packages
 %undefine _debuginfo_subpackages
+%if 0%{?fedora}
+%global _find_debuginfo_opts -r -q
+%else
 %global _find_debuginfo_opts -r
+%endif
 %global _missing_build_ids_terminate_build 1
 %global _no_recompute_build_ids 1
 %endif
@@ -771,14 +732,12 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 BuildRequires: clang
 %endif
 
-Source0: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/linux-%{kversion}.tar.xz
-
 %if %{with clang_lto}
 BuildRequires: llvm
 BuildRequires: lld
 %endif
 
-%if %{efiuki}
+%if %{with_efiuki}
 BuildRequires: dracut
 # For dracut UEFI uki binaries
 BuildRequires: binutils
@@ -786,12 +745,19 @@ BuildRequires: binutils
 BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
-BuildRequires: systemd-udev
+BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
 %endif
 
+%if 0%{?released_kernel}
+Source0: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/linux-%{tarfile_release}.tar.xz
+%else
+Source0: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/linux-%{tarfile_release}.tar.xz/%{src_hash}/linux-%{tarfile_release}.tar.xz
+%endif
+
 Source1: Makefile.rhelver
+
 
 # Name of the packaged file containing signing key
 %ifarch ppc64le
@@ -853,17 +819,17 @@ Source21: mod-sign.sh
 %if 0%{?include_rhel}
 Source23: x509.genkey.rhel
 
-Source24: kernel-aarch64-rhel.config
-Source25: kernel-aarch64-debug-rhel.config
+Source24: %{name}-aarch64-rhel.config
+Source25: %{name}-aarch64-debug-rhel.config
 Source26: mod-extra.list.rhel
 
-Source27: kernel-ppc64le-rhel.config
-Source28: kernel-ppc64le-debug-rhel.config
-Source29: kernel-s390x-rhel.config
-Source30: kernel-s390x-debug-rhel.config
-Source31: kernel-s390x-zfcpdump-rhel.config
-Source32: kernel-x86_64-rhel.config
-Source33: kernel-x86_64-debug-rhel.config
+Source27: %{name}-ppc64le-rhel.config
+Source28: %{name}-ppc64le-debug-rhel.config
+Source29: %{name}-s390x-rhel.config
+Source30: %{name}-s390x-debug-rhel.config
+Source31: %{name}-s390x-zfcpdump-rhel.config
+Source32: %{name}-x86_64-rhel.config
+Source33: %{name}-x86_64-debug-rhel.config
 
 Source34: filter-x86_64.sh.rhel
 Source35: filter-armv7hl.sh.rhel
@@ -879,18 +845,18 @@ Source41: x509.genkey.centos
 Source50: x509.genkey.fedora
 Source51: mod-extra.list.fedora
 
-Source52: kernel-aarch64-fedora.config
-Source53: kernel-aarch64-debug-fedora.config
-Source54: kernel-armv7hl-fedora.config
-Source55: kernel-armv7hl-debug-fedora.config
-Source56: kernel-armv7hl-lpae-fedora.config
-Source57: kernel-armv7hl-lpae-debug-fedora.config
-Source60: kernel-ppc64le-fedora.config
-Source61: kernel-ppc64le-debug-fedora.config
-Source62: kernel-s390x-fedora.config
-Source63: kernel-s390x-debug-fedora.config
-Source64: kernel-x86_64-fedora.config
-Source65: kernel-x86_64-debug-fedora.config
+Source52: %{name}-aarch64-fedora.config
+Source53: %{name}-aarch64-debug-fedora.config
+Source54: %{name}-armv7hl-fedora.config
+Source55: %{name}-armv7hl-debug-fedora.config
+Source56: %{name}-armv7hl-lpae-fedora.config
+Source57: %{name}-armv7hl-lpae-debug-fedora.config
+Source60: %{name}-ppc64le-fedora.config
+Source61: %{name}-ppc64le-debug-fedora.config
+Source62: %{name}-s390x-fedora.config
+Source63: %{name}-s390x-debug-fedora.config
+Source64: %{name}-x86_64-fedora.config
+Source65: %{name}-x86_64-debug-fedora.config
 
 Source67: filter-x86_64.sh.fedora
 Source68: filter-armv7hl.sh.fedora
@@ -926,14 +892,22 @@ Source211: Module.kabi_dup_ppc64le
 Source212: Module.kabi_dup_s390x
 Source213: Module.kabi_dup_x86_64
 
-#Source300: kernel-abi-stablelists-%%{rpmversion}-%%{distro_build}.tar.bz2
-#Source301: kernel-kabi-dw-%%{rpmversion}-%%{distro_build}.tar.bz2
+
+%if %{with_kernel_abi_stablelists}
+Source300: kernel-abi-stablelists-%{kabiversion}.tar.bz2
+%endif
+%if %{with_kabidw_base}
+Source301: kernel-kabi-dw-%{kabiversion}.tar.bz2
+%endif
 
 # Some people enjoy building customized kernels from the dist-git in Fedora and
 # use this to override configuration options. One day they may all use the
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.py
 Source3001: kernel-local
+%if %{patchlist_changelog}
+Source3002: Patchlist.changelog
+%endif
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
@@ -942,9 +916,6 @@ Source3012: kernel-local-cpu-native
 Source3013: kernel-local-pf
 Source3014: kernel-local-cpu-generic
 
-%if 0%{patchlist_changelog}
-Source3997: Patchlist.changelog
-%endif
 Source4000: README.rst
 Source4001: rpminspect.yaml
 Source4002: gating.yaml
@@ -952,33 +923,15 @@ Source4002: gating.yaml
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 %if 0%{?post_factum}
-Source5000: %{extra_patch}
+Patch5000: %{extra_patch}
 %if 0%{?pf_stable_extra}
-Source5002: %{stable_extra_patch}
+Patch5002: %{stable_extra_patch}
 %endif
 %else
 # For a stable release kernel
 %if 0%{?stable_update}
-%if 0%{?stable_base}
-%define    stable_patch_00  patch-%{kversion}.%{stable_base}.xz
-Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{major_ver}.x/%{stable_patch_00}
-%endif
-
-# non-released_kernel case
-# These are automagically defined by the rcrev and gitrev values set up
-# near the top of this spec file.
-%else
-%if 0%{?rcrev}
-Source5000: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}.xz
-%if 0%{?gitrev}
-Source5001: patch-%{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}.xz
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-Source5000: patch-%{kversion}-git%{gitrev}.xz
-%endif
-%endif
+%define    stable_patch_00  patch-%{specversion}.xz
+Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
 %endif
 %endif
 
@@ -991,10 +944,10 @@ Source5000: patch-%{kversion}-git%{gitrev}.xz
 
 %if !%{nopatches}
 
-Patch1: patch-%{kversion}-redhat.patch
+Patch1: patch-%{patchversion}-redhat.patch
 
 # empty final patch to facilitate testing of kernel patches
-# Patch999999: linux-kernel-test.patch
+Patch999999: linux-kernel-test.patch
 
 ### Extra
 
@@ -1009,18 +962,19 @@ Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
-Patch2000: %{patchwork_url}/10045863/mbox/#/patchwork-radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+# https://patchwork.kernel.org/patch/10045863
+Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%global tkg_id 3fd1eaddc4b8de0107ede10abab0b9db21f5654c
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-%dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{kversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%global tkg_id 24f561c816153b32f3a7aeaac585aa1a64765186
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 
 %if !0%{?post_factum}
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id bdef5292bba2493d46386840a8b5a824d534debc
-Source6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-5.17+.patch
+Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-5.17+.patch
 %endif
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1041,11 +995,11 @@ The kernel meta package
 #
 %define kernel_reqprovconf(o) \
 %if %{-o:0}%{!-o:1}\
-Provides: kernel = %{rpmversion}-%{pkg_release}\
+Provides: %{name} = %{specversion}-%{pkg_release}\
 %endif\
-Provides: kernel-%{_target_cpu} = %{rpmversion}-%{pkg_release}%{?1:+%{1}}\
-Provides: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}-%{_target_cpu} = %{specrpmversion}-%{pkg_release}%{?1:+%{1}}\
+Provides: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): ((linux-firmware >= 20150904-56.git6ebf5d57) if linux-firmware)\
@@ -1081,8 +1035,8 @@ Summary: Header files for the Linux kernel for use by glibc
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
 %if "0%{?variant}"
-Obsoletes: kernel-headers < %{rpmversion}-%{pkg_release}
-Provides: kernel-headers = %{rpmversion}-%{pkg_release}
+Obsoletes: kernel-headers < %{specversion}-%{pkg_release}
+Provides: %{name}-headers = %{specversion}-%{pkg_release}
 %endif
 %description headers
 Kernel-headers includes the C header files that specify the interface
@@ -1109,6 +1063,7 @@ This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
 
 %if %{with_selftests}
+
 %package selftests-internal
 Summary: Kernel samples and selftests
 License: GPLv2
@@ -1125,17 +1080,17 @@ Kernel sample programs and selftests.
 # with_selftests
 %endif
 
-%if %{with_gcov}
-%package gcov
-Summary: gcov graph and source files for coverage data collection.
-%description gcov
-kernel-gcov includes the gcov graph and source files for gcov coverage collection.
-%endif
+%define kernel_gcov_package() \
+%package %{?1:%{1}-}gcov\
+Summary: gcov graph and source files for coverage data collection.\
+%description %{?1:%{1}-}gcov\
+%{?1:%{1}-}gcov includes the gcov graph and source files for gcov coverage collection.\
+%{nil}
 
-%package -n kernel-abi-stablelists
+%package -n %{name}-abi-stablelists
 Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
-%description -n kernel-abi-stablelists
+%description -n %{name}-abi-stablelists
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
@@ -1162,8 +1117,8 @@ Linux kernel, suitable for the kabi-dw tool.
 %define kernel_debuginfo_package() \
 %package %{?1:%{1}-}debuginfo\
 Summary: Debug information for package %{name}%{?1:-%{1}}\
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}\
-Provides: %{name}%{?1:-%{1}}-debuginfo-%{_target_cpu} = %{version}-%{release}\
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}%{?1:-%{1}}-debuginfo-%{_target_cpu} = %{specrpmversion}-%{release}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
@@ -1179,9 +1134,9 @@ This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 %define kernel_devel_package(m) \
 %package %{?1:%{1}-}devel\
 Summary: Development package for building kernel modules to match the %{?2:%{2} }kernel\
-Provides: kernel%{?1:-%{1}}-devel-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-devel-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-devel-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-devel-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}-devel-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}-devel-uname-r = %{KVERREL}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
 Requires(pre): findutils\
@@ -1194,7 +1149,7 @@ Requires: flex\
 Requires: make\
 Requires: gcc\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-devel-uname-r = %{KVERREL}\
+Requires: %{name}-devel-uname-r = %{KVERREL}\
 %endif\
 Suggests: duperemove\
 Suggests: hardlink\
@@ -1211,8 +1166,8 @@ against the %{?2:%{2} }kernel package.\
 %define kernel_devel_matched_package(m) \
 %package %{?1:%{1}-}devel-matched\
 Summary: Meta package to install matching core and devel packages for a given %{?2:%{2} }kernel\
-Requires: kernel%{?1:-%{1}}-devel = %{version}-%{release}\
-Requires: kernel%{?1:-%{1}}-core = %{version}-%{release}\
+Requires: %{name}%{?1:-%{1}}-devel = %{specrpmversion}-%{release}\
+Requires: %{name}%{?1:-%{1}}-core = %{specrpmversion}-%{release}\
 %description %{?1:%{1}-}devel-matched\
 This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
@@ -1237,14 +1192,14 @@ This package provides *.ipa-clones files.\
 %package %{?1:%{1}-}modules-internal\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
-Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-internal = %{version}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-internal\
@@ -1258,16 +1213,16 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 %define kernel_modules_extra_package(m) \
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
-Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-extra = %{version}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-extra-uname-r = %{KVERREL}\
+Requires: %{name}-modules-extra-uname-r = %{KVERREL}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1282,15 +1237,15 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 %define kernel_modules_package(m) \
 %package %{?1:%{1}-}modules\
 Summary: kernel modules to match the %{?2:%{2}-}core kernel\
-Provides: kernel%{?1:-%{1}}-modules-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-modules-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-modules = %{version}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}-modules = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-uname-r = %{KVERREL}\
+Requires: %{name}-modules-uname-r = %{KVERREL}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1305,14 +1260,14 @@ This package provides commonly used kernel modules for the %{?2:%{2}-}core kerne
 %define kernel_modules_core_package(m) \
 %package %{?1:%{1}-}modules-core\
 Summary: Core kernel modules to match the %{?2:%{2}-}core kernel\
-Provides: kernel%{?1:-%{1}}-modules-core-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel-modules-core-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel-modules-core = %{version}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}-modules-core = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-core-uname-r = %{KVERREL}\
+Requires: %{name}-modules-core-uname-r = %{KVERREL}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1327,9 +1282,9 @@ This package provides essential kernel modules for the %{?2:%{2}-}core kernel pa
 %define kernel_meta_package() \
 %package %{1}\
 summary: kernel meta-package for the %{1} kernel\
-Requires: kernel-%{1}-core-uname-r = %{KVERREL}+%{1}\
-Requires: kernel-%{1}-modules-uname-r = %{KVERREL}+%{1}\
-Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}+%{1}\
+Requires: %{name}-%{1}-core-uname-r = %{KVERREL}+%{1}\
+Requires: %{name}-%{1}-modules-uname-r = %{KVERREL}+%{1}\
+Requires: %{name}-%{1}-modules-core-uname-r = %{KVERREL}+%{1}\
 Provides: installonlypkg(kernel)\
 %description %{1}\
 The meta-package for the %{1} kernel\
@@ -1343,11 +1298,11 @@ The meta-package for the %{1} kernel\
 %define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
-Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}-%{?1:%{1}-}core-uname-r = %{KVERREL}%{?1:+%{1}}\
 Provides: installonlypkg(kernel)\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-core-uname-r = %{KVERREL}\
-Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-core-uname-r = %{KVERREL}\
+Requires: %{name}-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %endif\
 %{expand:%%kernel_reqprovconf %{?1:%{1}} %{-o:%{-o}}}\
 %if %{?1:1} %{!?1:0} \
@@ -1365,12 +1320,12 @@ Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %endif\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
 %endif\
-%if %{efiuki}\
+%if %{with_efiuki}\
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
-Provides: kernel-%{?1:%{1}-}uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}-%{?1:%{1}-}uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %endif\
 %{nil}
 
@@ -1382,14 +1337,14 @@ Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 %package %{?1:%{1}-}modules-partner\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
-Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}\
-Provides: kernel%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{version}-%{release}%{?1:+%{1}}\
-Provides: kernel%{?1:-%{1}}-modules-partner = %{version}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner = %{specrpmversion}-%{release}%{?1:+%{1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{?1:+%{1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{?1:+%{1}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-partner\
@@ -1441,10 +1396,10 @@ Linux operating system.  The kernel handles the basic functions
 of the operating system: memory allocation, process allocation, device
 input and output, etc.
 
-%if %{efiuki}
+%if %{with_efiuki}
 %description debug-uki-virt
 Prebuilt debug unified kernel image for virtual machines.
- 
+
 %description uki-virt
 Prebuilt default unified kernel image for virtual machines.
 %endif
@@ -1462,11 +1417,6 @@ exit 1
 %endif
 %endif
 
-%if "%{baserelease}" == "0"
-echo "baserelease must be greater than zero"
-exit 1
-%endif
-
 # more sanity checking; do it quietly
 if [ "%{patches}" != "%%{patches}" ] ; then
   for patch in %{patches} ; do
@@ -1477,193 +1427,90 @@ if [ "%{patches}" != "%%{patches}" ] ; then
   done
 fi 2>/dev/null
 
-patch_command='%{__scm_apply_patch -p1 -q}'
-
-# First we unpack the kernel tarball.
-# If this isn't the first make prep, we use links to the existing clean tarball
-# which speeds things up quite a bit.
-
-# Update to latest upstream.
-%if 0%{?released_kernel}
-%define vanillaversion %{kversion}
-# non-released_kernel case
-%else
-%if 0%{?rcrev}
-%define vanillaversion %{major_ver}.%{upstream_sublevel}-rc%{rcrev}
-%if 0%{?gitrev}
-%define vanillaversion %{major_ver}.%{upstream_sublevel}-rc%{rcrev}-git%{gitrev}
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-%define vanillaversion %{kversion}-git%{gitrev}
-%else
-%define vanillaversion %{kversion}
-%endif
-%endif
-%endif
-
-# %%{vanillaversion} : the full version name, e.g. 2.6.35-rc6-git3
-# %%{kversion}       : the base version, e.g. 2.6.34
-
-# Use kernel-%%{kversion}%%{?dist} as the top-level directory name
-# so we can prep different trees within a single git directory.
-
-# Build a list of the other top-level kernel tree directories.
-# This will be used to hardlink identical vanilla subdirs.
-sharedirs=$(find "$PWD" -maxdepth 1 -type d -name 'kernel-%{major_ver}.*' \
-            | grep -x -v "$PWD"/kernel-%{kversion}%{?dist}) ||:
-
-# Delete all old stale trees.
-if [ -d kernel-%{kversion}%{?dist} ]; then
-  cd kernel-%{kversion}%{?dist}
-  for i in linux-*
-  do
-     if [ -d $i ]; then
-       # Just in case we ctrl-c'd a prep already
-       rm -rf deleteme.%{_target_cpu}
-       # Move away the stale away, and delete in background.
-       mv $i deleteme-$i
-       rm -rf deleteme* &
-     fi
-  done
-  cd ..
-fi
-
-# Generate new tree
-if [ ! -d kernel-%{kversion}%{?dist}/vanilla-%{vanillaversion} ]; then
-
-  if [ -d kernel-%{kversion}%{?dist}/vanilla-%{kversion} ]; then
-
-    # The base vanilla version already exists.
-    cd kernel-%{kversion}%{?dist}
-
-    # Any vanilla-* directories other than the base one are stale.
-    for dir in vanilla-*; do
-      [ "$dir" = vanilla-%{kversion} ] || rm -rf $dir &
-    done
-
-  else
-
-    rm -f pax_global_header
-    # Look for an identical base vanilla dir that can be hardlinked.
-    for sharedir in $sharedirs ; do
-      if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
-        break
-      fi
-    done
-    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{kversion} ]] ; then
-%setup -q -n kernel-%{kversion}%{?dist} -c -T
-      cp -al $sharedir/vanilla-%{kversion} .
-    else
-%setup -q -n kernel-%{kversion}%{?dist} -c
-      mv linux-%{kversion} vanilla-%{kversion}
-    fi
-
+patch_command='git --work-tree=. apply'
+ApplyPatch()
+{
+  local patch=$1
+  shift
+  if [ ! -f "$patch" ]; then
+    exit 1
   fi
+  case "$patch" in
+  *.bz2) bunzip2 < "$patch" | $patch_command ${1+"$@"} ;;
+  *.gz)  gunzip  < "$patch" | $patch_command ${1+"$@"} ;;
+  *.xz)  unxz    < "$patch" | $patch_command ${1+"$@"} ;;
+  *) $patch_command ${1+"$@"} < "$patch" ;;
+  esac
+}
 
-%if "%{kversion}" != "%{vanillaversion}"
-
-  for sharedir in $sharedirs ; do
-    if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
-      break
-    fi
-  done
-  if [[ ! -z $sharedir  &&  -d $sharedir/vanilla-%{vanillaversion} ]] ; then
-
-    cp -al $sharedir/vanilla-%{vanillaversion} .
-
-  else
-
-    # Need to apply patches to the base vanilla version.
-    cp -al vanilla-%{kversion} vanilla-%{vanillaversion}
-    cd vanilla-%{vanillaversion}
-
-# Update vanilla to the latest upstream.
-# (non-released_kernel case only)
-%if 0%{?rcrev}
-    xzcat %{SOURCE5000} | $patch_command
-%if 0%{?gitrev}
-    xzcat %{SOURCE5001} | $patch_command
-%endif
-%else
-# pre-{base_sublevel+1}-rc1 case
-%if 0%{?gitrev}
-    xzcat %{SOURCE5000} | $patch_command
-%endif
-%endif
-    git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
-    git config gc.auto 0
-    git add .
-    git commit -a -q -m "baseline"
-
-    cd ..
-
+# don't apply patch if it's empty
+ApplyOptionalPatch()
+{
+  local patch=$1
+  shift
+  if [ ! -f "$patch" ]; then
+    exit 1
   fi
+  local C=$(wc -l "$patch" | awk '{print $1}')
+  if [ "$C" -gt 9 ]; then
+    ApplyPatch "$patch" ${1+"$@"}
+  fi
+}
 
-%endif
-
-else
-
-  # We already have all vanilla dirs, just change to the top-level directory.
-  cd kernel-%{kversion}%{?dist}
-
-fi
-
-# Now build the fedora kernel tree.
-cp -al vanilla-%{vanillaversion} linux-%{KVERREL}
+%setup -q -n kernel-%{tarfile_release} -c
+mv linux-%{tarfile_release} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
 
-if [ ! -d .git ]; then
-    git init
-    git config user.email "kernel-team@fedoraproject.org"
-    git config user.name "Fedora Kernel Team"
-    git config gc.auto 0
-    git add .
-    git commit -a -q -m "baseline"
-fi
-
-
 %if 0%{?post_factum}
-$patch_command -i %{SOURCE5000}
+ApplyPatch %{PATCH5000}
 %if 0%{?pf_stable_extra}
-filterdiff -p1 -x Makefile %{SOURCE5002} > pf_stable_extra.patch
-$patch_command -i pf_stable_extra.patch
+filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
+ApplyPatch pf_stable_extra.patch
 rm -f pf_stable_extra.patch
 %endif
-git add .
-git commit -a -m "Stable post-factum update"
 %else
 # released_kernel with possible stable updates
 %if 0%{?stable_base}
 # This is special because the kernel spec is hell and nothing is consistent
-xzcat %{SOURCE5000} | $patch_command
-git commit -a -m "Stable update"
+ApplyPatch %{PATCH5000}
 %endif
 %endif
 
-# Note: Even in the "nopatches" path some patches (build tweaks and compile
-# fixes) will always get applied; see patch defition above for details
+%if !%{nopatches}
 
-git am %{patches}
+ApplyOptionalPatch %{PATCH1}
+%endif
+
+ApplyOptionalPatch %{PATCH999999}
+
+# openSUSE
+ApplyPatch %{PATCH1010}
+ApplyPatch %{PATCH1011}
+ApplyPatch %{PATCH1012}
+ApplyPatch %{PATCH1013}
+
+ApplyPatch %{PATCH2000}
+
+ApplyPatch %{PATCH2090}
+ApplyPatch %{PATCH2091}
 
 %if !0%{?post_factum}
-$patch_command -i %{SOURCE6000}
+ApplyPatch %{PATCH6000}
 %endif
+
+ApplyPatch %{PATCH6010}
 
 # END OF PATCH APPLICATIONS
 
 # Any further pre-build tree manipulations happen here.
 
 chmod +x scripts/checkpatch.pl
-mv COPYING COPYING-%{version}-%{release}
+mv COPYING COPYING-%{specrpmversion}-%{release}
 
-# This Prevents scripts/setlocalversion from mucking with our version numbers.
-touch .scmversion
+# on linux-next prevent scripts/setlocalversion from mucking with our version numbers
+rm -f localversion-next
 
 # Mangle /usr/bin/python shebangs to /usr/bin/python3
 # Mangle all Python shebangs to be Python 3 explicitly
@@ -1682,7 +1529,7 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
     scripts/jobserver-exec \
     tools \
     Documentation \
-    scripts/clang-tools
+    scripts/clang-tools 2> /dev/null
 
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
@@ -1690,12 +1537,11 @@ pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
 if [ -L configs ]; then
     rm -f configs
 fi
-# Deal with configs stuff
 mkdir configs
 cd configs
 
 # Drop some necessary files from the source dir into the buildroot
-cp $RPM_SOURCE_DIR/kernel-*.config .
+cp $RPM_SOURCE_DIR/%{name}-*.config .
 cp %{SOURCE3001} .
 %if %{with_native}
 cat %{SOURCE3012} >> kernel-local
@@ -1714,8 +1560,8 @@ cat %{SOURCE3013} >> kernel-local
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
-FLAVOR=%{primary_target} SPECVERSION=%{version} ./generate_all_configs.sh %{debugbuildsenabled}
 
+FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{specversion} SPECRPMVERSION=%{specrpmversion} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
@@ -1756,6 +1602,13 @@ done
 %endif
 %endif
 
+# Adjust FIPS module name for RHEL
+%if 0%{?rhel}
+for i in *.config; do
+  sed -i 's/CONFIG_CRYPTO_FIPS_NAME=.*/CONFIG_CRYPTO_FIPS_NAME="Red Hat Enterprise Linux %{rhel} - Kernel Cryptographic API"/' $i
+done
+%endif
+
 cp %{SOURCE81} .
 OPTS=""
 %if %{with_configchecks}
@@ -1766,7 +1619,7 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=%{?_smp_build_ncpus} PACKAGE_NAME=kernel ./process_configs.sh $OPTS ${rpmversion}
+RHJOBS=%{?_smp_build_ncpus} SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS ${specrpmversion}
 
 
 cp %{SOURCE82} .
@@ -1803,6 +1656,11 @@ cd ..
 ###
 %build
 
+%if %{with rpm_macros}
+rm -rf %{buildroot_unstripped} || true
+mkdir -p %{buildroot_unstripped}
+%endif
+
 %if %{with_sparse}
 %define sparse_mflags    C=1
 %endif
@@ -1829,14 +1687,14 @@ InitBuildVars() {
     Variant=$1
 
     # Pick the right kernel config file
-    Config=kernel-%{version}-%{_target_cpu}${Variant:+-${Variant}}.config
+    Config=%{name}-%{specrpmversion}-%{_target_cpu}${Variant:+-${Variant}}.config
     DevelDir=/usr/src/kernels/%{KVERREL}${Variant:++${Variant}}
 
-    KernelVer=%{version}-%{release}.%{_target_cpu}${Variant:++${Variant}}
+    KernelVer=%{specversion}-%{release}.%{_target_cpu}${Variant:++${Variant}}
 
     %if 0%{?stable_update}
     # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
-    perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stablerev}/" Makefile
+    perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stable_update}/" Makefile
     %endif
 
     # make sure EXTRAVERSION says what we want it to say
@@ -1845,11 +1703,8 @@ InitBuildVars() {
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Variant:++${Variant}}/" Makefile
 
     # if pre-rc1 devel kernel, must fix up PATCHLEVEL for our versioning scheme
-    %if !0%{?rcrev}
-    %if 0%{?gitrev}
-    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{upstream_sublevel}/' Makefile
-    %endif
-    %endif
+    # if we are post rc1 this should match anyway so this won't matter
+    perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{patchlevel}/' Makefile
 
     %{make} %{?_smp_mflags} mrproper
     cp configs/$Config .config
@@ -1888,6 +1743,17 @@ BuildKernel() {
     else
       CopyKernel=cp
     fi
+
+%if %{with_gcov}
+    # Make build directory unique for each variant, so that gcno symlinks
+    # are also unique for each variant.
+    if [ -n "$Variant" ]; then
+        ln -s $(pwd) ../linux-%{KVERREL}-${Variant}
+    fi
+    echo "GCOV - continuing build in: $(pwd)"
+    pushd ../linux-%{KVERREL}${Variant:+-${Variant}}
+    pwd > ../kernel${Variant:+-${Variant}}-gcov.list
+%endif
 
     InitBuildVars $Variant
 
@@ -2265,6 +2131,7 @@ BuildKernel() {
 
     #
     # save the vmlinux file for kernel debugging into the kernel-debuginfo rpm
+    # (use mv + symlink instead of cp to reduce disk space requirements)
     #
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     mv vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
@@ -2372,17 +2239,17 @@ BuildKernel() {
         rm depmod.out
     fi
     else
-    # Ensure important files/directories exist to let the packaging succeed
-    echo '%%defattr(-,-,-)' > modules.list
-    echo '%%defattr(-,-,-)' > k-d.list
-    mkdir -p lib/modules/$KernelVer/kernel
-    # Add files usually created by make modules, needed to prevent errors
-    # thrown by depmod during package installation
-    touch lib/modules/$KernelVer/modules.order
-    touch lib/modules/$KernelVer/modules.builtin
+        # Ensure important files/directories exist to let the packaging succeed
+        echo '%%defattr(-,-,-)' > modules.list
+        echo '%%defattr(-,-,-)' > k-d.list
+        mkdir -p lib/modules/$KernelVer/kernel
+        # Add files usually created by make modules, needed to prevent errors
+        # thrown by depmod during package installation
+        touch lib/modules/$KernelVer/modules.order
+        touch lib/modules/$KernelVer/modules.builtin
     fi
 
-%if %{efiuki}
+%if %{with_efiuki}
     popd
 
     KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
@@ -2418,7 +2285,7 @@ BuildKernel() {
 
     pushd $RPM_BUILD_ROOT
 
-# efiuki
+# with_efiuki
 %endif
 
     remove_depmod_files
@@ -2516,6 +2383,9 @@ BuildKernel() {
     fi
 %endif
 
+%if %{with_gcov}
+    popd
+%endif
 }
 
 ###
@@ -2554,6 +2424,14 @@ InitBuildVars
 %endif
 %endif
 
+%if %{with_bpftool}
+%global bpftool_make \
+  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts} VMLINUX_H="${RPM_VMLINUX_H}" V=1
+pushd tools/bpf/bpftool
+%{bpftool_make}
+popd
+%endif
+
 %if %{with_selftests}
 # Unfortunately, samples/bpf/Makefile expects that the headers are installed
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
@@ -2581,7 +2459,7 @@ pushd tools/testing/selftests
   force_targets=""
 %endif
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf vm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -2686,7 +2564,7 @@ find Documentation -type d | xargs chmod u+w
 cd linux-%{KVERREL}
 
 %if %{with_doc}
-docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{rpmversion}
+docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 
 # copy the source over
 mkdir -p $docdir
@@ -2765,11 +2643,11 @@ find . -type f -executable -exec install -m755 {} %{buildroot}%{_libexecdir}/ksa
 find . -type f ! -executable -exec install -m644 {} %{buildroot}%{_libexecdir}/ksamples/pktgen/{} \;
 popd
 popd
-# install vm selftests
-pushd tools/testing/selftests/vm
-find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
-find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
-find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/vm/{} \;
+# install mm selftests
+pushd tools/testing/selftests/mm
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
 popd
 # install drivers/net/mlxsw selftests
 pushd tools/testing/selftests/drivers/net/mlxsw
@@ -2995,10 +2873,12 @@ touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%
 %define kernel_uki_virt_scripts() \
 %{expand:%%posttrans %{?1:%{1}-}uki-virt}\
 mkdir -p /boot/efi/EFI/Linux\
-cp /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz-virt.efi /boot/efi/EFI/Linux/vmlinuz-%{KVERREL}%{?1:+%{1}}-virt.efi\
+entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
+cp /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz-virt.efi /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 %{nil}\
 %{expand:%%postun %{?1:%{1}-}uki-virt}\
-rm -f /boot/efi/EFI/Linux/vmlinuz-%{KVERREL}%{?1:+%{1}}-virt.efi\
+entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
+rm -f /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 %{nil}
 
 #
@@ -3016,7 +2896,7 @@ fi\
 %endif\
 %{nil}
 
-%if %{efiuki}
+%if %{with_efiuki}
 %kernel_uki_virt_scripts
 %endif
 
@@ -3029,7 +2909,7 @@ fi\
 %endif
 
 %if %{with_debug}
-%if %{efiuki}
+%if %{with_efiuki}
 %kernel_uki_virt_scripts debug
 %endif
 %kernel_variant_preun debug
@@ -3062,13 +2942,13 @@ fi
 %endif
 
 %if %{with_kernel_abi_stablelists}
-%files -n kernel-abi-stablelists
+%files -n %{name}-abi-stablelists
 /lib/modules/kabi-*
 %endif
 
 %if %{with_kabidw_base}
 %ifarch x86_64 s390x ppc64 ppc64le aarch64
-%files kernel-kabidw-base-internal
+%files %{name}-kabidw-base-internal
 %defattr(-,root,root)
 /kabidw-base/%{_target_cpu}/*
 %endif
@@ -3078,9 +2958,9 @@ fi
 %if %{with_doc}
 %files doc
 %defattr(-,root,root)
-%{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation/*
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}/Documentation
-%dir %{_datadir}/doc/kernel-doc-%{rpmversion}
+%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation/*
+%dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}/Documentation
+%dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 %endif
 
 %if %{with_selftests}
@@ -3092,13 +2972,6 @@ fi
 # empty meta-package
 %ifnarch %nobuildarches noarch
 %files
-%endif
-
-%if %{with_gcov}
-%ifnarch %nobuildarches noarch
-%files gcov
-%{_builddir}
-%endif
 %endif
 
 # This is %%{image_install_path} on an arch where that includes ELF files,
@@ -3127,6 +3000,7 @@ fi
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.gz\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
 %ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.gz\
 %ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
@@ -3145,7 +3019,11 @@ fi
 %if %{1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/vdso\
 %endif\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.*\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.block\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.drm\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.modesetting\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.networking\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.order\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
@@ -3164,13 +3042,18 @@ fi
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
 %endif\
 %endif\
-%if %{efiuki}\
+%if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
-%ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}-virt.efi\
+%ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %endif\
 %if %{?3:1} %{!?3:0}\
 %{expand:%%files %{3}}\
+%endif\
+%if %{with_gcov}\
+%ifnarch %nobuildarches noarch\
+%{expand:%%files -f kernel-%{?3:%{3}-}gcov.list %{?3:%{3}-}gcov}\
+%endif\
 %endif\
 %endif\
 %{nil}
@@ -3207,6 +3090,10 @@ fi
 #
 #
 %changelog
+* Tue Apr 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500.chinfo
+- 6.3.0 - pf1
+- Rawhide sync
+
 * Thu Apr 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.12-500.chinfo
 - 6.2.12 - pf6
 
@@ -3437,55 +3324,6 @@ fi
 
 * Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500.chinfo
 - 5.17.0 - pf1
-
-* Sat Mar 19 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.16-500.chinfo
-- 5.16.16 - pf7
-- Add block dedupe on devel files when duperemove is installed and supported by file system
-
-* Wed Mar 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.15-500.chinfo
-- 5.16.15 - pf7
-
-* Sun Mar 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.14-500.chinfo
-- 5.16.14 - pf5
-
-* Tue Mar 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.13-500.chinfo
-- 5.16.13 - pf5
-
-* Wed Mar 02 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.12-500.chinfo
-- 5.16.12 - pf5
-
-* Wed Feb 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.11-500.chinfo
-- 5.16.11 - pf5
-
-* Wed Feb 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.10-500.chinfo
-- 5.16.10 - pf3
-
-* Fri Feb 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.9-500.chinfo
-- 5.16.9 - pf3
-
-* Wed Feb 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.8-500.chinfo
-- 5.16.8 - pf3
-
-* Sat Feb 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.7-500.chinfo
-- 5.16.7 - pf3
-
-* Tue Feb 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.5-500.chinfo
-- 5.16.5 - pf3
-
-* Sun Jan 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.4-500.chinfo
-- 5.16.4 - pf3
-
-* Thu Jan 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.3-500.chinfo
-- 5.16.3 - pf3
-
-* Thu Jan 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.2-500.chinfo
-- 5.16.2 - pf2
-
-* Sun Jan 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.1-500.chinfo
-- 5.16.1 - pf2
-
-* Mon Jan 10 2022 Phantom X <megaphantomx at hotmail dot com> - 5.16.0-500.chinfo
-- 5.16.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
