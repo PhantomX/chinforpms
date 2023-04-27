@@ -60,14 +60,7 @@ Source2001: cpupower.config
 
 # For a stable release kernel
 %if 0%{?stable_base}
-Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{base_major}.x/patch-%{base_major}.%{base_sublevel}.%{stable_base}.xz
-%else
-# non-released_kernel case
-# These are automagically defined by the rcrev value set up
-# near the top of this spec file.
-%if 0%{?rcrev}
-Source5000: patch-%{upstream_major}.%{upstream_sublevel}-rc%{rcrev}.xz
-%endif
+Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/patch-%{specversion}.xz
 %endif
 
 
