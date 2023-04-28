@@ -21,13 +21,6 @@
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
-# Workaround to GCC 13 lambda mangling conflict:
-# RHBZ: https://bugzilla.redhat.com/show_bug.cgi?id=2168862
-# GCC: https://gcc.gnu.org/PR107897
-%if 0%{?fedora} && 0%{?fedora} >= 38
-%global _distro_extra_cxxflags %{?_distro_extra_cxxflags} -fabi-compat-version=0
-%endif
-
 %global kf5ver b797315
 
 Name:           telegram-desktop
@@ -168,11 +161,6 @@ BuildRequires:  pkgconfig(libswscale)
 # Video calls doesn't work when built against openssl 3.0:
 # https://github.com/telegramdesktop/tdesktop/issues/24698
 BuildRequires:  openssl1.1-devel
-
-# Telegram Desktop can use native open/save dialogs with XDG portals.
-Recommends:     xdg-desktop-portal%{?_isa}
-Recommends:     (xdg-desktop-portal-gnome%{?_isa} if gnome-shell%{?_isa})
-Recommends:     (xdg-desktop-portal-kde%{?_isa} if plasma-workspace-wayland%{?_isa})
 
 # Short alias for the main package...
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
