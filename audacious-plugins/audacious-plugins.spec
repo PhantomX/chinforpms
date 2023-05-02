@@ -20,7 +20,7 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3
+Version:        4.3.1
 Release:        100%{?dist}
 Epoch:          1
 
@@ -43,7 +43,6 @@ Source103:      audacious-plugins-ffaudio.metainfo.xml
 
 # Fedora customization
 Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
-Patch1:         %{vc_url}/commit/cbbd7743f7137f6a7434e93ef46151af0228a041.patch#/%{name}-gh-cbbd774.patch
 # Fedora customization: add default system-wide module_path
 Patch2:         audacious-plugins-3.6-ladspa.patch
 
@@ -330,6 +329,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
+- 4.3.1
+
 * Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3-100
 - 4.3
 - Rawhide sync

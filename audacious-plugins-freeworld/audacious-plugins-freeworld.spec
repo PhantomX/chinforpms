@@ -13,7 +13,7 @@
 
 Name:           audacious-plugins-freeworld
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3
+Version:        4.3.1
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
 Epoch:          1
@@ -128,6 +128,9 @@ install -pm0755 %{_vpath_builddir}/src/mms/mms.so %{buildroot}%{_libdir}/audacio
 
 
 %changelog
+* Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
+- 4.3.1
+
 * Sun Mar 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3-100
 - 4.3
 

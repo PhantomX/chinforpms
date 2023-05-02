@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 990a720525a271707ec121f6d0b3892b6352a541
+%global commit 5c8ed491ab6cb4c74b16d2551353429ac2c80a36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230416
+%global date 20230426
 %bcond_without snapshot
 
 %bcond_with sysspirv
@@ -54,7 +54,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.1
-Release:        106%{?dist}
+Release:        107%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -70,6 +70,7 @@ Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
 
+Patch100:       0001-util-Add-d3d9.deferSurfaceCreation-to-some-games.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
 
 %if %{without sysspirv}
