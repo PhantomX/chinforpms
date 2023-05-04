@@ -1,4 +1,4 @@
-From 18881a4532a035d1ab5c4ff75f4fad38626f54cd Mon Sep 17 00:00:00 2001
+From 09fbc4b0d2443c04becf4e63671e41e476298bc2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -24,18 +24,18 @@ Subject: [PATCH] Use system libraries
  17 files changed, 36 insertions(+), 16 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d947e02..4db9995 100644
+index 6063ede..123a290 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -163,6 +163,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
+@@ -159,6 +159,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
- option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)
+ option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)  # Ignored on Mac
  option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
 +option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
  option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
  option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1441,11 +1442,30 @@ add_library(xbrz STATIC
+@@ -1465,11 +1466,30 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -80,10 +80,10 @@ index ac6b06c..147d05b 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 667ba13..b61f8b6 100644
+index f9bd9c1..13b02b8 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
-@@ -20,7 +20,7 @@
+@@ -21,7 +21,7 @@
  #include <algorithm>
  #include <map>
  
@@ -119,7 +119,7 @@ index 66608fc..43cc7a4 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index d1498e4..4c6d6a8 100644
+index 1f0e2e0..fafdf98 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -132,7 +132,7 @@ index d1498e4..4c6d6a8 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index f4fb504..04703ae 100644
+index c7837e2..2595618 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -23,7 +23,7 @@
@@ -158,7 +158,7 @@ index 76d00d8..cb933f6 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index a12be66..b70a9fb 100644
+index 32da2df..edb118e 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -171,7 +171,7 @@ index a12be66..b70a9fb 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index ba98b06..eef97b5 100644
+index 116473e..66dbfaf 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -23,7 +23,7 @@
@@ -210,7 +210,7 @@ index 04a1aaf..80ba41d 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 01c3e93..f85cb6a 100644
+index e83ff0a..0cb3b91 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -223,7 +223,7 @@ index 01c3e93..f85cb6a 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index be00c8e..ea05711 100644
+index 3fa809c..1211450 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -236,7 +236,7 @@ index be00c8e..ea05711 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 15e4520..2afda10 100644
+index 17cf916..cd508a1 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -249,10 +249,10 @@ index 15e4520..2afda10 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 7b46ae2..ad6ba94 100644
+index e8d176b..28058a4 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
-@@ -23,7 +23,7 @@
+@@ -22,7 +22,7 @@
  
  #include "Common/CommonWindows.h"
  #include "Common/Data/Encoding/Utf8.h"
@@ -262,18 +262,18 @@ index 7b46ae2..ad6ba94 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 16f0a12..8076e9a 100644
+index 12e4f85..c1433a8 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
-@@ -5,7 +5,7 @@
- #include <math.h>
+@@ -4,7 +4,7 @@
  #include <iomanip>
  #include <sstream>
+ 
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
+ #include "Common/StringUtils.h"
  #include "Core/Config.h"
  #include "Core/MemMap.h"
- #include "Core/Reporting.h"
 -- 
-2.40.0
+2.40.1
 

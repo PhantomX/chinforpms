@@ -25,7 +25,7 @@
 
 Name:           telegram-desktop
 Version:        4.8.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -54,11 +54,9 @@ Patch200:       %{name}-no-text-replace.patch
 Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
-Patch203:       0001-Do-not-pop-up-emoji-tabbed-panel-and-media-menu-on-m.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
-Patch208:       0001-sane-background-and-text-colors.patch
 
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
@@ -158,9 +156,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 
-# Video calls doesn't work when built against openssl 3.0:
-# https://github.com/telegramdesktop/tdesktop/issues/24698
-BuildRequires:  openssl1.1-devel
+BuildRequires:  pkgconfig(openssl)
 
 # Short alias for the main package...
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -290,6 +286,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.1-101
+- OpenSSL 3
+- Remove uneeded patches
+
 * Tue Apr 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.1-100
 - 4.8.1
 

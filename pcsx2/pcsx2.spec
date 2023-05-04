@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4404
+Version:        1.7.4459
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -83,6 +83,7 @@ BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  cmake(cubeb)
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)

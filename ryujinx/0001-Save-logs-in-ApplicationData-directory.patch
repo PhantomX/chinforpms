@@ -4,14 +4,14 @@ Date: Tue, 1 Nov 2022 10:09:22 -0300
 Subject: [PATCH] Save logs in ApplicationData directory
 
 ---
- Ryujinx.Common/Logging/Targets/FileLogTarget.cs | 2 +-
- Ryujinx/Ui/MainWindow.cs                        | 2 +-
+ src/Ryujinx.Common/Logging/Targets/FileLogTarget.cs | 2 +-
+ src/Ryujinx/Ui/MainWindow.cs                        | 2 +-
  2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Ryujinx.Common/Logging/Targets/FileLogTarget.cs b/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
+diff --git a/src/Ryujinx.Common/Logging/Targets/FileLogTarget.cs b/src/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
 index 401fe91..7c43a99 100644
---- a/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
-+++ b/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
+--- a/src/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
++++ b/src/Ryujinx.Common/Logging/Targets/FileLogTarget.cs
 @@ -19,7 +19,7 @@ namespace Ryujinx.Common.Logging
          public FileLogTarget(string path, string name, FileShare fileShare, FileMode fileMode)
          {
@@ -21,10 +21,10 @@ index 401fe91..7c43a99 100644
              logDir.Create();
  
              // Clean up old logs, should only keep 3
-diff --git a/Ryujinx/Ui/MainWindow.cs b/Ryujinx/Ui/MainWindow.cs
+diff --git a/src/Ryujinx/Ui/MainWindow.cs b/src/Ryujinx/Ui/MainWindow.cs
 index c0b2e1b..efa61ae 100644
---- a/Ryujinx/Ui/MainWindow.cs
-+++ b/Ryujinx/Ui/MainWindow.cs
+--- a/src/Ryujinx/Ui/MainWindow.cs
++++ b/src/Ryujinx/Ui/MainWindow.cs
 @@ -1299,7 +1299,7 @@ namespace Ryujinx.Ui
  
          private void OpenLogsFolder_Pressed(object sender, EventArgs args)

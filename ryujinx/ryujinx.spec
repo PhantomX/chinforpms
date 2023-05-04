@@ -37,7 +37,7 @@
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 6.28.1
+%global microsoft_identitymodel_ver 6.30.0
 %global microsoft_io_recyclablememorystream_ver 2.3.2
 %global microsoft_netcore_app_runtime_linux_x64_ver 7.0.3
 %global microsoft_netcore_platforms_ver 1.0.1
@@ -131,7 +131,7 @@
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
 %global system_globalization_extensions_ver 4.0.1
-%global system_identitymodel_tokens_jwt_ver 6.28.1
+%global system_identitymodel_tokens_jwt_ver 6.30.0
 %global system_io_ver 4.1.0
 %global system_io_ver2 4.3.0
 %global system_io_compression_ver 4.1.0
@@ -141,7 +141,7 @@
 %global system_io_hashing 7.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 7.0.0
+%global system_management_ver 7.0.1
 %global system_memory_ver 4.5.5
 %global system_net_http_ver 4.1.0
 %global system_net_nameresolution_ver 4.3.0
@@ -218,7 +218,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.707
+Version:        1.1.747
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -452,6 +452,7 @@ Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 %if %{without bin}
 Patch10:        0001-Save-logs-in-ApplicationData-directory.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
+Patch12:        0001-Disable-Discord-integration-by-default.patch
 %endif
 
 ExclusiveArch:  x86_64
@@ -514,7 +515,7 @@ install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} 
 
 sed \
   -e 's|_RPM_GCDB_|%{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt|g' \
-  -i Ryujinx.SDL2.Common/SDL2Driver.cs
+  -i src/Ryujinx.SDL2.Common/SDL2Driver.cs
 %endif
 
 sed \
@@ -523,7 +524,7 @@ sed \
   -e 's|\%\%RYUJINX_TARGET_RELEASE_CHANNEL_NAME\%\%|master|g' \
   -e 's|\%\%RYUJINX_TARGET_RELEASE_CHANNEL_OWNER\%\%|Ryujinx|g' \
   -e 's|\%\%RYUJINX_TARGET_RELEASE_CHANNEL_REPO\%\%|chinforpms|g' \
-  -i Ryujinx.Common/ReleaseInformation.cs
+  -i src/Ryujinx.Common/ReleaseInformation.cs
 
 cat > %{appname}.sh <<'EOF'
 #!/usr/bin/bash
@@ -549,7 +550,7 @@ dotnet restore \
   --runtime linux-x64 \
   --packages "$(pwd)/nuget/packages" \
   --source "$(pwd)/nuget/cache" \
-  %{appname} \
+  src/%{appname} \
 %{nil}
 
 dotnet publish \
@@ -565,7 +566,7 @@ dotnet publish \
   -p:UseSharedCompilation=False \
   --self-contained \
   -o publish \
-  %{appname} \
+  src/%{appname} \
 %{nil}
 %endif
 

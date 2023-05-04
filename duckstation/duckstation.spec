@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit 27a100af112c112af8a180f57c851bf62ead6d82
+%global commit 4cbb6e224787b5ae90b38d3cadffc4ccbe5754f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230410
+%global date 20230502
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        85%{?dist}
+Release:        86%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -50,7 +50,6 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
-Patch7:         0001-gcc-13-build-fix.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -60,6 +59,7 @@ BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)

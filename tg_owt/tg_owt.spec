@@ -7,13 +7,17 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 fe316b0c5a155cceb2ddecee70d7b582cadfa225
+%global commit0 dcb5069ff76bd293e86928804208737e6cee2ccc
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20230418
+%global date 20230501
 
-%global commit1 00950840d1c9bcbb3eb6ebc5aac5793e71166c8b
+%global commit1 77c2121f7e6b8e694d6e908bbbe9be24214097da
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
+
+%global commit2 a566a9cfcd619e8327784aa7cff4a1276dc1e895
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 libsrtp
 
 %global commit3 8c0b94e793a66495e0b1f34a5eb26bd7dc672db0
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
@@ -30,7 +34,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        129%{?dist}
+Release:        130%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -47,6 +51,7 @@ ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
+Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %if !%{with absl}
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
@@ -95,7 +100,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
-BuildRequires:  openssl1.1-devel
+BuildRequires:  pkgconfig(openssl)
 
 # dlopen
 Requires:       libdrm%{?_isa}
@@ -160,7 +165,7 @@ Requires:       pkgconfig(libavutil)
 Requires:       pkgconfig(libswresample)
 Requires:       pkgconfig(libswscale)
 Requires:       ffmpeg-devel
-Requires:       openssl1.1-devel
+Requires:       pkgconfig(openssl)
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if !%{with absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
@@ -199,6 +204,7 @@ Requires:       cmake(Crc32c)
 %autopatch -p1 -M 999
 
 tar -xf %{S:1} -C src/third_party/libyuv
+tar -xf %{S:2} -C src/third_party/libsrtp --strip-components 1
 
 rm -rf src/third_party/crc32c
 sed -e '/libcrc32c.cmake/d' -i CMakeLists.txt
@@ -217,7 +223,6 @@ cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif
 cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
-cp -f -p src/third_party/libsrtp/README.chromium legal/README.libsrtp
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
 cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
@@ -308,6 +313,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0-130.20230501gitdcb5069
+- Build with OpenSSL 3
+
 * Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0-127.20230105git5098730
 - ffmpeg 5.1
 

@@ -17,7 +17,7 @@
 
 Name:           gstreamer1
 Version:        1.22.2
-Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPL-2.1-or-later
@@ -93,6 +93,8 @@ GStreamer streaming media framework.
 # Dirty multilib fix
 sed -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g" \
   -i meson.build
+sed -e '/EXESUFFIX/s| "gst-plugin-scanner|\0-%{__isa_bits}|g' \
+  -i gst/gstpluginloader.c
 
 
 %build
@@ -227,6 +229,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.2-101
+- Fix multilib wrappers again
+
 * Fri Apr 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.2-100
 - 1.22.2
 

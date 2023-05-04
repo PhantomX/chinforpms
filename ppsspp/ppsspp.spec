@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6df907112a702c1a2c11f94ee34091848a1eea1d
+%global commit 03bf19c47e2cc618589ebfe245e9725e8109282c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230420
+%global date 20230503
 %bcond_without snapshot
 
 # Enable Qt build
@@ -39,7 +39,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit5 c74a85d64a64594fab865c8fd86865be8ac2bf87
+%global commit5 75ec988188f62281efe7bf1d133338751369bb4c
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 cpu_features
 
@@ -65,8 +65,8 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.14.4
-Release:        108%{?dist}
+Version:        1.15.1
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -450,6 +450,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed May 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.15.1-100.20230503git03bf19c
+- 1.15.1
+
 * Tue Mar 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.4-104.20230314gitc31b4be
 - Patch to change font scaling
 - R: sdl_gamecontrollerdb

@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 4398861d50ef3ac187de3355685c83ac5984de7d
+%global commit fb386681821d503b767c465d41d99126626c2789
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230315
+%global date 20230415
 
 %bcond_without systinyxml
 
@@ -22,7 +22,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 23.02
+%global commit5 23.05
 %global srcname5 FAudio
 
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -31,7 +31,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -45,7 +45,9 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        %{pkgname}.png
 Source2:        https://github.com/lvandeve/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/icculus/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%if %{without systinyxml}
 Source4:        https://github.com/leethomason/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
 Source5:        https://github.com/FNA-XNA/FAudio/archive/%{commit5}/%{srcname5}-%{commit5}.tar.gz
 Source6:        https://github.com/Mashpoe/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 

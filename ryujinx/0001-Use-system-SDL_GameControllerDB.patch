@@ -7,10 +7,10 @@ Subject: [PATCH] Use system SDL_GameControllerDB
  Ryujinx.SDL2.Common/SDL2Driver.cs | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Ryujinx.SDL2.Common/SDL2Driver.cs b/Ryujinx.SDL2.Common/SDL2Driver.cs
+diff --git a/src/Ryujinx.SDL2.Common/SDL2Driver.cs b/src/Ryujinx.SDL2.Common/SDL2Driver.cs
 index fbf2b64..344632b 100644
---- a/Ryujinx.SDL2.Common/SDL2Driver.cs
-+++ b/Ryujinx.SDL2.Common/SDL2Driver.cs
+--- a/src/Ryujinx.SDL2.Common/SDL2Driver.cs
++++ b/src/Ryujinx.SDL2.Common/SDL2Driver.cs
 @@ -82,7 +82,7 @@ namespace Ryujinx.SDL2.Common
  
                  SDL_EventState(SDL_EventType.SDL_CONTROLLERSENSORUPDATE, SDL_DISABLE);
