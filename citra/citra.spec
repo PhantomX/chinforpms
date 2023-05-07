@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9ba6a901936bb40e1b724dc3792c1bd2da80ec4c
+%global commit b4db9aebf2b4ac53b6a24ce360bb23e0b8b0f0fa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230422
+%global date 20230506
 %bcond_without snapshot
 
 # Enable system boost
@@ -59,6 +59,10 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
+%global commit9 42dd8aa6ded90b1ec06091522774feff51e83fc5
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 dds-ktx
+
 %global commit10 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 lodepng
@@ -82,10 +86,10 @@
 
 Name:           citra
 Version:        0
-Release:        42%{?dist}
+Release:        43%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
-License:        GPL-2.0-only AND MIT%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
+License:        GPL-2.0-only AND MIT AND BSD-2-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
 URL:            https://citra-emu.org
 
 %if %{with snapshot}
@@ -104,6 +108,7 @@ Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcnam
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source9:        https://github.com/septag/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %if %{without boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
@@ -147,7 +152,7 @@ BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  ffmpeg-devel
 %endif
 %if %{with tests}
-BuildRequires:  pkgconfig(catch2) >= 3.1.0
+BuildRequires:  pkgconfig(catch2) >= 3.3.2
 %endif
 %if %{with fmt}
 BuildRequires:  cmake(fmt)
@@ -159,15 +164,18 @@ BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libusb-1.0)
-BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(libzstd) >= 1.5.5
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.9.0
+BuildRequires:  cmake(OpenAL) >= 1.23.1
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Multimedia)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6Core) >= 6.5.0
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6Widgets)
 %endif
 BuildRequires:  cmake(xbyak)
 
@@ -180,6 +188,7 @@ Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
+Provides:       bundled(dds-ktx) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 
@@ -218,6 +227,7 @@ tar -xf %{S:4} -C externals/fmt --strip-components 1
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
 tar -xf %{S:8} -C externals/teakra --strip-components 1
+tar -xf %{S:9} -C externals/dds-ktx --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 %if %{without boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
@@ -232,6 +242,7 @@ cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %dnl cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
+%dnl cp -p dds-ktx/LICENSE LICENSE.dds-ktx
 %if %{without dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
@@ -298,6 +309,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
+  -DCITRA_BUNDLE_LIBRARIES:BOOL=OFF \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
@@ -357,6 +369,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0-43.20230506gitb4db9ae
+- Qt6
+
 * Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 0-38.20230317gita2fd43d
 - clang optional support
 - R: ninja-build

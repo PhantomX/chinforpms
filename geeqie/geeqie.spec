@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit 62c1ecbfe8e8d710a2c15b3440b5f86926b9fea2
+%global commit 1cd0103859b62c7a2ca262e3a333b1f370b9e3ae
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230402
+%global date 20230501
 %bcond_without snapshot
 
 %bcond_with map
@@ -16,7 +16,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -31,7 +31,6 @@ Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.x
 Patch0:         sun_path.patch
 Patch1:         0001-Fix-lua-linking-with-C.patch
 Patch2:         0001-Add-missing-DEBUG_FILEDATA-conditional.patch
-Patch3:         0001-rcfile-fix-build.patch
 
 
 BuildRequires:  gcc
@@ -97,6 +96,8 @@ set -- $version
 printf '%s' "$2%{?with_snapshot:+git%{date}-%{shortcommit}}"
 EOF
 
+sed -e '/gq_helpdir/s|"ChangeLog|"NEWS|' -i src/window.cc
+
 
 %build
 cflags=(
@@ -114,7 +115,6 @@ CFLAGS="$CFLAGS ${cflags[*]}"
   -Dheif=disabled \
   -Dspell=disabled \
   -Dvideothumbnailer=disabled \
-  -Dgq_helpdir=%{_pkgdocdir} \
 %{nil}
 
 %meson_build
@@ -128,7 +128,7 @@ mkdir -p %{buildroot}%{_pkgdocdir}/html
 [ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] && exit 1
 
 # We want these _docdir files in GQ_HELPDIR.
-install -p -m 0644 AUTHORS COPYING NEWS README* TODO \
+install -p -m 0644 NEWS README* TODO \
     %{buildroot}%{_pkgdocdir}
 
 desktop-file-install \

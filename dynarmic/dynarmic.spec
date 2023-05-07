@@ -19,7 +19,7 @@
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.4.6
+Version:        6.4.7
 Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
@@ -97,6 +97,9 @@ rm -rf externals/{catch,fmt,robin-map,xbyak}
 
 
 %changelog
+* Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-1
+- 6.4.7
+
 * Mon Apr 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.6-1
 - 6.4.6
 

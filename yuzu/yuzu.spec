@@ -66,7 +66,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3556
+%global vc_version 3560
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -151,7 +151,7 @@ BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.4.6
+BuildRequires:  cmake(dynarmic) >= 6.4.7
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}

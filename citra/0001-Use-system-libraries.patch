@@ -1,17 +1,17 @@
-From 2c2dd7a55c01482219451c7b54c31aea2aa6efea Mon Sep 17 00:00:00 2001
+From 75f1e2c25692016479a296dad1d8fab1d850b1bc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt            |  2 --
- externals/CMakeLists.txt  | 68 +++++++++++++++++++++++++++++++++++++--
+ CMakeLists.txt            |  2 -
+ externals/CMakeLists.txt  | 84 +++++++++++++++++++++++++++++++++++++--
  src/citra/config.cpp      |  2 +-
- src/common/CMakeLists.txt | 10 ++++--
- 4 files changed, 74 insertions(+), 8 deletions(-)
+ src/common/CMakeLists.txt | 10 ++++-
+ 4 files changed, 90 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c98cc3a..a54cb66 100644
+index 83b2019..518fe00 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ cmake_policy(SET CMP0069 NEW)
@@ -22,7 +22,7 @@ index c98cc3a..a54cb66 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -113,7 +112,6 @@ function(check_submodules_present)
+@@ -123,7 +122,6 @@ function(check_submodules_present)
          endif()
      endforeach()
  endfunction()
@@ -31,7 +31,7 @@ index c98cc3a..a54cb66 100644
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
                 ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 12831f3..8fa154b 100644
+index 3255780..0eb1934 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -6,10 +6,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
@@ -46,7 +46,7 @@ index 12831f3..8fa154b 100644
  set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_NO_SYSTEM_PATHS ON)
-@@ -22,11 +22,20 @@ add_library(boost_serialization STATIC ${boost_serialization_SRC})
+@@ -31,11 +31,20 @@ add_library(
  target_link_libraries(boost_iostreams PUBLIC boost)
  
  # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
@@ -67,7 +67,7 @@ index 12831f3..8fa154b 100644
  
  # Crypto++
  set(CRYPTOPP_BUILD_DOCUMENTATION OFF)
-@@ -50,19 +59,43 @@ endif()
+@@ -70,19 +79,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
  
  # fmt and Xbyak need to be added before dynarmic
  # libfmt
@@ -111,7 +111,7 @@ index 12831f3..8fa154b 100644
  endif()
  
  # getopt
-@@ -74,7 +107,15 @@ endif()
+@@ -94,7 +127,15 @@ endif()
  add_subdirectory(glad)
  
  # inih
@@ -127,7 +127,22 @@ index 12831f3..8fa154b 100644
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -101,20 +142,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
+@@ -109,6 +150,14 @@ endif()
+ # Open Source Archives
+ add_subdirectory(open_source_archives)
+ 
++find_package(tsl-robin-map)
++if(tsl-robin-map_FOUND)
++    message(STATUS "Using the system tls_robin_map")
++    add_library(tsl-robin-map-shared INTERFACE)
++    target_link_libraries(tsl-robin-map-shared INTERFACE tsl::robin_map)
++    add_library(tsl::robin_map ALIAS tsl-robin-map-shared)
++endif()
++
+ # SoundTouch
+ 
+ set(INTEGER_SAMPLES ON CACHE BOOL "")
+@@ -125,20 +174,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
  endif()
  
  # Zstandard
@@ -171,13 +186,32 @@ index 12831f3..8fa154b 100644
  endif()
  
  # DiscordRPC
+@@ -195,6 +265,13 @@ endif()
+ 
+ # OpenAL Soft
+ if (ENABLE_OPENAL)
++find_package(OpenAL 1.23.1)
++if(OpenAL_FOUND)
++    message(STATUS "Using the system OpenAL")
++    add_library(openal-shared INTERFACE)
++    target_link_libraries(openal-shared INTERFACE OpenAL::OpenAL)
++    add_library(OpenAL ALIAS openal-shared)
++  else()
+     set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
+     set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
+     set(ALSOFT_INSTALL OFF CACHE BOOL "")
+@@ -205,3 +282,4 @@ if (ENABLE_OPENAL)
+     set(LIBTYPE "STATIC" CACHE STRING "")
+     add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
+ endif()
++endif()
 diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index 64d33a9..c32d52d 100644
+index d8d93a9..0aea249 100644
 --- a/src/citra/config.cpp
 +++ b/src/citra/config.cpp
 @@ -7,7 +7,7 @@
+ #include <sstream>
  #include <type_traits>
- #include <unordered_map>
  #include <SDL.h>
 -#include <inih/cpp/INIReader.h>
 +#include <INIReader.h>
@@ -185,10 +219,10 @@ index 64d33a9..c32d52d 100644
  #include "citra/default_ini.h"
  #include "common/file_util.h"
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 43b1e1b..1078ae6 100644
+index 9efb1ea..3882eaf 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -128,12 +128,18 @@ add_library(common STATIC
+@@ -126,12 +126,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h
@@ -199,16 +233,16 @@ index 43b1e1b..1078ae6 100644
  )
  
 +if(NOT TARGET xbyak::xbyak)
-+target_sources(common
++target_sources(citra_common
 +    PRIVATE
 +      x64/xbyak_abi.h
 +      x64/xbyak_util.h
 +)
 +endif()
 +
- create_target_directory_groups(common)
- 
- target_link_libraries(common PUBLIC fmt::fmt microprofile Boost::boost Boost::serialization Boost::iostreams)
+ if (MSVC)
+   target_compile_definitions(citra_common PRIVATE
+     # The standard library doesn't provide any replacement for codecvt yet
 -- 
-2.39.1
+2.40.1
 

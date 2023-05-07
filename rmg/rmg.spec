@@ -25,7 +25,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 mupen64plus-rsp-hle
 
-%global commit4 cfeea3a0f89ba5bc4265acb75778e1267ed1e424
+%global commit4 dbecbe3a120e428436c5972fa7b872cfc2c9db3e
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 parallel-rsp
 
@@ -33,7 +33,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 mupen64plus-input-raphnetraw
 
-%global commit7 158e74d4ec1c818289cd19c3a05e498c3ceff758
+%global commit7 670abbc972bd430fa77291b0967dd73128314317
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
@@ -45,7 +45,7 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
-%global commit10 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
+%global commit10 a6886b1ae022936a2e542af9bfbab40ea0af5af5
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 mupen64plus-input-gca
 
@@ -63,7 +63,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.3.9
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -89,9 +89,6 @@ Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{sr
 Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-use-system-lzma-sdk.patch
-
-Patch900:       0001-angrylion-rdp-plus-gcc-13-build-fix.patch
-Patch901:       0001-parallel-rsp-gcc-13-build-fix.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -181,9 +178,6 @@ done
 cp -p "angrylion-rdp-plus/MAME License.txt" ../../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
 cp -p imgui/LICENSE.txt ../../../LICENSEdir/LICENSE.imgui
 
-%patch -P 900 -p1 -d angrylion-rdp-plus
-%patch -P 901 -p1 -d parallel-rsp
-
 ln -s angrylion-rdp-plus mupen64plus-video-angrylion-plus
 ln -s GLideN64 mupen64plus-video-GLideN64
 ln -s parallel-rdp-standalone mupen64plus-video-parallel
@@ -258,6 +252,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat May 06 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.0-1
+- 0.4.0
+
 * Sat Apr 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.9-1
 - 0.3.9
 
