@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 03bf19c47e2cc618589ebfe245e9725e8109282c
+%global commit 97ea555427a19f357e1e5dbeaabf25a9ab5723ba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230503
+%global date 20230507
 %bcond_without snapshot
 
 # Enable Qt build
@@ -65,7 +65,7 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.15.1
+Version:        1.15.3
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -450,6 +450,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.15.3-100.20230507git97ea555
+- 1.15.3
+
 * Wed May 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.15.1-100.20230503git03bf19c
 - 1.15.1
 

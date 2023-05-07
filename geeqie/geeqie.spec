@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit 1cd0103859b62c7a2ca262e3a333b1f370b9e3ae
+%global commit 2f55f848197ef974a5d99e2107130a31e8066194
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230501
+%global date 20230507
 %bcond_without snapshot
 
 %bcond_with map
@@ -16,7 +16,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.0.1
-Release:        104%{?dist}
+Release:        105%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -49,12 +49,13 @@ BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(exiv2)
 BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(libheif)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libraw)
 BuildRequires:  pkgconfig(libtiff-4)
-BuildRequires:  pkgconfig(libwebp)
+BuildRequires:  webp-pixbuf-loader
 BuildRequires:  pkgconfig(lua) >= 5.3
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
@@ -65,7 +66,6 @@ BuildRequires:  pkgconfig(clutter-gtk-1.0)
 BuildRequires:  pkgconfig(champlain-0.12)
 %endif
 
-#BuildRequires:  pkgconfig(libheif)
 #BuildRequires:  pkgconfig(libffmpegthumbnailer)
 
 # for the included plug-in scripts
@@ -75,6 +75,7 @@ Requires:       ImageMagick
 Requires:       perl-Image-ExifTool
 Requires:       zenity
 Suggests:       jxl-pixbuf-loader
+Suggests:       webp-pixbuf-loader
 Suggests:       xcf-pixbuf-loader
 
 
@@ -112,7 +113,6 @@ CFLAGS="$CFLAGS ${cflags[*]}"
 
 %meson \
   -Dgps-map=%{?with_map:enabled}%{!?with_map:disabled} \
-  -Dheif=disabled \
   -Dspell=disabled \
   -Dvideothumbnailer=disabled \
 %{nil}
@@ -134,6 +134,7 @@ install -p -m 0644 NEWS README* TODO \
 desktop-file-install \
     --delete-original \
     --dir %{buildroot}%{_datadir}/applications \
+    --add-mime-type="image/heif;image/heic-sequence;image/heif-sequence" \
     --add-mime-type="image/jxl" \
     --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     --add-mime-type="image/x-dds" \
@@ -158,6 +159,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Gee
 
 
 %changelog
+* Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-105.20230507git2f55f84
+- libheif
+
 * Wed Apr 05 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-103.20230402git62c1ecb
 - Add dds mimetype to desktop file
 

@@ -20,7 +20,7 @@ index 1b9df8f..70d5d73 100644
  option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
  if(BUILD_LTO)
 @@ -25,9 +26,16 @@ include(GNUInstallDirs)
- 
+ list(APPEND CHDR_LIBS dr_libs)
  
  # lzma
 +if (WITH_SYSTEM_LZMA)

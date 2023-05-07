@@ -5,10 +5,10 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ffc3dce9b122c82c68dc337f280fa2ab1522c317
+%global commit 7da378033a7764f955516f75194856d87bbcd7a5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230117
-%bcond_with snapshot
+%global date 20230507
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -20,7 +20,7 @@
 
 Name:           dynarmic
 Version:        6.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT

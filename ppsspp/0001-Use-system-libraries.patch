@@ -29,7 +29,7 @@ index 6063ede..123a290 100644
 +++ b/CMakeLists.txt
 @@ -159,6 +159,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
  option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
- option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ON)  # Ignored on Mac
+ option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ${DEFAULT_USE_SYSTEM_LIBSDL2})
  option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
 +option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
  option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})

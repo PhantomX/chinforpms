@@ -31,9 +31,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit b00b8ae71b9c6b71b06ec3a3047d602edf85843d
+%global commit ead8e5e0c35c817da21fb7710adf912af42b9b96
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230502
+%global date 20230507
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -95,7 +95,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -194,6 +194,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(pugixml)
+BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(tinfo)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-cursor)
@@ -380,6 +381,8 @@ popd
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
+  -DUSE_SDL:BOOL=ON \
+  -DUSE_SYSTEM_SDL:BOOL=ON \
   -DUSE_SYSTEM_XXHASH:BOOL=ON \
   -DSPIRV_WERROR:BOOL=OFF \
 %{nil}

@@ -66,7 +66,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3560
+%global vc_version 3567
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}

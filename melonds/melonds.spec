@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 350292fb3c4037f90ba53f72e3d7cf08a7b3e196
+%global commit 758db2b986cbb8c11652aa53ce0bf91536e5c83c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230403
+%global date 20230506
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -29,7 +29,7 @@ Summary:        A Nintendo DS emulator
 # teakra - MIT
 # tiny-AES - Unlicense
 
-License:        GPL-3.0-only AND MIT AND LicenseRef-Fedora-Public-Domain AND Unlicense
+License:        GPL-3.0-or-later AND MIT AND LicenseRef-Fedora-Public-Domain AND Unlicense
 URL:            http://melonds.kuribo64.net/
 
 %if %{with snapshot}
@@ -61,6 +61,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(slirp)
 BuildRequires:  pkgconfig(wayland-egl)

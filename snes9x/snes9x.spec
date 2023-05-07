@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 843c5ea4a9f87b70479b468f43b89fe787ce4643
+%global commit 8d8e691c89c8b9b089251f3edbd6e26a9b59e3cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230427
+%global date 20230506
 %bcond_without snapshot
 
 %global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
@@ -24,10 +24,10 @@
 
 Name:           snes9x
 Version:        1.62.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
-License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0
+License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
 URL:            http://www.snes9x.com/
 
 %if %{with snapshot}
@@ -42,9 +42,6 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 # Fix CFLAGS usage in CLI version
 Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-cmake-fix-data-files-install.patch
-Patch2:         0001-gcc-13-build-fix.patch
-
-Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-VulkanMemoryAllocator-29d492b.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -68,7 +65,7 @@ BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
 BuildRequires:   minizip-ng-devel
-BuildRequires:   cmake(VulkanHeaders)
+BuildRequires:   cmake(VulkanHeaders) >= 1.3.249
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
 %endif
@@ -78,6 +75,7 @@ Requires:        hicolor-icon-theme
 Requires:        vulkan-loader%{?_isa}
 
 Provides:        bundled(glslang) = 0~git%{shortcommit11}
+Provides:        bundled(imgui) = 1.89.5
 Provides:        bundled(spirv-cross) = 0~git%{shortcommit10}
 
 
@@ -102,13 +100,19 @@ This package contains a graphical user interface using GTK+.
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -M 500 -p1
 
-%patch -P 900 -p1 -d external/VulkanMemoryAllocator-Hpp
-
 %{?with_snapshot:tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1}
 %{?with_snapshot:tar -xf %{S:11} -C external/glslang --strip-components 1}
 
 # Remove bundled libs
 rm -rf unzip
+
+pushd external
+cp -p fmt/LICENSE.rst LICENSE.fmt
+cp -p imgui/LICENSE.txt LICENSE.imgui
+cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
+cp -p VulkanMemoryAllocator-Hpp/LICENSE LICENSE.VulkanMemoryAllocator
+popd
 
 sed \
   -e 's|${MINIZIP_CFLAGS}|-I%{_includedir}/minizip|g' \
@@ -179,7 +183,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 
 
 %files gtk -f %{name}-gtk.lang
-%license LICENSE
+%license LICENSE external/LICENSE.*
 %doc docs/changes.txt
 %doc gtk/AUTHORS
 %{_bindir}/%{name}-gtk
