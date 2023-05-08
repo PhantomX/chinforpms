@@ -1,6 +1,6 @@
-%global commit d1c317720ab6a92811c013408844ffd9e581b2a2
+%global commit 222d20a585c454cb591e3dc539f3bd52427ea30c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230421
+%global date 20230505
 %bcond_without snapshot
 
 %define _fortify_level 0
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  7.4.1
-%global winevulkan 1.3.246
+%global winevulkan 1.3.250
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 7f36a96808177be546771d41150c765f56d7a251
+%global wine_stagingver b72829659df61958c81e42ef1d4504260a0c19a4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id a141028d8d19d2218b42eee2702f4fab27710750
+%global tkg_id 32d03e081a26cb1584a511b55543af448df7854a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -130,7 +130,7 @@
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
-%bcond_with sharedgpures
+%bcond_without sharedgpures
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -153,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.6
-Release:        102%{?dist}
+Version:        8.7
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -256,6 +256,8 @@ Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 Patch1041:       0001-proton-win10-fixup-1.patch
 Patch1042:       0001-proton-win10-fixup-2.patch
+Patch1043:       %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
+Patch1044:       0001-Revert-proton-tkg-staging-ntdll-Guard-against-syscal.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -263,6 +265,8 @@ Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patc
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
 Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
 Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
+# https://github.com/Frogging-Family/wine-tkg-git/issues/1005
+Patch1064:       0001-sharedgpures-fixup.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
@@ -670,7 +674,7 @@ Requires:      fontpackages-filesystem
 
 %description courier-fonts
 %{summary}
-
+bd89ab3040e30c11b34a95072d88f635ade03bdc
 %package fixedsys-fonts
 Summary:       Wine Fixedsys font family
 BuildArch:     noarch
@@ -898,12 +902,16 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %if %{with sharedgpures}
 %patch -P 1060 -p1
-%patch -P 1061 -p1
-%patch -P 1062 -p1
-%patch -P 1063 -p1
+cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
+%patch -P 1064 -p1
+%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-textures.patch
+%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-fixup-staging.patch
+%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-fences.patch
 %endif
 %patch -P 1026 -p1
+%patch -P 1043 -p1 -R
 %patch -P 1027 -p1
+%patch -P 1044 -p1
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
@@ -1664,6 +1672,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/hidparse.%{winesys}
 %{_libdir}/wine/%{winedlldir}/hlink.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hnetcfg.%{winedll}
+%{_libdir}/wine/%{winedlldir}/hrtfapo.%{winedll}
 %{_libdir}/wine/%{winedlldir}/http.%{winesys}
 %{_libdir}/wine/%{winedlldir}/httpapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ia2comproxy.%{winedll}
@@ -1944,6 +1953,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/tdi.%{winesys}
 %{_libdir}/wine/%{winedlldir}/traffic.%{winedll}
 %{_libdir}/wine/%{winedlldir}/threadpoolwinrt.%{winedll}
+%{_libdir}/wine/%{winedlldir}/twinapi.appcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tzres.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ucrtbase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/uianimation.%{winedll}
@@ -2505,6 +2515,10 @@ fi
 
 
 %changelog
+* Mon May 08 2023 Phantom X <megaphantomx at hotmail dot com>  - 1:8.7-100.20230505git222d20a
+- 8.7
+- Reenable shared GPU resources
+
 * Sun Apr 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.6-100
 - 8.6
 - Disable shared GPU resources, it needs rebase

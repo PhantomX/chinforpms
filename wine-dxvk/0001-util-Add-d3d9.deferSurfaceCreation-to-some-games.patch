@@ -1,19 +1,38 @@
-From cb676cb66493040de6acb53626816e7a44608496 Mon Sep 17 00:00:00 2001
+From 85c1086e17cb501780b3040bc2921b7869fde3fc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 May 2023 12:32:50 -0300
 Subject: [PATCH] [util] Add d3d9.deferSurfaceCreation to some games
 
 ---
- src/util/config/config.cpp | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ src/util/config/config.cpp | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/src/util/config/config.cpp b/src/util/config/config.cpp
-index e4e0487..807c433 100644
+index 7403ab9..8af2674 100644
 --- a/src/util/config/config.cpp
 +++ b/src/util/config/config.cpp
-@@ -757,6 +757,14 @@ namespace dxvk {
-     { R"(\\(DarkRomance_VampireInLove_CE)\.exe$)", {{
-       { "d3d9.allowDirectBufferMapping", "False"   },
+@@ -570,10 +570,6 @@ namespace dxvk {
+     { R"(\\RichardBurnsRally_SSE\.exe$)", {{
+       { "d3d9.floatEmulation",              "Strict" },
+     }} },
+-    /* BlazBlue Centralfiction                  */
+-    { R"(\\BBCF\.exe$)", {{
+-      { "d3d9.floatEmulation",              "Strict" },
+-    }} },
+     /* Resident Evil games using MT Framework   */
+     { R"(\\(rerev|re0hd|bhd)\.exe$)", {{
+       { "d3d9.allowDirectBufferMapping",                "False" },
+@@ -720,6 +716,7 @@ namespace dxvk {
+     /* BlazBlue Centralfiction                 *
+      * Temporary crash workaround              */
+     { R"(\\BBCF\.exe$)", {{
++      { "d3d9.floatEmulation",              "Strict" },
+       { "d3d9.textureMemory",               "0"   },
+     }} },
+     /* Battle Fantasia Revised Edition         *
+@@ -750,6 +747,14 @@ namespace dxvk {
+     { R"(\\DCGAME\.EXE$)", {{
+       { "d3d9.deviceLost",              "True"   },
      }} },
 +    /* Bejeweled 3  */
 +    { R"(\\Bejeweled3\.exe$)", {{
