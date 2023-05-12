@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 32d03e081a26cb1584a511b55543af448df7854a
+%global tkg_id eeeb31d010d19b1ebf21b2591dbcb2a3231619df
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -221,6 +221,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
+Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -254,10 +255,6 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1041:       0001-proton-win10-fixup-1.patch
-Patch1042:       0001-proton-win10-fixup-2.patch
-Patch1043:       %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
-Patch1044:       0001-Revert-proton-tkg-staging-ntdll-Guard-against-syscal.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -909,17 +906,14 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-fences.patch
 %endif
 %patch -P 1026 -p1
-%patch -P 1043 -p1 -R
+%patch -P 700 -p1 -R
 %patch -P 1027 -p1
-%patch -P 1044 -p1
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
 %endif
-%patch -P 1041 -p1
 %patch -P 1030 -p1
-%patch -P 1042 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
 %patch -P 1033 -p1

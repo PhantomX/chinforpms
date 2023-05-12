@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3ba7783be2309d9b9dde3f9a75587a40f9a7071b
+ 3ba7783be2309d9b9dde3f9a75587a40f9a7071b xfs: verify buffer contents when we skip log replay
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/ef2316f5985938889a33e0d8f579a8bd74b79b6f
  ef2316f5985938889a33e0d8f579a8bd74b79b6f redhat: version two of Makefile.rhelver tweaks
 

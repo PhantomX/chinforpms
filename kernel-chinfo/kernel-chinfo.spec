@@ -158,7 +158,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.1
+%define specrpmversion 6.3.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -188,14 +188,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a05fb04949567b5d3c0ebc2412958f8ce7861326
+%global pfcommit fb139fd1080ed83d86bf25c7872a5b8e58850b89
 %global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
-%global pfcoprhash cb6ece53edcf9229024ba2d8a762cb04
+%global pfcoprhash 5ace3c0c41cb40704fb3b21dd05c2e69
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -217,7 +217,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id f5e439ffac0e1a0275427a7d1d8a8a07e4a6eb39
+%global opensuse_id 78ee4774aa1081a539cf0d8188072e4783bcf3b3
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -3090,6 +3090,9 @@ fi
 #
 #
 %changelog
+* Thu May 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-500.chinfo
+- 6.3.2 - pf4
+
 * Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.1-500.chinfo
 - 6.3.1 - pf2
 

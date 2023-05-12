@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.3.0
+%define specrpmversion 6.3.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -59,7 +59,7 @@ Source2001: cpupower.config
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 # For a stable release kernel
-%if 0%{?stable_base}
+%if 0%{?stable_update}
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/patch-%{specversion}.xz
 %endif
 
@@ -193,12 +193,7 @@ and root causes of unexpected results.
 
 cd linux-%{tarfile_release}
 
-# This is for patching either an -rc or stable
-%if 0%{?rcrev}
-    xzcat %{SOURCE5000} | patch -p1 -F1 -s
-%endif
-
-%if 0%{?stable_base}
+%if 0%{?stable_update}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 
@@ -550,6 +545,9 @@ popd
 
 
 %changelog
+* Thu May 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-500
+- 6.3.2
+
 * Mon Apr 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500
 - 6.3.0
 

@@ -1,0 +1,8 @@
+Enable with wined8vkcfg.
+
+or
+
+The needed dll files are in /usr/share/wine/d8vk/ARCH, ARCH must match to
+the architecture from executable, 32 or 64.
+ln -s /usr/share/wine/d8vk/ARCH/d3d8.dll executable_directory/d3d8.dll
+WINEDLLOVERRIDES="d3d8=n" executable

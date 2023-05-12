@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit bef2ef69abbf1c446de00e8b27162cef3ff386fd
+%global commit 80f7d2abd8cdedb48b82b9dd0bec0b605fd8410d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230507
+%global date 20230509
 %bcond_without snapshot
 
 %bcond_with sysspirv
@@ -23,7 +23,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
 
-%global commit7 d39344f466caae0495ebac4d49b03a886d83ba3a
+%global commit7 275e6459c7ab1ddd4b125f28d0440716e4888078
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
@@ -54,7 +54,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.1
-Release:        108%{?dist}
+Release:        109%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -259,7 +259,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE LICENSE.*
-%doc README.chinforpms README.md README.dxvk dxvk.conf
+%doc README.chinforpms README.md README.%{pkgname} %{pkgname}.conf
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 

@@ -23,6 +23,7 @@
  drivers/nvme/host/nvme.h                           |   4 +
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
+ fs/xfs/xfs_buf_item_recover.c                      |  10 ++
  include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/lsm_hooks.h                          |   6 +
@@ -34,10 +35,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
- 36 files changed, 490 insertions(+), 186 deletions(-)
+ 37 files changed, 500 insertions(+), 186 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 340bd45fc8d2..16da4a6b3809 100644
+index 80cdc03e25aa..5dccfff7f82f 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -901,7 +902,7 @@ index 258d5fe3d395..f7298e3dc8f3 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 10db680acaed..5c6cfbdbb361 100644
+index 256a38371120..a77075a6abb5 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -912,7 +913,7 @@ index 10db680acaed..5c6cfbdbb361 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2816,6 +2817,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2821,6 +2822,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
 
@@ -941,7 +942,7 @@ index 10db680acaed..5c6cfbdbb361 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index d6a9bac91a4c..a1b60b4beb8e 100644
+index bdf1601219fc..0a451e5e2621 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1077,10 +1078,10 @@ index bf46f122e9e1..06dd6bc08962 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 44cab813bf95..4e8bd92f9cc4 100644
+index f4e2a88729fd..d3ba2beeb4d6 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4296,6 +4296,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
@@ -1129,6 +1130,27 @@ index 97a0f8faea6e..d837548d2024 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/xfs/xfs_buf_item_recover.c b/fs/xfs/xfs_buf_item_recover.c
+index ffa94102094d..43167f543afc 100644
+--- a/fs/xfs/xfs_buf_item_recover.c
++++ b/fs/xfs/xfs_buf_item_recover.c
+@@ -943,6 +943,16 @@ xlog_recover_buf_commit_pass2(
+ 	if (lsn && lsn != -1 && XFS_LSN_CMP(lsn, current_lsn) >= 0) {
+ 		trace_xfs_log_recover_buf_skip(log, buf_f);
+ 		xlog_recover_validate_buf_type(mp, bp, buf_f, NULLCOMMITLSN);
++
++		/*
++		 * We're skipping replay of this buffer log item due to the log
++		 * item LSN being behind the ondisk buffer.  Verify the buffer
++		 * contents since we aren't going to run the write verifier.
++		 */
++		if (bp->b_ops) {
++			bp->b_ops->verify_read(bp);
++			error = bp->b_error;
++		}
+ 		goto out_release;
+ 	}
+
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7aa62c92185f..2da17f5aeef9 100644
 --- a/include/linux/efi.h

@@ -23,7 +23,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.1.0~rc4
+Version:        23.1.0
 Release:        1%{?dist}
 
 License:        MIT
@@ -169,6 +169,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Wed May 10 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.0-1
+- 23.1.0
+
 * Thu May 04 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.0~rc4-1
 - 23.1.0-rc4
 

@@ -303,11 +303,11 @@ wine
 # 6
 -belcard
 mingw-wine-gecko
+wine-d8vk
 wine-dxvk
-wine-vkd3d-proton
 wine-mono
 wine-nine
-
+wine-vkd3d-proton
 
 # 6
 -mediastreamer

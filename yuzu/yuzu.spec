@@ -66,7 +66,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3567
+%global vc_version 3582
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -126,8 +126,6 @@ Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
-Patch15:        0001-nvflinger.cpp-ignore-Wconversion.patch
-Patch16:        0001-gcc-ignore-Wmaybe-uninitialized.patch
 
 ExclusiveArch:  x86_64
 
@@ -349,7 +347,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %files
-%license license.txt externals/{COPYRIGHT,LICENSE}.*
+%license LICENSE.txt externals/{COPYRIGHT,LICENSE}.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %{_bindir}/%{name}-room
@@ -358,7 +356,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 %if %{with qt}
 %files qt
-%license license.txt
+%license LICENSE.txt
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
