@@ -1,13 +1,13 @@
-From 8fe753a946724ea2a0513423e2b42caf8de88012 Mon Sep 17 00:00:00 2001
+From 3be432ba99c90224dd903516571f0975a4571ac5 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Mon, 8 May 2023 15:09:59 -0300
 Subject: [PATCH] sharedgpures-fixup
 
 ---
- wine-tkg-sharedgpures-fences.patch        |  3 +-
- wine-tkg-sharedgpures-fixup-staging.patch | 92 +++--------------------
- wine-tkg-sharedgpures-textures.patch      |  4 +-
- 3 files changed, 13 insertions(+), 86 deletions(-)
+ wine-tkg-sharedgpures-fences.patch        |   3 +-
+ wine-tkg-sharedgpures-fixup-staging.patch | 106 ++++------------------
+ wine-tkg-sharedgpures-textures.patch      |   4 +-
+ 3 files changed, 20 insertions(+), 93 deletions(-)
 
 diff --git a/wine-tkg-sharedgpures-fences.patch b/wine-tkg-sharedgpures-fences.patch
 index 503307a..d4bad51 100644
@@ -28,7 +28,7 @@ index 503307a..d4bad51 100644
       "VK_KHR_shared_presentable_image", # Needs WSI work.
       "VK_KHR_video_queue", # TODO Video extensions use separate headers + xml
 diff --git a/wine-tkg-sharedgpures-fixup-staging.patch b/wine-tkg-sharedgpures-fixup-staging.patch
-index 03fbdf3..617cbac 100644
+index 03fbdf3..dca62c4 100644
 --- a/wine-tkg-sharedgpures-fixup-staging.patch
 +++ b/wine-tkg-sharedgpures-fixup-staging.patch
 @@ -10,7 +10,6 @@ Subject: [PATCH 1/5] winegstreamer: Don't flip RGB for Media Foundation
@@ -47,6 +47,29 @@ index 03fbdf3..617cbac 100644
  -void wg_parser_stream_enable(struct wg_parser_stream *stream, const struct wg_format *format);
  +void wg_parser_stream_enable(struct wg_parser_stream *stream, const struct wg_format *format, uint32_t flags);
   void wg_parser_stream_disable(struct wg_parser_stream *stream);
+@@ -50,15 +50,15 @@ diff --git a/dlls/winegstreamer/media_source.c b/dlls/winegstreamer/media_source
+ index 537363c1cdf..68912f4235b 100644
+ --- a/dlls/winegstreamer/media_source.c
+ +++ b/dlls/winegstreamer/media_source.c
+-@@ -358,7 +358,7 @@ static void start_pipeline(struct media_source *source, struct source_async_comm
+-             IMFMediaTypeHandler_GetCurrentMediaType(mth, &current_mt);
++@@ -358,7 +358,7 @@ static HRESULT media_stream_start(struct media_stream *stream, BOOL active, BOOL
+  
+-             mf_media_type_to_wg_format(current_mt, &format);
+--            wg_parser_stream_enable(stream->wg_stream, &format);
+-+            wg_parser_stream_enable(stream->wg_stream, &format, 0);
++     if (FAILED(hr = wg_format_from_stream_descriptor(stream->descriptor, &format)))
++         WARN("Failed to get wg_format from stream descriptor, hr %#lx\n", hr);
++-    wg_parser_stream_enable(stream->wg_stream, &format);
+++    wg_parser_stream_enable(stream->wg_stream, &format, 0);
+  
+-             IMFMediaType_Release(current_mt);
+-             IMFMediaTypeHandler_Release(mth);
++     if (FAILED(hr = IMFMediaEventQueue_QueueEventParamUnk(source->event_queue, active ? MEUpdatedStream : MENewStream,
++             &GUID_NULL, S_OK, (IUnknown *)&stream->IMFMediaStream_iface)))
+ diff --git a/dlls/winegstreamer/quartz_parser.c b/dlls/winegstreamer/quartz_parser.c
+ index eb90875909d..23ec764df16 100644
+ --- a/dlls/winegstreamer/quartz_parser.c
 @@ -90,65 +90,6 @@ index d976bedd7f5..1e5d61e3356 100644
   };
   

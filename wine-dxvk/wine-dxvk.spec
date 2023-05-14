@@ -10,7 +10,7 @@
 %global commit 80f7d2abd8cdedb48b82b9dd0bec0b605fd8410d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230509
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with sysspirv
 %bcond_without sysvulkan
@@ -53,8 +53,8 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.1
-Release:        109%{?dist}
+Version:        2.2
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -268,6 +268,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri May 12 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.2-100
+- 2.2
+
 * Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-100
 - 2.1
 

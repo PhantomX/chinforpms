@@ -213,7 +213,7 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 ### build
 ###
 %build
-cd linux-%{kversion}
+cd linux-%{tarfile_release}
 
 %ifarch aarch64
 %global perf_build_extra_opts CORESIGHT=1
@@ -302,7 +302,7 @@ popd
 %install
 export LD=ld.bfd
 
-cd linux-%{kversion}
+cd linux-%{tarfile_release}
 
 # perf tool binary and supporting scripts/binaries
 %{perf_make} DESTDIR=%{buildroot} lib=%{_lib} install-bin
@@ -431,12 +431,12 @@ popd
 %{_datadir}/perf-core/
 %{_mandir}/man[1-8]/perf*
 %{_sysconfdir}/bash_completion.d/perf
-%doc linux-%{kversion}/tools/perf/Documentation/examples.txt
-%license linux-%{kversion}/COPYING
+%doc linux-%{tarfile_release}/tools/perf/Documentation/examples.txt
+%license linux-%{tarfile_release}/COPYING
 %{_docdir}/perf-tip/tips.txt
 
 %files -n python3-perf
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 %{python3_sitearch}/*
 
 %files -f cpupower.lang
@@ -469,12 +469,12 @@ popd
 %{_bindir}/kvm_stat
 %{_bindir}/page_owner_sort
 %{_bindir}/slabinfo
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 
 %files libs
 %{_libdir}/libcpupower.so.0
 %{_libdir}/libcpupower.so.0.0.1
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 
 %files libs-devel
 %{_libdir}/libcpupower.so
@@ -498,12 +498,12 @@ popd
 %{_mandir}/man8/bpftool-feature.8.gz
 %{_mandir}/man8/bpftool.8.gz
 %{_libexecdir}/ksamples
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 
 %files -n libperf
 %{_libdir}/libperf.so.0
 %{_libdir}/libperf.so.0.0.1
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 
 %files -n libperf-devel
 %{_libdir}/libperf.a
@@ -527,7 +527,7 @@ popd
 %{_docdir}/libperf/html/libperf.html
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
-%license linux-%{kversion}/COPYING
+%license linux-%{tarfile_release}/COPYING
 
 %files -n rtla
 %{_bindir}/rtla

@@ -2,6 +2,8 @@
 %bcond_with static
 # Use bundled abseil-cpp
 %bcond_without absl
+# Use bundled openh264
+%bcond_without openh264
 
 %if %{with static}
 %global debug_package %{nil}
@@ -34,7 +36,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        130%{?dist}
+Release:        131%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -44,7 +46,7 @@ Summary:        WebRTC library for the Telegram messenger
 # openh264 - BSD-2-Clause
 # pffft - BSD-3-Clause
 # rnnoise - BSD-3-Clause
-License:        BSD-3-Clause AND BSD-2-Clause%{!?with_absl: AND Apache-2.0}
+License:        BSD-3-Clause%{!?with_openh264: AND BSD-2-Clause}%{!?with_absl: AND Apache-2.0}
 URL:            https://github.com/desktop-app/%{name}
 
 ExclusiveArch:  x86_64 aarch64
@@ -52,12 +54,13 @@ ExclusiveArch:  x86_64 aarch64
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-%if !%{with absl}
+%if %{without absl}
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
 Patch10:        0001-gcc-13-build-fix.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
+Patch1001:      0001-fix-build-with-bundled-openh264.patch
 
 %if %{with absl}
 BuildRequires:  cmake(absl) >= 20220623
@@ -75,7 +78,9 @@ BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
-#BuildRequires:  pkgconfig(openh264)
+%if %{with openh264}
+BuildRequires:  pkgconfig(openh264)
+%endif
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
@@ -110,7 +115,7 @@ Requires:       mesa-libGL%{?_isa}
 Requires:       pipewire-libs%{?_isa}
 
 Provides:       bundled(base64) = 0~git
-%if !%{with absl}
+%if %{without absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
 %endif
 Provides:       bundled(dcsctp) = 0~git
@@ -123,7 +128,9 @@ Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
+%if %{without openh264}
 Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
+%endif
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
 
@@ -147,7 +154,9 @@ Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
 Requires:       pkgconfig(libpulse)
-#Requires:       pkgconfig(openh264)
+%if %{with openh264}
+Requires:       pkgconfig(openh264)
+%endif
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
 Requires:       pkgconfig(vpx) >= 1.10.0
@@ -167,7 +176,7 @@ Requires:       pkgconfig(libswscale)
 Requires:       ffmpeg-devel
 Requires:       pkgconfig(openssl)
 Provides:       %{name}-static%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-%if !%{with absl}
+%if %{without absl}
 Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
 %endif
 Provides:       bundled(rnnoise) = 0~git91ef40
@@ -182,7 +191,9 @@ Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
+%if %{without openh264}
 Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
+%endif
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
 Provides:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -228,8 +239,14 @@ cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
 cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
 cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
+%if %{with openh264}
+sed -e '/libopenh264.cmake/d' -i CMakeLists.txt
+rm -rf src/third_party/openh264/*
+%else
+%patch -P 1001 -p1
 cp -f -p src/third_party/openh264/src/LICENSE legal/LICENSE.openh264
 cp -f -p src/third_party/openh264/README.chromium legal/README.openh264
+%endif
 cp -f -p src/rtc_base/third_party/base64/LICENSE legal/LICENSE.base64
 cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
 cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
@@ -313,6 +330,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Sat May 13 2023 Phantom X <megaphantomx at hotmail dot com> - 0-131.20230501gitdcb5069
+- System openh264
+
 * Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0-130.20230501gitdcb5069
 - Build with OpenSSL 3
 
