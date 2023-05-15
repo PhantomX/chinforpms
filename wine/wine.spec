@@ -1,7 +1,7 @@
 %global commit 222d20a585c454cb591e3dc539f3bd52427ea30c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230505
-%bcond_without snapshot
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver b72829659df61958c81e42ef1d4504260a0c19a4
+%global wine_stagingver 8.8
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -130,7 +130,7 @@
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
-%bcond_without sharedgpures
+%bcond_with sharedgpures
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -153,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.7
-Release:        101%{?dist}
+Version:        8.8
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -222,23 +222,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
-Patch701:        %{whq_url}/7eaac918fde4d2f6b1d06f949a813fb611c9413e#/%{name}-whq-7eaac91.patch
-Patch702:        %{whq_url}/bf461e64072277391e166dc2a5d88ee63a36add2#/%{name}-whq-bf461e6.patch
-Patch703:        %{whq_url}/9b47d3c54358d21f994399e66caf434f6e24ac04#/%{name}-whq-9b47d3c.patch
-Patch704:        %{whq_url}/233f86abf4e19f0f2550f9906b783059db0da163#/%{name}-whq-233f86a.patch
-Patch705:        %{whq_url}/e2c6a5405418c15870509d3f8c4fed086f944f77#/%{name}-whq-e2c6a54.patch
-Patch706:        %{whq_url}/6f477988c8805558267bccef9af377e523b13ae7#/%{name}-whq-6f47798.patch
-Patch707:        %{whq_url}/b3535aa0dfa6d7d53b0706f480a5bb553bb13f8a#/%{name}-whq-b3535aa.patch
-Patch708:        %{whq_url}/449e56128e8f61de856f45dca1e0cdeccb58b9af#/%{name}-whq-449e561.patch
-Patch709:        %{whq_url}/4e244863417850215dff5d9e070ae3de72ab9a34#/%{name}-whq-4e24486.patch
-Patch710:        %{whq_url}/1f239c9b82bd01d098247cb9f7dabd6b80c1422d#/%{name}-whq-1f239c9.patch
-Patch711:        %{whq_url}/44232f95210cc0dce7699dd5540e72c0d67fb3a7#/%{name}-whq-44232f9.patch
-Patch712:        %{whq_url}/038e1dc47bea2d7cdd354c7fa0be7007e9fc5c04#/%{name}-whq-038e1dc.patch
-Patch713:        %{whq_url}/9d6f8a6a3cc568e6888270c34683c20ee9e927f1#/%{name}-whq-9d6f8a6.patch
-Patch714:        %{whq_url}/e4ec04bf26abe1e56a36ac32574614d0997da3db#/%{name}-whq-e4ec04b.patch
-Patch715:        %{whq_url}/8be62e8e307728b38b3de2936f6adef84ae31404#/%{name}-whq-8be62e8.patch
-Patch716:        %{whq_url}/298ffd8f804038cdfcb255f8661eff311655fb51#/%{name}-whq-298ffd8.patch
-Patch717:        %{whq_url}/0e622f64e022e06a925f560796f668c4b64e28e2#/%{name}-whq-0e622f6.patch
+Patch701:        https://gitlab.winehq.org/wine/wine/-/merge_requests/2815.patch#/%{name}-whq-mr2815.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -272,6 +256,7 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculatin
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1041:       0001-Revert-proton-tkg-staging-ntdll-Guard-against-syscal.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -688,7 +673,7 @@ Requires:      fontpackages-filesystem
 
 %description courier-fonts
 %{summary}
-bd89ab3040e30c11b34a95072d88f635ade03bdc
+
 %package fixedsys-fonts
 Summary:       Wine Fixedsys font family
 BuildArch:     noarch
@@ -888,22 +873,6 @@ This package adds the opencl driver for wine.
 %patch -P 599 -p1
 
 %patch -P 701 -p1
-%patch -P 702 -p1
-%patch -P 703 -p1
-%patch -P 704 -p1
-%patch -P 705 -p1
-%patch -P 706 -p1
-%patch -P 707 -p1
-%patch -P 708 -p1
-%patch -P 709 -p1
-%patch -P 710 -p1
-%patch -P 711 -p1
-%patch -P 712 -p1
-%patch -P 713 -p1
-%patch -P 714 -p1
-%patch -P 715 -p1
-%patch -P 716 -p1
-%patch -P 717 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -919,10 +888,11 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 5000 -p1
 
-rm -f patches/mfplat-streaming-support/{0025,0038}-*
-
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
+
+%{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0008-winegstreamer-Allow-videoconvert-to-parallelize.patch
+%{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0055-winegstreamer-Add-MFVideoFormat_ARGB32-output-for-th.patch
 
 %patch -P 1020 -p1
 %patch -P 1021 -p1
@@ -945,6 +915,7 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %patch -P 1026 -p1
 %patch -P 700 -p1 -R
 %patch -P 1027 -p1
+%patch -P 1041 -p1
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
@@ -2108,6 +2079,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/wuauserv.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/security.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sfc.%{winedll}
+%{_libdir}/wine/%{winesodir}/wineps.so
 %{_libdir}/wine/%{winedlldir}/wineps.%{winedrv}
 %{_libdir}/wine/%{winedlldir}/d3d8.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3d8thk.%{winedll}
@@ -2546,6 +2518,10 @@ fi
 
 
 %changelog
+* Sun May 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.8-100
+- 8.8
+- Disable shared GPU resources again
+
 * Mon May 08 2023 Phantom X <megaphantomx at hotmail dot com>  - 1:8.7-100.20230505git222d20a
 - 8.7
 - Reenable shared GPU resources
