@@ -1,11 +1,11 @@
-%global date 20190530
-%global snapshot_rev 353
+%global date 20211122
+%global snapshot_rev 356
 
-%global sver .%{date}svn%{snapshot_rev}
+%global dist .%{date}svn%{snapshot_rev}%{?dist}
 
 Name:           bennugd
 Version:        1.0.0
-Release:        2%{?sver}%{?dist}
+Release:        3%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib
@@ -21,7 +21,7 @@ Source0:        https://sourceforge.net/code-snapshots/svn/b/be/%{name}/code/%{n
 Patch0:         0001-fix-build-flags.patch
 Patch1:         0001-Versioned-libraries.patch
 Patch2:         0001-Hardcode-modules-path.patch
-Patch3:         0001-libdraw-staticinline.patch
+Patch3:         0001-mod_wm-disable-gr_set_icon.patch
 
 ExclusiveArch:  %{ix86}
 
@@ -35,6 +35,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(sdl)
 BuildRequires:  pkgconfig(SDL_mixer)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -57,7 +58,11 @@ needed for %{name}.
 
 
 %prep
-%autosetup -n %{name}-code-r%{snapshot_rev} -p1
+%autosetup -n %{name}-code-r%{snapshot_rev} -N -p1
+
+find \( -name '*.c*' -or -name '*.h*' \) -exec sed -i 's/\r$//' {} \;
+
+%autopatch -p1
 
 for file in */COPYING */README ; 
 do
@@ -139,6 +144,9 @@ done
 
 
 %changelog
+* Tue May 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-3.20211122svn356
+- Add patch to fix sdl12-compat support
+
 * Tue Aug 17 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-2.20190530svn353
 - Fix some rpmlint issues
 
