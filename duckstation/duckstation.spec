@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit eb778943153cee9dcadca227f3b4fdae6f50ab84
+%global commit d8e980887f5f47377635a67b96172c72e0bf983b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230505
+%global date 20230515
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        87%{?dist}
+Release:        88%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -82,6 +82,7 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(tinyxml2)
 BuildRequires:  pkgconfig(vulkan)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(x11)

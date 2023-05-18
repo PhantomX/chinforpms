@@ -178,6 +178,7 @@ BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Widgets)
 %endif
 BuildRequires:  cmake(xbyak)
+BuildRequires:  pkgconfig(xkbcommon)
 
 Requires:       hicolor-icon-theme
 Requires:       shared-mime-info

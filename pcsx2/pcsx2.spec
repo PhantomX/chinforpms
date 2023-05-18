@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4472
+Version:        1.7.4517
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -124,6 +124,7 @@ BuildRequires:  pkgconfig(sdl2) >= 2.0.22
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
@@ -214,7 +215,7 @@ sed -i \
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{appres}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
-  -i pcsx2/Frontend/CommonHost.cpp
+  -i pcsx2/Pcsx2Config.cpp
 
 
 %build

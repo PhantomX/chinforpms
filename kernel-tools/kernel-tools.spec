@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.3.2
+%define specrpmversion 6.3.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -545,6 +545,9 @@ popd
 
 
 %changelog
+* Wed May 17 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-500
+- 6.3.3
+
 * Thu May 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-500
 - 6.3.2
 

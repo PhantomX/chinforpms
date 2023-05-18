@@ -26,22 +26,26 @@
 %global minizippkg minizip
 %endif
 
-%global commit 7be5fc551dc09f3cf919ca1b5b8c82b06cfbdf4d
+%global commit 11768e3dd3e998bb874c919b96ae775826d6bd86
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230403
+%global date 20230517
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Cross
 
-%global commit3 c351692490513cdb0e5a2c925aaf7ea4a9b672f4
+%global commit3 498e20dfd1343d99b9115201034bb0219801cdec
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
 
 %global commit4 d87512353495e7760e7fda7566a05beef7627d8f
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
+
+%global commit5 d9e990e6d13527532b7e2bb23164a1f3b7f33bb5
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 rcheevos
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -54,7 +58,7 @@
 
 Name:           dolphin-emu
 Version:        5.0
-Release:        177%{?dist}
+Release:        178%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -83,17 +87,15 @@ Source1:        %{name}.appdata.xml
 Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/epezent/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+Source5:        https://github.com/RetroAchievements/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 
 %if %{with sysvulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
-Patch10:        0001-GBACore-update-mgba-API.patch
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
-
-Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-%{srcname3}-29d492b.patch
 
 
 BuildRequires:  gcc
@@ -123,13 +125,14 @@ BuildRequires:  pkgconfig(libzstd) >= 1.4.0
 BuildRequires:  mgba-devel
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
-BuildRequires:  qt5-qtbase-private-devel
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib-ng)
 %if %{with llvm}
@@ -188,6 +191,7 @@ Provides:       bundled(gtest) = 1.9.0
 Provides:       bundled(bochs) = 2.6.6
 Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
+Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
 
 
@@ -282,8 +286,7 @@ rm -rf \
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:4} -C implot/implot --strip-components 1
-
-%patch -P 900 -p1 -d VulkanMemoryAllocator
+tar -xf %{S:5} -C rcheevos/rcheevos --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson
@@ -410,6 +413,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu May 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-178.20230517git11768e3
+- Qt6
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-176.20230315git91fca07
 - gcc 13 build fix
 
