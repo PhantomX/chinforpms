@@ -27,13 +27,18 @@
 # Enable system llvm
 %bcond_without  sysllvm
 %global bundlellvm 16.0
+# Enable system rtmidi
+%if 0%{?fedora} > 38
+%bcond_without  sysrtmidi
+%endif
+%global bundlertmidi 5.0.0
 
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit ead8e5e0c35c817da21fb7710adf912af42b9b96
+%global commit 73dba6d6e0a10147d821231869ee33b59eac8aa8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230507
+%global date 20230520
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -84,6 +89,10 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
+%global commit22 84a99422a3faf1ab417fe71c0903a48debb9376a
+%global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
+%global srcname22 rtmidi
+
 %global stb_ver 2.27
 
 %if %{with snapshot}
@@ -95,7 +104,7 @@
 
 Name:           rpcs3
 Version:        0.0.27
-Release:        12%{?dist}
+Release:        13%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -131,6 +140,9 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 %endif
 %if %{without sysflatbuffers}
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
+%endif
+%if %{without sysrtmidi}
+Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
 
@@ -194,6 +206,13 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(pugixml)
+%if %{with sysrtmidi}
+BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
+%else
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(jack)
+Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
+%endif
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(tinfo)
 BuildRequires:  pkgconfig(vulkan)
@@ -321,6 +340,14 @@ cp -p 3rdparty/yaml-cpp/yaml-cpp/LICENSE 3rdparty/LICENSE.yaml-cpp
 sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
 %else
 rm -rf 3rdparty/yaml-cpp
+%endif
+
+%if %{without sysrtmidi}
+tar -xf %{S:22} -C 3rdparty/rtmidi/rtmidi --strip-components 1
+cp -p 3rdparty/rtmidi/rtmidi/LICENSE 3rdparty/LICENSE.rtmidi
+sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i 3rdparty/CMakeLists.txt
+%else
+rm -rf 3rdparty/rtmidi
 %endif
 
 %if %{with snapshot}

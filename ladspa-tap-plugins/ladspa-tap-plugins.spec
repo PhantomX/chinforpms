@@ -1,5 +1,5 @@
 %global pkgname tap-plugins
-%global vc_url https://github.com/tomszilagyi/%{pkgname}
+%global vc_url https://github.com/tomscii/%{pkgname}
 
 Name:           ladspa-%{pkgname}
 Version:        1.0.1

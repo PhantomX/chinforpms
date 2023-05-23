@@ -22,7 +22,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        7.4.1
+Version:        8.0.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -177,6 +177,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Mon May 22 2023 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
+- 8.0.0
+
 * Tue Apr 18 2023 Phantom X <megaphantomx at hotmail dot com> - 7.4.1-100
 - 7.4.1
 

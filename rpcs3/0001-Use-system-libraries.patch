@@ -1,15 +1,15 @@
-From 763430784a05ab0214ccab3b742ac93a3d16f853 Mon Sep 17 00:00:00 2001
+From f95aaf53e1be5d2bb681dcb9d1390ed5009318d0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt         | 32 ++++++++++++++++++++++++++++++++
+ 3rdparty/CMakeLists.txt         | 39 +++++++++++++++++++++++++++++++++
  rpcs3/Input/ds4_pad_handler.cpp |  4 ++++
- 2 files changed, 36 insertions(+)
+ 2 files changed, 43 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 60e006e..2592516 100644
+index 6d9383d..bb91fbb 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
 @@ -73,7 +73,15 @@ endif()
@@ -28,7 +28,7 @@ index 60e006e..2592516 100644
  
  
  # Vulkan
-@@ -82,7 +90,15 @@ add_subdirectory(SPIRV EXCLUDE_FROM_ALL)
+@@ -82,7 +90,15 @@ add_subdirectory(glslang EXCLUDE_FROM_ALL)
  
  
  # yaml-cpp
@@ -68,7 +68,7 @@ index 60e006e..2592516 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -359,7 +384,14 @@ if(USE_SDL)
+@@ -361,10 +386,24 @@ if(USE_SDL)
  endif()
  
  # MINIUPNP
@@ -81,10 +81,20 @@ index 60e006e..2592516 100644
  add_subdirectory(miniupnp EXCLUDE_FROM_ALL)
 +endif()
  
+ # RTMIDI
++pkg_check_modules(rtmidi IMPORTED_TARGET rtmidi)
++if(rtmidi_FOUND)
++	message(STATUS "Using the system rtmidi")
++	add_library(rtmidi INTERFACE)
++	target_link_libraries(rtmidi INTERFACE PkgConfig::rtmidi)
++else()
+ add_subdirectory(rtmidi EXCLUDE_FROM_ALL)
++endif()
+ 
  # add nice ALIAS targets for ease of use
  if(USE_SYSTEM_LIBUSB)
 diff --git a/rpcs3/Input/ds4_pad_handler.cpp b/rpcs3/Input/ds4_pad_handler.cpp
-index 663a7e3..fdbebd3 100644
+index bb46032..4f55c5f 100644
 --- a/rpcs3/Input/ds4_pad_handler.cpp
 +++ b/rpcs3/Input/ds4_pad_handler.cpp
 @@ -4,6 +4,10 @@
@@ -99,5 +109,5 @@ index 663a7e3..fdbebd3 100644
  constexpr id_pair SONY_DS4_ID_1 = {0x054C, 0x5C4};
  constexpr id_pair SONY_DS4_ID_2 = {0x054C, 0x09CC};
 -- 
-2.39.2
+2.40.1
 

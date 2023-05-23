@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b4db9aebf2b4ac53b6a24ce360bb23e0b8b0f0fa
+%global commit 2281bf5b0bd8cf5eb7bffb52145ce75cae3611e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230506
+%global date 20230521
 %bcond_without snapshot
 
 # Enable system boost
@@ -86,7 +86,7 @@
 
 Name:           citra
 Version:        0
-Release:        43%{?dist}
+Release:        44%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -149,6 +149,10 @@ Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavfilter)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  ffmpeg-devel
 %endif
 %if %{with tests}

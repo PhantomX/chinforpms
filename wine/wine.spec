@@ -1,7 +1,7 @@
-%global commit 222d20a585c454cb591e3dc539f3bd52427ea30c
+%global commit f4a43a8b2fb2de91924cb1c68a627130789d8341
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230505
-%bcond_with snapshot
+%global date 20230519
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -50,7 +50,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  7.4.1
+%global winemono  8.0.0
 %global winevulkan 1.3.250
 
 %global wineFAudio 23.03
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.8
+%global wine_stagingver 3e3ebf5cfc765734022aaa35f8ee877af0bee813
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 73ac283ee5f8a41a1d3260ef1c2b3ff69df6931f
+%global tkg_id 855eba6ca27e054406464d25dfd2fdceb13717b8
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -131,6 +131,8 @@
 %bcond_with fshack
 # Shared gpu resources
 %bcond_with sharedgpures
+
+%global wine_staging_opts -W winex11-CandidateWindowPos
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -154,7 +156,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.8
-Release:        100%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -222,7 +224,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
-Patch701:        https://gitlab.winehq.org/wine/wine/-/merge_requests/2815.patch#/%{name}-whq-mr2815.patch
+Patch701:        0001-proton-tkg-staging-fixup.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -271,7 +273,6 @@ Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-wa
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/87a85d50c502f705eeaf7a9f3f4c9e54c707ae56.patch#/%{name}-valve-87a85d5.patch
 Patch1092:       %{valve_url}/commit/464a79989b5250a1aa9e6a6e54aa0a334cd523ff.patch#/%{name}-valve-464a799.patch
-Patch1093:       %{valve_url}/commit/6c79e9c21f553a7db9ee6b8f828d16b2e5312bcc.patch#/%{name}-valve-6c79e9c.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -872,8 +873,6 @@ This package adds the opencl driver for wine.
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
 
-%patch -P 701 -p1
-
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -914,6 +913,7 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %endif
 %patch -P 1026 -p1
 %patch -P 700 -p1 -R
+%patch -P 701 -p1
 %patch -P 1027 -p1
 %patch -P 1041 -p1
 %patch -P 1028 -p1
@@ -936,8 +936,6 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %patch -P 1089 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
-%patch -P 1093 -p1
-
 %patch -P 1300 -p1
 %patch -P 1301 -p1
 %dnl %patch -P 1302 -p1
