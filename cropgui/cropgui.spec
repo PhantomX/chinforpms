@@ -1,6 +1,6 @@
-%global commit ef48fc2425a054d9186b7a9321414bf953f9e863
+%global commit 9f4c2b0ecfc869eda8e2216347c09d3de6932746
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230112
+%global date 20230518
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           cropgui
 Version:        0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPL-2.0-or-later
@@ -77,6 +77,8 @@ install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/
 convert %{name}.png -filter Lanczos -resize 16x16 \
   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 
+
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 

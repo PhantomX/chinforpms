@@ -225,6 +225,7 @@ qt6ct
 radeon-profile
 radeon-profile-daemon
 -rclone
+reflac
 -retext
 rmg
 rust-u4pak

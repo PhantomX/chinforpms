@@ -122,6 +122,7 @@ Requires:       vulkan-loader >= 1.2
 
 Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
+Requires:       wine-dxvk >= 2.1
 Enhances:       wine
 
 Provides:       bundled(dxil-spirv) = 0~git%{shortcommit1}

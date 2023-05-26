@@ -1,0 +1,87 @@
+From 35d10d69ebaab7370f21c46bbe5646b4eb7be54a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 23 May 2023 20:47:41 -0300
+Subject: [PATCH] Add option to maintain file times
+
+---
+ README.adoc |  1 +
+ reflac      | 12 ++++++++++--
+ reflac.adoc |  3 +++
+ 3 files changed, 14 insertions(+), 2 deletions(-)
+
+diff --git a/README.adoc b/README.adoc
+index c5ce8f2..1482ddf 100644
+--- a/README.adoc
++++ b/README.adoc
+@@ -64,6 +64,7 @@ Usage: reflac [OPTION]... [--] DIRECTORY...
+  -r --recursive  Recurse into directories.
+  -s --no-sync    Do not synchronize file data.  Will return faster, with
+                  the potential danger to lose your files in a system crash.
++ -t --time       Maintain same file times as original.
+  -v --verbose    Increases the verbosity.  Use once to display the FLACs
+                  currently being processed, use twice for the full ‘flac’
+                  output.
+diff --git a/reflac b/reflac
+index dc86527..c42b713 100755
+--- a/reflac
++++ b/reflac
+@@ -9,11 +9,12 @@ VERBOSE=0
+ RECURSIVE=0
+ NOACTION=0
+ SYNC=1
++TIME=0
+ FLAC_LEVEL=5 # Default FLAC compression level
+ 
+ SELF="$(readlink -f "$0")"
+-OPTS=$(getopt -o 012345678hnrsvV \
+-              -l best,fast,help,no-action,no-sync,recursive,verbose,version \
++OPTS=$(getopt -o 012345678hnrstvV \
++              -l best,fast,help,no-action,no-sync,recursive,time,verbose,version \
+               -n reflac -- "$@")
+ TMPDIR="$(mktemp --tmpdir -d reflac.XXXXXXXXXX)"
+ 
+@@ -44,6 +45,7 @@ Usage: reflac [OPTION]... [--] DIRECTORY...
+  -r --recursive  Recurse into directories.
+  -s --no-sync    Do not synchronize file data.  Will return faster, with
+                  the potential danger to lose your files in a system crash.
++ -t --time       Maintain same file times as original
+  -v --verbose    Increases the verbosity.  Use once to display the FLACs
+                  currently being processed, use twice for the full ‘flac’
+                  output.
+@@ -77,6 +79,9 @@ recompress()
+             fi
+ 
+             mv -f -- "$TMPDIR/$flac" "$flac.new"
++            if [ $TIME -eq 1 ]; then
++                touch -r "$flac" "$flac.new"
++            fi
+             if [ $SYNC -eq 1 ]; then
+                 sync "$flac.new"
+                 mv -f "$flac.new" "$flac"
+@@ -110,6 +115,9 @@ while true ; do
+         -s|--no-sync)
+             SYNC=0
+             shift ;;
++        -t|--time)
++            TIME=1
++            shift ;;
+         -v|--verbose)
+             VERBOSE=$((VERBOSE+1))
+             shift ;;
+diff --git a/reflac.adoc b/reflac.adoc
+index a085a65..ea5ffd6 100644
+--- a/reflac.adoc
++++ b/reflac.adoc
+@@ -45,6 +45,9 @@ Do not synchronize file data or the rename operation.  The script will
+ return to prompt faster, but introduces a chance to lose files or have
+ incomplete files after a system crash.
+ 
++*-t*, *--time*::
++Maintain same file times as original.
++
+ *-0*, *--fast*::
+ Passes *-0* onto the *flac* command.  This is the least attainable
+ compression possible, and it is also the least CPU-intensive for both
+-- 
+2.40.1
+

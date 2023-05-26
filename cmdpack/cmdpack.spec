@@ -1,6 +1,6 @@
 %global commit e178184cfd86f3fce0882a24ec425c163ac5964b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180519
+%global date 20180529
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -65,7 +65,7 @@ echo '.so man1/bin2ecm.1' > %{buildroot}%{_mandir}/man1/ecm2bin.1
 
 
 %changelog
-* Sun Aug 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1.06-2.20180519gite178184
+* Sun Aug 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1.06-2.20180529gite178184
 - Add error_recalc utility
 
 * Fri Jun 05 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.06-1.20180519gite178184

@@ -12,8 +12,13 @@
 # Speep up packaging, no rpaths to search here
 %global __brp_check_rpaths %{nil}
 
-# Disable kernel-rpm-macros, speed up packaging, but no ksyms provides
+# Disable some extractors from kernel-rpm-macros, speed up packaging, but no ksyms provides
 %bcond_with rpm_macros
+
+%if %{without rpm_macros}
+%global __required_ksyms_requires %{nil}
+%global __provided_ksyms_provides %{nil}
+%endif
 
 # Option to enable compiling with clang instead of gcc.
 %bcond_with toolchain_clang
@@ -41,7 +46,6 @@
 %global buildroot %{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_build_cpu}
 %endif
 
-%if %{with rpm_macros}
 # RPM macros strip everything in BUILDROOT, either with __strip
 # or find-debuginfo.sh. Make use of __spec_install_post override
 # and save/restore binaries we want to package as unstripped.
@@ -53,7 +57,6 @@
     echo "Restoring unstripped artefacts %{buildroot_unstripped} -> %{buildroot}" \
     cp -rav %{buildroot_unstripped}/. %{buildroot}/ \
 %{nil}
-%endif
 
 # The kernel's %%install section is special
 # Normally the %%install section starts by cleaning up the BUILD_ROOT
@@ -158,7 +161,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.3
+%define specrpmversion 6.3.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -193,9 +196,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e0303a7d144275e950e56f000e74622a91f7e4fa
+%global pfcommit 4acd9e448783d23957f811324f89a571ba7837ab
 %global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
-%global pfcoprhash 93b35271d83678b6a3ac41f4da4f6752
+%global pfcoprhash acedcba0d2ed7fcb7ad9b539a74ab35b
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -217,7 +220,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 70ea6f6e17a9470643535fb3287a49f34ce03388
+%global opensuse_id c5b4604852c852b09d2b5d0753f5c34058b4f1c3
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -651,9 +654,7 @@ BuildRequires: patchutils
 %endif
 BuildRequires: python3-devel
 BuildRequires: gcc-plugin-devel
-%if %{with rpm_macros}
 BuildRequires: kernel-rpm-macros
-%endif
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
@@ -1656,10 +1657,8 @@ cd ..
 ###
 %build
 
-%if %{with rpm_macros}
 rm -rf %{buildroot_unstripped} || true
 mkdir -p %{buildroot_unstripped}
-%endif
 
 %if %{with_sparse}
 %define sparse_mflags    C=1
@@ -2552,7 +2551,7 @@ find Documentation -type d | xargs chmod u+w
   %{__arch_install_post}\
   %{__os_install_post}\
   %{__remove_unwanted_dbginfo_install_post}\
-  %{?__restore_unstripped_root_post}\
+  %{__restore_unstripped_root_post}\
   %{__modsign_install_post}
 
 ###
@@ -3090,6 +3089,9 @@ fi
 #
 #
 %changelog
+* Thu May 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.4-500.chinfo
+- 6.3.4 - pf4
+
 * Wed May 17 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-500.chinfo
 - 6.3.3 - pf4
 

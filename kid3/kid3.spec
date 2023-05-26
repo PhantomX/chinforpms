@@ -1,7 +1,11 @@
-%global commit 172cf14915fd88356a9fd4e7428a596798a2e496
+%global commit 76a6a5864e868c9ed8a44be8a6e5c72e9937e389
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230407
+%global date 20230523
 %bcond_without snapshot
+
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%endif
 
 %bcond_without kf5
 
@@ -12,7 +16,7 @@
 
 Name:           kid3
 Version:        3.9.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Efficient KDE ID3 tag editor
 Epoch:          1
 
