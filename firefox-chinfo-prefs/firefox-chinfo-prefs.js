@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
 
-pref("chinfo.cfg.version", "20221207");
+pref("chinfo.cfg.version", "20230526");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -207,6 +207,7 @@ pref("browser.newtabpage.enabled", false);
 pref("browser.newtabpage.enhanced", false);
 pref("browser.newtabpage.directory.ping", "");
 pref("browser.newtabpage.introShown", true);
+pref("browser.vpn_promo.enabled", false);
 
 // Disable DoH
 pref("network.trr.mode", 0);

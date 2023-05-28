@@ -1,4 +1,4 @@
-# https://github.com/hrydgard/ppsspp/issues/13312
+# Selective LTO.
 %global _lto_cflags %{nil}
 %undefine _hardened_build
 %undefine _cmake_shared_libs
@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4517
+Version:        1.7.4536
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -79,7 +79,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  cmake(cubeb)
@@ -100,6 +100,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
+BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpulse)
@@ -120,6 +121,7 @@ BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.0.22
 BuildRequires:  pkgconfig(soundtouch)
 BuildRequires:  pkgconfig(x11-xcb)
@@ -221,28 +223,27 @@ sed \
 %build
 
 %cmake \
-  -DUSER_CMAKE_LD_FLAGS="-Wl,-z,noexecstack" \
-  -DDISABLE_BUILD_DATE:BOOL=TRUE \
-  -DBUILD_REPLAY_LOADERS:BOOL=FALSE \
-  -DQT_BUILD:BOOL=TRUE \
-  -DX11_API:BOOL=TRUE \
-  -DWAYLAND_API:BOOL=TRUE \
-  -DCMAKE_BUILD_STRIP:BOOL=FALSE \
-%if 0%{with native}
-  -DDISABLE_ADVANCE_SIMD:BOOL=FALSE \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DLTO_PCSX2_CORE:BOOL=ON \
+  -DDISABLE_BUILD_DATE:BOOL=ON \
+  -DBUILD_REPLAY_LOADERS:BOOL=OFF \
+  -DQT_BUILD:BOOL=ON \
+  -DX11_API:BOOL=ON \
+  -DWAYLAND_API:BOOL=ON \
+  -DCMAKE_BUILD_STRIP:BOOL=OFF \
+%if %{with native}
+  -DDISABLE_ADVANCE_SIMD:BOOL=OFF \
 %else
-  -DDISABLE_ADVANCE_SIMD:BOOL=TRUE \
+  -DDISABLE_ADVANCE_SIMD:BOOL=ON \
 %endif
-  -DUSE_LTO:BOOL=FALSE \
-  -DUSE_VTUNE:BOOL=FALSE \
-  -DCUBEB_API:BOOL=TRUE \
-  -DUSE_DISCORD_PRESENCE:BOOL=FALSE \
-  -DUSE_SYSTEM_YAML:BOOL=TRUE \
-  -DUSE_SYSTEM_ZSTD:BOOL=TRUE \
-  -DDISABLE_SETCAP:BOOL=TRUE \
-  -DENABLE_TESTS:BOOL=FALSE \
+  -DUSE_VTUNE:BOOL=OFF \
+  -DCUBEB_API:BOOL=ON \
+  -DUSE_DISCORD_PRESENCE:BOOL=OFF \
+  -DUSE_SYSTEM_ZSTD:BOOL=ON \
+  -DENABLE_SETCAP:BOOL=OFF \
+  -DENABLE_TESTS:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \
-  -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
 %cmake_build

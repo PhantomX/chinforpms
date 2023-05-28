@@ -59,6 +59,7 @@
 %global srcname8 mbedtls
 
 %global glad_ver 0.1.29
+%global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 
 %global vcm_url   https://github.com/yuzu-emu
@@ -66,7 +67,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3602
+%global vc_version 3614
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -200,6 +201,7 @@ Provides:       bundled(microprofile)
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
+Provides:       bundled(stb_dxt) = %{stbdxt_ver}
 
 %if "%{?repo}"
 Provides:       %{name}%{?repo:-%{repo}}%{?_isa} = %{version}-%{release}

@@ -1,7 +1,7 @@
 %global commit f4a43a8b2fb2de91924cb1c68a627130789d8341
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230519
-%bcond_without snapshot
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 3e3ebf5cfc765734022aaa35f8ee877af0bee813
+%global wine_stagingver 0cd181d0cea4770640325a55daf9f312eb206331
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 855eba6ca27e054406464d25dfd2fdceb13717b8
+%global tkg_id 6b08ee11773f2a3620bfb642ee8db58b981c44ca
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -155,8 +155,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.8
-Release:        102%{?dist}
+Version:        8.9
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2516,6 +2516,9 @@ fi
 
 
 %changelog
+* Sat May 27 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.9-100
+- 8.9
+
 * Sun May 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.8-100
 - 8.8
 - Disable shared GPU resources again

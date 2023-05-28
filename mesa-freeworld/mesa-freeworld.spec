@@ -1,5 +1,5 @@
 # Disable this, like mesa full package.
-%dnl %global _lto_cflags %{nil}
+%global _lto_cflags %{nil}
 
 %ifnarch s390x
 %if !0%{?rhel}
@@ -32,7 +32,7 @@ Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          100
 
@@ -206,6 +206,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sun May 28 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.1.1-101
+- Disable LTO for the time
+
 * Fri May 26 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.1.1-100
 - 23.1.1
 

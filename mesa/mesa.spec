@@ -1,5 +1,5 @@
-# Can break some games
-%dnl %global _lto_cflags %{nil}
+# Inconsistent
+%global _lto_cflags %{nil}
 
 %ifnarch s390x
 %global with_hardware 1
@@ -16,10 +16,14 @@
 
 %ifarch %{ix86} x86_64
 %global with_crocus 1
+%global with_i915   1
+%if !0%{?rhel}
+%global with_intel_clc 1
+%endif 
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
-%global platform_vulkan ,intel
+%global platform_vulkan ,intel,intel_hasvk
 %endif
 
 %ifarch aarch64
@@ -75,7 +79,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -90,6 +94,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Source1 contains email correspondence clarifying the license terms.
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
+
+Patch10:        gnome-shell-glthread-disable.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
@@ -157,6 +163,9 @@ BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
+%if 0%{?with_intel_clc}
+BuildRequires:  python3-ply
+%endif
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
@@ -203,6 +212,8 @@ Recommends:     gl-manpages
 %package libEGL
 Summary:        Mesa libEGL runtime libraries
 Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
+Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libEGL
@@ -222,14 +233,9 @@ Provides:       libEGL-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
-%global major %(echo %{version} | cut -d. -f1)
-%global minor %(echo %{version} | cut -d. -f2)
-%global minor_next %(v="%{minor}"; echo $((++v)))
-# Do not require the exact full version but rather the matching
-# major.minor of the mesa release in order to allow for alternative
-# providers from other repos to slightly lag behind.
-Recommends:     (%{name}-va-drivers%{?_isa} >= %{?epoch:%{epoch}:}%{major}.%{minor} with %{name}-va-drivers%{?_isa} < %{?epoch:%{epoch}:}%{major}.%{minor_next})
+Recommends:     %{name}-va-drivers%{?_isa}
 %endif
 
 %description dri-drivers
@@ -399,12 +405,15 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   src/vulkan/overlay-layer/mesa-overlay-control.py
 
 %build
+# ensure standard Rust compiler flags are set
+export RUSTFLAGS="%build_rustflags"
+
 %meson \
   -Dplatforms=x11,wayland \
   -Ddri3=enabled \
   -Dosmesa=true \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
+  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -415,7 +424,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
 %if 0%{?with_opencl}
-  -Dgallium-rusticl=true -Dllvm=enabled -Drust_std=2021 \
+  -Dgallium-rusticl=true \
 %endif 
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
@@ -430,6 +439,7 @@ pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=true \
+  -Dintel-clc=enabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -572,6 +582,7 @@ popd
 %endif
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/crocus_dri.so
+%{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
 %ifarch aarch64
@@ -674,6 +685,8 @@ popd
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
 %{_datadir}/vulkan/icd.d/intel_icd.*.json
+%{_libdir}/libvulkan_intel_hasvk.so
+%{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
 %ifarch aarch64
 %{_libdir}/libvulkan_broadcom.so
@@ -697,6 +710,10 @@ popd
 
 
 %changelog
+* Sun May 28 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.1-101
+- Rawhide sync
+- Disable LTO for the time
+
 * Fri May 26 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.1-100
 - 23.1.1
 

@@ -10,9 +10,9 @@
 %bcond_with sysspirv
 %bcond_with sysvulkan
 
-%global commit d8e980887f5f47377635a67b96172c72e0bf983b
+%global commit 671f856d8dccd49f1accf279778326fbfce6162f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230515
+%global date 20230524
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        88%{?dist}
+Release:        89%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -67,6 +67,7 @@ BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
 BuildRequires:  pkgconfig(fmt) >= 9

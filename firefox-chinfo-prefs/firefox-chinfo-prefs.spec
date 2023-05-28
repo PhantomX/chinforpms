@@ -1,6 +1,6 @@
 Name:           firefox-chinfo-prefs
-Version:        20221207
-Release:        2%{?dist}
+Version:        20230526
+Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
 License:        LicenseRef-Fedora-Public-Domain
@@ -31,6 +31,9 @@ install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/defaults/pref/chin
 
 
 %changelog
+* Fri May 26 2023 Phantom X <megaphantomx at hotmail dot com> - 20230526-1
+- 20230526
+
 * Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 20221207-2
 - Move to new directory
 
