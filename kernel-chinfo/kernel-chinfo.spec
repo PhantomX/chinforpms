@@ -161,7 +161,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.4
+%define specrpmversion 6.3.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -196,7 +196,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 4acd9e448783d23957f811324f89a571ba7837ab
+%global pfcommit 8485050281c297d3935b855d3d38dcb8dcafd7a3
 %global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
 %global pfcoprhash acedcba0d2ed7fcb7ad9b539a74ab35b
 %if "%{pfcommit}" == "0"
@@ -3089,6 +3089,10 @@ fi
 #
 #
 %changelog
+* Tue May 30 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.5-500.chinfo
+- 6.3.5 - pf4
+- Fix kernel-rpm-macros usage
+
 * Thu May 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.4-500.chinfo
 - 6.3.4 - pf4
 

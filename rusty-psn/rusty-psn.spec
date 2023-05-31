@@ -6,7 +6,7 @@
 %global vc_id   c5d2640a25137d55d8e9f01f6283ad209983df3d
 
 Name:           rusty-psn
-Version:        0.3.4
+Version:        0.3.5
 Release:        1%{?dist}
 Summary:        Simple tool to grab updates for PS3 games
 
@@ -76,6 +76,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon May 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.5-1
+- 0.3.5
+
 * Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.4-1
 - 0.3.4
 

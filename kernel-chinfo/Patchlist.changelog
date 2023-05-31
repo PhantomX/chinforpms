@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/6a5320b108d9739ed27db75e0a1aaae72ea236c1
+ 6a5320b108d9739ed27db75e0a1aaae72ea236c1 [PATCH] ALSA: hda/realtek: Add quirk for ThinkPad P1 Gen 6
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/3ba7783be2309d9b9dde3f9a75587a40f9a7071b
  3ba7783be2309d9b9dde3f9a75587a40f9a7071b xfs: verify buffer contents when we skip log replay
 

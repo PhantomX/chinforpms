@@ -15,7 +15,7 @@ gstreamer1
 -gstreamer1-plugins-base
 -gstreamer1-plugins-ugly-free
 gtk3
-gtk3-nocsd
+-gtk3-nocsd
 ladspa-tap-plugins
 libeatmydata
 -libogg
