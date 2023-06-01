@@ -109,6 +109,10 @@ for res in 16 32 48 256 ;do
 done
 
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 %files
 %license COPYING
 %doc README

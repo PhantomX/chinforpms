@@ -30,6 +30,17 @@ sed \
   -e '/^LDFLAGS=/d' \
   -i src/Makefile
 
+cat > %{name}.desktop <<'EOF'
+[Desktop Entry]
+Name=TUSH
+Comment=The Utility for SNES Headers
+Exec=%{name}
+Icon=applications-games
+Terminal=false
+Type=Application
+Categories=Utility;
+EOF
+
 
 %build
 %make_build -C src WXCONFIG=wx-config-3.2
@@ -40,16 +51,10 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 src/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<'EOF'
-[Desktop Entry]
-Name=TUSH
-Comment=The Utility for SNES Headers
-Exec=%{name}
-Icon=applications-games
-Terminal=false
-Type=Application
-Categories=Utility;
-EOF
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop

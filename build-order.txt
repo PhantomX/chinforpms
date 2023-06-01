@@ -193,6 +193,7 @@ mpdnotify
 -NetworkManager-f5vpn
 nicotine+
 nvtop
+openbor
 openjazz
 opentyrian
 orage

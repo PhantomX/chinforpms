@@ -121,6 +121,16 @@ echo 'ADD_DEFINITIONS(-DCOMMIT_DATE="%{date}")' >> desktop_version/CMakeLists.tx
 
 sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.cpp
 
+cat > %{pkgname}.desktop <<'EOF'
+[Desktop Entry]
+Type=Application
+Name=%{pkgname}
+Comment=Explore one simple game mechanic: you can't jump - instead, reverse your own gravity at the press of a button.
+Icon=%{pkgname}
+Exec=%{pkgname}
+Categories=Game;
+EOF
+
 
 %build
 
@@ -149,15 +159,9 @@ done
 popd
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{pkgname}.desktop <<'EOF'
-[Desktop Entry]
-Type=Application
-Name=%{pkgname}
-Comment=Explore one simple game mechanic: you can't jump - instead, reverse your own gravity at the press of a button.
-Icon=%{pkgname}
-Exec=%{pkgname}
-Categories=Game;
-EOF
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{pkgname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
 install -pm0644 %{S:1} \

@@ -13,6 +13,7 @@ BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(sdl2)
@@ -44,6 +45,19 @@ mv data/%{name}.6 .
 sed -e 's|/usr/share/games/cavestory-nx/data/|%{_datadir}/%{name}/|g' \
   -i src/ResourceManager.cpp
 
+cat > %{name}.desktop <<'EOF'
+[Desktop Entry]
+Name=Cave Story NX
+Type=Application
+Comment=Side-action adventure game
+Exec=%{name}
+Icon=%{name}
+Terminal=false
+Categories=Game;ActionGame;
+EOF
+
+
+
 %build
 %cmake \
 %{nil}
@@ -62,16 +76,9 @@ mkdir -p %{buildroot}%{_mandir}/man6
 install -pm0644 %{name}.6 %{buildroot}%{_mandir}/man6/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
-[Desktop Entry]
-Name=Cave Story NX
-Type=Application
-Comment=Side-action adventure game
-Exec=%{name}
-Icon=%{name}
-Terminal=false
-Categories=Game;ActionGame;
-EOF
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
 
 for res in 16 22 24 32 36 48 64 72 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
@@ -82,6 +89,10 @@ done
 
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 

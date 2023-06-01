@@ -103,6 +103,10 @@ for res in 16 24 32 48 64 96 128 256 ;do
 done
 
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 %files
 %license UNLICENSE
 %{_bindir}/%{name}

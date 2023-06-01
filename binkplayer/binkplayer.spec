@@ -50,18 +50,7 @@ convert \
   %{S:2} -resize 96x96 \
   -background white -gravity center -extent 96x96 %{name}.png
 
-
-%build
-
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-install -m0755 BinkPlayer%{?binbits} %{buildroot}%{_bindir}/%{name}
-
-chrpath --delete %{buildroot}%{_bindir}/%{name}
-
-mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
+cat > %{name}.desktop <<'EOF'
 [Desktop Entry]
 Name=Bink Player
 Comment=Play BINK video files
@@ -74,6 +63,21 @@ Categories=AudioVideo;
 NoDisplay=true
 EOF
 
+
+%build
+
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -m0755 BinkPlayer%{?binbits} %{buildroot}%{_bindir}/%{name}
+
+chrpath --delete %{buildroot}%{_bindir}/%{name}
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
+
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/96x96/apps
 install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/96x96/apps/
 
@@ -83,8 +87,6 @@ for res in 16 22 24 32 48 64 72 ;do
   convert %{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/%{name}.png
 done
-
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/mime/packages
 # Mime file modified from https://aur.archlinux.org/packages/binkplayer
@@ -99,6 +101,10 @@ cat >> %{buildroot}%{_datadir}/mime/packages/%{name}.xml <<'EOF'
   </mime-type>
 </mime-info>
 EOF
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files

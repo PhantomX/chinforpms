@@ -120,6 +120,10 @@ for res in 16 32 48 64 128 256 512 ;do
 done
 
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 %files
 %license LICENSE opt/%{app_name}/LICENSE*
 %{_bindir}/%{name}

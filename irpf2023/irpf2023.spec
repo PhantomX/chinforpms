@@ -43,6 +43,17 @@ rm -rf *.exe exec.{bat,sh} Execute.txt icones .install4j
 
 find -type f -exec chmod 0644 '{}' ';'
 
+cat > rfb-%{name}.desktop <<'EOF'
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=%{pkgname}
+Comment=%{pkgname} - Declaração de Ajuste Anual, Final de Espólio e Saída Definitiva do País
+Exec=%{name}
+Icon=%{name}
+Categories=Office;
+EOF
+
 
 %build
 # Nothing to build
@@ -66,20 +77,9 @@ EOF
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
-
-cat > %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop <<EOF
-[Desktop Entry]
-Version=1.0
-Type=Application
-Name=%{pkgname}
-Comment=%{pkgname} - Declaração de Ajuste Anual, Final de Espólio e Saída Definitiva do País
-Exec=%{name}
-Icon=%{name}
-Categories=Office;
-EOF
-
-desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
-
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  rfb-%{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
 ln -s ../../../../ProgramasRFB/%{name}/RFB.png \
@@ -93,6 +93,10 @@ for res in 16 24 32 48 64 96 128 192 256 ;do
 done
 
 rm -f %{buildroot}%{_datadir}/ProgramasRFB/%{name}/IRPF-Licenses.txt
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %files

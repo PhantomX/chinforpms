@@ -51,6 +51,17 @@ card contents, and you can browse and copy out just the files that you need.
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
+cat > %{name}.desktop <<'EOF'
+[Desktop Entry]
+Name=%{name}
+Comment=Mount Nintendo® contents
+Exec=%{name} gui
+Icon=%{name}
+Terminal=false
+Type=Application
+Categories=Utility;
+EOF
+
 %generate_buildrequires
 %pyproject_buildrequires -r
 
@@ -64,24 +75,19 @@ card contents, and you can browse and copy out just the files that you need.
 
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<'EOF'
-[Desktop Entry]
-Name=%{name}
-Comment=Mount Nintendo® contents
-Exec=%{name} gui
-Icon=%{name}
-Terminal=false
-Type=Application
-Categories=Utility;
-EOF
-
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
 
 for res in 16 32 64 128 1024 ; do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   install -pm0644 %{name}/gui/data/${res}x${res}.png ${dir}/%{name}.png
 done
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files -f %{pyproject_files}

@@ -39,16 +39,7 @@ unzip -d egui %{S:1}
 cp -p %{S:2} %{S:3} .
 
 
-%build
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 cli/%{name} %{buildroot}%{_bindir}/%{name}
-install -pm0755 egui/%{name} %{buildroot}%{_bindir}/%{name}-egui
-
-
-mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<'EOF'
+cat > %{name}.desktop <<'EOF'
 [Desktop Entry]
 Name=%{name}-egui
 Comment=Grab updates for PS3 games
@@ -58,6 +49,20 @@ Terminal=false
 Type=Application
 Categories=Network;
 EOF
+
+
+%build
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 cli/%{name} %{buildroot}%{_bindir}/%{name}
+install -pm0755 egui/%{name} %{buildroot}%{_bindir}/%{name}-egui
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop

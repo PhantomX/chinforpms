@@ -50,15 +50,7 @@ if [ "${RVER}" != "%{version}" ] ;then
   exit 1
 fi
 
-%build
-
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-install -m0755 flashplayer %{buildroot}%{_bindir}/%{binname}
-
-mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{binname}.desktop <<EOF
+cat > %{binname}.desktop <<'EOF'
 [Desktop Entry]
 Name=Adobe Flash Player Projector
 Type=Application
@@ -69,6 +61,19 @@ MimeType=application/x-shockwave-flash;
 Terminal=false
 Categories=GTK;AudioVideo;
 EOF
+
+
+%build
+
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -m0755 flashplayer %{buildroot}%{_bindir}/%{binname}
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/48x48/apps
 install -pm0644 %{S:1} \
@@ -83,6 +88,8 @@ done
 
 install -pm0644 %{S:2} %{buildroot}%{_datadir}/icons/
 
+
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 

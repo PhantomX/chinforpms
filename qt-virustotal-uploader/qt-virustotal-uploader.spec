@@ -20,6 +20,7 @@ Source0:        https://github.com/VirusTotal/%{name}/archive/%{commit}/%{name}-
 Source0:        https://github.com/VirusTotal/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  make
 BuildRequires:  c-vtapi-devel
 BuildRequires:  gcc-c++
@@ -44,18 +45,7 @@ sed \
   -e 's|-L/usr/local/lib -L$$(HOME)/local/lib ||g' \
   -i qt-vt-uploader.pro
 
-%build
-%qmake_qt5 qt-vt-uploader.pro
-%make_build
-
-
-%install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 VirusTotalUploader %{buildroot}%{_bindir}/
-
-mkdir -p %{buildroot}%{_datadir}/applications
-
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
+cat > %{name}.desktop <<EOF
 [Desktop Entry]
 Name=VirusTotal Uploader
 Comment=Upload files for VirusTotal analysis
@@ -68,6 +58,21 @@ StartupNotify=true
 Categories=Qt;Network;
 EOF
 
+
+%build
+%qmake_qt5 qt-vt-uploader.pro
+%make_build
+
+
+%install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 VirusTotalUploader %{buildroot}%{_bindir}/
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
+
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
 install -pm0644 vtlogo-sigma.png \
   %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/VirusTotalUploader.png
@@ -78,6 +83,11 @@ for res in 16 22 24 32 36 48 64 72 96 ;do
   convert vtlogo-sigma.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/VirusTotalUploader.png
 done
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
 
 %files
 %license COPYING

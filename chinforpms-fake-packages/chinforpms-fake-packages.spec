@@ -50,12 +50,7 @@ Only use this if you don't like flatpak and know what you're doing.
 
 cp -p %{S:0} .
 
-%build
-
-%install
-
-mkdir -p %{buildroot}%{_datadir}/pkgconfig
-cat > %{buildroot}%{_datadir}/pkgconfig/bash-completion.pc <<'EOF'
+cat > bash-completion.pc <<'EOF'
 prefix=/usr
 compatdir=/etc/bash_completion.d
 completionsdir=${prefix}/share/bash-completion/completions
@@ -67,7 +62,7 @@ URL: https://github.com/scop/bash-completion
 Version: %{fakever}
 EOF
 
-cat > %{buildroot}%{_datadir}/pkgconfig/xdg-desktop-portal.pc<<'EOF'
+cat > xdg-desktop-portal.pc<<'EOF'
 prefix=/usr
 datarootdir=${prefix}/share
 datadir=/usr/share
@@ -79,13 +74,25 @@ Description: Desktop integration portal
 Version: %{fakever}
 EOF
 
-mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/gconftool-2 <<'EOF'
+cat > gconftool-2 <<'EOF'
 #!/bin/sh
 # %{name} fake executable
 true
 EOF
-chmod 755 %{buildroot}%{_bindir}/gconftool-2
+
+%build
+
+%install
+
+mkdir -p %{buildroot}%{_datadir}/pkgconfig
+install -pm0644 \
+  bash-completion.pc xdg-desktop-portal.pc \
+  %{buildroot}%{_datadir}/pkgconfig/
+
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 gconftool-2 \
+  %{buildroot}%{_bindir}/
+
 
 %files
 %doc README

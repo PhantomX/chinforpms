@@ -41,16 +41,7 @@ them faster and more user-friendly.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-
-%build
-%py3_build
-
-
-%install
-%py3_install
-
-mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{name}.desktop <<EOF
+cat > %{name}.desktop <<EOF
 [Desktop Entry]
 Name=XInput GUI
 Comment=A simple GUI for Xorg's Xinput tool
@@ -60,6 +51,23 @@ Terminal=false
 Type=Application
 Categories=Settings;DesktopSettings;
 EOF
+
+
+%build
+%py3_build
+
+
+%install
+%py3_install
+
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{name}.desktop
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files

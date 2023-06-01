@@ -41,6 +41,16 @@ data to and from a real memory card is also possible.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
+cat > %{binname}.desktop <<EOF
+[Desktop Entry]
+Name=PSX Memory Card Manager
+Exec=%{binname}
+Terminal=false
+Icon=applications-games
+Type=Application
+Categories=Qt;Game;
+EOF
+
 
 %build
 %{qmake_qt5}
@@ -52,15 +62,9 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{binname} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
-cat > %{buildroot}%{_datadir}/applications/%{binname}.desktop <<EOF
-[Desktop Entry]
-Name=PSX Memory Card Manager
-Exec=%{binname}
-Terminal=false
-Icon=applications-games
-Type=Application
-Categories=Qt;Game;
-EOF
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{binname}.desktop
 
 
 %check
