@@ -110,7 +110,7 @@ cmdpack
 cropgui
 -curlew
 deluge
-devedeng
+-devedeng
 discimagecreator
 disk-indicator
 -dosbox-staging

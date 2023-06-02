@@ -322,8 +322,8 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0.0
-Release:        101%{?dist}
+Version:        8.0.2
+Release:        100%{?dist}
 Epoch:          2
 
 License:        Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later with GCC-exception-2.0 exception AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only and LGPL-2.1-or-later AND MIT AND LicenseRef-Fedora-Public-Domain AND CC-BY-3.0
@@ -347,7 +347,6 @@ Source36: README.tests
 # Fix SGX assert
 Patch: 0001-target-i386-the-sgx_epc_get_section-stub-is-reachabl.patch
 # Fix wrong type and rework inheritance.
-Patch: 0001-hw-pci-bridge-pci_expander_bridge-fix-type-in-pxb_cx.patch
 Patch: 0002-hw-pci-bridge-Make-PCIe-and-CXL-PXB-Devices-inherit-.patch
 
 BuildRequires: meson >= %{meson_version}
@@ -2773,6 +2772,9 @@ popd
 
 
 %changelog
+* Thu Jun 01 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.0.2-100
+- 8.0.2
+
 * Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.0.0-101
 - Rawhide sync
 

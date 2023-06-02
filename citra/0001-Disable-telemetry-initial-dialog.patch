@@ -1,46 +1,18 @@
-From a43b13c2105c50793d7d9e030ca26777fe7eadcc Mon Sep 17 00:00:00 2001
+From cbaccd0b1a5f03c6f62d4336a78e9c2b460a3baa Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 14:47:15 -0300
 Subject: [PATCH] Disable telemetry initial dialog
 
 Set default to false, if needed, enabled it in options
 ---
- src/citra/config.cpp    |  2 +-
- src/citra/default_ini.h |  2 +-
- src/citra_qt/main.cpp   | 10 ++--------
- 3 files changed, 4 insertions(+), 10 deletions(-)
+ src/citra_qt/main.cpp | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index 086fb0b..e5583fc 100644
---- a/src/citra/config.cpp
-+++ b/src/citra/config.cpp
-@@ -328,7 +328,7 @@ void Config::ReadValues() {
- 
-     // Web Service
-     NetSettings::values.enable_telemetry =
--        sdl2_config->GetBoolean("WebService", "enable_telemetry", true);
-+        sdl2_config->GetBoolean("WebService", "enable_telemetry", false);
-     NetSettings::values.web_api_url =
-         sdl2_config->GetString("WebService", "web_api_url", "https://api.citra-emu.org");
-     NetSettings::values.citra_username = sdl2_config->GetString("WebService", "citra_username", "");
-diff --git a/src/citra/default_ini.h b/src/citra/default_ini.h
-index 3c17d9d..1d499d0 100644
---- a/src/citra/default_ini.h
-+++ b/src/citra/default_ini.h
-@@ -326,7 +326,7 @@ gdbstub_port=24689
- [WebService]
- # Whether or not to enable telemetry
- # 0: No, 1 (default): Yes
--enable_telemetry =
-+enable_telemetry = 0
- # URL for Web API
- web_api_url = https://api.citra-emu.org
- # Username and token for Citra Web Service
 diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
-index 40767a4..17aa2eb 100644
+index a39932f..c0926a6 100644
 --- a/src/citra_qt/main.cpp
 +++ b/src/citra_qt/main.cpp
-@@ -134,14 +134,8 @@ void GMainWindow::ShowTelemetryCallout() {
+@@ -141,14 +141,8 @@ void GMainWindow::ShowTelemetryCallout() {
  
      UISettings::values.callout_flags =
          UISettings::values.callout_flags.GetValue() | static_cast<uint32_t>(CalloutFlag::Telemetry);
@@ -48,8 +20,8 @@ index 40767a4..17aa2eb 100644
 -        tr("<a href='https://citra-emu.org/entry/telemetry-and-why-thats-a-good-thing/'>Anonymous "
 -           "data is collected</a> to help improve Citra. "
 -           "<br/><br/>Would you like to share your usage data with us?");
--    if (QMessageBox::question(this, tr("Telemetry"), telemetry_message) != QMessageBox::Yes) {
--        NetSettings::values.enable_telemetry = false;
+-    if (QMessageBox::question(this, tr("Telemetry"), telemetry_message) == QMessageBox::Yes) {
+-        NetSettings::values.enable_telemetry = true;
 -        Settings::Apply();
 -    }
 +    NetSettings::values.enable_telemetry = false;
@@ -58,5 +30,5 @@ index 40767a4..17aa2eb 100644
  
  const int GMainWindow::max_recent_files_item;
 -- 
-2.38.1
+2.40.1
 

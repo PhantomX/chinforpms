@@ -1,4 +1,4 @@
-From 803232addd165e4e42888d860139cb3ea767e2bf Mon Sep 17 00:00:00 2001
+From 606a72e79c2428d779577b1ba1f3eed31b3b7e07 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -14,7 +14,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8896fe0..ddb62e6 100755
+index 1771b06..dbe5bf4 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -24,12 +24,12 @@ index 8896fe0..ddb62e6 100755
 -include(DownloadExternals)
  include(CMakeDependentOption)
  include(CTest)
- 
+ include(FetchContent)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 8532fd7..4139842 100755
+index 500eb21..a7d3621 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -34,8 +34,19 @@ if (NOT TARGET inih::INIReader)
+@@ -40,8 +40,19 @@ if (NOT TARGET inih::INIReader)
  endif()
  
  # mbedtls
@@ -43,7 +43,7 @@ index 8532fd7..4139842 100755
 +  target_include_directories(mbedtls-shared INTERFACE "${MBEDTLS_INCLUDE_DIRS}")
 +  add_library(mbedtls ALIAS mbedtls-shared)
 +else()
- add_subdirectory(mbedtls EXCLUDE_FROM_ALL)
+ add_subdirectory(mbedtls)
  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
 +endif()
  
@@ -79,5 +79,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.39.1
+2.40.1
 

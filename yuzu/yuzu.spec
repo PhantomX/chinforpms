@@ -67,7 +67,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3614
+%global vc_version 3628
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -160,6 +160,7 @@ BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(INIReader)
 BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
@@ -235,7 +236,7 @@ popd
 find \( -name '*.c*' -or -name '*.h*' -or -name '*.cmake' \) -exec sed -i 's/\r$//' {} \;
 find \( -name '*.qrc' -or -name '*.qss' -or -name '*.theme' -or -name '*.ts' \) -exec sed -i 's/\r$//' {} \;
 find \( -name '*.desktop' -or -name '*.txt' -or -name '*.xml' \) -exec sed -i 's/\r$//' {} \;
-find \( -iname '*license*' -or -name '*COPYRIGHT*' -or -iname '*README*' \) -exec sed -i 's/\r$//' {} \;
+find \( -iname '*license*' -or -iname '*README*' \) -exec sed -i 's/\r$//' {} \;
 %endif
 %if %{without dynarmic}
 tar -xf %{S:1} -C externals/dynarmic --strip-components 1
@@ -313,6 +314,7 @@ cp -f %{S:20} dist/compatibility_list/
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
+  -DYUZU_ROOM:BOOL=ON \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
@@ -349,7 +351,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %files
-%license LICENSE.txt externals/{COPYRIGHT,LICENSE}.*
+%license LICENSE.txt externals/LICENSE.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %{_bindir}/%{name}-room

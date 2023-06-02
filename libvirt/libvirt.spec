@@ -227,7 +227,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.3.0
+Version: 9.4.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -603,7 +603,7 @@ Requires: nfs-utils
 # For mkfs
 Requires: util-linux
 %if %{with_qemu}
-# From QEMU RPMs
+# From QEMU RPMs, used by virstoragetest
 Requires: /usr/bin/qemu-img
 %endif
 %if !%{with_storage_rbd}
@@ -1212,6 +1212,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
 %meson \
            -Drunstatedir=%{_rundir} \
+           -Dinitconfdir=%{_sysconfdir}/sysconfig \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
@@ -2461,6 +2462,9 @@ exit 0
 
 
 %changelog
+* Thu Jun 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.4.0-100
+- 9.4.0
+
 * Wed May 03 2023 Phantom X <megaphantomx at hotmail dot com> - 9.3.0-100
 - 9.3.0
 

@@ -1,15 +1,15 @@
 %undefine _cmake_shared_libs
 
-%global commit 8d8e691c89c8b9b089251f3edbd6e26a9b59e3cd
+%global commit 5526a1d9055e131f711c2bfae3d4a14a6180bdb8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230506
+%global date 20230601
 %bcond_without snapshot
 
-%global commit10 4e2fdb25671c742a9fbe93a6034eb1542244c7e1
+%global commit10 197a273fd494321157f40a962c51b5fa8c9c3581
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 6d41bb9c557c5a0eec61ffba1f775dc5f717a8f7
+%global commit11 9c7fd1a33e5cecbe465e1cd70170167d5e40d398
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -19,12 +19,15 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global glad_ver 2.0.3
+%global imgui_ver 1.89.5
+
 %global vc_url  https://github.com/snes9xgit/%{name}
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
 Version:        1.62.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -50,7 +53,6 @@ BuildRequires:   make
 BuildRequires:   nasm
 BuildRequires:   intltool
 BuildRequires:   pkgconfig(alsa)
-BuildRequires:   pkgconfig(epoxy)
 BuildRequires:   pkgconfig(gtkmm-3.0)
 BuildRequires:   pkgconfig(gl)
 BuildRequires:   pkgconfig(libpng)
@@ -74,9 +76,10 @@ BuildRequires:   libappstream-glib
 Requires:        hicolor-icon-theme
 Requires:        vulkan-loader%{?_isa}
 
-Provides:        bundled(glslang) = 0~git%{shortcommit11}
-Provides:        bundled(imgui) = 1.89.5
-Provides:        bundled(spirv-cross) = 0~git%{shortcommit10}
+Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(glslang) = 0~git%{shortcommit11}
+Provides:       bundled(imgui) = %{imgui_ver}
+Provides:       bundled(spirv-cross) = 0~git%{shortcommit10}
 
 
 %description
