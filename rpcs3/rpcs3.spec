@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 73dba6d6e0a10147d821231869ee33b59eac8aa8
+%global commit 33558d14e539da95c13ba43b3ba5428b3d04c54a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230520
+%global date 20230602
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -103,8 +103,8 @@
 %global kg_url https://github.com/KhronosGroup
 
 Name:           rpcs3
-Version:        0.0.27
-Release:        13%{?dist}
+Version:        0.0.28
+Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -145,8 +145,6 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
-
-Patch1:         %{vc_url}/%{name}/pull/13560.patch#/%{name}-gh-pr13560.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -456,6 +454,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Fri Jun 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.28-1.20230602git33558d1
+- 0.0.28
+
 * Sat Apr 08 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.27-5.20230408gitf0e36c6
 - System llvm is now supported, so use it
 
