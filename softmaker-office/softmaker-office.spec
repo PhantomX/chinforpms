@@ -35,17 +35,14 @@ Requires:       open-sans-fonts
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
-%global __requires_exclude ^libCSegmentation.so*
-%global __requires_exclude %__requires_exclude|^libCTokenizer.so*
-%global __requires_exclude %__requires_exclude|^libDpfDict.so*
-%global __requires_exclude %__requires_exclude|^libdpf.so*
-%global __requires_exclude %__requires_exclude|^libgamorphDpf.so*
-%global __requires_exclude %__requires_exclude|^libSGAnalyseSP.so*
-%global __requires_exclude %__requires_exclude|^libsprt4-7-0-instance-01.so*
-%global __requires_exclude %__requires_exclude|^libsprt4-7-0-instance-02.so*
-%global __requires_exclude %__requires_exclude|^libsprt4-7-0-instance-03.so*
-%global __requires_exclude %__requires_exclude|^libsprt4-7-0.so*
-%global __requires_exclude %__requires_exclude|^libsx.so*
+%global __requires_exclude ^libCSegmentation\\.so.*$
+%global __requires_exclude %__requires_exclude|^libCTokenizer\\.so.*$
+%global __requires_exclude %__requires_exclude|^libDpfDict\\.so.*$
+%global __requires_exclude %__requires_exclude|^libdpf\\.so.*$
+%global __requires_exclude %__requires_exclude|^libgamorphDpf\\.so.*$
+%global __requires_exclude %__requires_exclude|^libSGAnalyseSP\\.so.*$
+%global __requires_exclude %__requires_exclude|^libsprt4-7-0.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libsx\\.so.*$
 
 %description
 SoftMaker Office is a powerful, fast and Microsoft Office-compatible office

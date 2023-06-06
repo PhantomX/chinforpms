@@ -161,7 +161,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.5
+%define specrpmversion 6.3.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -191,12 +191,12 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8485050281c297d3935b855d3d38dcb8dcafd7a3
+%global pfcommit edde9f8678b44d6935e71f40ecfab49fcad2fba6
 %global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
 %global pfcoprhash acedcba0d2ed7fcb7ad9b539a74ab35b
 %if "%{pfcommit}" == "0"
@@ -220,7 +220,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id c5b4604852c852b09d2b5d0753f5c34058b4f1c3
+%global opensuse_id f583ba475430f56b79aabec05c7c036099baec27
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -3089,6 +3089,9 @@ fi
 #
 #
 %changelog
+* Mon Jun 05 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.6-500.chinfo
+- 6.3.6 - pf5
+
 * Tue May 30 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.5-500.chinfo
 - 6.3.5 - pf4
 - Fix kernel-rpm-macros usage

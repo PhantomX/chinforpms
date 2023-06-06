@@ -43,10 +43,10 @@ Provides:       bundled(libssl) = 1.0.0
 
 %global __provides_exclude_from ^/%{optdir}/.*
 
-%global __requires_exclude ^libssl.so.*
-%global __requires_exclude %__requires_exclude|^libcrypto.so.*
-%global __requires_exclude %__requires_exclude|^libicu.*.so.*
-%global __requires_exclude %__requires_exclude|^libQt.*.so.*
+%global __requires_exclude ^libssl\\.so.*$
+%global __requires_exclude %__requires_exclude|^libcrypto\\.so.*$
+%global __requires_exclude %__requires_exclude|^libicu.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
 
 
 %description

@@ -49,7 +49,7 @@ Summary:        %{summary} - libraries
 Provides:       %{name}-modules = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-modules%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %global __provides_exclude_from ^%{_libdir}/%{name}/modules/*.*\\.so$
-%global __requires_exclude ^lib(blit|draw|font|grbase|joy|key|render|scroll|text|video).so$
+%global __requires_exclude ^lib(blit|draw|font|grbase|joy|key|render|scroll|text|video)\\.so$
 
 
 %description libs

@@ -1,0 +1,17 @@
+runpath:
+  allowed_origin_paths:
+    # this is the real part after $ORIGIN
+    - /../../program
+    # but match this because that is what rpminspect turns it into
+    - /program
+
+annocheck:
+  ignore:
+    # run-path test because the DT_RPATH/DT_RUNPATH dynamic tag has a path that contains '..'
+    # and the path is intentionally [$ORIGIN/../../program]
+    - /usr/lib*/libreoffice/sdk/bin/cppumaker
+    - /usr/lib*/libreoffice/sdk/bin/idlc
+    - /usr/lib*/libreoffice/sdk/bin/javamaker
+    - /usr/lib*/libreoffice/sdk/bin/unoapploader
+    - /usr/lib*/libreoffice/sdk/bin/unoidl-check
+    - /usr/lib*/libreoffice/sdk/bin/uno-skeletonmaker

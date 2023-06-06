@@ -32,21 +32,21 @@ Provides:       bundled(qt) = 5.12.10
 
 %global __provides_exclude_from ^%{progdir}/.*
 
-%global __requires_exclude ^libfaac1.so.*
-%global __requires_exclude %__requires_exclude|^libaomagent.so.*
-%global __requires_exclude %__requires_exclude|^libav\(codec|util\).so.*
-%global __requires_exclude %__requires_exclude|^libcef.so.*
-%global __requires_exclude %__requires_exclude|^libclDNN64.so.*
-%global __requires_exclude %__requires_exclude|^libfdkaac2.*.so.*
-%global __requires_exclude %__requires_exclude|^libicu.*.so.*
-%global __requires_exclude %__requires_exclude|^libEGL.so
-%global __requires_exclude %__requires_exclude|^libffmpeg.so
-%global __requires_exclude %__requires_exclude|^libGLESv2.so
-%global __requires_exclude %__requires_exclude|^libmkldnn.so
-%global __requires_exclude %__requires_exclude|^libmpg123.so
-%global __requires_exclude %__requires_exclude|^libOpenCL.so.*
-%global __requires_exclude %__requires_exclude|^libswresample.so.*
-%global __requires_exclude %__requires_exclude|^libQt.*.so.*
+%global __requires_exclude ^libfaac1\\.so.*$
+%global __requires_exclude %__requires_exclude|^libaomagent\\.so.*$
+%global __requires_exclude %__requires_exclude|^libav\(codec|util\)\\.so.*$
+%global __requires_exclude %__requires_exclude|^libcef\\.so.*$
+%global __requires_exclude %__requires_exclude|^libclDNN64\\.so.*$
+%global __requires_exclude %__requires_exclude|^libfdkaac2.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libicu.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
+%global __requires_exclude %__requires_exclude|^libffmpeg\\.so.*$
+%global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
+%global __requires_exclude %__requires_exclude|^libmkldnn\\.so.*$
+%global __requires_exclude %__requires_exclude|^libmpg123\\.so.*$
+%global __requires_exclude %__requires_exclude|^libOpenCL\\.so.*$
+%global __requires_exclude %__requires_exclude|^libswresample\\.so.*$
+%global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
 
 
 %description

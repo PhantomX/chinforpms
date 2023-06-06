@@ -33,10 +33,10 @@ Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
-%global __requires_exclude ^libffmpeg.so
-%global __requires_exclude %__requires_exclude|^libEGL.so
-%global __requires_exclude %__requires_exclude|^libGLESv2.so
-%global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
+%global __requires_exclude ^libffmpeg\\.so.*$
+%global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
+%global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvk_swiftshader\\.so.*$
 
 
 %description

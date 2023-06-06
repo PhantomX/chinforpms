@@ -166,6 +166,7 @@ kernel-tools
 kse
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
+-libreoffice
 libstrangle
 -liveprogide
 -linux-steam-integration

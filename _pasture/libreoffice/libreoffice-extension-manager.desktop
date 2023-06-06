@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=LibreOffice Extension Manager
+Name[pt_BR]=Gerenciador de Extensões do LibreOffice
+Comment=Add and organize the LibreOffice extensions.
+Comment[pt_BR]=Adicione e organize as extensões do LibreOffice.
+Terminal=false
+TryExec=unopkg
+Exec=unopkg gui %U
+Type=Application
+Icon=libreoffice-startcenter
+StartupNotify=true
+MimeType=application/vnd.openofficeorg.extension;
+Categories=Office;
