@@ -26,9 +26,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 11768e3dd3e998bb874c919b96ae775826d6bd86
+%global commit 44d93048b3544a3a1bd632a9b05623f67d587e1b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230517
+%global date 20230607
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -56,9 +56,11 @@
 %global pkgname dolphin
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
+%global sbuild %%(echo %{version} | cut -d. -f4)
+
 Name:           dolphin-emu
-Version:        5.0
-Release:        178%{?dist}
+Version:        5.0.19552
+Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -128,6 +130,7 @@ BuildRequires:  pkgconfig(openal)
 BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
@@ -413,6 +416,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.19552-1.20230607git44d9304
+- Use upstream version scheme
+
 * Thu May 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0-178.20230517git11768e3
 - Qt6
 

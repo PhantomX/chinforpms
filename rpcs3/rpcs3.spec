@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 2e4bf9ef1bf60de18eed91140d188ca84a6c89c0
+%global commit 6f834e99d22e4821b9061aee4e51691de06d2345
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230603
+%global date 20230606
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -102,9 +102,11 @@
 %global vc_url  https://github.com/RPCS3
 %global kg_url https://github.com/KhronosGroup
 
+%global sbuild %%(echo %{version} | cut -d. -f4)
+
 Name:           rpcs3
-Version:        0.0.28
-Release:        2%{?dist}
+Version:        0.0.28.15143
+Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -145,6 +147,9 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:        %{vc_url}/%{name}/pull/13967.patch#/%{name}-gh-pr13967.patch
+Patch1:        %{vc_url}/%{name}/pull/13975.patch#/%{name}-gh-pr13975.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -348,14 +353,12 @@ sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i 3rdparty/CMakeLists.txt
 rm -rf 3rdparty/rtmidi
 %endif
 
-%if %{with snapshot}
-  sed \
-    -e '/find_packages/s|Git|\0_DISABLED|g' \
-    -e '/RPCS3_GIT_VERSION/s|local_build|%{shortcommit}|g' \
-    -e '/RPCS3_GIT_BRANCH/s|local_build|master|g' \
-    -e '/RPCS3_GIT_FULL_BRANCH/s|local_build|local_build|g' \
-    -i %{name}/git-version.cmake
-%endif
+sed \
+  -e '/find_packages/s|Git|\0_DISABLED|g' \
+  -e '/RPCS3_GIT_VERSION/s|local_build|%{sbuild}%{?with_snapshot:-%{shortcommit}}|g' \
+  -e '/RPCS3_GIT_BRANCH/s|local_build|master|g' \
+  -e '/RPCS3_GIT_FULL_BRANCH/s|local_build|local_build|g' \
+  -i %{name}/git-version.cmake
 
 # This resets RPM flags
 sed \
@@ -454,6 +457,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.28.15143-1.20230606git6f834e9
+- Add build number to %%{version}
+
 * Fri Jun 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.28-1.20230602git33558d1
 - 0.0.28
 

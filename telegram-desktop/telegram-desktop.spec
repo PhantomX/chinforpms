@@ -24,8 +24,8 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.8.1
-Release:        101%{?dist}
+Version:        4.8.3
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -54,6 +54,7 @@ Patch200:       %{name}-no-text-replace.patch
 Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
+Patch203:       0001-cmake-use-system-cppgir.patch
 Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
@@ -64,11 +65,13 @@ BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(cppgir)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(giomm-2.68)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(glibmm-2.68) >= 2.76.0
 BuildRequires:  pkgconfig(gobject-2.0)
+BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(json11)
@@ -147,8 +150,8 @@ Requires:       open-sans-fonts
 Requires:       vazirmatn-fonts
 %endif
 
-BuildRequires:  pkgconfig(webkit2gtk-4.1)
-Requires:       webkit2gtk4.1%{?_isa}
+BuildRequires:  pkgconfig(webkitgtk-6.0)
+Requires:       webkitgtk6.0%{?_isa}
 
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
@@ -163,6 +166,7 @@ Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # Virtual provides for bundled libraries...
+Provides:       bundled(cld3) = 3.0.13~gitb48dc46
 Provides:       bundled(rlottie) = 0~git
 Provides:       bundled(libtgvoip) = 2.4.4
 Provides:       bundled(kf5-kcoreaddons) = 0~git%{kf5ver}
@@ -197,6 +201,11 @@ sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
 rm -f Telegram/ThirdParty/libtgvoip/json11.*
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i Telegram/{cmake,ThirdParty/libtgvoip}/lib_tgvoip.cmake
+
+rm -rf cmake/external/glib/cppgir
+sed \
+  -e 's|/usr/share/cppgir/|%{_datadir}/cppgir/|g' \
+  -i cmake/external/glib/generate_cppgir.cmake
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
@@ -286,6 +295,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.3-100
+- 4.8.3
+
 * Tue May 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.1-101
 - OpenSSL 3
 - Remove uneeded patches

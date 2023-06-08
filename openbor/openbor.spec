@@ -1,9 +1,9 @@
 %define _legacy_common_support 1
 %define _fortify_level 2
 
-%global commit 7f6f17507078848be625e6d1c1b4f41823151387
+%global commit ab6d51d6b53c93509f997510e366d01d6e9b5b2f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220422
+%global date 20230530
 %bcond_with snapshot
 
 %if %{with snapshot}
@@ -39,6 +39,7 @@ BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(SDL2_gfx)
 BuildRequires:  pkgconfig(vorbisfile)
 BuildRequires:  pkgconfig(vpx)
+BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 
 %description
@@ -89,9 +90,18 @@ sed \
   -e '/-o $(TARGET)/s|$(CFLAGS)|\0 $(LDFLAGS)|g' \
   -i engine/Makefile
 
-sed -e 's|$VERSION_BUILD|%{ver}|g' -i engine/version.sh
+sed \
+  -e 's|$VERSION_BUILD|%{ver}|g' \
+%if %{with snapshot}
+  -e '/read -r/d' \
+  -e 's|$VERSION_COMMIT|%{shortcommit}|g' \
+  -e 's|${VERSION_COMMIT}|%{shortcommit}|g' \
+  -e 's|0000000|%{shortcommit}|g' \
+%endif
+  -i engine/version.sh
 
 pushd engine
+chmod +x ./version.sh
 ./version.sh
 popd
 

@@ -1,8 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit bb6613888a57a7746e127f44dad447e3a9cf5f5e
+%global commit 17a549baf2c8100f2c7e7c244996d9ac85d23198
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230510
+%global date 20230605
+%global sbuild 8127
 %bcond_without snapshot
 
 # Enable ffmpeg support
@@ -16,9 +17,11 @@
 
 %global appname io.%{name}.mGBA
 
+%global snapver %%(echo %{version} | cut -d. -f-2)
+
 Name:           mgba
 Version:        0.11.0
-Release:        0.10%{?dist}
+Release:        0.11%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0
@@ -50,6 +53,7 @@ BuildRequires:  pkgconfig(lzmasdk-c) >= 22.01
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  libzip-tools
+BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
 BuildRequires:  pkgconfig(Qt5Multimedia)
@@ -122,7 +126,8 @@ sed -i \
   -e 's|${GIT_COMMIT}|%{commit}|g' \
   -e 's|${GIT_COMMIT_SHORT}|%{shortcommit}|g' \
   -e 's|${GIT_BRANCH}|master|g' \
-  -e 's|${GIT_REV}|-1|g' \
+  -e 's|${GIT_REV}|%{sbuild}|g' \
+  -e 's|${VERSION_STRING}|%{snapver}-%{sbuild}-%{shortcommit}|g' \
   src/core/version.c.in
 %endif
 
@@ -134,6 +139,8 @@ sed -e 's|BUILD_UPDATER ON|BUILD_UPDATER OFF|g' -i CMakeLists.txt
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DSKIP_GIT:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \
+  -DENABLE_SCRIPTING:BOOL=ON \
+  -DUSE_LUA:BOOL=ON \
 %if %{without ffmpeg}
   -DUSE_FFMPEG:BOOL=OFF \
 %endif
@@ -181,6 +188,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-0.11.20230605git17a549b
+- Enable scripting
+
 * Sun Oct 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-0.1.20221016git2cea9e6
 - 0.11.0 snapshot
 

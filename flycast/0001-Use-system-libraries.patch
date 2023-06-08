@@ -1,22 +1,22 @@
-From 238fc14cd719bd5ce03905fba75ec4ac3d87de84 Mon Sep 17 00:00:00 2001
+From d5a42be23a55e69e64daeab3a4047dfa814fc0f9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                | 83 ++++++++++++++++++++++++++++++++---
+ CMakeLists.txt                | 84 ++++++++++++++++++++++++++++++++---
  core/archive/7zArchive.cpp    |  7 +++
  core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 ++
  core/rend/vulkan/compiler.cpp |  4 ++
  core/rend/vulkan/shaders.h    |  4 ++
- 6 files changed, 101 insertions(+), 6 deletions(-)
+ 6 files changed, 102 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3b76b5f..0ab8de8 100644
+index 0d7a559..b74ee9d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -51,6 +51,9 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
+@@ -64,6 +64,9 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
  option(ENABLE_GDB_SERVER "Build with GDB debugging support" OFF)
  option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
@@ -26,7 +26,7 @@ index 3b76b5f..0ab8de8 100644
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -332,16 +335,40 @@ if(USE_OPENMP)
+@@ -358,16 +361,40 @@ if(USE_OPENMP)
  	endif()
  endif()
  
@@ -68,17 +68,18 @@ index 3b76b5f..0ab8de8 100644
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
  	option(SKIP_GLSLANG_INSTALL "Skip installation" ON)
  	option(ENABLE_SPVREMAPPER "Enables building of SPVRemapper" OFF)
-@@ -349,8 +376,8 @@ if(USE_VULKAN)
+@@ -375,8 +402,9 @@ if(USE_VULKAN)
  	option(ENABLE_HLSL "Enables HLSL input support" OFF)
  	option(ENABLE_PCH "Enables Precompiled header" OFF)
  	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
--	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
+-	target_link_libraries(${PROJECT_NAME} PRIVATE glslang-default-resource-limits SPIRV)
++	target_link_libraries(${PROJECT_NAME} PRIVATE glslang-default-resource-limits)
  endif()
-+target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
++	target_link_libraries(${PROJECT_NAME} PRIVATE SPIRV)
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -412,9 +439,17 @@ if(NOT LIBRETRO)
+@@ -438,9 +466,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -97,7 +98,7 @@ index 3b76b5f..0ab8de8 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
  	target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -426,7 +461,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -452,7 +488,6 @@ if(NOT WITH_SYSTEM_ZLIB)
  	get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -105,7 +106,7 @@ index 3b76b5f..0ab8de8 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
  	pkg_check_modules(AO IMPORTED_TARGET ao)
  	if(AO_FOUND)
-@@ -658,8 +692,25 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -696,8 +731,25 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -131,8 +132,8 @@ index 3b76b5f..0ab8de8 100644
  add_subdirectory(core/deps/libelf)
  target_link_libraries(${PROJECT_NAME} PRIVATE elf)
  if(NOT LIBRETRO)
-@@ -718,9 +769,13 @@ if(LIBRETRO)
- 		shell/libretro/vmu_xhair.cpp)
+@@ -764,9 +816,13 @@ if(LIBRETRO)
+ 	endif()
  endif()
  
 -target_sources(${PROJECT_NAME} PRIVATE
@@ -147,7 +148,7 @@ index 3b76b5f..0ab8de8 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1167,7 +1222,15 @@ if(USE_VULKAN)
+@@ -1251,7 +1307,15 @@ if(USE_VULKAN)
  		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_MACOS_MVK)
  	endif()
  
@@ -162,11 +163,11 @@ index 3b76b5f..0ab8de8 100644
 +	endif()
  	target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
  
- 	add_library(VulkanMemoryAllocator INTERFACE)
-@@ -1383,7 +1446,15 @@ if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(aarch64.*|AARCH64.*|arm64.*)" OR CMAKE_OSX_
- 	set(KNOWN_ARCHITECTURE_DETECTED ON)
+ 	if (APPLE)
+@@ -1471,7 +1535,15 @@ if("arm64" IN_LIST ARCHITECTURE)
+ 	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
- if(CMAKE_SYSTEM_PROCESSOR MATCHES "i686.*|i386.*|x86.*|amd64.*|x86_64.*|AMD64.*" OR CMAKE_OSX_ARCHITECTURES MATCHES "x86_64")
+ if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
 +	find_package(xbyak 6)
 +	if(xbyak_FOUND)
 +		message(STATUS "Using the system xbyak")
@@ -180,7 +181,7 @@ index 3b76b5f..0ab8de8 100644
  	if(CMAKE_SIZEOF_VOID_P EQUAL 4)
  		target_sources(${PROJECT_NAME} PRIVATE
 diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
-index 9a74502..d743695 100644
+index 98e2665..8ca9a3e 100644
 --- a/core/archive/7zArchive.cpp
 +++ b/core/archive/7zArchive.cpp
 @@ -19,9 +19,16 @@
@@ -198,10 +199,10 @@ index 9a74502..d743695 100644
  #include "deps/lzma/Alloc.h"
 +#endif
  
- #define kInputBufSize ((size_t)1 << 18)
+ #include <cstring>
  
 diff --git a/core/archive/7zArchive.h b/core/archive/7zArchive.h
-index 797f1bb..ef79635 100644
+index d15f459..c6de736 100644
 --- a/core/archive/7zArchive.h
 +++ b/core/archive/7zArchive.h
 @@ -21,8 +21,13 @@
@@ -217,12 +218,12 @@ index 797f1bb..ef79635 100644
 +#endif
  
  #include <algorithm>
- 
+ #include <cstring>
 diff --git a/core/archive/archive.cpp b/core/archive/archive.cpp
-index 904839a..615011d 100644
+index 69f255a..a2eb348 100644
 --- a/core/archive/archive.cpp
 +++ b/core/archive/archive.cpp
-@@ -20,17 +20,21 @@
+@@ -20,19 +20,23 @@
   */
  
  #include "archive.h"
@@ -230,36 +231,38 @@ index 904839a..615011d 100644
  #include "7zArchive.h"
 +#endif
  #include "ZipArchive.h"
+ #include "oslib/storage.h"
  
- Archive *OpenArchive(const char *path)
+ Archive *OpenArchive(const std::string& path)
  {
- 	std::string base_path(path);
- 
+ 	FILE *file = hostfs::storage().openFile(path, "rb");
 +#ifndef DISABLE_7ZIP
- 	Archive *sz_archive = new SzArchive();
- 	if (sz_archive->Open(base_path.c_str()) || sz_archive->Open((base_path + ".7z").c_str()) || sz_archive->Open((base_path + ".7Z").c_str()))
- 		return sz_archive;
- 	delete sz_archive;
+ 	if (file == nullptr)
+ 	{
+ 		file = hostfs::storage().openFile(path + ".7z", "rb");
+ 		if (file == nullptr)
+ 			file = hostfs::storage().openFile(path + ".7Z", "rb");
+ 	}
 +#endif
- 
- 	Archive *zip_archive = new ZipArchive();
- 	if (zip_archive->Open(base_path.c_str()) || zip_archive->Open((base_path + ".zip").c_str()) || zip_archive->Open((base_path + ".ZIP").c_str()))
+ 	if (file != nullptr)
+ 	{
+ 		Archive *sz_archive = new SzArchive();
 diff --git a/core/rend/vulkan/compiler.cpp b/core/rend/vulkan/compiler.cpp
-index bbbec25..c9cbc86 100644
+index a1619f3..3f6848c 100644
 --- a/core/rend/vulkan/compiler.cpp
 +++ b/core/rend/vulkan/compiler.cpp
-@@ -19,7 +19,11 @@
-     along with Flycast.  If not, see <https://www.gnu.org/licenses/>.
- */
- #include "compiler.h"
+@@ -22,7 +22,11 @@
+ #include "vulkan_context.h"
+ 
+ #include <glslang/Public/ResourceLimits.h>
 +#ifdef USE_HOST_SPIRV
 +#include <glslang/SPIRV/GlslangToSpv.h>
 +#else
- #include "SPIRV/GlslangToSpv.h"
+ #include <SPIRV/GlslangToSpv.h>
 +#endif
- #include "vulkan_context.h"
  
- static const TBuiltInResource DefaultTBuiltInResource = {
+ int ShaderCompiler::initCount;
+ 
 diff --git a/core/rend/vulkan/shaders.h b/core/rend/vulkan/shaders.h
 index 1481223..27d3f6a 100644
 --- a/core/rend/vulkan/shaders.h
@@ -277,5 +280,5 @@ index 1481223..27d3f6a 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.39.2
+2.40.1
 

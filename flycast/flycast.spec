@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5f161df06b0c206d0a43494a8435b545e6d2748a
+%global commit 236539c88161671350f6aa55580b2117400cd830
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230428
+%global date 20230605
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -17,19 +17,19 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 LuaBridge
 
-%global commit2 4c3d5fce1a4fef4decfbfeaf20f3746ecd209775
+%global commit2 1ab24bcc817ebe629bf77daa53529d02361cb1e9
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
-%global commit3 b75e5a02b6933caf86c5822d019067b335492c85
+%global commit3 9e61870ecbd32514113b467e0a0c46f60ed222c7
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 Vulkan-Headers
 
-%global commit4 a6bfc237255a6bac1513f7c1ebde6d8aed6b5191
+%global commit4 0e89587db3ebee4d463f191bd296374c5fafc8ea
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
-%global commit5 10423ec659d301a0ff2daac8bbf38980abf27590
+%global commit5 d1517d64cfca91f573af1bf7341dc3a5113349c0
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
@@ -43,21 +43,23 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global imgui_ver 1.80
+%global imgui_ver 1.89.6
 %global libelf_ver 1.0
-%global nowide_ver 0.0.0
+%global nowide_ver 11.3.0
 %global stb_ver 2.25
+%global vk_ver 1.3.250
 
 Name:           flycast
-Version:        2.0
-Release:        11%{?dist}
+Version:        2.1
+Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
 
 # ggpo - MIT
 # libelf - BSD-2-Clause
-License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+# nowire - Boost
+License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
 %if %{with snapshot}
@@ -78,8 +80,6 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
-
-Patch900:       0001-breakpad-gcc-13-build-fix.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -115,11 +115,11 @@ BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
 %if %{with sysvulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
+BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %endif
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
-Requires:       vulkan-loader%{?_isa} >= 1.3.224.1
+Requires:       vulkan-loader%{?_isa} >= %{vk_ver}
 
 Provides:       bundled(breakpad) = 0~git%{shortcommit2}
 Provides:       bundled(chdpsr)
@@ -156,14 +156,13 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
 
 cp -p breakpad/LICENSE LICENSE.breakpad
-cp -p nowide/COPYING COPYING.nowide
+cp -p nowide/LICENSE LICENSE.nowide
 cp -p picotcp/COPYING COPYING.picotcp
 popd
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 pushd core/deps/breakpad
-%patch -P 900 -p1
 sed -e '/" -Werror"/d' -i configure.ac
 autoreconf -if
 popd
@@ -219,10 +218,6 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/mappings
-for mapping in generic pandora xboxdrv xpad ;do
-  install -pm0644 shell/linux/mappings/controller_$mapping.cfg %{buildroot}%{_datadir}/%{name}/mappings/
-done
-install -pm0644 shell/linux/mappings/keyboard.cfg %{buildroot}%{_datadir}/%{name}/mappings/
 
 mkdir -p %{buildroot}%{_mandir}/man1
 install -m644 shell/linux/man/%{name}*.1 %{buildroot}%{_mandir}/man1/
@@ -256,12 +251,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/pixmaps/%{name}.png
-%{_datadir}/%{name}/
+%dir %{_datadir}/%{name}
+%dir %{_datadir}/%{name}/mappings
 %{_mandir}/man1/%{name}*.1*
 %{_metainfodir}/*.xml
 
 
 %changelog
+* Tue Jun 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-1.20230605git236539c
+- 2.1
+
 * Fri Jul 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.1-20.20220715git76bf574
 - Bump
 

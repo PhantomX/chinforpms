@@ -1131,6 +1131,7 @@ done
 
 %else
 rm -f %{_vpath_builddir}/opt/libreoffice%{verprod}/share/wizards/resources_*.properties
+rm -f %{_vpath_builddir}/opt/libreoffice%{verprod}/share/template/common/l10n/zh_CN_ott_normal.ott
 %endif
 
 mv wizards_resources_en_US.properties %{_vpath_builddir}/opt/libreoffice%{verprod}/share/wizards/resources_en_US.properties
