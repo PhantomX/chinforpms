@@ -56,10 +56,12 @@
 %global pkgname dolphin
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
-%global sbuild %%(echo %{version} | cut -d. -f4)
+# Rev number - 20413
+%global baserelease 39965
+%global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
-Version:        5.0.19552
+Version:        5.0.%{sbuild}
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 

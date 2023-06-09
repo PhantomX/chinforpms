@@ -59,6 +59,7 @@
 %global srcname8 mbedtls
 
 %global glad_ver 0.1.29
+%global nxtzdb_ver 220816
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 
@@ -67,7 +68,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3635
+%global vc_version 3651
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -121,12 +122,14 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 %dnl %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
+Source21:       https://github.com/lat9nq/tzdb_to_nx/releases/download/%{nxtzdb_ver}/%{nxtzdb_ver}.zip#/nx_tzdb-%{nxtzdb_ver}.zip
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
+Patch15:        0001-Lower-the-SDL2-requirement-a-bit.patch
 
 ExclusiveArch:  x86_64
 
@@ -199,6 +202,7 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
+Provides:       bundled(nx_tzdb) = %{nxtzdb_ver}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
@@ -228,7 +232,7 @@ This is the Qt frontend.
 
 %if %{with ea}
 pushd externals
-rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* inih libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers
+rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* inih libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers xbyak
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
@@ -301,6 +305,11 @@ rm -f src/core/network/network.h
 sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 
 cp -f %{S:20} dist/compatibility_list/
+cp -f %{S:21} %{nxtzdb_ver}.zip
+
+sed \
+  -e '/NX_TZDB_ARCHIVE/s|${CMAKE_CURRENT_BINARY_DIR}|${PROJECT_SOURCE_DIR}|g' \
+  -i externals/nx_tzdb/CMakeLists.txt
 
 
 %build

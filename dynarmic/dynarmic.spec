@@ -8,7 +8,7 @@
 %global commit 7da378033a7764f955516f75194856d87bbcd7a5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230507
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -19,8 +19,8 @@
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.4.7
-Release:        2%{?dist}
+Version:        6.4.8
+Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
@@ -97,6 +97,9 @@ rm -rf externals/{catch,fmt,robin-map,xbyak}
 
 
 %changelog
+* Thu Jun 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.8-1
+- 6.4.8
+
 * Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-1
 - 6.4.7
 

@@ -31,8 +31,8 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.1.1
-Release:        101%{?dist}
+Version:        23.1.2
+Release:        100%{?dist}
 
 Epoch:          100
 
@@ -206,6 +206,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Jun 08 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.1.2-100
+- 23.1.1
+
 * Sun May 28 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.1.1-101
 - Disable LTO for the time
 

@@ -78,8 +78,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.1.1
-Release:        101%{?dist}
+Version:        23.1.2
+Release:        100%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -710,6 +710,9 @@ popd
 
 
 %changelog
+* Thu Jun 08 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.2-100
+- 23.1.2
+
 * Sun May 28 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.1-101
 - Rawhide sync
 - Disable LTO for the time
