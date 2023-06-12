@@ -1,0 +1,25 @@
+From c716f6536351374013d09a3ecc8e63303b96b3ed Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Sun, 11 Jun 2023 10:38:46 -0300
+Subject: [PATCH] proton-tkg-additions: fixup 2
+
+---
+ dlls/winex11.drv/mouse.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/dlls/winex11.drv/mouse.c b/dlls/winex11.drv/mouse.c
+index b790f90..a3e397d 100644
+--- a/dlls/winex11.drv/mouse.c
++++ b/dlls/winex11.drv/mouse.c
+@@ -1701,7 +1701,7 @@ BOOL X11DRV_ClipCursor( const RECT *clip, BOOL reset )
+             struct x11drv_thread_data *data = x11drv_thread_data();
+             if (data)
+             {
+-                if ((data->clip_hwnd && EqualRect( clip, &clip_rect ) && !EqualRect(&clip_rect, &virtual_rect)) || clip_fullscreen_window( foreground, TRUE ))
++                if ((data->clip_hwnd && EqualRect( clip, &clip_rect ) && !EqualRect(&clip_rect, &virtual_rect)) || clip_fullscreen_window( NtUserGetForegroundWindow(), TRUE ))
+                     return TRUE;
+             }
+         }
+-- 
+2.41.0
+

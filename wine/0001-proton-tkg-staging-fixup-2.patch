@@ -1,0 +1,27 @@
+From 9444952bfdc5a15566931099a5280e3da48c700c Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Sun, 11 Jun 2023 11:37:15 -0300
+Subject: [PATCH] proton tkg staging fixup 2
+
+---
+ dlls/kernelbase/version.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/kernelbase/version.c b/dlls/kernelbase/version.c
+index 87de276..218ae7a 100644
+--- a/dlls/kernelbase/version.c
++++ b/dlls/kernelbase/version.c
+@@ -1751,8 +1751,8 @@ LONG WINAPI PackageFullNameFromId(const PACKAGE_ID *package_id, UINT32 *length,
+             || !(arch_str = string_from_processor_arch(package_id->processorArchitecture)))
+         return ERROR_INVALID_PARAMETER;
+ 
+-    swprintf(ver_str, ARRAY_SIZE(ver_str), L"%u.%u.%u.%u", package_id->version.u.s.Major,
+-            package_id->version.u.s.Minor, package_id->version.u.s.Build, package_id->version.u.s.Revision);
++    swprintf(ver_str, ARRAY_SIZE(ver_str), L"%u.%u.%u.%u", package_id->version.Major,
++            package_id->version.Minor, package_id->version.Build, package_id->version.Revision);
+     have_length = *length;
+     *length = lstrlenW(package_id->name) + 1 + lstrlenW(ver_str) + 1 + lstrlenW(arch_str) + 1
+             + lstrlenW(package_id->resourceId) + 1 + lstrlenW(package_id->publisherId) + 1;
+-- 
+2.41.0
+

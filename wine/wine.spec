@@ -1,6 +1,6 @@
-%global commit f4a43a8b2fb2de91924cb1c68a627130789d8341
+%global commit 781b8c3d6b793d310ef200963d61fb9dea49b353
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230519
+%global date 20230608
 %bcond_with snapshot
 
 %define _fortify_level 0
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.0
-%global winevulkan 1.3.250
+%global winevulkan 1.3.251
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -63,8 +63,8 @@
 %global winetiff 4.5.0
 %global winejxrlib 1.1
 %global winevkd3d 1.7
-%global winexml2 2.10.3
-%global winexslt 1.1.37
+%global winexml2 2.11.4
+%global winexslt 1.1.38
 %global winezlib 1.2.13
 %global winezydis 4.0.0
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 0cd181d0cea4770640325a55daf9f312eb206331
+%global wine_stagingver 8.10
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 6b08ee11773f2a3620bfb642ee8db58b981c44ca
+%global tkg_id df6c3d41c6035aa050382f12a0b0c87f912acda0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -131,8 +131,6 @@
 %bcond_with fshack
 # Shared gpu resources
 %bcond_with sharedgpures
-
-%global wine_staging_opts -W winex11-CandidateWindowPos
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -155,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.9
+Version:        8.10
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -259,6 +257,9 @@ Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 Patch1041:       0001-Revert-proton-tkg-staging-ntdll-Guard-against-syscal.patch
+Patch1042:       0001-proton-tkg-additions-fixup-1.patch
+Patch1043:       0001-proton-tkg-additions-fixup-2.patch
+Patch1044:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -916,7 +917,10 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %patch -P 701 -p1
 %patch -P 1027 -p1
 %patch -P 1041 -p1
+%patch -P 1042 -p1
 %patch -P 1028 -p1
+%patch -P 1043 -p1
+%patch -P 1044 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
@@ -924,7 +928,7 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %patch -P 1030 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
-%patch -P 1033 -p1
+%dnl %patch -P 1033 -p1
 %dnl #FIXME see bugzilla (Elder Scrolls Online crash) %patch1034 -p1
 %dnl #FIXME needs rebase %patch -P 1035 -p1
 %dnl #FIXME needs rebase %patch -P 1036 -p1
@@ -2516,6 +2520,9 @@ fi
 
 
 %changelog
+* Sun Jun 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.10-100
+- 8.10
+
 * Sat May 27 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.9-100
 - 8.9
 
