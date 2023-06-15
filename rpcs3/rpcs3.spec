@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 6aff2803e53e05fbc5d064c1edaa5dea5ac877de
+%global commit 49c6c2c52910101b9ea8df7ab41d00103601c1ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230608
+%global date 20230613
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -105,7 +105,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.28.15157
+Version:        0.0.28.15183
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -147,11 +147,6 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
-
-Patch0:        %{vc_url}/%{name}/pull/13967.patch#/%{name}-gh-pr13967.patch
-Patch1:        %{vc_url}/%{name}/pull/13975.patch#/%{name}-gh-pr13975.patch
-Patch2:        %{vc_url}/%{name}/pull/13984.patch#/%{name}-gh-pr13984.patch
-Patch3:        %{vc_url}/%{name}/pull/13985.patch#/%{name}-gh-pr13985.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch

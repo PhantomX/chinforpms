@@ -1,7 +1,7 @@
 NAME = claws-mail
-VERSION ?= a9a16a253ed3865a51db5e306539d3494087dafd
+VERSION ?= c18a2f85c5680a0aaeefff4e949a25666aab13bd
 SNAPSHOT ?= 1
-SNAPROOT = https://git.claws-mail.org/readonly/claws.git
+SNAPROOT = git://git.claws-mail.org/claws.git
 
 ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
@@ -20,7 +20,7 @@ clean:
 	rm -f ${NAME}-${TARBALLVER}.tar.xz
 
 clone: clean
-	git clone ${SNAPROOT} ${DIRNAME}
+	git clone --depth 1 ${SNAPROOT} ${DIRNAME}
 
 archive: clone
 	cd ${DIRNAME} && git archive --format=tar --prefix=claws-${VERSION}/ ${DLSTR} | xz -9 > ../${NAME}-${TARBALLVER}.tar.xz

@@ -1,6 +1,6 @@
-%global commit a9a16a253ed3865a51db5e306539d3494087dafd
+%global commit c18a2f85c5680a0aaeefff4e949a25666aab13bd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230419
+%global date 20230609
 %bcond_without snapshot
 
 %global with_python  1
@@ -12,8 +12,8 @@
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global with_autotools 1
-%global extra_ver 999
-%global src_hash f04fe0c5d47297984c08c9dbf34f46f1
+%global extra_ver 64
+%global src_hash ddc852416530bfe27bb1f7e1f9310da2
 %else
 %global extra_ver 0
 %endif
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.1.1
-Release:        104%{?dist}
+Release:        105%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -452,7 +452,7 @@ exporting of your meetings or all your calendars.
 %autosetup %{?with_snapshot:-n claws-%{commit}} -p1
 
 %if %{with snapshot}
-echo 'echo %{version}-%{extra_ver}-%{shortcommit}' > version
+echo 'echo %{version}-%{extra_ver}-g%{shortcommit}' > version
 %endif
 
 %if 0%{?with_autotools}

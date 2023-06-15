@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.9.3
+Version:        3.9.4
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -33,11 +33,11 @@ Requires:       hicolor-icon-theme
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
 
-%global __requires_exclude ^libffmpeg.so
-%global __requires_exclude %__requires_exclude|^libEGL.so
-%global __requires_exclude %__requires_exclude|^libGLESv2.so
-%global __requires_exclude %__requires_exclude|^libvk_swiftshader.so
-%global __requires_exclude %__requires_exclude|^libvulkan.so
+%global __requires_exclude ^libffmpeg\\.so.*$
+%global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
+%global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvk_swiftshader\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvulkan\\.so.*$
 
 
 %description
@@ -134,6 +134,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Jun 12 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.4-1
+- 3.9.4
+
 * Thu Apr 27 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.3-1
 - 3.9.3
 

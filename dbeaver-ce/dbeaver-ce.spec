@@ -1,5 +1,6 @@
 %global _build_id_links none
 %undefine _debugsource_packages
+%global __jar_repack %{nil}
 
 %global rname   dbeaver
 
@@ -8,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        23.0.2
+Version:        23.1.0
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -105,6 +106,9 @@ done
 
 
 %changelog
+* Wed Jun 14 2023 Phantom X <megaphantomx at hotmail dot com> - 23.1.0-1
+- 23.1.0
+
 * Mon Apr 17 2023 Phantom X <megaphantomx at hotmail dot com> - 23.0.2-1
 - 23.0.2
 

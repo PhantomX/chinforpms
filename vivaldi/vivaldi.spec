@@ -13,10 +13,10 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 110.0.5481.100
+%global ffmpegcodec 112.0.5615.49
 
 Name:           vivaldi
-Version:        6.0.2979.25
+Version:        6.1.3035.75
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -166,7 +166,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
-* Tue Jun 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.0.2979.25-1
+* Wed Jun 14 2023 - 6.1.3035.75-1
+- 6.1.3035.75
+
+* Tue Jun 06 2023 - 6.0.2979.25-1
 - 6.0.2979.25
 
 * Thu May 18 2023 - 6.0.2979.22-1
