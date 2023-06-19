@@ -45,7 +45,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4536
+Version:        1.7.4592
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -194,8 +194,6 @@ cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p zydis/LICENSE LICENSE.zydis
 popd
 
-
-
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
   pcsx2/Docs/Configuration_Guide/Configuration_Guide.md
@@ -213,6 +211,8 @@ sed -i \
   -e '/PCSX2_GIT_TAG/s| ""| "v%{version}"|g' \
 %endif
   cmake/Pcsx2Utils.cmake
+
+sed -e '/DEFAULT_USE_SYSTEM_RYML/s|OFF|ON|' -i cmake/BuildParameters.cmake
 
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{appres}|g' \

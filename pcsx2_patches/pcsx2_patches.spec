@@ -1,6 +1,6 @@
-%global commit 56c088374ad398daff702a2078ce046fc5ec6787
+%global commit e3f85da3aa0d8a0a956f37f9e63b2ed597de7169
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230418
+%global date 20230611
 
 BuildArch:      noarch
 
@@ -31,22 +31,19 @@ cp %{S:1} .
 
 
 %build
-for i in cheats_{ni,ws} ;do
-  pushd ${i}
-  zip -9 -q ../${i}.zip *.pnach
-  popd
-done
+pushd patches
+zip -9 -q ../patches.zip *.pnach
+popd
 
 
 %install
 mkdir -p %{buildroot}%{_datadir}/PCSX2/resources
-install -pm0644 cheats_{ni,ws}.zip %{buildroot}%{_datadir}/PCSX2/resources/
+install -pm0644 patches.zip %{buildroot}%{_datadir}/PCSX2/resources/
 
 
 %files
 %license COPYING.GPLv3
-%{_datadir}/PCSX2/resources/cheats_ni.zip
-%{_datadir}/PCSX2/resources/cheats_ws.zip
+%{_datadir}/PCSX2/resources/patches.zip
 
 
 %changelog

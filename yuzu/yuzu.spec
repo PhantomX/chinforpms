@@ -58,8 +58,16 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
+%global commit9 34df65eff295c2bd9ee9e6a077d662486d5cabb3
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 tzdb_to_nx
+
+%global commit10 ce4d77644d2793027bb27f095dec7b530edcd947
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 tz
+
 %global glad_ver 0.1.29
-%global nxtzdb_ver 220816
+%global nxtzdb_ver 230404
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 
@@ -68,7 +76,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3651
+%global vc_version 3697
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -119,10 +127,11 @@ Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{sr
 %if !%{with mbedtls}
 Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
+Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %dnl %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
-Source21:       https://github.com/lat9nq/tzdb_to_nx/releases/download/%{nxtzdb_ver}/%{nxtzdb_ver}.zip#/nx_tzdb-%{nxtzdb_ver}.zip
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
@@ -202,7 +211,7 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
-Provides:       bundled(nx_tzdb) = %{nxtzdb_ver}
+Provides:       bundled(nx_tzdb) = ~git%{?shortcommit2}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
@@ -254,6 +263,9 @@ tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
 %if %{without mbedtls}
 tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 %endif
+mkdir externals/nx_tzdb/tzdb_to_nx
+tar -xf %{S:9} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
+tar -xf %{S:10} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 
 %autopatch -p1
 
@@ -270,6 +282,7 @@ cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 %if %{without mbedtls}
 cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
+cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p sirit/LICENSE.txt LICENSE.sirit
 popd
 
@@ -299,17 +312,18 @@ sed \
 %endif
   -i src/common/scm_rev.cpp.in
 
+sed \
+  -e 's|GIT_PROGRAM git|GIT_PROGRAM true|g' \
+  -e 's|${TZ_COMMIT_TIME}|1680663527|g' \
+  -e 's|${TZDB_VERSION}|nxtzdb_ver|g' \
+  -i externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt
+
 # https://github.com/pineappleEA/pineapple-src/issues/80
 rm -f src/core/network/network.h
 
 sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 
 cp -f %{S:20} dist/compatibility_list/
-cp -f %{S:21} %{nxtzdb_ver}.zip
-
-sed \
-  -e '/NX_TZDB_ARCHIVE/s|${CMAKE_CURRENT_BINARY_DIR}|${PROJECT_SOURCE_DIR}|g' \
-  -i externals/nx_tzdb/CMakeLists.txt
 
 
 %build
