@@ -161,7 +161,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.3.8
+%define specrpmversion 6.3.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -191,14 +191,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2c1b089df5f2437f0c1e723c0b87ae8b7a7d9b72
+%global pfcommit f4c840b46da817340aab09d3a0525018660e4647
 %global pf_first_commit 457391b0380335d5e9a5babdec90ac53928b23b4
-%global pfcoprhash cefaba27f11146ac112ac67b672ccc11
+%global pfcoprhash 361df4cb8baf6a5cc97c9a8b311648fa
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -220,7 +220,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 627a49e9def58335d62b46bbc1bc5babeff5f145
+%global opensuse_id 688062047e17c250d8549742374655395d3d3099
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -960,6 +960,7 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1014: %{opensuse_url}/drm-amdgpu-sdma4-set-align-mask-to-255.patch#/openSUSE-drm-amdgpu-sdma4-set-align-mask-to-255.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -3089,6 +3090,9 @@ fi
 #
 #
 %changelog
+* Wed Jun 21 2023  Phantom X <megaphantomx at hotmail dot com> - 6.3.9-500.chinfo
+- 6.3.9 - pf6
+
 * Wed Jun 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.8-500.chinfo
 - 6.3.8 - pf5
 

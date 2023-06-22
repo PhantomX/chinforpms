@@ -1,5 +1,20 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7fbd55f9899d0e8ec17ee56f7835885278bd2005
+ 7fbd55f9899d0e8ec17ee56f7835885278bd2005 Bluetooth: Add VID/PID 0489/e0e4 for MediaTek MT7922
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/c707ce93be6a6f4524cf88e3f18e0437d7bd2b14
+ c707ce93be6a6f4524cf88e3f18e0437d7bd2b14 usb: typec: ucsi: Fix command cancellation
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ac99dd89b9e59639ebec28116dd57302b0148c16
+ ac99dd89b9e59639ebec28116dd57302b0148c16 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/0e410712ded4b03690a7f8216433dd4a4f3a5fe7
+ 0e410712ded4b03690a7f8216433dd4a4f3a5fe7 xfs: fix livelock in delayed allocation at ENOSPC
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/6a5320b108d9739ed27db75e0a1aaae72ea236c1
  6a5320b108d9739ed27db75e0a1aaae72ea236c1 [PATCH] ALSA: hda/realtek: Add quirk for ThinkPad P1 Gen 6
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/3ba7783be2309d9b9dde3f9a75587a40f9a7071b
+ 3ba7783be2309d9b9dde3f9a75587a40f9a7071b xfs: verify buffer contents when we skip log replay
 
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/ef2316f5985938889a33e0d8f579a8bd74b79b6f
  ef2316f5985938889a33e0d8f579a8bd74b79b6f redhat: version two of Makefile.rhelver tweaks

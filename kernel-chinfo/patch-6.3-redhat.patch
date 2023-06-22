@@ -9,11 +9,13 @@
  drivers/acpi/irq.c                                 |  17 ++-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
+ drivers/bluetooth/btusb.c                          |   3 +
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/firmware/sysfb.c                           |  18 ++-
  drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -35,10 +37,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |   6 +
  sound/pci/hda/patch_realtek.c                      |   2 +
- 38 files changed, 492 insertions(+), 186 deletions(-)
+ 39 files changed, 512 insertions(+), 187 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d710ff6a3d56..fafd28dd7b62 100644
+index f8ee72375885..8f848f64ad80 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -102,10 +104,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 5f0f5c86963a..f02ea90d1d4b 100644
+index e43ee9becbbb..a167e34eaa56 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2519,3 +2519,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2518,3 +2518,8 @@ int ipl_report_free(struct ipl_report *report)
  }
 
  #endif
@@ -294,6 +296,20 @@ index 8f216de76648..51337c993a16 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index 0923582299f3..e88dd1a937a3 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -615,6 +615,9 @@ static const struct usb_device_id blacklist_table[] = {
+ 	{ USB_DEVICE(0x0489, 0xe0e2), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
++	{ USB_DEVICE(0x0489, 0xe0e4), .driver_info = BTUSB_MEDIATEK |
++						     BTUSB_WIDEBAND_SPEECH |
++						     BTUSB_VALID_LE_STATES },
+ 	{ USB_DEVICE(0x0489, 0xe0f2), .driver_info = BTUSB_MEDIATEK |
+ 						     BTUSB_WIDEBAND_SPEECH |
+ 						     BTUSB_VALID_LE_STATES },
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -556,6 +572,42 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 3c197db42c9d..16e4a2e90fae 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -34,6 +34,22 @@
+ #include <linux/screen_info.h>
+ #include <linux/sysfb.h>
+
++static int skip_simpledrm;
++
++static int __init simpledrm_disable(char *opt)
++{
++	if (!opt)
++                return -EINVAL;
++
++	get_option(&opt, &skip_simpledrm);
++
++	if (skip_simpledrm)
++		pr_info("The simpledrm driver will not be probed\n");
++
++	return 0;
++}
++early_param("nvidia-drm.modeset", simpledrm_disable);
++
+ static struct platform_device *pd;
+ static DEFINE_MUTEX(disable_lock);
+ static bool disabled;
+@@ -85,7 +101,7 @@ static __init int sysfb_init(void)
+
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+-	if (compatible) {
++	if (compatible && !skip_simpledrm) {
+ 		pd = sysfb_create_simplefb(si, &mode);
+ 		if (!IS_ERR(pd))
+ 			goto unlock_mutex;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -942,7 +994,7 @@ index 256a38371120..a77075a6abb5 100644
   * Changes the default domain of an iommu group that has *only* one device
   *
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index bdf1601219fc..0a451e5e2621 100644
+index c015393beeee..d97dac7ae5a7 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -1009,7 +1061,7 @@ index bdf1601219fc..0a451e5e2621 100644
  #ifdef CONFIG_NVME_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 9171452e2f6d..289bbb3523ce 100644
+index 2bc159a318ff..d5562a97f232 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -1045,7 +1097,7 @@ index 9171452e2f6d..289bbb3523ce 100644
 
  	spin_lock_irqsave(&ns->head->requeue_lock, flags);
  	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -905,8 +911,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+@@ -904,8 +910,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
  	int error = 0;
 
  	/* check if multipath is enabled and we have the capability */
@@ -1056,10 +1108,10 @@ index 9171452e2f6d..289bbb3523ce 100644
 
  	if (!ctrl->max_namespaces ||
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index bf46f122e9e1..06dd6bc08962 100644
+index a2d4f59e0535..1c5092b995e9 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
-@@ -873,6 +873,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+@@ -878,6 +878,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
  void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
  void nvme_failover_req(struct request *req);
@@ -1067,7 +1119,7 @@ index bf46f122e9e1..06dd6bc08962 100644
  void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
  int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
  void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -911,6 +912,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+@@ -916,6 +917,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
  static inline void nvme_failover_req(struct request *req)
  {
  }
@@ -1078,7 +1130,7 @@ index bf46f122e9e1..06dd6bc08962 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index f4e2a88729fd..d3ba2beeb4d6 100644
+index c525867760bf..549083cdf0ec 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1377,10 +1429,10 @@ index cf6cc576736f..3653a4f35265 100644
  int security_perf_event_open(struct perf_event_attr *attr, int type)
  {
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 379f216158ab..5711a9365a91 100644
+index 920e44ba998a..921398590e3f 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -9706,6 +9706,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -9733,6 +9733,8 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x17aa, 0x2318, "Thinkpad Z13 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x2319, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),
  	SND_PCI_QUIRK(0x17aa, 0x231a, "Thinkpad Z16 Gen2", ALC287_FIXUP_CS35L41_I2C_2),

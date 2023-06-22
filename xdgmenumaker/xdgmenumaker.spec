@@ -1,5 +1,5 @@
 Name:           xdgmenumaker
-Version:        2.0
+Version:        2.1
 Release:        1%{?dist}
 Summary:        Generates application menus using xdg information
 
@@ -58,6 +58,9 @@ done
 
 
 %changelog
+* Tue Jun 20 2023 Phantom X <megaphantomx at hotmail dot com> - 2.1-1
+- 2.1
+
 * Wed Jun 22 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0-1
 - 2.0
 
