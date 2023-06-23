@@ -1,5 +1,5 @@
 Name:           pipe-viewer
-Version:        0.4.6
+Version:        0.4.7
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
@@ -129,6 +129,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Thu Jun 22 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.7-1
+- 0.4.7
+
 * Thu May 18 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.6-1
 - 0.4.6
 
