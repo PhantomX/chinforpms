@@ -13,7 +13,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 d4f3e12db0609158c7b4e0beef2bb950aad0ccb9
+%global commit1 a231cb5e9a741e1893b0d7669c363d57550295a8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -45,7 +45,7 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 parallel-rdp-standalone
 
-%global commit10 a6886b1ae022936a2e542af9bfbab40ea0af5af5
+%global commit10 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 mupen64plus-input-gca
 
@@ -63,7 +63,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.4.0
+Version:        0.4.1
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -252,6 +252,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Jun 25 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-1
+- 0.4.1
+
 * Sat May 06 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.0-1
 - 0.4.0
 

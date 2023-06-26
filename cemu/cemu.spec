@@ -27,7 +27,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~36
+Version:        2.0~42
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -71,6 +71,7 @@ BuildRequires:  cmake(RapidJSON)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-protocols)
 BuildRequires:  wxGTK-devel >= 3.2
 BuildRequires:  pkgconfig(zarchive)
 BuildRequires:  pkgconfig(zlib)

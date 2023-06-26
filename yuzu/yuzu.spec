@@ -38,6 +38,10 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
+%global commit2 0aa3989b8f382f185fdf646cc83a1d16fa31d6ab
+%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
+%global srcname2 VulkanMemoryAllocator
+
 %global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
@@ -58,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 34df65eff295c2bd9ee9e6a077d662486d5cabb3
+%global commit9 8c272f21d19c6e821345fd055f41b9640f9189d0
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
@@ -76,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3697
+%global vc_version 3708
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -120,6 +124,7 @@ Source0:        %{vc_url}/%{vc_name}/archive/%{vc_tarball}-%{version}/%{vc_name}
 %if %{without dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %endif
+Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{ext_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
@@ -211,11 +216,12 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
-Provides:       bundled(nx_tzdb) = ~git%{?shortcommit2}
+Provides:       bundled(vma) = ~git%{?shortcommit2}
 Provides:       bundled(sirit) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
+Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit9}
 
 %if "%{?repo}"
 Provides:       %{name}%{?repo:-%{repo}}%{?_isa} = %{version}-%{release}
@@ -256,6 +262,8 @@ tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 %endif
+mkdir -p externals/vma/vma
+tar -xf %{S:2} -C externals/vma/vma/ --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
@@ -284,6 +292,7 @@ cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p sirit/LICENSE.txt LICENSE.sirit
+cp -p vma/vma/LICENSE.txt LICENSE.vma
 popd
 
 %if %{without mbedtls}
