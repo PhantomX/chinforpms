@@ -1,1 +1,1 @@
-CONFIG_PCCARD=y
+# CONFIG_PCCARD is not set

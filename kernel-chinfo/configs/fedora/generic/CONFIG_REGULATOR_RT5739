@@ -1,0 +1,14 @@
+# Symbol: REGULATOR_RT5739 [=n]
+# Type  : tristate
+# Defined at drivers/regulator/Kconfig:1133
+#   Prompt: Richtek RT5739 Regulator
+#   Depends on: REGULATOR [=y] && I2C [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Voltage and Current Regulator Support (REGULATOR [=y])
+#         -> Richtek RT5739 Regulator (REGULATOR_RT5739 [=n])
+# Selects: REGMAP_I2C [=y]
+# 
+# 
+# 
+CONFIG_REGULATOR_RT5739=m

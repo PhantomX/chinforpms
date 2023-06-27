@@ -129,7 +129,7 @@ popd
 
 if [ -z "$Dest" ]; then
 	sed -e "s|^.|${ModDir}|g" "$Dir"/dep2.list > "$RpmDir/$ListName"
-	echo "./$RpmDir/$ListName created."
+	echo "$RpmDir/$ListName created."
 	[ -d "$RpmDir/etc/modprobe.d/" ] || mkdir -p "$RpmDir/etc/modprobe.d/"
 	foreachp check_blacklist < "$List"
 fi

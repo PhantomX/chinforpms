@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        5.13.11.1288
+Version:        5.15.0.4063
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -27,6 +27,7 @@ BuildRequires:  chrpath
 BuildRequires:  ImageMagick
 Requires:       hicolor-icon-theme
 
+Provides:       bundled(ffmpeg) = 4.4
 Provides:       bundled(libicu) = 56.1
 Provides:       bundled(qt) = 5.12.10
 
@@ -34,9 +35,10 @@ Provides:       bundled(qt) = 5.12.10
 
 %global __requires_exclude ^libfaac1\\.so.*$
 %global __requires_exclude %__requires_exclude|^libaomagent\\.so.*$
-%global __requires_exclude %__requires_exclude|^libav\(codec|util\)\\.so.*$
+%global __requires_exclude %__requires_exclude|^libav\(codec|format|util\)\\.so.*$
 %global __requires_exclude %__requires_exclude|^libcef\\.so.*$
 %global __requires_exclude %__requires_exclude|^libclDNN64\\.so.*$
+%global __requires_exclude %__requires_exclude|^libdvf\\.so.*$
 %global __requires_exclude %__requires_exclude|^libfdkaac2.*\\.so.*$
 %global __requires_exclude %__requires_exclude|^libicu.*\\.so.*$
 %global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
@@ -46,6 +48,7 @@ Provides:       bundled(qt) = 5.12.10
 %global __requires_exclude %__requires_exclude|^libmpg123\\.so.*$
 %global __requires_exclude %__requires_exclude|^libOpenCL\\.so.*$
 %global __requires_exclude %__requires_exclude|^libswresample\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvulkan\\.so.*$
 %global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
 
 
@@ -149,6 +152,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Tue Jun 27 2023 - 5.15.0.4063-1
+- 5.15.0.4063
+
 * Thu Mar 16 2023 - 5.13.11.1288-1
 - 5.13.11.1288
 

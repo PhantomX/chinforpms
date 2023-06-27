@@ -25,6 +25,7 @@ ext4-inode-test
 fat_test
 fortify_kunit
 gss_krb5_test
+handshake-test
 hashtable_test
 iio-test-format
 iio-test-rescale
@@ -48,6 +49,7 @@ rational-test
 rcuscale
 rcutorture
 refscale
+regmap-kunit
 resource_kunit
 rocker
 scftorture

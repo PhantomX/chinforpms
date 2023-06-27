@@ -1,0 +1,121 @@
+From: Florian Weimer <fweimer@redhat.com>
+Subject: [PATCH v4] perf: Avoid implicit function declarations in
+ lexer/parse interface
+To: linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Ian Rogers <irogers@google.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ian Rogers <irogers@google.com>,
+        Justin M. Forbes <jforbes@fedoraproject.org>
+Date: Wed, 03 May 2023 20:06:09 +0200 (25 minutes, 29 seconds ago)
+Message-ID: <874jot47e6.fsf@oldenburg.str.redhat.com>
+
+In future compilers, -Wno-implicit-function-declaration may not bring
+back support for implicit function declarations, a feature that was
+removed from the C language in C99.  Instead of relying on implicit
+declarations, include the flex-generated header from the
+bison-generated C code.
+
+The expr-flex.h and pmu-flex.h headers needs to be included very late,
+so that the definition of YYSTYPE is available at that point.
+
+Signed-off-by: Florian Weimer <fweimer@redhat.com>
+
+---
+v4: Rebase on top of perf-next and integrate with bpf-filter.y as well.
+    Even later inclusion of "pmu-flex.h".
+v3: Fix commit message typo.  Try to repost via different mail server.
+v2: Include the flex-generated files instead of manually-written prototypes.
+ tools/perf/util/Build          | 11 ++++++++++-
+ tools/perf/util/bpf-filter.y   |  1 +
+ tools/perf/util/expr.y         |  2 ++
+ tools/perf/util/parse-events.y |  1 +
+ tools/perf/util/pmu.y          |  4 ++++
+ 5 files changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/tools/perf/util/Build b/tools/perf/util/Build
+index bd18fe5f2719..865ce4f66756 100644
+--- a/tools/perf/util/Build
++++ b/tools/perf/util/Build
+@@ -298,7 +298,7 @@ CFLAGS_bpf-filter-flex.o    += $(flex_flags)
+ bison_flags := -DYYENABLE_NLS=0
+ BISON_GE_35 := $(shell expr $(shell $(BISON) --version | grep bison | sed -e 's/.\+ \([0-9]\+\).\([0-9]\+\)/\1\2/g') \>\= 35)
+ ifeq ($(BISON_GE_35),1)
+-  bison_flags += -Wno-unused-parameter -Wno-nested-externs -Wno-implicit-function-declaration -Wno-switch-enum -Wno-unused-but-set-variable -Wno-unknown-warning-option
++  bison_flags += -Wno-unused-parameter -Wno-nested-externs -Wno-switch-enum -Wno-unused-but-set-variable -Wno-unknown-warning-option
+ else
+   bison_flags += -w
+ endif
+@@ -357,3 +357,12 @@ $(OUTPUT)util/vsprintf.o: ../lib/vsprintf.c FORCE
+ $(OUTPUT)util/list_sort.o: ../lib/list_sort.c FORCE
+ 	$(call rule_mkdir)
+ 	$(call if_changed_dep,cc_o_c)
++
++# These dependencies ensure that the flex-generated .h file is
++# available at the time the bison-generated .c sources are compiled.
++# Do not depend on the generated .h file to prevent triggering
++# parallel flex invocations for the same two output files.
++$(OUTPUT)util/bpf-filter-bison.o : $(OUTPUT)util/bpf-filter-flex.c
++$(OUTPUT)util/expr-bison.o : $(OUTPUT)util/expr-flex.c
++$(OUTPUT)util/parse-events-bison.o : $(OUTPUT)util/parse-events-flex.c
++$(OUTPUT)util/pmu-bison.o : $(OUTPUT)util/pmu-flex.c
+diff --git a/tools/perf/util/bpf-filter.y b/tools/perf/util/bpf-filter.y
+index 07d6c7926c13..935afafe22eb 100644
+--- a/tools/perf/util/bpf-filter.y
++++ b/tools/perf/util/bpf-filter.y
+@@ -8,6 +8,7 @@
+ #include <linux/compiler.h>
+ #include <linux/list.h>
+ #include "bpf-filter.h"
++#include "bpf-filter-flex.h"
+ 
+ static void perf_bpf_filter_error(struct list_head *expr __maybe_unused,
+ 				  char const *msg)
+diff --git a/tools/perf/util/expr.y b/tools/perf/util/expr.y
+index 250e444bf032..8879fa14960f 100644
+--- a/tools/perf/util/expr.y
++++ b/tools/perf/util/expr.y
+@@ -53,6 +53,8 @@
+ %destructor { ids__free($$.ids); } <ids>
+ 
+ %{
++#include "expr-flex.h"
++
+ static void expr_error(double *final_val __maybe_unused,
+ 		       struct expr_parse_ctx *ctx __maybe_unused,
+ 		       bool compute_ids __maybe_unused,
+diff --git a/tools/perf/util/parse-events.y b/tools/perf/util/parse-events.y
+index 4488443e506e..401d33714b23 100644
+--- a/tools/perf/util/parse-events.y
++++ b/tools/perf/util/parse-events.y
+@@ -17,6 +17,7 @@
+ #include "evsel.h"
+ #include "parse-events.h"
+ #include "parse-events-bison.h"
++#include "parse-events-flex.h"
+ 
+ void parse_events_error(YYLTYPE *loc, void *parse_state, void *scanner, char const *msg);
+ 
+diff --git a/tools/perf/util/pmu.y b/tools/perf/util/pmu.y
+index dff4e892ac4d..9c67f3d05a80 100644
+--- a/tools/perf/util/pmu.y
++++ b/tools/perf/util/pmu.y
+@@ -32,6 +32,10 @@ do { \
+ 	DECLARE_BITMAP(bits, PERF_PMU_FORMAT_BITS);
+ }
+ 
++%{
++#include "pmu-flex.h"
++%}
++
+ %%
+ 
+ format:
+
+base-commit: 5d27a645f60940fdf589e4ff5351506a7f0fdbaa

@@ -1,0 +1,13 @@
+# Symbol: PER_VMA_LOCK_STATS [=y]
+# Type  : bool
+# Defined at mm/Kconfig.debug:274
+#   Prompt: Statistics for per-vma locks
+#   Depends on: PER_VMA_LOCK [=y]
+#   Location:
+#     -> Kernel hacking
+#       -> Memory Debugging
+#         -> Statistics for per-vma locks (PER_VMA_LOCK_STATS [=y])
+# 
+# 
+# 
+CONFIG_PER_VMA_LOCK_STATS=y

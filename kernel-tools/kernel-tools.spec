@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.3.9
+%define specrpmversion 6.4.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -63,6 +63,8 @@ Source2001: cpupower.config
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/patch-%{specversion}.xz
 %endif
 
+Patch1: kernel-tools-c99.patch
+
 
 # Extra
 
@@ -105,6 +107,7 @@ BuildRequires: libnl3-devel
 BuildRequires: pciutils-devel gettext ncurses-devel
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 BuildRequires: rpm-build, elfutils
+BuildRequires: elfutils-debuginfod-client-devel
 %{?systemd_requires}
 BuildRequires: systemd
 
@@ -187,6 +190,18 @@ testing Linux as a black box, rtla leverages kernel tracing
 capabilities to provide precise information about the properties
 and root causes of unexpected results.
 
+%package -n rv
+Summary:        RV: Runtime Verification
+License:        GPL-2.0-only
+
+%description -n rv
+Runtime Verification (RV) is a lightweight (yet rigorous) method that
+complements classical exhaustive verification techniques (such as model
+checking and theorem proving) with a more practical approach for
+complex systems.
+The rv tool is the interface for a collection of monitors that aim
+analysing the logical and timing behavior of Linux.
+
 
 %prep
 %setup -q -n kernel-%{tarfile_release} -c
@@ -197,7 +212,7 @@ cd linux-%{tarfile_release}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 
-%dnl %patch1 -p1
+%patch1 -p1
 
 # END OF PATCH APPLICATIONS
 
@@ -269,6 +284,9 @@ popd
 # build VM tools
 pushd tools/mm/
 %{tools_make} slabinfo page_owner_sort
+popd 
+pushd tools/verification/rv/
+%{tools_make}
 popd
 pushd tools/tracing/rtla
 %{tools_make}
@@ -374,6 +392,9 @@ popd
 pushd tools/mm/
 install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
 install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
+popd
+pushd tools/verification/rv/
+%{tools_make} DESTDIR=%{buildroot} install
 popd
 pushd tools/tracing/rtla/
 %{tools_make} DESTDIR=%{buildroot} install
@@ -543,8 +564,19 @@ popd
 %{_mandir}/man1/rtla-timerlat.1.gz
 %{_mandir}/man1/rtla.1.gz
 
+%files -n rv
+%{_bindir}/rv
+%{_mandir}/man1/rv-list.1.gz
+%{_mandir}/man1/rv-mon-wip.1.gz
+%{_mandir}/man1/rv-mon-wwnr.1.gz
+%{_mandir}/man1/rv-mon.1.gz
+%{_mandir}/man1/rv.1.gz
+
 
 %changelog
+* Mon Jun 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-500
+- 6.4.0
+
 * Wed Jun 21 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.9-500
 - 6.3.9
 
@@ -760,33 +792,3 @@ popd
 
 * Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.0-500
 - 5.18.0
-
-* Wed May 18 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.9-500
-- 5.17.9
-
-* Sun May 15 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.8-500
-- 5.17.8
-
-* Thu May 12 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.7-500
-- 5.17.7
-
-* Mon May 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.6-500
-- 5.17.6
-
-* Wed Apr 27 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.5-500
-- 5.17.5
-
-* Wed Apr 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.4-500
-- 5.17.4
-
-* Wed Apr 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.3-500
-- 5.17.3
-
-* Fri Apr 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.2-500
-- 5.17.2
-
-* Mon Mar 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.1-500
-- 5.17.1
-
-* Mon Mar 21 2022 Phantom X <megaphantomx at hotmail dot com> - 5.17.0-500
-- 5.17.0

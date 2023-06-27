@@ -51,10 +51,10 @@ override_file = sys.argv[1]
 baseconfig_file = sys.argv[2]
 
 if not os.path.exists(override_file):
-    usage(f"overrides config file {override_file: s} does not exist!")
+    usage(f"overrides config file {override_file:s} does not exist!")
 
 if not os.path.exists(baseconfig_file):
-    usage(f"base configs file {baseconfig_file: s} does not exist")
+    usage(f"base configs file {baseconfig_file:s} does not exist")
 
 if len(sys.argv) == 4:
     print(f"# {sys.argv[3]:s}")

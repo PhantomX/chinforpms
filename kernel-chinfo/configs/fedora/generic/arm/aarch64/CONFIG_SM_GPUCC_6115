@@ -1,0 +1,15 @@
+# Symbol: SM_GPUCC_6115 [=n]
+# Type  : tristate
+# Defined at drivers/clk/qcom/Kconfig:844
+#   Prompt: SM6115 Graphics Clock Controller
+#   Depends on: COMMON_CLK [=y] && COMMON_CLK_QCOM [=y] && (ARM64 [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> Common Clock Framework (COMMON_CLK [=y])
+#         -> Support for Qualcomm's clock controllers (COMMON_CLK_QCOM [=y])
+#           -> SM6115 Graphics Clock Controller (SM_GPUCC_6115 [=n])
+# Selects: SM_GCC_6115 [=n]
+# 
+# 
+# 
+# CONFIG_SM_GPUCC_6115 is not set

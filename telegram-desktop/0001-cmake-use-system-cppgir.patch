@@ -14,7 +14,7 @@ index 66385e3..6359b75 100644
 +++ b/cmake/external/glib/CMakeLists.txt
 @@ -13,7 +13,6 @@ function(add_cppgir) # isolate scope
      set(CMAKE_DISABLE_FIND_PACKAGE_Qt5Core ON)
-     add_subdirectory(cppgir)
+     add_subdirectory(cppgir EXCLUDE_FROM_ALL)
  endfunction()
 -add_cppgir()
  
