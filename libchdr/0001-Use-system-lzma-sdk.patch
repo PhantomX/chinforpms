@@ -1,4 +1,4 @@
-From ba9648fb323e9cb76ff151353e025d3346be7c44 Mon Sep 17 00:00:00 2001
+From 64abf100f979aa9682fe2c61fc290fe037aa9f87 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 11 Nov 2021 20:36:39 -0300
 Subject: [PATCH] Use system lzma-sdk
@@ -8,7 +8,7 @@ Subject: [PATCH] Use system lzma-sdk
  1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1b9df8f..70d5d73 100644
+index 5e14392..f0324f4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -7,6 +7,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "chdr")
@@ -20,7 +20,7 @@ index 1b9df8f..70d5d73 100644
  option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
  if(BUILD_LTO)
 @@ -25,9 +26,16 @@ include(GNUInstallDirs)
- list(APPEND CHDR_LIBS dr_libs)
+ 
  
  # lzma
 +if (WITH_SYSTEM_LZMA)
@@ -37,5 +37,5 @@ index 1b9df8f..70d5d73 100644
  # zlib
  if (WITH_SYSTEM_ZLIB)
 -- 
-2.33.1
+2.41.0
 

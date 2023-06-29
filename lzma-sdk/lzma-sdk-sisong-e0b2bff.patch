@@ -1,0 +1,68 @@
+From 9662639b44c5e027c18ce2dd4a557e2b7a391859 Mon Sep 17 00:00:00 2001
+From: sisong <sisong@gmail.com>
+Date: Mon, 21 Nov 2022 13:11:30 +0800
+Subject: [PATCH] XzEnc support encode part; (for vcdiff compress)
+
+---
+ C/XzEnc.c | 11 ++++++++++-
+ C/XzEnc.h |  3 ++-
+ 2 files changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/C/XzEnc.c b/C/XzEnc.c
+index 22408e2..a6b73d6 100644
+--- a/C/XzEnc.c
++++ b/C/XzEnc.c
+@@ -1160,10 +1160,16 @@ static SRes XzEnc_MtCallback_Write(void *pp, unsigned outBufIndex)
+ 
+ SRes XzEnc_Encode(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr inStream, ICompressProgressPtr progress)
+ {
++    return XzEnc_Encode_Part(p,outStream,inStream,progress,1,1);
++}
++
++SRes XzEnc_Encode_Part(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr inStream,
++                       ICompressProgressPtr progress,int isWriteHead,int isWriteFooter){
+   // GET_CXzEnc_p
+ 
+   const CXzProps *props = &p->xzProps;
+ 
++ if (isWriteHead){
+   XzEncIndex_Init(&p->xzIndex);
+   {
+     UInt64 numBlocks = 1;
+@@ -1183,7 +1189,7 @@ SRes XzEnc_Encode(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr in
+   }
+ 
+   RINOK(Xz_WriteHeader((CXzStreamFlags)props->checkId, outStream))
+-
++ }//isWriteHead
+ 
+   #ifndef Z7_ST
+   if (props->numBlockThreads_Reduced > 1)
+@@ -1328,7 +1334,10 @@ SRes XzEnc_Encode(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr in
+     }
+   }
+ 
++ if (isWriteFooter)
+   return XzEncIndex_WriteFooter(&p->xzIndex, (CXzStreamFlags)props->checkId, outStream);
++ else
++  return SZ_OK;
+ }
+ 
+ 
+diff --git a/C/XzEnc.h b/C/XzEnc.h
+index 77b78c0..5f8fde0 100644
+--- a/C/XzEnc.h
++++ b/C/XzEnc.h
+@@ -50,7 +50,8 @@ void XzEnc_Destroy(CXzEncHandle p);
+ SRes XzEnc_SetProps(CXzEncHandle p, const CXzProps *props);
+ void XzEnc_SetDataSize(CXzEncHandle p, UInt64 expectedDataSiize);
+ SRes XzEnc_Encode(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr inStream, ICompressProgressPtr progress);
+-
++SRes XzEnc_Encode_Part(CXzEncHandle p, ISeqOutStreamPtr outStream, ISeqInStreamPtr inStream,
++                       ICompressProgressPtr progress,int isWriteHead,int isWriteFooter);
+ SRes Xz_Encode(ISeqOutStreamPtr outStream, ISeqInStreamPtr inStream,
+     const CXzProps *props, ICompressProgressPtr progress);
+ 
+-- 
+2.41.0
+

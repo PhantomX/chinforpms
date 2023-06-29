@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 236539c88161671350f6aa55580b2117400cd830
+%global commit 0070f9abad69c67ea47603c516f4e33490aeae2f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230605
+%global date 20230621
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -51,7 +51,7 @@
 
 Name:           flycast
 Version:        2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -80,6 +80,7 @@ Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
+Patch4:         0001-lzma-sdk-23.01-support.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -106,7 +107,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(lua)
 BuildRequires:  pkgconfig(miniupnpc)
-BuildRequires:  pkgconfig(lzmasdk-c)
+BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 %if %{with x11}
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(x11)

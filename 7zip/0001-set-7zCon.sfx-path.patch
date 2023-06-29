@@ -1,4 +1,4 @@
-From 5fb6d58d20e8466ed74a8c8bfaa3d00199c56039 Mon Sep 17 00:00:00 2001
+From e0d4cd667489df364bec588a2cae119b24eb904e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 27 Nov 2021 08:35:01 -0300
 Subject: [PATCH] set 7zCon.sfx path
@@ -8,18 +8,18 @@ Subject: [PATCH] set 7zCon.sfx path
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CPP/7zip/UI/Console/Main.cpp b/CPP/7zip/UI/Console/Main.cpp
-index 4690b28..695c350 100644
+index eb9e2a8..59f150e 100644
 --- a/CPP/7zip/UI/Console/Main.cpp
 +++ b/CPP/7zip/UI/Console/Main.cpp
-@@ -173,7 +173,7 @@ static const char * const kNoFormats = "7-Zip cannot find the code that works wi
+@@ -206,7 +206,7 @@ static const char * const kNoFormats = "7-Zip cannot find the code that works wi
  static const char * const kUnsupportedArcTypeMessage = "Unsupported archive type";
  // static const char * const kUnsupportedUpdateArcType = "Can't create archive for that type";
  
 -#define kDefaultSfxModule "7zCon.sfx"
 +#define kDefaultSfxModule "__RPMLIBEXECDIR_/7zCon.sfx"
  
- MY_ATTR_NORETURN
+ Z7_ATTR_NORETURN
  static void ShowMessageAndThrowException(LPCSTR message, NExitCode::EEnum code)
 -- 
-2.33.1
+2.41.0
 

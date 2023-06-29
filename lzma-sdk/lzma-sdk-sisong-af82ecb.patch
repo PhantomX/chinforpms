@@ -1,0 +1,25 @@
+From 514ef908776b9b069dfff651521edeff3b9cd02b Mon Sep 17 00:00:00 2001
+From: sisong <sisong@gmail.com>
+Date: Wed, 23 Nov 2022 10:09:44 +0800
+Subject: [PATCH] support USE_CRC_EMU ( for fix linux arm32 build )
+
+---
+ C/7zCrc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/C/7zCrc.c b/C/7zCrc.c
+index c995a8b..2f332a7 100644
+--- a/C/7zCrc.c
++++ b/C/7zCrc.c
+@@ -71,7 +71,7 @@ UInt32 Z7_FASTCALL CrcUpdateT1(UInt32 v, const void *data, size_t size, const UI
+ 
+ #ifdef MY_CPU_LE
+ 
+-#if defined(MY_CPU_ARM_OR_ARM64)
++#if (defined(MY_CPU_ARM_OR_ARM64)) && (!defined(USE_CRC_EMU))
+ 
+ // #pragma message("ARM*")
+ 
+-- 
+2.41.0
+

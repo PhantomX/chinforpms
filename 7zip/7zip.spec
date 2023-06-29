@@ -23,7 +23,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        22.01
+Version:        23.01
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -64,9 +64,9 @@ This build do not have RAR support.
 
 %prep
 %if 0%{sanitize}
-%autosetup -n -c %{name}-%{version} -p1
+%autosetup -n -c %{name}-%{version} -N -p1
 %else
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{name}-%{version} -N -p1
 %endif
 
 %if 0%{sanitize}
@@ -76,6 +76,8 @@ This build do not have RAR support.
 
 # correct end-of-line encoding
 find . -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.mak' -o -name '*.txt' \) -exec sed 's/\r//' -i {} ';'
+
+%autopatch -p1
 
 # move license files
 mv DOC/License.txt DOC/copying.txt .
@@ -105,11 +107,11 @@ export USE_ASM=1
 export DISABLE_RAR=1
 
 pushd CPP/7zip/Bundles/Alone2
-%make_build -f ../../%{makefile}.mak
+%make_build -f ../../%{makefile}.mak LFLAGS_STRIP=
 popd
 
 pushd CPP/7zip/Bundles/SFXCon
-%make_build -f makefile.gcc
+%make_build -f makefile.gcc LFLAGS_STRIP=
 popd
 
 %install
@@ -129,6 +131,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-1
+- 23.01
+
 * Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 22.01-1
 - 22.01
 

@@ -1,14 +1,14 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%global cheatver 0245
-%global historyver 255
-%global infover 0255
+%global cheatver 0255
+%global historyver 256
+%global infover 0256
 
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.255
+Version:        0.256
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -18,7 +18,7 @@ URL:            http://mamedev.org
 # http://cheat.retrogames.com/
 Source0:       http://cheat.retrogames.com/download/cheat%{cheatver}.zip
 # http://www.arcade-history.com/
-Source1:       http://www.arcade-history.com/dats/historyxml%{historyver}.zip
+Source1:       http://www.arcade-history.com/dats/history%{historyver}.zip
 # http://mameinfo.mameworld.info/
 Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zip
 
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.256-1
+- 0.256
+
 * Thu Jun 01 2023 Phantom X <megaphantomx at hotmail dot com> - 0.255-1
 - 0.255
 

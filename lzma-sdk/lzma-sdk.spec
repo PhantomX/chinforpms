@@ -9,8 +9,8 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        22.01
-Release:        103%{?dist}
+Version:        23.01
+Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -21,8 +21,8 @@ Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
 
-Patch10:        %{sisong_url}/commit/e0b2bff6c64607fba64f60d12c692fcbad53a8ea.patch#/%{name}-gh-sisong-e0b2bff.patch
-Patch11:        %{sisong_url}/commit/af82ecb1dc06f65c367debebdda8aad10ba7ad3e.patch#/%{name}-gh-sisong-af82ecb.patch
+Patch10:        %{name}-sisong-e0b2bff.patch
+Patch11:        %{name}-sisong-af82ecb.patch
 
 %if %{with asm}
 ExclusiveArch:  x86_64
@@ -56,7 +56,7 @@ Requires:       %{?epoch:%{epoch}:}%{name}%{?_isa} = %{version}-%{release}
 Development libraries and headers for %{name}.
 
 %prep
-%autosetup -c -n lzma%{ver} -p1
+%autosetup -c -n lzma%{ver} -N -p1
 
 rm -f lzma.exe
 
@@ -66,8 +66,10 @@ done
 
 # correct end-of-line encoding
 find . \
-  -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.txt' \) \
+  -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.gcc' -o -name '*.txt' -o -name '*.mak' \) \
   -exec sed 's/\r//' -i {} ';'
+
+%autopatch -p1
 
 # Modify booleans to prevent conflict
 find . \
@@ -124,8 +126,8 @@ export USE_ASM=1
 export IS_X64=1
 %endif
 
-%make_build -C C/Util/Lzma -f makefile.gcc clean MY_ASM=asmc64
-%make_build -C C/Util/Lzma -f makefile.gcc all MY_ASM=asmc64
+%make_build -C C/Util/Lzma -f makefile.gcc clean MY_ASM=asmc64 LFLAGS_STRIP=
+%make_build -C C/Util/Lzma -f makefile.gcc all MY_ASM=asmc64 LFLAGS_STRIP=
 
 %install
 mkdir -p %{buildroot}%{_libdir}
@@ -152,6 +154,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-100
+- 23.01
+
 * Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 22.01-103
 - Add sisong additions for HDiffPatch
 

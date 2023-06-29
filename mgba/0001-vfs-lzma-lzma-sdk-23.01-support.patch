@@ -1,0 +1,25 @@
+From a0a12ca5c629632d8498098f9cbdbc325d39fd4a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 28 Jun 2023 23:55:03 -0300
+Subject: [PATCH] vfs-lzma: lzma-sdk 23.01 support
+
+---
+ src/util/vfs/vfs-lzma.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/util/vfs/vfs-lzma.c b/src/util/vfs/vfs-lzma.c
+index 1bb4c56..78e187b 100644
+--- a/src/util/vfs/vfs-lzma.c
++++ b/src/util/vfs/vfs-lzma.c
+@@ -96,7 +96,7 @@ struct VDir* VDirOpen7z(const char* path, int flags) {
+ 	vd->lookStream.buf = malloc(BUFFER_SIZE);
+ 	vd->lookStream.bufSize = BUFFER_SIZE;
+ 
+-	LookToRead2_Init(&vd->lookStream);
++	LookToRead2_INIT(&vd->lookStream);
+ 
+ 	CrcGenerateTable();
+ 
+-- 
+2.41.0
+

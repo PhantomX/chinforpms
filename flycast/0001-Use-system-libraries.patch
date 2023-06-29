@@ -1,19 +1,19 @@
-From d5a42be23a55e69e64daeab3a4047dfa814fc0f9 Mon Sep 17 00:00:00 2001
+From 9e20bf4c27a5baa834cda10131549b3413c32ca3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                | 84 ++++++++++++++++++++++++++++++++---
+ CMakeLists.txt                | 85 ++++++++++++++++++++++++++++++++---
  core/archive/7zArchive.cpp    |  7 +++
  core/archive/7zArchive.h      |  5 +++
  core/archive/archive.cpp      |  4 ++
  core/rend/vulkan/compiler.cpp |  4 ++
  core/rend/vulkan/shaders.h    |  4 ++
- 6 files changed, 102 insertions(+), 6 deletions(-)
+ 6 files changed, 103 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0d7a559..b74ee9d 100644
+index 1962e69..9179889 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -64,6 +64,9 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
@@ -106,7 +106,7 @@ index 0d7a559..b74ee9d 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
  	pkg_check_modules(AO IMPORTED_TARGET ao)
  	if(AO_FOUND)
-@@ -696,8 +731,25 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -693,8 +728,26 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -125,6 +125,7 @@ index 0d7a559..b74ee9d 100644
 +  endif()
 +else()
 +if(NOT DISABLE_7ZIP)
++target_compile_definitions(${PROJECT_NAME} PRIVATE Z7_ST)
  target_compile_definitions(${PROJECT_NAME} PRIVATE _7ZIP_ST)
  target_sources(${PROJECT_NAME} PRIVATE core/deps/lzma/7zArcIn.c core/deps/lzma/7zBuf.c core/deps/lzma/7zCrc.c core/deps/lzma/7zCrcOpt.c core/deps/lzma/7zDec.c core/deps/lzma/7zFile.c core/deps/lzma/7zStream.c core/deps/lzma/Alloc.c core/deps/lzma/Bcj2.c core/deps/lzma/Bra86.c core/deps/lzma/Bra.c core/deps/lzma/BraIA64.c core/deps/lzma/CpuArch.c core/deps/lzma/Delta.c core/deps/lzma/LzFind.c core/deps/lzma/Lzma2Dec.c core/deps/lzma/Lzma86Dec.c core/deps/lzma/Lzma86Enc.c core/deps/lzma/LzmaDec.c core/deps/lzma/LzmaEnc.c core/deps/lzma/LzmaLib.c core/deps/lzma/Sort.c)
 +endif()
@@ -132,7 +133,7 @@ index 0d7a559..b74ee9d 100644
  add_subdirectory(core/deps/libelf)
  target_link_libraries(${PROJECT_NAME} PRIVATE elf)
  if(NOT LIBRETRO)
-@@ -764,9 +816,13 @@ if(LIBRETRO)
+@@ -761,9 +814,13 @@ if(LIBRETRO)
  	endif()
  endif()
  
@@ -148,7 +149,7 @@ index 0d7a559..b74ee9d 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1251,7 +1307,15 @@ if(USE_VULKAN)
+@@ -1248,7 +1305,15 @@ if(USE_VULKAN)
  		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_MACOS_MVK)
  	endif()
  
@@ -164,7 +165,7 @@ index 0d7a559..b74ee9d 100644
  	target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
  
  	if (APPLE)
-@@ -1471,7 +1535,15 @@ if("arm64" IN_LIST ARCHITECTURE)
+@@ -1468,7 +1533,15 @@ if("arm64" IN_LIST ARCHITECTURE)
  	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
  if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
@@ -280,5 +281,5 @@ index 1481223..27d3f6a 100644
  #include <glm/glm.hpp>
  #include <map>
 -- 
-2.40.1
+2.41.0
 

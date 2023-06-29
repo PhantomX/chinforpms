@@ -64,7 +64,7 @@
 
 Name:           rmg
 Version:        0.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -105,7 +105,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(lightning)
-BuildRequires:  pkgconfig(lzmasdk-c) >= 22.01
+BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6OpenGL)
@@ -252,6 +252,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-2
+- lzma-sdk rebuild
+
 * Sun Jun 25 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-1
 - 0.4.1
 

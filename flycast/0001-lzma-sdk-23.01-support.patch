@@ -1,0 +1,25 @@
+From dd69055426fb89a15e4f4bb4207e71b2118cf74b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 29 Jun 2023 00:56:13 -0300
+Subject: [PATCH] lzma-sdk 23.01 support
+
+---
+ core/archive/7zArchive.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/archive/7zArchive.cpp b/core/archive/7zArchive.cpp
+index 8ca9a3e..05174b1 100644
+--- a/core/archive/7zArchive.cpp
++++ b/core/archive/7zArchive.cpp
+@@ -54,7 +54,7 @@ bool SzArchive::Open(FILE *file)
+ 	}
+ 	lookStream.bufSize = kInputBufSize;
+ 	lookStream.realStream = &archiveStream.vt;
+-	LookToRead2_Init(&lookStream);
++	LookToRead2_INIT(&lookStream);
+ 
+ 	if (!crc_tables_generated)
+ 	{
+-- 
+2.41.0
+

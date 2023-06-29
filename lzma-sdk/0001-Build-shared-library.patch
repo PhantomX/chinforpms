@@ -1,4 +1,4 @@
-From 5c0aa3684bc89c8c769352c1974015a995c983a1 Mon Sep 17 00:00:00 2001
+From 965f9a3582bc9c45540e31caca0dd7e685291f1d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 09:38:07 -0300
 Subject: [PATCH] Build shared library
@@ -6,17 +6,17 @@ Subject: [PATCH] Build shared library
 ---
  C/7zFile.h               |   5 +-
  C/7zip_gcc_c.mak         |  41 ++------
- C/LzmaDec.c              | 215 --------------------------------------
+ C/LzmaDec.c              | 216 --------------------------------------
  C/LzmaDec.h              | 217 +++++++++++++++++++++++++++++++++++++++
- C/Util/Lzma/makefile.gcc |  17 ++-
- 5 files changed, 242 insertions(+), 253 deletions(-)
+ C/Util/Lzma/makefile.gcc |  27 ++++-
+ 5 files changed, 252 insertions(+), 254 deletions(-)
 
 diff --git a/C/7zFile.h b/C/7zFile.h
-index c7a30fc..5864e67 100644
+index f5069cd..b7847da 100644
 --- a/C/7zFile.h
 +++ b/C/7zFile.h
-@@ -13,8 +13,9 @@
- #include <windows.h>
+@@ -14,8 +14,9 @@
+ 
  #else
  // note: USE_FOPEN mode is limited to 32-bit file size
 -// #define USE_FOPEN
@@ -28,25 +28,21 @@ index c7a30fc..5864e67 100644
  
  #include "7zTypes.h"
 diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
-index d418104..c3b7346 100644
+index f19a99b..e1e478d 100644
 --- a/C/7zip_gcc_c.mak
 +++ b/C/7zip_gcc_c.mak
-@@ -7,12 +7,13 @@ MY_ASM = asmc
- PROGPATH = $(O)/$(PROG)
- PROGPATH_STATIC = $(O)/$(PROG)s
- 
-+DEFINES = -fPIC -D_7ZIP_ST
- 
- # for object file
- CFLAGS_BASE_LIST = -c
- # for ASM file
+@@ -23,9 +23,8 @@ CFLAGS_BASE_LIST = -c
  # CFLAGS_BASE_LIST = -S
--CFLAGS_BASE = $(MY_ARCH_2) -O2 $(CFLAGS_BASE_LIST) -Wall -Werror -Wextra $(CFLAGS_WARN) \
-+CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) -Wall -Werror -Wextra $(CFLAGS_WARN) \
+ 
+ FLAGS_FLTO =
+-FLAGS_FLTO = -flto
+ 
+-CFLAGS_BASE = $(MY_ARCH_2) -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
++CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
   -DNDEBUG -D_REENTRANT -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  
  
-@@ -43,36 +44,6 @@ endif
+@@ -56,36 +55,6 @@ endif
  
  LDFLAGS_STATIC = -DNDEBUG $(LDFLAGS_STATIC_2)
  
@@ -83,16 +79,16 @@ index d418104..c3b7346 100644
  PROGPATH = $(O)/$(PROG)$(SHARED_EXT)
  PROGPATH_STATIC = $(O)/$(PROG)s$(SHARED_EXT)
  	
-@@ -116,7 +87,7 @@ endif
+@@ -127,6 +96,8 @@ DEL_OBJ_EXE = -$(RM) $(PROGPATH) $(PROGPATH_STATIC) $(OBJS)
  
+ endif
  
- 
--CFLAGS = $(LOCAL_FLAGS) $(CFLAGS_BASE2) $(CFLAGS_BASE) $(CC_SHARED) -o $@
-+CFLAGS = $(LOCAL_FLAGS) $(CFLAGS_BASE2) $(CFLAGS_BASE) $(DEFINES) $(CC_SHARED) -o $@
- 
++CFLAGS_EXTRA += -fPIC
++
  
  ifdef IS_X64
-@@ -142,7 +113,7 @@ STATIC_TARGET=$(PROGPATH_STATIC)
+ AFLAGS_ABI = -elf64 -DABI_LINUX
+@@ -148,7 +119,7 @@ STATIC_TARGET=$(PROGPATH_STATIC)
  endif
  
  
@@ -101,34 +97,39 @@ index d418104..c3b7346 100644
  
  $(O):
  	$(MY_MKDIR) $(O)
-@@ -151,8 +122,8 @@ LFLAGS_ALL = -s $(MY_ARCH_2) $(LDFLAGS) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
- $(PROGPATH): $(OBJS)
- 	$(CXX) -o $(PROGPATH) $(LFLAGS_ALL)
+@@ -157,12 +128,14 @@ ifneq ($(CC), $(CROSS_COMPILE)clang)
+ LFLAGS_STRIP = -s
+ endif
  
--$(PROGPATH_STATIC): $(OBJS)
--	$(CXX) -static -o $(PROGPATH_STATIC) $(LFLAGS_ALL)
+-LFLAGS_ALL = $(LFLAGS_STRIP) $(MY_ARCH_2) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) $(OBJS) $(MY_LIBS) $(LIB2)
++LFLAGS_ALL = $(LFLAGS_STRIP) $(LDFLAGS) $(FLAGS_FLTO) $(LD_arch) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
+ $(PROGPATH): $(OBJS)
+ 	$(CC) -o $(PROGPATH) $(LFLAGS_ALL)
+ 
+ $(PROGPATH_STATIC): $(OBJS)
+ 	$(CC) -static -o $(PROGPATH_STATIC) $(LFLAGS_ALL)
 +$(LIBRARYMAJOR): $(OBJS)
-+	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) -DNDEBUG $(LDFLAGS) -Wl,-z,defs $(OBJS) $(MY_LIBS) $(LIB2)
++	$(CXX) -o $(LIBRARYMAJOR) -shared -Wl,-soname=$(LIBRARYMINOR) -DNDEBUG $(LFLAGS_ALL)
  
  
  ifndef NO_DEFAULT_RES
 diff --git a/C/LzmaDec.c b/C/LzmaDec.c
-index 80b70a9..15ab681 100644
+index 69bb8bb..a64fafe 100644
 --- a/C/LzmaDec.c
 +++ b/C/LzmaDec.c
-@@ -8,221 +8,6 @@
+@@ -8,222 +8,6 @@
  /* #include "CpuArch.h" */
  #include "LzmaDec.h"
  
--#define kNumTopBits 24
--#define kTopValue ((UInt32)1 << kNumTopBits)
+-// #define kNumTopBits 24
+-#define kTopValue ((UInt32)1 << 24)
 -
 -#define kNumBitModelTotalBits 11
 -#define kBitModelTotal (1 << kNumBitModelTotalBits)
 -
 -#define RC_INIT_SIZE 5
 -
--#ifndef _LZMA_DEC_OPT
+-#ifndef Z7_LZMA_DEC_OPT
 -
 -#define kNumMoveBits 5
 -#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
@@ -137,14 +138,14 @@ index 80b70a9..15ab681 100644
 -#define UPDATE_0(p) range = bound; *(p) = (CLzmaProb)(ttt + ((kBitModelTotal - ttt) >> kNumMoveBits));
 -#define UPDATE_1(p) range -= bound; code -= bound; *(p) = (CLzmaProb)(ttt - (ttt >> kNumMoveBits));
 -#define GET_BIT2(p, i, A0, A1) IF_BIT_0(p) \
--  { UPDATE_0(p); i = (i + i); A0; } else \
--  { UPDATE_1(p); i = (i + i) + 1; A1; }
+-  { UPDATE_0(p)  i = (i + i); A0; } else \
+-  { UPDATE_1(p)  i = (i + i) + 1; A1; }
 -
 -#define TREE_GET_BIT(probs, i) { GET_BIT2(probs + i, i, ;, ;); }
 -
 -#define REV_BIT(p, i, A0, A1) IF_BIT_0(p + i) \
--  { UPDATE_0(p + i); A0; } else \
--  { UPDATE_1(p + i); A1; }
+-  { UPDATE_0(p + i)  A0; } else \
+-  { UPDATE_1(p + i)  A1; }
 -#define REV_BIT_VAR(  p, i, m) REV_BIT(p, i, i += m; m += m, m += m; i += m; )
 -#define REV_BIT_CONST(p, i, m) REV_BIT(p, i, i += m;       , i += m * 2; )
 -#define REV_BIT_LAST( p, i, m) REV_BIT(p, i, i -= m        , ; )
@@ -152,19 +153,19 @@ index 80b70a9..15ab681 100644
 -#define TREE_DECODE(probs, limit, i) \
 -  { i = 1; do { TREE_GET_BIT(probs, i); } while (i < limit); i -= limit; }
 -
--/* #define _LZMA_SIZE_OPT */
+-/* #define Z7_LZMA_SIZE_OPT */
 -
--#ifdef _LZMA_SIZE_OPT
+-#ifdef Z7_LZMA_SIZE_OPT
 -#define TREE_6_DECODE(probs, i) TREE_DECODE(probs, (1 << 6), i)
 -#else
 -#define TREE_6_DECODE(probs, i) \
 -  { i = 1; \
--  TREE_GET_BIT(probs, i); \
--  TREE_GET_BIT(probs, i); \
--  TREE_GET_BIT(probs, i); \
--  TREE_GET_BIT(probs, i); \
--  TREE_GET_BIT(probs, i); \
--  TREE_GET_BIT(probs, i); \
+-  TREE_GET_BIT(probs, i) \
+-  TREE_GET_BIT(probs, i) \
+-  TREE_GET_BIT(probs, i) \
+-  TREE_GET_BIT(probs, i) \
+-  TREE_GET_BIT(probs, i) \
+-  TREE_GET_BIT(probs, i) \
 -  i -= 0x40; }
 -#endif
 -
@@ -176,25 +177,25 @@ index 80b70a9..15ab681 100644
 -  probLit = prob + (offs + bit + symbol); \
 -  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
 -
--#endif // _LZMA_DEC_OPT
+-#endif // Z7_LZMA_DEC_OPT
 -
 -
 -#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_INPUT_EOF; range <<= 8; code = (code << 8) | (*buf++); }
 -
--#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
+-#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
 -#define UPDATE_0_CHECK range = bound;
 -#define UPDATE_1_CHECK range -= bound; code -= bound;
 -#define GET_BIT2_CHECK(p, i, A0, A1) IF_BIT_0_CHECK(p) \
--  { UPDATE_0_CHECK; i = (i + i); A0; } else \
--  { UPDATE_1_CHECK; i = (i + i) + 1; A1; }
+-  { UPDATE_0_CHECK  i = (i + i); A0; } else \
+-  { UPDATE_1_CHECK  i = (i + i) + 1; A1; }
 -#define GET_BIT_CHECK(p, i) GET_BIT2_CHECK(p, i, ; , ;)
 -#define TREE_DECODE_CHECK(probs, limit, i) \
 -  { i = 1; do { GET_BIT_CHECK(probs + i, i) } while (i < limit); i -= limit; }
 -
 -
 -#define REV_BIT_CHECK(p, i, m) IF_BIT_0_CHECK(p + i) \
--  { UPDATE_0_CHECK; i += m; m += m; } else \
--  { UPDATE_1_CHECK; m += m; i += m; }
+-  { UPDATE_0_CHECK  i += m; m += m; } else \
+-  { UPDATE_1_CHECK  m += m; i += m; }
 -
 -
 -#define kNumPosBitsMax 4
@@ -335,11 +336,12 @@ index 80b70a9..15ab681 100644
 -      p->reps[*]    : undefined
 -*/
 -
+-
+ #ifdef Z7_LZMA_DEC_OPT
  
- #ifdef _LZMA_DEC_OPT
- 
+ int Z7_FASTCALL LZMA_DECODE_REAL(CLzmaDec *p, SizeT limit, const Byte *bufLimit);
 diff --git a/C/LzmaDec.h b/C/LzmaDec.h
-index 6194b7d..361e937 100644
+index b0ce28f..ee5257a 100644
 --- a/C/LzmaDec.h
 +++ b/C/LzmaDec.h
 @@ -6,6 +6,8 @@
@@ -350,20 +352,20 @@ index 6194b7d..361e937 100644
 +
  EXTERN_C_BEGIN
  
- /* #define _LZMA_PROB32 */
+ /* #define Z7_LZMA_PROB32 */
 @@ -20,6 +22,221 @@ typedef
  #endif
    CLzmaProb;
  
-+#define kNumTopBits 24
-+#define kTopValue ((UInt32)1 << kNumTopBits)
++// #define kNumTopBits 24
++#define kTopValue ((UInt32)1 << 24)
 +
 +#define kNumBitModelTotalBits 11
 +#define kBitModelTotal (1 << kNumBitModelTotalBits)
 +
 +#define RC_INIT_SIZE 5
 +
-+#ifndef _LZMA_DEC_OPT
++#ifndef Z7_LZMA_DEC_OPT
 +
 +#define kNumMoveBits 5
 +#define NORMALIZE if (range < kTopValue) { range <<= 8; code = (code << 8) | (*buf++); }
@@ -372,14 +374,14 @@ index 6194b7d..361e937 100644
 +#define UPDATE_0(p) range = bound; *(p) = (CLzmaProb)(ttt + ((kBitModelTotal - ttt) >> kNumMoveBits));
 +#define UPDATE_1(p) range -= bound; code -= bound; *(p) = (CLzmaProb)(ttt - (ttt >> kNumMoveBits));
 +#define GET_BIT2(p, i, A0, A1) IF_BIT_0(p) \
-+  { UPDATE_0(p); i = (i + i); A0; } else \
-+  { UPDATE_1(p); i = (i + i) + 1; A1; }
++  { UPDATE_0(p)  i = (i + i); A0; } else \
++  { UPDATE_1(p)  i = (i + i) + 1; A1; }
 +
 +#define TREE_GET_BIT(probs, i) { GET_BIT2(probs + i, i, ;, ;); }
 +
 +#define REV_BIT(p, i, A0, A1) IF_BIT_0(p + i) \
-+  { UPDATE_0(p + i); A0; } else \
-+  { UPDATE_1(p + i); A1; }
++  { UPDATE_0(p + i)  A0; } else \
++  { UPDATE_1(p + i)  A1; }
 +#define REV_BIT_VAR(  p, i, m) REV_BIT(p, i, i += m; m += m, m += m; i += m; )
 +#define REV_BIT_CONST(p, i, m) REV_BIT(p, i, i += m;       , i += m * 2; )
 +#define REV_BIT_LAST( p, i, m) REV_BIT(p, i, i -= m        , ; )
@@ -387,19 +389,19 @@ index 6194b7d..361e937 100644
 +#define TREE_DECODE(probs, limit, i) \
 +  { i = 1; do { TREE_GET_BIT(probs, i); } while (i < limit); i -= limit; }
 +
-+/* #define _LZMA_SIZE_OPT */
++/* #define Z7_LZMA_SIZE_OPT */
 +
-+#ifdef _LZMA_SIZE_OPT
++#ifdef Z7_LZMA_SIZE_OPT
 +#define TREE_6_DECODE(probs, i) TREE_DECODE(probs, (1 << 6), i)
 +#else
 +#define TREE_6_DECODE(probs, i) \
 +  { i = 1; \
-+  TREE_GET_BIT(probs, i); \
-+  TREE_GET_BIT(probs, i); \
-+  TREE_GET_BIT(probs, i); \
-+  TREE_GET_BIT(probs, i); \
-+  TREE_GET_BIT(probs, i); \
-+  TREE_GET_BIT(probs, i); \
++  TREE_GET_BIT(probs, i) \
++  TREE_GET_BIT(probs, i) \
++  TREE_GET_BIT(probs, i) \
++  TREE_GET_BIT(probs, i) \
++  TREE_GET_BIT(probs, i) \
++  TREE_GET_BIT(probs, i) \
 +  i -= 0x40; }
 +#endif
 +
@@ -411,25 +413,25 @@ index 6194b7d..361e937 100644
 +  probLit = prob + (offs + bit + symbol); \
 +  GET_BIT2(probLit, symbol, offs ^= bit; , ;)
 +
-+#endif // _LZMA_DEC_OPT
++#endif // Z7_LZMA_DEC_OPT
 +
 +
 +#define NORMALIZE_CHECK if (range < kTopValue) { if (buf >= bufLimit) return DUMMY_INPUT_EOF; range <<= 8; code = (code << 8) | (*buf++); }
 +
-+#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK; bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
++#define IF_BIT_0_CHECK(p) ttt = *(p); NORMALIZE_CHECK bound = (range >> kNumBitModelTotalBits) * (UInt32)ttt; if (code < bound)
 +#define UPDATE_0_CHECK range = bound;
 +#define UPDATE_1_CHECK range -= bound; code -= bound;
 +#define GET_BIT2_CHECK(p, i, A0, A1) IF_BIT_0_CHECK(p) \
-+  { UPDATE_0_CHECK; i = (i + i); A0; } else \
-+  { UPDATE_1_CHECK; i = (i + i) + 1; A1; }
++  { UPDATE_0_CHECK  i = (i + i); A0; } else \
++  { UPDATE_1_CHECK  i = (i + i) + 1; A1; }
 +#define GET_BIT_CHECK(p, i) GET_BIT2_CHECK(p, i, ; , ;)
 +#define TREE_DECODE_CHECK(probs, limit, i) \
 +  { i = 1; do { GET_BIT_CHECK(probs + i, i) } while (i < limit); i -= limit; }
 +
 +
 +#define REV_BIT_CHECK(p, i, m) IF_BIT_0_CHECK(p + i) \
-+  { UPDATE_0_CHECK; i += m; m += m; } else \
-+  { UPDATE_1_CHECK; m += m; i += m; }
++  { UPDATE_0_CHECK  i += m; m += m; } else \
++  { UPDATE_1_CHECK  m += m; i += m; }
 +
 +
 +#define kNumPosBitsMax 4
@@ -574,7 +576,7 @@ index 6194b7d..361e937 100644
  /* ---------- LZMA Properties ---------- */
  
 diff --git a/C/Util/Lzma/makefile.gcc b/C/Util/Lzma/makefile.gcc
-index 6ce77a0..2600cd1 100644
+index 2acb0b8..e2b5631 100644
 --- a/C/Util/Lzma/makefile.gcc
 +++ b/C/Util/Lzma/makefile.gcc
 @@ -1,4 +1,6 @@
@@ -585,10 +587,11 @@ index 6ce77a0..2600cd1 100644
  
  include ../../../CPP/7zip/LzmaDec_gcc.mak
  
-@@ -16,6 +18,26 @@ OBJS = \
+@@ -16,6 +18,27 @@ OBJS = \
    $O/LzmaEnc.o \
    $O/LzmaUtil.o \
    $O/Threads.o \
+-
 +  $O/Bcj2.o \
 +  $O/Bra.o \
 +  $O/Bra86.o \
@@ -602,6 +605,8 @@ index 6ce77a0..2600cd1 100644
 +  $O/7zDec.o \
 +  $O/Lzma2Dec.o \
 +  $O/Lzma2Enc.o \
++  $O/MtCoder.o \
++  $O/MtDec.o \
 +  $O/Sha256.o \
 +  $O/Sha256Opt.o \
 +  $O/Xz.o \
@@ -610,8 +615,7 @@ index 6ce77a0..2600cd1 100644
 +  $O/XzDec.o \
 +  $O/XzEnc.o
  
- 
  include ../../7zip_gcc_c.mak
 -- 
-2.37.2
+2.41.0
 

@@ -1,4 +1,4 @@
-From c2d3505c267af537f0b81c98684a35c82c761f53 Mon Sep 17 00:00:00 2001
+From 54dd4b6a3e67553ced1d7fcbcab458be73ec1071 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 15 Apr 2023 15:18:54 -0300
 Subject: [PATCH] use system lzma-sdk
@@ -6,8 +6,8 @@ Subject: [PATCH] use system lzma-sdk
 ---
  CMakeLists.txt                 |  1 -
  Source/RMG-Core/CMakeLists.txt | 11 +++++++++++
- Source/RMG-Core/Rom.cpp        | 14 +++++++-------
- 3 files changed, 18 insertions(+), 8 deletions(-)
+ Source/RMG-Core/Rom.cpp        | 16 ++++++++--------
+ 3 files changed, 19 insertions(+), 9 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 7981dd0..5929394 100644
@@ -44,7 +44,7 @@ index c4b64e0..b8aa452 100644
  
  set(RMG_CORE_SOURCES
 diff --git a/Source/RMG-Core/Rom.cpp b/Source/RMG-Core/Rom.cpp
-index 276a673..549af2a 100644
+index 276a673..cc351e2 100644
 --- a/Source/RMG-Core/Rom.cpp
 +++ b/Source/RMG-Core/Rom.cpp
 @@ -17,13 +17,13 @@
@@ -68,6 +68,15 @@ index 276a673..549af2a 100644
  
  #include <string>
  #include <unzip.h>
+@@ -354,7 +354,7 @@ static bool read_7zip_file(std::filesystem::path file, std::filesystem::path* ex
+     // initialize look reader
+     lookStream.bufSize = bufSize;
+     lookStream.realStream = &archiveStream.vt;
+-    LookToRead2_Init(&lookStream);
++    LookToRead2_INIT(&lookStream);
+ 
+     // initialize CRC table
+     CrcGenerateTable();
 -- 
-2.40.0
+2.41.0
 
