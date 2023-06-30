@@ -62,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 8c272f21d19c6e821345fd055f41b9640f9189d0
+%global commit9 212afa2394a74226dcf1b7996a570aae17debb69
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3708
+%global vc_version 3725
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -111,7 +111,7 @@ Version:        %{vc_version}
 Release:        1%{?dist}
 Summary:        A Nintendo Switch Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
 
 %if %{with snapshot}
@@ -262,8 +262,8 @@ tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 %endif
-mkdir -p externals/vma/vma
-tar -xf %{S:2} -C externals/vma/vma/ --strip-components 1
+mkdir -p externals/vma/VulkanMemoryAllocator
+tar -xf %{S:2} -C externals/vma/VulkanMemoryAllocator --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
@@ -292,7 +292,7 @@ cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p sirit/LICENSE.txt LICENSE.sirit
-cp -p vma/vma/LICENSE.txt LICENSE.vma
+cp -p vma/VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 popd
 
 %if %{without mbedtls}

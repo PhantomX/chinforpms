@@ -1,0 +1,25 @@
+From 727ceadcaf198795a74e35a1157953b2ae68c22e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 29 Jun 2023 00:00:30 -0300
+Subject: [PATCH] lzma-sdk 23.01 support
+
+---
+ compress_plugin_demo.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/compress_plugin_demo.h b/compress_plugin_demo.h
+index 6168937..2a8f8d4 100644
+--- a/compress_plugin_demo.h
++++ b/compress_plugin_demo.h
+@@ -644,6 +644,8 @@ int _default_setParallelThreadNumber(hdiff_TCompress* compressPlugin,int threadN
+ #if (_IsNeedIncludeDefaultCompressHead)
+ #   include "MtCoder.h" // "lzma/C/MtCoder.h"   for MTCODER__THREADS_MAX
+ #endif
++#define MTCODER__THREADS_MAX MTCODER_THREADS_MAX
++#define LZMA2_ENC_PROPS__BLOCK_SIZE__AUTO LZMA2_ENC_PROPS_BLOCK_SIZE_AUTO
+     struct TCompressPlugin_lzma2{
+         hdiff_TCompress base;
+         int             compress_level; //0..9
+-- 
+2.41.0
+

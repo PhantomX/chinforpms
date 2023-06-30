@@ -87,9 +87,9 @@ Source2:        %{vc_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcomm
 Source3:        https://github.com/FFmpeg/gas-preprocessor/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 Source4:        https://github.com/Kingcom/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        https://github.com/google/cpu_features/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
-Source6:        https://github.com/KhronosGroup/glslang/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source5:        https://github.com/google/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source6:        https://github.com/KhronosGroup/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/KhronosGroup/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source10:       %{name}.appdata.xml

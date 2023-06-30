@@ -1,7 +1,7 @@
-%global commit 781b8c3d6b793d310ef200963d61fb9dea49b353
+%global commit 3d28f9d362e6d9871747231b210c559536bb6dd4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230608
-%bcond_with snapshot
+%global date 20230629
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.0
-%global winevulkan 1.3.251
+%global winevulkan 1.3.254
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -62,7 +62,7 @@
 %global wineopenldap 2.5.14
 %global winetiff 4.5.0
 %global winejxrlib 1.1
-%global winevkd3d 1.7
+%global winevkd3d 1.8
 %global winexml2 2.11.4
 %global winexslt 1.1.38
 %global winezlib 1.2.13
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.10
+%global wine_stagingver 1fe536ee7543fd11ac8ee53e79bfce56271fddb3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id df6c3d41c6035aa050382f12a0b0c87f912acda0
+%global tkg_id aefe95ebc2b89ab8cb908a3daddd32e3cb05f236
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.10
+Version:        8.11
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -222,7 +222,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
-Patch701:        0001-proton-tkg-staging-fixup.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -248,18 +247,11 @@ Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/pr
 Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
-Patch1033:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.mypatch#/%{name}-tkg-winex11.drv_Ignore_ClipCursor_if_desktop_window_is_foreground.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/rdr2/ef6e33f.mypatch#/%{name}-tkg-ef6e33f.patch
-Patch1036:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes5.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes5.patch
-Patch1037:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys.patch
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 Patch1041:       0001-Revert-proton-tkg-staging-ntdll-Guard-against-syscal.patch
-Patch1042:       0001-proton-tkg-additions-fixup-1.patch
-Patch1043:       0001-proton-tkg-additions-fixup-2.patch
-Patch1044:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -888,11 +880,12 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 5000 -p1
 
+sed -e 's| DECLSPEC_HIDDEN;|;|g' -i patches/dmime-load-wave/000?-dmime-*.patch
+
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0008-winegstreamer-Allow-videoconvert-to-parallelize.patch
-%{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0055-winegstreamer-Add-MFVideoFormat_ARGB32-output-for-th.patch
 
 %patch -P 1020 -p1
 %patch -P 1021 -p1
@@ -906,21 +899,15 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %if %{with sharedgpures}
 %patch -P 1060 -p1
-cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
-%patch -P 1064 -p1
-%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-textures.patch
-%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-fixup-staging.patch
-%{__scm_apply_patch -p1 -q} -i ./wine-tkg-sharedgpures-fences.patch
+%patch -P 1061 -p1
+%patch -P 1062 -p1
+%patch -P 1063 -p1
 %endif
 %patch -P 1026 -p1
 %patch -P 700 -p1 -R
-%patch -P 701 -p1
 %patch -P 1027 -p1
 %patch -P 1041 -p1
-%patch -P 1042 -p1
 %patch -P 1028 -p1
-%patch -P 1043 -p1
-%patch -P 1044 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
@@ -928,11 +915,7 @@ cp %{PATCH1061} %{PATCH1062} %{PATCH1063} .
 %patch -P 1030 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
-%dnl %patch -P 1033 -p1
 %dnl #FIXME see bugzilla (Elder Scrolls Online crash) %patch1034 -p1
-%dnl #FIXME needs rebase %patch -P 1035 -p1
-%dnl #FIXME needs rebase %patch -P 1036 -p1
-%dnl #FIXME needs rebase %patch -P 1037 -p1
 %patch -P 1038 -p1
 %patch -P 1039 -p1
 %patch -P 1040 -p1
@@ -2520,6 +2503,9 @@ fi
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.11-100.20230629git3d28f9d
+- 8.11
+
 * Sun Jun 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.10-100
 - 8.10
 

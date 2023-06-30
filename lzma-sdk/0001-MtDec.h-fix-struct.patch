@@ -1,0 +1,25 @@
+From 59e7b769ef8ee5dae683dd8d11a50dcfd6103b4f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 29 Jun 2023 15:29:32 -0300
+Subject: [PATCH] MtDec.h: fix struct
+
+---
+ C/MtDec.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/C/MtDec.h b/C/MtDec.h
+index c28e8d9..095780a 100644
+--- a/C/MtDec.h
++++ b/C/MtDec.h
+@@ -36,7 +36,7 @@ SRes MtProgress_ProgressAdd(CMtProgress *p, UInt64 inSize, UInt64 outSize);
+ SRes MtProgress_GetError(CMtProgress *p);
+ void MtProgress_SetError(CMtProgress *p, SRes res);
+ 
+-struct CMtDec;
++struct CMtDec_;
+ 
+ typedef struct
+ {
+-- 
+2.41.0
+

@@ -10,7 +10,7 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        23.01
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -20,6 +20,7 @@ Source0:        %{url}/a/lzma%{ver}.7z
 Source1:        lzma-sdk-LICENSE.fedora
 
 Patch0:         0001-Build-shared-library.patch
+Patch1:         0001-MtDec.h-fix-struct.patch
 
 Patch10:        %{name}-sisong-e0b2bff.patch
 Patch11:        %{name}-sisong-af82ecb.patch
@@ -154,6 +155,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X - 23.01-101
+- Header fix
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-100
 - 23.01
 

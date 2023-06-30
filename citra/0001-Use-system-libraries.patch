@@ -1,17 +1,17 @@
-From 75f1e2c25692016479a296dad1d8fab1d850b1bc Mon Sep 17 00:00:00 2001
+From aae7a3db489155dc016b58e6c9c1ed847e787d71 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt            |  2 -
- externals/CMakeLists.txt  | 84 +++++++++++++++++++++++++++++++++++++--
+ CMakeLists.txt            | 17 +------
+ externals/CMakeLists.txt  | 93 ++++++++++++++++++++++++++++++++++++++-
  src/citra/config.cpp      |  2 +-
  src/common/CMakeLists.txt | 10 ++++-
- 4 files changed, 90 insertions(+), 8 deletions(-)
+ 4 files changed, 102 insertions(+), 20 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 83b2019..518fe00 100644
+index 19d59f6..125e089 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ cmake_policy(SET CMP0069 NEW)
@@ -22,19 +22,41 @@ index 83b2019..518fe00 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -123,7 +122,6 @@ function(check_submodules_present)
-         endif()
-     endforeach()
+@@ -114,7 +113,7 @@ function(check_submodules_present)
  endfunction()
--check_submodules_present()
+ if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
+     # only check submodules when source is obtained via Git
+-    check_submodules_present()
++    #check_submodules_present()
+ endif()
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
-                ${PROJECT_BINARY_DIR}/dist/compatibility_list/compatibility_list.qrc
+@@ -386,20 +385,6 @@ else()
+     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT citra)
+ endif()
+ 
+-# Create target for outputting distributable bundles.
+-if (NOT ANDROID AND NOT IOS)
+-    include(BundleTarget)
+-    if (ENABLE_SDL2_FRONTEND)
+-        bundle_target(citra)
+-    endif()
+-    if (ENABLE_QT)
+-        bundle_target(citra-qt)
+-    endif()
+-    if (ENABLE_DEDICATED_ROOM)
+-        bundle_target(citra-room)
+-    endif()
+-endif()
+-
+ # Installation instructions
+ # =========================
+ 
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 3255780..0eb1934 100644
+index 79c7d57..f6d9249 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -6,10 +6,10 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+@@ -8,10 +8,10 @@ else()
  endif()
  
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
@@ -46,13 +68,14 @@ index 3255780..0eb1934 100644
  set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
  set(Boost_NO_SYSTEM_PATHS ON)
-@@ -31,11 +31,20 @@ add_library(
+@@ -33,11 +33,22 @@ add_library(
  target_link_libraries(boost_iostreams PUBLIC boost)
  
  # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
 +endif()
  
  # Catch2
++if (ENABLE_TESTS)
 +find_package(Catch2 3.1.0 REQUIRED CONFIG)
 +if(Catch2_FOUND)
 +  message(STATUS "Using the system Catch")
@@ -64,10 +87,11 @@ index 3255780..0eb1934 100644
  set(CATCH_INSTALL_EXTRAS OFF)
  add_subdirectory(catch2)
 +endif()
++endif()
  
  # Crypto++
  set(CRYPTOPP_BUILD_DOCUMENTATION OFF)
-@@ -70,19 +79,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
+@@ -72,19 +83,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
  
  # fmt and Xbyak need to be added before dynarmic
  # libfmt
@@ -111,8 +135,8 @@ index 3255780..0eb1934 100644
  endif()
  
  # getopt
-@@ -94,7 +127,15 @@ endif()
- add_subdirectory(glad)
+@@ -103,7 +138,15 @@ set(ENABLE_CTEST OFF)
+ add_subdirectory(glslang)
  
  # inih
 +pkg_check_modules(inih IMPORTED_TARGET INIReader)
@@ -127,9 +151,9 @@ index 3255780..0eb1934 100644
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -109,6 +150,14 @@ endif()
- # Open Source Archives
- add_subdirectory(open_source_archives)
+@@ -124,6 +167,14 @@ add_subdirectory(open_source_archives)
+ # Dynamic library headers
+ add_subdirectory(library-headers EXCLUDE_FROM_ALL)
  
 +find_package(tsl-robin-map)
 +if(tsl-robin-map_FOUND)
@@ -140,9 +164,9 @@ index 3255780..0eb1934 100644
 +endif()
 +
  # SoundTouch
- 
  set(INTEGER_SAMPLES ON CACHE BOOL "")
-@@ -125,20 +174,41 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
+ set(SOUNDSTRETCH OFF CACHE BOOL "")
+@@ -142,22 +193,46 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
  endif()
  
  # Zstandard
@@ -174,19 +198,22 @@ index 3255780..0eb1934 100644
  
  # Cubeb
  if (ENABLE_CUBEB)
--    set(BUILD_TESTS OFF CACHE BOOL "")
--    add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +    find_package(cubeb)
 +    if(cubeb_FOUND)
 +      message(STATUS "Using the system cubeb")
++      add_library(cubeb-shared INTERFACE)
++      target_link_libraries(cubeb-shared INTERFACE cubeb::cubeb)
++      add_library(cubeb ALIAS cubeb-shared)
 +    else()
-+      set(BUILD_TESTS OFF CACHE BOOL "")
-+      add_subdirectory(cubeb EXCLUDE_FROM_ALL)
+     set(BUILD_TESTS OFF CACHE BOOL "")
+     set(BUILD_TOOLS OFF CACHE BOOL "")
+     set(BUNDLE_SPEEX ON CACHE BOOL "")
+     add_subdirectory(cubeb EXCLUDE_FROM_ALL)
 +    endif()
  endif()
  
  # DiscordRPC
-@@ -195,6 +265,13 @@ endif()
+@@ -223,6 +298,13 @@ endif()
  
  # OpenAL Soft
  if (ENABLE_OPENAL)
@@ -200,13 +227,29 @@ index 3255780..0eb1934 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -205,3 +282,4 @@ if (ENABLE_OPENAL)
+@@ -233,11 +315,20 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
 +endif()
+ 
+ # VMA
+ add_library(vma INTERFACE)
+ target_include_directories(vma INTERFACE ./vma/include)
+ 
+ # vulkan-headers
++find_package(VulkanHeaders)
++if(VulkanHeaders_FOUND)
++    message(STATUS "Using the system vulkan-headers")
++    add_library(vulkan-shared INTERFACE)
++    target_link_libraries(vulkan-shared INTERFACE Vulkan::Headers)
++    add_library(vulkan-headers ALIAS vulkan-shared)
++else()
+ add_library(vulkan-headers INTERFACE)
+ target_include_directories(vulkan-headers INTERFACE ./vulkan-headers/include)
++endif()
 diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index d8d93a9..0aea249 100644
+index 09fda6c..09d25ba 100644
 --- a/src/citra/config.cpp
 +++ b/src/citra/config.cpp
 @@ -7,7 +7,7 @@
@@ -219,10 +262,10 @@ index d8d93a9..0aea249 100644
  #include "citra/default_ini.h"
  #include "common/file_util.h"
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 9efb1ea..3882eaf 100644
+index 14a21b8..57b6198 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -126,12 +126,18 @@ add_library(citra_common STATIC
+@@ -132,12 +132,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h
@@ -240,9 +283,9 @@ index 9efb1ea..3882eaf 100644
 +)
 +endif()
 +
- if (MSVC)
-   target_compile_definitions(citra_common PRIVATE
-     # The standard library doesn't provide any replacement for codecvt yet
+ if (APPLE)
+     target_sources(citra_common PUBLIC
+         apple_authorization.h
 -- 
-2.40.1
+2.41.0
 

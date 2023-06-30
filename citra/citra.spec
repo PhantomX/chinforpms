@@ -13,17 +13,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c67c648c1a2de1be3e1ca0d9c7d6f9ee2521e9c6
+%global commit ca2d87e5e38f84a1f4336c995fa71fb0e235e667
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230601
+%global date 20230629
 %bcond_without snapshot
 
 # Enable system boost
 %bcond_without boost
 # Enable system dynarmic
 %bcond_without dynarmic
-# Enable ffmpeg support
-%bcond_without ffmpeg
 # Enable system fmt
 %bcond_without fmt
 # Disable Qt build
@@ -75,8 +73,27 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cpp-jwt
 
+%global commit13 1e4955adbcd9b3f5eaf2129e918ca057baed6520
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 glslang
+
+%global commit14 4ab79a8c023aa63caaa93848b09b9fe8b183b1a9
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 sirit
+
+%global commit15 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
+%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
+%global srcname15 SPIRV-Headers
+
+%global commit16 0e89587db3ebee4d463f191bd296374c5fafc8ea
+%global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
+%global srcname16 VulkanMemoryAllocator
+
+%global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
+
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
+%global vkh_ver 1.3.250
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -86,10 +103,10 @@
 
 Name:           citra
 Version:        0
-Release:        45%{?dist}
+Release:        46%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
-License:        GPL-2.0-only AND MIT AND BSD-2-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
+License:        GPL-2.0-only AND MIT AND BSD-2-Clause% AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
 URL:            https://citra-emu.org
 
 %if %{with snapshot}
@@ -114,14 +131,16 @@ Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{s
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
 Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+Source14:       https://github.com/yuzu-emu/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
-Patch3:         0001-general-fixes-for-gcc-13.patch
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-Optional-tests.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
@@ -147,14 +166,13 @@ BuildRequires:  cmake(dynarmic) >= 6.4.6
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
-%if %{with ffmpeg}
+BuildRequires:  pkgconfig(fdk-aac)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
-BuildRequires:  ffmpeg-devel
-%endif
+BuildRequires:  ffmpeg-devel >= 4.2
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 3.3.2
 %endif
@@ -181,11 +199,15 @@ BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Widgets)
 %endif
+BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(xkbcommon)
 
 Requires:       hicolor-icon-theme
 Requires:       shared-mime-info
+
+Requires:       libGL%{?_isa}
+Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
@@ -196,6 +218,9 @@ Provides:       bundled(teakra) = 0~git%{shortcommit8}
 Provides:       bundled(dds-ktx) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
+Provides:       bundled(glslang) = 0~git%{shortcommit13}
+Provides:       bundled(sirit) = 0~git%{?shortcommit14}
+Provides:       bundled(vma) = ~git%{?shortcommit16}
 
 
 %description
@@ -238,6 +263,10 @@ tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
+tar -xf %{S:13} -C externals/glslang --strip-components 1
+tar -xf %{S:14} -C externals/sirit --strip-components 1
+tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
+tar -xf %{S:16} -C externals/vma --strip-components 1
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -254,10 +283,13 @@ cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %if %{without fmt}
 cp -p fmt/LICENSE.rst LICENSE.fmt.rst
 %endif
+cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
+cp -p sirit/LICENSE.txt LICENSE.sirit
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
 cp -p teakra/LICENSE LICENSE.teakra
+cp -p vma/LICENSE.txt LICENSE.vma
 sed -e 's/\r//' -i LICENSE.cpp-jwt
 popd
 
@@ -309,24 +341,28 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DCITRA_WARNINGS_AS_ERRORS:BOOL=OFF \
 %if %{with qt}
+  -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
+  -DENABLE_QT_UPDATER:BOOL=OFF \
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DCITRA_BUNDLE_LIBRARIES:BOOL=OFF \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
+  -DUSE_SYSTEM_OPENSSL:BOOL=ON \
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif
-%if %{with ffmpeg}
-  -DENABLE_FFMPEG:BOOL=ON \
-  -DENABLE_FFMPEG_AUDIO_DECODER:BOOL=ON \
-  -DENABLE_FFMPEG_VIDEO_DUMPER:BOOL=ON \
-%endif
+  -DAVCODEC_INCLUDES:PATH=%{ffmpeg_includedir} \
+  -DAVFILTER_INCLUDES:PATH=%{ffmpeg_includedir} \
+  -DAVFORMAT_INCLUDES:PATH=%{ffmpeg_includedir} \
+  -DAVUTIL_INCLUDES:PATH=%{ffmpeg_includedir} \
+  -DSWRESAMPLE_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
   -DENABLE_WEB_SERVICE:BOOL=ON \
-  %{!?with_tests:-DCITRA_TESTS:BOOL=OFF} \
+  %{!?with_tests:-DENABLE_TESTS:BOOL=OFF} \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
@@ -351,7 +387,7 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_libdir}
 rm -rf %{buildroot}%{_datadir}/cmake
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %files
@@ -366,7 +402,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %files qt
 %license license.txt
 %{_bindir}/%{name}-qt
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{name}-qt.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/mime/packages/%{name}.xml
 %{_mandir}/man6/%{name}-qt.6*

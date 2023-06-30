@@ -141,7 +141,7 @@
 %global system_io_hashing 7.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 7.0.1
+%global system_management_ver 7.0.2
 %global system_memory_ver 4.5.5
 %global system_net_http_ver 4.1.0
 %global system_net_nameresolution_ver 4.3.0
@@ -218,7 +218,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.881
+Version:        1.1.942
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

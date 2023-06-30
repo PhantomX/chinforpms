@@ -1,6 +1,6 @@
-%global commit 528c69bf5ef616f4319c62b6aed34cd0c59a48c9
+%global commit e4bdee13ffa8959a2ba052bf5b2f53e0455f8994
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230212
+%global date 20230604
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
@@ -34,7 +34,6 @@ BuildRequires:  gcc-c++
 BuildRequires:  libdeflate-devel
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libuv)
-BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake(zopfli) >= %{zopfli_ver}
 

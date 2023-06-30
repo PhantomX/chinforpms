@@ -19,8 +19,8 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.5.2
-Release:        2%{?dist}
+Version:        4.6.3
+Release:        1%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -34,13 +34,14 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        https://github.com/sisong/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 
 Patch0:         0001-Makefile-package-build-fixes.patch
+Patch1:         0001-lzma-sdk-23.01-support.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
-BuildRequires:  pkgconfig(lzmasdk-c)
+BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(zlib)
 Requires:       lib%{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
@@ -121,6 +122,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 4.6.3-1
+- 4.6.3
+
 * Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 4.5.2-2
 - Enable vcdiff compress
 
