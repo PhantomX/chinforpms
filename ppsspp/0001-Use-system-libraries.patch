@@ -1,10 +1,10 @@
-From 09fbc4b0d2443c04becf4e63671e41e476298bc2 Mon Sep 17 00:00:00 2001
+From a91736c6326ceae556883cde5590bc443b60398c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                        | 20 ++++++++++++++++++++
+ CMakeLists.txt                        | 19 ++++++++++++++++++-
  Common/Data/Collections/Hashmaps.h    |  2 +-
  Core/Debugger/DisassemblyManager.cpp  |  2 +-
  Core/HLE/sceJpeg.cpp                  |  2 +-
@@ -19,55 +19,54 @@ Subject: [PATCH] Use system libraries
  GPU/GLES/TextureCacheGLES.cpp         |  2 +-
  GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
  UI/CwCheatScreen.cpp                  |  2 +-
+ UI/RetroAchievements.cpp              |  2 +-
  Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
- 17 files changed, 36 insertions(+), 16 deletions(-)
+ 18 files changed, 35 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6063ede..123a290 100644
+index 849c972..4df9fb4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -159,6 +159,7 @@ option(USE_SYSTEM_FFMPEG "Dynamically link against system FFMPEG" ${USE_SYSTEM_F
- option(USE_SYSTEM_LIBZIP "Dynamically link against system libzip" ${USE_SYSTEM_LIBZIP})
- option(USE_SYSTEM_LIBSDL2 "Dynamically link against system SDL2" ${DEFAULT_USE_SYSTEM_LIBSDL2})
- option(USE_SYSTEM_LIBPNG "Dynamically link against system libpng" ON)
-+option(USE_SYSTEM_XXHASH "Dynamically link against system miniupnpc" ${USE_SYSTEM_XXHASH})
- option(USE_SYSTEM_ZSTD "Dynamically link against system zstd" ${USE_SYSTEM_ZSTD})
- option(USE_SYSTEM_MINIUPNPC "Dynamically link against system miniUPnPc" ${USE_SYSTEM_MINIUPNPC})
- option(USE_ASAN "Use address sanitizer" OFF)
-@@ -1465,11 +1466,30 @@ add_library(xbrz STATIC
+@@ -1504,11 +1504,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
-+if(USE_SYSTEM_XXHASH)
-+	find_path(XXHASH_INCLUDE_DIR xxhash.h)
-+	find_library(XXHASH_LIBRARY xxhash)
-+	mark_as_advanced(XXHASH_INCLUDE_DIR XXHASH_LIBRARY)
-+	
-+	include(FindPackageHandleStandardArgs)
-+	find_package_handle_standard_args(XXHASH DEFAULT_MSG
-+	  XXHASH_INCLUDE_DIR XXHASH_LIBRARY)
-+	
-+	if(XXHASH_FOUND AND NOT TARGET XXHASH)
-+	  message(STATUS "Using shared xxhash")
-+	  add_library(xxhash UNKNOWN IMPORTED)
-+	  set_target_properties(xxhash PROPERTIES
-+	    IMPORTED_LOCATION "${XXHASH_LIBRARY}"
-+	    INTERFACE_INCLUDE_DIRECTORIES "${XXHASH_INCLUDE_DIR}"
-+	  )
-+	endif()
++find_package(PkgConfig QUIET)
++pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
++if(xxhash_FOUND)
++	message(STATUS "Using the system libxxhash")
++	add_library(xxhash-shared INTERFACE)
++	target_link_libraries(xxhash-shared INTERFACE PkgConfig::xxhash)
++	add_library(xxhash ALIAS xxhash-shared)
 +else()
  add_library(xxhash STATIC
  	ext/xxhash.c
  	ext/xxhash.h
  )
- target_include_directories(xxhash PRIVATE ext/xxhash)
+-target_include_directories(xxhash PRIVATE ext/xxhash)
++target_include_directories(xxhash PRIVATE ext)
 +endif()
  
  set(CoreExtra)
  set(CoreExtraLibs)
+@@ -2208,6 +2217,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+ 	set(OPENGL_LIBRARIES OpenGL::OpenGL)
+ endif()
+ 
++find_package(RapidJSON)
++if(rapidjson_FOUND)
++	message(STATUS "Using the system rapidjson")
++	target_include_directories(${CoreLibName} PRIVATE ${RAPIDJSON_INCLUDE_DIRS})
++else()
++	target_include_directories(${CoreLibName} PRIVATE ext/rapidjson/include)
++endif()
++
+ if(USE_SYSTEM_ZSTD)
+ 	find_package(ZSTD REQUIRED)
+ 	target_include_directories(${CoreLibName} PRIVATE ${ZSTD_INCLUDE_DIR})
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index ac6b06c..147d05b 100644
+index ca5de05..fdd66d5 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,7 @@
@@ -80,7 +79,7 @@ index ac6b06c..147d05b 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index f9bd9c1..13b02b8 100644
+index ecea54a..ca4af79 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -106,7 +105,7 @@ index 8b2e427..113f4be 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 66608fc..43cc7a4 100644
+index 37860f1..2372289 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -17,7 +17,7 @@
@@ -119,7 +118,7 @@ index 66608fc..43cc7a4 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index 1f0e2e0..fafdf98 100644
+index 00e122c..f63e721 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -132,10 +131,10 @@ index 1f0e2e0..fafdf98 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index c7837e2..2595618 100644
+index 4cfe9a2..580e0d0 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -23,7 +23,7 @@
+@@ -24,7 +24,7 @@
  #include <mutex>
  
  #include "ext/cityhash/city.h"
@@ -171,7 +170,7 @@ index 32da2df..edb118e 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 116473e..66dbfaf 100644
+index da0f944..9d19bde 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -23,7 +23,7 @@
@@ -210,7 +209,7 @@ index 04a1aaf..80ba41d 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index e83ff0a..0cb3b91 100644
+index 8bbb390..9a93d0e 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -223,7 +222,7 @@ index e83ff0a..0cb3b91 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 3fa809c..1211450 100644
+index 018d1ac..6017e01 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -248,8 +247,21 @@ index 17cf916..cd508a1 100644
  #include "Common/UI/UI.h"
  
  #include "Common/Data/Text/I18n.h"
+diff --git a/UI/RetroAchievements.cpp b/UI/RetroAchievements.cpp
+index 68fffca..560feaf 100644
+--- a/UI/RetroAchievements.cpp
++++ b/UI/RetroAchievements.cpp
+@@ -25,7 +25,7 @@
+ #include "ext/rcheevos/src/rhash/md5.h"
+ 
+ #include "UI/RetroAchievements.h"
+-#include "ext/rapidjson/include/rapidjson/document.h"
++#include "rapidjson/document.h"
+ 
+ #include "Common/Log.h"
+ #include "Common/File/Path.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index e8d176b..28058a4 100644
+index 89529d0..c3aa758 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
 @@ -22,7 +22,7 @@
@@ -275,5 +287,5 @@ index 12e4f85..c1433a8 100644
  #include "Core/Config.h"
  #include "Core/MemMap.h"
 -- 
-2.40.1
+2.41.0
 

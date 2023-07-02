@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f2919598fb083fc44159e12d5588ce4021f4ff22
+%global commit 9c08e27a0c3ae15f522e2fbddcb8afcabe22ab04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230525
+%global date 20230701
 %bcond_without snapshot
 
 # Enable Qt build
@@ -55,6 +55,10 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
+%global commit9 d176b4bcb42488da84f55991fd10f8ff36183384
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 rcheevos
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -66,11 +70,11 @@
 
 Name:           ppsspp
 Version:        1.15.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0%{!?with_sysffmpeg: AND GPL-3.0-or-later}
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_sysffmpeg: AND GPL-3.0-or-later}
 URL:            http://www.ppsspp.org/
 
 %if %{without snapshot}
@@ -91,6 +95,7 @@ Source5:        https://github.com/google/%{srcname5}/archive/%{commit5}/%{srcna
 Source6:        https://github.com/KhronosGroup/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/KhronosGroup/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+Source9:        https://github.com/RetroAchievements/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 %endif
 Source10:       %{name}.appdata.xml
 Source11:       Makefile
@@ -102,8 +107,6 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-
-Patch900:       https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/commit/29d492b60c84ca784ea0943efc7d2e6e0f3bdaac.patch#/%{name}-gh-VulkanMemoryAllocator-29d492b.patch
 
 %if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -143,6 +146,7 @@ BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.9
 BuildRequires:  pkgconfig(miniupnpc) >= 2.1
+BuildRequires:  pkgconfig(RapidJSON)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(snappy)
 BuildRequires:  pkgconfig(wayland-client)
@@ -169,6 +173,7 @@ Provides:       bundled(gason)
 Provides:       bundled(glslang) = 0~git%{shortcommit6}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(libkirk)
+Provides:       bundled(rcheevos) = 0~git%{shortcommit9}
 Provides:       bundled(sfmt19937)
 Provides:       bundled(sha1-reichl)
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit7}
@@ -223,6 +228,7 @@ tar -xf %{SOURCE5} -C ext/cpu_features --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
+tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 %endif
 
 rm -rf ext/glew/GL
@@ -232,8 +238,6 @@ rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
-
-%patch -P 900 -p2 -d ext/vma
 
 %if %{with sysffmpeg}
 rm -rf ffmpeg
@@ -246,6 +250,7 @@ cp -p cityhash/COPYING COPYING.cityhash
 cp -p cpu_features/LICENSE LICENSE.cpu_features
 cp -p gason/LICENSE LICENSE.gason
 cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
 popd
@@ -343,7 +348,6 @@ popd
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
   -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
-  -DUSE_SYSTEM_XXHASH:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \

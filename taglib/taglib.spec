@@ -7,7 +7,7 @@
 %global commit a31356e330674640a07bef7d71d08242cae8e9bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221221
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -15,7 +15,7 @@
 
 Name:           taglib
 Summary:        Audio Meta-Data Library
-Version:        1.13
+Version:        1.13.1
 Release:        100%{?dist}
 
 Epoch:          1
@@ -27,7 +27,8 @@ URL:            https://taglib.org/
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
+%dnl Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 # http://bugzilla.redhat.com/343241
@@ -136,6 +137,9 @@ test "$(pkg-config --modversion taglib_c)" = "%{version}"
 
 
 %changelog
+* Sat Jul 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.13.1-100
+- 1.13.1
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.13-100.20221221gita31356e
 - 1.13
 

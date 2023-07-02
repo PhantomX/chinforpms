@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.4.0
+%define specrpmversion 6.4.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ cd linux-%{tarfile_release}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
 
-%patch1 -p1
+%patch -P 1 -p1
 
 # END OF PATCH APPLICATIONS
 
@@ -574,6 +574,9 @@ popd
 
 
 %changelog
+* Sat Jul 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-500
+- 6.4.1
+
 * Mon Jun 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-500
 - 6.4.0
 

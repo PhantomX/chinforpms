@@ -1,6 +1,6 @@
-%global commit f1cd763715e991e341d15da599d1877fd5040ce0
+%global commit 226eda8f40143f579ab8a182ccfa71f7013ad3a6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230130
+%global date 20230329
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           c-vtapi
 Version:        0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        VirusTotal C API library
 
 License:        Apache-2.0
