@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 593f8506931d4763d9b55f930c4becb262bd3620
+%global commit 21f5976d359dacfe058d91a500f885e5b8da8121
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230629
+%global date 20230702
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -61,7 +61,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 979707380c677dfa65e3ba48f19e149773a4a32d
+%global commit15 3b3c175af0e993ffaae251871421e206cc41963f
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -73,7 +73,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
-%global commit18 08d094a0e457360ad8b94b017d2dc277e697ca76
+%global commit18 cd89023f797900e4492da58b7bed36f702120011
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 llvm
 
@@ -105,7 +105,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.28.15263
+Version:        0.0.28.15277
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
