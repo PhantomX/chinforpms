@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230425
-# 6.3
-# pf1
+# 20230704
+# 6.4
+# pf2
 
 set -e
 
@@ -50,6 +50,7 @@ MZEN3
 MNATIVE_AMD
 MNATIVE_INTEL
 RHEL_DIFFERENCES
+PER_VMA_LOCK
 "
 
 pf="

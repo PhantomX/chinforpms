@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.1
+%define specrpmversion 6.4.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -225,7 +225,7 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 1410ae953c419243bbb0f48b502215693a379036
+%global pfcommit bbadb1cef7afb8bdb6603f70031a73b8ad2fe6e7
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
 %global pfcoprhash 361df4cb8baf6a5cc97c9a8b311648fa
 %if "%{pfcommit}" == "0"
@@ -249,7 +249,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id d68cda5621aa7524f47fa0a6cc845dc8c0f72294
+%global opensuse_id b8cc9514b8848157a75053b1bcd6dd06ec3da83c
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -3402,6 +3402,12 @@ fi\
 #
 #
 %changelog
+* Wed Jul 05 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.2-500.chinfo
+- 6.4.2 - pf2
+
+* Tue Jul 04 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-501.chinfo
+- 6.4.1 - pf2
+
 * Sat Jul 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-500.chinfo
 - 6.4.1 - pf1
 
