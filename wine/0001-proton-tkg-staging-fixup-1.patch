@@ -1,0 +1,31 @@
+From 87155541d428e3461cf5d16bbdfab41ae4f68ae9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 9 Jul 2023 00:32:32 -0300
+Subject: [PATCH] proton-tkg-staging: fixup 1
+
+---
+ dlls/dsound/dsound_private.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/dlls/dsound/dsound_private.h b/dlls/dsound/dsound_private.h
+index 43f9df8..63f2d4b 100644
+--- a/dlls/dsound/dsound_private.h
++++ b/dlls/dsound/dsound_private.h
+@@ -212,10 +212,10 @@ HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
+ 
+ /* dsound.c */
+ 
+-HRESULT DSOUND_Create(REFIID riid, void **ppv);
+-HRESULT DSOUND_Create8(REFIID riid, void **ppv);
+-HRESULT IDirectSoundImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_ds8);
+-void DSOUND_ParseSpeakerConfig(DirectSoundDevice *device);
++HRESULT DSOUND_Create(REFIID riid, void **ppv) DECLSPEC_HIDDEN;
++HRESULT DSOUND_Create8(REFIID riid, void **ppv) DECLSPEC_HIDDEN;
++HRESULT IDirectSoundImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_ds8) DECLSPEC_HIDDEN;
++void DSOUND_ParseSpeakerConfig(DirectSoundDevice *device) DECLSPEC_HIDDEN;
+ 
+ /* primary.c */
+ 
+-- 
+2.41.0
+

@@ -1,0 +1,29 @@
+From 22de35f1546b9f5b97ef07f3d2f80aae867c9248 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 9 Jul 2023 00:34:27 -0300
+Subject: [PATCH] proton-tkg-staging: fixup 2
+
+---
+ dlls/dsound/dsound_private.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/dlls/dsound/dsound_private.h b/dlls/dsound/dsound_private.h
+index 8e92431..642adff 100644
+--- a/dlls/dsound/dsound_private.h
++++ b/dlls/dsound/dsound_private.h
+@@ -212,9 +212,9 @@ HRESULT IKsPrivatePropertySetImpl_Create(REFIID riid, void **ppv);
+ 
+ /* dsound.c */
+ 
+-HRESULT DSOUND_Create(REFIID riid, void **ppv) DECLSPEC_HIDDEN;
+-HRESULT DSOUND_Create8(REFIID riid, void **ppv) DECLSPEC_HIDDEN;
+-HRESULT IDirectSoundImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_ds8) DECLSPEC_HIDDEN;
++HRESULT DSOUND_Create(REFIID riid, void **ppv);
++HRESULT DSOUND_Create8(REFIID riid, void **ppv);
++HRESULT IDirectSoundImpl_Create(IUnknown *outer_unk, REFIID riid, void **ppv, BOOL has_ds8);
+ 
+ /* primary.c */
+ 
+-- 
+2.41.0
+
