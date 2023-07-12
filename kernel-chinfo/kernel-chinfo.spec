@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.2
+%define specrpmversion 6.4.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease %{pkgrelease}%{?buildid}%{?variantid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.1
+%define kabiversion 6.4.3
 %global src_hash 00000000000000000000000000000000
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
@@ -220,14 +220,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit bbadb1cef7afb8bdb6603f70031a73b8ad2fe6e7
+%global pfcommit 7550f7928b73f7d5cd52f0ab5f9a3d931c4ba6c7
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash 361df4cb8baf6a5cc97c9a8b311648fa
+%global pfcoprhash 3a5bd8a131044c6ab053af403957f713
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -249,7 +249,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id b8cc9514b8848157a75053b1bcd6dd06ec3da83c
+%global opensuse_id 5ab030f1f07fd96746960bce337ec62fc11b6a9a
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -3402,6 +3402,9 @@ fi\
 #
 #
 %changelog
+* Tue Jul 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
+- 6.4.3 - pf3
+
 * Wed Jul 05 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.2-500.chinfo
 - 6.4.2 - pf2
 

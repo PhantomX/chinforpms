@@ -1,41 +1,56 @@
- Makefile                                           |  20 +-
+ Makefile                                           |  20 +++-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  68 ++-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ arch/x86/kernel/setup.c                            |  22 ++--
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/nvme/host/core.c                           |  22 +-
- drivers/nvme/host/multipath.c                      |  19 +-
- drivers/nvme/host/nvme.h                           |   4 +
- include/linux/efi.h                                |  22 +-
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c             |  11 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c           |   3 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_object.c         |   6 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c            |   2 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c       |   3 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c            |   3 +-
+ drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c             |  69 +++++++-----
+ drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c             |  11 +-
+ drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c             |   4 +-
+ drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c           |   4 +-
+ .../gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c   |   1 +
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/usb/core/hub.c                             |   7 ++
+ include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
+ include/linux/module.h                             |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
+ kernel/fork.c                                      |   6 +
+ kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
+ mm/Kconfig                                         |   3 +-
+ scripts/mod/modpost.c                              |   8 ++
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 +
- tools/bpf/resolve_btfids/Makefile                  |   4 +-
- 64 files changed, 1544 insertions(+), 190 deletions(-)
+ security/security.c                                |  12 ++
+ 49 files changed, 569 insertions(+), 225 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index e51e4d9174ab..e58f04ca4249 100644
+index 56abbcac061d..fa5e45f46bac 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -57,11 +72,26 @@ index e51e4d9174ab..e58f04ca4249 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
+@@ -1335,7 +1347,13 @@ define filechk_version.h
+ 	((c) > 255 ? 255 : (c)))';                                       \
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
++	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
++	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
++	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
++	echo '#define RHEL_RELEASE_CODE \
++		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
++	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
+ endef
+
+ $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 0fb4b218f665..402f3309a90c 100644
+index 9ed7f03ba15a..9f5972a2d17b 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1304,9 +1304,9 @@ config HIGHMEM
+@@ -1305,9 +1305,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -74,10 +104,10 @@ index 0fb4b218f665..402f3309a90c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 343e1e1cae10..163545217df2 100644
+index 92f3fff2522b..eda3f7dfc558 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1268,7 +1268,7 @@ endchoice
+@@ -1269,7 +1269,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -134,7 +164,7 @@ index fe10da1a271e..e2c6068201c0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 16babff771bd..93e0fda57656 100644
+index 16babff771bd..a1e48e27cf7a 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -145,7 +175,7 @@ index 16babff771bd..93e0fda57656 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -1032,6 +1077,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1032,6 +1033,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -159,7 +189,7 @@ index 16babff771bd..93e0fda57656 100644
  	dmi_setup();
 
  	/*
-@@ -1190,19 +1242,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1190,19 +1198,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -553,6 +583,322 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 3c197db42c9d..16e4a2e90fae 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -34,6 +34,22 @@
+ #include <linux/screen_info.h>
+ #include <linux/sysfb.h>
+
++static int skip_simpledrm;
++
++static int __init simpledrm_disable(char *opt)
++{
++	if (!opt)
++                return -EINVAL;
++
++	get_option(&opt, &skip_simpledrm);
++
++	if (skip_simpledrm)
++		pr_info("The simpledrm driver will not be probed\n");
++
++	return 0;
++}
++early_param("nvidia-drm.modeset", simpledrm_disable);
++
+ static struct platform_device *pd;
+ static DEFINE_MUTEX(disable_lock);
+ static bool disabled;
+@@ -85,7 +101,7 @@ static __init int sysfb_init(void)
+
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+-	if (compatible) {
++	if (compatible && !skip_simpledrm) {
+ 		pd = sysfb_create_simplefb(si, &mode);
+ 		if (!IS_ERR(pd))
+ 			goto unlock_mutex;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+index 2eb2c66843a8..5612caf77dd6 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
+@@ -133,9 +133,6 @@ static int amdgpu_cs_p1_user_fence(struct amdgpu_cs_parser *p,
+ 	bo = amdgpu_bo_ref(gem_to_amdgpu_bo(gobj));
+ 	p->uf_entry.priority = 0;
+ 	p->uf_entry.tv.bo = &bo->tbo;
+-	/* One for TTM and two for the CS job */
+-	p->uf_entry.tv.num_shared = 3;
+-
+ 	drm_gem_object_put(gobj);
+
+ 	size = amdgpu_bo_size(bo);
+@@ -882,15 +879,19 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
+
+ 	mutex_lock(&p->bo_list->bo_list_mutex);
+
+-	/* One for TTM and one for the CS job */
++	/* One for TTM and one for each CS job */
+ 	amdgpu_bo_list_for_each_entry(e, p->bo_list)
+-		e->tv.num_shared = 2;
++		e->tv.num_shared = 1 + p->gang_size;
++	p->uf_entry.tv.num_shared = 1 + p->gang_size;
+
+ 	amdgpu_bo_list_get_list(p->bo_list, &p->validated);
+
+ 	INIT_LIST_HEAD(&duplicates);
+ 	amdgpu_vm_get_pd_bo(&fpriv->vm, &p->validated, &p->vm_pd);
+
++	/* Two for VM updates, one for TTM and one for each CS job */
++	p->vm_pd.tv.num_shared = 3 + p->gang_size;
++
+ 	if (p->uf_entry.tv.bo && !ttm_to_amdgpu_bo(p->uf_entry.tv.bo)->parent)
+ 		list_add(&p->uf_entry.tv.head, &p->validated);
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
+index 4fa019c8aefc..fb9251d9c899 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
+@@ -251,7 +251,8 @@ int amdgpu_jpeg_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *
+
+ 	if (amdgpu_ras_is_supported(adev, ras_block->block)) {
+ 		for (i = 0; i < adev->jpeg.num_jpeg_inst; ++i) {
+-			if (adev->jpeg.harvest_config & (1 << i))
++			if (adev->jpeg.harvest_config & (1 << i) ||
++			    !adev->jpeg.inst[i].ras_poison_irq.funcs)
+ 				continue;
+
+ 			r = amdgpu_irq_get(adev, &adev->jpeg.inst[i].ras_poison_irq, 0);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+index a70103ac0026..46557bbbc18a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
+@@ -1266,8 +1266,12 @@ void amdgpu_bo_move_notify(struct ttm_buffer_object *bo,
+ void amdgpu_bo_get_memory(struct amdgpu_bo *bo,
+ 			  struct amdgpu_mem_stats *stats)
+ {
+-	unsigned int domain;
+ 	uint64_t size = amdgpu_bo_size(bo);
++	unsigned int domain;
++
++	/* Abort if the BO doesn't currently have a backing store */
++	if (!bo->tbo.resource)
++		return;
+
+ 	domain = amdgpu_mem_type_to_domain(bo->tbo.resource->mem_type);
+ 	switch (domain) {
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+index a150b7a4b4aa..e4757a2807d9 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
+@@ -1947,6 +1947,8 @@ static int psp_securedisplay_initialize(struct psp_context *psp)
+ 		psp_securedisplay_parse_resp_status(psp, securedisplay_cmd->status);
+ 		dev_err(psp->adev->dev, "SECUREDISPLAY: query securedisplay TA failed. ret 0x%x\n",
+ 			securedisplay_cmd->securedisplay_out_message.query_ta.query_cmd_ret);
++		/* don't try again */
++		psp->securedisplay_context.context.bin_desc.size_bytes = 0;
+ 	}
+
+ 	return 0;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
+index 73516abef662..b779ee4bbaa7 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
+@@ -423,6 +423,9 @@ void amdgpu_sw_ring_ib_mark_offset(struct amdgpu_ring *ring, enum amdgpu_ring_mu
+ 	struct amdgpu_ring_mux *mux = &adev->gfx.muxer;
+ 	unsigned offset;
+
++	if (ring->hw_prio > AMDGPU_RING_PRIO_DEFAULT)
++		return;
++
+ 	offset = ring->wptr & ring->buf_mask;
+
+ 	amdgpu_ring_mux_ib_mark_offset(mux, ring, offset, type);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
+index 2d94f1b63bd6..b46a5771c3ec 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
+@@ -1191,7 +1191,8 @@ int amdgpu_vcn_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *r
+
+ 	if (amdgpu_ras_is_supported(adev, ras_block->block)) {
+ 		for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
+-			if (adev->vcn.harvest_config & (1 << i))
++			if (adev->vcn.harvest_config & (1 << i) ||
++			    !adev->vcn.inst[i].ras_poison_irq.funcs)
+ 				continue;
+
+ 			r = amdgpu_irq_get(adev, &adev->vcn.inst[i].ras_poison_irq, 0);
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+index 5b3a70becbdf..a252a206f37b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
+@@ -920,42 +920,51 @@ int amdgpu_vm_update_range(struct amdgpu_device *adev, struct amdgpu_vm *vm,
+ 	return r;
+ }
+
++static void amdgpu_vm_bo_get_memory(struct amdgpu_bo_va *bo_va,
++				    struct amdgpu_mem_stats *stats)
++{
++	struct amdgpu_vm *vm = bo_va->base.vm;
++	struct amdgpu_bo *bo = bo_va->base.bo;
++
++	if (!bo)
++		return;
++
++	/*
++	 * For now ignore BOs which are currently locked and potentially
++	 * changing their location.
++	 */
++	if (bo->tbo.base.resv != vm->root.bo->tbo.base.resv &&
++	    !dma_resv_trylock(bo->tbo.base.resv))
++		return;
++
++	amdgpu_bo_get_memory(bo, stats);
++	if (bo->tbo.base.resv != vm->root.bo->tbo.base.resv)
++	    dma_resv_unlock(bo->tbo.base.resv);
++}
++
+ void amdgpu_vm_get_memory(struct amdgpu_vm *vm,
+ 			  struct amdgpu_mem_stats *stats)
+ {
+ 	struct amdgpu_bo_va *bo_va, *tmp;
+
+ 	spin_lock(&vm->status_lock);
+-	list_for_each_entry_safe(bo_va, tmp, &vm->idle, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
+-	list_for_each_entry_safe(bo_va, tmp, &vm->evicted, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
+-	list_for_each_entry_safe(bo_va, tmp, &vm->relocated, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
+-	list_for_each_entry_safe(bo_va, tmp, &vm->moved, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
+-	list_for_each_entry_safe(bo_va, tmp, &vm->invalidated, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
+-	list_for_each_entry_safe(bo_va, tmp, &vm->done, base.vm_status) {
+-		if (!bo_va->base.bo)
+-			continue;
+-		amdgpu_bo_get_memory(bo_va->base.bo, stats);
+-	}
++	list_for_each_entry_safe(bo_va, tmp, &vm->idle, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
++
++	list_for_each_entry_safe(bo_va, tmp, &vm->evicted, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
++
++	list_for_each_entry_safe(bo_va, tmp, &vm->relocated, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
++
++	list_for_each_entry_safe(bo_va, tmp, &vm->moved, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
++
++	list_for_each_entry_safe(bo_va, tmp, &vm->invalidated, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
++
++	list_for_each_entry_safe(bo_va, tmp, &vm->done, base.vm_status)
++		amdgpu_vm_bo_get_memory(bo_va, stats);
+ 	spin_unlock(&vm->status_lock);
+ }
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c b/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
+index aa761ff3a5fa..7ba47fc1917b 100644
+--- a/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
++++ b/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
+@@ -346,7 +346,7 @@ static void nbio_v2_3_init_registers(struct amdgpu_device *adev)
+
+ #define NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT		0x00000000 // off by default, no gains over L1
+ #define NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT		0x00000009 // 1=1us, 9=1ms
+-#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E // 4ms
++#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E // 400ms
+
+ static void nbio_v2_3_enable_aspm(struct amdgpu_device *adev,
+ 				  bool enable)
+@@ -479,9 +479,12 @@ static void nbio_v2_3_program_aspm(struct amdgpu_device *adev)
+ 		WREG32_SOC15(NBIO, 0, mmRCC_BIF_STRAP5, data);
+
+ 	def = data = RREG32_PCIE(smnPCIE_LC_CNTL);
+-	data &= ~PCIE_LC_CNTL__LC_L0S_INACTIVITY_MASK;
+-	data |= 0x9 << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
+-	data |= 0x1 << PCIE_LC_CNTL__LC_PMI_TO_L1_DIS__SHIFT;
++	data |= NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT << PCIE_LC_CNTL__LC_L0S_INACTIVITY__SHIFT;
++	if (pci_is_thunderbolt_attached(adev->pdev))
++		data |= NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT  << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
++	else
++		data |= NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
++	data &= ~PCIE_LC_CNTL__LC_PMI_TO_L1_DIS_MASK;
+ 	if (def != data)
+ 		WREG32_PCIE(smnPCIE_LC_CNTL, data);
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+index 9295ac7edd56..d35c8a33d06d 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
+@@ -2306,7 +2306,7 @@ const struct amd_ip_funcs sdma_v4_0_ip_funcs = {
+
+ static const struct amdgpu_ring_funcs sdma_v4_0_ring_funcs = {
+ 	.type = AMDGPU_RING_TYPE_SDMA,
+-	.align_mask = 0xf,
++	.align_mask = 0xff,
+ 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
+ 	.support_64bit_ptrs = true,
+ 	.secure_submission_supported = true,
+@@ -2338,7 +2338,7 @@ static const struct amdgpu_ring_funcs sdma_v4_0_ring_funcs = {
+
+ static const struct amdgpu_ring_funcs sdma_v4_0_page_ring_funcs = {
+ 	.type = AMDGPU_RING_TYPE_SDMA,
+-	.align_mask = 0xf,
++	.align_mask = 0xff,
+ 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
+ 	.support_64bit_ptrs = true,
+ 	.secure_submission_supported = true,
+diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
+index 64dcaa2670dd..ac7aa8631f6a 100644
+--- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
++++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
+@@ -1740,7 +1740,7 @@ const struct amd_ip_funcs sdma_v4_4_2_ip_funcs = {
+
+ static const struct amdgpu_ring_funcs sdma_v4_4_2_ring_funcs = {
+ 	.type = AMDGPU_RING_TYPE_SDMA,
+-	.align_mask = 0xf,
++	.align_mask = 0xff,
+ 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
+ 	.support_64bit_ptrs = true,
+ 	.get_rptr = sdma_v4_4_2_ring_get_rptr,
+@@ -1771,7 +1771,7 @@ static const struct amdgpu_ring_funcs sdma_v4_4_2_ring_funcs = {
+
+ static const struct amdgpu_ring_funcs sdma_v4_4_2_page_ring_funcs = {
+ 	.type = AMDGPU_RING_TYPE_SDMA,
+-	.align_mask = 0xf,
++	.align_mask = 0xff,
+ 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
+ 	.support_64bit_ptrs = true,
+ 	.get_rptr = sdma_v4_4_2_ring_get_rptr,
+diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+index 08577d1b84ec..c42c0c1446f4 100644
+--- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
++++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
+@@ -1300,6 +1300,7 @@ static int smu_v13_0_0_get_thermal_temperature_range(struct smu_context *smu,
+ 	range->mem_emergency_max = (pptable->SkuTable.TemperatureLimit[TEMP_MEM] + CTF_OFFSET_MEM)*
+ 		SMU_TEMPERATURE_UNITS_PER_CENTIGRADES;
+ 	range->software_shutdown_temp = powerplay_table->software_shutdown_temp;
++	range->software_shutdown_temp_offset = pptable->SkuTable.FanAbnormalTempLimitOffset;
+
+ 	return 0;
+ }
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -938,142 +1284,6 @@ index f1dcfa3f1a1b..62fa35de72ac 100644
  /*
   * Changes the default domain of an iommu group
   *
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 3ec38e2b9173..58c733c6dc6a 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -251,6 +251,9 @@ static void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
-
- static blk_status_t nvme_error_status(u16 status)
- {
-+	if (unlikely(status & NVME_SC_DNR))
-+		return BLK_STS_TARGET;
-+
- 	switch (status & 0x7ff) {
- 	case NVME_SC_SUCCESS:
- 		return BLK_STS_OK;
-@@ -341,6 +344,7 @@ enum nvme_disposition {
- 	COMPLETE,
- 	RETRY,
- 	FAILOVER,
-+	FAILUP,
- 	AUTHENTICATE,
- };
-
-@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
- 	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
- 		return AUTHENTICATE;
-
--	if (blk_noretry_request(req) ||
-+	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
- 	    (nvme_req(req)->status & NVME_SC_DNR) ||
- 	    nvme_req(req)->retries >= nvme_max_retries)
- 		return COMPLETE;
-
--	if (req->cmd_flags & REQ_NVME_MPATH) {
-+	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
- 		if (nvme_is_path_error(nvme_req(req)->status) ||
- 		    blk_queue_dying(req->q))
--			return FAILOVER;
-+			return (req->cmd_flags & REQ_NVME_MPATH) ?
-+				FAILOVER : FAILUP;
- 	} else {
- 		if (blk_queue_dying(req->q))
- 			return COMPLETE;
-@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
- 	blk_mq_end_request(req, status);
- }
-
-+static inline void nvme_failup_req(struct request *req)
-+{
-+	nvme_update_ana(req);
-+
-+	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
-+	nvme_end_req(req);
-+}
-+
- void nvme_complete_rq(struct request *req)
- {
- 	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
-@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
- 	case FAILOVER:
- 		nvme_failover_req(req);
- 		return;
-+	case FAILUP:
-+		nvme_failup_req(req);
-+		return;
- 	case AUTHENTICATE:
- #ifdef CONFIG_NVME_AUTH
- 		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
-diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index 2bc159a318ff..d5562a97f232 100644
---- a/drivers/nvme/host/multipath.c
-+++ b/drivers/nvme/host/multipath.c
-@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
- 			blk_freeze_queue_start(h->disk->queue);
- }
-
--void nvme_failover_req(struct request *req)
-+void nvme_update_ana(struct request *req)
- {
- 	struct nvme_ns *ns = req->q->queuedata;
- 	u16 status = nvme_req(req)->status & 0x7ff;
--	unsigned long flags;
--	struct bio *bio;
--
--	nvme_mpath_clear_current_path(ns);
-
- 	/*
- 	 * If we got back an ANA error, we know the controller is alive but not
-@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
- 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
- 		queue_work(nvme_wq, &ns->ctrl->ana_work);
- 	}
-+}
-+
-+void nvme_failover_req(struct request *req)
-+{
-+	struct nvme_ns *ns = req->q->queuedata;
-+	unsigned long flags;
-+	struct bio *bio;
-+
-+	nvme_mpath_clear_current_path(ns);
-+	nvme_update_ana(req);
-
- 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
- 	for (bio = req->bio; bio; bio = bio->bi_next) {
-@@ -904,8 +910,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
- 	int error = 0;
-
- 	/* check if multipath is enabled and we have the capability */
--	if (!multipath || !ctrl->subsys ||
--	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
-+	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
- 		return 0;
-
- 	if (!ctrl->max_namespaces ||
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index 8657811f8b88..feee7e1e6c8d 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -879,6 +879,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
- void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
- void nvme_failover_req(struct request *req);
-+void nvme_update_ana(struct request *req);
- void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
- int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
- void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
-@@ -917,6 +918,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
- static inline void nvme_failover_req(struct request *req)
- {
- }
-+static inline void nvme_update_ana(struct request *req)
-+{
-+}
- static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
- {
- }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index c525867760bf..549083cdf0ec 100644
 --- a/drivers/pci/quirks.c
@@ -1208,6 +1418,18 @@ index 6bb55e61e8e8..3bf124aca5ff 100644
 
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
+diff --git a/include/linux/module.h b/include/linux/module.h
+index 9e56763dff81..71da868d8895 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -418,6 +418,7 @@ struct module {
+ 	struct module_attribute *modinfo_attrs;
+ 	const char *version;
+ 	const char *srcversion;
++	const char *rhelversion;
+ 	struct kobject *holders_dir;
+
+ 	/* Exported symbols */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1243,6 +1465,43 @@ index e2734e9e44d5..52344c344e7a 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 8103ffd217e9..00bc9fa0828b 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -662,6 +662,12 @@ static __latent_entropy int dup_mmap(struct mm_struct *mm,
+ 		retval = -EINTR;
+ 		goto fail_uprobe_end;
+ 	}
++#ifdef CONFIG_PER_VMA_LOCK
++	/* Disallow any page faults before calling flush_cache_dup_mm */
++	for_each_vma(old_vmi, mpnt)
++		vma_start_write(mpnt);
++	vma_iter_set(&old_vmi, 0);
++#endif
+ 	flush_cache_dup_mm(oldmm);
+ 	uprobe_dup_mmap(oldmm, mm);
+ 	/*
+diff --git a/kernel/module/main.c b/kernel/module/main.c
+index 4e2cf784cf8c..66782bc8bc65 100644
+--- a/kernel/module/main.c
++++ b/kernel/module/main.c
+@@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
+
+ MODINFO_ATTR(version);
+ MODINFO_ATTR(srcversion);
++MODINFO_ATTR(rhelversion);
+
+ static struct {
+ 	char name[MODULE_NAME_LEN + 1];
+@@ -987,6 +988,7 @@ struct module_attribute *modinfo_attrs[] = {
+ 	&module_uevent,
+ 	&modinfo_version,
+ 	&modinfo_srcversion,
++	&modinfo_rhelversion,
+ 	&modinfo_initstate,
+ 	&modinfo_coresize,
+ #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
 index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c
@@ -1266,8 +1525,56 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/mm/Kconfig b/mm/Kconfig
+index e3454087fd31..1d2afc2567d0 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -1198,8 +1198,9 @@ config ARCH_SUPPORTS_PER_VMA_LOCK
+        def_bool n
+
+ config PER_VMA_LOCK
+-	def_bool y
++	bool "Enable per-vma locking during page fault handling."
+ 	depends on ARCH_SUPPORTS_PER_VMA_LOCK && MMU && SMP
++	depends on BROKEN
+ 	help
+ 	  Allow per-vma locking during page fault handling.
+
+diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
+index c12150f96b88..3f28b300ae22 100644
+--- a/scripts/mod/modpost.c
++++ b/scripts/mod/modpost.c
+@@ -23,6 +23,7 @@
+ #include "modpost.h"
+ #include "../../include/linux/license.h"
+ #include "../../include/linux/module_symbol.h"
++#include "../../include/generated/uapi/linux/version.h"
+
+ /* Are we using CONFIG_MODVERSIONS? */
+ static bool modversions;
+@@ -2137,6 +2138,12 @@ static void write_buf(struct buffer *b, const char *fname)
+ 	}
+ }
+
++static void add_rhelversion(struct buffer *b, struct module *mod)
++{
++	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
++		   RHEL_MINOR);
++}
++
+ static void write_if_changed(struct buffer *b, const char *fname)
+ {
+ 	char *tmp;
+@@ -2200,6 +2207,7 @@ static void write_mod_c_file(struct module *mod)
+ 	add_depends(&buf, mod);
+ 	add_moddevtable(&buf, mod);
+ 	add_srcversion(&buf, mod);
++	add_rhelversion(&buf, mod);
+
+ 	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
+ 	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index ea31640b2671..2a08b8f8a380 100755
+index f6b3c7cd39c7..35044647ed1a 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -1362,25 +1669,3 @@ index d5ff7ff45b77..ac7d177a5fea 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/tools/bpf/resolve_btfids/Makefile b/tools/bpf/resolve_btfids/Makefile
-index ac548a7baa73..4b8079f294f6 100644
---- a/tools/bpf/resolve_btfids/Makefile
-+++ b/tools/bpf/resolve_btfids/Makefile
-@@ -67,7 +67,7 @@ $(BPFOBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(LIBBPF_OU
- LIBELF_FLAGS := $(shell $(HOSTPKG_CONFIG) libelf --cflags 2>/dev/null)
- LIBELF_LIBS  := $(shell $(HOSTPKG_CONFIG) libelf --libs 2>/dev/null || echo -lelf)
-
--HOSTCFLAGS += -g \
-+HOSTCFLAGS_resolve_btfids += -g \
-           -I$(srctree)/tools/include \
-           -I$(srctree)/tools/include/uapi \
-           -I$(LIBBPF_INCLUDE) \
-@@ -76,7 +76,7 @@ HOSTCFLAGS += -g \
-
- LIBS = $(LIBELF_LIBS) -lz
-
--export srctree OUTPUT HOSTCFLAGS Q HOSTCC HOSTLD HOSTAR
-+export srctree OUTPUT HOSTCFLAGS_resolve_btfids Q HOSTCC HOSTLD HOSTAR
- include $(srctree)/tools/build/Makefile.include
-
- $(BINARY_IN): fixdep FORCE prepare | $(OUTPUT)
