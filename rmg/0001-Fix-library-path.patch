@@ -1,50 +1,63 @@
-From 871dade63b11f8353e1448302cc93c6747c47ee0 Mon Sep 17 00:00:00 2001
+From 32181a4beaa55a74c55713fd9ae05d03df385bc5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 13 Nov 2022 18:23:10 -0300
 Subject: [PATCH] Fix library path
 
 ---
- CMakeLists.txt                  | 4 ++--
- Source/RMG-Core/Directories.cpp | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ CMakeLists.txt                  | 8 ++++----
+ Source/RMG-Core/Directories.cpp | 6 +++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8880e2d..1ee5794 100644
+index 99ae4b8..80a1dd5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -66,8 +66,8 @@ if (PORTABLE_INSTALL)
+@@ -70,10 +70,10 @@ if (PORTABLE_INSTALL)
      set(INSTALL_DESKTOP_FILE OFF)
  else()
      set(RMG_INSTALL_PATH "bin")
+-    set(SYSTEM_LIB_INSTALL_PATH "lib")
+-    set(LIB_INSTALL_PATH "lib/RMG")
 -    set(CORE_INSTALL_PATH "lib/RMG/Core")
 -    set(PLUGIN_INSTALL_PATH "lib/RMG/Plugin")
-+    set(CORE_INSTALL_PATH "lib${LIB_SUFFIX}/RMG/Core")
-+    set(PLUGIN_INSTALL_PATH "lib${LIB_SUFFIX}/RMG/Plugin")
++    set(SYSTEM_LIB_INSTALL_PATH "lib${LIB_SUFFIX}")
++    set(LIB_INSTALL_PATH "${SYSTEM_LIB_INSTALL_PATH}/RMG")
++    set(CORE_INSTALL_PATH "${SYSTEM_LIB_INSTALL_PATH}/RMG/Core")
++    set(PLUGIN_INSTALL_PATH "${SYSTEM_LIB_INSTALL_PATH}/RMG/Plugin")
      set(DATA_INSTALL_PATH "share/RMG")
      set(INSTALL_DESKTOP_FILE ON)
      set(APPDATA_INSTALL_PATH "share/metainfo/")
 diff --git a/Source/RMG-Core/Directories.cpp b/Source/RMG-Core/Directories.cpp
-index c4bbf55..fbab1bf 100644
+index 2499e7b..9df2d5d 100644
 --- a/Source/RMG-Core/Directories.cpp
 +++ b/Source/RMG-Core/Directories.cpp
-@@ -138,7 +138,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
+@@ -139,7 +139,7 @@ std::filesystem::path CoreGetLibraryDirectory(void)
+     else
+     {
+         directory = CORE_INSTALL_PREFIX;
+-        directory += "/lib/RMG/";
++        directory += "/_RPMLIBDIR_/RMG/";
+     }
+ #endif // PORTABLE_INSTALL
+     return directory;
+@@ -158,7 +158,7 @@ std::filesystem::path CoreGetCoreDirectory(void)
      else
      {
          directory = CORE_INSTALL_PREFIX;
 -        directory += "/lib/RMG/Core";
-+        directory += "/_LIBDIR_/RMG/Core";
++        directory += "/_RPMLIBDIR_/RMG/Core";
      }
  #endif // PORTABLE_INSTALL
      return directory;
-@@ -157,7 +157,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
+@@ -177,7 +177,7 @@ std::filesystem::path CoreGetPluginDirectory(void)
      else
      {
          directory = CORE_INSTALL_PREFIX;
 -        directory += "/lib/RMG/Plugin";
-+        directory += "/_LIBDIR_/RMG/Plugin";
++        directory += "/_RPMLIBDIR_/RMG/Plugin";
      }
  #endif // PORTABLE_INSTALL
      return directory;
 -- 
-2.39.2
+2.41.0
 

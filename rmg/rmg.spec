@@ -13,7 +13,7 @@
 
 # Hashes in Source/3rdParty/CMakeLists.txt
 
-%global commit1 a231cb5e9a741e1893b0d7669c363d57550295a8
+%global commit1 bb6949ad2ab268024ee4049279abc2f3c7fbdbb4
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 mupen64plus-core
 
@@ -37,7 +37,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 angrylion-rdp-plus
 
-%global commit8 0fee30d010d1feda7d343654871b3dfd05ccab70
+%global commit8 2f1b358028e700fcae2502a53f4f5e6822ce0367
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 GLideN64
 
@@ -63,8 +63,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.4.1
-Release:        2%{?dist}
+Version:        0.4.3
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -89,6 +89,7 @@ Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{sr
 Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-use-system-lzma-sdk.patch
+Patch13:        0001-RMG-Core-shared-library-fixes.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -159,6 +160,7 @@ tar -xf %{S:9} -C %{srcname9} --strip-components 1
 tar -xf %{S:11} -C %{srcname11} --strip-components 1
 
 rm -rf parallel-rdp-standalone/vulkan-headers
+rm -rf vosk-api
 
 for i in GLideN64 %{name}-{core,{input-{qt,raphnetraw}},rsp-hle} parallel-{rdp-standalone,rsp} ;do
   if [ -f $i/LICENSES ] ;then
@@ -209,9 +211,11 @@ sed \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --tags --always|echo \"%{version}-%{release}\"|g" \
   -i CMakeLists.txt
 
-sed -e 's|_LIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
+sed -e 's|_RPMLIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i Source/RMG-Input/main.cpp
+
+sed -e 's|_RPMVERSION_|%{version}|g' -i Source/RMG-Core/CMakeLists.txt
 
 
 %build
@@ -221,6 +225,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i Source/RMG-Input/
   -DUPDATER:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DDISCORD_RPC:BOOL=OFF \
+  -DVRU:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -229,6 +234,9 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i Source/RMG-Input/
 %install
 %cmake_install
 
+rm -f %{buildroot}%{_libdir}/lib%{pkgname}-Core.so
+
+chmod +x %{buildroot}%{_libdir}/*.so*
 chmod +x %{buildroot}%{_libdir}/%{pkgname}/*/*.so
 
 ln -sf ../fonts/dejavu-sans-fonts/DejaVuSans.ttf %{buildroot}%{_datadir}/%{pkgname}/font.ttf
@@ -244,6 +252,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %license LICENSE LICENSEdir/*
 %doc README.md
 %{_bindir}/%{pkgname}
+%{_libdir}/lib%{pkgname}-Core.so.*
 %{_libdir}/%{pkgname}
 %{_datadir}/%{pkgname}
 %{_datadir}/applications/%{appname}.desktop
@@ -252,6 +261,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Wed Jul 12 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.3-1
+- 0.4.3
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.1-2
 - lzma-sdk rebuild
 
