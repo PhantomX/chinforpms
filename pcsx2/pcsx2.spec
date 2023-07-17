@@ -26,6 +26,8 @@
 %global srcname12 Vulkan-Headers
 
 %bcond_with     native
+# Enable system soundtouch (needs no exception)
+%bcond_with soundtouch
 %bcond_without  sysvulkan
 
 %global appbin %{name}-qt
@@ -42,14 +44,15 @@
 %global imgui_ver 1.88
 %global jpgc_ver 1.05
 %global simpleini_ver 4.17
+%global soundtouch_ver 2.3.1
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4596
+Version:        1.7.4731
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://github.com/PCSX2/pcsx2
 
 %if %{with snapshot}
@@ -123,7 +126,9 @@ BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.0.22
-BuildRequires:  pkgconfig(soundtouch)
+%if %{with soundtouch}
+BuildRequires:  cmake(SoundTouch)
+%endif
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -156,6 +161,9 @@ Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
+%if %{without soundtouch}
+Provides:       bundled(soundtouch) = %{soundtouch_ver}
+%endif
 Provides:       bundled(xxhash) = %{xxhash_ver}
 Provides:       bundled(zydis) = 0~git
 
@@ -176,11 +184,18 @@ rm -rf .git
 pushd 3rdparty
 rm -rf \
   cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg fmt GL gtest libchdr libjpeg \
-  libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 soundtouch wil \
+  libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 wil \
   xbyak xz zlib zstd
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
 tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
+
+%if %{with soundtouch}
+rm -rf soundtouch
+%else
+sed -e '/find_package/s|SoundTouch|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+cp soundtouch/COPYING.TXT COPYING.soundtouch
+%endif
 
 %if %{without sysvulkan}
 tar -xf %{S:12} -C vulkan-headers --strip-components 1
@@ -294,7 +309,7 @@ rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
 
 
 %files
-%license COPYING* 3rdparty/LICENSE.*
+%license COPYING* 3rdparty/LICENSE.* %{!?with_soundtouch:3rdparty/COPYING*}
 %doc README.md bin/docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
 %{_datadir}/applications/%{appbin}.desktop

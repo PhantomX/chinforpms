@@ -1,20 +1,20 @@
-From 0446ec33f9b384b1ae7ca8bf68208db1acf03277 Mon Sep 17 00:00:00 2001
+From 5c5808ac6c3b639a495736c2058acc555405c954 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 50 ++++++++++++++++---
+ cmake/SearchForStuff.cmake                    | 57 ++++++++++++++++---
  pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
- pcsx2/CMakeLists.txt                          |  7 ++-
+ pcsx2/CMakeLists.txt                          |  9 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 7 files changed, 54 insertions(+), 15 deletions(-)
+ 7 files changed, 62 insertions(+), 16 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index d39696c..e978495 100644
+index 50f22e2..a4b8790 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -113,11 +113,10 @@ endif()
@@ -33,7 +33,7 @@ index d39696c..e978495 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -162,35 +161,70 @@ if(NOT WIN32 AND QT_BUILD)
+@@ -162,36 +161,78 @@ if(NOT WIN32 AND QT_BUILD)
  	find_package(CURL REQUIRED)
  endif()
  
@@ -45,6 +45,14 @@ index d39696c..e978495 100644
 +	add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
 +else()
 +	alias_library(chdr-static PkgConfig::CHDR)
++endif()
++
++find_package(SoundTouch)
++if(SoundTouch_FOUND)
++	message(STATUS "Using the system soundtouch")
++	alias_library(soundtouch SoundTouch::SoundTouch)
++else()
+ add_subdirectory(3rdparty/soundtouch EXCLUDE_FROM_ALL)
 +endif()
  
  # rapidyaml includes fast_float as a submodule, saves us pulling it in directly.
@@ -121,26 +129,29 @@ index 7fd6607..73faef3 100644
  #pragma clang diagnostic pop
  #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 105493b..924fed2 100644
+index e0d2f95..20bd884 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1224,10 +1224,15 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1220,12 +1220,17 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
 -	"${CMAKE_SOURCE_DIR}/3rdparty/xbyak"
  	"${FFMPEG_INCLUDE_DIRS}"
  )
- 
++
 +if(TARGET xbyak::xbyak)
 +	target_link_libraries(PCSX2_FLAGS INTERFACE xbyak::xbyak)
 +else()
 +	target_include_directories(PCSX2_FLAGS INTERFACE "${CMAKE_SOURCE_DIR}/3rdparty/xbyak/xbyak")
++)
 +endif()
-+
+ target_compile_definitions(PCSX2_FLAGS INTERFACE
+ 	XBYAK_NO_EXCEPTION
+-)
+ 
  if(COMMAND target_precompile_headers)
  	message("Using precompiled headers.")
- 	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
 index e5e572e..43f13ca 100644
 --- a/pcsx2/GS/MultiISA.cpp
@@ -168,7 +179,7 @@ index 21b6a2f..8077cb3 100644
  #if defined(_M_AMD64) || defined(_WIN64)
  #define RegLong Xbyak::Reg64
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index 4f7cbbf..bfa99a1 100644
+index 2404d27..b398341 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 @@ -17,8 +17,8 @@
@@ -180,8 +191,8 @@ index 4f7cbbf..bfa99a1 100644
 +#include "xbyak.h"
 +#include "xbyak_util.h"
  #include "GS/MultiISA.h"
+ #include "common/Assertions.h"
  
- /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
 diff --git a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
 index 51041a2..4b464cc 100644
 --- a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
@@ -196,5 +207,5 @@ index 51041a2..4b464cc 100644
  MULTI_ISA_UNSHARED_START
  
 -- 
-2.40.1
+2.41.0
 
