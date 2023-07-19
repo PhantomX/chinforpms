@@ -10,12 +10,14 @@
 %global parch i386
 %endif
 
-%global pkgrel 1060
+%global pkgrel 1200
 %global repo https://shop.softmaker.com/repo
+%global pkgdir office%{version}
+%global dist .%{pkgrel}%{?dist}
 
 Name:           softmaker-office
-Version:        2021
-Release:        1.%{pkgrel}%{?dist}
+Version:        2024
+Release:        1%{?dist}
 Epoch:          1
 Summary:        SoftMaker Office %{version} for Linux
 
@@ -55,18 +57,18 @@ and the presentations software Presentations.
 %setup -c -T
 rpm2cpio %{S:0} | cpio -imd --no-absolute-filenames
 
-tar xf usr/share/office2021/dwr.tar.lzma -C usr/share/office2021/
-rm -f usr/share/office2021/dwr.tar.lzma
-rm -f usr/share/office2021/add_rpm_repo.sh
-rm -f usr/share/office2021/fonts/Noto*
-rm -f usr/share/office2021/fonts/OpenSans*
+tar xf usr/share/%{pkgdir}/dwr.tar.lzma -C usr/share/%{pkgdir}/
+rm -f usr/share/%{pkgdir}/dwr.tar.lzma
+rm -f usr/share/%{pkgdir}/add_rpm_repo.sh
+rm -f usr/share/%{pkgdir}/fonts/Noto*
+rm -f usr/share/%{pkgdir}/fonts/OpenSans*
 
-find usr/share/office2021/ -name '*.so*' | xargs chmod +x
-find usr/share/office2021/ -name '*.dwr*' | xargs chmod -x
-find usr/share/office2021/ -name '*.iwr*' | xargs chmod -x
+find usr/share/%{pkgdir}/ -name '*.so*' | xargs chmod +x
+find usr/share/%{pkgdir}/ -name '*.dwr*' | xargs chmod -x
+find usr/share/%{pkgdir}/ -name '*.iwr*' | xargs chmod -x
 
-mv usr/share/office2021/icons .
-mv usr/share/office2021/mime .
+mv usr/share/%{pkgdir}/icons .
+mv usr/share/%{pkgdir}/mime .
 
 sed -e 's|glob pattern=|glob weight="40" pattern=|g' -i mime/%{name}-%{version}.xml
 
@@ -86,7 +88,7 @@ sed \
 
 %install
 mkdir -p %{buildroot}%{_libdir}/%{name}
-mv usr/share/office2021/* %{buildroot}%{_libdir}/%{name}/
+mv usr/share/%{pkgdir}/* %{buildroot}%{_libdir}/%{name}/
 
 chrpath --delete %{buildroot}%{_libdir}/%{name}/planmaker
 chrpath --delete %{buildroot}%{_libdir}/%{name}/presentations
@@ -168,6 +170,9 @@ install -pm0644 mime/%{name}-%{version}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Tue Jul 18 2023 - 1:2024-1.1200
+- 2024-1200
+
 * Mon Jan 23 2023 - 1:2021-1.1060
 - 2021-1060
 

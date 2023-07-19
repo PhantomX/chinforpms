@@ -1,4 +1,4 @@
-From aae7a3db489155dc016b58e6c9c1ed847e787d71 Mon Sep 17 00:00:00 2001
+From 0c54e4c3902bdd49117c762395a726003a607ef1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
@@ -11,10 +11,10 @@ Subject: [PATCH] Use system libraries
  4 files changed, 102 insertions(+), 20 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 19d59f6..125e089 100644
+index 12c511b..82f3cc5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -8,7 +8,6 @@ cmake_policy(SET CMP0069 NEW)
+@@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
  
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
@@ -22,7 +22,7 @@ index 19d59f6..125e089 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -114,7 +113,7 @@ function(check_submodules_present)
+@@ -133,7 +132,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index 19d59f6..125e089 100644
  endif()
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
-@@ -386,20 +385,6 @@ else()
+@@ -396,20 +395,6 @@ else()
      set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT citra)
  endif()
  
@@ -53,7 +53,7 @@ index 19d59f6..125e089 100644
  # =========================
  
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 79c7d57..f6d9249 100644
+index 4406c3d..ae98544 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,10 +8,10 @@ else()
@@ -65,9 +65,9 @@ index 79c7d57..f6d9249 100644
  
  # Boost
 +if (NOT USE_SYSTEM_BOOST)
- set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost")
- set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost")
- set(Boost_NO_SYSTEM_PATHS ON)
+ set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost" CACHE STRING "")
+ set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost" CACHE STRING "")
+ set(Boost_NO_SYSTEM_PATHS ON CACHE BOOL "")
 @@ -33,11 +33,22 @@ add_library(
  target_link_libraries(boost_iostreams PUBLIC boost)
  
@@ -83,15 +83,15 @@ index 79c7d57..f6d9249 100644
 +  target_link_libraries(catch-shared INTERFACE Catch2::Catch2WithMain)
 +  add_library(Catch2::Catch2WithMain ALIAS catch-shared)
 +else()
- set(CATCH_INSTALL_DOCS OFF)
- set(CATCH_INSTALL_EXTRAS OFF)
+ set(CATCH_INSTALL_DOCS OFF CACHE BOOL "")
+ set(CATCH_INSTALL_EXTRAS OFF CACHE BOOL "")
  add_subdirectory(catch2)
 +endif()
 +endif()
  
  # Crypto++
- set(CRYPTOPP_BUILD_DOCUMENTATION OFF)
-@@ -72,19 +83,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
+ set(CRYPTOPP_BUILD_DOCUMENTATION OFF CACHE BOOL "")
+@@ -66,19 +77,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
  
  # fmt and Xbyak need to be added before dynarmic
  # libfmt
@@ -128,14 +128,14 @@ index 79c7d57..f6d9249 100644
 +    target_link_libraries(dynarmic-shared INTERFACE dynarmic::dynarmic)
 +    add_library(dynarmic ALIAS dynarmic-shared)
 +  else()
-     set(DYNARMIC_TESTS OFF)
-     set(DYNARMIC_FRONTENDS "A32")
+     set(DYNARMIC_TESTS OFF CACHE BOOL "")
+     set(DYNARMIC_FRONTENDS "A32" CACHE STRING "")
      add_subdirectory(dynarmic EXCLUDE_FROM_ALL)
 +  endif()
  endif()
  
  # getopt
-@@ -103,7 +138,15 @@ set(ENABLE_CTEST OFF)
+@@ -98,7 +133,15 @@ set(ENABLE_HLSL OFF CACHE BOOL "")
  add_subdirectory(glslang)
  
  # inih
@@ -151,7 +151,7 @@ index 79c7d57..f6d9249 100644
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -124,6 +167,14 @@ add_subdirectory(open_source_archives)
+@@ -118,6 +161,14 @@ add_subdirectory(open_source_archives)
  # Dynamic library headers
  add_subdirectory(library-headers EXCLUDE_FROM_ALL)
  
@@ -166,7 +166,7 @@ index 79c7d57..f6d9249 100644
  # SoundTouch
  set(INTEGER_SAMPLES ON CACHE BOOL "")
  set(SOUNDSTRETCH OFF CACHE BOOL "")
-@@ -142,22 +193,46 @@ if (ENABLE_SDL2 AND NOT USE_SYSTEM_SDL2)
+@@ -143,22 +194,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
  endif()
  
  # Zstandard
@@ -213,7 +213,7 @@ index 79c7d57..f6d9249 100644
  endif()
  
  # DiscordRPC
-@@ -223,6 +298,13 @@ endif()
+@@ -219,6 +294,13 @@ endif()
  
  # OpenAL Soft
  if (ENABLE_OPENAL)
@@ -227,7 +227,7 @@ index 79c7d57..f6d9249 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -233,11 +315,20 @@ if (ENABLE_OPENAL)
+@@ -229,11 +311,20 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
@@ -235,7 +235,7 @@ index 79c7d57..f6d9249 100644
  
  # VMA
  add_library(vma INTERFACE)
- target_include_directories(vma INTERFACE ./vma/include)
+ target_include_directories(vma SYSTEM INTERFACE ./vma/include)
  
  # vulkan-headers
 +find_package(VulkanHeaders)
@@ -246,10 +246,10 @@ index 79c7d57..f6d9249 100644
 +    add_library(vulkan-headers ALIAS vulkan-shared)
 +else()
  add_library(vulkan-headers INTERFACE)
- target_include_directories(vulkan-headers INTERFACE ./vulkan-headers/include)
+ target_include_directories(vulkan-headers SYSTEM INTERFACE ./vulkan-headers/include)
 +endif()
 diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index 09fda6c..09d25ba 100644
+index 5edaf42..2e5a23d 100644
 --- a/src/citra/config.cpp
 +++ b/src/citra/config.cpp
 @@ -7,7 +7,7 @@
@@ -262,10 +262,10 @@ index 09fda6c..09d25ba 100644
  #include "citra/default_ini.h"
  #include "common/file_util.h"
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 14a21b8..57b6198 100644
+index ddf715f..a8d32d8 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -132,12 +132,18 @@ add_library(citra_common STATIC
+@@ -136,12 +136,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h

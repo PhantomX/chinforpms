@@ -9,13 +9,13 @@
 %global minver %%(echo %{version} | cut -d. -f4)
 
 Name:           wps-office
-Version:        11.1.0.11664
-Release:        3%{?dist}
+Version:        11.1.0.11698
+Release:        1%{?dist}
 Epoch:          1
 Summary:        WPS Office Suite
 
 License:        Proprietary
-URL:            http://wps-community.org/
+URL:            https://www.wps.com/office/linux/
 
 Source0:        https://wdl1.pcfg.cache.wpscdn.com/wpsdl/wpsoffice/download/linux/%{minver}/%{name}-%{version}.XA-1.x86_64.rpm
 
@@ -38,6 +38,7 @@ Provides:       bundled(qt5-qtwebkit) = 5.212.0
 Provides:       bundled(libssl) = 1.1
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __provides_exclude ^application\\(\\)$
 
 %global __requires_exclude ^libaeocenter\\.so.*$
 %global __requires_exclude %__requires_exclude|^libauth\\.so.*$
@@ -102,7 +103,7 @@ Provides:       bundled(libssl) = 1.1
 %global __requires_exclude %__requires_exclude|^libnssckbi\\.so.*$
 %global __requires_exclude %__requires_exclude|^libopencv_world\\.so.*$
 %global __requires_exclude %__requires_exclude|^libpdfmain\\.so.*$
-%global __requires_exclude %__requires_exclude|^libpaho-mqtt3-as*
+%global __requires_exclude %__requires_exclude|^libpaho-mqtt3-as\\.so.*$
 %global __requires_exclude %__requires_exclude|^libpinyintag\\.so.*$
 %global __requires_exclude %__requires_exclude|^libplayer\\.so.*$
 %global __requires_exclude %__requires_exclude|^libpng12\\.so.*$
@@ -222,8 +223,9 @@ rm -fv %{buildroot}%{progdir}/office6/libplc4.so*
 rm -fv %{buildroot}%{progdir}/office6/libodbc*.so*
 rm -fv %{buildroot}%{progdir}/office6/libsmime3.so*
 rm -fv %{buildroot}%{progdir}/office6/libsoftokn3.so*
+rm -fv %{buildroot}%{progdir}/office6/libstdc++.so*
 rm -fv %{buildroot}%{progdir}/office6/libSDL2*.so*
-rm -fv %{buildroot}%{progdir}/office6/libtcmalloc.so*
+rm -fv %{buildroot}%{progdir}/office6/libtcmalloc*.so*
 rm -fv %{buildroot}%{progdir}/office6/librpcetapi.so
 rm -fv %{buildroot}%{progdir}/office6/librpcwppapi.so
 rm -fv %{buildroot}%{progdir}/office6/librpcwpsapi.so
@@ -324,6 +326,9 @@ install -pm0644 usr/share/templates/*.desktop \
 
 
 %changelog
+* Tue Jul 18 2023 - 1:11.1.0.11698-1
+- 11.1.0.11698
+
 * Tue Nov 08 2022 - 1:11.1.0.11664-3
 - More rpath fixes
 

@@ -101,6 +101,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
+BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)

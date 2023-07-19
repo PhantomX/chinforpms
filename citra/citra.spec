@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ca2d87e5e38f84a1f4336c995fa71fb0e235e667
+%global commit e783b0d4a97a67eb3380c64f3fc6d65d41a51872
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230629
+%global date 20230718
 %bcond_without snapshot
 
 # Enable system boost
@@ -103,7 +103,7 @@
 
 Name:           citra
 Version:        0
-Release:        46%{?dist}
+Release:        47%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause% AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -156,6 +156,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 %if %{with boost}
 BuildRequires:  boost-devel >= 1.71.0
+BuildRequires:  pkgconfig(libbacktrace)
 %else
 Provides:       bundled(boost) = 0~git%{shortcommit11}
 %endif
@@ -350,6 +351,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DCITRA_BUNDLE_LIBRARIES:BOOL=OFF \
+  -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
 %if %{with boost}

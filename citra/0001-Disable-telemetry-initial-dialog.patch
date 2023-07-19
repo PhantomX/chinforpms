@@ -1,4 +1,4 @@
-From cbaccd0b1a5f03c6f62d4336a78e9c2b460a3baa Mon Sep 17 00:00:00 2001
+From abe607399f2753f60ad72c34076e9810c9e431f4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 24 Apr 2019 14:47:15 -0300
 Subject: [PATCH] Disable telemetry initial dialog
@@ -9,10 +9,10 @@ Set default to false, if needed, enabled it in options
  1 file changed, 2 insertions(+), 8 deletions(-)
 
 diff --git a/src/citra_qt/main.cpp b/src/citra_qt/main.cpp
-index a39932f..c0926a6 100644
+index 8452aea..dc4e18a 100644
 --- a/src/citra_qt/main.cpp
 +++ b/src/citra_qt/main.cpp
-@@ -141,14 +141,8 @@ void GMainWindow::ShowTelemetryCallout() {
+@@ -138,14 +138,8 @@ void GMainWindow::ShowTelemetryCallout() {
  
      UISettings::values.callout_flags =
          UISettings::values.callout_flags.GetValue() | static_cast<uint32_t>(CalloutFlag::Telemetry);
@@ -22,13 +22,13 @@ index a39932f..c0926a6 100644
 -           "<br/><br/>Would you like to share your usage data with us?");
 -    if (QMessageBox::question(this, tr("Telemetry"), telemetry_message) == QMessageBox::Yes) {
 -        NetSettings::values.enable_telemetry = true;
--        Settings::Apply();
+-        system.ApplySettings();
 -    }
 +    NetSettings::values.enable_telemetry = false;
-+    Settings::Apply();
++    system.ApplySettings();
  }
  
  const int GMainWindow::max_recent_files_item;
 -- 
-2.40.1
+2.41.0
 

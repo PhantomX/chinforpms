@@ -47,6 +47,7 @@ ff7tk
 -gstreamer1-plugins-base
 libadwaita
 cpuinfo
+libbacktrace
 libdeflate
 libqtadvanceddocking
 -libliftoff

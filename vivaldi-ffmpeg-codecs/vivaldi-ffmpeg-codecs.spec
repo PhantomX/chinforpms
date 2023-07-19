@@ -4,32 +4,42 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%global vivaldi_ver 5.7
+%bcond_without snap
+
+%global vivaldi_ver 6.1
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
 %global parch arm64
-%global pkgid 651934774
+%global pkgid 660838579
 %else
 %global parch amd64
-%global pkgid 651923070
+%global pkgid 660647727
+%global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
+%global snaprev 34
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-
+%global ffmpeg_ver 111306
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        110.0.5481.100
+Version:        112.0.5615.49
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
 URL:            https://ffmpeg.org/
 
+%if %{with snap}
+Source0:        https://api.snapcraft.io/api/v1/snaps/download/%{snapid}_%{snaprev}.snap#/%{name}-%{version}.snap
+Source1:        copyright
+ExclusiveArch:  x86_64
+BuildRequires:  squashfs-tools
+%else
 Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{version}-%{pkgdistro}_%{parch}.deb
-
 ExclusiveArch:  x86_64 aarch64
+%endif
 
 %global __provides_exclude_from ^%{vivaldi_dir}/.*
 %global __requires_exclude ^libffmpeg.so.*
@@ -42,21 +52,39 @@ ExclusiveArch:  x86_64 aarch64
 %prep
 %setup -c -T
 
+%if %{with snap}
+unsquashfs -n -d %{name} %{S:0}
+cp %{S:1} .
+mv %{name}/chromium-ffmpeg-%{ffmpeg_ver}/chromium-ffmpeg/libffmpeg.so .
+%else
 ar p %{S:0} data.tar.xz | tar xJ -C .
+mv usr/lib/chromium-browser/libffmpeg.so .
+mv usr/share/doc/%{pkgname}/copyright .
+%endif
+
+RVER="$(grep -aom1 'N-[0-9]\+-' libffmpeg.so | cut -d- -f2)"
+if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
+  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{version} "
+  echo "Edit Version and try again"
+  exit 1
+fi
 
 %build
 
 
 %install
 mkdir -p %{buildroot}%{vivaldi_dir}
-install -pm0755 usr/lib/chromium-browser/libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
+install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
 
 %files
-%license usr/share/doc/%{pkgname}/copyright
+%license copyright
 %{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
 
 
 %changelog
+* Mon Jul 17 2023 - 112.0.5615.49-1
+- 112.0.5615.49
+
 * Thu Mar 16 2023 - 110.0.5481.100-1
 - 110.0.5481.100
 
