@@ -15,17 +15,6 @@
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c             |  11 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c           |   3 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_object.c         |   6 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c            |   2 +
- drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c       |   3 +
- drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c            |   3 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c             |  69 +++++++-----
- drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c             |  11 +-
- drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c             |   4 +-
- drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c           |   4 +-
- .../gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c   |   1 +
  drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -47,10 +36,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 49 files changed, 569 insertions(+), 225 deletions(-)
+ 38 files changed, 498 insertions(+), 179 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 56abbcac061d..fa5e45f46bac 100644
+index d5041f7daf68..040d61eb5fe5 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -164,7 +153,7 @@ index fe10da1a271e..e2c6068201c0 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 16babff771bd..a1e48e27cf7a 100644
+index 0cccfeb67c3a..a7dccf67c4a1 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -189,7 +178,7 @@ index 16babff771bd..a1e48e27cf7a 100644
  	dmi_setup();
 
  	/*
-@@ -1190,19 +1198,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1192,19 +1200,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -619,286 +608,6 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-index 2eb2c66843a8..5612caf77dd6 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_cs.c
-@@ -133,9 +133,6 @@ static int amdgpu_cs_p1_user_fence(struct amdgpu_cs_parser *p,
- 	bo = amdgpu_bo_ref(gem_to_amdgpu_bo(gobj));
- 	p->uf_entry.priority = 0;
- 	p->uf_entry.tv.bo = &bo->tbo;
--	/* One for TTM and two for the CS job */
--	p->uf_entry.tv.num_shared = 3;
--
- 	drm_gem_object_put(gobj);
-
- 	size = amdgpu_bo_size(bo);
-@@ -882,15 +879,19 @@ static int amdgpu_cs_parser_bos(struct amdgpu_cs_parser *p,
-
- 	mutex_lock(&p->bo_list->bo_list_mutex);
-
--	/* One for TTM and one for the CS job */
-+	/* One for TTM and one for each CS job */
- 	amdgpu_bo_list_for_each_entry(e, p->bo_list)
--		e->tv.num_shared = 2;
-+		e->tv.num_shared = 1 + p->gang_size;
-+	p->uf_entry.tv.num_shared = 1 + p->gang_size;
-
- 	amdgpu_bo_list_get_list(p->bo_list, &p->validated);
-
- 	INIT_LIST_HEAD(&duplicates);
- 	amdgpu_vm_get_pd_bo(&fpriv->vm, &p->validated, &p->vm_pd);
-
-+	/* Two for VM updates, one for TTM and one for each CS job */
-+	p->vm_pd.tv.num_shared = 3 + p->gang_size;
-+
- 	if (p->uf_entry.tv.bo && !ttm_to_amdgpu_bo(p->uf_entry.tv.bo)->parent)
- 		list_add(&p->uf_entry.tv.head, &p->validated);
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
-index 4fa019c8aefc..fb9251d9c899 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_jpeg.c
-@@ -251,7 +251,8 @@ int amdgpu_jpeg_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *
-
- 	if (amdgpu_ras_is_supported(adev, ras_block->block)) {
- 		for (i = 0; i < adev->jpeg.num_jpeg_inst; ++i) {
--			if (adev->jpeg.harvest_config & (1 << i))
-+			if (adev->jpeg.harvest_config & (1 << i) ||
-+			    !adev->jpeg.inst[i].ras_poison_irq.funcs)
- 				continue;
-
- 			r = amdgpu_irq_get(adev, &adev->jpeg.inst[i].ras_poison_irq, 0);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-index a70103ac0026..46557bbbc18a 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_object.c
-@@ -1266,8 +1266,12 @@ void amdgpu_bo_move_notify(struct ttm_buffer_object *bo,
- void amdgpu_bo_get_memory(struct amdgpu_bo *bo,
- 			  struct amdgpu_mem_stats *stats)
- {
--	unsigned int domain;
- 	uint64_t size = amdgpu_bo_size(bo);
-+	unsigned int domain;
-+
-+	/* Abort if the BO doesn't currently have a backing store */
-+	if (!bo->tbo.resource)
-+		return;
-
- 	domain = amdgpu_mem_type_to_domain(bo->tbo.resource->mem_type);
- 	switch (domain) {
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index a150b7a4b4aa..e4757a2807d9 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -1947,6 +1947,8 @@ static int psp_securedisplay_initialize(struct psp_context *psp)
- 		psp_securedisplay_parse_resp_status(psp, securedisplay_cmd->status);
- 		dev_err(psp->adev->dev, "SECUREDISPLAY: query securedisplay TA failed. ret 0x%x\n",
- 			securedisplay_cmd->securedisplay_out_message.query_ta.query_cmd_ret);
-+		/* don't try again */
-+		psp->securedisplay_context.context.bin_desc.size_bytes = 0;
- 	}
-
- 	return 0;
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
-index 73516abef662..b779ee4bbaa7 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring_mux.c
-@@ -423,6 +423,9 @@ void amdgpu_sw_ring_ib_mark_offset(struct amdgpu_ring *ring, enum amdgpu_ring_mu
- 	struct amdgpu_ring_mux *mux = &adev->gfx.muxer;
- 	unsigned offset;
-
-+	if (ring->hw_prio > AMDGPU_RING_PRIO_DEFAULT)
-+		return;
-+
- 	offset = ring->wptr & ring->buf_mask;
-
- 	amdgpu_ring_mux_ib_mark_offset(mux, ring, offset, type);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
-index 2d94f1b63bd6..b46a5771c3ec 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vcn.c
-@@ -1191,7 +1191,8 @@ int amdgpu_vcn_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *r
-
- 	if (amdgpu_ras_is_supported(adev, ras_block->block)) {
- 		for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
--			if (adev->vcn.harvest_config & (1 << i))
-+			if (adev->vcn.harvest_config & (1 << i) ||
-+			    !adev->vcn.inst[i].ras_poison_irq.funcs)
- 				continue;
-
- 			r = amdgpu_irq_get(adev, &adev->vcn.inst[i].ras_poison_irq, 0);
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-index 5b3a70becbdf..a252a206f37b 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_vm.c
-@@ -920,42 +920,51 @@ int amdgpu_vm_update_range(struct amdgpu_device *adev, struct amdgpu_vm *vm,
- 	return r;
- }
-
-+static void amdgpu_vm_bo_get_memory(struct amdgpu_bo_va *bo_va,
-+				    struct amdgpu_mem_stats *stats)
-+{
-+	struct amdgpu_vm *vm = bo_va->base.vm;
-+	struct amdgpu_bo *bo = bo_va->base.bo;
-+
-+	if (!bo)
-+		return;
-+
-+	/*
-+	 * For now ignore BOs which are currently locked and potentially
-+	 * changing their location.
-+	 */
-+	if (bo->tbo.base.resv != vm->root.bo->tbo.base.resv &&
-+	    !dma_resv_trylock(bo->tbo.base.resv))
-+		return;
-+
-+	amdgpu_bo_get_memory(bo, stats);
-+	if (bo->tbo.base.resv != vm->root.bo->tbo.base.resv)
-+	    dma_resv_unlock(bo->tbo.base.resv);
-+}
-+
- void amdgpu_vm_get_memory(struct amdgpu_vm *vm,
- 			  struct amdgpu_mem_stats *stats)
- {
- 	struct amdgpu_bo_va *bo_va, *tmp;
-
- 	spin_lock(&vm->status_lock);
--	list_for_each_entry_safe(bo_va, tmp, &vm->idle, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
--	list_for_each_entry_safe(bo_va, tmp, &vm->evicted, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
--	list_for_each_entry_safe(bo_va, tmp, &vm->relocated, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
--	list_for_each_entry_safe(bo_va, tmp, &vm->moved, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
--	list_for_each_entry_safe(bo_va, tmp, &vm->invalidated, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
--	list_for_each_entry_safe(bo_va, tmp, &vm->done, base.vm_status) {
--		if (!bo_va->base.bo)
--			continue;
--		amdgpu_bo_get_memory(bo_va->base.bo, stats);
--	}
-+	list_for_each_entry_safe(bo_va, tmp, &vm->idle, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
-+
-+	list_for_each_entry_safe(bo_va, tmp, &vm->evicted, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
-+
-+	list_for_each_entry_safe(bo_va, tmp, &vm->relocated, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
-+
-+	list_for_each_entry_safe(bo_va, tmp, &vm->moved, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
-+
-+	list_for_each_entry_safe(bo_va, tmp, &vm->invalidated, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
-+
-+	list_for_each_entry_safe(bo_va, tmp, &vm->done, base.vm_status)
-+		amdgpu_vm_bo_get_memory(bo_va, stats);
- 	spin_unlock(&vm->status_lock);
- }
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c b/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
-index aa761ff3a5fa..7ba47fc1917b 100644
---- a/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
-+++ b/drivers/gpu/drm/amd/amdgpu/nbio_v2_3.c
-@@ -346,7 +346,7 @@ static void nbio_v2_3_init_registers(struct amdgpu_device *adev)
-
- #define NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT		0x00000000 // off by default, no gains over L1
- #define NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT		0x00000009 // 1=1us, 9=1ms
--#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E // 4ms
-+#define NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT	0x0000000E // 400ms
-
- static void nbio_v2_3_enable_aspm(struct amdgpu_device *adev,
- 				  bool enable)
-@@ -479,9 +479,12 @@ static void nbio_v2_3_program_aspm(struct amdgpu_device *adev)
- 		WREG32_SOC15(NBIO, 0, mmRCC_BIF_STRAP5, data);
-
- 	def = data = RREG32_PCIE(smnPCIE_LC_CNTL);
--	data &= ~PCIE_LC_CNTL__LC_L0S_INACTIVITY_MASK;
--	data |= 0x9 << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
--	data |= 0x1 << PCIE_LC_CNTL__LC_PMI_TO_L1_DIS__SHIFT;
-+	data |= NAVI10_PCIE__LC_L0S_INACTIVITY_DEFAULT << PCIE_LC_CNTL__LC_L0S_INACTIVITY__SHIFT;
-+	if (pci_is_thunderbolt_attached(adev->pdev))
-+		data |= NAVI10_PCIE__LC_L1_INACTIVITY_TBT_DEFAULT  << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
-+	else
-+		data |= NAVI10_PCIE__LC_L1_INACTIVITY_DEFAULT << PCIE_LC_CNTL__LC_L1_INACTIVITY__SHIFT;
-+	data &= ~PCIE_LC_CNTL__LC_PMI_TO_L1_DIS_MASK;
- 	if (def != data)
- 		WREG32_PCIE(smnPCIE_LC_CNTL, data);
-
-diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-index 9295ac7edd56..d35c8a33d06d 100644
---- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_0.c
-@@ -2306,7 +2306,7 @@ const struct amd_ip_funcs sdma_v4_0_ip_funcs = {
-
- static const struct amdgpu_ring_funcs sdma_v4_0_ring_funcs = {
- 	.type = AMDGPU_RING_TYPE_SDMA,
--	.align_mask = 0xf,
-+	.align_mask = 0xff,
- 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
- 	.support_64bit_ptrs = true,
- 	.secure_submission_supported = true,
-@@ -2338,7 +2338,7 @@ static const struct amdgpu_ring_funcs sdma_v4_0_ring_funcs = {
-
- static const struct amdgpu_ring_funcs sdma_v4_0_page_ring_funcs = {
- 	.type = AMDGPU_RING_TYPE_SDMA,
--	.align_mask = 0xf,
-+	.align_mask = 0xff,
- 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
- 	.support_64bit_ptrs = true,
- 	.secure_submission_supported = true,
-diff --git a/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c b/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
-index 64dcaa2670dd..ac7aa8631f6a 100644
---- a/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
-+++ b/drivers/gpu/drm/amd/amdgpu/sdma_v4_4_2.c
-@@ -1740,7 +1740,7 @@ const struct amd_ip_funcs sdma_v4_4_2_ip_funcs = {
-
- static const struct amdgpu_ring_funcs sdma_v4_4_2_ring_funcs = {
- 	.type = AMDGPU_RING_TYPE_SDMA,
--	.align_mask = 0xf,
-+	.align_mask = 0xff,
- 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
- 	.support_64bit_ptrs = true,
- 	.get_rptr = sdma_v4_4_2_ring_get_rptr,
-@@ -1771,7 +1771,7 @@ static const struct amdgpu_ring_funcs sdma_v4_4_2_ring_funcs = {
-
- static const struct amdgpu_ring_funcs sdma_v4_4_2_page_ring_funcs = {
- 	.type = AMDGPU_RING_TYPE_SDMA,
--	.align_mask = 0xf,
-+	.align_mask = 0xff,
- 	.nop = SDMA_PKT_NOP_HEADER_OP(SDMA_OP_NOP),
- 	.support_64bit_ptrs = true,
- 	.get_rptr = sdma_v4_4_2_ring_get_rptr,
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
-index 08577d1b84ec..c42c0c1446f4 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/smu13/smu_v13_0_0_ppt.c
-@@ -1300,6 +1300,7 @@ static int smu_v13_0_0_get_thermal_temperature_range(struct smu_context *smu,
- 	range->mem_emergency_max = (pptable->SkuTable.TemperatureLimit[TEMP_MEM] + CTF_OFFSET_MEM)*
- 		SMU_TEMPERATURE_UNITS_PER_CENTIGRADES;
- 	range->software_shutdown_temp = powerplay_table->software_shutdown_temp;
-+	range->software_shutdown_temp_offset = pptable->SkuTable.FanAbnormalTempLimitOffset;
-
- 	return 0;
- }
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1541,7 +1250,7 @@ index e3454087fd31..1d2afc2567d0 100644
  	  Allow per-vma locking during page fault handling.
 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index c12150f96b88..3f28b300ae22 100644
+index d8baa9b9ae6d..720cb35f6070 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -23,6 +23,7 @@
@@ -1552,7 +1261,7 @@ index c12150f96b88..3f28b300ae22 100644
 
  /* Are we using CONFIG_MODVERSIONS? */
  static bool modversions;
-@@ -2137,6 +2138,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -2101,6 +2102,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
 
@@ -1565,7 +1274,7 @@ index c12150f96b88..3f28b300ae22 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2200,6 +2207,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2164,6 +2171,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

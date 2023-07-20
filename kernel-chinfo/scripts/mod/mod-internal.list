@@ -27,8 +27,10 @@ fortify_kunit
 gss_krb5_test
 handshake-test
 hashtable_test
+hid-uclogic-test
 iio-test-format
 iio-test-rescale
+input_test
 is_signed_type_kunit
 kasan_test
 kfence_test

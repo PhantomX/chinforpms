@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.3
+%define specrpmversion 6.4.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -203,7 +203,7 @@ Summary: The Linux kernel
 # This allows pkg_release to have configurable %%{?dist} tag
 %define specrelease %{pkgrelease}%{?buildid}%{?variantid}%{?dist}
 # This defines the kabi tarball version
-%define kabiversion 6.4.3
+%define kabiversion %{specversion}
 %global src_hash 00000000000000000000000000000000
 
 # If this variable is set to 1, a bpf selftests build failure will cause a
@@ -220,14 +220,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7550f7928b73f7d5cd52f0ab5f9a3d931c4ba6c7
+%global pfcommit 8952fe66811f75a4ba4f1f44cf72c0a99e996288
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash 3a5bd8a131044c6ab053af403957f713
+%global pfcoprhash d6cd58fc2782d00b2a35b0b5ffe8eed2
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -3402,6 +3402,9 @@ fi\
 #
 #
 %changelog
+* Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
+- 6.4.3 - pf4
+
 * Tue Jul 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
 - 6.4.3 - pf3
 
