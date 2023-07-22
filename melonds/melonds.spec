@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 758db2b986cbb8c11652aa53ce0bf91536e5c83c
+%global commit e6cc4b14b0eb603001e968be9b1ace8a09e1bce1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230506
+%global date 20230716
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -95,6 +95,8 @@ cp -p src/tiny-AES-c/unlicense.txt LICENSE.tiny-AES-c
 
 rm -rf \
   src/frontend/qt_sdl/pcap src/xxhash
+
+sed -e '/include/s|xxhash/||g' -i src/NDSCart.cpp
 
 sed \
   -e 's|STREQUAL Release|STREQUAL Release_disabled|g' \

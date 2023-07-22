@@ -1,14 +1,14 @@
-From b96a8bc0c33e2fa10bb3d5a6f758a534d1a840cc Mon Sep 17 00:00:00 2001
+From f6885dccb8a65534fd7e3dee5303e711dea09dae Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 13 Nov 2022 12:06:55 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- thirdparty/GNUmakefile | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ thirdparty/GNUmakefile | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/thirdparty/GNUmakefile b/thirdparty/GNUmakefile
-index a1f20ec..1d8ca10 100644
+index 5390f9f..15da9cd 100644
 --- a/thirdparty/GNUmakefile
 +++ b/thirdparty/GNUmakefile
 @@ -6,6 +6,12 @@ $(object.path)/sljitAllocator.o: $(thirdparty.path)/sljitAllocator.cpp
@@ -24,14 +24,15 @@ index a1f20ec..1d8ca10 100644
  libchdr.objects := libchdr_bitstream libchdr_cdrom libchdr_chd libchdr_flac libchdr_huffman
  libchdr.objects += lzma_alloc lzma_bra86 lzma_braia64 lzma_cpuarch lzma_delta lzma_lfind
  libchdr.objects += lzma_86dec lzma_dec lcma_enc lzma_sort
-@@ -45,4 +51,5 @@ $(object.path)/zlib_zutil.o: $(libchdr.path)/deps/zlib-1.2.11/zutil.c
+@@ -45,7 +51,7 @@ $(object.path)/zlib_zutil.o: $(libchdr.path)/deps/zlib-1.2.13/zutil.c
  
  flags += -I$(libchdr.path)/include
  flags += -I$(libchdr.path)/deps/lzma-19.00/include -D_7ZIP_ST
--flags += -I$(libchdr.path)/deps/zlib-1.2.11
-\ No newline at end of file
-+flags += -I$(libchdr.path)/deps/zlib-1.2.11
+-flags += -I$(libchdr.path)/deps/zlib-1.2.13
 +endif
+ 
+ # instruct glibc to declare fseeko/ftello
+ flags += -D_LARGEFILE_SOURCE
 -- 
-2.38.1
+2.41.0
 

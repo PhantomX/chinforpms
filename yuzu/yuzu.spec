@@ -38,7 +38,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
-%global commit2 0aa3989b8f382f185fdf646cc83a1d16fa31d6ab
+%global commit2 9b0fc3e7b02afe97895eb3e945fe800c3a7485ac
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 VulkanMemoryAllocator
 
@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3739
+%global vc_version 3765
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -88,7 +88,7 @@
 %else
 %global vc_name %{name}
 %if 0%{?with_mainline}
-%global vc_version 1435
+%global vc_version 1501
 %global vc_name %{name}-mainline
 %global vc_tarball mainline-0
 %global vc_url  %{vcm_url}
@@ -262,8 +262,8 @@ tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 %endif
-mkdir -p externals/vma/VulkanMemoryAllocator
-tar -xf %{S:2} -C externals/vma/VulkanMemoryAllocator --strip-components 1
+mkdir -p externals/VulkanMemoryAllocator
+tar -xf %{S:2} -C externals/VulkanMemoryAllocator --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
@@ -292,7 +292,7 @@ cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p sirit/LICENSE.txt LICENSE.sirit
-cp -p vma/VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
+cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 popd
 
 %if %{without mbedtls}

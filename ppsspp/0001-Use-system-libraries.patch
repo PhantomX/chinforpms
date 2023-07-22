@@ -1,4 +1,4 @@
-From a91736c6326ceae556883cde5590bc443b60398c Mon Sep 17 00:00:00 2001
+From f8697f47eaab9413bd2d2918cfa71715f9d151e7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -11,6 +11,7 @@ Subject: [PATCH] Use system libraries
  Core/MIPS/IR/IRJit.cpp                |  2 +-
  Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
  Core/MIPS/MIPSAnalyst.cpp             |  2 +-
+ Core/RetroAchievements.cpp            |  2 +-
  Core/Util/PPGeDraw.cpp                |  2 +-
  GPU/Common/TextureDecoder.cpp         |  2 +-
  GPU/Common/TextureReplacer.cpp        |  2 +-
@@ -19,16 +20,15 @@ Subject: [PATCH] Use system libraries
  GPU/GLES/TextureCacheGLES.cpp         |  2 +-
  GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
  UI/CwCheatScreen.cpp                  |  2 +-
- UI/RetroAchievements.cpp              |  2 +-
  Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
  18 files changed, 35 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 849c972..4df9fb4 100644
+index dddcf33..ca408d9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1504,11 +1504,20 @@ add_library(xbrz STATIC
+@@ -1502,11 +1502,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -105,11 +105,11 @@ index 8b2e427..113f4be 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 37860f1..2372289 100644
+index 6a82ec1..eb22ce7 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
-@@ -17,7 +17,7 @@
- 
+@@ -18,7 +18,7 @@
+ #include "ppsspp_config.h"
  #include <set>
  
 -#include "ext/xxhash.h"
@@ -143,6 +143,19 @@ index 4cfe9a2..580e0d0 100644
  
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
+diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
+index 84302c8..5857466 100644
+--- a/Core/RetroAchievements.cpp
++++ b/Core/RetroAchievements.cpp
+@@ -26,7 +26,7 @@
+ #include "ext/rcheevos/include/rc_hash.h"
+ #include "ext/rcheevos/src/rhash/md5.h"
+ 
+-#include "ext/rapidjson/include/rapidjson/document.h"
++#include "rapidjson/document.h"
+ 
+ #include "Common/Log.h"
+ #include "Common/File/Path.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
 index 76d00d8..cb933f6 100644
 --- a/Core/Util/PPGeDraw.cpp
@@ -170,7 +183,7 @@ index 32da2df..edb118e 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index da0f944..9d19bde 100644
+index 5e7b471..afdfea9 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -23,7 +23,7 @@
@@ -183,7 +196,7 @@ index da0f944..9d19bde 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index d658d19..d68a750 100644
+index 465981e..aacb5f5 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -36,7 +36,7 @@
@@ -247,24 +260,11 @@ index 17cf916..cd508a1 100644
  #include "Common/UI/UI.h"
  
  #include "Common/Data/Text/I18n.h"
-diff --git a/UI/RetroAchievements.cpp b/UI/RetroAchievements.cpp
-index 68fffca..560feaf 100644
---- a/UI/RetroAchievements.cpp
-+++ b/UI/RetroAchievements.cpp
-@@ -25,7 +25,7 @@
- #include "ext/rcheevos/src/rhash/md5.h"
- 
- #include "UI/RetroAchievements.h"
--#include "ext/rapidjson/include/rapidjson/document.h"
-+#include "rapidjson/document.h"
- 
- #include "Common/Log.h"
- #include "Common/File/Path.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 89529d0..c3aa758 100644
+index 946a131..078e3e0 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
-@@ -22,7 +22,7 @@
+@@ -23,7 +23,7 @@
  
  #include "Common/CommonWindows.h"
  #include "Common/Data/Encoding/Utf8.h"

@@ -102,7 +102,7 @@
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_gtksharp_ver 3.24.24.59-ryujinx
-%global ryujinx_sdl2_cs_ver 2.26.3-build25
+%global ryujinx_sdl2_cs_ver 2.28.1-build28
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.2
 %global silk_net_ver 2.16.0
@@ -218,7 +218,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.942
+Version:        1.1.966
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

@@ -26,9 +26,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 44d93048b3544a3a1bd632a9b05623f67d587e1b
+%global commit 2764978bebce9cedf0e329c320951ff0508f7139
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230607
+%global date 20230719
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -57,7 +57,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 39965
+%global baserelease 40221
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -116,9 +116,10 @@ BuildRequires:  pkgconfig(egl)
 %endif
 BuildRequires:  pkgconfig(fmt) >= 9.1.0
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(gtest)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
-BuildRequires:  pkgconfig(libenet)
+BuildRequires:  pkgconfig(libenet) >= 1.3.8
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(spng)
@@ -187,8 +188,6 @@ Provides:       bundled(cpp-argparse)
 Provides:       bundled(rangeset)
 #soundtouch cannot be unbundled easily, as it requires compile time changes:
 Provides:       bundled(soundtouch) = 2.3.2
-#dolphin uses tests not included in upstream gtest (possibly unbundle later):
-Provides:       bundled(gtest) = 1.9.0
 #dolphin uses a very old bochs, which is impatible with f35+'s bochs.
 #We could rework dolphin to use latest, but this requires a lot of work.
 #Furthermore, the dolphin gtest test cases that fail with f33/34 bochs
@@ -245,18 +244,6 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
 
-#Fix for minizip install path
-sed \
-  -e 's|<mz_compat.h>|<minizip/mz_compat.h>|' \
-  -e 's|<mz_os.h>|<minizip/mz_os.h>|' \
-  -i Source/Core/Common/MinizipUtil.h \
-     Source/Core/UICommon/ResourcePack/ResourcePack.cpp \
-     Source/Core/DiscIO/VolumeVerifier.cpp
-
-sed \
-  -e 's|minizip-ng|minizip|g' \
-  -i CMakeLists.txt Source/Core/{Common,DiscIO,UICommon}/CMakeLists.txt
-
 # Fix for newer vulkan/glslang
 sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
   `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
@@ -280,7 +267,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 ###Remove Bundled:
 pushd Externals
 rm -rf \
-  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext hidapi \
+  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext gtest hidapi \
   libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
@@ -309,7 +296,9 @@ sed \
 %if %{with snapshot}
 sed \
   -e 's|GIT_FOUND|GIT_DISABLED|g' \
-  -i CMakeLists.txt
+  -e 's|${DOLPHIN_VERSION_MAJOR}.${DOLPHIN_VERSION_MINOR}|%{version}|g' \
+  -e 's|${DOLPHIN_WC_DESCRIBE} (no further info)|%{release}|g' \
+  -i CMakeLists.txt CMake/ScmRevGen.cmake
 %endif
 
 
@@ -339,11 +328,6 @@ sed \
 %endif
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DDISTRIBUTOR='%{distributor}' \
-  -DDOLPHIN_WC_REVISION:STRING=%{release} \
-  -DDOLPHIN_WC_DESCRIBE:STRING=%{version} \
-%if %{with snapshot}
-  -DDOLPHIN_WC_BRANCH:STRING=master \
-%endif
 %{nil}
 
 %cmake_build

@@ -1,41 +1,32 @@
-From a2b809243b4e4f24795dbe1133c45cbea69d4c20 Mon Sep 17 00:00:00 2001
+From 733b4aca756f4858ba833c9295cd55ebdc5b22b2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 3 Aug 2022 22:19:34 -0300
 Subject: [PATCH] system library support
 
 ---
- CMakeLists.txt                              | 13 ++++++++++++-
+ CMakeLists.txt                              |  4 ++++
  Source/Core/Common/Hash.cpp                 |  6 ++++++
  Source/Core/DiscIO/CompressedBlob.cpp       | 12 ++++++++++++
  Source/Core/UpdaterCommon/UpdaterCommon.cpp |  4 ++++
- 4 files changed, 34 insertions(+), 1 deletion(-)
+ 4 files changed, 26 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2cc8594..a5c4ca6 100644
+index ee44d04..e1d3fa1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -775,7 +775,18 @@ else()
-   add_subdirectory(Externals/zstd)
- endif()
+@@ -678,6 +678,10 @@ dolphin_find_optional_system_library_pkgconfig(ZSTD libzstd>=1.4.0 zstd::zstd Ex
  
--add_subdirectory(Externals/zlib-ng)
-+pkg_check_modules(ZLIBNG IMPORTED_TARGET zlib-ng)
-+if (ZLIBNG_FOUND)
-+  message(STATUS "Using shared zlib-ng")
-+  add_library(zlibng-shared INTERFACE)
-+  target_link_libraries(zlibng-shared INTERFACE PkgConfig::ZLIBNG)
-+  add_library(ZLIB::ZLIB ALIAS zlibng-shared)
+ dolphin_find_optional_system_library_pkgconfig(ZLIB zlib-ng ZLIB::ZLIB Externals/zlib-ng)
+ 
++if(TARGET PkgConfig::ZLIB)
 +  add_definitions(-DUSE_SHARED_ZLIBNG)
-+else()
-+  check_vendoring_approved(zlib-ng)
-+  message(STATUS "Using static zlib-ng from Externals")
-+  add_subdirectory(Externals/zlib-ng)
 +endif()
++
+ dolphin_find_optional_system_library_pkgconfig(MINIZIP minizip>=3.0.0 minizip::minizip Externals/minizip)
  
- pkg_check_modules(MINIZIP minizip>=3.0.0)
- if(MINIZIP_FOUND)
+ dolphin_find_optional_system_library(LZO Externals/LZO)
 diff --git a/Source/Core/Common/Hash.cpp b/Source/Core/Common/Hash.cpp
-index e6b421e..612128f 100644
+index 51182a0..7e92630 100644
 --- a/Source/Core/Common/Hash.cpp
 +++ b/Source/Core/Common/Hash.cpp
 @@ -7,7 +7,13 @@
@@ -77,7 +68,7 @@ index 139a1e6..bf487cb 100644
  #ifdef _WIN32
  #include <windows.h>
 diff --git a/Source/Core/UpdaterCommon/UpdaterCommon.cpp b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
-index 6fdb963..4f6d8de 100644
+index bba12b8..6a7cb18 100644
 --- a/Source/Core/UpdaterCommon/UpdaterCommon.cpp
 +++ b/Source/Core/UpdaterCommon/UpdaterCommon.cpp
 @@ -11,7 +11,11 @@
@@ -93,5 +84,5 @@ index 6fdb963..4f6d8de 100644
  #include "Common/CommonFuncs.h"
  #include "Common/CommonPaths.h"
 -- 
-2.39.1
+2.41.0
 

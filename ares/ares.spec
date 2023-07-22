@@ -7,17 +7,10 @@
 %global commit b7da32113fab30fb6672a475822d5d3a5bf56d76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230421
-%bcond_without snapshot
+%bcond_with snapshot
 
-%bcond_with gtk2
 %bcond_with libao
 %bcond_with openal
-
-%if %{with gtk2}
-%global toolkit gtk2
-%else
-%global toolkit gtk3
-%endif
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -26,8 +19,8 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        132
-Release:        3%{?dist}
+Version:        133
+Release:        1%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause
@@ -40,7 +33,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-gcc-13-build-fix.patch
 # https://aur.archlinux.org/cgit/aur.git/tree/ares-paths.patch?h=ares-emu
 Patch10:        ares-paths.patch
 Patch11:        0001-Use-system-libraries.patch
@@ -54,11 +46,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
 %endif
 BuildRequires:  pkgconfig(gl)
-%if %{with gtk2}
-BuildRequires:  pkgconfig(gtk+-2.0)
-%else
 BuildRequires:  pkgconfig(gtk+-3.0)
-%endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libchdr)
@@ -100,17 +88,15 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
   sed -e "/ruby +=/s|audio.openal\b||" -i ruby/GNUmakefile
 %endif
 
-sed -e '/nall\/main.cpp/d' -i nall/main.hpp
-
 
 %build
 %set_build_flags
 export flags="$CXXFLAGS $(pkg-config --cflags libchdr)"
 export options="$LDFLAGS $(pkg-config --libs libchdr)"
 
-for build in mia desktop-ui tools/genius ; do
+for build in desktop-ui ; do
 %make_build -C $build verbose compiler=g++ \
-  build=optimized local=false system_chdr=true hiro=%{toolkit} \
+  build=optimized local=false system_chdr=true hiro=gtk3 \
   lto=true \
 %{nil}
 done
@@ -119,46 +105,28 @@ done
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 desktop-ui/out/%{name} %{buildroot}%{_bindir}/
-install -pm0755 tools/genius/out/genius %{buildroot}%{_bindir}/
-install -pm0755 mia/out/mia %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/
 cp -rp %{name}/System/* %{buildroot}%{_datadir}/%{name}/
 
-
 mkdir -p %{buildroot}%{_datadir}/%{name}/Shaders/
-mkdir -p %{buildroot}%{_datadir}/mia/{Database,Firmware}/
-cp -rp mia/Database/* %{buildroot}%{_datadir}/mia/Database/
-cp -rp mia/Firmware/* %{buildroot}%{_datadir}/mia/Firmware/
 cp -rp %{name}/Shaders/* %{buildroot}%{_datadir}/%{name}/Shaders/
+mkdir -p %{buildroot}%{_datadir}/%{name}/Database/
+cp -rp mia/Database/* %{buildroot}%{_datadir}/%{name}/Database/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   desktop-ui/resource/%{name}.desktop
 
-desktop-file-install \
-  --dir %{buildroot}%{_datadir}/applications \
-  tools/genius/data/genius.desktop
-
-desktop-file-install \
-  --dir %{buildroot}%{_datadir}/applications \
-  mia/resource/mia.desktop
-
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/{256x256,scalable}/apps
 install -pm0644 desktop-ui/resource/%{name}.png \
-  tools/genius/data/genius.png \
-  mia/resource/mia.png \
   %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/
-
-install -pm0644 \
-  tools/genius/data/genius.svg \
-  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/
 
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  for icon in %{name} genius mia ;do
+  for icon in %{name} ;do
     convert %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/${icon}.png \
       -filter Lanczos -resize ${res}x${res} ${dir}/${icon}.png
   done
@@ -169,15 +137,15 @@ done
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{_bindir}/genius
-%{_bindir}/mia
 %{_datadir}/%{name}
-%{_datadir}/mia
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
 
 
 %changelog
+* Sat Jul 22 2023 Phantom X <megaphantomx at hotmail dot com> - 133-1
+- 133
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 132-2.20230316gitbe869f9
 - gcc 13 build fix
 

@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d30ea441b92e
-%global date 20230309
+%global commit e734bfae80c7
+%global date 20230718
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.14%{?dist}
+Release:        0.15%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
