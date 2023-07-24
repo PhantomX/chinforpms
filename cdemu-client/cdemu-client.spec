@@ -30,7 +30,7 @@ devices. It is part of CDEmu, a CD/DVD-ROM device emulator for Linux.
 %prep
 %autosetup
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/cdemu
+%py3_shebang_fix src/cdemu
 
 
 %build

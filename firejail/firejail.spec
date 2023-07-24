@@ -33,7 +33,7 @@ cp %{SOURCE1} .
 
 rm -f contrib/*.sh
 chmod -x contrib/*.py
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" contrib/*.py
+%py3_shebang_fix contrib/*.py
 
 sed \
   -e '/$(docdir)/d' \

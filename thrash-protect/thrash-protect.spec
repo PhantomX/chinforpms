@@ -29,7 +29,7 @@ problems, and in many cases the problems will resolve by themselves.
 %prep
 %autosetup -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}.py
+%py3_shebang_fix %{name}.py
 
 sed -e 's|/usr/sbin/|%{_sbindir}/|g' -i systemd/%{name}.service
 

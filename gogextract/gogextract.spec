@@ -26,7 +26,7 @@ GOG Extract is a script for unpacking GOG Linux installers.
 %prep
 %autosetup -n %{name}-%{commit} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}.py
+%py3_shebang_fix %{name}.py
 
 
 %build

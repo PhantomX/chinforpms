@@ -38,7 +38,7 @@ to be used with SDL2 Game Controller functionality.
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" duplicates.py
+%py3_shebang_fix duplicates.py
 
 %build
 

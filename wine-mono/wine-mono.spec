@@ -111,7 +111,7 @@ chmod -R g-w %{name}-%{version}
 
 
 # Fix all Python shebangs
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" .
+%py3_shebang_fix .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
 sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
 

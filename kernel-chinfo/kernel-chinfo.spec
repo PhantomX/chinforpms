@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.4
+%define specrpmversion 6.4.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -225,9 +225,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8952fe66811f75a4ba4f1f44cf72c0a99e996288
+%global pfcommit 6a74f9cb0eb78b49a415d3a223abdff354174a13
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash d6cd58fc2782d00b2a35b0b5ffe8eed2
+%global pfcoprhash 4923ca44138371c4b4b0de8a3502e5c1
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -1713,7 +1713,7 @@ rm -f localversion-next
 # *** ERROR: ambiguous python shebang in /usr/bin/kvm_stat: #!/usr/bin/python. Change it to python3 (or python2) explicitly.
 # We patch all sources below for which we got a report/error.
 echo "Fixing Python shebangs..."
-pathfix.py -i "%{__python3} %{py3_shbang_opts}" -p -n \
+%py3_shebang_fix \
     tools/kvm/kvm_stat/kvm_stat \
     scripts/show_delta \
     scripts/diffconfig \
@@ -3402,8 +3402,11 @@ fi\
 #
 #
 %changelog
-* Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
-- 6.4.3 - pf4
+* Sun Jul 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.5-500.chinfo
+- 6.4.5 - pf4
+
+* Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.4-500.chinfo
+- 6.4.4 - pf4
 
 * Tue Jul 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
 - 6.4.3 - pf3

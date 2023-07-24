@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.4.4
+%define specrpmversion 6.4.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -220,7 +220,7 @@ cd linux-%{tarfile_release}
 # -p preserves timestamps
 # -n prevents creating ~backup files
 # -i specifies the interpreter for the shebang
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" tools/ tools/perf/scripts/python/*.py scripts/clang-tools
+%py3_shebang_fix tools/ tools/perf/scripts/python/*.py scripts/clang-tools
 
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
 
@@ -574,6 +574,9 @@ popd
 
 
 %changelog
+* Sun Jul 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.5-500
+- 6.4.5
+
 * Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.4-500
 - 6.4.4
 

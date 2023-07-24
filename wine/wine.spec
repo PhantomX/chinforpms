@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.0
-%global winevulkan 1.3.254
+%global winevulkan 1.3.258
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.12
+%global wine_stagingver 8.13
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.12
+Version:        8.13
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -226,6 +226,7 @@ Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-wh
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
 
+Patch900:       https://bugs.winehq.org/attachment.cgi?id=74866#/%{name}-whq-bug74866.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
@@ -258,6 +259,8 @@ Patch1041:       0001-proton-tkg-staging-fixup-1.patch
 Patch1042:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
+Patch1051:       0001-fastsync-staging-protonify-fixup-1.patch
+Patch1052:       0001-fastsync-staging-protonify-fixup-2.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -884,15 +887,12 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 5000 -p1
 
-sed -e 's| DECLSPEC_HIDDEN;|;|g' \
-  -i patches/dsound-Fast_Mixer/0001-*.patch \
-  -i patches/dsound-EAX/00{0[489],1[89]}-*.patch
-
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0008-winegstreamer-Allow-videoconvert-to-parallelize.patch
 
+%patch -P 900 -p1
 %patch -P 1020 -p1
 %patch -P 1021 -p1
 %patch -P 1022 -p1
@@ -917,7 +917,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
+%patch -P 1051 -p1
 %patch -P 1050 -p1
+%patch -P 1052 -p1
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
@@ -1534,6 +1536,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/avrt.%{winedll}
 %{_libdir}/wine/%{winesodir}/bcrypt.so
 %{_libdir}/wine/%{winedlldir}/bcrypt.%{winedll}
+%{_libdir}/wine/%{winedlldir}/bcryptprimitives.%{winedll}
 %{_libdir}/wine/%{winedlldir}/bluetoothapis.%{winedll}
 %{_libdir}/wine/%{winedlldir}/browseui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/bthprops.%{winecpl}
@@ -1656,6 +1659,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/gamingtcui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gdi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/gdiplus.%{winedll}
+%{_libdir}/wine/%{winedlldir}/geolocation.%{winedll}
 %{_libdir}/wine/%{winedlldir}/glu32.%{winedll}
 %{_libdir}/wine/%{winesodir}/gphoto2.so
 %{_libdir}/wine/%{winedlldir}/gphoto2.%{wineds}
@@ -1702,6 +1706,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/kerberos.%{winedll}
 %{_libdir}/wine/%{winedlldir}/kernel32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/kernelbase.%{winedll}
+%{_libdir}/wine/%{winedlldir}/klist.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ksecdd.%{winesys}
 %{_libdir}/wine/%{winedlldir}/ksproxy.%{wineax}
 %{_libdir}/wine/%{winedlldir}/ksuser.%{winedll}
@@ -1999,7 +2004,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.devices.bluetooth.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.devices.enumeration.%{winedll}
-%{_libdir}/wine/%{winedlldir}/windows.devices.geolocation.geolocator.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.ui.gamebar.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
@@ -2517,6 +2521,9 @@ fi
 
 
 %changelog
+* Mon Jul 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.13-100
+- 8.13
+
 * Sun Jul 09 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.12-100
 - 8.12
 

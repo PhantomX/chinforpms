@@ -1,11 +1,12 @@
-From 87155541d428e3461cf5d16bbdfab41ae4f68ae9 Mon Sep 17 00:00:00 2001
+From e28d8624208b4e6220317dc33814aeb4fddb7ad0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 9 Jul 2023 00:32:32 -0300
 Subject: [PATCH] proton-tkg-staging: fixup 1
 
 ---
  dlls/dsound/dsound_private.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ dlls/msctf/msctf_internal.h  | 6 +++---
+ 2 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/dlls/dsound/dsound_private.h b/dlls/dsound/dsound_private.h
 index 43f9df8..63f2d4b 100644
@@ -26,6 +27,23 @@ index 43f9df8..63f2d4b 100644
  
  /* primary.c */
  
+diff --git a/dlls/msctf/msctf_internal.h b/dlls/msctf/msctf_internal.h
+index 24c8c01..e2e5221 100644
+--- a/dlls/msctf/msctf_internal.h
++++ b/dlls/msctf/msctf_internal.h
+@@ -36,9 +36,9 @@
+ #define COOKIE_MAGIC_INPUTPROCESSORPROFILEACTIVATIONSINK 0x00b0
+ #define COOKIE_MAGIC_ACTIVELANGSINK 0x00c0
+ 
+-extern DWORD tlsIndex;
+-extern TfClientId processId;
+-extern ITfCompartmentMgr *globalCompartmentMgr;
++extern DWORD tlsIndex DECLSPEC_HIDDEN;
++extern TfClientId processId DECLSPEC_HIDDEN;
++extern ITfCompartmentMgr *globalCompartmentMgr DECLSPEC_HIDDEN;
+ 
+ extern HRESULT ThreadMgr_Constructor(IUnknown *pUnkOuter, IUnknown **ppOut);
+ extern HRESULT DocumentMgr_Constructor(ITfThreadMgrEventSink*, ITfDocumentMgr **ppOut);
 -- 
 2.41.0
 

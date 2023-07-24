@@ -1,0 +1,34 @@
+From 21fa2b4bb61974ca9f16ffb437808dee89d8a41a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 23 Jul 2023 20:37:14 -0300
+Subject: [PATCH] fastsync-staging-protonify: fixup 2
+
+---
+ server/named_pipe.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/server/named_pipe.c b/server/named_pipe.c
+index 0657483..832920d 100644
+--- a/server/named_pipe.c
++++ b/server/named_pipe.c
+@@ -185,7 +185,7 @@ static const struct object_ops pipe_server_ops =
+     pipe_server_open_file,        /* open_file */
+     no_kernel_obj_list,           /* get_kernel_obj_list */
+     default_fd_get_fast_sync,     /* get_fast_sync */
+-    no_close_handle,              /* close_handle */
++    async_close_obj_handle,       /* close_handle */
+     pipe_server_destroy           /* destroy */
+ };
+ 
+@@ -232,7 +232,7 @@ static const struct object_ops pipe_client_ops =
+     no_open_file,                 /* open_file */
+     no_kernel_obj_list,           /* get_kernel_obj_list */
+     default_fd_get_fast_sync,     /* get_fast_sync */
+-    no_close_handle,              /* close_handle */
++    async_close_obj_handle,       /* close_handle */
+     pipe_end_destroy              /* destroy */
+ };
+ 
+-- 
+2.41.0
+

@@ -32,7 +32,7 @@ of CDEmu, a CD/DVD-ROM device emulator for Linux.
 %prep
 %autosetup
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
+%py3_shebang_fix src/%{name}
 
 
 %build

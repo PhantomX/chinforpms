@@ -401,7 +401,7 @@ an overlay.
 
 cp %{SOURCE1} docs/
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+%py3_shebang_fix \
   src/vulkan/overlay-layer/mesa-overlay-control.py
 
 %build

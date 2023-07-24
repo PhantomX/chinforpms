@@ -27,7 +27,7 @@ full navigation scenario and provides useful high-level functions, methods
 %prep
 %autosetup -n %{name}-%{rversion} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" bin/%{name}
+%py3_shebang_fix bin/%{name}
 
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}|g' \

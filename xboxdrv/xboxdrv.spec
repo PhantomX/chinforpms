@@ -79,7 +79,7 @@ both first and third party.
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:linux-%{version}} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+%py3_shebang_fix \
   examples/responsecurve-generator.py \
   xboxdrvctl
 

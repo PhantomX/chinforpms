@@ -24,7 +24,7 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.8.4
+Version:        4.8.7
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -59,6 +59,16 @@ Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
+Patch1000:      %{url}/commit/f817df9d7fb107d9196d94f22c9ca6250b902c16.patch#/%{name}-gh-f817df9.patch
+Patch1001:      %{url}/commit/9ccb11bd1a45adc376672a00b131d1847acd9354.patch#/%{name}-gh-9ccb11b.patch
+Patch1002:      %{da_url}/cmake_helpers/commit/0620bb7b87a0ec9195151fd5eb0cf38656c1280b.patch#/%{name}-gh-cmake_helpers-0620bb7.patch
+Patch1003:      %{da_url}/lib_base/commit/74be75339d474df1a2863028ec146744597bd0bb.patch#/%{name}-gh-lib_base-74be753.patch
+Patch1004:      %{da_url}/lib_base/commit/2669a04579069942b6208a18abe93c26adfddf2a.patch#/%{name}-gh-lib_base-2669a04.patch
+Patch1005:      %{da_url}/lib_ui/commit/da7f4fe4251fe7076e437dec7ed71aefd99f8537.patch#/%{name}-gh-lib_ui-da7f4fe.patch
+
+%if 0%{?fedora} < 39
+BuildRequires:  patchutils
+%endif
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(range-v3)
@@ -189,6 +199,16 @@ business messaging needs.
 %autosetup -N -n %{srcname}-%{version}-full
 %autopatch -p1 -M 999
 
+%if 0%{?fedora} < 39
+%patch -P 1001 -p1 -R
+filterdiff -p1 -x cmake %{P:1000} > f817df9.patch
+%{__scm_apply_patch -p1 -q} -R -i f817df9.patch
+%patch -P 1002 -p1 -R -d cmake
+%patch -P 1004 -p1 -R -d Telegram/lib_base
+%patch -P 1003 -p1 -R -d Telegram/lib_base
+%patch -P 1005 -p1 -R -d Telegram/lib_ui
+%endif
+
 cp -p %{S:20} thunar-sendto-%{name}.desktop
 
 # Unbundling libraries...
@@ -288,12 +308,16 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 %license LICENSE LEGAL
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
+%{_datadir}/dbus-1/services/%{appname}.service
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
 %{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
+* Mon Jul 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.7-100
+- 4.8.7
+
 * Thu Jun 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.4-100
 - 4.8.4
 

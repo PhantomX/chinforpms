@@ -54,7 +54,7 @@ MComix is a user-friendly, customizable image viewer.
 
 cp -f %{S:1} mime/comicthumb
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" mime/comicthumb
+%py3_shebang_fix mime/comicthumb
 
 sed \
   -e 's|%{name}.1.gz|%{name}.1|g' \

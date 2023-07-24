@@ -30,7 +30,7 @@ CD/DVD-ROM image analyzer, based on libMirage library.
 %prep
 %autosetup
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
+%py3_shebang_fix src/%{name}
 
 %build
 %cmake \

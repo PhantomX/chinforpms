@@ -48,7 +48,7 @@ cropgui is a a GTK GUI for lossless JPEG cropping
 
 sed -e '1{/env/d;}' -i filechooser.py
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" cropgtk.py
+%py3_shebang_fix cropgtk.py
 
 sed -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' -i cropgtk.py
 

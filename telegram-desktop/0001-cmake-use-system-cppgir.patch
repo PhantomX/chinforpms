@@ -1,4 +1,4 @@
-From a4dad27429ed079903b1e8f9dee2955cf39ea712 Mon Sep 17 00:00:00 2001
+From ac0316a182b88726ac06ac7ebd8ec6238888a2e6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 7 Jun 2023 17:39:44 -0300
 Subject: [PATCH] cmake: use system cppgir
@@ -9,11 +9,11 @@ Subject: [PATCH] cmake: use system cppgir
  2 files changed, 9 insertions(+), 6 deletions(-)
 
 diff --git a/cmake/external/glib/CMakeLists.txt b/cmake/external/glib/CMakeLists.txt
-index 66385e3..6359b75 100644
+index 2966200..cdd66c0 100644
 --- a/cmake/external/glib/CMakeLists.txt
 +++ b/cmake/external/glib/CMakeLists.txt
 @@ -13,7 +13,6 @@ function(add_cppgir) # isolate scope
-     set(CMAKE_DISABLE_FIND_PACKAGE_Qt5Core ON)
+     set(BUILD_EXAMPLES OFF)
      add_subdirectory(cppgir EXCLUDE_FROM_ALL)
  endfunction()
 -add_cppgir()
@@ -21,7 +21,7 @@ index 66385e3..6359b75 100644
  include(generate_cppgir.cmake)
  generate_cppgir(external_glib Gio-2.0)
 diff --git a/cmake/external/glib/generate_cppgir.cmake b/cmake/external/glib/generate_cppgir.cmake
-index 743b77f..2b7d098 100644
+index a95d513..fa9eef8 100644
 --- a/cmake/external/glib/generate_cppgir.cmake
 +++ b/cmake/external/glib/generate_cppgir.cmake
 @@ -4,7 +4,11 @@
@@ -36,12 +36,14 @@ index 743b77f..2b7d098 100644
      # cppgir generates all the dependent headers everytime, better to have a global folder
      set(gen_dst ${CMAKE_BINARY_DIR}/gen)
      file(MAKE_DIRECTORY ${gen_dst})
-@@ -20,11 +24,11 @@ function(generate_cppgir target_name gir)
+@@ -20,13 +24,13 @@ function(generate_cppgir target_name gir)
      OUTPUT
          ${gen_timestamp}
      COMMAND
 -        cppgir
 +        ${DESKTOP_APP_CPPGIR}
+         --debug
+         1
          --class
          --expected
          --ignore
@@ -50,7 +52,7 @@ index 743b77f..2b7d098 100644
          --output
          ${gen_dst}
          ${gir}
-@@ -32,17 +36,17 @@ function(generate_cppgir target_name gir)
+@@ -34,17 +38,17 @@ function(generate_cppgir target_name gir)
          echo 1> ${gen_timestamp}
      COMMENT "Generating C++ wrapper for ${gir} (${target_name})"
      DEPENDS
@@ -72,5 +74,5 @@ index 743b77f..2b7d098 100644
      endif()
  endfunction()
 -- 
-2.40.1
+2.41.0
 

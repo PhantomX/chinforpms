@@ -32,7 +32,7 @@ BuildRequires:  python3-devel
 
 cp -p %{S:1} .
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{pkgname}.py
+%py3_shebang_fix %{pkgname}.py
 
 
 %build

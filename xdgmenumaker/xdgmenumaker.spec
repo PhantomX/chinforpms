@@ -30,7 +30,7 @@ in all $XDG_DATA_DIRS/applications directories.
 %prep
 %autosetup -p0
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" src/%{name}
+%py3_shebang_fix src/%{name}
 
 
 %build

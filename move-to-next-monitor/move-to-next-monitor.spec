@@ -31,7 +31,7 @@ Requires:       xwininfo
 %prep
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" %{name}
+%py3_shebang_fix %{name}
 
 
 %build

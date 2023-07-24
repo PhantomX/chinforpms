@@ -45,7 +45,7 @@ sed \
   -e 's|\.py||g' \
   -i disable-c6.service
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" \
+%py3_shebang_fix \
   togglecode.py %{name}.py
 
 

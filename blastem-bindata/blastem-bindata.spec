@@ -41,7 +41,7 @@ assembler.
 %prep
 %autosetup -n %{pkgname}-%{commit} -p1
 
-pathfix.py -pni "%{__python3} %{py3_shbang_opts}" img2tiles.py
+%py3_shebang_fix img2tiles.py
 
 
 %build
