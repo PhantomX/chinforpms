@@ -39,7 +39,7 @@
  38 files changed, 498 insertions(+), 179 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d5041f7daf68..040d61eb5fe5 100644
+index 23ddaa3f3034..1ca016223132 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -93,10 +93,10 @@ index 9ed7f03ba15a..9f5972a2d17b 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 92f3fff2522b..eda3f7dfc558 100644
+index b2326674b4d3..375bae9b1708 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1269,7 +1269,7 @@ endchoice
+@@ -1288,7 +1288,7 @@ endchoice
 
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -994,10 +994,10 @@ index f1dcfa3f1a1b..62fa35de72ac 100644
   * Changes the default domain of an iommu group
   *
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index c525867760bf..549083cdf0ec 100644
+index b7c65193e786..fd55846ced2b 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4309,6 +4309,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4311,6 +4311,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
 
