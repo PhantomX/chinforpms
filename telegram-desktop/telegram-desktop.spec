@@ -24,7 +24,7 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.8.7
+Version:        4.8.9
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -315,6 +315,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jul 26 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.9-100
+- 4.8.9
+
 * Mon Jul 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.7-100
 - 4.8.7
 

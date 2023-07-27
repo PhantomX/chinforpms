@@ -1,6 +1,6 @@
-%global commit e3f85da3aa0d8a0a956f37f9e63b2ed597de7169
+%global commit 0493be5016c74373465c9d3b67bbdcdd12adb100
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230611
+%global date 20230722
 
 BuildArch:      noarch
 
@@ -21,7 +21,7 @@ BuildRequires:  zip
 
 
 %description
-PSX2 patch files.
+PCSX2 patch files.
 
 
 %prep

@@ -48,7 +48,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4731
+Version:        1.7.4811
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -323,6 +323,7 @@ rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
 %{_datadir}/%{appres}/resources/shaders
 %{_datadir}/%{appres}/resources/sounds
 %{_datadir}/%{appres}/resources/GameIndex.yaml
+%{_datadir}/%{appres}/resources/RedumpDatabase.yaml
 %{_datadir}/%{appres}/resources/cover-placeholder.png
 %{_datadir}/%{appres}/resources/game_controller_db.txt
 

@@ -1,4 +1,4 @@
-From 5c5808ac6c3b639a495736c2058acc555405c954 Mon Sep 17 00:00:00 2001
+From 989975b99a32e0d7662de38fbf18071ae6907025 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -6,18 +6,18 @@ Subject: [PATCH] Use system libraries
 ---
  cmake/SearchForStuff.cmake                    | 57 ++++++++++++++++---
  pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
- pcsx2/CMakeLists.txt                          |  9 ++-
+ pcsx2/CMakeLists.txt                          |  7 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 7 files changed, 62 insertions(+), 16 deletions(-)
+ 7 files changed, 61 insertions(+), 15 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 50f22e2..a4b8790 100644
+index 0f41dff..128e560 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -113,11 +113,10 @@ endif()
+@@ -117,11 +117,10 @@ endif()
  
  find_optional_system_library(fmt 3rdparty/fmt/fmt 7.1.3)
  find_optional_system_library(ryml 3rdparty/rapidyaml/rapidyaml 0.4.0)
@@ -33,7 +33,7 @@ index 50f22e2..a4b8790 100644
  find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
  
  if(QT_BUILD)
-@@ -162,36 +161,78 @@ if(NOT WIN32 AND QT_BUILD)
+@@ -166,36 +165,78 @@ if(NOT WIN32 AND QT_BUILD)
  	find_package(CURL REQUIRED)
  endif()
  
@@ -129,10 +129,10 @@ index 7fd6607..73faef3 100644
  #pragma clang diagnostic pop
  #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index e0d2f95..20bd884 100644
+index b4d2f36..e776817 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1220,12 +1220,17 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1230,9 +1230,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -144,14 +144,10 @@ index e0d2f95..20bd884 100644
 +	target_link_libraries(PCSX2_FLAGS INTERFACE xbyak::xbyak)
 +else()
 +	target_include_directories(PCSX2_FLAGS INTERFACE "${CMAKE_SOURCE_DIR}/3rdparty/xbyak/xbyak")
-+)
 +endif()
  target_compile_definitions(PCSX2_FLAGS INTERFACE
  	XBYAK_NO_EXCEPTION
--)
- 
- if(COMMAND target_precompile_headers)
- 	message("Using precompiled headers.")
+ )
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
 index e5e572e..43f13ca 100644
 --- a/pcsx2/GS/MultiISA.cpp
