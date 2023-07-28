@@ -9,7 +9,7 @@
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %global package_name kernel%{?variant}
-%define specrpmversion 6.4.6
+%define specrpmversion 6.4.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -124,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Thu Jul 27 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-500.chinfo
+- 6.4.7
+
 * Mon Jul 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.6-500.chinfo
 - 6.4.6
 
@@ -133,7 +136,7 @@ done
 * Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.4-500.chinfo
 - 6.4.4
 
-* Tue Jul 11 2023 Phantom X - 6.4.3-500.chinfo
+* Tue Jul 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.3-500.chinfo
 - 6.4.3
 
 * Wed Jul 05 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.2-500.chinfo

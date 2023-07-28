@@ -23,10 +23,10 @@ BuildArch:      noarch
 
 BuildRequires:  make
 BuildRequires:  ImageMagick
+BuildRequires:  python3-devel
 BuildRequires:  python3-pillow
 BuildRequires:  vasm
 BuildRequires:  xcftools
-BuildRequires:  /usr/bin/pathfix.py
 Requires:       %{pkgname} >= %{version}
 
 %description

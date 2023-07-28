@@ -12,7 +12,7 @@ Patch0:         %{name}-whitelist.patch
 
 BuildArch:      noarch
 
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 BuildRequires:  systemd
 %{?systemd_requires}
 

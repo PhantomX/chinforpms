@@ -16,7 +16,7 @@ URL:            https://github.com/vanaoff/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 Requires:       xdotool
 Requires:       xprop
 Requires:       xrandr

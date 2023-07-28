@@ -33,7 +33,6 @@ Patch0:         0001-Search-gettext-files-in-system-wide-directory.patch
 Patch1:         0001-Set-small-toolbar.patch
 
 BuildRequires:  python3-devel >= 3.8
-BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  gettext
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib

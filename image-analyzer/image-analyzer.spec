@@ -13,7 +13,7 @@ BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 Requires:       gobject-introspection
 Requires:       gtk3
 Requires:       libmirage

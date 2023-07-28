@@ -65,7 +65,6 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig
 BuildRequires:  python3-devel
 BuildRequires:  systemd
-BuildRequires:  /usr/bin/pathfix.py
 Requires:       python3-dbus
 %{?systemd_requires}
 

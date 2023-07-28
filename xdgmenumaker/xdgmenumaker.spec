@@ -14,7 +14,6 @@ BuildArch:      noarch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
-BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  python3-devel
 BuildRequires:  txt2tags
 Requires:       gobject-introspection

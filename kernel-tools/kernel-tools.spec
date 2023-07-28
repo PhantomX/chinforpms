@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.4.5
+%define specrpmversion 6.4.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -93,8 +93,6 @@ BuildRequires: openssl-devel libbabeltrace-devel
 BuildRequires: libtracefs-devel libtraceevent-devel
 BuildRequires: libbpf-devel
 BuildRequires: clang llvm
-# Used to mangle unversioned shebangs to be Python 3
-BuildRequires: /usr/bin/pathfix.py
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
 %endif
@@ -574,6 +572,9 @@ popd
 
 
 %changelog
+* Thu Jul 27 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-500
+- 6.4.7
+
 * Sun Jul 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.5-500
 - 6.4.5
 

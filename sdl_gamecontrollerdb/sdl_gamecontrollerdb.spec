@@ -26,7 +26,7 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 Patch0:         0001-Add-Xbox-360-Controller-for-Windows-GUID.patch
 
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 
 Provides:       %{pkgname} = %{version}-%{release}
 

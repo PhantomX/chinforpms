@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.6
+%define specrpmversion 6.4.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -225,9 +225,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit f4c236d82865dca61444961f5c7e92577edffe10
+%global pfcommit fa7b8b57682a200549b6c059a5e768d612c5b7dc
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash 487b78ecce1a2cb7bde1f96bcb4c2222
+%global pfcoprhash c1289fc7b6649e8b802bbb7b25fe5005
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -249,7 +249,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id ac1bf5af0899d8cbb7da819d553e6b5cb6224f19
+%global opensuse_id 90999e4682dc5686d84b81650aed70186f39078b
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1073,11 +1073,7 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 Patch1014: %{opensuse_url}/drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch#/openSUSE-drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch
-Patch1015: %{opensuse_url}/r8169-fix-ASPM-related-problem-for-chip-version-42-a.patch#/openSUSE-r8169-fix-ASPM-related-problem-for-chip-version-42-a.patch
-Patch1016: %{opensuse_url}/r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch#/openSUSE-r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch
-Patch1017: %{opensuse_url}/Revert-r8169-disable-ASPM-during-NAPI-poll.patch#/openSUSE-Revert-r8169-disable-ASPM-during-NAPI-poll.patch
-Patch1018: %{opensuse_url}/of-Preserve-of-display-device-name-for-compatibility.patch#/openSUSE-of-Preserve-of-display-device-name-for-compatibility.patch
-Patch1019: %{opensuse_url}/io_uring-Fix-io_uring-mmap-by-using-architecture-pro.patch#/openSUSE-io_uring-Fix-io_uring-mmap-by-using-architecture-pro.patch
+Patch1015: %{opensuse_url}/r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch#/openSUSE-r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1689,10 +1685,6 @@ ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1014}
 ApplyPatch %{PATCH1015}
-ApplyPatch %{PATCH1016}
-ApplyPatch %{PATCH1017}
-ApplyPatch %{PATCH1018}
-ApplyPatch %{PATCH1019}
 
 ApplyPatch %{PATCH2000}
 
@@ -3413,6 +3405,9 @@ fi\
 #
 #
 %changelog
+* Thu Jul 27 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-500.chinfo
+- 6.4.7 - pf4
+
 * Mon Jul 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.6-500.chinfo
 - 6.4.6 - pf4
 

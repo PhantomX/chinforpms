@@ -13,7 +13,7 @@ Source2:        %{name}-sysusers.conf
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  libselinux-devel
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
 Requires:       xdg-dbus-proxy

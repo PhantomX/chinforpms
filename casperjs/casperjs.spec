@@ -14,7 +14,6 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 Requires:       python3
-BuildRequires:  /usr/bin/pathfix.py
 Requires:       phantomjs
 
 

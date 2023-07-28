@@ -22,8 +22,6 @@ Source1:        https://github.com/jfredrickson/disable-c6/raw/82765d490290a99ba
 Source2:        https://aur.archlinux.org/cgit/aur.git/plain/enable-c6.service?h=disable-c6-systemd-with-modern-standby#/enable-c6.service
 
 BuildRequires:  python3-devel
-BuildRequires:  /usr/bin/pathfix.py
-BuildRequires:  /usr/bin/pathfix.py
 BuildRequires:  systemd
 %dnl Requires:       %{py3_dist portio}
 

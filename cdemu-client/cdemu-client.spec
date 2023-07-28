@@ -16,7 +16,6 @@ BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  python3-devel
-BuildRequires:  /usr/bin/pathfix.py
 Requires:       cdemu-daemon
 Requires:       gobject-introspection
 Requires:       python3

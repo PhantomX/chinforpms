@@ -176,7 +176,6 @@ BuildRequires:  pkgconfig(libzstd)
 # vulkan-overlay
 BuildRequires:  glslang
 BuildRequires:  lm_sensors-devel
-BuildRequires:  /usr/bin/pathfix.py
 
 
 %description

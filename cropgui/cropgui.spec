@@ -27,7 +27,7 @@ Patch0:         0001-Set-data-files-to-datadir.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 Requires:       ImageMagick
 Requires:       gtk3
 Requires:       libjpeg-turbo-utils

@@ -23,7 +23,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 
 
 %description

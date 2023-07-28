@@ -82,7 +82,7 @@ BuildRequires:  libgdiplus
 BuildRequires:  zip
 BuildRequires:  wine-core
 BuildRequires:  mono-core
-BuildRequires:  /usr/bin/pathfix.py
+BuildRequires:  python3-devel
 %endif
 
 Requires: wine-filesystem
