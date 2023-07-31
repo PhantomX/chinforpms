@@ -24,7 +24,7 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.8.9
+Version:        4.8.10
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -65,6 +65,8 @@ Patch1002:      %{da_url}/cmake_helpers/commit/0620bb7b87a0ec9195151fd5eb0cf3865
 Patch1003:      %{da_url}/lib_base/commit/74be75339d474df1a2863028ec146744597bd0bb.patch#/%{name}-gh-lib_base-74be753.patch
 Patch1004:      %{da_url}/lib_base/commit/2669a04579069942b6208a18abe93c26adfddf2a.patch#/%{name}-gh-lib_base-2669a04.patch
 Patch1005:      %{da_url}/lib_ui/commit/da7f4fe4251fe7076e437dec7ed71aefd99f8537.patch#/%{name}-gh-lib_ui-da7f4fe.patch
+Patch1006:      %{url}/commit/8ec0bdcac935adfdae740c4551db08927be59dd7.patch#/%{name}-gh-8ec0bdc.patch
+Patch1007:      0001-Version-4.8.10-Fix-build-with-GCC.patch
 
 %if 0%{?fedora} < 39
 BuildRequires:  patchutils
@@ -200,6 +202,7 @@ business messaging needs.
 %autopatch -p1 -M 999
 
 %if 0%{?fedora} < 39
+%patch -P 1006 -p1 -R
 %patch -P 1001 -p1 -R
 filterdiff -p1 -x cmake %{P:1000} > f817df9.patch
 %{__scm_apply_patch -p1 -q} -R -i f817df9.patch
@@ -207,6 +210,7 @@ filterdiff -p1 -x cmake %{P:1000} > f817df9.patch
 %patch -P 1004 -p1 -R -d Telegram/lib_base
 %patch -P 1003 -p1 -R -d Telegram/lib_base
 %patch -P 1005 -p1 -R -d Telegram/lib_ui
+%patch -P 1007 -p1
 %endif
 
 cp -p %{S:20} thunar-sendto-%{name}.desktop
@@ -315,6 +319,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Jul 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.10-100
+- 4.8.10
+
 * Wed Jul 26 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.9-100
 - 4.8.9
 

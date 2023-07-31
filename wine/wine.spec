@@ -1,7 +1,7 @@
-%global commit 3d28f9d362e6d9871747231b210c559536bb6dd4
+%global commit fddb79776871ee00adf4d78583135a5d96ca8c06
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230629
-%bcond_with snapshot
+%global date 20230727
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.0
-%global winevulkan 1.3.258
+%global winevulkan 1.3.259
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.13
+%global wine_stagingver 390b1f4127b0a2945034479a1547dcc8dff004e9
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 57fa14541affdc1d7f9799fda9befdeb8f72be0b
+%global tkg_id 51737289d018ae9eef4861a501f5af3c8d61f464
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.13
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -226,7 +226,7 @@ Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-wh
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
 
-Patch900:       https://bugs.winehq.org/attachment.cgi?id=74866#/%{name}-whq-bug74866.patch
+Patch900:        https://bugs.winehq.org/attachment.cgi?id=74866#/%{name}-whq-bug55085.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
@@ -255,8 +255,6 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padde
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1041:       0001-proton-tkg-staging-fixup-1.patch
-Patch1042:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       0001-fastsync-staging-protonify-fixup-1.patch
@@ -911,9 +909,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %patch -P 1026 -p1
 %patch -P 700 -p1 -R
-%patch -P 1041 -p1
 %patch -P 1027 -p1
-%patch -P 1042 -p1
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
@@ -2004,6 +2000,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.devices.bluetooth.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.devices.enumeration.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.devices.usb.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.input.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.gaming.ui.gamebar.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}

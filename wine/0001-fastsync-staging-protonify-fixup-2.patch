@@ -1,12 +1,25 @@
-From 21fa2b4bb61974ca9f16ffb437808dee89d8a41a Mon Sep 17 00:00:00 2001
+From 87d3816ce56b304a42b953715eb68d38b2e302de Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 23 Jul 2023 20:37:14 -0300
 Subject: [PATCH] fastsync-staging-protonify: fixup 2
 
 ---
+ configure.ac        | 1 +
  server/named_pipe.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/configure.ac b/configure.ac
+index 45308bc..4da19a1 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -428,6 +428,7 @@ AC_CHECK_HEADERS(\
+ 	linux/types.h \
+ 	linux/ucdrom.h \
+ 	linux/winesync.h \
++	linux/wireless.h \
+ 	lwp.h \
+ 	mach-o/loader.h \
+ 	mach/mach.h \
 diff --git a/server/named_pipe.c b/server/named_pipe.c
 index 0657483..832920d 100644
 --- a/server/named_pipe.c
