@@ -4,7 +4,7 @@
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
 %define min_rhel 8
-%define min_fedora 33
+%define min_fedora 37
 
 %define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
@@ -21,7 +21,9 @@
 %define arches_systemtap_64bit  %{arches_64bit}
 %define arches_dmidecode        %{arches_x86}
 %define arches_xen              %{arches_x86} aarch64
-%define arches_xen              x86_64 aarch64
+%if 0%{?fedora}
+    %define arches_xen          x86_64 aarch64
+%endif
 %define arches_vbox             %{arches_x86}
 %define arches_ceph             %{arches_64bit}
 %define arches_zfs              %{arches_x86} %{power64} %{arm}
@@ -132,7 +134,7 @@
 
 %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 
-%if (0%{?fedora} && 0%{?fedora} < 34) || (0%{?rhel} && 0%{?rhel} < 9)
+%if 0%{?rhel} && 0%{?rhel} < 9
     %define with_netcf 0%{!?_without_netcf:1}
 %endif
 
@@ -178,7 +180,7 @@
 %endif
 
 %define with_modular_daemons 0
-%if 0%{?fedora} >= 35 || 0%{?rhel} >= 9
+%if 0%{?fedora} || 0%{?rhel} >= 9
     %define with_modular_daemons 1
 %endif
 
@@ -192,7 +194,7 @@
 
 %define with_mingw 0
 %if 0%{?fedora}
-%define with_mingw 0%{!?_without_mingw:1}
+    %define with_mingw 0%{!?_without_mingw:1}
 %endif
 
 # RHEL releases provide stable tool chains and so it is safe to turn
@@ -227,7 +229,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.5.0
+Version: 9.6.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -313,7 +315,7 @@ BuildRequires: util-linux
 %if %{with_qemu}
 # For managing ACLs
 BuildRequires: libacl-devel
-# From QEMU RPMs
+# From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
 %endif
 # For LVM drivers
@@ -350,7 +352,7 @@ BuildRequires: libssh2-devel >= 1.3.0
 %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
 %endif
-%if %{?fedora} || (0%{?rhel} >= 9)
+%if 0%{?fedora} || 0%{?rhel} >= 9
 BuildRequires: passt
 %endif
 %if %{with_esx}
@@ -464,7 +466,8 @@ Requires: polkit >= 0.112
 Requires: dmidecode
 %endif
 # For service management
-Requires(post): /usr/bin/systemctl
+Requires(posttrans): /usr/bin/systemctl
+Requires(preun): /usr/bin/systemctl
 # libvirtd depends on 'messagebus' service
 Requires: dbus
 # For uid creation during pre
@@ -603,7 +606,7 @@ Requires: nfs-utils
 # For mkfs
 Requires: util-linux
 %if %{with_qemu}
-# From QEMU RPMs, used by virstoragetest
+# From QEMU RPMs
 Requires: /usr/bin/qemu-img
 %endif
 %if !%{with_storage_rbd}
@@ -685,7 +688,7 @@ Requires: libvirt-libs = %{version}-%{release}
 %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
 %endif
-%if (0%{?fedora} || 0%{?with_storage_gluster})
+%if 0%{?fedora} || 0%{?with_storage_gluster}
 Requires: /usr/sbin/gluster
 %endif
 
@@ -762,7 +765,7 @@ Requires: swtpm-tools
 %if %{with_numad}
 Requires: numad
 %endif
-%if %{?fedora} || (0%{?rhel} >= 9)
+%if 0%{?fedora} || 0%{?rhel} >= 9
 Recommends: passt
 Recommends: passt-selinux
 %endif
@@ -1463,333 +1466,345 @@ install -Dpm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysusersdir}/libvirt-qemu.conf
 # raising the test timeout
 VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 
-%define libvirt_daemon_schedule_restart() mkdir -p %{_localstatedir}/lib/rpm-state/libvirt || : \
-/bin/systemctl is-active %1.service 1>/dev/null 2>&1 && \
-  touch %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 || :
+%define libvirt_rpmstatedir %{_localstatedir}/lib/rpm-state/libvirt
 
-%define libvirt_daemon_finish_restart() rm -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1 \
-rmdir %{_localstatedir}/lib/rpm-state/libvirt 2>/dev/null || :
+# Mark units such that presets will later be applied to them. Meant
+# to be called during %pre. Units that already exist on the system
+# will not be marked, with the assumption that presets have already
+# been applied at some point in the past. This makes it safe to call
+# this macro for all units each time %pre runs.
+%define libvirt_systemd_schedule_preset() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    for unit in %{?*}; do \
+        if ! test -e %{_unitdir}/$unit; then \
+            touch %{libvirt_rpmstatedir}/preset-$unit || : \
+        fi \
+    done \
+    %{nil}
 
-%define libvirt_daemon_needs_restart() -f %{_localstatedir}/lib/rpm-state/libvirt/restart-%1
+# Apply presets for units that have previously been marked. Meant to
+# be called during %posttrans. Note that foo.service must be passed
+# as the first argument, before all the various foo*.socket
+# associated with it, for things to work correctly. This is necessary
+# because Also=foo.socket is usually present in foo.service's
+# [Install] section, and we want that configuration to take
+# precedence over foo.socket's own presets.
+%define libvirt_systemd_perform_preset() \
+    %{?7:%{error:Too many arguments}} \
+    for unit in %{?2} %{?3} %{?4} %{?5} %{?6} %1; do \
+        if test -e %{libvirt_rpmstatedir}/preset-$unit; then \
+            /usr/bin/systemctl --no-reload preset $unit || : \
+        fi \
+        rm -f %{libvirt_rpmstatedir}/preset-$unit \
+    done \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
 
-%define libvirt_daemon_perform_restart() if test %libvirt_daemon_needs_restart %1 \
-then \
-  /bin/systemctl try-restart %1.service >/dev/null 2>&1 || : \
-fi \
-%libvirt_daemon_finish_restart %1
+# Mark a single unit for restart. Meant to be called during %pre.
+%define libvirt_systemd_schedule_restart() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    touch %{libvirt_rpmstatedir}/restart-%1 || : \
+    %{nil}
+
+# Restart a unit that was previously marked. Meant to be called
+# during %posttrans. If systemd is not running, no action will be
+# performed.
+%define libvirt_systemd_perform_restart() \
+    if test -d /run/systemd/system && \
+       test -e %{libvirt_rpmstatedir}/restart-%1; then \
+        /usr/bin/systemctl try-restart %1 >/dev/null 2>&1 || : \
+    fi \
+    rm -f %{libvirt_rpmstatedir}/restart-%1 \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
+
+# Mark a single unit for reload. Meant to be called during %pre.
+%define libvirt_systemd_schedule_reload() \
+    mkdir -p %{libvirt_rpmstatedir} || : \
+    touch %{libvirt_rpmstatedir}/reload-%1 || : \
+    %{nil}
+
+# Reload a unit that was previously marked. Meant to be called during
+# %posttrans. If systemd is not running, no action will be performed.
+%define libvirt_systemd_perform_reload() \
+    if test -d /run/systemd/system && \
+       test -e %{libvirt_rpmstatedir}/reload-%1; then \
+        /usr/bin/systemctl try-reload-or-restart %1 >/dev/null 2>&1 || : \
+    fi \
+    rm -f %{libvirt_rpmstatedir}/reload-%1 \
+    rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
+    %{nil}
+
+# Disable a single unit, optionally stopping it if systemd is
+# running. Meant to be called during %preun.
+%define libvirt_systemd_disable() \
+    if test -d /run/systemd/system; then \
+        /usr/bin/systemctl --no-reload disable --now %{?*} || : \
+    else \
+        /usr/bin/systemctl --no-reload disable %{?*} || : \
+    fi \
+    %{nil}
+
+# %pre implementation for services that should be restarted on
+# upgrade. Note that foo.service must be passed as the first
+# argument, before all the various foo*.socket associated with it.
+%define libvirt_systemd_restart_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %libvirt_systemd_schedule_restart %1 \
+    %{nil}
+
+# %pre implementation for services that should be reloaded on
+# upgrade. Note that foo.service must be passed as the first
+# argument, before all the various foo*.socket associated with it.
+%define libvirt_systemd_reload_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %libvirt_systemd_schedule_reload %1 \
+    %{nil}
+
+# %pre implementation for services that should be neither restarted
+# nor reloaded on upgrade.
+%define libvirt_systemd_noaction_pre() \
+    %libvirt_systemd_schedule_preset %{?*} \
+    %{nil}
+
+# %posttrans implementation for all services. We can use a single
+# macro to cover all scenarios, because each operation will only be
+# performed if it had previously been scheduled. Note that
+# foo.service must be passed as the first argument, before all the
+# various foo*.socket associated with it.
+%define libvirt_systemd_posttrans() \
+    %libvirt_systemd_perform_preset %{?*} \
+    %libvirt_systemd_perform_reload %1 \
+    %libvirt_systemd_perform_restart %1 \
+    %{nil}
+
+# %preun implementation for all services.
+%define libvirt_systemd_preun() \
+    if [ $1 -lt 1 ]; then \
+        %libvirt_systemd_disable %{?*} \
+    fi \
+    %{nil}
 
 # For daemons with only UNIX sockets
-%define libvirt_daemon_systemd_post() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1.service
-%define libvirt_daemon_systemd_preun() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1.socket
+
+%define libvirt_systemd_unix_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket
+%define libvirt_systemd_unix_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket
+%define libvirt_systemd_unix_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket
 
 # For daemons with UNIX and INET sockets
-%define libvirt_daemon_systemd_post_inet() %systemd_post %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.service
-%define libvirt_daemon_systemd_preun_inet() %systemd_preun %1.service %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket %1.socket
+%define libvirt_systemd_inet_pre() %libvirt_systemd_restart_pre %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
+%define libvirt_systemd_inet_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
+%define libvirt_systemd_inet_preun() %libvirt_systemd_preun %1.service %1.socket %1-ro.socket %1-admin.socket %1-tls.socket %1-tcp.socket
 
 # For daemons with only UNIX sockets and no unprivileged read-only access
-%define libvirt_daemon_systemd_post_priv() %systemd_post %1.socket %1-admin.socket %1.service
-%define libvirt_daemon_systemd_preun_priv() %systemd_preun %1.service %1-admin.socket %1.socket
+%define libvirt_systemd_privileged_pre() %libvirt_systemd_reload_pre %1.service %1.socket %1-admin.socket
+%define libvirt_systemd_privileged_posttrans() %libvirt_systemd_posttrans %1.service %1.socket %1-admin.socket
+%define libvirt_systemd_privileged_preun() %libvirt_systemd_preun %1.service %1.socket %1-admin.socket
+
+# For one-shot daemons that have no associated sockets and should never be restarted
+%define libvirt_systemd_oneshot_pre() %libvirt_systemd_noaction_pre %1.service
+%define libvirt_systemd_oneshot_posttrans() %libvirt_systemd_posttrans %1.service
+%define libvirt_systemd_oneshot_preun() %libvirt_systemd_preun %1.service
+
+# For packages that install configuration for other daemons
+%define libvirt_systemd_config_pre() %libvirt_systemd_schedule_restart %1.service
+%define libvirt_systemd_config_posttrans() %libvirt_systemd_perform_restart %1.service
 
 %pre daemon
 %libvirt_sysconfig_pre libvirtd
-
-%post daemon
-%if ! %{with_modular_daemons}
-%libvirt_daemon_systemd_post_inet libvirtd
-%endif
-%libvirt_daemon_schedule_restart libvirtd
-
-%preun daemon
-%libvirt_daemon_systemd_preun_inet libvirtd
+%libvirt_systemd_inet_pre libvirtd
 
 %posttrans daemon
 %libvirt_sysconfig_posttrans libvirtd
-if test %libvirt_daemon_needs_restart libvirtd
-then
-    # See if user has previously modified their install to
-    # tell libvirtd to use --listen
-    grep -E '^LIBVIRTD_ARGS=.*--listen' /etc/sysconfig/libvirtd 1>/dev/null 2>&1
-    if test $? = 0
-    then
-        # Then lets keep honouring --listen and *not* use
-        # systemd socket activation, because switching things
-        # might confuse mgmt tool like puppet/ansible that
-        # expect the old style libvirtd
-        /bin/systemctl mask \
-                libvirtd.socket \
-                libvirtd-ro.socket \
-                libvirtd-admin.socket \
-                libvirtd-tls.socket \
-                libvirtd-tcp.socket >/dev/null 2>&1 || :
-        /bin/systemctl try-restart libvirtd.service >/dev/null 2>&1 || :
-    else
-        # Old libvirtd owns the sockets and will delete them on
-        # shutdown. Can't use a try-restart as libvirtd will simply
-        # own the sockets again when it comes back up. Thus we must
-        # do this particular ordering, so that we get libvirtd
-        # running with socket activation in use
-        /bin/systemctl stop libvirtd.service >/dev/null 2>&1 || :
-        /bin/systemctl try-restart \
-                libvirtd.socket \
-                libvirtd-ro.socket \
-                libvirtd-admin.socket >/dev/null 2>&1 || :
-        /bin/systemctl start libvirtd.service >/dev/null 2>&1 || :
-    fi
-fi
+%libvirt_systemd_inet_posttrans libvirtd
 
-%libvirt_daemon_finish_restart libvirtd
+%preun daemon
+%libvirt_systemd_inet_preun libvirtd
 
 %pre daemon-common
 %libvirt_sysconfig_pre libvirt-guests
+%libvirt_systemd_oneshot_pre libvirt-guests
 # 'libvirt' group is just to allow password-less polkit access to libvirt
 # daemons. The uid number is irrelevant, so we use dynamic allocation.
 %sysusers_create_compat %{SOURCE1}
 exit 0
 
-%post daemon-common
-%systemd_post libvirt-guests.service
-
-%preun daemon-common
-%systemd_preun libvirt-guests.service
-
-%postun daemon-common
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-%systemd_postun libvirt-guests.service
-
 %posttrans daemon-common
 %libvirt_sysconfig_posttrans libvirt-guests
+%libvirt_systemd_oneshot_posttrans libvirt-guests
+
+%preun daemon-common
+%libvirt_systemd_oneshot_preun libvirt-guests
 
 %pre daemon-lock
 %libvirt_sysconfig_pre virtlockd
-
-%post daemon-lock
-%libvirt_daemon_systemd_post_priv virtlockd
-
-%preun daemon-lock
-%libvirt_daemon_systemd_preun_priv virtlockd
-
-%postun daemon-lock
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlockd.service >/dev/null 2>&1 || :
-fi
+%libvirt_systemd_privileged_pre virtlockd
 
 %posttrans daemon-lock
 %libvirt_sysconfig_posttrans virtlockd
+%libvirt_systemd_privileged_posttrans virtlockd
+
+%preun daemon-lock
+%libvirt_systemd_privileged_preun virtlockd
 
 %pre daemon-log
 %libvirt_sysconfig_pre virtlogd
-
-%post daemon-log
-%libvirt_daemon_systemd_post_priv virtlogd
-
-%preun daemon-log
-%libvirt_daemon_systemd_preun_priv virtlogd
-
-%postun daemon-log
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    /bin/systemctl reload-or-try-restart virtlogd.service >/dev/null 2>&1 || :
-fi
+%libvirt_systemd_privileged_pre virtlogd
 
 %posttrans daemon-log
 %libvirt_sysconfig_posttrans virtlogd
+%libvirt_systemd_privileged_posttrans virtlogd
+
+%preun daemon-log
+%libvirt_systemd_privileged_preun virtlogd
 
 %pre daemon-proxy
 %libvirt_sysconfig_pre virtproxyd
-
-%post daemon-proxy
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post_inet virtproxyd
-%endif
-
-%preun daemon-proxy
-%libvirt_daemon_systemd_preun_inet virtproxyd
+%libvirt_systemd_inet_pre virtproxyd
 
 %posttrans daemon-proxy
 %libvirt_sysconfig_posttrans virtproxyd
+%libvirt_systemd_inet_posttrans virtproxyd
+
+%preun daemon-proxy
+%libvirt_systemd_inet_preun virtproxyd
 
 %pre daemon-driver-network
 %libvirt_sysconfig_pre virtnetworkd
+%libvirt_systemd_unix_pre virtnetworkd
 
 %post daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
 %endif
 
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtnetworkd
-%endif
-%libvirt_daemon_schedule_restart virtnetworkd
+%posttrans daemon-driver-network
+%libvirt_sysconfig_posttrans virtnetworkd
+%libvirt_systemd_unix_posttrans virtnetworkd
 
 %preun daemon-driver-network
-%libvirt_daemon_systemd_preun virtnetworkd
+%libvirt_systemd_unix_preun virtnetworkd
 
 %postun daemon-driver-network
 %if %{with_firewalld_zone}
     %firewalld_reload
 %endif
 
-%posttrans daemon-driver-network
-%libvirt_sysconfig_posttrans virtnetworkd
-%libvirt_daemon_perform_restart virtnetworkd
-
 %pre daemon-driver-nwfilter
 %libvirt_sysconfig_pre virtnwfilterd
-
-%post daemon-driver-nwfilter
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtnwfilterd
-%endif
-%libvirt_daemon_schedule_restart virtnwfilterd
-
-%preun daemon-driver-nwfilter
-%libvirt_daemon_systemd_preun virtnwfilterd
+%libvirt_systemd_unix_pre virtnwfilterd
 
 %posttrans daemon-driver-nwfilter
 %libvirt_sysconfig_posttrans virtnwfilterd
-%libvirt_daemon_perform_restart virtnwfilterd
+%libvirt_systemd_unix_posttrans virtnwfilterd
+
+%preun daemon-driver-nwfilter
+%libvirt_systemd_unix_preun virtnwfilterd
 
 %pre daemon-driver-nodedev
 %libvirt_sysconfig_pre virtnodedevd
-
-%post daemon-driver-nodedev
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtnodedevd
-%endif
-%libvirt_daemon_schedule_restart virtnodedevd
-
-%preun daemon-driver-nodedev
-%libvirt_daemon_systemd_preun virtnodedevd
+%libvirt_systemd_unix_pre virtnodedevd
 
 %posttrans daemon-driver-nodedev
 %libvirt_sysconfig_posttrans virtnodedevd
-%libvirt_daemon_perform_restart virtnodedevd
+%libvirt_systemd_unix_posttrans virtnodedevd
+
+%preun daemon-driver-nodedev
+%libvirt_systemd_unix_preun virtnodedevd
 
 %pre daemon-driver-interface
 %libvirt_sysconfig_pre virtinterfaced
-
-%post daemon-driver-interface
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtinterfaced
-%endif
-%libvirt_daemon_schedule_restart virtinterfaced
-
-%preun daemon-driver-interface
-%libvirt_daemon_systemd_preun virtinterfaced
+%libvirt_systemd_unix_pre virtinterfaced
 
 %posttrans daemon-driver-interface
 %libvirt_sysconfig_posttrans virtinterfaced
-%libvirt_daemon_perform_restart virtinterfaced
+%libvirt_systemd_unix_posttrans virtinterfaced
+
+%preun daemon-driver-interface
+%libvirt_systemd_unix_preun virtinterfaced
 
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
-
-%post daemon-driver-secret
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtsecretd
-%endif
-%libvirt_daemon_schedule_restart virtsecretd
-
-%preun daemon-driver-secret
-%libvirt_daemon_systemd_preun virtsecretd
+%libvirt_systemd_unix_pre virsecretd
 
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
-%libvirt_daemon_perform_restart virtsecretd
+%libvirt_systemd_unix_posttrans virsecretd
+
+%preun daemon-driver-secret
+%libvirt_systemd_unix_preun virsecretd
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
-
-%post daemon-driver-storage-core
-%if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtstoraged
-%endif
-%libvirt_daemon_schedule_restart virtstoraged
-
-%preun daemon-driver-storage-core
-%libvirt_daemon_systemd_preun virtstoraged
+%libvirt_systemd_unix_pre virtstoraged
 
 %posttrans daemon-driver-storage-core
 %libvirt_sysconfig_posttrans virtstoraged
-%libvirt_daemon_perform_restart virtstoraged
+%libvirt_systemd_unix_posttrans virtstoraged
+
+%preun daemon-driver-storage-core
+%libvirt_systemd_unix_preun virtstoraged
 
 %if %{with_qemu}
 %pre daemon-driver-qemu
 %libvirt_sysconfig_pre virtqemud
+%libvirt_systemd_unix_pre virtqemud
 # We want soft static allocation of well-known ids, as disk images
 # are commonly shared across NFS mounts by id rather than name; see
 # https://fedoraproject.org/wiki/Packaging:UsersAndGroups
 %sysusers_create_compat %{SOURCE2}
 exit 0
 
-%post daemon-driver-qemu
-    %if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtqemud
-    %endif
-%libvirt_daemon_schedule_restart virtqemud
-
-%preun daemon-driver-qemu
-%libvirt_daemon_systemd_preun virtqemud
-
 %posttrans daemon-driver-qemu
 %libvirt_sysconfig_posttrans virtqemud
-%libvirt_daemon_perform_restart virtqemud
+%libvirt_systemd_unix_posttrans virtqemud
+
+%preun daemon-driver-qemu
+%libvirt_systemd_unix_preun virtqemud
 %endif
 
 %if %{with_lxc}
 %pre daemon-driver-lxc
 %libvirt_sysconfig_pre virtlxcd
-
-%post daemon-driver-lxc
-    %if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtlxcd
-    %endif
-%libvirt_daemon_schedule_restart virtlxcd
-
-%preun daemon-driver-lxc
-%libvirt_daemon_systemd_preun virtlxcd
+%libvirt_systemd_unix_pre virtlxcd
 
 %posttrans daemon-driver-lxc
 %libvirt_sysconfig_posttrans virtlxcd
-%libvirt_daemon_perform_restart virtlxcd
+%libvirt_systemd_unix_posttrans virtlxcd
+
+%preun daemon-driver-lxc
+%libvirt_systemd_unix_preun virtlxcd
 %endif
 
 %if %{with_vbox}
-%post daemon-driver-vbox
-    %if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtvboxd
-    %endif
-%libvirt_daemon_schedule_restart virtvboxd
-
 %pre daemon-driver-vbox
 %libvirt_sysconfig_pre virtvboxd
-
-%preun daemon-driver-vbox
-%libvirt_daemon_systemd_preun virtvboxd
+%libvirt_systemd_unix_pre virtvboxd
 
 %posttrans daemon-driver-vbox
 %libvirt_sysconfig_posttrans virtvboxd
-%libvirt_daemon_perform_restart virtvboxd
+%libvirt_systemd_unix_posttrans virtvboxd
+
+%preun daemon-driver-vbox
+%libvirt_systemd_unix_preun virtvboxd
 %endif
 
 %if %{with_libxl}
-%post daemon-driver-libxl
-    %if %{with_modular_daemons}
-%libvirt_daemon_systemd_post virtxend
-    %endif
-%libvirt_daemon_schedule_restart virtxend
-
 %pre daemon-driver-libxl
 %libvirt_sysconfig_pre virtxend
-
-%preun daemon-driver-libxl
-%libvirt_daemon_systemd_preun virtxend
+%libvirt_systemd_unix_pre virtxend
 
 %posttrans daemon-driver-libxl
 %libvirt_sysconfig_posttrans virtxend
-%libvirt_daemon_perform_restart virtxend
+%libvirt_systemd_unix_posttrans virtxend
+
+%preun daemon-driver-libxl
+%libvirt_systemd_unix_preun virtxend
 %endif
+
+%pre daemon-config-network
+%libvirt_systemd_config_pre libvirtd
+%libvirt_systemd_config_pre virtnetworkd
 
 %post daemon-config-network
 if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ; then
@@ -1827,15 +1842,15 @@ if test $1 -eq 1 && test ! -f %{_sysconfdir}/libvirt/qemu/networks/default.xml ;
     ln -s ../default.xml %{_sysconfdir}/libvirt/qemu/networks/autostart/default.xml
     # libvirt saves this file with mode 0600
     chmod 0600 %{_sysconfdir}/libvirt/qemu/networks/default.xml
-
-    # Make sure libvirt picks up the new network definition
-    %libvirt_daemon_schedule_restart libvirtd
-    %libvirt_daemon_schedule_restart virtnetworkd
 fi
 
 %posttrans daemon-config-network
-%libvirt_daemon_perform_restart libvirtd
-%libvirt_daemon_perform_restart virtnetworkd
+%libvirt_systemd_config_posttrans libvirtd
+%libvirt_systemd_config_posttrans virtnetworkd
+
+%pre daemon-config-nwfilter
+%libvirt_systemd_config_pre libvirtd
+%libvirt_systemd_config_pre virtnwfilterd
 
 %post daemon-config-nwfilter
 for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
@@ -1845,13 +1860,10 @@ for datadir_file in %{_datadir}/libvirt/nwfilter/*.xml; do
     install -m 0600 "$datadir_file" "$sysconfdir_file"
   fi
 done
-# Make sure libvirt picks up the new nwfilter definitions
-%libvirt_daemon_schedule_restart libvirtd
-%libvirt_daemon_schedule_restart virtnwfilterd
 
 %posttrans daemon-config-nwfilter
-%libvirt_daemon_perform_restart libvirtd
-%libvirt_daemon_perform_restart virtnwfilterd
+%libvirt_systemd_config_posttrans libvirtd
+%libvirt_systemd_config_posttrans virtnwfilterd
 
 %if %{with_lxc}
 %pre login-shell
@@ -2462,6 +2474,9 @@ exit 0
 
 
 %changelog
+* Tue Aug 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.6.0-100
+- 9.6.0
+
 * Tue Jul 04 2023 Phantom X <megaphantomx at hotmail dot com> - 9.5.0-100
 - 9.5.0
 
