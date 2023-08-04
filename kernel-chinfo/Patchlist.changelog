@@ -1,9 +1,6 @@
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/942e598ce9c35692fd55be10989fbc0d16f72c84
  942e598ce9c35692fd55be10989fbc0d16f72c84 fork: lock VMAs of the parent process when forking
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/7001497089794a7796fb3f3950a1961ec134fee0
- 7001497089794a7796fb3f3950a1961ec134fee0 drivers/firmware: skip simpledrm if nvidia-drm.modeset=1 is set
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/89eb05f44793cf323b23fac464a4823e21c6bb1b
  89eb05f44793cf323b23fac464a4823e21c6bb1b redhat: version two of Makefile.rhelver tweaks
 

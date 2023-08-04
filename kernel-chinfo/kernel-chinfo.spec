@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.7
+%define specrpmversion 6.4.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -220,14 +220,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit fa7b8b57682a200549b6c059a5e768d612c5b7dc
+%global pfcommit a57494a74449c62cc049961603650392dfdba825
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash c1289fc7b6649e8b802bbb7b25fe5005
+%global pfcoprhash b62fbba4edbfeb4048bdef03075e7180
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -249,7 +249,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 90999e4682dc5686d84b81650aed70186f39078b
+%global opensuse_id c24ac79a6017521cded9f256f78ac3407cb3e579
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1073,7 +1073,6 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
 Patch1014: %{opensuse_url}/drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch#/openSUSE-drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch
-Patch1015: %{opensuse_url}/r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch#/openSUSE-r8169-revert-2ab19de62d67-r8169-remove-ASPM-restrict.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1684,7 +1683,6 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1014}
-ApplyPatch %{PATCH1015}
 
 ApplyPatch %{PATCH2000}
 
@@ -3405,6 +3403,9 @@ fi\
 #
 #
 %changelog
+* Thu Aug 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.8-500.chinfo
+- 6.4.8 - pf5
+
 * Thu Jul 27 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.7-500.chinfo
 - 6.4.7 - pf4
 

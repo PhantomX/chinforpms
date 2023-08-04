@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 568e7481d87f7bb2cac68eb24be967b1da75619f
+%global commit d34287b2cc8899b224bf783296d01cf221b065ba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230720
+%global date 20230802
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -49,7 +49,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
-%global commit12 06d0badec53710a4f572cf5642881ce570c5d274
+%global commit12 c59847629d3a19da4d10f0be4ac33b43fc4a100f
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
@@ -81,7 +81,7 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
 
-%global commit20 bf019f8c88bc64638fccef62840e935ab2689a4a
+%global commit20 d9f2a87e8112d1c1217adabb0dc945d8ad2da657
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
@@ -105,7 +105,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.28.15369
+Version:        0.0.29.15426
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -147,6 +147,8 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         0001-Fix-futex_waitv-struct-definition.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -229,15 +231,15 @@ Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Concurrent)
-BuildRequires:  cmake(Qt5DBus)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Multimedia)
-BuildRequires:  cmake(Qt5MultimediaWidgets)
-BuildRequires:  cmake(Qt5Svg)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  qt5-qtbase-private-devel
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6MultimediaWidgets)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
 
 Requires:       hicolor-icon-theme
 Requires:       shared-mime-info
@@ -454,6 +456,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Aug 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.29.15426-1.20230802gitd34287b
+- 0.0.29.15426
+- Qt6
+
 * Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.28.15143-1.20230606git6f834e9
 - Add build number to %%{version}
 
