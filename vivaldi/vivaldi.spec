@@ -16,7 +16,7 @@
 %global ffmpegcodec 112.0.5615.49
 
 Name:           vivaldi
-Version:        6.1.3035.204
+Version:        6.1.3035.257
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -38,7 +38,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Suggests:       vivaldi-ffmpeg-codecs >= %{ffmpegcodec}
+Requires:       vivaldi-ffmpeg-codecs = %{ffmpegcodec}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -166,6 +166,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Aug 04 2023 - 6.1.3035.257-1
+- 6.1.3035.257
+
 * Wed Jul 26 2023 - 6.1.3035.204-1
 - 6.1.3035.204
 
