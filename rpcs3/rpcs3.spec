@@ -36,9 +36,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit d34287b2cc8899b224bf783296d01cf221b065ba
+%global commit dea24c905babd3dd2063ce75a4bab4bf07333c80
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230802
+%global date 20230805
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -105,7 +105,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15426
+Version:        0.0.29.15443
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -147,8 +147,6 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
-
-Patch0:         0001-Fix-futex_waitv-struct-definition.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
