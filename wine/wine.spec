@@ -1,6 +1,6 @@
-%global commit fddb79776871ee00adf4d78583135a5d96ca8c06
+%global commit ee1d3a19a4b8571ba32bdf9af845a74bca22c97b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230727
+%global date 20230808
 %bcond_without snapshot
 
 %define _fortify_level 0
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.0
-%global winevulkan 1.3.259
+%global winevulkan 1.3.260
 
 %global wineFAudio 23.03
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 390b1f4127b0a2945034479a1547dcc8dff004e9
+%global wine_stagingver c210ef9f596f3cb3260e84775098634ca388c140
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 51737289d018ae9eef4861a501f5af3c8d61f464
+%global tkg_id a9e0948fce125ae6ce6609ab4f292066a6e74666
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        8.13
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -228,6 +228,7 @@ Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-stag
 
 Patch900:        https://bugs.winehq.org/attachment.cgi?id=74866#/%{name}-whq-bug55085.patch
 Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
+Patch902:        0001-Update-staging-RtlQueryPackageIdentity-patch.patch
 
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       FS_bypass_compositor.patch
@@ -257,8 +258,6 @@ Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
-Patch1051:       0001-fastsync-staging-protonify-fixup-1.patch
-Patch1052:       0001-fastsync-staging-protonify-fixup-2.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -877,6 +876,7 @@ This package adds the opencl driver for wine.
 tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 901 -p1
+%patch -P 902 -p1
 
 %if %{without fshack}
 %patch -P 1000 -p1
@@ -913,9 +913,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
-%patch -P 1051 -p1
 %patch -P 1050 -p1
-%patch -P 1052 -p1
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
@@ -1672,6 +1670,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/hrtfapo.%{winedll}
 %{_libdir}/wine/%{winedlldir}/http.%{winesys}
 %{_libdir}/wine/%{winedlldir}/httpapi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/hvsimanagementapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ia2comproxy.%{winedll}
 %{_libdir}/wine/%{winedlldir}/icacls.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/iccvid.%{winedll}
@@ -1800,6 +1799,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msvcp140_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140_2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcp140_atomic_wait.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msvcp140_codecvt_ids.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr70.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr71.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcr80.%{winedll}

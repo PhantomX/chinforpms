@@ -38,6 +38,10 @@ WINE_LIMIT_RESOLUTION_NUMBER override (Nier fix)
 =================================
 Enable with WINE_LIMIT_RESOLUTION_NUMBER=1 environment variable
 
+WINE_SIMULATE_WRITECOPY override
+=================================
+Enable with WINE_SIMULATE_WRITECOPY=1 environment variable
+
 WINE_WG_VIDEO_FORMAT_BGRX override (Persona 4 Golden fix)
 =================================
 Enable with WINE_WG_VIDEO_FORMAT_BGRX=1 environment variable

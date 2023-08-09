@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.9.5
+Version:        3.9.6
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -134,6 +134,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Aug 07 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.6-1
+- 3.9.6
+
 * Tue Jul 18 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.5-1
 - 3.9.5
 

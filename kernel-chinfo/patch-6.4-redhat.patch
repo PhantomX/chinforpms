@@ -7,6 +7,7 @@
  arch/x86/kernel/setup.c                            |  22 ++--
  drivers/acpi/apei/hest.c                           |   8 ++
  drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/resource.c                            |  60 ++++++++++
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
@@ -35,10 +36,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 38 files changed, 498 insertions(+), 179 deletions(-)
+ 39 files changed, 558 insertions(+), 179 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 23ddaa3f3034..1ca016223132 100644
+index 5547e02f6104..3193786e8ba0 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -76,10 +77,10 @@ index 23ddaa3f3034..1ca016223132 100644
 
  $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 9ed7f03ba15a..9f5972a2d17b 100644
+index 7286fbedbe98..3637542e095c 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1305,9 +1305,9 @@ config HIGHMEM
+@@ -1306,9 +1306,9 @@ config HIGHMEM
  	  If unsure, say n.
 
  config HIGHPTE
@@ -260,6 +261,91 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	acpi_walk_resources(handle, METHOD_NAME__CRS, acpi_irq_parse_one_cb, &ctx);
  	return ctx.rc;
  }
+diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
+index 1dd8d5aebf67..0800a9d77558 100644
+--- a/drivers/acpi/resource.c
++++ b/drivers/acpi/resource.c
+@@ -470,6 +470,52 @@ static const struct dmi_system_id asus_laptop[] = {
+ 	{ }
+ };
+
++static const struct dmi_system_id lenovo_laptop[] = {
++	{
++		.ident = "LENOVO IdeaPad Flex 5 14ALC7",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "82R9"),
++		},
++	},
++	{
++		.ident = "LENOVO IdeaPad Flex 5 16ALC7",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "82RA"),
++		},
++	},
++	{ }
++};
++
++static const struct dmi_system_id tongfang_gm_rg[] = {
++	{
++		.ident = "TongFang GMxRGxx/XMG CORE 15 (M22)/TUXEDO Stellaris 15 Gen4 AMD",
++		.matches = {
++			DMI_MATCH(DMI_BOARD_NAME, "GMxRGxx"),
++		},
++	},
++	{ }
++};
++
++static const struct dmi_system_id maingear_laptop[] = {
++	{
++		.ident = "MAINGEAR Vector Pro 2 15",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Micro Electronics Inc"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "MG-VCP2-15A3070T"),
++		}
++	},
++	{
++		.ident = "MAINGEAR Vector Pro 2 17",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "Micro Electronics Inc"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "MG-VCP2-17A3070T"),
++		},
++	},
++	{ }
++};
++
+ static const struct dmi_system_id lg_laptop[] = {
+ 	{
+ 		.ident = "LG Electronics 17U70P",
+@@ -493,6 +539,10 @@ struct irq_override_cmp {
+ static const struct irq_override_cmp override_table[] = {
+ 	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
+ 	{ asus_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
++	{ lenovo_laptop, 6, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, true },
++	{ lenovo_laptop, 10, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, true },
++	{ tongfang_gm_rg, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
++	{ maingear_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
+ 	{ lg_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
+ };
+
+@@ -512,6 +562,16 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
+ 			return entry->override;
+ 	}
+
++#ifdef CONFIG_X86
++	/*
++	 * IRQ override isn't needed on modern AMD Zen systems and
++	 * this override breaks active low IRQs on AMD Ryzen 6000 and
++	 * newer systems. Skip it.
++	 */
++	if (boot_cpu_has(X86_FEATURE_ZEN))
++		return false;
++#endif
++
+ 	return true;
+ }
+
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
 index 0c6f06abe3f4..f66b85b2c108 100644
 --- a/drivers/acpi/scan.c

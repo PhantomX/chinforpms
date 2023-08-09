@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/65e3a6166a5616d51a1a656bcb97cae229333a1b
+ 65e3a6166a5616d51a1a656bcb97cae229333a1b ACPI: resource: revert "Remove "Zen" specific match and quirks"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/942e598ce9c35692fd55be10989fbc0d16f72c84
  942e598ce9c35692fd55be10989fbc0d16f72c84 fork: lock VMAs of the parent process when forking
 
