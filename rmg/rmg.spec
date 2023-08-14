@@ -4,54 +4,12 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 6353be1599236eb2146067888436f366ca1475f1
+%global commit 558a48f64d58c204d5ba950b12741982fec63e60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230312
-%bcond_with snapshot
+%global date 20230813
+%bcond_without snapshot
 
 %bcond_with rust
-
-# Hashes in Source/3rdParty/CMakeLists.txt
-
-%global commit1 9c4e7837b13ace684b6429674d5e89cc81c57e12
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 mupen64plus-core
-
-%global commit2 39f79201baa15890c4cbae92f2215a634cc3ee6d
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 mupen64plus-rsp-cxd4
-
-%global commit3 88093cb43499eff53d343653cddcae2132af17ef
-%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
-%global srcname3 mupen64plus-rsp-hle
-
-%global commit4 dbecbe3a120e428436c5972fa7b872cfc2c9db3e
-%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
-%global srcname4 parallel-rsp
-
-%global commit6 86112413e98a8648edb11d199673cc24d5799af8
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
-%global srcname6 mupen64plus-input-raphnetraw
-
-%global commit7 670abbc972bd430fa77291b0967dd73128314317
-%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
-%global srcname7 angrylion-rdp-plus
-
-%global commit8 2f1b358028e700fcae2502a53f4f5e6822ce0367
-%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 GLideN64
-
-%global commit9 2c2226517c4c8929e08ec944654867e26efe0cf5
-%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
-%global srcname9 parallel-rdp-standalone
-
-%global commit10 21639fb13dfa797a7c0949ffd9bbda9a3456fc69
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 mupen64plus-input-gca
-
-%global commit11 d7c8516a4b848c0291e3d75b627c0843f515f591
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 imgui
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -63,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.4.4
+Version:        0.5.0
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -75,16 +33,6 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
-Source1:        %{mupen64_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        %{mupen64_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        %{mupen64_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source6:        https://github.com/raphnet/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/ghostlydark/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
-Source8:        https://github.com/gonetz/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
-Source9:        %{vc_url}/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
-%{?with_rust:Source10: https://github.com/amatho/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz}
-Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 
 Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
@@ -126,8 +74,8 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Provides:       bundled(mupen64plus) = 0~git%{shortcommit1}
-Provides:       bundled(imgui) = 0~git%{shortcommit11}
+Provides:       bundled(mupen64plus) = 0~git
+Provides:       bundled(imgui) = 0~git
 
 %global __provides_exclude_from ^%{_libdir}/%{pkgname}/.*
 
@@ -139,76 +87,52 @@ Rosalie's Mupen GUI is a free and open-source mupen64plus GUI written in C++.
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 500 -p1
 
-for i in \
-  %{srcname1} %{srcname2} %{srcname3} %{srcname4} \
-  %{srcname6} %{srcname7} %{srcname8} %{srcname9} %{srcname11}
-do
-  mkdir -p %{__cmake_builddir}/Source/3rdParty/$i
-done
-
 mkdir LICENSEdir READMEdir
 
-pushd %{__cmake_builddir}/Source/3rdParty
-tar -xf %{S:1} -C %{srcname1} --strip-components 1
-tar -xf %{S:2} -C %{srcname2} --strip-components 1
-tar -xf %{S:3} -C %{srcname3} --strip-components 1
-tar -xf %{S:4} -C %{srcname4} --strip-components 1
-tar -xf %{S:6} -C %{srcname6} --strip-components 1
-tar -xf %{S:7} -C %{srcname7} --strip-components 1
-tar -xf %{S:8} -C %{srcname8} --strip-components 1
-tar -xf %{S:9} -C %{srcname9} --strip-components 1
-tar -xf %{S:11} -C %{srcname11} --strip-components 1
+pushd Source/3rdParty
 
-rm -rf parallel-rdp-standalone/vulkan-headers
-rm -rf vosk-api
+rm -rf mupen64plus-video-parallel/vulkan-headers
+rm -rf 7-Zip discord-rpc fmt SDL_GameControllerDB vosk-api
 
-for i in GLideN64 %{name}-{core,{input-{qt,raphnetraw}},rsp-hle} parallel-{rdp-standalone,rsp} ;do
+for i in mupen64plus-{core,input-raphnetraw,rsp-{cx4,hle,parallel},video-{GLideN64,parallel}} ;do
   if [ -f $i/LICENSES ] ;then
-    cp -p $i/LICENSES ../../../LICENSEdir/LICENSES.$i
+    cp -p $i/LICENSES ../../LICENSEdir/LICENSES.$i
   fi
   if [ -f $i/LICENSE ] ;then
-    cp -p $i/LICENSE ../../../LICENSEdir/LICENSE.$i
+    cp -p $i/LICENSE ../../LICENSEdir/LICENSE.$i
   fi
   if [ -f $i/LICENSE.LESSER ] ;then
-    cp -p $i/LICENSE.LESSER ../../../LICENSEdir/LICENSE.LESSER.$i
+    cp -p $i/LICENSE.LESSER ../../LICENSEdir/LICENSE.LESSER.$i
   fi
   if [ -f $i/LICENSE.MIT ] ;then
-    cp -p $i/LICENSE.MIT ../../../LICENSEdir/LICENSE.MIT.$i
+    cp -p $i/LICENSE.MIT ../../LICENSEdir/LICENSE.MIT.$i
   fi
 done
 
-cp -p "angrylion-rdp-plus/MAME License.txt" ../../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
-cp -p imgui/LICENSE.txt ../../../LICENSEdir/LICENSE.imgui
+cp -p "mupen64plus-video-angrylion-plus/MAME License.txt" ../../LICENSEdir/MAME_License.angrylion-rdp-plus.txt
+cp -p imgui/LICENSE.txt ../../LICENSEdir/LICENSE.imgui
 
-ln -s angrylion-rdp-plus mupen64plus-video-angrylion-plus
-ln -s GLideN64 mupen64plus-video-GLideN64
-ln -s parallel-rdp-standalone mupen64plus-video-parallel
-ln -s parallel-rsp mupen64plus-rsp-parallel
-
-%if %{with rust}
-mkdir -p %{srcname10}
-tar -xf %{S:10} -C %{srcname10} --strip-components 1
-%else
-sed -e 's| cargo|\0_disabled|g' -i ../../../Source/3rdParty/CMakeLists.txt
+%if %{without rust}
+sed -e 's| cargo|\0_disabled|g' -i CMakeLists.txt
+rm -rf mupen64plus-input-gca
 %endif
 
 sed \
   -e '/find_package\(Git\)/d' \
   -e '/GIT_BRANCH/s|unknown|main|g' \
   -e '/GIT_COMMIT_HASH/s|unknown|%{shortcommit7}|g' \
-  -i angrylion-rdp-plus/git-version.cmake
+  -i mupen64plus-video-angrylion-plus/git-version.cmake
 
-rm -rf parallel-rsp/lightning
-sed -e '/PARALLEL_RSP_BAKED_LIGHTNING/s|ON|OFF|' -i parallel-rsp/CMakeLists.txt
-sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i parallel-rsp/rsp_jit.hpp
+rm -rf mupen64plus-rsp-parallel/lightning
+sed -e '/PARALLEL_RSP_BAKED_LIGHTNING/s|ON|OFF|' -i mupen64plus-rsp-parallel/CMakeLists.txt
+sed -e 's|<lightning.h>|<lightning/lightning.h>|g' -i mupen64plus-rsp-parallel/rsp_jit.hpp
 
 popd
 
-rm -rf Source/3rdParty/7-Zip
+echo %{version}-%{release} > VERSION
 
 sed \
-  -e '/Git /d' \
-  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --tags --always|echo \"%{version}-%{release}\"|g" \
+  -e 's|GIT_FOUND|DIT_DISABLED|g' \
   -i CMakeLists.txt
 
 sed -e 's|_RPMLIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
@@ -220,7 +144,6 @@ sed -e 's|_RPMVERSION_|%{version}|g' -i Source/RMG-Core/CMakeLists.txt
 
 %build
 %cmake \
-  -DNO_GIT_CLONE:BOOL=ON \
   -DPORTABLE_INSTALL:BOOL=OFF \
   -DUPDATER:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -261,6 +184,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Mon Aug 14 2023 Phantom X <megaphantomx at hotmail dot com> - 0.5.0-1.20230813git558a48f
+- 0.5.0
+
 * Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.4-1
 - 0.4.4
 

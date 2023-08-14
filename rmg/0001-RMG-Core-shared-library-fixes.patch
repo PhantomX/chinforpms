@@ -1,15 +1,14 @@
-From 75bb675f7441293fc9ee0f229cbc264b05527d68 Mon Sep 17 00:00:00 2001
+From 57f2db4f2312ba70dd4edbd5e02d6e5d8a72b80b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 12 Jul 2023 21:33:21 -0300
 Subject: [PATCH] RMG-Core: shared library fixes
 
 ---
  Source/RMG-Core/CMakeLists.txt | 4 +++-
- Source/RMG/CMakeLists.txt      | 5 -----
- 2 files changed, 3 insertions(+), 6 deletions(-)
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/Source/RMG-Core/CMakeLists.txt b/Source/RMG-Core/CMakeLists.txt
-index 3ca7d05..6d04029 100644
+index 6ef9fea..900c637 100644
 --- a/Source/RMG-Core/CMakeLists.txt
 +++ b/Source/RMG-Core/CMakeLists.txt
 @@ -1,7 +1,7 @@
@@ -21,7 +20,7 @@ index 3ca7d05..6d04029 100644
  
  set(CMAKE_CXX_STANDARD 20)
  
-@@ -80,6 +80,8 @@ endif(PORTABLE_INSTALL)
+@@ -91,6 +91,8 @@ endif(USE_LIBFMT)
  
  add_library(RMG-Core SHARED ${RMG_CORE_SOURCES})
  
@@ -30,22 +29,6 @@ index 3ca7d05..6d04029 100644
  if(UNIX)
      target_link_libraries(RMG-Core dl)
  endif(UNIX)
-diff --git a/Source/RMG/CMakeLists.txt b/Source/RMG/CMakeLists.txt
-index 1de652d..54f367a 100644
---- a/Source/RMG/CMakeLists.txt
-+++ b/Source/RMG/CMakeLists.txt
-@@ -97,11 +97,6 @@ target_link_libraries(RMG
-     RMG-Core
- )
- 
--# needed for dynamically linked RMG-Core
--set_target_properties(RMG PROPERTIES
--    INSTALL_RPATH "$ORIGIN"
--)
--
- target_include_directories(RMG PRIVATE 
-     ${CMAKE_CURRENT_BINARY_DIR}
-     ${CMAKE_CURRENT_SOURCE_DIR}
 -- 
 2.41.0
 
