@@ -38,6 +38,8 @@ s390x-kgcov=generic:generic-s390x:kgcov
 aarch64=generic:generic-arm:generic-arm-aarch64
 aarch64-debug=generic:generic-arm:generic-arm-aarch64:debug:debug-arm-aarch64
 aarch64-kgcov=generic:generic-arm:generic-arm-aarch64:kgcov
+aarch64-16k=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k
+aarch64-16k-debug=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k:debug:debug-arm-aarch64:debug-arm-aarch64-16k
 
 # arm
 armv7hl=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7

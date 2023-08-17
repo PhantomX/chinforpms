@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1004737240e720078d4c57351d055e516b648305
+ 1004737240e720078d4c57351d055e516b648305 Revert "KVM: SEV: remove ghcb variable declarations"
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/65e3a6166a5616d51a1a656bcb97cae229333a1b
  65e3a6166a5616d51a1a656bcb97cae229333a1b ACPI: resource: revert "Remove "Zen" specific match and quirks"
 

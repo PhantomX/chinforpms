@@ -190,7 +190,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.10
+%define specrpmversion 6.4.11
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -220,14 +220,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 2ea4795e02f4514899377423047669d82f343fb5
+%global pfcommit b54ddc9b19c0308077bc41c778fe207bd81db4aa
 %global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash b00f0351b861990b5d02f8e0f989c704
+%global pfcoprhash bf36f0ac92d15a5d1782e64044f92749
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -268,6 +268,8 @@ Summary: The Linux kernel
 %define with_debug     0
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
 %define with_zfcpdump  %{?_without_zfcpdump:0} %{?!_without_zfcpdump:1}
+# kernel-16k (aarch64 kernel with 16K page_size)
+%define with_arm64_16k %{?_without_arm64_16k: 0} %{?!_without_arm64_16k: 1}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k:0} %{?!_without_arm64_64k:1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
@@ -278,6 +280,7 @@ Summary: The Linux kernel
 # up         X         X             X
 # pae        X                       X
 # zfcpdump   X                       X
+# arm64_16k  X         X             X
 # arm64_64k  X         X             X
 # realtime   X         X             X
 
@@ -377,6 +380,9 @@ Summary: The Linux kernel
 %define with_realtime 0
 %define with_arm64_64k 0
 %endif
+
+# No arm64-16k flavor for now
+%define with_arm64_16k 0
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -506,6 +512,7 @@ Summary: The Linux kernel
 %define with_headers 0
 %define with_efiuki 0
 %define with_zfcpdump 0
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %endif
 
@@ -565,8 +572,9 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %endif
 
-# 64k variant only for aarch64
+# 16k and 64k variant only for aarch64
 %ifnarch aarch64
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %endif
 
@@ -660,6 +668,7 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_pae 0
 %define with_zfcpdump 0
+%define with_arm64_16k 0
 %define with_arm64_64k 0
 %define with_realtime 0
 
@@ -702,6 +711,11 @@ Summary: The Linux kernel
 %define with_realtime_base 1
 %else
 %define with_realtime_base 0
+%endif
+%if %{with_arm64_16k} && !%{with_dbgonly}
+%define with_arm64_16k_base 1
+%else
+%define with_arm64_16k_base 0
 %endif
 %if %{with_arm64_64k} && !%{with_dbgonly}
 %define with_arm64_64k_base 1
@@ -953,6 +967,8 @@ Source54: %{name}-armv7hl-fedora.config
 Source55: %{name}-armv7hl-debug-fedora.config
 Source56: %{name}-armv7hl-lpae-fedora.config
 Source57: %{name}-armv7hl-lpae-debug-fedora.config
+Source58: %{name}-aarch64-16k-fedora.config
+Source59: %{name}-aarch64-16k-debug-fedora.config
 Source60: %{name}-ppc64le-fedora.config
 Source61: %{name}-ppc64le-debug-fedora.config
 Source62: %{name}-s390x-fedora.config
@@ -1510,6 +1526,29 @@ Cortex-A15 devices with LPAE and HW virtualisation support
 The kernel package contains the Linux kernel (vmlinuz) for use by the
 zfcpdump infrastructure.
 # with_zfcpdump
+%endif
+
+%if %{with_arm64_16k_base}
+%define variant_summary The Linux kernel compiled for 16k pagesize usage
+%kernel_variant_package 16k
+%description 16k-core
+The kernel package contains a variant of the ARM64 Linux kernel using
+a 16K page size.
+%endif
+
+%if %{with_arm64_16k} && %{with_debug}
+%define variant_summary The Linux kernel compiled with extra debugging enabled
+%if !%{debugbuildsenabled}
+%kernel_variant_package -m 16k-debug
+%else
+%kernel_variant_package 16k-debug
+%endif
+%description 16k-debug-core
+The debug kernel package contains a variant of the ARM64 Linux kernel using
+a 16K page size.
+This variant of the kernel has numerous debugging options enabled.
+It should only be installed when trying to gather additional information
+on kernel bugs, as some of these options impact performance noticably.
 %endif
 
 %if %{with_arm64_64k_base}
@@ -2616,6 +2655,10 @@ echo "building rt-debug"
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
 %endif
 
+%if %{with_arm64_16k}
+BuildKernel %make_target %kernel_image %{_use_vdso} 16k-debug
+%endif
+
 %if %{with_arm64_64k}
 BuildKernel %make_target %kernel_image %{_use_vdso} 64k-debug
 %endif
@@ -2628,6 +2671,10 @@ BuildKernel %make_target %kernel_image %{_use_vdso} debug
 
 %if %{with_zfcpdump}
 BuildKernel %make_target %kernel_image %{_use_vdso} zfcpdump
+%endif
+
+%if %{with_arm64_16k_base}
+BuildKernel %make_target %kernel_image %{_use_vdso} 16k
 %endif
 
 %if %{with_arm64_64k_base}
@@ -2647,7 +2694,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686 %{nobuildarches}
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up} && !%{with_arm64_64k} && !%{with_realtime}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 InitBuildVars
@@ -2744,6 +2791,12 @@ find Documentation -type d | xargs chmod u+w
     fi \
     if [ "%{with_realtime}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
          %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
+    fi \
+    if [ "%{with_arm64_16k_base}" -ne "0" ]; then \
+       %{modsign_cmd} certs/signing_key.pem.sign+16k certs/signing_key.x509.sign+16k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k/ \
+    fi \
+    if [ "%{with_arm64_16k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
+         %{modsign_cmd} certs/signing_key.pem.sign+16k-debug certs/signing_key.x509.sign+16k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k-debug/ \
     fi \
     if [ "%{with_arm64_64k_base}" -ne "0" ]; then \
        %{modsign_cmd} certs/signing_key.pem.sign+64k certs/signing_key.x509.sign+64k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k/ \
@@ -3189,6 +3242,16 @@ fi\
 %kernel_variant_post -v debug
 %endif
 
+%if %{with_arm64_16k_base}
+%kernel_variant_preun 16k
+%kernel_variant_post -v 16k
+%endif
+
+%if %{with_debug} && %{with_arm64_16k}
+%kernel_variant_preun 16k-debug
+%kernel_variant_post -v 16k-debug
+%endif
+
 %if %{with_arm64_64k_base}
 %kernel_variant_preun 64k
 %kernel_variant_post -v 64k
@@ -3358,6 +3421,9 @@ fi\
 %if %{with_up}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
 %endif
+%if %{with_arm64_16k}
+%kernel_variant_files %{_use_vdso} %{with_debug} 16k-debug
+%endif
 %if %{with_arm64_64k}
 %kernel_variant_files %{_use_vdso} %{with_debug} 64k-debug
 %endif
@@ -3373,6 +3439,14 @@ fi\
 %files debug-modules
 %files debug-modules-core
 %files debug-modules-extra
+%if %{with_arm64_16k}
+%files 16k-debug
+%files 16k-debug-core
+%files 16k-debug-devel
+%files 16k-debug-devel-matched
+%files 16k-debug-modules
+%files 16k-debug-modules-extra
+%endif
 %if %{with_arm64_64k}
 %files 64k-debug
 %files 64k-debug-core
@@ -3383,6 +3457,7 @@ fi\
 %endif
 %endif
 %kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
+%kernel_variant_files %{_use_vdso} %{with_arm64_16k_base} 16k
 %kernel_variant_files %{_use_vdso} %{with_arm64_64k_base} 64k
 
 %define kernel_variant_ipaclones(k:) \
@@ -3403,6 +3478,9 @@ fi\
 #
 #
 %changelog
+* Wed Aug 16 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.11-500.chinfo
+- 6.4.10 - pf6
+
 * Fri Aug 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.10-500.chinfo
 - 6.4.10 - pf5
 

@@ -7,7 +7,7 @@
  arch/x86/kernel/setup.c                            |  22 ++--
  drivers/acpi/apei/hest.c                           |   8 ++
  drivers/acpi/irq.c                                 |  17 ++-
- drivers/acpi/resource.c                            |  60 ++++++++++
+ drivers/acpi/resource.c                            |  32 ++++--
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
@@ -36,10 +36,10 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 39 files changed, 558 insertions(+), 179 deletions(-)
+ 39 files changed, 518 insertions(+), 191 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 5547e02f6104..3193786e8ba0 100644
+index d0efd84bb7d0..77fb7e58f9eb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -262,10 +262,10 @@ index c2c786eb95ab..4e3aa80cd5cf 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/resource.c b/drivers/acpi/resource.c
-index 1dd8d5aebf67..0800a9d77558 100644
+index a4d9f149b48d..5c48b981758c 100644
 --- a/drivers/acpi/resource.c
 +++ b/drivers/acpi/resource.c
-@@ -470,6 +470,52 @@ static const struct dmi_system_id asus_laptop[] = {
+@@ -470,6 +470,24 @@ static const struct dmi_system_id asus_laptop[] = {
  	{ }
  };
 
@@ -287,70 +287,42 @@ index 1dd8d5aebf67..0800a9d77558 100644
 +	{ }
 +};
 +
-+static const struct dmi_system_id tongfang_gm_rg[] = {
-+	{
-+		.ident = "TongFang GMxRGxx/XMG CORE 15 (M22)/TUXEDO Stellaris 15 Gen4 AMD",
-+		.matches = {
-+			DMI_MATCH(DMI_BOARD_NAME, "GMxRGxx"),
-+		},
-+	},
-+	{ }
-+};
-+
-+static const struct dmi_system_id maingear_laptop[] = {
-+	{
-+		.ident = "MAINGEAR Vector Pro 2 15",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Micro Electronics Inc"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "MG-VCP2-15A3070T"),
-+		}
-+	},
-+	{
-+		.ident = "MAINGEAR Vector Pro 2 17",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Micro Electronics Inc"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "MG-VCP2-17A3070T"),
-+		},
-+	},
-+	{ }
-+};
-+
- static const struct dmi_system_id lg_laptop[] = {
+ static const struct dmi_system_id tongfang_gm_rg[] = {
  	{
- 		.ident = "LG Electronics 17U70P",
-@@ -493,6 +539,10 @@ struct irq_override_cmp {
+ 		.ident = "TongFang GMxRGxx/XMG CORE 15 (M22)/TUXEDO Stellaris 15 Gen4 AMD",
+@@ -532,6 +550,8 @@ struct irq_override_cmp {
  static const struct irq_override_cmp override_table[] = {
  	{ medion_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
  	{ asus_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
 +	{ lenovo_laptop, 6, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, true },
 +	{ lenovo_laptop, 10, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, true },
-+	{ tongfang_gm_rg, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
-+	{ maingear_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
- 	{ lg_laptop, 1, ACPI_LEVEL_SENSITIVE, ACPI_ACTIVE_LOW, 0, false },
- };
-
-@@ -512,6 +562,16 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
- 			return entry->override;
+ 	{ tongfang_gm_rg, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
+ 	{ maingear_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
+ 	{ pcspecialist_laptop, 1, ACPI_EDGE_SENSITIVE, ACPI_ACTIVE_LOW, 1, true },
+@@ -555,18 +575,6 @@ static bool acpi_dev_irq_override(u32 gsi, u8 triggering, u8 polarity,
  	}
 
-+#ifdef CONFIG_X86
-+	/*
-+	 * IRQ override isn't needed on modern AMD Zen systems and
-+	 * this override breaks active low IRQs on AMD Ryzen 6000 and
-+	 * newer systems. Skip it.
-+	 */
-+	if (boot_cpu_has(X86_FEATURE_ZEN))
-+		return false;
-+#endif
-+
- 	return true;
- }
-
+ #ifdef CONFIG_X86
+-	/*
+-	 * Always use the MADT override info, except for the i8042 PS/2 ctrl
+-	 * IRQs (1 and 12). For these the DSDT IRQ settings should sometimes
+-	 * be used otherwise PS/2 keyboards / mice will not work.
+-	 */
+-	if (gsi != 1 && gsi != 12)
+-		return true;
+-
+-	/* If the override comes from an INT_SRC_OVR MADT entry, honor it. */
+-	if (acpi_int_src_ovr[gsi])
+-		return true;
+-
+ 	/*
+ 	 * IRQ override isn't needed on modern AMD Zen systems and
+ 	 * this override breaks active low IRQs on AMD Ryzen 6000 and
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 0c6f06abe3f4..f66b85b2c108 100644
+index c28c8d5ca0c8..618ebf3f9436 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1746,6 +1746,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1747,6 +1747,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
 

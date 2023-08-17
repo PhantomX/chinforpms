@@ -9,6 +9,8 @@
 
 %bcond_with app
 %bcond_with sysvulkan
+# Tests requires bundled stuff. Disable for now.
+%bcond_with tests
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
@@ -18,9 +20,11 @@
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
 
+%global ver    %%(echo %{version} | sed -z 's/\\./-/3')
+
 Name:           mangohud
-Version:        0.6.8
-Release:        101%{?dist}
+Version:        0.6.9.1
+Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -29,7 +33,7 @@ URL:            %{vc_url}/%{pkgname}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-v%{version}.tar.gz
+Source0:        %{url}/archive/v%{ver}/%{pkgname}-v%{ver}.tar.gz
 %endif
 Source3:        %{name}.in
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
@@ -39,7 +43,10 @@ Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan
 Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/get_patch#/vulkan-headers_%{vulkan_ver}-2-wrap.zip
 %endif
 
-Patch0:         0001-gcc-13-build-fix.patch
+# MangoHud switched to bundled vulkan-headers since 0.6.9 version. This rebased
+# upstream patch which reverts this change.
+# https://github.com/flightlessmango/MangoHud/commit/bc282cf300ed5b6831177cf3e6753bc20f48e942
+Patch0:         mangohud-0.6.9-use-system-vulkan-headers.patch
 
 
 BuildRequires:  appstream
@@ -52,6 +59,9 @@ BuildRequires:  pkgconfig(dri)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(glfw3)
+%if %{with tests}
+BuildRequires:  libcmocka-devel
+%endif
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(spdlog)
@@ -83,7 +93,7 @@ improvements, temperature reporting, and logging capabilities.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/
@@ -111,6 +121,7 @@ cp -f -p %{S:3} bin/%{name}.in
   -Dwith_nvml=disabled \
   -Dwith_xnvctrl=disabled \
   -Dwith_wayland=enabled \
+  -Dtests=%{?with_tests:enabled}%{!?with_tests:disabled} \
 %{nil}
 
 %meson_build
@@ -140,6 +151,10 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Wed Aug 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.9.1-100
+- 0.6.9-1
+- Rawhide sync
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.8-101
 - gcc 13 build fix
 - Use bundled vulkan-headers and disable app for the time

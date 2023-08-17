@@ -1,9 +1,9 @@
 Name:           firejail
 Version:        0.9.72
-Release:        1%{?dist}
+Release:        100%{?dist}
 Summary:        Linux namespaces sandbox program
 
-License:        GPL-2.0-only
+License:        GPL-2.0-or-later
 URL:            https://firejail.wordpress.com/
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
 Source1:        README.suid
