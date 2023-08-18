@@ -16,7 +16,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.5
+Version:        2.7.6
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -36,7 +36,7 @@ Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 # Patch0: fixes GNOME quirks on Wayland sessions
 # Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
 Patch0:         xcb.patch
-Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
+%dnl Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
 BuildRequires:  cmake
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Aug 17 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.6-100
+- 2.7.6
+
 * Sun May 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.5-100
 - 2.7.5
 

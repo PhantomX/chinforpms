@@ -1,17 +1,17 @@
-From 0c54e4c3902bdd49117c762395a726003a607ef1 Mon Sep 17 00:00:00 2001
+From efd4922f9bdfbdea5999ade5ebe64f318d7a6e56 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt            | 17 +------
- externals/CMakeLists.txt  | 93 ++++++++++++++++++++++++++++++++++++++-
+ CMakeLists.txt            |  3 +-
+ externals/CMakeLists.txt  | 91 ++++++++++++++++++++++++++++++++++++++-
  src/citra/config.cpp      |  2 +-
  src/common/CMakeLists.txt | 10 ++++-
- 4 files changed, 102 insertions(+), 20 deletions(-)
+ 4 files changed, 100 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 12c511b..82f3cc5 100644
+index 64b42a0..8f670fa 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -22,7 +22,7 @@ index 12c511b..82f3cc5 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -133,7 +132,7 @@ function(check_submodules_present)
+@@ -136,7 +135,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,32 +31,11 @@ index 12c511b..82f3cc5 100644
  endif()
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
-@@ -396,20 +395,6 @@ else()
-     set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT citra)
- endif()
- 
--# Create target for outputting distributable bundles.
--if (NOT ANDROID AND NOT IOS)
--    include(BundleTarget)
--    if (ENABLE_SDL2_FRONTEND)
--        bundle_target(citra)
--    endif()
--    if (ENABLE_QT)
--        bundle_target(citra-qt)
--    endif()
--    if (ENABLE_DEDICATED_ROOM)
--        bundle_target(citra-room)
--    endif()
--endif()
--
- # Installation instructions
- # =========================
- 
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 4406c3d..ae98544 100644
+index 44882d6..c8de5ef 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -8,10 +8,10 @@ else()
+@@ -8,7 +8,6 @@ else()
  endif()
  
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/CMakeModules)
@@ -64,15 +43,8 @@ index 4406c3d..ae98544 100644
  include(ExternalProject)
  
  # Boost
-+if (NOT USE_SYSTEM_BOOST)
- set(BOOST_ROOT "${CMAKE_SOURCE_DIR}/externals/boost" CACHE STRING "")
- set(Boost_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/externals/boost" CACHE STRING "")
- set(Boost_NO_SYSTEM_PATHS ON CACHE BOOL "")
-@@ -33,11 +33,22 @@ add_library(
- target_link_libraries(boost_iostreams PUBLIC boost)
- 
- # Add additional boost libs here; remember to ALIAS them in the root CMakeLists!
-+endif()
+@@ -37,9 +36,19 @@ if (NOT USE_SYSTEM_BOOST)
+ endif()
  
  # Catch2
 +if (ENABLE_TESTS)
@@ -91,7 +63,7 @@ index 4406c3d..ae98544 100644
  
  # Crypto++
  set(CRYPTOPP_BUILD_DOCUMENTATION OFF CACHE BOOL "")
-@@ -66,19 +77,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
+@@ -68,19 +77,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
  
  # fmt and Xbyak need to be added before dynarmic
  # libfmt
@@ -135,7 +107,7 @@ index 4406c3d..ae98544 100644
  endif()
  
  # getopt
-@@ -98,7 +133,15 @@ set(ENABLE_HLSL OFF CACHE BOOL "")
+@@ -101,7 +134,15 @@ set(BUILD_EXTERNAL OFF CACHE BOOL "")
  add_subdirectory(glslang)
  
  # inih
@@ -151,7 +123,7 @@ index 4406c3d..ae98544 100644
  
  # MicroProfile
  add_library(microprofile INTERFACE)
-@@ -118,6 +161,14 @@ add_subdirectory(open_source_archives)
+@@ -121,6 +162,14 @@ add_subdirectory(open_source_archives)
  # Dynamic library headers
  add_subdirectory(library-headers EXCLUDE_FROM_ALL)
  
@@ -166,7 +138,7 @@ index 4406c3d..ae98544 100644
  # SoundTouch
  set(INTEGER_SAMPLES ON CACHE BOOL "")
  set(SOUNDSTRETCH OFF CACHE BOOL "")
-@@ -143,22 +194,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
+@@ -146,22 +195,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
  endif()
  
  # Zstandard
@@ -213,7 +185,7 @@ index 4406c3d..ae98544 100644
  endif()
  
  # DiscordRPC
-@@ -219,6 +294,13 @@ endif()
+@@ -224,6 +297,13 @@ endif()
  
  # OpenAL Soft
  if (ENABLE_OPENAL)
@@ -227,7 +199,7 @@ index 4406c3d..ae98544 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -229,11 +311,20 @@ if (ENABLE_OPENAL)
+@@ -234,11 +314,20 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
@@ -262,7 +234,7 @@ index 5edaf42..2e5a23d 100644
  #include "citra/default_ini.h"
  #include "common/file_util.h"
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index ddf715f..a8d32d8 100644
+index d5500a4..35396ac 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
 @@ -136,12 +136,18 @@ add_library(citra_common STATIC

@@ -1,4 +1,4 @@
-# Disable LTO. Crash.
+# Selective LTO.
 %global _lto_cflags %{nil}
 %undefine _cmake_shared_libs
 %undefine _hardened_build
@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e783b0d4a97a67eb3380c64f3fc6d65d41a51872
+%global commit f3d92dd3b82c921665b6071e1057cf7842080096
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230718
+%global date 20230817
 %bcond_without snapshot
 
 # Enable system boost
@@ -103,7 +103,7 @@
 
 Name:           citra
 Version:        0
-Release:        47%{?dist}
+Release:        48%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause% AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -137,8 +137,6 @@ Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}
 Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
-
-Patch2:         %{vc_url}/%{name}/pull/6221.patch#/%{name}-gh-pr6221.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
@@ -343,6 +341,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCITRA_WARNINGS_AS_ERRORS:BOOL=OFF \
+  -DENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
@@ -351,6 +350,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DCITRA_BUNDLE_LIBRARIES:BOOL=OFF \
+  -DCITRA_ENABLE_BUNDLE_TARGET:BOOL=OFF \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
