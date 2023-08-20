@@ -1,4 +1,4 @@
-From ac0316a182b88726ac06ac7ebd8ec6238888a2e6 Mon Sep 17 00:00:00 2001
+From 01993e026889213834f57b2545961e3e37766e66 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 7 Jun 2023 17:39:44 -0300
 Subject: [PATCH] cmake: use system cppgir
@@ -21,7 +21,7 @@ index 2966200..cdd66c0 100644
  include(generate_cppgir.cmake)
  generate_cppgir(external_glib Gio-2.0)
 diff --git a/cmake/external/glib/generate_cppgir.cmake b/cmake/external/glib/generate_cppgir.cmake
-index a95d513..fa9eef8 100644
+index a3cdfe7..0e04927 100644
 --- a/cmake/external/glib/generate_cppgir.cmake
 +++ b/cmake/external/glib/generate_cppgir.cmake
 @@ -4,7 +4,11 @@
@@ -36,27 +36,29 @@ index a95d513..fa9eef8 100644
      # cppgir generates all the dependent headers everytime, better to have a global folder
      set(gen_dst ${CMAKE_BINARY_DIR}/gen)
      file(MAKE_DIRECTORY ${gen_dst})
-@@ -20,13 +24,13 @@ function(generate_cppgir target_name gir)
+@@ -20,7 +24,7 @@ function(generate_cppgir target_name gir)
      OUTPUT
          ${gen_timestamp}
      COMMAND
--        cppgir
+-        CppGir::cppgir
 +        ${DESKTOP_APP_CPPGIR}
          --debug
          1
          --class
+@@ -28,7 +32,7 @@ function(generate_cppgir target_name gir)
          --expected
+         --optional
          --ignore
 -        ${cmake_helpers_loc}/external/glib/cppgir/data/cppgir.ignore:${cmake_helpers_loc}/external/glib/cppgir/data/cppgir_unix.ignore
 +        /usr/share/cppgir/cppgir.ignore:/usr/share/cppgir/cppgir_unix.ignore
          --output
          ${gen_dst}
          ${gir}
-@@ -34,17 +38,17 @@ function(generate_cppgir target_name gir)
+@@ -36,17 +40,17 @@ function(generate_cppgir target_name gir)
          echo 1> ${gen_timestamp}
      COMMENT "Generating C++ wrapper for ${gir} (${target_name})"
      DEPENDS
--        cppgir
+-        CppGir::cppgir
 +        ${DESKTOP_APP_CPPGIR}
          ${gir_path}
      )
@@ -64,11 +66,11 @@ index a95d513..fa9eef8 100644
  
      get_target_property(target_type ${target_name} TYPE)
      if (${target_type} STREQUAL "INTERFACE_LIBRARY")
--        target_link_libraries(${target_name} INTERFACE gi)
+-        target_link_libraries(${target_name} INTERFACE CppGir::gi)
 +        target_link_libraries(${target_name} INTERFACE PkgConfig::CPPGIR)
          target_compile_definitions(${target_name} INTERFACE GI_INLINE GI_OBJECT_NEWV)
      else()
--        target_link_libraries(${target_name} PUBLIC gi)
+-        target_link_libraries(${target_name} PUBLIC CppGir::gi)
 +        target_link_libraries(${target_name} PUBLIC PkgConfig::CPPGIR)
          target_compile_definitions(${target_name} PUBLIC GI_INLINE GI_OBJECT_NEWV)
      endif()

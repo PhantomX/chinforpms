@@ -4,11 +4,11 @@
 
 %global with_tracker 0
 
-%global glib2_version 2.72.0
+%global glib2_version 2.76.0
 %global pango_version 1.50.0
 %global cairo_version 1.14.0
 %global gdk_pixbuf_version 2.30.0
-%global wayland_protocols_version 1.25
+%global wayland_protocols_version 1.31
 %global wayland_version 1.21.0
 %global epoxy_version 1.4
 
@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.10.4
+Version:        4.12.0
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -28,13 +28,14 @@ License:        LGPL-2.0-or-later
 URL:            https://www.gtk.org
 
 Source0:        https://download.gnome.org/sources/gtk/%(echo %{version} | cut -d. -f-2)/gtk-%{version}.tar.xz
-Source1:        settings.ini
 Source2:        chinforpms-adwaita.css
 
-# Temporarily revert this until we figure out how to best restore
-# private requires that are needed for rpm automatic dep extraction.
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/4756
-Patch0:         0001-Revert-Meson-Simplify-pkgconfig-file-generator.patch
+# Backported upstream MR
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6293
+Patch0:         6293.patch
+# Backported upstream MR
+# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6250
+Patch1:         6250.patch
 
 # Disable this @#$& by default
 Patch100:       0001-Disable-overlay-scrolling.patch
@@ -138,6 +139,10 @@ for writing applications with version 4 of the GTK widget toolkit.
 Summary: Developer documentation for GTK
 BuildArch: noarch
 Requires: gtk4 = %{?epoch:%{epoch}:}%{version}-%{release}
+# Because web fonts from upstream are not bundled in the gi-docgen package,
+# packages containing documentation generated with gi-docgen should depend on
+# this metapackage to ensure the proper system fonts are present.
+Recommends: gi-docgen-fonts
 
 %description devel-docs
 This package contains developer documentation for version 4 of the GTK
@@ -187,8 +192,6 @@ rm $RPM_BUILD_ROOT%{_mandir}/man1/gtk4-broadwayd.1*
 mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gtk-4.0
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-4.0/modules
 
-install -p %{SOURCE1} $RPM_BUILD_ROOT%{_datadir}/gtk-4.0/
-
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
@@ -212,7 +215,6 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_datadir}/glib-2.0/schemas/org.gtk.gtk4.Settings.FileChooser.gschema.xml
 %dir %{_datadir}/gtk-4.0
 %{_datadir}/gtk-4.0/emoji/
-%{_datadir}/gtk-4.0/settings.ini
 %if 0%{?with_broadway}
 %{_bindir}/gtk4-broadwayd
 %{_mandir}/man1/gtk4-broadwayd.1*
@@ -246,6 +248,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_bindir}/gtk4-icon-browser
 %{_bindir}/gtk4-node-editor
 %{_bindir}/gtk4-print-editor
+%{_bindir}/gtk4-rendernode-tool
 %{_bindir}/gtk4-widget-factory
 %{_datadir}/applications/org.gtk.gtk4.NodeEditor.desktop
 %{_datadir}/applications/org.gtk.Demo4.desktop
@@ -267,9 +270,14 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-demo-application.1*
 %{_mandir}/man1/gtk4-icon-browser.1*
 %{_mandir}/man1/gtk4-node-editor.1*
+%{_mandir}/man1/gtk4-rendernode-tool.1*
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Sat Aug 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.0-100
+- 4.12.0
+- Rawhide sync
+
 * Tue Jun 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.4-100
 - 4.10.4
 

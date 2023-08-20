@@ -1,5 +1,6 @@
 %undefine _cmake_shared_libs
-#global _lto_cflags -fno-lto
+# no defined reference for "fastjmp_set"
+%global _lto_cflags -fno-lto
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
@@ -8,11 +9,11 @@
 %global with_nogui 0
 
 %bcond_with sysspirv
-%bcond_with sysvulkan
+%bcond_without sysvulkan
 
-%global commit 2e8b6370cf6b257949acb6e06f6259d0756a22c9
+%global commit 7890051165d0090248c92b2be8c63e7405bd09a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230724
+%global date 20230819
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -25,12 +26,12 @@
 %global glad_ver 0.1.33
 %global imgui_ver 1.88
 %global md5_ver 1.6
-%global rcheevos_scommit 0e9eb7c
+%global rcheevos_scommit 3af1e2f
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        91%{?dist}
+Release:        92%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -50,6 +51,7 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
+Patch7:         0001-log.h-ignore-format-security.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -81,7 +83,6 @@ BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(soundtouch)
-BuildRequires:  pkgconfig(tinyxml2)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(wayland-egl)
@@ -127,6 +128,7 @@ Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = 0~git
 Provides:       bundled(stb) = %{stb_ver}
+Provides:       bundled(zydis) = 0~git
 
 
 %description
@@ -160,7 +162,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC soundtouch lzma minizip msvc \
-  rapidjson tinyxml2 xbyak xxhash zlib zstd fast_float
+  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas spirv-cross
 
 %if %{with sysvulkan}
   mkdir -p ../src/vulkan
@@ -180,6 +182,7 @@ cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
+cp -p zydis/LICENSE LICENSE.zydis
 
 popd
 

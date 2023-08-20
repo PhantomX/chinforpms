@@ -1,20 +1,20 @@
-From 4d4bad4f61afb8bb2810ca16f776f9f8138c86c2 Mon Sep 17 00:00:00 2001
+From e2fb38d312a0508d023367d754d0717c12f86b8c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                    | 158 +++++++++++++++++++++++++-
- src/common/vulkan/shader_compiler.cpp | 129 +++++++++++++++++++++
+ dep/CMakeLists.txt                    | 149 +++++++++++++++++++++++++-
+ src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++
  src/core/CMakeLists.txt               |   6 +-
  src/core/texture_replacements.cpp     |   2 +
- 4 files changed, 291 insertions(+), 4 deletions(-)
+ 4 files changed, 282 insertions(+), 4 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 2dcbc33..b84c3cc 100644
+index e82f71b..f48f989 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,26 +1,182 @@
+@@ -1,25 +1,168 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -24,7 +24,6 @@ index 2dcbc33..b84c3cc 100644
 +else()
  add_subdirectory(fmt)
 +endif()
-+
 +find_package(Microsoft.GSL 4.0.0)
 +if(Microsoft.GSL_FOUND)
 +  message(STATUS "Using the system GSL")
@@ -34,10 +33,8 @@ index 2dcbc33..b84c3cc 100644
 +else()
  add_subdirectory(gsl)
 +endif()
-+
  add_subdirectory(glad)
 -add_subdirectory(stb)
-+
 +find_package(ZLIB)
 +if(ZLIB_FOUND)
 +  message(STATUS "Using the system zlib")
@@ -74,7 +71,7 @@ index 2dcbc33..b84c3cc 100644
 +pkg_search_module(libchdr IMPORTED_TARGET libchdr)
 +if(libchdr_FOUND)
 +  message(STATUS "Using the system libchdr")
-+  add_library(libchdr-shared INTERFACE)
++ add_library(libchdr-shared INTERFACE)
 +  target_link_libraries(libchdr-shared INTERFACE PkgConfig::libchdr)
 +  add_library(libchdr ALIAS libchdr-shared)
 +else()
@@ -147,16 +144,6 @@ index 2dcbc33..b84c3cc 100644
  add_subdirectory(soundtouch)
 +endif()
 +
-+find_package(tinyxml2)
-+if(tinyxml2_FOUND)
-+  message(STATUS "Using the system tinyxml2")
-+  add_library(tinyxml2-shared INTERFACE)
-+  target_link_libraries(tinyxml2-shared INTERFACE tinyxml2::tinyxml2)
-+  add_library(tinyxml2 ALIAS tinyxml2-shared)
-+else()
- add_subdirectory(tinyxml2)
-+endif()
-+
  add_subdirectory(googletest)
 +
 +pkg_search_module(cpuinfo IMPORTED_TARGET libcpuinfo)
@@ -168,7 +155,6 @@ index 2dcbc33..b84c3cc 100644
 +else()
  add_subdirectory(cpuinfo)
 +endif()
-+
 +
 +find_package(FastFloat)
 +if(FastFloat_FOUND)
@@ -364,10 +350,10 @@ index 664cb96..e35334f 100644
  {
    return CompileShaderToSPV(EShLangVertex, "vs", source_code);
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index 31f4d44..e1d93b5 100644
+index 90a704b..794d515 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -150,7 +150,11 @@ if(ENABLE_VULKAN)
+@@ -155,7 +155,11 @@ if(ENABLE_VULKAN)
  endif()
  
  if(${CPU_ARCH} STREQUAL "x64")
@@ -397,5 +383,5 @@ index 0edbc6b..b7d1e70 100644
  Log_SetChannel(TextureReplacements);
  
 -- 
-2.39.0
+2.41.0
 

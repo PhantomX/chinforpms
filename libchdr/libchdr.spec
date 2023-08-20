@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -26,7 +26,10 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch10:        0001-Shared-library-fixes.patch
 Patch11:        0001-Use-system-lzma-sdk.patch
 Patch12:        0001-Do-not-build-static-library-if-INSTALL_STATIC_LIBS-O.patch
-Patch13:        0001-dep-libchdr-Add-chd_precache_progress.patch
+Patch13:        0001-dep-libchdr-Re-add-progress-precaching.patch
+Patch14:        0002-dep-libchdr-Add-read_header-variants-for-user-provid.patch
+Patch15:        0003-dep-libchdr-Add-option-to-transfer-file-ownership.patch
+Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -87,6 +90,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Sun Aug 20 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2-10.20230508git54bfb87
+- More patches pulled from Duckstation
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2-9.20230508git54bfb87
 - lzma-sdk rebuild
 

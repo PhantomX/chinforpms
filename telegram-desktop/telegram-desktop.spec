@@ -12,19 +12,31 @@
 %global cvc_url https://chromium.googlesource.com
 %global da_url https://github.com/desktop-app
 
+%bcond_with bin
+
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
 %bcond_without bundled_fonts
 %bcond_without wayland
 %bcond_without x11
 
+%if %{with bin}
+%global debug_package %{nil}
+%global _build_id_links none
+%global __strip /bin/true
+%global __objdump /bin/true
+%global __debug_install_post /bin/true
+%endif
+
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
+%global glibmm_ver 2.77.0
+%global libsigc_ver 3.0.0
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.8.10
+Version:        4.9.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -37,12 +49,16 @@ Epoch:          1
 # * qt_functions.cpp - LGPL-3.0-only -- build-time dependency;
 # * open-sans-fonts  - Apache-2.0 -- bundled font;
 # * vazirmatn-fonts - OFL -- bundled font.
-License:        GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-3.0-only AND OFL-1.1
+# * Implib.so - MIT -- build-time dependency;
+License:        GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-3.0-only AND OFL-1.1 AND MIT
 URL:            https://github.com/telegramdesktop/%{srcname}
 
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64 %{!?with_bin:aarch64}
 
 Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.tar.gz
+%if %{with bin}
+Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
+%endif
 Source20:       thunar-sendto-%{name}.desktop
 
 Patch100:       %{name}-build-fix.patch
@@ -59,18 +75,9 @@ Patch204:       %{name}-build-fixes.patch
 Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
-Patch1000:      %{url}/commit/f817df9d7fb107d9196d94f22c9ca6250b902c16.patch#/%{name}-gh-f817df9.patch
-Patch1001:      %{url}/commit/9ccb11bd1a45adc376672a00b131d1847acd9354.patch#/%{name}-gh-9ccb11b.patch
-Patch1002:      %{da_url}/cmake_helpers/commit/0620bb7b87a0ec9195151fd5eb0cf38656c1280b.patch#/%{name}-gh-cmake_helpers-0620bb7.patch
-Patch1003:      %{da_url}/lib_base/commit/74be75339d474df1a2863028ec146744597bd0bb.patch#/%{name}-gh-lib_base-74be753.patch
-Patch1004:      %{da_url}/lib_base/commit/2669a04579069942b6208a18abe93c26adfddf2a.patch#/%{name}-gh-lib_base-2669a04.patch
-Patch1005:      %{da_url}/lib_ui/commit/da7f4fe4251fe7076e437dec7ed71aefd99f8537.patch#/%{name}-gh-lib_ui-da7f4fe.patch
-Patch1006:      %{url}/commit/8ec0bdcac935adfdae740c4551db08927be59dd7.patch#/%{name}-gh-8ec0bdc.patch
-Patch1007:      0001-Version-4.8.10-Fix-build-with-GCC.patch
-
-%if 0%{?fedora} < 39
-BuildRequires:  patchutils
-%endif
+BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
+%if %{without bin}
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(range-v3)
@@ -81,7 +88,7 @@ BuildRequires:  pkgconfig(cppgir)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(giomm-2.68)
 BuildRequires:  pkgconfig(glib-2.0)
-BuildRequires:  pkgconfig(glibmm-2.68) >= 2.76.0
+BuildRequires:  pkgconfig(glibmm-2.68) >= %{glibmm_ver}
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
@@ -92,14 +99,12 @@ BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(opus)
-BuildRequires:  pkgconfig(sigc++-3.0)
+BuildRequires:  pkgconfig(sigc++-3.0) >= %{libsigc_ver}
 BuildRequires:  pkgconfig(rnnoise)
 
 BuildRequires:  cmake
-BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  libappstream-glib
 BuildRequires:  libatomic
 BuildRequires:  libdispatch-devel
 BuildRequires:  libqrcodegencpp-devel
@@ -147,20 +152,6 @@ BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(protobuf-lite)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 
-Requires:       hicolor-icon-theme
-Recommends:     libdrm%{?_isa}
-Recommends:     mesa-libgbm%{?_isa}
-Recommends:     mesa-libEGL%{?_isa}
-Recommends:     mesa-libGL%{?_isa}
-
-%if %{with bundled_fonts}
-Provides:       bundled(open-sans-fonts) = 1.10
-Provides:       bundled(vazirmatn-fonts) = 27.2.2
-%else
-Requires:       open-sans-fonts
-Requires:       vazirmatn-fonts
-%endif
-
 BuildRequires:  pkgconfig(webkitgtk-6.0)
 Requires:       webkitgtk6.0%{?_isa}
 
@@ -171,6 +162,21 @@ BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
 
 BuildRequires:  pkgconfig(openssl)
+%endif
+
+%if %{with bin} || %{with bundled_fonts}
+Provides:       bundled(open-sans-fonts) = 1.10
+Provides:       bundled(vazirmatn-fonts) = 27.2.2
+%else
+Requires:       open-sans-fonts
+Requires:       vazirmatn-fonts
+%endif
+
+Requires:       hicolor-icon-theme
+Recommends:     libdrm%{?_isa}
+Recommends:     mesa-libgbm%{?_isa}
+Recommends:     mesa-libEGL%{?_isa}
+Recommends:     mesa-libGL%{?_isa}
 
 # Short alias for the main package...
 Provides: telegram = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -181,6 +187,9 @@ Provides:       bundled(cld3) = 3.0.13~gitb48dc46
 Provides:       bundled(rlottie) = 0~git
 Provides:       bundled(libtgvoip) = 2.4.4
 Provides:       bundled(kf5-kcoreaddons) = 0~git%{kf5ver}
+%if %{with bin}
+Provides:       bundled(qt6-qtcore) = 6.5.2
+%endif
 
 
 %description
@@ -201,19 +210,12 @@ business messaging needs.
 %autosetup -N -n %{srcname}-%{version}-full
 %autopatch -p1 -M 999
 
-%if 0%{?fedora} < 39
-%patch -P 1006 -p1 -R
-%patch -P 1001 -p1 -R
-filterdiff -p1 -x cmake %{P:1000} > f817df9.patch
-%{__scm_apply_patch -p1 -q} -R -i f817df9.patch
-%patch -P 1002 -p1 -R -d cmake
-%patch -P 1004 -p1 -R -d Telegram/lib_base
-%patch -P 1003 -p1 -R -d Telegram/lib_base
-%patch -P 1005 -p1 -R -d Telegram/lib_ui
-%patch -P 1007 -p1
-%endif
+%if %{with bin}
+mkdir bin
+tar xvf %{S:1} -C bin --strip-components 1
 
-cp -p %{S:20} thunar-sendto-%{name}.desktop
+sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.service
+%else
 
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{GSL,QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,minizip,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
@@ -236,8 +238,6 @@ find Telegram -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
 sed -e '/CONFIG:Debug/d' -i cmake/options_linux.cmake
 
-sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{appname}.desktop
-
 sed \
   -e 's|${third_party_loc}/wayland-protocols/|${WaylandProtocols_DATADIR}/|g' \
   -i Telegram/lib_ui/CMakeLists.txt \
@@ -247,8 +247,15 @@ sed \
   -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
   -i Telegram/CMakeLists.txt
 
+%endif
+
+cp -p %{S:20} thunar-sendto-%{name}.desktop
+
+sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{appname}.desktop
+
 
 %build
+%if %{without bin}
 # Building Telegram Desktop using cmake...
 %cmake \
     -G Ninja \
@@ -284,10 +291,32 @@ sed \
 cp -p changelog.txt %{_vpath_builddir}/
 
 %cmake_build
+%endif
 
 
 %install
+%if %{without bin}
 %cmake_install
+%else
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 bin/Telegram %{buildroot}%{_bindir}/%{name}
+
+mkdir -p %{buildroot}%{_datadir}/applications
+install -pm0644 lib/xdg/%{appname}.desktop %{buildroot}%{_datadir}/applications/
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm0644 lib/xdg/%{appname}.metainfo.xml %{buildroot}%{_metainfodir}/
+mkdir -p %{buildroot}%{_datadir}/dbus-1/services
+install -pm0644 lib/xdg/%{appname}.service %{buildroot}%{_datadir}/dbus-1/services/
+
+for size in 16 32 48 64 128 256 512 ;do
+  dir=%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps
+  mkdir -p ${dir}
+  install -pm0644 Telegram/Resources/art/icon${size}.png ${dir}/telegram.png
+done
+
+mkdir -p %{buildroot}%{_sysconfdir}/tdesktop
+echo "%{_bindir}/%{name}" > %{buildroot}%{_sysconfdir}/tdesktop/externalupdater
+%endif
 
 desktop-file-edit \
   --set-key=Exec \
@@ -316,9 +345,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
 %{_metainfodir}/%{appname}.metainfo.xml
+%if %{with bin}
+%{_sysconfdir}/tdesktop/externalupdater
+%endif
 
 
 %changelog
+* Sat Aug 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.1-100
+- 4.9.1
+
 * Sun Jul 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.8.10-100
 - 4.8.10
 

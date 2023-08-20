@@ -22,24 +22,24 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 7.0.200
-%global local_dotnet_url_id 4d8ba1a1-4241-4735-bac7-8d8c9f69832a/2c0f2741c551eb49c37fc941ed4d04bf
+%global local_dotnet_ver 7.0.400
+%global local_dotnet_url_id dbfe6cc7-dd82-4cec-b267-31ed988b1652/c60ab4793c3714be878abcb9aa834b63
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
-%global discordrichpresence_ver 1.1.3.18
+%global discordrichpresence_ver 1.2.1.24
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.18.0
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.3
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.10
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
-%global microsoft_codeanalysis_ver 4.5.0
+%global microsoft_codeanalysis_ver 4.6.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
 %global microsoft_identitymodel_ver 6.31.0
 %global microsoft_io_recyclablememorystream_ver 2.3.2
-%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.3
+%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.10
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.0.0
@@ -119,7 +119,7 @@
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
-%global system_collections_immutable_ver 6.0.0
+%global system_collections_immutable_ver 7.0.0
 %global system_console_ver 4.0.0
 %global system_diagnostics_debug_ver 4.0.11
 %global system_diagnostics_debug_ver2 4.3.0
@@ -161,7 +161,7 @@
 %global system_reflection_emit_lightweight_ver 4.0.1
 %global system_reflection_emit_lightweight_ver2 4.3.0
 %global system_reflection_extensions_ver 4.0.1
-%global system_reflection_metadata_ver 6.0.1
+%global system_reflection_metadata_ver 7.0.0
 %global system_reflection_primitives_ver 4.0.1
 %global system_reflection_primitives_ver2 4.3.0
 %global system_reflection_typeextensions_ver 4.1.0
@@ -195,7 +195,7 @@
 %global system_security_principal_windows_ver2 4.5.0
 %global system_text_encoding_ver 4.0.11
 %global system_text_encoding_ver2 4.3.0
-%global system_text_encoding_codepages_ver 6.0.0
+%global system_text_encoding_codepages_ver 7.0.0
 %global system_text_encoding_extensions_ver 4.0.11
 %global system_text_encodings_web_ver 6.0.0
 %global system_text_encodings_web_ver2 4.7.2
@@ -218,7 +218,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.966
+Version:        1.1.997
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -449,11 +449,9 @@ Source401:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 %global nuget_files5 %{SOURCE400} %{SOURCE401}
 %endif
 
-%if %{without bin}
 Patch10:        0001-Save-logs-in-ApplicationData-directory.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Disable-Discord-integration-by-default.patch
-%endif
 
 ExclusiveArch:  x86_64
 
@@ -489,7 +487,7 @@ and consistent builds.
 
 %prep
 %if %{with bin}
-%autosetup -c
+%autosetup -N -c
 %else
 %autosetup -n %{appname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 %endif

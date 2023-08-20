@@ -26,9 +26,9 @@
 %global minizippkg minizip
 %endif
 
-%global commit 2764978bebce9cedf0e329c320951ff0508f7139
+%global commit f19651e49b52a08bbd19c5d10ce61bd40143d190
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230719
+%global date 20230819
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -39,7 +39,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
 
-%global commit4 d87512353495e7760e7fda7566a05beef7627d8f
+%global commit4 cc5e1daa5c7f2335a9460ae79c829011dc5cef2d
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
@@ -57,7 +57,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 40221
+%global baserelease 40371
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -181,7 +181,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 ##Bundled code ahoy
 #The following isn't in Fedora yet:
 Provides:       bundled(FreeSurround)
-Provides:       bundled(imgui) = 1.85
+Provides:       bundled(imgui) = 1.89.7
 Provides:       bundled(cpp-argparse)
 #Is this technically bundled code? Adding this just in case:            
 #https://github.com/AdmiralCurtiss/rangeset

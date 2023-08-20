@@ -1,17 +1,17 @@
-From 5bd1239afa0f46683bb2eaf6bdef388e0f40572e Mon Sep 17 00:00:00 2001
+From 853fa0c95ea20f5ea70e63ca03d9547919c8ae18 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 00:04:23 -0300
 Subject: [PATCH] gamedb: missings hashes and personal additions
 
 ---
- data/resources/database/gamedb.json | 8 +++++---
+ data/resources/gamedb.json | 8 +++++---
  1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/data/resources/database/gamedb.json b/data/resources/database/gamedb.json
-index 97cded1..ad18ce0 100644
---- a/data/resources/database/gamedb.json
-+++ b/data/resources/database/gamedb.json
-@@ -276899,7 +276899,8 @@
+diff --git a/data/resources/gamedb.json b/data/resources/gamedb.json
+index a6be98f..0eb1511 100644
+--- a/data/resources/gamedb.json
++++ b/data/resources/gamedb.json
+@@ -280771,7 +280771,8 @@
    "serial": "SLPS-00006",
    "name": "Nekketsu Oyako (Japan)",
    "codes": [
@@ -21,7 +21,7 @@ index 97cded1..ad18ce0 100644
    ],
    "languages": [
     "Japanese"
-@@ -420230,7 +420231,8 @@
+@@ -425814,7 +425815,8 @@
    "serial": "SLPS-00040",
    "name": "Tekken (Japan)",
    "codes": [
@@ -31,7 +31,7 @@ index 97cded1..ad18ce0 100644
    ],
    "languages": [
     "Japanese"
-@@ -490947,4 +490949,4 @@
+@@ -499827,4 +499829,4 @@
     }
    ]
   }
@@ -39,5 +39,5 @@ index 97cded1..ad18ce0 100644
 \ No newline at end of file
 +]
 -- 
-2.37.1
+2.41.0
 
