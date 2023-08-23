@@ -30,6 +30,7 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
+noise-suppression-for-voice
 SDL1
 -sdl12-compat
 -sdlcl
