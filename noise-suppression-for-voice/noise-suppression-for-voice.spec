@@ -29,8 +29,7 @@ BuildRequires:  libatomic
 %package -n     ladspa-%{name}-plugin
 Summary:        %{name} LADSPA plugin
 BuildRequires:  ladspa-devel
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       ladspa%{?_isa}
+Requires:       ladspa
 Provides:       bundled(rnnoise) = 0~git
 
 %description -n ladspa-%{name}-plugin
@@ -53,8 +52,7 @@ BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       lv2%{?_isa}
+Requires:       lv2
 Provides:       bundled(juce) = 7.0.1
 Provides:       bundled(rnnoise) = 0~git
 

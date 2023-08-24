@@ -16,7 +16,6 @@ gstreamer1
 -gstreamer1-plugins-ugly-free
 gtk3
 -gtk3-nocsd
-ladspa-tap-plugins
 libeatmydata
 -libogg
 -libvorbis
@@ -30,7 +29,6 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
-noise-suppression-for-voice
 SDL1
 -sdl12-compat
 -sdlcl

@@ -48,7 +48,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4932
+Version:        1.7.4940
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -75,6 +75,7 @@ Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
+Patch9:         0001-Fix-for-patched-libchdr.patch
 
 ExclusiveArch:  x86_64
 

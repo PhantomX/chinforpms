@@ -1,20 +1,19 @@
-From e2fb38d312a0508d023367d754d0717c12f86b8c Mon Sep 17 00:00:00 2001
+From 4eab6fbff4fc51133236c903dbe687526dbe35bd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                    | 149 +++++++++++++++++++++++++-
- src/common/vulkan/shader_compiler.cpp | 129 ++++++++++++++++++++++
- src/core/CMakeLists.txt               |   6 +-
- src/core/texture_replacements.cpp     |   2 +
- 4 files changed, 282 insertions(+), 4 deletions(-)
+ dep/CMakeLists.txt                | 128 +++++++++++++++++++++++++++++-
+ src/core/CMakeLists.txt           |   6 +-
+ src/core/texture_replacements.cpp |   2 +
+ 3 files changed, 132 insertions(+), 4 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index e82f71b..f48f989 100644
+index 5bbfcb3..18ec2f6 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,25 +1,168 @@
+@@ -1,24 +1,146 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -32,9 +31,8 @@ index e82f71b..f48f989 100644
 +  add_library(GSL ALIAS gsl-shared)
 +else()
  add_subdirectory(gsl)
-+endif()
- add_subdirectory(glad)
 -add_subdirectory(stb)
++endif()
 +find_package(ZLIB)
 +if(ZLIB_FOUND)
 +  message(STATUS "Using the system zlib")
@@ -99,28 +97,7 @@ index e82f71b..f48f989 100644
  add_subdirectory(rapidjson)
 +endif()
 +
-+pkg_search_module(SPIRV_Tools IMPORTED_TARGET SPIRV-Tools)
-+pkg_search_module(SPIRV IMPORTED_TARGET spirv)
-+pkg_search_module(glslang IMPORTED_TARGET glslang)
-+
-+if(SPIRV_FOUND AND SPIRV_Tools_FOUND AND glslang_FOUND)
-+  message(STATUS "Using the system glslang")
-+  add_library(SPIRV_Tools-shared INTERFACE)
-+  target_link_libraries(SPIRV_Tools-shared INTERFACE PkgConfig::SPIRV_Tools)
-+  add_library(SPIRV_Tools ALIAS SPIRV_Tools-shared)
-+
-+  add_library(SPIRV-shared INTERFACE)
-+  target_link_libraries(SPIRV-shared INTERFACE PkgConfig::SPIRV)
-+  add_library(SPIRV ALIAS SPIRV-shared)
-+
-+  add_library(glslang-shared INTERFACE)
-+  target_compile_definitions(glslang-shared PUBLIC SYSTEM_GLSLANG=1)
-+  target_link_libraries(glslang-shared INTERFACE PkgConfig::glslang)
-+  add_library(glslang ALIAS glslang-shared)
-+else()
  add_subdirectory(glslang)
-+endif()
-+
  add_subdirectory(imgui)
  add_subdirectory(simpleini)
 +
@@ -185,176 +162,13 @@ index e82f71b..f48f989 100644
 +  endif()
  endif()
  
- if(ENABLE_DISCORD_PRESENCE)
-diff --git a/src/common/vulkan/shader_compiler.cpp b/src/common/vulkan/shader_compiler.cpp
-index 664cb96..e35334f 100644
---- a/src/common/vulkan/shader_compiler.cpp
-+++ b/src/common/vulkan/shader_compiler.cpp
-@@ -12,14 +12,25 @@
- Log_SetChannel(Vulkan::ShaderCompiler);
- 
- // glslang includes
-+#ifdef SYSTEM_GLSLANG
-+#include <glslang/SPIRV/GlslangToSpv.h>
-+#include <glslang/Include/ResourceLimits.h>
-+#include <glslang/Public/ShaderLang.h>
-+#else
- #include "SPIRV/GlslangToSpv.h"
- #include "StandAlone/ResourceLimits.h"
- #include "glslang/Public/ShaderLang.h"
-+#endif
- 
- namespace Vulkan::ShaderCompiler {
- // Registers itself for cleanup via atexit
- bool InitializeGlslang();
- 
-+#ifdef SYSTEM_GLSLANG
-+// Resource limits used when compiling shaders
-+static const TBuiltInResource* GetCompilerResourceLimits();
-+#endif
-+
- static unsigned s_next_bad_shader_id = 1;
- 
- static bool glslang_initialized = false;
-@@ -67,7 +78,11 @@ static std::optional<SPIRVCodeVector> CompileShaderToSPV(EShLanguage stage, cons
-     }
-   };
- 
-+#ifdef SYSTEM_GLSLANG
-+  if (!shader->parse(GetCompilerResourceLimits(), default_version, profile, false, true, messages, includer))
-+#else
-   if (!shader->parse(&glslang::DefaultTBuiltInResource, default_version, profile, false, true, messages, includer))
-+#endif
-   {
-     DumpBadShader("Failed to parse shader");
-     return std::nullopt;
-@@ -137,6 +152,120 @@ void DeinitializeGlslang()
-   glslang_initialized = false;
- }
- 
-+#ifdef SYSTEM_GLSLANG
-+const TBuiltInResource* GetCompilerResourceLimits()
-+{
-+  static const TBuiltInResource limits = {
-+    /* .MaxLights = */ 32,
-+    /* .MaxClipPlanes = */ 6,
-+    /* .MaxTextureUnits = */ 32,
-+    /* .MaxTextureCoords = */ 32,
-+    /* .MaxVertexAttribs = */ 64,
-+    /* .MaxVertexUniformComponents = */ 4096,
-+    /* .MaxVaryingFloats = */ 64,
-+    /* .MaxVertexTextureImageUnits = */ 32,
-+    /* .MaxCombinedTextureImageUnits = */ 80,
-+    /* .MaxTextureImageUnits = */ 32,
-+    /* .MaxFragmentUniformComponents = */ 4096,
-+    /* .MaxDrawBuffers = */ 32,
-+    /* .MaxVertexUniformVectors = */ 128,
-+    /* .MaxVaryingVectors = */ 8,
-+    /* .MaxFragmentUniformVectors = */ 16,
-+    /* .MaxVertexOutputVectors = */ 16,
-+    /* .MaxFragmentInputVectors = */ 15,
-+    /* .MinProgramTexelOffset = */ -8,
-+    /* .MaxProgramTexelOffset = */ 7,
-+    /* .MaxClipDistances = */ 8,
-+    /* .MaxComputeWorkGroupCountX = */ 65535,
-+    /* .MaxComputeWorkGroupCountY = */ 65535,
-+    /* .MaxComputeWorkGroupCountZ = */ 65535,
-+    /* .MaxComputeWorkGroupSizeX = */ 1024,
-+    /* .MaxComputeWorkGroupSizeY = */ 1024,
-+    /* .MaxComputeWorkGroupSizeZ = */ 64,
-+    /* .MaxComputeUniformComponents = */ 1024,
-+    /* .MaxComputeTextureImageUnits = */ 16,
-+    /* .MaxComputeImageUniforms = */ 8,
-+    /* .MaxComputeAtomicCounters = */ 8,
-+    /* .MaxComputeAtomicCounterBuffers = */ 1,
-+    /* .MaxVaryingComponents = */ 60,
-+    /* .MaxVertexOutputComponents = */ 64,
-+    /* .MaxGeometryInputComponents = */ 64,
-+    /* .MaxGeometryOutputComponents = */ 128,
-+    /* .MaxFragmentInputComponents = */ 128,
-+    /* .MaxImageUnits = */ 8,
-+    /* .MaxCombinedImageUnitsAndFragmentOutputs = */ 8,
-+    /* .MaxCombinedShaderOutputResources = */ 8,
-+    /* .MaxImageSamples = */ 0,
-+    /* .MaxVertexImageUniforms = */ 0,
-+    /* .MaxTessControlImageUniforms = */ 0,
-+    /* .MaxTessEvaluationImageUniforms = */ 0,
-+    /* .MaxGeometryImageUniforms = */ 0,
-+    /* .MaxFragmentImageUniforms = */ 8,
-+    /* .MaxCombinedImageUniforms = */ 8,
-+    /* .MaxGeometryTextureImageUnits = */ 16,
-+    /* .MaxGeometryOutputVertices = */ 256,
-+    /* .MaxGeometryTotalOutputComponents = */ 1024,
-+    /* .MaxGeometryUniformComponents = */ 1024,
-+    /* .MaxGeometryVaryingComponents = */ 64,
-+    /* .MaxTessControlInputComponents = */ 128,
-+    /* .MaxTessControlOutputComponents = */ 128,
-+    /* .MaxTessControlTextureImageUnits = */ 16,
-+    /* .MaxTessControlUniformComponents = */ 1024,
-+    /* .MaxTessControlTotalOutputComponents = */ 4096,
-+    /* .MaxTessEvaluationInputComponents = */ 128,
-+    /* .MaxTessEvaluationOutputComponents = */ 128,
-+    /* .MaxTessEvaluationTextureImageUnits = */ 16,
-+    /* .MaxTessEvaluationUniformComponents = */ 1024,
-+    /* .MaxTessPatchComponents = */ 120,
-+    /* .MaxPatchVertices = */ 32,
-+    /* .MaxTessGenLevel = */ 64,
-+    /* .MaxViewports = */ 16,
-+    /* .MaxVertexAtomicCounters = */ 0,
-+    /* .MaxTessControlAtomicCounters = */ 0,
-+    /* .MaxTessEvaluationAtomicCounters = */ 0,
-+    /* .MaxGeometryAtomicCounters = */ 0,
-+    /* .MaxFragmentAtomicCounters = */ 8,
-+    /* .MaxCombinedAtomicCounters = */ 8,
-+    /* .MaxAtomicCounterBindings = */ 1,
-+    /* .MaxVertexAtomicCounterBuffers = */ 0,
-+    /* .MaxTessControlAtomicCounterBuffers = */ 0,
-+    /* .MaxTessEvaluationAtomicCounterBuffers = */ 0,
-+    /* .MaxGeometryAtomicCounterBuffers = */ 0,
-+    /* .MaxFragmentAtomicCounterBuffers = */ 1,
-+    /* .MaxCombinedAtomicCounterBuffers = */ 1,
-+    /* .MaxAtomicCounterBufferSize = */ 16384,
-+    /* .MaxTransformFeedbackBuffers = */ 4,
-+    /* .MaxTransformFeedbackInterleavedComponents = */ 64,
-+    /* .MaxCullDistances = */ 8,
-+    /* .MaxCombinedClipAndCullDistances = */ 8,
-+    /* .MaxSamples = */ 4,
-+    /* .maxMeshOutputVerticesNV = */ 256,
-+    /* .maxMeshOutputPrimitivesNV = */ 512,
-+    /* .maxMeshWorkGroupSizeX_NV = */ 32,
-+    /* .maxMeshWorkGroupSizeY_NV = */ 1,
-+    /* .maxMeshWorkGroupSizeZ_NV = */ 1,
-+    /* .maxTaskWorkGroupSizeX_NV = */ 32,
-+    /* .maxTaskWorkGroupSizeY_NV = */ 1,
-+    /* .maxTaskWorkGroupSizeZ_NV = */ 1,
-+    /* .maxMeshViewCountNV = */ 4,
-+    /* .maxDualSourceDrawBuffersEXT = */ 1,
-+
-+    /* .limits = */ {
-+        /* .nonInductiveForLoops = */ 1,
-+        /* .whileLoops = */ 1,
-+        /* .doWhileLoops = */ 1,
-+        /* .generalUniformIndexing = */ 1,
-+        /* .generalAttributeMatrixVectorIndexing = */ 1,
-+        /* .generalVaryingIndexing = */ 1,
-+        /* .generalSamplerIndexing = */ 1,
-+        /* .generalVariableIndexing = */ 1,
-+        /* .generalConstantMatrixVectorIndexing = */ 1,
-+  }};
-+
-+  return &limits;
-+ }
-+#endif
-+
- std::optional<SPIRVCodeVector> CompileVertexShader(std::string_view source_code)
- {
-   return CompileShaderToSPV(EShLangVertex, "vs", source_code);
+ if(ENABLE_OPENGL)
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index 90a704b..794d515 100644
+index cec43dc..f741813 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -155,7 +155,11 @@ if(ENABLE_VULKAN)
- endif()
+@@ -126,7 +126,11 @@ target_link_libraries(core PUBLIC Threads::Threads common util zlib)
+ target_link_libraries(core PRIVATE stb xxhash imgui rapidjson)
  
  if(${CPU_ARCH} STREQUAL "x64")
 -  target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../dep/xbyak/xbyak")
@@ -363,7 +177,7 @@ index 90a704b..794d515 100644
 +  else()
 +    target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../dep/xbyak/xbyak")
 +  endif()
-   target_compile_definitions(core PUBLIC "WITH_RECOMPILER=1" "WITH_MMAP_FASTMEM=1")
+   target_compile_definitions(core PUBLIC "XBYAK_NO_EXCEPTION=1" "WITH_RECOMPILER=1" "WITH_MMAP_FASTMEM=1")
    target_sources(core PRIVATE ${RECOMPILER_SRCS}
      cpu_recompiler_code_generator_x64.cpp
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp

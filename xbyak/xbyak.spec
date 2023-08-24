@@ -1,7 +1,7 @@
 %bcond_with check
 
 Name:           xbyak
-Version:        6.69.1
+Version:        6.73
 Release:        100%{?dist}
 Summary:        A C++ JIT assembler for x86
 
@@ -79,6 +79,9 @@ make test
 
 
 %changelog
+* Wed Aug 23 2023 Phantom X <megaphantomx at hotmail dot com> - 1:6.73-100
+- 6.73
+
 * Thu Apr 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:6.69.1-100
 - 6.69.1
 

@@ -1,0 +1,26 @@
+From 4cdbc6cf8165550ff28fdb0e0021e9941827c002 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 23 Aug 2023 22:50:02 -0300
+Subject: [PATCH] Fix for patched libchdr
+
+---
+ pcsx2/CDVD/ChdFileReader.cpp | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/pcsx2/CDVD/ChdFileReader.cpp b/pcsx2/CDVD/ChdFileReader.cpp
+index 73faef3..f8f852e 100644
+--- a/pcsx2/CDVD/ChdFileReader.cpp
++++ b/pcsx2/CDVD/ChdFileReader.cpp
+@@ -39,9 +39,6 @@ ChdFileReader::ChdFileReader()
+ ChdFileReader::~ChdFileReader()
+ {
+ 	Close();
+-
+-	for (std::FILE* fp : m_files)
+-		std::fclose(fp);
+ }
+ 
+ bool ChdFileReader::CanHandle(const std::string& fileName, const std::string& displayName)
+-- 
+2.41.0
+

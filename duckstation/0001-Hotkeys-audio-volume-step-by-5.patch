@@ -12,14 +12,14 @@ index 49f2a3f..25befd6 100644
 --- a/src/core/common_host.cpp
 +++ b/src/core/common_host.cpp
 @@ -1033,7 +1033,7 @@ DEFINE_HOTKEY("AudioVolumeUp", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE("H
-   {
-     g_settings.audio_output_muted = false;
+                 {
+                   g_settings.audio_output_muted = false;
  
--    const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 10, 100);
-+    const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 5, 100);
-     g_settings.audio_output_volume = volume;
-     g_settings.audio_fast_forward_volume = volume;
-     SPU::GetOutputStream()->SetOutputVolume(volume);
+-                  const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 10, 100);
++                  const s32 volume = std::min<s32>(System::GetAudioOutputVolume() + 5, 100);
+                   g_settings.audio_output_volume = volume;
+                   g_settings.audio_fast_forward_volume = volume;
+                   SPU::GetOutputStream()->SetOutputVolume(volume);
 @@ -1048,7 +1048,7 @@ DEFINE_HOTKEY("AudioVolumeDown", TRANSLATABLE("Hotkeys", "Audio"), TRANSLATABLE(
                  {
                    g_settings.audio_output_muted = false;

@@ -8,12 +8,13 @@
 
 %global with_nogui 0
 
-%bcond_with sysspirv
+# Enable system soundtouch (needs no exception)
+%bcond_with soundtouch
 %bcond_without sysvulkan
 
-%global commit 7890051165d0090248c92b2be8c63e7405bd09a3
+%global commit 82cdef45b377eae34180af01cdd329cfd957d507
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230819
+%global date 20230823
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -27,15 +28,16 @@
 %global imgui_ver 1.88
 %global md5_ver 1.6
 %global rcheevos_scommit 3af1e2f
+%global soundtouch_ver 2.3.1
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        92%{?dist}
+Release:        93%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPL-3.0-only AND MIT%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0%{!?with_soundtouch: AND LGPL-2.1}
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -82,7 +84,9 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  pkgconfig(sdl2)
+%if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
+%endif
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(wayland-egl)
@@ -95,15 +99,6 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
 %if %{with sysvulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
-%endif
-%if %{with sysspirv}
-BuildRequires:  pkgconfig(glslang) >= 11.0.0
-BuildRequires:  spirv-headers-devel
-BuildRequires:  spirv-tools
-BuildRequires:  pkgconfig(SPIRV-Tools)
-%else
-Provides:       bundled(glslang) = 0~git
-Provides:       bundled(spirv-tools) = 0~git
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -122,12 +117,17 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Suggests:       qt6-qttranslations
 
 Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(glslang) = 0~git
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = 0~git
+%if %{without soundtouch}
+Provides:       bundled(soundtouch) = %{soundtouch_ver}
+%endif
 Provides:       bundled(stb) = %{stb_ver}
+Provides:       bundled(spirv-tools) = 0~git
 Provides:       bundled(zydis) = 0~git
 
 
@@ -161,8 +161,15 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC soundtouch lzma minizip msvc \
+  cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC lzma minizip msvc \
   rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas spirv-cross
+
+%if %{with soundtouch}
+rm -rf soundtouch
+%else
+sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
+cp soundtouch/COPYING.TXT COPYING.soundtouch
+%endif
 
 %if %{with sysvulkan}
   mkdir -p ../src/vulkan
@@ -172,12 +179,7 @@ rm -rf \
   sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 
-%if %{with sysspirv}
-  rm -rf glslang
-%else
-  sed -e 's|SPIRV-Tools|SPIRV-Tools_disabled|g' -i CMakeLists.txt
-  cp -p glslang/LICENSE.txt LICENSE.glslang
-%endif
+cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
