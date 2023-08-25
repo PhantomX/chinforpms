@@ -116,6 +116,7 @@
 %global have_dbus_display 0
 %endif
 
+%global have_gvnc_devel %{defined fedora}
 %global have_sdl_image %{defined fedora}
 %global have_fdt 1
 %global have_opengl 1
@@ -194,6 +195,7 @@
 %define requires_audio_alsa Requires: %{name}-audio-alsa = %{evr}
 %define requires_audio_oss Requires: %{name}-audio-oss = %{evr}
 %define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
+%define requires_audio_pipewire Requires: %{name}-audio-pipewire = %{evr}
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
 %define requires_char_baum Requires: %{name}-char-baum = %{evr}
 %define requires_device_usb_host Requires: %{name}-device-usb-host = %{evr}
@@ -210,7 +212,11 @@
 %define requires_device_display_virtio_vga_gl Requires: %{name}-device-display-virtio-vga-gl = %{evr}
 %define requires_package_qemu_pr_helper Requires: qemu-pr-helper
 %ifnarch %{ix86}
+%if 0%{?fedora} || 0%{?rhel} > 9
 %define requires_package_virtiofsd Requires: vhostuser-backend(fs)
+%else
+%define requires_package_virtiofsd Requires: virtiofsd
+%endif
 %define obsoletes_package_virtiofsd %{nil}
 %else
 %define requires_package_virtiofsd %{nil}
@@ -275,6 +281,7 @@
 %{requires_audio_dbus} \
 %{requires_audio_oss} \
 %{requires_audio_pa} \
+%{requires_audio_pipewire} \
 %{requires_audio_sdl} \
 %{requires_audio_jack} \
 %{requires_audio_spice} \
@@ -322,7 +329,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.0.4
+Version:        8.1.0
 Release:        100%{?dist}
 Epoch:          2
 
@@ -344,10 +351,7 @@ Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
 
-# Fix SGX assert
-Patch: 0001-target-i386-the-sgx_epc_get_section-stub-is-reachabl.patch
-# Fix wrong type and rework inheritance.
-Patch: 0002-hw-pci-bridge-Make-PCIe-and-CXL-PXB-Devices-inherit-.patch
+Patch0001: 0001-tests-Disable-iotests-like-RHEL-does.patch
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: bison
@@ -365,7 +369,6 @@ BuildRequires: libusbx-devel >= %{libusbx_version}
 %if %{have_usbredir}
 BuildRequires: usbredir-devel >= %{usbredir_version}
 %endif
-BuildRequires: texinfo
 BuildRequires: python3-sphinx
 BuildRequires: python3-sphinx_rtd_theme
 BuildRequires: libseccomp-devel >= %{libseccomp_version}
@@ -498,7 +501,11 @@ BuildRequires: fuse3-devel
 BuildRequires: SDL2_image-devel
 %endif
 # gvnc used by vnc-display-test
+%if %{have_gvnc_devel}
+# Used by vnc-display-test
 BuildRequires: pkgconfig(gvnc-1.0)
+%endif
+BuildRequires: pipewire-devel
 
 BuildRequires: systemd-rpm-macros
 %{?sysusers_requires_compat}
@@ -560,6 +567,7 @@ This package provides documentation and auxiliary programs used with %{name}.
 
 %package docs
 Summary: %{name} documentation
+BuildArch: noarch
 %description docs
 %{name}-docs provides documentation files regarding %{name}.
 
@@ -733,6 +741,12 @@ Summary: QEMU PulseAudio audio driver
 Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
 %description audio-pa
 This package provides the additional PulseAudi audio driver for QEMU.
+
+%package  audio-pipewire
+Summary: QEMU Pipewire audio driver
+Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+%description audio-pipewire
+This package provides the additional Pipewire audio driver for QEMU.
 
 %package  audio-sdl
 Summary: QEMU SDL audio driver
@@ -1443,17 +1457,20 @@ mkdir -p %{static_builddir}
   --disable-cfi-debug              \\\
   --disable-cloop                  \\\
   --disable-cocoa                  \\\
+  --disable-colo-proxy             \\\
   --disable-coreaudio              \\\
   --disable-coroutine-pool         \\\
   --disable-crypto-afalg           \\\
   --disable-curl                   \\\
   --disable-curses                 \\\
   --disable-dbus-display           \\\
+  --disable-debug-graph-lock       \\\
   --disable-debug-info             \\\
   --disable-debug-mutex            \\\
   --disable-debug-tcg              \\\
   --disable-dmg                    \\\
   --disable-docs                   \\\
+  --disable-download               \\\
   --disable-dsound                 \\\
   --disable-fdt                    \\\
   --disable-fuse                   \\\
@@ -1503,6 +1520,7 @@ mkdir -p %{static_builddir}
   --disable-pa                     \\\
   --disable-parallels              \\\
   --disable-pie                    \\\
+  --disable-pipewire               \\\
   --disable-pvrdma                 \\\
   --disable-qcow1                  \\\
   --disable-qed                    \\\
@@ -1530,12 +1548,15 @@ mkdir -p %{static_builddir}
   --disable-tcg                    \\\
   --disable-tools                  \\\
   --disable-tpm                    \\\
+  --disable-tsan                   \\\
   --disable-u2f                    \\\
   --disable-usb-redir              \\\
   --disable-user                   \\\
+  --disable-vpc                    \\\
   --disable-vde                    \\\
   --disable-vdi                    \\\
   --disable-vfio-user-server       \\\
+  --disable-vhdx                   \\\
   --disable-vhost-crypto           \\\
   --disable-vhost-kernel           \\\
   --disable-vhost-net              \\\
@@ -1556,7 +1577,6 @@ mkdir -p %{static_builddir}
   --disable-xen-pci-passthrough    \\\
   --disable-xkbcommon              \\\
   --disable-zstd                   \\\
-  --with-git-submodules=ignore     \\\
   --without-default-devices
 
 run_configure() {
@@ -1580,10 +1600,8 @@ run_configure() {
         --with-pkgversion="%{name}-%{version}-%{release}" \
         --with-suffix="%{name}" \
         --firmwarepath="%firmwaredirs" \
-        --meson="%{__meson}" \
         --enable-trace-backends=dtrace \
         --with-coroutine=ucontext \
-        --with-git=git \
         --tls-priority=@QEMU,SYSTEM \
         %{disable_everything} \
         "$@" \
@@ -1661,6 +1679,7 @@ run_configure \
   --enable-oss \
   --enable-pa \
   --enable-pie \
+  --enable-pipewire \
 %if %{have_block_rbd}
   --enable-rbd \
 %endif
@@ -1693,7 +1712,7 @@ run_configure \
   --enable-xkbcommon \
   \
   \
-  --audio-drv-list=pa,sdl,alsa,%{?jack_drv}oss \
+  --audio-drv-list=pipewire,pa,sdl,alsa,%{?jack_drv}oss \
   --target-list-exclude=moxie-softmmu \
   --with-default-devices \
   --enable-auth-pam \
@@ -1744,13 +1763,18 @@ run_configure \
 %if %{have_virgl}
   --enable-virglrenderer \
 %endif
+  --enable-vhdx \
   --enable-virtfs \
+  --enable-virtfs-proxy-helper \
+  --enable-vpc \
   --enable-vnc-jpeg \
   --enable-vte \
   --enable-vvfat \
 %if %{have_xen}
   --enable-xen \
+%ifarch x86_64
   --enable-xen-pci-passthrough \
+%endif
 %endif
   --enable-zstd \
 %{nil}
@@ -1849,7 +1873,7 @@ install -D -p -m 0644 %{modprobe_kvm_conf} %{buildroot}%{_sysconfdir}/modprobe.d
 %endif
 
 # Copy some static data into place
-install -D -p -m 0644 -t %{buildroot}%{qemudocdir} README.rst COPYING COPYING.LIB LICENSE docs/interop/qmp-spec.txt
+install -D -p -m 0644 -t %{buildroot}%{qemudocdir} README.rst COPYING COPYING.LIB LICENSE docs/interop/qmp-spec.rst
 install -D -p -m 0644 qemu.sasl %{buildroot}%{_sysconfdir}/sasl2/%{name}.conf
 
 install -m 0644 scripts/dump-guest-memory.py %{buildroot}%{_datadir}/%{name}
@@ -2263,6 +2287,8 @@ popd
 %{_libdir}/%{name}/audio-oss.so
 %files audio-pa
 %{_libdir}/%{name}/audio-pa.so
+%files audio-pipewire
+%{_libdir}/%{name}/audio-pipewire.so
 %files audio-sdl
 %{_libdir}/%{name}/audio-sdl.so
 %if %{have_jack}
@@ -2772,6 +2798,9 @@ popd
 
 
 %changelog
+* Fri Aug 25 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.1.0-100
+- 8.1.0
+
 * Mon Aug 21 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.0.4-100
 - 8.0.4
 
