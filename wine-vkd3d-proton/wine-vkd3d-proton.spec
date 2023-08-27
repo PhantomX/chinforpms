@@ -9,14 +9,14 @@
 %bcond_without sysvulkan
 
 # Need be set for release builds too
-%global commit db608963e43416a51f61da9657368a763e87916c
+%global commit 0a71c8e389e84e5d960a7fe17fc49e0c7a804953
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230716
+%global date 20230825
 %bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 be72a5222d39609f62e8ebdb48ae2ed031e98fa6
+%global commit1 7f12df707f9569d9af96b861d230f23adbfda951
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -61,7 +61,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -109,7 +109,7 @@ BuildRequires:  pkgconfig(vulkan) >= 1.3.228
 BuildRequires:  spirv-headers-devel >= 1.5.4
 %endif
 %if %{with sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.228
+BuildRequires:  vulkan-headers >= 1.3.252
 %endif
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

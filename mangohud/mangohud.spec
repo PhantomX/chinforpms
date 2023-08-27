@@ -24,7 +24,7 @@
 
 Name:           mangohud
 Version:        0.6.9.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -47,7 +47,7 @@ Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/
 # upstream patch which reverts this change.
 # https://github.com/flightlessmango/MangoHud/commit/bc282cf300ed5b6831177cf3e6753bc20f48e942
 Patch0:         mangohud-0.6.9-use-system-vulkan-headers.patch
-
+Patch1:         0001-Change-loader-files-names.patch
 
 BuildRequires:  appstream
 BuildRequires:  gcc
@@ -151,6 +151,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Sat Aug 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.9.1-101
+- Rename loader files
+
 * Wed Aug 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.9.1-100
 - 0.6.9-1
 - Rawhide sync

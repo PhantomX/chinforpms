@@ -3,7 +3,7 @@
 %global commit c1063effd1d15345661a15b12c148926d529d46d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230227
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -16,7 +16,7 @@
 
 
 Name:           grub2-distro-grub-fedora-theme
-Version:        3.1
+Version:        3.2
 Release:        1%{?dist}
 Summary:        A pack of GRUB2 themes for each Linux distribution - Fedora theme
 
@@ -58,9 +58,11 @@ install -m644 -p %{S:10} .
 
 
 %install
-mkdir -p %{buildroot}%{_grubthemedir}/distro-grub-fedora
-cp -rp customize/fedora/* %{buildroot}%{_grubthemedir}/distro-grub-fedora/
-
+mkdir -p %{buildroot}%{_grubthemedir}/distro-grub-fedora/icons
+install -pm0644 assets/{fonts,menu}/* %{buildroot}%{_grubthemedir}/distro-grub-fedora/
+install -pm0644 assets/icons/* %{buildroot}%{_grubthemedir}/distro-grub-fedora/icons/
+install -pm0644 assets/backgrounds/fedora.png %{buildroot}%{_grubthemedir}/distro-grub-fedora/background.png
+install -pm0644 assets/theme.txt %{buildroot}%{_grubthemedir}/distro-grub-fedora
 
 %files
 %license LICENSE
@@ -69,5 +71,8 @@ cp -rp customize/fedora/* %{buildroot}%{_grubthemedir}/distro-grub-fedora/
 
 
 %changelog
+* Sat Aug 26 2023 Phantom X <megaphantomx at hotmail dot com> - 3.2-1
+- 3.2
+
 * Fri Mar 31 2023 Phantom X <megaphantomx at hotmail dot com> - 3.1-1.20230227gitc1063ef
 - Initial spec

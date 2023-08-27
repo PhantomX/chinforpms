@@ -1,0 +1,53 @@
+From 206100b049f93c8d19eacad7291bc9ea95dc153a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 26 Aug 2023 09:26:06 -0300
+Subject: [PATCH] Change loader files names
+
+---
+ src/meson.build | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/src/meson.build b/src/meson.build
+index 15c8033..2209381 100644
+--- a/src/meson.build
++++ b/src/meson.build
+@@ -3,7 +3,7 @@ glslang = find_program('glslangValidator')
+ # Needs prefix for configure_file()
+ if get_option('append_libdir_mangohud')
+   libdir_mangohud = join_paths(get_option('prefix'), get_option('libdir'), 'mangohud')
+-  ld_libdir_mangohud = get_option('prefix') + '/\$LIB/mangohud/'
++  ld_libdir_mangohud = get_option('prefix') + '/\$LIB/mangohud'
+ else
+   libdir_mangohud = join_paths(get_option('prefix'), get_option('libdir'))
+   ld_libdir_mangohud = get_option('prefix') + '/\$LIB/'
+@@ -11,8 +11,7 @@ endif
+ 
+ conf_data = configuration_data()
+ 
+-conf_data.set('ld_libdir_mangohud_abs', libdir_mangohud)
+-conf_data.set('ld_libdir_mangohud', ld_libdir_mangohud)
++conf_data.set('ld_libdir_mangohud_abs', ld_libdir_mangohud)
+ 
+ overlay_shaders = [
+   'overlay.frag',
+@@ -281,7 +280,7 @@ if get_option('mangoapp_layer')
+ endif
+ 
+ configure_file(input : 'mangohud.json.in',
+-  output : '@0@.@1@.json'.format(meson.project_name(), host_machine.cpu_family()),
++  output : '@0@.json'.format(meson.project_name()),
+   configuration : conf_data,
+   install : true,
+   install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
+@@ -297,7 +296,7 @@ configure_file(input : '../bin/mangohud.in',
+ 
+ if get_option('mangoapp_layer')
+   configure_file(input : 'app/layer.json.in',
+-    output : 'libMangoApp.@0@.json'.format(host_machine.cpu_family()),
++    output : 'libMangoApp.json',
+     configuration : conf_data,
+     install : true,
+     install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
+-- 
+2.41.0
+

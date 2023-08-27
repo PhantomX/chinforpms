@@ -18,7 +18,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.12.0
+Version:        4.12.1
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -29,13 +29,6 @@ URL:            https://www.gtk.org
 
 Source0:        https://download.gnome.org/sources/gtk/%(echo %{version} | cut -d. -f-2)/gtk-%{version}.tar.xz
 Source2:        chinforpms-adwaita.css
-
-# Backported upstream MR
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6293
-Patch0:         6293.patch
-# Backported upstream MR
-# https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/6250
-Patch1:         6250.patch
 
 # Disable this @#$& by default
 Patch100:       0001-Disable-overlay-scrolling.patch
@@ -274,6 +267,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Fri Aug 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.1-100
+- 4.12.1
+
 * Sat Aug 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.0-100
 - 4.12.0
 - Rawhide sync

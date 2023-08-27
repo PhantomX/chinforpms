@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 0746a3b91afa5ef0ae53fbd1fb707483b4d76844
+%global commit 02db89ac30291629f30ca59999cee7748f764b90
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230810
+%global date 20230825
 %bcond_without snapshot
 
 %bcond_with sysspirv
@@ -54,7 +54,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.2
-Release:        106%{?dist}
+Release:        107%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -103,7 +103,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
 %if %{?with_sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.251
+BuildRequires:  vulkan-headers >= 1.3.255
 %endif
 
 # glslangValidator
