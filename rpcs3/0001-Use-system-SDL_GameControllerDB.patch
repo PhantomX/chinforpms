@@ -1,0 +1,25 @@
+From afa42c1dc2c1130615ac1177351a641934d780b4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 30 Aug 2023 23:05:22 -0300
+Subject: [PATCH] Use system SDL_GameControllerDB
+
+---
+ rpcs3/Input/sdl_pad_handler.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpcs3/Input/sdl_pad_handler.cpp b/rpcs3/Input/sdl_pad_handler.cpp
+index f25ab21..2a37ebd 100644
+--- a/rpcs3/Input/sdl_pad_handler.cpp
++++ b/rpcs3/Input/sdl_pad_handler.cpp
+@@ -221,7 +221,7 @@ bool sdl_pad_handler::Init()
+ 
+ 	if (g_cfg.io.load_sdl_mappings)
+ 	{
+-		const std::string db_path = rpcs3::utils::get_input_config_root() + "gamecontrollerdb.txt";
++		const std::string db_path = "_RPM_GCDBDIR_/gamecontrollerdb.txt";
+ 		sdl_log.notice("Adding mappings from file '%s'", db_path);
+ 
+ 		if (fs::is_file(db_path))
+-- 
+2.41.0
+

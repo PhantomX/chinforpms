@@ -13,7 +13,7 @@ diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
 index 5bbfcb3..18ec2f6 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,24 +1,146 @@
+@@ -1,25 +1,148 @@
 +find_package(fmt 8)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -141,6 +141,8 @@ index 5bbfcb3..18ec2f6 100644
 +else()
  add_subdirectory(fast_float)
 +endif()
++
+ add_subdirectory(reshadefx)
 +
 +find_package(xbyak)
 +if(xbyak_FOUND)

@@ -31,14 +31,14 @@
 %if 0%{?fedora} > 38
 %bcond_without  sysrtmidi
 %endif
-%global bundlertmidi 5.0.0
+%global bundlertmidi 6.0.0
 
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit e410841f10c488fbe1d9836acad0bbfd897dd1d1
+%global commit af850dac99310109821ef17e983a2a74bf351a08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230817
+%global date 20230830
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -89,7 +89,7 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
-%global commit22 84a99422a3faf1ab417fe71c0903a48debb9376a
+%global commit22 1e5b49925aa60065db52de44c366d446a902547b
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
 %global srcname22 rtmidi
 
@@ -105,7 +105,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15493
+Version:        0.0.29.15561
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -151,6 +151,7 @@ Source99:       Makefile
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
+Patch13:        0001-Use-system-SDL_GameControllerDB.patch
 
 ExclusiveArch:  x86_64
 
@@ -243,6 +244,7 @@ Requires:       hicolor-icon-theme
 Requires:       shared-mime-info
 
 Requires:       libGL%{?_isa}
+Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(spirv-tools) = 0~git%{shortcommit10}
@@ -364,6 +366,8 @@ sed \
   -i CMakeLists.txt
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
+
+sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_pad_handler.cpp
 
 
 %build

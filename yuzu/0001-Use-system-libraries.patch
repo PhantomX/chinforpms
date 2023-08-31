@@ -29,7 +29,7 @@ diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
 index 500eb21..a7d3621 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -40,8 +40,19 @@ if (NOT TARGET inih::INIReader)
+@@ -40,13 +40,24 @@ if (NOT TARGET inih::INIReader)
  endif()
  
  # mbedtls
@@ -45,6 +45,11 @@ index 500eb21..a7d3621 100755
 +else()
  add_subdirectory(mbedtls)
  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
+ if (NOT MSVC)
+     target_compile_options(mbedcrypto PRIVATE
+         -Wno-unused-but-set-variable
+         -Wno-string-concatenation)
+ endif()
 +endif()
  
  # MicroProfile

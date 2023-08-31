@@ -12,9 +12,9 @@
 %bcond_with soundtouch
 %bcond_without sysvulkan
 
-%global commit 82cdef45b377eae34180af01cdd329cfd957d507
+%global commit f6c8a850ae988eebd9c157d24d79c9b2d872789e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230823
+%global date 20230830
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -33,7 +33,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        93%{?dist}
+Release:        94%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -54,6 +54,8 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-log.h-ignore-format-security.patch
+Patch8:         0001-gcc-13-build-fix.patch
+Patch9:         0001-Fix-build-without-discord-presence-support.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -162,7 +164,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC lzma minizip msvc \
-  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas spirv-cross
+  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas
 
 %if %{with soundtouch}
 rm -rf soundtouch

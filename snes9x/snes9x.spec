@@ -1,11 +1,11 @@
 %undefine _cmake_shared_libs
 
-%global commit 5526a1d9055e131f711c2bfae3d4a14a6180bdb8
+%global commit 94fbbfe0dd0525c5b1c75124846ffa7e820880ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230601
+%global date 20230827
 %bcond_without snapshot
 
-%global commit10 197a273fd494321157f40a962c51b5fa8c9c3581
+%global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
@@ -27,7 +27,7 @@
 
 Name:           snes9x
 Version:        1.62.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -44,7 +44,8 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 
 # Fix CFLAGS usage in CLI version
 Patch0:         %{name}-1.56.1-unix_flags.patch
-Patch1:         0001-cmake-fix-data-files-install.patch
+Patch1:         0001-Use-system-libraries.patch
+Patch2:         0001-Remove-application-path-from-database-search.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -53,7 +54,6 @@ BuildRequires:   make
 BuildRequires:   nasm
 BuildRequires:   intltool
 BuildRequires:   pkgconfig(alsa)
-BuildRequires:   pkgconfig(gtkmm-3.0)
 BuildRequires:   pkgconfig(gl)
 BuildRequires:   pkgconfig(libpng)
 BuildRequires:   pkgconfig(libpulse)
@@ -76,27 +76,55 @@ BuildRequires:   libappstream-glib
 Requires:        hicolor-icon-theme
 Requires:        vulkan-loader%{?_isa}
 
+
+%global _description %{expand:
+Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
+emulator. It basically allows you to play most games designed for the SNES
+and Super Famicom Nintendo game systems on your computer.}
+
+%description %_description
+
+
+%package        common
+Summary:        Super Nintendo Entertainment System emulator - common files
+BuildArch:      noarch
+Requires:       hicolor-icon-theme
+
+%description    common
+%_description
+
+This package contains common file to %{name} sub packages.
+
+
+%package gtk
+Summary:        Super Nintendo Entertainment System emulator - GTK version
+BuildRequires:  pkgconfig(gtkmm-3.0)
+Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit11}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit10}
 
-
-%description
-Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
-emulator. It basically allows you to play most games designed for the SNES
-and Super Famicom Nintendo game systems on your computer.
-
-%package gtk
-Summary: Super Nintendo Entertainment System emulator - GTK version
-Requires: hicolor-icon-theme
-
-%description gtk
-Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
-emulator. It basically allows you to play most games designed for the SNES
-and Super Famicom Nintendo game systems on your computer.
+%description gtk %_description
 
 This package contains a graphical user interface using GTK+.
+
+%package qt
+Summary:        Super Nintendo Entertainment System emulator - Qt version
+BuildRequires:  cmake(cubeb)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+%dnl %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
+Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       bundled(glad) = %{glad_ver}
+Provides:       bundled(glslang) = 0~git%{shortcommit11}
+Provides:       bundled(imgui) = %{imgui_ver}
+Provides:       bundled(spirv-cross) = 0~git%{shortcommit10}
+
+%description qt %_description
+
+This package contains a graphical user interface using Qt.
 
 
 %prep
@@ -110,6 +138,7 @@ This package contains a graphical user interface using GTK+.
 rm -rf unzip
 
 pushd external
+rm -rf cubeb vulkan-headers
 cp -p fmt/LICENSE.rst LICENSE.fmt
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p glslang/LICENSE.txt LICENSE.glslang
@@ -120,6 +149,11 @@ popd
 sed \
   -e 's|${MINIZIP_CFLAGS}|-I%{_includedir}/minizip|g' \
   -i gtk/CMakeLists.txt
+
+cp -p gtk/data/%{name}-gtk.desktop %{name}-qt.desktop
+cp -p %{SOURCE1} .
+sed -e 's|%{name}-gtk|%{name}-qt|g' %{name}-gtk.appdata.xml > %{name}-qt.appdata.xml
+
 
 pushd unix
 autoreconf -ivf
@@ -138,6 +172,13 @@ pushd gtk
 
 popd
 
+pushd qt
+%cmake \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
+%{nil}
+
+popd
+
 # Build CLI version
 pushd unix
 %configure \
@@ -148,6 +189,10 @@ pushd unix
 popd
 
 pushd gtk
+%cmake_build
+popd
+
+pushd qt
 %cmake_build
 popd
 
@@ -166,16 +211,29 @@ popd
 mkdir -p %{buildroot}%{_bindir}
 install -p -m 0755 unix/%{name} %{buildroot}%{_bindir}
 
-# Validate desktop file
-desktop-file-validate \
-  %{buildroot}%{_datadir}/applications/%{name}-gtk.desktop
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 qt/%{__cmake_builddir}/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
 
 # Install AppData file
-install -d %{buildroot}%{_datadir}/metainfo
-install -p -m 644 %{SOURCE1} %{buildroot}%{_datadir}/metainfo
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
+install -d %{buildroot}%{_metainfodir}
+install -p -m 644 %{name}-{gtk,qt}.appdata.xml %{buildroot}%{_metainfodir}/
+
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  --set-name="Snes9x Qt" \
+  --set-key=Exec \
+  --set-value="%{name}-qt %F" \
+  --add-category=Qt \
+  %{name}-qt.desktop
+
 
 %find_lang %{name}-gtk
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-gtk.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 
 
 %files
@@ -184,19 +242,31 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %doc unix/docs/readme_unix.html
 %{_bindir}/%{name}
 
+%files common
+%{_datadir}/%{name}
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
+
 
 %files gtk -f %{name}-gtk.lang
 %license LICENSE external/LICENSE.*
 %doc docs/changes.txt
 %doc gtk/AUTHORS
 %{_bindir}/%{name}-gtk
-%{_datadir}/%{name}
-%{_datadir}/metainfo/%{name}-gtk.appdata.xml
+%{_metainfodir}/%{name}-gtk.appdata.xml
 %{_datadir}/applications/%{name}-gtk.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+
+
+%files qt
+%license LICENSE external/LICENSE.*
+%{_bindir}/%{name}-qt
+%{_datadir}/applications/%{name}-qt.desktop
+%{_metainfodir}/%{name}-qt.appdata.xml
 
 
 %changelog
+* Wed Aug 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1.62.3-5.20230827git94fbbfe
+- Qt sub package
+
 * Wed Apr 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1.62.3-1.20230417gitbfdbc28
 - 1.62.3
 

@@ -1,0 +1,31 @@
+From ed9ee0ea7b617c3af23a42d5ac4bdf189de26620 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 29 Aug 2023 22:07:29 -0300
+Subject: [PATCH] Remove application path from database search
+
+---
+ qt/src/CheatsDialog.cpp | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/qt/src/CheatsDialog.cpp b/qt/src/CheatsDialog.cpp
+index 190e28c..27b9f9e 100644
+--- a/qt/src/CheatsDialog.cpp
++++ b/qt/src/CheatsDialog.cpp
+@@ -114,7 +114,6 @@ void CheatsDialog::searchDatabase()
+     std::initializer_list<std::string> dirs =
+     {
+         EmuConfig::findConfigDir(),
+-        QGuiApplication::applicationDirPath().toStdString(),
+         S9xGetDirectory(CHEAT_DIR),
+         "/usr/share/snes9x",
+         "/usr/local/share/snes9x"
+@@ -199,4 +198,4 @@ void CheatsDialog::resizeEvent(QResizeEvent *event)
+ {
+     app->config->cheat_dialog_width = event->size().width();
+     app->config->cheat_dialog_height = event->size().height();
+-}
+\ No newline at end of file
++}
+-- 
+2.41.0
+

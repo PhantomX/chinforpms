@@ -1,0 +1,36 @@
+From 79ba47bfee5089a5ce61f0bace68d0ccd7962e11 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 29 Aug 2023 20:50:57 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ qt/CMakeLists.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/qt/CMakeLists.txt b/qt/CMakeLists.txt
+index b4c7bcb..67643f0 100644
+--- a/qt/CMakeLists.txt
++++ b/qt/CMakeLists.txt
+@@ -175,6 +175,11 @@ set(QT_UI_FILES
+     src/ShortcutsPanel.ui
+     src/FoldersPanel.ui)
+ 
++find_package(cubeb)
++if(cubeb_FOUND)
++  message(STATUS "Using the system cubeb")
++  list(APPEND LIBS cubeb::cubeb)
++else()
+ set(USE_SANITIZERS CACHE BOOL OFF)
+ set(BUILD_TESTS CACHE BOOL OFF)
+ set(BUILD_TOOLS CACHE BOOL OFF)
+@@ -182,6 +187,7 @@ set(BUNDLE_SPEEX FORCE BOOL ON)
+ add_subdirectory("../external/cubeb" "cubeb" EXCLUDE_FROM_ALL)
+ list(APPEND LIBS cubeb)
+ list(APPEND INCLUDES "../external/cubeb/include")
++endif()
+ 
+ set(BUILD_TESTING CACHE BOOL OFF)
+ add_subdirectory("../external/glslang" "glslang" EXCLUDE_FROM_ALL)
+-- 
+2.41.0
+

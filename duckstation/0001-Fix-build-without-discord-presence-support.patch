@@ -1,0 +1,32 @@
+From d7075536cd6234eb50a3e7214ea14b8d3c0904d5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 30 Aug 2023 22:52:57 -0300
+Subject: [PATCH] Fix build without discord presence support
+
+---
+ src/core/system.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/core/system.cpp b/src/core/system.cpp
+index 3ee1e26..5d6a073 100644
+--- a/src/core/system.cpp
++++ b/src/core/system.cpp
+@@ -3722,6 +3722,7 @@ void System::CheckForSettingsChanges(const Settings& old_settings)
+ 
+   FullscreenUI::CheckForConfigChanges(old_settings);
+ 
++#ifdef WITH_DISCORD_PRESENCE
+   if (g_settings.enable_discord_presence != old_settings.enable_discord_presence)
+   {
+     if (g_settings.enable_discord_presence)
+@@ -3729,6 +3730,7 @@ void System::CheckForSettingsChanges(const Settings& old_settings)
+     else
+       ShutdownDiscordPresence();
+   }
++#endif
+ 
+   if (g_settings.log_level != old_settings.log_level || g_settings.log_filter != old_settings.log_filter ||
+       g_settings.log_to_console != old_settings.log_to_console ||
+-- 
+2.41.0
+
