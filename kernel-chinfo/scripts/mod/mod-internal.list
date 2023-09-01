@@ -1,4 +1,5 @@
 bitfield_kunit
+checksum_kunit
 clk-gate_test
 clk_test
 cmdline_kunit
@@ -60,6 +61,7 @@ slub_kunit
 soc-topology-test
 soc-utils-test
 stackinit_kunit
+strcat_kunit
 strscpy_kunit
 sysctl-test
 test_bits

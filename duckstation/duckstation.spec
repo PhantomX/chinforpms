@@ -12,9 +12,9 @@
 %bcond_with soundtouch
 %bcond_without sysvulkan
 
-%global commit f6c8a850ae988eebd9c157d24d79c9b2d872789e
+%global commit 0e6efb22416a6545de235fda909281331b8eb4a6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230830
+%global date 20230831
 %bcond_without snapshot
 
 %if %{with snapshot}

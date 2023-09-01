@@ -106,8 +106,6 @@ function merge_configs()
 		echo "# powerpc" > "$name";;
 	"s390x")
 		echo "# s390" > "$name";;
-	"armv7hl")
-		echo "# arm" > "$name";;
 	*)
 		echo "# $arch" > "$name";;
 	esac

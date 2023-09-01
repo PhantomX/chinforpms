@@ -19,9 +19,3 @@ s390x-zfcpdump=generic:generic-s390x:generic-s390x-zfcpdump
 # aarch64
 aarch64=generic:generic-arm-aarch64
 aarch64-debug=generic:generic-arm-aarch64:debug:debug-arm-aarch64
-
-# arm
-armv7hl=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7
-armv7hl-debug=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7:debug:debug-arm
-armv7hl-lpae=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-lpae
-armv7hl-lpae-debug=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-lpae:debug:debug-arm

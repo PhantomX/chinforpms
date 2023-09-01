@@ -40,12 +40,3 @@ aarch64-debug=generic:generic-arm:generic-arm-aarch64:debug:debug-arm-aarch64
 aarch64-kgcov=generic:generic-arm:generic-arm-aarch64:kgcov
 aarch64-16k=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k
 aarch64-16k-debug=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k:debug:debug-arm-aarch64:debug-arm-aarch64-16k
-
-# arm
-armv7hl=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7
-armv7hl-debug=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7:debug:debug-arm
-armv7hl-kgcov=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-armv7:kgcov
-armv7hl-lpae=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-lpae
-armv7hl-lpae-debug=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-lpae:debug:debug-arm
-armv7hl-lpae-kgcov=generic:generic-arm:generic-arm-armv7:generic-arm-armv7-lpae:kgcov
-

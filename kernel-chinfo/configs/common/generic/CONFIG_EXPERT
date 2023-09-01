@@ -1,1 +1,1 @@
-# CONFIG_EXPERT is not set
+CONFIG_EXPERT=y

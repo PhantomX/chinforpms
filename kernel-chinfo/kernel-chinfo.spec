@@ -34,18 +34,6 @@
 %{error:clang_lto requires --with toolchain_clang}
 %endif
 
-# Cross compile on copr for arm
-# See https://bugzilla.redhat.com/1879599
-%if 0%{?_with_cross_arm:1}
-%global _target_cpu armv7hl
-%global _arch arm
-%global _build_arch arm
-%global _with_cross    1
-# Enforces buildroot if cross_arm
-# See https://bugzilla.redhat.com/2149446
-%global buildroot %{_buildrootdir}/%{NAME}-%{VERSION}-%{RELEASE}.%{_build_cpu}
-%endif
-
 # RPM macros strip everything in BUILDROOT, either with __strip
 # or find-debuginfo.sh. Make use of __spec_install_post override
 # and save/restore binaries we want to package as unstripped.
@@ -143,6 +131,7 @@ Summary: The Linux kernel
 
 # Default compression algorithm
 %global compression xz
+%global compression_flags --compress
 %global compext xz
 %if %{zipmodules}
 %global zipsed -e 's/\.ko$/\.ko.%compext/'
@@ -190,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.4.12
+%define specrpmversion 6.5.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -220,14 +209,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 841bc1c0c6ecb5a05ce6b530f01062b938ad63f6
-%global pf_first_commit 6995e2de6891c724bfeb2db33d7b87775f913ad1
-%global pfcoprhash 5614a741a75850291dc1ba9e431be979
+%global pfcommit 5eeffbf9e10ddc7694a477b1566bece013db8b49
+%global pf_first_commit 2dde18cd1d8fac735875f2e4987f11817cc0bc2c
+%global pfcoprhash 2b834babe6ee2c02fc1d4ec106c62d32
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -249,7 +238,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id db7e8f007f9836f6e2472c41063e0a39720145da
+%global opensuse_id 0955fc7006c076198062e63e5848e69920dff929
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -261,9 +250,7 @@ Summary: The Linux kernel
 #
 # standard kernel
 %define with_up        %{?_without_up:0} %{?!_without_up:1}
-# kernel PAE (only valid for ARM (lpae))
-%define with_pae       %{?_without_pae:0} %{?!_without_pae:1}
-# kernel-debug
+# build also debug variants
 %define with_debug     %{?_without_debug:0} %{?!_without_debug:1}
 %define with_debug     0
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
@@ -278,7 +265,6 @@ Summary: The Linux kernel
 # Supported variants
 #            (base)    with_debug    with_gcov
 # up         X         X             X
-# pae        X                       X
 # zfcpdump   X                       X
 # arm64_16k  X         X             X
 # arm64_64k  X         X             X
@@ -288,7 +274,7 @@ Summary: The Linux kernel
 %define with_doc       %{?_without_doc:0} %{?!_without_doc:1}
 # kernel-headers
 %define with_headers   %{?_without_headers:0} %{?!_without_headers:1}
-%define with_cross_headers   %{?_without_cross_headers:   0} %{?!_without_cross_headers:1}
+%define with_cross_headers   %{?_without_cross_headers:0} %{?!_without_cross_headers:1}
 %define with_bpftool   %{?_without_bpftool:0} %{?!_without_bpftool:1}
 %define with_bpftool   0
 # kernel-debuginfo
@@ -303,8 +289,6 @@ Summary: The Linux kernel
 #
 # Only build the base kernel (--with baseonly):
 %define with_baseonly  %{?_with_baseonly:1} %{?!_with_baseonly:0}
-# Only build the pae kernel (--with paeonly):
-%define with_paeonly   %{?_with_paeonly:1} %{?!_with_paeonly:0}
 # Only build the debug kernel (--with dbgonly):
 %define with_dbgonly   %{?_with_dbgonly:1} %{?!_with_dbgonly:0}
 %define with_dbgonly   0
@@ -458,14 +442,8 @@ Summary: The Linux kernel
 # and debuginfo generation. Currently we rely on the old alldebug setting.
 %global _build_id_links alldebug
 
-# kernel PAE is only built on ARMv7
-%ifnarch armv7hl
-%define with_pae 0
-%endif
-
 # if requested, only build base kernel
 %if %{with_baseonly}
-%define with_pae 0
 %define with_debug 0
 %define with_realtime 0
 %define with_vdso_install 0
@@ -475,13 +453,6 @@ Summary: The Linux kernel
 %define with_cross 0
 %define with_cross_headers 0
 %define with_ipaclones 0
-%endif
-
-# if requested, only build pae kernel
-%if %{with_paeonly}
-%define with_up 0
-%define with_debug 0
-%define with_realtime 0
 %endif
 
 # if requested, only build debug kernel
@@ -499,7 +470,6 @@ Summary: The Linux kernel
 %if %{with_rtonly}
 %define with_realtime 1
 %define with_up 0
-%define with_pae 0
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
@@ -514,6 +484,11 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %define with_arm64_16k 0
 %define with_arm64_64k 0
+%endif
+
+# RT kernel is only built on x86_64 and aarch64
+%ifnarch x86_64 aarch64
+%define with_realtime 0
 %endif
 
 # turn off kABI DUP check and DWARF-based check if kABI check is disabled
@@ -572,7 +547,7 @@ Summary: The Linux kernel
 %define with_zfcpdump 0
 %endif
 
-# 16k and 64k variant only for aarch64
+# 16k and 64k variants only for aarch64
 %ifnarch aarch64
 %define with_arm64_16k 0
 %define with_arm64_64k 0
@@ -616,25 +591,6 @@ Summary: The Linux kernel
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
-%ifarch %{arm}
-%define all_arch_configs %{name}-%{specrpmversion}-arm*.config
-%define skip_nonpae_vdso 1
-%define asmarch arm
-%define hdrarch arm
-%define make_target bzImage
-%define kernel_image arch/arm/boot/zImage
-# http://lists.infradead.org/pipermail/linux-arm-kernel/2012-March/091404.html
-%define kernel_mflags KALLSYMS_EXTRA_PASS=1
-# we only build headers/perf/tools on the base arm arches
-# just like we used to only build them on i386 for x86
-%ifnarch armv7hl
-%define with_headers 0
-%define with_cross_headers 0
-%endif
-# These currently don't compile on armv7
-%define with_selftests 0
-%endif
-
 %ifarch aarch64
 %define all_arch_configs %{name}-%{specrpmversion}-aarch64*.config
 %define asmarch arm64
@@ -659,14 +615,13 @@ Summary: The Linux kernel
 %if 0%{?fedora}
 %define nobuildarches i386
 %else
-%define nobuildarches i386 i686 %{arm}
+%define nobuildarches i386 i686
 %endif
 
 %ifarch %nobuildarches
 # disable BuildKernel commands
 %define with_up 0
 %define with_debug 0
-%define with_pae 0
 %define with_zfcpdump 0
 %define with_arm64_16k 0
 %define with_arm64_64k 0
@@ -679,13 +634,7 @@ Summary: The Linux kernel
 %endif
 
 %if 0%{?use_vdso}
-
-%if 0%{?skip_nonpae_vdso}
-%define _use_vdso 0
-%else
 %define _use_vdso 1
-%endif
-
 %else
 %define _use_vdso 0
 %endif
@@ -739,9 +688,9 @@ Release: %{pkg_release}
 # DO NOT CHANGE THE 'ExclusiveArch' LINE TO TEMPORARILY EXCLUDE AN ARCHITECTURE BUILD.
 # SET %%nobuildarches (ABOVE) INSTEAD
 %if 0%{?fedora}
-ExclusiveArch: noarch x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: noarch x86_64 s390x aarch64 ppc64le
 %else
-ExclusiveArch: noarch i386 i686 x86_64 s390x %{arm} aarch64 ppc64le
+ExclusiveArch: noarch i386 i686 x86_64 s390x aarch64 ppc64le
 %endif
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
@@ -755,8 +704,8 @@ Provides: installonlypkg(kernel)
 #
 # List the packages used during the kernel build
 #
-BuildRequires: kmod, patch, bash, coreutils, tar, git-core, which
-BuildRequires: bzip2, xz, findutils, gzip, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk
+BuildRequires: kmod, bash, coreutils, tar, git-core, which
+BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk, %compression
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
@@ -790,10 +739,8 @@ BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
 BuildRequires: clang llvm-devel fuse-devel
-%ifnarch %{arm}
-BuildRequires: numactl-devel
-%endif
 BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel
+BuildRequires: numactl-devel
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
@@ -943,11 +890,10 @@ Source32: %{name}-x86_64-rhel.config
 Source33: %{name}-x86_64-debug-rhel.config
 
 Source34: filter-x86_64.sh.rhel
-Source35: filter-armv7hl.sh.rhel
-Source37: filter-aarch64.sh.rhel
-Source38: filter-ppc64le.sh.rhel
-Source39: filter-s390x.sh.rhel
-Source40: filter-modules.sh.rhel
+Source35: filter-aarch64.sh.rhel
+Source36: filter-ppc64le.sh.rhel
+Source37: filter-s390x.sh.rhel
+Source38: filter-modules.sh.rhel
 
 Source41: x509.genkey.centos
 # ARM64 64K page-size kernel config
@@ -963,25 +909,20 @@ Source51: mod-extra.list.fedora
 
 Source52: %{name}-aarch64-fedora.config
 Source53: %{name}-aarch64-debug-fedora.config
-Source54: %{name}-armv7hl-fedora.config
-Source55: %{name}-armv7hl-debug-fedora.config
-Source56: %{name}-armv7hl-lpae-fedora.config
-Source57: %{name}-armv7hl-lpae-debug-fedora.config
-Source58: %{name}-aarch64-16k-fedora.config
-Source59: %{name}-aarch64-16k-debug-fedora.config
-Source60: %{name}-ppc64le-fedora.config
-Source61: %{name}-ppc64le-debug-fedora.config
-Source62: %{name}-s390x-fedora.config
-Source63: %{name}-s390x-debug-fedora.config
-Source64: %{name}-x86_64-fedora.config
-Source65: %{name}-x86_64-debug-fedora.config
+Source54: %{name}-aarch64-16k-fedora.config
+Source55: %{name}-aarch64-16k-debug-fedora.config
+Source56: %{name}-ppc64le-fedora.config
+Source57: %{name}-ppc64le-debug-fedora.config
+Source58: %{name}-s390x-fedora.config
+Source59: %{name}-s390x-debug-fedora.config
+Source60: %{name}-x86_64-fedora.config
+Source61: %{name}-x86_64-debug-fedora.config
 
-Source67: filter-x86_64.sh.fedora
-Source68: filter-armv7hl.sh.fedora
-Source70: filter-aarch64.sh.fedora
-Source71: filter-ppc64le.sh.fedora
-Source72: filter-s390x.sh.fedora
-Source73: filter-modules.sh.fedora
+Source62: filter-x86_64.sh.fedora
+Source63: filter-aarch64.sh.fedora
+Source64: filter-ppc64le.sh.fedora
+Source65: filter-s390x.sh.fedora
+Source66: filter-modules.sh.fedora
 %endif
 
 Source75: partial-kgcov-snip.config
@@ -1088,7 +1029,7 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch#/openSUSE-drm-amd-pm-update-the-LC_L1_INACTIVITY-setting-to-ad.patch
+Patch1014: %{opensuse_url}/Revert-101bd907b424-misc-rtsx-judge-ASPM-Mode-to-set.patch#/openSUSE-Revert-101bd907b424-misc-rtsx-judge-ASPM-Mode-to-set.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1164,7 +1105,7 @@ options that can be passed to Linux kernel modules at load time.
 Summary: Header files for the Linux kernel for use by glibc
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
-%if "0%{?variant}"
+%if 0%{?gemini} || "0%{?variant}" != "0"
 Obsoletes: kernel-headers < %{specversion}-%{pkg_release}
 Provides: %{name}-headers = %{specversion}-%{pkg_release}
 %endif
@@ -1177,6 +1118,10 @@ glibc package.
 
 %package cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
+%if 0%{?gemini} || "0%{?variant}" != "0"
+Provides: kernel-cross-headers = %{specversion}-%{release}
+Obsoletes: kernel-cross-headers < %{specversion}
+%endif
 %description cross-headers
 Kernel-cross-headers includes the C header files that specify the interface
 between the Linux kernel and userspace libraries and programs.  The
@@ -1239,8 +1184,8 @@ Linux kernel, suitable for the kabi-dw tool.
 # This macro creates a kernel-<subpackage>-debuginfo package.
 #    %%kernel_debuginfo_package <subpackage>
 #
-# Explanation of the find_debuginfo_opts: We build multiple kernels (debug
-# pae etc.) so the regex filters those kernels appropriately. We also
+# Explanation of the find_debuginfo_opts: We build multiple kernels (debug,
+# rt, 64k etc.) so the regex filters those kernels appropriately. We also
 # have to package several binaries as part of kernel-devel but getting
 # unique build-ids is tricky for these userspace binaries. We don't really
 # care about debugging those so we just filter those out and remove it.
@@ -1469,11 +1414,11 @@ Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{
 %if 0%{!?fedora:1}\
 %{expand:%%kernel_modules_partner_package %{?1:%{1}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %endif\
+%{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
+%endif\
 %if "%{1}" == "rt" || "%{1}" == "rt-debug"\
 %{expand:%%kernel_kvm_package %{?1:%{1}}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
 %else \
-%{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
-%endif\
 %if %{with_efiuki}\
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
@@ -1510,14 +1455,6 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 %{nil}
 
 # Now, each variant package.
-
-%if %{with_pae}
-%define variant_summary The Linux kernel compiled for Cortex-A15
-%kernel_variant_package lpae
-%description lpae-core
-This package includes a version of the Linux kernel with support for
-Cortex-A15 devices with LPAE and HW virtualisation support
-%endif
 
 %if %{with_zfcpdump}
 %define variant_summary The Linux kernel compiled for zfcpdump usage
@@ -1721,12 +1658,11 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
-ApplyPatch %{PATCH2090}
-ApplyPatch %{PATCH2091}
+%dnl ApplyPatch %{PATCH2090}
+%dnl ApplyPatch %{PATCH2091}
 
 %if !0%{?post_factum}
 ApplyPatch %{PATCH6000}
@@ -2005,7 +1941,7 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/%{image_install_path}
 %endif
 
-%ifarch %{arm} aarch64
+%ifarch aarch64
     %{make} ARCH=$Arch dtbs INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     %{make} ARCH=$Arch dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
@@ -2041,14 +1977,7 @@ BuildKernel() {
         CopyKernel=cp
     fi
 
-    # Sign the image if we're using EFI
-    # aarch64 kernels are gziped EFI images
-    KernelExtension=${KernelImage##*.}
-    if [ "$KernelExtension" == "gz" ]; then
-        SignImage=${KernelImage%.*}
-    else
-        SignImage=$KernelImage
-    fi
+    SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
      %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
@@ -2148,7 +2077,7 @@ BuildKernel() {
     # NOTENOTE: checksums to the rpm metadata provides list.
     # NOTENOTE: if you change the symvers name, update the backend too
     echo "**** GENERATING kernel ABI metadata ****"
-    %compression -c9 < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext
+    %compression --stdout %compression_flags < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext
     cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.%compext
 
 %if %{with_kabichk}
@@ -2305,16 +2234,6 @@ BuildKernel() {
     # arch/arm64/include/asm/opcodes.h references arch/arm
     cp -a --parents arch/arm/include/asm/opcodes.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
-    # include the machine specific headers for ARM variants, if available.
-%ifarch %{arm}
-    if [ -d arch/%{asmarch}/mach-${Variant}/include ]; then
-      cp -a --parents arch/%{asmarch}/mach-${Variant}/include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    fi
-    # include a few files for 'make prepare'
-    cp -a --parents arch/arm/tools/gen-mach-types $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-    cp -a --parents arch/arm/tools/mach-types $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
-
-%endif
     cp -a include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
 %ifarch i686 x86_64
     # files for 'make prepare' to succeed with kernel-devel
@@ -2412,6 +2331,8 @@ BuildKernel() {
     {
         # remove files that will be auto generated by depmod at rpm -i time
         pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
+            # in case below list needs to be extended, remember to add a
+            # matching ghost entry in the files section as well
             rm -f modules.{alias,alias.bin,builtin.alias.bin,builtin.bin} \
                   modules.{dep,dep.bin,devname,softdep,symbols,symbols.bin}
         popd
@@ -2586,13 +2507,11 @@ BuildKernel() {
     ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
 %dnl %if 0%{?fedora} > 37
-%ifnarch armv7hl
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
     if [ "$Variant" != "zfcpdump" ]; then
         bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
     fi
-%endif
 %dnl %endif
 
     # prune junk from kernel-devel
@@ -2681,10 +2600,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso} 16k
 BuildKernel %make_target %kernel_image %{_use_vdso} 64k
 %endif
 
-%if %{with_pae}
-BuildKernel %make_target %kernel_image %{use_vdso} lpae
-%endif
-
 %if %{with_realtime_base}
 BuildKernel %make_target %kernel_image %{_use_vdso} rt
 %endif
@@ -2694,7 +2609,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686 %{nobuildarches}
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_pae} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 InitBuildVars
@@ -2777,9 +2692,6 @@ find Documentation -type d | xargs chmod u+w
 # TODO - this needs to be fixed in same way as we have it in c9s
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
-    if [ "%{with_pae}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+lpae certs/signing_key.x509.sign+lpae $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+lpae/ \
-    fi \
     if [ "%{with_up_base}" -ne "0" ]; then \
       %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
     fi \
@@ -2807,7 +2719,7 @@ find Documentation -type d | xargs chmod u+w
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
     echo "Compressing kernel modules ..." \
-    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P%{?_smp_build_ncpus} -r %compression; \
+    find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P%{?_smp_build_ncpus} -r %compression %compression_flags; \
   fi \
 %{nil}
 
@@ -2885,11 +2797,7 @@ find $RPM_BUILD_ROOT/usr/include \
 %endif
 
 %if %{with_cross_headers}
-%if 0%{?fedora}
-HDR_ARCH_LIST='arm arm64 powerpc s390 x86'
-%else
 HDR_ARCH_LIST='arm64 powerpc s390 x86'
-%endif
 mkdir -p $RPM_BUILD_ROOT/usr/tmp-headers
 
 for arch in $HDR_ARCH_LIST; do
@@ -3125,17 +3033,11 @@ fi\
 
 #
 # This macro defines a %%post script for a kernel*-modules-core package.
-# It also defines a %%postun script that does the same thing.
 #	%%kernel_modules_core_post [<subpackage>]
-#
-# FIXME: /bin/kernel-install can't handle UKIs (yet), so cleanup depmod files in %postun for now.
 #
 %define kernel_modules_core_post() \
 %{expand:%%posttrans %{?1:%{1}-}modules-core}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%{nil}\
-%{expand:%%postun %{?1:%{1}-}modules-core}\
-rm -f /lib/modules/%{KVERREL}%{?1:+%{1}}/modules.*\
 %{nil}
 
 # This macro defines a %%posttrans script for a kernel package.
@@ -3154,7 +3056,9 @@ rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{
 /bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
 if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" ]]; then\
     ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
-    command -v restorecon &>/dev/null && restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" \
+    if command -v restorecon &>/dev/null; then\
+        restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+    fi\
 fi\
 %{nil}
 
@@ -3205,7 +3109,7 @@ rm -f /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
 #
 %define kernel_variant_preun() \
 %{expand:%%preun %{?1:%{1}-}core}\
-/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
+/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} || exit $?\
 %if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
@@ -3221,11 +3125,6 @@ fi\
 %if %{with_up_base}
 %kernel_variant_preun
 %kernel_variant_post -r kernel-smp
-%endif
-
-%if %{with_pae}
-%kernel_variant_preun lpae
-%kernel_variant_post -v lpae -r (kernel|kernel-smp)
 %endif
 
 %if %{with_zfcpdump}
@@ -3342,12 +3241,14 @@ fi\
 %ghost /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/.vmlinuz.hmac \
 %ghost /%{image_install_path}/.vmlinuz-%{KVERREL}%{?3:+%{3}}.hmac \
-%ifarch %{arm} aarch64\
+%ifarch aarch64\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
 %attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%dir /lib/modules\
+%dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
@@ -3355,8 +3256,6 @@ fi\
 %ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-core.list %{?3:%{3}-}modules-core}\
-%dir /lib/modules\
-%dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}/kernel\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/build\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
@@ -3374,6 +3273,16 @@ fi\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.modesetting\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.networking\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.order\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.alias\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.alias.bin\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin.alias.bin\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin.bin\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.dep\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.dep.bin\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.devname\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.softdep\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.symbols\
+%ghost %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.symbols.bin\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules.list %{?3:%{3}-}modules}\
 %{expand:%%files %{?3:%{3}-}devel}\
 %defverify(not mtime)\
@@ -3478,6 +3387,9 @@ fi\
 #
 #
 %changelog
+* Thu Aug 31 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.0-500.chinfo
+- 6.5.0 - pf1
+
 * Wed Aug 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.12-500.chinfo
 - 6.4.12 - pf6
 
@@ -3704,54 +3616,6 @@ fi\
 
 * Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.0-500.chinfo
 - 5.19.0 - pf1
-
-* Fri Jul 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.15-500.chinfo
-- 5.18.15 - pf5
-
-* Sat Jul 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.14-500.chinfo
-- 5.18.14 - pf4
-
-* Fri Jul 22 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.13-500.chinfo
-- 5.18.13 - pf4
-
-* Mon Jul 18 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.12-500.chinfo
-- 5.18.12 - pf4
-
-* Wed Jul 13 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.11-500.chinfo
-- 5.18.11 - pf4
-
-* Thu Jul 07 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.10-500.chinfo
-- 5.18.10 - pf4
-
-* Sat Jul 02 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.9-500.chinfo
-- 5.18.9 - pf3
-
-* Wed Jun 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.8-500.chinfo
-- 5.18.8 - pf3
-
-* Sat Jun 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.7-500.chinfo
-- 5.18.7 - pf3
-
-* Wed Jun 22 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.6-500.chinfo
-- 5.18.6 - pf3
-
-* Thu Jun 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.5-500.chinfo
-- 5.18.5 - pf2
-
-* Tue Jun 14 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.4-500.chinfo
-- 5.18.4 - pf2
-
-* Thu Jun 09 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.3-500.chinfo
-- 5.18.3 - pf2
-
-* Mon Jun 06 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.2-500.chinfo
-- 5.18.2 - pf2
-
-* Mon May 30 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.1-500.chinfo
-- 5.18.1 - pf2
-
-* Mon May 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.18.0-500.chinfo
-- 5.18.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

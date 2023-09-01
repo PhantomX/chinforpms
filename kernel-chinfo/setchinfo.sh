@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230816
-# 6.4
-# pf6
+# 20230831
+# 6.5
+# pf1
 
 set -e
 
@@ -67,7 +67,6 @@ V4L2_LOOPBACK
 "
 
 pfv="
-X86_AMD_PSTATE_DEFAULT_MODE=3
 SCHED_TIMESLICE=4
 "
 
