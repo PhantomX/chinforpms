@@ -37,7 +37,7 @@
 
 Name:           telegram-desktop
 Version:        4.9.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -50,6 +50,7 @@ Epoch:          1
 # * open-sans-fonts  - Apache-2.0 -- bundled font;
 # * vazirmatn-fonts - OFL -- bundled font.
 # * Implib.so - MIT -- build-time dependency;
+# * GSL - MIT -- build-time dependency;
 License:        GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-3.0-only AND OFL-1.1 AND MIT
 URL:            https://github.com/telegramdesktop/%{srcname}
 
@@ -78,7 +79,7 @@ Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 %if %{without bin}
-BuildRequires:  cmake(Microsoft.GSL)
+%dnl BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
@@ -218,10 +219,12 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{GSL,QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,minizip,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,minizip,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  -i cmake/external/rlottie/CMakeLists.txt cmake/external/kcoreaddons/CMakeLists.txt
+  -i cmake/external/rlottie/CMakeLists.txt \
+  cmake/external/kcoreaddons/CMakeLists.txt \
+  cmake/external/gsl/CMakeLists.txt
 
 rm -f Telegram/ThirdParty/libtgvoip/json11.*
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -351,6 +354,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Sep 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.4-101
+- Bundle GSL for the time
+
 * Fri Sep 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.4-100
 - 4.9.4
 

@@ -229,7 +229,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.6.0
+Version: 9.7.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -831,6 +831,7 @@ Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
 %else
 Requires: libvirt-daemon = %{version}-%{release}
 %endif
@@ -858,6 +859,7 @@ Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
 %else
 Requires: libvirt-daemon = %{version}-%{release}
 %endif
@@ -882,6 +884,7 @@ Summary: Server side daemon & driver required to run LXC guests
 %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
 %else
 Requires: libvirt-daemon = %{version}-%{release}
 %endif
@@ -907,6 +910,7 @@ Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
 %else
 Requires: libvirt-daemon = %{version}-%{release}
 %endif
@@ -931,6 +935,7 @@ Summary: Server side daemon & driver required to run VirtualBox guests
 %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
+Recommends: libvirt-daemon = %{version}-%{release}
 %else
 Requires: libvirt-daemon = %{version}-%{release}
 %endif
@@ -1725,14 +1730,14 @@ exit 0
 
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
-%libvirt_systemd_unix_pre virsecretd
+%libvirt_systemd_unix_pre virtsecretd
 
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
-%libvirt_systemd_unix_posttrans virsecretd
+%libvirt_systemd_unix_posttrans virtsecretd
 
 %preun daemon-driver-secret
-%libvirt_systemd_unix_preun virsecretd
+%libvirt_systemd_unix_preun virtsecretd
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
@@ -2140,8 +2145,6 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/qemu/slirp/
 %ghost %dir %{_rundir}/libvirt/qemu/swtpm/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/
-%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/
-%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/channel/target/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/checkpoint/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/dump/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/nvram/
@@ -2474,6 +2477,9 @@ exit 0
 
 
 %changelog
+* Sat Sep 02 2023 Phantom X <megaphantomx at hotmail dot com> - 9.7.0-100
+- 9.7.0
+
 * Tue Aug 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.6.0-100
 - 9.6.0
 

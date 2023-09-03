@@ -50,7 +50,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  8.0.0
+%global winemono  8.0.1
 %global winevulkan 1.3.260
 
 %global wineFAudio 23.03
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.14
+%global wine_stagingver 8.15
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id afd534d8b91a079375a5864332c625088b873afe
+%global tkg_id c69dc4cf4f20831c1ea57d3c452b0322f21c5487
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.14
+Version:        8.15
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -222,6 +222,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
+Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-whq-240556e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -274,6 +275,7 @@ Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-update-nvapi-and-nvencodeapi-autoconf.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
+Patch1305:       %{name}-mono-8.0.1.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -904,6 +906,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1063 -p1
 %endif
 %patch -P 1026 -p1
+%patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1027 -p1
 %patch -P 1028 -p1
@@ -914,7 +917,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1030 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
-%dnl #FIXME see bugzilla (Elder Scrolls Online crash) %patch1034 -p1
+%patch -P 1034 -p1
 %patch -P 1035 -p1
 %patch -P 1036 -p1
 %patch -P 1037 -p1
@@ -930,6 +933,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %dnl %patch -P 1302 -p1
 %patch -P 1303 -p1
 %patch -P 1304 -p1
+%patch -P 1305 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -1626,6 +1630,7 @@ fi
 %{_libdir}/wine/%{winesodir}/dwrite.so
 %{_libdir}/wine/%{winedlldir}/dwrite.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dx8vb.%{winedll}
+%{_libdir}/wine/%{winedlldir}/dxcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dxdiagn.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dxgi.%{winedll}
 %if 0%{?wine_staging}
@@ -1992,6 +1997,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/where.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/whoami.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wiaservc.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wldp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wimgapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/win32u.so
 %{_libdir}/wine/%{winedlldir}/win32u.%{winedll}
@@ -2515,6 +2521,9 @@ fi
 
 
 %changelog
+* Sat Sep 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.15-100
+- 8.15
+
 * Mon Aug 21 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.14-100
 - 8.14
 

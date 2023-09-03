@@ -7,10 +7,10 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit e1df54ceaa4bdae12124ce4e638bccf641a34fa6
+%global commit 1a039a4729b9a8f0440739eec4cedf59e79a3aa0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230510
-%bcond_with snapshot
+%global date 20230615
+%bcond_without snapshot
 
 %bcond_with sysspirv
 %bcond_without sysvulkan
@@ -54,7 +54,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        Vulkan-based D3D8 implementation for Linux / Wine
 
@@ -112,6 +112,7 @@ Requires:       vulkan-loader >= 1.1
 
 Requires:       wine-common >= %{winecommonver}
 Requires:       wine-desktop >= %{winecommonver}
+Requires:       wine-dxvk >= 2.2
 Enhances:       wine
 
 
@@ -210,7 +211,7 @@ meson \
   --wrap-mode=nodownload \
   --cross-file build-%{cfname}${i}.txt \
   --buildtype "plain" \
-  -Denable_d3d9=false \
+  -Denable_d3d9=true \
   -Denable_d3d10=false \
   -Denable_d3d11=false \
   -Denable_dxgi=false \

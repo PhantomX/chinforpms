@@ -6,7 +6,7 @@
 
 %bcond_without snap
 
-%global vivaldi_ver 6.1
+%global vivaldi_ver 6.2
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
@@ -25,7 +25,7 @@
 
 Name:           vivaldi-ffmpeg-codecs
 Version:        112.0.5615.49
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -82,6 +82,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Fri Sep 01 2023 - 112.0.5615.49-2
+- Set vivaldir_ver to 6.2
+
 * Mon Jul 17 2023 - 112.0.5615.49-1
 - 112.0.5615.49
 
