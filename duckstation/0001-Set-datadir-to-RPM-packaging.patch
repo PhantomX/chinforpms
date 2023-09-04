@@ -1,4 +1,4 @@
-From f0e7d1021d63ee3dbb66826bbdc7f10c62338760 Mon Sep 17 00:00:00 2001
+From 63a42b6512e65c97b1abc23aeb5f3a9684f3e5ef Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 22 Aug 2022 22:53:43 -0300
 Subject: [PATCH] Set datadir to RPM packaging
@@ -9,10 +9,10 @@ Subject: [PATCH] Set datadir to RPM packaging
  2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
-index c6aad17..08a45fb 100644
+index 613d6cb..f758981 100644
 --- a/src/duckstation-qt/qthost.cpp
 +++ b/src/duckstation-qt/qthost.cpp
-@@ -237,7 +237,7 @@ void QtHost::SetResourcesDirectory()
+@@ -259,7 +259,7 @@ void QtHost::SetResourcesDirectory()
  {
  #ifndef __APPLE__
    // On Windows/Linux, these are in the binary directory.
@@ -22,11 +22,11 @@ index c6aad17..08a45fb 100644
    // On macOS, this is in the bundle resources directory.
    EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
 diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
-index f0bbff8..c8c9839 100644
+index 5d70644..c11bdad 100644
 --- a/src/duckstation-qt/qttranslations.cpp
 +++ b/src/duckstation-qt/qttranslations.cpp
-@@ -38,8 +38,8 @@ void QtHost::InstallTranslator()
-   const QString language(QString::fromStdString(Host::GetBaseStringSettingValue("Main", "Language", "en")));
+@@ -71,8 +71,8 @@ void QtHost::InstallTranslator()
+     QString::fromStdString(Host::GetBaseStringSettingValue("Main", "Language", GetDefaultLanguage())));
  
    // install the base qt translation first
 -  const QString base_dir(QStringLiteral("%1/translations").arg(qApp->applicationDirPath()));
@@ -37,5 +37,5 @@ index f0bbff8..c8c9839 100644
    if (!has_base_ts)
    {
 -- 
-2.37.2
+2.41.0
 

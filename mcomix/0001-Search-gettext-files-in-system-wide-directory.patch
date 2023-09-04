@@ -1,14 +1,14 @@
-From 24e1af5eba8d110890c512d4ef30470b233408c1 Mon Sep 17 00:00:00 2001
+From b4b5d3291175691b64f6a93ebf3c79327db541a2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 14 Dec 2022 00:11:38 -0300
 Subject: [PATCH] Search gettext files in system-wide directory
 
 ---
- mcomix/i18n.py | 27 ++++++++++++++++++---------
- 1 file changed, 18 insertions(+), 9 deletions(-)
+ mcomix/i18n.py | 32 ++++++++++++++++++++++----------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
 diff --git a/mcomix/i18n.py b/mcomix/i18n.py
-index 1c812d9..9168fd7 100644
+index c3a915f..176c48c 100644
 --- a/mcomix/i18n.py
 +++ b/mcomix/i18n.py
 @@ -6,6 +6,7 @@ import locale
@@ -19,12 +19,18 @@ index 1c812d9..9168fd7 100644
  
  try:
      import chardet
-@@ -71,13 +72,22 @@ def install_gettext():
+@@ -71,16 +72,27 @@ def install_gettext(force_lang=None):
      # Initialize default locale
      locale.setlocale(locale.LC_ALL, '')
  
 +    lang_identifiers = []
-     if preferences.prefs['language'] != 'auto':
+     if force_lang is not None:
+         lang = force_lang
+-        lang_identifiers = [lang]
++        if lang not in ('en', 'en_US'):
++            # .mo is not needed for english
++            lang_identifiers.append(lang)
+     elif preferences.prefs['language'] != 'auto':
          lang = preferences.prefs['language']
 -        lang_identifiers = [ lang ]
 +        if lang not in ('en', 'en_US'):
@@ -44,7 +50,7 @@ index 1c812d9..9168fd7 100644
  
      # Make sure GTK uses the correct language.
      os.environ['LANGUAGE'] = lang
-@@ -86,15 +96,14 @@ def install_gettext():
+@@ -89,15 +101,15 @@ def install_gettext(force_lang=None):
  
      # Search for .mo files manually, since gettext doesn't support packaged resources
      for lang in lang_identifiers:
@@ -63,9 +69,10 @@ index 1c812d9..9168fd7 100644
              break
 +        except IOError:
 +            log.error('locale file: %s not found.', resource)
- 
++
      else:
          translation = gettext.NullTranslations()
+ 
 -- 
-2.38.1
+2.41.0
 

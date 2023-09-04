@@ -1,4 +1,4 @@
-From 4c5911b63a8a50470259d95d8fe0638175e31a05 Mon Sep 17 00:00:00 2001
+From a36757694c060bb28bedf417cfe52ba6759d40d9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 22 Aug 2022 22:58:03 -0300
 Subject: [PATCH] Fix translation names
@@ -9,10 +9,10 @@ Subject: [PATCH] Fix translation names
  2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index 33478dc..51b8288 100644
+index e06975c..161dcda 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -151,7 +151,7 @@ set(TS_FILES
+@@ -149,7 +149,7 @@ set(TS_FILES
    translations/duckstation-qt_de.ts
    translations/duckstation-qt_en.ts
    translations/duckstation-qt_es.ts
@@ -21,7 +21,7 @@ index 33478dc..51b8288 100644
    translations/duckstation-qt_fr.ts
    translations/duckstation-qt_he.ts
    translations/duckstation-qt_it.ts
-@@ -159,11 +159,11 @@ set(TS_FILES
+@@ -157,11 +157,11 @@ set(TS_FILES
    translations/duckstation-qt_ko.ts
    translations/duckstation-qt_nl.ts
    translations/duckstation-qt_pl.ts
@@ -37,10 +37,10 @@ index 33478dc..51b8288 100644
  
  set_source_files_properties(${TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/translations")
 diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
-index cb6b498..bd69b21 100644
+index c11bdad..d5a568e 100644
 --- a/src/duckstation-qt/qttranslations.cpp
 +++ b/src/duckstation-qt/qttranslations.cpp
-@@ -157,7 +157,7 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
+@@ -179,7 +179,7 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
    return {{QStringLiteral("English"), QStringLiteral("en")},
            {QStringLiteral("Deutsch"), QStringLiteral("de")},
            {QStringLiteral("Español de Hispanoamérica"), QStringLiteral("es")},
@@ -49,7 +49,7 @@ index cb6b498..bd69b21 100644
            {QStringLiteral("Français"), QStringLiteral("fr")},
            {QStringLiteral("עברית"), QStringLiteral("he")},
            {QStringLiteral("日本語"), QStringLiteral("ja")},
-@@ -165,11 +165,11 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
+@@ -187,11 +187,11 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
            {QStringLiteral("Italiano"), QStringLiteral("it")},
            {QStringLiteral("Nederlands"), QStringLiteral("nl")},
            {QStringLiteral("Polski"), QStringLiteral("pl")},
@@ -63,8 +63,8 @@ index cb6b498..bd69b21 100644
 +          {QStringLiteral("简体中文"), QStringLiteral("zh_CN")}};
  }
  
- static constexpr const ImWchar s_base_latin_range[] = {
-@@ -258,4 +258,4 @@ const QtHost::GlyphInfo* QtHost::GetGlyphInfo(const std::string_view& language)
+ const char* QtHost::GetDefaultLanguage()
+@@ -286,4 +286,4 @@ const QtHost::GlyphInfo* QtHost::GetGlyphInfo(const std::string_view& language)
    }
  
    return nullptr;

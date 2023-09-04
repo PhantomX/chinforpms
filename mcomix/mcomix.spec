@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           mcomix
-Version:        2.1.1
+Version:        2.3.0
 Release:        1%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
@@ -111,7 +111,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_bindir}/%{name}
 %{_bindir}/comicthumb
 # Do not own %%{_datadir}/icons/hicolor explicitly
-%{_datadir}/icons/hicolor/*/apps/%{name}.png
+%{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/icons/hicolor/*/mimetypes/application-x-*.png
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/mime/packages/%{name}.xml
@@ -122,6 +122,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sun Sep 03 2023 Phantom X <megaphantomx at hotmail dot com> - 2.3.0-1
+- 2.3.0
+
 * Thu Jun 08 2023 Phantom X <megaphantomx at hotmail dot com> - 2.1.1-1
 - 2.1.1
 

@@ -12,16 +12,16 @@
 %bcond_with soundtouch
 %bcond_without sysvulkan
 
-%global commit 0e6efb22416a6545de235fda909281331b8eb4a6
+%global commit a4c7293d289acca8bbb5d09ecd090a2995f47082
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230831
+%global date 20230903
 %bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global appname org.%{name}.DuckStation
+%global appname org.%{name}.%{name}
 %global vc_url  https://github.com/stenzek/%{name}
 
 %global glad_ver 0.1.33
@@ -33,7 +33,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        94%{?dist}
+Release:        95%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -44,7 +44,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-Source1:        %{appname}.metainfo.xml
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
@@ -56,6 +55,7 @@ Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-log.h-ignore-format-security.patch
 Patch8:         0001-gcc-13-build-fix.patch
 Patch9:         0001-Fix-build-without-discord-presence-support.patch
+Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -215,21 +215,20 @@ sed \
 %endif
 
 sed \
+  -e 's|@GIT_VERSION@|%{version}-%{release}|g' \
+%if %{with snapshot}
+  -e 's|@GIT_DATE@|%{date}|g' \
+%else
+  -e 's| date="@GIT_DATE@"||g' \
+%endif
+  scripts/flatpak/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
+
+cp -p scripts/flatpak/duckstation-qt.desktop %{appname}.desktop
+
+sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i src/duckstation-qt/qt{host,translations}.cpp
-
-cat > %{appname}.desktop <<'EOF'
-[Desktop Entry]
-Type=Application
-Name=DuckStation
-GenericName=PlayStation 1 Emulator
-Comment=Fast PlayStation 1 emulator
-Icon=%{appname}
-TryExec=%{name}-qt
-Exec=%{name}-qt %%f
-Categories=Game;Emulator;Qt;
-EOF
 
 
 %build
@@ -272,6 +271,7 @@ ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
+  --set-icon="%{appname}" \
   %{appname}.desktop
 
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
@@ -282,7 +282,7 @@ for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
 done
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
+install -pm 0644 %{appname}.metainfo.xml %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 %find_lang %{name}-qt --with-qt
 
