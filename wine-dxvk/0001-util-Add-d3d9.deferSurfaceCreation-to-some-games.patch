@@ -1,4 +1,4 @@
-From 287e34d8bcb79a1a98d50c0102b63c59f9134511 Mon Sep 17 00:00:00 2001
+From dcceb928de29a81d5e63516b85cb262e5a2accb2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 May 2023 12:32:50 -0300
 Subject: [PATCH] util: Add d3d9.deferSurfaceCreation to some games
@@ -8,12 +8,12 @@ Subject: [PATCH] util: Add d3d9.deferSurfaceCreation to some games
  1 file changed, 8 insertions(+)
 
 diff --git a/src/util/config/config.cpp b/src/util/config/config.cpp
-index 8a7da89..a893967 100644
+index 280ff69..303cb57 100644
 --- a/src/util/config/config.cpp
 +++ b/src/util/config/config.cpp
-@@ -758,6 +758,14 @@ namespace dxvk {
-     { R"(\\eldorado\.exe$)", {{
-       { "d3d9.floatEmulation",        "Strict"   },
+@@ -811,6 +811,14 @@ namespace dxvk {
+     { R"(\\drakensang\.exe$)", {{
+       { "d3d9.deferSurfaceCreation",        "True" },
      }} },
 +    /* Bejeweled 3  */
 +    { R"(\\Bejeweled3\.exe$)", {{
@@ -23,9 +23,9 @@ index 8a7da89..a893967 100644
 +    { R"(\\MBTL\.exe$)", {{
 +      { "d3d9.deferSurfaceCreation",        "True" },
 +    }} },
-     
+ 
      /**********************************************/
      /* D3D12 GAMES (vkd3d-proton with dxvk dxgi)  */
 -- 
-2.40.1
+2.41.0
 
