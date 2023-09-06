@@ -36,8 +36,8 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.9.4
-Release:        101%{?dist}
+Version:        4.9.5
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -61,6 +61,10 @@ Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.
 Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 %endif
 Source20:       thunar-sendto-%{name}.desktop
+
+Patch0:         %{url}/commit/8adbbe6885cc857fb48effb7fdbbfe1e8388ea2c.patch#/%{name}-gh-8adbbe6.patch
+Patch1:         %{url}/commit/107b72f44251ede68c2946089e50116602392aac.patch#/%{name}-gh-107b72f.patch
+Patch2:         %{url}/commit/4bfe40d02e1deadb805130ab2cb4fd7e18c1a2a1.patch#/%{name}-gh-4bfe40d.patch
 
 Patch100:       %{name}-build-fix.patch
 
@@ -354,6 +358,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Sep 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.5-100
+- 4.9.5
+
 * Sat Sep 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.4-101
 - Bundle GSL for the time
 

@@ -14,10 +14,10 @@
 %bcond_with valgrind
 %endif
 
-%global commit 7d0aee96e7fa0d87efe319db0a6ccd8871949d76
+%global commit c111021a223ad749096f14c498f9e96617c58ae8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230413
-%bcond_with snapshot
+%global date 20230905
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -31,7 +31,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.0
+Version:        23.2.0~rc3
 Release:        100%{?dist}
 
 Epoch:          100
@@ -206,6 +206,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Tue Sep 05 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.2.0~rc3-100.20230905gitc111021
+- 23.2.0-rc3
+
 * Sat Jul 29 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.2.0-100
 - 23.2.0
 

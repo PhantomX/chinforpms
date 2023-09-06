@@ -4,13 +4,13 @@ Date: Mon, 6 Jan 2020 14:49:18 -0300
 Subject: [PATCH] Remove text replacing
 
 ---
- Telegram/lib_ui/ui/widgets/input_fields.cpp | 3 ---
+ Telegram/lib_ui/ui/widgets/fields/input_field.cpp | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/Telegram/lib_ui/ui/widgets/input_fields.cpp b/Telegram/lib_ui/ui/widgets/input_fields.cpp
+diff --git a/Telegram/lib_ui/ui/widgets/fields/input_field.cpp b/Telegram/lib_ui/ui/widgets/fields/input_field.cpp
 index db17e0c..5045c05 100644
---- a/Telegram/lib_ui/ui/widgets/input_fields.cpp
-+++ b/Telegram/lib_ui/ui/widgets/input_fields.cpp
+--- a/Telegram/lib_ui/ui/widgets/fields/input_field.cpp
++++ b/Telegram/lib_ui/ui/widgets/fields/input_field.cpp
 @@ -883,9 +883,6 @@ void InstantReplaces::add(const QString &what, const QString &with) {
  const InstantReplaces &InstantReplaces::Default() {
  	static const auto result = [] {

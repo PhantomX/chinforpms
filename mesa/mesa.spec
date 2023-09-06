@@ -23,10 +23,10 @@
 %global with_iris   1
 %global with_vmware 1
 %global with_xa     1
-%global platform_vulkan ,intel,intel_hasvk
+%global intel_platform_vulkan ,intel,intel_hasvk
 %endif
 
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %if !0%{?rhel}
 %global with_etnaviv   1
 %global with_lima      1
@@ -38,7 +38,7 @@
 %global with_panfrost  1
 %global with_tegra     1
 %global with_xa        1
-%global platform_vulkan ,broadcom,freedreno
+%global extra_platform_vulkan ,broadcom,freedreno
 %endif
 
 %ifnarch s390x
@@ -58,13 +58,13 @@
 # Enable patent encumbered video codecs acceleration
 %bcond_with videocodecs
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?platform_vulkan}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 7d0aee96e7fa0d87efe319db0a6ccd8871949d76
+%global commit c111021a223ad749096f14c498f9e96617c58ae8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230413
-%bcond_with snapshot
+%global date 20230905
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -78,7 +78,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.0
+Version:        23.2.0~rc3
 Release:        100%{?dist}
 
 License:        MIT
@@ -97,7 +97,7 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
 
-BuildRequires:  meson >= 1.0.0
+BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -431,7 +431,7 @@ export RUSTFLAGS="%build_rustflags"
   -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 %endif
   -Dshared-glapi=enabled \
-  -Dgles1=disabled \
+  -Dgles1=enabled \
   -Dgles2=enabled \
   -Dopengl=true \
   -Dgbm=enabled \
@@ -584,14 +584,16 @@ popd
 %{_libdir}/dri/i915_dri.so
 %{_libdir}/dri/iris_dri.so
 %endif
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/imx-drm_dri.so
 %{_libdir}/dri/imx-lcdif_dri.so
 %{_libdir}/dri/kirin_dri.so
+%{_libdir}/dri/komeda_dri.so
 %{_libdir}/dri/mali-dp_dri.so
 %{_libdir}/dri/mcde_dri.so
 %{_libdir}/dri/mxsfb-drm_dri.so
+%{_libdir}/dri/rcar-du_dri.so
 %{_libdir}/dri/stm_dri.so
 %endif
 %if 0%{?with_vc4}
@@ -687,7 +689,7 @@ popd
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
-%ifarch aarch64
+%ifarch aarch64 x86_64 %{ix86}
 %{_libdir}/libvulkan_broadcom.so
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
 %{_libdir}/libvulkan_freedreno.so
@@ -709,6 +711,9 @@ popd
 
 
 %changelog
+* Tue Sep 05 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.0~rc3-100.20230905gitc111021
+- 23.2.0-rc3
+
 * Sat Jul 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.0-100
 - 23.2.0
 

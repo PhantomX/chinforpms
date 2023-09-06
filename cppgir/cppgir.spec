@@ -1,6 +1,6 @@
-%global commit fa346156b25dd79a8bf5a50cd10022858b859984
+%global commit 69ef481cba38e848554cc5403b8d4141d3c51335
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230814
+%global date 20230903
 %bcond_without snapshot
 
 %global commit10 95b9cb015fa17baa749c2b396b335906e1596a9e
@@ -13,7 +13,7 @@
 
 Name:           cppgir
 Version:        0.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        GObject-Introspection C++ binding wrapper generator
 
 License:        MIT AND BSL-1.0
