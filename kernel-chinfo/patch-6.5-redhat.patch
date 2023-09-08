@@ -1,43 +1,42 @@
- Makefile                                           |  20 +-
- arch/arm/Kconfig                                   |   4 +-
- arch/arm64/Kconfig                                 |   2 +-
+ Makefile                                           |  12 ++
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            |  68 ++-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ arch/x86/kernel/setup.c                            |  22 ++--
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
- drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/gpu/drm/msm/adreno/adreno_device.c         |   2 +-
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/nvme/host/core.c                           |  22 +++-
+ drivers/nvme/host/multipath.c                      |  19 ++--
+ drivers/nvme/host/nvme.h                           |   4 +
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/scsi/sd.c                                  |  10 ++
+ drivers/usb/core/hub.c                             |   7 ++
+ include/linux/efi.h                                |  22 ++--
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/module.h                             |   5 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/module/main.c                               |   7 +
  kernel/module/signing.c                            |   9 +-
- scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 +
- 66 files changed, 1779 insertions(+), 188 deletions(-)
+ security/security.c                                |  12 ++
+ 37 files changed, 523 insertions(+), 210 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 2fdd8b40b7e0..42e68b77b932 100644
+index c47558bc00aa..ed7450da2c78 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -59,50 +58,6 @@ index 2fdd8b40b7e0..42e68b77b932 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1335,7 +1347,13 @@ define filechk_version.h
- 	((c) > 255 ? 255 : (c)))';                                       \
- 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
- 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
--	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
-+	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
-+	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
-+	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
-+	echo '#define RHEL_RELEASE_CODE \
-+		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
-+	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
- endef
-
- $(version_h): PATCHLEVEL := $(or $(PATCHLEVEL), 0)
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 7a27550ff3c1..cf402933dd3c 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1307,9 +1307,9 @@ config HIGHMEM
- 	  If unsure, say n.
-
- config HIGHPTE
--	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
-+	bool "Allocate 2nd-level pagetables from highmem"
- 	depends on HIGHMEM
--	default y
-+	default n
- 	help
- 	  The VM uses one page of physical memory for each page table.
- 	  For systems with a lot of processes, this can use a lot of
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a2511b30d0f6..a41975a8f04f 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1296,7 +1296,7 @@ endchoice
-
- config ARM64_FORCE_52BIT
- 	bool "Force 52-bit virtual addresses for userspace"
--	depends on ARM64_VA_BITS_52 && EXPERT
-+	depends on ARM64_VA_BITS_52
- 	help
- 	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
- 	  to maintain compatibility with older software by providing 48-bit VAs
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -151,7 +106,7 @@ index 00d76448319d..e679d13303e3 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index fd975a4a5200..d171d94853de 100644
+index fd975a4a5200..3e05018e244c 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -162,7 +117,7 @@ index fd975a4a5200..d171d94853de 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -1031,6 +1076,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -1031,6 +1032,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
 
@@ -176,7 +131,7 @@ index fd975a4a5200..d171d94853de 100644
  	reserve_ibft_region();
  	dmi_setup();
 
-@@ -1192,19 +1244,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1192,19 +1200,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
 
@@ -570,6 +525,19 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/gpu/drm/msm/adreno/adreno_device.c b/drivers/gpu/drm/msm/adreno/adreno_device.c
+index ce8d0b2475bf..6e3c1368c5e1 100644
+--- a/drivers/gpu/drm/msm/adreno/adreno_device.c
++++ b/drivers/gpu/drm/msm/adreno/adreno_device.c
+@@ -371,7 +371,7 @@ static const struct adreno_info gpulist[] = {
+ 		.rev = ADRENO_REV(6, 9, 0, ANY_ID),
+ 		.fw = {
+ 			[ADRENO_FW_SQE] = "a660_sqe.fw",
+-			[ADRENO_FW_GMU] = "a690_gmu.bin",
++			[ADRENO_FW_GMU] = "a660_gmu.bin",
+ 		},
+ 		.gmem = SZ_4M,
+ 		.inactive_period = DRM_MSM_INACTIVE_PERIOD,
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -955,6 +923,142 @@ index caaf563d38ae..d9c4d039c4e7 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index f3a01b79148c..9a1a74d183ce 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -251,6 +251,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
+
+ static blk_status_t nvme_error_status(u16 status)
+ {
++	if (unlikely(status & NVME_SC_DNR))
++		return BLK_STS_TARGET;
++
+ 	switch (status & 0x7ff) {
+ 	case NVME_SC_SUCCESS:
+ 		return BLK_STS_OK;
+@@ -341,6 +344,7 @@ enum nvme_disposition {
+ 	COMPLETE,
+ 	RETRY,
+ 	FAILOVER,
++	FAILUP,
+ 	AUTHENTICATE,
+ };
+
+@@ -352,15 +356,16 @@ static inline enum nvme_disposition nvme_decide_disposition(struct request *req)
+ 	if ((nvme_req(req)->status & 0x7ff) == NVME_SC_AUTH_REQUIRED)
+ 		return AUTHENTICATE;
+
+-	if (blk_noretry_request(req) ||
++	if ((req->cmd_flags & (REQ_FAILFAST_DEV | REQ_FAILFAST_DRIVER)) ||
+ 	    (nvme_req(req)->status & NVME_SC_DNR) ||
+ 	    nvme_req(req)->retries >= nvme_max_retries)
+ 		return COMPLETE;
+
+-	if (req->cmd_flags & REQ_NVME_MPATH) {
++	if (req->cmd_flags & (REQ_NVME_MPATH | REQ_FAILFAST_TRANSPORT)) {
+ 		if (nvme_is_path_error(nvme_req(req)->status) ||
+ 		    blk_queue_dying(req->q))
+-			return FAILOVER;
++			return (req->cmd_flags & REQ_NVME_MPATH) ?
++				FAILOVER : FAILUP;
+ 	} else {
+ 		if (blk_queue_dying(req->q))
+ 			return COMPLETE;
+@@ -390,6 +395,14 @@ static inline void nvme_end_req(struct request *req)
+ 	blk_mq_end_request(req, status);
+ }
+
++static inline void nvme_failup_req(struct request *req)
++{
++	nvme_update_ana(req);
++
++	nvme_req(req)->status = NVME_SC_HOST_PATH_ERROR;
++	nvme_end_req(req);
++}
++
+ void nvme_complete_rq(struct request *req)
+ {
+ 	struct nvme_ctrl *ctrl = nvme_req(req)->ctrl;
+@@ -419,6 +432,9 @@ void nvme_complete_rq(struct request *req)
+ 	case FAILOVER:
+ 		nvme_failover_req(req);
+ 		return;
++	case FAILUP:
++		nvme_failup_req(req);
++		return;
+ 	case AUTHENTICATE:
+ #ifdef CONFIG_NVME_AUTH
+ 		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
+diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
+index 0a88d7bdc5e3..967bb3a85889 100644
+--- a/drivers/nvme/host/multipath.c
++++ b/drivers/nvme/host/multipath.c
+@@ -80,14 +80,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
+ 			blk_freeze_queue_start(h->disk->queue);
+ }
+
+-void nvme_failover_req(struct request *req)
++void nvme_update_ana(struct request *req)
+ {
+ 	struct nvme_ns *ns = req->q->queuedata;
+ 	u16 status = nvme_req(req)->status & 0x7ff;
+-	unsigned long flags;
+-	struct bio *bio;
+-
+-	nvme_mpath_clear_current_path(ns);
+
+ 	/*
+ 	 * If we got back an ANA error, we know the controller is alive but not
+@@ -98,6 +94,16 @@ void nvme_failover_req(struct request *req)
+ 		set_bit(NVME_NS_ANA_PENDING, &ns->flags);
+ 		queue_work(nvme_wq, &ns->ctrl->ana_work);
+ 	}
++}
++
++void nvme_failover_req(struct request *req)
++{
++	struct nvme_ns *ns = req->q->queuedata;
++	unsigned long flags;
++	struct bio *bio;
++
++	nvme_mpath_clear_current_path(ns);
++	nvme_update_ana(req);
+
+ 	spin_lock_irqsave(&ns->head->requeue_lock, flags);
+ 	for (bio = req->bio; bio; bio = bio->bi_next) {
+@@ -912,8 +918,7 @@ int nvme_mpath_init_identify(struct nvme_ctrl *ctrl, struct nvme_id_ctrl *id)
+ 	int error = 0;
+
+ 	/* check if multipath is enabled and we have the capability */
+-	if (!multipath || !ctrl->subsys ||
+-	    !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
++	if (!ctrl->subsys || !(ctrl->subsys->cmic & NVME_CTRL_CMIC_ANA))
+ 		return 0;
+
+ 	if (!ctrl->max_namespaces ||
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index f35647c470af..e57357f23306 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -885,6 +885,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
+ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys);
+ void nvme_mpath_default_iopolicy(struct nvme_subsystem *subsys);
+ void nvme_failover_req(struct request *req);
++void nvme_update_ana(struct request *req);
+ void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl);
+ int nvme_mpath_alloc_disk(struct nvme_ctrl *ctrl,struct nvme_ns_head *head);
+ void nvme_mpath_add_disk(struct nvme_ns *ns, __le32 anagrpid);
+@@ -923,6 +924,9 @@ static inline bool nvme_ctrl_use_ana(struct nvme_ctrl *ctrl)
+ static inline void nvme_failover_req(struct request *req)
+ {
+ }
++static inline void nvme_update_ana(struct request *req)
++{
++}
+ static inline void nvme_kick_requeue_lists(struct nvme_ctrl *ctrl)
+ {
+ }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 321156ca273d..fc399e56ec8f 100644
 --- a/drivers/pci/quirks.c
@@ -990,6 +1094,34 @@ index 321156ca273d..fc399e56ec8f 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 3c668cfb146d..95724cd9875f 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -130,6 +130,14 @@ static const char *sd_cache_types[] = {
+ 	"write back, no read (daft)"
+ };
+
++static const char *sd_probe_types[] = { "async", "sync" };
++
++static char sd_probe_type[6] = "async";
++module_param_string(probe, sd_probe_type, sizeof(sd_probe_type),
++		    S_IRUGO|S_IWUSR);
++MODULE_PARM_DESC(probe, "async or sync. Setting to 'sync' disables asynchronous "
++		 "device number assignments (sda, sdb, ...).");
++
+ static void sd_set_flush_flag(struct scsi_disk *sdkp)
+ {
+ 	bool wc = false, fua = false;
+@@ -3961,6 +3969,8 @@ static int __init init_sd(void)
+ 		goto err_out_class;
+ 	}
+
++	if (!strcmp(sd_probe_type, "sync"))
++		sd_template.gendrv.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 	err = scsi_register_driver(&sd_template.gendrv);
+ 	if (err)
+ 		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index a739403a9e45..191513936ce8 100644
 --- a/drivers/usb/core/hub.c
@@ -1089,18 +1221,6 @@ index 7308a1a7599b..a3aa26339b43 100644
 
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
-diff --git a/include/linux/module.h b/include/linux/module.h
-index a98e188cf37b..059c2f633ef6 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -418,6 +418,7 @@ struct module {
- 	struct module_attribute *modinfo_attrs;
- 	const char *version;
- 	const char *srcversion;
-+	const char *rhelversion;
- 	struct kobject *holders_dir;
-
- 	/* Exported symbols */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1136,26 +1256,6 @@ index 32828502f09e..b5c27505fa16 100644
  #endif	/* CONFIG_SECURITY */
 
  #if defined(CONFIG_SECURITY) && defined(CONFIG_WATCH_QUEUE)
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 59b1d067e528..0b1c207dcd4f 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
-
- MODINFO_ATTR(version);
- MODINFO_ATTR(srcversion);
-+MODINFO_ATTR(rhelversion);
-
- static struct {
- 	char name[MODULE_NAME_LEN + 1];
-@@ -980,6 +981,7 @@ struct module_attribute *modinfo_attrs[] = {
- 	&module_uevent,
- 	&modinfo_version,
- 	&modinfo_srcversion,
-+	&modinfo_rhelversion,
- 	&modinfo_initstate,
- 	&modinfo_coresize,
- #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
 index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c
@@ -1179,39 +1279,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
 
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index b29b29707f10..e176487ebf1f 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -23,6 +23,7 @@
- #include "modpost.h"
- #include "../../include/linux/license.h"
- #include "../../include/linux/module_symbol.h"
-+#include "../../include/generated/uapi/linux/version.h"
-
- /* Are we using CONFIG_MODVERSIONS? */
- static bool modversions;
-@@ -2076,6 +2077,12 @@ static void write_buf(struct buffer *b, const char *fname)
- 	}
- }
-
-+static void add_rhelversion(struct buffer *b, struct module *mod)
-+{
-+	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
-+		   RHEL_MINOR);
-+}
-+
- static void write_if_changed(struct buffer *b, const char *fname)
- {
- 	char *tmp;
-@@ -2136,6 +2143,7 @@ static void write_mod_c_file(struct module *mod)
- 	add_depends(&buf, mod);
- 	add_moddevtable(&buf, mod);
- 	add_srcversion(&buf, mod);
-+	add_rhelversion(&buf, mod);
-
- 	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
- 	if (ret >= sizeof(fname)) {
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index a70d43723146..56d06b04f752 100755
 --- a/scripts/tags.sh

@@ -1,0 +1,33 @@
+From 98635366cf95900962757b8c4a8035af964c9f87 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 7 Sep 2023 10:31:28 -0300
+Subject: [PATCH] Remove PORTABLE_DIR
+
+---
+ src/common/fs/path_util.cpp | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/src/common/fs/path_util.cpp b/src/common/fs/path_util.cpp
+index 3bbe9ff..c35dfbf 100755
+--- a/src/common/fs/path_util.cpp
++++ b/src/common/fs/path_util.cpp
+@@ -101,16 +101,9 @@ public:
+         yuzu_path_cache = yuzu_path / CACHE_DIR;
+         yuzu_path_config = yuzu_path / CONFIG_DIR;
+ #else
+-        yuzu_path = GetCurrentDir() / PORTABLE_DIR;
+-
+-        if (Exists(yuzu_path) && IsDir(yuzu_path)) {
+-            yuzu_path_cache = yuzu_path / CACHE_DIR;
+-            yuzu_path_config = yuzu_path / CONFIG_DIR;
+-        } else {
+             yuzu_path = GetDataDirectory("XDG_DATA_HOME") / YUZU_DIR;
+             yuzu_path_cache = GetDataDirectory("XDG_CACHE_HOME") / YUZU_DIR;
+             yuzu_path_config = GetDataDirectory("XDG_CONFIG_HOME") / YUZU_DIR;
+-        }
+ #endif
+ 
+         GenerateYuzuPath(YuzuPath::YuzuDir, yuzu_path);
+-- 
+2.41.0
+

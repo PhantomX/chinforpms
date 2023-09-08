@@ -144,6 +144,7 @@ Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
 Patch15:        0001-Lower-the-SDL2-requirement-a-bit.patch
+Patch16:        0001-Remove-PORTABLE_DIR.patch
 
 ExclusiveArch:  x86_64
 
