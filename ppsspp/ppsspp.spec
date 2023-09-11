@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 25e7c042f259f454946b0f27d96a4d87b2136765
+%global commit d4365c6ae17c418db962354995b931eeb140a95a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230826
+%global date 20230909
 %bcond_without snapshot
 
 # Enable Qt build
@@ -39,7 +39,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
-%global commit5 75ec988188f62281efe7bf1d133338751369bb4c
+%global commit5 fd4ffc1632db7b4e763bd28ffa6fc9d761cf3587
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 cpu_features
 
@@ -55,7 +55,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 97db619aa4de15fe19887255e75899ae65d2e432
+%global commit9 813163c10c0745322affb8342ca2ab3bb30bfcbf
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -69,8 +69,8 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.15.4
-Release:        104%{?dist}
+Version:        1.16.0
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -454,6 +454,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sun Sep 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.0-100.20230909gitd4365c6
+- 1.16.0
+
 * Fri May 26 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.15.4-100.20230525gitf291959
 - 1.15.4
 

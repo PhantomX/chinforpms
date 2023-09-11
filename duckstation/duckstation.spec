@@ -12,9 +12,9 @@
 %bcond_with soundtouch
 %bcond_without sysvulkan
 
-%global commit a4c7293d289acca8bbb5d09ecd090a2995f47082
+%global commit e6d5fa43af49c3407af8229f893dbdd738c9d3dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230903
+%global date 20230905
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -33,7 +33,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        95%{?dist}
+Release:        96%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -53,9 +53,8 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-log.h-ignore-format-security.patch
-Patch8:         0001-gcc-13-build-fix.patch
-Patch9:         0001-Fix-build-without-discord-presence-support.patch
-Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
+Patch8:         0001-Fix-build-without-discord-presence-support.patch
+Patch9:         0001-Lower-the-SDL2-requirement-a-bit.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -78,13 +77,13 @@ BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  pkgconfig(gl)
+BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
-BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  pkgconfig(sdl2)
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
@@ -221,9 +220,9 @@ sed \
 %else
   -e 's| date="@GIT_DATE@"||g' \
 %endif
-  scripts/flatpak/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
+  scripts/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
 
-cp -p scripts/flatpak/duckstation-qt.desktop %{appname}.desktop
+cp -p scripts/duckstation-qt.desktop %{appname}.desktop
 
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
