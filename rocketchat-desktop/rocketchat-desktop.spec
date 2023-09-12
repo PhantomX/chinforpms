@@ -67,7 +67,7 @@ if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
   while read -r param
   do
     APP_USER_FLAGS+=("${param}")
-  done < <(LANG=C grep -v '^#' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
+  done < <(LANG=C grep '^\-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
 else
   if [ -w "${XDG_CONFIG_HOME}" ] ; then
     cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
@@ -79,7 +79,7 @@ fi
 
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
+exec "${APP_PATH}/${APP_NAME}" ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
 EORF
 
 

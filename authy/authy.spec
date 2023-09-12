@@ -5,13 +5,13 @@
 %global __strip /bin/true
 
 %global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 19
+%global snaprev 21
 
 %global app_name Authy
 
 Name:           authy
 # Version from application info
-Version:        2.3.0
+Version:        2.4.1
 Release:        1%{?dist}
 Summary:        Two factor authentication desktop application
 
@@ -72,7 +72,7 @@ if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
   while read -r param
   do
     APP_USER_FLAGS+=("${param}")
-  done < <(LANG=C grep -v '^#' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
+  done < <(LANG=C grep '^\-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
 else
   if [ -w "${XDG_CONFIG_HOME}" ] ; then
     cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
@@ -84,7 +84,7 @@ fi
 
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}/${APP_NAME}" "${APP_USER_FLAGS}" "$@"
+exec "${APP_PATH}/${APP_NAME}" ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
 EORF
 
 
@@ -123,6 +123,9 @@ done
 
 
 %changelog
+* Mon Sep 11 2023 - 2.4.1-1
+- 2.4.1
+
 * Mon Jul 17 2023 - 2.3.0-1
 - 2.3.0
 
