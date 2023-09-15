@@ -1,6 +1,6 @@
-%global commit c1821f7ad689035fa102d33767f4acd89ca8d6e2
+%global commit 21c3681a90626469a9cb31f526046112aae75450
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230307
+%global date 20230723
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,13 +12,13 @@
 
 %global appname io.github.sithlord48.%{name}
 
-%global ff7tk_ver 0.83
+%global ff7tk_ver 0.83.2
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.13.0.0
-Release:        2%{?dist}
+Version:        1.14.0.0
+Release:        1%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 Epoch:          1
@@ -35,7 +35,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Patch0:         0001-Use-system-qhexedit.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -89,6 +89,7 @@ sed \
 
 %build
 %cmake \
+  -G Ninja \
   -DQt6_LRELEASE_EXECUTABLE=lrelease-qt6 \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -134,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.0.0-1.20230723git21c3681
+- 1.14.0.0
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1.13.0.0-1.20220911git56c2db6
 - 1.13.0.0
 

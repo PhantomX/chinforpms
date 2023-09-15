@@ -19,7 +19,7 @@
 
 Name:           gtk4
 Version:        4.12.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        GTK graphical user interface library
 
 Epoch:          1
@@ -85,6 +85,7 @@ BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
+BuildRequires:  /usr/bin/appstream-util
 BuildRequires:  /usr/bin/rst2man
 
 # standard icons
@@ -186,7 +187,8 @@ mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/gtk-4.0
 mkdir -p $RPM_BUILD_ROOT%{_libdir}/gtk-4.0/modules
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+appstream-util validate-relax --nonet $RPM_BUILD_ROOT%{_metainfodir}/*.xml
+desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 
 %files -f gtk40.lang
 %license COPYING
@@ -199,7 +201,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_libdir}/gtk-4.0/%{bin_version}/media/
 %{_libdir}/gtk-4.0/%{bin_version}/printbackends/
 %{_libdir}/gtk-4.0/modules
-%{_libdir}/girepository-1.0
+%{_libdir}/girepository-1.0/
 %{_mandir}/man1/gtk4-launch.1*
 %{_mandir}/man1/gtk4-update-icon-cache.1*
 %{_datadir}/glib-2.0/schemas/org.gtk.gtk4.Settings.ColorChooser.gschema.xml
@@ -221,7 +223,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_bindir}/gtk4-encode-symbolic-svg
 %{_bindir}/gtk4-query-settings
 %{_datadir}/gettext/
-%{_datadir}/gir-1.0
+%{_datadir}/gir-1.0/
 %{_datadir}/gtk-4.0/gtk4builder.rng
 %{_datadir}/gtk-4.0/valgrind/
 %{_mandir}/man1/gtk4-builder-tool.1*
@@ -267,6 +269,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.1-101
+- Rawhide sync
+
 * Fri Aug 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.1-100
 - 4.12.1
 

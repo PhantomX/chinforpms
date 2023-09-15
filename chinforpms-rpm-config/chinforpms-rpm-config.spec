@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        10
+Version:        11
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -41,6 +41,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Thu Sep 14 2023 Phantom X <megaphantomx at hotmail dot com> - 11-1
+- Fedora 39 update
+
 * Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 10-1
 - Remove sed requirement
 

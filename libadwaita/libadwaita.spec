@@ -3,7 +3,7 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           libadwaita
-Version:        1.3~rc
+Version:        1.4~rc
 Release:        100%{?dist}
 Summary:        Building blocks for modern GNOME applications
 
@@ -23,6 +23,9 @@ BuildRequires:  meson >= 0.59.0
 #BuildRequires:  sassc
 BuildRequires:  vala
 
+BuildRequires:  pkgconfig(appstream)
+BuildRequires:  pkgconfig(fribidi)
+BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(gtk4) >= 4.5
 
@@ -113,6 +116,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.4~rc-100
+- 1.4.rc
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.3~rc-100
 - 1.3.rc
 

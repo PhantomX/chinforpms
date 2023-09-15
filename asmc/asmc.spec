@@ -9,7 +9,7 @@
 
 # Use provided binary for first time bootstrap
 # Set to 0 after
-%global bootstrap 0
+%global bootstrap 1
 
 %undefine _debugsource_packages
 
@@ -28,7 +28,8 @@ URL:            https://github.com/nidud/asmc
 ExclusiveArch:  %{ix86} x86_64
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%dnl Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:             https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.gz/187e7ff180858e19e20c1ebcc0c5e273/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif

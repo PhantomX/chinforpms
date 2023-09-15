@@ -1,7 +1,7 @@
 %global pkgname Qt-Advanced-Docking-System
 
 Name:           libqtadvanceddocking
-Version:        4.0.2
+Version:        4.1.1
 Release:        1%{?dist}
 Summary:        Advanced Docking System for Qt
 
@@ -60,12 +60,15 @@ developing applications that use %{name}.
 %{_libdir}/*.so.*
 
 %files devel
-%{_includedir}/qtadvanceddocking
-%{_libdir}/cmake/qtadvanceddocking
+%{_includedir}/qt5advanceddocking
+%{_libdir}/cmake/qt5advanceddocking
 %{_libdir}/*.so
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 4.1.1-1
+- 4.1.1
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 4.0.2-1
 - 4.0.2
 

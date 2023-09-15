@@ -1,6 +1,6 @@
-%global commit eb4a6674bfe9cf91b63b9817412ae5f6862c8432
+%global commit 959002f82d7962a473d8bf301845f2af720e0aa4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230214
+%global date 20230816
 %bcond_without snapshot
 
 %global commit1 1.6.1
@@ -19,7 +19,7 @@
 
 Name:           cpuinfo
 Version:        0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        CPU INFOrmation library
 
 License:        BSD-2-Clause
@@ -38,7 +38,9 @@ Source2:        https://github.com/google/%{srcname2}/archive/release-%{shortcom
 Patch0:         0001-Versioned-shared-lib.patch
 
 BuildRequires:  cmake
-BuildRequires:  gcc-g++
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  make
 
 Provides:       bundled(clog) = 0~git
 

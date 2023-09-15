@@ -17,9 +17,9 @@
 # Use "%define _native_flags 1" to enable
 #%_native_flags 1
 
-%_optflags_i686 %(grep '^optflags: i686' /usr/lib/rpm/redhat/rpmrc | cut -d' ' -f4-)
+%_optflags_i686 %(grep '^optflags: i686 ' /usr/lib/rpm/redhat/rpmrc | cut -d' ' -f4-)
 
-%_optflags_x86_64 %(grep '^optflags: x86_64' /usr/lib/rpm/redhat/rpmrc | cut -d' ' -f4-)
+%_optflags_x86_64 %(grep '^optflags: x86_64 ' /usr/lib/rpm/redhat/rpmrc | cut -d' ' -f4-)
 
 %_chinforpms_flags_i686 %{__chinforpms_global_compiler_flags} %(nf="%{expand:%{_optflags_i686}}" ; \\
   echo "${nf%{?_native_flags:/-march=i686 -mtune=generic/-march=native -mtune=native}}")

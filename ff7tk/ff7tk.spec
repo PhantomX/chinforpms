@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit 9bb33102503c3c8987f04cbe148fe7277bef3d15
+%global commit f63b4db5b31fdf3e75953db978e8946da8310b7a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230314
+%global date 20230908
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,7 +10,7 @@
 %endif
 
 Name:           ff7tk
-Version:        0.83.2.0
+Version:        0.83.3.0
 Release:        1%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
@@ -24,7 +24,7 @@ Patch10:        0001-cmake-do-not-install-dbg-files.patch
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  make
+BuildRequires:  ninja-build
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6Core5Compat)
 BuildRequires:  cmake(Qt6Gui)
@@ -67,6 +67,7 @@ sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeL
 
 %build
 %cmake \
+  -G Ninja \
   -DQt6_LRELEASE_EXECUTABLE=lrelease-qt6 \
   -DTESTS:BOOL=OFF \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
@@ -96,6 +97,9 @@ sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeL
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.83.3.0-1.20230908gitf63b4db
+- 0.83.3.0
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.83.2.0-1.20230314git9bb3310
 - 0.83.2.0
 
