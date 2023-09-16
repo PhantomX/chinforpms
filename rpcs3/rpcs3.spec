@@ -27,6 +27,8 @@
 # Enable system llvm
 %bcond_without  sysllvm
 %global bundlellvm 16.0
+# Set to build with versioned LLVM packages
+%global llvm_pkgver 16
 # Enable system rtmidi
 %if 0%{?fedora} > 38
 %bcond_without  sysrtmidi
@@ -161,8 +163,8 @@ BuildRequires:  cmake
 BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
-BuildRequires:  clang
-BuildRequires:  llvm
+BuildRequires:  clang%{?llvm_pkgver}
+BuildRequires:  llvm%{?llvm_pkgver}
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -170,7 +172,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(FAudio)
 %if %{with sysllvm}
-BuildRequires:  cmake(LLVM) >= %{bundlellvm}
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= %{bundlellvm}
 %else
 Provides:       bundled(llvm) = %{bundlellvm}~git%{shortcommit18}
 %endif

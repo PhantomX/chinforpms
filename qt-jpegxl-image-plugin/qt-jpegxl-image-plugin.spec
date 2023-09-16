@@ -1,6 +1,6 @@
-%global commit 66ac0de3b51903a9ceb293eb5b6eaf4cb29d2911
+%global commit 4bcbf5ff51e6fc0d2125e93ceb455f1411461aad
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230119
+%global date 20230627
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           qt-jpegxl-image-plugin
 Version:        0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
 License:        GPL-3.0-only
@@ -26,7 +26,7 @@ BuildRequires:  cmake
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  pkgconfig(libjxl) >= 0.7
+BuildRequires:  pkgconfig(libjxl) >= 0.8
 BuildRequires:  pkgconfig(libjxl_threads)
 
 

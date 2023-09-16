@@ -34,11 +34,6 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 %prep
 %autosetup -n %{srcname}-%{version} -p1
 
-%if 0%{?fedora} < 35
-# Push this down for the time
-sed -e 's|Pillow>=8.2|Pillow>=8.1|g' -i setup.py
-%endif
-
 %generate_buildrequires
 %pyproject_buildrequires -r
 

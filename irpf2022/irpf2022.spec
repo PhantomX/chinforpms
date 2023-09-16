@@ -78,7 +78,6 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 
-cat > %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop <<EOF
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   rfb-%{name}.desktop

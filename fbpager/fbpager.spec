@@ -38,7 +38,7 @@ Enhances:       fluxbox
 %{name} is fbpager: A pager for fluxbox.
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup -n %{name}-%{commit} -p1
 
 cp -p %{S:1} %{name}.1
 cp -p %{S:2} %{name}.resource

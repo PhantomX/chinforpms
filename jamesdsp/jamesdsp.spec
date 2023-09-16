@@ -29,7 +29,7 @@
 
 Name:           jamesdsp
 Version:        2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -59,7 +59,7 @@ BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
 BuildRequires:  qcodeeditor-devel
-BuildRequires:  cmake(qtadvanceddocking)
+BuildRequires:  cmake(qt5advanceddocking)
 BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpipewire-0.3)
@@ -153,8 +153,8 @@ sed \
 
 cat >> src/subprojects/EELEditor/src/EELEditor.pri <<EOF
 
-LIBS += -lqtadvanceddocking -lQCodeEditor
-INCLUDEPATH += %{_includedir}/qtadvanceddocking %{_includedir}/QCodeEditor
+LIBS += -lqt5advanceddocking -lQCodeEditor
+INCLUDEPATH += %{_includedir}/qt5advanceddocking %{_includedir}/QCodeEditor
 EOF
 
 sed \
@@ -271,6 +271,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-3.20220908git49994d2
+- Update qt5advanceddocking BR
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-2.20220908git49994d2
 - gcc 13 build fix
 

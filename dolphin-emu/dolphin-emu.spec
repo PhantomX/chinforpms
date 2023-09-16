@@ -10,6 +10,7 @@
 
 %bcond_without ffmpeg
 %bcond_without egl
+%bcond_with sysfmt
 %bcond_with llvm
 %bcond_with sysvulkan
 %bcond_with unittests
@@ -19,16 +20,9 @@
 %global enablejit 1
 %endif
 
-# Minizip package name, f38 uses minizip-ng
-%if 0%{?fedora} > 37
-%global minizippkg minizip-ng
-%else
-%global minizippkg minizip
-%endif
-
-%global commit f19651e49b52a08bbd19c5d10ce61bd40143d190
+%global commit 1a821465f4b6bdeef09e8a964a0d2ce50cf7970d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230819
+%global date 20230912
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -57,7 +51,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 40371
+%global baserelease 40535
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -114,7 +108,9 @@ BuildRequires:  pkgconfig(bzip2)
 %if %{with egl}
 BuildRequires:  pkgconfig(egl)
 %endif
+%if %{with sysfmt}
 BuildRequires:  pkgconfig(fmt) >= 9.1.0
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtest)
 BuildRequires:  pkgconfig(hidapi-hidraw)
@@ -146,7 +142,7 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel >= 2.28.0
-BuildRequires:  %{minizippkg}-devel
+BuildRequires:  minizip-ng-devel
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  vulkan-headers
@@ -197,7 +193,9 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
-
+%if %{without sysfmt}
+Provides:       bundled(fmt) = 9.1.0
+%endif
 
 %description
 Dolphin is a Gamecube, Wii and Triforce (the arcade machine based on the
@@ -267,9 +265,13 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 ###Remove Bundled:
 pushd Externals
 rm -rf \
-  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg fmt gettext gtest hidapi \
+  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi \
   libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
+
+%if %{with sysfmt}
+  rm -rf fmt
+%endif
 
 %if %{with sysvulkan}
   rm -rf glslang
@@ -319,6 +321,9 @@ sed \
 %endif
 %if %{without egl}
   -DENABLE_EGL:BOOL=OFF \
+%endif
+%if %{without sysfmt}
+  -DUSE_SYSTEM_FMT:BOOL=OFF \
 %endif
 %if %{without llvm}
   -DENABLE_LLVM:BOOL=OFF \

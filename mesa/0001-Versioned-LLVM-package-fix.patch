@@ -1,0 +1,32 @@
+From d53e791b6be79fdeac65ac56faef6b5cc6925864 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 15 Sep 2023 20:51:54 -0300
+Subject: [PATCH] Versioned LLVM package fix
+
+---
+ src/gallium/frontends/rusticl/meson.build | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/src/gallium/frontends/rusticl/meson.build b/src/gallium/frontends/rusticl/meson.build
+index 4bde074..32c6679 100644
+--- a/src/gallium/frontends/rusticl/meson.build
++++ b/src/gallium/frontends/rusticl/meson.build
+@@ -142,6 +142,7 @@ rusticl_opencl_bindings_rs = rust.bindgen(
+   output : 'rusticl_opencl_bindings.rs',
+   include_directories : [
+     inc_include,
++    '_RPM_CLANG_INC_',
+   ],
+   c_args : [
+     rusticl_bindgen_c_args,
+@@ -223,6 +224,7 @@ rusticl_mesa_bindings_rs = rust.bindgen(
+     inc_include,
+     inc_nir,
+     inc_src,
++    '_RPM_CLANG_INC_',
+   ],
+   dependencies: [
+     dep_valgrind,
+-- 
+2.41.0
+

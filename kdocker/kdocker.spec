@@ -38,7 +38,7 @@ also be made to disappear from the task bar.
 
 
 %prep
-%autosetup -n %{project}-%{?gver:%{commit}}%{!?gver:%{version}} -p1
+%autosetup -n %{project}-%{version} -p1
 # unbundle qtsingleapplication
 rm -fr 3rdparty
 

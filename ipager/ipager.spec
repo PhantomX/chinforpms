@@ -3,7 +3,7 @@
 
 Name:           ipager
 Version:        1.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A themable desktop pager for fluxbox and other WMs
 
 License:        MIT
@@ -35,6 +35,7 @@ sed \
   -e "/^ipager_env.Append($/a\        LINKFLAGS = [ '-fPIC', '-pie' ]," \
   -e "s|'/usr/lib'|'%{_libdir}'|g" \
   -e 's|imlib2-config --cflags --libs|pkg-config imlib2 --cflags --libs|g' \
+  -e 's|imlib2-config|true|g' \
   -i SConstruct
 
 %build
@@ -65,6 +66,9 @@ scons \
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.0-3
+- Remove all imlib2-config references
+
 * Sat Oct 03 2020 Phantom X <megaphantomx at hotmail dot com> - 1.1.0-2
 - Unset compiler variables to please scons bullshit
 

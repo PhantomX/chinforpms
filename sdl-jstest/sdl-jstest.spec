@@ -1,27 +1,34 @@
-%global commit aafbdb1ed3e687583037ba55ae88b1210d6ce98b
+%global commit 5bc418e7f12b6da24992b414d1e06ce424d30e5c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20180715
+%global date 20230913
 %bcond_without snapshot
+
+%global commit1 ad3e98dbc86157cce04e60343965970cb812e92e
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 tinycmmc
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global vc_url  https://github.com/grumbel
+
 Name:           sdl-jstest
-Version:        0.2.1
-Release:        0.2%{?dist}
+Version:        0.2.2
+Release:        1%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
 License:        GPL-3.0-only
-URL:            https://gitlab.com/sdl-jstest/sdl-jstest
+URL:            %{vc_url}/%{name}
 
 %if %{with snapshot}
-Source0:        %{url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/-/archive/%{name}-%{version}.tar.gz#/%{name}-%{version}.tar.bz2
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 
-Patch0:         %{name}-system-sdl_db.patch
+Patch0:         0001-Use-system-SDL_GameControllerDB.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -30,6 +37,8 @@ BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(ncurses)
 BuildRequires:  pkgconfig(sdl2)
 Requires:       sdl_gamecontrollerdb
+
+Provides:       bundled(%{srcname1}) = 0~git%{shortcommit1}
 
 
 %description
@@ -44,6 +53,8 @@ you want to test your SDL_LINUX_JOYSTICK configuration.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
+tar -xf %{SOURCE1} -C external/tinycmmc --strip-components 1
+
 %if %{with snapshot}
 sed -i \
   -e '/Git REQUIRED/d' \
@@ -51,10 +62,9 @@ sed -i \
   -e "/COMMAND/s|\${GIT_EXECUTABLE} log.*$|echo \"%{date}\"|g" \
   CMakeLists.txt
 %endif
+echo %{version}-%{release} > VERSION
 
-sed \
-  -e '/AddMappingsFromFile/s|"gamecontrollerdb.txt"|"%{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt"|g' \
-  -i sdl2-jstest.c
+sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i src/sdl2-jstest.c
 
 
 %build
@@ -73,11 +83,14 @@ sed \
 %license LICENSE.txt
 %doc README.md
 %{_bindir}/sdl*-jstest
+%{_datadir}/icons/hicolor/*/apps/*
 %{_mandir}/man1/sdl*-jstest.1*
-%{_metainfodir}/sdl*-jstest.appdata.xml
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2.2-1.20230913git5bc418e
+- 0.2.2
+
 * Mon Oct 08 2018 Phantom X <megaphantomx at bol dot com dot br> - 0.2.1-0.2.20180715gitaafbdb1
 - BR: gcc-c++
 

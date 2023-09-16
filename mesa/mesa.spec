@@ -19,26 +19,25 @@
 %global with_i915   1
 %if !0%{?rhel}
 %global with_intel_clc 1
-%endif 
+%endif
 %global with_iris   1
-%global with_vmware 1
 %global with_xa     1
 %global intel_platform_vulkan ,intel,intel_hasvk
 %endif
 
 %ifarch aarch64 x86_64 %{ix86}
 %if !0%{?rhel}
-%global with_etnaviv   1
 %global with_lima      1
 %global with_vc4       1
-%global with_v3d       1
 %endif
+%global with_etnaviv   1
 %global with_freedreno 1
 %global with_kmsro     1
 %global with_panfrost  1
 %global with_tegra     1
+%global with_v3d       1
 %global with_xa        1
-%global extra_platform_vulkan ,broadcom,freedreno
+%global extra_platform_vulkan ,broadcom,freedreno,panfrost
 %endif
 
 %ifnarch s390x
@@ -47,6 +46,12 @@
 %global with_r600 1
 %endif
 %global with_radeonsi 1
+%global with_vmware 1
+%endif
+
+%if !0%{?rhel}
+%global with_libunwind 1
+%global with_lmsensors 1
 %endif
 
 %ifarch %{valgrind_arches}
@@ -58,12 +63,15 @@
 # Enable patent encumbered video codecs acceleration
 %bcond_with videocodecs
 
+# Set to build with versioned LLVM packages
+%global llvm_pkgver 16
+
 %global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit c111021a223ad749096f14c498f9e96617c58ae8
+%global commit 3317f14d8383a50ceae8c2b257ec4d1895b9d40f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230905
+%global date 20230914
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -79,9 +87,9 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.0~rc3
-Release:        100%{?dist}
+Release:        101%{?dist}
 
-License:        MIT
+License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
 
 %if %{with snapshot}
@@ -96,6 +104,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
+Patch11:        mesa-mr23981.patch
+Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
 BuildRequires:  meson >= 1.2.0
 BuildRequires:  gcc
@@ -110,8 +120,12 @@ BuildRequires:  kernel-headers
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
 BuildRequires:  pkgconfig(libdrm) >= 2.4.110
+%if 0%{?with_libunwind}
+BuildRequires:  pkgconfig(libunwind)
+%endif
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.24
@@ -138,6 +152,9 @@ BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xrandr) >= 1.3
 BuildRequires:  bison
 BuildRequires:  flex
+%if 0%{?with_lmsensors}
+BuildRequires:  lm_sensors-devel
+%endif
 %if 0%{?with_vdpau}
 BuildRequires:  pkgconfig(vdpau) >= 1.1
 %endif
@@ -149,14 +166,14 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm-devel >= 13.0.0
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= 13.0.0
 %if 0%{?with_opencl}
-BuildRequires:  clang-devel
+BuildRequires:  clang%{?llvm_pkgver}-devel
 BuildRequires:  bindgen
 BuildRequires:  rust-packaging
 BuildRequires:  pkgconfig(libclc)
 BuildRequires:  pkgconfig(SPIRV-Tools)
-BuildRequires:  pkgconfig(LLVMSPIRVLib)
+BuildRequires:  spirv-llvm-translator%{?llvm_pkgver}-devel
 %endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
@@ -171,11 +188,9 @@ BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
 BuildRequires:  pkgconfig(vulkan)
 %endif
-BuildRequires:  pkgconfig(libzstd)
 
 # vulkan-overlay
 BuildRequires:  glslang
-BuildRequires:  lm_sensors-devel
 
 
 %description
@@ -251,7 +266,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 
 %if 0%{?with_va}
 %package        va-drivers
-Summary:        Mesa-based VAAPI drivers
+Summary:        Mesa-based VA-API video acceleration drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description va-drivers
@@ -288,6 +303,10 @@ Summary:        Mesa gbm runtime library
 Provides:       libgbm = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
+# older mesa-dri-drivers together with a newer mesa-libgbm and its dependants.
+# See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
+Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-dri-drivers%{?_isa})
 
 %description libgbm
 %{summary}.
@@ -324,6 +343,10 @@ Provides:       libxatracker-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 Summary:        Mesa shared glapi
 Provides:       libglapi = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
+# older mesa-dri-drivers together with a newer mesa-libglapi or its dependants.
+# See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
+Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-dri-drivers%{?_isa})
 
 %description libglapi
 %{summary}.
@@ -365,17 +388,10 @@ Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release
 %package vulkan-drivers
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
+Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vulkan-drivers
 The drivers with support for the Vulkan API.
-
-%package vulkan-devel
-Summary:        Mesa Vulkan development files
-Requires:       %{name}-vulkan-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       vulkan-devel
-
-%description vulkan-devel
-Headers for development with the Vulkan API.
 
 %package vulkan-lavapipe-layer
 Summary:        Mesa Vulkan lavapipe layer
@@ -396,7 +412,15 @@ an overlay.
 
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -N -p1
+%autopatch -M 999 -p1
+
+%if 0%{?llvm_pkgver}
+%patch -P 1000 -p1
+sed \
+  -e 's|_RPM_CLANG_INC_|%{_libdir}/llvm%{?llvm_pkgver}/lib/clang/%{?llvm_pkgver}/include|g' \
+  -i src/gallium/frontends/rusticl/meson.build
+%endif
 
 cp %{SOURCE1} docs/
 
@@ -438,7 +462,9 @@ export RUSTFLAGS="%build_rustflags"
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=true \
+%if 0%{?with_intel_clc}
   -Dintel-clc=enabled \
+%endif
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -446,7 +472,12 @@ export RUSTFLAGS="%build_rustflags"
   -Db_ndebug=true \
   -Dbuild-tests=false \
   -Dselinux=true \
+%if !0%{?with_libunwind}
   -Dlibunwind=disabled \
+%endif
+%if !0%{?with_lmsensors}
+  -Dlmsensors=disabled \
+%endif
   -Dandroid-libbacktrace=disabled \
   %{nil}
 
@@ -499,8 +530,8 @@ popd
 %{_libdir}/libEGL_mesa.so.0*
 %files libEGL-devel
 %dir %{_includedir}/EGL
-%{_includedir}/EGL/eglmesaext.h
 %{_includedir}/EGL/eglext_angle.h
+%{_includedir}/EGL/eglmesaext.h
 
 %files libglapi
 %{_libdir}/libglapi.so.0
@@ -564,7 +595,6 @@ popd
 %files dri-drivers
 %dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
-%{_datadir}/drirc.d/00-radv-defaults.conf
 %{_libdir}/dri/kms_swrast_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
@@ -656,32 +686,35 @@ popd
 %if 0%{?with_va}
 %files va-drivers
 %{_libdir}/dri/nouveau_drv_video.so
-%{_libdir}/dri/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
 %endif
 %if 0%{?with_radeonsi}
 %{_libdir}/dri/radeonsi_drv_video.so
 %endif
+%{_libdir}/dri/virtio_gpu_drv_video.so
 %endif
 
 %if 0%{?with_vdpau}
 %files vdpau-drivers
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
-%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %if 0%{?with_r600}
 %{_libdir}/vdpau/libvdpau_r600.so.1*
 %endif
 %if 0%{?with_radeonsi}
 %{_libdir}/vdpau/libvdpau_radeonsi.so.1*
 %endif
+%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %endif
 
 %files vulkan-drivers
+%{_libdir}/libvulkan_lvp.so
+%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
 %{_libdir}/libvulkan_radeon.so
+%{_datadir}/drirc.d/00-radv-defaults.conf
 %{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel.so
@@ -694,10 +727,10 @@ popd
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
 %{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+%{_libdir}/libvulkan_panfrost.so
+%{_datadir}/vulkan/icd.d/panfrost_icd.*.json
 %endif
 %endif
-
-%files vulkan-devel
 
 %files vulkan-lavapipe-layer
 %{_libdir}/libvulkan_lvp.so
@@ -711,6 +744,9 @@ popd
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.0~rc3-101.20230914git3317f14
+- Add llvm_pkgver define to set versioned LLVM packages, when needed
+
 * Tue Sep 05 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.0~rc3-100.20230905gitc111021
 - 23.2.0-rc3
 

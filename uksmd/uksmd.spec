@@ -1,15 +1,15 @@
 %global commit 779017a3dc5f5951811bffdae6f3634e5cba91fa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230204
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           uksmd
-Version:        0
-Release:        5%{?dist}
+Version:        6.5.1
+Release:        1%{?dist}
 
 Summary:        Userspace KSM helper daemon
 License:        GPL-3.0-only
@@ -19,13 +19,14 @@ URL:            https://codeberg.org/pf-kernel/%{name}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/%{version}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  meson
 BuildRequires:  gcc
-BuildRequires:  pkgconfig(libprocps)
+BuildRequires:  pkgconfig(libproc2)
 BuildRequires:  pkgconfig(libcap-ng)
+BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  systemd
 
 
@@ -69,6 +70,9 @@ pf-kernel (https://gitlab.com/post-factum/pf-kernel/).
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.1-1
+- 6.5.1
+
 * Fri Mar 31 2023 Phantom X <megaphantomx at hotmail dot com> - 0-5.20230204git779017a
 - Bump
 - meson

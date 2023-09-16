@@ -1,6 +1,6 @@
-%global commit 9f4c2b0ecfc869eda8e2216347c09d3de6932746
+%global commit cd46c9827aef16466e921f41ffdf86c86285dd02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230518
+%global date 20230615
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           cropgui
 Version:        0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPL-2.0-or-later

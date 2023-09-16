@@ -31,7 +31,7 @@ requests, certificate revocation lists and more.
 
 %prep
 %setup -c -T
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+rpm2cpio %{S:0} | cpio -imdv
 
 
 %build

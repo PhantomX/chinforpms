@@ -1,6 +1,6 @@
-%global commit 3807292acee096459a73732f663544916d9eb0e5
+%global commit 0a774368916def5c9889de50f3323dec11de781e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230102
+%global date 20230811
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           adwaita-qt
 Version:        1.4.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 License:        LGPL-2.1-or-later
 Summary:        Adwaita theme for Qt-based applications

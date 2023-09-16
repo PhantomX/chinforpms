@@ -6,9 +6,9 @@
 %bcond_with valgrind
 %endif
 
-%global commit c111021a223ad749096f14c498f9e96617c58ae8
+%global commit 3317f14d8383a50ceae8c2b257ec4d1895b9d40f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230905
+%global date 20230914
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -24,7 +24,7 @@ Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.0~rc3
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -45,6 +45,7 @@ BuildRequires:  gettext
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
 BuildRequires:  pkgconfig(libdrm) >= 2.4.110
+BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
@@ -130,7 +131,7 @@ EOF
   -Dbuild-tests=false \
   -Dselinux=true \
   -Dlmsensors=disabled \
-  -Dlibunwind=disabled \
+  -Dlibunwind=enabled \
   -Dandroid-libbacktrace=disabled \
   %{nil}
 

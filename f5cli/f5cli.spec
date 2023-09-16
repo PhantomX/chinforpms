@@ -46,7 +46,7 @@ if [ "${RVER}" != "%{version}" ] ;then
 fi
 
 %setup -c -T
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+rpm2cpio %{S:0} | cpio -imdv
 
 cp %{S:1} %{S:3} .
 

@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit 2f55f848197ef974a5d99e2107130a31e8066194
+%global commit 53478d9ce5183300e88decf4a98328d42842ce6d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230507
+%global date 20230915
 %bcond_without snapshot
 
 %bcond_with map
@@ -15,8 +15,8 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.0.1
-Release:        105%{?dist}
+Version:        2.1
+Release:        100%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -27,11 +27,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %dnl Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %endif
-
-Patch0:         sun_path.patch
-Patch1:         0001-Fix-lua-linking-with-C.patch
-Patch2:         0001-Add-missing-DEBUG_FILEDATA-conditional.patch
-
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -159,6 +154,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Gee
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.1-100.20230915git53478d9
+- 2.1
+
 * Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0.1-105.20230507git2f55f84
 - libheif
 

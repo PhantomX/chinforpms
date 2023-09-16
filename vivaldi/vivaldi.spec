@@ -25,6 +25,8 @@ URL:            https://vivaldi.com/
 Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.%{_arch}.rpm
 Source1:        eula.txt
 
+Patch0:         0001-Move-user-flags-to-main-wrapper.patch
+
 ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  chrpath
@@ -56,7 +58,7 @@ Vivaldi web browser.
 %prep
 %setup -c -T
 
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+rpm2cpio %{S:0} | cpio -imdv
 
 FCVER="$(grep ^FFMPEG_VERSION_DEB= opt/vivaldi/update-ffmpeg | cut -d= -f2 | cut -d- -f1)"
 if [ "${FCVER}" != "%{ffmpegcodec}" ] ;then
@@ -64,6 +66,8 @@ if [ "${FCVER}" != "%{ffmpegcodec}" ] ;then
   echo "Edit ffmpegcodec and try again"
   exit 1
 fi
+
+%autopatch -p1
 
 cp %{S:1} .
 
@@ -79,26 +83,9 @@ cat > %{name}.wrapper <<'EORF'
 APP_NAME=%{name}
 APP_PATH="%{_libdir}/%{name}"
 
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
-APP_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/${APP_NAME}-userflags.conf"
-APP_USER_FLAGS=()
-if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
-  while read -r param
-  do
-    APP_USER_FLAGS+=("${param}")
-  done < <(LANG=C grep '^\-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
-else
-  if [ -w "${XDG_CONFIG_HOME}" ] ; then
-    cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
-# %{name} user flags (One parameter per line)
-#--proxy-server="socks5://proxy:port"
-EOF
-  fi
-fi
-
 LD_LIBRARY_PATH="${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
-exec "${APP_PATH}/${APP_NAME}" --password-store=basic ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
+exec "${APP_PATH}/${APP_NAME}" "$@"
 EORF
 
 

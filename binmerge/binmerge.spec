@@ -1,6 +1,6 @@
-%global commit 6e26cc41f1839cb24c1068fe673b1510a2cef258
+%global commit 3802aaff10ddfc58abc6f55900e68d2942ed7b9f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220311
+%global date 20230908
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           binmerge
 Version:        1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Tool to merge multiple bin/cue tracks into one
 
 License:        GPL-2.0-only

@@ -1,0 +1,43 @@
+From 8bb3ab59f7286d510f63fd9115d10cc8f3d6e5ea Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 15 Sep 2023 23:19:18 -0300
+Subject: [PATCH] Use system SDL_GameControllerDB
+
+---
+ CMakeLists.txt    | 6 ------
+ src/sdl2-jstest.c | 2 +-
+ 2 files changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4969b63..c31adaa 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -97,12 +97,6 @@ if(BUILD_SDL2_JSTEST)
+   file(COPY sdl2-jstest.1
+     DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+ 
+-  file(COPY external/sdl_gamecontrollerdb/gamecontrollerdb.txt
+-    DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+-
+-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/gamecontrollerdb.txt
+-    DESTINATION ${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME})
+-
+   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/sdl2-jstest.1
+     DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+ 
+diff --git a/src/sdl2-jstest.c b/src/sdl2-jstest.c
+index 5a4274e..bfb18c0 100644
+--- a/src/sdl2-jstest.c
++++ b/src/sdl2-jstest.c
+@@ -608,7 +608,7 @@ int main(int argc, char** argv)
+     atexit(SDL_Quit);
+ 
+     {
+-      int ret = SDL_GameControllerAddMappingsFromFile(SDL2_JSTEST_DATADIR "/gamecontrollerdb.txt");
++      int ret = SDL_GameControllerAddMappingsFromFile("_RPM_GCDBDIR_/gamecontrollerdb.txt");
+       if (ret < 0) {
+         ret = SDL_GameControllerAddMappingsFromFile("gamecontrollerdb.txt");
+       }
+-- 
+2.41.0
+

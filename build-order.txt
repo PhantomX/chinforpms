@@ -107,6 +107,7 @@ chinfo-extramimetypes
 claws-mail
 claws-mail-themes
 cmdpack
+cppgir
 -cpupower-gui
 cropgui
 -curlew
@@ -157,11 +158,12 @@ image-analyzer
 input-leap
 ipager
 ipsbehead
-jdupes
+-jdupes
 joy2key
 kdocker
 keepassxc
 kernel-tools
+kid3
 -krename
 -kristall
 kse

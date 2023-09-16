@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global pyctrver 0.5.1
 
 Name:           ninfs
-Version:        2.0~a9
+Version:        2.0~a10
 Release:        1%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
@@ -100,6 +100,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0~a10-1
+- 2.0a10
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 2.0~a9-1
 - 2.0a9
 

@@ -16,8 +16,8 @@
 %global pkgver %%(c=%{version}; echo ${c//./_})
 
 Name:           vasm
-Version:        1.9
-Release:        2%{?dist}
+Version:        1.9d
+Release:        1%{?dist}
 Summary:        Portable 6502 6800 arm c16x jagrisc m68k ppc vidcore x86 z80 assembler
 
 License:        VASMBSD
@@ -71,6 +71,9 @@ strip --strip-unneeded %{buildroot}%{_bindir}/vobjdump
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.9d-1
+- 1.9d
+
 * Tue Mar 29 2022 - 1.9-2
 - Fix for package_note_file
 

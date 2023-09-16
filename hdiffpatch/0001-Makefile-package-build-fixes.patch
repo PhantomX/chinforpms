@@ -1,4 +1,4 @@
-From 83ddbed6ed70c6c7548051df11655f99e9c9b0e9 Mon Sep 17 00:00:00 2001
+From 21ab845dca252b85c59344d07cef7ae571763aeb Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 17 Mar 2022 13:53:39 -0300
 Subject: [PATCH] Makefile: package build fixes
@@ -8,7 +8,7 @@ Subject: [PATCH] Makefile: package build fixes
  1 file changed, 54 insertions(+), 16 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index fb596e9..d272a8e 100644
+index 5883a2b..1db9597 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -3,10 +3,10 @@ DIR_DIFF := 1
@@ -66,8 +66,8 @@ index fb596e9..d272a8e 100644
 +    ifeq ($(LZMA),1)
  	HPATCH_OBJ+=$(LZMA_PATH)/7zCrc.o \
  				$(LZMA_PATH)/7zCrcOpt.o \
- 				$(LZMA_PATH)/Bra.o \
-@@ -109,6 +118,7 @@ else
+ 				$(LZMA_PATH)/7zStream.o \
+@@ -110,6 +119,7 @@ else
  				$(LZMA_PATH)/XzCrc64Opt.o \
  				$(LZMA_PATH)/XzDec.o
  	HDIFF_OBJ +=$(LZMA_PATH)/XzEnc.o
@@ -75,7 +75,7 @@ index fb596e9..d272a8e 100644
    endif
  endif
  
-@@ -205,7 +215,7 @@ endif
+@@ -206,7 +216,7 @@ endif
  
  
  DEF_FLAGS := \
@@ -84,7 +84,7 @@ index fb596e9..d272a8e 100644
      -D_IS_NEED_ALL_CompressPlugin=0 \
      -D_IS_NEED_DEFAULT_CompressPlugin=0 \
      -D_IS_NEED_ALL_ChecksumPlugin=0 \
-@@ -231,6 +241,9 @@ else
+@@ -232,6 +242,9 @@ else
  	ifeq ($(BZIP2),1)
          DEF_FLAGS += -I$(BZ2_PATH)
  	endif
@@ -94,7 +94,7 @@ index fb596e9..d272a8e 100644
  endif
  ifeq ($(ZLIB),0)
  else
-@@ -238,6 +251,9 @@ else
+@@ -239,6 +252,9 @@ else
  	ifeq ($(ZLIB),1)
          DEF_FLAGS += -I$(ZLIB_PATH)
  	endif
@@ -104,7 +104,7 @@ index fb596e9..d272a8e 100644
  endif
  ifeq ($(DIR_DIFF),0)
    DEF_FLAGS += -D_IS_NEED_DIR_DIFF_PATCH=0
-@@ -266,7 +282,7 @@ else
+@@ -267,7 +283,7 @@ else
  endif
  ifeq ($(LZMA),0)
  else
@@ -113,9 +113,9 @@ index fb596e9..d272a8e 100644
    ifeq ($(VCD),0)
    else
      DEF_FLAGS += -D_CompressPlugin_7zXZ -DUSE_CRC_EMU
-@@ -275,6 +291,12 @@ else
+@@ -276,6 +292,12 @@ else
    else
-     DEF_FLAGS += -D_LZMA_DEC_OPT
+     DEF_FLAGS += -DZ7_LZMA_DEC_OPT
    endif
 +  ifeq ($(LZMA),1)
 +    DEF_FLAGS += -I$(LZMA_PATH)
@@ -126,7 +126,7 @@ index fb596e9..d272a8e 100644
  endif
  ifeq ($(ZSTD),0)
  else
-@@ -283,6 +305,9 @@ else
+@@ -284,6 +306,9 @@ else
        DEF_FLAGS += -DZSTD_HAVE_WEAK_SYMBOLS=0 -DZSTD_TRACE=0 -DZSTD_DISABLE_ASM=1 -DZSTDLIB_VISIBLE= -DZSTDLIB_HIDDEN= \
  	    -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common -I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
  	endif
@@ -136,7 +136,7 @@ index fb596e9..d272a8e 100644
  endif
  
  ifeq ($(MT),0)
-@@ -303,6 +328,9 @@ endif
+@@ -304,6 +329,9 @@ endif
  ifeq ($(BZIP2),2)
    PATCH_LINK += -lbz2		# link bzip2
  endif
@@ -146,7 +146,7 @@ index fb596e9..d272a8e 100644
  ifeq ($(ZSTD),2)
    PATCH_LINK += -lzstd		# link zstd
  endif
-@@ -334,15 +362,15 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
+@@ -335,15 +363,15 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
  
  .PHONY: all install clean
  
@@ -168,7 +168,7 @@ index fb596e9..d272a8e 100644
  
  ifeq ($(OS),Windows_NT) # mingw?
    RM := del /Q /F
-@@ -351,17 +379,27 @@ else
+@@ -352,17 +380,27 @@ else
    RM := rm -f
    DEL_HDIFF_OBJ := $(HDIFF_OBJ)
  endif

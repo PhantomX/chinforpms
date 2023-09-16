@@ -1,16 +1,16 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit fb386681821d503b767c465d41d99126626c2789
+%global commit d741b3aa27d9288cc1dc61eb5f6d72c97f90fce3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230415
+%global date 20230914
 
 %bcond_without systinyxml
 
-%global commit2 5601b8272a6850b7c5d693dd0c0e16da50be8d8d
+%global commit2 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 lodepng
 
-%global commit3 6925c1067de2c9e39d626bcba84db0113f8395f2
+%global commit3 0d4e9aac4575744ddaae56b146f1be19f064f0e5
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 physfs
 
@@ -18,11 +18,11 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 tinyxml2
 
-%global commit6 b4ca16d59f90b7ba9aa5a53ae72e34f92ed3e35d
+%global commit6 dedf70e0a769bc52a17a36da840d96770fc26d12
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 23.05
+%global commit5 23.09
 %global srcname5 FAudio
 
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -31,7 +31,7 @@
 
 Name:           vvvvvv
 Version:        2.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -67,7 +67,6 @@ BuildRequires:  pkgconfig(physfs)
 %if %{with systinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %endif
-BuildRequires:  cmake(utf8cpp)
 
 Requires:       vvvvvv-data >= 2.1
 Requires:       hicolor-icon-theme
@@ -95,7 +94,7 @@ tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
 tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
 sed \
   -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \
-  -e '/find_package(utf8cpp CONFIG)/aadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
+  -e '/find_package(FAudio CONFIG)/iadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
   -e '/target_link_libraries/s| tinyxml2 | tinyxml2-static |g' \
   -i desktop_version/CMakeLists.txt
 cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
@@ -189,6 +188,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-11.20230914gitd741b3a
+- Removed utf8cpp BR
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-9.20230315git4398861
 - Build with system tinyxml2
 

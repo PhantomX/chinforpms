@@ -37,7 +37,7 @@
 
 Name:           telegram-desktop
 Version:        4.9.7
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -73,7 +73,6 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch203:       0001-cmake-use-system-cppgir.patch
 Patch204:       %{name}-build-fixes.patch
-Patch205:       0001-tgvoip-system-json11.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
 BuildRequires:  desktop-file-utils
@@ -94,7 +93,6 @@ BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
 BuildRequires:  pkgconfig(jemalloc)
-BuildRequires:  pkgconfig(json11)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
@@ -226,7 +224,6 @@ sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   cmake/external/kcoreaddons/CMakeLists.txt \
   cmake/external/gsl/CMakeLists.txt
 
-rm -f Telegram/ThirdParty/libtgvoip/json11.*
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i Telegram/{cmake,ThirdParty/libtgvoip}/lib_tgvoip.cmake
 
@@ -354,6 +351,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.7-101
+- Rebundle json11
+
 * Thu Sep 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.9.7-100
 - 4.9.7
 

@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        5.15.3.4839
+Version:        5.15.12.7665
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -68,7 +68,7 @@ if [ "${RVER}" != "%{version}" ] ;then
   exit 1
 fi
 
-rpm2cpio %{S:0} | cpio -imdv --no-absolute-filenames
+rpm2cpio %{S:0} | cpio -imdv
 
 cp %{S:1} .
 
@@ -152,6 +152,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Sat Sep 16 2023 - 5.15.12.7665-1
+- 5.15.12.7665
+
 * Tue Jul 18 2023 - 5.15.3.4839-1
 - 5.15.3.4839
 

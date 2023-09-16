@@ -1,6 +1,6 @@
-%global commit dc7f76416e2fca9f4a861a1b967caf6aa15813c1
+%global commit fdd5c6e34285beef5b9be759c9b91390df486c66
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211114
+%global date 20230315
 %bcond_without snapshot
 
 %ifnarch %{ix86} ppc64 s390x
@@ -15,7 +15,7 @@
 
 Name:           flips
 Version:        1.40
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPL-3.0-or-later

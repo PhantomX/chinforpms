@@ -1,6 +1,6 @@
-%global commit 5f4132329a77ddc1ec1851d01152d60150a04cde
+%global commit eb64ebd962c17ca7ab176e6963fd069685a0d209
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220418
+%global date 20220808
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -14,7 +14,7 @@
 
 Name:           easytag
 Version:        2.5.1
-Release:        0.5%{?dist}
+Release:        0.6%{?dist}
 Summary:        Tag editor for MP3, Ogg, FLAC and other music files
 
 Epoch:          1

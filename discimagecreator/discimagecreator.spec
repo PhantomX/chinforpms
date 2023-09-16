@@ -1,7 +1,7 @@
 %global commit bef4f0ad46b9115fddfce976e1a5adfcdeff3580
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230309
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -10,8 +10,8 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20230309
-Release:        0%{?dist}
+Version:        20230909
+Release:        1%{?dist}
 Summary:        Disc and disk image creation tool 
 
 License:        Apache-2.0
@@ -82,6 +82,9 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230909-1
+- 20230909
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 20220909-1.202209013gitbb05d98
 - 20220909
 

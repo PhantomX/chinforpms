@@ -1,6 +1,6 @@
 Name:           adriconf
-Version:        2.5.0
-Release:        2%{?dist}
+Version:        2.7.1
+Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
 License:        GPL-3.0-or-later
@@ -8,7 +8,7 @@ URL:            https://gitlab.freedesktop.org/mesa/%{name}
 
 Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
 
-Patch0:         0001-gcc-13-build.patch
+Patch0:         %{url}/-/commit/eb7a9e5c2f8d66317548301d884bff4ec5da395b.patch#/%{name}-gl-eb7a9e5.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -18,15 +18,14 @@ BuildRequires:  gettext
 BuildRequires:  gtest-devel
 BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
+BuildRequires:  pkgconfig(atkmm-2.36)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gbm)
-BuildRequires:  pkgconfig(gl)
-BuildRequires:  pkgconfig(gtkmm-3.0)
+BuildRequires:  pkgconfig(gtkmm-4.0)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpci)
 BuildRequires:  pkgconfig(pugixml)
-BuildRequires:  pkgconfig(x11)
 Requires:       hicolor-icon-theme
 
 
@@ -74,9 +73,12 @@ done
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm0644 flatpak/org.freedesktop.%{name}.metainfo.xml \
   %{buildroot}%{_metainfodir}/
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedesktop.%{name}.metainfo.xml
+
 
 %find_lang %{name}
+
+%check
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedesktop.%{name}.metainfo.xml
 
 
 %files -f %{name}.lang
@@ -89,6 +91,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedeskto
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.7.1-1
+- 2.7.1
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-2
 - gcc 13 fix
 

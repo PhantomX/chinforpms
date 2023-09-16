@@ -3041,23 +3041,23 @@ fi\
 %{nil}
 
 # This macro defines a %%posttrans script for a kernel package.
-#    %%kernel_variant_posttrans [<subpackage>]
+#    %%kernel_variant_posttrans [-v <subpackage>] [-u uki-suffix]
 # More text can follow to go at the end of this variant's %%post.
 #
-%define kernel_variant_posttrans() \
-%{expand:%%posttrans %{?1:%{1}-}core}\
+%define kernel_variant_posttrans(v:u:) \
+%{expand:%%posttrans %{?-v:%{-v*}-}%{!?-u*:core}%{?-u*:uki-%{-u*}}}\
 %if 0%{!?fedora:1}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
-    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?-v:+%{-v*}} || exit $?\
 fi\
 %endif\
-rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}}\
-/bin/kernel-install add %{KVERREL}%{?1:+%{1}} /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz || exit $?\
-if [[ ! -e "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext" ]]; then\
-    ln -s "/lib/modules/%{KVERREL}%{?1:+%{1}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%{-v*}}\
+/bin/kernel-install add %{KVERREL}%{?-v:+%{-v*}} /lib/modules/%{KVERREL}%{?-v:+%{-v*}}/vmlinuz%{?-u:-%{-u*}.efi} || exit $?\
+if [[ ! -e "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext" ]]; then\
+    ln -s "/lib/modules/%{KVERREL}%{?-v:+%{-v*}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
     if command -v restorecon &>/dev/null; then\
-        restorecon "/boot/symvers-%{KVERREL}%{?1:+%{1}}.%compext"\
+        restorecon "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
     fi\
 fi\
 %{nil}
@@ -3076,7 +3076,7 @@ fi\
 %if 0%{!?fedora:1}\
 %{expand:%%kernel_modules_partner_post %{?-v*}}\
 %endif\
-%{expand:%%kernel_variant_posttrans %{?-v*}}\
+%{expand:%%kernel_variant_posttrans %{?-v*:-v %{-v*}}}\
 %{expand:%%post %{?-v*:%{-v*}-}core}\
 %{-r:\
 if [ `uname -i` == "x86_64" -o `uname -i` == "i386" ] &&\
@@ -3088,38 +3088,21 @@ touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%
 %{nil}
 
 #
-# This macro defines scripts for a kernel*-uki-virt package
-#
-# FIXME: /bin/kernel-install can't handle UKIs (yet), so just cp/rm as temporary stop-gap
-#
-%define kernel_uki_virt_scripts() \
-%{expand:%%posttrans %{?1:%{1}-}uki-virt}\
-mkdir -p /boot/efi/EFI/Linux\
-entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
-cp /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz-virt.efi /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
-%{nil}\
-%{expand:%%postun %{?1:%{1}-}uki-virt}\
-entry_token=$(kernel-install inspect | grep KERNEL_INSTALL_ENTRY_TOKEN: | cut -d ' ' -f2)\
-rm -f /boot/efi/EFI/Linux/${entry_token}-%{KVERREL}%{?1:+%{1}}.efi\
-%{nil}
-
-#
 # This macro defines a %%preun script for a kernel package.
-#    %%kernel_variant_preun <subpackage>
+#    %%kernel_variant_preun [-v <subpackage>] -u [uki-suffix]
 #
-%define kernel_variant_preun() \
-%{expand:%%preun %{?1:%{1}-}core}\
-/bin/kernel-install remove %{KVERREL}%{?1:+%{1}} || exit $?\
-%if 0%{!?fedora:1}\
+%define kernel_variant_preun(v:u:) \
+%{expand:%%preun %{?-v:%{-v*}-}%{!?-u*:core}%{?-u*:uki-%{-u*}}}\
+/bin/kernel-install remove %{KVERREL}%{?-v:+%{-v*}} || exit $?\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
-    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?1:+%{1}} || exit $?\
+    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?-v:+%{-v*}} || exit $?\
 fi\
-%endif\
 %{nil}
 
 %if %{with_up_base} && %{with_efiuki}
-%kernel_uki_virt_scripts
+%kernel_variant_posttrans -u virt
+%kernel_variant_preun -u virt
 %endif
 
 %if %{with_up_base}
@@ -3128,47 +3111,48 @@ fi\
 %endif
 
 %if %{with_zfcpdump}
-%kernel_variant_preun zfcpdump
+%kernel_variant_preun -v zfcpdump
 %kernel_variant_post -v zfcpdump
 %endif
 
 %if %{with_up} && %{with_debug} && %{with_efiuki}
-%kernel_uki_virt_scripts debug
+%kernel_variant_posttrans -v debug -u virt
+%kernel_variant_preun -v debug -u virt
 %endif
 
 %if %{with_up} && %{with_debug}
-%kernel_variant_preun debug
+%kernel_variant_preun -v debug
 %kernel_variant_post -v debug
 %endif
 
 %if %{with_arm64_16k_base}
-%kernel_variant_preun 16k
+%kernel_variant_preun -v 16k
 %kernel_variant_post -v 16k
 %endif
 
 %if %{with_debug} && %{with_arm64_16k}
-%kernel_variant_preun 16k-debug
+%kernel_variant_preun -v 16k-debug
 %kernel_variant_post -v 16k-debug
 %endif
 
 %if %{with_arm64_64k_base}
-%kernel_variant_preun 64k
+%kernel_variant_preun -v 64k
 %kernel_variant_post -v 64k
 %endif
 
 %if %{with_debug} && %{with_arm64_64k}
-%kernel_variant_preun 64k-debug
+%kernel_variant_preun -v 64k-debug
 %kernel_variant_post -v 64k-debug
 %endif
 
 %if %{with_realtime_base}
-%kernel_variant_preun rt
+%kernel_variant_preun -v rt
 %kernel_variant_post -v rt -r (kernel|kernel-smp)
 %kernel_kvm_post rt
 %endif
 
 %if %{with_realtime} && %{with_debug}
-%kernel_variant_preun rt-debug
+%kernel_variant_preun -v rt-debug
 %kernel_variant_post -v rt-debug
 %kernel_kvm_post rt-debug
 %endif

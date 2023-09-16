@@ -3,7 +3,7 @@
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           libadwaita
-Version:        1.4~rc
+Version:        1.4.0
 Release:        100%{?dist}
 Summary:        Building blocks for modern GNOME applications
 
@@ -116,6 +116,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.0-100
+- 1.4.0
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.4~rc-100
 - 1.4.rc
 

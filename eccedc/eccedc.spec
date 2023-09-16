@@ -1,7 +1,7 @@
 %global commit abbef80868dfe5b58c1849f3a2cf6d238067a0f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230309
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -10,7 +10,7 @@
 %global pkgname EccEdc
 
 Name:           eccedc
-Version:        20230309
+Version:        20230606
 Release:        1%{?dist}
 Summary:        Checks or fix user data of the 2048 byte per sector of CD by using ecc/edc
 
@@ -55,7 +55,7 @@ sed -e 's|-O2||g' -i %{pkgname}/makefile
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{pkgname}/%{pkgname}_linux.out %{buildroot}%{_bindir}/%{pkgname}
+install -pm0755 %{pkgname}/%{pkgname}.out %{buildroot}%{_bindir}/%{pkgname}
 
 
 %files
@@ -65,6 +65,9 @@ install -pm0755 %{pkgname}/%{pkgname}_linux.out %{buildroot}%{_bindir}/%{pkgname
 
 
 %changelog
+* Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230606-1
+- 20230606
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230309-1.20230309gitabbef80
 - 20230309
 

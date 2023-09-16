@@ -29,7 +29,7 @@ KEYS.BIN and decrypting PTF themes.
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup -n %{name}-%{commit} -p1
 
 sed \
   -e 's|CFLAGS = -Wall -Wextra -Werror|CFLAGS+=|g' \

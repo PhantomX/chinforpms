@@ -9,7 +9,7 @@
 
 # Use provided binary for first time bootstrap
 # Set to 0 after
-%global bootstrap 1
+%global bootstrap 0
 
 %undefine _debugsource_packages
 

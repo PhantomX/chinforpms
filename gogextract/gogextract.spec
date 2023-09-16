@@ -4,7 +4,7 @@
 
 BuildArch:      noarch
 
-%global gver .%{date}git%{shortcommit}%{?dist}
+%global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           gogextract
 Version:        0

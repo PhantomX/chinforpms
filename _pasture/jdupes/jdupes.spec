@@ -1,5 +1,5 @@
 Name:           jdupes
-Version:        1.21.3
+Version:        1.27.3
 Release:        1%{?dist}
 Summary:        A powerful duplicate file finder
 
@@ -8,7 +8,7 @@ License:        MIT
 URL:            https://github.com/jbruchon/%{name}
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         0001-Use-system-xxhash.patch
+#Patch0:         0001-Use-system-xxhash.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -26,6 +26,8 @@ rm -f xxhash.*
 %build
 %set_build_flags
 %make_build \
+  EXTERNAL_HASH_LIB=1 \
+  LINK_OPTIONS=-lxxhash \
   COMPILER_OPTIONS="$CFLAGS -DNDEBUG -DSMA_MAX_FREE=11" \
   CFLAGS_EXTRA="-DENABLE_DEDUPE -DSTATIC_DEDUPE_H=1" \
 %{nil}

@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           xinput-gui
 Version:        0.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
 License:        GPL-3.0-only
@@ -23,6 +23,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist setuptools}
 Requires:       gtk3
@@ -80,6 +81,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-3
+- BR: desktop-file-utils
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-2
 - Replace xorg-x11-server-utils BR
 

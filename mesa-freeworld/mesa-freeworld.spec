@@ -14,14 +14,17 @@
 %bcond_with valgrind
 %endif
 
-%global commit c111021a223ad749096f14c498f9e96617c58ae8
+%global commit 3317f14d8383a50ceae8c2b257ec4d1895b9d40f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230905
+%global date 20230914
 %bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
+
+# Set to build with versioned LLVM packages
+%global llvm_pkgver 16
 
 %global pkgname mesa
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
@@ -32,7 +35,7 @@ Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.0~rc3
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          100
 
@@ -58,6 +61,7 @@ BuildRequires:  kernel-headers
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
 BuildRequires:  pkgconfig(libdrm) >= 2.4.110
+BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libselinux)
@@ -85,7 +89,7 @@ BuildRequires:  pkgconfig(vdpau) >= 1.1
 BuildRequires:  pkgconfig(libva) >= 1.8.0
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm-devel >= 11.0.0
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= 11.0.0
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
@@ -147,6 +151,7 @@ Enhances:       %{pkgname}%{?_isa}
   -Dglx=dri \
   -Degl=true \
   -Dglvnd=true \
+  -Dintel-clc=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -155,7 +160,6 @@ Enhances:       %{pkgname}%{?_isa}
   -Dbuild-tests=false \
   -Dselinux=true \
   -Dlmsensors=disabled \
-  -Dlibunwind=disabled \
   -Dandroid-libbacktrace=disabled \
   %{nil}
 

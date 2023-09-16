@@ -29,7 +29,7 @@ Requires:       xwininfo
 
 
 %prep
-%autosetup %{?gver:-n %{name}-%{commit}} -p1
+%autosetup -n %{name}-%{commit} -p1
 
 %py3_shebang_fix %{name}
 

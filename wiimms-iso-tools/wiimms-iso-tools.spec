@@ -1,8 +1,8 @@
 %global _legacy_common_support 1
 
-%global commit e58ce7463bc8829c46bcba52e8232f550e49c17c
+%global commit fc1c0b840cb3ac41ca6e4f1d5e16da12b47eab58
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210418
+%global date 20220827
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,8 +12,8 @@
 %global vc_url https://github.com/Wiimm/%{name}
 
 Name:           wiimms-iso-tools
-Version:        3.04a
-Release:        2%{?dist}
+Version:        3.05a
+Release:        1%{?dist}
 Summary:        Tools to manipulate Wii and GameCube ISO images
 
 License:        GPL-2.0-or-later
@@ -115,6 +115,9 @@ done
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 3.05a-1.20220827gitfc1c0b8
+- 3.05a
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 3.04a-2.20210418gite58ce74
 - Fix for package_note_file
 

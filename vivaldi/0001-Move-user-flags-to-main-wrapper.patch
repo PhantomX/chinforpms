@@ -1,0 +1,46 @@
+From 1b21238a084bc6e2577a73ae9a18a105817a0efe Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 15 Sep 2023 11:51:30 -0300
+Subject: [PATCH] Move user flags to main wrapper
+
+---
+ opt/vivaldi/vivaldi | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/opt/vivaldi/vivaldi b/opt/vivaldi/vivaldi
+index 8a8844b..952f416 100755
+--- a/opt/vivaldi/vivaldi
++++ b/opt/vivaldi/vivaldi
+@@ -61,6 +61,23 @@ export CHROME_VERSION_EXTRA="stable"
+ # We don't want bug-buddy intercepting our crashes. http://crbug.com/24120
+ export GNOME_DISABLE_CRASH_DIALOG=SET_BY_GOOGLE_CHROME
+ 
++XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
++VIVALDI_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/vivaldi-userflags.conf"
++VIVALDI_USER_FLAGS=("--password-store=basic")
++if [[ -r "${VIVALDI_USER_FLAGS_FILE}" ]]; then
++  while read -r param
++  do
++    VIVALDI_USER_FLAGS+=("$(eval "echo ${param}")")
++  done < <(LANG=C grep '^-' "${VIVALDI_USER_FLAGS_FILE}" | tr -d \'\")
++else
++  if [ -w "${XDG_CONFIG_HOME}" ] ; then
++    cat > "${VIVALDI_USER_FLAGS_FILE}" <<'EOF'
++# vivaldi user flags (One parameter per line, environment variables are evaluated)
++#--proxy-server="socks5://proxy:port"
++EOF
++  fi
++fi
++
+ # Sanitize std{in,out,err} because they'll be shared with untrusted child
+ # processes (http://crbug.com/376567).
+ exec < /dev/null
+@@ -68,4 +85,4 @@ exec > >(exec cat)
+ exec 2> >(exec cat >&2)
+ 
+ # Note: exec -a below is a bashism.
+-exec -a "$0" "$HERE/vivaldi-bin" "$@"
++exec -a "$0" "$HERE/vivaldi-bin" ${VIVALDI_USER_FLAGS:+"${VIVALDI_USER_FLAGS[@]}"} "$@"
+-- 
+2.41.0
+

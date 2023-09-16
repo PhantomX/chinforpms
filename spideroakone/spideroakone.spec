@@ -109,7 +109,7 @@ if [ "${RVER}" != "%{version}" ] ;then
 fi
 
 %setup -c -T
-rpm2cpio %{SOURCE0} | cpio -imdv --no-absolute-filenames
+rpm2cpio %{SOURCE0} | cpio -imdv
 
 mv usr/share/pixmaps/%{pkgname1}.png usr/share/pixmaps/%{name}.png
 mv usr/share/applications/%{pkgname1}.desktop usr/share/applications/%{name}.desktop

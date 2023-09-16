@@ -1,4 +1,4 @@
-From a504c988b32cf8f9d152404c9b1618d364139dc8 Mon Sep 17 00:00:00 2001
+From 222486326c71b35ec6df5be631b12360a4c8876f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 25 Feb 2022 09:07:50 -0300
 Subject: [PATCH] Disable setuptools_scm version check
@@ -32,18 +32,18 @@ index 2dd3d35..8a7523c 100644
  pytest-cov>=2.10
 -setuptools-scm
 diff --git a/setup.cfg b/setup.cfg
-index dfee4fe..88e0b57 100644
+index 0f94fd8..34a38bc 100644
 --- a/setup.cfg
 +++ b/setup.cfg
-@@ -29,8 +29,6 @@ include_package_data = True
- install_requires =
+@@ -31,8 +31,6 @@ install_requires =
      setuptools  # Required for pkg_resources
      vdf>=3.2
+     Pillow
 -setup_requires =
 -    setuptools-scm
  python_requires = >=3.6
  
  [options.packages.find]
 -- 
-2.39.2
+2.41.0
 

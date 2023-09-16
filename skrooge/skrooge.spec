@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.29.0
-Release:        101%{?dist}
+Version:        2.30.0
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -59,7 +59,7 @@ BuildRequires:  cmake(Qt5QuickWidgets)
 BuildRequires:  cmake(Qt5Script)
 BuildRequires:  cmake(Qt5Sql)
 BuildRequires:  cmake(Qt5Svg)
-BuildRequires:  cmake(Qt5WebKitWidgets)
+BuildRequires:  cmake(Qt5WebEngineWidgets)
 BuildRequires:  cmake(Qt5Xml)
 BuildRequires:  cmake(Qt5XmlPatterns)
 # I think due to custom sqlcipher plugin -- rex
@@ -151,6 +151,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.30.0-100
+- 2.30.0
+
 * Thu Jun 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.29.0-101
 - Rebuild (qt5)
 
