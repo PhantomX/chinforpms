@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f3d92dd3b82c921665b6071e1057cf7842080096
+%global commit d2d37411bcd198a4615ddace4100b259e41b1814
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230817
+%global date 20230915
 %bcond_without snapshot
 
 # Enable system boost
@@ -23,9 +23,11 @@
 # Enable system dynarmic
 %bcond_without dynarmic
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 # Disable Qt build
 %bcond_without qt
+# Enable system vulkan
+%bcond_without vulkan
 # Build tests
 %bcond_with tests
 
@@ -89,11 +91,15 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 VulkanMemoryAllocator
 
+%global commit17 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+%global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
+%global srcname17 Vulkan-Headers
+
 %global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
 
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
-%global vkh_ver 1.3.250
+%global vkh_ver 1.3.261
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -103,7 +109,7 @@
 
 Name:           citra
 Version:        0
-Release:        48%{?dist}
+Release:        49%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause% AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
@@ -135,6 +141,9 @@ Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}
 Source14:       https://github.com/yuzu-emu/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%if %{without vulkan}
+Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+%endif
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -198,7 +207,9 @@ BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Widgets)
 %endif
+%if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
+%endif
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(xkbcommon)
 
@@ -252,6 +263,7 @@ sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
 %if %{without fmt}
 tar -xf %{S:4} -C externals/fmt --strip-components 1
+sed -e '/find_package/s|fmt|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
@@ -266,6 +278,10 @@ tar -xf %{S:13} -C externals/glslang --strip-components 1
 tar -xf %{S:14} -C externals/sirit --strip-components 1
 tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:16} -C externals/vma --strip-components 1
+%if %{without vulkan}
+tar -xf %{S:17} -C externals/Vulkan-Headers/ --strip-components 1
+sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i externals/CMakeLists.txt
+%endif
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -412,6 +428,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0-49.20230915gitd2d3741
+- Vulkan support
+
 * Sun May 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0-43.20230506gitb4db9ae
 - Qt6
 

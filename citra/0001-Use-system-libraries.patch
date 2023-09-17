@@ -1,4 +1,4 @@
-From efd4922f9bdfbdea5999ade5ebe64f318d7a6e56 Mon Sep 17 00:00:00 2001
+From 3b6b6d813a7e689a8bfd3262f4826ace18fb20b8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
@@ -11,7 +11,7 @@ Subject: [PATCH] Use system libraries
  4 files changed, 100 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 64b42a0..8f670fa 100644
+index 7bd7edf..45c8f7a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -22,7 +22,7 @@ index 64b42a0..8f670fa 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -136,7 +135,7 @@ function(check_submodules_present)
+@@ -138,7 +137,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -32,7 +32,7 @@ index 64b42a0..8f670fa 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 44882d6..c8de5ef 100644
+index 7777a61..6101f24 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -199,7 +199,7 @@ index 44882d6..c8de5ef 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -234,11 +314,20 @@ if (ENABLE_OPENAL)
+@@ -234,17 +314,26 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
@@ -219,9 +219,15 @@ index 44882d6..c8de5ef 100644
 +else()
  add_library(vulkan-headers INTERFACE)
  target_include_directories(vulkan-headers SYSTEM INTERFACE ./vulkan-headers/include)
+ if (APPLE)
+     target_include_directories(vulkan-headers SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/MoltenVK)
+ endif()
 +endif()
+ 
+ # adrenotools
+ if (ANDROID)
 diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index 5edaf42..2e5a23d 100644
+index 9520a8f..9c7938b 100644
 --- a/src/citra/config.cpp
 +++ b/src/citra/config.cpp
 @@ -7,7 +7,7 @@
@@ -234,7 +240,7 @@ index 5edaf42..2e5a23d 100644
  #include "citra/default_ini.h"
  #include "common/file_util.h"
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index d5500a4..35396ac 100644
+index 8bb5154..5bddc4e 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
 @@ -136,12 +136,18 @@ add_library(citra_common STATIC

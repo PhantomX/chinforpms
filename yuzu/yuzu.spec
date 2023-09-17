@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3856
+%global vc_version 3874
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -144,7 +144,6 @@ Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
 Patch15:        0001-Lower-the-SDL2-requirement-a-bit.patch
-Patch16:        0001-Remove-PORTABLE_DIR.patch
 
 ExclusiveArch:  x86_64
 
@@ -347,6 +346,7 @@ cp -f %{S:20} dist/compatibility_list/
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
+  -DYUZU_ENABLE_PORTABLE:BOOL=OFF \
   -DYUZU_ROOM:BOOL=ON \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \

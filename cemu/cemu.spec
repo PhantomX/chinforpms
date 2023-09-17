@@ -12,10 +12,14 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+# Enable system fmt
+%bcond_with fmt
+
 %global commit1 f65bcf481ab34cd07d3909aab1479f409fa79f2f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 imgui
 
+%global fmt_ver 9.1.0
 %global vkh_ver 1.3.240
 
 %global vc_url   https://github.com/cemu-project/Cemu
@@ -27,7 +31,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~42
+Version:        2.0~49
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -36,6 +40,11 @@ URL:            https://cemu.info/
 
 Source0:        %{vc_url}/archive/v%{ver}/%{pkgname}-%{ver}.tar.gz
 Source1:        https://github.com/ocornut/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+%if %{without fmt}
+Source2:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
+%endif
+
+Patch10:        0001-Bundled-fmt-support.patch
 
 ExclusiveArch:  x86_64
 
@@ -55,7 +64,11 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  boost-devel
 BuildRequires:  cmake(cubeb)
-BuildRequires:  pkgconfig(fmt) >= 9.1.0
+%if %{with fmt}
+BuildRequires:  cmake(fmt) >= 9.1.0
+%else
+Provides:       bundled(fmt) = %{fmt_ver}
+%endif
 BuildRequires:  cmake(glm)
 BuildRequires:  cmake(glslang)
 BuildRequires:  pkgconfig(gl)
@@ -98,6 +111,11 @@ rm -rf cubeb DirectX_2010 discord-rpc vcpkg* Vulkan-Headers ZArchive
 
 mkdir -p imgui
 tar -xf %{S:1} -C imgui --strip-components 1
+%if %{without fmt}
+mkdir fmt
+tar -xf %{S:2} -C fmt --strip-components 1
+sed -e '/^find_package(fmt/s|REQUIRED||' -i ../CMakeLists.txt
+%endif
 
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p ih264d/NOTICE NOTICE.ih264d

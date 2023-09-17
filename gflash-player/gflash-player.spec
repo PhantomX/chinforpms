@@ -73,7 +73,7 @@ install -m0755 flashplayer %{buildroot}%{_bindir}/%{binname}
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
+  %{binname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/48x48/apps
 install -pm0644 %{S:1} \

@@ -1,52 +1,46 @@
-From 989975b99a32e0d7662de38fbf18071ae6907025 Mon Sep 17 00:00:00 2001
+From ff50bae1971f8bf06128bb6e0d8bf53808d35c68 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 57 ++++++++++++++++---
+ cmake/SearchForStuff.cmake                    | 67 +++++++++++++++++++
  pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
- pcsx2/CMakeLists.txt                          |  7 ++-
+ pcsx2/CMakeLists.txt                          |  7 +-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 7 files changed, 61 insertions(+), 15 deletions(-)
+ 7 files changed, 79 insertions(+), 7 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 0f41dff..128e560 100644
+index fe21b77..92e554f 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -117,11 +117,10 @@ endif()
- 
- find_optional_system_library(fmt 3rdparty/fmt/fmt 7.1.3)
- find_optional_system_library(ryml 3rdparty/rapidyaml/rapidyaml 0.4.0)
--find_optional_system_library(zstd 3rdparty/zstd 1.4.5)
--if (${zstd_TYPE} STREQUAL System)
--	alias_library(Zstd::Zstd zstd::libzstd_shared)
--	alias_library(pcsx2-zstd zstd::libzstd_shared)
--endif()
-+
-+check_lib(zstd libzstd)
-+alias_library(Zstd::Zstd PkgConfig::zstd)
-+alias_library(pcsx2-zstd PkgConfig::zstd)
- find_optional_system_library(libzip 3rdparty/libzip 1.8.0)
- 
- if(QT_BUILD)
-@@ -166,36 +165,78 @@ if(NOT WIN32 AND QT_BUILD)
- 	find_package(CURL REQUIRED)
+@@ -115,30 +115,85 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
+ 	This text being in a compile log in an open issue may cause it to be closed.")
  endif()
  
--add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
--add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
-+check_lib(CHDR libchdr)
-+if(NOT CHDR_FOUND)
-+	add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
-+	add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
++find_package(fmt 9)
++if(fmt_FOUND)
++	message(STATUS "Using the system fmt")
 +else()
-+	alias_library(chdr-static PkgConfig::CHDR)
+ add_subdirectory(3rdparty/fmt/fmt EXCLUDE_FROM_ALL)
 +endif()
-+
++find_package(ryml)
++if(ryml_FOUND)
++	message(STATUS "Using the system rapidyml")
++	alias_library(ryml ryml::ryml)
++else()
+ add_subdirectory(3rdparty/rapidyaml/rapidyaml EXCLUDE_FROM_ALL)
++endif()
++check_lib(CHDR libchdr)
++if(CHDR_FOUND)
++	alias_library(chdr-static PkgConfig::CHDR)
++else()
+ add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
++endif()
 +find_package(SoundTouch)
 +if(SoundTouch_FOUND)
 +	message(STATUS "Using the system soundtouch")
@@ -78,19 +72,38 @@ index 0f41dff..128e560 100644
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
--add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
- add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
- 
 +check_lib(CPUINFO libcpuinfo)
-+if(NOT CPUINFO_FOUND)
-+	add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
-+else()
++if(CPUINFO_FOUND)
 +	alias_library(cpuinfo PkgConfig::CPUINFO)
++else()
+ add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(cpuinfo)
 +endif()
-+
+ add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
++check_lib(zstd libzstd)
++if(zstd_FOUND)
++  alias_library(Zstd::Zstd PkgConfig::zstd)
++else()
+ add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
++endif()
++find_package(libzip)
++if(libzip_FOUND)
++	message(STATUS "Using the system libzip")
++else()
+ add_subdirectory(3rdparty/libzip EXCLUDE_FROM_ALL)
++endif()
+ add_subdirectory(3rdparty/rcheevos EXCLUDE_FROM_ALL)
++pkg_search_module(rapidjson IMPORTED_TARGET RapidJSON)
++if(rapidjson_FOUND)
++	message(STATUS "Using the system rapidjson")
++	alias_library(rapidjson PkgConfig::rapidjson)
++else()
+ add_subdirectory(3rdparty/rapidjson EXCLUDE_FROM_ALL)
++endif()
+ add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
+ 
  if(USE_OPENGL)
- 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
- endif()
+@@ -147,12 +202,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -103,18 +116,18 @@ index 0f41dff..128e560 100644
 +	endif()
  endif()
  
- if(CUBEB_API)
-+	find_package(cubeb)
-+	if(cubeb_FOUND)
-+		message(STATUS "Using the system cubeb")
-+		alias_library(cubeb cubeb::cubeb)
-+	else()
- 	add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
- 	target_compile_options(cubeb PRIVATE "-w")
- 	target_compile_options(speex PRIVATE "-w")
-+	endif()
- endif()
++find_package(cubeb)
++if(cubeb_FOUND)
++	message(STATUS "Using the system cubeb")
++	alias_library(cubeb cubeb::cubeb)
++else()
+ add_subdirectory(3rdparty/cubeb EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(cubeb)
+ disable_compiler_warnings_for_target(speex)
++endif()
  
+ # Find the Qt components that we need.
+ find_package(Qt6 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
 diff --git a/pcsx2/CDVD/ChdFileReader.cpp b/pcsx2/CDVD/ChdFileReader.cpp
 index 7fd6607..73faef3 100644
 --- a/pcsx2/CDVD/ChdFileReader.cpp
@@ -129,10 +142,10 @@ index 7fd6607..73faef3 100644
  #pragma clang diagnostic pop
  #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index b4d2f36..e776817 100644
+index 679b498..baacb53 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1230,9 +1230,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1184,9 +1184,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"

@@ -30,7 +30,7 @@
 # Set to build with versioned LLVM packages
 %global llvm_pkgver 16
 # Enable system rtmidi
-%if 0%{?fedora} > 38
+%if 0%{?fedora} > 40
 %bcond_without  sysrtmidi
 %endif
 %global bundlertmidi 6.0.0
@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 009d8e13dac86ed8f73d58ffd0e9b073c788f628
+%global commit f398f1113de8e1e316e95d345dcae0b7523cd132
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230906
+%global date 20230912
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15680
+Version:        0.0.29.15620
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -297,6 +297,12 @@ sed -e 's|${GIT_EXECUTABLE}|true|g' \
   -i 3rdparty/llvm/llvm/llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
 
 cp -p 3rdparty/llvm/llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
+%else
+%if 0%{?llvm_pkgver}
+sed \
+  -e '/CMAKE_MODULE_PATH/alist(APPEND CMAKE_PREFIX_PATH "%{_libdir}/llvm%{?llvm_pkgver}/lib/cmake")' \
+  -i CMakeLists.txt
+%endif
 %endif
 
 %if %{without sysffmpeg}
@@ -460,6 +466,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.29.15620-1.20230912gitf398f11
+- Add llvm_pkgver define to set versioned LLVM packages, when needed
+
 * Wed Aug 02 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.29.15426-1.20230802gitd34287b
 - 0.0.29.15426
 - Qt6

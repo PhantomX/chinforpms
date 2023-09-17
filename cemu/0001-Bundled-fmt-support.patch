@@ -1,0 +1,27 @@
+From 5e52c1c2616a4665cbf29f5d72175eea31c2ea76 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 16 Sep 2023 20:01:49 -0300
+Subject: [PATCH] Bundled fmt support
+
+---
+ CMakeLists.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 34a28a0..ec4bb9d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -199,4 +199,10 @@ if (NOT ZArchive_FOUND)
+ 	add_subdirectory("dependencies/ZArchive" EXCLUDE_FROM_ALL)
+ endif()
+ 
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
++add_subdirectory("dependencies/fmt" EXCLUDE_FROM_ALL)
++endif()
++
+ add_subdirectory(src)
+-- 
+2.41.0
+

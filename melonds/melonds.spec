@@ -4,9 +4,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e6cc4b14b0eb603001e968be9b1ace8a09e1bce1
+%global commit db963aa002cdf943c86d19f8abd3f4fd40be38ec
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230716
+%global date 20230915
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,7 +21,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD

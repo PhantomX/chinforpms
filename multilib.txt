@@ -10,7 +10,7 @@ chinforpms-rpm-config
 -FAudio-noreverb
 gamemode
 -glslang
-gnome-theme-extra
+gnome-themes-extra
 gstreamer1
 -gstreamer1-plugins-base
 -gstreamer1-plugins-ugly-free

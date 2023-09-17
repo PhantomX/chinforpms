@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 5cefce5c08f74cfc80eee3f82a32d846144e5277
+%global commit 55925d91495d5df7021e778ee408d2909f3ed6d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230308
+%global date 20230916
 %bcond_without snapshot
 
 %bcond_with gtk2
@@ -25,7 +25,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Nintendo SNES emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause

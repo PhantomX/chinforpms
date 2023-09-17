@@ -8,13 +8,15 @@
 
 %global with_nogui 0
 
+# Enable system fmt
+%bcond_with fmt
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
-%bcond_without sysvulkan
+%bcond_without vulkan
 
-%global commit e6d5fa43af49c3407af8229f893dbdd738c9d3dd
+%global commit 57cdb180c61858d5ee0846ff88a57e338f6fbec4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230905
+%global date 20230916
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -33,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        96%{?dist}
+Release:        97%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -75,7 +77,11 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
+%if %{without fmt}
 BuildRequires:  pkgconfig(fmt) >= 9
+%else
+Provides:       bundled(fmt) = 9.0.0
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
@@ -98,7 +104,7 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  minizip-compat-devel
-%if %{with sysvulkan}
+%if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
 %endif
 
@@ -162,8 +168,15 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cpuinfo cubeb discord-rpc fmt gsl libchdr libFLAC lzma minizip msvc \
+  cpuinfo cubeb discord-rpc gsl libchdr libFLAC lzma minizip msvc \
   rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas
+
+%if %{with fmt}
+  rm -rf fmt
+%else
+sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
+cp fmt/LICENSE.rst LICENSE.fmt.rst
+%endif
 
 %if %{with soundtouch}
 rm -rf soundtouch
@@ -172,7 +185,7 @@ sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
 cp soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
-%if %{with sysvulkan}
+%if %{with vulkan}
   mkdir -p ../src/vulkan
   mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
   rm -rf vulkan
@@ -192,10 +205,10 @@ popd
 rm -f CMakeModules/FindSDL2.cmake
 
 pushd src/%{name}-qt/translations
-mv %{name}-qt_es-es.ts %{name}-qt_es_ES.ts
-mv %{name}-qt_pt-br.ts %{name}-qt_pt_BR.ts
-mv %{name}-qt_pt-pt.ts %{name}-qt_pt_PT.ts
-mv %{name}-qt_zh-cn.ts %{name}-qt_zh_CN.ts
+mv %{name}-qt_es-ES.ts %{name}-qt_es_ES.ts
+mv %{name}-qt_pt-BR.ts %{name}-qt_pt_BR.ts
+mv %{name}-qt_pt-PT.ts %{name}-qt_pt_PT.ts
+mv %{name}-qt_zh-CN.ts %{name}-qt_zh_CN.ts
 
 sed -e 's|[Cc]ubed|Cubeb|g' -i %{name}-qt_pt_BR.ts
 popd
@@ -229,6 +242,8 @@ sed \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i src/duckstation-qt/qt{host,translations}.cpp
 
+sed -e 's|ENABLE_CUBEB|USE_CUBEB|g' -i CMakeLists.txt dep/CMakeLists.txt
+
 
 %build
 %cmake \
@@ -237,7 +252,6 @@ sed \
   -DBUILD_NOGUI_FRONTEND:BOOL=OFF \
 %endif
   -DUSE_WAYLAND:BOOL=ON \
-  -DENABLE_CHEEVOS:BOOL=ON \
   -DENABLE_DISCORD_PRESENCE:BOOL=OFF \
 %{nil}
 

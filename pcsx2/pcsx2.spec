@@ -25,10 +25,16 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
 
+%global commit13 b6f4ceaed0a0a24ccf575fab6c56dd50ccf6f1a9
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 fmt
+
 %bcond_with     native
+# Enable system fmt
+%bcond_with fmt
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
-%bcond_without  sysvulkan
+%bcond_without  vulkan
 
 %global appbin %{name}-qt
 %global appres PCSX2
@@ -48,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.4940
+Version:        1.7.5015
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -62,8 +68,11 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       https://github.com/RetroAchievements/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
-%if %{without sysvulkan}
-Source12:        https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%if %{without vulkan}
+Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%endif
+%if %{without fmt}
+Source13:       https://github.com/fmtlib/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
@@ -76,6 +85,7 @@ Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-for-patched-libchdr.patch
+Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
 
 ExclusiveArch:  x86_64
 
@@ -92,7 +102,11 @@ BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
-BuildRequires:  pkgconfig(fmt) >= 7.1.3
+%if %{with fmt}
+BuildRequires:  pkgconfig(fmt) >= 0.8.1
+%else
+Provides:       bundled(fmt) = 0~git%{shortcommit13}
+%endif
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(gtk+-3.0)
@@ -116,6 +130,7 @@ BuildRequires:  pkgconfig(libzip) >= 1.8.0
 BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
+BuildRequires:  cmake(RapidJSON)
 BuildRequires:  cmake(ryml) >= 0.4.1
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6CoreTools)
@@ -130,6 +145,8 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  pkgconfig(sdl2) >= 2.0.22
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch)
+%else
+Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
@@ -138,7 +155,7 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
-%if %{with sysvulkan}
+%if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
 %endif
 BuildRequires:  fonts-rpm-macros
@@ -163,9 +180,6 @@ Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
-%if %{without soundtouch}
-Provides:       bundled(soundtouch) = %{soundtouch_ver}
-%endif
 Provides:       bundled(xxhash) = %{xxhash_ver}
 Provides:       bundled(zydis) = 0~git
 
@@ -185,21 +199,29 @@ rm -rf .git
 
 pushd 3rdparty
 rm -rf \
-  cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg fmt GL gtest libchdr libjpeg \
+  cpuinfo cubeb d3d12memalloc ffmpeg GL gtest libchdr libjpeg \
   libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 wil \
-  xbyak xz zlib zstd
+  winpixeventruntime xbyak xz zlib zstd
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
 tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
+
+%if %{with fmt}
+rm -rf fmt
+%else
+tar -xf %{S:13} -C fmt/fmt --strip-components 1
+sed -e '/find_package/s|fmt|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+cp -p fmt/fmt/LICENSE.rst LICENSE.fmt.rst
+%endif
 
 %if %{with soundtouch}
 rm -rf soundtouch
 %else
 sed -e '/find_package/s|SoundTouch|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
-cp soundtouch/COPYING.TXT COPYING.soundtouch
+cp -p soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
-%if %{without sysvulkan}
+%if %{without vulkan}
 tar -xf %{S:12} -C vulkan-headers --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
 %endif
