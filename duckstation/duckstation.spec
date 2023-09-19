@@ -6,7 +6,7 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global with_nogui 0
+%bcond_with nogui
 
 # Enable system fmt
 %bcond_with fmt
@@ -14,7 +14,7 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 57cdb180c61858d5ee0846ff88a57e338f6fbec4
+%global commit 7fc4b89719caf0c62e6ec5ac15d3ad663397b3c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230916
 %bcond_without snapshot
@@ -35,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        97%{?dist}
+Release:        98%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -137,13 +137,18 @@ Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(spirv-tools) = 0~git
 Provides:       bundled(zydis) = 0~git
 
+%if %{without nogui}
+Provides:       %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-nogui < %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
+
 
 %description
 A Sony PlayStation (PSX) emulator, focusing on playability, speed, and long-term
 maintainability.
 
 
-%if %{?with_nogui}
+%if %{with nogui}
 %package nogui
 Summary:        DuckStation emulator without a graphical user interface
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -204,11 +209,11 @@ popd
 
 rm -f CMakeModules/FindSDL2.cmake
 
+
+
 pushd src/%{name}-qt/translations
-mv %{name}-qt_es-ES.ts %{name}-qt_es_ES.ts
-mv %{name}-qt_pt-BR.ts %{name}-qt_pt_BR.ts
-mv %{name}-qt_pt-PT.ts %{name}-qt_pt_PT.ts
-mv %{name}-qt_zh-CN.ts %{name}-qt_zh_CN.ts
+rename -a - _ *.ts
+rename _ - *.ts
 
 sed -e 's|[Cc]ubed|Cubeb|g' -i %{name}-qt_pt_BR.ts
 popd
@@ -242,13 +247,11 @@ sed \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i src/duckstation-qt/qt{host,translations}.cpp
 
-sed -e 's|ENABLE_CUBEB|USE_CUBEB|g' -i CMakeLists.txt dep/CMakeLists.txt
-
 
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-%if !%{?with_nogui}
+%if %{without nogui}
   -DBUILD_NOGUI_FRONTEND:BOOL=OFF \
 %endif
   -DUSE_WAYLAND:BOOL=ON \
@@ -309,12 +312,13 @@ appstream-util validate-relax --nonet \
 %doc README.md
 %license LICENSE dep/LICENSE.*
 %{_bindir}/%{name}-qt*
+%dir %{_datadir}/%{name}/translations/
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/*.metainfo.xml
 
 
-%if %{?with_nogui}
+%if %{with nogui}
 %files nogui
 %doc README.md
 %license LICENSE dep/LICENSE.*
@@ -325,7 +329,8 @@ appstream-util validate-relax --nonet \
 %files data
 %doc NEWS.md README.md
 %license LICENSE
-%{_datadir}/%{name}
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/resources/
 %exclude %{_datadir}/%{name}/translations
 
 

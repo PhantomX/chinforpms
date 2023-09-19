@@ -1,17 +1,46 @@
-From e60b9580f755cdf348afc1cad2d8f69831c14f19 Mon Sep 17 00:00:00 2001
+From 5f7e642b127da1c14d662d33256b2fed3ab0fa6d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 3 Jan 2023 18:40:09 -0300
 Subject: [PATCH] Set datadir to RPM packaging
 
 ---
- pcsx2/Pcsx2Config.cpp | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ pcsx2-qt/Translations.cpp | 6 +++---
+ pcsx2/Pcsx2Config.cpp     | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/pcsx2-qt/Translations.cpp b/pcsx2-qt/Translations.cpp
+index 6cf291d..cfc2e62 100644
+--- a/pcsx2-qt/Translations.cpp
++++ b/pcsx2-qt/Translations.cpp
+@@ -116,12 +116,12 @@ void QtHost::InstallTranslator()
+ #ifdef __APPLE__
+ 	const QString base_dir = QStringLiteral("%1/../Resources/translations").arg(qApp->applicationDirPath());
+ #else
+-	const QString base_dir = QStringLiteral("%1/translations").arg(qApp->applicationDirPath());
++	const QString base_dir = QStringLiteral("_RPM_DATADIR_/translations");
+ #endif
+ 
+ 	// Qt base uses underscores instead of hyphens.
+ 	const QString qt_language = QString(language).replace(QChar('-'), QChar('_'));
+-	QString base_path = QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(qt_language);
++	QString base_path = QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(qt_language);
+ 	bool has_base_ts = QFile::exists(base_path);
+ 	if (!has_base_ts)
+ 	{
+@@ -129,7 +129,7 @@ void QtHost::InstallTranslator()
+ 		const int index = language.lastIndexOf('-');
+ 		if (index > 0)
+ 		{
+-			base_path = QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(language.left(index));
++			base_path = QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(language.left(index));
+ 			has_base_ts = QFile::exists(base_path);
+ 		}
+ 	}
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
-index f3782b2..2c249b7 100644
+index 8700ad6..599d4b9 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
-@@ -1529,7 +1529,7 @@ void EmuFolders::SetResourcesDirectory()
+@@ -1687,7 +1687,7 @@ void EmuFolders::SetResourcesDirectory()
  {
  #ifndef __APPLE__
  	// On Windows/Linux, these are in the binary directory.
@@ -21,5 +50,5 @@ index f3782b2..2c249b7 100644
  	// On macOS, this is in the bundle resources directory.
  	Resources = Path::Canonicalize(Path::Combine(AppRoot, "../Resources"));
 -- 
-2.40.1
+2.41.0
 

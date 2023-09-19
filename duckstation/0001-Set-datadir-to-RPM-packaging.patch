@@ -1,4 +1,4 @@
-From a4c455c5e167c6173628be8dc2e5b350d85d8078 Mon Sep 17 00:00:00 2001
+From 24cc8c05a4fc43edfab9a53b4569b8d018c661a4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 22 Aug 2022 22:53:43 -0300
 Subject: [PATCH] Set datadir to RPM packaging
@@ -9,7 +9,7 @@ Subject: [PATCH] Set datadir to RPM packaging
  2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
-index b74fa45..3e62037 100644
+index 8438c41..4058ce2 100644
 --- a/src/duckstation-qt/qthost.cpp
 +++ b/src/duckstation-qt/qthost.cpp
 @@ -259,7 +259,7 @@ void QtHost::SetResourcesDirectory()
@@ -22,7 +22,7 @@ index b74fa45..3e62037 100644
    // On macOS, this is in the bundle resources directory.
    EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
 diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
-index 2426ef8..5c95c0d 100644
+index 575a897..41af2e5 100644
 --- a/src/duckstation-qt/qttranslations.cpp
 +++ b/src/duckstation-qt/qttranslations.cpp
 @@ -74,14 +74,14 @@ void QtHost::InstallTranslator()
@@ -38,16 +38,16 @@ index 2426ef8..5c95c0d 100644
    // Qt base uses underscores instead of hyphens.
    const QString qt_language = QString(language).replace(QChar('-'), QChar('_'));
 -  QString base_path(QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(qt_language));
-+  QString base_path(QStringLiteral("_RPM_QTTDIR_/qt_%2.qm").arg(qt_language));
++  QString base_path(QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(qt_language));
    bool has_base_ts = QFile::exists(base_path);
    if (!has_base_ts)
    {
 @@ -89,7 +89,7 @@ void QtHost::InstallTranslator()
-     const int index = language.lastIndexOf('_');
+     const int index = language.lastIndexOf('-');
      if (index > 0)
      {
 -      base_path = QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(language.left(index));
-+      base_path = QStringLiteral("_RPM_QTTDIR_/qt_%2.qm").arg(language.left(index));
++      base_path = QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(language.left(index));
        has_base_ts = QFile::exists(base_path);
      }
    }

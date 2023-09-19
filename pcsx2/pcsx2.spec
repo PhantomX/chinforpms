@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5015
+Version:        1.7.5025
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -86,6 +86,7 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-for-patched-libchdr.patch
 Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
+Patch11:        0001-Fix-translation-names.patch
 
 ExclusiveArch:  x86_64
 
@@ -253,10 +254,13 @@ sed -i \
 
 sed -e '/DEFAULT_USE_SYSTEM_RYML/s|OFF|ON|' -i cmake/BuildParameters.cmake
 
+rename -a - _ pcsx2-qt/Translations/*.ts
+rename _ - pcsx2-qt/Translations/*.ts
+
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{appres}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
-  -i pcsx2/Pcsx2Config.cpp
+  -i pcsx2/Pcsx2Config.cpp pcsx2-qt/Translations.cpp
 
 
 %build
@@ -293,7 +297,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/bin/%{appbin} %{buildroot}%{_bindir}/%{appbin}
 
 mkdir -p %{buildroot}%{_datadir}/%{appres}
-cp -r %{__cmake_builddir}/bin/resources \
+cp -r %{__cmake_builddir}/bin/{resources,translations} \
   %{buildroot}%{_datadir}/%{appres}/
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
@@ -326,20 +330,18 @@ desktop-file-install \
   --set-value="%{appbin}" \
   .github/workflows/scripts/linux/%{appbin}.desktop
 
-
-# No localization for Qt GUI yet
-rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
-%dnl %find_lang %{appbin} --with-qt
+%find_lang %{appbin} --with-qt
 
 
-%files
+%files -f %{appbin}.lang
 %license COPYING* 3rdparty/LICENSE.* %{!?with_soundtouch:3rdparty/COPYING*}
 %doc README.md bin/docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
 %{_datadir}/applications/%{appbin}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appres}.png
 %dir %{_datadir}/%{appres}
-%dir %{_datadir}/%{appres}/resources
+%dir %{_datadir}/%{appres}/resources/
+%dir %{_datadir}/%{appres}/translations/
 %{_datadir}/%{appres}/resources/fonts
 %{_datadir}/%{appres}/resources/fullscreenui
 %{_datadir}/%{appres}/resources/icons
@@ -352,6 +354,9 @@ rm -rf %{buildroot}%{_datadir}/%{appres}/resources/locale
 
 
 %changelog
+* Sun Sep 17 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7.5025-1
+- Add translations
+
 * Tue Jan 03 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7.3849-1
 - Not instalable anymore, fix this
 

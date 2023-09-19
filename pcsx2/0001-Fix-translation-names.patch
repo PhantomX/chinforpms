@@ -1,0 +1,108 @@
+From 422119898e63647b5aacba3eb28254445ebbaa67 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 17 Sep 2023 11:39:26 -0300
+Subject: [PATCH] Fix translation names
+
+---
+ pcsx2-qt/CMakeLists.txt   |  2 +-
+ pcsx2-qt/Translations.cpp | 68 +++++++++++++++++++--------------------
+ 2 files changed, 36 insertions(+), 36 deletions(-)
+
+diff --git a/pcsx2-qt/CMakeLists.txt b/pcsx2-qt/CMakeLists.txt
+index b35fe27..3aaabd9 100644
+--- a/pcsx2-qt/CMakeLists.txt
++++ b/pcsx2-qt/CMakeLists.txt
+@@ -208,7 +208,7 @@ elseif(APPLE)
+ 	set(PCSX2_MACOS_LOCALIZATIONS)
+ 	foreach (TS_FILE IN LISTS TS_FILES)
+ 		get_filename_component(TS_FILE_NAME ${TS_FILE} NAME)
+-		set(regex "^pcsx2-qt_([a-zA-Z0-9\\-]+)\\.ts$")
++		set(regex "^pcsx2-qt_([a-zA-Z0-9\\_]+)\\.ts$")
+ 		if (TS_FILE_NAME MATCHES ${regex})
+ 			string(REGEX REPLACE ${regex} "\\1" language ${TS_FILE_NAME})
+ 			string(REPLACE "-" "_" language ${language})
+diff --git a/pcsx2-qt/Translations.cpp b/pcsx2-qt/Translations.cpp
+index cfc2e62..1006abf 100644
+--- a/pcsx2-qt/Translations.cpp
++++ b/pcsx2-qt/Translations.cpp
+@@ -243,42 +243,42 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
+ {
+ 	return {
+ 		{QCoreApplication::translate("InterfaceSettingsWidget", "System Language [Default]"), QStringLiteral("system")},
+-		{QStringLiteral("Afrikaans (af-ZA)"), QStringLiteral("af-ZA")},
+-		{QStringLiteral("عربي (ar-SA)"), QStringLiteral("ar-SA")},
+-		{QStringLiteral("Català (ca-ES)"), QStringLiteral("ca-ES")},
+-		{QStringLiteral("Čeština (cs-CZ)"), QStringLiteral("cs-CZ")},
+-		{QStringLiteral("Dansk (da-DK)"), QStringLiteral("da-DK")},
+-		{QStringLiteral("Deutsch (de-DE)"), QStringLiteral("de-DE")},
+-		{QStringLiteral("Ελληνικά (el-GR)"), QStringLiteral("el-GR")},
++		{QStringLiteral("Afrikaans (af-ZA)"), QStringLiteral("af_ZA")},
++		{QStringLiteral("عربي (ar-SA)"), QStringLiteral("ar_SA")},
++		{QStringLiteral("Català (ca-ES)"), QStringLiteral("ca_ES")},
++		{QStringLiteral("Čeština (cs-CZ)"), QStringLiteral("cs_CZ")},
++		{QStringLiteral("Dansk (da-DK)"), QStringLiteral("da_DK")},
++		{QStringLiteral("Deutsch (de-DE)"), QStringLiteral("de_DE")},
++		{QStringLiteral("Ελληνικά (el-GR)"), QStringLiteral("el_GR")},
+ 		{QStringLiteral("English (en)"), QStringLiteral("en")},
+-		{QStringLiteral("Español (Hispanoamérica) (es-419)"), QStringLiteral("es-419")},
+-		{QStringLiteral("Español (España) (es-ES)"), QStringLiteral("es-ES")},
+-		{QStringLiteral("فارسی (fa-IR)"), QStringLiteral("fa-IR")},
+-		{QStringLiteral("Suomi (fi-FI)"), QStringLiteral("fi-FI")},
+-		{QStringLiteral("Français (fr-FR)"), QStringLiteral("fr-FR")},
+-		{QStringLiteral("עִבְרִית (he-IL)"), QStringLiteral("he-IL")},
+-		{QStringLiteral("मानक हिन्दी (hi-IN)"), QStringLiteral("hi-IN")},
+-		{QStringLiteral("Magyar (hu-HU)"), QStringLiteral("hu-HU")},
+-		{QStringLiteral("Bahasa Indonesia (id-ID)"), QStringLiteral("id-ID")},
+-		{QStringLiteral("Italiano (it-IT)"), QStringLiteral("it-IT")},
+-		{QStringLiteral("日本語 (ja-JP)"), QStringLiteral("ja-JP")},
+-		{QStringLiteral("한국어 (ko-KR)"), QStringLiteral("ko-KR")},
+-		{QStringLiteral("Latvija (lv-LV)"), QStringLiteral("lv-LV")},
+-		{QStringLiteral("Lietuvių (lt-LT)"), QStringLiteral("lt-LT")},
+-		{QStringLiteral("Nederlands (nl-NL)"), QStringLiteral("nl-NL")},
+-		{QStringLiteral("Norsk (no-NO)"), QStringLiteral("no-NO")},
+-		{QStringLiteral("Polski (pl-PL)"), QStringLiteral("pl-PL")},
+-		{QStringLiteral("Português (Brasil) (pt-BR)"), QStringLiteral("pt-BR")},
+-		{QStringLiteral("Português (Portugal) (pt-PT)"), QStringLiteral("pt-PT")},
+-		{QStringLiteral("Limba română (ro-RO)"), QStringLiteral("ro-RO")},
+-		{QStringLiteral("Русский (ru-RU)"), QStringLiteral("ru-RU")},
+-		{QStringLiteral("Српски језик (sr-SP)"), QStringLiteral("sr-SP")},
+-		{QStringLiteral("Svenska (sv-SE)"), QStringLiteral("sv-SE")},
+-		{QStringLiteral("Türkçe (tr-TR)"), QStringLiteral("tr-TR")},
+-		{QStringLiteral("Українська мова (uk-UA)"), QStringLiteral("uk-UA")},
+-		{QStringLiteral("Tiếng Việt (vi-VN)"), QStringLiteral("vi-VN")},
+-		{QStringLiteral("简体中文 (zh-CN)"), QStringLiteral("zh-CN")},
+-		{QStringLiteral("繁體中文 (zh-TW)"), QStringLiteral("zh-TW")},
++		{QStringLiteral("Español (Hispanoamérica) (es-419)"), QStringLiteral("es_419")},
++		{QStringLiteral("Español (España) (es-ES)"), QStringLiteral("es_ES")},
++		{QStringLiteral("فارسی (fa-IR)"), QStringLiteral("fa_IR")},
++		{QStringLiteral("Suomi (fi-FI)"), QStringLiteral("fi_FI")},
++		{QStringLiteral("Français (fr-FR)"), QStringLiteral("fr_FR")},
++		{QStringLiteral("עִבְרִית (he-IL)"), QStringLiteral("he_IL")},
++		{QStringLiteral("मानक हिन्दी (hi-IN)"), QStringLiteral("hi_IN")},
++		{QStringLiteral("Magyar (hu-HU)"), QStringLiteral("hu_HU")},
++		{QStringLiteral("Bahasa Indonesia (id-ID)"), QStringLiteral("id_ID")},
++		{QStringLiteral("Italiano (it-IT)"), QStringLiteral("it_IT")},
++		{QStringLiteral("日本語 (ja-JP)"), QStringLiteral("ja_JP")},
++		{QStringLiteral("한국어 (ko-KR)"), QStringLiteral("ko_KR")},
++		{QStringLiteral("Latvija (lv-LV)"), QStringLiteral("lv_LV")},
++		{QStringLiteral("Lietuvių (lt-LT)"), QStringLiteral("lt_LT")},
++		{QStringLiteral("Nederlands (nl-NL)"), QStringLiteral("nl_NL")},
++		{QStringLiteral("Norsk (no-NO)"), QStringLiteral("no_NO")},
++		{QStringLiteral("Polski (pl-PL)"), QStringLiteral("pl_PL")},
++		{QStringLiteral("Português (Brasil) (pt-BR)"), QStringLiteral("pt_BR")},
++		{QStringLiteral("Português (Portugal) (pt-PT)"), QStringLiteral("pt_PT")},
++		{QStringLiteral("Limba română (ro-RO)"), QStringLiteral("ro_RO")},
++		{QStringLiteral("Русский (ru-RU)"), QStringLiteral("ru_RU")},
++		{QStringLiteral("Српски језик (sr-SP)"), QStringLiteral("sr_SP")},
++		{QStringLiteral("Svenska (sv-SE)"), QStringLiteral("sv_SE")},
++		{QStringLiteral("Türkçe (tr-TR)"), QStringLiteral("tr_TR")},
++		{QStringLiteral("Українська мова (uk-UA)"), QStringLiteral("uk_UA")},
++		{QStringLiteral("Tiếng Việt (vi-VN)"), QStringLiteral("vi_VN")},
++		{QStringLiteral("简体中文 (zh-CN)"), QStringLiteral("zh_CN")},
++		{QStringLiteral("繁體中文 (zh-TW)"), QStringLiteral("zh_TW")},
+ 	};
+ }
+ 
+-- 
+2.41.0
+
