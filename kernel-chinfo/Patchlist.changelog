@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/60528063540aabceb7c4d79c7938d229ed5efc4f
+ 60528063540aabceb7c4d79c7938d229ed5efc4f selinux: fix handling of empty opts in selinux_fs_context_submount()
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/80c615ec2edb4aadded21fe924e2caa172d59577
  80c615ec2edb4aadded21fe924e2caa172d59577 Revert "misc: rtsx: judge ASPM Mode to set PETXCFG Reg"
 
