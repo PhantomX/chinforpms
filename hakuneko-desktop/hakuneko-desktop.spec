@@ -68,7 +68,7 @@ if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
   while read -r param
   do
     APP_USER_FLAGS+=("${param}")
-  done < <(LANG=C grep '^\-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
+  done < <(LANG=C grep '^-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
 else
   if [ -w "${XDG_CONFIG_HOME}" ] ; then
     cat > "${APP_USER_FLAGS_FILE}" <<'EOF'

@@ -12,7 +12,7 @@
 %global app_name Rocket.Chat
 
 Name:           %{real_name}-desktop
-Version:        3.9.6
+Version:        3.9.7
 Release:        1%{?dist}
 Summary:        Rocket.Chat desktop application
 
@@ -67,7 +67,7 @@ if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
   while read -r param
   do
     APP_USER_FLAGS+=("${param}")
-  done < <(LANG=C grep '^\-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
+  done < <(LANG=C grep '^-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
 else
   if [ -w "${XDG_CONFIG_HOME}" ] ; then
     cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
@@ -132,8 +132,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 
 
-
 %changelog
+* Thu Sep 21 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.7-1
+- 3.9.7
+
 * Mon Aug 07 2023 Phantom X <megaphantomx at hotmail dot com> - 3.9.6-1
 - 3.9.6
 

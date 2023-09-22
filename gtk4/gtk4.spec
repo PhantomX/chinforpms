@@ -18,8 +18,8 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
 Name:           gtk4
-Version:        4.12.1
-Release:        101%{?dist}
+Version:        4.12.2
+Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
 Epoch:          1
@@ -269,6 +269,9 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Wed Sep 20 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.2-100
+- 4.12.2
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.1-101
 - Rawhide sync
 

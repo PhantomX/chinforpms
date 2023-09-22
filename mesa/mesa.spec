@@ -69,9 +69,9 @@
 %global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit 3317f14d8383a50ceae8c2b257ec4d1895b9d40f
+%global commit ed1a0b98f387810d26e8275a423e09d7df6866d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230914
+%global date 20230921
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -87,7 +87,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.0~rc3
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
