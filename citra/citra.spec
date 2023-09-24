@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d2d37411bcd198a4615ddace4100b259e41b1814
+%global commit d0b8974845c1ab54a941b9c1704ee5a734089c5c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230915
+%global date 20230923
 %bcond_without snapshot
 
 # Enable system boost
@@ -26,6 +26,7 @@
 %bcond_with fmt
 # Disable Qt build
 %bcond_without qt
+%bcond_without soundtouch
 # Enable system vulkan
 %bcond_without vulkan
 # Build tests
@@ -109,10 +110,10 @@
 
 Name:           citra
 Version:        0
-Release:        49%{?dist}
+Release:        50%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
-License:        GPL-2.0-only AND MIT AND BSD-2-Clause% AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}
+License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://citra-emu.org
 
 %if %{with snapshot}
@@ -129,7 +130,9 @@ Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcna
 %endif
 Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+%if %{without soundtouch}
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+%endif
 Source8:        https://github.com/wwylele/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/septag/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -207,6 +210,11 @@ BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Widgets)
 %endif
+%if %{with soundtouch}
+BuildRequires:  cmake(SoundTouch)
+%else
+Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
+%endif
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 %endif
@@ -223,7 +231,6 @@ Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
 Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
-Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
 Provides:       bundled(dds-ktx) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
@@ -266,7 +273,9 @@ tar -xf %{S:4} -C externals/fmt --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
+%if %{without soundtouch}
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
+%endif
 tar -xf %{S:8} -C externals/teakra --strip-components 1
 tar -xf %{S:9} -C externals/dds-ktx --strip-components 1
 tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
@@ -302,7 +311,9 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
 cp -p sirit/LICENSE.txt LICENSE.sirit
+%if %{without soundtouch}
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
+%endif
 cp -p teakra/LICENSE LICENSE.teakra
 cp -p vma/LICENSE.txt LICENSE.vma
 sed -e 's/\r//' -i LICENSE.cpp-jwt
@@ -373,6 +384,9 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif
+%if %{with soundtouch}
+  -DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON \
+%endif
   -DAVCODEC_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DAVFILTER_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DAVFORMAT_INCLUDES:PATH=%{ffmpeg_includedir} \
@@ -428,6 +442,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Sep 23 2023 Phantom X <megaphantomx at hotmail dot com> - 0-50.20230923gitd0b8974
+- System SoundTouch support
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0-49.20230915gitd2d3741
 - Vulkan support
 

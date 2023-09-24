@@ -9,11 +9,11 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 dcb5069ff76bd293e86928804208737e6cee2ccc
+%global commit0 592b14d13bf9103226e90a83571e24c49f6bfdcd
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20230501
+%global date 20230921
 
-%global commit1 77c2121f7e6b8e694d6e908bbbe9be24214097da
+%global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
@@ -36,7 +36,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        131%{?dist}
+Release:        132%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -58,7 +58,6 @@ Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcnam
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch10:        0001-gcc-13-build-fix.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 Patch1001:      0001-fix-build-with-bundled-openh264.patch
 

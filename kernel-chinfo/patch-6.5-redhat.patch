@@ -12,6 +12,7 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/firmware/sysfb.c                           |  18 ++-
  drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
@@ -38,7 +39,6 @@
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- security/selinux/hooks.c                           |  10 +-
  42 files changed, 580 insertions(+), 192 deletions(-)
 
 diff --git a/Makefile b/Makefile
@@ -531,6 +531,42 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
+index 82fcfd29bc4d..17b7e096b682 100644
+--- a/drivers/firmware/sysfb.c
++++ b/drivers/firmware/sysfb.c
+@@ -34,6 +34,22 @@
+ #include <linux/screen_info.h>
+ #include <linux/sysfb.h>
+ 
++static int skip_simpledrm;
++
++static int __init simpledrm_disable(char *opt)
++{
++	if (!opt)
++                return -EINVAL;
++
++	get_option(&opt, &skip_simpledrm);
++
++	if (skip_simpledrm)
++		pr_info("The simpledrm driver will not be probed\n");
++
++	return 0;
++}
++early_param("nvidia-drm.modeset", simpledrm_disable);
++
+ static struct platform_device *pd;
+ static DEFINE_MUTEX(disable_lock);
+ static bool disabled;
+@@ -85,7 +101,7 @@ static __init int sysfb_init(void)
+ 
+ 	/* try to create a simple-framebuffer device */
+ 	compatible = sysfb_parse_mode(si, &mode);
+-	if (compatible) {
++	if (compatible && !skip_simpledrm) {
+ 		pd = sysfb_create_simplefb(si, &mode);
+ 		if (!IS_ERR(pd))
+ 			goto unlock_mutex;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index 84e7ba5314d3..efc96776f761 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1536,30 +1572,3 @@ index 549104a447e3..73670798f075 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index afd663744041..5c16fe737a27 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -2748,14 +2748,20 @@ static int selinux_umount(struct vfsmount *mnt, int flags)
- static int selinux_fs_context_submount(struct fs_context *fc,
- 				   struct super_block *reference)
- {
--	const struct superblock_security_struct *sbsec;
-+	const struct superblock_security_struct *sbsec = selinux_superblock(reference);
- 	struct selinux_mnt_opts *opts;
- 
-+	/*
-+	 * Ensure that fc->security remains NULL when no options are set
-+	 * as expected by selinux_set_mnt_opts().
-+	 */
-+	if (!(sbsec->flags & (FSCONTEXT_MNT|CONTEXT_MNT|DEFCONTEXT_MNT)))
-+		return 0;
-+
- 	opts = kzalloc(sizeof(*opts), GFP_KERNEL);
- 	if (!opts)
- 		return -ENOMEM;
- 
--	sbsec = selinux_superblock(reference);
- 	if (sbsec->flags & FSCONTEXT_MNT)
- 		opts->fscontext_sid = sbsec->sid;
- 	if (sbsec->flags & CONTEXT_MNT)

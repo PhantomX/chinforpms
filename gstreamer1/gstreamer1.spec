@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.22.5
+Version:        1.22.6
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -229,6 +229,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Fri Sep 22 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.6-100
+- 1.22.6
+
 * Sun Jul 23 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.5-100
 - 1.22.5
 

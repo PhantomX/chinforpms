@@ -68,11 +68,11 @@ index a3cdfe7..0e04927 100644
      if (${target_type} STREQUAL "INTERFACE_LIBRARY")
 -        target_link_libraries(${target_name} INTERFACE CppGir::gi)
 +        target_link_libraries(${target_name} INTERFACE PkgConfig::CPPGIR)
-         target_compile_definitions(${target_name} INTERFACE GI_INLINE GI_OBJECT_NEWV)
+         target_compile_definitions(${target_name} INTERFACE GI_INLINE)
      else()
 -        target_link_libraries(${target_name} PUBLIC CppGir::gi)
 +        target_link_libraries(${target_name} PUBLIC PkgConfig::CPPGIR)
-         target_compile_definitions(${target_name} PUBLIC GI_INLINE GI_OBJECT_NEWV)
+         target_compile_definitions(${target_name} PUBLIC GI_INLINE)
      endif()
  endfunction()
 -- 

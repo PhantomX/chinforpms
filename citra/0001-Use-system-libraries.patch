@@ -1,4 +1,4 @@
-From 3b6b6d813a7e689a8bfd3262f4826ace18fb20b8 Mon Sep 17 00:00:00 2001
+From d25a8e70548b34d44b66d8f058bd20ead52f7c16 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 08:28:04 -0300
 Subject: [PATCH] Use system libraries
@@ -11,7 +11,7 @@ Subject: [PATCH] Use system libraries
  4 files changed, 100 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7bd7edf..45c8f7a 100644
+index 7580398..153152a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -22,7 +22,7 @@ index 7bd7edf..45c8f7a 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -138,7 +137,7 @@ function(check_submodules_present)
+@@ -146,7 +145,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -32,7 +32,7 @@ index 7bd7edf..45c8f7a 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 7777a61..6101f24 100644
+index f11cb29..a0d386a 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -136,9 +136,9 @@ index 7777a61..6101f24 100644
 +endif()
 +
  # SoundTouch
- set(INTEGER_SAMPLES ON CACHE BOOL "")
- set(SOUNDSTRETCH OFF CACHE BOOL "")
-@@ -146,22 +195,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
+ if(NOT USE_SYSTEM_SOUNDTOUCH)
+     set(INTEGER_SAMPLES ON CACHE BOOL "")
+@@ -149,22 +198,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
  endif()
  
  # Zstandard
@@ -185,7 +185,7 @@ index 7777a61..6101f24 100644
  endif()
  
  # DiscordRPC
-@@ -224,6 +297,13 @@ endif()
+@@ -227,6 +300,13 @@ endif()
  
  # OpenAL Soft
  if (ENABLE_OPENAL)
@@ -199,7 +199,7 @@ index 7777a61..6101f24 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -234,17 +314,26 @@ if (ENABLE_OPENAL)
+@@ -237,17 +317,26 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
