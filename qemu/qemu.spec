@@ -329,7 +329,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.1.0
+Version:        8.1.1
 Release:        100%{?dist}
 Epoch:          2
 
@@ -2798,6 +2798,9 @@ popd
 
 
 %changelog
+* Sun Sep 24 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.1.1-100
+- 8.1.1
+
 * Fri Aug 25 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.1.0-100
 - 8.1.0
 
