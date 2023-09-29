@@ -1,4 +1,4 @@
-From 9e20bf4c27a5baa834cda10131549b3413c32ca3 Mon Sep 17 00:00:00 2001
+From 0481461f4ff331213e4bf9a904b63ed869ffd961 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libraries
@@ -13,7 +13,7 @@ Subject: [PATCH] Use system libraries
  6 files changed, 103 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1962e69..9179889 100644
+index dce5cd1..bb11f93 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -64,6 +64,9 @@ option(APPLE_BREAKPAD "macOS: Build breakpad client and dump symbols" OFF)
@@ -26,7 +26,7 @@ index 1962e69..9179889 100644
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -358,16 +361,40 @@ if(USE_OPENMP)
+@@ -364,16 +367,40 @@ if(USE_OPENMP)
  	endif()
  endif()
  
@@ -68,7 +68,7 @@ index 1962e69..9179889 100644
  	option(BUILD_EXTERNAL "Build external dependencies in /External" OFF)
  	option(SKIP_GLSLANG_INSTALL "Skip installation" ON)
  	option(ENABLE_SPVREMAPPER "Enables building of SPVRemapper" OFF)
-@@ -375,8 +402,9 @@ if(USE_VULKAN)
+@@ -381,8 +408,9 @@ if(USE_VULKAN)
  	option(ENABLE_HLSL "Enables HLSL input support" OFF)
  	option(ENABLE_PCH "Enables Precompiled header" OFF)
  	add_subdirectory(core/deps/glslang EXCLUDE_FROM_ALL)
@@ -79,7 +79,7 @@ index 1962e69..9179889 100644
  
  if(NOT LIBRETRO)
  	find_package(ALSA)
-@@ -438,9 +466,17 @@ if(NOT LIBRETRO)
+@@ -444,9 +472,17 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -98,7 +98,7 @@ index 1962e69..9179889 100644
  
  if(NOT WITH_SYSTEM_ZLIB)
  	target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
-@@ -452,7 +488,6 @@ if(NOT WITH_SYSTEM_ZLIB)
+@@ -458,7 +494,6 @@ if(NOT WITH_SYSTEM_ZLIB)
  	get_target_property(ZLIB_LIBRARY zlib LOCATION)
  endif()
  
@@ -106,7 +106,7 @@ index 1962e69..9179889 100644
  if(PKG_CONFIG_FOUND AND NOT ANDROID AND NOT APPLE AND NOT LIBRETRO)
  	pkg_check_modules(AO IMPORTED_TARGET ao)
  	if(AO_FOUND)
-@@ -693,8 +728,26 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -699,8 +734,26 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -133,7 +133,7 @@ index 1962e69..9179889 100644
  add_subdirectory(core/deps/libelf)
  target_link_libraries(${PROJECT_NAME} PRIVATE elf)
  if(NOT LIBRETRO)
-@@ -761,9 +814,13 @@ if(LIBRETRO)
+@@ -767,9 +820,13 @@ if(LIBRETRO)
  	endif()
  endif()
  
@@ -149,8 +149,8 @@ index 1962e69..9179889 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1248,7 +1305,15 @@ if(USE_VULKAN)
- 		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_MACOS_MVK)
+@@ -1264,7 +1321,15 @@ if(USE_VULKAN)
+ 		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_METAL_EXT)
  	endif()
  
 +	find_package(VulkanHeaders)
@@ -164,8 +164,8 @@ index 1962e69..9179889 100644
 +	endif()
  	target_link_libraries(${PROJECT_NAME} PRIVATE Vulkan::Headers)
  
- 	if (APPLE)
-@@ -1468,7 +1533,15 @@ if("arm64" IN_LIST ARCHITECTURE)
+ 	add_subdirectory(core/deps/VulkanMemoryAllocator)
+@@ -1474,7 +1539,15 @@ if("arm64" IN_LIST ARCHITECTURE)
  	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
  if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
@@ -221,10 +221,10 @@ index d15f459..c6de736 100644
  #include <algorithm>
  #include <cstring>
 diff --git a/core/archive/archive.cpp b/core/archive/archive.cpp
-index 69f255a..a2eb348 100644
+index 53db47f..c475681 100644
 --- a/core/archive/archive.cpp
 +++ b/core/archive/archive.cpp
-@@ -20,19 +20,23 @@
+@@ -20,7 +20,9 @@
   */
  
  #include "archive.h"
@@ -234,9 +234,10 @@ index 69f255a..a2eb348 100644
  #include "ZipArchive.h"
  #include "oslib/storage.h"
  
- Archive *OpenArchive(const std::string& path)
- {
- 	FILE *file = hostfs::storage().openFile(path, "rb");
+@@ -34,12 +36,14 @@ Archive *OpenArchive(const std::string& path)
+ 			file = hostfs::storage().openFile(path, "rb");
+ 	} catch (const hostfs::StorageException& e) {
+ 	}
 +#ifndef DISABLE_7ZIP
  	if (file == nullptr)
  	{
@@ -265,7 +266,7 @@ index a1619f3..3f6848c 100644
  int ShaderCompiler::initCount;
  
 diff --git a/core/rend/vulkan/shaders.h b/core/rend/vulkan/shaders.h
-index 1481223..27d3f6a 100644
+index e53311b..b4de6f1 100644
 --- a/core/rend/vulkan/shaders.h
 +++ b/core/rend/vulkan/shaders.h
 @@ -20,7 +20,11 @@

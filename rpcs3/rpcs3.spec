@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit f398f1113de8e1e316e95d345dcae0b7523cd132
+%global commit 2381e3323694d4f2b3dca713d3288d7e9cf6eeab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230912
+%global date 20230927
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15620
+Version:        0.0.29.15655
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 

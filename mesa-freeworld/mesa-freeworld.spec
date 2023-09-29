@@ -17,7 +17,7 @@
 %global commit ed1a0b98f387810d26e8275a423e09d7df6866d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230921
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -34,8 +34,8 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.0~rc3
-Release:        102%{?dist}
+Version:        23.2.1
+Release:        100%{?dist}
 
 Epoch:          100
 
@@ -149,7 +149,7 @@ Enhances:       %{pkgname}%{?_isa}
   -Dopengl=true \
   -Dgbm=enabled \
   -Dglx=dri \
-  -Degl=true \
+  -Degl=enabled \
   -Dglvnd=true \
   -Dintel-clc=disabled \
   -Dmicrosoft-clc=disabled \
@@ -210,6 +210,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Fri Sep 29 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.2.1-100
+- 23.2.1
+
 * Tue Sep 05 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.2.0~rc3-100.20230905gitc111021
 - 23.2.0-rc3
 

@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 213bc70e2d4bf14052af94255557792b4b14a0f4
+%global commit 205c365b1ba44edd69522d1ba2cc4a6ba7eee704
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230915
+%global date 20230927
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -21,21 +21,21 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
-%global commit3 9e61870ecbd32514113b467e0a0c46f60ed222c7
+%global commit3 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 Vulkan-Headers
 
-%global commit4 0e89587db3ebee4d463f191bd296374c5fafc8ea
+%global commit4 6eb62e1515072827db992c2befd80b71b2d04329
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
-%global commit5 d1517d64cfca91f573af1bf7341dc3a5113349c0
+%global commit5 76b52ebf77833908dc4c0dd6c70a9c357ac720bd
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
 # Enable system spirv (broken)
-%bcond_with sysspirv
-%bcond_with sysvulkan
+%bcond_with spirv
+%bcond_without vulkan
 # Build with x11 instead SDL
 %bcond_with x11
 
@@ -47,11 +47,11 @@
 %global libelf_ver 1.0
 %global nowide_ver 11.3.0
 %global stb_ver 2.25
-%global vk_ver 1.3.250.1
+%global vk_ver 1.3.261
 
 Name:           flycast
 Version:        2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -59,7 +59,7 @@ Epoch:          1
 # ggpo - MIT
 # libelf - BSD-2-Clause
 # nowire - Boost
-License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_sysspirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_spirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
 %if %{with snapshot}
@@ -69,11 +69,11 @@ Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-%if %{without sysvulkan}
+%if %{without vulkan}
 Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-%if %{without sysspirv}
+%if %{without spirv}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
@@ -96,7 +96,7 @@ BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
-%if %{with sysspirv}
+%if %{with spirv}
 BuildRequires:  pkgconfig(glslang)
 %else
 Provides:       bundled(glslang) = git~0%{shortcommit5}
@@ -115,7 +115,7 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
-%if %{with sysvulkan}
+%if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %endif
 Requires:       hicolor-icon-theme
@@ -146,12 +146,12 @@ rm -rf glm libzip lzma miniupnpc oboe SDL xbyak xxHash zlib
 
 tar -xf %{S:1} -C luabridge/ --strip-components 1
 tar -xf %{S:2} -C breakpad/ --strip-components 1
-%if %{without sysvulkan}
+%if %{without vulkan}
 tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../../CMakeLists.txt
 %endif
 tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
-%if %{without sysspirv}
+%if %{without spirv}
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
@@ -205,7 +205,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
   -DUSE_HOST_SDL:BOOL=ON \
-%if %{with sysspirv}
+%if %{with spirv}
   -DUSE_HOST_SPIRV:BOOL=ON \
 %endif
   -DCMAKE_BUILD_TYPE:STRING=Release \

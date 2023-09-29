@@ -10,7 +10,7 @@
 %global commit c4ad32420a77c5c74a5c075f8247c247fb2b6b08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230923
-%bcond_without snapshot
+%bcond_with snapshot
 
 # Enable Qt build
 %bcond_with qt
@@ -69,7 +69,7 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.16.3
+Version:        1.16.5
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -232,8 +232,8 @@ tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 %endif
 
 rm -rf ext/glew/GL
-rm -rf ext/{glew,rapidjson,miniupnp,snappy}/*.{c,cpp,h}
-rm -rf ext/{discord-rpc,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
+rm -rf ext/{glew,rapidjson,snappy}/*.{c,cpp,h}
+rm -rf ext/{discord-rpc,miniupnp,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
@@ -454,6 +454,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Thu Sep 28 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.5-100
+- 1.16.5
+
 * Sun Sep 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.3-100.20230923gitc4ad324
 - 1.16.3
 

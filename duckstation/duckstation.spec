@@ -14,9 +14,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 7fc4b89719caf0c62e6ec5ac15d3ad663397b3c8
+%global commit a45b50c3e996af823d35a6a193458532c4f4316d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230916
+%global date 20230928
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -35,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        98%{?dist}
+Release:        99%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -54,7 +54,6 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
-Patch7:         0001-log.h-ignore-format-security.patch
 Patch8:         0001-Fix-build-without-discord-presence-support.patch
 Patch9:         0001-Lower-the-SDL2-requirement-a-bit.patch
 

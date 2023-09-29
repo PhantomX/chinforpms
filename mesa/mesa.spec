@@ -72,7 +72,7 @@
 %global commit ed1a0b98f387810d26e8275a423e09d7df6866d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230921
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -86,8 +86,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.0~rc3
-Release:        102%{?dist}
+Version:        23.2.1
+Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -104,7 +104,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
-Patch11:        mesa-mr23981.patch
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
 BuildRequires:  meson >= 1.2.0
@@ -744,6 +743,9 @@ popd
 
 
 %changelog
+* Fri Sep 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.1-100
+- 23.2.1
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.0~rc3-101.20230914git3317f14
 - Add llvm_pkgver define to set versioned LLVM packages, when needed
 
