@@ -14,16 +14,16 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit a45b50c3e996af823d35a6a193458532c4f4316d
+%global commit d5608bf12df7a7e03750cb94a08a3d7999034ae2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230928
+%global date 20230930
 %bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global appname org.%{name}.%{name}
+%global appname org.%{name}.DuckStation
 %global vc_url  https://github.com/stenzek/%{name}
 
 %global glad_ver 0.1.33
@@ -35,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        99%{?dist}
+Release:        100%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -239,8 +239,6 @@ sed \
 %endif
   scripts/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
 
-cp -p scripts/duckstation-qt.desktop %{appname}.desktop
-
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
@@ -286,13 +284,16 @@ ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  --set-icon="%{appname}" \
-  %{appname}.desktop
+  scripts/%{appname}.desktop
+
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
+install -pm0644 scripts/%{appname}.png \
+  %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/
 
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert data/resources/images/duck.png -filter Lanczos -resize ${res}x${res} \
+  convert scripts/%{appname}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appname}.png
 done
 

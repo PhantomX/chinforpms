@@ -5,7 +5,6 @@ Subject: [PATCH] Use system libraries
 
 ---
  cmake/SearchForStuff.cmake                    | 67 +++++++++++++++++++
- pcsx2/CDVD/ChdFileReader.cpp                  |  2 +-
  pcsx2/CMakeLists.txt                          |  7 +-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
@@ -17,7 +16,7 @@ diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
 index fe21b77..92e554f 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -115,30 +115,85 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
+@@ -115,31 +115,86 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
  	This text being in a compile log in an open issue may cause it to be closed.")
  endif()
  
@@ -36,10 +35,11 @@ index fe21b77..92e554f 100644
 +endif()
 +check_lib(CHDR libchdr)
 +if(CHDR_FOUND)
-+	alias_library(chdr-static PkgConfig::CHDR)
++	alias_library(libchdr PkgConfig::CHDR)
 +else()
  add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(libchdr)
 +endif()
 +find_package(SoundTouch)
 +if(SoundTouch_FOUND)
@@ -128,19 +128,6 @@ index fe21b77..92e554f 100644
  
  # Find the Qt components that we need.
  find_package(Qt6 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
-diff --git a/pcsx2/CDVD/ChdFileReader.cpp b/pcsx2/CDVD/ChdFileReader.cpp
-index 7fd6607..73faef3 100644
---- a/pcsx2/CDVD/ChdFileReader.cpp
-+++ b/pcsx2/CDVD/ChdFileReader.cpp
-@@ -25,7 +25,7 @@
- #pragma clang diagnostic push
- #pragma clang diagnostic ignored "-Wunused-function"
- #endif
--#include "libchdr/chd.h"
-+#include "chd.h"
- #ifdef __clang__
- #pragma clang diagnostic pop
- #endif
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
 index 679b498..baacb53 100644
 --- a/pcsx2/CMakeLists.txt

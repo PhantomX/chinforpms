@@ -1,12 +1,12 @@
-From 422119898e63647b5aacba3eb28254445ebbaa67 Mon Sep 17 00:00:00 2001
+From fca5c433dd27713da4537c06ec6d13a9b627c304 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 17 Sep 2023 11:39:26 -0300
 Subject: [PATCH] Fix translation names
 
 ---
  pcsx2-qt/CMakeLists.txt   |  2 +-
- pcsx2-qt/Translations.cpp | 68 +++++++++++++++++++--------------------
- 2 files changed, 36 insertions(+), 36 deletions(-)
+ pcsx2-qt/Translations.cpp | 72 +++++++++++++++++++--------------------
+ 2 files changed, 37 insertions(+), 37 deletions(-)
 
 diff --git a/pcsx2-qt/CMakeLists.txt b/pcsx2-qt/CMakeLists.txt
 index b35fe27..3aaabd9 100644
@@ -22,10 +22,10 @@ index b35fe27..3aaabd9 100644
  			string(REGEX REPLACE ${regex} "\\1" language ${TS_FILE_NAME})
  			string(REPLACE "-" "_" language ${language})
 diff --git a/pcsx2-qt/Translations.cpp b/pcsx2-qt/Translations.cpp
-index cfc2e62..1006abf 100644
+index f2599b4..2a78eb8 100644
 --- a/pcsx2-qt/Translations.cpp
 +++ b/pcsx2-qt/Translations.cpp
-@@ -243,42 +243,42 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
+@@ -243,43 +243,43 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
  {
  	return {
  		{QCoreApplication::translate("InterfaceSettingsWidget", "System Language [Default]"), QStringLiteral("system")},
@@ -52,6 +52,7 @@ index cfc2e62..1006abf 100644
 -		{QStringLiteral("עִבְרִית (he-IL)"), QStringLiteral("he-IL")},
 -		{QStringLiteral("मानक हिन्दी (hi-IN)"), QStringLiteral("hi-IN")},
 -		{QStringLiteral("Magyar (hu-HU)"), QStringLiteral("hu-HU")},
+-		{QStringLiteral("hrvatski (hr-HR)"), QStringLiteral("hr-HR")},
 -		{QStringLiteral("Bahasa Indonesia (id-ID)"), QStringLiteral("id-ID")},
 -		{QStringLiteral("Italiano (it-IT)"), QStringLiteral("it-IT")},
 -		{QStringLiteral("日本語 (ja-JP)"), QStringLiteral("ja-JP")},
@@ -80,6 +81,7 @@ index cfc2e62..1006abf 100644
 +		{QStringLiteral("עִבְרִית (he-IL)"), QStringLiteral("he_IL")},
 +		{QStringLiteral("मानक हिन्दी (hi-IN)"), QStringLiteral("hi_IN")},
 +		{QStringLiteral("Magyar (hu-HU)"), QStringLiteral("hu_HU")},
++		{QStringLiteral("hrvatski (hr-HR)"), QStringLiteral("hr_HR")},
 +		{QStringLiteral("Bahasa Indonesia (id-ID)"), QStringLiteral("id_ID")},
 +		{QStringLiteral("Italiano (it-IT)"), QStringLiteral("it_IT")},
 +		{QStringLiteral("日本語 (ja-JP)"), QStringLiteral("ja_JP")},

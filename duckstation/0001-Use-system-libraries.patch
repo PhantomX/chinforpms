@@ -1,19 +1,19 @@
-From 2b1a6c0a3245d6e836d63ca457712e0297277572 Mon Sep 17 00:00:00 2001
+From e7ef6abe0b163db3cd6e57ab6fab4353360c36b9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 104 +++++++++++++++++++++++++++++-
+ dep/CMakeLists.txt                | 102 ++++++++++++++++++++++++++++++
  src/core/CMakeLists.txt           |   6 +-
  src/core/texture_replacements.cpp |   2 +
- 3 files changed, 110 insertions(+), 2 deletions(-)
+ 3 files changed, 109 insertions(+), 1 deletion(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 86969f8..df3a2c6 100644
+index 6b4473f..0c873ae 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,25 +1,127 @@
+@@ -1,42 +1,144 @@
 +find_package(fmt 9)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -22,8 +22,10 @@ index 86969f8..df3a2c6 100644
 +  add_library(fmt ALIAS fmt-shared)
 +else()
  add_subdirectory(fmt EXCLUDE_FROM_ALL)
--add_subdirectory(stb EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(fmt)
 +endif()
+ add_subdirectory(stb EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(stb)
 +find_package(ZLIB)
 +if(ZLIB_FOUND)
 +  message(STATUS "Using the system zlib")
@@ -32,8 +34,8 @@ index 86969f8..df3a2c6 100644
 +  add_library(zlib ALIAS zlib-shared)
 +else()
  add_subdirectory(zlib EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(zlib)
 +endif()
-+add_subdirectory(stb EXCLUDE_FROM_ALL)
 +pkg_search_module(zstd IMPORTED_TARGET libzstd)
 +if(zstd_FOUND)
 +  message(STATUS "Using the system zstd")
@@ -42,6 +44,7 @@ index 86969f8..df3a2c6 100644
 +  add_library(Zstd::Zstd ALIAS zstd-shared)
 +else()
  add_subdirectory(zstd EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(zstd)
 +endif()
 +pkg_search_module(minizip IMPORTED_TARGET minizip)
 +if(minizip_FOUND)
@@ -51,6 +54,7 @@ index 86969f8..df3a2c6 100644
 +  add_library(minizip ALIAS minizip-shared)
 +else()
  add_subdirectory(minizip EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(minizip)
 +endif()
 +pkg_search_module(libchdr IMPORTED_TARGET libchdr)
 +if(libchdr_FOUND)
@@ -60,7 +64,9 @@ index 86969f8..df3a2c6 100644
 +  add_library(libchdr ALIAS libchdr-shared)
 +else()
  add_subdirectory(lzma EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(lzma)
  add_subdirectory(libchdr EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(libchdr)
 +endif()
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
@@ -71,6 +77,7 @@ index 86969f8..df3a2c6 100644
 +  add_library(xxhash ALIAS xxhash-shared)
 +else()
  add_subdirectory(xxhash EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(xxhash)
 +endif()
 +pkg_search_module(rapidjson IMPORTED_TARGET RapidJSON)
 +if(rapidjson_FOUND)
@@ -81,8 +88,11 @@ index 86969f8..df3a2c6 100644
  add_subdirectory(rapidjson EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(glslang EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(glslang)
  add_subdirectory(imgui EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(imgui)
  add_subdirectory(simpleini EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(simpleini)
 +find_package(VulkanHeaders)
 +if(VulkanHeaders_FOUND)
 +  message(STATUS "Using the system vulkan-headers")
@@ -100,6 +110,7 @@ index 86969f8..df3a2c6 100644
 +  add_library(soundtouch ALIAS soundtouch-shared)
 +else()
  add_subdirectory(soundtouch EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(soundtouch)
 +endif()
  add_subdirectory(googletest EXCLUDE_FROM_ALL)
 +pkg_search_module(cpuinfo IMPORTED_TARGET libcpuinfo)
@@ -110,6 +121,7 @@ index 86969f8..df3a2c6 100644
 +  add_library(cpuinfo ALIAS cpuinfo-shared)
 +else()
  add_subdirectory(cpuinfo EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(cpuinfo)
 +endif()
 +find_package(FastFloat)
 +if(FastFloat_FOUND)
@@ -120,7 +132,9 @@ index 86969f8..df3a2c6 100644
  add_subdirectory(fast_float EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(reshadefx EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(reshadefx)
  add_subdirectory(rcheevos EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(rcheevos)
  
 +find_package(xbyak)
 +if(xbyak_FOUND)
@@ -138,12 +152,14 @@ index 86969f8..df3a2c6 100644
 +    add_library(cubeb ALIAS cubeb-shared)
 +  else()
    add_subdirectory(cubeb EXCLUDE_FROM_ALL)
+   disable_compiler_warnings_for_target(cubeb)
+   disable_compiler_warnings_for_target(speex)
 +  endif()
  endif()
  
  if(ENABLE_OPENGL)
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index c708f0a..e678258 100644
+index fcd06ca..92ae46b 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
 @@ -127,7 +127,11 @@ target_link_libraries(core PUBLIC Threads::Threads common util zlib)

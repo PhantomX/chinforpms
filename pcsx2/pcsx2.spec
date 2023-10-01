@@ -17,7 +17,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 31f8788fe0e694e99db7ce138d45a655c556fa96
+%global commit11 43f8c2a2a0750561786f17dd35af8755716705aa
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 rcheevos
 
@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5025
+Version:        1.7.5067
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -84,7 +84,6 @@ Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
-Patch9:         0001-Fix-for-patched-libchdr.patch
 Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
 Patch11:        0001-Fix-translation-names.patch
 

@@ -1,4 +1,4 @@
-From b2fdc0e9852fcf60825ed474b17353ac7367e6bd Mon Sep 17 00:00:00 2001
+From 195805c4bf24e4becce81a55f266c03fbcba5c20 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Oct 2021 08:19:03 -0300
 Subject: [PATCH] gtk3 dialogs
@@ -8,7 +8,7 @@ Subject: [PATCH] gtk3 dialogs
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/src/qt6ct/appearancepage.cpp b/src/qt6ct/appearancepage.cpp
-index 2f2d6ef..5791c33 100644
+index fc154c2..8f00a1c 100644
 --- a/src/qt6ct/appearancepage.cpp
 +++ b/src/qt6ct/appearancepage.cpp
 @@ -48,6 +48,7 @@ AppearancePage::AppearancePage(QWidget *parent) :
@@ -17,9 +17,9 @@ index 2f2d6ef..5791c33 100644
      QStringList keys = QStyleFactory::keys();
 +    keys.removeAll("gtk2"); //hide gtk2 style
      keys.removeAll("qt6ct-style"); //hide qt6ct proxy style
+     keys.removeAll("qt5ct-style"); //hide qt5ct proxy style
      keys.removeAll("qt5gtk2"); //hide qt5gtk2 alias
-     keys.removeAll("gtk2"); //hide gtk2 alias
-@@ -82,10 +83,10 @@ AppearancePage::AppearancePage(QWidget *parent) :
+@@ -83,10 +84,10 @@ AppearancePage::AppearancePage(QWidget *parent) :
  
      keys = QPlatformThemeFactory::keys();
      m_ui->dialogComboBox->addItem(tr("Default"), "default");
@@ -34,5 +34,5 @@ index 2f2d6ef..5791c33 100644
          m_ui->dialogComboBox->addItem("KDE", "kde");
      if (keys.contains("xdgdesktopportal"))
 -- 
-2.38.1
+2.41.0
 
