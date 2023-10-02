@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           mcomix
-Version:        2.3.0
+Version:        3.0.0
 Release:        1%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
@@ -27,7 +27,6 @@ Source0:        https://sourceforge.net/code-snapshots/git/m/mc/%{name}/git.git/
 %else
 Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
 %endif
-Source1:        https://github.com/multiSnow/mcomix3/raw/cb63d286a0357af45b2b5defd70618c70b9e709d/mcomix/comicthumb.py
 
 Patch0:         0001-Search-gettext-files-in-system-wide-directory.patch
 Patch1:         0001-Set-small-toolbar.patch
@@ -51,18 +50,12 @@ MComix is a user-friendly, customizable image viewer.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-git-%{commit}} -p1
 
-cp -f %{S:1} mime/comicthumb
-
-%py3_shebang_fix mime/comicthumb
-
-sed \
-  -e 's|%{name}.1.gz|%{name}.1|g' \
-  -e 's|share/appdata|share/metainfo|g' \
-  -i setup.py
-
-gunzip %{name}.1.gz mime/comicthumb.1.gz
+gunzip share/man/man1/*.1.gz
 
 mv %{name}/messages locale
+find locale/ -name '*.py' -delete
+
+sed -e '/binary/s|/provides|/binary|' -i share/metainfo/mcomix.metainfo.xml
 
 %generate_buildrequires
 %pyproject_buildrequires -r
@@ -86,42 +79,51 @@ do
   install -pm0644 $f $localedir/
 done
 
-install -pm0755 mime/comicthumb %{buildroot}%{_bindir}/comicthumb
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install \
+  --dir %{buildroot}%{_datadir}/applications \
+  share/applications/%{name}.desktop
 
-mkdir -p %{buildroot}%{_datadir}/thumbnailers
-install -pm0644 mime/comicthumb.thumbnailer \
-  %{buildroot}%{_datadir}/thumbnailers/comicthumb.thumbnailer
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor
+cp -rp share/icons/hicolor/* %{buildroot}%{_datadir}/icons/hicolor/
 
-install -pm0644 mime/comicthumb.1 %{buildroot}%{_mandir}/man1/
+mkdir -p %{buildroot}%{_mandir}/man1
+install -pm0644 share/man/man1/*.1 %{buildroot}%{_mandir}/man1/
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm0644 mime/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm0644 share/metainfo/mcomix.metainfo.xml \
+  %{buildroot}%{_metainfodir}/
+
+mkdir -p %{buildroot}%{_datadir}/mime/packages
+install -pm0644 share/mime/packages/%{name}.xml \
+  %{buildroot}%{_datadir}/mime/packages/
+
 
 %find_lang %{name}
 
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 
 %files -f %{pyproject_files} -f %{name}.lang
 %license  COPYING
-%doc ChangeLog README*
+%doc ChangeLog.md README.md
 %{_bindir}/%{name}
-%{_bindir}/comicthumb
 # Do not own %%{_datadir}/icons/hicolor explicitly
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 %{_datadir}/icons/hicolor/*/mimetypes/application-x-*.png
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/mime/packages/%{name}.xml
-%{_datadir}/thumbnailers/comicthumb.thumbnailer
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/man1/comicthumb.1*
-%{_metainfodir}/%{name}.appdata.xml
+%{_metainfodir}/%{name}.metainfo.xml
 
 
 %changelog
+* Sun Oct 01 2023 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-1
+- 3.0.0
+
 * Sun Sep 03 2023 Phantom X <megaphantomx at hotmail dot com> - 2.3.0-1
 - 2.3.0
 

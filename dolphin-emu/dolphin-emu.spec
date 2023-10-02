@@ -10,9 +10,9 @@
 
 %bcond_without ffmpeg
 %bcond_without egl
-%bcond_with sysfmt
+%bcond_with fmt
 %bcond_with llvm
-%bcond_with sysvulkan
+%bcond_with vulkan
 %bcond_with unittests
 
 #JIT is only supported on x86_64 and aarch64:
@@ -20,9 +20,9 @@
 %global enablejit 1
 %endif
 
-%global commit 1a821465f4b6bdeef09e8a964a0d2ce50cf7970d
+%global commit da6339a72275f6b499a003b5486ebfc8f26e0d2f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230912
+%global date 20231001
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -41,9 +41,15 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
+%global commit6 f5e54359df4c26b6230fc61d38aa294581393084
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 fmt
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
+
+%global fmt_ver 10.1.0
 
 %global distributor chinforpms
 
@@ -51,7 +57,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 40535
+%global baserelease 40597
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -86,8 +92,11 @@ Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/epezent/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/RetroAchievements/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+%if %{without fmt}
+Source6:       https://github.com/fmtlib/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+%endif
 
-%if %{with sysvulkan}
+%if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
@@ -108,8 +117,8 @@ BuildRequires:  pkgconfig(bzip2)
 %if %{with egl}
 BuildRequires:  pkgconfig(egl)
 %endif
-%if %{with sysfmt}
-BuildRequires:  pkgconfig(fmt) >= 9.1.0
+%if %{with fmt}
+BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtest)
@@ -153,7 +162,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %endif
-%if %{with sysvulkan}
+%if %{with vulkan}
 BuildRequires:  pkgconfig(glslang) >= 11.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
@@ -193,8 +202,8 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
-%if %{without sysfmt}
-Provides:       bundled(fmt) = 9.1.0
+%if %{without fmt}
+Provides:       bundled(fmt) = %{fmt_ver}
 %endif
 
 %description
@@ -247,7 +256,7 @@ sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
   `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
   -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
 
-%if %{with sysvulkan}
+%if %{with vulkan}
   sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
     -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
   sed \
@@ -269,11 +278,7 @@ rm -rf \
   libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
-%if %{with sysfmt}
-  rm -rf fmt
-%endif
-
-%if %{with sysvulkan}
+%if %{with vulkan}
   rm -rf glslang
 %endif
 
@@ -281,6 +286,9 @@ tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:4} -C implot/implot --strip-components 1
 tar -xf %{S:5} -C rcheevos/rcheevos --strip-components 1
+%if %{without fmt}
+tar -xf %{S:6} -C fmt/fmt --strip-components 1
+%endif
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson
@@ -322,7 +330,7 @@ sed \
 %if %{without egl}
   -DENABLE_EGL:BOOL=OFF \
 %endif
-%if %{without sysfmt}
+%if %{without fmt}
   -DUSE_SYSTEM_FMT:BOOL=OFF \
 %endif
 %if %{without llvm}

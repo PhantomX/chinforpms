@@ -1,9 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit 4b9072de0343f6b88dc427079990b8f89de9b033
+%global commit 46f59df10acf93320df94546b44411d537efce78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230915
-%global sbuild 8221
+%global date 20230928
+%global sbuild 8243
 %bcond_without snapshot
 
 # Enable ffmpeg support
@@ -21,7 +21,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.15%{?dist}
+Release:        0.16%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1

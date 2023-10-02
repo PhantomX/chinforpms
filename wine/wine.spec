@@ -62,7 +62,7 @@
 %global wineopenldap 2.5.14
 %global winetiff 4.5.0
 %global winejxrlib 1.1
-%global winevkd3d 1.8
+%global winevkd3d 1.9
 %global winexml2 2.11.4
 %global winexslt 1.1.38
 %global winezlib 1.2.13
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.16
+%global wine_stagingver 8.17
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,9 +111,9 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 960b695f67ae9a60986ca72bedcd4f046f64e54e
+%global tkg_id 02279a554e14d99f2ee2f005892d99c731cb48c6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid 51c8597825c2d86c5d2c912ff2a16adde64b23c1
+%global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.16
+Version:        8.17
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2524,6 +2524,9 @@ fi
 
 
 %changelog
+* Sun Oct 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.17-100
+- 8.17
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.16-100
 - 8.16
 
