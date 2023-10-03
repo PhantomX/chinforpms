@@ -10,20 +10,21 @@
 %global parch i386
 %endif
 
-%global pkgrel 1200
+%global pkgver 2024
+%global pkgrel 1204
 %global repo https://shop.softmaker.com/repo
-%global pkgdir office%{version}
-%global dist .%{pkgrel}%{?dist}
+%global pkgdir office%{pkgver}
+%global dist %{?dist}
 
 Name:           softmaker-office
-Version:        2024
+Version:        %{pkgver}.%{pkgrel}
 Release:        1%{?dist}
 Epoch:          1
-Summary:        SoftMaker Office %{version} for Linux
+Summary:        SoftMaker Office %{pkgver} for Linux
 
 License:        Proprietary
-URL:            http://www.softmaker.de
-Source0:        %{repo}/rpm/%{parch}/RPMS/%{name}-%{version}-%{pkgrel}.%{parch}.rpm
+URL:            https://www.softmaker.de
+Source0:        %{repo}/rpm/%{parch}/RPMS/%{name}-%{pkgver}-%{pkgrel}.%{parch}.rpm
 Source1:        %{repo}/linux-repo-public.key
 
 ExclusiveArch:  %{ix86} x86_64
@@ -70,16 +71,16 @@ find usr/share/%{pkgdir}/ -name '*.iwr*' | xargs chmod -x
 mv usr/share/%{pkgdir}/icons .
 mv usr/share/%{pkgdir}/mime .
 
-sed -e 's|glob pattern=|glob weight="40" pattern=|g' -i mime/%{name}-%{version}.xml
+sed -e 's|glob pattern=|glob weight="40" pattern=|g' -i mime/%{name}-%{pkgver}.xml
 
 mv mime/*.desktop .
-rename -- '-%{version}' '' *.desktop
+rename -- '-%{pkgver}' '' *.desktop
 for i in *.desktop ;do
   mv $i %{name}-$i
 done
 sed \
   -e '/^ $/d' \
-  -e '/Name=/s| %{version}||g' \
+  -e '/Name=/s| %{pkgver}||g' \
   -e 's|12;application/vnd.openxmlformats-officedocument.spreadsheetml.template;|12;|' \
   -i *.desktop
 
@@ -157,7 +158,7 @@ for res in 16 24 32 48 64 128 256 512 1024;do
 done
 
 mkdir -p %{buildroot}%{_datadir}/mime/packages
-install -pm0644 mime/%{name}-%{version}.xml \
+install -pm0644 mime/%{name}-%{pkgver}.xml \
   %{buildroot}%{_datadir}/mime/packages/%{name}.xml
 
 
@@ -170,6 +171,9 @@ install -pm0644 mime/%{name}-%{version}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Mon Oct 02 2023 - 1:2024.1204-1
+- 2024-1204
+
 * Tue Jul 18 2023 - 1:2024-1.1200
 - 2024-1200
 
