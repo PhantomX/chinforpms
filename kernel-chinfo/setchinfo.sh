@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20230831
+# 20231006
 # 6.5
-# pf1
+# pf4
 
 set -e
 
@@ -77,7 +77,7 @@ USER_NS_UNPRIVILEGED
 
 SCRIPT="$(readlink -f $0)"
 SCRIPT_DIR="$(dirname ${SCRIPT})"
-CONFIG_DIR="${SCRIPT_DIR}/configs/fedora"
+CONFIG_DIR="${SCRIPT_DIR}/configs/custom-overrides"
 OUTPUT_DIR="${CONFIG_DIR}/generic"
 DEBUG_DIR="${CONFIG_DIR}/debug"
 

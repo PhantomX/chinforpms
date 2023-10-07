@@ -19,7 +19,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 imgui
 
-%global fmt_ver 9.1.0
+%global fmt_ver 10.1.1
 %global vkh_ver 1.3.240
 
 %global vc_url   https://github.com/cemu-project/Cemu
@@ -31,7 +31,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~49
+Version:        2.0~55
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -114,16 +114,18 @@ tar -xf %{S:1} -C imgui --strip-components 1
 %if %{without fmt}
 mkdir fmt
 tar -xf %{S:2} -C fmt --strip-components 1
-sed -e '/^find_package(fmt/s|REQUIRED||' -i ../CMakeLists.txt
+sed -e '/^find_package(fmt/s|9 REQUIRED|%{fmt_ver}|' -i ../CMakeLists.txt
 %endif
 
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p ih264d/NOTICE NOTICE.ih264d
 popd
 
+%if %{with fmt}
 # Fixes from https://aur.archlinux.org/packages/cemu
 # unbundled fmt
 sed -e '/FMT_HEADER_ONLY/d' -i src/Common/precompiled.h
+%endif
 # gamelist column width improvement
 sed \
   -e '/InsertColumn/s/kListIconWidth/&+8/;/SetColumnWidth/s/last_col_width/&-1/' \

@@ -1,6 +1,6 @@
-%global commit df80e2f33b61440afe935a2a6a57729800c1073e
+%global commit f91c91e5aa3434b4fa9d087f6c2a2f0bae541cee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230605
+%global date 20230810
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -19,7 +19,7 @@
 
 Name:           asmc
 Version:        2.34.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Asmc Macro Assembler
 
 License:        GPL-2.0-only
@@ -28,8 +28,8 @@ URL:            https://github.com/nidud/asmc
 ExclusiveArch:  %{ix86} x86_64
 
 %if %{with snapshot}
-%dnl Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-Source0:             https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.gz/187e7ff180858e19e20c1ebcc0c5e273/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%dnl Source0:             https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.gz/187e7ff180858e19e20c1ebcc0c5e273/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif

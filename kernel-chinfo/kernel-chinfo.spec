@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.5
+%define specrpmversion 6.5.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,14 +209,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 0c18428df8e5b0a7e8990bd09f59ababa5361134
+%global pfcommit 7860d121466306e02154ef34968a0dc9711539a4
 %global pf_first_commit 2dde18cd1d8fac735875f2e4987f11817cc0bc2c
-%global pfcoprhash 46d6df8ed9a540af73fb70a4d36c2304
+%global pfcoprhash da1ba804fbee74c65039cc17fb81bf95
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,7 +238,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id f926df350d93cc579ca01c3c8b46e2bb3227aa27
+%global opensuse_id c97c2df132a23866617068875dec1651d86b8572
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1015,8 +1015,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch2: %{ark_url}/80c615ec2edb4aadded21fe924e2caa172d59577.patch#/kernel-ark-revert-80c615e.patch
-Patch3: %{ark_url}/f3cdb1143146a65982f46846cd590affb2b87538.patch#/kernel-ark-revert-f3cdb11.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1031,7 +1029,6 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/drm-amdgpu-set-completion-status-as-preempted-for-th.patch#/openSUSE-drm-amdgpu-set-completion-status-as-preempted-for-th.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1649,8 +1646,6 @@ ApplyPatch %{PATCH5000}
 %endif
 
 %if !%{nopatches}
-ApplyOptionalPatch %{PATCH2} -R
-ApplyOptionalPatch %{PATCH3} -R
 ApplyOptionalPatch %{PATCH1}
 %endif
 
@@ -1661,7 +1656,6 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
@@ -3375,6 +3369,9 @@ fi\
 #
 #
 %changelog
+* Fri Oct 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.6-500.chinfo
+- 6.5.5 - pf4
+
 * Sat Sep 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.5-500.chinfo
 - 6.5.5 - pf3
 

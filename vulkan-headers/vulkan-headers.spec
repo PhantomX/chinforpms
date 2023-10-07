@@ -1,7 +1,7 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.3.264
-Release:        101%{?dist}
+Version:        1.3.267
+Release:        100%{?dist}
 Summary:        Vulkan Header files and API registry
 
 License:        Apache-2.0
@@ -16,8 +16,6 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Headers-sdk-%{versi
 %else
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar.gz
 %endif
-
-Patch0:         %{url}/commit/4f51aac14f65629dfe83702b806f740dbd7bd701.patch#/%{name}-gh-4f51aac.patch
 
 BuildRequires:  cmake3
 BuildRequires:  gcc
@@ -57,6 +55,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Fri Oct 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.267-100
+- 1.3.267
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.264-101
 - Add missing include file
 
