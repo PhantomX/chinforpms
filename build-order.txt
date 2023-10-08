@@ -286,7 +286,7 @@ xfwm4
 xinput-gui
 -xorg-x11-server
 -yad
-youtube-dlp
+yt-dlp
 -ytfzf
 zenity
 zenstates

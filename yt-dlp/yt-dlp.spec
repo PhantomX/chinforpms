@@ -1,18 +1,19 @@
 %bcond_without man
+%bcond_with tests
 
 %global forkname youtube-dlc
-%global pkgname yt-dlp
 
-Name:           youtube-dlp
-Version:        2023.09.24
-Release:        1%{?dist}
+Name:           yt-dlp
+Version:        2023.10.07
+Release:        100%{?dist}
+Epoch:          1
 Summary:        A command-line program to download videos
 
 License:        Unlicense
 URL:            https://github.com/yt-dlp/yt-dlp
 
-Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
-Source1:        %{pkgname}.conf
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source1:        %{name}.conf
 
 BuildArch:      noarch
 
@@ -26,43 +27,80 @@ BuildRequires:  make
 %if %{with man}
 BuildRequires:  pandoc
 %endif
-# Tests failed because of no connection in Koji.
-# BuildRequires:  python-nose
+%if %{with tests}
+# Needed for %%check
+BuildRequires:  %{py3_dist pytest}
+%endif
 
 Recommends:     AtomicParsley
 Suggests:       aria2c
 
-Provides:       yt-dlp = %{?epoch:%{epoch}:}%{version}-%{release}
+# ffmpeg-free is now available in Fedora.
+Recommends:     /usr/bin/ffmpeg
+Recommends:     /usr/bin/ffprobe
+
+Suggests:       %{py3_dist keyring}
+
+Obsoletes:      youtube-dlp < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       youtube-dlp = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{forkname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
-A command-line program to download videos from youtube.com and many other video
-platforms.
+%{name} is a command-line program to download videos from youtube.com and many
+other video platforms.
 
 This is a fork of youtube-dlc which is inturn a fork of youtube-dl.
 
 
+%package bash-completion
+Summary:        Bash completion for %{name}
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       bash-completion
+Supplements:    (%{name} and bash-completion)
+
+%description bash-completion
+Bash command line completion support for %{name}.
+
+%package zsh-completion
+Summary:        Zsh completion for %{name}
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       zsh
+Supplements:    (%{name} and zsh)
+
+%description zsh-completion
+Zsh command line completion support for %{name}.
+
+%package fish-completion
+Summary:        Fish completion for %{name}
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       fish
+Supplements:    (%{name} and fish)
+
+%description fish-completion
+Fish command line completion support for %{name}.
+
+
 %prep
-%autosetup -p1 -n %{pkgname}-%{version}
+%autosetup -p1
 
 # remove pre-built file
-rm -f %{pkgname}
+rm -f %{name}
 
 cp -a setup.py setup.py.installpath
 sed -i '/README.txt/d' setup.py
 
 # Remove interpreter shebang from module files.
-find yt_dlp -type f -exec sed -i -e '1{/^\#!\/usr\/bin\/env python$/d;};' {} +
+find yt_dlp -type f -exec sed -i -e '1{\@^#!.*@d}' {} +
 
 sed \
-  -e '/^install:/s|%{pkgname} %{pkgname}\.1|%{pkgname}\.1|g' \
+  -e '/^install:/s|%{name} %{name}\.1|%{name}\.1|g' \
   -e '/$(DESTDIR)$(BINDIR)/d' \
   -i Makefile
 
 %if %{without man}
 sed \
-  -e '/^install:/s|%{pkgname}\.1 ||g' \
+  -e '/^install:/s|%{name}\.1 ||g' \
   -e '/$(DESTDIR)$(MANDIR)/d' \
   -i Makefile
 %endif
@@ -76,7 +114,7 @@ sed \
 
 %make_build completion-bash completion-zsh completion-fish
 %if %{with man}
-%make_build %{pkgname}.1
+%make_build %{name}.1
 %endif
 
 %install
@@ -92,27 +130,40 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %check
-# This basically cannot work without massive .flake8rc
-# starts with flake8 and of course no contributors bothered to make
-# their code truly PEP8 compliant.
-#
-# make offlinetest
+%if %{with tests}
+# See https://github.com/yt-dlp/yt-dlp/blob/master/devscripts/run_tests.sh
+%pytest -k "not download"
+%endif
 
 
 %files -f %{pyproject_files}
 %doc CONTRIBUTORS Changelog.md README.md
 %license LICENSE
-%{_bindir}/%{pkgname}
-%config(noreplace) %{_sysconfdir}/%{pkgname}.conf
+%{_bindir}/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}.conf
 %if %{with man}
-%{_mandir}/man1/%{pkgname}.1*
+%{_mandir}/man1/%{name}.1*
 %endif
-%{_datadir}/bash-completion/completions/%{pkgname}
-%{_datadir}/zsh/site-functions/_%{pkgname}
-%{_datadir}/fish/vendor_completions.d/%{pkgname}.fish
+%{_datadir}/bash-completion/completions/%{name}
+%{_datadir}/zsh/site-functions/_%{name}
+%{_datadir}/fish/vendor_completions.d/%{name}.fish
+
+%files bash-completion
+%{bash_completions_dir}/%{name}
+
+%files zsh-completion
+%{zsh_completions_dir}/_%{name}
+
+%files fish-completion
+%{fish_completions_dir}/%{name}.fish
 
 
 %changelog
+* Sat Oct 07 2023 Phantom X <megaphantomx at hotmail dot com> - 2023.10.07-100
+- 2023.10.07
+- Rawhide sync
+- Rename spec, youtube-dlp to yt-dlp
+
 * Sun Oct 01 2023 Phantom X <megaphantomx at hotmail dot com> - 2023.09.24-1
 - 2023.09.24
 

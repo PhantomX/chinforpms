@@ -38,11 +38,11 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
-%global commit2 9b0fc3e7b02afe97895eb3e945fe800c3a7485ac
+%global commit2 2f382df218d7e8516dee3b3caccb819a62b571a2
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 VulkanMemoryAllocator
 
-%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
+%global commit3 4ab79a8c023aa63caaa93848b09b9fe8b183b1a9
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3910
+%global vc_version 3913
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
