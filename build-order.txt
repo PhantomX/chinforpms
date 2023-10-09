@@ -213,6 +213,7 @@ plzip
 protontricks
 ps3iso-tools
 -pspshrink
+psv-save-converter
 psxmemcardmgr
 pulsemixer
 -purple-rocketchat
