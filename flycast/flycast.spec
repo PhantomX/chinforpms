@@ -5,13 +5,13 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 205c365b1ba44edd69522d1ba2cc4a6ba7eee704
+%global commit 417a42ae100dd785c7b86baed4f6f3bcc4c972b0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230927
+%global date 20231010
 %bcond_without snapshot
 
 # Disable LTO. Crash.
-%global _lto_cflags %{nil}
+%dnl %global _lto_cflags %{nil}
 
 %global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -51,7 +51,7 @@
 
 Name:           flycast
 Version:        2.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -81,6 +81,7 @@ Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
+Patch5:         0001-UI-tweak-font-scale.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -259,6 +260,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Tue Oct 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-7.20231010git417a42a
+- Enable LTO
+- Patch to change font scaling
+
 * Tue Jun 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-1.20230605git236539c
 - 2.1
 

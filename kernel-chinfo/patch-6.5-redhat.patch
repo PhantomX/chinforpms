@@ -15,7 +15,6 @@
  drivers/hid/hid-rmi.c                              |  66 -----------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
- drivers/iommu/apple-dart.c                         |   3 +-
  drivers/iommu/iommu.c                              |  22 ++++
  drivers/nvme/host/core.c                           |  22 +++-
  drivers/nvme/host/multipath.c                      |  19 ++--
@@ -873,20 +872,6 @@ index 258d5fe3d395..f7298e3dc8f3 100644
 
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index 8af64b57f048..f4d880408254 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -671,8 +671,7 @@ static int apple_dart_attach_dev(struct iommu_domain *domain,
- 		return ret;
-
- 	switch (domain->type) {
--	case IOMMU_DOMAIN_DMA:
--	case IOMMU_DOMAIN_UNMANAGED:
-+	default:
- 		ret = apple_dart_domain_add_streams(dart_domain, cfg);
- 		if (ret)
- 			return ret;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index cabeb5bd3e41..25ef4e9cc34a 100644
 --- a/drivers/iommu/iommu.c

@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.6
+%define specrpmversion 6.5.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,14 +209,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
+%global post_factum 5
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 7860d121466306e02154ef34968a0dc9711539a4
+%global pfcommit f73b003c768d8066fd7fda350698bd8170172331
 %global pf_first_commit 2dde18cd1d8fac735875f2e4987f11817cc0bc2c
-%global pfcoprhash da1ba804fbee74c65039cc17fb81bf95
+%global pfcoprhash f1ace192d5fafed0e9fdba189c50b156
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -3369,8 +3369,11 @@ fi\
 #
 #
 %changelog
+* Tue Oct 10 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.7-500.chinfo
+- 6.5.7 - pf5
+
 * Fri Oct 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.6-500.chinfo
-- 6.5.5 - pf4
+- 6.5.6 - pf4
 
 * Sat Sep 23 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.5-500.chinfo
 - 6.5.5 - pf3

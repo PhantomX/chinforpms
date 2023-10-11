@@ -1,0 +1,25 @@
+From d999eefa3edc40db8ac6ccb908efb4fa879a3d62 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 10 Oct 2023 18:13:01 -0300
+Subject: [PATCH] UI: tweak font scale
+
+---
+ core/rend/gui.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/rend/gui.cpp b/core/rend/gui.cpp
+index 0a48ea7..d3f930c 100644
+--- a/core/rend/gui.cpp
++++ b/core/rend/gui.cpp
+@@ -3075,7 +3075,7 @@ void gui_display_osd()
+ 
+ 			ImGui::Begin("##osd", NULL, ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoNav
+ 					| ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground);
+-			ImGui::SetWindowFontScale(1.5);
++			ImGui::SetWindowFontScale(1.0);
+ 			ImGui::TextColored(ImVec4(1, 1, 0, 0.7f), "%s", message.c_str());
+ 			ImGui::End();
+ 		}
+-- 
+2.41.0
+

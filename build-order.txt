@@ -194,6 +194,7 @@ mp3val
 mpdnotify
 -mps-youtube
 -mupen64plus
+ncpamixer
 -NetworkManager-f5vpn
 nicotine+
 noise-suppression-for-voice

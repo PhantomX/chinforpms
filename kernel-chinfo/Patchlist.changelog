@@ -10,9 +10,6 @@
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/afdab9b20ab7455f752527125b57c92d24601c6e
  afdab9b20ab7455f752527125b57c92d24601c6e drm/amdgpu: set completion status as preempted for the resubmission
 
-"https://gitlab.com/cki-project/kernel-ark/-/commit"/fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a
- fe8fa52d7059d2dd7b171a0ad1a53bd55c7d449a iommu/apple-dart: Handle DMA_FQ domains in attach_dev()
-
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/d08eefa0932515ada7d972c51b99153a7ea3d6ac
  d08eefa0932515ada7d972c51b99153a7ea3d6ac locking/atomic: scripts: fix fallback ifdeffery
 
