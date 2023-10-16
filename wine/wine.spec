@@ -51,21 +51,21 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.0.1
-%global winevulkan 1.3.260
+%global winevulkan 1.3.267
 
-%global wineFAudio 23.03
+%global wineFAudio 23.10
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.15
-%global winempg123 1.31.1
+%global winempg123 1.32.2
 %global winepng 1.6.39
-%global wineopenldap 2.5.14
-%global winetiff 4.5.0
+%global wineopenldap 2.5.16
+%global winetiff 4.6.0
 %global winejxrlib 1.1
 %global winevkd3d 1.9
-%global winexml2 2.11.4
+%global winexml2 2.11.5
 %global winexslt 1.1.38
-%global winezlib 1.2.13
+%global winezlib 1.3
 %global winezydis 4.0.0
 
 %global _default_patch_fuzz 2
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.17.1
+%global wine_stagingver 8.18
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -153,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.17
-Release:        101%{?dist}
+Version:        8.18
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -255,6 +255,8 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padde
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1041:       0001-proton-tkg-additions-fixup-1.patch
+Patch1042:       0001-proton-tkg-additions-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -909,7 +911,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1027 -p1
+%patch -P 1041 -p1
 %patch -P 1028 -p1
+%patch -P 1042 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
@@ -2012,6 +2016,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.globalization.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.devices.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.media.mediacontrol.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.media.speech.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.networking.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.networking.hostname.%{winedll}
@@ -2020,6 +2025,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.networking.connectivity.%{winedll}
 %endif
 %{_libdir}/wine/%{winedlldir}/windows.perception.stub.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.security.credentials.ui.userconsentverifier.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
@@ -2524,6 +2531,9 @@ fi
 
 
 %changelog
+* Sun Oct 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.18-100
+- 8.18
+
 * Mon Oct 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.17-101
 - Staging 8.17.1
 

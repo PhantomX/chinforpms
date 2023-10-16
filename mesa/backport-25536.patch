@@ -1,0 +1,17 @@
+diff -up mesa-23.2.1/src/compiler/nir/nir.h.omv~ mesa-23.2.1/src/compiler/nir/nir.h
+diff -up mesa-23.2.1/src/compiler/nir/nir_builder.h.omv~ mesa-23.2.1/src/compiler/nir/nir_builder.h
+--- mesa-23.2.1/src/compiler/nir/nir_builder.h.omv~	2023-10-08 20:59:06.742229723 +0200
++++ mesa-23.2.1/src/compiler/nir/nir_builder.h	2023-10-08 21:00:59.076348267 +0200
+@@ -1482,8 +1482,11 @@ nir_build_deref_follower(nir_builder *b,
+       return nir_build_deref_struct(b, parent, leader->strct.index);
+ 
+    case nir_deref_type_cast:
+-      return nir_build_deref_cast(b, &parent->def, leader->modes,
++      if(parent->dest.is_ssa)
++      return nir_build_deref_cast(b, &parent->dest.ssa, leader->modes,
+                                   leader->type, leader->cast.ptr_stride);
++      else
++	      unreachable("Deref type cast isn't SSA");
+    default:
+       unreachable("Invalid deref instruction type");
+    }

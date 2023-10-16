@@ -1,0 +1,306 @@
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h.1~	2021-10-14 23:06:29.016569194 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/clApiRename.h	2021-10-14 23:06:29.016569194 +0200
+@@ -0,0 +1,148 @@
++#pragma once
++
++#define clGetPlatformIDs clGetPlatformIDsMESA
++#define GetPlatformInfo GetPlatformInfoMESA
++#define clGetDeviceIDs clGetDeviceIDsMESA
++#define clGetDeviceInfo clGetDeviceInfoMESA
++#define clCreateContext clCreateContextMESA
++#define clCreateContextFromType clCreateContextFromTypeMESA
++#define clRetainContext clRetainContextMESA
++#define clReleaseContext clReleaseContextMESA
++#define clGetContextInfo clGetContextInfoMESA
++#define clCreateCommandQueue clCreateCommandQueueMESA
++#define clRetainCommandQueue clRetainCommandQueueMESA
++#define clReleaseCommandQueue clReleaseCommandQueueMESA
++#define clGetCommandQueueInfo clGetCommandQueueInfoMESA
++#define clSetCommandQueueProperty clSetCommandQueuePropertyMESA
++#define clCreateBuffer clCreateBufferMESA
++#define clCreateImage2D clCreateImage2DMESA
++#define clCreateImage3D clCreateImage3DMESA
++#define clRetainMemObject clRetainMemObjectMESA
++#define clReleaseMemObject clReleaseMemObjectMESA
++#define clGetSupportedImageFormats clGetSupportedImageFormatsMESA
++#define clGetMemObjectInfo clGetMemObjectInfoMESA
++#define clGetImageInfo clGetImageInfoMESA
++#define clCreateSampler clCreateSamplerMESA
++#define clRetainSampler clRetainSamplerMESA
++#define clReleaseSampler clReleaseSamplerMESA
++#define clGetSamplerInfo clGetSamplerInfoMESA
++#define clCreateProgramWithSource clCreateProgramWithSourceMESA
++#define clCreateProgramWithBinary clCreateProgramWithBinaryMESA
++#define clRetainProgram clRetainProgramMESA
++#define clReleaseProgram clReleaseProgramMESA
++#define clBuildProgram clBuildProgramMESA
++#define clUnloadCompiler clUnloadCompilerMESA
++#define clGetProgramInfo clGetProgramInfoMESA
++#define clGetProgramBuildInfo clGetProgramBuildInfoMESA
++#define clCreateKernel clCreateKernelMESA
++#define clCreateKernelsInProgram clCreateKernelsInProgramMESA
++#define clRetainKernel clRetainKernelMESA
++#define clReleaseKernel clReleaseKernelMESA
++#define clSetKernelArg clSetKernelArgMESA
++#define clGetKernelInfo clGetKernelInfoMESA
++#define clGetKernelWorkGroupInfo clGetKernelWorkGroupInfoMESA
++#define clWaitForEvents clWaitForEventsMESA
++#define clGetEventInfo clGetEventInfoMESA
++#define clRetainEvent clRetainEventMESA
++#define clReleaseEvent clReleaseEventMESA
++#define clGetEventProfilingInfo clGetEventProfilingInfoMESA
++#define clFlush clFlushMESA
++#define clFinish clFinishMESA
++#define clEnqueueReadBuffer clEnqueueReadBufferMESA
++#define clEnqueueWriteBuffer clEnqueueWriteBufferMESA
++#define clEnqueueCopyBuffer clEnqueueCopyBufferMESA
++#define clEnqueueReadImage clEnqueueReadImageMESA
++#define clEnqueueWriteImage clEnqueueWriteImageMESA
++#define clEnqueueCopyImage clEnqueueCopyImageMESA
++#define clEnqueueCopyImageToBuffer clEnqueueCopyImageToBufferMESA
++#define clEnqueueCopyBufferToImage clEnqueueCopyBufferToImageMESA
++#define clEnqueueMapBuffer clEnqueueMapBufferMESA
++#define clEnqueueMapImage clEnqueueMapImageMESA
++#define clEnqueueUnmapMemObject clEnqueueUnmapMemObjectMESA
++#define clEnqueueNDRangeKernel clEnqueueNDRangeKernelMESA
++#define clEnqueueTask clEnqueueTaskMESA
++#define clEnqueueNativeKernel clEnqueueNativeKernelMESA
++#define clEnqueueMarker clEnqueueMarkerMESA
++#define clEnqueueWaitForEvents clEnqueueWaitForEventsMESA
++#define clEnqueueBarrier clEnqueueBarrierMESA
++#define GetExtensionFunctionAddress GetExtensionFunctionAddressMESA
++#define clCreateFromGLBuffer clCreateFromGLBufferMESA
++#define gclCreateFromGLTexture2D gclCreateFromGLTexture2DMESA
++#define gclCreateFromGLTexture3D gclCreateFromGLTexture3DMESA
++#define gclCreateFromGLRenderbuffer gclCreateFromGLRenderbufferMESA
++#define gclGetGLObjectInfo gclGetGLObjectInfoMESA
++#define gclGetGLTextureInfo gclGetGLTextureInfoMESA
++#define gclEnqueueAcquireGLObjects gclEnqueueAcquireGLObjectsMESA
++#define gclEnqueueReleaseGLObjects gclEnqueueReleaseGLObjectsMESA
++#define gclGetGLContextInfoKHR gclGetGLContextInfoKHRMESA
++#define gclGetDeviceIDsFromD3D10KHR gclGetDeviceIDsFromD3D10KHRMESA
++#define gclCreateFromD3D10BufferKHR gclCreateFromD3D10BufferKHRMESA
++#define gclCreateFromD3D10Texture2DKHR gclCreateFromD3D10Texture2DKHRMESA
++#define gclCreateFromD3D10Texture3DKHR gclCreateFromD3D10Texture3DKHRMESA
++#define gclEnqueueAcquireD3D10ObjectsKHR gclEnqueueAcquireD3D10ObjectsKHRMESA
++#define gclEnqueueReleaseD3D10ObjectsKHR gclEnqueueReleaseD3D10ObjectsKHRMESA
++#define clSetEventCallback clSetEventCallbackMESA
++#define clCreateSubBuffer clCreateSubBufferMESA
++#define clSetMemObjectDestructorCallback clSetMemObjectDestructorCallbackMESA
++#define clCreateUserEvent clCreateUserEventMESA
++#define clSetUserEventStatus clSetUserEventStatusMESA
++#define clEnqueueReadBufferRect clEnqueueReadBufferRectMESA
++#define clEnqueueWriteBufferRect clEnqueueWriteBufferRectMESA
++#define clEnqueueCopyBufferRect clEnqueueCopyBufferRectMESA
++#define gclCreateSubDevicesEXT gclCreateSubDevicesEXTMESA
++#define gclRetainDeviceEXT gclRetainDeviceEXTMESA
++#define gclReleaseDeviceEXT gclReleaseDeviceEXTMESA
++#define gclCreateEventFromGLsyncKHR gclCreateEventFromGLsyncKHRMESA
++#define clCreateSubDevices clCreateSubDevicesMESA
++#define clRetainDevice clRetainDeviceMESA
++#define clReleaseDevice clReleaseDeviceMESA
++#define clCreateImage clCreateImageMESA
++#define clCreateProgramWithBuiltInKernels clCreateProgramWithBuiltInKernelsMESA
++#define clCompileProgram clCompileProgramMESA
++#define clLinkProgram clLinkProgramMESA
++#define clUnloadPlatformCompiler clUnloadPlatformCompilerMESA
++#define clGetKernelArgInfo clGetKernelArgInfoMESA
++#define clEnqueueFillBuffer clEnqueueFillBufferMESA
++#define clEnqueueFillImage clEnqueueFillImageMESA
++#define clEnqueueMigrateMemObjects clEnqueueMigrateMemObjectsMESA
++#define clEnqueueMarkerWithWaitList clEnqueueMarkerWithWaitListMESA
++#define clEnqueueBarrierWithWaitList clEnqueueBarrierWithWaitListMESA
++#define GetExtensionFunctionAddressForPlatform GetExtensionFunctionAddressForPlatformMESA
++#define gclCreateFromGLTexture gclCreateFromGLTextureMESA
++#define gclGetDeviceIDsFromD3D11KHR gclGetDeviceIDsFromD3D11KHRMESA
++#define gclCreateFromD3D11BufferKHR gclCreateFromD3D11BufferKHRMESA
++#define gclCreateFromD3D11Texture2DKHR gclCreateFromD3D11Texture2DKHRMESA
++#define gclCreateFromD3D11Texture3DKHR gclCreateFromD3D11Texture3DKHRMESA
++#define gclCreateFromDX9MediaSurfaceKHR gclCreateFromDX9MediaSurfaceKHRMESA
++#define gclEnqueueAcquireD3D11ObjectsKHR gclEnqueueAcquireD3D11ObjectsKHRMESA
++#define gclEnqueueReleaseD3D11ObjectsKHR gclEnqueueReleaseD3D11ObjectsKHRMESA
++#define gclGetDeviceIDsFromDX9MediaAdapterKHR gclGetDeviceIDsFromDX9MediaAdapterKHRMESA
++#define gclEnqueueAcquireDX9MediaSurfacesKHR gclEnqueueAcquireDX9MediaSurfacesKHRMESA
++#define gclEnqueueReleaseDX9MediaSurfacesKHR gclEnqueueReleaseDX9MediaSurfacesKHRMESA
++#define gclCreateFromEGLImageKHR gclCreateFromEGLImageKHRMESA
++#define gclEnqueueAcquireEGLObjectsKHR gclEnqueueAcquireEGLObjectsKHRMESA
++#define gclEnqueueReleaseEGLObjectsKHR gclEnqueueReleaseEGLObjectsKHRMESA
++#define gclCreateEventFromEGLSyncKHR gclCreateEventFromEGLSyncKHRMESA
++#define clCreateCommandQueueWithProperties clCreateCommandQueueWithPropertiesMESA
++#define gclCreatePipe gclCreatePipeMESA
++#define gclGetPipeInfo gclGetPipeInfoMESA
++#define clSVMAlloc clSVMAllocMESA
++#define clSVMFree clSVMFreeMESA
++#define clEnqueueSVMFree clEnqueueSVMFreeMESA
++#define clEnqueueSVMMemcpy clEnqueueSVMMemcpyMESA
++#define clEnqueueSVMMemFill clEnqueueSVMMemFillMESA
++#define clEnqueueSVMMap clEnqueueSVMMapMESA
++#define clEnqueueSVMUnmap clEnqueueSVMUnmapMESA
++#define gclCreateSamplerWithProperties gclCreateSamplerWithPropertiesMESA
++#define clSetKernelArgSVMPointer clSetKernelArgSVMPointerMESA
++#define clSetKernelExecInfo clSetKernelExecInfoMESA
++#define gclGetKernelSubGroupInfoKHR gclGetKernelSubGroupInfoKHRMESA
++#define gclCloneKernel gclCloneKernelMESA
++#define gclCreateProgramWithIL gclCreateProgramWithILMESA
++#define clEnqueueSVMMigrateMem clEnqueueSVMMigrateMemMESA
++#define gclGetDeviceAndHostTimer gclGetDeviceAndHostTimerMESA
++#define gclGetHostTimer gclGetHostTimerMESA
++#define gclGetKernelSubGroupInfo gclGetKernelSubGroupInfoMESA
++#define gclSetDefaultDeviceCommandQueue gclSetDefaultDeviceCommandQueueMESA
++#define gclSetProgramReleaseCallback gclSetProgramReleaseCallbackMESA
++#define gclSetProgramSpecializationConstant gclSetProgramSpecializationConstantMESA
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/context.cpp	2021-10-14 23:06:29.016569194 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/context.hpp"
+ #include "core/platform.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/device.cpp	2021-10-14 23:06:29.016569194 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/platform.hpp"
+ #include "core/device.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.cpp	2021-10-14 23:06:29.017569226 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/dispatch.hpp"
+ 
+ namespace clover {
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/dispatch.hpp	2021-10-14 23:06:29.017569226 +0200
+@@ -23,6 +23,7 @@
+ #ifndef API_DISPATCH_HPP
+ #define API_DISPATCH_HPP
+ 
++#include "clApiRename.h"
+ #include "CL/cl.h"
+ #include "CL/cl_ext.h"
+ #include "CL/cl_egl.h"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/event.cpp	2021-10-14 23:06:29.017569226 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/event.hpp"
+ 
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/interop.cpp	2021-10-14 23:06:29.017569226 +0200
+@@ -21,6 +21,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "core/event.hpp"
+ #include "api/util.hpp"
+ 
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp.1~	2021-10-13 22:00:05.001492500 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/kernel.cpp	2021-10-14 23:06:29.017569226 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/kernel.hpp"
+ #include "core/event.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/memory.cpp	2021-10-14 23:06:29.017569226 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "util/format/u_format.h"
+ #include "util/u_math.h"
+ #include "api/util.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/platform.cpp	2021-10-14 23:06:29.018569258 +0200
+@@ -22,6 +22,7 @@
+ 
+ #include <unordered_map>
+ 
++#include "clApiRename.h"
+ #include "api/dispatch.hpp"
+ #include "api/util.hpp"
+ #include "core/platform.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp.1~	2021-10-14 23:06:29.018569258 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/program.cpp	2021-10-14 23:07:01.922636060 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/program.hpp"
+ #include "core/platform.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/queue.cpp	2021-10-14 23:06:29.018569258 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/queue.hpp"
+ 
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/sampler.cpp	2021-10-14 23:06:29.018569258 +0200
+@@ -20,6 +20,7 @@
+ // OTHER DEALINGS IN THE SOFTWARE.
+ //
+ 
++#include "clApiRename.h"
+ #include "api/util.hpp"
+ #include "core/sampler.hpp"
+ 
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/transfer.cpp	2021-10-14 23:06:29.019569290 +0200
+@@ -22,6 +22,7 @@
+ 
+ #include <cstring>
+ 
++#include "clApiRename.h"
+ #include "util/bitscan.h"
+ 
+ #include "api/dispatch.hpp"
+diff -up mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp.1~ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp
+--- mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp.1~	2021-10-13 22:00:05.002492400 +0200
++++ mesa-21.3.0-rc1/src/gallium/frontends/clover/api/util.hpp	2021-10-14 23:06:29.019569290 +0200
+@@ -26,6 +26,7 @@
+ #include <cassert>
+ #include <iostream>
+ 
++#include "clApiRename.h"
+ #include "core/error.hpp"
+ #include "core/property.hpp"
+ #include "util/algorithm.hpp"

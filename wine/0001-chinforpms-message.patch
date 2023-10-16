@@ -1,17 +1,17 @@
-From ca989e7afb6b6620197a9c2f730ea2452d55769d Mon Sep 17 00:00:00 2001
+From 3c016f11ca78d4172e03fb2f6638c12dedb6a0d6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Oct 2020 20:20:50 -0300
 Subject: [PATCH] chinforpms message
 
 ---
- ...rnel32-Add-winediag-message-to-show-warning-that-t.patch | 6 +++---
+ ...dll-Print-a-warning-message-specifying-the-wine-st.patch | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch b/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
-index d120deb..627c326 100644
---- a/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
-+++ b/patches/Staging/0001-kernel32-Add-winediag-message-to-show-warning-that-t.patch
-@@ -46,11 +46,11 @@ index 20bc3f977d1..c2187a19397 100644
+diff --git a/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch b/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
+index 1d755ec..eab59f6 100644
+--- a/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
++++ b/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
+@@ -46,11 +46,11 @@ index 1a87f4d1f5e..31c0a3bae94 100644
  +    InitializeObjectAttributes( &staging_event_attr, &staging_event_string, OBJ_OPENIF, NULL, NULL );
  +    if (NtCreateEvent( &staging_event, EVENT_ALL_ACCESS, &staging_event_attr, NotificationEvent, FALSE ) == STATUS_SUCCESS)
  +    {
@@ -24,8 +24,8 @@ index d120deb..627c326 100644
 -+        WARN_(winediag)("wine-staging %s is a testing version containing experimental patches.\n", wine_get_version());
 ++        WARN_(winediag)("wine-chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
  +
-      if (process_detaching) NtTerminateThread( GetCurrentThread(), 0 );
-  
+      RtlAcquirePebLock();
+      InsertHeadList( &tls_links, &NtCurrentTeb()->TlsLinks );
 -- 
-2.28.0
+2.41.0
 

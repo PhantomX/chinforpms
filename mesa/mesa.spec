@@ -64,15 +64,15 @@
 %bcond_with videocodecs
 
 # Set to build with versioned LLVM packages
-%global llvm_pkgver 16
+%dnl %global llvm_pkgver 16
 
 %global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}
 %global vulkan_layers device-select,overlay
 
-%global commit ed1a0b98f387810d26e8275a423e09d7df6866d2
+%global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230921
-%bcond_with snapshot
+%global date 20231012
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -87,7 +87,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.1
-Release:        100%{?dist}
+Release:        102%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -103,7 +103,28 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/24045
+# https://bugzilla.redhat.com/show_bug.cgi?id=2238711
+# fixes a symbol name collision between iris and radeonsi drivers
+# expected to fix the crashes reported in #2238711
+Patch0:         0001-radeonsi-prefix-function-with-si_-to-prevent-name-co.patch 
+
 Patch10:        gnome-shell-glthread-disable.patch
+# Without this patch, the OpenCL ICD calls into MesaOpenCL,
+# which for some reason calls back into the OpenCL ICD instead
+# of calling its own function by the same name.
+Patch11:        mesa-20.1.1-fix-opencl.patch
+# Fix clover with new LLVM versions
+Patch12:        %{vc_url}/-/merge_requests/24879.patch#/%{name}-gl-mr24879.patch
+Patch13:        %{vc_url}/-/merge_requests/13449.patch#/%{name}-gl-mr13449.patch
+# Make VirtualBox great again
+# Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
+Patch14:        mesa-22.3-make-vbox-great-again.patch
+# Fix LLVM 17 support
+Patch15:        %{vc_url}/-/merge_requests/25536.patch#/%{name}-gl-mr25536.patch
+# Adapt Patch16 to work with 23.2 branch
+Patch16:        backport-25536.patch
+
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
 BuildRequires:  meson >= 1.2.0
@@ -707,8 +728,6 @@ popd
 %endif
 
 %files vulkan-drivers
-%{_libdir}/libvulkan_lvp.so
-%{_datadir}/vulkan/icd.d/lvp_icd.*.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
@@ -743,6 +762,10 @@ popd
 
 
 %changelog
+* Fri Oct 13 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.1-101.20231012git94ed71d
+- Add some patches from OpenMandriva
+- Fix build with LLVM 17.
+
 * Fri Sep 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.1-100
 - 23.2.1
 

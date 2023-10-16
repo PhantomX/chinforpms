@@ -1,0 +1,101 @@
+From 76cfbb86b5a0749fc4a02e08049ca69d3bd2fb5a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 15 Oct 2023 16:49:21 -0300
+Subject: [PATCH] SDL: fix high CPU usage with Vulkan
+
+Revert commit da801033f55b5beb07c674eeec54067b05a8d3f0
+---
+ SDL/SDLMain.cpp | 46 ++++++++++++++++------------------------------
+ 1 file changed, 16 insertions(+), 30 deletions(-)
+
+diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
+index 7eef3aa..c11d054 100644
+--- a/SDL/SDLMain.cpp
++++ b/SDL/SDLMain.cpp
+@@ -1441,6 +1441,11 @@ int main(int argc, char *argv[]) {
+ 	SDL_ShowCursor(SDL_DISABLE);
+ #endif
+ 
++	if (!mainThreadIsRender) {
++		NativeInitGraphics(graphicsContext);
++		NativeResized();
++	}
++
+ 	// Ensure that the swap interval is set after context creation (needed for kmsdrm)
+ 	SDL_GL_SetSwapInterval(1);
+ 
+@@ -1453,7 +1458,9 @@ int main(int argc, char *argv[]) {
+ 	}
+ 	EnableFZ();
+ 
+-	EmuThreadStart(graphicsContext);
++	if (mainThreadIsRender) {
++		EmuThreadStart(graphicsContext);
++	}
+ 
+ 	graphicsContext->ThreadStart();
+ 
+@@ -1466,32 +1473,7 @@ int main(int argc, char *argv[]) {
+ 
+ 	bool waitOnExit = g_Config.iGPUBackend == (int)GPUBackend::OPENGL;
+ 
+-	if (!mainThreadIsRender) {
+-		// We should only be a message pump
+-		while (true) {
+-			inputTracker.TranslateMouseWheel();
+-
+-			SDL_Event event;
+-			while (SDL_PollEvent(&event)) {
+-				ProcessSDLEvent(window, event, &inputTracker);
+-			}
+-			if (g_QuitRequested || g_RestartRequested)
+-				break;
+-
+-			UpdateSDLCursor();
+-
+-			inputTracker.MouseControl();
+-			inputTracker.MouseCaptureControl();
+-
+-
+-			{
+-				std::lock_guard<std::mutex> guard(g_mutexWindow);
+-				if (g_windowState.update) {
+-					UpdateWindowState(window);
+-				}
+-			}
+-		}
+-	} else while (true) {
++	while (true) {
+ 		inputTracker.TranslateMouseWheel();
+ 
+ 		{
+@@ -1557,19 +1539,23 @@ int main(int argc, char *argv[]) {
+ 		}
+ 	}
+ 
+-	EmuThreadStop("shutdown");
++	if (mainThreadIsRender) {
++		EmuThreadStop("shutdown");
++	}
+ 
+ 	if (waitOnExit) {
+ 		while (graphicsContext->ThreadFrame()) {
+ 			// Need to keep eating frames to allow the EmuThread to exit correctly.
+ 			continue;
+ 		}
++		EmuThreadJoin();
+ 	}
+ 
+-	EmuThreadJoin();
+-
+ 	delete joystick;
+ 
++	if (!mainThreadIsRender) {
++		NativeShutdownGraphics();
++	}
+ 	graphicsContext->ThreadEnd();
+ 
+ 	NativeShutdown();
+-- 
+2.41.0
+

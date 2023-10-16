@@ -14,17 +14,17 @@
 %bcond_with valgrind
 %endif
 
-%global commit ed1a0b98f387810d26e8275a423e09d7df6866d2
+%global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230921
-%bcond_with snapshot
+%global date 20231012
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Set to build with versioned LLVM packages
-%global llvm_pkgver 16
+%dnl %global llvm_pkgver 16
 
 %global pkgname mesa
 %global vc_url  https://gitlab.freedesktop.org/mesa/mesa
@@ -35,7 +35,7 @@ Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        23.2.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          100
 
@@ -49,6 +49,11 @@ Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
+
+# Fix LLVM 17 support
+Patch0:         %{vc_url}/-/merge_requests/25536.patch#/mesa-gl-mr25536.patch
+# Adapt Patch1 to work with 23.2 branch
+Patch1:         backport-25536.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc

@@ -7,10 +7,10 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c4ad32420a77c5c74a5c075f8247c247fb2b6b08
+%global commit 5580d47d870c3a5809f58781053be8d09238737c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230923
-%bcond_with snapshot
+%global date 20231015
+%bcond_without snapshot
 
 # Enable Qt build
 %bcond_with qt
@@ -27,7 +27,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 b2160ff5e6c2b3f7892e41a53f390db350dfbf5b
+%global commit2 82049cca2e4c1516ed00a77b502a21f91b7843f4
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -55,7 +55,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 a34895b5e59b70e0d58714f71df416dca2437ebc
+%global commit9 0a1d19d04e4d34e0b9c1959dd34f81d3ab21b11d
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -69,8 +69,8 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.16.5
-Release:        100%{?dist}
+Version:        1.16.6
+Release:        101%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -107,6 +107,7 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
+Patch7:         0001-SDL-fix-high-CPU-usage-with-Vulkan.patch
 
 %if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -233,7 +234,7 @@ tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,snappy}/*.{c,cpp,h}
-rm -rf ext/{discord-rpc,miniupnp,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
+rm -rf ext/{discord-rpc,miniupnp,libchr,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
@@ -454,6 +455,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Sat Oct 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.6-100.20231013git1e6142d
+- 1.16.6
+
 * Thu Sep 28 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.5-100
 - 1.16.5
 

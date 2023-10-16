@@ -1,5 +1,5 @@
 Name:           sdl2-controllermap
-Version:        2.26.5
+Version:        2.28.4
 Release:        1%{?dist}
 Summary:        Official tool to create SDL2 Game Controller controller mappings
 

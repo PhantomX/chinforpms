@@ -1,4 +1,4 @@
-From f8697f47eaab9413bd2d2918cfa71715f9d151e7 Mon Sep 17 00:00:00 2001
+From 388fe4e0cf1c7072828608a5e06ca17647760729 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -22,13 +22,14 @@ Subject: [PATCH] Use system libraries
  UI/CwCheatScreen.cpp                  |  2 +-
  Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
- 18 files changed, 35 insertions(+), 18 deletions(-)
+ ext/CMakeLists.txt                    |  8 ++++++++
+ 19 files changed, 43 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dddcf33..ca408d9 100644
+index 4b77f20..dbf6cc8 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1502,11 +1502,20 @@ add_library(xbrz STATIC
+@@ -1562,11 +1562,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -50,7 +51,7 @@ index dddcf33..ca408d9 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2208,6 +2217,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2307,6 +2316,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -66,7 +67,7 @@ index dddcf33..ca408d9 100644
  	find_package(ZSTD REQUIRED)
  	target_include_directories(${CoreLibName} PRIVATE ${ZSTD_INCLUDE_DIR})
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index ca5de05..fdd66d5 100644
+index a9e5dec..baac5d4 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,7 @@
@@ -105,7 +106,7 @@ index 8b2e427..113f4be 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 6a82ec1..eb22ce7 100644
+index e64dcf3..f210484 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -18,7 +18,7 @@
@@ -118,7 +119,7 @@ index 6a82ec1..eb22ce7 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index 00e122c..f63e721 100644
+index f8ba243..77fc64c 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -131,7 +132,7 @@ index 00e122c..f63e721 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 4cfe9a2..580e0d0 100644
+index 1cdeeb0..e2ec8cf 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -24,7 +24,7 @@
@@ -144,7 +145,7 @@ index 4cfe9a2..580e0d0 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 84302c8..5857466 100644
+index 2c30cef..00a7c8a 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
 @@ -26,7 +26,7 @@
@@ -157,7 +158,7 @@ index 84302c8..5857466 100644
  #include "Common/Log.h"
  #include "Common/File/Path.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 76d00d8..cb933f6 100644
+index 0505517..a30b19a 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -170,7 +171,7 @@ index 76d00d8..cb933f6 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 32da2df..edb118e 100644
+index da58590..53f073a 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -183,7 +184,7 @@ index 32da2df..edb118e 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 5e7b471..afdfea9 100644
+index be1fc7f..861721a 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -23,7 +23,7 @@
@@ -222,7 +223,7 @@ index 04a1aaf..80ba41d 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 8bbb390..9a93d0e 100644
+index 94dcf0d..8473948 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -235,7 +236,7 @@ index 8bbb390..9a93d0e 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 018d1ac..6017e01 100644
+index 84898ff..0b49ed8 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -248,7 +249,7 @@ index 018d1ac..6017e01 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 17cf916..cd508a1 100644
+index 1b63895..d565563 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -286,6 +287,23 @@ index 12e4f85..c1433a8 100644
  #include "Common/StringUtils.h"
  #include "Core/Config.h"
  #include "Core/MemMap.h"
+diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
+index 1031f6e..c868cf2 100644
+--- a/ext/CMakeLists.txt
++++ b/ext/CMakeLists.txt
+@@ -38,4 +38,12 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+ 	add_subdirectory(discord-rpc-build)
+ endif()
+ 
++pkg_search_module(chdr IMPORTED_TARGET libchdr)
++if(chdr_FOUND)
++	message(STATUS "Using the system libchdr")
++	add_library(chdr-shared INTERFACE)
++	target_link_libraries(chdr-shared INTERFACE PkgConfig::chdr)
++	add_library(chdr ALIAS chdr-shared)
++else()
+ add_subdirectory(libchdr-build)
++endif()
 -- 
 2.41.0
 
