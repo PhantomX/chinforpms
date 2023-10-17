@@ -9,8 +9,9 @@
 
 %bcond_with app
 %bcond_with sysvulkan
-# Tests requires bundled stuff. Disable for now.
-%bcond_with tests
+%ifnarch s390x
+%bcond_without tests
+%endif
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
@@ -23,8 +24,8 @@
 %global ver    %%(echo %{version} | sed -z 's/\\./-/3')
 
 Name:           mangohud
-Version:        0.6.9.1
-Release:        101%{?dist}
+Version:        0.7.0
+Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -92,6 +93,19 @@ Suggests:       goverlay
 improvements, temperature reporting, and logging capabilities.
 
 
+%package        mangoplot
+Summary:        Local visualization "mangoplot" for %{name}
+BuildArch:      noarch
+
+BuildRequires:  python3-devel
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       python3-matplotlib
+Requires:       python3-numpy
+
+%description    mangoplot
+Local visualization "mangoplot" for %{name}.
+
+
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
@@ -105,6 +119,24 @@ unzip %{S:13} -d subprojects/
 rm -f include/nvml.h
 
 cp -f -p %{S:3} bin/%{name}.in
+sed -e 's|@version@|%{version}-%{release}|g' -i bin/%{name}.in
+
+%py3_shebang_fix bin/mangoplot.py
+
+%if %{with tests}
+# Use system cmocka instead of subproject
+# https://gitlab.archlinux.org/archlinux/packaging/packages/mangohud/-/blob/0.6.9.1-10/PKGBUILD?ref_type=tags#L32
+sed -i "s/  cmocka = subproject('cmocka')//g" meson.build
+sed -i "s/cmocka_dep = cmocka.get_variable('cmocka_dep')/cmocka_dep = dependency('cmocka')/g" meson.build
+%endif
+
+# https://github.com/flightlessmango/MangoHud/commit/dc1761e98a435aaee6a919e21f43b85cc38500ac
+sed -e "s/, '-static-libstdc++'//" \
+  -i src/meson.build
+
+sed \
+  -e "s|'git', 'describe', '--tags', '--dirty=+'|'echo','%{version}-%{release}'|g" \
+  -i src/meson.build
 
 
 %build
@@ -135,12 +167,22 @@ chmod 0755 %{buildroot}%{_bindir}/%{name}
 rm -rf %{buildroot}%{_datadir}/doc
 
 
+%check
+# https://github.com/flightlessmango/MangoHud/issues/812
+# ? tag-invalid           : stock icon is not valid [io.github.flightlessmango.mangohud]
+%dnl appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.xml
+%if %{with tests}
+%meson_test
+%endif
+
+
 %files
 %license LICENSE
 %doc README.md data/%{pkgname}.conf
 %{_bindir}/mango*
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
+%{_libdir}/%{name}/lib%{pkgname}_opengl.so
 %if %{with app}
 %{_libdir}/%{name}/libMangoApp.so
 %endif
@@ -149,8 +191,15 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_mandir}/man1/mango*.1*
 %{_metainfodir}/*.metainfo.xml
 
+%files mangoplot
+%{_bindir}/mangoplot
+
 
 %changelog
+* Mon Oct 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.7.0-100
+- 0.7.0
+- Rawhide sync
+
 * Sat Aug 26 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.9.1-101
 - Rename loader files
 

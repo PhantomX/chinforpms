@@ -1,0 +1,20 @@
+# complains about qemu use of: gethostbyname, inet_aton, inet_ntoa
+# but warning here isn't really accomplishing anything
+badfuncs:
+  exclude_path: .*
+
+# These pre-compiled files have `.symtab`
+debuginfo:
+  ignore:
+    - /usr/share/qemu/palcode-clipper
+    - /usr/share/qemu/hppa-firmware.img
+
+# More pre-compiled rom warnings:
+# - Program built without GNU_STACK: /usr/share/qemu/u-boot.e500
+# - Stack is still executable: /usr/share/qemu/hppa-firmware.img
+elf:
+  exclude_path: ^/usr/share/qemu/(u-boot.e500|hppa-firmware.img)$
+
+# CryptoPkg fuzz tests have invalid unicode, but I assume that's intentional
+unicode:
+  exclude: .*edk2/CryptoPkg.*
