@@ -1,17 +1,16 @@
-From d25a8e70548b34d44b66d8f058bd20ead52f7c16 Mon Sep 17 00:00:00 2001
+From 806278ac55406af318678112bfcc27babcd65cdc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Wed, 9 Feb 2022 08:28:04 -0300
+Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt            |  3 +-
- externals/CMakeLists.txt  | 91 ++++++++++++++++++++++++++++++++++++++-
- src/citra/config.cpp      |  2 +-
- src/common/CMakeLists.txt | 10 ++++-
- 4 files changed, 100 insertions(+), 6 deletions(-)
+ externals/CMakeLists.txt  | 59 ++++++++++++++++++++++++++++++++++++++-
+ src/common/CMakeLists.txt | 10 +++++--
+ 3 files changed, 67 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 7580398..153152a 100644
+index 3f1fbee..9f31408 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -22,7 +21,7 @@ index 7580398..153152a 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -146,7 +145,7 @@ function(check_submodules_present)
+@@ -167,7 +166,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -32,7 +31,7 @@ index 7580398..153152a 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index f11cb29..a0d386a 100644
+index 649f1c2..c61d991 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -63,69 +62,9 @@ index f11cb29..a0d386a 100644
  
  # Crypto++
  set(CRYPTOPP_BUILD_DOCUMENTATION OFF CACHE BOOL "")
-@@ -68,19 +77,43 @@ target_include_directories(dds-ktx INTERFACE ./dds-ktx)
- 
- # fmt and Xbyak need to be added before dynarmic
- # libfmt
-+find_package(fmt 9.1)
-+if(fmt_FOUND)
-+  message(STATUS "Using the system fmt")
-+  add_library(fmt-shared INTERFACE)
-+  target_link_libraries(fmt-shared INTERFACE fmt::fmt)
-+  add_library(fmt::fmt ALIAS fmt-shared)
-+else()
- option(FMT_INSTALL "" ON)
- add_subdirectory(fmt EXCLUDE_FROM_ALL)
-+endif()
- 
- # Xbyak
- if ("x86_64" IN_LIST ARCHITECTURE)
-+  find_package(xbyak 6)
-+  if(xbyak_FOUND)
-+    message(STATUS "Using the system xbyak")
-+    add_library(xbyak-shared INTERFACE)
-+    target_link_libraries(xbyak-shared INTERFACE xbyak::xbyak)
-+    add_library(xbyak ALIAS xbyak-shared)
-+  else()
-     add_subdirectory(xbyak EXCLUDE_FROM_ALL)
-+  endif()
+@@ -179,6 +188,14 @@ if (NOT FOUND_FFMPEG_HEADERS)
+     target_include_directories(library-headers SYSTEM INTERFACE ./library-headers/ffmpeg/include)
  endif()
- 
- # Dynarmic
- if ("x86_64" IN_LIST ARCHITECTURE OR "arm64" IN_LIST ARCHITECTURE)
-+  find_package(dynarmic 6.4.0)
-+  if(dynarmic_FOUND)
-+    message(STATUS "Using the system dynarmic")
-+    add_library(dynarmic-shared INTERFACE)
-+    target_link_libraries(dynarmic-shared INTERFACE dynarmic::dynarmic)
-+    add_library(dynarmic ALIAS dynarmic-shared)
-+  else()
-     set(DYNARMIC_TESTS OFF CACHE BOOL "")
-     set(DYNARMIC_FRONTENDS "A32" CACHE STRING "")
-     add_subdirectory(dynarmic EXCLUDE_FROM_ALL)
-+  endif()
- endif()
- 
- # getopt
-@@ -101,7 +134,15 @@ set(BUILD_EXTERNAL OFF CACHE BOOL "")
- add_subdirectory(glslang)
- 
- # inih
-+pkg_check_modules(inih IMPORTED_TARGET INIReader)
-+if(inih_FOUND)
-+  message(STATUS "Using the system inih")
-+  add_library(inih-shared INTERFACE)
-+  target_link_libraries(inih-shared INTERFACE PkgConfig::inih)
-+  add_library(inih ALIAS inih-shared)
-+else()
- add_subdirectory(inih)
-+endif()
- 
- # MicroProfile
- add_library(microprofile INTERFACE)
-@@ -121,6 +162,14 @@ add_subdirectory(open_source_archives)
- # Dynamic library headers
- add_subdirectory(library-headers EXCLUDE_FROM_ALL)
  
 +find_package(tsl-robin-map)
 +if(tsl-robin-map_FOUND)
@@ -138,7 +77,7 @@ index f11cb29..a0d386a 100644
  # SoundTouch
  if(NOT USE_SYSTEM_SOUNDTOUCH)
      set(INTEGER_SAMPLES ON CACHE BOOL "")
-@@ -149,22 +198,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
+@@ -207,22 +224,46 @@ if (ENABLE_LIBUSB AND NOT USE_SYSTEM_LIBUSB)
  endif()
  
  # Zstandard
@@ -185,7 +124,7 @@ index f11cb29..a0d386a 100644
  endif()
  
  # DiscordRPC
-@@ -227,6 +300,13 @@ endif()
+@@ -310,6 +351,13 @@ endif()
  
  # OpenAL Soft
  if (ENABLE_OPENAL)
@@ -199,7 +138,7 @@ index f11cb29..a0d386a 100644
      set(ALSOFT_EMBED_HRTF_DATA OFF CACHE BOOL "")
      set(ALSOFT_EXAMPLES OFF CACHE BOOL "")
      set(ALSOFT_INSTALL OFF CACHE BOOL "")
-@@ -237,17 +317,26 @@ if (ENABLE_OPENAL)
+@@ -320,17 +368,26 @@ if (ENABLE_OPENAL)
      set(LIBTYPE "STATIC" CACHE STRING "")
      add_subdirectory(openal-soft EXCLUDE_FROM_ALL)
  endif()
@@ -225,25 +164,12 @@ index f11cb29..a0d386a 100644
 +endif()
  
  # adrenotools
- if (ANDROID)
-diff --git a/src/citra/config.cpp b/src/citra/config.cpp
-index 9520a8f..9c7938b 100644
---- a/src/citra/config.cpp
-+++ b/src/citra/config.cpp
-@@ -7,7 +7,7 @@
- #include <sstream>
- #include <type_traits>
- #include <SDL.h>
--#include <inih/cpp/INIReader.h>
-+#include <INIReader.h>
- #include "citra/config.h"
- #include "citra/default_ini.h"
- #include "common/file_util.h"
+ if (ANDROID AND "arm64" IN_LIST ARCHITECTURE)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 8bb5154..5bddc4e 100644
+index e2ee678..a7e4c7d 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -136,12 +136,18 @@ add_library(citra_common STATIC
+@@ -144,12 +144,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h

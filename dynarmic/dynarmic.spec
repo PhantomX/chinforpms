@@ -5,6 +5,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+# Enable system zydis
+%bcond_with zydis
+
 %global commit 7da378033a7764f955516f75194856d87bbcd7a5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230507
@@ -15,11 +18,10 @@
 %endif
 
 %global mcl_ver 0.1.11
-%global zycore_ver 1.4.1
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.4.8
+Version:        6.5.0
 Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
@@ -42,10 +44,13 @@ BuildRequires:  boost-devel >= 1.57
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  cmake(tsl-robin-map)
 BuildRequires:  cmake(xbyak)
+%if %{with zydis}
+BuildRequires:  cmake(zydis) >= %{zydis_ver}
+%else
+Provides:       bundled(zydis) = %{zydis_ver}
+%endif
 
 Provides:       bundled(mcl) = %{mcl_ver}
-Provides:       bundled(zydis) = %{zydis_ver}
-Provides:       bundled(zydis) = %{zydis_ver}
 
 
 %description
@@ -66,16 +71,25 @@ with %{name}.
 
 rm -rf externals/{catch,fmt,robin-map,xbyak}
 
+%if %{with zydis}
+rm -rf externals/{zycore,zydis}
+sed \
+  -e '/find_/s|Zydis|zydis|g' \
+  -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
+%else
+sed \
+  -e '/find_/s|Zydis|zydis_DISABLED|g' \
+  -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
+%endif
+
 
 %build
 %cmake \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
-  -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
-  -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_IGNORE_ASSERTS:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
-  -DDYNARMIC_TESTS=OFF \
+  -DDYNARMIC_TESTS:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -97,6 +111,10 @@ rm -rf externals/{catch,fmt,robin-map,xbyak}
 
 
 %changelog
+* Thu Oct 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.0-1
+- 6.5.0
+- System zydis support
+
 * Thu Jun 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.8-1
 - 6.4.8
 

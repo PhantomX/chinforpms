@@ -37,7 +37,7 @@
 
 Name:           telegram-desktop
 Version:        4.10.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -351,6 +351,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Oct 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.3-101
+- Rebuild (qt6)
+
 * Mon Oct 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.3-100
 - 4.10.3
 

@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5067
+Version:        1.7.5136
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -148,6 +148,7 @@ BuildRequires:  cmake(SoundTouch)
 %else
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
+BuildRequires:  cmake(WebP)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -181,7 +182,7 @@ Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xxhash) = %{xxhash_ver}
-Provides:       bundled(zydis) = 0~git
+%dnl Provides:       bundled(zydis) = 0~git
 
 
 %description
@@ -199,9 +200,9 @@ rm -rf .git
 
 pushd 3rdparty
 rm -rf \
-  cpuinfo cubeb d3d12memalloc ffmpeg GL gtest libchdr libjpeg \
+  cpuinfo cubeb d3d12memalloc ffmpeg GL gtest libchdr libwebp \
   libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 wil \
-  winpixeventruntime xbyak xz zlib zstd
+  winpixeventruntime xbyak xz zlib zstd zydis
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
 tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
@@ -230,7 +231,7 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 #cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
-cp -p zydis/LICENSE LICENSE.zydis
+%dnl cp -p zydis/LICENSE LICENSE.zydis
 popd
 
 # To remove executable bits from man, doc and icon files
@@ -353,6 +354,10 @@ desktop-file-install \
 
 
 %changelog
+* Thu Oct 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7.5136-1
+- 1.7.5136
+- BR: WebP
+
 * Sun Sep 17 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7.5025-1
 - Add translations
 

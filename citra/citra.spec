@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d0b8974845c1ab54a941b9c1704ee5a734089c5c
+%global commit 6d4e462e425f20109fb066903ef3b68d83f12b03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230923
+%global date 20231019
 %bcond_without snapshot
 
 # Enable system boost
@@ -32,7 +32,7 @@
 # Build tests
 %bcond_with tests
 
-%global commit2 511806c0eba8ba5b5cedd4b4a814e96df92864a6
+%global commit2 af7d1050bf2287072edd629be133da458a3cf978
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
@@ -44,7 +44,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 15798ac9c2611d5c7f9ba832e2c9159bdd8945f2
+%global commit5 9327192b0095dc1f420b2082d37bd427b5750d48
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 cryptopp-cmake
 
@@ -110,7 +110,7 @@
 
 Name:           citra
 Version:        0
-Release:        50%{?dist}
+Release:        51%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -321,8 +321,6 @@ popd
 
 
 rm -f externals/json/json.hpp
-ln -sf %{_includedir}/nlohmann/json.hpp \
-  externals/json/json.hpp
 
 rm -rf externals/teakra/externals/catch/
 
@@ -378,20 +376,28 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %endif
   -DCITRA_BUNDLE_LIBRARIES:BOOL=OFF \
   -DCITRA_ENABLE_BUNDLE_TARGET:BOOL=OFF \
+%if %{with dynarmic}
+  -DUSE_SYSTEM_DYNARMIC:BOOL=ON \
+%endif
+%if %{with fmt}
+  -DUSE_SYSTEM_FMT:BOOL=ON \
+%endif
+  -DUSE_SYSTEM_CPP_JWT:BOOL=OFF \
+  -DUSE_SYSTEM_INIH:BOOL=ON \
+  -DUSE_SYSTEM_JSON:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
+  -DUSE_SYSTEM_XBYAK:BOOL=ON \
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif
 %if %{with soundtouch}
   -DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON \
 %endif
-  -DAVCODEC_INCLUDES:PATH=%{ffmpeg_includedir} \
-  -DAVFILTER_INCLUDES:PATH=%{ffmpeg_includedir} \
-  -DAVFORMAT_INCLUDES:PATH=%{ffmpeg_includedir} \
-  -DAVUTIL_INCLUDES:PATH=%{ffmpeg_includedir} \
-  -DSWRESAMPLE_INCLUDES:PATH=%{ffmpeg_includedir} \
+  -DUSE_SYSTEM_FDK_AAC_HEADERS:BOOL=ON \
+  -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
+  -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
   -DENABLE_WEB_SERVICE:BOOL=ON \
   %{!?with_tests:-DENABLE_TESTS:BOOL=OFF} \

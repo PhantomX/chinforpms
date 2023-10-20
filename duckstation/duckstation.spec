@@ -14,9 +14,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit d5608bf12df7a7e03750cb94a08a3d7999034ae2
+%global commit 2df88e79fe08c2505fa5a1ed9522941780097d03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230930
+%global date 20231017
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -35,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -134,7 +134,7 @@ Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(spirv-tools) = 0~git
-Provides:       bundled(zydis) = 0~git
+%dnl Provides:       bundled(zydis) = 0~git
 
 %if %{without nogui}
 Provides:       %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -173,7 +173,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb discord-rpc gsl libchdr libFLAC lzma minizip msvc \
-  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas
+  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
 
 %if %{with fmt}
   rm -rf fmt
@@ -202,7 +202,7 @@ cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
-cp -p zydis/LICENSE LICENSE.zydis
+%dnl cp -p zydis/LICENSE LICENSE.zydis
 
 popd
 
@@ -327,7 +327,7 @@ appstream-util validate-relax --nonet \
 
 
 %files data
-%doc NEWS.md README.md
+%doc README.md
 %license LICENSE
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/resources/

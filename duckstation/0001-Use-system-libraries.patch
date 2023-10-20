@@ -1,19 +1,19 @@
-From e7ef6abe0b163db3cd6e57ab6fab4353360c36b9 Mon Sep 17 00:00:00 2001
+From 9fd8f56a4aa64a247bae912838c21c95708f38e0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 102 ++++++++++++++++++++++++++++++
- src/core/CMakeLists.txt           |   6 +-
+ dep/CMakeLists.txt                | 111 ++++++++++++++++++++++++++++++
+ src/core/CMakeLists.txt           |  13 +++-
  src/core/texture_replacements.cpp |   2 +
- 3 files changed, 109 insertions(+), 1 deletion(-)
+ 3 files changed, 125 insertions(+), 1 deletion(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 6b4473f..0c873ae 100644
+index 6b4473f..dc89fb0 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,42 +1,144 @@
+@@ -1,42 +1,153 @@
 +find_package(fmt 9)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -143,6 +143,15 @@ index 6b4473f..0c873ae 100644
 +  target_link_libraries(xbyak INTERFACE xbyak::xbyak)
 +endif()
 +
++if(ENABLE_HOST_DISASSEMBLY)
++  find_package(zydis)
++  if(zydis_FOUND)
++    message(STATUS "Using the system zydis")
++    add_library(zydis INTERFACE)
++    target_link_libraries(zydis INTERFACE Zydis::Zydis)
++  endif()
++endif()
++
  if(ENABLE_CUBEB)
 +  find_package(cubeb)
 +  if(cubeb_FOUND)
@@ -159,10 +168,10 @@ index 6b4473f..0c873ae 100644
  
  if(ENABLE_OPENGL)
 diff --git a/src/core/CMakeLists.txt b/src/core/CMakeLists.txt
-index fcd06ca..92ae46b 100644
+index ee3cdf6..a105dfc 100644
 --- a/src/core/CMakeLists.txt
 +++ b/src/core/CMakeLists.txt
-@@ -127,7 +127,11 @@ target_link_libraries(core PUBLIC Threads::Threads common util zlib)
+@@ -133,8 +133,19 @@ target_link_libraries(core PUBLIC Threads::Threads common util zlib)
  target_link_libraries(core PRIVATE stb xxhash imgui rapidjson rcheevos)
  
  if(${CPU_ARCH} STREQUAL "x64")
@@ -173,23 +182,31 @@ index fcd06ca..92ae46b 100644
 +    target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../dep/xbyak/xbyak")
 +  endif()
    target_compile_definitions(core PUBLIC "XBYAK_NO_EXCEPTION=1" "ENABLE_RECOMPILER=1" "ENABLE_MMAP_FASTMEM=1")
++  if(ENABLE_HOST_DISASSEMBLY)
++    if(TARGET zydis)
++      target_link_libraries(core PUBLIC zydis)
++    else()
++      target_include_directories(core PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../dep/zydis/include")
++    endif()
++  endif()
    target_sources(core PRIVATE ${RECOMPILER_SRCS}
      cpu_recompiler_code_generator_x64.cpp
+   )
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index 0edbc6b..b7d1e70 100644
+index c41469b..9fa0254 100644
 --- a/src/core/texture_replacements.cpp
 +++ b/src/core/texture_replacements.cpp
-@@ -12,9 +12,11 @@
- #include "host.h"
- #include "settings.h"
+@@ -14,9 +14,11 @@
+ 
+ #include "fmt/format.h"
  #include "xxhash.h"
 +#ifndef SYSTEM_XXHASH
- #if defined(CPU_X86) || defined(CPU_X64)
+ #if defined(CPU_ARCH_X86) || defined(CPU_ARCH_X64)
  #include "xxh_x86dispatch.h"
  #endif
 +#endif
+ 
  #include <cinttypes>
- Log_SetChannel(TextureReplacements);
  
 -- 
 2.41.0

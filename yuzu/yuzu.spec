@@ -62,16 +62,16 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 212afa2394a74226dcf1b7996a570aae17debb69
+%global commit9 0d17dd066d91f954a4c89d46dcb067eead6b1e4a
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
-%global commit10 ce4d77644d2793027bb27f095dec7b530edcd947
+%global commit10 16ce126a87c5f130cde8b8dce73b38952a19f085
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tz
 
 %global glad_ver 0.1.29
-%global nxtzdb_ver 230404
+%global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 
@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3924
+%global vc_version 3938
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}

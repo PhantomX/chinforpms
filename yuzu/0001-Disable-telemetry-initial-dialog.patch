@@ -1,4 +1,4 @@
-From 35bb432cd3c2cf4af6993510fd87a1166dc99e32 Mon Sep 17 00:00:00 2001
+From 8a73ec694782832e3d7fc2c8372278bf64de76ec Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 10:26:57 -0300
 Subject: [PATCH] Disable telemetry initial dialog
@@ -11,10 +11,10 @@ Set default to false, if needed, enabled it in options
  3 files changed, 4 insertions(+), 10 deletions(-)
 
 diff --git a/src/common/settings.h b/src/common/settings.h
-index b0bc651..ca47113 100755
+index 0455241..5f0163d 100755
 --- a/src/common/settings.h
 +++ b/src/common/settings.h
-@@ -501,7 +501,7 @@ struct Values {
+@@ -518,7 +518,7 @@ struct Values {
                                             Category::Network};
  
      // WebService
@@ -24,10 +24,10 @@ index b0bc651..ca47113 100755
                                       Category::WebService};
      Setting<std::string> yuzu_username{linkage, std::string(), "yuzu_username",
 diff --git a/src/yuzu/main.cpp b/src/yuzu/main.cpp
-index 97ae9e4..d891488 100755
+index 4c6fdf0..d846c87 100755
 --- a/src/yuzu/main.cpp
 +++ b/src/yuzu/main.cpp
-@@ -199,14 +199,8 @@ void GMainWindow::ShowTelemetryCallout() {
+@@ -207,14 +207,8 @@ void GMainWindow::ShowTelemetryCallout() {
  
      UISettings::values.callout_flags =
          UISettings::values.callout_flags.GetValue() | static_cast<uint32_t>(CalloutFlag::Telemetry);
@@ -35,7 +35,7 @@ index 97ae9e4..d891488 100755
 -        tr("<a href='https://yuzu-emu.org/help/feature/telemetry/'>Anonymous "
 -           "data is collected</a> to help improve yuzu. "
 -           "<br/><br/>Would you like to share your usage data with us?");
--    if (QMessageBox::question(this, tr("Telemetry"), telemetry_message) != QMessageBox::Yes) {
+-    if (!question(this, tr("Telemetry"), telemetry_message)) {
 -        Settings::values.enable_telemetry = false;
 -        system->ApplySettings();
 -    }

@@ -1,4 +1,4 @@
-From 606a72e79c2428d779577b1ba1f3eed31b3b7e07 Mon Sep 17 00:00:00 2001
+From 490c96ea91edd7f4cb822c03939523e32bb3dd7c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -8,13 +8,13 @@ https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
  CMakeLists.txt                           |  1 -
- externals/CMakeLists.txt                 | 11 +++++++++++
+ externals/CMakeLists.txt                 |  9 +++++++++
  externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++++++
- 3 files changed, 34 insertions(+), 1 deletion(-)
+ 3 files changed, 32 insertions(+), 1 deletion(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1771b06..dbe5bf4 100755
+index 9849b72..de1a350 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -24,18 +24,16 @@ index 1771b06..dbe5bf4 100755
 -include(DownloadExternals)
  include(CMakeDependentOption)
  include(CTest)
- include(FetchContent)
+ 
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 500eb21..a7d3621 100755
+index d4c52df..185e5fe 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -40,13 +40,24 @@ if (NOT TARGET inih::INIReader)
+@@ -40,6 +40,14 @@ if (NOT TARGET inih::INIReader)
  endif()
  
  # mbedtls
-+if(NOT APPLE)
-+  find_package(MBEDTLS)
-+endif()
++find_package(MBEDTLS)
 +if(MBEDTLS_FOUND)
 +  message(STATUS "Using the system mbed TLS")
 +  add_library(mbedtls-shared INTERFACE)
@@ -46,7 +44,7 @@ index 500eb21..a7d3621 100755
  add_subdirectory(mbedtls)
  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
  if (NOT MSVC)
-     target_compile_options(mbedcrypto PRIVATE
+@@ -47,6 +55,7 @@ if (NOT MSVC)
          -Wno-unused-but-set-variable
          -Wno-string-concatenation)
  endif()
@@ -84,5 +82,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.40.1
+2.41.0
 

@@ -1,22 +1,22 @@
-From ff50bae1971f8bf06128bb6e0d8bf53808d35c68 Mon Sep 17 00:00:00 2001
+From 80d886f2322479bf5a9a9b1b28e7850e50e1c712 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 67 +++++++++++++++++++
- pcsx2/CMakeLists.txt                          |  7 +-
+ cmake/SearchForStuff.cmake                    | 80 +++++++++++++++++++
+ pcsx2/CMakeLists.txt                          | 12 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 7 files changed, 79 insertions(+), 7 deletions(-)
+ 6 files changed, 95 insertions(+), 7 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index fe21b77..92e554f 100644
+index 9ea7af6..c2b3046 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -115,31 +115,86 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
+@@ -114,32 +114,101 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
  	This text being in a compile log in an open issue may cause it to be closed.")
  endif()
  
@@ -70,6 +70,13 @@ index fe21b77..92e554f 100644
 +endif()
  
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
++find_package(WebP)
++if(WebP_FOUND)
++	message(STATUS "Using the system libwebp")
++	alias_library(WebP::libwebp WebP::webp)
++else()
+ add_subdirectory(3rdparty/libwebp EXCLUDE_FROM_ALL)
++endif()
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 +check_lib(CPUINFO libcpuinfo)
@@ -79,7 +86,15 @@ index fe21b77..92e554f 100644
  add_subdirectory(3rdparty/cpuinfo EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(cpuinfo)
 +endif()
++if(DUMP_BLOCKS)
++find_package(zydis)
++if(zydis_FOUND)
++	message(STATUS "Using the system Zydis")
++	alias_library(zydis Zydis::Zydis)
++else()
  add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
++endif()
++endif()
 +check_lib(zstd libzstd)
 +if(zstd_FOUND)
 +  alias_library(Zstd::Zstd PkgConfig::zstd)
@@ -103,7 +118,7 @@ index fe21b77..92e554f 100644
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
  
  if(USE_OPENGL)
-@@ -147,12 +202,24 @@ endif()
+@@ -148,12 +216,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -127,12 +142,20 @@ index fe21b77..92e554f 100644
 +endif()
  
  # Find the Qt components that we need.
- find_package(Qt6 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
+ find_package(Qt6 6.5.3 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 679b498..baacb53 100644
+index b782c09..69e4a08 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1184,9 +1184,14 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1124,7 +1124,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+ 	libchdr
+ 	libzip::zip
+ 	cpuinfo
+-	zydis
+ 	cubeb
+ 	rcheevos
+ 	discord-rpc
+@@ -1181,13 +1180,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -148,6 +171,14 @@ index 679b498..baacb53 100644
  target_compile_definitions(PCSX2_FLAGS INTERFACE
  	XBYAK_NO_EXCEPTION
  )
+ 
++if(DUMP_BLOCKS)
++	target_link_libraries(PCSX2_FLAGS INTERFACE zydis)
++endif()
++
+ if(COMMAND target_precompile_headers)
+ 	message("Using precompiled headers.")
+ 	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
 index e5e572e..43f13ca 100644
 --- a/pcsx2/GS/MultiISA.cpp
