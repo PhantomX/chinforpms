@@ -36,8 +36,8 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.10.3
-Release:        101%{?dist}
+Version:        4.10.4
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -84,6 +84,7 @@ BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
 BuildRequires:  pkgconfig(alsa)
+BuildRequires:  boost-devel
 BuildRequires:  pkgconfig(cppgir)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(giomm-2.68)
@@ -351,6 +352,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Oct 21 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.4-100
+- 4.10.4
+
 * Wed Oct 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.10.3-101
 - Rebuild (qt6)
 
