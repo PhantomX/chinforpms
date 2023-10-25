@@ -1,13 +1,19 @@
 %undefine _cmake_shared_libs
+%global _lto_cflags %{nil}
+%undefine _hardened_build
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit db963aa002cdf943c86d19f8abd3f4fd40be38ec
+%global commit 3ab752b8ca7878246c3d7f8a338a8bc3b0de26dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230915
+%global date 20231022
 %bcond_without snapshot
+
+# build with qt6 instead 5
+%bcond_with qt5
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -18,10 +24,11 @@
 %global vc_url  https://github.com/Arisotura/%{pkgname}
 
 %global fatfs_ver 86631
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 Name:           melonds
 Version:        0.9.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -47,13 +54,15 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  make
-BuildRequires:  cmake(Qt6Core)
-BuildRequires:  cmake(Qt6Gui)
-BuildRequires:  cmake(Qt6Multimedia)
-BuildRequires:  cmake(Qt6Network)
-BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt%{qt_ver}Core)
+BuildRequires:  cmake(Qt%{qt_ver}Gui)
+BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
+BuildRequires:  cmake(Qt%{qt_ver}Network)
+BuildRequires:  cmake(Qt%{qt_ver}Widgets)
+%if %{with qt6}
 BuildRequires:  cmake(Qt6OpenGL)
 BuildRequires:  cmake(Qt6OpenGLWidgets)
+%endif
 BuildRequires:  extra-cmake-modules
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
@@ -115,8 +124,11 @@ export LDFLAGS+=" -Wl,-z,noexecstack"
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_LTO:BOOL=OFF \
+  -DENABLE_LTO_RELEASE:BOOL=OFF \
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
+%if %{with qt6}
   -DUSE_QT6:BOOL=ON \
+%endif
 %{nil}
 
 %cmake_build
@@ -145,6 +157,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue Oct 24 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-9.20231022git3ab752b
+- Build with Qt 5 until 6 is fixed
+
 * Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-1.20221111git5488e0b
 - 0.9.5
 

@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit e3613e7dc10adbe9e3950ffea3281d1c85b104a0
+%global commit f9d213650cfe4733937c43d93de91a17f8582820
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231013
+%global date 20231024
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15668
+Version:        0.0.29.15696
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -213,7 +213,6 @@ BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
 %else
 BuildRequires:  pkgconfig(alsa)
-BuildRequires:  pkgconfig(jack)
 Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 %endif
 BuildRequires:  pkgconfig(sdl2)

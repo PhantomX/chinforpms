@@ -31,7 +31,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~55
+Version:        2.0~59
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 

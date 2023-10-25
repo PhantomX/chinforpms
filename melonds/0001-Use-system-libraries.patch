@@ -40,8 +40,8 @@ index cdb0587..1522329 100644
 +fix_interface_includes(PkgConfig::XXHASH)
 +target_link_libraries(core PUBLIC PkgConfig::XXHASH)
  
- if (ENABLE_OGLRENDERER)
-     target_sources(core PRIVATE
+ if (ENABLE_GDBSTUB)
+     message(NOTICE "Enabling GDB stub")
 -- 
 2.36.1
 
