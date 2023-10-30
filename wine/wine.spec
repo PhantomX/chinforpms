@@ -50,7 +50,7 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  8.0.1
+%global winemono  8.1.0
 %global winevulkan 1.3.267
 
 %global wineFAudio 23.10
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.18
+%global wine_stagingver 8.19
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 02279a554e14d99f2ee2f005892d99c731cb48c6
+%global tkg_id 49b477df289c31576a69715e4a0aab4f0ca72074
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.18
+Version:        8.19
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -223,6 +223,7 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
 Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-whq-240556e.patch
+Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-whq-2bfe81e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -255,8 +256,8 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padde
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1041:       0001-proton-tkg-additions-fixup-1.patch
-Patch1042:       0001-proton-tkg-additions-fixup-2.patch
+Patch1041:       0001-proton-tkg-staging-fixup-1.patch
+Patch1042:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -277,7 +278,6 @@ Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-staging-update-nvapi-and-nvencodeapi-autoconf.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
-Patch1305:       %{name}-mono-8.0.1.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -910,10 +910,11 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%patch -P 1027 -p1
 %patch -P 1041 -p1
-%patch -P 1028 -p1
+%patch -P 1027 -p1
 %patch -P 1042 -p1
+%patch -P 702 -p1 -R
+%patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
@@ -937,7 +938,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %dnl %patch -P 1302 -p1
 %patch -P 1303 -p1
 %patch -P 1304 -p1
-%patch -P 1305 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -1985,7 +1985,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/vcomp120.%{winedll}
 %{_libdir}/wine/%{winedlldir}/vcomp140.%{winedll}
 %{_libdir}/wine/%{winedlldir}/vcruntime140.%{winedll}
+%ifarch x86_64
 %{_libdir}/wine/%{winedlldir}/vcruntime140_1.%{winedll}
+%endif
 %{_libdir}/wine/%{winedlldir}/vdmdbg.%{winedll}
 %{_libdir}/wine/%{winedlldir}/vga.%{winedll}
 %{_libdir}/wine/%{winedlldir}/version.%{winedll}
@@ -2531,6 +2533,9 @@ fi
 
 
 %changelog
+* Mon Oct 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.19-100
+- 8.19
+
 * Sun Oct 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.18-100
 - 8.18
 

@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 417a42ae100dd785c7b86baed4f6f3bcc4c972b0
+%global commit c1f0a5a15f07ba82ccb974e5c7dc82206324b0a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231010
+%global date 20231027
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -50,8 +50,8 @@
 %global vk_ver 1.3.261
 
 Name:           flycast
-Version:        2.1
-Release:        7%{?dist}
+Version:        2.2
+Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -260,6 +260,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sun Oct 29 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.2-1.20231027gitc1f0a5a
+- 2.2
+
 * Tue Oct 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.1-7.20231010git417a42a
 - Enable LTO
 - Patch to change font scaling

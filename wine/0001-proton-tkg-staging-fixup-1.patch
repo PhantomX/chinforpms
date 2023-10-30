@@ -1,0 +1,60 @@
+From e7f566b9568f516f6bd92ed440f172f390a30eff Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 29 Oct 2023 22:20:43 -0300
+Subject: [PATCH] proton-tkg-staging fixup 1
+
+---
+ dlls/wbemprox/builtin.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/dlls/wbemprox/builtin.c b/dlls/wbemprox/builtin.c
+index fe496bd..668313a 100644
+--- a/dlls/wbemprox/builtin.c
++++ b/dlls/wbemprox/builtin.c
+@@ -1346,7 +1346,7 @@ static UINT16 get_bios_smbiosminorversion( const char *buf, UINT len )
+ }
+ static WCHAR *get_bios_manufacturer( const char *buf, UINT len )
+ {
+-    WCHAR *ret = get_smbios_string( SMBIOS_TYPE_BIOS, offsetof(struct smbios_bios, vendor), buf, len );
++    WCHAR *ret = get_bios_string( 1, buf, len );
+     if (!ret) return wcsdup( L"The Wine Project" );
+     return ret;
+ }
+@@ -1392,7 +1392,7 @@ static WCHAR *get_bios_releasedate( const char *buf, UINT len )
+ 
+ static WCHAR *get_bios_smbiosbiosversion( const char *buf, UINT len )
+ {
+-    WCHAR *ret = get_smbios_string( SMBIOS_TYPE_BIOS, offsetof(struct smbios_bios, version), buf, len );
++    WCHAR *ret = get_bios_string( 2, buf, len );
+     if (!ret) return wcsdup( L"Wine" );
+     return ret;
+ }
+@@ -1650,14 +1650,14 @@ static WCHAR *get_username(void)
+ 
+ static WCHAR *get_compsysproduct_name( const char *buf, UINT len )
+ {
+-    WCHAR *ret = get_smbios_string( SMBIOS_TYPE_SYSTEM, offsetof(struct smbios_system, product), buf, len );
++    WCHAR *ret = get_compsysproduct_string( 2, buf, len );
+     if (!ret) return wcsdup( L"Wine" );
+     return ret;
+ }
+ 
+ static WCHAR *get_compsysproduct_vendor( const char *buf, UINT len )
+ {
+-    WCHAR *ret = get_smbios_string( SMBIOS_TYPE_SYSTEM, offsetof(struct smbios_system, vendor), buf, len );
++    WCHAR *ret = get_compsysproduct_string( 1, buf, len );
+     if (!ret) return wcsdup( L"The Wine Project" );
+     return ret;
+ }
+@@ -4022,7 +4022,7 @@ static enum fill_status fill_sid( struct table *table, const struct expr *cond )
+ 
+ static WCHAR *get_systemenclosure_manufacturer( const char *buf, UINT len )
+ {
+-    WCHAR *ret = get_smbios_string( SMBIOS_TYPE_CHASSIS, offsetof(struct smbios_chassis, vendor), buf, len );
++    WCHAR *ret = get_systemenclosure_string( 1, buf, len );
+     if (!ret) return wcsdup( L"Wine" );
+     return ret;
+ }
+-- 
+2.41.0
+

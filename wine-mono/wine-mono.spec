@@ -9,7 +9,7 @@
 
 %bcond_without bin
 #Set to 1 to download sources from github
-%global with_gh 1
+%global with_gh 0
 
 %if %{with bin}
 %global debug_package %{nil}
@@ -22,7 +22,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        8.0.1
+Version:        8.1.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -177,6 +177,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Mon Oct 30 2023 Phantom X <megaphantomx at hotmail dot com> - 8.1.0-100
+- 8.1.0
+
 * Sat Sep 02 2023 Phantom X <megaphantomx at hotmail dot com> - 8.0.1-100
 - 8.0.1
 
