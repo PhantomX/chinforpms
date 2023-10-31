@@ -43,15 +43,6 @@ diff --git a/tools/perf/util/Build b/tools/perf/util/Build
 index bd18fe5f2719..865ce4f66756 100644
 --- a/tools/perf/util/Build
 +++ b/tools/perf/util/Build
-@@ -298,7 +298,7 @@ CFLAGS_bpf-filter-flex.o    += $(flex_flags)
- bison_flags := -DYYENABLE_NLS=0
- BISON_GE_35 := $(shell expr $(shell $(BISON) --version | grep bison | sed -e 's/.\+ \([0-9]\+\).\([0-9]\+\)/\1\2/g') \>\= 35)
- ifeq ($(BISON_GE_35),1)
--  bison_flags += -Wno-unused-parameter -Wno-nested-externs -Wno-implicit-function-declaration -Wno-switch-enum -Wno-unused-but-set-variable -Wno-unknown-warning-option
-+  bison_flags += -Wno-unused-parameter -Wno-nested-externs -Wno-switch-enum -Wno-unused-but-set-variable -Wno-unknown-warning-option
- else
-   bison_flags += -w
- endif
 @@ -357,3 +357,12 @@ $(OUTPUT)util/vsprintf.o: ../lib/vsprintf.c FORCE
  $(OUTPUT)util/list_sort.o: ../lib/list_sort.c FORCE
  	$(call rule_mkdir)
@@ -75,8 +66,8 @@ index 07d6c7926c13..935afafe22eb 100644
  #include "bpf-filter.h"
 +#include "bpf-filter-flex.h"
  
- static void perf_bpf_filter_error(struct list_head *expr __maybe_unused,
- 				  char const *msg)
+ int perf_bpf_filter_lex(void);
+ 
 diff --git a/tools/perf/util/expr.y b/tools/perf/util/expr.y
 index 250e444bf032..8879fa14960f 100644
 --- a/tools/perf/util/expr.y
@@ -100,8 +91,8 @@ index 4488443e506e..401d33714b23 100644
  #include "parse-events-bison.h"
 +#include "parse-events-flex.h"
  
+ int parse_events_lex(YYSTYPE * yylval_param, YYLTYPE * yylloc_param , void *yyscanner);
  void parse_events_error(YYLTYPE *loc, void *parse_state, void *scanner, char const *msg);
- 
 diff --git a/tools/perf/util/pmu.y b/tools/perf/util/pmu.y
 index dff4e892ac4d..9c67f3d05a80 100644
 --- a/tools/perf/util/pmu.y

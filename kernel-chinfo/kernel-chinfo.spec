@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.5.9
+%define specrpmversion 6.6.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,14 +209,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit ea8537f8a327422baca2c482a9609d7172467f64
-%global pf_first_commit 2dde18cd1d8fac735875f2e4987f11817cc0bc2c
-%global pfcoprhash c58da64bb658cc6242e49b20b2125549
+%global pfcommit 96127240b52c67d8efa95caac9460cd6fdd298ea
+%global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
+%global pfcoprhash fcc275b92061bfef2f8052eced1cab66
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,32 +238,38 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 51baea80c5fb8bb0ffe0c6720c7feb08d669042f
+%global opensuse_id 218b73fcd12a30a515ced5a7188e20039f135dc4
+%global tkg_id 94a2ac0bd873bfa09abef78980be90d47a4cf8ba
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
 %global __provides_exclude_from ^%{_libexecdir}/kselftests
 
-# The following build options are enabled by default, but may become disabled
-# by later architecture-specific checks. These can also be disabled by using
-# --without <opt> in the rpmbuild command, or by forcing these values to 0.
+# The following build options are (mostly) enabled by default, but may become
+# enabled/disabled by later architecture-specific checks.
+# Where disabled by default, they can be enabled by using --with <opt> in the
+# rpmbuild command, or by forcing these values to 1.
+# Where enabled by default, they can be disabled by using --without <opt> in
+# the rpmbuild command, or by forcing these values to 0.
 #
 # standard kernel
 %define with_up        %{?_without_up:0} %{?!_without_up:1}
+# build the base variants
+%define with_base      %{?_without_base:0} %{?!_without_base:1}
 # build also debug variants
 %define with_debug     %{?_without_debug:0} %{?!_without_debug:1}
 %define with_debug     0
 # kernel-zfcpdump (s390 specific kernel for zfcpdump)
 %define with_zfcpdump  %{?_without_zfcpdump:0} %{?!_without_zfcpdump:1}
 # kernel-16k (aarch64 kernel with 16K page_size)
-%define with_arm64_16k %{?_without_arm64_16k: 0} %{?!_without_arm64_16k: 1}
+%define with_arm64_16k %{?_with_arm64_16k: 0} %{?!_with_arm64_16k: 1}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k:0} %{?!_without_arm64_64k:1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
 %define with_realtime  %{?_with_realtime:1} %{?!_with_realtime:0}
 
 # Supported variants
-#            (base)    with_debug    with_gcov
+#            with_base with_debug    with_gcov
 # up         X         X             X
 # zfcpdump   X                       X
 # arm64_16k  X         X             X
@@ -364,9 +370,6 @@ Summary: The Linux kernel
 %define with_realtime 0
 %define with_arm64_64k 0
 %endif
-
-# No arm64-16k flavor for now
-%define with_arm64_16k 0
 
 %if %{with_verbose}
 %define make_opts V=1
@@ -525,6 +528,8 @@ Summary: The Linux kernel
 %endif
 %endif
 
+%define all_configs %{name}-%{specrpmversion}-*.config
+
 # don't build noarch kernels or headers (duh)
 %ifarch noarch
 %define with_up 0
@@ -534,7 +539,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
-%define all_arch_configs %{name}-%{specrpmversion}-*.config
 %endif
 
 # sparse blows up on ppc
@@ -563,13 +567,11 @@ Summary: The Linux kernel
 %ifarch i686
 %define asmarch x86
 %define hdrarch i386
-%define all_arch_configs %{name}-%{specrpmversion}-i?86*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
 %ifarch x86_64
 %define asmarch x86
-%define all_arch_configs %{name}-%{specrpmversion}-x86_64*.config
 %define kernel_image arch/x86/boot/bzImage
 %endif
 
@@ -580,19 +582,16 @@ Summary: The Linux kernel
 %define kernel_image vmlinux
 %define kernel_image_elf 1
 %define use_vdso 0
-%define all_arch_configs %{name}-%{specrpmversion}-ppc64le*.config
 %endif
 
 %ifarch s390x
 %define asmarch s390
 %define hdrarch s390
-%define all_arch_configs %{name}-%{specrpmversion}-s390x.config
 %define kernel_image arch/s390/boot/bzImage
 %define vmlinux_decompressor arch/s390/boot/vmlinux
 %endif
 
 %ifarch aarch64
-%define all_arch_configs %{name}-%{specrpmversion}-aarch64*.config
 %define asmarch arm64
 %define hdrarch arm64
 %define make_target vmlinuz.efi
@@ -651,22 +650,22 @@ Summary: The Linux kernel
 %endif
 
 # short-hand for "are we building base/non-debug variants of ...?"
-%if %{with_up} && !%{with_dbgonly}
+%if %{with_up} && %{with_base}
 %define with_up_base 1
 %else
 %define with_up_base 0
 %endif
-%if %{with_realtime} && !%{with_dbgonly}
+%if %{with_realtime} && %{with_base}
 %define with_realtime_base 1
 %else
 %define with_realtime_base 0
 %endif
-%if %{with_arm64_16k} && !%{with_dbgonly}
+%if %{with_arm64_16k} && %{with_base}
 %define with_arm64_16k_base 1
 %else
 %define with_arm64_16k_base 0
 %endif
-%if %{with_arm64_64k} && !%{with_dbgonly}
+%if %{with_arm64_64k} && %{with_base}
 %define with_arm64_64k_base 1
 %else
 %define with_arm64_64k_base 0
@@ -681,7 +680,7 @@ Summary: The Linux kernel
 
 
 Name: %{package_name}
-License: GPLv2 and Redistributable, no modification permitted
+License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
 URL: https://www.kernel.org/
 Version: %{specrpmversion}
 Release: %{pkg_release}
@@ -901,8 +900,6 @@ Source42: %{name}-aarch64-64k-rhel.config
 Source43: %{name}-aarch64-64k-debug-rhel.config
 %endif
 
-Source87: flavors
-
 %if 0%{?include_fedora}
 Source50: x509.genkey.fedora
 Source51: mod-extra.list.fedora
@@ -925,7 +922,14 @@ Source65: filter-s390x.sh.fedora
 Source66: filter-modules.sh.fedora
 %endif
 
-Source75: partial-kgcov-snip.config
+Source70: partial-kgcov-snip.config
+Source71: partial-kgcov-debug-snip.config
+Source72: partial-clang-snip.config
+Source73: partial-clang-debug-snip.config
+Source74: partial-clang_lto-x86_64-snip.config
+Source75: partial-clang_lto-x86_64-debug-snip.config
+Source76: partial-clang_lto-aarch64-snip.config
+Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
@@ -935,6 +939,8 @@ Source84: mod-internal.list
 Source85: mod-partner.list
 
 Source86: dracut-virt.conf
+
+Source87: flavors
 
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
@@ -953,10 +959,10 @@ Source213: Module.kabi_dup_x86_64
 
 
 %if %{with_kernel_abi_stablelists}
-Source300: kernel-abi-stablelists-%{kabiversion}.tar.bz2
+Source300: kernel-abi-stablelists-%{kabiversion}.tar.xz
 %endif
 %if %{with_kabidw_base}
-Source301: kernel-kabi-dw-%{kabiversion}.tar.bz2
+Source301: kernel-kabi-dw-%{kabiversion}.tar.xz
 %endif
 
 # RT specific virt module
@@ -994,6 +1000,7 @@ Source4002: gating.yaml
 
 %if 0%{?post_factum}
 Patch5000: %{extra_patch}
+Patch5003: https://codeberg.org/pf-kernel/linux/commit/477f95f7686e7f77d3ea600aabd43ade1041b196.patch#/pf-revert-477f95f.patch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1035,17 +1042,14 @@ Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%global tkg_id e6c1edf94343082d087835f9ab6474cbc9ecfeb9
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+%dnl Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 %dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%dnl Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 
-%if !0%{?post_factum}
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id bdef5292bba2493d46386840a8b5a824d534debc
 Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-5.17+.patch
-%endif
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
@@ -1140,7 +1144,6 @@ It provides the kernel source files common to all builds.
 
 %package selftests-internal
 Summary: Kernel samples and selftests
-License: GPLv2
 Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs
 %description selftests-internal
 Kernel sample programs and selftests.
@@ -1424,6 +1427,8 @@ Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
 Provides: kernel-%{?1:%{1}-}uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires(pre): %{kernel_prereq}\
+Requires(pre): systemd >= 254-1\
 %endif\
 %endif\
 %if %{with_gcov}\
@@ -1632,6 +1637,7 @@ cp -a %{SOURCE1} .
 
 %if 0%{?post_factum}
 ApplyPatch %{PATCH5000}
+ApplyPatch %{PATCH5003} -R
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -1662,9 +1668,7 @@ ApplyPatch %{PATCH2000}
 %dnl ApplyPatch %{PATCH2090}
 %dnl ApplyPatch %{PATCH2091}
 
-%if !0%{?post_factum}
 ApplyPatch %{PATCH6000}
-%endif
 
 ApplyPatch %{PATCH6010}
 
@@ -1720,35 +1724,65 @@ cat %{SOURCE3011} >> kernel-local
 %endif
 %endif
 
-%if 0%{?post_factum}
-cat %{SOURCE3013} >> kernel-local
-%endif
+%dnl %if 0%{?post_factum}
+%dnl cat %{SOURCE3013} >> kernel-local
+%dnl %endif
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
 
+# kernel-local - rename and copy for partial snippet config process
+cp kernel-local partial-kernel-local-snip.config
+cp kernel-local partial-kernel-local-debug-snip.config
+rm -f kernel-local
+
 FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{specversion} SPECRPMVERSION=%{specrpmversion} ./generate_all_configs.sh %{debugbuildsenabled}
+
+# Collect custom defined config options
+PARTIAL_CONFIGS=""
+%if %{with_gcov}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE70} %{SOURCE71}"
+%endif
+%if %{with toolchain_clang}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE72} %{SOURCE73}"
+%endif
+%if %{with clang_lto}
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE74} %{SOURCE75} %{SOURCE76} %{SOURCE77}"
+%endif
+PARTIAL_CONFIGS="$PARTIAL_CONFIGS partial-kernel-local-snip.config partial-kernel-local-debug-snip.config"
+
+GetArch()
+{
+  case "$1" in
+  *aarch64*) echo "aarch64" ;;
+  *ppc64le*) echo "ppc64le" ;;
+  *s390x*) echo "s390x" ;;
+  *x86_64*) echo "x86_64" ;;
+  # no arch, apply everywhere
+  *) echo "" ;;
+  esac
+}
 
 # Merge in any user-provided local config option changes
 %ifnarch %nobuildarches
-for i in %{all_arch_configs}
+for i in %{all_configs}
 do
-  mv $i $i.tmp
-  ./merge.py kernel-local $i.tmp > $i
-%if %{with_gcov}
-  echo "Merging with gcov options"
-  cat %{SOURCE75}
-  mv $i $i.tmp
-  ./merge.py %{SOURCE75} $i.tmp > $i
-%endif
-  rm $i.tmp
-done
-%endif
+  kern_arch="$(GetArch $i)"
+  kern_debug="$(echo $i | grep -q debug && echo "debug" || echo "")"
 
-%if %{with clang_lto}
-for i in *aarch64*.config *x86_64*.config; do
-  sed -i 's/# CONFIG_LTO_CLANG_THIN is not set/CONFIG_LTO_CLANG_THIN=y/' $i
-  sed -i 's/CONFIG_LTO_NONE=y/# CONFIG_LTO_NONE is not set/' $i
+  for j in $PARTIAL_CONFIGS
+  do
+    part_arch="$(GetArch $j)"
+    part_debug="$(echo $j | grep -q debug && echo "debug" || echo "")"
+
+    # empty arch means apply to all arches
+    if [ "$part_arch" == "" -o "$part_arch" == "$kern_arch" ] && [ "$part_debug" == "$kern_debug" ]
+    then
+      mv $i $i.tmp
+      ./merge.py $j $i.tmp > $i
+    fi
+  done
+  rm -f $i.tmp
 done
 %endif
 
@@ -1978,9 +2012,9 @@ BuildKernel() {
     SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
-     %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-     %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
-     rm vmlinuz.tmp 
+    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
+    rm vmlinuz.tmp 
     %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
@@ -2107,10 +2141,10 @@ BuildKernel() {
     # Don't build kabi base for debug kernels
     if [ "$Variant" != "zfcpdump" -a "$Variant" != "debug" ]; then
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
-        tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
+        tar -xvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
 
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
-        tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+        tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
         echo "**** GENERATING DWARF-based kABI baseline dataset ****"
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
@@ -2126,10 +2160,10 @@ BuildKernel() {
 %if %{with_kabidwchk}
     if [ "$Variant" != "zfcpdump" ]; then
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf
-        tar xjvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
+        tar -xvf %{SOURCE301} -C $RPM_BUILD_ROOT/kabi-dwarf
         if [ -d "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" ]; then
             mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
-            tar xjvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
+            tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
             echo "**** GENERATING DWARF-based kABI dataset ****"
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
@@ -2687,33 +2721,16 @@ find Documentation -type d | xargs chmod u+w
 #
 # Don't sign modules for the zfcpdump variant as it is monolithic.
 
-# TODO - this needs to be fixed in same way as we have it in c9s
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
-    if [ "%{with_up_base}" -ne "0" ]; then \
-      %{modsign_cmd} certs/signing_key.pem.sign certs/signing_key.x509.sign $RPM_BUILD_ROOT/lib/modules/%{KVERREL}/ \
-    fi \
-    if [ "%{with_up}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+debug certs/signing_key.x509.sign+debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+debug/ \
-    fi \
-    if [ "%{with_realtime_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+rt certs/signing_key.x509.sign+rt $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt/ \
-    fi \
-    if [ "%{with_realtime}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+rt-debug certs/signing_key.x509.sign+rt-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+rt-debug/ \
-    fi \
-    if [ "%{with_arm64_16k_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+16k certs/signing_key.x509.sign+16k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k/ \
-    fi \
-    if [ "%{with_arm64_16k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+16k-debug certs/signing_key.x509.sign+16k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+16k-debug/ \
-    fi \
-    if [ "%{with_arm64_64k_base}" -ne "0" ]; then \
-       %{modsign_cmd} certs/signing_key.pem.sign+64k certs/signing_key.x509.sign+64k $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k/ \
-    fi \
-    if [ "%{with_arm64_64k}" -ne "0" ] && [ "%{with_debug}" -ne "0" ]; then \
-         %{modsign_cmd} certs/signing_key.pem.sign+64k-debug certs/signing_key.x509.sign+64k-debug $RPM_BUILD_ROOT/lib/modules/%{KVERREL}+64k-debug/ \
-    fi \
+    echo "Signing kernel modules ..." \
+    modules_dirs="$(shopt -s nullglob; echo $RPM_BUILD_ROOT/lib/modules/%{KVERREL}*)" \
+    for modules_dir in $modules_dirs; do \
+        variant_suffix="${modules_dir#$RPM_BUILD_ROOT/lib/modules/%{KVERREL}}" \
+        [ "$variant_suffix" == "+zfcpdump" ] && continue \
+        echo "Signing modules for %{KVERREL}${variant_suffix}" \
+        %{modsign_cmd} certs/signing_key.pem.sign${variant_suffix} certs/signing_key.x509.sign${variant_suffix} $modules_dir/ \
+    done \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
     echo "Compressing kernel modules ..." \
@@ -2821,7 +2838,7 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
 # install kabi releases directories
-tar xjvf %{SOURCE300} -C $INSTALL_KABI_PATH
+tar -xvf %{SOURCE300} -C $INSTALL_KABI_PATH
 # with_kernel_abi_stablelists
 %endif
 
@@ -3369,6 +3386,9 @@ fi\
 #
 #
 %changelog
+* Tue Oct 31 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.0-500.chinfo
+- 6.6.0 - pf1
+
 * Wed Oct 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.9-500.chinfo
 - 6.5.9 - pf6
 
@@ -3586,45 +3606,6 @@ fi\
 
 * Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500.chinfo
 - 6.0.0 - pf1
-
-* Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500.chinfo
-- 5.19.12 - pf6
-
-* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-500.chinfo
-- 5.19.11 - pf5
-
-* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.10-500.chinfo
-- 5.19.10 - pf5
-
-* Thu Sep 15 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.9-500.chinfo
-- 5.19.9 - pf5
-
-* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-500.chinfo
-- 5.19.8 - pf4
-
-* Mon Sep 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.7-500.chinfo
-- 5.19.7 - pf3
-
-* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.6-500.chinfo
-- 5.19.6 - pf3
-
-* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500.chinfo
-- 5.19.5 - pf3
-
-* Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500.chinfo
-- 5.19.4 - pf3
-
-* Tue Aug 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.3-500.chinfo
-- 5.19.3 - pf3
-
-* Wed Aug 17 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.2-500.chinfo
-- 5.19.2 - pf2
-
-* Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.1-500.chinfo
-- 5.19.1 - pf2
-
-* Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.0-500.chinfo
-- 5.19.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

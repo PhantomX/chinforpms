@@ -1,10 +1,6 @@
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
 
-# CONFIG_KERNEL_GZIP is not set
-# CONFIG_KERNEL_XZ is not set
-CONFIG_KERNEL_ZSTD=y
-
 CONFIG_ACPI_TABLE_UPGRADE=y
 
 CONFIG_DRM_AMDGPU_SI=y
