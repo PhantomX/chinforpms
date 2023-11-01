@@ -3,7 +3,7 @@
 
 Name:           gkrellm-cpupower
 Version:        0.1.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Gkrellm plugin for manipulating CPU frequency
 
 License:        GPL-2.0-only
@@ -52,6 +52,9 @@ install -pm0755 cpufreqnextgovernor %{buildroot}%{_sbindir}/
 %{gkplugindir}/cpupower.so
 
 %changelog
+* Tue Oct 31 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-4
+- kernel-tools libcpupower bump
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-3
 - Fix for package_note_file
 

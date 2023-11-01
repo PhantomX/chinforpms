@@ -9,7 +9,7 @@
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %global package_name kernel%{?variant}
-%define specrpmversion 6.5.9
+%define specrpmversion 6.6.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -124,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Tue Oct 31 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.0-500.chinfo
+- 6.6.0
+
 * Wed Oct 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.9-500.chinfo
 - 6.5.9
 
@@ -339,48 +342,3 @@ done
 
 * Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500.chinfo
 - 6.0.0
-
-* Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500.chinfo
-- 5.19.12
-
-* Mon Sep 26 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-501.chinfo
-- 5.19.11
-
-* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-500.chinfo
-- 5.19.11
-
-* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.10-500.chinfo
-- 5.19.10
-
-* Fri Sep 16 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.9-500.chinfo
-- 5.19.9
-
-* Sun Sep 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-501.chinfo
-- 5.19.8
-
-* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-500.chinfo
-- 5.19.8
-
-* Mon Sep 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.7-500.chinfo
-- 5.19.7
-
-* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.6-500.chinfo
-- 5.19.6
-
-* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500.chinfo
-- 5.19.5
-
-* Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500.chinfo
-- 5.19.4
-
-* Wed Aug 24 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.3-500.chinfo
-- 5.19.3
-
-* Wed Aug 17 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.2-500.chinfo
-- 5.19.2
-
-* Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.1-500.chinfo
-- 5.19.1
-
-* Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.0-500.chinfo
-- 5.19.0
