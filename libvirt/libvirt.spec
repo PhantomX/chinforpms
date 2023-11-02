@@ -95,6 +95,7 @@
 %define with_fuse             0
 %define with_sanlock          0
 %define with_numad            0
+%define with_nbdkit           0
 %define with_firewalld_zone   0
 %define with_netcf            0
 %define with_libssh2          0
@@ -174,6 +175,18 @@
     %endif
 %endif
 
+# We should only enable nbdkit support if the OS ships a SELinux policy that
+# allows libvirt to launch it. Right now that's not the case anywhere, but
+# things should be fine by the time Fedora 40 is released.
+#
+# TODO: add RHEL 9 once a minor release that contains the necessary SELinux
+#       bits exists (we only support the most recent minor release)
+%if %{with_qemu}
+    %if 0%{?fedora} >= 40
+        %define with_nbdkit 0%{!?_without_nbdkit:1}
+    %endif
+%endif
+
 %ifarch %{arches_dmidecode}
     %define with_dmidecode 0%{!?_without_dmidecode:1}
 %endif
@@ -228,7 +241,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.8.0
+Version: 9.9.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -317,6 +330,9 @@ BuildRequires: util-linux
 BuildRequires: libacl-devel
 # From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
+%endif
+# nbdkit support requires libnbd
+%if %{with_nbdkit}
 BuildRequires: libnbd-devel
 %endif
 # For LVM drivers
@@ -770,9 +786,11 @@ Requires: numad
 Recommends: passt
 Recommends: passt-selinux
 %endif
+%if %{with_nbdkit}
 Recommends: nbdkit
 Recommends: nbdkit-curl-plugin
 Recommends: nbdkit-ssh-plugin
+%endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
@@ -1079,10 +1097,8 @@ exit 1
 
 %if %{with_qemu}
     %define arg_qemu -Ddriver_qemu=enabled
-    %define arg_libnbd -Dlibnbd=enabled
 %else
     %define arg_qemu -Ddriver_qemu=disabled
-    %define arg_libnbd -Dlibnbd=disabled
 %endif
 
 %if %{with_openvz}
@@ -1157,6 +1173,12 @@ exit 1
     %define arg_numad -Dnumad=enabled
 %else
     %define arg_numad -Dnumad=disabled
+%endif
+
+%if %{with_nbdkit}
+    %define arg_nbdkit -Dnbdkit=enabled
+%else
+    %define arg_nbdkit -Dnbdkit=disabled
 %endif
 
 %if %{with_fuse}
@@ -1271,6 +1293,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dyajl=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
+           %{?arg_nbdkit} \
            %{?arg_libnbd} \
            -Dlibnl=enabled \
            -Daudit=enabled \
@@ -1328,14 +1351,14 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Ddriver_vmware=disabled \
   -Ddriver_vz=disabled \
   -Ddtrace=disabled \
-  -Dexpensive_tests=enabled \
+  -Dexpensive_tests=disabled \
   -Dfirewalld=disabled \
   -Dfirewalld_zone=disabled \
   -Dfuse=disabled \
   -Dglusterfs=disabled \
   -Dhost_validate=disabled \
   -Dlibiscsi=disabled \
-  -Dlibnbd=disabled \
+  -Dnbdkit=disabled \
   -Dlibnl=disabled \
   -Dlibpcap=disabled \
   -Dlibssh2=disabled \
@@ -2485,6 +2508,9 @@ exit 0
 
 
 %changelog
+* Wed Nov 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.9.0-100
+- 9.9.0
+
 * Mon Oct 02 2023 Phantom X <megaphantomx at hotmail dot com> - 9.8.0-100
 - 9.8.0
 

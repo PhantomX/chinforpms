@@ -9,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        23.2.2
+Version:        23.2.3
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -46,6 +46,16 @@ APP_PATH="%{_libdir}/%{name}"
 
 exec "${APP_PATH}/${APP_NAME}" "$@"
 EOF
+
+mkdir _jnacleanup
+%ifarch x86_64
+  mv plugins/com.sun.jna_*/com/sun/jna/linux-x86-64 _jnacleanup/
+%endif
+%ifarch aarch64
+  mv plugins/com.sun.jna_*/com/sun/jna/linux-aarch64 _jnacleanup/
+%endif
+rm -rf plugins/com.sun.jna_*/com/sun/jna/*/
+mv _jnacleanup/* plugins/com.sun.jna_*/com/sun/jna/
 
 
 %build
@@ -106,6 +116,9 @@ done
 
 
 %changelog
+* Wed Nov 01 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.3-1
+- 23.2.3
+
 * Sun Oct 15 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.2-1
 - 23.2.2
 
