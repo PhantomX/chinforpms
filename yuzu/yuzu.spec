@@ -50,11 +50,11 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 6d963fbe8d415399d65e94db7910bbd22fe3741c
+%global commit6 a609330e4c6374f741d3b369269f7848255e1954
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
-%global commit7 e12ef06218596b52d9b5d6e1639484866a8e7067
+%global commit7 10ef5735d842b31025f1257ae78899f50a40fb14
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
 %global srcname7 cpp-jwt
 
@@ -80,7 +80,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3945
+%global vc_version 3966
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
