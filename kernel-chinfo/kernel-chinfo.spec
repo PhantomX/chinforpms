@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.0
+%define specrpmversion 6.6.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,14 +209,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 96127240b52c67d8efa95caac9460cd6fdd298ea
+%global pfcommit cfbb79a8053b59d9f9cc7371e34d70f9c11fdf3f
 %global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
-%global pfcoprhash fcc275b92061bfef2f8052eced1cab66
+%global pfcoprhash 2605aae566ff20409901826a30460432
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -1001,6 +1001,7 @@ Source4002: gating.yaml
 %if 0%{?post_factum}
 Patch5000: %{extra_patch}
 Patch5003: https://codeberg.org/pf-kernel/linux/commit/477f95f7686e7f77d3ea600aabd43ade1041b196.patch#/pf-revert-477f95f.patch
+Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/84c68fe1f91beef8b25ca2202d3581260447b334.patch#/kernel-ark-revert-84c68fe.patch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1638,6 +1639,7 @@ cp -a %{SOURCE1} .
 %if 0%{?post_factum}
 ApplyPatch %{PATCH5000}
 ApplyPatch %{PATCH5003} -R
+ApplyPatch %{PATCH5004} -R
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -3386,6 +3388,9 @@ fi\
 #
 #
 %changelog
+* Wed Nov 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.1-500.chinfo
+- 6.6.1 - pf2
+
 * Tue Oct 31 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.0-500.chinfo
 - 6.6.0 - pf1
 

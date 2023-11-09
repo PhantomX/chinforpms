@@ -1,7 +1,7 @@
-From 53a215006cac2148a0e05b32949ca49f86381c0a Mon Sep 17 00:00:00 2001
+From 9a419038aaf3d3d8ccf0b8e450b8396e89801551 Mon Sep 17 00:00:00 2001
 From: Stenzek <stenzek@gmail.com>
 Date: Sat, 12 Aug 2023 14:35:37 +1000
-Subject: [PATCH 3/4] dep/libchdr: Add option to transfer file ownership
+Subject: [PATCH 3/5] dep/libchdr: Add option to transfer file ownership
 
 ---
  include/libchdr/chd.h | 1 +
@@ -21,7 +21,7 @@ index 33104d7..403a430 100644
  /* error types */
  enum _chd_error
 diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
-index 79661f9..61acd11 100644
+index 3065e4f..c8ad90c 100644
 --- a/src/libchdr_chd.c
 +++ b/src/libchdr_chd.c
 @@ -1528,7 +1528,13 @@ CHD_EXPORT chd_error chd_open_file(FILE *file, int mode, chd_file *parent, chd_f

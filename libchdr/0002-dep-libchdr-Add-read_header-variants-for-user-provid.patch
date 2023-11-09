@@ -1,7 +1,7 @@
-From 1053f090c2479c351d28b7c7d80dc5b3cf0709c6 Mon Sep 17 00:00:00 2001
+From c0c984aaa4ac18a571be26c233cdb9e562f47297 Mon Sep 17 00:00:00 2001
 From: Stenzek <stenzek@gmail.com>
 Date: Sat, 12 Aug 2023 14:00:33 +1000
-Subject: [PATCH 2/4] dep/libchdr: Add read_header variants for user-provided
+Subject: [PATCH 2/5] dep/libchdr: Add read_header variants for user-provided
  file
 
 ---
@@ -23,7 +23,7 @@ index e152cf0..33104d7 100644
  
  
 diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
-index 6d50884..79661f9 100644
+index 7b4a209..3065e4f 100644
 --- a/src/libchdr_chd.c
 +++ b/src/libchdr_chd.c
 @@ -2009,34 +2009,44 @@ CHD_EXPORT const chd_header *chd_get_header(chd_file *chd)

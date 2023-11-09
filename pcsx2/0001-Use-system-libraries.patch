@@ -1,19 +1,19 @@
-From 80d886f2322479bf5a9a9b1b28e7850e50e1c712 Mon Sep 17 00:00:00 2001
+From 361a74f4e3245e94dd2756c864e157b0e011de49 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 80 +++++++++++++++++++
+ cmake/SearchForStuff.cmake                    | 81 +++++++++++++++++++
  pcsx2/CMakeLists.txt                          | 12 ++-
  pcsx2/GS/MultiISA.cpp                         |  2 +-
  .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
  .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 6 files changed, 95 insertions(+), 7 deletions(-)
+ 6 files changed, 96 insertions(+), 7 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 9ea7af6..c2b3046 100644
+index df3c44e..b05b26e 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -114,32 +114,101 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
@@ -118,7 +118,7 @@ index 9ea7af6..c2b3046 100644
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
  
  if(USE_OPENGL)
-@@ -148,12 +216,24 @@ endif()
+@@ -148,12 +217,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -142,12 +142,12 @@ index 9ea7af6..c2b3046 100644
 +endif()
  
  # Find the Qt components that we need.
- find_package(Qt6 6.5.3 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
+ find_package(Qt6 6.6.0 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets Network LinguistTools REQUIRED)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index b782c09..69e4a08 100644
+index f5d3f93..2854025 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1124,7 +1124,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1129,7 +1129,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -155,7 +155,7 @@ index b782c09..69e4a08 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1181,13 +1180,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1186,13 +1185,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"

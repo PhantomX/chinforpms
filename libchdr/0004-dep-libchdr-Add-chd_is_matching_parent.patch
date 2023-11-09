@@ -1,7 +1,7 @@
-From f1f9a9a015c7c0c84ae70b91d2555b8c23508076 Mon Sep 17 00:00:00 2001
+From e7b52d641a90093cfe94c18fe818dc2a76767586 Mon Sep 17 00:00:00 2001
 From: Stenzek <stenzek@gmail.com>
 Date: Sat, 12 Aug 2023 14:40:19 +1000
-Subject: [PATCH 4/4] dep/libchdr: Add chd_is_matching_parent()
+Subject: [PATCH 4/5] dep/libchdr: Add chd_is_matching_parent()
 
 ---
  include/libchdr/chd.h |  2 ++
@@ -29,7 +29,7 @@ index 403a430..0beed49 100644
  
  
 diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
-index 61acd11..8c65d74 100644
+index c8ad90c..d95a65d 100644
 --- a/src/libchdr_chd.c
 +++ b/src/libchdr_chd.c
 @@ -2056,6 +2056,27 @@ CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header)

@@ -1,7 +1,7 @@
-From 15e5c1be0d107a80f1da9676dc0a73f75afe6b92 Mon Sep 17 00:00:00 2001
+From 29d3bc54266ce9b3aadb5c447d8f37617baea879 Mon Sep 17 00:00:00 2001
 From: Stenzek <stenzek@gmail.com>
 Date: Sat, 12 Aug 2023 13:47:08 +1000
-Subject: [PATCH 1/4] dep/libchdr: Re-add progress precaching
+Subject: [PATCH 1/5] dep/libchdr: Re-add progress precaching
 
 ---
  include/libchdr/chd.h |  1 +
@@ -21,7 +21,7 @@ index 160fcb7..e152cf0 100644
  /* close a CHD file */
  CHD_EXPORT void chd_close(chd_file *chd);
 diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
-index d2bf4d0..6d50884 100644
+index 0de1cdd..7b4a209 100644
 --- a/src/libchdr_chd.c
 +++ b/src/libchdr_chd.c
 @@ -42,6 +42,7 @@

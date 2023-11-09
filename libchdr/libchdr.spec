@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -30,6 +30,7 @@ Patch13:        0001-dep-libchdr-Re-add-progress-precaching.patch
 Patch14:        0002-dep-libchdr-Add-read_header-variants-for-user-provid.patch
 Patch15:        0003-dep-libchdr-Add-option-to-transfer-file-ownership.patch
 Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
+Patch17:        0005-dep-libchdr-Add-subtype-parsing-functions.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -90,6 +91,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Thu Nov 09 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2-12.20230918git9108f34
+- Duckstation patchset update
+
 * Sun Aug 20 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2-10.20230508git54bfb87
 - More patches pulled from Duckstation
 

@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/libsdl-org/SDL
 
 Name:           SDL2
-Version:        2.28.4
+Version:        2.28.5
 Release:        100%{?dist}
 Summary:        Cross-platform multimedia library
 
@@ -26,10 +26,6 @@ Patch0:         multilib.patch
 # Prefer Wayland by default
 Patch1:         SDL2-2.0.22-prefer-wayland.patch
 Patch2:         SDL2-2.0.3-cmake-joystick.patch
-Patch3:         %{vc_url}/commit/d5ba5bb05f60f922306265539ae264a9bad6c9a3.patch#/%{name}-gh-d5ba5bb.patch
-Patch4:         %{vc_url}/commit/36eb4845b52a8c0c63c2adb8fa3a2f7f8ba28dd1.patch#/%{name}-gh-36eb484.patch
-Patch5:         %{vc_url}/commit/1f7ec57d3b963931a3f2febf6061d22614f1660c.patch#/%{name}-gh-1f7ec57.patch
-Patch6:         %{vc_url}/commit/5be746acbcdb8fa8a3265dc78f0c2d1a7089857a.patch#/%{name}-gh-5be746a.patch
 
 BuildRequires:  git-core
 BuildRequires:  cmake
@@ -180,6 +176,9 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_includedir}/SDL2/SDL_revision.h
 %{_libdir}/cmake/SDL2/SDL2staticTargets*.cmake
 
 %changelog
+* Thu Nov 09 2023 Phantom X <megaphantomx at hotmail dot com> - 2.28.5-100
+- 2.28.5
+
 * Fri Oct 13 2023 Phantom X <megaphantomx at hotmail dot com> - 2.28.4-100
 - Fedora 39 backport
 

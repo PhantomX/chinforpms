@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5136
+Version:        1.7.5195
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -132,7 +132,7 @@ BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  cmake(ryml) >= 0.4.1
-BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Core) >= 6.6
 BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6GuiTools)
