@@ -1,0 +1,76 @@
+From 3c0f60b0069929887301fd1eb4737637c6666c4c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 9 Nov 2023 00:25:50 -0300
+Subject: [PATCH] Export subtype parsing functions
+
+---
+ include/libchdr/cdrom.h | 18 ++++++++++++++++--
+ src/libchdr_cdrom.c     |  4 ++--
+ src/link.T              |  2 +-
+ 3 files changed, 19 insertions(+), 5 deletions(-)
+
+diff --git a/include/libchdr/cdrom.h b/include/libchdr/cdrom.h
+index 0e97847..5534817 100644
+--- a/include/libchdr/cdrom.h
++++ b/include/libchdr/cdrom.h
+@@ -54,8 +54,22 @@ enum
+ 	CD_SUB_RAW,                 /* raw non-interleaved 96 bytes per sector */
+ };
+ 
+-const char* cdrom_get_subtype_string(uint32_t subtype);
+-bool cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint32_t* subsize);
++#ifdef _MSC_VER
++#ifdef CHD_DLL
++#ifdef CHD_DLL_EXPORTS
++#define CHD_EXPORT __declspec(dllexport)
++#else
++#define CHD_EXPORT __declspec(dllimport)
++#endif
++#else
++#define CHD_EXPORT
++#endif
++#else
++#define CHD_EXPORT __attribute__ ((visibility("default")))
++#endif
++
++CHD_EXPORT const char* cdrom_get_subtype_string(uint32_t subtype);
++CHD_EXPORT bool cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint32_t* subsize);
+ 
+ 
+ #define CD_FLAG_GDROM   0x00000001  /* disc is a GD-ROM, all tracks should be stored with GD-ROM metadata */
+diff --git a/src/libchdr_cdrom.c b/src/libchdr_cdrom.c
+index aa06b49..1f7f265 100644
+--- a/src/libchdr_cdrom.c
++++ b/src/libchdr_cdrom.c
+@@ -20,7 +20,7 @@
+ 
+ #include <libchdr/cdrom.h>
+ 
+-const char* cdrom_get_subtype_string(uint32_t subtype)
++CHD_EXPORT const char* cdrom_get_subtype_string(uint32_t subtype)
+ {
+ 	switch (subtype)
+ 	{
+@@ -30,7 +30,7 @@ const char* cdrom_get_subtype_string(uint32_t subtype)
+ 	}
+ }
+ 
+-bool cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint32_t* subsize)
++CHD_EXPORT bool cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint32_t* subsize)
+ {
+ 	// https://github.com/mamedev/mame/blob/d2d54fb8ed53a2e86d308067da8414f85b5929b0/src/lib/util/cdrom.cpp#L767
+   if (!strcmp(typestring, "RW"))
+diff --git a/src/link.T b/src/link.T
+index ea37716..6112c2d 100644
+--- a/src/link.T
++++ b/src/link.T
+@@ -1,5 +1,5 @@
+ {
+-   global: chd_*;
++   global: chd_*; cdrom_*;
+    local: *;
+ };
+ 
+-- 
+2.41.0
+

@@ -31,6 +31,7 @@ Patch14:        0002-dep-libchdr-Add-read_header-variants-for-user-provid.patch
 Patch15:        0003-dep-libchdr-Add-option-to-transfer-file-ownership.patch
 Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
 Patch17:        0005-dep-libchdr-Add-subtype-parsing-functions.patch
+Patch18:        0001-Export-subtype-parsing-functions.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc

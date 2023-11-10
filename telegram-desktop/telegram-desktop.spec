@@ -36,7 +36,7 @@
 %global kf5ver b797315
 
 Name:           telegram-desktop
-Version:        4.11.5
+Version:        4.11.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -343,7 +343,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/dbus-1/services/%{appname}.service
-%{_datadir}/icons/hicolor/*/apps/*.png
+%{_datadir}/icons/hicolor/*/apps/*.*
 %{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
 %{_metainfodir}/%{appname}.metainfo.xml
 %if %{with bin}
@@ -352,6 +352,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Nov 09 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.11.6-100
+- 4.11.6
+
 * Mon Nov 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.11.5-100
 - 4.11.5
 

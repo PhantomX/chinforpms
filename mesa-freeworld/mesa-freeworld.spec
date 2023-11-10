@@ -17,7 +17,7 @@
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231012
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -34,8 +34,8 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.1
-Release:        101%{?dist}
+Version:        23.3.0~rc3
+Release:        100%{?dist}
 
 Epoch:          100
 
@@ -49,11 +49,6 @@ Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
-
-# Fix LLVM 17 support
-Patch0:         %{vc_url}/-/merge_requests/25536.patch#/mesa-gl-mr25536.patch
-# Adapt Patch1 to work with 23.2 branch
-Patch1:         backport-25536.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
@@ -215,6 +210,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Nov 09 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.3.0~rc3-100
+- 23.3.0-rc3
+
 * Fri Sep 29 2023 Phantom X <megaphantomx at hotmail dot com> - 100:23.2.1-100
 - 23.2.1
 

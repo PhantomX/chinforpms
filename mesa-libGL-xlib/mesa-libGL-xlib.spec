@@ -9,7 +9,7 @@
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231012
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -23,8 +23,8 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.2.1
-Release:        2%{?dist}
+Version:        23.3.0~rc3
+Release:        1%{?dist}
 
 License:        MIT
 URL:            http://www.mesa3d.org
@@ -170,6 +170,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Thu Nov 09 2023 Phantom X <megaphantomx at hotmail dot com> - 23.3.0~rc3-1
+- 23.3.0-rc3
+
 * Fri Sep 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.2.1-1
 - 23.2.1
 
