@@ -13,13 +13,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6d4e462e425f20109fb066903ef3b68d83f12b03
+%global commit ceeda057981c4627470a4454603fbc3da19b74f8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231019
+%global date 20231111
 %bcond_without snapshot
 
 # Enable system boost
 %bcond_without boost
+# Enable system cryptopp
+%bcond_without cryptopp
 # Enable system dynarmic
 %bcond_without dynarmic
 # Enable system fmt
@@ -96,6 +98,10 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Vulkan-Headers
 
+%global commit18 09b3c850c606e7fedd06597223e54344e8d23c8c
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
+%global srcname18 faad2
+
 %global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
 
 %global cpphttplibver b251668
@@ -110,7 +116,7 @@
 
 Name:           citra
 Version:        0
-Release:        51%{?dist}
+Release:        52%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -121,14 +127,16 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+%if %{without cryptopp}
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+%endif
 %if %{without dynarmic}
 Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 %if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
-Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %if %{without soundtouch}
 Source7:        %{vc_url}/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -147,6 +155,7 @@ Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive
 %if %{without vulkan}
 Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
+Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
 Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
@@ -170,6 +179,11 @@ BuildRequires:  pkgconfig(libbacktrace)
 %else
 Provides:       bundled(boost) = 0~git%{shortcommit11}
 %endif
+%if %{with cryptopp}
+BuildRequires:  pkgconfig(libcryptopp)
+%else
+Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
+%endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
 BuildRequires:  cmake(dynarmic) >= 6.4.6
@@ -177,7 +191,6 @@ BuildRequires:  cmake(dynarmic) >= 6.4.6
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
-BuildRequires:  pkgconfig(fdk-aac)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
@@ -203,7 +216,7 @@ BuildRequires:  cmake(OpenAL) >= 1.23.1
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
 BuildRequires:  cmake(Qt6Concurrent)
-BuildRequires:  cmake(Qt6Core) >= 6.5.0
+BuildRequires:  cmake(Qt6Core) >= 6.6.0
 BuildRequires:  cmake(Qt6DBus)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
@@ -228,7 +241,6 @@ Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(cpp-httplib) = 0~git%{?cpphttplibver}
-Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
@@ -238,6 +250,7 @@ Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 Provides:       bundled(vma) = ~git%{?shortcommit16}
+Provides:       bundled(faad2) = ~git%{?shortcommit18}
 
 
 %description
@@ -260,9 +273,13 @@ This is the Qt frontend.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
+%if %{with cryptopp}
+sed -e 's|crypto++|cryptopp|' -i externals/cmake-modules/Findcryptopp.cmake
+%else
 mkdir -p externals/cryptopp
 tar -xf %{S:2} -C externals/cryptopp --strip-components 1
 tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
+%endif
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
@@ -291,6 +308,7 @@ tar -xf %{S:16} -C externals/vma --strip-components 1
 tar -xf %{S:17} -C externals/Vulkan-Headers/ --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
+tar -xf %{S:18} -C externals/faad2/faad2 --strip-components 1
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -299,11 +317,15 @@ pushd externals
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
-%dnl cp -p cryptopp/cryptopp/License.txt LICENSE.cpp-jwt
-%dnl cp -p dds-ktx/LICENSE LICENSE.dds-ktx
+%if %{without cryptopp}
+sed 's/\r//' -i cryptopp/cryptopp/License.txt
+cp -p cryptopp/cryptopp/License.txt LICENSE.cryptopp
+%endif
+cp -p dds-ktx/LICENSE LICENSE.dds-ktx
 %if %{without dynarmic}
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
+cp -p faad2/faad2/COPYING COPYING.faad2
 %if %{without fmt}
 cp -p fmt/LICENSE.rst LICENSE.fmt.rst
 %endif
@@ -340,6 +362,8 @@ sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
 sed -e '/find_package/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
+
+sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindOpenAL.cmake
 
 %if %{with snapshot}
   sed \
@@ -383,19 +407,25 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_FMT:BOOL=ON \
 %endif
   -DUSE_SYSTEM_CPP_JWT:BOOL=OFF \
+%if %{with cryptopp}
+  -DUSE_SYSTEM_CRYPTOPP:BOOL=ON \
+%endif
+  -DUSE_SYSTEM_CUBEB:BOOL=ON \
+  -DUSE_SYSTEM_ENET:BOOL=ON \
   -DUSE_SYSTEM_INIH:BOOL=ON \
   -DUSE_SYSTEM_JSON:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
+  -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
   -DUSE_SYSTEM_XBYAK:BOOL=ON \
+  -DUSE_SYSTEM_ZSTD:BOOL=ON \
 %if %{with boost}
   -DUSE_SYSTEM_BOOST:BOOL=ON \
 %endif
 %if %{with soundtouch}
   -DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON \
 %endif
-  -DUSE_SYSTEM_FDK_AAC_HEADERS:BOOL=ON \
   -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
   -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
@@ -448,6 +478,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 0-52.20231111gitceeda05
+- System cryptopp
+- Bundled faad2 (no SBR)
+
 * Sat Sep 23 2023 Phantom X <megaphantomx at hotmail dot com> - 0-50.20230923gitd0b8974
 - System SoundTouch support
 

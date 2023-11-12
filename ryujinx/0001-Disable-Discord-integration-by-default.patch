@@ -1,4 +1,4 @@
-From 64987aa937022668b74229fdf043583fd4143df7 Mon Sep 17 00:00:00 2001
+From 25482145159994d8251da163fa5dcfa9df20d876 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 3 May 2023 19:25:02 -0300
 Subject: [PATCH] Disable Discord integration by default
@@ -8,10 +8,10 @@ Subject: [PATCH] Disable Discord integration by default
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs b/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
-index 7ab20e3..7c1efe7 100644
+index c79fa56..3bc8417 100644
 --- a/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
 +++ b/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
-@@ -764,7 +764,7 @@ namespace Ryujinx.Ui.Common.Configuration
+@@ -781,7 +781,7 @@ namespace Ryujinx.Ui.Common.Configuration
              System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;
              System.EnableDockedMode.Value = true;
@@ -19,7 +19,7 @@ index 7ab20e3..7c1efe7 100644
 +            EnableDiscordIntegration.Value = false;
              CheckUpdatesOnStart.Value = true;
              ShowConfirmExit.Value = true;
-             HideCursor.Value = HideCursorMode.Never;
+             HideCursor.Value = HideCursorMode.OnIdle;
 -- 
 2.41.0
 

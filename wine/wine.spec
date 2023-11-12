@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.19
+%global wine_stagingver 8.20
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 49b477df289c31576a69715e4a0aab4f0ca72074
+%global tkg_id 9828c75b0589a2a851848dc5bfbe785272ae8b70
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.19
+Version:        8.20
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -256,8 +256,6 @@ Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padde
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1041:       0001-proton-tkg-staging-fixup-1.patch
-Patch1042:       0001-proton-tkg-staging-fixup-2.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -891,6 +889,12 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 
 %{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0008-winegstreamer-Allow-videoconvert-to-parallelize.patch
 
+sed \
+  -e 's|^C_SRCS|SOURCES|g' \
+  -i dlls/d3d12core/Makefile.in dlls/dxgkrnl.sys/Makefile.in \
+  dlls/dxgmms1.sys/Makefile.in dlls/win32k.sys/Makefile.in \
+  dlls/windows.networking.connectivity/Makefile.in
+
 %patch -P 1020 -p1
 %patch -P 1021 -p1
 %patch -P 1022 -p1
@@ -910,9 +914,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%patch -P 1041 -p1
 %patch -P 1027 -p1
-%patch -P 1042 -p1
 %patch -P 702 -p1 -R
 %patch -P 1028 -p1
 %patch -P 1029 -p1
@@ -1787,6 +1789,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mssip32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msrle32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mstask.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msttsengine.%{winedll}
 %{_libdir}/wine/%{winesodir}/msv1_0.so
 %{_libdir}/wine/%{winedlldir}/msv1_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvcirt.%{winedll}
@@ -2533,6 +2536,9 @@ fi
 
 
 %changelog
+* Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.20-100
+- 8.20
+
 * Mon Oct 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.19-100
 - 8.19
 
