@@ -1,0 +1,138 @@
+From 73e135ee7d33ec039ea24f08ab6f14f85a1895d5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 12 Nov 2023 10:41:37 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ external/CMakeLists.txt | 52 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 51 insertions(+), 1 deletion(-)
+
+diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
+index 36717a5..7900f35 100644
+--- a/external/CMakeLists.txt
++++ b/external/CMakeLists.txt
+@@ -26,7 +26,7 @@ function(check_submodules_present)
+ 	endforeach()
+ endfunction()
+ 
+-check_submodules_present()
++#check_submodules_present()
+ 
+ # Set folder for external projects (for project tree in IDE)
+ set(CMAKE_FOLDER externals)
+@@ -51,14 +51,28 @@ endif()
+ add_library(printf INTERFACE)
+ target_include_directories(printf INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/printf")
+ 
++find_package(fmt 10.1)
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++  add_library(fmt INTERFACE)
++  target_link_libraries(fmt INTERFACE fmt::fmt)
++else()
+ set(FMT_INSTALL ON)
+ add_subdirectory(fmt)
+ set(fmt_DIR fmt)
++endif()
+ 
++find_package(spdlog)
++if(spdlog_FOUND)
++  message(STATUS "Using the system spdlog")
++  add_library(spdlog INTERFACE)
++  target_link_libraries(spdlog INTERFACE spdlog::spdlog)
++else()
+ set(SPDLOG_WCHAR_FILENAMES ON CACHE BOOL "")
+ set(SPDLOG_NO_THREAD_ID ON CACHE BOOL "")
+ set(SPDLOG_FMT_EXTERNAL ON CACHE BOOL "")
+ add_subdirectory(spdlog EXCLUDE_FROM_ALL)
++endif()
+ 
+ add_library(stb INTERFACE)
+ target_include_directories(stb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb")
+@@ -100,9 +114,20 @@ endif()
+ 
+ find_package(SDL2 REQUIRED)
+ add_library(sdl2 INTERFACE)
++if(SDL2_FOUND)
++  message(STATUS "Using the system sdl2")
++  target_link_libraries(sdl2 INTERFACE SDL2::SDL2)
++else()
+ target_include_directories(sdl2 INTERFACE "${SDL2_INCLUDE_DIR}")
+ target_link_libraries(sdl2 INTERFACE "${SDL2_LIBRARY}")
++endif()
+ 
++find_package(cubeb)
++if(cubeb_FOUND)
++  message(STATUS "Using the system cubeb")
++  add_library(cubeb INTERFACE)
++  target_link_libraries(cubeb INTERFACE cubeb::cubeb)
++else()
+ # Cubeb setup, from https://github.com/RPCS3/rpcs3/blob/master/3rdparty/cubeb/CMakeLists.txt
+ set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Don't build shared libs")
+ set(BUILD_TESTS FALSE CACHE BOOL "Don't build tests")
+@@ -124,6 +149,7 @@ elseif (ARCHITECTURE STREQUAL "x86_64")
+ 		_USE_SSE2
+ 	)
+ endif ()
++endif()
+ 
+ if(WIN32)
+ 	add_library(winsock INTERFACE)
+@@ -228,16 +254,31 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
+ target_compile_definitions(dlmalloc PUBLIC ONLY_MSPACES=1)
+ target_compile_definitions(dlmalloc PUBLIC USE_LOCK=0)
+ 
++find_package(pugixml)
++if(pugixml_FOUND)
++  message(STATUS "Using the system pugixml")
++  add_library(pugixml-shared INTERFACE)
++  target_link_libraries(pugixml-shared INTERFACE pugixml)
++  add_library(pugixml::pugixml ALIAS pugixml-shared)
++else()
+ add_subdirectory(pugixml)
++endif()
+ 
+ add_library(CLI11 INTERFACE)
+ target_include_directories(CLI11 INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/cli11")
+ 
++find_package(VulkanHeaders)
++if(VulkanHeaders_FOUND)
++  message(STATUS "Using the system vulkan-headers")
++  add_library(vulkan INTERFACE)
++  target_link_libraries(vulkan INTERFACE Vulkan::Headers)
++else()
+ add_library(vulkan INTERFACE)
+ target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include")
+ if(APPLE)
+ 	target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/MoltenVK")
+ endif()
++endif()
+ 
+ add_library(vma INTERFACE)
+ target_include_directories(vma INTERFACE
+@@ -323,6 +364,14 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
+ 
+ target_include_directories(libatrac9 PUBLIC LibAtrac9/C/src)
+ 
++find_package(PkgConfig REQUIRED)
++pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
++if(xxhash_FOUND)
++  message(STATUS "Using the system xxhash")
++  add_library(xxhash INTERFACE)
++  target_link_libraries(xxhash INTERFACE PkgConfig::xxhash)
++  add_library(xxHash::xxhash ALIAS xxhash)
++else()
+ option(BUILD_SHARED_LIBS "Build shared library" OFF)
+ option(XXHASH_BUILD_XXHSUM "Build the xxhsum binary" OFF)
+ option(XXH_X86DISPATCH_ALLOW_AVX "Allow building XXH3 with AVX even if it crashes on SSE2-Only CPUs" OFF)
+@@ -331,6 +380,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+ if(XXH_X86DISPATCH_ALLOW_AVX)
+ 	target_compile_definitions(xxhash PRIVATE XXH_X86DISPATCH_ALLOW_AVX)
+ endif()
++endif()
+ 
+ # Tracy
+ option(TRACY_ENABLE_ON_CORE_COMPONENTS
+-- 
+2.41.0
+

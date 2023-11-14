@@ -1,0 +1,29 @@
+From 001232d9539b45e4f2652ac49a99509b6f905f6f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 12 Nov 2023 20:04:07 -0300
+Subject: [PATCH] Fix update settings
+
+---
+ vita3k/gui/src/settings_dialog.cpp    | 2 ++
+ 1 files changed, 2 insertions(+)
+
+diff --git a/vita3k/gui/src/settings_dialog.cpp b/vita3k/gui/src/settings_dialog.cpp
+index be69a7c..cdf72d0 100644
+--- a/vita3k/gui/src/settings_dialog.cpp
++++ b/vita3k/gui/src/settings_dialog.cpp
+@@ -830,10 +830,12 @@ void draw_settings_dialog(GuiState &gui, EmuEnvState &emuenv) {
+         if (ImGui::IsItemHovered())
+             ImGui::SetTooltip("Check the box to log issues related to the app compatibility database.");
+         ImGui::Spacing();
++#ifdef USE_VITA3K_UPDATE
+         ImGui::Checkbox("Check for updates", &emuenv.cfg.check_for_updates);
+         if (ImGui::IsItemHovered())
+             ImGui::SetTooltip("Automatically check for updates at startup.");
+         ImGui::Separator();
++#endif
+         const auto perfomance_overley_size = ImGui::CalcTextSize("Performance overlay").x;
+         ImGui::SetCursorPosX((ImGui::GetWindowWidth() / 2.f) - (perfomance_overley_size / 2.f));
+         ImGui::TextColored(GUI_COLOR_TEXT_TITLE, "Performance Overlay");
+-- 
+2.41.0
+

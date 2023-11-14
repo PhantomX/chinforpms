@@ -242,7 +242,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 9.9.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
 
@@ -253,6 +253,7 @@ Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source1: libvirt-sysusers.conf
 Source2: libvirt-qemu-sysusers.conf
 
+Patch0:  https://gitlab.com/libvirt/libvirt/-/commit/4f4a8dce944e05311565b690a84f6bb1ef67c086.patch#/%{name}-git-4f4a8dc.patch
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -2508,6 +2509,9 @@ exit 0
 
 
 %changelog
+* Tue Nov 14 2023 Phantom X <megaphantomx at hotmail dot com> - 9.9.0-101
+- Fix bzrh##2247754
+
 * Wed Nov 01 2023 Phantom X <megaphantomx at hotmail dot com> - 9.9.0-100
 - 9.9.0
 

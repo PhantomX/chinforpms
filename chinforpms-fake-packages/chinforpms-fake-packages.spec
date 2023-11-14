@@ -24,20 +24,6 @@ Obsoletes:      GConf2 < %{fakeepoch}:%{fakever}-%{release}
 Provides:       PackageKit-session-service = %{fakeepoch}:%{fakever}-%{release}
 Obsoletes:      PackageKit-session-service < %{fakeepoch}:%{fakever}-%{release}
 
-Provides:       xdg-desktop-portal = %{fakeepoch}:%{fakever}-%{release}
-Obsoletes:      xdg-desktop-portal < %{fakeepoch}:%{fakever}-%{release}
-Provides:       xdg-desktop-portal-devel = %{fakeepoch}:%{fakever}-%{release}
-Obsoletes:      xdg-desktop-portal-devel < %{fakeepoch}:%{fakever}-%{release}
-
-Provides:       xdg-desktop-portal-gtk = %{fakeepoch}:%{fakever}-%{release}
-Obsoletes:      xdg-desktop-portal-gtk < %{fakeepoch}:%{fakever}-%{release}
-
-Provides:       xdg-desktop-portal-gnome = %{fakeepoch}:%{fakever}-%{release}
-Obsoletes:      xdg-desktop-portal-gnome < %{fakeepoch}:%{fakever}-%{release}
-
-Provides:       xdg-desktop-portal-kde = %{fakeepoch}:%{fakever}-%{release}
-Obsoletes:      xdg-desktop-portal-kde < %{fakeepoch}:%{fakever}-%{release}
-
 %description
 This package exists to obsolete and provides other packages that chinforpms don't
 like, but are dependencies to good ones.
@@ -62,18 +48,6 @@ URL: https://github.com/scop/bash-completion
 Version: %{fakever}
 EOF
 
-cat > xdg-desktop-portal.pc<<'EOF'
-prefix=/usr
-datarootdir=${prefix}/share
-datadir=/usr/share
-
-interfaces_dir=${datadir}/dbus-1/interfaces/
-
-Name: xdg-desktop-portal
-Description: Desktop integration portal
-Version: %{fakever}
-EOF
-
 cat > gconftool-2 <<'EOF'
 #!/bin/sh
 # %{name} fake executable
@@ -86,7 +60,7 @@ EOF
 
 mkdir -p %{buildroot}%{_datadir}/pkgconfig
 install -pm0644 \
-  bash-completion.pc xdg-desktop-portal.pc \
+  bash-completion.pc \
   %{buildroot}%{_datadir}/pkgconfig/
 
 mkdir -p %{buildroot}%{_bindir}
