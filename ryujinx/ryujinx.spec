@@ -22,24 +22,24 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 7.0.400
-%global local_dotnet_url_id dbfe6cc7-dd82-4cec-b267-31ed988b1652/c60ab4793c3714be878abcb9aa834b63
+%global local_dotnet_ver 8.0.100
+%global local_dotnet_url_id 5226a5fa-8c0b-474f-b79a-8984ad7c5beb/3113ccbf789c9fd29972835f0f334b7a
 
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.2.1.24
 %global gtksharp_dependencies_ver 1.1.1
 %global libhac_ver 0.19.0
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 7.0.10
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 8.0.0
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_ver 4.7.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 7.0.0
+%global microsoft_identitymodel_ver 7.0.3
 %global microsoft_io_recyclablememorystream_ver 2.3.2
-%global microsoft_netcore_app_runtime_linux_x64_ver 7.0.10
+%global microsoft_netcore_app_runtime_linux_x64_ver 8.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.0.0
@@ -48,7 +48,7 @@
 %global microsoft_win32_primitives_ver 4.0.1
 %global microsoft_win32_primitives_ver2 4.3.0
 %global microsoft_win32_registry_ver 4.5.0
-%global microsoft_win32_systemevents_ver 7.0.0
+%global microsoft_win32_systemevents_ver 8.0.0
 %global msgpack_cli_ver 1.0.1
 %global netcoreserver_ver 7.0.0
 %global netstandard_library_ver 1.6.0
@@ -118,7 +118,7 @@
 %global system_buffers_ver2 4.3.0
 %global system_buffers_ver3 4.5.1
 %global system_codedom_ver 4.4.0
-%global system_codedom_ver2 7.0.0
+%global system_codedom_ver2 8.0.0
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
@@ -130,22 +130,22 @@
 %global system_diagnostics_tools_ver 4.0.1
 %global system_diagnostics_tracing_ver 4.1.0
 %global system_diagnostics_tracing_ver2 4.3.0
-%global system_drawing_common_ver 7.0.0
+%global system_drawing_common_ver 8.0.0
 %global system_globalization_ver 4.0.11
 %global system_globalization_ver2 4.3.0
 %global system_globalization_calendars_ver 4.0.1
 %global system_globalization_extensions_ver 4.0.1
-%global system_identitymodel_tokens_jwt_ver 7.0.0
+%global system_identitymodel_tokens_jwt_ver 7.0.3
 %global system_io_ver 4.1.0
 %global system_io_ver2 4.3.0
 %global system_io_compression_ver 4.1.0
 %global system_io_compression_zipfile_ver 4.0.1
 %global system_io_filesystem_ver 4.0.1
 %global system_io_filesystem_primitives_ver 4.0.1
-%global system_io_hashing 7.0.0
+%global system_io_hashing 8.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 7.0.2
+%global system_management_ver 8.0.0
 %global system_memory_ver 4.5.5
 %global system_net_http_ver 4.1.0
 %global system_net_nameresolution_ver 4.3.0
@@ -222,7 +222,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1075
+Version:        1.1.1085
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -469,7 +469,7 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  librsvg2-tools
 %if %{without bin}
 %if %{without local_dotnet}
-BuildRequires:  dotnet >= 7.0.100
+BuildRequires:  dotnet >= 8.0.100
 %endif
 BuildRequires:  libicu-devel
 BuildRequires:  pkgconfig(zlib)

@@ -1,0 +1,57 @@
+From f21606c102368ad7a6e8bcab5a0c65dcddbbf9e5 Mon Sep 17 00:00:00 2001
+From: Lumir Balhar <lbalhar@redhat.com>
+Date: Thu, 19 Jan 2023 17:35:02 +0100
+Subject: [PATCH] system certs
+
+---
+ requests/certs.py | 7 ++++++-
+ setup.cfg         | 1 -
+ setup.py          | 1 -
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/requests/certs.py b/requests/certs.py
+index 1f30a45..9224f62 100644
+--- a/requests/certs.py
++++ b/requests/certs.py
+@@ -9,8 +9,13 @@ only one — the one from the certifi package.
+ If you are packaging Requests, e.g., for a Linux distribution or a managed
+ environment, you can change the definition of where() to return a separately
+ packaged CA bundle.
++
++This Fedora-patched package returns "/etc/pki/tls/certs/ca-bundle.crt" provided
++by the ca-certificates RPM package.
+ """
+-from certifi import where
++def where():
++    """Return the absolute path to the system CA bundle."""
++    return '/etc/pki/tls/certs/ca-bundle.crt'
+ 
+ if __name__ == "__main__":
+     print(where())
+diff --git a/setup.cfg b/setup.cfg
+index bf21c81..906c0f1 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -4,7 +4,6 @@ provides-extra =
+     socks
+     use_chardet_on_py3
+ requires-dist =
+-    certifi>=2017.4.17
+     charset_normalizer>=2,<4
+     idna>=2.5,<4
+     urllib3>=1.21.1,<1.27
+diff --git a/setup.py b/setup.py
+index 092b40d..c6c0ad5 100755
+--- a/setup.py
++++ b/setup.py
+@@ -62,7 +62,6 @@ requires = [
+     "charset_normalizer>=2,<4",
+     "idna>=2.5,<4",
+     "urllib3>=1.21.1,<3",
+-    "certifi>=2017.4.17",
+ ]
+ test_requirements = [
+     "pytest-httpbin==2.0.0",
+-- 
+2.39.0
+

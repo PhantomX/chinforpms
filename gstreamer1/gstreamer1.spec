@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.22.6
+Version:        1.22.7
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -210,7 +210,7 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 %{_datadir}/aclocal/gst-element-check-%{majorminor}.m4
 
-%dir %{_datadir}/gstreamer-%{majorminor}/gdb/
+%dir %{_datadir}/gstreamer-%{majorminor}/gdb
 %{_datadir}/gstreamer-%{majorminor}/gdb/
 %{_datadir}/gdb/auto-load/
 
@@ -229,6 +229,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Wed Nov 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.7-100
+- 1.22.7
+
 * Fri Sep 22 2023 Phantom X <megaphantomx at hotmail dot com> - 1.22.6-100
 - 1.22.6
 
