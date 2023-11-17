@@ -17,7 +17,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 43f8c2a2a0750561786f17dd35af8755716705aa
+%global commit11 8a717b1b303be636213a3e6612b059c1c0e98102
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 rcheevos
 
@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5195
+Version:        1.7.5209
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
