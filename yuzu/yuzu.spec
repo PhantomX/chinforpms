@@ -46,6 +46,10 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
+%global commit4 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
+%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
+%global srcname4 simpleini
+
 %global commit5 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
@@ -80,7 +84,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3971
+%global vc_version 3981
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -126,6 +130,7 @@ Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{sr
 %endif
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{ext_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -139,7 +144,6 @@ Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{src
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-Revert-CMakeLists-Require-a-minimum-of-boost-1.79.0.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
@@ -152,15 +156,15 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
-BuildRequires:  llvm
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
+BuildRequires:  llvm-devel >= 17.0.2
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 %if %{with boost}
-BuildRequires:  boost-devel >= 1.76.0
+BuildRequires:  boost-devel >= 1.79.0
 %endif
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
@@ -175,7 +179,6 @@ Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 9
-BuildRequires:  pkgconfig(INIReader)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavutil)
@@ -217,7 +220,8 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile)
 Provides:       bundled(vma) = ~git%{?shortcommit2}
-Provides:       bundled(sirit) = 0~git%{?shortcommit4}
+Provides:       bundled(sirit) = 0~git%{?shortcommit3}
+Provides:       bundled(simpleini) = 0~git%{?shortcommit4}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
@@ -265,6 +269,8 @@ sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 mkdir -p externals/VulkanMemoryAllocator
 tar -xf %{S:2} -C externals/VulkanMemoryAllocator --strip-components 1
 tar -xf %{S:3} -C externals/sirit --strip-components 1
+mkdir -p externals/simpleini
+tar -xf %{S:4} -C externals/simpleini --strip-components 1
 tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
 tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
@@ -291,6 +297,7 @@ cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
+cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p sirit/LICENSE.txt LICENSE.sirit
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 popd

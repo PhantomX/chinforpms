@@ -1,4 +1,4 @@
-From 490c96ea91edd7f4cb822c03939523e32bb3dd7c Mon Sep 17 00:00:00 2001
+From 3d3d94245a66c9c762de5ba72f49d8c60f71853b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -14,7 +14,7 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9849b72..de1a350 100755
+index e5cac8f..4a48429 100755
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -26,11 +26,11 @@ index 9849b72..de1a350 100755
  include(CTest)
  
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index d4c52df..185e5fe 100755
+index 515e3f2..fddf07f 100755
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -40,6 +40,14 @@ if (NOT TARGET inih::INIReader)
- endif()
+@@ -35,6 +35,14 @@ endif()
+ add_subdirectory(glad)
  
  # mbedtls
 +find_package(MBEDTLS)
@@ -44,7 +44,7 @@ index d4c52df..185e5fe 100755
  add_subdirectory(mbedtls)
  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
  if (NOT MSVC)
-@@ -47,6 +55,7 @@ if (NOT MSVC)
+@@ -42,6 +50,7 @@ if (NOT MSVC)
          -Wno-unused-but-set-variable
          -Wno-string-concatenation)
  endif()
@@ -82,5 +82,5 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 -- 
-2.41.0
+2.42.0
 
