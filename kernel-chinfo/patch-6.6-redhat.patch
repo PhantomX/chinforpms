@@ -3,7 +3,9 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 ++-
+ drivers/acpi/acpi_video.c                          |   2 +-
  drivers/acpi/apei/hest.c                           |   8 +
+ drivers/acpi/device_pm.c                           |  13 ++
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
@@ -18,8 +20,10 @@
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
  drivers/iommu/iommu.c                              |  22 +++
  drivers/pci/quirks.c                               |  24 +++
+ drivers/rtc/rtc-cmos.c                             |  18 ++-
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
+ include/acpi/acpi_bus.h                            |   1 +
  include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
  include/linux/module.h                             |   1 +
@@ -34,10 +38,10 @@
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 36 files changed, 669 insertions(+), 175 deletions(-)
+ 40 files changed, 696 insertions(+), 182 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index f8c14da7c7bc..3dc4598eb8a7 100644
+index 03c52108af62..66048c4637d1 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -168,6 +172,19 @@ index b098b1fa2470..a159419e60df 100644
  
  	reserve_initrd();
  
+diff --git a/drivers/acpi/acpi_video.c b/drivers/acpi/acpi_video.c
+index b411948594ff..4e868454b38d 100644
+--- a/drivers/acpi/acpi_video.c
++++ b/drivers/acpi/acpi_video.c
+@@ -2031,7 +2031,7 @@ static int acpi_video_bus_add(struct acpi_device *device)
+ 	 * HP ZBook Fury 16 G10 requires ACPI video's child devices have _PS0
+ 	 * evaluated to have functional panel brightness control.
+ 	 */
+-	acpi_device_fix_up_power_extended(device);
++	acpi_device_fix_up_power_children(device);
+ 
+ 	pr_info("%s [%s] (multi-head: %s  rom: %s  post: %s)\n",
+ 	       ACPI_VIDEO_DEVICE_NAME, acpi_device_bid(device),
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 6aef1ee5e1bd..8f146b1b4972 100644
 --- a/drivers/acpi/apei/hest.c
@@ -187,6 +204,30 @@ index 6aef1ee5e1bd..8f146b1b4972 100644
  	hest_hdr = (struct acpi_hest_header *)(hest_tab + 1);
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
+diff --git a/drivers/acpi/device_pm.c b/drivers/acpi/device_pm.c
+index f007116a8427..3b4d048c4941 100644
+--- a/drivers/acpi/device_pm.c
++++ b/drivers/acpi/device_pm.c
+@@ -397,6 +397,19 @@ void acpi_device_fix_up_power_extended(struct acpi_device *adev)
+ }
+ EXPORT_SYMBOL_GPL(acpi_device_fix_up_power_extended);
+ 
++/**
++ * acpi_device_fix_up_power_children - Force a device's children into D0.
++ * @adev: Parent device object whose children's power state is to be fixed up.
++ *
++ * Call acpi_device_fix_up_power() for @adev's children so long as they
++ * are reported as present and enabled.
++ */
++void acpi_device_fix_up_power_children(struct acpi_device *adev)
++{
++	acpi_dev_for_each_child(adev, fix_up_power_if_applicable, NULL);
++}
++EXPORT_SYMBOL_GPL(acpi_device_fix_up_power_children);
++
+ int acpi_device_update_power(struct acpi_device *device, int *state_p)
+ {
+ 	int state;
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
 index 1687483ff319..390b67f19181 100644
 --- a/drivers/acpi/irq.c
@@ -997,6 +1038,41 @@ index e3e915329510..929ca9fa61a7 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/rtc/rtc-cmos.c b/drivers/rtc/rtc-cmos.c
+index 228fb2d11c70..696cfa7025de 100644
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -818,18 +818,24 @@ static void rtc_wake_off(struct device *dev)
+ }
+ 
+ #ifdef CONFIG_X86
+-/* Enable use_acpi_alarm mode for Intel platforms no earlier than 2015 */
+ static void use_acpi_alarm_quirks(void)
+ {
+-	if (boot_cpu_data.x86_vendor != X86_VENDOR_INTEL)
++	switch (boot_cpu_data.x86_vendor) {
++	case X86_VENDOR_INTEL:
++		if (dmi_get_bios_year() < 2015)
++			return;
++		break;
++	case X86_VENDOR_AMD:
++	case X86_VENDOR_HYGON:
++		if (dmi_get_bios_year() < 2021)
++			return;
++		break;
++	default:
+ 		return;
+-
++	}
+ 	if (!is_hpet_enabled())
+ 		return;
+ 
+-	if (dmi_get_bios_year() < 2015)
+-		return;
+-
+ 	use_acpi_alarm = true;
+ }
+ #else
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
 index 6effa13039f3..fbfbd542b858 100644
 --- a/drivers/scsi/sd.c
@@ -1043,6 +1119,18 @@ index 0ff47eeffb49..005b8c595c60 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index 254685085c82..0b7eab0ef7d7 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -539,6 +539,7 @@ int acpi_device_set_power(struct acpi_device *device, int state);
+ int acpi_bus_init_power(struct acpi_device *device);
+ int acpi_device_fix_up_power(struct acpi_device *device);
+ void acpi_device_fix_up_power_extended(struct acpi_device *adev);
++void acpi_device_fix_up_power_children(struct acpi_device *adev);
+ int acpi_bus_update_power(acpi_handle handle, int *state_p);
+ int acpi_device_update_power(struct acpi_device *device, int *state_p);
+ bool acpi_bus_power_manageable(acpi_handle handle);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 80b21d1c6eaf..b66c0683f2fc 100644
 --- a/include/linux/efi.h
