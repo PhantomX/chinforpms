@@ -329,7 +329,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.1.2
+Version:        8.1.3
 Release:        100%{?dist}
 Epoch:          2
 
@@ -337,7 +337,7 @@ License:        Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND GPL-1
 
 URL:            http://www.qemu.org/
 
-Source0:        http://wiki.qemu-project.org/download/%{name}-%{ver}.tar.xz
+Source0:        https://download.qemu.org/%{name}-%{ver}.tar.xz
 
 Source10: qemu-guest-agent.service
 Source11: 99-qemu-guest-agent.rules
@@ -350,8 +350,6 @@ Source27: kvm.conf
 Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
-
-Patch0001: 0001-tests-Disable-iotests-like-RHEL-does.patch
 
 BuildRequires: meson >= %{meson_version}
 BuildRequires: bison
@@ -2014,12 +2012,18 @@ install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %check
+# Disable iotests. RHEL has done this forever, and these
+# tests have been flakey in the past
+export MTESTARGS="--no-suite block"
+
 %if %{with check}
 %if !%{tools_only}
 
 pushd %{qemu_kvm_build}
 echo "Testing %{name}-build"
-# 2022-06: ppc64le random qtest segfaults with no discernable pattern
+# ppc64le random qtest segfaults with no discernable pattern
+#   Last check: 2023-10
+#   Added: 2022-06 
 %ifnarch %{power64}
 %make_build check
 %endif
@@ -2798,6 +2802,9 @@ popd
 
 
 %changelog
+* Thu Nov 23 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.1.3-100
+- 8.1.3
+
 * Mon Oct 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2:8.1.2-100
 - 8.1.2
 

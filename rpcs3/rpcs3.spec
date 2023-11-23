@@ -59,15 +59,15 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 ecf1b62882c1b6ca1da445fa94ee8dae42cf5961
+%global commit14 8b43a97a9330f8b0035439ce9e255e4be202deca
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 3b3c175af0e993ffaae251871421e206cc41963f
+%global commit15 37884f864d6fd9b04f44677cb04da15d0c9d6526
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
-%global commit16 0b67821f307e8c6bf0eba9b6d3250e3cf1441450
+%global commit16 456c68f452da09d8ca84b375faa2b1397713eaba
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
@@ -83,7 +83,7 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
 
-%global commit20 d9f2a87e8112d1c1217adabb0dc945d8ad2da657
+%global commit20 9a2df87789ebfecf64d35d732e5847662fbd5520
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15696
+Version:        0.0.29.15726
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
