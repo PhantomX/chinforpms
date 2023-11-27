@@ -12,11 +12,11 @@
 %global commit 1bcda32ea5504fcea7b66ef6ccaf080a72e069b8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231109
-%bcond_without snapshot
+%bcond_with snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 2cfabacd7d78b88493090aed572514340a1c3443
+%global commit1 fc4df6ce3aa7deffa764847c6e59f8df63c7b4b6
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -60,8 +60,8 @@ BuildArch:      noarch
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.10
-Release:        2%{?dist}
+Version:        2.11
+Release:        1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -154,28 +154,28 @@ tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
 tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-components 1
 %if %{without sysvulkan}
-tar -xf %{S:4} -C subprojects/Vulkan-Headers --strip-components 1
+tar -xf %{S:4} -C khronos/Vulkan-Headers --strip-components 1
 %endif
 %if %{without sysspirv}
-tar -xf %{S:5} -C subprojects/SPIRV-Headers --strip-components 1
+tar -xf %{S:5} -C khronos/SPIRV-Headers --strip-components 1
 rm -rf subprojects/dxil-spirv/third_party/spirv-headers
-ln -sf ../../../subprojects/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
+ln -sf ../../../khronos/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
 %endif
 
 find -type f -name '*.h' -exec chmod -x {} ';'
 
 %if %{with sysvulkan}
-mkdir -p subprojects/Vulkan-Headers/include
+mkdir -p khronos/Vulkan-Headers/include
 ln -sf %{_includedir}/vulkan \
-  subprojects/Vulkan-Headers/include/vulkan
+  khronos/Vulkan-Headers/include/vulkan
 ln -sf %{_includedir}/vk_video \
-  subprojects/Vulkan-Headers/include/vk_video
+  khronos/Vulkan-Headers/include/vk_video
 %endif
 
 %if %{with sysspirv}
-mkdir -p subprojects/SPIRV-Headers/include
+mkdir -p khronos/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
-  subprojects/SPIRV-Headers/include/spirv
+  khronos/SPIRV-Headers/include/spirv
 
 mkdir -p subprojects/dxil-spirv/third_party/spirv-headers/include/
 ln -sf %{_includedir}/spirv \
@@ -297,6 +297,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Nov 24 2023 Phantom X <megaphantomx at hotmail dot com> - 2.11-1
+- 2.11
+
 * Mon Sep 11 2023 Phantom X <megaphantomx at hotmail dot com> - 2.10-1
 - 2.10
 

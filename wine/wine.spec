@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.20
+%global wine_stagingver 8.21
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9828c75b0589a2a851848dc5bfbe785272ae8b70
+%global tkg_id 21ea5483910659b6d0df5013a0f7ddeb655d9304
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.20
+Version:        8.21
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -346,6 +346,7 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libv4l2)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  opencl-headers
@@ -899,6 +900,7 @@ sed \
 %patch -P 1021 -p1
 %patch -P 1022 -p1
 %if %{with fshack}
+%patch -P 702 -p1 -R
 %patch -P 1023 -p1
 %endif
 %if %{with childwindow}
@@ -915,7 +917,6 @@ sed \
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1027 -p1
-%patch -P 702 -p1 -R
 %patch -P 1028 -p1
 %patch -P 1029 -p1
 %if %{with fastsync}
@@ -2536,6 +2537,9 @@ fi
 
 
 %changelog
+* Sat Nov 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.21-100
+- 8.21
+
 * Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.20-100
 - 8.20
 

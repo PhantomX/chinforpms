@@ -20,9 +20,9 @@
 %global enablejit 1
 %endif
 
-%global commit da6339a72275f6b499a003b5486ebfc8f26e0d2f
+%global commit 719f1dca29cbc345aaedf5881c3d75907b6e470e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231001
+%global date 20231126
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -57,7 +57,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 40597
+%global baserelease 40794
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -126,6 +126,7 @@ BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libenet) >= 1.3.8
 BuildRequires:  pkgconfig(libevdev)
+BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(spng)
 BuildRequires:  pkgconfig(libpulse)
@@ -275,7 +276,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi \
-  libiconv-* liblzma libspng libusb LZO mbedtls mGBA miniupnpc minizip OpenAL \
+  libiconv-* liblzma libspng libusb lz4 LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if %{with vulkan}

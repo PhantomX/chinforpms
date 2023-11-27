@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5209
+Version:        1.7.5238
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 

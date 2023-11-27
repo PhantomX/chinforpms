@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit f9d213650cfe4733937c43d93de91a17f8582820
+%global commit ebf48800e6bf2569fa0a59974ab2daaeb3a92f23
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231024
+%global date 20231121
 %bcond_without snapshot
 
 %global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
