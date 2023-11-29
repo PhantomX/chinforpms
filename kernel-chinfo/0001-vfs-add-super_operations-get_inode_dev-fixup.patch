@@ -1,0 +1,23 @@
+From 15e128999ef1a9b17a89cf92c5e30bd42b3e61b1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 28 Nov 2023 19:36:45 -0300
+Subject: [PATCH] vfs: add super_operations->get_inode_dev fixup
+
+---
+ kernel/audit_watch.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/audit_watch.c b/kernel/audit_watch.c
+index 7a98cd1..fc2ab7e 100644
+--- a/kernel/audit_watch.c
++++ b/kernel/audit_watch.c
+@@ -539,6 +539,5 @@ int audit_exe_compare(struct task_struct *tsk, struct audit_fsnotify_mark *mark)
+ 	ino = file_inode(exe_file)->i_ino;
+ 	dev = file_inode(exe_file)->i_sb->s_dev;
+ 	fput(exe_file);
+-
+ 	return audit_mark_compare(mark, ino, dev);
+ }
+-- 
+2.43.0
+

@@ -137,7 +137,6 @@ BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6GuiTools)
 BuildRequires:  cmake(Qt6LinguistTools)
-BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel

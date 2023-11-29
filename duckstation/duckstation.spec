@@ -14,9 +14,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit ad1716e376a9fe63d0334431fe5f7faf1d692767
+%global commit afe8384b6d4677f6b444bde1f2b75c07f376ac0e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231115
+%global date 20231126
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -35,7 +35,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
