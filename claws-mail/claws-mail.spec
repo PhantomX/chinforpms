@@ -1,7 +1,7 @@
 %global commit a8e4b62ddf09c668ad59d78dea9d71ab23804982
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231026
-%bcond_without snapshot
+%bcond_with snapshot
 
 %global with_python  1
 
@@ -24,8 +24,8 @@
 %global vc_url  https://git.claws-mail.org/?p=claws.git
 
 Name:           claws-mail
-Version:        4.1.1
-Release:        107%{?dist}
+Version:        4.2.0
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -42,6 +42,9 @@ Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
+Patch0:         %{vc_url};a=patch;h=ca7335445eedf0da1b6518846338a7abdecbb7e1#/%{name}-git-ca73354.patch
+Patch1:         %{vc_url};a=patch;h=dd4c4e5152235f9f4f319cc9fdad9227ebf688c9#/%{name}-git-dd4c4e5.patch
+
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
 
@@ -54,6 +57,9 @@ Patch51:        12fix_manpage_header.patch
 Obsoletes:      %{name}-plugins-fancy < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-plugins-fancy = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
+
+Obsoletes:      %{name}-plugins-gdata < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{name}-plugins-gdata = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %if !0%{?with_python}
 Obsoletes:      %{name}-plugins-python < %{?epoch:%{epoch}:}%{version}-%{release}
@@ -97,7 +103,6 @@ BuildRequires:  pkgconfig(libcurl)
 # actually 1.9.1 with TLS SNI patches, which are integrated into 1.9.2
 BuildRequires:  pkgconfig(libetpan) >= 1.9.2
 BuildRequires:  pkgconfig(libgcrypt)
-BuildRequires:  pkgconfig(libgdata) >= 0.17.2
 BuildRequires:  pkgconfig(libical) >= 2.0
 BuildRequires:  pkgconfig(libidn)
 BuildRequires:  pkgconfig(libnm)
@@ -160,7 +165,6 @@ Requires: %{name}-plugins-dillo = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: %{name}-plugins-fancy = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Requires: %{name}-plugins-fetchinfo = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires: %{name}-plugins-gdata = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: %{name}-plugins-keyword-warner = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: %{name}-plugins-litehtml = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires: %{name}-plugins-libravatar = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -294,17 +298,6 @@ Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description plugins-fetchinfo
 This plugin inserts headers containing some download information:
 UIDL, Sylpheeds account name, POP server, user ID and retrieval time.
-
-
-%package plugins-gdata
-Summary:        Access to GData (Google services) for Claws Mail
-Requires:       claws-mail%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description plugins-gdata
-Access to GData (Google services) for Claws Mail.
-
-The only currently implemented feature is inclusion of
-Google contacts into the address completion.
 
 
 %package plugins-keyword-warner
@@ -592,9 +585,6 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 %files plugins-fetchinfo
 %{_libdir}/claws-mail/plugins/fetchinfo*
 
-%files plugins-gdata
-%{_libdir}/claws-mail/plugins/gdata*
-
 %files plugins-keyword-warner
 %{_libdir}/claws-mail/plugins/keyword_warner*
 
@@ -649,6 +639,10 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Thu Nov 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-100
+- 4.2.0
+- gdata plugin removed by upstream
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.1.1-103.20230224gite2e7f63
 - Rawhide sync
 - Reenable python
