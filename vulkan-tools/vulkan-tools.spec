@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.3.270
+Version:        1.3.272
 Release:        100%{?dist}
 Summary:        Vulkan tools
 
@@ -14,6 +14,8 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Tools-sdk-%{version
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Tools-%{version}.tar.gz
 %endif
 
+Patch10:        0001-cmake-change-volk-namespace.patch
+
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake3
@@ -21,6 +23,7 @@ BuildRequires:  glslang
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  vulkan-loader-devel
+BuildRequires:  cmake(volk_vulkan)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-protocols)
@@ -85,6 +88,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Sat Dec 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.272-100
+- 1.3.272
+
 * Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.270-100
 - 1.3.270
 

@@ -47,7 +47,7 @@ Provides:       bundled(dr_flac) = %{drflac_ver}
 
 %package        devel
 Summary:        Development files for %{name}
-Requires:       %{?epoch:%{epoch}:}%{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for

@@ -38,6 +38,7 @@ SDL1
 taglib
 -v4l-utils
 -vkd3d
+volk-vulkan
 vulkan-headers
 vulkan-loader
 vulkan-tools

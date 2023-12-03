@@ -1,7 +1,7 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.3.270
-Release:        102%{?dist}
+Version:        1.3.272
+Release:        100%{?dist}
 Summary:        Vulkan Header files and API registry
 
 License:        Apache-2.0
@@ -55,6 +55,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Sat Dec 02 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.272-100
+- 1.3.272
+
 * Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1.3.270-102
 - 1.3.270
 

@@ -1,0 +1,155 @@
+From fcb43424da7add713f2ff74771bf3ac9b75282e9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 2 Dec 2023 16:29:23 -0300
+Subject: [PATCH] cmake: change namespace to volk_vulkan
+
+Fix conflict with the vector library
+---
+ CMakeLists.txt                   | 36 ++++++++++++++++----------------
+ cmake/volkConfig.cmake.in        | 12 +++++------
+ cmake/volk_vulkanConfig.cmake.in |  1 +
+ 3 files changed, 25 insertions(+), 24 deletions(-)
+ create mode 120000 cmake/volk_vulkanConfig.cmake.in
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d498317..cac370e 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -31,17 +31,17 @@ endif()
+ # Static library
+ 
+ if(NOT VOLK_HEADERS_ONLY OR VOLK_INSTALL)
+-  add_library(volk STATIC volk.h volk.c)
+-  add_library(volk::volk ALIAS volk)
+-  target_include_directories(volk PUBLIC
++  add_library(volk_vulkan STATIC volk.h volk.c)
++  add_library(volk_vulkan::volk_vulkan ALIAS volk_vulkan)
++  target_include_directories(volk_vulkan PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+     $<INSTALL_INTERFACE:include>
+   )
+   if(VOLK_STATIC_DEFINES)
+-    target_compile_definitions(volk PUBLIC ${VOLK_STATIC_DEFINES})
++    target_compile_definitions(volk_vulkan PUBLIC ${VOLK_STATIC_DEFINES})
+   endif()
+   if (NOT WIN32)
+-    target_link_libraries(volk PUBLIC dl)
++    target_link_libraries(volk_vulkan PUBLIC dl)
+   endif()
+ endif()
+ 
+@@ -49,10 +49,10 @@ endif()
+ # Interface library
+ 
+ add_library(volk_headers INTERFACE)
+-add_library(volk::volk_headers ALIAS volk_headers)
++add_library(volk_vulkan::volk_headers ALIAS volk_headers)
+ target_include_directories(volk_headers INTERFACE
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
+-  $<INSTALL_INTERFACE:include>
++  $<INSTALL_INTERFACE:include/volk_vulkan>
+ )
+ if (NOT WIN32)
+   target_link_libraries(volk_headers INTERFACE dl)
+@@ -81,7 +81,7 @@ if(VOLK_PULL_IN_VULKAN)
+ 
+   if(VOLK_INCLUDES)
+     if(TARGET volk)
+-      target_include_directories(volk PUBLIC "${VOLK_INCLUDES}")
++      target_include_directories(volk_vulkan PUBLIC "${VOLK_INCLUDES}")
+     endif()
+     target_include_directories(volk_headers INTERFACE "${VOLK_INCLUDES}")
+   endif()
+@@ -93,13 +93,13 @@ endif()
+ if(VOLK_INSTALL)
+ 
+   include(GNUInstallDirs)
+-  set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/volk)
++  set(INSTALL_CONFIGDIR ${CMAKE_INSTALL_LIBDIR}/cmake/volk_vulkan)
+ 
+   # Install files
+-  install(FILES volk.h volk.c DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
++  install(FILES volk.h volk.c DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/volk_vulkan)
+ 
+   # Install library target and add it and any dependencies to export set.
+-  install(TARGETS volk volk_headers
++  install(TARGETS volk_vulkan volk_headers
+     EXPORT volk-targets
+     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+@@ -108,28 +108,28 @@ if(VOLK_INSTALL)
+ 
+   # Actually write exported config w/ imported targets
+   install(EXPORT volk-targets
+-    FILE volkTargets.cmake
+-    NAMESPACE volk::
++    FILE volk_vulkanTargets.cmake
++    NAMESPACE volk_vulkan::
+     DESTINATION ${INSTALL_CONFIGDIR}
+   )
+ 
+   # Create a ConfigVersion.cmake file:
+   include(CMakePackageConfigHelpers)
+   write_basic_package_version_file(
+-    ${CMAKE_CURRENT_BINARY_DIR}/volkConfigVersion.cmake
++    ${CMAKE_CURRENT_BINARY_DIR}/volk_vulkanConfigVersion.cmake
+     COMPATIBILITY AnyNewerVersion
+   )
+ 
+   # Configure config file
+-  configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/volkConfig.cmake.in
+-    ${CMAKE_CURRENT_BINARY_DIR}/volkConfig.cmake
++  configure_package_config_file(${CMAKE_CURRENT_LIST_DIR}/cmake/volk_vulkanConfig.cmake.in
++    ${CMAKE_CURRENT_BINARY_DIR}/volk_vulkanConfig.cmake
+     INSTALL_DESTINATION ${INSTALL_CONFIGDIR}
+   )
+ 
+   # Install the fully generated config and configVersion files
+   install(FILES
+-    ${CMAKE_CURRENT_BINARY_DIR}/volkConfig.cmake
+-    ${CMAKE_CURRENT_BINARY_DIR}/volkConfigVersion.cmake
++    ${CMAKE_CURRENT_BINARY_DIR}/volk_vulkanConfig.cmake
++    ${CMAKE_CURRENT_BINARY_DIR}/volk_vulkanConfigVersion.cmake
+     DESTINATION ${INSTALL_CONFIGDIR}
+   )
+ 
+diff --git a/cmake/volkConfig.cmake.in b/cmake/volkConfig.cmake.in
+index 6e45c37..aac2aaf 100644
+--- a/cmake/volkConfig.cmake.in
++++ b/cmake/volkConfig.cmake.in
+@@ -1,7 +1,7 @@
+ get_filename_component(volk_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+ 
+-if(NOT TARGET volk::volk)
+-  include("${volk_CMAKE_DIR}/volkTargets.cmake")
++if(NOT TARGET volk_vulkan::volk_vulkan)
++  include("${volk_CMAKE_DIR}/volk_vulkanTargets.cmake")
+ endif()
+ 
+ # Mirror the default behaviour of the respective option.
+@@ -12,10 +12,10 @@ endif()
+ if(VOLK_PULL_IN_VULKAN)
+   find_package(Vulkan QUIET)
+   if(TARGET Vulkan::Vulkan) 
+-    add_dependencies(volk::volk Vulkan::Vulkan)
+-    add_dependencies(volk::volk_headers Vulkan::Vulkan)
++    add_dependencies(volk_vulkan::volk_vulkan Vulkan::Vulkan)
++    add_dependencies(volk_vulkan::volk_headers Vulkan::Vulkan)
+   elseif(DEFINED ENV{VULKAN_SDK})
+-    target_include_directories(volk::volk INTERFACE "$ENV{VULKAN_SDK}/include")
+-    target_include_directories(volk::volk_headers INTERFACE "$ENV{VULKAN_SDK}/include")
++    target_include_directories(volk_vulkan::volk_vulkan INTERFACE "$ENV{VULKAN_SDK}/include")
++    target_include_directories(volk_vulkan::volk_headers INTERFACE "$ENV{VULKAN_SDK}/include")
+   endif()
+ endif()
+diff --git a/cmake/volk_vulkanConfig.cmake.in b/cmake/volk_vulkanConfig.cmake.in
+new file mode 120000
+index 0000000..30fc3a0
+--- /dev/null
++++ b/cmake/volk_vulkanConfig.cmake.in
+@@ -0,0 +1 @@
++volkConfig.cmake.in
+\ No newline at end of file
+-- 
+2.43.0
+

@@ -204,9 +204,29 @@
 %define qemu_moddir %{_libdir}/qemu
 %define qemu_datadir %{_datadir}/qemu
 
-%define with_mingw 0
+# Native / MinGW builds
+%define with_native 0%{!?_without_native:1}
+
+%define with_mingw32 0
+%define with_mingw64 0
+
 %if 0%{?fedora}
-    %define with_mingw 0%{!?_without_mingw:1}
+    %if 0%{!?_without_mingw:1}
+        %define with_mingw32 0%{!?_without_mingw32:1}
+        %define with_mingw64 0%{!?_without_mingw64:1}
+    %endif
+
+    # These tell the other mingw macros whether to perform or
+    # skip the 32-bit and 64-bit specific steps respectively
+    %define mingw_build_win32 %{with_mingw32}
+    %define mingw_build_win64 %{with_mingw64}
+%endif
+
+%if !%{with_native}
+    # Building the debugsource package apparently only works if the
+    # native build is enabled. debuginfo packages don't have this
+    # problem and setting this doesn't disable them
+    %global debug_package %{nil}
 %endif
 
 # RHEL releases provide stable tool chains and so it is safe to turn
@@ -241,8 +261,8 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.9.0
-Release: 101%{?dist}
+Version: 9.10.0
+Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
 
@@ -252,8 +272,7 @@ URL: https://libvirt.org/
 Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source1: libvirt-sysusers.conf
 Source2: libvirt-qemu-sysusers.conf
-
-Patch0:  https://gitlab.com/libvirt/libvirt/-/commit/4f4a8dce944e05311565b690a84f6bb1ef67c086.patch#/%{name}-git-4f4a8dc.patch
+Source3: virtlogin-sysusers.conf
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -286,22 +305,30 @@ Requires: libvirt-libs = %{version}-%{release}
 # All build-time requirements. Run-time requirements are
 # listed against each sub-RPM
 BuildRequires: python3-docutils
-BuildRequires: gcc
 BuildRequires: meson >= 0.56.0
 BuildRequires: ninja-build
 BuildRequires: git
 BuildRequires: perl-interpreter
 BuildRequires: python3
+BuildRequires: python3-pytest
 %{?sysusers_requires_compat}
-%if %{with_libxl}
+# For xmllint
+BuildRequires: libxml2
+# For xsltproc
+BuildRequires: libxslt
+BuildRequires: gettext
+BuildRequires: systemd-rpm-macros
+# Fedora build root suckage
+BuildRequires: gawk
+%if %{with_native}
+BuildRequires: gcc
+    %if %{with_libxl}
 BuildRequires: xen-devel
-%endif
+    %endif
 BuildRequires: glib2-devel >= 2.56
 BuildRequires: libxml2-devel
-BuildRequires: libxslt
 BuildRequires: readline-devel
 BuildRequires: bash-completion >= 2.0
-BuildRequires: gettext
 BuildRequires: libtasn1-devel
 BuildRequires: gnutls-devel
 BuildRequires: libattr-devel
@@ -310,75 +337,75 @@ BuildRequires: libblkid-devel >= 2.17
 # for augparse, optionally used in testing
 BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
-BuildRequires: systemd-rpm-macros
 BuildRequires: libpciaccess-devel >= 0.10.9
 BuildRequires: yajl-devel
-%if %{with_sanlock}
+    %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
-%endif
+    %endif
 BuildRequires: libpcap-devel >= 1.5.0
 BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
 BuildRequires: iptables
 BuildRequires: ebtables
-BuildRequires: module-init-tools
+# For modprobe
+BuildRequires: kmod
 BuildRequires: cyrus-sasl-devel
 BuildRequires: polkit >= 0.112
 # For mount/umount in FS driver
 BuildRequires: util-linux
-%if %{with_qemu}
+    %if %{with_qemu}
 # For managing ACLs
 BuildRequires: libacl-devel
 # From QEMU RPMs, used by virstoragetest
 BuildRequires: /usr/bin/qemu-img
-%endif
+    %endif
 # nbdkit support requires libnbd
-%if %{with_nbdkit}
+    %if %{with_nbdkit}
 BuildRequires: libnbd-devel
-%endif
+    %endif
 # For LVM drivers
 BuildRequires: lvm2
 # For pool type=iscsi
 BuildRequires: iscsi-initiator-utils
-%if %{with_storage_iscsi_direct}
+    %if %{with_storage_iscsi_direct}
 # For pool type=iscsi-direct
 BuildRequires: libiscsi-devel
-%endif
+    %endif
 # For disk driver
 BuildRequires: parted-devel
 # For Multipath support
 BuildRequires: device-mapper-devel
-%if %{with_storage_rbd}
+    %if %{with_storage_rbd}
 BuildRequires: librados-devel
 BuildRequires: librbd-devel
-%endif
-%if %{with_storage_gluster}
+    %endif
+    %if %{with_storage_gluster}
 BuildRequires: glusterfs-api-devel >= 3.4.1
 BuildRequires: glusterfs-devel >= 3.4.1
-%endif
-%if %{with_numactl}
+    %endif
+    %if %{with_numactl}
 # For QEMU/LXC numa info
 BuildRequires: numactl-devel
-%endif
+    %endif
 BuildRequires: libcap-ng-devel >= 0.5.0
-%if %{with_fuse}
+    %if %{with_fuse}
 BuildRequires: fuse-devel >= 2.8.6
-%endif
-%if %{with_libssh2}
+    %endif
+    %if %{with_libssh2}
 BuildRequires: libssh2-devel >= 1.3.0
-%endif
-%if %{with_netcf}
+    %endif
+    %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
-%endif
-%if 0%{?fedora} || 0%{?rhel} >= 9
+    %endif
+    %if 0%{?fedora} || 0%{?rhel} >= 9
 BuildRequires: passt
-%endif
-%if %{with_esx}
+    %endif
+    %if %{with_esx}
 BuildRequires: libcurl-devel
-%endif
-%if %{with_hyperv}
+    %endif
+    %if %{with_hyperv}
 BuildRequires: libwsman-devel >= 2.6.3
-%endif
+    %endif
 BuildRequires: audit-libs-devel
 # we need /usr/sbin/dtrace
 BuildRequires: systemtap-sdt-devel
@@ -386,27 +413,25 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
 BuildRequires: nfs-utils
-# Fedora build root suckage
-BuildRequires: gawk
 # For storage wiping with different algorithms
 BuildRequires: scrub
-%if %{with_numad}
+    %if %{with_numad}
 BuildRequires: numad
-%endif
-%if %{with_wireshark}
+    %endif
+    %if %{with_wireshark}
 BuildRequires: wireshark-devel
-%endif
-%if %{with_libssh}
+    %endif
+    %if %{with_libssh}
 BuildRequires: libssh-devel >= 0.8.1
-%endif
-BuildRequires: rpcgen
+    %endif
 BuildRequires: libtirpc-devel
+    %if %{with_firewalld_zone}
 # Needed for the firewalld_reload macro
-%if %{with_firewalld_zone}
 BuildRequires: firewalld-filesystem
+    %endif
 %endif
 
-%if %{with_mingw}
+%if %{with_mingw32}
 BuildRequires: mingw32-filesystem
 BuildRequires: mingw32-gcc
 BuildRequires: mingw32-binutils
@@ -420,6 +445,8 @@ BuildRequires: mingw32-portablexdr
 BuildRequires: mingw32-dlfcn
 BuildRequires: mingw32-libssh2
 BuildRequires: mingw32-curl
+%endif
+%if %{with_mingw64}
 BuildRequires: mingw64-filesystem
 BuildRequires: mingw64-gcc
 BuildRequires: mingw64-binutils
@@ -440,6 +467,7 @@ Libvirt is a C toolkit to interact with the virtualization capabilities
 of recent versions of Linux (and other OSes). The main package includes
 the libvirtd server exporting the virtualization support.
 
+%if %{with_native}
 %package docs
 Summary: API reference and website documentation
 
@@ -479,10 +507,10 @@ Requires: iproute
 # for /sbin/tc
 Requires: iproute-tc
 Requires: polkit >= 0.112
-%if %{with_dmidecode}
+    %if %{with_dmidecode}
 # For virConnectGetSysinfo
 Requires: dmidecode
-%endif
+    %endif
 # For service management
 Requires(posttrans): /usr/bin/systemctl
 Requires(preun): /usr/bin/systemctl
@@ -491,7 +519,11 @@ Requires: dbus
 # For uid creation during pre
 Requires(pre): shadow-utils
 # Needed by /usr/libexec/libvirt-guests.sh script.
+    %if 0%{?fedora}
 Requires: gettext-runtime
+    %else
+Requires: gettext
+    %endif
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-admin < 7.3.0
@@ -599,9 +631,9 @@ capabilities.
 Summary: Interface driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-%if %{with_netcf}
+    %if %{with_netcf}
 Requires: netcf-libs >= 0.2.2
-%endif
+    %endif
 
 %description daemon-driver-interface
 The interface driver plugin for the libvirtd daemon, providing
@@ -623,13 +655,13 @@ Requires: libvirt-libs = %{version}-%{release}
 Requires: nfs-utils
 # For mkfs
 Requires: util-linux
-%if %{with_qemu}
+    %if %{with_qemu}
 # From QEMU RPMs
 Requires: /usr/bin/qemu-img
-%endif
-%if !%{with_storage_rbd}
+    %endif
+    %if !%{with_storage_rbd}
 Obsoletes: libvirt-daemon-driver-storage-rbd < 5.2.0
-%endif
+    %endif
 Obsoletes: libvirt-daemon-driver-storage-sheepdog < 8.8.0
 
 %description daemon-driver-storage-core
@@ -677,7 +709,7 @@ Requires: iscsi-initiator-utils
 The storage driver backend adding implementation of the storage APIs for iscsi
 volumes using the host iscsi stack.
 
-%if %{with_storage_iscsi_direct}
+    %if %{with_storage_iscsi_direct}
 %package daemon-driver-storage-iscsi-direct
 Summary: Storage driver plugin for iscsi-direct
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
@@ -686,7 +718,7 @@ Requires: libvirt-libs = %{version}-%{release}
 %description daemon-driver-storage-iscsi-direct
 The storage driver backend adding implementation of the storage APIs for iscsi
 volumes using libiscsi direct connection.
-%endif
+    %endif
 
 %package daemon-driver-storage-mpath
 Summary: Storage driver plugin for multipath volumes
@@ -698,24 +730,24 @@ Requires: device-mapper
 The storage driver backend adding implementation of the storage APIs for
 multipath storage using device mapper.
 
-%if %{with_storage_gluster}
+    %if %{with_storage_gluster}
 %package daemon-driver-storage-gluster
 Summary: Storage driver plugin for gluster
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-%if 0%{?fedora}
+        %if 0%{?fedora}
 Requires: glusterfs-client >= 2.0.1
-%endif
-%if 0%{?fedora} || 0%{?with_storage_gluster}
+        %endif
+        %if 0%{?fedora} || 0%{?with_storage_gluster}
 Requires: /usr/sbin/gluster
-%endif
+        %endif
 
 %description daemon-driver-storage-gluster
 The storage driver backend adding implementation of the storage APIs for gluster
 volumes using libgfapi.
-%endif
+    %endif
 
-%if %{with_storage_rbd}
+    %if %{with_storage_rbd}
 %package daemon-driver-storage-rbd
 Summary: Storage driver plugin for rbd
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
@@ -724,9 +756,9 @@ Requires: libvirt-libs = %{version}-%{release}
 %description daemon-driver-storage-rbd
 The storage driver backend adding implementation of the storage APIs for rbd
 volumes using the ceph protocol.
-%endif
+    %endif
 
-%if %{with_storage_zfs}
+    %if %{with_storage_zfs}
 %package daemon-driver-storage-zfs
 Summary: Storage driver plugin for ZFS
 Requires: libvirt-daemon-driver-storage-core = %{version}-%{release}
@@ -738,7 +770,7 @@ Requires: /sbin/zpool
 %description daemon-driver-storage-zfs
 The storage driver backend adding implementation of the storage APIs for
 ZFS volumes.
-%endif
+    %endif
 
 %package daemon-driver-storage
 Summary: Storage driver plugin including all backends for the libvirtd daemon
@@ -748,25 +780,25 @@ Requires: libvirt-daemon-driver-storage-logical = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-scsi = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-iscsi = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage-mpath = %{version}-%{release}
-%if %{with_storage_iscsi_direct}
+    %if %{with_storage_iscsi_direct}
 Requires: libvirt-daemon-driver-storage-iscsi-direct = %{version}-%{release}
-%endif
-%if %{with_storage_gluster}
+    %endif
+    %if %{with_storage_gluster}
 Requires: libvirt-daemon-driver-storage-gluster = %{version}-%{release}
-%endif
-%if %{with_storage_rbd}
+    %endif
+    %if %{with_storage_rbd}
 Requires: libvirt-daemon-driver-storage-rbd = %{version}-%{release}
-%endif
-%if %{with_storage_zfs}
+    %endif
+    %if %{with_storage_zfs}
 Requires: libvirt-daemon-driver-storage-zfs = %{version}-%{release}
-%endif
+    %endif
 
 %description daemon-driver-storage
 The storage driver plugin for the libvirtd daemon, providing
 an implementation of the storage APIs using LVM, iSCSI,
 parted and more.
 
-%if %{with_qemu}
+    %if %{with_qemu}
 %package daemon-driver-qemu
 Summary: QEMU driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
@@ -780,26 +812,26 @@ Requires: lzop
 Requires: xz
 Requires: systemd-container
 Requires: swtpm-tools
-%if %{with_numad}
+        %if %{with_numad}
 Requires: numad
-%endif
-%if 0%{?fedora} || 0%{?rhel} >= 9
+        %endif
+        %if 0%{?fedora} || 0%{?rhel} >= 9
 Recommends: passt
 Recommends: passt-selinux
-%endif
-%if %{with_nbdkit}
+        %endif
+        %if %{with_nbdkit}
 Recommends: nbdkit
 Recommends: nbdkit-curl-plugin
 Recommends: nbdkit-ssh-plugin
-%endif
+        %endif
 
 %description daemon-driver-qemu
 The qemu driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 QEMU
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %package daemon-driver-lxc
 Summary: LXC driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
@@ -809,17 +841,17 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 Requires: systemd-container
 # for modprobe of nbd driver
 Requires: module-init-tools
-%if %{with_numad}
+        %if %{with_numad}
 Requires: numad
-%endif
+        %endif
 
 %description daemon-driver-lxc
 The LXC driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 the Linux kernel
-%endif
+    %endif
 
-%if %{with_vbox}
+    %if %{with_vbox}
 %package daemon-driver-vbox
 Summary: VirtualBox driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
@@ -829,9 +861,9 @@ Requires: libvirt-libs = %{version}-%{release}
 The vbox driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 VirtualBox
-%endif
+    %endif
 
-%if %{with_libxl}
+    %if %{with_libxl}
 %package daemon-driver-libxl
 Summary: Libxl driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
@@ -842,22 +874,22 @@ Obsoletes: libvirt-daemon-driver-xen < 4.3.0
 The Libxl driver plugin for the libvirtd daemon, providing
 an implementation of the hypervisor driver APIs using
 Libxl
-%endif
+    %endif
 
-%if %{with_qemu_tcg}
+    %if %{with_qemu_tcg}
 %package daemon-qemu
 Summary: Server side daemon & driver required to run QEMU guests
 
-%if %{with_modular_daemons}
+        %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 Recommends: libvirt-daemon = %{version}-%{release}
-%else
+        %else
 Requires: libvirt-daemon = %{version}-%{release}
-%endif
+        %endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -870,22 +902,22 @@ Requires: qemu
 %description daemon-qemu
 Server side daemon and driver required to manage the virtualization
 capabilities of the QEMU TCG emulators
-%endif
+    %endif
 
-%if %{with_qemu_kvm}
+    %if %{with_qemu_kvm}
 %package daemon-kvm
 Summary: Server side daemon & driver required to run KVM guests
 
-%if %{with_modular_daemons}
+        %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-log = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 Recommends: libvirt-daemon = %{version}-%{release}
-%else
+        %else
 Requires: libvirt-daemon = %{version}-%{release}
-%endif
+        %endif
 Requires: libvirt-daemon-driver-qemu = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -898,19 +930,19 @@ Requires: qemu-kvm
 %description daemon-kvm
 Server side daemon and driver required to manage the virtualization
 capabilities of the KVM hypervisor
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %package daemon-lxc
 Summary: Server side daemon & driver required to run LXC guests
 
-%if %{with_modular_daemons}
+        %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 Recommends: libvirt-daemon = %{version}-%{release}
-%else
+        %else
 Requires: libvirt-daemon = %{version}-%{release}
-%endif
+        %endif
 Requires: libvirt-daemon-driver-lxc = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -922,21 +954,21 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-lxc
 Server side daemon and driver required to manage the virtualization
 capabilities of LXC
-%endif
+    %endif
 
-%if %{with_libxl}
+    %if %{with_libxl}
 %package daemon-xen
 Summary: Server side daemon & driver required to run XEN guests
 
-%if %{with_modular_daemons}
+        %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 Requires: libvirt-daemon-plugin-lockd = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 Recommends: libvirt-daemon = %{version}-%{release}
-%else
+        %else
 Requires: libvirt-daemon = %{version}-%{release}
-%endif
+        %endif
 Requires: libvirt-daemon-driver-libxl = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -949,19 +981,19 @@ Requires: xen
 %description daemon-xen
 Server side daemon and driver required to manage the virtualization
 capabilities of XEN
-%endif
+    %endif
 
-%if %{with_vbox}
+    %if %{with_vbox}
 %package daemon-vbox
 Summary: Server side daemon & driver required to run VirtualBox guests
 
-%if %{with_modular_daemons}
+        %if %{with_modular_daemons}
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-proxy = %{version}-%{release}
 Recommends: libvirt-daemon = %{version}-%{release}
-%else
+        %else
 Requires: libvirt-daemon = %{version}-%{release}
-%endif
+        %endif
 Requires: libvirt-daemon-driver-vbox = %{version}-%{release}
 Requires: libvirt-daemon-driver-interface = %{version}-%{release}
 Requires: libvirt-daemon-driver-network = %{version}-%{release}
@@ -973,7 +1005,7 @@ Requires: libvirt-daemon-driver-storage = %{version}-%{release}
 %description daemon-vbox
 Server side daemon and driver required to manage the virtualization
 capabilities of VirtualBox
-%endif
+    %endif
 
 %package client
 Summary: Client side utilities of the libvirt library
@@ -1010,7 +1042,7 @@ Requires: cyrus-sasl-gssapi
 %description libs
 Shared libraries for accessing the libvirt daemon.
 
-%if %{with_wireshark}
+    %if %{with_wireshark}
 %package wireshark
 Summary: Wireshark dissector plugin for libvirt RPC transactions
 Requires: wireshark
@@ -1018,9 +1050,9 @@ Requires: libvirt-libs = %{version}-%{release}
 
 %description wireshark
 Wireshark dissector plugin for better analysis of libvirt RPC traffic.
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %package login-shell
 Summary: Login shell for connecting users to an LXC container
 Requires: libvirt-libs = %{version}-%{release}
@@ -1029,7 +1061,7 @@ Requires: libvirt-libs = %{version}-%{release}
 Provides the set-uid virt-login-shell binary that is used to
 connect a user to an LXC container when they login, by switching
 namespaces.
-%endif
+    %endif
 
 %package devel
 Summary: Libraries, includes, etc. to compile with the libvirt library
@@ -1039,7 +1071,7 @@ Requires: pkgconfig
 %description devel
 Include header files & development libraries for the libvirt C library.
 
-%if %{with_sanlock}
+    %if %{with_sanlock}
 %package daemon-plugin-sanlock
 Summary: Sanlock lock manager plugin for QEMU driver
 Requires: sanlock >= 2.4
@@ -1052,7 +1084,7 @@ Provides: libvirt-lock-sanlock = %{version}-%{release}
 %description daemon-plugin-sanlock
 Includes the Sanlock lock manager plugin for the QEMU
 driver
-%endif
+    %endif
 
 %package nss
 Summary: Libvirt plugin for Name Service Switch
@@ -1060,8 +1092,9 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 
 %description nss
 Libvirt plugin for NSS for translating domain names into IP addresses.
+%endif
 
-%if %{with_mingw}
+%if %{with_mingw32}
 %package -n mingw32-libvirt
 Summary: %{summary}
 Obsoletes: mingw32-libvirt-static < 7.0.0
@@ -1070,6 +1103,10 @@ BuildArch: noarch
 %description -n mingw32-libvirt
 MinGW Windows libvirt virtualization library.
 
+%{?mingw32_debug_package}
+%endif
+
+%if %{with_mingw64}
 %package -n mingw64-libvirt
 Summary: %{summary}
 Obsoletes: mingw64-libvirt-static < 7.0.0
@@ -1078,7 +1115,7 @@ BuildArch: noarch
 %description -n mingw64-libvirt
 MinGW Windows libvirt virtualization library.
 
-%{?mingw_debug_package}
+%{?mingw64_debug_package}
 %endif
 
 %prep
@@ -1247,6 +1284,7 @@ exit 1
 
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
+%if %{with_native}
 %meson \
            -Drunstatedir=%{_rundir} \
            -Dinitconfdir=%{_sysconfdir}/sysconfig \
@@ -1285,6 +1323,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dcapng=enabled \
            %{?arg_fuse} \
            %{?arg_netcf} \
+           -Dnls=enabled \
            -Dselinux=enabled \
            %{?arg_selinux_mount} \
            -Dapparmor=disabled \
@@ -1295,7 +1334,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
            %{?arg_nbdkit} \
-           %{?arg_libnbd} \
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
@@ -1322,8 +1360,9 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_login_shell}
 
 %meson_build
+%endif
 
-%if %{with_mingw}
+%if %{with_mingw32} || %{with_mingw64}
 %mingw_meson \
   --auto-features=enabled \
   -Ddriver_remote=enabled \
@@ -1366,7 +1405,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dlibssh=disabled \
   -Dlogin_shell=disabled \
   -Dnetcf=disabled \
-  -Dnls=disabled \
+  -Dnls=enabled \
   -Dnss=disabled \
   -Dnumactl=disabled \
   -Dnumad=disabled \
@@ -1398,13 +1437,14 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
   -Dyajl=disabled
-%mingw_ninja
+    %mingw_ninja
 %endif
 
 
 %install
 export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 
+%if %{with_native}
 %meson_install
 
 # We don't want to install /etc/libvirt/qemu/networks in the main %%files list
@@ -1424,70 +1464,49 @@ cp -a $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml \
 # libvirt saves these files with mode 600
 chmod 600 $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/nwfilter/*.xml
 
-%if ! %{with_qemu}
+    %if ! %{with_qemu}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_qemu.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
-%endif
+    %endif
 %find_lang %{name}
 
-%if ! %{with_sanlock}
+    %if ! %{with_sanlock}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirt_sanlock.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
-%endif
+    %endif
 
-%if ! %{with_lxc}
+    %if ! %{with_lxc}
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_lxc.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_lxc.aug
-%endif
+    %endif
 
-%if ! %{with_qemu}
+    %if ! %{with_qemu}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/qemu.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.qemu
-%endif
-%if ! %{with_lxc}
+    %endif
+    %if ! %{with_lxc}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/lxc.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.lxc
-%endif
-%if ! %{with_libxl}
+    %endif
+    %if ! %{with_libxl}
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/libvirt/libxl.conf
 rm -rf $RPM_BUILD_ROOT%{_sysconfdir}/logrotate.d/libvirtd.libxl
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/libvirtd_libxl.aug
 rm -f $RPM_BUILD_ROOT%{_datadir}/augeas/lenses/tests/test_libvirtd_libxl.aug
-%endif
+    %endif
 
 # Copied into libvirt-docs subpackage eventually
 mv $RPM_BUILD_ROOT%{_datadir}/doc/libvirt libvirt-docs
 
-%ifarch %{arches_systemtap_64bit}
+    %ifarch %{arches_systemtap_64bit}
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_probes-64.stp
 
-    %if %{with_qemu}
+        %if %{with_qemu}
 mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
    $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes-64.stp
+        %endif
     %endif
-%endif
-
-%if %{with_mingw}
-%mingw_ninja_install
-
-rm -rf $RPM_BUILD_ROOT%{mingw32_sysconfdir}/libvirt/nwfilter
-rm -rf $RPM_BUILD_ROOT%{mingw64_sysconfdir}/libvirt/nwfilter
-rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/doc/*
-rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/doc/*
-rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/gtk-doc/*
-rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/gtk-doc/*
-
-rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt_iohelper.exe
-rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt_iohelper.exe
-rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt-guests.sh
-rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
-
-%mingw_debug_install_post
-
-%mingw_find_lang %{name}
-
-%endif
 
 ## chinforpms changes
 install -Dpm 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysusersdir}/libvirt.conf
@@ -1497,19 +1516,52 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
 install -Dpm 644 %{SOURCE2} $RPM_BUILD_ROOT%{_sysusersdir}/libvirt-qemu.conf
 %endif
 
+install -Dpm 644 %{SOURCE3} $RPM_BUILD_ROOT%{_sysusersdir}/virtlogin.conf
+
+%endif
+
+%if %{with_mingw32} || %{with_mingw64}
+%mingw_ninja_install
+%endif
+
+%if %{with_mingw32}
+rm -rf $RPM_BUILD_ROOT%{mingw32_sysconfdir}/libvirt/nwfilter
+rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw32_datadir}/gtk-doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt_iohelper.exe
+rm -rf $RPM_BUILD_ROOT%{mingw32_libexecdir}/libvirt-guests.sh
+%endif
+
+%if %{with_mingw64}
+rm -rf $RPM_BUILD_ROOT%{mingw64_sysconfdir}/libvirt/nwfilter
+rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw64_datadir}/gtk-doc/*
+rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt_iohelper.exe
+rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
+%endif
+
+%if %{with_mingw32} || %{with_mingw64}
+%mingw_debug_install_post
+
+%mingw_find_lang %{name}
+
+%endif
 
 %check
+
+%if %{with_native}
 # Building on slow archs, like emulated s390x in Fedora copr, requires
 # raising the test timeout
 VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
+%endif
 
 %define libvirt_rpmstatedir %{_localstatedir}/lib/rpm-state/libvirt
 
 # Mark units such that presets will later be applied to them. Meant
-# to be called during %pre. Units that already exist on the system
+# to be called during %%pre. Units that already exist on the system
 # will not be marked, with the assumption that presets have already
 # been applied at some point in the past. This makes it safe to call
-# this macro for all units each time %pre runs.
+# this macro for all units each time %%pre runs.
 %define libvirt_systemd_schedule_preset() \
     mkdir -p %{libvirt_rpmstatedir} || : \
     for unit in %{?*}; do \
@@ -1520,7 +1572,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     %{nil}
 
 # Apply presets for units that have previously been marked. Meant to
-# be called during %posttrans. Note that foo.service must be passed
+# be called during %%posttrans. Note that foo.service must be passed
 # as the first argument, before all the various foo*.socket
 # associated with it, for things to work correctly. This is necessary
 # because Also=foo.socket is usually present in foo.service's
@@ -1537,14 +1589,14 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
     %{nil}
 
-# Mark a single unit for restart. Meant to be called during %pre.
+# Mark a single unit for restart. Meant to be called during %%pre.
 %define libvirt_systemd_schedule_restart() \
     mkdir -p %{libvirt_rpmstatedir} || : \
     touch %{libvirt_rpmstatedir}/restart-%1 || : \
     %{nil}
 
 # Restart a unit that was previously marked. Meant to be called
-# during %posttrans. If systemd is not running, no action will be
+# during %%posttrans. If systemd is not running, no action will be
 # performed.
 %define libvirt_systemd_perform_restart() \
     if test -d /run/systemd/system && \
@@ -1555,14 +1607,14 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     rmdir %{libvirt_rpmstatedir} 2>/dev/null || : \
     %{nil}
 
-# Mark a single unit for reload. Meant to be called during %pre.
+# Mark a single unit for reload. Meant to be called during %%pre.
 %define libvirt_systemd_schedule_reload() \
     mkdir -p %{libvirt_rpmstatedir} || : \
     touch %{libvirt_rpmstatedir}/reload-%1 || : \
     %{nil}
 
 # Reload a unit that was previously marked. Meant to be called during
-# %posttrans. If systemd is not running, no action will be performed.
+# %%posttrans. If systemd is not running, no action will be performed.
 %define libvirt_systemd_perform_reload() \
     if test -d /run/systemd/system && \
        test -e %{libvirt_rpmstatedir}/reload-%1; then \
@@ -1573,7 +1625,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     %{nil}
 
 # Disable a single unit, optionally stopping it if systemd is
-# running. Meant to be called during %preun.
+# running. Meant to be called during %%preun.
 %define libvirt_systemd_disable() \
     if test -d /run/systemd/system; then \
         /usr/bin/systemctl --no-reload disable --now %{?*} || : \
@@ -1582,7 +1634,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     fi \
     %{nil}
 
-# %pre implementation for services that should be restarted on
+# %%pre implementation for services that should be restarted on
 # upgrade. Note that foo.service must be passed as the first
 # argument, before all the various foo*.socket associated with it.
 %define libvirt_systemd_restart_pre() \
@@ -1590,7 +1642,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     %libvirt_systemd_schedule_restart %1 \
     %{nil}
 
-# %pre implementation for services that should be reloaded on
+# %%pre implementation for services that should be reloaded on
 # upgrade. Note that foo.service must be passed as the first
 # argument, before all the various foo*.socket associated with it.
 %define libvirt_systemd_reload_pre() \
@@ -1598,13 +1650,13 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     %libvirt_systemd_schedule_reload %1 \
     %{nil}
 
-# %pre implementation for services that should be neither restarted
+# %%pre implementation for services that should be neither restarted
 # nor reloaded on upgrade.
 %define libvirt_systemd_noaction_pre() \
     %libvirt_systemd_schedule_preset %{?*} \
     %{nil}
 
-# %posttrans implementation for all services. We can use a single
+# %%posttrans implementation for all services. We can use a single
 # macro to cover all scenarios, because each operation will only be
 # performed if it had previously been scheduled. Note that
 # foo.service must be passed as the first argument, before all the
@@ -1615,7 +1667,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
     %libvirt_systemd_perform_restart %1 \
     %{nil}
 
-# %preun implementation for all services.
+# %%preun implementation for all services.
 %define libvirt_systemd_preun() \
     if [ $1 -lt 1 ]; then \
         %libvirt_systemd_disable %{?*} \
@@ -1647,6 +1699,7 @@ VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
 %define libvirt_systemd_config_pre() %libvirt_systemd_schedule_restart %1.service
 %define libvirt_systemd_config_posttrans() %libvirt_systemd_perform_restart %1.service
 
+%if %{with_native}
 %pre daemon
 %libvirt_sysconfig_pre libvirtd
 %libvirt_systemd_inet_pre libvirtd
@@ -1711,9 +1764,9 @@ exit 0
 %libvirt_systemd_unix_pre virtnetworkd
 
 %post daemon-driver-network
-%if %{with_firewalld_zone}
+    %if %{with_firewalld_zone}
     %firewalld_reload
-%endif
+    %endif
 
 %posttrans daemon-driver-network
 %libvirt_sysconfig_posttrans virtnetworkd
@@ -1723,9 +1776,9 @@ exit 0
 %libvirt_systemd_unix_preun virtnetworkd
 
 %postun daemon-driver-network
-%if %{with_firewalld_zone}
+    %if %{with_firewalld_zone}
     %firewalld_reload
-%endif
+    %endif
 
 %pre daemon-driver-nwfilter
 %libvirt_sysconfig_pre virtnwfilterd
@@ -1782,7 +1835,7 @@ exit 0
 %preun daemon-driver-storage-core
 %libvirt_systemd_unix_preun virtstoraged
 
-%if %{with_qemu}
+    %if %{with_qemu}
 %pre daemon-driver-qemu
 %libvirt_sysconfig_pre virtqemud
 %libvirt_systemd_unix_pre virtqemud
@@ -1798,9 +1851,9 @@ exit 0
 
 %preun daemon-driver-qemu
 %libvirt_systemd_unix_preun virtqemud
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %pre daemon-driver-lxc
 %libvirt_sysconfig_pre virtlxcd
 %libvirt_systemd_unix_pre virtlxcd
@@ -1811,9 +1864,9 @@ exit 0
 
 %preun daemon-driver-lxc
 %libvirt_systemd_unix_preun virtlxcd
-%endif
+    %endif
 
-%if %{with_vbox}
+    %if %{with_vbox}
 %pre daemon-driver-vbox
 %libvirt_sysconfig_pre virtvboxd
 %libvirt_systemd_unix_pre virtvboxd
@@ -1824,9 +1877,9 @@ exit 0
 
 %preun daemon-driver-vbox
 %libvirt_systemd_unix_preun virtvboxd
-%endif
+    %endif
 
-%if %{with_libxl}
+    %if %{with_libxl}
 %pre daemon-driver-libxl
 %libvirt_sysconfig_pre virtxend
 %libvirt_systemd_unix_pre virtxend
@@ -1837,7 +1890,7 @@ exit 0
 
 %preun daemon-driver-libxl
 %libvirt_systemd_unix_preun virtxend
-%endif
+    %endif
 
 %pre daemon-config-network
 %libvirt_systemd_config_pre libvirtd
@@ -1902,12 +1955,14 @@ done
 %libvirt_systemd_config_posttrans libvirtd
 %libvirt_systemd_config_posttrans virtnwfilterd
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %pre login-shell
-getent group virtlogin >/dev/null || groupadd -r virtlogin
+%sysusers_create_compat %{SOURCE3}
 exit 0
+    %endif
 %endif
 
+%if %{with_native}
 %files
 
 %files docs
@@ -1970,9 +2025,9 @@ exit 0
 %{_datadir}/augeas/lenses/virtlockd.aug
 %{_datadir}/augeas/lenses/tests/test_virtlockd.aug
 %{_datadir}/augeas/lenses/libvirt_lockd.aug
-%if %{with_qemu}
+    %if %{with_qemu}
 %{_datadir}/augeas/lenses/tests/test_libvirt_lockd.aug
-%endif
+    %endif
 %attr(0755, root, root) %{_sbindir}/virtlockd
 %{_mandir}/man8/virtlockd.8*
 
@@ -2045,13 +2100,13 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_leaseshelper
 %{_libdir}/libvirt/connection-driver/libvirt_driver_network.so
 %{_mandir}/man8/virtnetworkd.8*
-%if %{with_firewalld_zone}
+    %if %{with_firewalld_zone}
 %{_prefix}/lib/firewalld/zones/libvirt.xml
 %{_prefix}/lib/firewalld/zones/libvirt-routed.xml
 %{_prefix}/lib/firewalld/policies/libvirt-routed-in.xml
 %{_prefix}/lib/firewalld/policies/libvirt-routed-out.xml
 %{_prefix}/lib/firewalld/policies/libvirt-to-host.xml
-%endif
+    %endif
 
 %files daemon-driver-nodedev
 %config(noreplace) %{_sysconfdir}/libvirt/virtnodedevd.conf
@@ -2128,31 +2183,31 @@ exit 0
 %files daemon-driver-storage-iscsi
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_iscsi.so
 
-%if %{with_storage_iscsi_direct}
+    %if %{with_storage_iscsi_direct}
 %files daemon-driver-storage-iscsi-direct
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_iscsi-direct.so
-%endif
+    %endif
 
 %files daemon-driver-storage-mpath
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_mpath.so
 
-%if %{with_storage_gluster}
+    %if %{with_storage_gluster}
 %files daemon-driver-storage-gluster
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_gluster.so
 %{_libdir}/libvirt/storage-file/libvirt_storage_file_gluster.so
-%endif
+    %endif
 
-%if %{with_storage_rbd}
+    %if %{with_storage_rbd}
 %files daemon-driver-storage-rbd
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_rbd.so
-%endif
+    %endif
 
-%if %{with_storage_zfs}
+    %if %{with_storage_zfs}
 %files daemon-driver-storage-zfs
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_zfs.so
-%endif
+    %endif
 
-%if %{with_qemu}
+    %if %{with_qemu}
 %files daemon-driver-qemu
 %config(noreplace) %{_sysconfdir}/libvirt/virtqemud.conf
 %config(noreplace) %{_prefix}/lib/sysctl.d/60-qemu-postcopy-migration.conf
@@ -2194,9 +2249,9 @@ exit 0
 %{_bindir}/virt-qemu-run
 %{_mandir}/man1/virt-qemu-run.1*
 %{_mandir}/man8/virtqemud.8*
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %files daemon-driver-lxc
 %config(noreplace) %{_sysconfdir}/libvirt/virtlxcd.conf
 %{_datadir}/augeas/lenses/virtlxcd.aug
@@ -2218,9 +2273,9 @@ exit 0
 %attr(0755, root, root) %{_libexecdir}/libvirt_lxc
 %{_libdir}/libvirt/connection-driver/libvirt_driver_lxc.so
 %{_mandir}/man8/virtlxcd.8*
-%endif
+    %endif
 
-%if %{with_libxl}
+    %if %{with_libxl}
 %files daemon-driver-libxl
 %config(noreplace) %{_sysconfdir}/libvirt/virtxend.conf
 %{_datadir}/augeas/lenses/virtxend.aug
@@ -2246,9 +2301,9 @@ exit 0
 %dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/libxl/save/
 %{_libdir}/libvirt/connection-driver/libvirt_driver_libxl.so
 %{_mandir}/man8/virtxend.8*
-%endif
+    %endif
 
-%if %{with_vbox}
+    %if %{with_vbox}
 %files daemon-driver-vbox
 %config(noreplace) %{_sysconfdir}/libvirt/virtvboxd.conf
 %{_datadir}/augeas/lenses/virtvboxd.aug
@@ -2260,36 +2315,36 @@ exit 0
 %attr(0755, root, root) %{_sbindir}/virtvboxd
 %{_libdir}/libvirt/connection-driver/libvirt_driver_vbox.so
 %{_mandir}/man8/virtvboxd.8*
-%endif
+    %endif
 
-%if %{with_qemu_tcg}
+    %if %{with_qemu_tcg}
 %files daemon-qemu
-%endif
+    %endif
 
-%if %{with_qemu_kvm}
+    %if %{with_qemu_kvm}
 %files daemon-kvm
-%endif
+    %endif
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %files daemon-lxc
-%endif
+    %endif
 
-%if %{with_libxl}
+    %if %{with_libxl}
 %files daemon-xen
-%endif
+    %endif
 
-%if %{with_vbox}
+    %if %{with_vbox}
 %files daemon-vbox
-%endif
+    %endif
 
-%if %{with_sanlock}
+    %if %{with_sanlock}
 %files daemon-plugin-sanlock
-%if %{with_qemu}
+        %if %{with_qemu}
 %config(noreplace) %{_sysconfdir}/libvirt/qemu-sanlock.conf
-%endif
-%if %{with_libxl}
+        %endif
+        %if %{with_libxl}
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-sanlock.conf
-%endif
+        %endif
 %dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
@@ -2298,7 +2353,7 @@ exit 0
 %{_sbindir}/virt-sanlock-cleanup
 %{_mandir}/man8/virt-sanlock-cleanup.8*
 %attr(0755, root, root) %{_libexecdir}/libvirt_sanlock_helper
-%endif
+    %endif
 
 %files client
 %{_mandir}/man1/virsh.1*
@@ -2312,13 +2367,13 @@ exit 0
 %{_bindir}/virt-pki-validate
 %{_datadir}/bash-completion/completions/virsh
 
-%if %{with_qemu}
+    %if %{with_qemu}
 %files client-qemu
 %{_mandir}/man1/virt-qemu-qmp-proxy.1*
 %{_mandir}/man1/virt-qemu-sev-validate.1*
 %{_bindir}/virt-qemu-qmp-proxy
 %{_bindir}/virt-qemu-sev-validate
-%endif
+    %endif
 
 %files libs -f %{name}.lang
 %license COPYING COPYING.LESSER
@@ -2333,29 +2388,31 @@ exit 0
 %dir %{_datadir}/libvirt/schemas/
 %{_datadir}/systemtap/tapset/libvirt_probes*.stp
 %{_datadir}/systemtap/tapset/libvirt_functions.stp
-%if %{with_qemu}
+    %if %{with_qemu}
 %{_datadir}/systemtap/tapset/libvirt_qemu_probes*.stp
-%endif
+    %endif
 %{_datadir}/libvirt/schemas/*.rng
 %{_datadir}/libvirt/cpu_map/*.xml
 %{_datadir}/libvirt/test-screenshot.png
 
-%if %{with_wireshark}
+    %if %{with_wireshark}
 %files wireshark
 %{wireshark_plugindir}/libvirt.so
-%endif
+    %endif
 
 %files nss
 %{_libdir}/libnss_libvirt.so.2
 %{_libdir}/libnss_libvirt_guest.so.2
 
-%if %{with_lxc}
+    %if %{with_lxc}
 %files login-shell
 %attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
 %{_libexecdir}/virt-login-shell-helper
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
+## chinforpms changes
+%{_sysusersdir}/virtlogin.conf
 %{_mandir}/man1/virt-login-shell.1*
-%endif
+    %endif
 
 %files devel
 %{_libdir}/libvirt.so
@@ -2390,8 +2447,9 @@ exit 0
 %{_datadir}/libvirt/api/libvirt-admin-api.xml
 %{_datadir}/libvirt/api/libvirt-qemu-api.xml
 %{_datadir}/libvirt/api/libvirt-lxc-api.xml
+%endif
 
-%if %{with_mingw}
+%if %{with_mingw32}
 %files -n mingw32-libvirt -f mingw32-libvirt.lang
 %dir %{mingw32_sysconfdir}/libvirt/
 %config(noreplace) %{mingw32_sysconfdir}/libvirt/libvirt.conf
@@ -2448,7 +2506,9 @@ exit 0
 %{mingw32_mandir}/man1/virt-pki-query-dn.1*
 %{mingw32_mandir}/man1/virt-pki-validate.1*
 %{mingw32_mandir}/man7/virkey*.7*
+%endif
 
+%if %{with_mingw64}
 %files -n mingw64-libvirt -f mingw64-libvirt.lang
 %dir %{mingw64_sysconfdir}/libvirt/
 %config(noreplace) %{mingw64_sysconfdir}/libvirt/libvirt.conf
@@ -2509,6 +2569,9 @@ exit 0
 
 
 %changelog
+* Sat Dec 02 2023 Phantom X <megaphantomx at hotmail dot com> - 9.10.0-100
+- 9.10.0
+
 * Tue Nov 14 2023 Phantom X <megaphantomx at hotmail dot com> - 9.9.0-101
 - Fix bzrh##2247754
 

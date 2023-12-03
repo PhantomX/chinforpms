@@ -64,6 +64,7 @@ perl-X11-GUITest
 qcodeeditor
 rapidyaml
 -spirv-tools
+volk-vulkan
 vulkan-loader
 xbyak
 xcftools
