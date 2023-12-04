@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.3
+%define specrpmversion 6.6.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,9 +214,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit a9237721cbc7c641e6dba716ec99edef8101d4be
+%global pfcommit 89e7c92672cd1a3987d09191b835bcc90466cdd8
 %global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
-%global pfcoprhash 52ca24f618bf611994eff6b22e3ed283
+%global pfcoprhash f70665928b42be34165cc7480bc2b1da
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,7 +238,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 263a8551d2c008c025accf98725fa65c6c416d90
+%global opensuse_id d766c572a0364cdd25a29e4aea41104f5ffdbd17
 %global tkg_id 94a2ac0bd873bfa09abef78980be90d47a4cf8ba
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1037,8 +1037,7 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: 0001-vfs-add-super_operations-get_inode_dev-fixup.patch
- 
+
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
@@ -1661,7 +1660,6 @@ ApplyOptionalPatch %{PATCH1}
 ApplyOptionalPatch %{PATCH999999}
 
 # openSUSE
-ApplyPatch %{PATCH1014}
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
@@ -3390,6 +3388,9 @@ fi\
 #
 #
 %changelog
+* Sun Dec 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.4-500.chinfo
+- 6.6.3 - pf4
+
 * Tue Nov 28 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.3-500.chinfo
 - 6.6.3 - pf3
 
