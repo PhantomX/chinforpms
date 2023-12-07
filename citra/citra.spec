@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ceeda057981c4627470a4454603fbc3da19b74f8
+%global commit 59df319f48a8a67db717233e5b222a0b86f1eae4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231111
+%global date 20231204
 %bcond_without snapshot
 
 # Enable system boost
@@ -116,7 +116,7 @@
 
 Name:           citra
 Version:        0
-Release:        52%{?dist}
+Release:        53%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -418,6 +418,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
+  -DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON \
   -DUSE_SYSTEM_XBYAK:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
 %if %{with boost}
@@ -430,7 +431,11 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
   -DENABLE_WEB_SERVICE:BOOL=ON \
-  %{!?with_tests:-DENABLE_TESTS:BOOL=OFF} \
+%if %{with tests}
+  -DUSE_SYSTEM_CATCH2:BOOL=ON \
+%else
+  -DENABLE_TESTS:BOOL=OFF \
+%endif
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \

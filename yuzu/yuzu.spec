@@ -84,7 +84,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 3997
+%global vc_version 4009
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -176,6 +176,7 @@ BuildRequires:  cmake(dynarmic) >= 6.4.7
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 %endif
+BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 9
@@ -251,7 +252,9 @@ This is the Qt frontend.
 
 %if %{with ea}
 pushd externals
-rm -rf cubeb/* discord-rpc enet ffmpeg/ffmpeg/* inih libressl libusb opus/opus/* SDL vcpkg Vulkan-Headers xbyak
+rm -rf \
+  cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode inih libressl libusb \
+  opus/opus/* SDL vcpkg Vulkan-Headers xbyak
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif

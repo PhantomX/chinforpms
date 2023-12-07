@@ -7,9 +7,11 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global appname io.github.feralinteractive.gamemode
+
 Name:           gamemode
-Version:        1.7
-Release:        101%{?dist}
+Version:        1.8
+Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
 
@@ -22,10 +24,9 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
 %endif
 
-Patch0:         %{url}/commit/4934191b1928ef695c3e8af21e75781f8591745f.patch#/%{name}-gh-4934191.patch
-
 BuildRequires:  meson
 BuildRequires:  gcc
+BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(inih)
 BuildRequires:  pkgconfig(libsystemd)
@@ -65,6 +66,11 @@ sed -e '/^GAMEMODEAUTO_NAME/s|lib|/usr/\\$LIB/lib|' -i data/%{name}run
 
 rm -f %{buildroot}%{_libdir}/*.a
 
+%check
+%meson_test
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
+
+
 %pre
 %sysusers_create_compat %{buildroot}%{_sysusersdir}/%{name}.conf
 
@@ -73,25 +79,30 @@ rm -f %{buildroot}%{_libdir}/*.a
 %license LICENSE.txt
 %doc README.md
 %{_bindir}/%{name}*
-%{_libdir}/lib*.so.*
+%{_libdir}/lib%{name}*.so.*
 %{_libexecdir}/%{name}
-%{_userunitdir}/*.service
-%{_mandir}/man1/*.1.*
-%{_mandir}/man8/*.8.*
-%{_datadir}/dbus-1/services/*.service
-%{_datadir}/polkit-1/actions/*.policy
+%{_userunitdir}/%{name}d.service
+%{_mandir}/man1/%{name}*.1.*
+%{_mandir}/man8/%{name}*.8.*
+%{_datadir}/dbus-1/services/com.feralinteractive.GameMode.service
+%{_datadir}/polkit-1/actions/com.feralinteractive.GameMode.policy
+%{_datadir}/polkit-1/rules.d/%{name}.rules
 %{_datadir}/%{name}/
-%{_metainfodir}/*.metainfo.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 %{_sysusersdir}/%{name}.conf
+%{_pam_secconfdir}/limits.d/10-%{name}.conf
 
 %files devel
 %license LICENSE.txt
 %{_includedir}/%{name}*.h
-%{_libdir}/pkgconfig/*.pc
-%{_libdir}/lib*.so
+%{_libdir}/pkgconfig/*%{name}*.pc
+%{_libdir}/lib%{name}*.so
 
 
 %changelog
+* Wed Dec 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.8-100
+- 1.8
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.7-101
 - glibc 2.36 fix
 

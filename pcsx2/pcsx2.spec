@@ -17,7 +17,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 8a717b1b303be636213a3e6612b059c1c0e98102
+%global commit11 8afec6c55e3a0f72368a5a085203bab1b8828ffb
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 rcheevos
 
@@ -25,7 +25,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
 
-%global commit13 b6f4ceaed0a0a24ccf575fab6c56dd50ccf6f1a9
+%global commit13 5cfd28d476c6859617878f951931b8ce7d36b9df
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 fmt
 
@@ -54,7 +54,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5238
+Version:        1.7.5263
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -103,7 +103,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
 %if %{with fmt}
-BuildRequires:  pkgconfig(fmt) >= 0.8.1
+BuildRequires:  pkgconfig(fmt) >= 10.1.1
 %else
 Provides:       bundled(fmt) = 0~git%{shortcommit13}
 %endif
@@ -156,7 +156,7 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.272
 %endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
@@ -211,7 +211,7 @@ rm -rf fmt
 %else
 tar -xf %{S:13} -C fmt/fmt --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
-cp -p fmt/fmt/LICENSE.rst LICENSE.fmt.rst
+cp -p fmt/fmt/LICENSE LICENSE.fmt
 %endif
 
 %if %{with soundtouch}

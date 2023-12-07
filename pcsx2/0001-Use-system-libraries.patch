@@ -1,4 +1,4 @@
-From 0e0d697fc471660f5b92e906872c91da24df1ec6 Mon Sep 17 00:00:00 2001
+From 4b9ae95d0ccfaf547835796107bd1ccc26dda37c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -13,12 +13,12 @@ Subject: [PATCH] Use system libraries
  6 files changed, 96 insertions(+), 7 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 9683626..9802336 100644
+index f605185..5dcd95d 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -114,32 +114,101 @@ if(GCC_VERSION VERSION_GREATER_EQUAL "9.0" AND GCC_VERSION VERSION_LESS "9.2")
- 	This text being in a compile log in an open issue may cause it to be closed.")
- endif()
+@@ -117,32 +117,101 @@ endif()
+ # Prevent fmt from being built with exceptions, or being thrown at call sites.
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
  
 +find_package(fmt 9)
 +if(fmt_FOUND)
@@ -118,7 +118,7 @@ index 9683626..9802336 100644
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
  
  if(USE_OPENGL)
-@@ -148,12 +217,24 @@ endif()
+@@ -151,12 +220,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)

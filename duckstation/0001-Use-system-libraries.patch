@@ -1,4 +1,4 @@
-From 486ac1d8ad485e2446b8e98e5629852d751d4f4a Mon Sep 17 00:00:00 2001
+From ab9df66a187262912e3201c1b4eea521d16c88d3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
@@ -9,16 +9,17 @@ Subject: [PATCH] Use system libraries
  2 files changed, 109 insertions(+), 3 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 63daac0..3bcd64b 100644
+index 527cac2..c8a9554 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,42 +1,128 @@
+@@ -1,43 +1,129 @@
 +find_package(fmt 9)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
 +  add_library(fmt INTERFACE)
 +  target_link_libraries(fmt INTERFACE fmt::fmt)
 +else()
+ set(FMT_INSTALL OFF CACHE BOOL "")
  add_subdirectory(fmt EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(fmt)
 +endif()
@@ -141,7 +142,7 @@ index 63daac0..3bcd64b 100644
  endif()
  
  if(ENABLE_OPENGL)
-@@ -50,9 +136,27 @@ if(ENABLE_DISCORD_PRESENCE)
+@@ -51,9 +137,27 @@ if(ENABLE_DISCORD_PRESENCE)
  endif()
  
  if(CPU_ARCH_X64)

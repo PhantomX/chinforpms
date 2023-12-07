@@ -14,9 +14,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit afe8384b6d4677f6b444bde1f2b75c07f376ac0e
+%global commit 14c7c70b0c50dba2a2be2b2029effd7fe4f809e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231126
+%global date 20231206
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -29,13 +29,13 @@
 %global glad_ver 0.1.33
 %global imgui_ver 1.88
 %global md5_ver 1.6
-%global rcheevos_scommit 3af1e2f
+%global rcheevos_scommit 8afec6c
 %global soundtouch_ver 2.3.1
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        104%{?dist}
+Release:        105%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -74,10 +74,10 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
-%if %{without fmt}
-BuildRequires:  pkgconfig(fmt) >= 9
+%if %{with fmt}
+BuildRequires:  pkgconfig(fmt) >= 10.1
 %else
-Provides:       bundled(fmt) = 9.0.0
+Provides:       bundled(fmt) = 10.1.1
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)

@@ -1,13 +1,13 @@
-From ef2255496fe96a7441ad0f75c6606d504fbf9553 Mon Sep 17 00:00:00 2001
+From f1b5dd333c9f392d4ab1b0de6e313d3b301d44c5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt            |  3 +--
- externals/CMakeLists.txt  | 37 ++++++++++++++++++++++++++++++++++---
+ externals/CMakeLists.txt  | 24 ++++++++++++++++++++----
  src/common/CMakeLists.txt | 10 ++++++++--
- 3 files changed, 43 insertions(+), 7 deletions(-)
+ 3 files changed, 29 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 1344d06..9109290 100644
@@ -31,7 +31,7 @@ index 1344d06..9109290 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index d695d25..143f5dc 100644
+index e9f57b5..9652049 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -42,27 +42,23 @@ index d695d25..143f5dc 100644
  include(ExternalProject)
  
  # Boost
-@@ -41,9 +40,19 @@ else()
+@@ -41,6 +40,7 @@ else()
  endif()
  
  # Catch2
 +if (ENABLE_TESTS)
-+find_package(Catch2 3.1.0 REQUIRED CONFIG)
-+if(Catch2_FOUND)
-+  message(STATUS "Using the system Catch")
-+  add_library(catch-shared INTERFACE)
-+  target_link_libraries(catch-shared INTERFACE Catch2::Catch2WithMain)
-+  add_library(Catch2::Catch2WithMain ALIAS catch-shared)
-+else()
- set(CATCH_INSTALL_DOCS OFF CACHE BOOL "")
- set(CATCH_INSTALL_EXTRAS OFF CACHE BOOL "")
- add_subdirectory(catch2)
-+endif()
+ add_library(catch2 INTERFACE)
+ if(USE_SYSTEM_CATCH2)
+     find_package(Catch2 3.0.0 REQUIRED)
+@@ -50,6 +50,7 @@ else()
+     add_subdirectory(catch2)
+ endif()
+ target_link_libraries(catch2 INTERFACE Catch2::Catch2WithMain)
 +endif()
  
  # Crypto++
  if(USE_SYSTEM_CRYPTOPP)
-@@ -182,6 +191,14 @@ if (NOT FOUND_FFMPEG_HEADERS)
+@@ -188,6 +189,14 @@ if (NOT FOUND_FFMPEG_HEADERS)
      target_include_directories(library-headers SYSTEM INTERFACE ./library-headers/ffmpeg/include)
  endif()
  
@@ -77,7 +73,7 @@ index d695d25..143f5dc 100644
  # SoundTouch
  if(NOT USE_SYSTEM_SOUNDTOUCH)
      set(INTEGER_SAMPLES ON CACHE BOOL "")
-@@ -211,12 +228,19 @@ endif()
+@@ -217,12 +226,19 @@ endif()
  
  # Zstandard
  if(USE_SYSTEM_ZSTD)
@@ -99,23 +95,15 @@ index d695d25..143f5dc 100644
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -376,10 +400,16 @@ endif()
- 
+@@ -383,7 +399,7 @@ endif()
  # vulkan-headers
  add_library(vulkan-headers INTERFACE)
-+find_package(VulkanHeaders)
-+if(VulkanHeaders_FOUND)
-+    message(STATUS "Using the system vulkan-headers")
-+    target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
-+else()
- target_include_directories(vulkan-headers SYSTEM INTERFACE ./vulkan-headers/include)
- if (APPLE)
-     target_include_directories(vulkan-headers SYSTEM INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/MoltenVK)
- endif()
-+endif()
- 
- # adrenotools
- if (ANDROID AND "arm64" IN_LIST ARCHITECTURE)
+ if(USE_SYSTEM_VULKAN_HEADERS)
+-    find_package(Vulkan REQUIRED)
++    find_package(VulkanHeaders REQUIRED)
+     if(TARGET Vulkan::Headers)
+         message(STATUS "Found Vulkan headers")
+         target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
 index 6b97b68..cd00b95 100644
 --- a/src/common/CMakeLists.txt
@@ -142,5 +130,5 @@ index 6b97b68..cd00b95 100644
      target_sources(citra_common PUBLIC
          apple_authorization.h
 -- 
-2.41.0
+2.43.0
 
