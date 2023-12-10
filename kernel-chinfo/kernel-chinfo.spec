@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.4
+%define specrpmversion 6.6.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,9 +214,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 89e7c92672cd1a3987d09191b835bcc90466cdd8
+%global pfcommit 626a1ff2d9b2c12357dafac5d8f25faa218f3ef8
 %global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
-%global pfcoprhash f70665928b42be34165cc7480bc2b1da
+%global pfcoprhash 543fcdaa16f324756251f8eb74210398
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,7 +238,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id d766c572a0364cdd25a29e4aea41104f5ffdbd17
+%global opensuse_id 7675861f3dd607aff91ef8099ad5c6226fc8bd8f
 %global tkg_id 94a2ac0bd873bfa09abef78980be90d47a4cf8ba
 
 # libexec dir is not used by the linker, so the shared object there
@@ -3388,8 +3388,11 @@ fi\
 #
 #
 %changelog
+* Fri Dec 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.5-500.chinfo
+- 6.6.5 - pf3
+
 * Sun Dec 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.4-500.chinfo
-- 6.6.3 - pf4
+- 6.6.4 - pf3
 
 * Tue Nov 28 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.3-500.chinfo
 - 6.6.3 - pf3

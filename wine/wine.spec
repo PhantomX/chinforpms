@@ -51,9 +51,9 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  8.1.0
-%global winevulkan 1.3.267
+%global winevulkan 1.3.272
 
-%global wineFAudio 23.10
+%global wineFAudio 23.12
 %global winegsm 1.0.19
 %global winejpeg 9e
 %global winelcms2 2.15
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 8.21
+%global wine_stagingver 9.0-rc1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 21ea5483910659b6d0df5013a0f7ddeb655d9304
+%global tkg_id aea5231d46eacaa4874f031da3d9c3559807a10c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.21
+Version:        9.0~rc1
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -250,7 +250,7 @@ Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.pat
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes7.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes7.patch
+Patch:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes7.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes7.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.patch
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
@@ -888,8 +888,6 @@ tar -xf %{SOURCE900} --strip-components=1
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
-%{__scm_apply_patch -p1 -q} -i patches/mfplat-streaming-support/0008-winegstreamer-Allow-videoconvert-to-parallelize.patch
-
 sed \
   -e 's|^C_SRCS|SOURCES|g' \
   -i dlls/d3d12core/Makefile.in dlls/dxgkrnl.sys/Makefile.in \
@@ -926,9 +924,9 @@ sed \
 %patch -P 1031 -p1
 %patch -P 1032 -p1
 %patch -P 1034 -p1
-%patch -P 1035 -p1
-%patch -P 1036 -p1
-%patch -P 1037 -p1
+%dnl %patch -P 1035 -p1
+%dnl %patch -P 1036 -p1
+%dnl %patch -P 1037 -p1
 %patch -P 1038 -p1
 %patch -P 1039 -p1
 %patch -P 1040 -p1
@@ -1555,6 +1553,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/comcat.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comctl32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comdlg32.%{winedll}
+%{_libdir}/wine/%{winedlldir}/coml2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/compstui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comsvcs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/concrt140.%{winedll}
@@ -2537,6 +2536,9 @@ fi
 
 
 %changelog
+* Sat Dec 09 2023 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc1-100
+- 9.0-rc1
+
 * Sat Nov 25 2023 Phantom X <megaphantomx at hotmail dot com> - 1:8.21-100
 - 8.21
 

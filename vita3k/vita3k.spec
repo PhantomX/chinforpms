@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6030dae6be4fdb263c1a883fb495b71eee007a69
+%global commit c01996ec909f2332fe21f6209d25cf9bd8f48281
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231112
+%global date 20231208
 
 %bcond_with fmt
 %bcond_with yamlcpp
@@ -160,7 +160,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.1.9.3477
+Version:        0.1.9.3506
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator 
 
@@ -168,7 +168,6 @@ License:        GPL-2.0-or-later AND BSD-2-Clause AND MIT AND ( 0BSD AND MIT ) A
 URL:            https://vita3k.org/
 
 Source0:        %{vc_url}/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
-Source1:        %{name}.sh
 
 Source10:       %{vc_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
@@ -208,7 +207,7 @@ Source33:       https://github.com/Cyan4973/%{srcname33}/archive/%{commit33}/%{s
 %endif
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-Set-datadir-to-RPM-packaging.patch
+Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
 
 BuildRequires:  cmake
@@ -375,13 +374,12 @@ sed \
   -e 's|GIT_FOUND|GIT_FOUND_DISABLED|g' \
   -i external/SPIRV-Cross/CMakeLists.txt
 
-cp -rp %{S:1} .
 sed \
-  -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
-  -e 's|_RPM_BINDIR_|%{_libexecdir}|g' \
-  -i %{name}.sh vita3k/app/src/app_init.cpp
+  -e 's|getenv("APPDIR")|"%{_prefix}"|g' \
+  -e 's|usr/share/|share/|' \
+  -i vita3k/app/src/app_init.cpp
 
-cat > %{name}.desktop <<'EOF'
+cat > %{pkgname}.desktop <<'EOF'
 [Desktop Entry]
 Type=Application
 Version=1.0
@@ -389,8 +387,8 @@ Name=Vita3K
 GenericName=PlayStation Vita Emulator
 Comment=Experimental PlayStation Vita emulator
 Categories=Game;Emulator;
-Icon=%{name}
-Exec=%{name}
+Icon=%{pkgname}
+Exec=%{pkgname}
 Terminal=false
 EOF
 
@@ -402,7 +400,6 @@ EOF
   -DXXH_X86DISPATCH_ALLOW_AVX:BOOL=ON \
   -DUSE_VITA3K_UPDATE:BOOL=OFF \
   -DUSE_DISCORD_RICH_PRESENCE:BOOL=OFF \
-  -DNFD_PORTAL:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -410,48 +407,44 @@ EOF
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{__cmake_builddir}/bin/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
-mkdir -p %{buildroot}%{_libexecdir}
-install -pm0755 %{__cmake_builddir}/bin/%{pkgname} %{buildroot}%{_libexecdir}/%{name}
-
-mkdir -p %{buildroot}%{_datadir}/%{name}/data
+mkdir -p %{buildroot}%{_datadir}/%{pkgname}/data
 cp -rp %{__cmake_builddir}/bin/{data,lang,shaders-builtin} \
-  %{buildroot}%{_datadir}/%{name}/
+  %{buildroot}%{_datadir}/%{pkgname}/
 
-rm -f %{buildroot}%{_datadir}/%{name}/data/fonts/*
+rm -f %{buildroot}%{_datadir}/%{pkgname}/data/fonts/*
 ln -sf ../../../fonts/mplus/mplus-1mn-bold.ttf \
-  %{buildroot}%{_datadir}/%{name}/data/fonts/mplus-1mn-bold.ttf
+  %{buildroot}%{_datadir}/%{pkgname}/data/fonts/mplus-1mn-bold.ttf
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
+  %{pkgname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
 ln -s ../../../../%{name}/data/image/icon.png \
-  %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{name}.png
+  %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{pkgname}.png
 
 for res in 16 22 24 32 36 48 64 72 96 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   convert data/image/icon.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{name}.png
+    ${dir}/%{pkgname}.png
 done
 
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %files
 %license COPYING.txt external/{COPYING,LICENSE,copyright}.*
 %doc README.md
-%{_bindir}/%{name}
-%{_libexecdir}/%{name}
-%{_datadir}/%{name}/
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
+%{_bindir}/%{pkgname}
+%{_datadir}/%{pkgname}/
+%{_datadir}/applications/%{pkgname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{pkgname}.*
 
 
 %changelog
