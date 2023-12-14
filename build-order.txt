@@ -148,6 +148,7 @@ gmpc
 -gmysqlcc
 gnome-themes
 gnome-themes-extra
+golang-github-dim13-otpauth
 gogextract
 gpa
 grub2-distro-grub-fedora-theme

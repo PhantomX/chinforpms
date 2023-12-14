@@ -2,9 +2,9 @@
 // Chinforinfula Firefox settings
 // Some personal and privacy modifications
 
-// Some borrowed from https://github.com/ghacksuserjs/ghacks-user.js
+// Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20230526");
+pref("chinfo.cfg.version", "20231210");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -36,6 +36,7 @@ pref("browser.tabs.insertRelatedAfterCurrent", true);
 pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
+pref("browser.tabs.searchclipboardfor.middleclick", false);
 pref("browser.uidensity", 1);
 pref("browser.uitour.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);
@@ -81,6 +82,7 @@ pref("privacy.userContext.enabled", true);
 pref("privacy.userContext.ui.enabled", true);
 pref("toolkit.cosmeticAnimations.enabled", false);
 pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);
+pref("webchannel.allowObject.urlWhitelist", "");
 pref("widget.gtk.overlay-scrollbars.enabled", false);
 pref("widget.use-xdg-desktop-portal.file-picker", 2);
 
@@ -154,6 +156,7 @@ pref("permissions.default.microphone", 2);
 
 // Disable the internal PDF viewer
 pref("pdfjs.disabled", true);
+pref("pdfjs.enableScripting", false);
 
 // No Pocket here
 pref("browser.pocket.enabled", false);

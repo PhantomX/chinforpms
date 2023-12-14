@@ -10,7 +10,7 @@
 %global appname io.github.feralinteractive.gamemode
 
 Name:           gamemode
-Version:        1.8
+Version:        1.8.1
 Release:        100%{?dist}
 Summary:        Daemon/lib that optimizes system performance on demand
 Epoch:          1
@@ -100,6 +100,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Dec 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.8.1-100
+- 1.8.1
+
 * Wed Dec 06 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.8-100
 - 1.8
 
