@@ -1,18 +1,18 @@
-From 76cfbb86b5a0749fc4a02e08049ca69d3bd2fb5a Mon Sep 17 00:00:00 2001
+From 5b3209889443bd4223a9d027e681cf1260957546 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 15 Oct 2023 16:49:21 -0300
 Subject: [PATCH] SDL: fix high CPU usage with Vulkan
 
 Revert commit da801033f55b5beb07c674eeec54067b05a8d3f0
 ---
- SDL/SDLMain.cpp | 46 ++++++++++++++++------------------------------
- 1 file changed, 16 insertions(+), 30 deletions(-)
+ SDL/SDLMain.cpp | 45 ++++++++++++++++-----------------------------
+ 1 file changed, 16 insertions(+), 29 deletions(-)
 
 diff --git a/SDL/SDLMain.cpp b/SDL/SDLMain.cpp
-index 7eef3aa..c11d054 100644
+index b986e84..2c5a559 100644
 --- a/SDL/SDLMain.cpp
 +++ b/SDL/SDLMain.cpp
-@@ -1441,6 +1441,11 @@ int main(int argc, char *argv[]) {
+@@ -1422,6 +1422,11 @@ int main(int argc, char *argv[]) {
  	SDL_ShowCursor(SDL_DISABLE);
  #endif
  
@@ -24,7 +24,7 @@ index 7eef3aa..c11d054 100644
  	// Ensure that the swap interval is set after context creation (needed for kmsdrm)
  	SDL_GL_SetSwapInterval(1);
  
-@@ -1453,7 +1458,9 @@ int main(int argc, char *argv[]) {
+@@ -1434,7 +1439,9 @@ int main(int argc, char *argv[]) {
  	}
  	EnableFZ();
  
@@ -35,7 +35,7 @@ index 7eef3aa..c11d054 100644
  
  	graphicsContext->ThreadStart();
  
-@@ -1466,32 +1473,7 @@ int main(int argc, char *argv[]) {
+@@ -1447,31 +1454,7 @@ int main(int argc, char *argv[]) {
  
  	bool waitOnExit = g_Config.iGPUBackend == (int)GPUBackend::OPENGL;
  
@@ -53,7 +53,6 @@ index 7eef3aa..c11d054 100644
 -
 -			UpdateSDLCursor();
 -
--			inputTracker.MouseControl();
 -			inputTracker.MouseCaptureControl();
 -
 -
@@ -69,7 +68,7 @@ index 7eef3aa..c11d054 100644
  		inputTracker.TranslateMouseWheel();
  
  		{
-@@ -1557,19 +1539,23 @@ int main(int argc, char *argv[]) {
+@@ -1536,19 +1519,23 @@ int main(int argc, char *argv[]) {
  		}
  	}
  
@@ -97,5 +96,5 @@ index 7eef3aa..c11d054 100644
  
  	NativeShutdown();
 -- 
-2.41.0
+2.43.0
 

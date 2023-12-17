@@ -28,7 +28,7 @@ f5vpn-filesystem
 flycast
 -freac-superfast-codecs-freeworld
 -gens-gs
-gflash-player
+-gflash-player
 glow
 -gstreamer1-plugins-ugly
 hactool

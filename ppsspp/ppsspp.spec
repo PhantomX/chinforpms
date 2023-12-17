@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 931fdfbd55cefe23eb980c727c99e273393a7b9b
+%global commit 58e12acee4d7829ee675ce95f3d377c3aaa3ecc5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231114
+%global date 20231215
 %bcond_without snapshot
 
 # Enable Qt build
@@ -35,7 +35,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 7bd1ec93d4586985ba1ef420b43b5e620f68695e
+%global commit4 a8d71f0f279eb0d30ecf6af51473b66ae0cf8e8d
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -55,7 +55,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 6fb3ebca22fe4f3a97e7a391e5e9c4623aa2286a
+%global commit9 64fcb9ea3cf990e65343057ace9271ff3b77428e
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -70,7 +70,7 @@
 
 Name:           ppsspp
 Version:        1.16.6
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
