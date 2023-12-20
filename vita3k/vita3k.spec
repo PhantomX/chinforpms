@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c01996ec909f2332fe21f6209d25cf9bd8f48281
+%global commit da8a6933d87478ca3425e27d47736a409b1bf85f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231208
+%global date 20231217
 
 %bcond_with fmt
 %bcond_with yamlcpp
@@ -53,7 +53,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 f5e54359df4c26b6230fc61d38aa294581393084
+%global commit18 640e0c02d48e19076e976b395d919c815a27ae5d
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -85,7 +85,7 @@
 %global shortcommit25 %(c=%{commit25}; echo ${c:0:7})
 %global srcname25 printf
 
-%global commit26 144f8f157f6aca9d817097255021d0045f5469cd
+%global commit26 1d2547a72d20126c1425101cb448943a1027d950
 %global shortcommit26 %(c=%{commit26}; echo ${c:0:7})
 %global srcname26 psvpfstools
 
@@ -160,7 +160,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.1.9.3506
+Version:        0.1.9.3520
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator 
 
@@ -299,7 +299,7 @@ tar -xf %{S:17} -C ffmpeg --strip-components 1
 %if %{without fmt}
 tar -xf %{S:18} -C %{srcname18} --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
-cp -p fmt/LICENSE.rst LICENSE.fmt.rst
+cp -p fmt/LICENSE LICENSE.fmt
 %endif
 tar -xf %{S:19} -C %{srcname19} --strip-components 1
 tar -xf %{S:20} -C %{srcname20} --strip-components 1
