@@ -84,7 +84,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 4009
+%global vc_version 4029
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -147,7 +147,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
-Patch15:        0001-Lower-the-SDL2-requirement-a-bit.patch
 
 ExclusiveArch:  x86_64
 
@@ -197,7 +196,7 @@ Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= 2.28.2
 %if %{with qt}
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)
