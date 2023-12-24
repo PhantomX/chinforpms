@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.0-rc2
+%global wine_stagingver 9.0-rc3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id aea5231d46eacaa4874f031da3d9c3559807a10c
+%global tkg_id 88e64d8c68d0a5051fa434eebfc4ebd1e5a5d173
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.0~rc2
+Version:        9.0~rc3
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2536,6 +2536,9 @@ fi
 
 
 %changelog
+* Sat Dec 23 2023 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc3-100
+- 9.0-rc3
+
 * Sat Dec 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc2-100
 - 9.0-rc2
 
