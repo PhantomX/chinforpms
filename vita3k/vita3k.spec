@@ -215,7 +215,6 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
-BuildRequires:  llvm
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

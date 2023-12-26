@@ -10,6 +10,7 @@
 
 %bcond_without ffmpeg
 %bcond_without egl
+%bcond_with enet
 %bcond_with fmt
 %bcond_with llvm
 %bcond_with vulkan
@@ -20,9 +21,9 @@
 %global enablejit 1
 %endif
 
-%global commit 719f1dca29cbc345aaedf5881c3d75907b6e470e
+%global commit 57327be7f379757a192fa788f5875ed1a77970c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231126
+%global date 20231222
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -45,10 +46,15 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 fmt
 
+%global commit7 2a85cd64459f6ba038d233a634d9440490dbba12
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 enet
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global enet_ver 1.3.18
 %global fmt_ver 10.1.0
 
 %global distributor chinforpms
@@ -57,7 +63,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 40794
+%global baserelease 42253
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -95,6 +101,9 @@ Source5:        https://github.com/RetroAchievements/%{srcname5}/archive/%{commi
 %if %{without fmt}
 Source6:       https://github.com/fmtlib/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
+%if %{without enet}
+Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+%endif
 
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -124,7 +133,9 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtest)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
-BuildRequires:  pkgconfig(libenet) >= 1.3.8
+%if %{with enet}
+BuildRequires:  pkgconfig(libenet) >= %{enet_ver}
+%endif
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
@@ -203,6 +214,9 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
+%if %{without enet}
+Provides:       bundled(enet) = %{enet_ver}
+%endif
 %if %{without fmt}
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
@@ -275,7 +289,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 ###Remove Bundled:
 pushd Externals
 rm -rf \
-  bzip2 cubeb curl discord-rpc ed25519 enet ffmpeg gettext gtest hidapi \
+  bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
   libiconv-* liblzma libspng libusb lz4 LZO mbedtls mGBA miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
@@ -289,6 +303,13 @@ tar -xf %{S:4} -C implot/implot --strip-components 1
 tar -xf %{S:5} -C rcheevos/rcheevos --strip-components 1
 %if %{without fmt}
 tar -xf %{S:6} -C fmt/fmt --strip-components 1
+%else
+rm -rf fmt
+%endif
+%if %{without enet}
+tar -xf %{S:7} -C enet/enet --strip-components 1
+%else
+rm -rf enet
 %endif
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
@@ -330,6 +351,9 @@ sed \
 %endif
 %if %{without egl}
   -DENABLE_EGL:BOOL=OFF \
+%endif
+%if %{without enet}
+  -DUSE_SYSTEM_ENET:BOOL=OFF \
 %endif
 %if %{without fmt}
   -DUSE_SYSTEM_FMT:BOOL=OFF \

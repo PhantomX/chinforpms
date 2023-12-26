@@ -1,22 +1,20 @@
-From 4b9ae95d0ccfaf547835796107bd1ccc26dda37c Mon Sep 17 00:00:00 2001
+From 059399d8aa6dff3c993e66329650b870458e728c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                    | 81 +++++++++++++++++++
- pcsx2/CMakeLists.txt                          | 12 ++-
- pcsx2/GS/MultiISA.cpp                         |  2 +-
- .../SW/GSDrawScanlineCodeGenerator.h          |  2 +-
- pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h    |  4 +-
- .../Renderers/SW/GSSetupPrimCodeGenerator.h   |  2 +-
- 6 files changed, 96 insertions(+), 7 deletions(-)
+ cmake/SearchForStuff.cmake                 | 87 ++++++++++++++++++++++
+ pcsx2/CMakeLists.txt                       | 12 ++-
+ pcsx2/GS/MultiISA.cpp                      |  2 +-
+ pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h |  4 +-
+ 4 files changed, 100 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index f605185..5dcd95d 100644
+index f81fe46..5acfd1e 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -117,32 +117,101 @@ endif()
+@@ -117,34 +117,109 @@ endif()
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
  
@@ -116,9 +114,17 @@ index f605185..5dcd95d 100644
  add_subdirectory(3rdparty/rapidjson EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
++check_lib(lz4 liblz4)
++if(lz4_FOUND)
++	message(STATUS "Using the system lz4")
++	alias_library(LZ4::LZ4 PkgConfig::lz4)
++else()
+ add_subdirectory(3rdparty/lz4 EXCLUDE_FROM_ALL)
++endif()
  
  if(USE_OPENGL)
-@@ -151,12 +220,24 @@ endif()
+ 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
+@@ -152,12 +227,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -144,10 +150,10 @@ index f605185..5dcd95d 100644
  # Find the Qt components that we need.
  find_package(Qt6 6.6.0 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index f5d3f93..2854025 100644
+index c8db702..b68acf4 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1129,7 +1129,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1123,7 +1123,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -155,7 +161,7 @@ index f5d3f93..2854025 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1186,13 +1185,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1181,13 +1180,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -180,38 +186,25 @@ index f5d3f93..2854025 100644
  	message("Using precompiled headers.")
  	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
-index e5e572e..43f13ca 100644
+index d9f99aa..b88c94f 100644
 --- a/pcsx2/GS/MultiISA.cpp
 +++ b/pcsx2/GS/MultiISA.cpp
-@@ -15,7 +15,7 @@
+@@ -2,7 +2,7 @@
+ // SPDX-License-Identifier: LGPL-3.0+
  
- #include "PrecompiledHeader.h"
  #include "MultiISA.h"
 -#include <xbyak/xbyak_util.h>
 +#include <xbyak_util.h>
  
  #ifdef _WIN32
  #define strcasecmp _stricmp
-diff --git a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
-index 21b6a2f..8077cb3 100644
---- a/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
-+++ b/pcsx2/GS/Renderers/SW/GSDrawScanlineCodeGenerator.h
-@@ -23,7 +23,7 @@
- #ifdef _WIN32
- #include "common/RedtapeWindows.h"
- #endif
--#include <xbyak/xbyak.h>
-+#include <xbyak.h>
- 
- #if defined(_M_AMD64) || defined(_WIN64)
- #define RegLong Xbyak::Reg64
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index 2404d27..b398341 100644
+index 66a1f03..fa96247 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-@@ -17,8 +17,8 @@
- 
+@@ -11,8 +11,8 @@
  #define XBYAK_NO_OP_NAMES
+ #define XBYAK_ENABLE_OMITTED_OPERAND
  
 -#include "xbyak/xbyak.h"
 -#include "xbyak/xbyak_util.h"
@@ -219,19 +212,6 @@ index 2404d27..b398341 100644
 +#include "xbyak_util.h"
  #include "GS/MultiISA.h"
  #include "common/Assertions.h"
- 
-diff --git a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
-index 51041a2..4b464cc 100644
---- a/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
-+++ b/pcsx2/GS/Renderers/SW/GSSetupPrimCodeGenerator.h
-@@ -22,7 +22,7 @@
- #ifdef _WIN32
- #include "common/RedtapeWindows.h"
- #endif
--#include <xbyak/xbyak.h>
-+#include <xbyak.h>
- 
- MULTI_ISA_UNSHARED_START
  
 -- 
 2.43.0

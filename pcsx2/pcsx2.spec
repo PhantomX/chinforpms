@@ -3,6 +3,11 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%bcond_without clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
@@ -54,7 +59,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5263
+Version:        1.7.5332
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -89,8 +94,13 @@ Patch11:        0001-Fix-translation-names.patch
 
 ExclusiveArch:  x86_64
 
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -120,6 +130,7 @@ BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpulse)
@@ -267,7 +278,7 @@ sed \
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  -DLTO_PCSX2_CORE:BOOL=ON \
+  %{!?with_clang:-DLTO_PCSX2_CORE:BOOL=ON} \
   -DDISABLE_BUILD_DATE:BOOL=ON \
   -DBUILD_REPLAY_LOADERS:BOOL=OFF \
   -DQT_BUILD:BOOL=ON \
@@ -282,7 +293,6 @@ sed \
   -DUSE_VTUNE:BOOL=OFF \
   -DCUBEB_API:BOOL=ON \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
-  -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DENABLE_SETCAP:BOOL=OFF \
   -DENABLE_TESTS:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \

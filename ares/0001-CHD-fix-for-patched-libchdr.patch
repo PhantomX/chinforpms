@@ -1,0 +1,156 @@
+From 3ae0e7d647f4c006ff6ffc2e72b144d72a76ef38 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 25 Dec 2023 12:00:38 -0300
+Subject: [PATCH] CHD: fix for patched libchdr
+
+---
+ nall/decode/chd.hpp      |  6 +++---
+ nall/file-buffer-chd.hpp | 19 +++++++++----------
+ nall/file-chd.hpp        | 22 +++++++++++-----------
+ 3 files changed, 23 insertions(+), 24 deletions(-)
+
+diff --git a/nall/decode/chd.hpp b/nall/decode/chd.hpp
+index e6450f2..8a79464 100644
+--- a/nall/decode/chd.hpp
++++ b/nall/decode/chd.hpp
+@@ -1,6 +1,6 @@
+ #pragma once
+ 
+-#include <nall/file.hpp>
++#include <nall/file-chd.hpp>
+ #include <nall/maybe.hpp>
+ #include <nall/string.hpp>
+ #include <libchdr/chd.h>
+@@ -34,7 +34,7 @@ struct CHD {
+ 
+   vector<Track> tracks;
+ private:
+-  file_buffer fp;
++  chd_patch_file_buffer fp;
+   chd_file* chd = nullptr;
+   static constexpr int chd_sector_size = 2352 + 96;
+   size_t chd_hunk_size;
+@@ -49,7 +49,7 @@ inline CHD::~CHD() {
+ }
+ 
+ inline auto CHD::load(const string& location) -> bool {
+-  fp = file::open(location, file::mode::read);
++  fp = chd_patch_file::open(location, chd_patch_file::mode::read);
+   if(!fp) {
+     print("CHD: Failed to open ", location, "\n");
+     return false;
+diff --git a/nall/file-buffer-chd.hpp b/nall/file-buffer-chd.hpp
+index eac9570..4abb621 100644
+--- a/nall/file-buffer-chd.hpp
++++ b/nall/file-buffer-chd.hpp
+@@ -16,24 +16,24 @@ namespace nall {
+ //on Windows (at least for 7 and earlier), FILE* is not buffered
+ //thus, reading/writing one byte at a time will be dramatically slower
+ //on all other OSes, FILE* is buffered
+-//in order to ensure good performance, file_buffer implements its own buffer
++//in order to ensure good performance, chd_patch_file_buffer implements its own buffer
+ //this speeds up Windows substantially, without harming performance elsewhere much
+ 
+-struct file_buffer {
++struct chd_patch_file_buffer {
+   struct mode  { enum : u32 { read, write, modify, append }; };
+   struct index { enum : u32 { absolute, relative }; };
+ 
+-  file_buffer(const file_buffer&) = delete;
+-  auto operator=(const file_buffer&) -> file_buffer& = delete;
++  chd_patch_file_buffer(const chd_patch_file_buffer&) = delete;
++  auto operator=(const chd_patch_file_buffer&) -> chd_patch_file_buffer& = delete;
+ 
+-  file_buffer() = default;
+-  file_buffer(const string& filename, u32 mode) { open(filename, mode); }
++  chd_patch_file_buffer() = default;
++  chd_patch_file_buffer(const string& filename, u32 mode) { open(filename, mode); }
+ 
+-  file_buffer(file_buffer&& source) { operator=(std::move(source)); }
++  chd_patch_file_buffer(chd_patch_file_buffer&& source) { operator=(std::move(source)); }
+ 
+-  ~file_buffer() { close(); }
++  ~chd_patch_file_buffer() { close(); }
+ 
+-  auto operator=(file_buffer&& source) -> file_buffer& {
++  auto operator=(chd_patch_file_buffer&& source) -> chd_patch_file_buffer& {
+     if(this == &source) return *this;
+     close();
+ 
+@@ -214,7 +214,6 @@ struct file_buffer {
+   auto close() -> void {
+     if(!fileHandle) return;
+     bufferFlush();
+-    fclose(fileHandle);
+     fileHandle = nullptr;
+   }
+ 
+diff --git a/nall/file-chd.hpp b/nall/file-chd.hpp
+index 91be160..704c16d 100644
+--- a/nall/file-chd.hpp
++++ b/nall/file-chd.hpp
+@@ -1,23 +1,23 @@
+ #pragma once
+ 
+-#include <nall/file-buffer.hpp>
++#include <nall/file-buffer-chd.hpp>
+ 
+ namespace nall {
+ 
+-struct file : inode {
++struct chd_patch_file : inode {
+   struct mode  { enum : u32 { read, write, modify, append }; };
+   struct index { enum : u32 { absolute, relative }; };
+ 
+-  file() = delete;
++  chd_patch_file() = delete;
+ 
+-  static auto open(const string& filename, u32 mode) -> file_buffer {
+-    return file_buffer{filename, mode};
++  static auto open(const string& filename, u32 mode) -> chd_patch_file_buffer {
++    return chd_patch_file_buffer{filename, mode};
+   }
+ 
+   static auto copy(const string& sourcename, const string& targetname) -> bool {
+     if(sourcename == targetname) return true;
+-    if(auto reader = file::open(sourcename, mode::read)) {
+-      if(auto writer = file::open(targetname, mode::write)) {
++    if(auto reader = chd_patch_file::open(sourcename, mode::read)) {
++      if(auto writer = chd_patch_file::open(targetname, mode::write)) {
+         for(u64 n : range(reader.size())) writer.write(reader.read());
+         return true;
+       }
+@@ -73,7 +73,7 @@ struct file : inode {
+ 
+   static auto read(const string& filename) -> vector<u8> {
+     vector<u8> memory;
+-    if(auto fp = file::open(filename, mode::read)) {
++    if(auto fp = chd_patch_file::open(filename, mode::read)) {
+       memory.resize(fp.size());
+       fp.read(memory);
+     }
+@@ -81,18 +81,18 @@ struct file : inode {
+   }
+ 
+   static auto read(const string& filename, array_span<u8> memory) -> bool {
+-    if(auto fp = file::open(filename, mode::read)) return fp.read(memory), true;
++    if(auto fp = chd_patch_file::open(filename, mode::read)) return fp.read(memory), true;
+     return false;
+   }
+ 
+   static auto write(const string& filename, array_view<u8> memory) -> bool {
+-    if(auto fp = file::open(filename, mode::write)) return fp.write(memory), true;
++    if(auto fp = chd_patch_file::open(filename, mode::write)) return fp.write(memory), true;
+     return false;
+   }
+ 
+   //create an empty file (will replace existing files)
+   static auto create(const string& filename) -> bool {
+-    if(auto fp = file::open(filename, mode::write)) return true;
++    if(auto fp = chd_patch_file::open(filename, mode::write)) return true;
+     return false;
+   }
+ 
+-- 
+2.43.0
+

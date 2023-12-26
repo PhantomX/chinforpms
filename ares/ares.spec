@@ -4,10 +4,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit b7da32113fab30fb6672a475822d5d3a5bf56d76
+%global commit 432c4e3b2a9f233cd742d1de764cced7ff337e48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230421
-%bcond_with snapshot
+%global date 20231221
+%bcond_without snapshot
 
 %bcond_with libao
 %bcond_with openal
@@ -20,7 +20,7 @@
 
 Name:           ares
 Version:        134
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause
@@ -36,6 +36,7 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 # https://aur.archlinux.org/cgit/aur.git/tree/ares-paths.patch?h=ares-emu
 Patch10:        ares-paths.patch
 Patch11:        0001-Use-system-libraries.patch
+Patch500:       0001-CHD-fix-for-patched-libchdr.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
@@ -69,13 +70,18 @@ ares is a multi-system emulator with an uncompromising focus on
 accuracy and code readability.
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 499 -p1
 
 rm -rf thirdparty/{libchdr,MoltenVK}
 
 find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
 
 find -name '.gitignore' -delete
+
+cp -a nall/file.hpp nall/file-chd.hpp
+cp -a nall/file-buffer.hpp nall/file-buffer-chd.hpp
+%patch -P 500 -p1
 
 sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 

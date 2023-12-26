@@ -2,6 +2,11 @@
 # no defined reference for "fastjmp_set"
 %global _lto_cflags -fno-lto
 
+%bcond_without clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
@@ -14,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 14c7c70b0c50dba2a2be2b2029effd7fe4f809e7
+%global commit 9ec3266f029de4e6e6d7c3bce406b77db9f4f096
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231206
+%global date 20231221
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -35,7 +40,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        105%{?dist}
+Release:        106%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -57,8 +62,13 @@ Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 
 ExclusiveArch:  x86_64 aarch64
 
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  extra-cmake-modules

@@ -1,9 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit 63b18687f073deeac7c1aeabb386ffd4d1a89175
+%global commit d83b2f99cd3d35509cf110bb47cbc72f569a31ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231125
-%global sbuild 8261
+%global date 20231222
+%global sbuild 8282
 %bcond_without snapshot
 
 # Enable ffmpeg support
@@ -21,7 +21,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.17%{?dist}
+Release:        0.18%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
@@ -109,11 +109,11 @@ Provides:       mGBA = %{?epoch:%{epoch}:}%{version}-%{release}
 mGBA with SDL frontend.
 
 %package qt
-Summary:        mGBA with Qt5 frontend
+Summary:        mGBA with Qt frontend
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       mGBA-qt = %{?epoch:%{epoch}:}%{version}-%{release}
 %description qt
-mGBA with Qt5 frontend.
+mGBA with Qt frontend.
 
 
 %prep
