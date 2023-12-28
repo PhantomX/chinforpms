@@ -55,8 +55,8 @@
 %global netstandard_library_ver2 2.0.0
 %global netstandard_library_ver3 2.0.3
 %global newtonsoft_json_ver 13.0.1
-%global opentk_ver 4.7.7
-%global opentk_redist_glfw_ver 3.3.8.30
+%global opentk_ver 4.8.1
+%global opentk_redist_glfw_ver 3.3.8.39
 %global pangosharp_ver %{ryujinx_gtksharp_ver}
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
@@ -222,7 +222,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1085
+Version:        1.1.1101
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -285,7 +285,7 @@ Source237:      %{nuget_url}/newtonsoft.json.%{newtonsoft_json_ver}.nupkg
 Source238:      %{nuget_url}/opentk.core.%{opentk_ver}.nupkg
 Source239:      %{nuget_url}/opentk.graphics.%{opentk_ver}.nupkg
 Source240:      %{nuget_url}/opentk.mathematics.%{opentk_ver}.nupkg
-Source241:      %{nuget_url}/opentk.openal.%{opentk_ver}.nupkg
+Source241:      %{nuget_url}/opentk.audio.openal.%{opentk_ver}.nupkg
 Source242:      %{nuget_url}/opentk.redist.glfw.%{opentk_redist_glfw_ver}.nupkg
 Source243:      %{nuget_url}/opentk.windowing.graphicslibraryframework.%{opentk_ver}.nupkg
 Source244:      %{nuget_url}/ryujinx.pangosharp.%{ryujinx_gtksharp_ver}.nupkg

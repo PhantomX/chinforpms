@@ -108,7 +108,7 @@ chinfo-extramimetypes
 claws-mail
 claws-mail-themes
 cmdpack
-cppgir
+-cppgir
 -cpupower-gui
 cropgui
 -curlew

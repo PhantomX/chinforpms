@@ -17,6 +17,7 @@
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
 %bcond_without bundled_fonts
+%bcond_with minizip
 %bcond_without wayland
 %bcond_without x11
 
@@ -31,12 +32,14 @@
 # Reducing debuginfo verbosity...
 %global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
 
+%global cppgir_ver 2.77.0
 %global glibmm_ver 2.77.0
 %global libsigc_ver 3.0.0
 %global kf5ver b797315
+%global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        4.11.7
+Version:        4.13.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -71,7 +74,6 @@ Patch200:       %{name}-no-text-replace.patch
 Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
-Patch203:       0001-cmake-use-system-cppgir.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
@@ -85,7 +87,7 @@ BuildRequires:  cmake(tl-expected)
 
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  boost-devel
-BuildRequires:  pkgconfig(cppgir)
+BuildRequires:  cmake(fmt)
 BuildRequires:  pkgconfig(gio-2.0)
 BuildRequires:  pkgconfig(giomm-2.68)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -109,7 +111,11 @@ BuildRequires:  libatomic
 BuildRequires:  libdispatch-devel
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  libstdc++-devel
+%if %{with minizip}
 BuildRequires:  minizip-compat-devel
+%else
+Provides:       bundled(minizip) = %{minizip_ver}
+%endif
 BuildRequires:  ninja-build
 BuildRequires:  python3
 
@@ -187,6 +193,7 @@ Provides:       bundled(cld3) = 3.0.13~gitb48dc46
 Provides:       bundled(rlottie) = 0~git
 Provides:       bundled(libtgvoip) = 2.4.4
 Provides:       bundled(kf5-kcoreaddons) = 0~git%{kf5ver}
+Provides:       bundled(cppgir) = 0~git%{cppgir_ver}
 %if %{with bin}
 Provides:       bundled(qt6-qtcore) = 6.5.2
 %endif
@@ -218,7 +225,11 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,minizip,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
+
+%if %{without minizip}
+rm -rf Telegram/minizip
+%endif
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i cmake/external/rlottie/CMakeLists.txt \
@@ -227,11 +238,6 @@ sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i Telegram/{cmake,ThirdParty/libtgvoip}/lib_tgvoip.cmake
-
-rm -rf cmake/external/glib/cppgir
-sed \
-  -e 's|/usr/share/cppgir/|%{_datadir}/cppgir/|g' \
-  -i cmake/external/glib/generate_cppgir.cmake
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
@@ -352,6 +358,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Dec 28 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.13.1-100
+- 4.13.1
+
 * Tue Nov 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.11.7-100
 - 4.11.7
 

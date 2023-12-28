@@ -1,64 +1,57 @@
-# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
-
 %global debug_package %{nil}
 %global _build_id_links none
 %global __strip /bin/true
 
-%global snapid H8ZpNgIoPyvmkgxOWw5MSzsXK1wRZiHn
-%global snaprev 22
+%global app_name Session
 
-%global app_name Authy
-
-Name:           authy
-# Version from application info
-Version:        2.4.2
+Name:           session-desktop
+Version:        1.11.5
 Release:        1%{?dist}
-Summary:        Two factor authentication desktop application
+Summary:        Onion routing based messenger
 
-License:        Unknown
-URL:            https://authy.com/
-
-# curl -q -H 'Snap-Device-Series: 16' https://api.snapcraft.io/v2/snaps/info/authy
-Source0:        https://api.snapcraft.io/api/v1/snaps/download/%{snapid}_%{snaprev}.snap#/%{name}-%{version}.snap
+License:        GPL-3.0-only
+URL:            https://getsession.org/
+Source0:        https://github.com/oxen-io/%{name}/releases/download/v%{version}/%{name}-linux-%{_arch}-%{version}.rpm
+Source1:        https://github.com/oxen-io/%{name}/raw/v%{version}/LICENSE
 
 ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
-BuildRequires:  ImageMagick
-BuildRequires:  squashfs-tools
 Requires:       libappindicator-gtk3%{?_isa}
 Requires:       libdbusmenu%{?_isa}
+Requires:       libnotify%{?_isa}
+Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
 
 %global __requires_exclude ^libffmpeg\\.so.*$
 %global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
 %global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
 %global __requires_exclude %__requires_exclude|^libvk_swiftshader\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvulkan\\.so.*$
 
 
 %description
-The Twilio Authy app generates secure 2 step verification tokens on your device.
-It help's you protect your account from hackers and hijackers by adding an
-additional layer of security.
+Session is an end-to-end encrypted messenger that minimises sensitive metadata.
 
 
 %prep
 %setup -c -T
-unsquashfs -n -d %{name} %{S:0}
+rpm2cpio %{S:0} | cpio -imdv
 
-RVER="$(strings %{name}/resources/app.asar |grep '"version": "' | tail -n1 | cut -d\" -f 4 )"
-if [ "${RVER}" != "%{version}" ] ;then
-  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{version} "
-  echo "Edit Version and try again"
-  exit 1
-fi
+cp %{S:1} .
 
-find %{name}/ -name '*.so*' | xargs chmod +x
+find opt/%{app_name}/ -name '*.so*' | xargs chmod +x
 
-chrpath --delete %{name}/%{name}
+chrpath --delete opt/%{app_name}/%{name}
+
+pushd opt/%{app_name}/resources/app.asar.unpacked/node_modules/@signalapp/better-sqlite3
+rm -rf build/{deps,node_gyp_bins}
+rm -rf build/Release/*.a
+popd
 
 cat > %{name}.wrapper <<'EORF'
 #!/usr/bin/bash
@@ -96,26 +89,39 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp %{name}/{%{name},locales,resources,swiftshader,*.{bin,dat,pak,so}} \
+cp -rp opt/%{app_name}/{%{name},locales,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
+
+rm -fv %{buildroot}%{_libdir}/%{name}/libvulkan.so*
+
+# FIXME: Acceleration do not works without these
+%dnl rm -fv %{buildroot}%{_libdir}/%{name}/libEGL.so*
+%dnl rm -fv %{buildroot}%{_libdir}/%{name}/libGLESv2.so*
+
 
 chmod 0755 %{buildroot}%{_libdir}/%{name}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  --set-icon="%{name}" \
-  %{name}/meta/gui/%{name}.desktop
+  --set-key="Exec" \
+  --set-value="%{name} %%U" \
+  usr/share/applications/%{name}.desktop
 
-for res in 16 24 32 48 64 72 96 128 192 256 ;do
+for res in 16 32 48 64 128 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{name}/meta/gui/icon.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{name}.png
+  install -pm0644 usr/share/icons/hicolor/${res}x${res}/apps/%{name}.png \
+    ${dir}/
 done
 
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+
+
 %files
+%license LICENSE opt/Session/LICENSE*
 %{_bindir}/%{name}
 %{_libdir}/%{name}/
 %{_datadir}/applications/%{name}.desktop
@@ -123,32 +129,6 @@ done
 
 
 %changelog
-* Wed Dec 27 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4.2-1
-- 2.4.2
-
-* Mon Sep 11 2023 - 2.4.1-1
-- 2.4.1
-
-* Mon Jul 17 2023 - 2.3.0-1
-- 2.3.0
-
-* Sat Jan 07 2023 - 2.2.2-1
-- 2.2.2
-
-* Wed Nov 02 2022 - 2.2.1-2
-- Fix snap revision
-
-* Thu Jul 28 2022 - 2.2.1-1
-- 2.2.1
-
-* Wed Nov 24 2021 - 1.9.0-1
-- 1.9.0
-
-* Tue Aug 03 2021 - 1.8.4-1
-- 1.8.4
-
-* Wed Dec 02 2020 - 1.8.3-2
-- Fix gpu acceleration
-
-* Fri Sep 18 2020 - 1.8.3-1
+* Wed Dec 27 2023 Phantom X <megaphantomx at hotmail dot com> - 1.11.5-1
 - Initial spec
+

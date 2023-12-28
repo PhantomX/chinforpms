@@ -107,7 +107,7 @@ mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   --set-key="Exec" \
-  --set-value="%{name}" \
+  --set-value="%{name} %%U" \
   --remove-category=GNOME \
   --remove-category=GTK \
   usr/share/applications/%{name}.desktop
