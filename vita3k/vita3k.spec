@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit da8a6933d87478ca3425e27d47736a409b1bf85f
+%global commit bef1567a61a0ac4467ad88e4e13c41fec54a07cb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231217
+%global date 20231225
 
 %bcond_with fmt
 %bcond_with yamlcpp
@@ -117,9 +117,9 @@
 %global shortcommit33 %(c=%{commit33}; echo ${c:0:7})
 %global srcname33 xxHash
 
-%global commit34 e037fb54f32973343fada6a051d3a3f8adf3a4a0
+%global commit34 6dd38b8a1dbaa7863aa907045f32308a56a6ff5d
 %global shortcommit34 %(c=%{commit34}; echo ${c:0:7})
-%global srcname34 sdl2-cmake-scripts
+%global srcname34 concurrentqueue
 
 %global commit120 66afe099f1cf1f79c270471e9c0f02139072057d
 %global shortcommit120 %(c=%{commit120}; echo ${c:0:7})
@@ -160,7 +160,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.1.9.3520
+Version:        0.1.9.3529
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator 
 
@@ -205,6 +205,7 @@ Source32:       https://github.com/aquynh/%{srcname32}/archive/%{commit32}/%{src
 %if %{without xxhash}
 Source33:       https://github.com/Cyan4973/%{srcname33}/archive/%{commit33}/%{srcname33}-%{shortcommit33}.tar.gz
 %endif
+Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%{srcname34}-%{shortcommit34}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
@@ -325,12 +326,14 @@ sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i CMakeLists.txt
 tar -xf %{S:32} -C %{srcname32} --strip-components 1
 %if %{without xxhash}
 tar -xf %{S:33} -C %{srcname33} --strip-components 1
-cp -p yaml-cpp/LICENSE LICENSE.xxhash
+cp -p xxHash/LICENSE LICENSE.xxhash
 sed -e 's|xxhash_FOUND|xxhash_DISABLED|g' -i CMakeLists.txt
 %endif
+tar -xf %{S:34} -C %{srcname34} --strip-components 1
 
 cp -p LibAtrac9/LICENSE LICENSE.LibAtrac9
 cp -p better-enums/LICENSE.md LICENSE.better-enums.md
+cp -p concurrentqueue/LICENSE.md LICENSE.concurrentqueue.md
 cp -p ddspp/LICENSE LICENSE.ddspp
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 cp -p ffmpeg/copyright copyright.ffmpeg
