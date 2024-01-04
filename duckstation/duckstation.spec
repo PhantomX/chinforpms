@@ -2,7 +2,7 @@
 # no defined reference for "fastjmp_set"
 %global _lto_cflags -fno-lto
 
-%bcond_without clang
+%bcond_with clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 9ec3266f029de4e6e6d7c3bce406b77db9f4f096
+%global commit 32f5482ad23537480a5ade0ed4b7c6221fb4909c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231221
+%global date 20240101
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -40,7 +40,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        106%{?dist}
+Release:        107%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org

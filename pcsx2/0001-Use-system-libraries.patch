@@ -1,29 +1,23 @@
-From 059399d8aa6dff3c993e66329650b870458e728c Mon Sep 17 00:00:00 2001
+From 593cbe6d448b517076e784b974da8e7dcc338bc2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                 | 87 ++++++++++++++++++++++
- pcsx2/CMakeLists.txt                       | 12 ++-
+ cmake/SearchForStuff.cmake                 | 70 ++++++++++++++++++++++
+ pcsx2/CMakeLists.txt                       | 12 +++-
  pcsx2/GS/MultiISA.cpp                      |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h |  4 +-
- 4 files changed, 100 insertions(+), 5 deletions(-)
+ 4 files changed, 83 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index f81fe46..5acfd1e 100644
+index a9f82c3..0e3a885 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -117,34 +117,109 @@ endif()
- # Prevent fmt from being built with exceptions, or being thrown at call sites.
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
+@@ -100,29 +100,82 @@ if(ENABLE_TESTS)
+ 	endif()
+ endif()
  
-+find_package(fmt 9)
-+if(fmt_FOUND)
-+	message(STATUS "Using the system fmt")
-+else()
- add_subdirectory(3rdparty/fmt/fmt EXCLUDE_FROM_ALL)
-+endif()
 +find_package(ryml)
 +if(ryml_FOUND)
 +	message(STATUS "Using the system rapidyml")
@@ -68,13 +62,6 @@ index f81fe46..5acfd1e 100644
 +endif()
  
  add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
-+find_package(WebP)
-+if(WebP_FOUND)
-+	message(STATUS "Using the system libwebp")
-+	alias_library(WebP::libwebp WebP::webp)
-+else()
- add_subdirectory(3rdparty/libwebp EXCLUDE_FROM_ALL)
-+endif()
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 +check_lib(CPUINFO libcpuinfo)
@@ -93,12 +80,6 @@ index f81fe46..5acfd1e 100644
  add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
 +endif()
 +endif()
-+check_lib(zstd libzstd)
-+if(zstd_FOUND)
-+  alias_library(Zstd::Zstd PkgConfig::zstd)
-+else()
- add_subdirectory(3rdparty/zstd EXCLUDE_FROM_ALL)
-+endif()
 +find_package(libzip)
 +if(libzip_FOUND)
 +	message(STATUS "Using the system libzip")
@@ -114,17 +95,9 @@ index f81fe46..5acfd1e 100644
  add_subdirectory(3rdparty/rapidjson EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
-+check_lib(lz4 liblz4)
-+if(lz4_FOUND)
-+	message(STATUS "Using the system lz4")
-+	alias_library(LZ4::LZ4 PkgConfig::lz4)
-+else()
- add_subdirectory(3rdparty/lz4 EXCLUDE_FROM_ALL)
-+endif()
  
  if(USE_OPENGL)
- 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
-@@ -152,12 +227,24 @@ endif()
+@@ -131,12 +184,24 @@ endif()
  
  if(USE_VULKAN)
  	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
@@ -149,11 +122,24 @@ index f81fe46..5acfd1e 100644
  
  # Find the Qt components that we need.
  find_package(Qt6 6.6.0 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
+@@ -150,7 +215,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
+ 
+ # Prevent fmt from being built with exceptions, or being thrown at call sites.
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
++find_package(fmt 9)
++if(fmt_FOUND)
++	message(STATUS "Using the system fmt")
++else()
+ add_subdirectory(3rdparty/fmt/fmt EXCLUDE_FROM_ALL)
++endif()
+ 
+ # Deliberately at the end. We don't want to set the flag on third-party projects.
+ if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index c8db702..b68acf4 100644
+index 21b8ad1..c6f451b 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1123,7 +1123,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1105,7 +1105,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -161,7 +147,7 @@ index c8db702..b68acf4 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1181,13 +1180,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1163,13 +1162,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -172,7 +158,7 @@ index c8db702..b68acf4 100644
 +if(TARGET xbyak::xbyak)
 +	target_link_libraries(PCSX2_FLAGS INTERFACE xbyak::xbyak)
 +else()
-+	target_include_directories(PCSX2_FLAGS INTERFACE "${CMAKE_SOURCE_DIR}/3rdparty/xbyak/xbyak")
++	target_include_directories(PCSX2_FLAGS INTERFACE "${CMAKE_SOURCE_DIR}/3rdparty/xbyak")
 +endif()
  target_compile_definitions(PCSX2_FLAGS INTERFACE
  	XBYAK_NO_EXCEPTION
@@ -182,9 +168,9 @@ index c8db702..b68acf4 100644
 +	target_link_libraries(PCSX2_FLAGS INTERFACE zydis)
 +endif()
 +
+ set_source_files_properties(PrecompiledHeader.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
  if(COMMAND target_precompile_headers)
  	message("Using precompiled headers.")
- 	target_precompile_headers(PCSX2_FLAGS INTERFACE PrecompiledHeader.h)
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
 index d9f99aa..b88c94f 100644
 --- a/pcsx2/GS/MultiISA.cpp

@@ -3,7 +3,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_without clang
+%bcond_with clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -22,7 +22,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 8afec6c55e3a0f72368a5a085203bab1b8828ffb
+%global commit11 3cadf84c30bbc050c0fec79d26e1c8ff504bda42
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 rcheevos
 
@@ -59,7 +59,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5332
+Version:        1.7.5384
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -89,8 +89,7 @@ Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
-Patch10:        0001-Lower-the-SDL2-requirement-a-bit.patch
-Patch11:        0001-Fix-translation-names.patch
+Patch9:         0001-Fix-translation-names.patch
 
 ExclusiveArch:  x86_64
 
@@ -152,7 +151,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
-BuildRequires:  pkgconfig(sdl2) >= 2.0.22
+BuildRequires:  pkgconfig(sdl2) >= 2.28.5
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch)
 %else

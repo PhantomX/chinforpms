@@ -38,24 +38,24 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 8ef844ca53420ccb66a928135460e436761b6d5a
+%global commit 2369266b8a1aac739fc5a56d177b6708fb87ddd8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231202
+%global date 20240103
 %bcond_without snapshot
 
-%global commit10 eb0a36633d2acf4de82588504f951ad0f2cecacb
+%global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Tools
 
-%global commit11 83cfba67b6af80bb9bfafc0b324718c4841f2991
+%global commit11 ced3ce8d5ecc5aef8a5156fea206a37b33774bf3
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
-%global commit12 c59847629d3a19da4d10f0be4ac33b43fc4a100f
+%global commit12 416f7356967c1f66784dc1580fe157f9406d8bff
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 10423ec659d301a0ff2daac8bbf38980abf27590
+%global commit13 36d08c0d940cf307a23928299ef52c7970d8cee6
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -63,7 +63,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 37884f864d6fd9b04f44677cb04da15d0c9d6526
+%global commit15 66596ad9e1d7efa8479656872cf09c9c1870a02e
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -71,7 +71,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 85a1ed200d50660786c1a88d9166e871123cce39
+%global commit17 e867c06631767a2d96424cbec530f9ee5e78180f
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 SPIRV-Headers
 
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.29.15782
+Version:        0.0.30.15910
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -465,6 +465,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Jan 04 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.30.15910-1.20240103git2369266
+- 0.0.30
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.0.29.15620-1.20230912gitf398f11
 - Add llvm_pkgver define to set versioned LLVM packages, when needed
 

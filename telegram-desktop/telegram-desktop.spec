@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        4.14.1
+Version:        4.14.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -95,7 +95,6 @@ BuildRequires:  pkgconfig(glibmm-2.68) >= %{glibmm_ver}
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
-BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
@@ -358,6 +357,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jan 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.2-100
+- 4.14.2
+
 * Mon Jan 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.1-100
 - 4.14.1
 
