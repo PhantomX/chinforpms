@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.9
+%define specrpmversion 6.6.10
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,9 +214,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit face180db60ebb7d5edf6feba91122aa54ef4856
+%global pfcommit 5f81e0fdc6d2b79922e9634c0444244a80a0ac4d
 %global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
-%global pfcoprhash 8c355d4b518630026b11e804968ea98c
+%global pfcoprhash e0ca1bfe7ec7ce9a5685389e5e179973
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,7 +238,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 6869d093e8485475463bc171d23d7c4142fb6fa4
+%global opensuse_id ebe37ffb869ed80338256438e9605f4d3cf0b52a
 %global tkg_id 94a2ac0bd873bfa09abef78980be90d47a4cf8ba
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1037,6 +1037,7 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1014: %{opensuse_url}/firewire-ohci-suppress-unexpected-system-reboot-in-A.patch#/openSUSE-firewire-ohci-suppress-unexpected-system-reboot-in-A.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1664,6 +1665,7 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
+ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
@@ -3388,6 +3390,9 @@ fi\
 #
 #
 %changelog
+* Fri Jan 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.10-500.chinfo
+- 6.6.10 - pf6
+
 * Mon Jan 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.9-500.chinfo
 - 6.6.9 - pf6
 

@@ -61,7 +61,7 @@ Recommends:     (youtube-dlp or youtube-dl)
 
 
 %package gtk
-Summary:        A Nintendo 3DS Emulator (Qt frontend)
+Summary:        A lightweight YouTube client for Linux (Qt frontend)
 BuildRequires:  perl(Gtk3)
 BuildRequires:  perl(File::ShareDir)
 BuildRequires:  perl(Storable)

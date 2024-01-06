@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b9cd3c64652d
-%global date 20230904
+%global commit 23052186705a
+%global date 20240104
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.16%{?dist}
+Release:        0.17%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
@@ -26,6 +26,7 @@ BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
 Requires:       sdl_gamecontrollerdb
