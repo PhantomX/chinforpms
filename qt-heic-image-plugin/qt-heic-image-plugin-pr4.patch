@@ -1,0 +1,79 @@
+From e2b0611d0bc5134ac3ade7680719bd573c31e403 Mon Sep 17 00:00:00 2001
+From: Zhang Hua <zhanghua.00@qq.com>
+Date: Mon, 1 Jan 2024 15:29:05 +0800
+Subject: [PATCH] Allow switching to different qt versions easily
+
+We can defining QT_MAJOR_VERSION when calling
+cmake to specify which qt version we want to
+use.
+
+We use QT5 by default as the latest KDE stable
+version is KDE5.
+
+We require QT 5.15 because we are using
+versionless targets.
+See https://doc.qt.io/qt-6/cmake-qt5-and-qt6-compatibility.html
+for more info.
+---
+ CMakeLists.txt     | 6 ++++--
+ README.md          | 4 ++--
+ src/CMakeLists.txt | 7 +++++--
+ 3 files changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6b943c0..b901b44 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,8 +19,10 @@ include(KDECMakeSettings)
+ 
+ include(CheckIncludeFiles)
+ 
+-set(REQUIRED_QT_VERSION 5.14.0)
+-find_package(Qt5Gui ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
++if(NOT DEFINED QT_MAJOR_VERSION)
++set(QT_MAJOR_VERSION "5")
++endif()
++find_package(Qt${QT_MAJOR_VERSION} REQUIRED COMPONENTS Gui)
+ 
+ include(FindPkgConfig)
+ 
+diff --git a/README.md b/README.md
+index a5e50d8..55234c1 100644
+--- a/README.md
++++ b/README.md
+@@ -2,8 +2,8 @@
+ Qt plug-in to allow Qt and KDE based applications to read/write HEIF/HEIC images. 
+ 
+ Requirements:
+-* Qt 5.14
+-* [libheif](https://github.com/strukturag/libheif) 1.10.0 with
++* Qt >=5.15
++* [libheif](https://github.com/strukturag/libheif) >=1.10.0 with
+   * libde265 decoder
+   * x265 encoder (built with 8bit and 10bit support)
+ 
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 44ec532..63079c1 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -18,7 +18,7 @@ function(kimageformats_add_plugin plugin)
+     add_library(${plugin} MODULE ${KIF_ADD_PLUGIN_SOURCES})
+     set_property(TARGET ${plugin} APPEND PROPERTY AUTOGEN_TARGET_DEPENDS ${json})
+     set_target_properties(${plugin} PROPERTIES LIBRARY_OUTPUT_DIRECTORY "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/imageformats")
+-    target_link_libraries(${plugin} Qt5::Gui)
++    target_link_libraries(${plugin} Qt::Gui)
+     install(TARGETS ${plugin} DESTINATION ${KDE_INSTALL_QTPLUGINDIR}/imageformats)
+ endfunction()
+ 
+@@ -27,7 +27,10 @@ endfunction()
+ if (LibHeif_FOUND)
+     kimageformats_add_plugin(kimg_heif JSON "heif.json" SOURCES heif.cpp)
+     target_link_libraries(kimg_heif PkgConfig::LibHeif)
+-    install(FILES heif.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR}/qimageioplugins/)
++    if (QT_MAJOR_VERSION STRLESS "6")
++        #TODO: Find out where should we place the heif.desktop file in KF6
++        install(FILES heif.desktop DESTINATION ${KDE_INSTALL_KSERVICES5DIR}/qimageioplugins/)
++    endif()
+ endif()
+ 
+ ##################################

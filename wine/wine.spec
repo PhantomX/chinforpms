@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.0-rc3
+%global wine_stagingver 9.0-rc4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.0~rc3
+Version:        9.0~rc4
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -270,6 +270,9 @@ Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-wa
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/87a85d50c502f705eeaf7a9f3f4c9e54c707ae56.patch#/%{name}-valve-87a85d5.patch
 Patch1092:       %{valve_url}/commit/464a79989b5250a1aa9e6a6e54aa0a334cd523ff.patch#/%{name}-valve-464a799.patch
+Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
+Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
+
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -931,7 +934,9 @@ sed \
 %patch -P 1039 -p1
 %patch -P 1040 -p1
 
+%patch -P 1093 -p1
 %patch -P 1089 -p1
+%patch -P 1094 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
 %patch -P 1300 -p1
@@ -1387,11 +1392,11 @@ fi
 %license COPYING.LIB
 %license LICENSE
 %license LICENSE.OLD
-%doc ANNOUNCE
+%doc ANNOUNCE.md
 %doc AUTHORS
 %doc README.FEDORA
 %doc README.chinforpms
-%doc README
+%doc README.md
 %doc VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
@@ -2536,6 +2541,9 @@ fi
 
 
 %changelog
+* Sat Jan 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc4-100
+- 9.0-rc4
+
 * Sat Dec 23 2023 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc3-100
 - 9.0-rc3
 

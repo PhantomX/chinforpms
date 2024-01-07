@@ -239,7 +239,7 @@ Summary: The Linux kernel
 %endif
 
 %global opensuse_id ebe37ffb869ed80338256438e9605f4d3cf0b52a
-%global tkg_id 94a2ac0bd873bfa09abef78980be90d47a4cf8ba
+%global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1044,9 +1044,8 @@ Patch1014: %{opensuse_url}/firewire-ohci-suppress-unexpected-system-reboot-in-A.
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
-%dnl Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-%dnl Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
-%dnl Patch2091: 0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1669,8 +1668,8 @@ ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
-%dnl ApplyPatch %{PATCH2090}
-%dnl ApplyPatch %{PATCH2091}
+ApplyPatch %{PATCH2090}
+ApplyPatch %{PATCH2091}
 
 ApplyPatch %{PATCH6000}
 

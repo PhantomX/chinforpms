@@ -160,6 +160,7 @@ image-analyzer
 input-leap
 ipager
 ipsbehead
+jazz2-ressurection
 -jdupes
 joy2key
 kdocker
@@ -227,6 +228,7 @@ qemu
 qmc2
 qmp3gain
 qmpdclient
+qt-heic-image-plugin
 qt-jpegxl-image-plugin
 qt-virustotal-uploader
 qt5ct
