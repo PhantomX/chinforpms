@@ -5,7 +5,7 @@
 
 Name:           bennugd
 Version:        1.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib
@@ -73,6 +73,8 @@ done;
 sed \
   -e 's|_RPMLIBDIR_|%{_libdir}/%{name}|g' \
   -i core/bgdc/src/c_main.c core/bgdrtm/src/sysprocs.c
+
+sed -e '/LDFLAGS/s| -s | |g' -i core/*/src/Makefile.am modules/*/Makefile.am
 
 for i in core modules tools/moddesc ;do
   pushd $i
@@ -144,6 +146,9 @@ done
 
 
 %changelog
+* Sun Jan 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-4.20211122svn356
+- Remove strip from LDFLAGS
+
 * Tue May 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-3.20211122svn356
 - Add patch to fix sdl12-compat support
 

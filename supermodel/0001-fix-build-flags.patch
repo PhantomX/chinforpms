@@ -1,0 +1,83 @@
+From 546aa59b82d9d67694e12ff2dc389628c6e8411e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 7 Jan 2024 17:50:57 -0300
+Subject: [PATCH] fix build flags
+
+---
+ Makefiles/Makefile.UNIX | 18 +++++++++++++-----
+ Makefiles/Rules.inc     | 12 ++++++------
+ 2 files changed, 19 insertions(+), 11 deletions(-)
+
+diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
+index 9cf8b1a..4ae1e9c 100644
+--- a/Makefiles/Makefile.UNIX
++++ b/Makefiles/Makefile.UNIX
+@@ -55,15 +55,23 @@ LD = gcc
+ # SDL
+ #
+ 
+-SDL2_CFLAGS = `sdl2-config --cflags`
+-SDL2_LIBS = `sdl2-config --libs`
++SDL2_CFLAGS = `pkg-config --cflags sdl2`
++SDL2_LIBS = `pkg-config --libs sdl2`
+ 
+ #
+ #	UNIX-specific
+ #
+-
+-PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) -O3
+-PLATFORM_LDFLAGS = $(SDL2_LIBS) -lGL -lGLU -lz -lm -lstdc++ -lpthread -lSDL2_net
++SDL2_NET_CFLAGS = `pkg-config --cflags SDL2_net`
++SDL2_NET_LIBS = `pkg-config --libs SDL2_net`
++GL_CFLAGS = `pkg-config --cflags gl`
++GL_LIBS = `pkg-config --libs gl`
++GLU_CFLAGS = `pkg-config --cflags glu`
++GLU_LIBS = `pkg-config --libs glu`
++ZLIB_CFLAGS = `pkg-config --cflags zlib`
++ZLIB_LIBS = `pkg-config --libs zlib`
++
++PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) $(SDL2_NET_CFLAGS) $(GL_CFLAGS) $(GLU_CFLAGS) $(ZLIB_CFLAGS)
++PLATFORM_LDFLAGS = $(SDL2_LIBS) $(SDL2_NET_LIBS) $(GL_LIBS) $(GLU_LIBS) $(ZLIB_LIBS) -lm -lstdc++ -lpthread
+ 
+ 
+ ###############################################################################
+diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
+index 0a815c1..e82e682 100644
+--- a/Makefiles/Rules.inc
++++ b/Makefiles/Rules.inc
+@@ -69,7 +69,7 @@ endif
+ # Compiler options
+ #
+ ARCH =
+-OPT = -O3
++CFLAGS ?= -O3
+ WARN = -Wall
+ CSTD = -std=iso9899:2011
+ CXXSTD = -std=c++17
+@@ -78,10 +78,10 @@ CXXSTD = -std=c++17
+ #
+ # Construct the compiler (C and C++) and linker flags
+ #
+-COMMON_CFLAGS = -c $(ARCH) $(OPT) $(WARN) $(addprefix -I,$(sort $(INCLUDE_DIRS))) -DGLEW_STATIC $(SUPERMODEL_BUILD_FLAGS)
+-CFLAGS = $(COMMON_CFLAGS) $(CSTD)
+-CXXFLAGS = $(PLATFORM_CXXFLAGS) $(COMMON_CFLAGS) $(CXXSTD)
+-LDFLAGS = -o $(BIN_DIR)/$(OUTFILE) $(PLATFORM_LDFLAGS) -s
++COMMON_CFLAGS = -c $(ARCH) $(WARN) $(addprefix -I,$(sort $(INCLUDE_DIRS))) -DGLEW_STATIC $(SUPERMODEL_BUILD_FLAGS)
++CFLAGS += $(COMMON_CFLAGS) $(CSTD)
++CXXFLAGS += $(PLATFORM_CXXFLAGS) $(COMMON_CFLAGS) $(CXXSTD)
++LDFLAGS += -o $(BIN_DIR)/$(OUTFILE) $(PLATFORM_LDFLAGS)
+ 
+ 
+ ###############################################################################
+@@ -298,7 +298,7 @@ $(OBJ_DIR)/%.o:	%.c
+ 
+ MUSASHI_OUTFILE = $(OBJ_DIR)/m68kmake.exe # do not remove the .exe suffix!
+ MUSASHI_CFLAGS = -ISrc/CPU/68K/Musashi -I$(OBJ_DIR) -DINLINE="static inline" -Wno-unused-variable
+-MUSASHI_LDFLAGS = -o $(MUSASHI_OUTFILE) $(OBJ_DIR)/m68kmake.o -s
++MUSASHI_LDFLAGS = -o $(MUSASHI_OUTFILE) $(OBJ_DIR)/m68kmake.o
+ 
+ $(MUSASHI_OUTFILE): Src/CPU/68K/Musashi/m68kmake.c Src/CPU/68K/Musashi/m68k_in.c
+ 	$(info --------------------------------------------------------------------------------)
+-- 
+2.43.0
+
