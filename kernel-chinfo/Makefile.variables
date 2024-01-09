@@ -68,6 +68,7 @@ HEAD ?= HEAD
 # to '0'.
 INCLUDE_FEDORA_FILES:=1
 INCLUDE_RHEL_FILES:=1
+INCLUDE_RT_FILES:=1
 
 # This variable is the location of the KABI cross compilers
 KABI_CROSS_COMPILE_PREFIX ?= /usr/bin/

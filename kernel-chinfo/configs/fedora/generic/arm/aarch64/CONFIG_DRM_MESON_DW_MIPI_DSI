@@ -1,15 +1,1 @@
-# Symbol: DRM_MESON_DW_MIPI_DSI [=m]
-# Type  : tristate
-# Defined at drivers/gpu/drm/meson/Kconfig:21
-#   Prompt: MIPI DSI Synopsys Controller support for Amlogic Meson Display
-#   Depends on: HAS_IOMEM [=y] && DRM_MESON [=m]
-#   Location:
-#     -> Device Drivers
-#       -> Graphics support
-#         -> DRM Support for Amlogic Meson Display Controller (DRM_MESON [=m])
-#           -> MIPI DSI Synopsys Controller support for Amlogic Meson Display (DRM_MESON_DW_MIPI_DSI [=m])
-# Selects: DRM_DW_MIPI_DSI [=m] && GENERIC_PHY_MIPI_DPHY [=y]
-# 
-# 
-# 
 CONFIG_DRM_MESON_DW_MIPI_DSI=m

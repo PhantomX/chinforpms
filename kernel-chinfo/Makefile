@@ -12,6 +12,7 @@ include Makefile.variables
 SPECRELEASED_KERNEL=$(RELEASED_KERNEL)
 SPECINCLUDE_FEDORA_FILES=$(INCLUDE_FEDORA_FILES)
 SPECINCLUDE_RHEL_FILES=$(INCLUDE_RHEL_FILES)
+SPECINCLUDE_RT_FILES=$(INCLUDE_RT_FILES)
 
 ifneq (,$(findstring n,$(firstword -$(MAKEFLAGS))))
   # Do not set RHTEST on the command line. Use the make command built-in options
@@ -71,7 +72,6 @@ SOURCES:=$(RPM)/SOURCES
 TESTPATCH:=$(REDHAT)/linux-kernel-test.patch
 CHANGELOG_EXT:=changelog-$(RHEL_MAJOR).$(RHEL_MINOR)
 SPECCHANGELOG:=$(SPECPACKAGE_NAME).$(CHANGELOG_EXT)
-CHANGELOG_PREV_EXT:=changelog-$(RHEL_MAJOR).$(shell expr $(RHEL_MINOR) - 1)
 ARCH_LIST=aarch64 ppc64le s390x x86_64
 
 # save some user selectable values to know later if we can override them
@@ -106,12 +106,16 @@ LOCVERFILE:=../localversion
 # create an empty localversion file if you don't want a local buildid
 ifneq ($(wildcard $(LOCVERFILE)),)
   DISTLOCALVERSION:=$(shell cat $(LOCVERFILE))
-  $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)". Update '$(shell dirname $(REDHAT))/localversion' to change.)
+  ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
+    $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)". Update '$(shell dirname $(REDHAT))/localversion' to change.)
+  endif
 else
   ifeq ($(DISTLOCALVERSION),)
     DISTLOCALVERSION:=.test
   endif
-  $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)".)
+  ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
+    $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)".)
+  endif
 endif
 
 # options for process_configs.sh script
@@ -137,7 +141,14 @@ endif
 # opposed to any adjusted version for snapshotting.
 ifneq ($(SPECKEXTRAVERSION),)
   UPSTREAMBUILD:=0$(shell echo $(SPECKEXTRAVERSION) | sed -e s/-/./).
-  UPSTREAM_TARBALL_NAME:=$(SPECKVERSION).$(SPECKPATCHLEVEL)$(SPECKEXTRAVERSION)
+  ifeq ($(SPECKSUBLEVEL),0)
+    UPSTREAM_TARBALL_NAME:=$(SPECKVERSION).$(SPECKPATCHLEVEL)$(SPECKEXTRAVERSION)
+  else
+    UPSTREAM_TARBALL_NAME:=$(SPECKVERSION).$(SPECKPATCHLEVEL).$(SPECKSUBLEVEL)$(SPECKEXTRAVERSION)
+    # stable-rc's are not tagged
+    STABLERC_MARKER:=$(shell $(GIT) rev-parse -q --verify origin/$(UPSTREAM_BRANCH) | cut -c 1-12 || \
+            $(GIT) rev-parse -q --verify $(UPSTREAM_BRANCH) | cut -c 1-12)
+  endif
 else
   ifeq ($(SPECKSUBLEVEL),0)
     UPSTREAM_TARBALL_NAME:=$(SPECKVERSION).$(SPECKPATCHLEVEL)
@@ -150,7 +161,11 @@ else
   endif
   UPSTREAMBUILD:=
 endif
-MARKER:=v$(UPSTREAM_TARBALL_NAME)
+ifneq ($(STABLERC_MARKER),)
+  MARKER:=$(STABLERC_MARKER)
+else
+  MARKER:=v$(UPSTREAM_TARBALL_NAME)
+endif
 
 # If VERSION_ON_UPSTREAM is set, the versioning of the rpm package is based
 # on a branch tracking upstream. This allows for generating rpms
@@ -166,7 +181,19 @@ endif
 UPSTREAM:=$(shell $(GIT) rev-parse -q --verify origin/$(UPSTREAM_BRANCH) || \
             $(GIT) rev-parse -q --verify $(UPSTREAM_BRANCH))
 
-ifeq ($(VERSION_ON_UPSTREAM),1)
+ifneq ("$(wildcard $(TOPDIR)/localversion-next)", "")
+  # we are building linux-next
+  MARKER:=$(shell $(GIT) describe $(UPSTREAM))
+  # The merge window is weird because the actual versioning hasn't
+  # been updated but we still need something that works for
+  # packaging. Fix this by bumping the patch level.
+  ifeq ($(SPECKEXTRAVERSION),)
+    SPECKPATCHLEVEL:=$(shell expr $(SPECKPATCHLEVEL) + 1)
+  endif
+  LINUXNEXT_VERSION:=$(shell echo $(MARKER) | sed 's!next-!!')
+  UPSTREAMBUILD:=0.0.next.$(LINUXNEXT_VERSION).
+  UPSTREAM_TARBALL_NAME:=$(MARKER)
+else ifeq ($(VERSION_ON_UPSTREAM),1)
   # UPSTREAM_BRANCH is expected to track mainline.
   ifeq ($(UPSTREAM),)
       $(error "Missing an $(UPSTREAM_BRANCH) branch")
@@ -304,9 +331,9 @@ endif
 TARFILE:=linux-$(SPECTARFILE_RELEASE).tar.xz
 TARBALL:=$(REDHAT)/$(TARFILE)
 
-KABI_TARBALL:=$(SOURCES)/kernel-abi-stablelists-$(SPECKABIVERSION).tar.bz2
+KABI_TARBALL:=$(SOURCES)/kernel-abi-stablelists-$(SPECKABIVERSION).tar.xz
 KABIDW := $(REDHAT)/kabi-dwarf
-KABIDW_TARBALL:=$(SOURCES)/kernel-kabi-dw-$(SPECKABIVERSION).tar.bz2
+KABIDW_TARBALL:=$(SOURCES)/kernel-kabi-dw-$(SPECKABIVERSION).tar.xz
 
 # Taken from tools/lib/bpf/Makefile
 SPECBPFTOOLVERSION:=$(shell \
@@ -575,14 +602,14 @@ $(TARBALL):
 
 .PHONY: $(KABI_TARBALL)
 $(KABI_TARBALL):
-	@(cd kabi && tar cjf $(KABI_TARBALL) kabi-rhel$(RHEL_MAJOR)* kabi-current)
+	@(cd kabi && tar -cJf $(KABI_TARBALL) kabi-rhel$(RHEL_MAJOR)* kabi-current)
 
 .PHONY: $(KABIDW_TARBALL)
 $(KABIDW_TARBALL):
 	@if [ ! -d $(KABIDW)/base ]; then \
 		mkdir -p $(KABIDW)/base; \
 	fi
-	@(cd kabi-dwarf && tar cjf $(KABIDW_TARBALL) base run_kabi-dw.sh)
+	@(cd kabi-dwarf && tar -cJf $(KABIDW_TARBALL) base run_kabi-dw.sh)
 
 dist-git-version-check:
 	@# genspec.sh uses pathspec magic that wasn't introduced until version 2.13
@@ -616,13 +643,8 @@ _setup-source: dist-git-version-check
 	fi
 	@cp $(REDHAT)/$(SPECFILE).template $(SOURCES)/$(SPECFILE)
 	@if [ ! -e  $(REDHAT)/$(SPECCHANGELOG) ]; then \
-		if [ -e $(SPECPACKAGE_NAME).$(CHANGELOG_PREV_EXT) ]; then \
-			echo "Creating $(SPECCHANGELOG) as copy of $(CHANGELOG_PREV_EXT)"; \
-			cp $(REDHAT)/$(SPECPACKAGE_NAME).$(CHANGELOG_PREV_EXT) $(REDHAT)/$(SPECCHANGELOG); \
-		else \
-			echo "Creating $(SPECCHANGELOG) as copy of $(REDHAT)/kernel.$(CHANGELOG_EXT)"; \
-			cp $(REDHAT)/kernel.$(CHANGELOG_EXT) $(SPECCHANGELOG); \
-		fi; \
+		echo "Creating an empty $(SPECCHANGELOG) since it does not exist yet"; \
+		touch $(REDHAT)/$(SPECCHANGELOG); \
 	fi
 	@if [ -z "$(RHSELFTESTDATA)" ]; then \
 		cp $(REDHAT)/$(SPECCHANGELOG) $(SOURCES)/$(SPECCHANGELOG); \
@@ -663,11 +685,11 @@ sources-rh: $(TARBALL) generate-testpatch-tmp setup-source dist-configs-check
 		configs/$(SPECPACKAGE_NAME)-*.config \
 		configs/partial*.config \
 		scripts/gating/gating.yaml \
-		scripts/update_scripts.sh \
 		scripts/mod/mod-denylist.sh \
 		scripts/mod/mod-internal.list \
 		scripts/mod/mod-partner.list \
 		scripts/mod/mod-sign.sh \
+		scripts/mod/mod-kvm.list \
 		configs/flavors \
 		configs/generate_all_configs.sh \
 		configs/merge.py \
@@ -677,6 +699,8 @@ sources-rh: $(TARBALL) generate-testpatch-tmp setup-source dist-configs-check
 		kernel-local \
 		dracut-virt.conf \
 		$(SOURCES)/
+	@cat $$(ls -1 $(SPECPACKAGE_NAME).changelog-* | sort -t '.' -k 3 -n -r) \
+		> $(SOURCES)/kernel.changelog
 	@if [ "$(RELEASED_KERNEL)" -ne 0 ]; then \
 		cp keys/redhatsecureboot{301,501,ca5,ca1}.cer $(SOURCES)/; \
 		cp keys/secureboot_{ppc,s390}.cer $(SOURCES)/; \
@@ -687,11 +711,11 @@ sources-rh: $(TARBALL) generate-testpatch-tmp setup-source dist-configs-check
 		cp kabi/Module.kabi_$$KABIARCH $(SOURCES)/; \
 		cp kabi/Module.kabi_dup_$$KABIARCH $(SOURCES)/; \
 	done
-	@(cd kabi && tar cjf $(KABI_TARBALL) kabi-rhel$(RHEL_MAJOR)* kabi-current)
+	@(cd kabi && tar -cJf $(KABI_TARBALL) kabi-rhel$(RHEL_MAJOR)* kabi-current)
 	@if [ ! -d $(KABIDW)/base ]; then \
 		mkdir -p $(KABIDW)/base; \
 	fi
-	@(cd kabi-dwarf && tar cjf $(KABIDW_TARBALL) base run_kabi-dw.sh)
+	@(cd kabi-dwarf && tar -cJf $(KABIDW_TARBALL) base run_kabi-dw.sh)
 
 dist-sources: dist-kabi dist-kabi-dup sources-rh
 
@@ -720,7 +744,7 @@ dist-kernel-%: dist-sources
 dist-prep: RPMBUILDOPTS=--nodeps --target noarch -bp
 dist-prep: dist-sources do-rpmbuild
 
-dist-perf: RPMBUILDOPTS=--without up --without smp --without zfcpdump --without debug --without doc --without headers --without  --without doc --without debuginfo --target $(MACH) -bb
+dist-perf: RPMBUILDOPTS=--without up --without smp --without zfcpdump --without debug --without doc --without headers --without doc --without debuginfo --target $(MACH) -bb
 dist-perf: dist-sources do-rpmbuild
 
 dist-rpm-baseonly: RPMBUILDOPTS=--target $(MACH) --without debug --without debuginfo --without vdso_install --without bpftool --without perf --without tools -bb
@@ -753,6 +777,9 @@ dist-release-changed:
 dist-release: dist-clean-sources
 	@$(MAKE) dist-release-changed
 
+dist-get-tag:
+	$(info $(DISTRELEASETAG))
+
 dist-release-tag:
 	@$(GIT) tag -a -m "$(DISTRELEASETAG)" $(DISTRELEASETAG)
 
@@ -765,22 +792,14 @@ git-tree-check:
 		{ echo -e "Dirty tree, please clean before merging.\n"; exit 1; }
 
 dist-merge-upstream: git-tree-check
-	@if test "$(shell $(GIT) branch --show-current)" != "$(DIST_BRANCH)"; then \
-		echo -e "Please checkout $(DIST_BRANCH) branch before merging.\n"; \
-		exit 1; \
-		fi;
-
-	@# If TAG is empty, script defaults to master:HEAD
-	@$(GIT) checkout $(DIST_BRANCH)
-	@cd ..; $(REDHAT)/scripts/ci/ark-update-configs.sh $(TAG)
+	@cd ..; $(REDHAT)/scripts/ci/ark-update-configs.sh
 
 dist-merge-upstream-push: export DIST_PUSH="1"
 dist-merge-upstream-push: dist-merge-upstream
 
 dist-fedora-release: git-tree-check
 
-	@# If TAG is empty, script defaults to master:HEAD
-	@cd ..; $(REDHAT)/scripts/ci/ark-create-release.sh $(TAG) || \
+	@cd ..; $(REDHAT)/scripts/ci/ark-create-release.sh || \
 		(echo "Unable to create release tag"; exit 1)
 
 dist-fedora-release-push: export DIST_PUSH="1"
@@ -841,7 +860,7 @@ dist-os-version:
 
 dist-dump-variables:
 	$(eval VARS:=$(sort $(shell cat Makefile.variables | sed '/^#/d; /^$$/d; s/[ ]*[?:]=.*//')))
-	@$(foreach V,$(sort $(.VARIABLES)), $(if $(filter-out environment default automatic, $(origin $V)),$(info $V=$($V) ),$(if $(filter $(VARS),$(V)),$(info $V=$($V)))))
+	@$(foreach V,$(sort $(.VARIABLES)), $(if $(filter-out environment default automatic, $(origin $V)),$(info $V=$($V)),$(if $(filter $(VARS),$(V)),$(info $V=$($V)))))
 
 dist-self-test:
 	@if test -x /usr/bin/bats; then \
@@ -852,6 +871,13 @@ dist-self-test:
 
 dist-self-test-data:
 	./self-test/data/create-data.sh
+
+dist-check-licenses:
+	@if test -x /usr/bin/bats; then \
+		bats $(REDHAT)/self-test/1007-spdx-licenses.bats ; \
+	else \
+		echo "dist-check-licenses: The bats package is not installed" ; \
+	fi
 
 dist-help:
 	@echo  'Cleaning targets:'
@@ -972,9 +998,13 @@ dist-full-help:
 	@echo  '  dist-get-latest - Returns the latest "known good" kernel from brew. This'
 	@echo  '                    should not be confused with the latest top-of-tree'
 	@echo  '                    development tag.'
+	@echo  '  dist-get-tag    - Returns the latest release tag'
 	@echo  '  dist-os-version - Displays the current Red Hat Enterprise Linux versioni'
 	@echo  '                    target used by the current branch/tree.'
 	@echo  '  dist-self-test  - Runs self-tests from the redhat/self-test directory'
+	@echo  '  dist-check-licenses - Runs license selftest checking SPDX-License-Identifier:'
+	@echo  '                        tags in all source files against `License:` field in the'
+	@echo  '                        specfile template.'
 	@echo  ''
 
 export

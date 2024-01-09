@@ -1,5 +1,7 @@
 bitfield_kunit
 checksum_kunit
+cfg80211-tests
+clk-fractional-divider_test
 clk-gate_test
 clk_test
 cmdline_kunit
@@ -22,10 +24,12 @@ drm_mm_test
 drm_modes_test
 drm_plane_helper_test
 drm_probe_helper_test
+drm_exec_test
 drm_rect_test
 ext4-inode-test
 fat_test
 fortify_kunit
+gso_test
 gss_krb5_test
 handshake-test
 hashtable_test
@@ -42,6 +46,8 @@ lib_test
 list-test
 locktorture
 mac80211_hwsim
+mac80211-tests
+mean_and_variance_test
 memcpy_kunit
 mptcp_crypto_test
 mptcp_token_test
@@ -49,6 +55,7 @@ mtty
 netdevsim
 overflow_kunit
 pktgen
+property-entry-test
 rational-test
 rcuscale
 rcutorture
@@ -59,6 +66,7 @@ rocker
 scftorture
 siphash_kunit
 slub_kunit
+snd-hda-cirrus-scodec-test
 soc-topology-test
 soc-utils-test
 stackinit_kunit

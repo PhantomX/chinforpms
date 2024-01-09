@@ -137,4 +137,5 @@ if [ -w "${OUTPUT_DIR}" ] ;then
   esac
 
   ./build_configs.sh kernel-chinfo
+  grep -l '^# EMPTY' *.config | xargs rm -f
 fi

@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.6.10
+%define specrpmversion 6.7.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -63,9 +63,6 @@ Source2001: cpupower.config
 Source5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/patch-%{specversion}.xz
 %endif
 
-Patch1: kernel-tools-c99.patch
-
-
 # Extra
 
 ### openSUSE patches - http://kernel.opensuse.org/cgit/kernel-source/
@@ -91,7 +88,7 @@ BuildRequires: audit-libs-devel glibc-devel glibc-headers glibc-static python3-d
 BuildRequires: asciidoc libxslt-devel xmlto libcap-devel python3-setuptools
 BuildRequires: openssl-devel libbabeltrace-devel
 BuildRequires: libtracefs-devel libtraceevent-devel
-BuildRequires: libbpf-devel
+BuildRequires: libbpf-devel >= 1.2.0
 BuildRequires: clang llvm llvm-devel
 %ifnarch s390x %{arm}
 BuildRequires: numactl-devel
@@ -178,7 +175,7 @@ This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
 
 %package -n rtla
-Summary:        RTLA: Real-Time Linux Analysis tools 
+Summary:        Real-Time Linux Analysis tools 
 License:        GPL-2.0-only
 
 %description -n rtla
@@ -209,8 +206,6 @@ cd linux-%{tarfile_release}
 %if 0%{?stable_update}
     xzcat %{SOURCE5000} | patch -p1 -F1 -s
 %endif
-
-%patch -P 1 -p1
 
 # END OF PATCH APPLICATIONS
 
@@ -290,8 +285,12 @@ pushd tools/tracing/rtla
 %{tools_make}
 popd
 
+if [ -f /usr/src/%{KVERREL}/vmlinux.h ]; then
+    RPM_VMLINUX_H=/usr/src/%{KVERREL}/vmlinux.h
+fi
+
 %global bpftool_make \
-  make EXTRA_CFLAGS="${CFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" DESTDIR=%{buildroot} V=1
+  make EXTRA_CFLAGS="${CFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" DESTDIR=%{buildroot} VMLINUX_H="${RPM_VMLINUX_H}" V=1
 
 pushd tools/bpf/bpftool
 %{bpftool_make}
@@ -572,6 +571,9 @@ popd
 
 
 %changelog
+* Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500
+- 6.7.0
+
 * Fri Jan 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.10-500
 - 6.6.10
 
@@ -799,39 +801,3 @@ popd
 
 * Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500
 - 6.0.0
-
-* Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.12-500
-- 5.19.12
-
-* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.11-500
-- 5.19.11
-
-* Tue Sep 20 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.10-500
-- 5.19.10
-
-* Thu Sep 15 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.9-500
-- 5.19.9
-
-* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.8-500
-- 5.19.8
-
-* Mon Sep 05 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.7-500
-- 5.19.7
-
-* Wed Aug 31 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.6-500
-- 5.19.6
-
-* Mon Aug 29 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.5-500
-- 5.19.5
-
-* Thu Aug 25 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.4-500
-- 5.19.4
-
-* Wed Aug 17 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.2-500
-- 5.19.2
-
-* Thu Aug 11 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.1-500
-- 5.19.1
-
-* Mon Aug 01 2022 Phantom X <megaphantomx at hotmail dot com> - 5.19.0-500
-- 5.19.0

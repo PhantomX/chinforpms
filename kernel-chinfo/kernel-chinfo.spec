@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.6.10
+%define specrpmversion 6.7.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -205,18 +205,20 @@ Summary: The Linux kernel
 
 %define pkg_release %{specrelease}
 
+%global tkg 0
+
 # Apply post-factum patches? (pf release number to enable, 0 to disable)
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 1
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5f81e0fdc6d2b79922e9634c0444244a80a0ac4d
-%global pf_first_commit ffc253263a1375a65fa6c9f62a893e9767fbebfa
-%global pfcoprhash e0ca1bfe7ec7ce9a5685389e5e179973
+%global pfcommit 175b6a7bddb48e8fe9bd5502daaa2eb8a29003e9
+%global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
+%global pfcoprhash aef2b16005b6e6af07b0332af26e6edc
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -238,7 +240,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id ebe37ffb869ed80338256438e9605f4d3cf0b52a
+%global opensuse_id 880a670b49dbda5d4b13047db6e40b2d3d30fa20
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -282,7 +284,6 @@ Summary: The Linux kernel
 %define with_headers   %{?_without_headers:0} %{?!_without_headers:1}
 %define with_cross_headers   %{?_without_cross_headers:0} %{?!_without_cross_headers:1}
 %define with_bpftool   %{?_without_bpftool:0} %{?!_without_bpftool:1}
-%define with_bpftool   0
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
 # kernel-abi-stablelists
@@ -342,7 +343,7 @@ Summary: The Linux kernel
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla:1} %{?!_with_vanilla:0}
 
-%ifarch x86_64
+%ifarch x86_64 aarch64
 %define with_efiuki %{?_without_efiuki:0} %{?!_without_efiuki:1}
 %else
 %define with_efiuki 0
@@ -364,8 +365,8 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no stablelist
 %define with_kernel_abi_stablelists 0
-# selftests turns on bpftool
-%define with_selftests 0
+# Fedora builds these separately
+%define with_bpftool 0
 # No realtime fedora variants
 %define with_realtime 0
 %define with_arm64_64k 0
@@ -460,12 +461,11 @@ Summary: The Linux kernel
 
 # if requested, only build debug kernel
 %if %{with_dbgonly}
+%define with_base 0
 %define with_vdso_install 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %endif
 
@@ -504,9 +504,9 @@ Summary: The Linux kernel
 %define use_vdso 1
 %endif
 
-# selftests require bpftool to be built
-%if %{with_selftests}
-%define with_bpftool 1
+# selftests require bpftool to be built.  If bpftools is disabled, then disable selftests
+%if %{with_bpftool} == 0
+%define with_selftests 0
 %endif
 
 %ifnarch noarch
@@ -627,8 +627,8 @@ Summary: The Linux kernel
 %define with_realtime 0
 
 %define with_debuginfo 0
-%define with_selftests 0
 %define with_bpftool 0
+%define with_selftests 0
 %define _enable_debug_packages 0
 %endif
 
@@ -712,7 +712,6 @@ BuildRequires: dwarves
 BuildRequires: patchutils
 %endif
 BuildRequires: python3-devel
-BuildRequires: gcc-plugin-devel
 BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
@@ -738,6 +737,9 @@ BuildRequires: zlib-devel binutils-devel
 %endif
 %if %{with_selftests}
 BuildRequires: clang llvm-devel fuse-devel
+%ifarch x86_64
+BuildRequires: lld
+%endif
 BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel
 BuildRequires: numactl-devel
 %endif
@@ -933,8 +935,6 @@ Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
-Source82: update_scripts.sh
-
 Source84: mod-internal.list
 Source85: mod-partner.list
 
@@ -1001,7 +1001,6 @@ Source4002: gating.yaml
 %if 0%{?post_factum}
 Patch5000: %{extra_patch}
 Patch5003: https://codeberg.org/pf-kernel/linux/commit/477f95f7686e7f77d3ea600aabd43ade1041b196.patch#/pf-revert-477f95f.patch
-Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/84c68fe1f91beef8b25ca2202d3581260447b334.patch#/kernel-ark-revert-84c68fe.patch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1037,15 +1036,16 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/firewire-ohci-suppress-unexpected-system-reboot-in-A.patch#/openSUSE-firewire-ohci-suppress-unexpected-system-reboot-in-A.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
+%if 0%{?tkg}
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
 Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+%endif
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1145,7 +1145,7 @@ It provides the kernel source files common to all builds.
 
 %package selftests-internal
 Summary: Kernel samples and selftests
-Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs
+Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs, keyutils
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -1154,6 +1154,8 @@ Kernel sample programs and selftests.
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libexecdir}/(ksamples|kselftests)/.*|XXX' -o selftests-debuginfo.list}
+
+%define __requires_exclude ^liburandom_read.so.*$
 
 # with_selftests
 %endif
@@ -1577,6 +1579,26 @@ Prebuilt debug unified kernel image for virtual machines.
 Prebuilt default unified kernel image for virtual machines.
 %endif
 
+%if %{with_arm64_16k} && %{with_debug} && %{with_efiuki}
+%description 16k-debug-uki-virt
+Prebuilt 16k debug unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_16k_base} && %{with_efiuki}
+%description 16k-uki-virt
+Prebuilt 16k unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_64k} && %{with_debug} && %{with_efiuki}
+%description 64k-debug-uki-virt
+Prebuilt 64k debug unified kernel image for virtual machines.
+%endif
+
+%if %{with_arm64_64k_base} && %{with_efiuki}
+%description 64k-uki-virt
+Prebuilt 64k unified kernel image for virtual machines.
+%endif
+
 %if %{with_ipaclones}
 %kernel_ipaclones_package
 %endif
@@ -1639,7 +1661,6 @@ cp -a %{SOURCE1} .
 %if 0%{?post_factum}
 ApplyPatch %{PATCH5000}
 ApplyPatch %{PATCH5003} -R
-ApplyPatch %{PATCH5004} -R
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -1655,7 +1676,6 @@ ApplyPatch %{PATCH5000}
 
 %if !%{nopatches}
 ApplyOptionalPatch %{PATCH1}
-%endif
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -1664,18 +1684,21 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
+%if 0%{?tkg}
 ApplyPatch %{PATCH2090}
 ApplyPatch %{PATCH2091}
+%endif
 
 ApplyPatch %{PATCH6000}
 
 ApplyPatch %{PATCH6010}
 
 # END OF PATCH APPLICATIONS
+
+%endif
 
 # Any further pre-build tree manipulations happen here.
 
@@ -1822,23 +1845,30 @@ for opt in %{clang_make_opts}; do
   OPTS="$OPTS -m $opt"
 done
 %endif
-RHJOBS=%{?_smp_build_ncpus} SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS ${specrpmversion}
 
-
-cp %{SOURCE82} .
-RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh %{primary_target}
+RHJOBS=%{?_smp_build_ncpus} SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specrpmversion} %{primary_target}
 
 # We may want to override files from the primary target in case of building
 # against a flavour of it (eg. centos not rhel), thus override it here if
 # necessary
+update_scripts() {
+	TARGET="$1"
+
+	for i in "$RPM_SOURCE_DIR"/*."$TARGET"; do
+		NEW=${i%."$TARGET"}
+		cp "$i" "$(basename "$NEW")"
+	done
+}
+
+update_target=%{primary_target}
 if [ "%{primary_target}" == "rhel" ]; then
+: # no-op to avoid empty if-fi error
 %if 0%{?centos}
   echo "Updating scripts/sources to centos version"
-  RPM_SOURCE_DIR=$RPM_SOURCE_DIR ./update_scripts.sh centos
-%else
-  echo "Not updating scripts/sources to centos version"
+  update_target=centos
 %endif
 fi
+update_scripts $update_target
 
 # end of kernel config
 %endif
@@ -2657,6 +2687,8 @@ InitBuildVars
 pushd tools/bpf/bpftool
 %{bpftool_make}
 popd
+%else
+echo "bpftools disabled ... disabling selftests"
 %endif
 
 %if %{with_selftests}
@@ -3125,7 +3157,7 @@ fi\
 
 %if %{with_up_base}
 %kernel_variant_preun
-%kernel_variant_post -r kernel-smp
+%kernel_variant_post
 %endif
 
 %if %{with_zfcpdump}
@@ -3153,6 +3185,16 @@ fi\
 %kernel_variant_post -v 16k-debug
 %endif
 
+%if %{with_arm64_16k} && %{with_debug} && %{with_efiuki}
+%kernel_variant_posttrans -v 16k-debug -u virt
+%kernel_variant_preun -v 16k-debug -u virt
+%endif
+
+%if %{with_arm64_16k_base} && %{with_efiuki}
+%kernel_variant_posttrans -v 16k -u virt
+%kernel_variant_preun -v 16k -u virt
+%endif
+
 %if %{with_arm64_64k_base}
 %kernel_variant_preun -v 64k
 %kernel_variant_post -v 64k
@@ -3163,9 +3205,19 @@ fi\
 %kernel_variant_post -v 64k-debug
 %endif
 
+%if %{with_arm64_64k} && %{with_debug} && %{with_efiuki}
+%kernel_variant_posttrans -v 64k-debug -u virt
+%kernel_variant_preun -v 64k-debug -u virt
+%endif
+
+%if %{with_arm64_64k_base} && %{with_efiuki}
+%kernel_variant_posttrans -v 64k -u virt
+%kernel_variant_preun -v 64k -u virt
+%endif
+
 %if %{with_realtime_base}
 %kernel_variant_preun -v rt
-%kernel_variant_post -v rt -r (kernel|kernel-smp)
+%kernel_variant_post -v rt -r kernel
 %kernel_kvm_post rt
 %endif
 
@@ -3309,11 +3361,11 @@ fi\
 %else\
 %if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
-%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
+%attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi\
 %ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %endif\
 %endif\
@@ -3389,6 +3441,9 @@ fi\
 #
 #
 %changelog
+* Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
+- 6.7.0 - pf1
+
 * Fri Jan 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.10-500.chinfo
 - 6.6.10 - pf6
 
@@ -3600,42 +3655,6 @@ fi\
 
 * Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500.chinfo
 - 6.1.0 - pf1
-
-* Thu Dec 08 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.12-500.chinfo
-- 6.0.12 - pf6
-
-* Fri Dec 02 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.11-500.chinfo
-- 6.0.11 - pf6
-
-* Sat Nov 26 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.10-500.chinfo
-- 6.0.10 - pf6
-
-* Wed Nov 16 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.9-500.chinfo
-- 6.0.9 - pf5
-
-* Thu Nov 10 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.8-500.chinfo
-- 6.0.8 - pf5
-
-* Thu Nov 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.7-500.chinfo
-- 6.0.7 - pf3
-
-* Sat Oct 29 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.6-500.chinfo
-- 6.0.6 - pf3
-
-* Wed Oct 26 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.5-500.chinfo
-- 6.0.5 - pf3
-
-* Fri Oct 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.3-500.chinfo
-- 6.0.2 - pf3
-
-* Sat Oct 15 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.2-500.chinfo
-- 6.0.2 - pf3
-
-* Wed Oct 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.1-500.chinfo
-- 6.0.1 - pf2
-
-* Mon Oct 03 2022 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-500.chinfo
-- 6.0.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
