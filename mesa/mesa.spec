@@ -86,7 +86,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        23.3.2
+Version:        23.3.3
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -751,6 +751,9 @@ popd
 
 
 %changelog
+* Thu Jan 11 2024 Phantom X <megaphantomx at hotmail dot com> - 23.3.3-100
+- 23.3.3
+
 * Thu Dec 28 2023 Phantom X <megaphantomx at hotmail dot com> - 23.3.2-100
 - 23.3.2
 

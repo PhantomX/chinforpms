@@ -1,7 +1,7 @@
-%global commit ee1d3a19a4b8571ba32bdf9af845a74bca22c97b
+%global commit d9b5bf9a719b1145f514230f170ccc6b969a6679
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230808
-%bcond_with snapshot
+%global date 20240109
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -154,7 +154,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.0~rc4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1

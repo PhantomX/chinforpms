@@ -4,18 +4,24 @@
 %global _build_id_links none
 %global __strip /bin/true
 
+%ifarch aarch64
+%global parch arm64
+%else
+%global parch amd64
+%endif
+
 %global vc_url  https://github.com/rustdesk/%{name}
 %global rustdesk_id dbab22cbbcc51e5c188e76d4bffdcc331fab7e55
 
 Name:           rustdesk-server
-Version:        1.1.6
+Version:        1.1.9
 Release:        1%{?dist}
 Summary:        RustDesk server program
 
 License:        AGPL-3.0-only
 URL:            https://rustdesk.com/
 
-Source0:        %{vc_url}/releases/download/%{version}/%{name}-linux-x64.zip
+Source0:        %{vc_url}/releases/download/%{version}/%{name}-linux-%{parch}.zip#/%{name}-%{version}-linux-%{parch}.zip
 Source1:        %{vc_url}/raw/%{rustdesk_id}/LICENSE
 Source2:        %{vc_url}/raw/%{rustdesk_id}/README.md
 Source3:        %{name}-hbbr.service
@@ -23,7 +29,7 @@ Source4:        %{name}-hbbs.service
 Source5:        %{name}-sysusers.conf
 Source6:        %{name}.firewalld
 
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 arm64
 
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
@@ -43,7 +49,9 @@ cp -p %{S:1} %{S:2} .
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 hbbr hbbs %{buildroot}%{_bindir}/
+install -pm0755 %{parch}/hbbr %{buildroot}%{_bindir}/
+install -pm0755 %{parch}/hbbs %{buildroot}%{_bindir}/
+install -pm0755 %{parch}/rustdesk-utils %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_localstatedir}/lib/%{name}
 
@@ -74,11 +82,15 @@ install -pm0644 %{S:6} %{buildroot}%{_prefix}/lib/firewalld/services/%{name}.xml
 %doc README.md
 %{_bindir}/hbbr
 %{_bindir}/hbbs
+%{_bindir}/rustdesk-utils
 %{_sysusersdir}/%{name}.conf
 %dir %attr(0751, %{name}, %{name}) %{_localstatedir}/lib/%{name}
 %{_prefix}/lib/firewalld/services/%{name}.xml
 
 
 %changelog
+* Tue Jan 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.9-1
+- 1.1.9
+
 * Sun Jul 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.6-1
 - Initial spec
