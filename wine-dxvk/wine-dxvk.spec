@@ -7,13 +7,16 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 5e06cf95737ccf8cdd8a8bcc50c944a4ae0f4ecc
+%global commit eb806952d8d0da94e3c0d449b643f80ee2005030
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240102
+%global date 20240109
 %bcond_without snapshot
 
+%bcond_without gplasync
 %bcond_with sysspirv
 %bcond_without sysvulkan
+
+%global gplasync_id 650e2ffa3c5a8694007b11fd3601b32ea11dcf19
 
 %global commit5 0bcc624926a25a2a273d07877fd25a6ff5ba1cfb
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -39,6 +42,12 @@
 
 %global winedll dll%{?libext}
 
+%if %{with snapshot}
+%global gplasync_ver master
+%else
+%global gplasync_ver 2.3-1
+%endif
+
 %global winecommonver 5.3
 
 %global pkgname dxvk
@@ -49,12 +58,13 @@ BuildArch:      noarch
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global gplasync_url https://gitlab.com/Ph42oN/dxvk-gplasync/-/raw/%{gplasync_id}
 %global kg_url https://github.com/KhronosGroup
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
 Version:        2.3
-Release:        102%{?dist}
+Release:        103%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -69,6 +79,12 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
+
+%if %{with gplasync}
+Patch200:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
+Patch201:      0001-dxvk.conf-gplasync-options.patch
+Source200:     %{gplasync_url}/README.md#/README.gplasync.md
+%endif
 
 Patch100:       0001-util-Add-d3d9.deferSurfaceCreation-to-some-games.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
@@ -148,6 +164,9 @@ package or when debugging this package.
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 cp %{S:1} README.%{pkgname}
+%if %{with gplasync}
+cp %{S:200} README.gplasync.md
+%endif
 
 %if %{with sysspirv}
 ln -s %{_includedir}/spirv include/spirv/include/spirv
@@ -259,7 +278,7 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 %files
 %license LICENSE LICENSE.*
-%doc README.chinforpms README.md README.%{pkgname} %{pkgname}.conf
+%doc README.chinforpms README.md README.%{pkgname} %{pkgname}.conf %{?with_gplasync:README.gplasync.md}
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
@@ -268,6 +287,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Jan 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.3-103.20240109giteb80695
+- gplasync patch
+
 * Mon Sep 04 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.3-100
 - 2.3
 

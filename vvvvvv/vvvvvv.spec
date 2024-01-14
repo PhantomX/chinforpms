@@ -1,8 +1,9 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit d741b3aa27d9288cc1dc61eb5f6d72c97f90fce3
+%global commit 7ff2e818cd6dc5a7a102927fa2cd48ec490edc2e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230914
+%global date 20240110
+%bcond_without snapshot
 
 %bcond_without systinyxml
 
@@ -10,7 +11,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 lodepng
 
-%global commit3 0d4e9aac4575744ddaae56b146f1be19f064f0e5
+%global commit3 bfa7997c671957eb0a340ff1cf3c634e6269904a
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 physfs
 
@@ -22,26 +23,36 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 23.09
+%global commit5 23.11
 %global srcname5 FAudio
+
+%global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 SheenBidi
+
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.4
-Release:        11%{?dist}
+Version:        2.4.1
+Release:        0.1%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - Zlib -- static dependency;
 # * S4 (tinyxml2) - zlib -- static dependency, if with_systinyxml 0;
-# * S6 (c-hashmap) - BSD-3-Clause -- static dependency, if with_systinyxml 0;
-License:        VVVVVV AND Zlib AND BSD-3-Clause
-
+# * S6 (c-hashmap) - BSD-3-Clause -- static dependency;
+# * S7 (SheenBidi) - ASL-2.0 -- static dependency;
+License:        VVVVVV AND Zlib AND BSD-3-Clause AND ASL-2.0
 URL:            https://github.com/TerryCavanagh/%{pkgname}
+
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+%endif
 Source1:        %{pkgname}.png
 Source2:        https://github.com/lvandeve/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/icculus/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
@@ -50,10 +61,12 @@ Source4:        https://github.com/leethomason/%{srcname4}/archive/%{commit4}/%{
 %endif
 Source5:        https://github.com/FNA-XNA/FAudio/archive/%{commit5}/%{srcname5}-%{commit5}.tar.gz
 Source6:        https://github.com/Mashpoe/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/Tehreer/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 
 Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
 
+Patch1000:      https://github.com/Tehreer/SheenBidi/pull/21.patch#/%{name}-gh-SheenBidi-pr21.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -79,13 +92,15 @@ Provides:       bundled(lodepng) = 0~git%{shortcommit2}
 Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
 Provides:       bundled(c-hashmap) = 0~git%{shortcommit6}
+Provides:       bundled(SheenBidi) = 0~git%{shortcommit7}
 
 %description
 %{pkgname} is a %{summary}.
 
 
 %prep
-%autosetup -n %{pkgname}-%{commit} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 999 -p1
 
 tar -xf %{S:2} -C third_party/lodepng --strip-components 1
 tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
@@ -102,9 +117,12 @@ cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
 
 tar -xf %{S:5} -C third_party/FAudio \*/src/stb\*.h --strip-components 1
 tar -xf %{S:6} -C third_party/c-hashmap --strip-components 1
+tar -xf %{S:7} -C third_party/SheenBidi --strip-components 1
+%patch -P 1000 -p1 -d third_party/SheenBidi
 
 cp -p third_party/lodepng/LICENSE LICENSE.lodepng
 cp -p third_party/c-hashmap/LICENSE LICENSE.c-hashmap
+cp -p third_party/SheenBidi/LICENSE LICENSE.SheenBidi
 
 cp -p desktop_version/README.md README_desktop.md
 
@@ -114,9 +132,17 @@ sed \
   -e '/CMAKE_INSTALL_RPATH/d' \
   -i desktop_version/CMakeLists.txt
 
-
-echo 'ADD_DEFINITIONS(-DINTERIM_COMMIT="%{shortcommit}")' >> desktop_version/CMakeLists.txt
-echo 'ADD_DEFINITIONS(-DCOMMIT_DATE="%{date}")' >> desktop_version/CMakeLists.txt
+%if %{with snapshot}
+sed \
+  -e 's|GIT_FOUND|NOT OFFICIAL_BUILD|g' \
+  -e 's|${GIT_EXECUTABLE}|/usr/bin/true|g' \
+  -i desktop_version/CMakeLists.txt desktop_version/version.cmake
+sed \
+  -e 's|@INTERIM_COMMIT@|%{shortcommit}|g' \
+  -e 's|@COMMIT_DATE@|%{date}|g' \
+  -e 's|@BRANCH_NAME@|master|g' \
+  -i desktop_version/src/InterimVersion.in.c
+%endif
 
 sed -e 's|_RPM_DATA_DIR_|%{_datadir}|g' -i desktop_version/src/FileSystemUtils.cpp
 
@@ -188,6 +214,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Jan 11 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-0.1.20240110git7ff2e81
+- 2.4.1 snapshot
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-11.20230914gitd741b3a
 - Removed utf8cpp BR
 

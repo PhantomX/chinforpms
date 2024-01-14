@@ -1,7 +1,7 @@
 %global commit d9b5bf9a719b1145f514230f170ccc6b969a6679
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240109
-%bcond_without snapshot
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.0-rc4
+%global wine_stagingver 9.0-rc5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -153,8 +153,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.0~rc4
-Release:        101%{?dist}
+Version:        9.0~rc5
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2541,6 +2541,9 @@ fi
 
 
 %changelog
+* Sat Jan 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc5-100
+- 9.0-rc5
+
 * Sat Jan 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.0~rc4-100
 - 9.0-rc4
 

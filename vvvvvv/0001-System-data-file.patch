@@ -12,8 +12,8 @@ index 7d72fd4..2fb0ca7 100644
 --- a/desktop_version/src/FileSystemUtils.cpp
 +++ b/desktop_version/src/FileSystemUtils.cpp
 @@ -245,7 +245,7 @@ int FILESYSTEM_init(char *argvZero, char* baseDir, char *assetsPath, char* langD
-     mkdir(levelDir, 0777);
-     vlog_info("Level directory: %s", levelDir);
+         mkdir(temp, 0777);
+     }
  
 -    basePath = SDL_GetBasePath();
 +    basePath = "_RPM_DATA_DIR_/VVVVVV/";

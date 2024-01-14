@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 32f5482ad23537480a5ade0ed4b7c6221fb4909c
+%global commit 5d3cf93aa3420ce4bd6bb22a42b5b4c438854170
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240101
+%global date 20240110
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -40,7 +40,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        107%{?dist}
+Release:        108%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -59,6 +59,7 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
+Patch7:         0001-Disable-font-downloading.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -122,6 +123,9 @@ BuildRequires:  libappstream-glib
 Requires:       coreutils
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
+Requires:       google-noto-sans-jp-fonts
+Requires:       google-noto-sans-kr-fonts
+Requires:       google-noto-sans-sc-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libwayland-egl%{?_isa}
@@ -216,7 +220,11 @@ popd
 
 rm -f CMakeModules/FindSDL2.cmake
 
-
+sed \
+  -e '/NotoSansJP/s|\.ttf|.otf|' \
+  -e '/NotoSansKR/s|\.ttf|.otf|' \
+  -e '/NotoSansSC/s|\.ttf|.otf|' \
+  -i src/duckstation-qt/qttranslations.cpp
 
 pushd src/%{name}-qt/translations
 rename -a - _ *.ts
@@ -289,6 +297,12 @@ ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
 ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
 
+ln -sf ../../../fonts/google-noto-sans-jp-fonts/NotoSansJP-Regular.otf \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansJP-Regular.otf
+
+ln -sf ../../../fonts/google-noto-sans-sc-fonts/NotoSansSC-Regular.otf \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansSC-Regular.otf
+
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
@@ -343,6 +357,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jan 12 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1-108.20240110git5d3cf93
+- Add more font packages to requirements
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1-84.20230316git3bbce19
 - gcc 13 build fix
 

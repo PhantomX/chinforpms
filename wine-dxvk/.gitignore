@@ -1,6 +1,7 @@
 /wine-dxvk-gh-*.patch
 /wine-dxvk-pge-*.patch
 /wine-dxvk-sporif-*.patch
+/wine-dxvk-gplasync-*.patch
 /wine-dxvk-tkg-*.patch
 /wine-dxvk-valve-*.patch
-/README.async.md
+/README.*async.md

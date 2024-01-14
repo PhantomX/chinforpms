@@ -20,7 +20,7 @@
 %bcond_without  smallffmpeg
 # Enable system flatbuffers
 %bcond_without  sysflatbuffers
-%global bundleflatbuffers 2.0.8
+%global bundleflatbuffers 23.5.26
 # Enable system hidapi
 %bcond_without  syshidapi
 %global bundlehidapi 0.12.0
@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 2369266b8a1aac739fc5a56d177b6708fb87ddd8
+%global commit 17aeefe1b04c64f6f1d929eb9f5d85a0706c3186
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240103
+%global date 20240111
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -87,7 +87,7 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
-%global commit21 06c5c7ed0bd987a918cf88caafb094f22cdd1721
+%global commit21 0100f6a5779831fa7a651e4b67ef389a8752bd9b
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.30.15910
+Version:        0.0.30.15947
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 

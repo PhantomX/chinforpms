@@ -1,0 +1,38 @@
+From 2b6a2a6268e2913aca8cadc43229657de640609d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 13 Jan 2024 17:00:31 -0300
+Subject: [PATCH] dxvk.conf: gplasync options
+
+---
+ dxvk.conf | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/dxvk.conf b/dxvk.conf
+index ec3876c..8253954 100644
+--- a/dxvk.conf
++++ b/dxvk.conf
+@@ -646,3 +646,21 @@
+ # - True/False
+ 
+ # dxvk.hideIntegratedGraphics = False
++
++
++# Sets the async pipeline compiler
++# 
++# Behaves like the DXVK_ASYNC environment variable.
++# Like DXVK_ASYNC, always take precedence, if enabled.
++# Supported values: True, False
++
++# dxvk.useAsync = False
++
++
++# Sets state cache with gpl and fixes for async
++#
++# Behaves like the DXVK_GPLASYNCCACHE environment variable.
++# Like DXVK_GPLASYNCCACHE, always take precedence, if enabled.
++# Supported values: True, False
++
++# dxvk.gplAsyncCache = False
+-- 
+2.43.0
+
