@@ -96,6 +96,7 @@
 %define with_sanlock          0
 %define with_numad            0
 %define with_nbdkit           0
+%define with_nbdkit_config_default 0
 %define with_firewalld_zone   0
 %define with_netcf            0
 %define with_libssh2          0
@@ -175,15 +176,26 @@
     %endif
 %endif
 
-# We should only enable nbdkit support if the OS ships a SELinux policy that
-# allows libvirt to launch it. Right now that's not the case anywhere, but
-# things should be fine by the time Fedora 40 is released.
+# We want to build with nbdkit support, but should only enable nbdkit by
+# default if the OS ships a SELinux policy that allows libvirt to launch it.
+# Right now that's not the case anywhere, but things should be fine by the time
+# Fedora 40 is released.
 #
 # TODO: add RHEL 9 once a minor release that contains the necessary SELinux
 #       bits exists (we only support the most recent minor release)
 %if %{with_qemu}
-    %if 0%{?fedora} >= 40
+    # rhel-8 lacks pidfd_open
+    %if 0%{?fedora} || 0%{?rhel} >= 9
         %define with_nbdkit 0%{!?_without_nbdkit:1}
+
+        # setting 'with_nbdkit_config_default' must be done only when compiling
+        # in nbdkit support
+        #
+        # TODO: add RHEL 9 once a minor release that contains the necessary SELinux
+        #       bits exists (we only support the most recent minor release)
+        %if 0%{?fedora} >= 40
+            %define with_nbdkit_config_default 0%{!?_without_nbdkit_config_default:1}
+        %endif
     %endif
 %endif
 
@@ -261,7 +273,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 9.10.0
+Version: 10.0.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -397,9 +409,6 @@ BuildRequires: libssh2-devel >= 1.3.0
     %if %{with_netcf}
 BuildRequires: netcf-devel >= 0.2.2
     %endif
-    %if 0%{?fedora} || 0%{?rhel} >= 9
-BuildRequires: passt
-    %endif
     %if %{with_esx}
 BuildRequires: libcurl-devel
     %endif
@@ -436,8 +445,6 @@ BuildRequires: mingw32-filesystem
 BuildRequires: mingw32-gcc
 BuildRequires: mingw32-binutils
 BuildRequires: mingw32-glib2 >= 2.48
-BuildRequires: mingw32-libgpg-error
-BuildRequires: mingw32-libgcrypt
 BuildRequires: mingw32-gnutls
 BuildRequires: mingw32-gettext
 BuildRequires: mingw32-libxml2
@@ -451,8 +458,6 @@ BuildRequires: mingw64-filesystem
 BuildRequires: mingw64-gcc
 BuildRequires: mingw64-binutils
 BuildRequires: mingw64-glib2 >= 2.48
-BuildRequires: mingw64-libgpg-error
-BuildRequires: mingw64-libgcrypt
 BuildRequires: mingw64-gnutls
 BuildRequires: mingw64-gettext
 BuildRequires: mingw64-libxml2
@@ -1219,6 +1224,12 @@ exit 1
     %define arg_nbdkit -Dnbdkit=disabled
 %endif
 
+%if %{with_nbdkit_config_default}
+    %define arg_nbdkit_config_default -Dnbdkit_config_default=enabled
+%else
+    %define arg_nbdkit_config_default -Dnbdkit_config_default=disabled
+%endif
+
 %if %{with_fuse}
     %define arg_fuse -Dfuse=enabled
 %else
@@ -1334,6 +1345,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
            %{?arg_nbdkit} \
+           %{?arg_nbdkit_config_default} \
            -Dlibnl=enabled \
            -Daudit=enabled \
            -Ddtrace=enabled \
@@ -1399,6 +1411,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dhost_validate=disabled \
   -Dlibiscsi=disabled \
   -Dnbdkit=disabled \
+  -Dnbdkit_config_default=disabled \
   -Dlibnl=disabled \
   -Dlibpcap=disabled \
   -Dlibssh2=disabled \
@@ -2569,6 +2582,9 @@ exit 0
 
 
 %changelog
+* Tue Jan 16 2024 Phantom X <megaphantomx at hotmail dot com> - 10.0.0-100
+- 10.0.0
+
 * Sat Dec 02 2023 Phantom X <megaphantomx at hotmail dot com> - 9.10.0-100
 - 9.10.0
 

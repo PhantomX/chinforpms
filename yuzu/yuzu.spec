@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 0d17dd066d91f954a4c89d46dcb067eead6b1e4a
+%global commit9 404d39004570a26c734a9d1fa29ab4d63089c599
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
@@ -84,7 +84,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 4036
+%global vc_version 4067
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}

@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.0-rc5
+%global wine_stagingver 9.0
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 88e64d8c68d0a5051fa434eebfc4ebd1e5a5d173
+%global tkg_id deb8bcadc265316244247cbf1c4121296ffc6618
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.0~rc5
+Version:        9.0
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -250,7 +250,7 @@ Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.pat
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes7.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes7.patch
+Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes7.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes7.patch
 Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.patch
 Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.patch
 Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
@@ -890,12 +890,6 @@ tar -xf %{SOURCE900} --strip-components=1
 
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
-
-sed \
-  -e 's|^C_SRCS|SOURCES|g' \
-  -i dlls/d3d12core/Makefile.in dlls/dxgkrnl.sys/Makefile.in \
-  dlls/dxgmms1.sys/Makefile.in dlls/win32k.sys/Makefile.in \
-  dlls/windows.networking.connectivity/Makefile.in
 
 %patch -P 1020 -p1
 %patch -P 1021 -p1
