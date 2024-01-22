@@ -1,14 +1,27 @@
+%global commit 50a0a7b334227a5c6e1f846a08c3aed8d7f6f412
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20230604
+%bcond_without snapshot
+
+BuildArch:      noarch
+
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%endif
+
 Name:           pipe-viewer
-Version:        0.4.8
+Version:        0.4.9
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
 License:        Artistic-2.0
 URL:            https://github.com/trizen/%{name}
 
+%if %{with snapshot}
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
-
-BuildArch:      noarch
+%endif
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
@@ -77,7 +90,7 @@ This is the Gtk frontend.
 
 
 %prep
-%autosetup -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build
@@ -129,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Sat Jan 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.4.9-1.20230604git50a0a7b
+- 0.4.9
+
 * Sun Aug 06 2023 Phantom X <megaphantomx at hotmail dot com> - 0.4.8-1
 - 0.4.8
 

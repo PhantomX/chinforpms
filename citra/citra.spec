@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 59df319f48a8a67db717233e5b222a0b86f1eae4
+%global commit 8d82adb3d39b276f83cdbd26762ff0e8c43c1a16
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231204
+%global date 20240121
 %bcond_without snapshot
 
 # Enable system boost
@@ -94,7 +94,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 VulkanMemoryAllocator
 
-%global commit17 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+%global commit17 217e93c664ec6704ec2d8c36fa116c1a4a1e2d40
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Vulkan-Headers
 
@@ -106,7 +106,7 @@
 
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
-%global vkh_ver 1.3.261
+%global vkh_ver 1.3.275
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -116,7 +116,7 @@
 
 Name:           citra
 Version:        0
-Release:        53%{?dist}
+Release:        54%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -191,6 +191,7 @@ BuildRequires:  cmake(dynarmic) >= 6.4.6
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
+BuildRequires:  pkgconfig(gamemode)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
@@ -342,6 +343,7 @@ sed -e 's/\r//' -i LICENSE.cpp-jwt
 popd
 
 
+rm -rf externals/gamemode
 rm -f externals/json/json.hpp
 
 rm -rf externals/teakra/externals/catch/

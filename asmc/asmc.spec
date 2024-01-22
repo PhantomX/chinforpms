@@ -1,6 +1,6 @@
-%global commit f91c91e5aa3434b4fa9d087f6c2a2f0bae541cee
+%global commit a32d99a43786533e3700e387f7ae026067103277
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230810
+%global date 20240104
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -18,8 +18,8 @@
 %endif
 
 Name:           asmc
-Version:        2.34.37
-Release:        2%{?dist}
+Version:        2.34.38
+Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
 License:        GPL-2.0-only
@@ -107,6 +107,9 @@ install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Jan 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.38-1.20240104gita32d99a
+- 2.34.38
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 2.34.37-1.20230605gitdf80e2f
 - 2.34.37
 
