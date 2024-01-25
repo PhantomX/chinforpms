@@ -7,7 +7,7 @@
 %global commit 432c4e3b2a9f233cd742d1de764cced7ff337e48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231221
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with libao
 %bcond_with openal
@@ -19,8 +19,8 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        134
-Release:        2%{?dist}
+Version:        135
+Release:        1%{?dist}
 Summary:        Multi-system emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause
@@ -149,6 +149,9 @@ done
 
 
 %changelog
+* Tue Jan 23 2024 Phantom X <megaphantomx at hotmail dot com> - 135-1
+- 135
+
 * Wed Nov 22 2023 Phantom X <megaphantomx at hotmail dot com> - 134-1
 - 134
 
