@@ -1,9 +1,9 @@
 Name:           qt5ct
 Version:        1.8
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Qt5 Configuration Tool
 
-License:        BSD
+License:        BSD-2-Clause
 URL:            https://sourceforge.net/projects/%{name}/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
 Source1:        README.gtk3
@@ -104,6 +104,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Wed Jan 24 2024 Phantom X - 1.8-102
+- Rebuild (qt5)
+
 * Wed Oct 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1.8-101
 - Rebuild (qt5)
 

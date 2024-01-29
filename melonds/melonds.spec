@@ -7,13 +7,13 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1b7b5106e24d1bad0776c97696f834209e30d900
+%global commit 7897bd387bfd37615a049eba28d02dc23cfa5194
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231206
+%global date 20240117
 %bcond_without snapshot
 
 # build with qt6 instead 5
-%bcond_with qt6
+%bcond_without qt6
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -28,7 +28,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Jan 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-12.20240117git7897bd3
+- Reenable Qt 6
+
 * Tue Oct 24 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-9.20231022git3ab752b
 - Build with Qt 5 until 6 is fixed
 

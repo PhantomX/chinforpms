@@ -1,1 +1,1 @@
-# CONFIG_TCP_AO is not set
+CONFIG_TCP_AO=y

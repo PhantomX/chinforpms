@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.0
+%define specrpmversion 6.7.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,12 +211,12 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 4
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 175b6a7bddb48e8fe9bd5502daaa2eb8a29003e9
+%global pfcommit 17d49c467affe76ed474596dbd1d209dacd629a9
 %global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
 %global pfcoprhash aef2b16005b6e6af07b0332af26e6edc
 %if "%{pfcommit}" == "0"
@@ -230,17 +230,17 @@ Summary: The Linux kernel
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
-%global pf_stable_extra 0
+%global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
-%global st_first_commit d49914ee4ec93d58d90a12275a814415c189059c
-%global st_last_commit 1916ff079c77dc38275493cc18e22fe18532fb0f
+%global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
+%global st_last_commit 7bbf3b67cb49d0f8a20e64b7473923041b758211
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id 880a670b49dbda5d4b13047db6e40b2d3d30fa20
+%global opensuse_id a52bf765724a419339d0b0ac309ebfbac92845a8
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1001,6 +1001,7 @@ Source4002: gating.yaml
 %if 0%{?post_factum}
 Patch5000: %{extra_patch}
 Patch5003: https://codeberg.org/pf-kernel/linux/commit/477f95f7686e7f77d3ea600aabd43ade1041b196.patch#/pf-revert-477f95f.patch
+Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1661,6 +1662,7 @@ cp -a %{SOURCE1} .
 %if 0%{?post_factum}
 ApplyPatch %{PATCH5000}
 ApplyPatch %{PATCH5003} -R
+ApplyPatch %{PATCH5004} -R
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -1750,9 +1752,9 @@ cat %{SOURCE3011} >> kernel-local
 %endif
 %endif
 
-%dnl %if 0%{?post_factum}
-%dnl cat %{SOURCE3013} >> kernel-local
-%dnl %endif
+%if 0%{?post_factum}
+cat %{SOURCE3013} >> kernel-local
+%endif
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
@@ -3441,6 +3443,9 @@ fi\
 #
 #
 %changelog
+* Sun Jan 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
+- 6.7.2 - pf4
+
 * Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
 - 6.7.0 - pf1
 

@@ -19,7 +19,7 @@
 
 %global opensuse_id 6d1d0389ca8e0089bb088a35ae097df2d87df746
 
-%define specrpmversion 6.7.0
+%define specrpmversion 6.7.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -571,6 +571,9 @@ popd
 
 
 %changelog
+* Sun Jan 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500
+- 6.7.2
+
 * Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500
 - 6.7.0
 
