@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d2ebd36ab963bdf21f8fae50c6cc5eec21cc2426
+%global commit 9401fabfa119b02712e93daf8d39074b59809172
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231230
+%global date 20240128
 %bcond_without snapshot
 
 # Enable Qt build
@@ -55,7 +55,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 64fcb9ea3cf990e65343057ace9271ff3b77428e
+%global commit9 e7989c300280ba06d7621ae5b4e00ac7fe28d97a
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -69,8 +69,8 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.16.6
-Release:        104%{?dist}
+Version:        1.17
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -302,6 +302,8 @@ rm -rf wiiu
 popd
 %endif
 
+sed -e 's|std=c++11|std=c++17|' -i ext/native/tools/CMakeLists.txt
+
 
 %build
 %set_build_flags
@@ -455,6 +457,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Mon Jan 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.17-100.20240128git9401fab
+- 1.17
+
 * Sat Oct 14 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.16.6-100.20231013git1e6142d
 - 1.16.6
 
