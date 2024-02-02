@@ -1,0 +1,25 @@
+From 105d3d3df6c76de1292bf55d269f4ff64bc8fee8 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 1 Feb 2024 23:03:00 -0300
+Subject: [PATCH] Disable header_bar as default
+
+---
+ pynicotine/config.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pynicotine/config.py b/pynicotine/config.py
+index 3317cbc..054d192 100644
+--- a/pynicotine/config.py
++++ b/pynicotine/config.py
+@@ -309,7 +309,7 @@ class Config:
+             "ui": {
+                 "language": "",
+                 "dark_mode": False,
+-                "header_bar": True,
++                "header_bar": False,
+                 "icontheme": "",
+                 "chatme": "#908E8B",
+                 "chatremote": "",
+-- 
+2.43.0
+

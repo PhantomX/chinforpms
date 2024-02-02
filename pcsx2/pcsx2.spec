@@ -59,11 +59,11 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5384
+Version:        1.7.5533
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://github.com/PCSX2/pcsx2
 
 %if %{with snapshot}
@@ -90,6 +90,7 @@ Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
+Patch10:        0001-Console.h-disable-force-inline-in-printf-writer.patch
 
 ExclusiveArch:  x86_64
 
@@ -241,7 +242,11 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 %dnl cp -p zydis/LICENSE LICENSE.zydis
+
+cp -p promptfont/LICENSE.txt LICENSE.promptfont
 popd
+
+rm -f bin/resources/fonts/promptfont-license
 
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
@@ -304,6 +309,8 @@ sed \
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/bin/%{appbin} %{buildroot}%{_bindir}/%{appbin}
 
+mv %{__cmake_builddir}/bin/resources/docs _docs
+
 mkdir -p %{buildroot}%{_datadir}/%{appres}
 cp -r %{__cmake_builddir}/bin/{resources,translations} \
   %{buildroot}%{_datadir}/%{appres}/
@@ -342,8 +349,8 @@ desktop-file-install \
 
 
 %files -f %{appbin}.lang
-%license COPYING* 3rdparty/LICENSE.* %{!?with_soundtouch:3rdparty/COPYING*}
-%doc README.md bin/docs/*.pdf
+%license COPYING* 3rdparty/LICENSE.* _docs/*.html %{!?with_soundtouch:3rdparty/COPYING*}
+%doc README.md _docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
 %{_datadir}/applications/%{appbin}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appres}.png

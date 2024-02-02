@@ -1,0 +1,31 @@
+From bc488e2365b0df690954968b2176382b5c2746d2 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 30 Jan 2024 22:27:22 -0300
+Subject: [PATCH] Console.h: disable force inline in printf writer
+
+---
+ common/Console.h | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/common/Console.h b/common/Console.h
+index 78184d7..2e3b758 100644
+--- a/common/Console.h
++++ b/common/Console.h
+@@ -132,10 +132,10 @@ struct ConsoleLogWriter
+ 	} while (0)
+ 
+ 	// clang-format off
+-	__fi static void Error(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_StrongRed); }
+-	__fi static void Warning(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_StrongOrange); }
+-	__fi static void WriteLn(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_Default); }
+-	__fi static void WriteLn(ConsoleColors color, const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(color); }
++	static void Error(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_StrongRed); }
++	static void Warning(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_StrongOrange); }
++	static void WriteLn(const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(Color_Default); }
++	static void WriteLn(ConsoleColors color, const char* format, ...) { MAKE_PRINTF_CONSOLE_WRITER(color); }
+ 	// clang-format on	
+ 
+ #undef MAKE_PRINTF_CONSOLE_WRITER
+-- 
+2.43.0
+

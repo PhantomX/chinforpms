@@ -1,4 +1,4 @@
-From a5eac7ce583e10215b8d943bc08325765bb2a896 Mon Sep 17 00:00:00 2001
+From 95064ebc20623d1215cf5487d46cc9dfacce55f3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 15 Apr 2023 15:18:54 -0300
 Subject: [PATCH] use system lzma-sdk
@@ -10,54 +10,54 @@ Subject: [PATCH] use system lzma-sdk
  3 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 99ae4b8..499e508 100644
+index 0c6afb5..f648864 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -82,7 +82,6 @@ else()
+@@ -128,7 +128,6 @@ else()
  endif()
  
  add_subdirectory(Source/3rdParty)
--add_subdirectory(Source/3rdParty/7-Zip)
+-add_subdirectory(Source/3rdParty/lzma)
  if (VRU)
      add_subdirectory(Source/3rdParty/vosk-api)
  endif(VRU)
 diff --git a/Source/RMG-Core/CMakeLists.txt b/Source/RMG-Core/CMakeLists.txt
-index 229843a..3ca7d05 100644
+index 8ed4f6e..d2bb1d0 100644
 --- a/Source/RMG-Core/CMakeLists.txt
 +++ b/Source/RMG-Core/CMakeLists.txt
-@@ -12,6 +12,17 @@ if (WIN32)
-     pkg_check_modules(ICONV REQUIRED iconv)
- endif(WIN32)
+@@ -22,6 +22,17 @@ if (NOT PORTABLE_INSTALL)
+     include(GNUInstallDirs)
+ endif(NOT PORTABLE_INSTALL)
  
-+pkg_check_modules(SEVENZIP IMPORTED_TARGET lzmasdk-c)
-+if(SEVENZIP_FOUND)
++pkg_check_modules(LZMA IMPORTED_TARGET lzmasdk-c)
++if(LZMA_FOUND)
 +    message(STATUS "Using system lzmasdk")
-+    add_library(sevenzip-shared INTERFACE)
-+    target_link_libraries(sevenzip-shared INTERFACE PkgConfig::SEVENZIP)
-+    add_library(7Zip ALIAS sevenzip-shared)
++    add_library(lzma-shared INTERFACE)
++    target_link_libraries(lzma-shared INTERFACE PkgConfig::LZMA)
++    add_library(lzma ALIAS lzma-shared)
 +else()
-+    add_subdirectory(../3rdParty/7-Zip)
-+    target_include_directories(RMG-Core ../3rdParty/7-Zip/C)
++    add_subdirectory(../3rdParty/lzma)
++    target_include_directories(RMG-Core ../3rdParty/lzma)
 +endif()
 +
  configure_file(Config.hpp.in Config.hpp)
  
  set(RMG_CORE_SOURCES
 diff --git a/Source/RMG-Core/Rom.cpp b/Source/RMG-Core/Rom.cpp
-index 98ef24e..4b9e6e4 100644
+index 21e545f..dea42cc 100644
 --- a/Source/RMG-Core/Rom.cpp
 +++ b/Source/RMG-Core/Rom.cpp
 @@ -19,13 +19,13 @@
  #include "CachedRomHeaderAndSettings.hpp"
  
- // 7-Zip includes
--#include "../3rdParty/7-Zip/C/7zTypes.h"
--#include "../3rdParty/7-Zip/C/7z.h"
--#include "../3rdParty/7-Zip/C/7zAlloc.h"
--#include "../3rdParty/7-Zip/C/7zBuf.h"
--#include "../3rdParty/7-Zip/C/7zCrc.h"
--#include "../3rdParty/7-Zip/C/7zFile.h"
--#include "../3rdParty/7-Zip/C/7zVersion.h"
+ // lzma includes
+-#include "../3rdParty/lzma/7zTypes.h"
+-#include "../3rdParty/lzma/7z.h"
+-#include "../3rdParty/lzma/7zAlloc.h"
+-#include "../3rdParty/lzma/7zBuf.h"
+-#include "../3rdParty/lzma/7zCrc.h"
+-#include "../3rdParty/lzma/7zFile.h"
+-#include "../3rdParty/lzma/7zVersion.h"
 +#include "7zTypes.h"
 +#include "7z.h"
 +#include "7zAlloc.h"
@@ -69,5 +69,5 @@ index 98ef24e..4b9e6e4 100644
  #include <string>
  #include <unzip.h>
 -- 
-2.41.0
+2.43.0
 

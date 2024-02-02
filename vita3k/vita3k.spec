@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit bef1567a61a0ac4467ad88e4e13c41fec54a07cb
+%global commit ac73ee8270b80c7740469cc0143f24155f411ce2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231225
+%global date 202401295
 
 %bcond_with fmt
 %bcond_with yamlcpp
@@ -36,10 +36,6 @@
 %global commit13 c35576bed0295689540b39873126129adfa0b4c8
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 better-enums
-
-%global commit14 cb9ea3fada60f9b01e9133d7db4d3e08171d0565
-%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
-%global srcname14 crypto-algorithms
 
 %global commit15 e98f4ee160380d7c39dc1f04e7488bcf0770d391
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
@@ -85,7 +81,7 @@
 %global shortcommit25 %(c=%{commit25}; echo ${c:0:7})
 %global srcname25 printf
 
-%global commit26 1d2547a72d20126c1425101cb448943a1027d950
+%global commit26 ab1aa9b36388843f6a9f8dc86b1746f1f2a7e557
 %global shortcommit26 %(c=%{commit26}; echo ${c:0:7})
 %global srcname26 psvpfstools
 
@@ -129,15 +125,11 @@
 %global shortcommit260 %(c=%{commit260}; echo ${c:0:7})
 %global srcname260 libb64
 
-%global commit261 f7518374b9bdc7f43c8f60d82ed16f0d5af53a19
-%global shortcommit261 %(c=%{commit261}; echo ${c:0:7})
-%global srcname261 libtomcrypt
-
 %global commit262 7d1e69bee7d2f08ea5754eff4463c041aacd49af
 %global shortcommit262 %(c=%{commit262}; echo ${c:0:7})
 %global srcname262 libzrif
 
-%global commit263 a5e7cbbd4ba21d1a7d4018866fd5a605644731a4
+%global commit263 4094450bcaac2256236d61ae3a730425ae47bd39
 %global shortcommit263 %(c=%{commit263}; echo ${c:0:7})
 %global srcname263 psvpfsparser
 
@@ -160,7 +152,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.1.9.3529
+Version:        0.2.0.3561
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator 
 
@@ -174,7 +166,6 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Source12:       https://github.com/Macdu/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source120:      https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname120}/archive/%{commit120}/%{srcname120}-%{shortcommit120}.tar.gz
 Source13:       https://github.com/aantron/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
-Source14:       https://github.com/KorewaWatchful/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       %{vc_url}/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 Source17:       %{vc_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
@@ -190,7 +181,6 @@ Source24:       https://github.com/btzy/%{srcname24}/archive/%{commit24}/%{srcna
 Source25:       %{vc_url}/%{srcname25}/archive/%{commit25}/%{srcname25}-%{shortcommit25}.tar.gz
 Source26:       %{vc_url}/%{srcname26}/archive/%{commit26}/%{srcname26}-%{shortcommit26}.tar.gz
 Source260:      %{kw_url}/%{srcname260}/archive/%{commit260}/%{srcname260}-%{shortcommit260}.tar.gz
-Source261:      %{kw_url}/%{srcname261}/archive/%{commit261}/%{srcname261}-%{shortcommit261}.tar.gz
 Source262:      %{kw_url}/%{srcname262}/archive/%{commit262}/%{srcname262}-%{shortcommit262}.tar.gz
 Source263:      %{vc_url}/%{srcname263}/archive/%{commit263}/%{srcname263}-%{shortcommit263}.tar.gz
 Source27:       https://github.com/nothings/%{srcname27}/archive/%{commit27}/%{srcname27}-%{shortcommit27}.tar.gz
@@ -231,6 +221,7 @@ Provides:       bundled(%{srcname18}) = 0~git%{shortcommit18}
 %endif
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 %if %{with xxhash}
 BuildRequires:  pkgconfig(libxxhash)
@@ -259,7 +250,6 @@ Provides:       bundled(%{srcname10}) = 0~git%{shortcommit10}
 Provides:       bundled(vma) = 0~git%{shortcommit12}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit11}
 Provides:       bundled(%{srcname13}) = 0~git%{shortcommit13}
-Provides:       bundled(%{srcname14}) = 0~git%{shortcommit14}
 Provides:       bundled(%{srcname15}) = 0~git%{shortcommit15}
 Provides:       bundled(%{srcname16}) = 0~git%{shortcommit16}
 Provides:       bundled(%{srcname17}) = 0~git%{shortcommit17}
@@ -292,7 +282,6 @@ tar -xf %{S:11} -C %{srcname11} --strip-components 1
 tar -xf %{S:12} -C %{srcname12} --strip-components 1
 tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
 tar -xf %{S:13} -C %{srcname13} --strip-components 1
-tar -xf %{S:14} -C %{srcname14} --strip-components 1
 tar -xf %{S:15} -C %{srcname15} --strip-components 1
 tar -xf %{S:16} -C %{srcname16} --strip-components 1
 tar -xf %{S:17} -C ffmpeg --strip-components 1
@@ -310,7 +299,6 @@ tar -xf %{S:24} -C %{srcname24} --strip-components 1
 tar -xf %{S:25} -C %{srcname25} --strip-components 1
 tar -xf %{S:26} -C %{srcname26} --strip-components 1
 tar -xf %{S:260} -C %{srcname26}/%{srcname260} --strip-components 1
-tar -xf %{S:261} -C %{srcname26}/%{srcname261} --strip-components 1
 tar -xf %{S:262} -C %{srcname26}/%{srcname262} --strip-components 1
 tar -xf %{S:263} -C %{srcname26}/%{srcname263} --strip-components 1
 tar -xf %{S:27} -C %{srcname27} --strip-components 1
@@ -450,5 +438,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2.0.3561-1.202401295gitac73ee8
+- 0.2.0.3561
+
 * Sun Nov 12 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.9.3477-1.20231112git6030dae
 - Initial spec

@@ -4,10 +4,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit d0928b5124de51a420abdaa46fc2d7088a77046d
+%global commit 685aa597c7ee7ad7cfd4dd782f40d21863b75899
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230828
-%bcond_with snapshot
+%global date 20240128
+%bcond_without snapshot
 
 %bcond_with rust
 
@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.5.5
+Version:        0.5.7
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -34,7 +34,6 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
-Patch10:        0001-Fix-library-path.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-use-system-lzma-sdk.patch
 Patch13:        0001-RMG-Core-shared-library-fixes.patch
@@ -135,8 +134,6 @@ sed \
   -e 's|GIT_FOUND|DIT_DISABLED|g' \
   -i CMakeLists.txt
 
-sed -e 's|_RPMLIBDIR_|%{?_lib}|g' -i Source/RMG-Core/Directories.cpp
-
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i Source/RMG-Input/main.cpp
 
 sed -e 's|_RPMVERSION_|%{version}|g' -i Source/RMG-Core/CMakeLists.txt
@@ -184,6 +181,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-1.20240128git685aa59
+- 0.5.7
+
 * Thu Jan 18 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.5-1
 - 0.5.5
 

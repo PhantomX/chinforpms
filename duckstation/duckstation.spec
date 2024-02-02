@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 5d3cf93aa3420ce4bd6bb22a42b5b4c438854170
+%global commit ad41c81fa8111ffe52a0382fe66680dcd4ba7c6a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240110
+%global date 20240130
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -32,19 +32,19 @@
 %global vc_url  https://github.com/stenzek/%{name}
 
 %global glad_ver 0.1.33
-%global imgui_ver 1.88
+%global imgui_ver 1.90.1
 %global md5_ver 1.6
-%global rcheevos_scommit 8afec6c
+%global rcheevos_scommit 74860c9
 %global soundtouch_ver 2.3.1
 %global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        108%{?dist}
+Release:        109%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0 AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -219,6 +219,7 @@ cp -p vixl/LICENCE LICENSE.vixl
 popd
 
 rm -f CMakeModules/FindSDL2.cmake
+rm -f data/resources/fonts/*.txt
 
 sed \
   -e '/NotoSansJP/s|\.ttf|.otf|' \

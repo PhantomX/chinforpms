@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.2.9
+Version:        3.3.0
 Release:        100%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -30,17 +30,20 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
+Patch0:         0001-Disable-header_bar-as-default.patch
+Patch1:         0001-Set-GTK3-as-default.patch
+
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  libappstream-glib
 BuildRequires:  %{py3_dist pygobject}
 BuildRequires:  python3-devel
 # check
-BuildRequires:  gtk3
+BuildRequires:  ( gtk3 or gtk4 )
 BuildRequires:  %{py3_dist pytest}
 #BuildRequires:  xorg-x11-server-Xvfb
 Requires:       gdbm
-Requires:       gtk3
+Requires:       ( gtk3 or gtk4 )
 Requires:       %{py3_dist pygobject}
 Requires:       hicolor-icon-theme
 Recommends:     gspell
@@ -102,6 +105,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.0-100
+- 3.3.0
+
 * Sun Mar 05 2023 Phantom X <megaphantomx at hotmail dot com> - 3.2.9-100
 - 3.2.9
 
