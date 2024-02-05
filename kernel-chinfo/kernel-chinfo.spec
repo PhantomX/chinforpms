@@ -247,7 +247,7 @@ Summary: The Linux kernel
 # should not be exported to RPM provides
 %global __provides_exclude_from ^%{_libexecdir}/kselftests
 
-# The following build options are (mostly) enablhttps://codeberg.org/pf-kernel/linux/commit/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2ed by default, but may become
+# The following build options are (mostly) enabled by default, but may become
 # enabled/disabled by later architecture-specific checks.
 # Where disabled by default, they can be enabled by using --with <opt> in the
 # rpmbuild command, or by forcing these values to 1.

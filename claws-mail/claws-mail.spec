@@ -1,7 +1,7 @@
-%global commit a8e4b62ddf09c668ad59d78dea9d71ab23804982
+%global commit 1608444ca48f8db3ec731805d330a5b13b05a6a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231026
-%bcond_with snapshot
+%global date 20240203
+%bcond_without snapshot
 
 %global with_python  1
 
@@ -12,8 +12,8 @@
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global with_autotools 1
-%global extra_ver 106
-%global src_hash 2491b176b38162bde7b288c7611403db
+%global extra_ver 38
+%global src_hash ef185e41b37cd1ce4152a64a1cac1976
 %else
 %global extra_ver 0
 %endif
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.2.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -41,9 +41,6 @@ Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/ch
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
-
-Patch0:         %{vc_url};a=patch;h=ca7335445eedf0da1b6518846338a7abdecbb7e1#/%{name}-git-ca73354.patch
-Patch1:         %{vc_url};a=patch;h=dd4c4e5152235f9f4f319cc9fdad9227ebf688c9#/%{name}-git-dd4c4e5.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch

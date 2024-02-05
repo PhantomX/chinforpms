@@ -1,4 +1,4 @@
-From 2b6a2a6268e2913aca8cadc43229657de640609d Mon Sep 17 00:00:00 2001
+From 61042abe2b2aed07814c3154d29a49db7e4fbee5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 13 Jan 2024 17:00:31 -0300
 Subject: [PATCH] dxvk.conf: gplasync options
@@ -8,13 +8,13 @@ Subject: [PATCH] dxvk.conf: gplasync options
  1 file changed, 18 insertions(+)
 
 diff --git a/dxvk.conf b/dxvk.conf
-index ec3876c..8253954 100644
+index 09f5dfb..aa187bd 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
-@@ -646,3 +646,21 @@
+@@ -669,3 +669,21 @@
  # - True/False
  
- # dxvk.hideIntegratedGraphics = False
+ # d3d9.countLosableResources = True
 +
 +
 +# Sets the async pipeline compiler
