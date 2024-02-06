@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.3
+%define specrpmversion 6.7.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 5
+%global post_factum 6
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
@@ -233,14 +233,14 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
-%global st_last_commit 01e08e5d7656e660c8a4852191e1e133cbdb0a66
+%global st_last_commit 18d179e11910a53ef98791eabc410d5abcfa377e
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id 0fa3c9e44a6fe28422619dc4a1e4224ab30f186e
+%global opensuse_id 8578156a60177c42451bf31696bbacc64fde9f44
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1005,9 +1005,7 @@ Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21
 Patch5005: https://codeberg.org/pf-kernel/linux/commit/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
 Patch5006: https://codeberg.org/pf-kernel/linux/commit/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
 Patch5007: https://codeberg.org/pf-kernel/linux/commit/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
-# https://lore.kernel.org/all/CAL3q7H5UaYcAYHijBO+QTnnpruVQXvdirg05_X94KRKrKnXDZw@mail.gmail.com/T/
-Patch5008: 0001-btrfs-unused-block-deletion-fix-followup-1.patch
-Patch5009: 0002-btrfs-unused-block-deletion-fix-followup-2.patch
+Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-a264ed0.pfpatch/26c15ca9edd19e02735d910cfaea2547/pf-kernel-v6.7-85e857f-a264ed0.pfpatch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1043,13 +1041,13 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/mm-kmsan-fix-infinite-recursion-due-to-RCU-critical-.patch#/openSUSE-mm-kmsan-fix-infinite-recursion-due-to-RCU-critical-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{patchwork_url}/13541191/mbox#/patchwork-btrfs-don-t-reserve-space-for-checksums-when-writing-to-nocow-files.patch
+Patch2002: %{patchwork_url}/13542875/mbox#/patchwork-btrfs-reject-encoded-write-if-inode-has-nodatasum-flag-set.patch
 
 %if 0%{?tkg}
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
@@ -1675,7 +1673,6 @@ ApplyPatch %{PATCH5005} -R
 ApplyPatch %{PATCH5006} -R
 ApplyPatch %{PATCH5007} -R
 ApplyPatch %{PATCH5008}
-ApplyPatch %{PATCH5009}
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -1699,10 +1696,10 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
+ApplyPatch %{PATCH2002}
 
 %if 0%{?tkg}
 ApplyPatch %{PATCH2090}
@@ -3458,7 +3455,10 @@ fi\
 #
 #
 %changelog
-* Sun Jan 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
+* Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.4-500.chinfo
+- 6.7.4 - pf6
+
+* Sun Jan 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.2-500.chinfo
 - 6.7.2 - pf4
 
 * Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo

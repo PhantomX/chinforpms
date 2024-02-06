@@ -1,3 +1,9 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/067c5243fae90055e1276c8ba54076f4bbaef253
+ 067c5243fae90055e1276c8ba54076f4bbaef253 Input: atkbd - do not skip atkbd_deactivate() when skipping ATKBD_CMD_GETID
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/eed0dfdb91bf9fd3545a8c1a2f926590a34ad7f7
+ eed0dfdb91bf9fd3545a8c1a2f926590a34ad7f7 Input: atkbd - skip ATKBD_CMD_SETLEDS when skipping ATKBD_CMD_GETID
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/46a8350ec1068377bdfcd55191012325f85113bb
  46a8350ec1068377bdfcd55191012325f85113bb Revert "cpupower: Bump soname version"
 

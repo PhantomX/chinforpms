@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        5.15.12.7665
+Version:        5.17.5.2543
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -25,6 +25,7 @@ ExclusiveArch:  x86_64
 BuildRequires:  desktop-file-utils
 BuildRequires:  chrpath
 BuildRequires:  ImageMagick
+Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
 
 Provides:       bundled(ffmpeg) = 4.4
@@ -47,6 +48,7 @@ Provides:       bundled(qt) = 5.12.10
 %global __requires_exclude %__requires_exclude|^libmkldnn\\.so.*$
 %global __requires_exclude %__requires_exclude|^libmpg123\\.so.*$
 %global __requires_exclude %__requires_exclude|^libOpenCL\\.so.*$
+%global __requires_exclude %__requires_exclude|^libsqlite3\\.so.*$
 %global __requires_exclude %__requires_exclude|^libswresample\\.so.*$
 %global __requires_exclude %__requires_exclude|^libvulkan\\.so.*$
 %global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
@@ -86,6 +88,7 @@ rm -f opt/%{name}/libquazip*
 rm -f opt/%{name}/libturbojpeg*
 
 chrpath --delete opt/%{name}/%{name}
+chrpath --delete opt/%{name}/aomhost
 chrpath --delete opt/%{name}/zopen
 find opt/%{name}/ -type f -name '*.so*' | xargs chrpath -k --delete
 
@@ -99,12 +102,14 @@ sed -e 's|/opt/zoom|%{progdir}|g' opt/%{name}/qt.conf
 mkdir -p %{buildroot}%{progdir}
 mv opt/%{name}/* %{buildroot}%{progdir}
 
+rm -f %{buildroot}%{_libdir}/%{name}/cef/libvulkan.so*
+
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{appname} <<'EOF'
 #!/usr/bin/sh
 APP_PATH=%{progdir}
 export APP_PATH
-LD_LIBRARY_PATH="%{progdir}/cef:${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+LD_LIBRARY_PATH="${APP_PATH}/cef:${APP_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec ${APP_PATH}/ZoomLauncher "$@"
 EOF
@@ -152,6 +157,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Tue Feb 06 2024 - 5.17.5.2543-1
+- 5.17.5.2543
+
 * Sat Sep 16 2023 - 5.15.12.7665-1
 - 5.15.12.7665
 

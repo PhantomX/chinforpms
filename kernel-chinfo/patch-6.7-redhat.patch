@@ -15,6 +15,7 @@
  drivers/firmware/sysfb.c                           |  18 ++-
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
+ drivers/input/keyboard/atkbd.c                     |  14 +-
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
  drivers/iommu/iommu.c                              |  22 +++
  drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
@@ -36,10 +37,10 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
  tools/power/cpupower/Makefile                      |   2 +-
- 38 files changed, 674 insertions(+), 176 deletions(-)
+ 39 files changed, 683 insertions(+), 181 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 0564d3d09395..51590b9fd3c6 100644
+index 73a208d9d4c4..cfff9444b6ab 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -544,7 +545,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/firmware/sysfb.c b/drivers/firmware/sysfb.c
-index 82fcfd29bc4d..17b7e096b682 100644
+index 3c197db42c9d..16e4a2e90fae 100644
 --- a/drivers/firmware/sysfb.c
 +++ b/drivers/firmware/sysfb.c
 @@ -34,6 +34,22 @@
@@ -732,6 +733,60 @@ index 34aee59dd147..7c5a7f7c11bd 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
+diff --git a/drivers/input/keyboard/atkbd.c b/drivers/input/keyboard/atkbd.c
+index 13ef6284223d..7f67f9f2946b 100644
+--- a/drivers/input/keyboard/atkbd.c
++++ b/drivers/input/keyboard/atkbd.c
+@@ -811,7 +811,6 @@ static int atkbd_probe(struct atkbd *atkbd)
+ {
+ 	struct ps2dev *ps2dev = &atkbd->ps2dev;
+ 	unsigned char param[2];
+-	bool skip_getid;
+ 
+ /*
+  * Some systems, where the bit-twiddling when testing the io-lines of the
+@@ -825,6 +824,11 @@ static int atkbd_probe(struct atkbd *atkbd)
+ 				 "keyboard reset failed on %s\n",
+ 				 ps2dev->serio->phys);
+ 
++	if (atkbd_skip_getid(atkbd)) {
++		atkbd->id = 0xab83;
++		goto deactivate_kbd;
++	}
++
+ /*
+  * Then we check the keyboard ID. We should get 0xab83 under normal conditions.
+  * Some keyboards report different values, but the first byte is always 0xab or
+@@ -833,18 +837,17 @@ static int atkbd_probe(struct atkbd *atkbd)
+  */
+ 
+ 	param[0] = param[1] = 0xa5;	/* initialize with invalid values */
+-	skip_getid = atkbd_skip_getid(atkbd);
+-	if (skip_getid || ps2_command(ps2dev, param, ATKBD_CMD_GETID)) {
++	if (ps2_command(ps2dev, param, ATKBD_CMD_GETID)) {
+ 
+ /*
+- * If the get ID command was skipped or failed, we check if we can at least set
++ * If the get ID command failed, we check if we can at least set
+  * the LEDs on the keyboard. This should work on every keyboard out there.
+  * It also turns the LEDs off, which we want anyway.
+  */
+ 		param[0] = 0;
+ 		if (ps2_command(ps2dev, param, ATKBD_CMD_SETLEDS))
+ 			return -1;
+-		atkbd->id = skip_getid ? 0xab83 : 0xabba;
++		atkbd->id = 0xabba;
+ 		return 0;
+ 	}
+ 
+@@ -860,6 +863,7 @@ static int atkbd_probe(struct atkbd *atkbd)
+ 		return -1;
+ 	}
+ 
++deactivate_kbd:
+ /*
+  * Make sure nothing is coming from the keyboard and disturbs our
+  * internal state.
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
 index 258d5fe3d395..f7298e3dc8f3 100644
 --- a/drivers/input/rmi4/rmi_driver.c
@@ -980,10 +1035,10 @@ index 6b6aa3c36744..0ce08e9a0a3d 100644
  	arg->desc_id = ev->desc_id;
  	arg->status = ev->status;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d55a3ffae4b8..a8c1d69567cd 100644
+index a2bf6de11462..692a9e777d72 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4410,6 +4410,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4426,6 +4426,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -1043,10 +1098,10 @@ index 542a4bbb21bc..62161ceed2e2 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 87480a6e6d93..0f0c5550bea6 100644
+index ef8d9bda94ac..3fab06f3b43e 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5763,6 +5763,13 @@ static void hub_event(struct work_struct *work)
+@@ -5777,6 +5777,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -1129,10 +1184,10 @@ index 9cc5bf32f6f2..7462fb1fc99e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index ff217a5ce552..90c924a7fa88 100644
+index 472cb16458b0..7c0f6dd800cb 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -405,6 +405,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
+@@ -407,6 +407,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
  #endif /* CONFIG_BPF_SYSCALL */
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1344,10 +1399,10 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 1d1df326c881..c1c06654d448 100644
+index 9d3138c6364c..7089843865bf 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -484,6 +484,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
+@@ -486,6 +486,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
  int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
@@ -1355,7 +1410,7 @@ index 1d1df326c881..c1c06654d448 100644
  #else /* CONFIG_SECURITY */
  
  static inline int call_blocking_lsm_notifier(enum lsm_event event, void *data)
-@@ -1395,6 +1396,10 @@ static inline int security_locked_down(enum lockdown_reason what)
+@@ -1404,6 +1405,10 @@ static inline int security_locked_down(enum lockdown_reason what)
  {
  	return 0;
  }
@@ -1516,10 +1571,10 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index dcb3e7014f9b..8037be366b20 100644
+index 266cec94369b..c572a4da96b2 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5230,6 +5230,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5248,6 +5248,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  
