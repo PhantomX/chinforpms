@@ -47,7 +47,7 @@ loader for Windows, Linux, and MacOS.
 %package        devel
 Summary:        Development files for %{name}
 Requires:       %{name}%{?_isa} = %{version}-%{release}
-Requires:       vulkan-headers
+Requires:       vulkan-headers >= %{version}
 Provides:       vulkan-devel%{?_isa} = %{version}-%{release}
 Provides:       vulkan-devel = %{version}-%{release}
 Obsoletes:      vulkan-devel < %{version}-%{release}

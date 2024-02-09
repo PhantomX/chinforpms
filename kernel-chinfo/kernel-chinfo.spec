@@ -1005,7 +1005,7 @@ Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21
 Patch5005: https://codeberg.org/pf-kernel/linux/commit/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
 Patch5006: https://codeberg.org/pf-kernel/linux/commit/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
 Patch5007: https://codeberg.org/pf-kernel/linux/commit/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
-Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-a264ed0.pfpatch/26c15ca9edd19e02735d910cfaea2547/pf-kernel-v6.7-85e857f-a264ed0.pfpatch
+Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-c5b4fdc.pfpatch/7fbf21c2c458c4eb3f3394f8c1a66cf8/pf-kernel-v6.7-85e857f-c5b4fdc.pfpatch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif

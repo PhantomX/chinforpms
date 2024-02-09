@@ -8,20 +8,20 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit 7da378033a7764f955516f75194856d87bbcd7a5
+%global commit a32e6f52ef6ef9a2aa7451666a2d70385b719244
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230507
-%bcond_with snapshot
+%global date 20240206
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global mcl_ver 0.1.11
+%global mcl_ver 0.1.12
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.5.0
+Version:        6.6.2
 Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
@@ -43,7 +43,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  boost-devel >= 1.57
 BuildRequires:  pkgconfig(fmt) >= 9
 BuildRequires:  cmake(tsl-robin-map)
-BuildRequires:  cmake(xbyak)
+BuildRequires:  cmake(xbyak) >= 7
 %if %{with zydis}
 BuildRequires:  cmake(zydis) >= %{zydis_ver}
 %else
@@ -69,7 +69,7 @@ with %{name}.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-rm -rf externals/{catch,fmt,robin-map,xbyak}
+rm -rf externals/{catch,fmt,oaknut,robin-map,xbyak}
 
 %if %{with zydis}
 rm -rf externals/{zycore,zydis}
@@ -111,6 +111,9 @@ sed \
 
 
 %changelog
+* Fri Feb 09 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.2-1.20240206gita32e6f5
+- 6.6.2
+
 * Thu Oct 19 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.0-1
 - 6.5.0
 - System zydis support

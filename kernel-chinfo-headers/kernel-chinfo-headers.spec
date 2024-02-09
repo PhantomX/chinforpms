@@ -127,9 +127,6 @@ done
 * Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.4-500.chinfo
 - 6.7.4
 
-* Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.4-500.chinfo
-- 6.7.4
-
 * Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.3-500.chinfo
 - 6.7.3
 

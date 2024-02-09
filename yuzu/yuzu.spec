@@ -27,6 +27,8 @@
 %bcond_without boost
 # Enable system dynarmic
 %bcond_without dynarmic
+# Enable system ffmpeg
+%bcond_with ffmpeg
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -74,6 +76,10 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tz
 
+%global commit11 9c1294eaddb88cb0e044c675ccae059a85fc9c6c
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 FFmpeg
+
 %global glad_ver 0.1.29
 %global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
@@ -84,7 +90,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 4075
+%global vc_version 4123
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -139,6 +145,9 @@ Source8:        %{ext_url}/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcom
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+%if %{without ffmpeg}
+Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+%endif
 %dnl %endif
 
 Source20:       https://api.yuzu-emu.org/gamedb#/compatibility_list.json
@@ -147,6 +156,7 @@ Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
+Patch15:        0001-Bump-xbyak-version.patch
 
 ExclusiveArch:  x86_64
 
@@ -170,20 +180,29 @@ BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.4.7
+BuildRequires:  cmake(dynarmic) >= 6.6.1
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 %endif
 BuildRequires:  pkgconfig(gamemode) >= 1.7
+BuildRequires:  pkgconfig(libbrotlidec)
+BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(fmt) >= 9
+%if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
+%else
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(libva-drm)
+BuildRequires:  pkgconfig(x11)
+Provides:       bundled(ffmpeg) = 0~git%{?shortcommit11}
+%endif
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
@@ -208,7 +227,8 @@ BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  qt5-linguist
 %endif
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
-BuildRequires:  cmake(xbyak)
+BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
+BuildRequires:  cmake(xbyak) >= 7
 BuildRequires:  pkgconfig(zlib)
 
 Requires:       hicolor-icon-theme
@@ -282,6 +302,9 @@ tar -xf %{S:8} -C externals/mbedtls --strip-components 1
 mkdir externals/nx_tzdb/tzdb_to_nx
 tar -xf %{S:9} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
 tar -xf %{S:10} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
+%if %{without ffmpeg}
+tar -xf %{S:11} -C externals/ffmpeg/ffmpeg --strip-components 1
+%endif
 
 %autopatch -p1
 
@@ -302,6 +325,9 @@ cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p sirit/LICENSE.txt LICENSE.sirit
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
+%if %{without ffmpeg}
+cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
+%endif
 popd
 
 %if %{without mbedtls}
@@ -360,7 +386,12 @@ cp -f %{S:20} dist/compatibility_list/
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+%if %{with ffmpeg}
   -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
+%else
+  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=ON \
+%endif
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \

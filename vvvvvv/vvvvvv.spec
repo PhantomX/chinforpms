@@ -23,7 +23,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 23.11
+%global commit5 24.02
 %global srcname5 FAudio
 
 %global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21

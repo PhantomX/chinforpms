@@ -96,7 +96,7 @@ index 29e0a73..f816d4d 100644
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
 @@ -320,7 +336,13 @@ if(ANDROID)
- endif()
+ target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
 +    pkg_check_modules(gamemode REQUIRED IMPORTED_TARGET gamemode)
@@ -110,14 +110,14 @@ index 29e0a73..f816d4d 100644
  
  # cpp-jwt
 @@ -387,7 +409,7 @@ endif()
- # vulkan-headers
- add_library(vulkan-headers INTERFACE)
- if(USE_SYSTEM_VULKAN_HEADERS)
--    find_package(Vulkan REQUIRED)
-+    find_package(VulkanHeaders REQUIRED)
-     if(TARGET Vulkan::Headers)
-         message(STATUS "Found Vulkan headers")
-         target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
+     # vulkan-headers
+     add_library(vulkan-headers INTERFACE)
+     if(USE_SYSTEM_VULKAN_HEADERS)
+-        find_package(Vulkan REQUIRED)
++        find_package(VulkanHeaders REQUIRED)
+         if(TARGET Vulkan::Headers)
+             message(STATUS "Found Vulkan headers")
+             target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
 index f8c953a..fbc90b3 100644
 --- a/src/common/CMakeLists.txt

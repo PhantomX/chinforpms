@@ -42,6 +42,7 @@ volk-vulkan
 vulkan-headers
 vulkan-loader
 vulkan-tools
+vulkan-utility-libraries
 -webp-pixbuf-loader
 wine
 -wine-d9vk - no mingw

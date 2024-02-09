@@ -1,0 +1,87 @@
+%global debug_package %{nil}
+
+%global with_sdk 0
+
+Name:           vulkan-utility-libraries
+Version:        1.3.277
+Release:        100%{?dist}
+Summary:        Vulkan utility libraries
+
+License:        Apache-2.0
+URL:            https://github.com/KhronosGroup/Vulkan-Utility-Libraries
+
+%if 0%{?with_sdk}
+Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Utility-Libraries-sdk-%{version}.tar.gz
+%else
+Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Utility-Libraries-%{version}.tar.gz
+%endif
+
+BuildRequires:  gcc
+BuildRequires:  gcc-c++
+BuildRequires:  cmake3
+BuildRequires:  ninja-build
+BuildRequires:  python%{python3_pkgversion}-devel
+BuildRequires:  cmake(VulkanHeaders) >= %{version}
+
+%description
+%{summary}.
+
+%package        devel
+Summary:        Development files for %{name}
+Requires:       vulkan-headers >= %{version}
+Obsoletes:      vulkan-validation-layers-devel < 1.3.268.0-2
+Provides:       vulkan-validation-layers-devel = %{version}-%{release}
+Provides:       vulkan-validation-layers-devel%{?_isa} = %{version}-%{release}
+
+%description    devel
+%{summary}.
+
+
+%prep
+%if 0%{?with_sdk}
+%autosetup -n Vulkan-Utility-Libraries-sdk-%{version} -p1
+%else
+%autosetup -n Vulkan-Utility-Libraries-%{version} -p1
+%endif
+
+%build
+%cmake3 \
+  -GNinja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
+  -DBUILD_TESTS:BOOL=OFF \
+  -DVUL_WERROR:BOOL=OFF \
+  -DUPDATE_DEPS:BOOL=OFF \
+%{nil}
+
+%cmake3_build
+
+%install
+%cmake_install
+
+%files devel
+%license LICENSE.md
+%doc README.md
+%{_includedir}/vulkan/
+%{_libdir}/cmake/VulkanUtilityLibraries/*.cmake
+%{_libdir}/libVulkanLayerSettings.a
+
+
+%changelog
+* Fri Feb 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.277-100
+- 1.3.277
+
+* Thu Feb 01 2024 José Expósito <jexposit@redhat.com> - 1.3.268.0-5
+- Add Provides and Obsoletes vulkan-validation-layers-devel
+
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 1.3.268.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Fri Nov 17 2023 José Expósito <jexposit@redhat.com> - 1.3.268.0-3
+- Avoid generating an empty non-devel package
+
+* Fri Nov 17 2023 José Expósito <jexposit@redhat.com> - 1.3.268.0-2
+- Generate non-devel package
+
+* Thu Nov 16 2023 José Expósito <jexposit@redhat.com> - 1.3.268.0-1
+- Initial import (fedora#2247640)

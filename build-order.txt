@@ -66,6 +66,7 @@ rapidyaml
 -spirv-tools
 volk-vulkan
 vulkan-loader
+vulkan-utility-libraries
 xbyak
 xcftools
 

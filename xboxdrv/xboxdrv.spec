@@ -7,6 +7,8 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global src_hash a62703eda7d59393538b2f22d5b0c791
+
 %global gl_url  https://gitlab.com/xboxdrv/xboxdrv
 # cebtenzzre fork
 %global glc_url  https://gitlab.com/cebtenzzre/xboxdrv
@@ -22,7 +24,7 @@ URL:            https://xboxdrv.gitlab.io
 %if %{with snapshot}
 Source0:        %{glc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        https://xboxdrv.gitlab.io/%{name}-linux-%{version}.tar.bz2
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.xz/%{src_hash}/%{name}-linux-%{version}.tar.bz2
 %endif
 
 Source1:        %{name}.service
@@ -37,7 +39,7 @@ Source6:        org.seul.xboxdrv.policy
 
 %if %{without snapshot}
 # Fix 60 seconds delay
-Patch1:         %{gl_url}/-/merge_requests/262.patch#/%{name}-gl-262.patch
+Patch1:         xboxdrv-mr262.patch
 # Fix "pure virtual function called" crash and related hang
 Patch2:         xboxdrv-pr220.patch
 # Don't submit transfers when controller is disconnecting
@@ -50,7 +52,7 @@ Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea0
 # https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
 Patch7:         %{name}-scons-py3.patch
 %endif
-Patch8:         %{gl_url}/commit/3ca002d783974539f5be4e683b67a58f4cc9fce0.patch#/%{name}-gl-3ca002d.patch
+Patch8:         xboxdrv-commit-3ca002d.patch
 # https://aur.archlinux.org/packages/xboxdrv/#comment-822087
 Patch9:         0001-scons-fix-build.patch
 

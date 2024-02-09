@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8d82adb3d39b276f83cdbd26762ff0e8c43c1a16
+%global commit 2766118e335059f35fe5942681727f6875d8fb9c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240121
+%global date 20240208
 %bcond_without snapshot
 
 # Enable system boost
@@ -46,7 +46,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
-%global commit5 9327192b0095dc1f420b2082d37bd427b5750d48
+%global commit5 a99c80c26686e44eddf0432140ae397f3efbd0b3
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 cryptopp-cmake
 
@@ -116,7 +116,7 @@
 
 Name:           citra
 Version:        0
-Release:        54%{?dist}
+Release:        55%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -186,7 +186,7 @@ Provides:       bundled(cryptopp) = 0~git%{shortcommit2}
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.4.6
+BuildRequires:  cmake(dynarmic) >= 6.6.1
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
