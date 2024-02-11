@@ -1,0 +1,41 @@
+From 4d17defb0f7c80bbdc09a3b8958ed8eeda16683d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 10 Feb 2024 21:50:07 -0300
+Subject: [PATCH] Use system libzstd
+
+---
+ CMakeLists.txt | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f078573..718f599 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,6 +8,7 @@ endif()
+ option(INSTALL_STATIC_LIBS "Install static libraries" OFF)
+ option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
+ option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
++option(WITH_SYSTEM_ZSTD "Use system provided zstd library" OFF)
+ 
+ option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
+ if(BUILD_LTO)
+@@ -49,9 +50,16 @@ else()
+ endif()
+ 
+ # zstd 
++if (WITH_SYSTEM_ZSTD)
++  include(FindPkgConfig)
++  pkg_check_modules(ZSTD REQUIRED libzstd)
++  list(APPEND CHDR_INCLUDES ${ZSTD_INCLUDE_DIRS})
++  list(APPEND CHDR_LIBS ${ZSTD_LIBRARIES})
++else()
+ add_subdirectory(deps/zstd-1.5.5 EXCLUDE_FROM_ALL)
+ list(APPEND CHDR_LIBS zstd)
+ list(APPEND CHDR_INCLUDES zstd)
++endif()
+ #--------------------------------------------------
+ # chdr
+ #--------------------------------------------------
+-- 
+2.43.0
+

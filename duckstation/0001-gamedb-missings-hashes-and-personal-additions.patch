@@ -1,43 +1,32 @@
-From 853fa0c95ea20f5ea70e63ca03d9547919c8ae18 Mon Sep 17 00:00:00 2001
+From 3e988879e5eff779b2c5583a97436cd8d9d863b5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 26 Nov 2021 00:04:23 -0300
+Date: Sat, 10 Feb 2024 22:01:35 -0300
 Subject: [PATCH] gamedb: missings hashes and personal additions
 
 ---
- data/resources/gamedb.json | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ data/resources/gamedb.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/data/resources/gamedb.json b/data/resources/gamedb.json
-index a6be98f..0eb1511 100644
---- a/data/resources/gamedb.json
-+++ b/data/resources/gamedb.json
-@@ -280771,7 +280771,8 @@
-   "serial": "SLPS-00006",
-   "name": "Nekketsu Oyako (Japan)",
-   "codes": [
--   "HASH-520AF7ED8E12BC72"
-+   "HASH-520AF7ED8E12BC72",
-+   "HASH-C8157B99F7A29390"
-   ],
-   "languages": [
-    "Japanese"
-@@ -425814,7 +425815,8 @@
-   "serial": "SLPS-00040",
-   "name": "Tekken (Japan)",
-   "codes": [
--   "SLPS-00040"
-+   "SLPS-00040",
-+   "HASH-87B7B57972AB0BAE"
-   ],
-   "languages": [
-    "Japanese"
-@@ -499827,4 +499829,4 @@
-    }
-   ]
-  }
--]
-\ No newline at end of file
-+]
+diff --git a/data/resources/gamedb.yaml b/data/resources/gamedb.yaml
+index 818018a..17614d9 100644
+--- a/data/resources/gamedb.yaml
++++ b/data/resources/gamedb.yaml
+@@ -110748,6 +110748,7 @@ SLPS-00006:
+     - DigitalController
+   codes:
+     - HASH-520AF7ED8E12BC72
++    - HASH-C8157B99F7A29390
+   metadata:
+     publisher: "TechnoSoft"
+     developer: "TechnoSoft"
+@@ -163595,6 +163596,7 @@ SLPS-00040:
+   codes:
+     - SLPS-00040
+     - SLPS-91020
++    - HASH-87B7B57972AB0BAE
+   metadata:
+     publisher: "Namco"
+     developer: "Namco"
 -- 
-2.41.0
+2.43.0
 

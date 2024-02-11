@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit ad41c81fa8111ffe52a0382fe66680dcd4ba7c6a
+%global commit d9846093c3991329c5b3cfb7ff9aba229114d581
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240130
+%global date 20240206
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -40,7 +40,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        109%{?dist}
+Release:        110%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -98,7 +98,7 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= 2.30.0
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
 %endif
@@ -106,6 +106,7 @@ BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  cmake(WebP)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(xkbcommon)

@@ -1,19 +1,19 @@
-From ab9df66a187262912e3201c1b4eea521d16c88d3 Mon Sep 17 00:00:00 2001
+From e2e264a0c73719192fcd7ac6d2259de86cd1ee47 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 110 +++++++++++++++++++++++++++++-
- src/core/texture_replacements.cpp |   2 +
- 2 files changed, 109 insertions(+), 3 deletions(-)
+ dep/CMakeLists.txt                | 95 ++++++++++++++++++++++++++++++-
+ src/core/texture_replacements.cpp |  2 +
+ 2 files changed, 94 insertions(+), 3 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 527cac2..c8a9554 100644
+index 6c319d1..9d2749e 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,43 +1,129 @@
-+find_package(fmt 9)
+@@ -1,30 +1,94 @@
++find_package(fmt 10.1)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
 +  add_library(fmt INTERFACE)
@@ -21,29 +21,10 @@ index 527cac2..c8a9554 100644
 +else()
  set(FMT_INSTALL OFF CACHE BOOL "")
  add_subdirectory(fmt EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(fmt)
 +endif()
+ disable_compiler_warnings_for_target(fmt)
  add_subdirectory(stb EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(stb)
-+find_package(ZLIB)
-+if(ZLIB_FOUND)
-+  message(STATUS "Using the system zlib")
-+  add_library(zlib INTERFACE)
-+  target_link_libraries(zlib INTERFACE ZLIB::ZLIB)
-+else()
- add_subdirectory(zlib EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(zlib)
-+endif()
-+pkg_search_module(zstd IMPORTED_TARGET libzstd)
-+if(zstd_FOUND)
-+  message(STATUS "Using the system zstd")
-+  add_library(zstd INTERFACE)
-+  target_link_libraries(zstd INTERFACE PkgConfig::zstd)
-+  add_library(Zstd::Zstd ALIAS zstd)
-+else()
- add_subdirectory(zstd EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(zstd)
-+endif()
 +pkg_search_module(minizip IMPORTED_TARGET minizip)
 +if(minizip_FOUND)
 +  message(STATUS "Using the system minizip")
@@ -63,6 +44,7 @@ index 527cac2..c8a9554 100644
  disable_compiler_warnings_for_target(lzma)
  add_subdirectory(libchdr EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(libchdr)
+ add_subdirectory(xxhash EXCLUDE_FROM_ALL)
 +endif()
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
@@ -71,7 +53,6 @@ index 527cac2..c8a9554 100644
 +  target_compile_definitions(xxhash INTERFACE SYSTEM_XXHASH=1)
 +  target_link_libraries(xxhash INTERFACE PkgConfig::xxhash)
 +else()
- add_subdirectory(xxhash EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(xxhash)
 +endif()
 +pkg_search_module(rapidjson IMPORTED_TARGET RapidJSON)
@@ -126,7 +107,8 @@ index 527cac2..c8a9554 100644
  add_subdirectory(reshadefx EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(reshadefx)
  add_subdirectory(rcheevos EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(rcheevos)
+@@ -41,9 +105,16 @@ if(WIN32 OR ANDROID)
+ endif()
  
  if(ENABLE_CUBEB)
 +  find_package(cubeb)
@@ -142,7 +124,7 @@ index 527cac2..c8a9554 100644
  endif()
  
  if(ENABLE_OPENGL)
-@@ -51,9 +137,27 @@ if(ENABLE_DISCORD_PRESENCE)
+@@ -57,9 +128,27 @@ if(ENABLE_DISCORD_PRESENCE)
  endif()
  
  if(CPU_ARCH_X64)

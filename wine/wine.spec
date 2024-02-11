@@ -50,8 +50,8 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  8.1.0
-%global winevulkan 1.3.272
+%global winemono  9.0.0
+%global winevulkan 1.3.277
 
 %global wineFAudio 23.12
 %global winegsm 1.0.19
@@ -100,7 +100,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.1
+%global wine_stagingver 9.2
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +111,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id edf80e3ecdcf69555f2359433003dd635b3b5798
+%global tkg_id 3fbd4978a084c5a2ba9225929af1a57804669201
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +153,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.1
+Version:        9.2
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2535,6 +2535,9 @@ fi
 
 
 %changelog
+* Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.2-100
+- 9.2
+
 * Sat Jan 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.1-100
 - 9.1
 

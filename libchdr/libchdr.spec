@@ -1,6 +1,6 @@
-%global commit 9108f34a892272f61c3ed3bff4bee728d4c1dd57
+%global commit 2648c221c9ce6b49600ed7d2eb45c9e6e593790f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230918
+%global date 20240210
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -33,10 +33,12 @@ Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
 Patch17:        0005-dep-libchdr-Add-subtype-parsing-functions.patch
 Patch18:        0006-dep-libchdr-Add-chd_get_compressed_size.patch
 Patch19:        0001-Export-subtype-parsing-functions.patch
+Patch20:        0001-Use-system-libzstd.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  make
+BuildRequires:  pkgconfig(libzstd) >= 1.5.5
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(zlib)
 
@@ -58,7 +60,7 @@ developing applications that use %{name}.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-rm -rf deps/{lzma,zlib}*
+rm -rf deps/{lzma,zlib,zstd}*
 
 sed -e 's| -O3||g' -i CMakeLists.txt
 sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
@@ -70,6 +72,7 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
   -DINSTALL_STATIC_LIBS:BOOL=OFF \
   -DWITH_SYSTEM_LZMA:BOOL=ON \
   -DWITH_SYSTEM_ZLIB:BOOL=ON \
+  -DWITH_SYSTEM_ZSTD:BOOL=ON \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
@@ -93,6 +96,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-14.20240210git2648c22
+- BR: libzstd
+
 * Sun Dec 24 2023 Phantom X <megaphantomx at hotmail dot com> - 0.2-13.20230918git9108f34
 - Duckstation patchset update
 

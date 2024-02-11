@@ -1,7 +1,7 @@
-%global commit 7f2251bc1b6c8ac6b81f0cfcc6a9a4894899ee28
+%global commit c3cf3fe53df2b93b8780146c4693ead68373b052
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200226
-%bcond_with snapshot
+%global date 20200922
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -10,19 +10,19 @@
 %global src_hash a62703eda7d59393538b2f22d5b0c791
 
 %global gl_url  https://gitlab.com/xboxdrv/xboxdrv
-# cebtenzzre fork
-%global glc_url  https://gitlab.com/cebtenzzre/xboxdrv
+# zerojay fork
+%global zj_url  https://github.com/zerojay/xboxdrv
 
 Name:           xboxdrv
 Version:        0.8.8
-Release:        108%{?dist}
+Release:        109%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPL-3.0-or-later
 URL:            https://xboxdrv.gitlab.io
 
 %if %{with snapshot}
-Source0:        %{glc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{zj_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.xz/%{src_hash}/%{name}-linux-%{version}.tar.bz2
 %endif
@@ -42,16 +42,20 @@ Source6:        org.seul.xboxdrv.policy
 Patch1:         xboxdrv-mr262.patch
 # Fix "pure virtual function called" crash and related hang
 Patch2:         xboxdrv-pr220.patch
+%else
+Patch10:         xboxdrv-pr220-zj.patch
+%endif
 # Don't submit transfers when controller is disconnecting
 Patch3:         xboxdrv-pr221.patch
 # Ensure string2btn matches btn2string's output
 Patch4:         xboxdrv-pr227.patch
 # https://bugs.gentoo.org/show_bug.cgi?id=594674
 Patch5:         xboxdrv-0.8.8-fix-c++14.patch
+%if %{without snapshot}
 Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1.patch
+%endif
 # https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
 Patch7:         %{name}-scons-py3.patch
-%endif
 Patch8:         xboxdrv-commit-3ca002d.patch
 # https://aur.archlinux.org/packages/xboxdrv/#comment-822087
 Patch9:         0001-scons-fix-build.patch
@@ -142,6 +146,9 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 
 
 %changelog
+* Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-109.20200922gitc3cf3fe
+- zerojay fork
+
 * Tue Feb 08 2022 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-108
 - Return to official fork
 

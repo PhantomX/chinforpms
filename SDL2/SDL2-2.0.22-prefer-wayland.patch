@@ -1,0 +1,41 @@
+From 68d8a2c6b4f732920df40bd79dc3c18b71a4a349 Mon Sep 17 00:00:00 2001
+From: Neal Gompa <ngompa@fedoraproject.org>
+Date: Fri, 29 Apr 2022 23:39:39 -0400
+Subject: [PATCH] Revert "Revert "video: Prefer Wayland over X11""
+
+For Fedora/RHEL, we want to continue using Wayland by default.
+
+The majority of issues around Wayland by default seem to center
+around cases that are issues for the Steam Runtime's bundled
+copy of SDL and proprietary games that depend on that runtime.
+
+These issues do not apply to us.
+
+This reverts commit 254fcc90eb22bb159ab365ad956222a9c5632841.
+---
+ src/video/SDL_video.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/src/video/SDL_video.c b/src/video/SDL_video.c
+index 2b896c44b..6f31f4c9e 100644
+--- a/src/video/SDL_video.c
++++ b/src/video/SDL_video.c
+@@ -68,12 +68,12 @@ static VideoBootStrap *bootstrap[] = {
+ #ifdef SDL_VIDEO_DRIVER_COCOA
+     &COCOA_bootstrap,
+ #endif
+-#ifdef SDL_VIDEO_DRIVER_X11
+-    &X11_bootstrap,
+-#endif
+ #ifdef SDL_VIDEO_DRIVER_WAYLAND
+     &Wayland_bootstrap,
+ #endif
++#ifdef SDL_VIDEO_DRIVER_X11
++    &X11_bootstrap,
++#endif
+ #ifdef SDL_VIDEO_DRIVER_VIVANTE
+     &VIVANTE_bootstrap,
+ #endif
+-- 
+2.35.1
+
