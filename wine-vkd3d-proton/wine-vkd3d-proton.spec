@@ -9,18 +9,18 @@
 %bcond_without sysvulkan
 
 # Need be set for release builds too
-%global commit 1bcda32ea5504fcea7b66ef6ccaf080a72e069b8
+%global commit 85a0367c2f70260a8296ac00d53fb528db9d6583
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231109
-%bcond_with snapshot
+%global date 20240213
+%bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 9044a31d22afff1d75d07886e5096daf5f1ebed8
+%global commit1 a211364df0ce3dcdaf367f7f82d1204b12954d95
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 e150e716ff57dd69cf31d45344121f10de8925af
+%global commit2 6c11c2bd46dba5b68bf62fc7d1195ebc7aa3694a
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
@@ -28,11 +28,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 a0c76b4ef76e219483755ff61dce6b67ff79f24b
+%global commit4 5a5c9a643484d888873e32c5d7d484fae8e71d3d
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 aa331ab0ffcb3a67021caa1a0c1c9017712f2f31
+%global commit5 1c9115b562bab79ee2160fbd845f41b815b9f21f
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -61,7 +61,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.11.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT

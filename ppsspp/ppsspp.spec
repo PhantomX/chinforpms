@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9401fabfa119b02712e93daf8d39074b59809172
+%global commit f3635c4463f194b1908455b3d56080e368a6df7d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240128
+%global date 20240212
 %bcond_without snapshot
 
 # Enable Qt build
@@ -69,7 +69,7 @@
 %global vma_ver 3.0.0
 
 Name:           ppsspp
-Version:        1.17
+Version:        1.17.1
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -108,6 +108,7 @@ Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 Patch7:         0001-SDL-fix-high-CPU-usage-with-Vulkan.patch
+Patch8:         0001-Revert-Some-renaming-add-a-bunch-of-sanity-debug-ass.patch
 
 %if %{without sysffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -457,6 +458,9 @@ install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Feb 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.17.1-100.20240212gitf3635c4
+- 1.17.1
+
 * Mon Jan 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.17-100.20240128git9401fab
 - 1.17
 

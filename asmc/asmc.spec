@@ -1,6 +1,6 @@
-%global commit a32d99a43786533e3700e387f7ae026067103277
+%global commit 4935c972eb15f170f36412974e6f86a48ee83324
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240104
+%global date 20240202
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -13,12 +13,14 @@
 
 %undefine _debugsource_packages
 
+%global _smp_build_ncpus 1
+
 %ifarch x86_64
 %global platform 64
 %endif
 
 Name:           asmc
-Version:        2.34.38
+Version:        2.34.39
 Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -47,11 +49,12 @@ BuildRequires:  gcc
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 sed \
+  -e '/^all:/s| clean||g' \
   -e 's|gcc |\0$(CFLAGS) |' \
   -e '/gcc/s| -s | |' \
   -e '/gcc/s|$@|\0 $(LDFLAGS)|' \
   -e '/chmod/d' \
-  -i source/%{name}/gcc/makefile
+  -i source/%{name}/makefile
 
 
 %build
@@ -62,15 +65,16 @@ mkdir stage1
 
 %if 0%{?bootstrap}
   chmod +x bin/%{name}{,64}
-  bsbin="../../../bin/%{name}%{platform}"
+  bsbin="../../bin/%{name}%{platform}"
 %else
   rm -f bin/*
   bsbin=%{name}%{platform}
 %endif
 
 for i in %{name}{,64} ;do
-  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=${bsbin}
-  mv source/%{name}/gcc/${i} stage1/
+  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=${bsbin} || :
+  %make_build -C source/%{name} -f ./makefile ${i} CC=${bsbin} YACC=1
+  mv source/%{name}/${i} stage1/
 done
 
 rm -f bin/*
@@ -78,25 +82,27 @@ rm -f bin/*
 mkdir stage2
 
 for i in %{name}{,64} ;do
-  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=../../../stage1/%{name}%{platform}
-  mv source/%{name}/gcc/${i} stage2/
+  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage1/%{name}%{platform}
+  %make_build -C source/%{name} -f ./makefile ${i} YACC=1 CC=../../stage1/%{name}%{platform}
+  mv source/%{name}/${i} stage2/
 done
 
 for i in %{name}{,64} ;do
-  make -C source/%{name}/gcc -f ./makefile ${i} clean CC=../../../stage2/%{name}%{platform}
+  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage2/%{name}%{platform}
+  %make_build -C source/%{name} -f ./makefile ${i} YACC=1 CC=../../stage2/%{name}%{platform}
 done
 
 
 %check
 for i in %{name}{,64} ;do
-  cmp stage2/${i} source/%{name}/gcc/${i}
+  cmp stage2/${i} source/%{name}/${i}
 done
 
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 source/%{name}/gcc/%{name} %{buildroot}%{_bindir}/
-install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
+install -pm0755 source/%{name}/%{name} %{buildroot}%{_bindir}/
+install -pm0755 source/%{name}/%{name}64 %{buildroot}%{_bindir}/
 
 
 %files
@@ -107,6 +113,9 @@ install -pm0755 source/%{name}/gcc/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.39-1.20240202git4935c97
+- 2.34.39
+
 * Sat Jan 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.38-1.20240104gita32d99a
 - 2.34.38
 

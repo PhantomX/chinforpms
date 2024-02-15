@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 4a0ace5de2fd07fcf6c8e7d3c7d8f3c48d4d4581
+%global commit 44fa364f36c43bed19b055096600f075c656f78c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231222
+%global date 20240209
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -51,7 +51,7 @@
 
 Name:           flycast
 Version:        2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -182,7 +182,7 @@ sed \
   -i core/version.h*
 
 sed \
-  -e 's|LINK_FLAGS_RELEASE -s||g' \
+  -e '/LINK_FLAGS_RELEASE -s/d' \
   -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt

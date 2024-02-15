@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        62%{?dist}
+Release:        63%{?dist}
 Summary:        A database of game controller mappings
 
 License:        Zlib AND MIT
@@ -54,6 +54,9 @@ install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Mon Feb 12 2024 Phantom X <megaphantomx at hotmail dot com> - 0-63.20240210gitae51c99
+- Add another extra GUID
+
 * Fri Dec 23 2022 Phantom X <megaphantomx at hotmail dot com> - 0-51.20221221gitb717695
 - Add extra GUID patch
 

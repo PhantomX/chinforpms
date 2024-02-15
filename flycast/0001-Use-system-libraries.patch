@@ -97,9 +97,9 @@ index dce5cd1..bb11f93 100644
 +target_link_libraries(${PROJECT_NAME} PRIVATE chdr-static)
  
  if(NOT WITH_SYSTEM_ZLIB)
- 	target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/core/deps/libchdr/deps/zlib-1.2.11")
+ 	set(ZLIB_RELATIVE_PATH "core/deps/libchdr/deps/zlib-1.2.12")
 @@ -458,7 +494,6 @@ if(NOT WITH_SYSTEM_ZLIB)
- 	get_target_property(ZLIB_LIBRARY zlib LOCATION)
+ 	get_target_property(ZLIB_LIBRARY_DEBUG zlib LOCATION_Debug)
  endif()
  
 -find_package(PkgConfig)
@@ -169,7 +169,7 @@ index dce5cd1..bb11f93 100644
  	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
  if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
-+	find_package(xbyak 6)
++	find_package(xbyak 7)
 +	if(xbyak_FOUND)
 +		message(STATUS "Using the system xbyak")
 +		add_library(xbyak-shared INTERFACE)

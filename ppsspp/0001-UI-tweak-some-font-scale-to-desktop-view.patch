@@ -18,7 +18,7 @@ index 1405c4d..4c28a5d 100644
  		ctx->BindFontTexture();
 -	ctx->Draw()->SetFontScale(1.1f, 1.1f);
 +	ctx->Draw()->SetFontScale(0.4f, 0.4f);
- 	ctx->Draw()->DrawTextShadow(ubuntu24, sy->T("Game crashed"), x, y, 0xFFFFFFFF);
+ 	ctx->Draw()->DrawTextShadow(ubuntu24, sy->T_cstr("Game crashed"), x, y, 0xFFFFFFFF);
  
  	char statbuf[4096];
 @@ -339,7 +339,7 @@ sysName.c_str(), sysVersion, GetCompilerABI(),

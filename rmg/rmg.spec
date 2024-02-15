@@ -22,7 +22,7 @@
 
 Name:           rmg
 Version:        0.5.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -181,6 +181,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-2.20240128git685aa59
+- Rebuild (lightning)
+
 * Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-1.20240128git685aa59
 - 0.5.7
 
