@@ -179,7 +179,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.4
+%define specrpmversion 6.7.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 6
+%global post_factum 7
 %global pf_url https://gitlab.com/post-factum/pf-kernel/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
@@ -233,7 +233,7 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
-%global st_last_commit 18d179e11910a53ef98791eabc410d5abcfa377e
+%global st_last_commit 004dcea13dc10acaf1486d9939be4c793834c13c
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
@@ -1005,7 +1005,8 @@ Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21
 Patch5005: https://codeberg.org/pf-kernel/linux/commit/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
 Patch5006: https://codeberg.org/pf-kernel/linux/commit/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
 Patch5007: https://codeberg.org/pf-kernel/linux/commit/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
-Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-c5b4fdc.pfpatch/7fbf21c2c458c4eb3f3394f8c1a66cf8/pf-kernel-v6.7-85e857f-c5b4fdc.pfpatch
+# 85e857f1ed2a905706eabab2e9c966f3a59858a3...892f5ddd16ceb9ac9a0f7f09a99051587496c840
+Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-892f5dd.pfpatch/192fefe78d822612a2d8ce6c6be1a9e1/pf-kernel-v6.7-85e857f-892f5dd.pfpatch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -3455,6 +3456,9 @@ fi\
 #
 #
 %changelog
+* Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.5-500.chinfo
+- 6.7.5 - pf7
+
 * Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.4-500.chinfo
 - 6.7.4 - pf6
 

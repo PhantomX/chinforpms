@@ -1,6 +1,6 @@
-%global commit 37aeb0bf34f0d6d2318276a6b4d96340d14621c3
+%global commit 6f40a932b7a13e3cf427ec31be47daee88bd3182
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230715
+%global date 20240210
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -10,8 +10,8 @@ BuildArch:      noarch
 %endif
 
 Name:           winetricks
-Version:        20230212
-Release:        101%{?dist}
+Version:        20240105
+Release:        100%{?dist}
 
 Summary:        Work around common problems in Wine
 
@@ -76,6 +76,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Feb 15 2024 Phantom X <megaphantomx at hotmail dot com> - 20240105-100.20240210git6f40a93
+- 20240105
+
 * Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 20230212-100.20230224gita7e8a73
 - 20230212
 
