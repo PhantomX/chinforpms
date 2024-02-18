@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit d9846093c3991329c5b3cfb7ff9aba229114d581
+%global commit a1da72202b554d1429b0472410e07818be8ec8db
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240206
+%global date 20240215
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -173,6 +173,7 @@ DuckStation emulator without a graphical user interface.
 %package data
 Summary:        DuckStation emulator data files
 BuildArch:      noarch
+Requires:       (%{name} = %{?epoch:%{epoch}:}%{version}-%{release} or %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release})
 
 %description data
 This package provides the data files for duckstation.
