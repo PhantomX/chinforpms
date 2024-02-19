@@ -1,17 +1,17 @@
-From 25482145159994d8251da163fa5dcfa9df20d876 Mon Sep 17 00:00:00 2001
+From 86591a2318d59cdf7098dc7b96be87ea8f8bb179 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 3 May 2023 19:25:02 -0300
 Subject: [PATCH] Disable Discord integration by default
 
 ---
- src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs | 2 +-
+ src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs b/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
-index c79fa56..3bc8417 100644
---- a/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
-+++ b/src/Ryujinx.Ui.Common/Configuration/ConfigurationState.cs
-@@ -781,7 +781,7 @@ namespace Ryujinx.Ui.Common.Configuration
+diff --git a/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs b/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
+index b7f3608..83be2e3 100644
+--- a/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
++++ b/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
+@@ -782,7 +782,7 @@ namespace Ryujinx.UI.Common.Configuration
              System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;
              System.EnableDockedMode.Value = true;
@@ -21,5 +21,5 @@ index c79fa56..3bc8417 100644
              ShowConfirmExit.Value = true;
              HideCursor.Value = HideCursorMode.OnIdle;
 -- 
-2.41.0
+2.43.2
 

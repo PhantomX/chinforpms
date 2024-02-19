@@ -40,7 +40,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        110%{?dist}
+Release:        111%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org

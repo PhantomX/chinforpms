@@ -32,13 +32,13 @@
 %global libhac_ver 0.19.0
 %global microsoft_aspnetcore_app_runtime_linux_x64_ver 8.0.0
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
-%global microsoft_codeanalysis_ver 4.7.0
+%global microsoft_codeanalysis_ver 4.8.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 7.2.0
-%global microsoft_io_recyclablememorystream_ver 2.3.2
+%global microsoft_identitymodel_ver 7.3.0
+%global microsoft_io_recyclablememorystream_ver 3.0.0
 %global microsoft_netcore_app_runtime_linux_x64_ver 8.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
@@ -50,12 +50,12 @@
 %global microsoft_win32_registry_ver 4.5.0
 %global microsoft_win32_systemevents_ver 8.0.0
 %global msgpack_cli_ver 1.0.1
-%global netcoreserver_ver 7.0.0
+%global netcoreserver_ver 8.0.7
 %global netstandard_library_ver 1.6.0
 %global netstandard_library_ver2 2.0.0
 %global netstandard_library_ver3 2.0.3
 %global newtonsoft_json_ver 13.0.1
-%global opentk_ver 4.8.1
+%global opentk_ver 4.8.2
 %global opentk_redist_glfw_ver 3.3.8.39
 %global pangosharp_ver %{ryujinx_gtksharp_ver}
 %global runtime_any_system_collections_ver 4.3.0
@@ -100,11 +100,11 @@
 %global runtime_unix_system_private_uri_ver 4.3.0
 %global runtime_unix_system_runtime_extensions_ver 4.3.0
 %global ryujinx_audio_openal_dependencies_ver 1.21.0.1
-%global ryujinx_graphics_nvdec_dependencies_ver 5.0.1-build13
+%global ryujinx_graphics_nvdec_dependencies_ver 5.0.3-build14
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_gtksharp_ver 3.24.24.59-ryujinx
-%global ryujinx_sdl2_cs_ver 2.28.1-build28
+%global ryujinx_sdl2_cs_ver 2.30.0-build32
 %global securifybv_ver 0.1.0
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.2
@@ -112,7 +112,7 @@
 %global sixlabors_fonts_ver 1.0.0-beta0013
 %global sixlabors_imagesharp_ver 1.0.4
 %global sixlabors_imagesharp_drawing_ver 1.0.0-beta11
-%global spb_ver 0.0.4-build28
+%global spb_ver 0.0.4-build32
 %global system_appcontext_ver 4.1.0
 %global system_buffers_ver 4.0.0
 %global system_buffers_ver2 4.3.0
@@ -221,7 +221,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1111
+Version:        1.1.1197
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -457,7 +457,6 @@ Source405:      %{nuget_url}/netcoreserver.%{netcoreserver_ver}.nupkg
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405}
 %endif
 
-Patch10:        0001-Save-logs-in-ApplicationData-directory.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Disable-Discord-integration-by-default.patch
 

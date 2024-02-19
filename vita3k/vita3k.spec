@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ac73ee8270b80c7740469cc0143f24155f411ce2
+%global commit 1b0e65e66d17202b1ae9f155cfecea802dd58778
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202401295
+%global date 20240218
 
 %bcond_with fmt
 %bcond_with yamlcpp

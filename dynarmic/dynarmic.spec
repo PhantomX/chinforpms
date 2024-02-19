@@ -8,9 +8,9 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit a32e6f52ef6ef9a2aa7451666a2d70385b719244
+%global commit 4f08226e0ec038203586e9f4b262f22a7220ccc4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240206
+%global date 20240217
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,7 +21,7 @@
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.6.2
+Version:        6.6.3
 Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
@@ -111,6 +111,9 @@ sed \
 
 
 %changelog
+* Sun Feb 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.3-1.20240217git4f08226
+- 6.6.3
+
 * Fri Feb 09 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.2-1.20240206gita32e6f5
 - 6.6.2
 

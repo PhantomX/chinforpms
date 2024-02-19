@@ -1,4 +1,4 @@
-%global _lto_cflags %{nil}
+%global _lto_cflags -fno-lto
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 30e8c3e951d4275aa39dafd8a754099c268e3405
+%global commit 7abc5f3eadcfc9b3875910efe124942ebac0c4ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240207
+%global date 20240216
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -107,7 +107,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.30.16065
+Version:        0.0.30.16122
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -365,12 +365,6 @@ sed \
   -e '/RPCS3_GIT_BRANCH/s|local_build|master|g' \
   -e '/RPCS3_GIT_FULL_BRANCH/s|local_build|local_build|g' \
   -i %{name}/git-version.cmake
-
-# This resets RPM flags
-sed \
-  -e '/set(CMAKE_CXX_FLAGS/d' \
-  -e '/set(CMAKE_C_FLAGS/d' \
-  -i CMakeLists.txt
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 

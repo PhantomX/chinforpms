@@ -21,9 +21,9 @@
 %global enablejit 1
 %endif
 
-%global commit 57327be7f379757a192fa788f5875ed1a77970c4
+%global commit 982ad933559be802db81078eda8c9cdd892944c5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231222
+%global date 20240217
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -42,7 +42,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
-%global commit6 f5e54359df4c26b6230fc61d38aa294581393084
+%global commit6 e69e5f977d458f2650bb346dadf2ad30c5320281
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 fmt
 
@@ -50,12 +50,16 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 enet
 
+%global commit18 c5641f2c22d117da7971504591a8f6a41ece488b
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
+%global srcname18 tinygltf
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global enet_ver 1.3.18
-%global fmt_ver 10.1.0
+%global fmt_ver 10.2.1
 
 %global distributor chinforpms
 
@@ -63,7 +67,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 42253
+%global baserelease 41542
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -104,6 +108,7 @@ Source6:       https://github.com/fmtlib/%{srcname6}/archive/%{commit6}/%{srcnam
 %if %{without enet}
 Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
+Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -152,6 +157,7 @@ BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
+BuildRequires:  pkgconfig(sdl2) >= 2.26.0
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
@@ -311,6 +317,7 @@ tar -xf %{S:7} -C enet/enet --strip-components 1
 %else
 rm -rf enet
 %endif
+tar -xf %{S:18} -C tinygltf/tinygltf --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson

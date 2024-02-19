@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2766118e335059f35fe5942681727f6875d8fb9c
+%global commit da5aa70fc940c3f0feec3bf83acab233c84966d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240208
+%global date 20240218
 %bcond_without snapshot
 
 # Enable system boost
@@ -30,7 +30,7 @@
 %bcond_without qt
 %bcond_without soundtouch
 # Enable system vulkan
-%bcond_without vulkan
+%bcond_with vulkan
 # Build tests
 %bcond_with tests
 
@@ -116,7 +116,7 @@
 
 Name:           citra
 Version:        0
-Release:        55%{?dist}
+Release:        56%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -306,8 +306,7 @@ tar -xf %{S:14} -C externals/sirit --strip-components 1
 tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 tar -xf %{S:16} -C externals/vma --strip-components 1
 %if %{without vulkan}
-tar -xf %{S:17} -C externals/Vulkan-Headers/ --strip-components 1
-sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i externals/CMakeLists.txt
+tar -xf %{S:17} -C externals/vulkan-headers/ --strip-components 1
 %endif
 tar -xf %{S:18} -C externals/faad2/faad2 --strip-components 1
 
@@ -420,7 +419,9 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
+%if %{with vulkan}
   -DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON \
+%endif
   -DUSE_SYSTEM_XBYAK:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
 %if %{with boost}
