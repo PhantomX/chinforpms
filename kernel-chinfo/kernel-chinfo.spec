@@ -156,6 +156,9 @@ Summary: The Linux kernel
 # kernel package name
 %global package_name kernel%{?variant}
 %global gemini 0
+%if "0%{?variant}" != "0"
+%global gemini 1
+%endif
 # Include Fedora files
 %global include_fedora 1
 # Include RHEL files
@@ -179,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.5
+%define specrpmversion 6.7.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,13 +215,13 @@ Summary: The Linux kernel
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
 %global post_factum 7
-%global pf_url https://gitlab.com/post-factum/pf-kernel/commit
+%global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit eae47a41e05e9a3d10008874f65e07fbac93ab97
+%global pfcommit 95e5ffff0f12b7c0b5d1f96b1f6a0fdbfbbee61f
 %global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
-%global pfcoprhash aef2b16005b6e6af07b0332af26e6edc
+%global pfcoprhash 9fc88454fef7acb0ea2ac8d76c18b165
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -233,14 +236,14 @@ Summary: The Linux kernel
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
 %global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
-%global st_last_commit 004dcea13dc10acaf1486d9939be4c793834c13c
+%global st_last_commit b631f5b445dc3379f67ff63a2e4c58f22d4975dc
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id 8578156a60177c42451bf31696bbacc64fde9f44
+%global opensuse_id b9dc7c6bd504ffa68f293710ddbb3d2d3b978e0e
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -283,6 +286,13 @@ Summary: The Linux kernel
 # kernel-headers
 %define with_headers   %{?_without_headers:0} %{?!_without_headers:1}
 %define with_cross_headers   %{?_without_cross_headers:0} %{?!_without_cross_headers:1}
+# perf
+%define with_perf      %{?_without_perf:0} %{?!_without_perf:1}
+# libperf
+%define with_libperf   %{?_without_libperf:0} %{?!_without_libperf:1}
+# tools
+%define with_tools     %{?_without_tools:0} %{?!_without_tools:1}
+# bpftool
 %define with_bpftool   %{?_without_bpftool:0} %{?!_without_bpftool:1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
@@ -296,7 +306,7 @@ Summary: The Linux kernel
 #
 # Only build the base kernel (--with baseonly):
 %define with_baseonly  %{?_with_baseonly:1} %{?!_with_baseonly:0}
-# Only build the debug kernel (--with dbgonly):
+# Only build the debug variants (--with dbgonly):
 %define with_dbgonly   %{?_with_dbgonly:1} %{?!_with_dbgonly:0}
 %define with_dbgonly   0
 # Only build the realtime kernel (--with rtonly):
@@ -365,8 +375,6 @@ Summary: The Linux kernel
 %define with_ipaclones 0
 # no stablelist
 %define with_kernel_abi_stablelists 0
-# Fedora builds these separately
-%define with_bpftool 0
 # No realtime fedora variants
 %define with_realtime 0
 %define with_arm64_64k 0
@@ -451,6 +459,9 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_realtime 0
 %define with_vdso_install 0
+%define with_perf 0
+%define with_libperf 0
+%define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
@@ -463,6 +474,9 @@ Summary: The Linux kernel
 %if %{with_dbgonly}
 %define with_base 0
 %define with_vdso_install 0
+%define with_perf 0
+%define with_libperf 0
+%define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
@@ -476,6 +490,9 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
+%define with_perf 0
+%define with_libperf 0
+%define with_tools 0
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
@@ -536,6 +553,9 @@ Summary: The Linux kernel
 %define with_realtime 0
 %define with_headers 0
 %define with_cross_headers 0
+%define with_tools 0
+%define with_perf 0
+%define with_libperf 0
 %define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
@@ -627,9 +647,19 @@ Summary: The Linux kernel
 %define with_realtime 0
 
 %define with_debuginfo 0
+%define with_perf 0
+%define with_libperf 0
+%define with_tools 0
 %define with_bpftool 0
 %define with_selftests 0
 %define _enable_debug_packages 0
+%endif
+
+# Architectures we build tools/cpupower on
+%if 0%{?fedora}
+%define cpupowerarchs %{ix86} x86_64 ppc64le aarch64
+%else
+%define cpupowerarchs i686 x86_64 ppc64le aarch64
 %endif
 
 %if 0%{?use_vdso}
@@ -716,19 +746,46 @@ BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
-%ifnarch %{nobuildarches} noarch
-BuildRequires: bpftool
-%endif
 %if %{with_headers}
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
+BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme, python3-pyyaml
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
 %endif
-%if %{signmodules} || %{signkernel}
+%if %{with_perf}
+BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison flex xz-devel
+BuildRequires: audit-libs-devel python3-setuptools
+BuildRequires: java-devel
+BuildRequires: libbpf-devel >= 0.6.0-1
+BuildRequires: libbabeltrace-devel
+BuildRequires: libtraceevent-devel
+%ifnarch s390x
+BuildRequires: numactl-devel
+%endif
+%ifarch aarch64
+BuildRequires: opencsd-devel >= 1.0.0
+%endif
+%endif
+%if %{with_tools}
+BuildRequires: python3-docutils
+BuildRequires: gettext ncurses-devel
+BuildRequires: libcap-devel libcap-ng-devel
+# The following are rtla requirements
+BuildRequires: python3-docutils
+BuildRequires: libtraceevent-devel
+BuildRequires: libtracefs-devel
+
+%ifnarch s390x
+BuildRequires: pciutils-devel
+%endif
+%ifarch i686 x86_64
+BuildRequires: libnl3-devel
+%endif
+%endif
+%if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
 %endif
 %if %{with_bpftool}
@@ -787,6 +844,14 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define __strip %{_build_arch}-linux-gnu-strip
 %endif
 
+# These below are required to build man pages
+%if %{with_perf}
+BuildRequires: xmlto
+%endif
+%if %{with_perf} || %{with_tools}
+BuildRequires: asciidoc
+%endif
+
 %if %{with toolchain_clang}
 BuildRequires: clang
 %endif
@@ -835,13 +900,13 @@ Source13: redhatsecureboot301.cer
 Source14: secureboot_s390.cer
 Source15: secureboot_ppc.cer
 
-%define secureboot_ca_1 %{SOURCE10}
-%define secureboot_ca_0 %{SOURCE11}
+%define secureboot_ca_0 %{SOURCE10}
+%define secureboot_ca_1 %{SOURCE11}
 %ifarch x86_64 aarch64
-%define secureboot_key_1 %{SOURCE12}
-%define pesign_name_1 redhatsecureboot501
-%define secureboot_key_0 %{SOURCE13}
-%define pesign_name_0 redhatsecureboot301
+%define secureboot_key_0 %{SOURCE12}
+%define pesign_name_0 redhatsecureboot501
+%define secureboot_key_1 %{SOURCE13}
+%define pesign_name_1 redhatsecureboot301
 %endif
 %ifarch s390x
 %define secureboot_key_0 %{SOURCE14}
@@ -860,12 +925,12 @@ Source11: redhatsecurebootca2.cer
 Source12: redhatsecureboot401.cer
 Source13: redhatsecureboot003.cer
 
-%define secureboot_ca_1 %{SOURCE10}
-%define secureboot_ca_0 %{SOURCE11}
-%define secureboot_key_1 %{SOURCE12}
-%define pesign_name_1 redhatsecureboot401
-%define secureboot_key_0 %{SOURCE13}
-%define pesign_name_0 redhatsecureboot003
+%define secureboot_ca_0 %{SOURCE10}
+%define secureboot_ca_1 %{SOURCE11}
+%define secureboot_key_0 %{SOURCE12}
+%define pesign_name_0 redhatsecureboot401
+%define secureboot_key_1 %{SOURCE13}
+%define pesign_name_1 redhatsecureboot003
 
 # released_kernel
 %endif
@@ -944,6 +1009,7 @@ Source87: flavors
 
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
+Source102: nvidiagpuoot001.x509
 
 Source200: check-kabi
 
@@ -976,6 +1042,9 @@ Source476: %{name}-x86_64-rt-rhel.config
 Source477: %{name}-x86_64-rt-debug-rhel.config
 %endif
 
+# Sources for kernel-tools
+Source2002: kvm_stat.logrotate
+
 # Some people enjoy building customized kernels from the dist-git in Fedora and
 # use this to override configuration options. One day they may all use the
 # source tree, but in the mean time we carry this to support the legacy workflow
@@ -999,14 +1068,25 @@ Source4002: gating.yaml
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 %if 0%{?post_factum}
-Patch5000: %{extra_patch}
-Patch5003: https://codeberg.org/pf-kernel/linux/commit/4cae7ce82cee3a13b2a452bbdb4d106f98076cbc.patch#/pf-revert-4cae7ce.patch
-Patch5004: https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
-Patch5005: https://codeberg.org/pf-kernel/linux/commit/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
-Patch5006: https://codeberg.org/pf-kernel/linux/commit/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
-Patch5007: https://codeberg.org/pf-kernel/linux/commit/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
-# 85e857f1ed2a905706eabab2e9c966f3a59858a3...892f5ddd16ceb9ac9a0f7f09a99051587496c840
-Patch5008: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/pf-kernel-v6.7-85e857f-892f5dd.pfpatch/192fefe78d822612a2d8ce6c6be1a9e1/pf-kernel-v6.7-85e857f-892f5dd.pfpatch
+Patch5000:  %{extra_patch}
+Patch5003:  %{pf_url}/4cae7ce82cee3a13b2a452bbdb4d106f98076cbc.patch#/pf-revert-4cae7ce.patch
+Patch5004:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
+Patch5005:  %{pf_url}/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
+Patch5006:  %{pf_url}/e0db969bffbb90660e65db9ab538fdbcd21e6962.patch#/pf-revert-e0db969.patch
+Patch5007:  %{pf_url}/b6bfb04ba890ad0f9bdd3d258e60a49de73e1fe9.patch#/pf-revert-b6bfb04.patch
+Patch5008:  %{pf_url}/95703b89b57d865eefc07c9c2ac53c1dd75deecc.patch#/pf-revert-95703b8.patch
+Patch5009:  %{pf_url}/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
+Patch5010:  %{pf_url}/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
+Patch5011:  %{pf_url}/cbccbf7ce7adb622036ebcf183131dac65d5d7bd.patch#/pf-revert-cbccbf7.patch
+Patch5012:  %{pf_url}/c7cd543a10f67cd7bb7cf8f4bb4d6a5a2a89366f.patch#/pf-revert-c7cd543.patch
+Patch5013:  %{pf_url}/ce785ff8b745222f5158d95bed1da7e313d8968e.patch#/pf-revert-ce785ff.patch
+Patch5014:  %{pf_url}/8ce2625ee1a0517478080d1013ca68473ee3bb37.patch#/pf-revert-8ce2625.patch
+Patch5015:  %{pf_url}/511a526f7b96b4023893fb9ed53ebfe8f7abaf6a.patch#/pf-revert-511a526.patch
+Patch5016:  %{pf_url}/b8c5d92743d2e80d4b257463fc2e4f7337e8a06c.patch#/pf-revert-b8c5d92.patch
+Patch5017:  %{pf_url}/771c44a1198919bffccbe0a4df269211eab872f5.patch#/pf-revert-771c44a.patch
+Patch5018:  %{pf_url}/a145be23455a77be3c674f56fd1c3c6a5d0bc95f.patch#/pf-revert-a145be2.patch
+Patch5019:  %{pf_url}/8ba93bc9e0fb0c774d73798207d12c36e9745edc.patch#/pf-revert-8ba93bc.patch
+Patch5020:  %{pf_url}/f3e90e41ba5d661ed63d4ff21f1566c104300c66.patch#/pf-revert-f3e90e4.patch
 %if 0%{?pf_stable_extra}
 Patch5002: %{stable_extra_patch}
 %endif
@@ -1047,8 +1127,6 @@ Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{patchwork_url}/13541191/mbox#/patchwork-btrfs-don-t-reserve-space-for-checksums-when-writing-to-nocow-files.patch
-Patch2002: %{patchwork_url}/13542875/mbox#/patchwork-btrfs-reject-encoded-write-if-inode-has-nodatasum-flag-set.patch
 
 %if 0%{?tkg}
 Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
@@ -1057,8 +1135,8 @@ Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
-%global graysky2_id bdef5292bba2493d46386840a8b5a824d534debc
-Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-5.17+.patch
+%global graysky2_id c409515574bd4d69af45ad74d4e7ba7151010516
+Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
@@ -1117,9 +1195,9 @@ options that can be passed to Linux kernel modules at load time.
 Summary: Header files for the Linux kernel for use by glibc
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
-%if 0%{?gemini} || "0%{?variant}" != "0"
-Obsoletes: kernel-headers < %{specversion}-%{pkg_release}
-Provides: %{name}-headers = %{specversion}-%{pkg_release}
+%if 0%{?gemini}
+Obsoletes: kernel-headers < %{specversion}-%{release}
+Provides: %{name}-headers = %{specversion}-%{release}
 %endif
 %description headers
 Kernel-headers includes the C header files that specify the interface
@@ -1130,7 +1208,7 @@ glibc package.
 
 %package cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
-%if 0%{?gemini} || "0%{?variant}" != "0"
+%if 0%{?gemini}
 Provides: kernel-cross-headers = %{specversion}-%{release}
 Obsoletes: kernel-cross-headers < %{specversion}
 %endif
@@ -1148,6 +1226,199 @@ Provides: installonlypkg(kernel)
 %description debuginfo-common-%{_target_cpu}
 This package is required by %{name}-debuginfo subpackages.
 It provides the kernel source files common to all builds.
+
+%if %{with_perf}
+%package -n perf
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Performance monitoring for the Linux kernel
+Requires: bzip2
+%description -n perf
+This package contains the perf tool, which enables performance monitoring
+of the Linux kernel.
+
+%package -n perf-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Debug information for package perf
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
+AutoReqProv: no
+%description -n perf-debuginfo
+This package provides debug information for the perf package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/perf(\.debug)?|.*%%{_libexecdir}/perf-core/.*|.*%%{_libdir}/libperf-jvmti.so(\.debug)?|XXX' -o perf-debuginfo.list}
+
+%package -n python3-perf
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Python bindings for apps which will manipulate perf events
+%description -n python3-perf
+The python3-perf package contains a module that permits applications
+written in the Python programming language to use the interface
+to manipulate perf events.
+
+%package -n python3-perf-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Debug information for package perf python bindings
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
+AutoReqProv: no
+%description -n python3-perf-debuginfo
+This package provides debug information for the perf python bindings.
+
+# the python_sitearch macro should already be defined from above
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{python3_sitearch}/perf.*so(\.debug)?|XXX' -o python3-perf-debuginfo.list}
+
+# with_perf
+%endif
+
+%if %{with_libperf}
+%package -n libperf
+Summary: The perf library from kernel source
+%description -n libperf
+This package contains the kernel source perf library.
+
+%package -n libperf-devel
+Summary: Developement files for the perf library from kernel source
+%description -n libperf-devel
+This package includes libraries and header files needed for development
+of applications which use perf library from kernel source.
+
+%package -n libperf-debuginfo
+Summary: Debug information for package libperf
+Group: Development/Debug
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n libperf-debuginfo
+This package provides debug information for the libperf package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so(\.debug)?|XXX' -o libperf-debuginfo.list}
+# with_libperf
+%endif
+
+%if %{with_tools}
+%package -n kernel-tools
+Summary: Assortment of tools for the Linux kernel
+%ifarch %{cpupowerarchs}
+Provides:  cpupowerutils = 1:009-0.6.p1
+Obsoletes: cpupowerutils < 1:009-0.6.p1
+Provides:  cpufreq-utils = 1:009-0.6.p1
+Provides:  cpufrequtils = 1:009-0.6.p1
+Obsoletes: cpufreq-utils < 1:009-0.6.p1
+Obsoletes: cpufrequtils < 1:009-0.6.p1
+Obsoletes: cpuspeed < 1:1.5-16
+Requires: kernel-tools-libs = %{specrpmversion}-%{release}
+%endif
+%define __requires_exclude ^%{_bindir}/python
+%description -n kernel-tools
+This package contains the tools/ directory from the kernel source
+and the supporting documentation.
+
+%package -n kernel-tools-libs
+Summary: Libraries for the kernels-tools
+%description -n kernel-tools-libs
+This package contains the libraries built from the tools/ directory
+from the kernel source.
+
+%package -n kernel-tools-libs-devel
+Summary: Assortment of tools for the Linux kernel
+Requires: kernel-tools = %{version}-%{release}
+%ifarch %{cpupowerarchs}
+Provides:  cpupowerutils-devel = 1:009-0.6.p1
+Obsoletes: cpupowerutils-devel < 1:009-0.6.p1
+%endif
+Requires: kernel-tools-libs = %{version}-%{release}
+Provides: kernel-tools-devel
+%description -n kernel-tools-libs-devel
+This package contains the development files for the tools/ directory from
+the kernel source.
+
+%package -n kernel-tools-debuginfo
+Summary: Debug information for package kernel-tools
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n kernel-tools-debuginfo
+This package provides debug information for package kernel-tools.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+
+%package -n rtla
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Real-Time Linux Analysis tools
+Requires: libtraceevent
+Requires: libtracefs
+%description -n rtla
+The rtla meta-tool includes a set of commands that aims to analyze
+the real-time properties of Linux. Instead of testing Linux as a black box,
+rtla leverages kernel tracing capabilities to provide precise information
+about the properties and root causes of unexpected results.
+
+%package -n rv
+Summary: RV: Runtime Verification
+%description -n rv
+Runtime Verification (RV) is a lightweight (yet rigorous) method that
+complements classical exhaustive verification techniques (such as model
+checking and theorem proving) with a more practical approach for
+complex systems.
+The rv tool is the interface for a collection of monitors that aim
+analysing the logical and timing behavior of Linux.
+
+# with_tools
+%endif
+
+%if %{with_bpftool}
+
+%if 0%{?fedora}
+# bpftoolverion doesn't bump with stable updates so let's stick with
+# upstream kernel version for the package name. We still get correct
+# output with bpftool -V.
+%define bpftoolversion  %specrpmversion
+%else
+%define bpftoolversion 7.4.0
+%endif
+
+%package -n bpftool
+Summary: Inspection and simple manipulation of eBPF programs and maps
+Version: %{bpftoolversion}
+%description -n bpftool
+This package contains the bpftool, which allows inspection and simple
+manipulation of eBPF programs and maps.
+
+%package -n bpftool-debuginfo
+Summary: Debug information for package bpftool
+Version: %{bpftoolversion}
+Group: Development/Debug
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
+AutoReqProv: no
+%description -n bpftool-debuginfo
+This package provides debug information for the bpftool package.
+
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_sbindir}/bpftool(\.debug)?|XXX' -o bpftool-debuginfo.list}
+
+# Setting "Version:" above overrides the internal {version} macro,
+# need to restore it here
+%define version %{specrpmversion}
+
+# with_bpftool
+%endif
 
 %if %{with_selftests}
 
@@ -1673,7 +1944,19 @@ ApplyPatch %{PATCH5004} -R
 ApplyPatch %{PATCH5005} -R
 ApplyPatch %{PATCH5006} -R
 ApplyPatch %{PATCH5007} -R
-ApplyPatch %{PATCH5008}
+ApplyPatch %{PATCH5008} -R
+ApplyPatch %{PATCH5009} -R
+ApplyPatch %{PATCH5010} -R
+ApplyPatch %{PATCH5011} -R
+ApplyPatch %{PATCH5012} -R
+ApplyPatch %{PATCH5013} -R
+ApplyPatch %{PATCH5014} -R
+ApplyPatch %{PATCH5015} -R
+ApplyPatch %{PATCH5016} -R
+ApplyPatch %{PATCH5017} -R
+ApplyPatch %{PATCH5018} -R
+ApplyPatch %{PATCH5019} -R
+ApplyPatch %{PATCH5020} -R
 %if 0%{?pf_stable_extra}
 filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
@@ -1699,8 +1982,6 @@ ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
 
 ApplyPatch %{PATCH2000}
-ApplyPatch %{PATCH2001}
-ApplyPatch %{PATCH2002}
 
 %if 0%{?tkg}
 ApplyPatch %{PATCH2090}
@@ -1832,7 +2113,8 @@ done
 %if %{signkernel}%{signmodules}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
-cat rheldup3.pem rhelkpatch1.pem > ../certs/rhel.pem
+openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
+cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem > ../certs/rhel.pem
 %ifarch s390x ppc64le
 openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
 cat secureboot.pem >> ../certs/rhel.pem
@@ -1879,6 +2161,7 @@ update_target=%{primary_target}
 if [ "%{primary_target}" == "rhel" ]; then
 : # no-op to avoid empty if-fi error
 %if 0%{?centos}
+  update_scripts $update_target
   echo "Updating scripts/sources to centos version"
   update_target=centos
 %endif
@@ -2133,9 +2416,7 @@ BuildKernel() {
     (cd $RPM_BUILD_ROOT/lib/modules/$KernelVer ; ln -s build source)
     # dirs for additional modules per module-init-tools, kbuild/modules.txt
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/updates
-%if 0%{!?fedora:1}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/weak-updates
-%endif
     # CONFIG_KERNEL_HEADER_TEST generates some extra files in the process of
     # testing so just delete
     find . -name *.h.s -delete
@@ -2234,7 +2515,6 @@ BuildKernel() {
 %endif
 
     # then drop all but the needed Makefiles/Kconfig files
-    rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/Documentation
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
     cp .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2586,13 +2866,16 @@ BuildKernel() {
 
     ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
-%dnl %if 0%{?fedora} > 37
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
     if [ "$Variant" != "zfcpdump" ]; then
-        bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+        # Build the bootstrap bpftool to generate vmlinux.h
+        export BPFBOOTSTRAP_CFLAGS=$(echo "%{__global_compiler_flags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+        export BPFBOOTSTRAP_LDFLAGS=$(echo "%{__global_ldflags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+        CFLAGS="" LDFLAGS="" make EXTRA_CFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_LDFLAGS="${BPFBOOTSTRAP_LDFLAGS}" %{?make_opts} %{?clang_make_opts} V=1 -C tools/bpf/bpftool bootstrap
+
+        tools/bpf/bpftool/bootstrap/bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
     fi
-%dnl %endif
 
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
@@ -2695,6 +2978,79 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 InitBuildVars
 %endif
 %endif
+
+%ifarch aarch64
+%global perf_build_extra_opts CORESIGHT=1
+%endif
+%global perf_make \
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+%if %{with_perf}
+# perf
+# make sure check-headers.sh is executable
+chmod +x tools/perf/check-headers.sh
+%{perf_make} JOBS=%{_smp_build_ncpus} DESTDIR=$RPM_BUILD_ROOT all
+%endif
+
+%if %{with_libperf}
+%global libperf_make \
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" %{?cross_opts} -C tools/lib/perf V=1
+%{libperf_make} JOBS=%{_smp_build_ncpus} DESTDIR=$RPM_BUILD_ROOT
+%endif
+
+%global tools_make \
+  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" %{make} %{?make_opts}
+
+%if %{with_tools}
+sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
+%ifarch %{cpupowerarchs}
+# cpupower
+# make sure version-gen.sh is executable.
+chmod +x tools/power/cpupower/utils/version-gen.sh
+%{tools_make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false DEBUG=false
+%ifarch x86_64
+    pushd tools/power/cpupower/debug/x86_64
+    %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
+    popd
+%endif
+%ifarch x86_64
+   pushd tools/power/x86/x86_energy_perf_policy/
+   %{tools_make}
+   popd
+   pushd tools/power/x86/turbostat
+   %{tools_make}
+   popd
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make}
+   popd
+   pushd tools/arch/x86/intel_sdsi
+   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}"
+   popd
+%endif
+%endif
+pushd tools/thermal/tmon/
+%{tools_make}
+popd
+pushd tools/iio/
+%{tools_make}
+popd
+pushd tools/gpio/
+%{tools_make}
+popd
+# build VM tools
+pushd tools/mm/
+%{tools_make} slabinfo page_owner_sort
+popd
+pushd tools/verification/rv/
+%{tools_make}
+popd
+pushd tools/tracing/rtla
+%{tools_make}
+popd
+%endif
+
+if [ -f $DevelDir/vmlinux.h ]; then
+  RPM_VMLINUX_H=$DevelDir/vmlinux.h
+fi
 
 %if %{with_bpftool}
 %global bpftool_make \
@@ -2887,9 +3243,116 @@ rm -rf $RPM_BUILD_ROOT/usr/tmp-headers
 # kabi directory
 INSTALL_KABI_PATH=$RPM_BUILD_ROOT/lib/modules/
 mkdir -p $INSTALL_KABI_PATH
+
 # install kabi releases directories
 tar -xvf %{SOURCE300} -C $INSTALL_KABI_PATH
 # with_kernel_abi_stablelists
+%endif
+
+%if %{with_perf}
+# perf tool binary and supporting scripts/binaries
+%{perf_make} DESTDIR=$RPM_BUILD_ROOT lib=%{_lib} install-bin
+# remove the 'trace' symlink.
+rm -f %{buildroot}%{_bindir}/trace
+
+# For both of the below, yes, this should be using a macro but right now
+# it's hard coded and we don't actually want it anyway right now.
+# Whoever wants examples can fix it up!
+
+# remove examples
+rm -rf %{buildroot}/usr/lib/perf/examples
+rm -rf %{buildroot}/usr/lib/perf/include
+
+# python-perf extension
+%{perf_make} DESTDIR=$RPM_BUILD_ROOT install-python_ext
+
+# perf man pages (note: implicit rpm magic compresses them later)
+mkdir -p %{buildroot}/%{_mandir}/man1
+%{perf_make} DESTDIR=$RPM_BUILD_ROOT install-man
+
+# remove any tracevent files, eg. its plugins still gets built and installed,
+# even if we build against system's libtracevent during perf build (by setting
+# LIBTRACEEVENT_DYNAMIC=1 above in perf_make macro). Those files should already
+# ship with libtraceevent package.
+rm -rf %{buildroot}%{_libdir}/traceevent
+%endif
+
+%if %{with_libperf}
+%{libperf_make} DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} install install_headers
+# This is installed on some arches and we don't want to ship it
+rm -rf %{buildroot}%{_libdir}/libperf.a
+%endif
+
+%if %{with_tools}
+%ifarch %{cpupowerarchs}
+%{make} -C tools/power/cpupower DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
+rm -f %{buildroot}%{_libdir}/*.{a,la}
+%find_lang cpupower
+mv cpupower.lang ../
+%ifarch x86_64
+    pushd tools/power/cpupower/debug/x86_64
+    install -m755 centrino-decode %{buildroot}%{_bindir}/centrino-decode
+    install -m755 powernow-k8-decode %{buildroot}%{_bindir}/powernow-k8-decode
+    popd
+%endif
+chmod 0755 %{buildroot}%{_libdir}/libcpupower.so*
+%endif
+%ifarch x86_64
+   mkdir -p %{buildroot}%{_mandir}/man8
+   pushd tools/power/x86/x86_energy_perf_policy
+   %{tools_make} DESTDIR=%{buildroot} install
+   popd
+   pushd tools/power/x86/turbostat
+   %{tools_make} DESTDIR=%{buildroot} install
+   popd
+   pushd tools/power/x86/intel-speed-select
+   %{tools_make} DESTDIR=%{buildroot} install
+   popd
+   pushd tools/arch/x86/intel_sdsi
+   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}" DESTDIR=%{buildroot} install
+   popd
+%endif
+pushd tools/thermal/tmon
+%{tools_make} INSTALL_ROOT=%{buildroot} install
+popd
+pushd tools/iio
+%{tools_make} DESTDIR=%{buildroot} install
+popd
+pushd tools/gpio
+%{tools_make} DESTDIR=%{buildroot} install
+popd
+install -m644 -D %{SOURCE2002} %{buildroot}%{_sysconfdir}/logrotate.d/kvm_stat
+pushd tools/kvm/kvm_stat
+%{__make} INSTALL_ROOT=%{buildroot} install-tools
+%{__make} INSTALL_ROOT=%{buildroot} install-man
+install -m644 -D kvm_stat.service %{buildroot}%{_unitdir}/kvm_stat.service
+popd
+# install VM tools
+pushd tools/mm/
+install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
+install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
+popd
+pushd tools/verification/rv/
+%{tools_make} DESTDIR=%{buildroot} install
+popd
+pushd tools/tracing/rtla/
+%{tools_make} DESTDIR=%{buildroot} install
+rm -f %{buildroot}%{_bindir}/hwnoise
+rm -f %{buildroot}%{_bindir}/osnoise
+rm -f %{buildroot}%{_bindir}/timerlat
+(cd %{buildroot}
+
+        ln -sf rtla ./%{_bindir}/hwnoise
+        ln -sf rtla ./%{_bindir}/osnoise
+        ln -sf rtla ./%{_bindir}/timerlat
+)
+popd
+%endif
+
+%if %{with_bpftool}
+pushd tools/bpf/bpftool
+%{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
+popd
 %endif
 
 %if %{with_selftests}
@@ -3279,6 +3742,162 @@ fi\
 %dir %{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
 %endif
 
+%if %{with_perf}
+%files -n perf
+%{_bindir}/perf
+%{_libdir}/libperf-jvmti.so
+%dir %{_libexecdir}/perf-core
+%{_libexecdir}/perf-core/*
+%{_datadir}/perf-core/*
+%{_mandir}/man[1-8]/perf*
+%{_sysconfdir}/bash_completion.d/perf
+%doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
+%{_docdir}/perf-tip/tips.txt
+
+%files -n python3-perf
+%{python3_sitearch}/*
+
+%if %{with_debuginfo}
+%files -f perf-debuginfo.list -n perf-debuginfo
+
+%files -f python3-perf-debuginfo.list -n python3-perf-debuginfo
+%endif
+# with_perf
+%endif
+
+%if %{with_libperf}
+%files -n libperf
+%{_libdir}/libperf.so.0
+%{_libdir}/libperf.so.0.0.1
+
+%files -n libperf-devel
+%{_libdir}/libperf.so
+%{_libdir}/pkgconfig/libperf.pc
+%{_includedir}/internal/*.h
+%{_includedir}/perf/bpf_perf.h
+%{_includedir}/perf/core.h
+%{_includedir}/perf/cpumap.h
+%{_includedir}/perf/perf_dlfilter.h
+%{_includedir}/perf/event.h
+%{_includedir}/perf/evlist.h
+%{_includedir}/perf/evsel.h
+%{_includedir}/perf/mmap.h
+%{_includedir}/perf/threadmap.h
+%{_mandir}/man3/libperf.3.gz
+%{_mandir}/man7/libperf-counting.7.gz
+%{_mandir}/man7/libperf-sampling.7.gz
+%{_docdir}/libperf/examples/sampling.c
+%{_docdir}/libperf/examples/counting.c
+%{_docdir}/libperf/html/libperf.html
+%{_docdir}/libperf/html/libperf-counting.html
+%{_docdir}/libperf/html/libperf-sampling.html
+
+%files -f libperf-debuginfo.list -n libperf-debuginfo
+# with_libperf
+%endif
+
+
+%if %{with_tools}
+%ifnarch %{cpupowerarchs}
+%files -n kernel-tools
+%else
+%files -n kernel-tools -f cpupower.lang
+%{_bindir}/cpupower
+%{_datadir}/bash-completion/completions/cpupower
+%ifarch x86_64
+%{_bindir}/centrino-decode
+%{_bindir}/powernow-k8-decode
+%endif
+%{_mandir}/man[1-8]/cpupower*
+%ifarch x86_64
+%{_bindir}/x86_energy_perf_policy
+%{_mandir}/man8/x86_energy_perf_policy*
+%{_bindir}/turbostat
+%{_mandir}/man8/turbostat*
+%{_bindir}/intel-speed-select
+%{_sbindir}/intel_sdsi
+%endif
+# cpupowerarchs
+%endif
+%{_bindir}/tmon
+%{_bindir}/iio_event_monitor
+%{_bindir}/iio_generic_buffer
+%{_bindir}/lsiio
+%{_bindir}/lsgpio
+%{_bindir}/gpio-hammer
+%{_bindir}/gpio-event-mon
+%{_bindir}/gpio-watch
+%{_mandir}/man1/kvm_stat*
+%{_bindir}/kvm_stat
+%{_unitdir}/kvm_stat.service
+%config(noreplace) %{_sysconfdir}/logrotate.d/kvm_stat
+%{_bindir}/page_owner_sort
+%{_bindir}/slabinfo
+
+%if %{with_debuginfo}
+%files -f kernel-tools-debuginfo.list -n kernel-tools-debuginfo
+%endif
+
+%ifarch %{cpupowerarchs}
+%files -n kernel-tools-libs
+%{_libdir}/libcpupower.so.0
+%{_libdir}/libcpupower.so.0.0.1
+
+%files -n kernel-tools-libs-devel
+%{_libdir}/libcpupower.so
+%{_includedir}/cpufreq.h
+%{_includedir}/cpuidle.h
+%{_includedir}/powercap.h
+%endif
+
+%files -n rtla
+%{_bindir}/rtla
+%{_bindir}/hwnoise
+%{_bindir}/osnoise
+%{_bindir}/timerlat
+%{_mandir}/man1/rtla-hwnoise.1.gz
+%{_mandir}/man1/rtla-osnoise-hist.1.gz
+%{_mandir}/man1/rtla-osnoise-top.1.gz
+%{_mandir}/man1/rtla-osnoise.1.gz
+%{_mandir}/man1/rtla-timerlat-hist.1.gz
+%{_mandir}/man1/rtla-timerlat-top.1.gz
+%{_mandir}/man1/rtla-timerlat.1.gz
+%{_mandir}/man1/rtla.1.gz
+
+%files -n rv
+%{_bindir}/rv
+%{_mandir}/man1/rv-list.1.gz
+%{_mandir}/man1/rv-mon-wip.1.gz
+%{_mandir}/man1/rv-mon-wwnr.1.gz
+%{_mandir}/man1/rv-mon.1.gz
+%{_mandir}/man1/rv.1.gz
+
+# with_tools
+%endif
+
+%if %{with_bpftool}
+%files -n bpftool
+%{_sbindir}/bpftool
+%{_sysconfdir}/bash_completion.d/bpftool
+%{_mandir}/man8/bpftool-cgroup.8.gz
+%{_mandir}/man8/bpftool-gen.8.gz
+%{_mandir}/man8/bpftool-iter.8.gz
+%{_mandir}/man8/bpftool-link.8.gz
+%{_mandir}/man8/bpftool-map.8.gz
+%{_mandir}/man8/bpftool-prog.8.gz
+%{_mandir}/man8/bpftool-perf.8.gz
+%{_mandir}/man8/bpftool.8.gz
+%{_mandir}/man8/bpftool-net.8.gz
+%{_mandir}/man8/bpftool-feature.8.gz
+%{_mandir}/man8/bpftool-btf.8.gz
+%{_mandir}/man8/bpftool-struct_ops.8.gz
+
+%if %{with_debuginfo}
+%files -f bpftool-debuginfo.list -n bpftool-debuginfo
+%defattr(-,root,root)
+%endif
+%endif
+
 %if %{with_selftests}
 %files selftests-internal
 %{_libexecdir}/ksamples
@@ -3314,7 +3933,7 @@ fi\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
-%attr(0600, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
 %ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
@@ -3329,9 +3948,7 @@ fi\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/build\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/source\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/updates\
-%if 0%{!?fedora:1}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/weak-updates\
-%endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/systemtap\
 %{_datadir}/doc/kernel-keys/%{KVERREL}%{?3:+%{3}}\
 %if %{1}\
@@ -3456,6 +4073,10 @@ fi\
 #
 #
 %changelog
+* Fri Feb 23 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.6-500.chinfo
+- 6.7.6 - pf7
+- Rawhide sync (reenable tools packages)
+
 * Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.5-500.chinfo
 - 6.7.5 - pf7
 

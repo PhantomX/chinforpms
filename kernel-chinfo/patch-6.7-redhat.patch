@@ -1,3 +1,4 @@
+ .../admin-guide/laptops/thinkpad-acpi.rst          |   7 +-
  Makefile                                           |  20 ++-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -13,13 +14,17 @@
  drivers/firmware/efi/efi.c                         | 124 +++++++++++----
  drivers/firmware/efi/secureboot.c                  |  38 +++++
  drivers/firmware/sysfb.c                           |  18 ++-
+ drivers/gpu/drm/amd/amdgpu/amdgpu.h                |   2 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c           |  15 ++
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  11 +-
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
- drivers/input/keyboard/atkbd.c                     |  14 +-
+ drivers/input/keyboard/atkbd.c                     |   3 +-
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
  drivers/iommu/iommu.c                              |  22 +++
  drivers/net/wireless/ath/ath10k/wmi-tlv.c          |   4 +
  drivers/pci/quirks.c                               |  24 +++
+ drivers/platform/x86/thinkpad_acpi.c               |  20 ++-
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 ++-
@@ -37,10 +42,37 @@
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
  tools/power/cpupower/Makefile                      |   2 +-
- 39 files changed, 683 insertions(+), 181 deletions(-)
+ .../selftests/net/openvswitch/openvswitch.sh       |  13 ++
+ .../testing/selftests/net/openvswitch/ovs-dpctl.py |  71 +++++++--
+ 46 files changed, 796 insertions(+), 196 deletions(-)
 
+diff --git a/Documentation/admin-guide/laptops/thinkpad-acpi.rst b/Documentation/admin-guide/laptops/thinkpad-acpi.rst
+index 98d304010170..7f674a6cfa8a 100644
+--- a/Documentation/admin-guide/laptops/thinkpad-acpi.rst
++++ b/Documentation/admin-guide/laptops/thinkpad-acpi.rst
+@@ -444,7 +444,9 @@ event	code	Key		Notes
+ 
+ 0x1008	0x07	FN+F8		IBM: toggle screen expand
+ 				Lenovo: configure UltraNav,
+-				or toggle screen expand
++				or toggle screen expand.
++				On newer platforms (2024+)
++				replaced by 0x131f (see below)
+ 
+ 0x1009	0x08	FN+F9		-
+ 
+@@ -504,6 +506,9 @@ event	code	Key		Notes
+ 
+ 0x1019	0x18	unknown
+ 
++0x131f	...	FN+F8	        Platform Mode change.
++				Implemented in driver.
++
+ ...	...	...
+ 
+ 0x1020	0x1F	unknown
 diff --git a/Makefile b/Makefile
-index 73a208d9d4c4..cfff9444b6ab 100644
+index d07a8e0179ac..5779c09825d9 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -580,6 +612,84 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+index 50f57d4dfd8f..f65a1518546e 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
+@@ -1509,9 +1509,11 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
+ #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
+ bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
+ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
++void amdgpu_choose_low_power_state(struct amdgpu_device *adev);
+ #else
+ static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
+ static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
++static void amdgpu_choose_low_power_state(struct amdgpu_device *adev) { }
+ #endif
+ 
+ #if defined(CONFIG_DRM_AMD_DC)
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+index 2deebece810e..cc21ed67a330 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
+@@ -1519,4 +1519,19 @@ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev)
+ #endif /* CONFIG_AMD_PMC */
+ }
+ 
++/**
++ * amdgpu_choose_low_power_state
++ *
++ * @adev: amdgpu_device_pointer
++ *
++ * Choose the target low power state for the GPU
++ */
++void amdgpu_choose_low_power_state(struct amdgpu_device *adev)
++{
++	if (amdgpu_acpi_is_s0ix_active(adev))
++		adev->in_s0ix = true;
++	else if (amdgpu_acpi_is_s3_active(adev))
++		adev->in_s3 = true;
++}
++
+ #endif /* CONFIG_SUSPEND */
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 19bc8d47317b..7f48c7ec4136 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -4441,13 +4441,15 @@ int amdgpu_device_prepare(struct drm_device *dev)
+ 	struct amdgpu_device *adev = drm_to_adev(dev);
+ 	int i, r;
+ 
++	amdgpu_choose_low_power_state(adev);
++
+ 	if (dev->switch_power_state == DRM_SWITCH_POWER_OFF)
+ 		return 0;
+ 
+ 	/* Evict the majority of BOs before starting suspend sequence */
+ 	r = amdgpu_device_evict_resources(adev);
+ 	if (r)
+-		return r;
++		goto unprepare;
+ 
+ 	for (i = 0; i < adev->num_ip_blocks; i++) {
+ 		if (!adev->ip_blocks[i].status.valid)
+@@ -4456,10 +4458,15 @@ int amdgpu_device_prepare(struct drm_device *dev)
+ 			continue;
+ 		r = adev->ip_blocks[i].version->funcs->prepare_suspend((void *)adev);
+ 		if (r)
+-			return r;
++			goto unprepare;
+ 	}
+ 
+ 	return 0;
++
++unprepare:
++	adev->in_s0ix = adev->in_s3 = false;
++
++	return r;
+ }
+ 
+ /**
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -734,7 +844,7 @@ index 34aee59dd147..7c5a7f7c11bd 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/input/keyboard/atkbd.c b/drivers/input/keyboard/atkbd.c
-index 13ef6284223d..7f67f9f2946b 100644
+index c229bd6b3f7f..7f67f9f2946b 100644
 --- a/drivers/input/keyboard/atkbd.c
 +++ b/drivers/input/keyboard/atkbd.c
 @@ -826,7 +826,7 @@ static int atkbd_probe(struct atkbd *atkbd)
@@ -1036,6 +1146,51 @@ index a2bf6de11462..692a9e777d72 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
+index c4895e9bc714..ceb22f8d8442 100644
+--- a/drivers/platform/x86/thinkpad_acpi.c
++++ b/drivers/platform/x86/thinkpad_acpi.c
+@@ -166,6 +166,7 @@ enum tpacpi_hkey_event_t {
+ 	TP_HKEY_EV_VOL_MUTE		= 0x1017, /* Mixer output mute */
+ 	TP_HKEY_EV_PRIVACYGUARD_TOGGLE	= 0x130f, /* Toggle priv.guard on/off */
+ 	TP_HKEY_EV_AMT_TOGGLE		= 0x131a, /* Toggle AMT on/off */
++	TP_HKEY_EV_PROFILE_TOGGLE	= 0x131f, /* Toggle platform profile */
+ 
+ 	/* Reasons for waking up from S3/S4 */
+ 	TP_HKEY_EV_WKUP_S3_UNDOCK	= 0x2304, /* undock requested, S3 */
+@@ -3731,6 +3732,7 @@ static bool hotkey_notify_extended_hotkey(const u32 hkey)
+ 	switch (hkey) {
+ 	case TP_HKEY_EV_PRIVACYGUARD_TOGGLE:
+ 	case TP_HKEY_EV_AMT_TOGGLE:
++	case TP_HKEY_EV_PROFILE_TOGGLE:
+ 		tpacpi_driver_event(hkey);
+ 		return true;
+ 	}
+@@ -11118,7 +11120,23 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
+ 		else
+ 			dytc_control_amt(!dytc_amt_active);
+ 	}
+-
++	if (hkey_event == TP_HKEY_EV_PROFILE_TOGGLE) {
++		switch (dytc_current_profile) {
++		case PLATFORM_PROFILE_LOW_POWER:
++			dytc_profile_set(NULL, PLATFORM_PROFILE_BALANCED);
++			break;
++		case PLATFORM_PROFILE_BALANCED:
++			dytc_profile_set(NULL, PLATFORM_PROFILE_PERFORMANCE);
++			break;
++		case PLATFORM_PROFILE_PERFORMANCE:
++			dytc_profile_set(NULL, PLATFORM_PROFILE_LOW_POWER);
++			break;
++		default:
++			pr_warn("Profile HKEY unexpected profile %d", dytc_current_profile);
++		}
++		/* Notify user space the profile changed */
++		platform_profile_notify();
++	}
+ }
+ 
+ static void hotkey_driver_event(const unsigned int scancode)
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
 index 542a4bbb21bc..62161ceed2e2 100644
 --- a/drivers/scsi/sd.c
@@ -1065,10 +1220,10 @@ index 542a4bbb21bc..62161ceed2e2 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index ef8d9bda94ac..3fab06f3b43e 100644
+index 4854d883e601..e1ee781ca985 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5777,6 +5777,13 @@ static void hub_event(struct work_struct *work)
+@@ -5795,6 +5795,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -1151,7 +1306,7 @@ index 9cc5bf32f6f2..7462fb1fc99e 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 472cb16458b0..7c0f6dd800cb 100644
+index ed3d517460f8..93ff72b07031 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -407,6 +407,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1432,7 +1587,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index cb6406f485a9..71e1f15d9dce 100644
+index f7c4d3fe4381..7fd1ef7930c6 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -1443,7 +1598,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1987,6 +1988,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1988,6 +1989,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1456,7 +1611,7 @@ index cb6406f485a9..71e1f15d9dce 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2047,6 +2054,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2048,6 +2055,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
@@ -1538,10 +1693,10 @@ index 68d19632aeb7..ef348935b6ff 100644
  
  static int __init lockdown_lsm_init(void)
 diff --git a/security/security.c b/security/security.c
-index 266cec94369b..c572a4da96b2 100644
+index 2cfecdb054c3..4e5fc4ec5896 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5248,6 +5248,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5283,6 +5283,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  
@@ -1573,3 +1728,176 @@ index b53753dee02f..90701fc65aa2 100644
  
  PACKAGE =			cpupower
  PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org
+diff --git a/tools/testing/selftests/net/openvswitch/openvswitch.sh b/tools/testing/selftests/net/openvswitch/openvswitch.sh
+index f8499d4c87f3..36e40256ab92 100755
+--- a/tools/testing/selftests/net/openvswitch/openvswitch.sh
++++ b/tools/testing/selftests/net/openvswitch/openvswitch.sh
+@@ -502,7 +502,20 @@ test_netlink_checks () {
+ 	    wc -l) == 2 ] || \
+ 	      return 1
+ 
++	info "Checking clone depth"
+ 	ERR_MSG="Flow actions may not be safe on all matching packets"
++	PRE_TEST=$(dmesg | grep -c "${ERR_MSG}")
++	ovs_add_flow "test_netlink_checks" nv0 \
++		'in_port(1),eth(),eth_type(0x800),ipv4()' \
++		'clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(clone(drop)))))))))))))))))' \
++		>/dev/null 2>&1 && return 1
++	POST_TEST=$(dmesg | grep -c "${ERR_MSG}")
++
++	if [ "$PRE_TEST" == "$POST_TEST" ]; then
++		info "failed - clone depth too large"
++		return 1
++	fi
++
+ 	PRE_TEST=$(dmesg | grep -c "${ERR_MSG}")
+ 	ovs_add_flow "test_netlink_checks" nv0 \
+ 		'in_port(1),eth(),eth_type(0x0806),arp()' 'drop(0),2' \
+diff --git a/tools/testing/selftests/net/openvswitch/ovs-dpctl.py b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
+index b97e621face9..5e0e539a323d 100644
+--- a/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
++++ b/tools/testing/selftests/net/openvswitch/ovs-dpctl.py
+@@ -299,7 +299,7 @@ class ovsactions(nla):
+         ("OVS_ACTION_ATTR_PUSH_NSH", "none"),
+         ("OVS_ACTION_ATTR_POP_NSH", "flag"),
+         ("OVS_ACTION_ATTR_METER", "none"),
+-        ("OVS_ACTION_ATTR_CLONE", "none"),
++        ("OVS_ACTION_ATTR_CLONE", "recursive"),
+         ("OVS_ACTION_ATTR_CHECK_PKT_LEN", "none"),
+         ("OVS_ACTION_ATTR_ADD_MPLS", "none"),
+         ("OVS_ACTION_ATTR_DEC_TTL", "none"),
+@@ -465,29 +465,42 @@ class ovsactions(nla):
+                     print_str += "pop_mpls"
+             else:
+                 datum = self.get_attr(field[0])
+-                print_str += datum.dpstr(more)
++                if field[0] == "OVS_ACTION_ATTR_CLONE":
++                    print_str += "clone("
++                    print_str += datum.dpstr(more)
++                    print_str += ")"
++                else:
++                    print_str += datum.dpstr(more)
+ 
+         return print_str
+ 
+     def parse(self, actstr):
++        totallen = len(actstr)
+         while len(actstr) != 0:
+             parsed = False
++            parencount = 0
+             if actstr.startswith("drop"):
+                 # If no reason is provided, the implicit drop is used (i.e no
+                 # action). If some reason is given, an explicit action is used.
+-                actstr, reason = parse_extract_field(
+-                    actstr,
+-                    "drop(",
+-                    "([0-9]+)",
+-                    lambda x: int(x, 0),
+-                    False,
+-                    None,
+-                )
++                reason = None
++                if actstr.startswith("drop("):
++                    parencount += 1
++
++                    actstr, reason = parse_extract_field(
++                        actstr,
++                        "drop(",
++                        "([0-9]+)",
++                        lambda x: int(x, 0),
++                        False,
++                        None,
++                    )
++
+                 if reason is not None:
+                     self["attrs"].append(["OVS_ACTION_ATTR_DROP", reason])
+                     parsed = True
+                 else:
+-                    return
++                    actstr = actstr[len("drop"): ]
++                    return (totallen - len(actstr))
+ 
+             elif parse_starts_block(actstr, "^(\d+)", False, True):
+                 actstr, output = parse_extract_field(
+@@ -504,6 +517,7 @@ class ovsactions(nla):
+                     False,
+                     0,
+                 )
++                parencount += 1
+                 self["attrs"].append(["OVS_ACTION_ATTR_RECIRC", recircid])
+                 parsed = True
+ 
+@@ -516,12 +530,22 @@ class ovsactions(nla):
+ 
+             for flat_act in parse_flat_map:
+                 if parse_starts_block(actstr, flat_act[0], False):
+-                    actstr += len(flat_act[0])
++                    actstr = actstr[len(flat_act[0]):]
+                     self["attrs"].append([flat_act[1]])
+                     actstr = actstr[strspn(actstr, ", ") :]
+                     parsed = True
+ 
+-            if parse_starts_block(actstr, "ct(", False):
++            if parse_starts_block(actstr, "clone(", False):
++                parencount += 1
++                subacts = ovsactions()
++                actstr = actstr[len("clone("):]
++                parsedLen = subacts.parse(actstr)
++                lst = []
++                self["attrs"].append(("OVS_ACTION_ATTR_CLONE", subacts))
++                actstr = actstr[parsedLen:]
++                parsed = True
++            elif parse_starts_block(actstr, "ct(", False):
++                parencount += 1
+                 actstr = actstr[len("ct(") :]
+                 ctact = ovsactions.ctact()
+ 
+@@ -553,6 +577,7 @@ class ovsactions(nla):
+                         natact = ovsactions.ctact.natattr()
+ 
+                         if actstr.startswith("("):
++                            parencount += 1
+                             t = None
+                             actstr = actstr[1:]
+                             if actstr.startswith("src"):
+@@ -607,15 +632,29 @@ class ovsactions(nla):
+                                     actstr = actstr[strspn(actstr, ", ") :]
+ 
+                         ctact["attrs"].append(["OVS_CT_ATTR_NAT", natact])
+-                        actstr = actstr[strspn(actstr, ",) ") :]
++                        actstr = actstr[strspn(actstr, ", ") :]
+ 
+                 self["attrs"].append(["OVS_ACTION_ATTR_CT", ctact])
+                 parsed = True
+ 
+-            actstr = actstr[strspn(actstr, "), ") :]
++            actstr = actstr[strspn(actstr, ", ") :]
++            while parencount > 0:
++                parencount -= 1
++                actstr = actstr[strspn(actstr, " "):]
++                if len(actstr) and actstr[0] != ")":
++                    raise ValueError("Action str: '%s' unbalanced" % actstr)
++                actstr = actstr[1:]
++
++            if len(actstr) and actstr[0] == ")":
++                return (totallen - len(actstr))
++
++            actstr = actstr[strspn(actstr, ", ") :]
++
+             if not parsed:
+                 raise ValueError("Action str: '%s' not supported" % actstr)
+ 
++        return (totallen - len(actstr))
++
+ 
+ class ovskey(nla):
+     nla_flags = NLA_F_NESTED
+@@ -2111,6 +2150,8 @@ def main(argv):
+     ovsflow = OvsFlow()
+     ndb = NDB()
+ 
++    sys.setrecursionlimit(100000)
++
+     if hasattr(args, "showdp"):
+         found = False
+         for iface in ndb.interfaces:

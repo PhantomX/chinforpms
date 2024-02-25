@@ -1,3 +1,27 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/11fa2c73bc247b4d40c71e3220ead390202a2043
+ 11fa2c73bc247b4d40c71e3220ead390202a2043 selftests: openvswitch: Add validation for the recursion test
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/21fc802bce4938279432d1a4febef04de6354902
+ 21fc802bce4938279432d1a4febef04de6354902 net: openvswitch: limit the number of recursions from action sets
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/78a136fba17f14893a2cdd15bdaf9fcc1f48808f
+ 78a136fba17f14893a2cdd15bdaf9fcc1f48808f dm: limit the number of targets and parameter size area
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/ab98876014e44b8bad6575d69c9a65342d38f9d4
+ ab98876014e44b8bad6575d69c9a65342d38f9d4 btrfs: don't refill whole delayed refs block reserve when starting transaction
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/19a889e3c4589ccfbfc55056651847468054ff83
+ 19a889e3c4589ccfbfc55056651847468054ff83 drm/amd: Stop evicting resources on APUs in suspend
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/7fd92c3ac45f07f817b49b20b9f0d4dce0395eb4
+ 7fd92c3ac45f07f817b49b20b9f0d4dce0395eb4 Revert "drm/amd: flush any delayed gfxoff on suspend entry"
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/1c09c97c739e156ff5a7ce6b3df1173eeebeb3ef
+ 1c09c97c739e156ff5a7ce6b3df1173eeebeb3ef smb: client: set correct id, uid and cruid for multiuser automounts
+
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/4b490493dd82802f8b7f9977e09b4d8f5b5d55be
+ 4b490493dd82802f8b7f9977e09b4d8f5b5d55be platform/x86: Support for mode FN key
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/067c5243fae90055e1276c8ba54076f4bbaef253
  067c5243fae90055e1276c8ba54076f4bbaef253 Input: atkbd - do not skip atkbd_deactivate() when skipping ATKBD_CMD_GETID
 

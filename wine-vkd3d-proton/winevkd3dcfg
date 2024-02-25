@@ -5,7 +5,7 @@
 # Script by Phantom X <megaphantomx at bol.com.b>
 # Suggested usage: $ winedxvkcfg --help
 #
-# Copyright 2018-2023 Phantom X, Goiania, Brazil.
+# Copyright 2018-2024 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20230403
+ver=20240221
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -138,12 +138,16 @@ setcfg(){
         done
       fi
       for dll in ${dlls} ;do
-        wine${winebits} reg add "${overrideskey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
-        retval=$?
-        if [ "${retval}" -eq 0 ] ;then
-          enabled=1
+        if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -v -F "native" &>/dev/null ;then
+          wine${winebits} reg add "${overrideskey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            enabled=1
+          else
+            disabled=1
+          fi
         else
-          disabled=1
+          enabled=1
         fi
         rm -f "${native_path}/${dll}.dll"
         ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"

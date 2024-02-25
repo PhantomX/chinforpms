@@ -29,6 +29,7 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
+ntsync
 SDL1
 -sdl12-compat
 -sdlcl

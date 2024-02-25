@@ -12,6 +12,11 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+%global commit 3a02490a1f37c7f437b99a2ef459ab886d08d79f
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20240218
+%bcond_with snapshot
+
 # Enable system fmt
 %bcond_with fmt
 
@@ -19,7 +24,11 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 imgui
 
-%global fmt_ver 10.1.1
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%endif
+
+%global fmt_ver 10.2.1
 %global vkh_ver 1.3.240
 
 %global vc_url   https://github.com/cemu-project/Cemu
@@ -31,14 +40,18 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~59
+Version:        2.0~66
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
 License:        MPL-2.0 AND MIT AND MIT-0 AND Apache-2.0
 URL:            https://cemu.info/
 
+%if %{with snapshot}
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+%else
 Source0:        %{vc_url}/archive/v%{ver}/%{pkgname}-%{ver}.tar.gz
+%endif
 Source1:        https://github.com/ocornut/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{without fmt}
 Source2:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
@@ -81,7 +94,7 @@ BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  cmake(RapidJSON)
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl2) >= 2.30.0
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-protocols)
@@ -104,7 +117,7 @@ Provides:       %{pkgname}%{?_isa} = %{version}-%{release}
 
 
 %prep
-%autosetup -n %{pkgname}-%{ver} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 pushd dependencies
 rm -rf cubeb DirectX_2010 discord-rpc vcpkg* Vulkan-Headers ZArchive
@@ -193,5 +206,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Feb 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0~65-1.20240218git3a02490
+- Add snapshot support
+
 * Fri Apr 21 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0~36-1
 - Initial spec

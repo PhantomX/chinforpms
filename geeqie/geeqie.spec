@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit 53478d9ce5183300e88decf4a98328d42842ce6d
+%global commit db0c7d50c7ac7f2fdbf8c16f2354510b34f6a9e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230915
+%global date 20240224
 %bcond_without snapshot
 
 %bcond_with map
@@ -11,11 +11,12 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global appname org.geeqie.Geeqie
 %global vc_url  https://github.com/BestImageViewer/%{name}
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.1
+Version:        2.2
 Release:        100%{?dist}
 
 URL:            https://www.geeqie.org
@@ -134,11 +135,11 @@ desktop-file-install \
     --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     --add-mime-type="image/x-dds" \
     --add-mime-type="image/x-xcf;image/x-compressed-xcf" \
-    %{buildroot}%{_datadir}/applications/%{name}.desktop
+    %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 %find_lang %{name}
 
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
 %files -f %{name}.lang
 %doc %{_pkgdocdir}/
@@ -149,11 +150,14 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.geeqie.Gee
 %{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/*/*%{name}*
 %{_datadir}/pixmaps/%{name}.png
-%{_datadir}/applications/*%{name}.desktop
-%{_metainfodir}/org.geeqie.Geeqie.appdata.xml
+%{_datadir}/applications/%{appname}.desktop
+%{_metainfodir}/%{appname}.appdata.xml
 
 
 %changelog
+* Sun Feb 25 2024 Phantom X <megaphantomx at hotmail dot com> - 2.2-100.20240224gitdb0c7d5
+- 2.2
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.1-100.20230915git53478d9
 - 2.1
 

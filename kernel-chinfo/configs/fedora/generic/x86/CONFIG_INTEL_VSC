@@ -1,1 +1,1 @@
-CONFIG_INTEL_VSC=m
+# CONFIG_INTEL_VSC is not set
