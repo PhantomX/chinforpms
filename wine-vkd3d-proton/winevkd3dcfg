@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20240221
+ver=20240227
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -149,13 +149,17 @@ setcfg(){
         else
           enabled=1
         fi
-        rm -f "${native_path}/${dll}.dll"
-        ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
-        retval=$?
-        if [ "${retval}" -eq 0 ] ;then
-          enabledlnk=1
+        if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+          rm -f "${native_path}/${dll}.dll"
+          ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            enabledlnk=1
+          else
+            enabledlnk=0
+          fi
         else
-          enabledlnk=0
+          enabledlnk=1
         fi
       done
     fi

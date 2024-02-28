@@ -30,7 +30,7 @@
 
 Name:           wine-nine
 Version:        0.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -47,6 +47,8 @@ Source1:        ninewinecfg
 Source2:        wineninecfg
 
 Source100:      wine-ninecfg.desktop
+
+Patch0:         %{url}/commit/95e0da48ad713fb4bc54011c96b06088fd6a0c83.patch#/%{name}-gh-95e0da4.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -101,7 +103,7 @@ mesonarray(){
 # http://bugs.winehq.org/show_bug.cgi?id=24606
 # http://bugs.winehq.org/show_bug.cgi?id=25073
 # https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'` -Wno-error -mno-avx -mno-avx2"
+TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'` -Wno-error"
 
 TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
 TEMP_LDFLAGS="`mesonarray "%{build_ldflags}"`"

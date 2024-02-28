@@ -1,17 +1,22 @@
-%global commit 4ecedf1d758afbaad8ac0bb0aeed32d5e5bc4777
+%global commit 6cfeacdfa00096cd8bdbecc95a4c1c9dc2cd2113
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230901
+%global date 20240226
 %bcond_without snapshot
 
 %bcond_without qt
+# build with qt6 instead 5
+%bcond_without qt6
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
+%global appname io.github.input_leap.InputLeap
+
 Name:           input-leap
 Version:        2.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only
@@ -44,11 +49,14 @@ BuildRequires:  pkgconfig(libssl)
 %if %{with qt}
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  cmake(Qt%{qt_ver}Core)
+BuildRequires:  cmake(Qt%{qt_ver}Gui)
+BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
+BuildRequires:  cmake(Qt%{qt_ver}Network)
+BuildRequires:  cmake(Qt%{qt_ver}Widgets)
+%if %{with qt6}
+BuildRequires:  cmake(Qt6Core5Compat)
+%endif
 Requires:       hicolor-icon-theme
 %endif
 
@@ -59,11 +67,6 @@ computers.
 
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
-
-sed \
-  -e 's|<id></id>|<id>%{name}.desktop</id>|g' \
-  -e 's|barrier|%{name}|g' \
-  -i res/%{name}.appdata.xml.in
 
 sed \
   -e '/include (CheckIncludeFiles)/i\    set(CMAKE_AR "/usr/bin/gcc-ar")' \
@@ -80,8 +83,11 @@ sed \
 
 %build
 %{cmake3} \
+  -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{without qt}
   -DINPUTLEAP_BUILD_GUI:BOOL=OFF \
+%else
+  -DQT_DEFAULT_MAJOR_VERSION:STRING=%{qt_ver} \
 %endif
   -DINPUTLEAP_USE_EXTERNAL_GTEST:BOOL=ON \
 %if %{with snapshot}
@@ -99,22 +105,10 @@ sed \
 %install
 %cmake_install
 
-desktop-file-install \
-  --delete-original \
-  --dir %{buildroot}%{_datadir}/applications \
-  --set-name="InputLeap" \
-  --set-key=Exec \
-  --set-value="%{name}" \
-  --set-icon="%{name}" \
-  --remove-category=Utility \
-  --add-category=Network \
-  %{buildroot}%{_datadir}/applications/%{name}.desktop
-
-
 %check
 %if %{with qt}
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 %endif
 
 
@@ -126,12 +120,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_bindir}/%{name}
 %{_mandir}/man1/%{name}*.1*
 %if %{with qt}
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_metainfodir}/%{name}.appdata.xml
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
+%{_metainfodir}/%{appname}.appdata.xml
 %endif
 
 
 %changelog
+* Tue Feb 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-3.20240226git6cfeacd
+- Qt 6
+
 * Fri Feb 17 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-1.20230130git68aac94
 - Initial spec

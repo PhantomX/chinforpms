@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20220324
+ver=20240227
 
 name="Gallium Nine"
 pkgname="wine-nine"
@@ -155,6 +155,18 @@ setcfg(){
           enabledlnk=1
         else
           enabledlnk=0
+        fi
+        if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll.so")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+          rm -f "${native_path}/${dll}.dll"
+          ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
+          retval=$?
+          if [ "${retval}" -eq 0 ] ;then
+            enabledlnk=1
+          else
+            enabledlnk=0
+          fi
+        else
+          enabledlnk=1
         fi
       done
     fi
