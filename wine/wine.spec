@@ -1,7 +1,7 @@
-%global commit d9b5bf9a719b1145f514230f170ccc6b969a6679
+%global commit c2a4f3810b17f9efa3c848b473b19f641f7881f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240109
-%bcond_with snapshot
+%global date 20240227
+%bcond_without snapshot
 
 %define _fortify_level 0
 
@@ -53,20 +53,21 @@
 %global winemono  9.0.0
 %global winevulkan 1.3.277
 
-%global wineFAudio 23.12
+%global wineFAudio 24.02
+%global winefluidsynth 2.3.4
 %global winegsm 1.0.19
-%global winejpeg 9e
-%global winelcms2 2.15
-%global winempg123 1.32.2
-%global winepng 1.6.39
-%global wineopenldap 2.5.16
+%global winejpeg 9~f
+%global winelcms2 2.16
+%global winempg123 1.32.5
+%global winepng 1.6.42
+%global wineopenldap 2.5.17
 %global winetiff 4.6.0
 %global winejxrlib 1.1
 %global winevkd3d 1.9
-%global winexml2 2.11.5
-%global winexslt 1.1.38
-%global winezlib 1.3
-%global winezydis 4.0.0
+%global winexml2 2.11.7
+%global winexslt 1.1.39
+%global winezlib 1.3.1
+%global winezydis 4.1.0
 
 %global _default_patch_fuzz 2
 
@@ -100,7 +101,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.2
+%global wine_stagingver 91d4974f10f63141862bfe565a7261663b5872cc
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -111,7 +112,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3fbd4978a084c5a2ba9225929af1a57804669201
+%global tkg_id 9fecab431486f8bbbd7583abb64698bad8ab7a0e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -153,7 +154,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.2
+Version:        9.3
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -268,8 +269,8 @@ Patch1064:       0001-sharedgpures-fixup.patch
 
 Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
-Patch1091:       %{valve_url}/commit/87a85d50c502f705eeaf7a9f3f4c9e54c707ae56.patch#/%{name}-valve-87a85d5.patch
-Patch1092:       %{valve_url}/commit/464a79989b5250a1aa9e6a6e54aa0a334cd523ff.patch#/%{name}-valve-464a799.patch
+Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.patch#/%{name}-valve-c08ed66.patch
+Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.patch#/%{name}-valve-ed14fff.patch
 Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 
@@ -557,6 +558,7 @@ Recommends:     gstreamer1-plugins-ugly
 %endif
 %endif
 
+Provides:       bundled(fluidsynth) = %{winefluidsynth}
 Provides:       bundled(gsm) = %{winegsm}
 Provides:       bundled(libFAudio) = %{wineFAudio}
 Provides:       bundled(libjpeg) = %{winejpeg}
@@ -1743,6 +1745,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/mmcndmgr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mmdevapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/mouhid.%{winesys}
 %{_libdir}/wine/%{winesodir}/mountmgr.so
 %{_libdir}/wine/%{winedlldir}/mountmgr.%{winesys}
 %{_libdir}/wine/%{winedlldir}/mp3dmod.%{winedll}
@@ -2030,6 +2033,7 @@ fi
 %endif
 %{_libdir}/wine/%{winedlldir}/windows.perception.stub.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.security.credentials.ui.userconsentverifier.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.security.authentication.onlineid.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
@@ -2535,6 +2539,9 @@ fi
 
 
 %changelog
+* Wed Feb 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.3-100.20240227gitc2a4f38
+- 9.3
+
 * Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.2-100
 - 9.2
 
