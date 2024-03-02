@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.6
+%define specrpmversion 6.7.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,36 +214,38 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 7
+%global post_factum 8
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 95e5ffff0f12b7c0b5d1f96b1f6a0fdbfbbee61f
+%global pfcommit 0269be0382f4f85d1616c1227b994d4b162e4515
 %global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
-%global pfcoprhash 9fc88454fef7acb0ea2ac8d76c18b165
+%global pfcoprhash ed1b6101263c1dd2eadcccf5b3279812
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
 %global pfrange %(c=%{pfcommit}; echo ${c:0:7})
 %endif
 %global pfpatch pf-kernel-v%{patchversion}-%{pfrange}.pfpatch
-%dnl %global extra_patch https://codeberg.org/pf-kernel/linux/compare/v%{patchversion}...%{pfcommit}.diff#/%{pfpatch}
-%global extra_patch https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{pfpatch}/%{pfcoprhash}/%{pfpatch}
+%dnl %global pf_patch https://codeberg.org/pf-kernel/linux/compare/v%{patchversion}...%{pfcommit}.diff#/%{pfpatch}
+%global pf_patch https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{pfpatch}/%{pfcoprhash}/%{pfpatch}
 
 # Apply a patch range from stable repository, extending pf unmantained branches
 # Root Makefile are stripped from patching
 %global pf_stable_extra 1
 %if 0%{?pf_stable_extra}
+# Use official patch instead diff from git
+%global pf_stable_full 1
 %global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
-%global st_last_commit b631f5b445dc3379f67ff63a2e4c58f22d4975dc
+%global st_last_commit 903f401696531c59a7dbc020258b64944cd2453b
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id b9dc7c6bd504ffa68f293710ddbb3d2d3b978e0e
+%global opensuse_id 1ff84c539098385746e3fa3aaf975296fb8e6791
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1065,10 +1067,14 @@ Source4000: README.rst
 Source4001: rpminspect.yaml
 Source4002: gating.yaml
 
+%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
+%global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
+
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 %if 0%{?post_factum}
-Patch5000:  %{extra_patch}
+Patch5000:  %{pf_patch}
+Patch5002:  %{pf_url}/e43bdf48ccda4c1d8a705c34cc854bb9676156af.patch#/pf-revert-e43bdf4.patch
 Patch5003:  %{pf_url}/4cae7ce82cee3a13b2a452bbdb4d106f98076cbc.patch#/pf-revert-4cae7ce.patch
 Patch5004:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
 Patch5005:  %{pf_url}/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
@@ -1087,19 +1093,31 @@ Patch5017:  %{pf_url}/771c44a1198919bffccbe0a4df269211eab872f5.patch#/pf-revert-
 Patch5018:  %{pf_url}/a145be23455a77be3c674f56fd1c3c6a5d0bc95f.patch#/pf-revert-a145be2.patch
 Patch5019:  %{pf_url}/8ba93bc9e0fb0c774d73798207d12c36e9745edc.patch#/pf-revert-8ba93bc.patch
 Patch5020:  %{pf_url}/f3e90e41ba5d661ed63d4ff21f1566c104300c66.patch#/pf-revert-f3e90e4.patch
+Patch5021:  %{pf_url}/a9ed8b7501b01434c30fc85d8b161c57a385dd57.patch#/pf-revert-a9ed8b7.patch
+Patch5022:  %{pf_url}/c73f20dced3937da6bdcce6076c0ebfe2940bcc5.patch#/pf-revert-c73f20d.patch
+
+Patch5023:  %{pf_url}/bca1e2935587c286339c63ba487734a750f7a00b.patch#/pf-revert-bca1e29.patch
+Patch5024:  %{pf_url}/2639f8b3347e47e1a5a087df19cc6854226a2dae.patch#/pf-revert-2639f8b.patch
+Patch5025:  %{pf_url}/438e8e3aba34b3e3525ba53c755a851856598cb4.patch#/pf-revert-438e8e3.patch
+Patch5026:  %{pf_url}/1c7bcda43c032c831120583ac328bd16611483d0.patch#/pf-revert-1c7bcda.patch
+Patch5027:  %{pf_url}/24523e5cdc56d0f556d4221e1af5965e277c81b1.patch#/pf-revert-24523e5.patch
+Patch5028:  %{pf_url}/de5c7ac9ca953516c6453b00da2714317cc7b08c.patch#/pf-revert-de5c7ac.patch
+Patch5029:  %{pf_url}/4f96a9febc40451b33271c78a7eadc0a7261c407.patch#/pf-revert-4f96a9f.patch
+Patch5030:  %{kernel_url}/?id=60d6130d0ac1d883ed93c2a1e10aadb60967fd48#/kernel-stable-revert-60d6130.patch
+Patch5031:  %{pf_url}/5dd41fa7340b34b415ed569e4e41b2ffdc8d77ae.patch#/pf-revert-5dd41fa.patch
+
 %if 0%{?pf_stable_extra}
-Patch5002: %{stable_extra_patch}
+%if !0%{?pf_stable_full}
+Patch6000: %{stable_extra_patch}
 %endif
-%else
-# For a stable release kernel
-%if 0%{?stable_update}
-%define    stable_patch_00  patch-%{specversion}.xz
-Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
 %endif
 %endif
 
-%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
-%global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
+# For a stable release kernel
+%if (0%{?patchlevel} && 0%{?released_kernel} && !0%{?post_factum}) || (0%{?post_factum} && 0%{?pf_stable_full})
+%define    stable_patch_00  patch-%{specversion}.xz
+Patch6000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
+%endif
 
 ## Patches needed for building this package
 
@@ -1122,6 +1140,9 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1014: %{opensuse_url}/fs-ntfs3-fix-build-without-CONFIG_NTFS3_LZX_XPRESS.patch#/openSUSE-fs-ntfs3-fix-build-without-CONFIG_NTFS3_LZX_XPRESS.patch
+Patch1015: %{opensuse_url}/mptcp-avoid-printing-warning-once-on-client-side.patch#/openSUSE-mptcp-avoid-printing-warning-once-on-client-side.patch  
+Patch1016: %{opensuse_url}/mptcp-fix-possible-deadlock-in-subflow-diag.patch#/openSUSE-mptcp-fix-possible-deadlock-in-subflow-diag.patch       
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1136,9 +1157,9 @@ Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id c409515574bd4d69af45ad74d4e7ba7151010516
-Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
+Patch7000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
 
-Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+Patch7010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 # END OF PATCH DEFINITIONS
 
@@ -1939,6 +1960,7 @@ cp -a %{SOURCE1} .
 
 %if 0%{?post_factum}
 ApplyPatch %{PATCH5000}
+ApplyPatch %{PATCH5002} -R
 ApplyPatch %{PATCH5003} -R
 ApplyPatch %{PATCH5004} -R
 ApplyPatch %{PATCH5005} -R
@@ -1946,6 +1968,8 @@ ApplyPatch %{PATCH5006} -R
 ApplyPatch %{PATCH5007} -R
 ApplyPatch %{PATCH5008} -R
 ApplyPatch %{PATCH5009} -R
+ApplyPatch %{PATCH5022} -R
+ApplyPatch %{PATCH5021} -R
 ApplyPatch %{PATCH5010} -R
 ApplyPatch %{PATCH5011} -R
 ApplyPatch %{PATCH5012} -R
@@ -1957,16 +1981,36 @@ ApplyPatch %{PATCH5017} -R
 ApplyPatch %{PATCH5018} -R
 ApplyPatch %{PATCH5019} -R
 ApplyPatch %{PATCH5020} -R
+ApplyPatch %{PATCH5031} -R
+ApplyPatch %{PATCH5029} -R
+ApplyPatch %{PATCH5028} -R
+ApplyPatch %{PATCH5027} -R
+ApplyPatch %{PATCH5026} -R
+ApplyPatch %{PATCH5025} -R
+ApplyPatch %{PATCH5024} -R
+ApplyPatch %{PATCH5023} -R
 %if 0%{?pf_stable_extra}
-filterdiff -p1 -x Makefile %{PATCH5002} > pf_stable_extra.patch
+%if 0%{?pf_stable_full}
+xzcat %{PATCH6000} | filterdiff -p1 -x Makefile > pf_stable_extra.patch
+%else
+filterdiff -p1 -x Makefile %{PATCH6000} > pf_stable_extra.patch
+%endif
 ApplyPatch pf_stable_extra.patch
 rm -f pf_stable_extra.patch
+ApplyPatch %{PATCH5021}
+ApplyPatch %{PATCH5022}
+ApplyPatch %{PATCH5027}
+ApplyPatch %{PATCH5028}
+ApplyPatch %{PATCH5029}
+ApplyPatch %{PATCH5030} -R
+ApplyPatch %{PATCH5031}
+ApplyPatch %{PATCH5002}
 %endif
 %else
 # released_kernel with possible stable updates
-%if 0%{?stable_base}
+%if 0%{?patchlevel} && 0%{?released_kernel}
 # This is special because the kernel spec is hell and nothing is consistent
-ApplyPatch %{PATCH5000}
+ApplyPatch %{PATCH6000}
 %endif
 %endif
 
@@ -1980,6 +2024,9 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
+ApplyPatch %{PATCH1014}
+ApplyPatch %{PATCH1015}
+ApplyPatch %{PATCH1016}
 
 ApplyPatch %{PATCH2000}
 
@@ -1988,9 +2035,9 @@ ApplyPatch %{PATCH2090}
 ApplyPatch %{PATCH2091}
 %endif
 
-ApplyPatch %{PATCH6000}
+ApplyPatch %{PATCH7000}
 
-ApplyPatch %{PATCH6010}
+ApplyPatch %{PATCH7010}
 
 # END OF PATCH APPLICATIONS
 
@@ -4073,6 +4120,9 @@ fi\
 #
 #
 %changelog
+* Fri Mar 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
+- 6.7.7 - pf8
+
 * Fri Feb 23 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.6-500.chinfo
 - 6.7.6 - pf7
 - Rawhide sync (reenable tools packages)

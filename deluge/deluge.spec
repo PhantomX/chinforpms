@@ -1,7 +1,7 @@
-%global commit 5f6f65a06500e12f378e7918289e1d82954c1bd6
+%global commit 7f3f7f69ee78610e95bea07d99f699e9310c4e08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211123
-%bcond_with snapshot
+%global date 20240219
+%bcond_without snapshot
 
 BuildArch:      noarch
 
@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           deluge
 Version:        2.1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -187,10 +187,11 @@ pushd %{buildroot}
 ## properly.
 popd && mv %{buildroot}/%{name}.lang .
 
-mv %{buildroot}%{_datadir}/appdata %{buildroot}%{_metainfodir}
 
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+
 
 %files
 
@@ -230,7 +231,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{python3_sitelib}/%{name}/ui/gtk3
 %{_mandir}/man?/%{name}-gtk*
 %{_mandir}/man?/%{name}.1*
-%{_metainfodir}/%{name}.appdata.xml
+%{_metainfodir}/%{name}.metainfo.xml
 
 %files console
 %{_bindir}/%{name}-console
@@ -279,6 +280,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Feb 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.1-101.20240219git7f3f7f6
+- Snapshot
+
 * Sun Jul 24 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.1-100
 - 2.1.1
 

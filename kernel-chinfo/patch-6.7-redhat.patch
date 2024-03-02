@@ -14,9 +14,6 @@
  drivers/firmware/efi/efi.c                         | 124 +++++++++++----
  drivers/firmware/efi/secureboot.c                  |  38 +++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/amd/amdgpu/amdgpu.h                |   2 +
- drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c           |  15 ++
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |  11 +-
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
  drivers/input/keyboard/atkbd.c                     |   3 +-
@@ -44,7 +41,7 @@
  tools/power/cpupower/Makefile                      |   2 +-
  .../selftests/net/openvswitch/openvswitch.sh       |  13 ++
  .../testing/selftests/net/openvswitch/ovs-dpctl.py |  71 +++++++--
- 46 files changed, 796 insertions(+), 196 deletions(-)
+ 43 files changed, 770 insertions(+), 194 deletions(-)
 
 diff --git a/Documentation/admin-guide/laptops/thinkpad-acpi.rst b/Documentation/admin-guide/laptops/thinkpad-acpi.rst
 index 98d304010170..7f674a6cfa8a 100644
@@ -72,7 +69,7 @@ index 98d304010170..7f674a6cfa8a 100644
  
  0x1020	0x1F	unknown
 diff --git a/Makefile b/Makefile
-index d07a8e0179ac..5779c09825d9 100644
+index 72ee3609aae3..824a28d7c706 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -612,84 +609,6 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu.h b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-index 50f57d4dfd8f..f65a1518546e 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu.h
-@@ -1509,9 +1509,11 @@ static inline int amdgpu_acpi_smart_shift_update(struct drm_device *dev,
- #if defined(CONFIG_ACPI) && defined(CONFIG_SUSPEND)
- bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev);
- bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev);
-+void amdgpu_choose_low_power_state(struct amdgpu_device *adev);
- #else
- static inline bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev) { return false; }
- static inline bool amdgpu_acpi_is_s3_active(struct amdgpu_device *adev) { return false; }
-+static void amdgpu_choose_low_power_state(struct amdgpu_device *adev) { }
- #endif
- 
- #if defined(CONFIG_DRM_AMD_DC)
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-index 2deebece810e..cc21ed67a330 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_acpi.c
-@@ -1519,4 +1519,19 @@ bool amdgpu_acpi_is_s0ix_active(struct amdgpu_device *adev)
- #endif /* CONFIG_AMD_PMC */
- }
- 
-+/**
-+ * amdgpu_choose_low_power_state
-+ *
-+ * @adev: amdgpu_device_pointer
-+ *
-+ * Choose the target low power state for the GPU
-+ */
-+void amdgpu_choose_low_power_state(struct amdgpu_device *adev)
-+{
-+	if (amdgpu_acpi_is_s0ix_active(adev))
-+		adev->in_s0ix = true;
-+	else if (amdgpu_acpi_is_s3_active(adev))
-+		adev->in_s3 = true;
-+}
-+
- #endif /* CONFIG_SUSPEND */
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 19bc8d47317b..7f48c7ec4136 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -4441,13 +4441,15 @@ int amdgpu_device_prepare(struct drm_device *dev)
- 	struct amdgpu_device *adev = drm_to_adev(dev);
- 	int i, r;
- 
-+	amdgpu_choose_low_power_state(adev);
-+
- 	if (dev->switch_power_state == DRM_SWITCH_POWER_OFF)
- 		return 0;
- 
- 	/* Evict the majority of BOs before starting suspend sequence */
- 	r = amdgpu_device_evict_resources(adev);
- 	if (r)
--		return r;
-+		goto unprepare;
- 
- 	for (i = 0; i < adev->num_ip_blocks; i++) {
- 		if (!adev->ip_blocks[i].status.valid)
-@@ -4456,10 +4458,15 @@ int amdgpu_device_prepare(struct drm_device *dev)
- 			continue;
- 		r = adev->ip_blocks[i].version->funcs->prepare_suspend((void *)adev);
- 		if (r)
--			return r;
-+			goto unprepare;
- 	}
- 
- 	return 0;
-+
-+unprepare:
-+	adev->in_s0ix = adev->in_s3 = false;
-+
-+	return r;
- }
- 
- /**
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1147,7 +1066,7 @@ index a2bf6de11462..692a9e777d72 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index c4895e9bc714..ceb22f8d8442 100644
+index 5ecd9d33250d..66be6eedb4ae 100644
 --- a/drivers/platform/x86/thinkpad_acpi.c
 +++ b/drivers/platform/x86/thinkpad_acpi.c
 @@ -166,6 +166,7 @@ enum tpacpi_hkey_event_t {
@@ -1166,7 +1085,7 @@ index c4895e9bc714..ceb22f8d8442 100644
  		tpacpi_driver_event(hkey);
  		return true;
  	}
-@@ -11118,7 +11120,23 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
+@@ -11119,7 +11121,23 @@ static void tpacpi_driver_event(const unsigned int hkey_event)
  		else
  			dytc_control_amt(!dytc_amt_active);
  	}
@@ -1192,7 +1111,7 @@ index c4895e9bc714..ceb22f8d8442 100644
  
  static void hotkey_driver_event(const unsigned int scancode)
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 542a4bbb21bc..62161ceed2e2 100644
+index a12ff43ac8fd..4940d18fd72d 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1210,7 +1129,7 @@ index 542a4bbb21bc..62161ceed2e2 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4048,6 +4056,8 @@ static int __init init_sd(void)
+@@ -4072,6 +4080,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
