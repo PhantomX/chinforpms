@@ -6,7 +6,7 @@
 
 %bcond_without snap
 
-%global vivaldi_ver 6.5
+%global vivaldi_ver 6.6
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
@@ -16,16 +16,16 @@
 %global parch amd64
 %global pkgid 660647727
 %global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 34
+%global snaprev 37
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-%global ffmpeg_ver 111306
+%global ffmpeg_ver 114023
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        112.0.5615.49
-Release:        4%{?dist}
+Version:        114023
+Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -54,8 +54,9 @@ ExclusiveArch:  x86_64 aarch64
 
 %if %{with snap}
 unsquashfs -n -d %{name} %{S:0}
+
 cp %{S:1} .
-mv %{name}/chromium-ffmpeg-%{ffmpeg_ver}/chromium-ffmpeg/libffmpeg.so .
+mv %{name}/chromium-ffmpeg-%{version}/chromium-ffmpeg/libffmpeg.so .
 %else
 ar p %{S:0} data.tar.xz | tar xJ -C .
 mv usr/lib/chromium-browser/libffmpeg.so .
@@ -63,7 +64,7 @@ mv usr/share/doc/%{pkgname}/copyright .
 %endif
 
 RVER="$(grep -aom1 'N-[0-9]\+-' libffmpeg.so | cut -d- -f2)"
-if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
+if [ "${RVER}" != "%{version}" ] ;then
   echo "Version mismatch. You have ${RVER} in %{S:0} instead %{version} "
   echo "Edit Version and try again"
   exit 1
@@ -82,6 +83,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 114023-1
+- 114023, vivaldir_ver 6.6
+
 * Sun Dec 24 2023 Phantom X <megaphantomx at hotmail dot com> - 112.0.5615.49-4
 - Set vivaldir_ver to 6.5
 

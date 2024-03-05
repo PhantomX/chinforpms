@@ -13,10 +13,10 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 112.0.5615.49
+%global ffmpegcodec 114023
 
 Name:           vivaldi
-Version:        6.5.3206.63
+Version:        6.6.3271.45
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -60,7 +60,7 @@ Vivaldi web browser.
 
 rpm2cpio %{S:0} | cpio -imdv
 
-FCVER="$(grep ^FFMPEG_VERSION_DEB= opt/vivaldi/update-ffmpeg | cut -d= -f2 | cut -d- -f1)"
+FCVER="$(grep ^FFMPEG_VERSION= opt/vivaldi/update-ffmpeg | cut -d= -f2 | cut -d' ' -f1)"
 if [ "${FCVER}" != "%{ffmpegcodec}" ] ;then
   echo "Version mismatch. You have ${FCVER} in ffmpegcodec instead %{ffmpegcodec}"
   echo "Edit ffmpegcodec and try again"
@@ -153,6 +153,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Mar 04 2024 - 6.6.3271.45-1
+- 6.6.3271.45
+
 * Wed Feb 14 2024 - 6.5.3206.63-1
 - 6.5.3206.63
 

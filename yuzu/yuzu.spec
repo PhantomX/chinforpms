@@ -90,7 +90,7 @@
 %global ext_url  %{vcm_url}
 
 %if %{with ea}
-%global vc_version 4175
+%global vc_version 4176
 %global vc_name pineapple-src
 %global vc_tarball EA
 %global vc_url  %{vcea_url}
@@ -156,7 +156,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
 Patch13:        0001-appstream-validate.patch
 Patch14:        0001-boost-build-fix.patch
-Patch15:        0001-Bump-xbyak-version.patch
 
 ExclusiveArch:  x86_64
 

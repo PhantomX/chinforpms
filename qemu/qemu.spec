@@ -358,7 +358,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.2.1
+Version:        8.2.2
 Release:        100%{?dist}
 Epoch:          2
 
@@ -371,6 +371,16 @@ Source0:        https://download.qemu.org/%{name}-%{ver}.tar.xz
 # https://patchwork.kernel.org/project/qemu-devel/patch/20231128143647.847668-1-crobinso@redhat.com/
 # Fix pvh.img ld build failure on fedora rawhide
 Patch: 0001-pc-bios-optionrom-Fix-pvh.img-ld-build-failure-on-fe.patch
+
+# Fix user-emulation of FIFREEZE and FITHAW ioctls
+# Posted upstream 20-02-2024
+# https://lists.nongnu.org/archive/html/qemu-devel/2024-02/msg03971.html
+Patch: qemu-fifreeze-fithaw.patch
+
+# ppc/spapr: Initialize max_cpus limit to SPAPR_IRQ_NR_IPIS
+# https://bugzilla.redhat.com/show_bug.cgi?id=2265982
+Patch: https://github.com/qemu/qemu/commit/2df5c1f5b014126595a26c6797089d284a3b211c.patch
+Patch: https://github.com/qemu/qemu/commit/c4f91d7b7be76c47015521ab0109c6e998a369b0.patch
 
 Source10: qemu-guest-agent.service
 Source11: 99-qemu-guest-agent.rules
@@ -3126,6 +3136,9 @@ popd
 
 
 %changelog
+* Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2:8.2.2-100
+- 8.2.2
+
 * Tue Jan 30 2024 Phantom X <megaphantomx at hotmail dot com> - 2:8.2.1-100
 - 8.2.1
 

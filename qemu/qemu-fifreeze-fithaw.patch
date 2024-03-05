@@ -1,0 +1,210 @@
+From qemu-devel-bounces+rjones=redhat.com@nongnu.org  Tue Feb 20 14:15:07 2024
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on
+	rhmail.home.annexia.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	FREEMAIL_FROM,MAILING_LIST_MULTI,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+	T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.2
+Delivered-To: rjones@gapps.redhat.com
+Received: from imap.gmail.com [2a00:1450:400c:c06::6c]
+	by rhmail.home.annexia.org with IMAP (fetchmail-6.3.24)
+	for <rjones@localhost> (single-drop); Tue, 20 Feb 2024 14:15:07 +0000 (GMT)
+Received: by 2002:adf:9c85:0:b0:337:c4af:7eda with SMTP id d5csp1377865wre;
+ Tue, 20 Feb 2024 06:14:45 -0800 (PST)
+X-Forwarded-Encrypted: i=2;
+ AJvYcCVmEOlyyvvd2pjxJlVqmm6wAsFvP2QS6RrV8WHdcPQ9BbSQtwkd4h6dvrOsn7U4WKwJ+S9i3pICvKhQ6p2IG/C63ey7jQaX6g==
+X-Google-Smtp-Source: AGHT+IE5mSiEO9H5JEkHNlHfhZDS2s9/kx/Heg/BJJ4bRe1DByou2O4YqVcehEElFPcfnv1EbTzP
+X-Received: by 2002:ac8:7e82:0:b0:42e:1a0c:5561 with SMTP id
+ w2-20020ac87e82000000b0042e1a0c5561mr4869415qtj.11.1708438485118; Tue, 20 Feb
+ 2024 06:14:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1708438485; cv=none; d=google.com;
+ s=arc-20160816;
+ b=ey2nB0Hz7p8/LRoN4jZjtpNuGZQ63SBhaAnxzcDl/T2RrxPzHh65rz1zmLdWzVCLkQ
+ v+yYlKkQFU8NNp3UT4S4zYwfeGSE1kFImALTRCMrWHrkw9LZZZb2BeEsiziU3hlaWROV
+ UVjYZdUHzbALZboflhpU0jK2UBurjafvHopQR7okuWukM2MkehE707uhOPscNCgZG8f9
+ ZtrZX2StAQhzGbE+rGPka9c6AdsKBWYcVUbAe//oQeRl1NCUorQedrseU25E1dcobqwl
+ 80kRNnHYH+GOx7inmTEi8W2DSWb3g48Q0EEVWc/sfDB/f2t6PO4sELzmSvhytswBISkg D57A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com;
+ s=arc-20160816;
+ h=content-transfer-encoding:sender:errors-to:list-subscribe:list-help
+ :list-post:list-archive:list-unsubscribe:list-id:precedence
+ :mime-version:message-id:date:subject:cc:to:from:delivered-to;
+ bh=uNCdCIQzg/12W/RrXAVFQ1Isw/BMjvNQW4Y14ZuF5vg=;
+ fh=k0ip+oilfdxldYSElE+D70uElArHhwV8D0y78HTEik8=;
+ b=U8UgVOefnhiU8Ata8X00Xvx9Y6fexE3GSwQioOOaRIx9xhn1c0xjhLQ4N5DB19Cbt2
+ U+lqbgtVw4xI915hyyC1NRT3w/ImfJLikpDpzXLpmbJCOMYj0J7qkTFPsPXBLMx/fDi8
+ Ctg2koPP9m5EG4cAEIacP85/2vee28uKUFbdeB/B8DIsSIQYWGskfMNaqv2NOvW9O4Fj
+ qyhK2YEImZY2KK3xW48LAtPW/oqqvfmtYmJn40otnhiU6eErtS71NJmccE1lca4P7xil
+ dtz0Rqc3C8iTH8eayxAeT7xD4AFZznehPPWbMxK3C5kecZ8bnceNw5cmQqfvQRmR0yGB bNKA==;
+ dara=google.com
+ARC-Authentication-Results: i=1; mx.google.com; spf=pass (google.com: domain
+ of qemu-devel-bounces+rjones=redhat.com@nongnu.org designates 209.51.188.17
+ as permitted sender)
+ smtp.mailfrom="qemu-devel-bounces+rjones=redhat.com@nongnu.org"
+Return-Path: <qemu-devel-bounces+rjones=redhat.com@nongnu.org>
+Received: from us-smtp-inbound-delivery-1.mimecast.com
+ (us-smtp-delivery-1.mimecast.com. [205.139.110.120]) by mx.google.com with
+ ESMTPS id
+ m9-20020ac86889000000b0042c2147b5d1si8208493qtq.474.2024.02.20.06.14.44 for
+ <rjones@gapps.redhat.com> (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384
+ bits=256/256); Tue, 20 Feb 2024 06:14:45 -0800 (PST)
+Received-SPF: pass (google.com: domain of
+ qemu-devel-bounces+rjones=redhat.com@nongnu.org designates 209.51.188.17 as
+ permitted sender) client-ip=209.51.188.17;
+Authentication-Results: mx.google.com; spf=pass (google.com: domain of
+ qemu-devel-bounces+rjones=redhat.com@nongnu.org designates 209.51.188.17 as
+ permitted sender)
+ smtp.mailfrom="qemu-devel-bounces+rjones=redhat.com@nongnu.org"
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.3, cipher=TLS_AES_256_GCM_SHA384) id
+ us-mta-656-0vwFszxbMwexl4X3OxB3MQ-1; Tue, 20 Feb 2024 09:14:43 -0500
+X-MC-Unique: 0vwFszxbMwexl4X3OxB3MQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com
+ [10.11.54.3]) (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256
+ bits) key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest
+ SHA256) (No client certificate requested) by mimecast-mx02.redhat.com
+ (Postfix) with ESMTPS id 792F8863732 for <rjones@gapps.redhat.com>; Tue, 20
+ Feb 2024 14:14:43 +0000 (UTC)
+Received: by smtp.corp.redhat.com (Postfix) id 761ED11422B9; Tue, 20 Feb 2024
+ 14:14:43 +0000 (UTC)
+Delivered-To: rjones@redhat.com
+Received: from mimecast-mx02.redhat.com
+ (mimecast10.extmail.prod.ext.rdu2.redhat.com [10.11.55.26]) by
+ smtp.corp.redhat.com (Postfix) with ESMTPS id 3BBF311422B4 for
+ <rjones@redhat.com>; Tue, 20 Feb 2024 14:14:43 +0000 (UTC)
+Received: from us-smtp-inbound-delivery-1.mimecast.com
+ (us-smtp-delivery-1.mimecast.com [207.211.31.120]) (using TLSv1.3 with cipher
+ TLS_AES_256_GCM_SHA384 (256/256 bits) key-exchange X25519 server-signature
+ RSA-PSS (2048 bits) server-digest SHA256) (No client certificate requested)
+ by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1EC691C54037 for
+ <rjones@redhat.com>; Tue, 20 Feb 2024 14:14:43 +0000 (UTC)
+Received: from lists.gnu.org (lists.gnu.org [209.51.188.17]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-467-K7PF_hWUMIuYn6nNX_NhGQ-1; Tue, 20 Feb 2024 09:14:41 -0500
+X-MC-Unique: K7PF_hWUMIuYn6nNX_NhGQ-1
+Received: from localhost ([::1] helo=lists1p.gnu.org) by lists.gnu.org with
+ esmtp (Exim 4.90_1) (envelope-from <qemu-devel-bounces@nongnu.org>) id
+ 1rcQsH-00027z-CN; Tue, 20 Feb 2024 09:13:33 -0500
+Received: from eggs.gnu.org ([2001:470:142:3::10]) by lists.gnu.org with
+ esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.90_1) (envelope-from
+ <michael.vogt@gmail.com>) id 1rcNp8-0004k1-C7 for qemu-devel@nongnu.org; Tue,
+ 20 Feb 2024 05:58:06 -0500
+Received: from mail-wm1-x32a.google.com ([2a00:1450:4864:20::32a]) by
+ eggs.gnu.org with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim
+ 4.90_1) (envelope-from <michael.vogt@gmail.com>) id 1rcNp6-0004zw-Uh for
+ qemu-devel@nongnu.org; Tue, 20 Feb 2024 05:58:06 -0500
+Received: by mail-wm1-x32a.google.com with SMTP id
+ 5b1f17b1804b1-412698cdd77so8973055e9.1 for <qemu-devel@nongnu.org>; Tue, 20
+ Feb 2024 02:58:04 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=1e100.net;
+ s=20230601; t=1708426683; x=1709031483;
+ h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+ :to:from:x-gm-message-state:from:to:cc:subject:date:message-id :reply-to;
+ bh=uNCdCIQzg/12W/RrXAVFQ1Isw/BMjvNQW4Y14ZuF5vg=;
+ b=anLCtG+2+69Viw2YFg93vXg3ZBx/82tUVKrUPKG0+3CgiM2BmSukRsME1L+upQkYAV
+ Llc9ODBvHts9RRZU1MeybdSSRMnAHrXrIJ6HZP30K1cHOxyXB7DOp27hCfOelFBBffpM
+ IVwjaKn+XnJ95IUMwMrhZ2T5Mcicw8tbRkCyDQwqrIpfpGWpOEq2HkEbe9T6z143sCBZ
+ XYDpDvFRQauxu+SUoVeQjDxt1gm0XHFzwdGH/QjQ/2YDwkkB/yUtlaDHgXafwnzwow/8
+ uHvdTZ9neIWDCUHEiHqRg9tHudOy1VhxH6T4jxzakzyTEit+mh2qB05/Yg2brj+hBo1u SaDg==
+X-Gm-Message-State: AOJu0YxyvxpfZhEbdDWqHqfThgFNUwkmqMXvDaxwAQH7HqdpGm5oVEbJ
+ rzstVAif1eTUKOE4NOnCiMyJ9q/vEtd63Er7imeDi7lVutB0bby6fZFsj8mI
+X-Received: by 2002:a05:600c:4f43:b0:411:e86d:85a3 with SMTP id
+ m3-20020a05600c4f4300b00411e86d85a3mr16304898wmq.16.1708426682414; Tue, 20
+ Feb 2024 02:58:02 -0800 (PST)
+Received: from top.fritz.box (p5dd94bc2.dip0.t-ipconnect.de. [93.217.75.194])
+ by smtp.gmail.com with ESMTPSA id
+ co18-20020a0560000a1200b0033d4c3b0beesm7032427wrb.19.2024.02.20.02.58.01
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256); Tue, 20 Feb 2024
+ 02:58:02 -0800 (PST)
+From: Michael Vogt <michael.vogt@gmail.com>
+To: qemu-devel@nongnu.org
+Cc: Michael Vogt <michael.vogt@gmail.com>
+Subject: [PATCH] linux-user: Add FIFREEZE and FITHAW ioctls
+Date: Tue, 20 Feb 2024 11:57:21 +0100
+Message-ID: <20240220105726.8852-1-michael.vogt@gmail.com>
+MIME-Version: 1.0
+X-Spam_score_int: -20
+X-Spam_score: -2.1
+X-Spam_bar: --
+X-Spam_report: (-2.1 / 5.0 requ) BAYES_00=-1.9, DKIM_SIGNED=0.1,
+ DKIM_VALID=-0.1, DKIM_VALID_AU=-0.1, DKIM_VALID_EF=-0.1, FREEMAIL_FROM=0.001,
+ RCVD_IN_DNSWL_NONE=-0.0001, SPF_HELO_NONE=0.001, SPF_PASS=-0.001,
+ T_SCC_BODY_TEXT_LINE=-0.01 autolearn=ham autolearn_force=no
+X-Spam_action: no action
+X-Mailman-Approved-At: Tue, 20 Feb 2024 09:13:26 -0500
+X-BeenThere: qemu-devel@nongnu.org
+X-Mailman-Version: 2.1.29
+Precedence: list
+List-Id: <qemu-devel.nongnu.org>
+List-Unsubscribe: <https://lists.nongnu.org/mailman/options/qemu-devel>,
+ <mailto:qemu-devel-request@nongnu.org?subject=unsubscribe>
+List-Archive: <https://lists.nongnu.org/archive/html/qemu-devel>
+List-Post: <mailto:qemu-devel@nongnu.org>
+List-Help: <mailto:qemu-devel-request@nongnu.org?subject=help>
+List-Subscribe: <https://lists.nongnu.org/mailman/listinfo/qemu-devel>,
+ <mailto:qemu-devel-request@nongnu.org?subject=subscribe>
+Errors-To: qemu-devel-bounces+rjones=redhat.com@nongnu.org
+Sender: qemu-devel-bounces+rjones=redhat.com@nongnu.org
+X-Mimecast-Impersonation-Protect: Policy=CLT - Impersonation Protection
+ Definition;Similar Internal Domain=false;Similar Monitored External
+ Domain=false;Custom External Domain=false;Mimecast External
+ Domain=false;Newly Observed Domain=false;Internal User Name=false;Custom
+ Display Name List=false;Reply-to Address Mismatch=false;Targeted Threat
+ Dictionary=false;Mimecast Threat Dictionary=false;Custom Threat
+ Dictionary=false
+X-Mimecast-Bulk-Signature: yes
+X-Mimecast-Spam-Signature: bulk
+X-Scanned-By: MIMEDefang 3.4.1 on 10.11.54.3
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: gmail.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"; x-default=true
+Status: RO
+Content-Length: 1327
+Lines: 42
+
+Add missing FIFREEZE and FITHAW ioctls.
+
+Signed-off-by: Michael Vogt <michael.vogt@gmail.com>
+---
+ linux-user/ioctls.h       | 6 ++++++
+ linux-user/syscall_defs.h | 3 +++
+ 2 files changed, 9 insertions(+)
+
+diff --git a/linux-user/ioctls.h b/linux-user/ioctls.h
+index 071f7ca253..1aec9d5836 100644
+--- a/linux-user/ioctls.h
++++ b/linux-user/ioctls.h
+@@ -134,6 +134,12 @@
+      IOCTL(FICLONE, IOC_W, TYPE_INT)
+      IOCTL(FICLONERANGE, IOC_W, MK_PTR(MK_STRUCT(STRUCT_file_clone_range)))
+ #endif
++#ifdef FIFREEZE
++     IOCTL(FIFREEZE, IOC_W | IOC_R, TYPE_INT)
++#endif
++#ifdef FITHAW
++     IOCTL(FITHAW, IOC_W | IOC_R, TYPE_INT)
++#endif
+ 
+      IOCTL(FIGETBSZ, IOC_R, MK_PTR(TYPE_LONG))
+ #ifdef CONFIG_FIEMAP
+diff --git a/linux-user/syscall_defs.h b/linux-user/syscall_defs.h
+index 77ba343c85..744fda599e 100644
+--- a/linux-user/syscall_defs.h
++++ b/linux-user/syscall_defs.h
+@@ -943,6 +943,9 @@ struct target_rtc_pll_info {
+ #define TARGET_FICLONE    TARGET_IOW(0x94, 9, abi_int)
+ #define TARGET_FICLONERANGE TARGET_IOW(0x94, 13, struct file_clone_range)
+ 
++#define TARGET_FIFREEZE    TARGET_IOWR('X', 119, abi_int)
++#define TARGET_FITHAW    TARGET_IOWR('X', 120, abi_int)
++
+ /*
+  * Note that the ioctl numbers for FS_IOC_<GET|SET><FLAGS|VERSION>
+  * claim type "long" but the actual type used by the kernel is "int".
+-- 
+2.43.0
+
+
