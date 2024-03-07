@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.7
+%define specrpmversion 6.7.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -219,9 +219,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 0269be0382f4f85d1616c1227b994d4b162e4515
+%global pfcommit 8817c500948220d1330b7c3cbd0e8eac0ef46937
 %global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
-%global pfcoprhash ed1b6101263c1dd2eadcccf5b3279812
+%global pfcoprhash ca3c6dfc136880a2d65f68067a1c082d
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -245,7 +245,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 1ff84c539098385746e3fa3aaf975296fb8e6791
+%global opensuse_id 6982b70e1a0af0607da4155c6e5ccb47e5f6b69c
 %global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1140,9 +1140,6 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
-Patch1014: %{opensuse_url}/fs-ntfs3-fix-build-without-CONFIG_NTFS3_LZX_XPRESS.patch#/openSUSE-fs-ntfs3-fix-build-without-CONFIG_NTFS3_LZX_XPRESS.patch
-Patch1015: %{opensuse_url}/mptcp-avoid-printing-warning-once-on-client-side.patch#/openSUSE-mptcp-avoid-printing-warning-once-on-client-side.patch  
-Patch1016: %{opensuse_url}/mptcp-fix-possible-deadlock-in-subflow-diag.patch#/openSUSE-mptcp-fix-possible-deadlock-in-subflow-diag.patch       
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2024,9 +2021,6 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
-ApplyPatch %{PATCH1015}
-ApplyPatch %{PATCH1016}
 
 ApplyPatch %{PATCH2000}
 
@@ -4120,6 +4114,9 @@ fi\
 #
 #
 %changelog
+* Wed Mar 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
+- 6.7.9 - pf8
+
 * Fri Mar 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
 - 6.7.7 - pf8
 

@@ -1,3 +1,6 @@
+"https://gitlab.com/cki-project/kernel-ark/-/commit"/f65fe5e93408aed742291b98358a9873317a59ef
+ f65fe5e93408aed742291b98358a9873317a59ef Bluetooth: rfcomm: Fix null-ptr-deref in rfcomm_check_security
+
 "https://gitlab.com/cki-project/kernel-ark/-/commit"/11fa2c73bc247b4d40c71e3220ead390202a2043
  11fa2c73bc247b4d40c71e3220ead390202a2043 selftests: openvswitch: Add validation for the recursion test
 
