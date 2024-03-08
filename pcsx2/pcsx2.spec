@@ -22,10 +22,6 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 glslang
 
-%global commit11 3cadf84c30bbc050c0fec79d26e1c8ff504bda42
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 rcheevos
-
 %global commit12 9f4c61a31435a7a90a314fc68aeb386c92a09c0f
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
@@ -54,12 +50,13 @@
 %global gsl_ver 4.0.0
 %global imgui_ver 1.88
 %global jpgc_ver 1.05
+%global rcheevos_scommit 3d01191
 %global simpleini_ver 4.17
 %global soundtouch_ver 2.3.1
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5562
+Version:        1.7.5600
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -72,7 +69,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-Source11:       https://github.com/RetroAchievements/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %if %{without vulkan}
 Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
@@ -133,6 +129,7 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
+BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
@@ -189,7 +186,7 @@ Provides:       bundled(gsl) = %{gsl_ver}
 Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
-Provides:       bundled(rcheevos) = 0~git%{shortcommit11}
+Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xxhash) = %{xxhash_ver}
 %dnl Provides:       bundled(zydis) = 0~git
@@ -215,7 +212,6 @@ rm -rf \
   winpixeventruntime xbyak xz zlib zstd zydis
 
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
-tar -xf %{S:11} -C rcheevos/rcheevos --strip-components 1
 
 %if %{with fmt}
 rm -rf fmt
@@ -239,7 +235,7 @@ sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.
 
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 #cp -p rainterface/LICENSE LICENSE.rainterface
-cp -p rcheevos/rcheevos/LICENSE LICENSE.rcheevos
+cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 %dnl cp -p zydis/LICENSE LICENSE.zydis
 

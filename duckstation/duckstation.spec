@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit a1da72202b554d1429b0472410e07818be8ec8db
+%global commit 25db163347205d95fbcd888a86147aee03ecaac2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240215
+%global date 20240307
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -34,13 +34,12 @@
 %global glad_ver 0.1.33
 %global imgui_ver 1.90.1
 %global md5_ver 1.6
-%global rcheevos_scommit 74860c9
+%global rcheevos_scommit 3d01191
 %global soundtouch_ver 2.3.1
-%global stb_ver 2.25
 
 Name:           duckstation
 Version:        0.1
-Release:        111%{?dist}
+Release:        112%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -96,6 +95,8 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
+BuildRequires:  pkgconfig(libjpeg)
+BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
@@ -145,7 +146,6 @@ Provides:       bundled(simpleini) = 0~git
 %if %{without soundtouch}
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
-Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(spirv-tools) = 0~git
 %dnl Provides:       bundled(zydis) = 0~git
 
@@ -186,7 +186,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cpuinfo cubeb discord-rpc gsl libchdr libFLAC lzma minizip msvc \
+  cpuinfo cubeb discord-rpc gsl libchdr libFLAC libjpeg libpng lzma minizip msvc \
   rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
 
 %if %{with fmt}

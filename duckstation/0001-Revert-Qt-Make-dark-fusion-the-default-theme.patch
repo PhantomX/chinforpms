@@ -5,21 +5,21 @@ Subject: [PATCH] Revert Qt: Make dark fusion the default theme
 
 This reverts commit 5cf16133cbb15eedfc3d61293daa8971ecfe3f18
 ---
- src/duckstation-qt/generalsettingswidget.cpp | 2 +-
+ src/duckstation-qt/interfacesettingswidget.cpp | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/src/duckstation-qt/generalsettingswidget.cpp b/src/duckstation-qt/generalsettingswidget.cpp
+diff --git a/src/duckstation-qt/interfacesettingswidget.cpp b/src/duckstation-qt/interfacesettingswidget.cpp
 index 38d3c39..815702e 100644
---- a/src/duckstation-qt/generalsettingswidget.cpp
-+++ b/src/duckstation-qt/generalsettingswidget.cpp
+--- a/src/duckstation-qt/interfacesettingswidget.cpp
++++ b/src/duckstation-qt/interfacesettingswidget.cpp
 @@ -23,7 +23,7 @@ const char* GeneralSettingsWidget::THEME_VALUES[] = {
    "", "fusion", "darkfusion", "darkfusionblue", "greymatter", "qdarkstyle", nullptr,
  };
  
--const char* GeneralSettingsWidget::DEFAULT_THEME_NAME = "darkfusion";
-+const char* GeneralSettingsWidget::DEFAULT_THEME_NAME = "";
+-const char* InterfaceSettingsWidget::DEFAULT_THEME_NAME = "darkfusion";
++const char* InterfaceSettingsWidget::DEFAULT_THEME_NAME = "";
  
- GeneralSettingsWidget::GeneralSettingsWidget(SettingsWindow* dialog, QWidget* parent)
+ InterfaceSettingsWidget::InterfaceSettingsWidget(SettingsWindow* dialog, QWidget* parent)
    : QWidget(parent), m_dialog(dialog)
 -- 
 2.41.0

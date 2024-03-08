@@ -1,4 +1,4 @@
-From e2e264a0c73719192fcd7ac6d2259de86cd1ee47 Mon Sep 17 00:00:00 2001
+From 96bd9e6b59cdcbd6e662eda0a3c25eb4b3af4431 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
@@ -9,10 +9,10 @@ Subject: [PATCH] Use system libraries
  2 files changed, 94 insertions(+), 3 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 6c319d1..9d2749e 100644
+index 438c8a1..d9286e6 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,30 +1,94 @@
+@@ -1,28 +1,92 @@
 +find_package(fmt 10.1)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -21,10 +21,8 @@ index 6c319d1..9d2749e 100644
 +else()
  set(FMT_INSTALL OFF CACHE BOOL "")
  add_subdirectory(fmt EXCLUDE_FROM_ALL)
-+endif()
  disable_compiler_warnings_for_target(fmt)
- add_subdirectory(stb EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(stb)
++endif()
 +pkg_search_module(minizip IMPORTED_TARGET minizip)
 +if(minizip_FOUND)
 +  message(STATUS "Using the system minizip")
@@ -44,7 +42,6 @@ index 6c319d1..9d2749e 100644
  disable_compiler_warnings_for_target(lzma)
  add_subdirectory(libchdr EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(libchdr)
- add_subdirectory(xxhash EXCLUDE_FROM_ALL)
 +endif()
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
@@ -53,6 +50,7 @@ index 6c319d1..9d2749e 100644
 +  target_compile_definitions(xxhash INTERFACE SYSTEM_XXHASH=1)
 +  target_link_libraries(xxhash INTERFACE PkgConfig::xxhash)
 +else()
+ add_subdirectory(xxhash EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(xxhash)
 +endif()
 +pkg_search_module(rapidjson IMPORTED_TARGET RapidJSON)
@@ -107,7 +105,7 @@ index 6c319d1..9d2749e 100644
  add_subdirectory(reshadefx EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(reshadefx)
  add_subdirectory(rcheevos EXCLUDE_FROM_ALL)
-@@ -41,9 +105,16 @@ if(WIN32 OR ANDROID)
+@@ -39,9 +103,16 @@ if(WIN32 OR ANDROID)
  endif()
  
  if(ENABLE_CUBEB)
@@ -124,7 +122,7 @@ index 6c319d1..9d2749e 100644
  endif()
  
  if(ENABLE_OPENGL)
-@@ -57,9 +128,27 @@ if(ENABLE_DISCORD_PRESENCE)
+@@ -55,9 +126,27 @@ if(ENABLE_DISCORD_PRESENCE)
  endif()
  
  if(CPU_ARCH_X64)
@@ -156,7 +154,7 @@ index 6c319d1..9d2749e 100644
  
  if(CPU_ARCH_ARM32 OR CPU_ARCH_ARM64)
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index c41469b..9fa0254 100644
+index 153698c..c774cf9 100644
 --- a/src/core/texture_replacements.cpp
 +++ b/src/core/texture_replacements.cpp
 @@ -14,9 +14,11 @@
@@ -172,5 +170,5 @@ index c41469b..9fa0254 100644
  #include <cinttypes>
  
 -- 
-2.43.0
+2.44.0
 
