@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 9004c132ed6fcbcfdb0f8b2c40f49d28b41fcb1c
+%global commit 0776d764a411217bc42a4a442717ee64508638a4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240223
+%global date 20240309
 %bcond_without snapshot
 
 %bcond_without gplasync
@@ -18,11 +18,11 @@
 
 %global gplasync_id 650e2ffa3c5a8694007b11fd3601b32ea11dcf19
 
-%global commit5 0bcc624926a25a2a273d07877fd25a6ff5ba1cfb
+%global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+%global commit6 46dc0f6e514f5730784bb2cac2a7c731636839e8
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
 
@@ -64,7 +64,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.3
-Release:        106%{?dist}
+Release:        107%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -119,7 +119,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
 %if %{?with_sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.255
+BuildRequires:  vulkan-headers >= 1.3.279
 %endif
 
 # glslangValidator

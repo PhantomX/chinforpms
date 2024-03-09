@@ -9,18 +9,18 @@
 %bcond_without sysvulkan
 
 # Need be set for release builds too
-%global commit 806fd7299a2555bd4a2abc5ee9374c3317454da7
+%global commit ffb04fb7091f932ca95da236d63ab9a4064d6443
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240226
+%global date 20240307
 %bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 9212e76eea49e5ac7ef751e0fdb48f724ba4cd3a
+%global commit1 071fa39b4f904b4810d3f4ef71b511109b210043
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit2 6c11c2bd46dba5b68bf62fc7d1195ebc7aa3694a
+%global commit2 75ad1345d4af5268448a9b26797294b48795cd69
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
@@ -28,11 +28,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 5a5c9a643484d888873e32c5d7d484fae8e71d3d
+%global commit4 f030d9dd8ca297b84b10330cee87f72acc3b0aab
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 1c9115b562bab79ee2160fbd845f41b815b9f21f
+%global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -60,8 +60,8 @@ BuildArch:      noarch
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.11.1
-Release:        3%{?dist}
+Version:        2.12
+Release:        0.1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -104,12 +104,11 @@ BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
-BuildRequires:  pkgconfig(vulkan) >= 1.3.228
 %if %{with sysspirv}
-BuildRequires:  spirv-headers-devel >= 1.5.4
+BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
 %if %{with sysvulkan}
-BuildRequires:  vulkan-headers >= 1.3.252
+BuildRequires:  vulkan-headers >= 1.3.279
 %endif
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

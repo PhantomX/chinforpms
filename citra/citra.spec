@@ -29,6 +29,8 @@
 # Disable Qt build
 %bcond_without qt
 %bcond_without soundtouch
+# Enable webservice
+%bcond_with webservice
 # Enable system vulkan
 %bcond_with vulkan
 # Build tests
@@ -116,7 +118,7 @@
 
 Name:           citra
 Version:        0
-Release:        57%{?dist}
+Release:        58%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -147,7 +149,9 @@ Source10:       https://github.com/lvandeve/%{srcname10}/archive/%{commit10}/%{s
 %if %{without boost}
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
+%if %{with webservice}
 Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%endif
 Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 Source14:       https://github.com/yuzu-emu/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
@@ -157,7 +161,7 @@ Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}
 %endif
 Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
-Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
+%dnl Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Disable-telemetry-initial-dialog.patch
@@ -247,7 +251,9 @@ Provides:       bundled(nihstro) = 0~git%{shortcommit6}
 Provides:       bundled(teakra) = 0~git%{shortcommit8}
 Provides:       bundled(dds-ktx) = 0~git%{shortcommit9}
 Provides:       bundled(lodepng) = 0~git%{shortcommit10}
+%if %{with webservice}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
+%endif
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 Provides:       bundled(vma) = ~git%{?shortcommit16}
@@ -300,7 +306,9 @@ tar -xf %{S:10} -C externals/lodepng/lodepng --strip-components 1
 %if %{without boost}
 tar -xf %{S:11} -C externals/boost --strip-components 1
 %endif
+%if %{with webservice}
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
+%endif
 tar -xf %{S:13} -C externals/glslang --strip-components 1
 tar -xf %{S:14} -C externals/sirit --strip-components 1
 tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
@@ -316,7 +324,10 @@ pushd externals
 %if %{without boost}
 cp -p boost/LICENSE_1_0.txt LICENSE.boost
 %endif
+%if %{with webservice}
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
+sed -e 's/\r//' -i LICENSE.cpp-jwt
+%endif
 %if %{without cryptopp}
 sed 's/\r//' -i cryptopp/cryptopp/License.txt
 cp -p cryptopp/cryptopp/License.txt LICENSE.cryptopp
@@ -338,7 +349,6 @@ cp -p soundtouch/COPYING.txt COPYING.soundtouch
 %endif
 cp -p teakra/LICENSE LICENSE.teakra
 cp -p vma/LICENSE.txt LICENSE.vma
-sed -e 's/\r//' -i LICENSE.cpp-jwt
 popd
 
 
@@ -376,7 +386,7 @@ sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindO
     -i src/common/scm_rev.cpp.in
 %endif
 
-cp -f %{S:20} .
+%dnl cp -f %{S:20} .
 
 
 %build
@@ -408,6 +418,9 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_FMT:BOOL=ON \
 %endif
   -DUSE_SYSTEM_CPP_JWT:BOOL=OFF \
+%if %{without webservice}
+  -DENABLE_WEB_SERVICE:BOOL=OFF \
+%endif
 %if %{with cryptopp}
   -DUSE_SYSTEM_CRYPTOPP:BOOL=ON \
 %endif
@@ -433,7 +446,6 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
   -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
-  -DENABLE_WEB_SERVICE:BOOL=ON \
 %if %{with tests}
   -DUSE_SYSTEM_CATCH2:BOOL=ON \
 %else
@@ -451,7 +463,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DTEAKRA_BUILD_UNIT_TESTS:BOOL=OFF \
 %{nil}
 
-cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
+%dnl cp -f compatibility_list.json %{__cmake_builddir}/dist/compatibility_list/
 
 %cmake_build
 
@@ -486,6 +498,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-58.20240304git0ff3440
+- Disable webservice
+
 * Sat Nov 11 2023 Phantom X <megaphantomx at hotmail dot com> - 0-52.20231111gitceeda05
 - System cryptopp
 - Bundled faad2 (no SBR)

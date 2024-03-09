@@ -1,7 +1,7 @@
 %global commit c2a4f3810b17f9efa3c848b473b19f641f7881f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240227
-%bcond_without snapshot
+%bcond_with snapshot
 
 %define _fortify_level 0
 
@@ -51,7 +51,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  9.0.0
-%global winevulkan 1.3.277
+%global winevulkan 1.3.279
 
 %global wineFAudio 24.02
 %global winefluidsynth 2.3.4
@@ -63,7 +63,7 @@
 %global wineopenldap 2.5.17
 %global winetiff 4.6.0
 %global winejxrlib 1.1
-%global winevkd3d 1.9
+%global winevkd3d 1.11
 %global winexml2 2.11.7
 %global winexslt 1.1.39
 %global winezlib 1.3.1
@@ -101,7 +101,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 91d4974f10f63141862bfe565a7261663b5872cc
+%global wine_stagingver 9.4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -112,7 +112,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9fecab431486f8bbbd7583abb64698bad8ab7a0e
+%global tkg_id dda6a102ae35a3cba0046bd1d982d817dca8884d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -154,7 +154,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.3
+Version:        9.4
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -323,6 +323,7 @@ BuildRequires:  python3
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  cups-devel
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(glut)
 BuildRequires:  pkgconfig(freetype2)
@@ -2539,6 +2540,9 @@ fi
 
 
 %changelog
+* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.4-100
+- 9.4
+
 * Wed Feb 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.3-100.20240227gitc2a4f38
 - 9.3
 
