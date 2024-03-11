@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.3.4
+Version:        3.4.0
 Release:        100%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -120,6 +120,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Sun Mar 10 2024 Phantom X <megaphantomx at hotmail dot com> - 3.4.0-100
+- 3.4.0
+
 * Sat Aug 26 2023 Phantom X <megaphantomx at hotmail dot com> - 3.3.4-100
 - 3.3.4
 

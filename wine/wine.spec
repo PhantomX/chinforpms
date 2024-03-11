@@ -101,7 +101,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.4
+%global wine_stagingver 9.4.1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -155,7 +155,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2540,6 +2540,9 @@ fi
 
 
 %changelog
+* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.4-101
+- Staging 9.4.1
+
 * Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.4-100
 - 9.4
 
