@@ -1,1 +1,1 @@
-# CONFIG_SND_SOC_RZ is not set
+CONFIG_SND_SOC_RZ=m

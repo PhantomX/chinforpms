@@ -1,1 +1,1 @@
-# CONFIG_RZG2L_ADC is not set
+CONFIG_RZG2L_ADC=m

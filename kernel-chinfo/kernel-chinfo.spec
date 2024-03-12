@@ -166,7 +166,7 @@ Summary: The Linux kernel
 # Include RT files
 %global include_rt 0
 # Provide Patchlist.changelog file
-%global patchlist_changelog 1
+%global patchlist_changelog 0
 
 # Set released_kernel to 1 when the upstream source tarball contains a
 #  kernel release. (This includes prepatch or "rc" releases.)
@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.7.9
+%define specrpmversion 6.8.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,14 +214,14 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 8
+%global post_factum 1
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 8817c500948220d1330b7c3cbd0e8eac0ef46937
-%global pf_first_commit 0dd3ee31125508cd67f7e7172247f05b7fd1753a
-%global pfcoprhash ca3c6dfc136880a2d65f68067a1c082d
+%global pfcommit e2f1890110c01ee515153c90d1288c5e4bf0fe4c
+%global pf_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
+%global pfcoprhash 870d4982f716927de674c133908fb310
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -245,8 +245,8 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 6982b70e1a0af0607da4155c6e5ccb47e5f6b69c
-%global tkg_id d5ab8eb9e108378993195f12e33b3167f127f593
+%global opensuse_id a00a1ae3a9db64a2825ecb142a14e244b14c6dc7
+%global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1052,7 +1052,7 @@ Source2002: kvm_stat.logrotate
 # source tree, but in the mean time we carry this to support the legacy workflow
 Source3000: merge.py
 Source3001: kernel-local
-%if %{patchlist_changelog}
+%if 0%{patchlist_changelog}
 Source3002: Patchlist.changelog
 %endif
 
@@ -1074,37 +1074,8 @@ Source4002: gating.yaml
 
 %if 0%{?post_factum}
 Patch5000:  %{pf_patch}
-Patch5002:  %{pf_url}/e43bdf48ccda4c1d8a705c34cc854bb9676156af.patch#/pf-revert-e43bdf4.patch
-Patch5003:  %{pf_url}/4cae7ce82cee3a13b2a452bbdb4d106f98076cbc.patch#/pf-revert-4cae7ce.patch
-Patch5004:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
-Patch5005:  %{pf_url}/b7ed5814e756477173c45ad3e2da42dce4d1bac9.patch#/pf-revert-b7ed581.patch
-Patch5006:  %{pf_url}/e0db969bffbb90660e65db9ab538fdbcd21e6962.patch#/pf-revert-e0db969.patch
-Patch5007:  %{pf_url}/b6bfb04ba890ad0f9bdd3d258e60a49de73e1fe9.patch#/pf-revert-b6bfb04.patch
-Patch5008:  %{pf_url}/95703b89b57d865eefc07c9c2ac53c1dd75deecc.patch#/pf-revert-95703b8.patch
-Patch5009:  %{pf_url}/6b6c089e1e992745f6f0cbe3904cdb3db2155aa2.patch#/pf-revert-6b6c089.patch
-Patch5010:  %{pf_url}/b2d38e0b64716bdf8f227d0ff6810739aecef588.patch#/pf-revert-b2d38e0.patch
-Patch5011:  %{pf_url}/cbccbf7ce7adb622036ebcf183131dac65d5d7bd.patch#/pf-revert-cbccbf7.patch
-Patch5012:  %{pf_url}/c7cd543a10f67cd7bb7cf8f4bb4d6a5a2a89366f.patch#/pf-revert-c7cd543.patch
-Patch5013:  %{pf_url}/ce785ff8b745222f5158d95bed1da7e313d8968e.patch#/pf-revert-ce785ff.patch
-Patch5014:  %{pf_url}/8ce2625ee1a0517478080d1013ca68473ee3bb37.patch#/pf-revert-8ce2625.patch
-Patch5015:  %{pf_url}/511a526f7b96b4023893fb9ed53ebfe8f7abaf6a.patch#/pf-revert-511a526.patch
-Patch5016:  %{pf_url}/b8c5d92743d2e80d4b257463fc2e4f7337e8a06c.patch#/pf-revert-b8c5d92.patch
-Patch5017:  %{pf_url}/771c44a1198919bffccbe0a4df269211eab872f5.patch#/pf-revert-771c44a.patch
-Patch5018:  %{pf_url}/a145be23455a77be3c674f56fd1c3c6a5d0bc95f.patch#/pf-revert-a145be2.patch
-Patch5019:  %{pf_url}/8ba93bc9e0fb0c774d73798207d12c36e9745edc.patch#/pf-revert-8ba93bc.patch
-Patch5020:  %{pf_url}/f3e90e41ba5d661ed63d4ff21f1566c104300c66.patch#/pf-revert-f3e90e4.patch
-Patch5021:  %{pf_url}/a9ed8b7501b01434c30fc85d8b161c57a385dd57.patch#/pf-revert-a9ed8b7.patch
-Patch5022:  %{pf_url}/c73f20dced3937da6bdcce6076c0ebfe2940bcc5.patch#/pf-revert-c73f20d.patch
-
-Patch5023:  %{pf_url}/bca1e2935587c286339c63ba487734a750f7a00b.patch#/pf-revert-bca1e29.patch
-Patch5024:  %{pf_url}/2639f8b3347e47e1a5a087df19cc6854226a2dae.patch#/pf-revert-2639f8b.patch
-Patch5025:  %{pf_url}/438e8e3aba34b3e3525ba53c755a851856598cb4.patch#/pf-revert-438e8e3.patch
-Patch5026:  %{pf_url}/1c7bcda43c032c831120583ac328bd16611483d0.patch#/pf-revert-1c7bcda.patch
-Patch5027:  %{pf_url}/24523e5cdc56d0f556d4221e1af5965e277c81b1.patch#/pf-revert-24523e5.patch
-Patch5028:  %{pf_url}/de5c7ac9ca953516c6453b00da2714317cc7b08c.patch#/pf-revert-de5c7ac.patch
-Patch5029:  %{pf_url}/4f96a9febc40451b33271c78a7eadc0a7261c407.patch#/pf-revert-4f96a9f.patch
-Patch5030:  %{kernel_url}/?id=60d6130d0ac1d883ed93c2a1e10aadb60967fd48#/kernel-stable-revert-60d6130.patch
-Patch5031:  %{pf_url}/5dd41fa7340b34b415ed569e4e41b2ffdc8d77ae.patch#/pf-revert-5dd41fa.patch
+Patch5002:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
+Patch5003:  %{pf_url}/4190f58a10e079bbbb487cc0520db13ee09aa05e.patch#/pf-revert-4190f58.patch
 
 %if 0%{?pf_stable_extra}
 %if !0%{?pf_stable_full}
@@ -1114,7 +1085,7 @@ Patch6000: %{stable_extra_patch}
 %endif
 
 # For a stable release kernel
-%if (0%{?patchlevel} && 0%{?released_kernel} && !0%{?post_factum}) || (0%{?post_factum} && 0%{?pf_stable_full})
+%if 0%{?stable_update} && ((0%{?released_kernel} && !0%{?post_factum}) || (0%{?post_factum} && 0%{?pf_stable_full}))
 %define    stable_patch_00  patch-%{specversion}.xz
 Patch6000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
 %endif
@@ -1154,7 +1125,7 @@ Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id c409515574bd4d69af45ad74d4e7ba7151010516
-Patch7000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.1.79-6.8-rc3.patch
+Patch7000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.8-rc4+.patch
 
 Patch7010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
@@ -1959,34 +1930,7 @@ cp -a %{SOURCE1} .
 ApplyPatch %{PATCH5000}
 ApplyPatch %{PATCH5002} -R
 ApplyPatch %{PATCH5003} -R
-ApplyPatch %{PATCH5004} -R
-ApplyPatch %{PATCH5005} -R
-ApplyPatch %{PATCH5006} -R
-ApplyPatch %{PATCH5007} -R
-ApplyPatch %{PATCH5008} -R
-ApplyPatch %{PATCH5009} -R
-ApplyPatch %{PATCH5022} -R
-ApplyPatch %{PATCH5021} -R
-ApplyPatch %{PATCH5010} -R
-ApplyPatch %{PATCH5011} -R
-ApplyPatch %{PATCH5012} -R
-ApplyPatch %{PATCH5013} -R
-ApplyPatch %{PATCH5014} -R
-ApplyPatch %{PATCH5015} -R
-ApplyPatch %{PATCH5016} -R
-ApplyPatch %{PATCH5017} -R
-ApplyPatch %{PATCH5018} -R
-ApplyPatch %{PATCH5019} -R
-ApplyPatch %{PATCH5020} -R
-ApplyPatch %{PATCH5031} -R
-ApplyPatch %{PATCH5029} -R
-ApplyPatch %{PATCH5028} -R
-ApplyPatch %{PATCH5027} -R
-ApplyPatch %{PATCH5026} -R
-ApplyPatch %{PATCH5025} -R
-ApplyPatch %{PATCH5024} -R
-ApplyPatch %{PATCH5023} -R
-%if 0%{?pf_stable_extra}
+%if 0%{?stable_update} && 0%{?pf_stable_extra}
 %if 0%{?pf_stable_full}
 xzcat %{PATCH6000} | filterdiff -p1 -x Makefile > pf_stable_extra.patch
 %else
@@ -1994,18 +1938,10 @@ filterdiff -p1 -x Makefile %{PATCH6000} > pf_stable_extra.patch
 %endif
 ApplyPatch pf_stable_extra.patch
 rm -f pf_stable_extra.patch
-ApplyPatch %{PATCH5021}
-ApplyPatch %{PATCH5022}
-ApplyPatch %{PATCH5027}
-ApplyPatch %{PATCH5028}
-ApplyPatch %{PATCH5029}
-ApplyPatch %{PATCH5030} -R
-ApplyPatch %{PATCH5031}
-ApplyPatch %{PATCH5002}
 %endif
 %else
 # released_kernel with possible stable updates
-%if 0%{?patchlevel} && 0%{?released_kernel}
+%if 0%{?stable_update} && 0%{?released_kernel}
 # This is special because the kernel spec is hell and nothing is consistent
 ApplyPatch %{PATCH6000}
 %endif
@@ -2019,7 +1955,7 @@ ApplyOptionalPatch %{PATCH999999}
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
-ApplyPatch %{PATCH1012}
+%dnl ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
 
 ApplyPatch %{PATCH2000}
@@ -4114,7 +4050,10 @@ fi\
 #
 #
 %changelog
-* Wed Mar 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
+* Mon Mar 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-500.chinfo
+- 6.8.0 - pf1
+
+* Wed Mar 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.9-500.chinfo
 - 6.7.9 - pf8
 
 * Fri Mar 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
@@ -4308,45 +4247,6 @@ fi\
 
 * Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.0-500.chinfo
 - 6.2.0 - pf1
-
-* Tue Feb 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.12-500.chinfo
-- 6.1.12 - pf6
-
-* Thu Feb 09 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.11-500.chinfo
-- 6.1.11 - pf5
-
-* Mon Feb 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.10-500.chinfo
-- 6.1.10 - pf5
-
-* Wed Feb 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.9-500.chinfo
-- 6.1.9 - pf5
-
-* Tue Jan 24 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.8-500.chinfo
-- 6.1.8 - pf4
-
-* Wed Jan 18 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.7-500.chinfo
-- 6.1.7 - pf4
-
-* Sat Jan 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.6-500.chinfo
-- 6.1.6 - pf3
-
-* Thu Jan 12 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.5-500.chinfo
-- 6.1.5 - pf3
-
-* Sat Jan 07 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.4-500.chinfo
-- 6.1.4 - pf3
-
-* Wed Jan 04 2023 Phantom X <megaphantomx at hotmail dot com> - 6.1.3-500.chinfo
-- 6.1.3 - pf2
-
-* Sat Dec 31 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.2-500.chinfo
-- 6.1.2 - pf1
-
-* Wed Dec 21 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.1-500.chinfo
-- 6.1.1 - pf1
-
-* Mon Dec 12 2022 Phantom X <megaphantomx at hotmail dot com> - 6.1.0-500.chinfo
-- 6.1.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
