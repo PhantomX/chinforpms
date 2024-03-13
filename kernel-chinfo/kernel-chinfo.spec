@@ -245,7 +245,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id a00a1ae3a9db64a2825ecb142a14e244b14c6dc7
+%global opensuse_id bd04f98ccf0a884928645e2b4ad29652d5aaa242
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 # libexec dir is not used by the linker, so the shared object there
