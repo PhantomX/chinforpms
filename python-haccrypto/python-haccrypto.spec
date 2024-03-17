@@ -1,7 +1,7 @@
 %global srcname haccrypto
 
 Name:           python-%{srcname}
-Version:        0.1.2
+Version:        0.1.3
 Release:        1%{?dist}
 Summary:        Nintendo Switch XTSN crypto for Python
 
@@ -53,6 +53,9 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Sat Mar 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.3-1
+- 0.1.3
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.2-1
 - 0.1.2
 

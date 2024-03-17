@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global pyctrver 0.5.1
 
 Name:           ninfs
-Version:        2.0~a10
+Version:        2.0
 Release:        1%{?dist}
 Summary:        FUSE program to extract data from Nintendo® game consoles
 
@@ -32,7 +32,7 @@ Patch0:         0001-Remove-desktop-file-command-line-parameter.patch
 
 BuildRequires:  python3-devel
 BuildRequires:  %{py3_dist haccrypto} >= %{haccryptover}
-BuildRequires:  %{py3_dist pyctr} = %{pyctrver}
+BuildRequires:  (%{py3_dist pyctr} >= %{pyctrver} and %{py3_dist pyctr} < 0.8)
 BuildRequires:  %{py3_dist pycryptodomex} >= 3.10.1
 BuildRequires:  %{py3_dist pypng} >= 0.0.21
 BuildRequires:  python3-tkinter
@@ -100,6 +100,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Mar 16 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0-1
+- 2.0
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.0~a10-1
 - 2.0a10
 

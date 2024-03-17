@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit db0c7d50c7ac7f2fdbf8c16f2354510b34f6a9e0
+%global commit ac72a6acc8ab7510b9070cec9233055690d0aa01
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240224
+%global date 20240316
 %bcond_without snapshot
 
 %bcond_with map
@@ -16,7 +16,7 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.2
+Version:        2.3
 Release:        100%{?dist}
 
 URL:            https://www.geeqie.org
@@ -155,6 +155,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Mar 17 2024 Phantom X <megaphantomx at hotmail dot com> - 2.3-100.20240316gitac72a6a
+- 2.3
+
 * Sun Feb 25 2024 Phantom X <megaphantomx at hotmail dot com> - 2.2-100.20240224gitdb0c7d5
 - 2.2
 

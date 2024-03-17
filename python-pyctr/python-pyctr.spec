@@ -1,7 +1,7 @@
 %global srcname pyctr
 
 Name:           python-%{srcname}
-Version:        0.5.1
+Version:        0.7.5
 Release:        1%{?dist}
 Summary:        Python library to interact with Nintendo 3DS files
 
@@ -58,6 +58,9 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Sat Mar 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.5-1
+- 0.7.5
+
 * Sun Sep 05 2021 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-1
 - 0.5.1
 - Update to best packaging practices
