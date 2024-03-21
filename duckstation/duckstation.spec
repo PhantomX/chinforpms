@@ -19,9 +19,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 25db163347205d95fbcd888a86147aee03ecaac2
+%global commit 3702a533f276a4af232228db899d80cc5cabb5e4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240307
+%global date 20240316
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -35,11 +35,12 @@
 %global imgui_ver 1.90.1
 %global md5_ver 1.6
 %global rcheevos_scommit 3d01191
+%global simpleini_ver 4.22
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
 Version:        0.1
-Release:        112%{?dist}
+Release:        113%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -142,7 +143,7 @@ Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
-Provides:       bundled(simpleini) = 0~git
+Provides:       bundled(simpleini) = %{simpleini_ver}
 %if %{without soundtouch}
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif

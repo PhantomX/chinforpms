@@ -13,7 +13,7 @@ index 38d3c39..815702e 100644
 --- a/src/duckstation-qt/interfacesettingswidget.cpp
 +++ b/src/duckstation-qt/interfacesettingswidget.cpp
 @@ -23,7 +23,7 @@ const char* GeneralSettingsWidget::THEME_VALUES[] = {
-   "", "fusion", "darkfusion", "darkfusionblue", "greymatter", "qdarkstyle", nullptr,
+   "",  "fusion", "darkfusion", "darkfusionblue", "greymatter", "darkruby", "qdarkstyle", nullptr,
  };
  
 -const char* InterfaceSettingsWidget::DEFAULT_THEME_NAME = "darkfusion";

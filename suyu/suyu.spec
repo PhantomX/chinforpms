@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d02af377d4fd9098585ddf75275f40d648a3d38d
+%global commit fec573fd6afc19cca35e70b74709e078858957ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240309
+%global date 20240319
 %bcond_without snapshot
 
 # Enable system boost
@@ -31,7 +31,7 @@
 # Build tests
 %bcond_with tests
 # Enable webservice
-%bcond_with webservice
+%bcond_without webservice
 
 %global commit1 07c614f91b0af5335e1f9c0653c2d75e7b5f53bd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -93,8 +93,8 @@
 %global appname org.suyu_emu.%{name}
 
 Name:           suyu
-Version:        0
-Release:        0.1%{?dist}
+Version:        0.0.2
+Release:        1%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -128,7 +128,6 @@ Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{src
 
 %dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
 
-Patch0:         %{vc_url}/%{name}/-/merge_requests/104.patch#/%{name}-gl-pr104.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 
@@ -323,8 +322,8 @@ sed \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
   -e 's|@BUILD_DATE@|%(date +%F)|g' \
-  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:HEAD-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
-  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
+  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
+  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
 sed \
@@ -414,6 +413,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-1.20240319gitfec573f
+- 0.0.2
+
 * Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20240309gitd02af37
 - Initial spec
 
