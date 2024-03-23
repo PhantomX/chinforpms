@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d8c15de03085ccaf54bd50fce55b3e7d836f7378
+%global commit 40cdef6c1c9bd73bf3a55d412e30c25bbcf2b59c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240307
+%global date 20240319
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -33,8 +33,8 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
-# Enable system spirv (broken)
-%bcond_with spirv
+# Enable system glslang
+%bcond_without glslang
 %bcond_without vulkan
 # Build with x11 instead SDL
 %bcond_with x11
@@ -50,8 +50,8 @@
 %global vk_ver 1.3.261
 
 Name:           flycast
-Version:        2.2
-Release:        4%{?dist}
+Version:        2.3
+Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -59,7 +59,7 @@ Epoch:          1
 # ggpo - MIT
 # libelf - BSD-2-Clause
 # nowire - Boost
-License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_spirv: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_glslang: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
 URL:            https://github.com/flyinghead/%{name}
 
 %if %{with snapshot}
@@ -73,7 +73,7 @@ Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{s
 Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-%if %{without spirv}
+%if %{without glslang}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
@@ -97,8 +97,8 @@ BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
-%if %{with spirv}
-BuildRequires:  pkgconfig(glslang)
+%if %{with glslang}
+BuildRequires:  pkgconfig(glslang) >= 12.3.1
 %else
 Provides:       bundled(glslang) = git~0%{shortcommit5}
 %endif
@@ -152,7 +152,7 @@ tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../../CMakeLists.txt
 %endif
 tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
-%if %{without spirv}
+%if %{without glslang}
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
@@ -206,8 +206,8 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
   -DUSE_HOST_SDL:BOOL=ON \
-%if %{with spirv}
-  -DUSE_HOST_SPIRV:BOOL=ON \
+%if %{with glslang}
+  -DUSE_HOST_GLSLANG:BOOL=ON \
 %endif
   -DCMAKE_BUILD_TYPE:STRING=Release \
 %{nil}
@@ -260,6 +260,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Thu Mar 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.3-1.20240319git40cdef6
+- 2.3
+
 * Sun Oct 29 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.2-1.20231027gitc1f0a5a
 - 2.2
 

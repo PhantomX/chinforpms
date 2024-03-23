@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit fec573fd6afc19cca35e70b74709e078858957ea
+%global commit 286902ac8a092e5477828ae1ab94b728c347cbbf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240319
+%global date 20240322
 %bcond_without snapshot
 
 # Enable system boost
@@ -82,7 +82,7 @@
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 
-%global vc_url   https://gitlab.com/suyu-emu
+%global vc_url   https://git.suyu.dev/suyu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -94,23 +94,23 @@
 
 Name:           suyu
 Version:        0.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://suyu-emu.org
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/-/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
 %endif
 
 %if %{without dynarmic}
 Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %endif
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source3:        %{vc_url}/%{srcname3}/-/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.bz2
+Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{with webservice}
@@ -118,7 +118,7 @@ Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcn
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{vc_url}/%{srcname8}/-/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.bz2
+Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -242,7 +242,7 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{name} -p1
 
 pushd externals
 rm -rf \

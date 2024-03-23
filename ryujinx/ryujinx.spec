@@ -22,15 +22,15 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 8.0.100
-%global local_dotnet_url_id 5226a5fa-8c0b-474f-b79a-8984ad7c5beb/3113ccbf789c9fd29972835f0f334b7a
+%global local_dotnet_ver 8.0.203
+%global local_dotnet_url_id 656a3402-6889-400f-927f-7f956856e58b/93750973d6eedd17c6d963658e7ec214
 
 %global avalonia_angle_windows_natives_ver 2.1.0.2023020321
-%global avalonia_ver 11.0.7
+%global avalonia_ver 11.0.10
 %global avalonia_ver2 11.0.4
 %global avalonia_ver3 11.0.0
 %global avalonia_build_services_ver 0.0.29
-%global avalonia_svg_ver 11.0.0.13
+%global avalonia_svg_ver 11.0.0.16
 %global concentus_ver 1.1.7
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.2.1.24
@@ -41,23 +41,26 @@
 %global harfbuzzsharp_ver2 2.8.2.3
 %global libhac_ver 0.19.0
 %global microcom_runtime_ver 0.11.0
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 8.0.0
+# Must match dotnet
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 8.0.3
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_analyzers_ver2 3.0.0
-%global microsoft_codeanalysis_ver 4.8.0
+%global microsoft_codeanalysis_ver 4.9.2
 %global microsoft_codeanalysis_ver2 3.8.0
 %global microsoft_csharp_ver 4.5.0
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 7.3.0
+%global microsoft_identitymodel_ver 7.4.0
 %global microsoft_io_recyclablememorystream_ver 3.0.0
-%global microsoft_netcore_app_runtime_linux_x64_ver 8.0.0
+# Must match dotnet
+%global microsoft_netcore_app_runtime_linux_x64_ver 8.0.3
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.1.2
 %global microsoft_netcore_platforms_ver4 2.0.0
+%global microsoft_netcore_platforms_ver5 5.0.0
 %global microsoft_netcore_targets_ver 1.0.1
 %global microsoft_netcore_targets_ver2 1.1.0
 %global microsoft_win32_primitives_ver 4.0.1
@@ -122,14 +125,14 @@
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.2
 %global silk_net_ver 2.16.0
-%global sixlabors_fonts_ver 1.0.0-beta0013
-%global sixlabors_imagesharp_ver 1.0.4
-%global sixlabors_imagesharp_drawing_ver 1.0.0-beta11
+%global sixlabors_fonts_ver 1.0.0
+%global sixlabors_imagesharp_ver 2.1.7
+%global sixlabors_imagesharp_drawing_ver 1.0.0
 %global skiasharp_ver 2.88.7
 %global skiasharp_ver2 2.88.6
 %global skiasharp_ver3 2.88.3
 %global spb_ver 0.0.4-build32
-%global svg_model_ver 1.0.0.13
+%global svg_model_ver 1.0.0.16
 %global system_appcontext_ver 4.1.0
 %global system_buffers_ver 4.0.0
 %global system_buffers_ver2 4.3.0
@@ -139,7 +142,7 @@
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
-%global system_collections_immutable_ver 7.0.0
+%global system_collections_immutable_ver 8.0.0
 %global system_collections_immutable_ver2 5.0.0
 %global system_componentmodel_annotations_ver 4.5.0
 %global system_console_ver 4.0.0
@@ -186,7 +189,7 @@
 %global system_reflection_emit_lightweight_ver 4.0.1
 %global system_reflection_emit_lightweight_ver2 4.3.0
 %global system_reflection_extensions_ver 4.0.1
-%global system_reflection_metadata_ver 7.0.0
+%global system_reflection_metadata_ver 8.0.0
 %global system_reflection_metadata_ver2 5.0.0
 %global system_reflection_primitives_ver 4.0.1
 %global system_reflection_primitives_ver2 4.3.0
@@ -222,8 +225,9 @@
 %global system_security_principal_windows_ver2 4.5.0
 %global system_text_encoding_ver 4.0.11
 %global system_text_encoding_ver2 4.3.0
-%global system_text_encoding_codepages_ver 7.0.0
-%global system_text_encoding_codepages_ver2 4.5.1
+%global system_text_encoding_codepages_ver 8.0.0
+%global system_text_encoding_codepages_ver2 5.0.0
+%global system_text_encoding_codepages_ver3 4.5.1
 %global system_text_encoding_extensions_ver 4.0.11
 %global system_text_encodings_web_ver 6.0.0
 %global system_text_encodings_web_ver2 4.7.2
@@ -247,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1217
+Version:        1.1.1241
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -538,13 +542,15 @@ Source465:      %{nuget_url}/system.threading.timer.%{system_threading_timer_ver
 Source466:      %{nuget_url}/system.xml.readerwriter.%{system_xml_readerwriter_ver}.nupkg
 Source467:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nupkg
 Source468:      %{nuget_url}/tmds.dbus.protocol.%{tmds_dbus_protocol_ver}.nupkg
-
+Source469:      %{nuget_url}/system.text.encoding.codepages.%{system_text_encoding_codepages_ver3}.nupkg
+Source470:      %{nuget_url}/microsoft.netcore.platforms.%{microsoft_netcore_platforms_ver5}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
 %global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
-%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449} %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468}
+%global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
+%global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470}
 %endif
 
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
@@ -606,7 +612,8 @@ tar xvf %{S:199} -C dotnetbin
 %endif
 
 mkdir -p nuget/{cache,packages}
-install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} %{nuget_files5} \
+install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} \
+  %{nuget_files5} %{nuget_files6} \
   nuget/cache/
 
 sed \

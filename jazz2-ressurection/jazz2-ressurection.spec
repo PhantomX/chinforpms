@@ -1,6 +1,6 @@
-%global commit 70c08fd1b49f796faeb233096033eec8ce007737
+%global commit b2affe564ae0b3afa2b392a4f8a1ad2efdf26f65
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240106
+%global date 20240318
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 %global vc_url https://github.com/deathkiller/jazz2-native
 
 Name:           jazz2-ressurection
-Version:        2.4.1
+Version:        2.6.0
 Release:        1%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
@@ -92,6 +92,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Fri Mar 22 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.0-1.20240318gitb2affe5
+- 2.6.0
+
 * Sat Jan 06 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-1.20240106git70c08fd
 - Initial spec
 

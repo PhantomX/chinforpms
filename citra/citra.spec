@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 0ff3440232d6bc9226e37c41c05c5aead03f37fd
+%global commit 8433057909752c8b23fbe0224011fda6ecab1744
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240304
+%global date 20240307
 %bcond_without snapshot
 
 # Enable system boost
@@ -44,7 +44,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 a33701196adfad74917046096bf5a2aa0ab0bb50
+%global commit4 2dd4fa8742fdac36468f8d8ea3e06e78215551f8
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -72,7 +72,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 lodepng
 
-%global commit11 66937ea62d126a92b5057e3fd9ceac7c44daf4f5
+%global commit11 3c27c785ad0f8a742af02e620dc225673f3a12d8
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 ext-boost
 
@@ -114,11 +114,11 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global vc_url  https://github.com/citra-emu
+%global vc_url  https://github.com/PabloMK7
 
 Name:           citra
 Version:        0
-Release:        58%{?dist}
+Release:        59%{?dist}
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -338,7 +338,7 @@ cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
 cp -p faad2/faad2/COPYING COPYING.faad2
 %if %{without fmt}
-cp -p fmt/LICENSE.rst LICENSE.fmt.rst
+cp -p fmt/LICENSE LICENSE.fmt
 %endif
 cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
@@ -498,6 +498,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Thu Mar 21 2024 Phantom X <megaphantomx at hotmail dot com> - 0-59.20240307git8433057
+- Change to PabloMK7 fork
+
 * Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-58.20240304git0ff3440
 - Disable webservice
 
