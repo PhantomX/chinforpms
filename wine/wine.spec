@@ -101,7 +101,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.4.1
+%global wine_stagingver 9.5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -112,9 +112,9 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id dda6a102ae35a3cba0046bd1d982d817dca8884d
+%global tkg_id d08b8898f33798bce350ade6150fe0ab3fbe71cf
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
-%global tkg_cid cadea613ac7b28fe01e5b52fbc7fd0e2655f5bc1
+%global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
@@ -132,6 +132,9 @@
 %bcond_with fshack
 # Shared gpu resources
 %bcond_with sharedgpures
+
+# Enable when needed
+%bcond_with patchutils
 
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
@@ -154,8 +157,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.4
-Release:        101%{?dist}
+Version:        9.5
+Release:        99%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -241,7 +244,8 @@ Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_po
 Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
+%dnl Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
+Patch1024:       wine-childwindow-proton.patch
 Patch1025:       %{tkg_url}/misc/childwindow/OPWR-proton.patch#/%{name}-tkg-OPWR-proton.patch
 Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
@@ -273,7 +277,9 @@ Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.pa
 Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.patch#/%{name}-valve-ed14fff.patch
 Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
-
+Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
+Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
+Patch1097:       0001-winex11.drv-Add-a-GPU-for-each-Vulkan-device-fixup.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -317,7 +323,9 @@ BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
 BuildRequires:  icoutils
+%if %{with patchutils}
 BuildRequires:  patchutils
+%endif
 BuildRequires:  perl-generators
 BuildRequires:  python3
 BuildRequires:  pkgconfig(alsa)
@@ -915,7 +923,13 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1027 -p1
+%if %{without childwindow}
+%patch -P 1095 -p1
+%endif
 %patch -P 1028 -p1
+%if %{without childwindow}
+%patch -P 1096 -p1
+%endif
 %patch -P 1029 -p1
 %if %{with fastsync}
 %patch -P 1050 -p1
@@ -923,6 +937,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1030 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
+%patch -P 1097 -p1
 %patch -P 1034 -p1
 %dnl %patch -P 1035 -p1
 %dnl %patch -P 1036 -p1
