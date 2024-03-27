@@ -1,3 +1,7 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global commit 28e1441f356afb9eb2538c82ebbd392c2a8686ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200215
@@ -17,7 +21,7 @@
 Name:           gmpc
 Summary:        GNOME frontend for the MPD
 Version:        11.8.90
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        GPL-2.0-or-later
 URL:            http://gmpclient.org/
@@ -136,6 +140,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 11.8.90-101.20200215git28e1441
+- build_type_safety_c 0
+
 * Thu Apr 22 2021 Phantom X <megaphantomx at hotmail dot com> - 11.8.90-100.20200215git28e1441
 - 11.8.90
 

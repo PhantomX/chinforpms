@@ -1,23 +1,25 @@
 %global apiver  1
+%global gtk_version 4.13.4
+%global glib_version 2.76.0
 
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           libadwaita
-Version:        1.4.0
+Version:        1.5.0
 Release:        100%{?dist}
 Summary:        Building blocks for modern GNOME applications
 
 Epoch:          1
 
-License:        LGPLv2+
+License:        LGPL-2.1-or-later AND MIT
 URL:            https://gitlab.gnome.org/GNOME/libadwaita
 Source0:        https://download.gnome.org/sources/%{name}/%(echo %{version} | cut -d~ -f1 | cut -d. -f-2)/%{name}-%{tarball_version}.tar.xz
 Source1:        chinforpms-adwaita.css
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
+BuildRequires:  gettext
 BuildRequires:  gi-docgen
-BuildRequires:  intltool
 BuildRequires:  libappstream-glib
 BuildRequires:  meson >= 0.59.0
 #BuildRequires:  sassc
@@ -25,9 +27,9 @@ BuildRequires:  vala
 
 BuildRequires:  pkgconfig(appstream)
 BuildRequires:  pkgconfig(fribidi)
-BuildRequires:  pkgconfig(glib-2.0)
+BuildRequires:  pkgconfig(glib-2.0) >= %{glib_version}
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
-BuildRequires:  pkgconfig(gtk4) >= 4.5
+BuildRequires:  pkgconfig(gtk4) >= %{gtk_version}
 
 %description
 Building blocks for modern GNOME applications.
@@ -116,6 +118,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.5.0-100
+- 1.5.0
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.4.0-100
 - 1.4.0
 

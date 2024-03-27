@@ -49,7 +49,7 @@ libadwaita
 cpuinfo
 libbacktrace
 libdeflate
-libqtadvanceddocking
+-libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
@@ -61,7 +61,7 @@ python-pynput
 -perl-Gtk3
 perl-LWP-UserAgent-Cached
 perl-X11-GUITest
-qcodeeditor
+-qcodeeditor
 rapidyaml
 -spirv-tools
 volk-vulkan
@@ -131,7 +131,7 @@ firetools
 flips
 fluxbox-chinfo-menu
 -fslint
-fss-parallel-tools
+-fss-parallel-tools
 eccedc
 engrampa
 fbpager
@@ -166,7 +166,7 @@ jazz2-ressurection
 joy2key
 kdocker
 keepassxc
-kernel-tools
+-kernel-tools
 kid3
 -krename
 -kristall

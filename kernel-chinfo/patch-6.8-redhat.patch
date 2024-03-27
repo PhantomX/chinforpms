@@ -1,46 +1,45 @@
- Makefile                                           |  20 +-
+ Makefile                                           |  20 ++-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  98 +++-
+ arch/x86/kernel/setup.c                            |  22 ++-
  drivers/acpi/apei/hest.c                           |   8 +
  drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
- drivers/firmware/efi/secureboot.c                  |  38 ++
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++----
+ drivers/firmware/efi/secureboot.c                  |  38 +++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
- drivers/scsi/sd.c                                  |  10 +
+ drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |   2 +
+ drivers/hid/hid-rmi.c                              |  66 --------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
+ drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
+ drivers/iommu/iommu.c                              |  22 +++
+ drivers/pci/quirks.c                               |  24 +++
+ drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ fs/xfs/xfs_iomap.c                                 |   4 +-
+ include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/module.h                             |   5 +
- include/linux/rh_kabi.h                            | 541 +++++++++++++++++++++
+ include/linux/module.h                             |   1 +
+ include/linux/rh_kabi.h                            | 172 +++++++++++++++++++++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/module/main.c                               |   7 +
+ kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
- kernel/panic.c                                     |  13 +
- kernel/rh_messages.c                               | 414 ++++++++++++++++
- kernel/rh_messages.h                               | 109 +++++
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 +
- 73 files changed, 2147 insertions(+), 207 deletions(-)
+ security/security.c                                |  12 ++
+ 38 files changed, 673 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index c7ee53f4bf04..a151f77036d7 100644
+index 33d8e822f6f1..0451e4e79e5c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -125,7 +124,7 @@ index d1f3b56e7afc..eaefd0d7cfff 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 84201071dfac..d00c2713281e 100644
+index 84201071dfac..1e7b9e53ec3d 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -136,7 +135,7 @@ index 84201071dfac..d00c2713281e 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -901,6 +976,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -901,6 +902,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -150,7 +149,7 @@ index 84201071dfac..d00c2713281e 100644
  	reserve_ibft_region();
  	dmi_setup();
  
-@@ -1064,19 +1146,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1072,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -234,10 +233,10 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index e6ed1ba91e5c..6a87d6ca4a84 100644
+index 617f3e0e963d..92d9066ab4c2 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1761,6 +1761,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -580,6 +579,19 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+index 94bdb5fa6ebc..1fbaf7b81d69 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
+@@ -4524,6 +4524,8 @@ int amdgpu_device_prepare(struct drm_device *dev)
+ 	if (r)
+ 		goto unprepare;
+ 
++	flush_delayed_work(&adev->gfx.gfx_off_delay_work);
++
+ 	for (i = 0; i < adev->num_ip_blocks; i++) {
+ 		if (!adev->ip_blocks[i].status.valid)
+ 			continue;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -683,7 +695,7 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index ce1995a2827f..57f9e9de4747 100644
+index 2e2cabc5f50a..8b44d990f978 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -10,6 +10,7 @@
@@ -926,7 +938,7 @@ index 42eaebb3bf5c..7a35119c3144 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d14413916f93..ff6cbc3fa509 100644
+index cd1210026ac5..448d146c6757 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -937,7 +949,7 @@ index d14413916f93..ff6cbc3fa509 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -3095,6 +3096,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -3106,6 +3107,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -966,7 +978,7 @@ index d14413916f93..ff6cbc3fa509 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d797df6e5f3e..a6921ee1535a 100644
+index 2ebbe51a7efe..503f79c60365 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4433,6 +4433,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1046,6 +1058,28 @@ index e38a4124f610..0a607946e5f9 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/xfs/xfs_iomap.c b/fs/xfs/xfs_iomap.c
+index 18c8f168b153..055cdec2e9ad 100644
+--- a/fs/xfs/xfs_iomap.c
++++ b/fs/xfs/xfs_iomap.c
+@@ -1323,7 +1323,7 @@ xfs_seek_iomap_begin(
+ 	if (cow_fsb != NULLFILEOFF && cow_fsb <= offset_fsb) {
+ 		if (data_fsb < cow_fsb + cmap.br_blockcount)
+ 			end_fsb = min(end_fsb, data_fsb);
+-		xfs_trim_extent(&cmap, offset_fsb, end_fsb);
++		xfs_trim_extent(&cmap, offset_fsb, end_fsb - offset_fsb);
+ 		seq = xfs_iomap_inode_sequence(ip, IOMAP_F_SHARED);
+ 		error = xfs_bmbt_to_iomap(ip, iomap, &cmap, flags,
+ 				IOMAP_F_SHARED, seq);
+@@ -1348,7 +1348,7 @@ xfs_seek_iomap_begin(
+ 	imap.br_state = XFS_EXT_NORM;
+ done:
+ 	seq = xfs_iomap_inode_sequence(ip, 0);
+-	xfs_trim_extent(&imap, offset_fsb, end_fsb);
++	xfs_trim_extent(&imap, offset_fsb, end_fsb - offset_fsb);
+ 	error = xfs_bmbt_to_iomap(ip, iomap, &imap, flags, 0, seq);
+ out_unlock:
+ 	xfs_iunlock(ip, lockmode);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index c74f47711f0b..e7bbf3b7a938 100644
 --- a/include/linux/efi.h
@@ -1128,7 +1162,7 @@ index 76458b6d53da..b80d5835be72 100644
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
 diff --git a/include/linux/module.h b/include/linux/module.h
-index 96bc462872c0..910919c76fac 100644
+index 96bc462872c0..3ce91ff5db5a 100644
 --- a/include/linux/module.h
 +++ b/include/linux/module.h
 @@ -418,6 +418,7 @@ struct module {
@@ -1141,15 +1175,15 @@ index 96bc462872c0..910919c76fac 100644
  	/* Exported symbols */
 diff --git a/include/linux/rh_kabi.h b/include/linux/rh_kabi.h
 new file mode 100644
-index 000000000000..5139cb2cabdc
+index 000000000000..e0d3353802bb
 --- /dev/null
 +++ b/include/linux/rh_kabi.h
-@@ -0,0 +1,541 @@
+@@ -0,0 +1,172 @@
 +/*
 + * rh_kabi.h - Red Hat kABI abstraction header
 + *
 + * Copyright (c) 2014 Don Zickus
-+ * Copyright (c) 2015-2020 Jiri Benc
++ * Copyright (c) 2015-2017 Jiri Benc
 + * Copyright (c) 2015 Sabrina Dubroca, Hannes Frederic Sowa
 + * Copyright (c) 2016-2018 Prarit Bhargava
 + * Copyright (c) 2017 Paolo Abeni, Larry Woodman
@@ -1173,252 +1207,48 @@ index 000000000000..5139cb2cabdc
 +#ifndef _LINUX_RH_KABI_H
 +#define _LINUX_RH_KABI_H
 +
-+#include <linux/kconfig.h>
 +#include <linux/compiler.h>
 +#include <linux/stringify.h>
 +
 +/*
-+ * NOTE
-+ *   Unless indicated otherwise, don't use ';' after these macros as it
-+ *   messes up the kABI checker by changing what the resulting token string
-+ *   looks like.  Instead let the macros add the ';' so it can be properly
-+ *   hidden from the kABI checker (mainly for RH_KABI_EXTEND, but applied to
-+ *   most macros for uniformity).
-+ *
-+ *
 + * RH_KABI_CONST
 + *   Adds a new const modifier to a function parameter preserving the old
 + *   checksum.
 + *
-+ * RH_KABI_ADD_MODIFIER
-+ *   Adds a new modifier to a function parameter or a typedef, preserving
-+ *   the old checksum.  Useful e.g. for adding rcu annotations or changing
-+ *   int to unsigned.  Beware that this may change the semantics; if you're
-+ *   sure this is safe, always explain why binary compatibility with 3rd
-+ *   party modules is retained.
-+ *
 + * RH_KABI_DEPRECATE
-+ *   Marks the element as deprecated and make it unusable by modules while
-+ *   keeping a hole in its place to preserve binary compatibility.
++ *   Mark the element as deprecated and make it unusable by modules while
++ *   preserving kABI checksums.
 + *
 + * RH_KABI_DEPRECATE_FN
-+ *   Marks the function pointer as deprecated and make it unusable by modules
-+ *   while keeping a hole in its place to preserve binary compatibility.
++ *   Mark the function pointer as deprecated and make it unusable by modules
++ *   while preserving kABI checksums.
 + *
 + * RH_KABI_EXTEND
-+ *   Adds a new field to a struct.  This must always be added to the end of
-+ *   the struct.  Before using this macro, make sure this is actually safe
-+ *   to do - there is a number of conditions under which it is *not* safe.
-+ *   In particular (but not limited to), this macro cannot be used:
-+ *   - if the struct in question is embedded in another struct, or
-+ *   - if the struct is allocated by drivers either statically or
-+ *     dynamically, or
-+ *   - if the struct is allocated together with driver data (an example of
-+ *     such behavior is struct net_device or struct request).
-+ *
-+ * RH_KABI_EXTEND_WITH_SIZE
-+ *   Adds a new element (usually a struct) to a struct and reserves extra
-+ *   space for the new element.  The provided 'size' is the total space to
-+ *   be added in longs (i.e. it's 8 * 'size' bytes), including the size of
-+ *   the added element.  It is automatically checked that the new element
-+ *   does not overflow the reserved space, now nor in the future. However,
-+ *   no attempt is done to check the content of the added element (struct)
-+ *   for kABI conformance - kABI checking inside the added element is
-+ *   effectively switched off.
-+ *   For any struct being added by RH_KABI_EXTEND_WITH_SIZE, it is
-+ *   recommended its content to be documented as not covered by kABI
-+ *   guarantee.
-+ *
-+ * RH_KABI_FILL_HOLE
-+ *   Fills a hole in a struct.
++ *   Simple macro for adding a new element to a struct.
 + *
 + *   Warning: only use if a hole exists for _all_ arches.  Use pahole to verify.
 + *
-+ * RH_KABI_RENAME
-+ *   Renames an element without changing its type.  This macro can be used in
-+ *   bitfields, for example.
++ * RH_KABI_FILL_HOLE
++ *   Simple macro for filling a hole in a struct.
 + *
-+ *   NOTE: this macro does not add the final ';'
++ * RH_KABI_RENAME
++ *   Simple macro for renaming an element without changing its type.  This
++ *   macro can be used in bitfields, for example.
++ *
++ *   NOTE: does not include the final ';'
 + *
 + * RH_KABI_REPLACE
-+ *   Replaces the _orig field by the _new field.  The size of the occupied
-+ *   space is preserved, it's fine if the _new field is smaller than the
-+ *   _orig field.  If a _new field is larger or has a different alignment,
-+ *   compilation will abort.
++ *   Simple replacement of _orig with a union of _orig and _new.
 + *
-+ * RH_KABI_REPLACE_SPLIT
-+ *   Works the same as RH_KABI_REPLACE but replaces a single _orig field by
-+ *   multiple new fields.  The checks for size and alignment done by
-+ *   RH_KABI_REPLACE are still applied.
++ *   The RH_KABI_REPLACE* macros attempt to add the ability to use the '_new'
++ *   element while preserving size alignment with the '_orig' element.
 + *
-+ * RH_KABI_HIDE_INCLUDE
-+ *   Hides the given include file from kABI checksum computations.  This is
-+ *   used when a newly added #include makes a previously opaque struct
-+ *   visible.
++ *   The #ifdef __GENKSYMS__ preserves the kABI agreement, while the anonymous
++ *   union structure preserves the size alignment (assuming the '_new' element
++ *   is not bigger than the '_orig' element).
 + *
-+ *   Example usage:
-+ *   #include RH_KABI_HIDE_INCLUDE(<linux/poll.h>)
-+ *
-+ * RH_KABI_FAKE_INCLUDE
-+ *   Pretends inclusion of the given file for kABI checksum computations.
-+ *   This is used when upstream removed a particular #include but that made
-+ *   some structures opaque that were previously visible and is causing kABI
-+ *   checker failures.
-+ *
-+ *   Example usage:
-+ *   #include RH_KABI_FAKE_INCLUDE(<linux/rhashtable.h>)
-+ *
-+ * RH_KABI_RESERVE
-+ *   Adds a reserved field to a struct.  This is done prior to kABI freeze
-+ *   for structs that cannot be expanded later using RH_KABI_EXTEND (for
-+ *   example because they are embedded in another struct or because they are
-+ *   allocated by drivers or because they use unusual memory layout).  The
-+ *   size of the reserved field is 'unsigned long' and is assumed to be
-+ *   8 bytes.
-+ *
-+ *   The argument is a number unique for the given struct; usually, multiple
-+ *   RH_KABI_RESERVE macros are added to a struct with numbers starting from
-+ *   one.
-+ *
-+ *   Example usage:
-+ *   struct foo {
-+ *           int a;
-+ *           RH_KABI_RESERVE(1)
-+ *           RH_KABI_RESERVE(2)
-+ *           RH_KABI_RESERVE(3)
-+ *           RH_KABI_RESERVE(4)
-+ *   };
-+ *
-+ * RH_KABI_USE
-+ *   Uses a previously reserved field or multiple fields.  The arguments are
-+ *   one or more numbers assigned to RH_KABI_RESERVE, followed by a field to
-+ *   be put in their place.  The compiler ensures that the new field is not
-+ *   larger than the reserved area.
-+ *
-+ *   Example usage:
-+ *   struct foo {
-+ *           int a;
-+ *           RH_KABI_USE(1, int b)
-+ *           RH_KABI_USE(2, 3, int c[3])
-+ *           RH_KABI_RESERVE(4)
-+ *   };
-+ *
-+ * RH_KABI_USE_SPLIT
-+ *   Works the same as RH_KABI_USE but replaces a single reserved field by
-+ *   multiple new fields.
-+ *
-+ * RH_KABI_AUX_EMBED
-+ * RH_KABI_AUX_PTR
-+ *   Adds an extenstion of a struct in the form of "auxiliary structure".
-+ *   This is done prior to kABI freeze for structs that cannot be expanded
-+ *   later using RH_KABI_EXTEND.  See also RH_KABI_RESERVED, these two
-+ *   approaches can (and often are) combined.
-+ *
-+ *   To use this for 'struct foo' (the "base structure"), define a new
-+ *   structure called 'struct foo_rh'; this new struct is called "auxiliary
-+ *   structure".  Then add RH_KABI_AUX_EMBED or RH_KABI_AUX_PTR to the end
-+ *   of the base structure.  The argument is the name of the base structure,
-+ *   without the 'struct' keyword.
-+ *
-+ *   RH_KABI_AUX_PTR stores a pointer to the aux structure in the base
-+ *   struct.  The lifecycle of the aux struct needs to be properly taken
-+ *   care of.
-+ *
-+ *   RH_KABI_AUX_EMBED embeds the aux struct into the base struct.  This
-+ *   cannot be used when the base struct is itself embedded into another
-+ *   struct, allocated in an array, etc.
-+ *
-+ *   Both approaches (ptr and embed) work correctly even when the aux struct
-+ *   is allocated by modules.  To ensure this, the code responsible for
-+ *   allocation/assignment of the aux struct has to properly set the size of
-+ *   the aux struct; see the RH_KABI_AUX_SET_SIZE and RH_KABI_AUX_INIT_SIZE
-+ *   macros.
-+ *
-+ *   New fields can be later added to the auxiliary structure, always to its
-+ *   end.  Note the auxiliary structure cannot be shrunk in size later (i.e.,
-+ *   fields cannot be removed, only deprecated).  Any code accessing fields
-+ *   from the aux struct must guard the access using the RH_KABI_AUX macro.
-+ *   The access itself is then done via a '_rh' field in the base struct.
-+ *
-+ *   The auxiliary structure is not guaranteed for access by modules unless
-+ *   explicitly commented as such in the declaration of the aux struct
-+ *   itself or some of its elements.
-+ *
-+ *   Example:
-+ *
-+ *   struct foo_rh {
-+ *           int newly_added;
-+ *   };
-+ *
-+ *   struct foo {
-+ *           bool big_hammer;
-+ *           RH_KABI_AUX_PTR(foo)
-+ *   };
-+ *
-+ *   void use(struct foo *f)
-+ *   {
-+ *           if (RH_KABI_AUX(f, foo, newly_added))
-+ *                   f->_rh->newly_added = 123;
-+ *	     else
-+ *	             // the field 'newly_added' is not present in the passed
-+ *	             // struct, fall back to old behavior
-+ *	             f->big_hammer = true;
-+ *   }
-+ *
-+ *   static struct foo_rh my_foo_rh {
-+ *           .newly_added = 0;
-+ *   }
-+ *
-+ *   static struct foo my_foo = {
-+ *           .big_hammer = false,
-+ *           ._rh = &my_foo_rh,
-+ *           RH_KABI_AUX_INIT_SIZE(foo)
-+ *   };
-+ *
-+ * RH_KABI_USE_AUX_PTR
-+ *   Creates an auxiliary structure post kABI freeze.  This works by using
-+ *   two reserved fields (thus there has to be two reserved fields still
-+ *   available) and converting them to RH_KABI_AUX_PTR.
-+ *
-+ *   Example:
-+ *
-+ *   struct foo_rh {
-+ *   };
-+ *
-+ *   struct foo {
-+ *           int a;
-+ *           RH_KABI_RESERVE(1)
-+ *           RH_KABI_USE_AUX_PTR(2, 3, foo)
-+ *   };
-+ *
-+ * RH_KABI_AUX_SET_SIZE
-+ * RH_KABI_AUX_INIT_SIZE
-+ *   Calculates and stores the size of the auxiliary structure.
-+ *
-+ *   RH_KABI_AUX_SET_SIZE is for dynamically allocated base structs,
-+ *   RH_KABI_AUX_INIT_SIZE is for statically allocated case structs.
-+ *
-+ *   These macros must be called from the allocation (RH_KABI_AUX_SET_SIZE)
-+ *   or declaration (RH_KABI_AUX_INIT_SIZE) site, regardless of whether
-+ *   that happens in the kernel or in a module.  Without calling one of
-+ *   these macros, the aux struct will appear to have no fields to the
-+ *   kernel.
-+ *
-+ *   Note: since RH_KABI_AUX_SET_SIZE is intended to be invoked outside of
-+ *   a struct definition, it does not add the semicolon and must be
-+ *   terminated by semicolon by the caller.
-+ *
-+ * RH_KABI_AUX
-+ *   Verifies that the given field exists in the given auxiliary structure.
-+ *   This MUST be called prior to accessing that field; failing to do that
-+ *   may lead to invalid memory access.
-+ *
-+ *   The first argument is a pointer to the base struct, the second argument
-+ *   is the name of the base struct (without the 'struct' keyword), the
-+ *   third argument is the field name.
-+ *
-+ *   This macro works for structs extended by either of RH_KABI_AUX_EMBED,
-+ *   RH_KABI_AUX_PTR and RH_KABI_USE_AUX_PTR.
++ * RH_KABI_REPLACE_UNSAFE
++ *   Unsafe version of RH_KABI_REPLACE.  Only use for typedefs.
 + *
 + * RH_KABI_FORCE_CHANGE
 + *   Force change of the symbol checksum.  The argument of the macro is a
@@ -1432,137 +1262,36 @@ index 000000000000..5139cb2cabdc
 + *   won't be loaded by the kernel.  This macro should only be used as a
 + *   last resort when all other KABI workarounds have failed.
 + *
-+ * RH_KABI_EXCLUDE
-+ *   !!! WARNING: DANGEROUS, DO NOT USE unless you are aware of all the !!!
-+ *   !!! implications. This should be used ONLY EXCEPTIONALLY and only  !!!
-+ *   !!! under specific circumstances. Very likely, this macro does not !!!
-+ *   !!! do what you expect it to do. Note that any usage of this macro !!!
-+ *   !!! MUST be paired with a RH_KABI_FORCE_CHANGE annotation of       !!!
-+ *   !!! a suitable symbol (or an equivalent safeguard) and the commit  !!!
-+ *   !!! log MUST explain why the chosen solution is appropriate.       !!!
++ * NOTE
++ *   Don't use ';' after these macros as it messes up the kABI checker by
++ *   changing what the resulting token string looks like.  Instead let this
++ *   macro add the ';' so it can be properly hidden from the kABI checker
++ *   (mainly for RH_KABI_EXTEND, but applied to all macros for uniformity).
 + *
-+ *   Exclude the element from checksum generation.  Any such element is
-+ *   considered not to be part of the kABI whitelist and may be changed at
-+ *   will.  Note however that it's the responsibility of the developer
-+ *   changing the element to ensure 3rd party drivers using this element
-+ *   won't panic, for example by not allowing them to be loaded.  That can
-+ *   be achieved by changing another, non-whitelisted symbol they use,
-+ *   either by nature of the change or by using RH_KABI_FORCE_CHANGE.
-+ *
-+ *   Also note that any change to the element must preserve its size. Change
-+ *   of the size is not allowed and would constitute a silent kABI breakage.
-+ *   Beware that the RH_KABI_EXCLUDE macro does not do any size checks.
-+ *
-+ * RH_KABI_EXCLUDE_WITH_SIZE
-+ *   Like RH_KABI_EXCLUDE, this macro excludes the element from
-+ *   checksum generation.  The same warnings as for RH_KABI_EXCLUDE
-+ *   apply: use RH_KABI_FORCE_CHANGE.
-+ *
-+ *   This macro is intended to be used for elements embedded inside
-+ *   kABI-protected structures (struct, array). In contrast with
-+ *   RH_KABI_EXCLUDE, this macro reserves extra space, so that the
-+ *   embedded element can grow without changing the offsets of the
-+ *   fields that follow. The provided 'size' is the total space to be
-+ *   added in longs (i.e. it's 8 * 'size' bytes), including the size
-+ *   of the added element.  It is automatically checked that the new
-+ *   element does not overflow the reserved space, now nor in the
-+ *   future. The size is also included in the checksum via the
-+ *   reserved space, to ensure that we don't accidentally change it,
-+ *   which would change the offsets of the fields that follow.
-+ *
-+ * RH_KABI_BROKEN_INSERT
-+ * RH_KABI_BROKEN_REMOVE
-+ *   Insert a field to the middle of a struct / delete a field from a struct.
-+ *   Note that this breaks kABI! It can be done only when it's certain that
-+ *   no 3rd party driver can validly reach into the struct.  A typical
-+ *   example is a struct that is:  both (a) referenced only through a long
-+ *   chain of pointers from another struct that is part of a whitelisted
-+ *   symbol and (b) kernel internal only, it should have never been visible
-+ *   to genksyms in the first place.
-+ *
-+ *   Another example are structs that are explicitly exempt from kABI
-+ *   guarantee but we did not have enough foresight to use RH_KABI_EXCLUDE.
-+ *   In this case, the warning for RH_KABI_EXCLUDE applies.
-+ *
-+ *   A detailed explanation of correctness of every RH_KABI_BROKEN_* macro
-+ *   use is especially important.
-+ *
-+ * RH_KABI_BROKEN_INSERT_BLOCK
-+ * RH_KABI_BROKEN_REMOVE_BLOCK
-+ *   A version of RH_KABI_BROKEN_INSERT / REMOVE that allows multiple fields
-+ *   to be inserted or removed together.  All fields need to be terminated
-+ *   by ';' inside(!) the macro parameter.  The macro itself must not be
-+ *   terminated by ';'.
-+ *
-+ * RH_KABI_BROKEN_REPLACE
-+ *   Replace a field by a different one without doing any checking.  This
-+ *   allows replacing a field by another with a different size.  Similarly
-+ *   to other RH_KABI_BROKEN macros, use of this indicates a kABI breakage.
-+ *
-+ * RH_KABI_BROKEN_INSERT_ENUM
-+ * RH_KABI_BROKEN_REMOVE_ENUM
-+ *   Insert a field to the middle of an enumaration type / delete a field from
-+ *   an enumaration type. Note that this can break kABI especially if the
-+ *   number of enum fields is used in an array within a structure. It can be
-+ *   done only when it is certain that no 3rd party driver will use the
-+ *   enumeration type or a structure that embeds an array with size determined
-+ *   by an enumeration type.
-+ *
-+ * RH_KABI_EXTEND_ENUM
-+ *   Adds a new field to an enumeration type.  This must always be added to
-+ *   the end of the enum.  Before using this macro, make sure this is actually
-+ *   safe to do.
 + */
-+
-+#undef linux
-+#define linux linux
-+
 +#ifdef __GENKSYMS__
 +
 +# define RH_KABI_CONST
-+# define RH_KABI_ADD_MODIFIER(_new)
 +# define RH_KABI_EXTEND(_new)
 +# define RH_KABI_FILL_HOLE(_new)
 +# define RH_KABI_FORCE_CHANGE(ver)		__attribute__((rh_kabi_change ## ver))
 +# define RH_KABI_RENAME(_orig, _new)		_orig
-+# define RH_KABI_HIDE_INCLUDE(_file)		<linux/rh_kabi.h>
-+# define RH_KABI_FAKE_INCLUDE(_file)		_file
-+# define RH_KABI_BROKEN_INSERT(_new)
-+# define RH_KABI_BROKEN_REMOVE(_orig)		_orig;
-+# define RH_KABI_BROKEN_INSERT_BLOCK(_new)
-+# define RH_KABI_BROKEN_REMOVE_BLOCK(_orig)	_orig
-+# define RH_KABI_BROKEN_REPLACE(_orig, _new)	_orig;
-+# define RH_KABI_BROKEN_INSERT_ENUM(_new)
-+# define RH_KABI_BROKEN_REMOVE_ENUM(_orig)	_orig,
-+# define RH_KABI_EXTEND_ENUM(_new)
 +
 +# define _RH_KABI_DEPRECATE(_type, _orig)	_type _orig
 +# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)	_type (*_orig)(_args)
 +# define _RH_KABI_REPLACE(_orig, _new)		_orig
-+# define _RH_KABI_EXCLUDE(_elem)
-+
-+# define __RH_KABI_CHECK_SIZE(_item, _size)
++# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_orig
 +
 +#else
 +
 +# define RH_KABI_ALIGN_WARNING ".  Disable CONFIG_RH_KABI_SIZE_ALIGN_CHECKS if debugging."
 +
 +# define RH_KABI_CONST				const
-+# define RH_KABI_ADD_MODIFIER(_new)		_new
 +# define RH_KABI_EXTEND(_new)			_new;
 +# define RH_KABI_FILL_HOLE(_new)		_new;
 +# define RH_KABI_FORCE_CHANGE(ver)
 +# define RH_KABI_RENAME(_orig, _new)		_new
-+# define RH_KABI_HIDE_INCLUDE(_file)		_file
-+# define RH_KABI_FAKE_INCLUDE(_file)		<linux/rh_kabi.h>
-+# define RH_KABI_BROKEN_INSERT(_new)		_new;
-+# define RH_KABI_BROKEN_REMOVE(_orig)
-+# define RH_KABI_BROKEN_INSERT_BLOCK(_new)	_new
-+# define RH_KABI_BROKEN_REMOVE_BLOCK(_orig)
-+# define RH_KABI_BROKEN_REPLACE(_orig, _new)	_new;
-+# define RH_KABI_BROKEN_INSERT_ENUM(_new)	_new,
-+# define RH_KABI_BROKEN_REMOVE_ENUM(_orig)
-+# define RH_KABI_EXTEND_ENUM(_new)		_new,
++
 +
 +#if IS_BUILTIN(CONFIG_RH_KABI_SIZE_ALIGN_CHECKS)
 +# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)			\
@@ -1572,15 +1301,9 @@ index 000000000000..5139cb2cabdc
 +		_Static_assert(__alignof__(struct{_new;}) <= __alignof__(struct{_orig;}), \
 +			       __FILE__ ":" __stringify(__LINE__) ": "  __stringify(_orig) " is not aligned the same as " __stringify(_new) RH_KABI_ALIGN_WARNING); \
 +	}
-+# define __RH_KABI_CHECK_SIZE(_item, _size)				\
-+	_Static_assert(sizeof(struct{_item;}) <= _size,			\
-+		       __FILE__ ":" __stringify(__LINE__) ": " __stringify(_item) " is larger than the reserved size (" __stringify(_size) " bytes)" RH_KABI_ALIGN_WARNING);
 +#else
 +# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
-+# define __RH_KABI_CHECK_SIZE(_item, _size)
 +#endif
-+
-+#define RH_KABI_UNIQUE_ID	__PASTE(rh_kabi_hidden_, __LINE__)
 +
 +# define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
 +# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
@@ -1590,100 +1313,42 @@ index 000000000000..5139cb2cabdc
 +		_new;					  \
 +		struct {				  \
 +			_orig;				  \
-+		} RH_KABI_UNIQUE_ID;			  \
++		} __UNIQUE_ID(rh_kabi_hide);		  \
 +		__RH_KABI_CHECK_SIZE_ALIGN(_orig, _new);  \
 +	}
-+
-+# define _RH_KABI_EXCLUDE(_elem)		_elem
++# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_new
 +
 +#endif /* __GENKSYMS__ */
 +
++/* semicolon added wrappers for the RH_KABI_REPLACE macros */
 +# define RH_KABI_DEPRECATE(_type, _orig)	_RH_KABI_DEPRECATE(_type, _orig);
 +# define RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
 +	_RH_KABI_DEPRECATE_FN(_type, _orig, _args);
 +# define RH_KABI_REPLACE(_orig, _new)		_RH_KABI_REPLACE(_orig, _new);
-+
-+#define _RH_KABI_REPLACE1(_new)		_new;
-+#define _RH_KABI_REPLACE2(_new, ...)	_new; _RH_KABI_REPLACE1(__VA_ARGS__)
-+#define _RH_KABI_REPLACE3(_new, ...)	_new; _RH_KABI_REPLACE2(__VA_ARGS__)
-+#define _RH_KABI_REPLACE4(_new, ...)	_new; _RH_KABI_REPLACE3(__VA_ARGS__)
-+#define _RH_KABI_REPLACE5(_new, ...)	_new; _RH_KABI_REPLACE4(__VA_ARGS__)
-+#define _RH_KABI_REPLACE6(_new, ...)	_new; _RH_KABI_REPLACE5(__VA_ARGS__)
-+#define _RH_KABI_REPLACE7(_new, ...)	_new; _RH_KABI_REPLACE6(__VA_ARGS__)
-+#define _RH_KABI_REPLACE8(_new, ...)	_new; _RH_KABI_REPLACE7(__VA_ARGS__)
-+#define _RH_KABI_REPLACE9(_new, ...)	_new; _RH_KABI_REPLACE8(__VA_ARGS__)
-+#define _RH_KABI_REPLACE10(_new, ...)	_new; _RH_KABI_REPLACE9(__VA_ARGS__)
-+#define _RH_KABI_REPLACE11(_new, ...)	_new; _RH_KABI_REPLACE10(__VA_ARGS__)
-+#define _RH_KABI_REPLACE12(_new, ...)	_new; _RH_KABI_REPLACE11(__VA_ARGS__)
-+
-+#define RH_KABI_REPLACE_SPLIT(_orig, ...)	_RH_KABI_REPLACE(_orig, \
-+		struct { __PASTE(_RH_KABI_REPLACE, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__) });
++# define RH_KABI_REPLACE_UNSAFE(_orig, _new)	_RH_KABI_REPLACE_UNSAFE(_orig, _new);
++/*
++ * Macro for breaking up a random element into two smaller chunks using an
++ * anonymous struct inside an anonymous union.
++ */
++# define RH_KABI_REPLACE2(orig, _new1, _new2)	RH_KABI_REPLACE(orig, struct{ _new1; _new2;})
 +
 +# define RH_KABI_RESERVE(n)		_RH_KABI_RESERVE(n);
++/*
++ * Simple wrappers to replace standard Red Hat reserved elements.
++ */
++# define RH_KABI_USE(n, _new)		RH_KABI_REPLACE(_RH_KABI_RESERVE(n), _new)
++/*
++ * Macros for breaking up a reserved element into two smaller chunks using
++ * an anonymous struct inside an anonymous union.
++ */
++# define RH_KABI_USE2(n, _new1, _new2)	RH_KABI_REPLACE(_RH_KABI_RESERVE(n), struct{ _new1; _new2; })
 +
-+#define _RH_KABI_USE1(n, _new)	_RH_KABI_RESERVE(n), _new
-+#define _RH_KABI_USE2(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE1(__VA_ARGS__)
-+#define _RH_KABI_USE3(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE2(__VA_ARGS__)
-+#define _RH_KABI_USE4(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE3(__VA_ARGS__)
-+#define _RH_KABI_USE5(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE4(__VA_ARGS__)
-+#define _RH_KABI_USE6(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE5(__VA_ARGS__)
-+#define _RH_KABI_USE7(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE6(__VA_ARGS__)
-+#define _RH_KABI_USE8(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE7(__VA_ARGS__)
-+#define _RH_KABI_USE9(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE8(__VA_ARGS__)
-+#define _RH_KABI_USE10(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE9(__VA_ARGS__)
-+#define _RH_KABI_USE11(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE10(__VA_ARGS__)
-+#define _RH_KABI_USE12(n, ...)	_RH_KABI_RESERVE(n); _RH_KABI_USE11(__VA_ARGS__)
-+
-+#define _RH_KABI_USE(...)	_RH_KABI_REPLACE(__VA_ARGS__)
-+#define RH_KABI_USE(n, ...)	_RH_KABI_USE(__PASTE(_RH_KABI_USE, COUNT_ARGS(__VA_ARGS__))(n, __VA_ARGS__));
-+
-+# define RH_KABI_USE_SPLIT(n, ...)	RH_KABI_REPLACE_SPLIT(_RH_KABI_RESERVE(n), __VA_ARGS__)
-+
++/*
++ * We tried to standardize on Red Hat reserved names.  These wrappers
++ * leverage those common names making it easier to read and find in the
++ * code.
++ */
 +# define _RH_KABI_RESERVE(n)		unsigned long rh_reserved##n
-+
-+#define RH_KABI_EXCLUDE(_elem)		_RH_KABI_EXCLUDE(_elem);
-+
-+#define RH_KABI_EXCLUDE_WITH_SIZE(_new, _size)				\
-+	union {								\
-+		RH_KABI_EXCLUDE(_new)					\
-+		unsigned long RH_KABI_UNIQUE_ID[_size];			\
-+		__RH_KABI_CHECK_SIZE(_new, 8 * (_size))			\
-+	};
-+
-+#define RH_KABI_EXTEND_WITH_SIZE(_new, _size)				\
-+	RH_KABI_EXTEND(union {						\
-+		_new;							\
-+		unsigned long RH_KABI_UNIQUE_ID[_size];			\
-+		__RH_KABI_CHECK_SIZE(_new, 8 * (_size))			\
-+	})
-+
-+#define _RH_KABI_AUX_PTR(_struct)					\
-+	size_t _struct##_size_rh;					\
-+	_RH_KABI_EXCLUDE(struct _struct##_rh *_rh)
-+#define RH_KABI_AUX_PTR(_struct)					\
-+	_RH_KABI_AUX_PTR(_struct);
-+
-+#define _RH_KABI_AUX_EMBED(_struct)					\
-+	size_t _struct##_size_rh;					\
-+	_RH_KABI_EXCLUDE(struct _struct##_rh _rh)
-+#define RH_KABI_AUX_EMBED(_struct)					\
-+	_RH_KABI_AUX_EMBED(_struct);
-+
-+#define RH_KABI_USE_AUX_PTR(n1, n2, _struct)				\
-+	RH_KABI_USE(n1, n2,						\
-+		     struct { RH_KABI_AUX_PTR(_struct) })
-+
-+#define RH_KABI_AUX_SET_SIZE(_name, _struct) ({				\
-+	(_name)->_struct##_size_rh = sizeof(struct _struct##_rh);	\
-+})
-+
-+#define RH_KABI_AUX_INIT_SIZE(_struct)					\
-+	._struct##_size_rh = sizeof(struct _struct##_rh),
-+
-+#define RH_KABI_AUX(_ptr, _struct, _field) ({				\
-+	size_t __off = offsetof(struct _struct##_rh, _field);		\
-+	(_ptr)->_struct##_size_rh > __off ? true : false;		\
-+})
 +
 +#endif /* _LINUX_RH_KABI_H */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
@@ -1722,7 +1387,7 @@ index d0eb20f90b26..a99c045730e9 100644
  				    size_t *uctx_len, void *val, size_t val_len,
  				    u64 id, u64 flags)
 diff --git a/kernel/module/main.c b/kernel/module/main.c
-index 36681911c05a..f0422a91bf7f 100644
+index b0b99348e1a8..c35cc48d782c 100644
 --- a/kernel/module/main.c
 +++ b/kernel/module/main.c
 @@ -528,6 +528,7 @@ static struct module_attribute modinfo_##field = {                    \
@@ -1893,16 +1558,3 @@ index 7035ee35a393..e1d54a896ef9 100644
  #ifdef CONFIG_PERF_EVENTS
  /**
   * security_perf_event_open() - Check if a perf event open is allowed
-diff --git a/tools/power/cpupower/Makefile b/tools/power/cpupower/Makefile
-index b53753dee02f..90701fc65aa2 100644
---- a/tools/power/cpupower/Makefile
-+++ b/tools/power/cpupower/Makefile
-@@ -53,7 +53,7 @@ DESTDIR ?=
- 
- VERSION:=			$(shell ./utils/version-gen.sh)
- LIB_MAJ=			0.0.1
--LIB_MIN=			1
-+LIB_MIN=			0
- 
- PACKAGE =			cpupower
- PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org

@@ -2,9 +2,9 @@
 
 # https://github.com/dim13/otpauth
 
-%global commit 6a02ca0121cd84f883a22120600a416693ffd0c8
+%global commit 36a9db9948feab1fc993fe635861fd78bcd015bc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20231208
+%global date 20240314
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 %endif
 
 %global goipath         github.com/dim13/otpauth
-Version:                0.5.1
+Version:                0.5.2
 
 %gometa
 
@@ -69,5 +69,8 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.2-1.20240314git36a9db9
+- 0.5.2
+
 * Mon Dec 11 2023 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-2.20231208git6a02ca0
 - Initial spec

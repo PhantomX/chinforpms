@@ -1,9 +1,13 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global gkplugindir %{_libdir}/gkrellm2/plugins
 %global pkgname     gkrellm2-cpupower
 
 Name:           gkrellm-cpupower
 Version:        0.1.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Gkrellm plugin for manipulating CPU frequency
 
 License:        GPL-2.0-only
@@ -33,7 +37,6 @@ sed -i \
   Makefile
 
 %build
-%set_build_flags
 %make_build
 
 %install
@@ -52,6 +55,9 @@ install -pm0755 cpufreqnextgovernor %{buildroot}%{_sbindir}/
 %{gkplugindir}/cpupower.so
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-6
+- build_type_safety_c 0
+
 * Sat Feb 24 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-5
 - kernel-tools bump revert
 

@@ -14,7 +14,7 @@ Version:        20230606
 Release:        1%{?dist}
 Summary:        Checks or fix user data of the 2048 byte per sector of CD by using ecc/edc
 
-License:        GPLv3
+License:        GPL-3.0-or-later
 
 URL:            https://github.com/saramibreak/%{pkgname}
 
@@ -49,7 +49,6 @@ sed -e 's|-O2||g' -i %{pkgname}/makefile
 
 
 %build
-%set_build_flags
 %make_build -C %{pkgname}
 
 
@@ -65,6 +64,9 @@ install -pm0755 %{pkgname}/%{pkgname}.out %{buildroot}%{_bindir}/%{pkgname}
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20230606-1
+- 20230606
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230606-1
 - 20230606
 

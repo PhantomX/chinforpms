@@ -1,4 +1,4 @@
-From ab90b9bd7392299f9257341ced7a4be2aed45d12 Mon Sep 17 00:00:00 2001
+From 0668649051e21cbb633dbbefd449caf599dc1c0f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 30 Mar 2022 08:33:19 -0300
 Subject: [PATCH] Use system qhexedit
@@ -8,7 +8,7 @@ Subject: [PATCH] Use system qhexedit
  1 file changed, 8 insertions(+)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e8d2407..af6c74e 100644
+index 8ad99e9..3f4e8d3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -56,6 +56,8 @@ if(NOT CMAKE_BUILD_TYPE)
@@ -20,10 +20,10 @@ index e8d2407..af6c74e 100644
  #Set Deployed Binary Name
  if(WIN32 OR APPLE)
      set(BIN_NAME "Black_Chocobo")
-@@ -78,5 +80,11 @@ endif()
+@@ -77,6 +79,12 @@ endif()
+ 
  add_subdirectory(deploy)
  add_subdirectory(icons)
- add_subdirectory(translations)
 +if(USE_SYSTEM_QHEXEDIT)
 +find_package(PkgConfig REQUIRED)
 +pkg_search_module(QHEXEDIT REQUIRED qhexedit2-qt6)
@@ -32,6 +32,7 @@ index e8d2407..af6c74e 100644
  add_subdirectory(qhexedit)
 +endif()
  add_subdirectory(src)
+ add_subdirectory(translations)
 -- 
-2.41.0
+2.44.0
 

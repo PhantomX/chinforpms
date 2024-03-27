@@ -1,6 +1,6 @@
-%global commit 2761674cb1c1c82a1ed52793dbdd5a7cb32466dd
+%global commit 2ab815a9115fbad6b25f07c7e3b67ba1f79c4257
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240229
+%global date 20240324
 %bcond_without snapshot
 
 %global with_python  1
@@ -12,7 +12,7 @@
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global with_autotools 1
-%global extra_ver 65
+%global extra_ver 71
 %global src_hash ef185e41b37cd1ce4152a64a1cac1976
 %else
 %global extra_ver 0
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.2.0
-Release:        102%{?dist}
+Release:        103%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later

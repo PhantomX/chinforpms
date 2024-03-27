@@ -47,7 +47,6 @@ cp -p %{S:2} %{name}.resource
 
 
 %build
-%set_build_flags
 CXXFLAGS+=" -std=c++14" \
 %configure --enable-xrender
 %make_build

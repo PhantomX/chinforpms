@@ -59,7 +59,6 @@ sed \
 
 
 %build
-%set_build_flags
 export CXXFLAGS+=" -std=c++11"
 %make_build \
   config=%{systemlibs} \

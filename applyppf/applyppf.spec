@@ -29,7 +29,6 @@ cp %{S:1} .
 
 
 %build
-%set_build_flags
 $CC $CFLAGS \
   -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE \
   $LDFLAGS \

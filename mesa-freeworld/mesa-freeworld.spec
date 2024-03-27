@@ -161,6 +161,9 @@ Enhances:       %{pkgname}%{?_isa}
   -Dselinux=true \
   -Dlmsensors=disabled \
   -Dandroid-libbacktrace=disabled \
+%ifarch %{ix86}
+  -Dglx-read-only-text=true
+%endif
   %{nil}
 
 %meson_build

@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit f63b4db5b31fdf3e75953db978e8946da8310b7a
+%global commit 9006e58e5c3482eef4f3fada64fc0536b1003b48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230908
+%global date 20240310
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,7 +10,7 @@
 %endif
 
 Name:           ff7tk
-Version:        0.83.3.0
+Version:        1.0.0.0
 Release:        1%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
@@ -80,23 +80,28 @@ sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeL
 %install
 %cmake_install
 
+mv %{buildroot}%{_datadir}/%{name}/sbom-%{name}-*.spdx .
+rmdir -p %{buildroot}%{_datadir}/%{name} || :
+
 %find_lang %{name} --with-qt
 
 
 %files -f %{name}.lang
-%license COPYING.TXT
+%license COPYING.TXT sbom-%{name}-*.spdx
 %doc README.md
 %{_libdir}/*.so.*
 
 %files devel
-%license COPYING.TXT
+%license COPYING.TXT sbom-%{name}-*.spdx
 %{_includedir}/%{name}/
 %{_libdir}/cmake/%{name}/
-%{_libdir}/pkgconfig/*.pc
 %{_libdir}/*.so
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.0.0-1.20240310git9006e58
+- 1.0.0.0
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.83.3.0-1.20230908gitf63b4db
 - 0.83.3.0
 

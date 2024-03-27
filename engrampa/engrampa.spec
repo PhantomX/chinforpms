@@ -2,7 +2,7 @@
 %global rel_build 1
 
 # This is needed, because src-url contains branched part of versioning-scheme.
-%global branch 1.26
+%global branch 1.28
 
 # Settings used for build from snapshots.
 %{!?rel_build:%global commit f4611c3411c44e792f729a0780c31b0aa55fe004}
@@ -21,7 +21,7 @@ Version:       %{branch}.1
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
-Release:       0.12%{?git_rel}%{?dist}
+Release:       0.1%{?git_rel}%{?dist}
 %endif
 Epoch:         1
 Summary:       MATE Desktop file archiver
@@ -35,7 +35,7 @@ URL:           http://mate-desktop.org
 # Source for snapshot-builds.
 %{!?rel_build:Source0:    %{vc_url}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
 
-Patch0:        engrampa-c99.patch
+Patch1:         %{vc_url}/patch/?id=28ec395b81efebb06b7c67c849da14389233c923#/%{name}-git-28ec395.patch
 
 BuildRequires: gcc
 BuildRequires: make
@@ -129,6 +129,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.28.1-100
+- 1.28.1
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.26.1-100
 - 1.26.1
 

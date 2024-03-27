@@ -118,7 +118,6 @@ chmod +x check/*.sh
 sed -e 's|strip |true |g' -i install.sh
 
 %build
-%set_build_flags
 pushd CPP/7zip/CMAKE/
 sh ./generate.sh
 popd

@@ -17,8 +17,16 @@
 # Filter provides for private modules
 %global __provides_exclude_from ^%{_libdir}/gtk-4.0
 
+# FTBFS on i686 with GCC 14 -Werror=int-conversion
+# https://gitlab.gnome.org/GNOME/gtk/-/issues/6033
+%if 0%{?fedora} >= 40 || 0%{?rhel} >= 10
+%ifarch %{ix86}
+%global build_type_safety_c 1
+%endif
+%endif
+
 Name:           gtk4
-Version:        4.12.5
+Version:        4.14.1
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -33,7 +41,7 @@ Source2:        chinforpms-adwaita.css
 # Disable this @#$& by default
 Patch100:       0001-Disable-overlay-scrolling.patch
 Patch101:       0001-set-atril-as-print-preview.patch
-Patch102:       0001-CSD-Disable-shadows-by-default.patch
+%dnl Patch102:       0001-CSD-Disable-shadows-by-default.patch
 Patch103:       0001-CSD-Prefer-SSD-by-default.patch
 
 Patch120:       0001-appearance-disable-backdrop.patch
@@ -48,6 +56,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
 BuildRequires:  gi-docgen
+BuildRequires:  glslc
 BuildRequires:  meson
 BuildRequires:  python3-gobject
 BuildRequires:  pkgconfig(avahi-gobject)
@@ -66,11 +75,11 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(pango) >= %{pango_version}
-BuildRequires:  pkgconfig(rest-0.7)
 BuildRequires:  pkgconfig(sysprof-capture-4)
 %if 0%{?with_tracker}
 BuildRequires:  pkgconfig(tracker-sparql-3.0)
 %endif
+BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-client) >= %{wayland_version}
 BuildRequires:  pkgconfig(wayland-cursor) >= %{wayland_version}
 BuildRequires:  pkgconfig(wayland-egl) >= %{wayland_version}
@@ -220,6 +229,7 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 %{_libdir}/pkgconfig/*
 %{_bindir}/gtk4-builder-tool
 %{_bindir}/gtk4-encode-symbolic-svg
+%{_bindir}/gtk4-path-tool
 %{_bindir}/gtk4-query-settings
 %{_datadir}/gettext/
 %{_datadir}/gir-1.0/
@@ -227,6 +237,7 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 %{_datadir}/gtk-4.0/valgrind/
 %{_mandir}/man1/gtk4-builder-tool.1*
 %{_mandir}/man1/gtk4-encode-symbolic-svg.1*
+%{_mandir}/man1/gtk4-path-tool.1*
 %{_mandir}/man1/gtk4-query-settings.1*
 
 %files devel-docs
@@ -268,6 +279,9 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.1-100
+- 4.14.1
+
 * Fri Jan 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.12.5-100
 - 4.12.5
 

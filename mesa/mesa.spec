@@ -88,7 +88,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        24.0.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -106,13 +106,19 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
 
+# Backport of https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28101
+# to fix LLVM 18 compatibility (https://bugzilla.redhat.com/show_bug.cgi?id=2268800).
+Patch20:        0001-Pass-no-verify-fixpoint-option-to-instcombine-in-LLV.patch
+Patch21:        0001-winsys-radeon-pass-priv-instead-NULL-to-radeon_bo_ca.patch
+
+
 # Without this patch, the OpenCL ICD calls into MesaOpenCL,
 # which for some reason calls back into the OpenCL ICD instead
 # of calling its own function by the same name.
-Patch20:        mesa-20.1.1-fix-opencl.patch
+Patch50:        mesa-20.1.1-fix-opencl.patch
 # Make VirtualBox great again
 # Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
-Patch21:        mesa-22.3-make-vbox-great-again.patch
+Patch51:        mesa-22.3-make-vbox-great-again.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
@@ -506,6 +512,9 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Dlmsensors=disabled \
 %endif
   -Dandroid-libbacktrace=disabled \
+%ifarch %{ix86}
+  -Dglx-read-only-text=true
+%endif
   %{nil}
 
 %meson_build
@@ -783,6 +792,9 @@ popd
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.3-101
+- Rawhide sync
+
 * Thu Mar 14 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.3-100
 - 24.0.3
 

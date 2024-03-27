@@ -1,7 +1,7 @@
 %global soversion 0
 
 Name:           libdeflate
-Version:        1.18
+Version:        1.20
 Release:        1%{?dist}
 Summary:        Heavily optimized library for compression and decompression
 
@@ -85,6 +85,9 @@ popd
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.20-1
+- 1.20
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.18-1
 - 1.18
 

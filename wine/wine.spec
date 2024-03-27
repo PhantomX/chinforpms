@@ -112,7 +112,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d08b8898f33798bce350ade6150fe0ab3fbe71cf
+%global tkg_id ac3142b6b9264c3e8ccb8b36fa234fcedaa128f9
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -244,8 +244,7 @@ Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_po
 Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-%dnl Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
-Patch1024:       wine-childwindow-proton.patch
+Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
 Patch1025:       %{tkg_url}/misc/childwindow/OPWR-proton.patch#/%{name}-tkg-OPWR-proton.patch
 Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
@@ -279,7 +278,6 @@ Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
 Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
-Patch1097:       0001-winex11.drv-Add-a-GPU-for-each-Vulkan-device-fixup.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -937,7 +935,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1030 -p1
 %patch -P 1031 -p1
 %patch -P 1032 -p1
-%patch -P 1097 -p1
 %patch -P 1034 -p1
 %dnl %patch -P 1035 -p1
 %dnl %patch -P 1036 -p1

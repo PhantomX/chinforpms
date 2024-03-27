@@ -12,10 +12,12 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1b0e65e66d17202b1ae9f155cfecea802dd58778
+%global commit e671af683a976a54f49c5f9fa7732ac228d9a0ce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240218
+%global date 20240323
 
+%bcond_with capstone
+%bcond_with ffmpeg
 %bcond_with fmt
 %bcond_with yamlcpp
 # Needs dispatch header
@@ -41,11 +43,11 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 dlmalloc
 
-%global commit16 83adf70ded4ea5642fb35da1e2cdc73e898316e7
+%global commit16 d8b33e4311fbb41aac376cc8b644c47df03c1549
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 dynarmic
 
-%global commit17 20c78ca8650551beedc28b96a6c2f0f2dc2ae08e
+%global commit17 e30b7d7fe228bfb3f6e41ce1040b44a15eb7d5e0
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
@@ -139,6 +141,7 @@
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
+%global ffmpeg_ver 5.1.4
 %global glad_ver 2.0.4
 %global miniz_ver 3.0.0
 %global vk_ver 1.3.261
@@ -152,7 +155,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3561
+Version:        0.2.0.3589
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator 
 
@@ -168,7 +171,11 @@ Source120:      https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname120}/archiv
 Source13:       https://github.com/aantron/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 Source15:       %{vc_url}/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%if %{without ffmpeg}
 Source17:       %{vc_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+Source170:      https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
+Source171:      ffmpeg-linux_x86-64.sh
+%endif
 %if %{without fmt}
 Source18:       https://github.com/fmtlib/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
@@ -191,7 +198,9 @@ Source300:      https://github.com/Princess-of-Sleeping/%{srcname300}/archive/%{
 %if %{without yamlcpp}
 Source31:       https://github.com/jbeder/%{srcname31}/archive/%{commit31}/%{srcname31}-%{shortcommit31}.tar.gz
 %endif
+%if %{without capstone}
 Source32:       https://github.com/aquynh/%{srcname32}/archive/%{commit32}/%{srcname32}-%{shortcommit32}.tar.gz
+%endif
 %if %{without xxhash}
 Source33:       https://github.com/Cyan4973/%{srcname33}/archive/%{commit33}/%{srcname33}-%{shortcommit33}.tar.gz
 %endif
@@ -200,6 +209,11 @@ Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
+Patch500:       0001-Disable-ffmpeg-download.patch
+
+%if %{without ffmpeg}
+ExclusiveArch:  x86_64
+%endif
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -213,7 +227,25 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
 BuildRequires:  boost-devel
+%if %{with capstone}
+BuildRequires:  pkgconfig(capstone) >= 5
+%else
+Provides:       bundled(%{srcname32}) = 0~git%{shortcommit32}
+%endif
 BuildRequires:  cmake(cubeb)
+%if %{with ffmpeg}
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswscale)
+BuildRequires:  ffmpeg-devel
+%else
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(libva-drm)
+BuildRequires:  pkgconfig(libva-x11)
+BuildRequires:  pkgconfig(x11)
+Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
+%endif
 %if %{with fmt}
 BuildRequires:  pkgconfig(fmt) >= 10.1
 %else
@@ -252,7 +284,6 @@ Provides:       bundled(spirv-cross) = 0~git%{shortcommit11}
 Provides:       bundled(%{srcname13}) = 0~git%{shortcommit13}
 Provides:       bundled(%{srcname15}) = 0~git%{shortcommit15}
 Provides:       bundled(%{srcname16}) = 0~git%{shortcommit16}
-Provides:       bundled(%{srcname17}) = 0~git%{shortcommit17}
 Provides:       bundled(%{srcname19}) = 0~git%{shortcommit19}
 Provides:       bundled(%{srcname20}) = 0~git%{shortcommit20}
 Provides:       bundled(%{srcname21}) = 0~git%{shortcommit21}
@@ -265,7 +296,6 @@ Provides:       bundled(%{srcname27}) = 0~git%{shortcommit27}
 Provides:       bundled(%{srcname28}) = 0~git%{shortcommit28}
 Provides:       bundled(%{srcname29}) = 0~git%{shortcommit29}
 Provides:       bundled(%{srcname30}) = 0~git%{shortcommit30}
-Provides:       bundled(%{srcname32}) = 0~git%{shortcommit32}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(miniz) = %{miniz_ver}
 
@@ -274,7 +304,8 @@ Provides:       bundled(miniz) = %{miniz_ver}
 
 
 %prep
-%autosetup -n %{pkgname}-%{commit} -p1
+%autosetup -n %{pkgname}-%{commit} -N -p1
+%autopatch -M 499 -p1
 
 pushd external
 tar -xf %{S:10} -C %{srcname10} --strip-components 1
@@ -284,7 +315,14 @@ tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
 tar -xf %{S:13} -C %{srcname13} --strip-components 1
 tar -xf %{S:15} -C %{srcname15} --strip-components 1
 tar -xf %{S:16} -C %{srcname16} --strip-components 1
+%if %{without ffmpeg}
 tar -xf %{S:17} -C ffmpeg --strip-components 1
+%patch -P 500 -p1
+rm -rf ffmpeg/include/*
+rm -rf ffmpeg/lib/*
+tar -xf %{S:170} -C ffmpeg/include --strip-components 1
+cp -p %{S:171} ffmpeg/include/
+%endif
 %if %{without fmt}
 tar -xf %{S:18} -C %{srcname18} --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
@@ -311,7 +349,10 @@ tar -xf %{S:31} -C %{srcname31} --strip-components 1
 cp -p yaml-cpp/LICENSE LICENSE.yaml-cpp
 sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i CMakeLists.txt
 %endif
+%if %{without capstone}
 tar -xf %{S:32} -C %{srcname32} --strip-components 1
+sed -e '/find_package/s|capstone|\0_DISABLED|g' -i CMakeLists.txt
+%endif
 %if %{without xxhash}
 tar -xf %{S:33} -C %{srcname33} --strip-components 1
 cp -p xxHash/LICENSE LICENSE.xxhash
@@ -321,10 +362,15 @@ tar -xf %{S:34} -C %{srcname34} --strip-components 1
 
 cp -p LibAtrac9/LICENSE LICENSE.LibAtrac9
 cp -p better-enums/LICENSE.md LICENSE.better-enums.md
+%if %{without capstone}
+cp -p capstone/LICENSE.TXT LICENSE.capstone
+%endif
 cp -p concurrentqueue/LICENSE.md LICENSE.concurrentqueue.md
 cp -p ddspp/LICENSE LICENSE.ddspp
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+%if %{without ffmpeg}
 cp -p ffmpeg/copyright copyright.ffmpeg
+%endif
 cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p googletest/LICENSE LICENSE.googletest
 cp -p imgui/LICENSE.txt LICENSE.imgui
@@ -382,11 +428,44 @@ Exec=%{pkgname}
 Terminal=false
 EOF
 
+%if %{without ffmpeg}
+pushd external/ffmpeg
+sed -e '/target_link_libraries/s|INTERFACE|\0 va va-drm va-x11 X11|g' -i CMakeLists.txt
+sed \
+  -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
+  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
+  -e '/make install/d' \
+  -i include/ffmpeg-linux_*.sh
+popd
+%endif
+
 %build
+%if %{without ffmpeg}
+pushd external/ffmpeg/include
+sed \
+  -e "/extra-cflags/s|-O3|$CFLAGS|g" \
+%if %{with clang}
+  -e 's|-flto=[^ ]*||g' \
+%endif
+  -i ffmpeg-linux_*.sh
+chmod +x ffmpeg-linux_*.sh
+%ifarch x86_64
+%{?with_clang:CFLAGS=} ./ffmpeg-linux_x86-64.sh
+%endif
+%make_build
+make install
+popd
+mkdir -p %{__cmake_builddir}/external/ffmpeg/lib
+mv external/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/external/ffmpeg/lib/
+%endif
+
 %cmake \
   -G Ninja \
   -DUSE_LTO:STRING=NEVER \
   -DVITA3K_FORCE_SYSTEM_BOOST:BOOL=ON \
+%if %{with ffmpeg}
+  -DVITA3K_FORCE_SYSTEM_FFMPEG:BOOL=ON \
+%endif
   -DXXH_X86DISPATCH_ALLOW_AVX:BOOL=ON \
   -DUSE_VITA3K_UPDATE:BOOL=OFF \
   -DUSE_DISCORD_RICH_PRESENCE:BOOL=OFF \

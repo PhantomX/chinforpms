@@ -120,8 +120,6 @@ EOF
 
 
 %build
-%set_build_flags
-
 %if %{with asm}
 export USE_ASM=1
 export IS_X64=1

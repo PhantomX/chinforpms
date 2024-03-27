@@ -1,6 +1,6 @@
-%global commit bef4f0ad46b9115fddfce976e1a5adfcdeff3580
+%global commit ab0e989499d96c6351ede4adcd086418802ab6e4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230309
+%global date 20240326
 %bcond_with snapshot
 
 %if %{with snapshot}
@@ -10,7 +10,7 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20230909
+Version:        20240101
 Release:        1%{?dist}
 Summary:        Disc and disk image creation tool 
 
@@ -62,7 +62,6 @@ sed \
   -i %{pkgname}/get.cpp
 
 %build
-%set_build_flags
 %make_build -C %{pkgname}
 
 
@@ -82,6 +81,9 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20240101-1
+- 20240101
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 20230909-1
 - 20230909
 

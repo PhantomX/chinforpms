@@ -1,6 +1,6 @@
-%global commit 4935c972eb15f170f36412974e6f86a48ee83324
+%global commit 12546367b8cd67af8ba56650404cf72dc3742814
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240202
+%global date 20240326
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 # Use provided binary for first time bootstrap
 # Set to 0 after
-%global bootstrap 0
+%global bootstrap 1
 
 %undefine _debugsource_packages
 
@@ -20,7 +20,7 @@
 %endif
 
 Name:           asmc
-Version:        2.34.39
+Version:        2.34.49
 Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -58,8 +58,6 @@ sed \
 
 
 %build
-%set_build_flags
-
 
 mkdir stage1
 
@@ -113,6 +111,9 @@ install -pm0755 source/%{name}/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.49-1.20240326git1254636
+- 2.34.49
+
 * Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.39-1.20240202git4935c97
 - 2.34.39
 

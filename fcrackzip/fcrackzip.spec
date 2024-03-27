@@ -1,6 +1,10 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 Name:           fcrackzip
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Password cracker for zip archives
 
 License:        GPL-2.0-only
@@ -55,5 +59,8 @@ mv %{buildroot}%{_bindir}/zipinfo %{buildroot}%{_bindir}/fcrack-zipinfo
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0-2
+- build_type_safety_c 0
+
 * Tue Aug 25 2020 Phantom X <megaphantomx at hotmail dot com> - 1.0-1
 - Initial spec

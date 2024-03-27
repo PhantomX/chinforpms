@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.0
+%define specrpmversion 6.8.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,12 +214,12 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 1
+%global post_factum 2
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit e2f1890110c01ee515153c90d1288c5e4bf0fe4c
+%global pfcommit de7817223cb21e830c80b234fac20b3115513812
 %global pf_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
 %global pfcoprhash 870d4982f716927de674c133908fb310
 %if "%{pfcommit}" == "0"
@@ -237,15 +237,15 @@ Summary: The Linux kernel
 %if 0%{?pf_stable_extra}
 # Use official patch instead diff from git
 %global pf_stable_full 1
-%global st_first_commit f6c30bfe5a49bc38cae985083a11016800708fea
-%global st_last_commit 903f401696531c59a7dbc020258b64944cd2453b
+%global st_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
+%global st_last_commit 03a22b591c5443ba269e8570c6fef411251fe1b8
 %global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
 %global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
 %global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
 %endif
 %endif
 
-%global opensuse_id bd04f98ccf0a884928645e2b4ad29652d5aaa242
+%global opensuse_id 4b0ca589d4bf654c3f695093e9b4a68d984b3af4
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1076,6 +1076,13 @@ Source4002: gating.yaml
 Patch5000:  %{pf_patch}
 Patch5002:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
 Patch5003:  %{pf_url}/4190f58a10e079bbbb487cc0520db13ee09aa05e.patch#/pf-revert-4190f58.patch
+Patch5004:  %{pf_url}/74b6fc23b9977f6a093645fd35cba8a41d3904f9.patch#/pf-revert-74b6fc2.patch
+Patch5005:  %{pf_url}/ff18f7d3c6cbbd2932789d384eccf1db301ab37c.patch#/pf-revert-ff18f7d.patch
+Patch5006:  %{pf_url}/e7e55653a5f9a1837d936cb5b0a507b0f7bec78d.patch#/pf-revert-e7e5565.patch
+Patch5007:  %{pf_url}/248bf6f07f19efdde2028742044745704d72eb57.patch#/pf-revert-248bf6f.patch
+Patch5008:  %{pf_url}/4cb0dd12456c901b3e55e47382aaf2189f8b90c7.patch#/pf-revert-4cb0dd1.patch
+Patch5009:  %{pf_url}/d2b40c9ea0dfbe3a34eaf55e0427e807feac7ac8.patch#/pf-revert-d2b40c9.patch
+Patch5010:  %{pf_url}/ed88ac9bf8fd1694c850a88110dcc9146e370529.patch#/pf-revert-ed88ac9.patch
 
 %if 0%{?pf_stable_extra}
 %if !0%{?pf_stable_full}
@@ -1930,6 +1937,13 @@ cp -a %{SOURCE1} .
 ApplyPatch %{PATCH5000}
 ApplyPatch %{PATCH5002} -R
 ApplyPatch %{PATCH5003} -R
+ApplyPatch %{PATCH5004} -R
+ApplyPatch %{PATCH5005} -R
+ApplyPatch %{PATCH5006} -R
+ApplyPatch %{PATCH5007} -R
+ApplyPatch %{PATCH5008} -R
+ApplyPatch %{PATCH5009} -R
+ApplyPatch %{PATCH5010} -R
 %if 0%{?stable_update} && 0%{?pf_stable_extra}
 %if 0%{?pf_stable_full}
 xzcat %{PATCH6000} | filterdiff -p1 -x Makefile > pf_stable_extra.patch

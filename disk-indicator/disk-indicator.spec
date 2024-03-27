@@ -41,9 +41,6 @@ sed \
   -i Makefile 
 
 %build
-
-%set_build_flags
-
 ./configure.sh --all
 %make_build 
 

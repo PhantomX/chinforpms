@@ -1,6 +1,6 @@
-%global commit 21c3681a90626469a9cb31f526046112aae75450
+%global commit 4c8ac6d6627133bfcc7dfbc8f112ad48a16395ef
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230723
+%global date 20240210
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,12 +12,12 @@
 
 %global appname io.github.sithlord48.%{name}
 
-%global ff7tk_ver 0.83.2
+%global ff7tk_ver 1.0.0
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
-Version:        1.14.0.0
+Version:        1.15.0.0
 Release:        1%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
@@ -135,6 +135,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.15.0.0-1.20240210git4c8ac6d
+- 1.15.0.0
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:1.14.0.0-1.20230723git21c3681
 - 1.14.0.0
 

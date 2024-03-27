@@ -3,7 +3,7 @@
 Name:           buildsys-build-%{repo}
 Epoch:          11
 Version:        39
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tools and files used by the %{repo} buildsys 
 
 License:        MIT
@@ -77,6 +77,9 @@ sed -i 's|^default_prefix=.*|default_prefix=%{_datadir}/%{name}/|'  \
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 11:39-2
+- Bump for 40
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 11:39-1
 - Bump for 39
 

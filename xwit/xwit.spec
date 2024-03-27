@@ -34,7 +34,6 @@ cp -p debian/copyright LICENSE
 
 
 %build
-%set_build_flags
 CFLAGS+=" -Wall -Wmissing-prototypes -Wstrict-prototypes"
 LDFLAGS+=" -Wl,-z,defs"
 %make_build

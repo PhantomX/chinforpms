@@ -1,9 +1,13 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global pkgname libvorbis
 
 Name:           %{pkgname}-aotuv
 Summary:        The Vorbis General Audio Compression Codec - aoTuV optimized
 Version:        1.3.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        BSD-3-Clause
 
@@ -85,5 +89,8 @@ make check
 
 
 %changelog
+* Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-2
+- build_type_safety_c 1
+
 * Fri Dec 11 2020 Phantom X <megaphantomx at hotmail dot com> - 2:1.3.7-1
 - Initial spec

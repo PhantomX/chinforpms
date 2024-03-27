@@ -99,8 +99,6 @@ sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main
 
 
 %build
-%set_build_flags
-
 %if %{with asm}
 export USE_ASM=1
 %endif

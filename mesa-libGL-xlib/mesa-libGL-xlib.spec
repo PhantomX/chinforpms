@@ -133,6 +133,9 @@ EOF
   -Dlmsensors=disabled \
   -Dlibunwind=enabled \
   -Dandroid-libbacktrace=disabled \
+%ifarch %{ix86}
+  -Dglx-read-only-text=true
+%endif
   %{nil}
 
 %meson_build

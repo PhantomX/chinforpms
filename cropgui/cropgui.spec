@@ -1,7 +1,7 @@
 %global commit cd46c9827aef16466e921f41ffdf86c86285dd02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230615
-%bcond_without snapshot
+%bcond_with snapshot
 
 BuildArch:      noarch
 
@@ -10,8 +10,8 @@ BuildArch:      noarch
 %endif
 
 Name:           cropgui
-Version:        0.6
-Release:        4%{?dist}
+Version:        0.7
+Release:        1%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPL-2.0-or-later
@@ -92,6 +92,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7-1
+- 0.7
+
 * Wed Nov 16 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6-1.20220916git1340ac1
 - 0.6
 

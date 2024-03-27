@@ -1,0 +1,35 @@
+From 99017891cad55972c26c0ca8354f48e722b37a66 Mon Sep 17 00:00:00 2001
+From: Pierre-Eric Pelloux-Prayer <pierre-eric.pelloux-prayer@amd.com>
+Date: Mon, 18 Mar 2024 11:52:50 +0100
+Subject: [PATCH] winsys/radeon: pass priv instead NULL to
+ radeon_bo_can_reclaim
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This fixes a NULL pointer issue.
+
+Fixes: 4a078e693e9 ("r300,r600,radeon/winsys: always pass the winsys to radeon_bo_reference")
+Closes: https://gitlab.freedesktop.org/mesa/mesa/-/issues/10613
+Reviewed-by: Marek Olšák <marek.olsak@amd.com>
+Part-of: <https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28240>
+---
+ src/gallium/winsys/radeon/drm/radeon_drm_bo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/gallium/winsys/radeon/drm/radeon_drm_bo.c b/src/gallium/winsys/radeon/drm/radeon_drm_bo.c
+index 2e1d9c488e2..7979cad75fa 100644
+--- a/src/gallium/winsys/radeon/drm/radeon_drm_bo.c
++++ b/src/gallium/winsys/radeon/drm/radeon_drm_bo.c
+@@ -729,7 +729,7 @@ bool radeon_bo_can_reclaim_slab(void *priv, struct pb_slab_entry *entry)
+ {
+    struct radeon_bo *bo = container_of(entry, struct radeon_bo, u.slab.entry);
+ 
+-   return radeon_bo_can_reclaim(NULL, &bo->base);
++   return radeon_bo_can_reclaim(priv, &bo->base);
+ }
+ 
+ static void radeon_bo_slab_destroy(void *winsys, struct pb_buffer_lean *_buf)
+-- 
+2.44.0
+

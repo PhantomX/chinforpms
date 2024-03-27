@@ -36,8 +36,6 @@ GKrellMPC is a GKrellM plugin to control MPD.
 %autosetup -n %{name}-%{ver} -p1
 
 %build
-%set_build_flags
-
 %make_build
 
 
