@@ -51,8 +51,6 @@ ${patch_command} -i debian/patches/unlock-qt.patch
 
 
 %build
-%set_build_flags
-
 %{__python3} build.py --skip-git --skip-qtbase --skip-qtwebkit --confirm --release
 
 %install

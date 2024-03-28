@@ -32,7 +32,6 @@ MP3val is also able to fix most of the problems.
   Makefile.linux
 
 %build
-%set_build_flags
 %make_build -f Makefile.linux
 
 %install

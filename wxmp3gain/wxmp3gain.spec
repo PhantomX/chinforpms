@@ -1,7 +1,3 @@
-%global debug_package %{nil}
-%global _build_id_links none
-%global __strip /bin/true
-
 %global commit 5e748cd7f97ec5ab212c604fca6f9550f3e98099
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230401

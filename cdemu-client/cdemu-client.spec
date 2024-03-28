@@ -56,7 +56,7 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 %{_bindir}/*
 %{_datadir}/applications/*.desktop
 %{_datadir}/pixmaps/*.svg
-%{_datadir}/bash-completion/completions/cdemu
+%{bash_completions_dir}/completions/cdemu
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 
 

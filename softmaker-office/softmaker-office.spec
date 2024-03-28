@@ -11,7 +11,7 @@
 %endif
 
 %global pkgver 2024
-%global pkgrel 1204
+%global pkgrel 1210
 %global repo https://shop.softmaker.com/repo
 %global pkgdir office%{pkgver}
 %global dist %{?dist}
@@ -164,13 +164,18 @@ install -pm0644 mime/%{name}-%{pkgver}.xml \
 
 %files
 %license mime/copyright
-%{_bindir}/*
+%{_bindir}/planmaker
+%{_bindir}/presentations
+%{_bindir}/textmaker
 %{_libdir}/%{name}
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/*/*.png
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Thu Mar 28 2024 - 1:2024.1210-1
+- 2024.1204
+
 * Mon Oct 02 2023 - 1:2024.1204-1
 - 2024-1204
 

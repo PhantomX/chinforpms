@@ -1,9 +1,9 @@
 %global debug_package %{nil}
 %global __strip /bin/true
 
-%global cheatver 0257
-%global historyver 258
-%global infover 0258
+%global cheatver 0259
+%global historyver 264
+%global infover 0264
 
 %global samplelink http://samples.mameworld.info/wav
 
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 0.258-1
+- 0.264
+
 * Wed Aug 30 2023 Phantom X <megaphantomx at hotmail dot com> - 0.258-1
 - 0.258
 

@@ -29,7 +29,6 @@ Recommends:     (libstrangle(x86-32) if glibc(x86-32))
 %autosetup -p1
 
 %build
-%set_build_flags
 %make_build libdir=%{_libdir}
 
 

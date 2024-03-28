@@ -58,8 +58,6 @@ sed \
 sed -e 's|/lib/|/%{_lib}/|g' -i src/loader/console.cpp src/loader/gui.cpp
 
 %build
-%set_build_flags
-
 %make_build prefix=/usr libdir=%{_libdir}
 
 

@@ -1,6 +1,6 @@
-%global commit e4bdee13ffa8959a2ba052bf5b2f53e0455f8994
+%global commit 961f232cf99d546b2b7e704c0ecf3fc5bea52221
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230604
+%global date 20240126
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           maxcso
 Version:        1.13.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Fast cso compressor
 
 # maxcso - ISC
@@ -50,12 +50,11 @@ rm -rf lz4 libdeflate libuv zlib zopfli
 
 
 %build
-%set_build_flags
-%make_build SYSTEM_LIBDEFLATE=1 SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
+%make_build USE_EXTERNAL_LIBDEFLATE=1 USE_EXTERNAL_ZOPFLI=1 PREFIX=%{_prefix}
 
 
 %install
-%make_install SYSTEM_LIBDEFLATE=1 SYSTEM_ZOPFLI=1 PREFIX=%{_prefix}
+%make_install USE_EXTERNAL_LIBDEFLATE=1 USE_EXTERNAL_ZOPFLI=1 PREFIX=%{_prefix}
 
 
 %files
@@ -66,6 +65,9 @@ rm -rf lz4 libdeflate libuv zlib zopfli
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-7.20240126git961f232
+- Rework external libraries fix
+
 * Sat Dec 11 2021 Phantom X <megaphantomx at hotmail dot com> - 1.13.0-3.20211208gita4b6f86
 - Bump
 

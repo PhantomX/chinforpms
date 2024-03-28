@@ -16,7 +16,7 @@
 %global pkgver %%(c=%{version}; echo ${c//./_})
 
 Name:           vasm
-Version:        1.9d
+Version:        1.9f
 Release:        1%{?dist}
 Summary:        Portable 6502 6800 arm c16x jagrisc m68k ppc vidcore x86 z80 assembler
 
@@ -37,12 +37,12 @@ various formats or absolute code.
 %autosetup -n %{name}
 
 sed \
-  -e 's|-O2|$(CFLAGS)|g' \
+  -e 's|-O2||g' \
+  -e 's|^CFLAGS =|CFLAGS +=|g' \
   -e 's|^LDFLAGS =|LDFLAGS += -Wl,-z,noexecstack |g' \
   -i Makefile
 
 %build
-%set_build_flags
 for cpu in %{cpu_list}; do
   for syntax in %{syntax_list}; do
     %make_build CPU=${cpu} SYNTAX=${syntax}
@@ -71,7 +71,10 @@ strip --strip-unneeded %{buildroot}%{_bindir}/vobjdump
 
 
 %changelog
-* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.9d-1
+* Thu Mar 28 2024 - 1.9f-1
+- 1.9f
+
+* Sat Sep 16 2023 - 1.9d-1
 - 1.9d
 
 * Tue Mar 29 2022 - 1.9-2

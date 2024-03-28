@@ -1,6 +1,10 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 # Disable LTO. Build fails
 %global _lto_cflags %{nil}
 
@@ -26,7 +30,7 @@
 
 Name:           kronos
 Version:        2.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -138,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-2.20230216git1930e4b
+- build_type_safety_c 0
+
 * Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-1.20230216git1930e4b
 - 2.5.0
 

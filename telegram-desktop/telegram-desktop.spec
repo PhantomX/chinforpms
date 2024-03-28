@@ -17,7 +17,7 @@
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
 %bcond_without bundled_fonts
-%bcond_with minizip
+%bcond_without minizip
 %bcond_without wayland
 %bcond_without x11
 
@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        4.15.5
+Version:        4.15.6
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -111,7 +111,7 @@ BuildRequires:  libdispatch-devel
 BuildRequires:  libqrcodegencpp-devel
 BuildRequires:  libstdc++-devel
 %if %{with minizip}
-BuildRequires:  minizip-compat-devel
+BuildRequires:  minizip-ng-compat-devel
 %else
 Provides:       bundled(minizip) = %{minizip_ver}
 %endif
@@ -357,6 +357,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.15.6-100
+- 4.15.6
+
 * Mon Mar 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.15.5-100
 - 4.15.5
 

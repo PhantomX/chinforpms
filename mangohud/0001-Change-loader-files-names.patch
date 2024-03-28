@@ -1,4 +1,4 @@
-From 5eceba6fcc92b12a394c7a9135e64ea166090d3e Mon Sep 17 00:00:00 2001
+From f0f8236fda91d44f3da011713a32cf9dbe000801 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 26 Aug 2023 09:26:06 -0300
 Subject: [PATCH] Change loader files names
@@ -22,19 +22,19 @@ index fd3dd2f..3a19ef9 100644
        "api_version": "1.3.0",
        "library_path": "@ld_libdir_mangohud_abs@/libMangoHud.so",
 diff --git a/src/meson.build b/src/meson.build
-index 537ce63..933355a 100644
+index 39396d1..e71a614 100644
 --- a/src/meson.build
 +++ b/src/meson.build
-@@ -3,7 +3,7 @@ glslang = find_program('glslang', 'glslangValidator')
+@@ -9,7 +9,7 @@ endif
  # Needs prefix for configure_file()
  if get_option('append_libdir_mangohud')
    libdir_mangohud = join_paths(get_option('prefix'), get_option('libdir'), 'mangohud')
--  ld_libdir_mangohud = get_option('prefix') + '/\$LIB/mangohud/'
-+  ld_libdir_mangohud = get_option('prefix') + '/\$LIB/mangohud'
+-  ld_libdir_mangohud = ld_prefix + 'mangohud/'
++  ld_libdir_mangohud = ld_prefix + 'mangohud'
  else
    libdir_mangohud = join_paths(get_option('prefix'), get_option('libdir'))
-   ld_libdir_mangohud = get_option('prefix') + '/\$LIB/'
-@@ -11,8 +11,7 @@ endif
+   ld_libdir_mangohud = ld_prefix
+@@ -27,8 +27,7 @@ endif
  
  conf_data = configuration_data()
  
@@ -42,9 +42,9 @@ index 537ce63..933355a 100644
 -conf_data.set('ld_libdir_mangohud', ld_libdir_mangohud)
 +conf_data.set('ld_libdir_mangohud_abs', ld_libdir_mangohud)
  conf_data.set('cpu_family', host_machine.cpu_family())
- conf_data.set('version', run_command(['git', 'describe', '--tags', '--dirty=+']).stdout().strip())
+ conf_data.set('version', describe_ver)
  
-@@ -315,7 +314,7 @@ if get_option('mangoapp_layer')
+@@ -338,7 +337,7 @@ if get_option('mangoapp_layer')
  endif
  
  configure_file(input : 'mangohud.json.in',
@@ -53,7 +53,7 @@ index 537ce63..933355a 100644
    configuration : conf_data,
    install : true,
    install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
-@@ -331,7 +330,7 @@ configure_file(input : '../bin/mangohud.in',
+@@ -354,7 +353,7 @@ configure_file(input : '../bin/mangohud.in',
  
  if get_option('mangoapp_layer')
    configure_file(input : 'app/layer.json.in',
@@ -63,5 +63,5 @@ index 537ce63..933355a 100644
      install : true,
      install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
 -- 
-2.41.0
+2.44.0
 

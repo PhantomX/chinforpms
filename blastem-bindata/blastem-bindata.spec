@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit b9cd3c64652d
-%global date 20230904
+%global commit ea37200967c7
+%global date 20240307
 %bcond_without snapshot
 
 %if %{with snapshot}

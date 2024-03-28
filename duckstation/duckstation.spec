@@ -14,14 +14,15 @@
 %bcond_with nogui
 
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
+%bcond_with minizip
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 3702a533f276a4af232228db899d80cc5cabb5e4
+%global commit c09e9edc4a25fb40fae22e9c050b61cc3eefbe3c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240316
+%global date 20240328
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -31,16 +32,18 @@
 %global appname org.%{name}.DuckStation
 %global vc_url  https://github.com/stenzek/%{name}
 
+%global fmt_ver 10.1.1
 %global glad_ver 0.1.33
 %global imgui_ver 1.90.1
 %global md5_ver 1.6
+%global minizip_ver 1.1
 %global rcheevos_scommit 3d01191
 %global simpleini_ver 4.22
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
 Version:        0.1
-Release:        113%{?dist}
+Release:        114%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -88,7 +91,7 @@ BuildRequires:  cmake(FastFloat)
 %if %{with fmt}
 BuildRequires:  pkgconfig(fmt) >= 10.1
 %else
-Provides:       bundled(fmt) = 10.1.1
+Provides:       bundled(fmt) = %{fmt_ver}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)
@@ -103,6 +106,8 @@ BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
+%else
+Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -114,7 +119,11 @@ BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  minizip-compat-devel
+%if %{with minizip}
+BuildRequires:  minizip-ng-compat-devel
+%else
+Provides:       bundled(minizip) = %{minizip_ver}
+%endif
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
 %endif
@@ -144,9 +153,6 @@ Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = %{simpleini_ver}
-%if %{without soundtouch}
-Provides:       bundled(soundtouch) = %{soundtouch_ver}
-%endif
 Provides:       bundled(spirv-tools) = 0~git
 %dnl Provides:       bundled(zydis) = 0~git
 
@@ -187,7 +193,7 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cpuinfo cubeb discord-rpc gsl libchdr libFLAC libjpeg libpng lzma minizip msvc \
+  cpuinfo cubeb discord-rpc gsl libchdr libFLAC libjpeg libpng lzma msvc \
   rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
 
 %if %{with fmt}
@@ -196,6 +202,13 @@ rm -rf \
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
 cp fmt/LICENSE.rst LICENSE.fmt.rst
 %endif
+
+%if %{with minizip}
+  rm -rf minizip
+%else
+sed -e '/pkg_search_module/s|minizip|\0_DISABLED|g' -i CMakeLists.txt
+%endif
+
 
 %if %{with soundtouch}
 rm -rf soundtouch
@@ -298,7 +311,7 @@ rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto-Regular.ttf
 
-ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
+ln -sf ../../../fonts/google-roboto-mono-fonts/RobotoMono-Medium.ttf \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
 
 ln -sf ../../../fonts/google-noto-sans-jp-fonts/NotoSansJP-Regular.otf \

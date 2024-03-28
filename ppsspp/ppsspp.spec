@@ -7,9 +7,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8e93f9ad71c645cb77047fe1bd75bfb925f83580
+%global commit 768174e19ca80bccadc067bd2c7adc0d35fb4602
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240317
+%global date 20240327
 %bcond_without snapshot
 
 # Enable Qt build
@@ -59,6 +59,10 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
+%global commit10 288d3a7ebc1ad959f62d51da75baa3d27438c499
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 OpenXR-SDK
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -70,7 +74,7 @@
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -96,9 +100,10 @@ Source6:        https://github.com/KhronosGroup/%{srcname6}/archive/%{commit6}/%
 Source7:        https://github.com/KhronosGroup/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/RetroAchievements/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
-Source10:       %{name}.appdata.xml
-Source11:       Makefile
+Source100:       %{name}.appdata.xml
+Source101:       Makefile
 
 Patch0:         %{name}-noupdate.patch
 Patch1:         0001-Disable-Discord-support.patch
@@ -231,6 +236,7 @@ tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
+tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
 %endif
 
 rm -rf ext/glew/GL
@@ -255,6 +261,7 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
+cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
 popd
 
 sed -i \
@@ -431,7 +438,7 @@ desktop-file-install --mode 0644 \
   %{name}.desktop
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:10} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm 0644 %{S:100} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files

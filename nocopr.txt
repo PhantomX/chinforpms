@@ -3,7 +3,7 @@ aacgain
 -amdgpu-pro-vulkan-driver
 ares
 audacious-plugins-freeworld
-authy
+-authy
 bandwhich
 bh-fonts
 binkplayer
@@ -15,7 +15,7 @@ cemu
 chinforpms-fake-packages
 citra
 -cowsrevenge
-czkawka
+-czkawka
 dbeaver-ce
 -desmume
 -discord
@@ -36,11 +36,12 @@ hakuneko-desktop
 -higan
 -irpf2017
 -irpf2018
-irpf2019
+-irpf2019
 irpf2020
 irpf2021
 irpf2022
 irpf2023
+irpf2024
 -kepka
 lbreakouthd
 kronos
@@ -67,7 +68,7 @@ python-haccrypto
 python-pyctr
 -reicast
 -odrive
-rocketchat-desktop
+-rocketchat-desktop
 rpcs3
 rustdesk
 rustdesk-server
@@ -79,7 +80,8 @@ softmaker-office
 spideroakone
 steam
 supermodel
-teamviewer
+suyu
+-teamviewer
 telegram-desktop
 tg_owt
 tush
@@ -87,6 +89,7 @@ tush
 vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
+vita3k
 vivaldi
 vivaldi-ffmpeg-codecs
 -vmware-horizon-client
@@ -96,5 +99,5 @@ vvvvvv-data
 wps-office
 -yabause
 -yggdrasil
-yuzu
+-yuzu
 zoom

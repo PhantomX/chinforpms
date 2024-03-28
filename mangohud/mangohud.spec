@@ -15,7 +15,8 @@
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
-%global imgui_ver 1.81
+%global imgui_ver 1.89.9
+%global implot_ver 0.16
 %global vulkan_ver 1.2.158
 
 %global pkgname MangoHud
@@ -24,7 +25,7 @@
 %global ver    %%(echo %{version} | sed -z 's/\\./-/3')
 
 Name:           mangohud
-Version:        0.7.0
+Version:        0.7.1
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -43,6 +44,8 @@ Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#
 Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan_ver}.tar.gz#/Vulkan-Headers-%{vulkan_ver}.tar.gz
 Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/get_patch#/vulkan-headers_%{vulkan_ver}-2-wrap.zip
 %endif
+Source14:       https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.zip
+Source15:       https://wrapdb.mesonbuild.com/v2/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-1-wrap.zip
 
 # MangoHud switched to bundled vulkan-headers since 0.6.9 version. This rebased
 # upstream patch which reverts this change.
@@ -82,6 +85,7 @@ Requires:       libglvnd-glx%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(imgui) = %{imgui_ver}
+Provides:       bundled(implot) = %{implot_ver}
 
 Recommends:     (mangohud(x86-32) if glibc(x86-32))
 
@@ -115,6 +119,8 @@ unzip %{S:11} -d subprojects/
 tar xf %{S:12} -C subprojects/
 unzip %{S:13} -d subprojects/
 %endif
+unzip %{S:14} -d subprojects/
+unzip %{S:15} -d subprojects/
 
 rm -f include/nvml.h
 
@@ -143,6 +149,7 @@ sed \
 %meson \
   --libdir=%{_libdir} \
   -Dappend_libdir_mangohud=true \
+  -Ddynamic_string_tokens=true \
   -Dglibcxx_asserts=false \
   -Duse_system_spdlog=enabled \
   -Duse_system_vulkan=%{?with_sysvulkan:enabled}%{!?with_sysvulkan:disabled} \
@@ -196,6 +203,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.1-100
+- 0.7.1
+
 * Mon Oct 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.7.0-100
 - 0.7.0
 - Rawhide sync

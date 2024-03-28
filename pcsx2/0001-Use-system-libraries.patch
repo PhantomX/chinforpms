@@ -1,4 +1,4 @@
-From 593cbe6d448b517076e784b974da8e7dcc338bc2 Mon Sep 17 00:00:00 2001
+From 02e17d44f6c8f13ee44dd8386427b68a3764a401 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -11,7 +11,7 @@ Subject: [PATCH] Use system libraries
  4 files changed, 83 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index a9f82c3..0e3a885 100644
+index 71f7aed..22804c3 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -100,29 +100,82 @@ if(ENABLE_TESTS)
@@ -121,7 +121,7 @@ index a9f82c3..0e3a885 100644
 +endif()
  
  # Find the Qt components that we need.
- find_package(Qt6 6.6.0 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
+ find_package(Qt6 6.6.2 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
 @@ -150,7 +215,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
@@ -136,7 +136,7 @@ index a9f82c3..0e3a885 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 21b8ad1..c6f451b 100644
+index fb1ab1f..f0cf187 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
 @@ -1105,7 +1105,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
@@ -200,5 +200,5 @@ index 66a1f03..fa96247 100644
  #include "common/Assertions.h"
  
 -- 
-2.43.0
+2.44.0
 

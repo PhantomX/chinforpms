@@ -1,4 +1,4 @@
-From 75f4ce2d6dd5c51a63dbd54005d50e64379e6520 Mon Sep 17 00:00:00 2001
+From 0371944d43f913771d07be317edf5bec5f9aca0f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 19 Jan 2021 08:02:01 -0300
 Subject: [PATCH] Disable automatic autostart settings
@@ -9,20 +9,20 @@ This is not good when there is no manual configuration
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/main-status-icon.c b/src/main-status-icon.c
-index 6f81dbb..fbb0934 100644
+index ee1f095..e230dd3 100644
 --- a/src/main-status-icon.c
 +++ b/src/main-status-icon.c
-@@ -211,7 +211,7 @@ __lambda8_ (void)
+@@ -313,7 +313,7 @@ static void
+ __lambda9_ (void)
+ {
  	XnpApplication* _tmp0_;
- 	_tmp0_ = application;
- 	xnp_application_save_notes (_tmp0_);
 -	xfce_autostart_set ("xfce4-notes-autostart", "xfce4-notes", TRUE);
 +	//xfce_autostart_set ("xfce4-notes-autostart", "xfce4-notes", TRUE);
- 	gtk_main_quit ();
+ 	_tmp0_ = application;
+ 	xnp_application_quit (_tmp0_);
  }
- 
-@@ -366,7 +366,7 @@ _vala_main (gchar** args,
- 	g_signal_connect ((GApplication*) app, "activate", (GCallback) ___lambda10__g_application_activate, NULL);
+@@ -420,7 +420,7 @@ _vala_main (gchar** args,
+ 	g_signal_connect ((GApplication*) app, "activate", (GCallback) ___lambda11__g_application_activate, NULL);
  	g_set_application_name (_ ("Notes"));
  	build_plugin ();
 -	xfce_autostart_set ("xfce4-notes-autostart", "xfce4-notes", FALSE);
@@ -31,5 +31,5 @@ index 6f81dbb..fbb0934 100644
  	_g_object_unref0 (application);
  	application = NULL;
 -- 
-2.29.2
+2.44.0
 

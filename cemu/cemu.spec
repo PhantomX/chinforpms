@@ -18,7 +18,7 @@
 %bcond_with snapshot
 
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
 
 %global commit1 f65bcf481ab34cd07d3909aab1479f409fa79f2f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -40,7 +40,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~72
+Version:        2.0~73
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -57,7 +57,6 @@ Source1:        https://github.com/ocornut/%{srcname1}/archive/%{commit1}/%{srcn
 Source2:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
 
-Patch0:         %{vc_url}/commit/eaa82817dd235b5067002df76b06e66a550ac1d3.patch#/%{name}-gh-eaa8281.patch
 Patch10:        0001-Bundled-fmt-support.patch
 
 ExclusiveArch:  x86_64

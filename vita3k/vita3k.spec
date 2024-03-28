@@ -209,6 +209,7 @@ Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
+Patch13:        0001-gcc-14-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 
 %if %{without ffmpeg}

@@ -1,5 +1,5 @@
 Name:           plzip
-Version:        1.10
+Version:        1.11
 Release:        1%{?dist}
 Summary:        Multi-threaded compressor using the lzip file format
 
@@ -23,7 +23,6 @@ Plzip is a massively parallel (multi-threaded) implementation of lzip.
 
 
 %build
-%set_build_flags
 %configure CXXFLAGS="${CXXFLAGS}" LDFLAGS="${LDFLAGS}"
 %make_build
 
@@ -47,6 +46,9 @@ make check
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.11-1
+- 1.11
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.10-1
 - 1.10
 

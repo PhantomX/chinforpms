@@ -33,7 +33,6 @@ developing applications that use %{name}.
 
 
 %build
-%set_build_flags
 %configure \
   --disable-static \
   --enable-shared \

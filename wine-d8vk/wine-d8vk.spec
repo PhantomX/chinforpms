@@ -54,7 +54,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 Summary:        Vulkan-based D3D8 implementation for Linux / Wine
 
@@ -76,6 +76,8 @@ Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcomm
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
 Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+
+Patch10:        0001-gcc-14-build-fix.patch
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -256,5 +258,8 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0-3.20230615git1a039a4
+- gcc 14 build fix
+
 * Wed May 10 2023 Phantom X <megaphantomx at hotmail dot com> - 1.0-1
 - Initial spec

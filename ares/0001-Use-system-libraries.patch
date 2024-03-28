@@ -1,14 +1,14 @@
-From f6885dccb8a65534fd7e3dee5303e711dea09dae Mon Sep 17 00:00:00 2001
+From ac6fa669b2296d835ae4290b9110eef5a4f6c242 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 13 Nov 2022 12:06:55 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- thirdparty/GNUmakefile | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ thirdparty/GNUmakefile | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/thirdparty/GNUmakefile b/thirdparty/GNUmakefile
-index 5390f9f..15da9cd 100644
+index fb0f6b7..570c0dc 100644
 --- a/thirdparty/GNUmakefile
 +++ b/thirdparty/GNUmakefile
 @@ -6,6 +6,12 @@ $(object.path)/sljitAllocator.o: $(thirdparty.path)/sljitAllocator.cpp
@@ -24,15 +24,14 @@ index 5390f9f..15da9cd 100644
  libchdr.objects := libchdr_bitstream libchdr_cdrom libchdr_chd libchdr_flac libchdr_huffman
  libchdr.objects += lzma_alloc lzma_bra86 lzma_braia64 lzma_cpuarch lzma_delta lzma_lfind
  libchdr.objects += lzma_86dec lzma_dec lcma_enc lzma_sort
-@@ -45,7 +51,7 @@ $(object.path)/zlib_zutil.o: $(libchdr.path)/deps/zlib-1.2.13/zutil.c
- 
- flags += -I$(libchdr.path)/include
- flags += -I$(libchdr.path)/deps/lzma-19.00/include -D_7ZIP_ST
--flags += -I$(libchdr.path)/deps/zlib-1.2.13
+@@ -66,6 +72,7 @@ flags += -I$(libchdr.path)/deps/lzma-19.00/include -D_7ZIP_ST
+ flags += -I$(libchdr.path)/deps/zlib-1.2.13
+ flags += -I$(libchdr.path)/deps/zstd-1.5.5/lib
+ flags += -DZSTD_DISABLE_ASM
 +endif
  
  # instruct glibc to declare fseeko/ftello
  flags += -D_LARGEFILE_SOURCE
 -- 
-2.41.0
+2.44.0
 

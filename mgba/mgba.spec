@@ -1,9 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit 49d9b70e6f2015165b6719a6da8ea842e996fde0
+%global commit e3edca1f4168c1eee36cd213ef8d5e91fd35e400
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240208
-%global sbuild 8325
+%global date 20240327
+%global sbuild 8353
 %bcond_without snapshot
 
 # Enable ffmpeg support
@@ -21,7 +21,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.19%{?dist}
+Release:        0.20%{?dist}
 Summary:        A Nintendo Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
@@ -54,13 +54,13 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lua)
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Multimedia)
-BuildRequires:  pkgconfig(Qt5Network)
-BuildRequires:  pkgconfig(Qt5OpenGL)
-BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  qt5-linguist
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6Multimedia)
+BuildRequires:  pkgconfig(Qt6Network)
+BuildRequires:  pkgconfig(Qt6OpenGL)
+BuildRequires:  pkgconfig(Qt6Widgets)
+BuildRequires:  qt6-linguist
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(sqlite3)
 BuildRequires:  pkgconfig(zlib)
@@ -132,6 +132,7 @@ sed -i \
 %endif
 
 sed -e 's|BUILD_UPDATER ON|BUILD_UPDATER OFF|g' -i CMakeLists.txt
+sed -e 's|QT_VERSIONS 6 5|QT_VERSIONS 6|' -i src/platform/qt/CMakeLists.txt
 
 
 %build
@@ -188,6 +189,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-0.20.20240327gite3edca1
+- Qt 6
+
 * Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-0.11.20230605git17a549b
 - Enable scripting
 

@@ -8,7 +8,7 @@ Summary:        A themable desktop pager for fluxbox and other WMs
 
 License:        MIT
 URL:            http://www.useperl.ru/ipager/index.en.html
-Source0:        https://gentoo.osuosl.org/distfiles/%{name}-%{version}.tar.gz
+Source0:        https://slackware.uk/slacky/slackware-13.0/desktop/ipager/1.1.0/src/%{name}-%{version}.tar.gz
 
 Patch0:         %{aur_git}/%{name}-1.1.0-20120429.patch?h=%{name}&id=%{aur_id}#/%{name}-1.1.0-20120429.patch
 Patch1:         %{aur_git}/%{name}-1.1.0-20190902.patch?h=%{name}&id=%{aur_id}#/%{name}-1.1.0-20190902.patch
@@ -39,7 +39,6 @@ sed \
   -i SConstruct
 
 %build
-%set_build_flags
 unset CC
 unset CXX
 scons %{?_smp_mflags} \

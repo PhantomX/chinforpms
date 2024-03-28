@@ -32,7 +32,7 @@
 
 %bcond_with     native
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
 %bcond_without  vulkan
@@ -56,7 +56,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5600
+Version:        1.7.5648
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -319,7 +319,7 @@ rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto-Regular.ttf
 
-ln -sf ../../../fonts/google-roboto-mono/'RobotoMono[wght].ttf' \
+ln -sf ../../../fonts/google-roboto-mono/RobotoMono-Medium.ttf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/RobotoMono-Medium.ttf
 
 # Install icon

@@ -19,7 +19,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        135
+Version:        136
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -33,8 +33,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-# https://aur.archlinux.org/cgit/aur.git/tree/ares-paths.patch?h=ares-emu
-Patch10:        ares-paths.patch
 Patch11:        0001-Use-system-libraries.patch
 Patch500:       0001-CHD-fix-for-patched-libchdr.patch
 
@@ -96,7 +94,6 @@ sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
 
 
 %build
-%set_build_flags
 export flags="$CXXFLAGS $(pkg-config --cflags libchdr)"
 export options="$LDFLAGS $(pkg-config --libs libchdr)"
 
@@ -149,6 +146,9 @@ done
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 136-1
+- 136
+
 * Tue Jan 23 2024 Phantom X <megaphantomx at hotmail dot com> - 135-1
 - 135
 

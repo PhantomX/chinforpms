@@ -3,7 +3,7 @@
 %global pkgrel 1
 
 Name:           kse
-Version:        5.5.2
+Version:        5.5.3
 Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
@@ -76,6 +76,9 @@ done
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 5.5.3-1
+- 5.5.3
+
 * Fri Feb 24 2023 Phantom X <megaphantomx at hotmail dot com> - 5.5.2-1
 - 5.5.2
 

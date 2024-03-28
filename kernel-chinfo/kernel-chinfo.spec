@@ -214,7 +214,7 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 2
+%global post_factum 3
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
@@ -3831,7 +3831,7 @@ fi\
 
 %ifarch %{cpupowerarchs}
 %files -n kernel-tools-libs
-%{_libdir}/libcpupower.so.0
+%{_libdir}/libcpupower.so.1
 %{_libdir}/libcpupower.so.0.0.1
 
 %files -n kernel-tools-libs-devel
@@ -4064,6 +4064,9 @@ fi\
 #
 #
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.2-500.chinfo
+- 6.8.2 - pf3
+
 * Mon Mar 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-500.chinfo
 - 6.8.0 - pf1
 

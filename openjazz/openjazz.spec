@@ -1,6 +1,6 @@
-%global commit b8bb91495631078fb795ec627bb6286b1041158c
+%global commit 71eb6e50adf0b4e6c7fcb426791bd3e72eae5a2b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200422
+%global date 20240217
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,11 +10,11 @@
 %global binname OpenJazz
 
 Name:           openjazz
-Version:        20171024
-Release:        4%{?dist}
+Version:        20231028
+Release:        1%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
-License:        GPL-2.0-or-later
+License:        GPL-2.0-or-later AND MIT
 URL:            http://www.alister.eu/jazz/oj/
 
 %global vc_url  https://github.com/AlisterT/%{name}
@@ -24,18 +24,19 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
-BuildRequires:  perl-podlators
-BuildRequires:  pkgconfig(libmodplug)
-BuildRequires:  pkgconfig(sdl)
-BuildRequires:  pkgconfig(zlib)
-%if %{with snapshot}
-BuildRequires:  autoconf
-BuildRequires:  automake
-%endif
+BuildRequires:  asciidoctor
+BuildRequires:  pkgconfig(sdl2)
 Requires:       hicolor-icon-theme
+
+Provides:       bundled(argparse) = 0~git
+Provides:       bundled(miniz) = 0~git
+Provides:       bundled(psmplug) = 0~git
+Provides:       bundled(scale2x) = 0~git
+
 
 %description
 %{summary}.
@@ -44,39 +45,20 @@ Requires:       hicolor-icon-theme
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p0
 
-pod2man -r "%{binname} %{version}" unix/%{binname}.6.pod > %{binname}.6
-
-sed -e 's|"/."|"/.local/share/%{name}/"|' -i src/main.cpp
-
-cat > %{binname}.wrapper <<'EOF'
-#!/usr/bin/sh
-set -e
-mkdir -p ${HOME}/.local/share/%{name}
-cd ${HOME}/.local/share/%{name}
-exec %{_bindir}/%{binname}.bin "$@"
-EOF
-
-%if %{with snapshot}
-sed -e '/AC_INIT/s|\[0\]|[%{version}]|g' -i configure.ac
-autoreconf -ivf
-%endif
 
 %build
-export CPPFLAGS="-DDATAPATH=\\\"%{_datadir}/%{name}/\\\" -DHOMEDIR"
-%configure \
-  --disable-silent-rules
-%make_build
+%cmake
+
+%cmake_build
 
 
 %install
-%make_install
+%cmake_install
 
-mv %{buildroot}%{_bindir}/%{binname} %{buildroot}%{_bindir}/%{binname}.bin
-install -pm0755 %{binname}.wrapper %{buildroot}%{_bindir}/%{binname}
+rm -rf %{buildroot}%{_datadir}/pixmaps
 
-mkdir -p %{buildroot}%{_mandir}/man6
-install -pm0644 %{binname}.6 %{buildroot}%{_mandir}/man6/
 
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
@@ -84,14 +66,15 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 %license COPYING licenses.txt
 %doc README.md
 %{_bindir}/%{binname}
-%{_bindir}/%{binname}.bin
 %{_datadir}/applications/%{binname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/%{name}/%{name}.000
 %{_mandir}/man6/%{binname}.6*
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20231028-1.20240217git71eb6e5
+- 20231028
+
 * Tue Dec 01 2020 Phantom X <megaphantomx at hotmail dot com> - 20171024-4.20200422gitb8bb914
 - Bump
 

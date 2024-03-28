@@ -161,13 +161,14 @@ image-analyzer
 input-leap
 ipager
 ipsbehead
+jamesdsp
 jazz2-ressurection
 -jdupes
 joy2key
 kdocker
 keepassxc
 -kernel-tools
-kid3
+-kid3
 -krename
 -kristall
 kse
@@ -215,10 +216,9 @@ perl-rename
 pev
 phantomjs
 pipe-viewer
-pkgrip
 plzip
 protontricks
-ps3iso-tools
+ps3iso-utils
 -pspshrink
 psv-save-converter
 psxmemcardmgr
@@ -241,6 +241,7 @@ radeon-profile
 radeon-profile-daemon
 -rclone
 reflac
+restricted-ssh-commands
 -retext
 rmg
 rust-u4pak
@@ -309,7 +310,6 @@ audacious-plugins
 dolphin-emu
 freac
 -freac-superfast-codecs
-jamesdsp
 -mupen64plus-rsp-parallel
 -mupen64plus-video-parallel
 -ortp

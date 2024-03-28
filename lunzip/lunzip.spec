@@ -1,5 +1,5 @@
 Name:           lunzip
-Version:        1.13
+Version:        1.14
 Release:        1%{?dist}
 Summary:        Decompressor for lzip files
 
@@ -22,7 +22,6 @@ Lunzip is a decompressor for lzip files.
 
 
 %build
-%set_build_flags
 %configure CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 %make_build
 
@@ -43,6 +42,9 @@ make check
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.14-1
+- 1.14
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.13-1
 - 1.13
 

@@ -1,3 +1,7 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global commit eb42b856b21f3f997a99e1311c16a4e629e0eb50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20180108
@@ -8,7 +12,7 @@
 
 Name:           xcf-pixbuf-loader
 Version:        0.0.1
-Release:        31%{?dist}
+Release:        32%{?dist}
 Summary:        XCF (GIMP) image loader for GTK+ applications
 
 License:        LGPL-2.0-or-later
@@ -52,6 +56,9 @@ install -m0755 .libs/libioxcf.so %{buildroot}%{loaders_dir}/libpixbufloader-xcf.
 %{loaders_dir}/libpixbufloader-xcf.so
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.1-32.20180108giteb42b85
+- build_type_safety_c 0
+
 * Fri Oct 14 2022 Phantom X <megaphantomx at hotmail dot com> - 0.0.1-31.20180108giteb42b85
 - chinforpms
 

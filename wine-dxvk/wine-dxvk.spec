@@ -7,16 +7,16 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 0776d764a411217bc42a4a442717ee64508638a4
+%global commit 855b2746b61ad944759ae9e31bbb4ad7562e6912
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240309
-%bcond_with snapshot
+%global date 20240326
+%bcond_without snapshot
 
 %bcond_without gplasync
 %bcond_with sysspirv
 %bcond_without sysvulkan
 
-%global gplasync_id 93f3eb45de5639ea13b218e88d23081630ae3e7d
+%global gplasync_id 66173ef9e18baf7a58881a8246275db7861b7d54
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -45,7 +45,7 @@
 %if %{with snapshot}
 %global gplasync_ver master
 %else
-%global gplasync_ver master
+%global gplasync_ver 2.3.1-1
 %endif
 
 %global winecommonver 5.3
@@ -64,7 +64,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.3.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -79,6 +79,8 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
+
+Patch10:        0001-gcc-14-build-fix.patch
 
 %if %{with gplasync}
 Patch200:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch

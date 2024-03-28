@@ -45,7 +45,6 @@ sed -e '/\$(docdir)/d' -i Makefile
 
 
 %build
-%set_build_flags
 export CFLAGS+=" -pedantic -Wall -Wextra -Wno-missing-field-initializers"
 %make_build \
   prefix="%{_prefix}" \

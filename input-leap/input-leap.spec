@@ -1,6 +1,6 @@
-%global commit 6cfeacdfa00096cd8bdbecc95a4c1c9dc2cd2113
+%global commit a1864cba75342ad289699b9ec56de28a957a6e54
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240226
+%global date 20240325
 %bcond_without snapshot
 
 %bcond_without qt
@@ -16,7 +16,7 @@
 
 Name:           input-leap
 Version:        2.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only

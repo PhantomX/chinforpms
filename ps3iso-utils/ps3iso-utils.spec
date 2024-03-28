@@ -35,8 +35,6 @@ sed \
 
 
 %build
-%set_build_flags
-
 for i in extract make patch split ;do
 %make_build -C ${i}ps3iso
 done

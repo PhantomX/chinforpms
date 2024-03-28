@@ -8,9 +8,9 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit 4f08226e0ec038203586e9f4b262f22a7220ccc4
+%global commit fa6cc2e4b2a2954f2298b6548174479c5b106c2a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240217
+%global date 20240302
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -21,18 +21,20 @@
 %global zydis_ver 4.0.0
 
 Name:           dynarmic
-Version:        6.6.3
+Version:        6.7.0
 Release:        1%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
-URL:            https://github.com/merryhime/%{name}
+URL:            https://github.com/lioncash/%{name}
 
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch501:       %{url}/commit/732a65769479ca7fe4278bc4ad5aa5156606e0fe.patch#/%{name}-gh-revert732a657.patch
 
 ExclusiveArch:  x86_64
 
@@ -67,7 +69,10 @@ with %{name}.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
+%autopatch -M 500 -p1
+
+%patch -P 501 -p1 -R
 
 rm -rf externals/{catch,fmt,oaknut,robin-map,xbyak}
 
@@ -111,6 +116,9 @@ sed \
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-1.20240302gitfa6cc2e
+- 6.7.0
+
 * Sun Feb 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.3-1.20240217git4f08226
 - 6.6.3
 

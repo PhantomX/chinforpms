@@ -29,7 +29,7 @@ index 59e3c79..36c20f5 100644
  #endif
  }
  
-@@ -384,11 +384,11 @@ void CSystemLogger::ErrorLog(const char *fmt, va_list vl)
+@@ -384,7 +384,7 @@ void CSystemLogger::ErrorLog(const char *fmt, va_list vl)
   #ifdef _WIN32
    OutputDebugString(string2);
  #else
@@ -38,12 +38,6 @@ index 59e3c79..36c20f5 100644
  #endif
  }
  
- CSystemLogger::CSystemLogger(CLogger::LogLevel level)
-   : m_logLevel(level)
- {
--}
-\ No newline at end of file
-+}
 -- 
 2.43.0
 

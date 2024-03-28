@@ -16,7 +16,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.6
+Version:        2.7.7
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -36,6 +36,9 @@ Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 # Patch0: fixes GNOME quirks on Wayland sessions
 # Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
 Patch0:         xcb.patch
+Patch1:         %{vc_url}/pull/10451.patch#/%{name}-gh-pr10451.patch
+Patch2:         %{vc_url}/pull/10458.patch#/%{name}-gh-pr10458.patch
+Patch3:         %{vc_url}/pull/10459.patch#/%{name}-gh-pr10459.patch
 %dnl Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
@@ -65,8 +68,11 @@ BuildRequires:  pkgconfig(zlib) >= 1.2.0
 BuildRequires:  qt5-linguist
 BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  readline-devel
-%if %{with keeshare}
-BuildRequires:  minizip-ng-devel
+%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
+BuildRequires:  minizip-compat-devel
+%endif
+%if %{defined fedora} && 0%{?fedora} >= 40
+BuildRequires:  minizip-ng-compat-devel
 %endif
 %if %{with yubikey}
 BuildRequires:  libyubikey-devel
@@ -157,6 +163,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Mar 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.7-100
+- 2.7.7
+
 * Thu Aug 17 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.6-100
 - 2.7.6
 

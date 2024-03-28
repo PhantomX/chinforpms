@@ -56,8 +56,6 @@ sed -e 's| $(OFLAGS)||g' -i components/decoder/alac/alac/Makefile
 
 
 %build
-%set_build_flags
-
 %make_build -C runtime \
   config=%{systemlibs} \
   prefix=/usr libdir=%{_libdir}

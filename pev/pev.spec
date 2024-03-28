@@ -63,9 +63,6 @@ plugins building.
 %{?with_snapshot:tar xf %{S:1} -C lib/libpe --strip-components 1}
 
 %build
-
-%set_build_flags
-
 %make_build \
   prefix=%{_prefix} \
   libdir=%{_libdir}

@@ -30,7 +30,7 @@
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 # Enable system rtmidi
-%if 0%{?fedora} > 40
+%if 0%{?fedora} > 41
 %bcond_without  sysrtmidi
 %endif
 %global bundlertmidi 6.0.0
@@ -107,8 +107,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.31.16163
-Release:        1%{?dist}
+Version:        0.0.31.1252
+Release:        2%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -149,6 +149,8 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source99:       Makefile
+
+Patch0:         %{name}-pr15331.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch

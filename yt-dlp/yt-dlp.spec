@@ -5,7 +5,7 @@
 
 Name:           yt-dlp
 Version:        2024.03.10
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
 
@@ -145,9 +145,6 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 %if %{with man}
 %{_mandir}/man1/%{name}.1*
 %endif
-%{_datadir}/bash-completion/completions/%{name}
-%{_datadir}/zsh/site-functions/_%{name}
-%{_datadir}/fish/vendor_completions.d/%{name}.fish
 
 %files bash-completion
 %{bash_completions_dir}/%{name}
@@ -160,6 +157,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.03.10-101
+- Fix duplicated files
+
 * Mon Mar 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.03.10-100
 - 2024.03.10
 

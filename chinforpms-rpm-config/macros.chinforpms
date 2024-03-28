@@ -25,4 +25,4 @@
   echo "${nf%{?_native_flags:/-march=i686 -mtune=generic/-march=native -mtune=native}}")
 
 %_chinforpms_flags_x86_64 %{__chinforpms_global_compiler_flags} %(nf="%{expand:%{_optflags_x86_64}}" ; \\
-  echo "${nf%{?_native_flags:/-mtune=generic/-march=native -mtune=native}}")
+  echo "${nf%{?_native_flags:/-march=x86-64* -mtune=generic/-march=native -mtune=native}}")

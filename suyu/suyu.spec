@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 286902ac8a092e5477828ae1ab94b728c347cbbf
+%global commit 09578d522b203458d8196001bc5130de8c4e619a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240322
+%global date 20240326
 %bcond_without snapshot
 
 # Enable system boost
@@ -94,7 +94,7 @@
 
 Name:           suyu
 Version:        0.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -127,6 +127,8 @@ Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{src
 %endif
 
 %dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
+
+Patch0:         %{vc_url}/%{name}/pulls/65.patch#/%{name}-gl-pr65.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch

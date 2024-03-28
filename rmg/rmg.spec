@@ -7,7 +7,7 @@
 %global commit 685aa597c7ee7ad7cfd4dd782f40d21863b75899
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240128
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with rust
 
@@ -21,8 +21,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.5.7
-Release:        2%{?dist}
+Version:        0.5.8
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -48,7 +48,12 @@ BuildRequires:  cargo
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(freetype2)
+%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
 BuildRequires:  minizip-compat-devel
+%endif
+%if %{defined fedora} && 0%{?fedora} >= 40
+BuildRequires:  minizip-ng-compat-devel
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
@@ -90,8 +95,9 @@ mkdir LICENSEdir READMEdir
 
 pushd Source/3rdParty
 
+rm -rf mupen64plus-core/subprojects/minizip/
 rm -rf mupen64plus-video-parallel/vulkan-headers
-rm -rf 7-Zip discord-rpc fmt SDL_GameControllerDB vosk-api
+rm -rf discord-rpc fmt lzma SDL_GameControllerDB vosk-api
 
 for i in mupen64plus-{core,input-raphnetraw,rsp-{cx4,hle,parallel},video-{GLideN64,parallel}} ;do
   if [ -f $i/LICENSES ] ;then
@@ -181,6 +187,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.8-1
+- 0.5.8
+
 * Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-2.20240128git685aa59
 - Rebuild (lightning)
 

@@ -3,6 +3,7 @@
 %global date 20240227
 %bcond_with snapshot
 
+%global build_type_safety_c 0
 %define _fortify_level 0
 
 # Compiling the preloader fails with hardening enabled
@@ -158,7 +159,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.5
-Release:        99%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2552,6 +2553,12 @@ fi
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.5-101
+- tkg sync
+
+* Sat Mar 23 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.5-100
+- 9.5
+
 * Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.4-101
 - Staging 9.4.1
 

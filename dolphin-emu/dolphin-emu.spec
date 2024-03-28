@@ -11,7 +11,7 @@
 %bcond_without ffmpeg
 %bcond_without egl
 %bcond_with enet
-%bcond_with fmt
+%bcond_without fmt
 %bcond_with llvm
 %bcond_with vulkan
 %bcond_with unittests
@@ -21,9 +21,9 @@
 %global enablejit 1
 %endif
 
-%global commit 982ad933559be802db81078eda8c9cdd892944c5
+%global commit 1efda863e47b690f460f069502a4391b3c7d87c4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240217
+%global date 20240326
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -38,7 +38,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 d9e990e6d13527532b7e2bb23164a1f3b7f33bb5
+%global commit5 b64ac2b25038bc9feb94ca759b5ba4d02642b3af
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -67,7 +67,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 41542
+%global baserelease 41677
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -114,6 +114,7 @@ Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcna
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
+Patch2:         %{vc_url}/pull/12611.patch#/%{name}-gh-pr12611.patch
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -169,7 +170,12 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel >= 2.28.0
-BuildRequires:  minizip-ng-devel
+%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
+BuildRequires:  minizip-compat-devel
+%endif
+%if %{defined fedora} && 0%{?fedora} >= 40
+BuildRequires:  minizip-ng-compat-devel
+%endif
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  vulkan-headers

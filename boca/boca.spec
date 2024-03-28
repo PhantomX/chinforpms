@@ -86,8 +86,6 @@ sed \
 sed -e 's|/lib/|/%{_lib}/|g' -i runtime/common/utilities.cpp
 
 %build
-%set_build_flags
-
 %make_build \
   config=%{systemlibs} \
   prefix=/usr libdir=%{_libdir}

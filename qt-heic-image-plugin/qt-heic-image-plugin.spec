@@ -1,5 +1,5 @@
 Name:           qt-heic-image-plugin
-Version:        0.3.1
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        Qt plugin for HEIF/HEIC images
 
@@ -8,11 +8,9 @@ URL:            https://github.com/novomesk/qt-heic-image-plugin
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 
-Patch0:         %{url}/pull/4.patch#/%{name}-pr4.patch
-
 
 BuildRequires:  cmake
-BuildRequires:  extra-cmake-modules
+BuildRequires:  extra-cmake-modules >= 5.89.0
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(libheif) >= 1.10.0
 
@@ -77,16 +75,19 @@ popd
 %files -n qt5-heic-image-plugin
 %license LICENSE
 %doc README.md
-%{_qt5_plugindir}/imageformats/kimg_heif.so
+%{_qt5_plugindir}/imageformats/kimg_heif5.so
 %{_kf5_datadir}/kservices5/qimageioplugins/heif.desktop
 
 
 %files -n qt6-heic-image-plugin
 %license LICENSE
 %doc README.md
-%{_qt6_plugindir}/imageformats/kimg_heif.so
+%{_qt6_plugindir}/imageformats/kimg_heif6.so
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.4.0-1
+- 0.4.0
+
 * Sat Jan 06 2024 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-1
 - Initial spec

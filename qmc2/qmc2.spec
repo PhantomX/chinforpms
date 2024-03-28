@@ -1,7 +1,7 @@
-%global commit 9186ba6c6fc370874d16a9743246f6871b4ab2f3
+%global commit f8b478a8fad5b51a6ed1a0a02da9f5ff470b0042
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220417
-%bcond_with snapshot
+%global date 20230324
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -17,8 +17,8 @@
 %global vc_url https://github.com/qmc2/%{pkgname}
 
 Name:           qmc2
-Version:        0.243
-Release:        101%{?dist}
+Version:        0.244
+Release:        100%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -41,7 +41,11 @@ Patch11:        0001-use-system-lzma-sdk.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
+%if %{defined fedora} && 0%{?fedora} >= 40
+BuildRequires:  minizip-ng-compat-devel
+%else
 BuildRequires:  minizip-ng-devel
+%endif
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
@@ -57,7 +61,7 @@ BuildRequires:  pkgconfig(Qt5Sql)
 BuildRequires:  pkgconfig(Qt5Svg)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  pkgconfig(Qt5WebKitWidgets)
+BuildRequires:  pkgconfig(Qt5WebEngineWidgets)
 BuildRequires:  pkgconfig(Qt5Xml)
 BuildRequires:  pkgconfig(Qt5XmlPatterns)
 BuildRequires:  pkgconfig(sdl2)
@@ -167,6 +171,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.244-100.20230324gitf8b478a
+- 0.244 snapshot
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 0.243-101
 - lzma-sdk rebuild
 

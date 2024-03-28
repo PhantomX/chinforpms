@@ -1,6 +1,6 @@
-%global commit 5bc418e7f12b6da24992b414d1e06ce424d30e5c
+%global commit ae5dc5619fc1d6a26591b1e98edb81905eb891ed
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230913
+%global date 20240126
 %bcond_without snapshot
 
 %global commit1 ad3e98dbc86157cce04e60343965970cb812e92e
@@ -15,7 +15,7 @@
 
 Name:           sdl-jstest
 Version:        0.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
 License:        GPL-3.0-only

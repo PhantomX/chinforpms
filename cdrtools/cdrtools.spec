@@ -5,12 +5,16 @@
 # Build can fail if more than one job
 %global _smp_build_ncpus 1
 
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global ver %%(echo %{version} | tr -d '~')
 %global mver %%(echo %{version} | cut -d'~' -f1)
 
 Name:           cdrtools
 Version:        3.02~a09
-Release:        3%{?dist}
+Release:        4%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
@@ -90,7 +94,6 @@ for i in \
 done
 
 %build
-%set_build_flags
 %make_build GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
     CPPOPTX="$CXXFLAGS" COPTX="$CFLAGS -DTRY_EXT2_FS" \
     LDOPTX="$LDFLAGS"
@@ -302,6 +305,9 @@ fi
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-4
+- build_type_safety_c 0
+
 * Wed Sep 28 2022 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-3
 - Fix alternatives priority
 

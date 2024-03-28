@@ -1,3 +1,7 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global commit af0b92e8758f1ed2ce14870c4446b60ac0f65f71
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20211011
@@ -6,7 +10,7 @@
 
 Name:           psv-save-converter
 Version:        0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PS3 PSV save tool
 
 License:        GPL-3.0-or-later
@@ -37,8 +41,6 @@ sed \
 
 
 %build
-%set_build_flags
-
 %make_build TARGET_EXEC=%{name}
 
 %install
@@ -54,6 +56,9 @@ install -pm0755 build/%{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0-2.20211011gitaf0b92e
+- build_type_safety_c 0
+
 * Sun Oct 08 2023 Phantom X <megaphantomx at hotmail dot com> - 0-1.20211011gitaf0b92e
 - Initial spec
 

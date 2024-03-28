@@ -1,14 +1,14 @@
-%global commit 63dad3ceb7a3d1dc2288a0df6b054a6ea244a8b6
+%global commit b02ba93a5d725378205e9e664dfa20682ed69a4c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220714
-%bcond_with snapshot
+%global date 20240305
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           xarchiver
-Version:        0.5.4.21
+Version:        0.5.4.23
 Release:        100%{?dist}
 Summary:        Desktop Environment independent archive manager
 
@@ -115,6 +115,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.23-100.20240305gitb02ba93
+- 0.5.4.23
+
 * Tue Sep 05 2023 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.21-100
 - 0.5.4.21
 

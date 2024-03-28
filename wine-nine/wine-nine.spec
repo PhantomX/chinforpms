@@ -3,6 +3,10 @@
 %undefine _hardened_build
 %undefine _package_note_file
 
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 # Disable LTO
 %global _lto_cflags %{nil}
 
@@ -30,7 +34,7 @@
 
 Name:           wine-nine
 Version:        0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Wine D3D9 interface library for Mesa's Gallium Nine statetracker
 
 Epoch:          2
@@ -164,6 +168,9 @@ desktop-file-install \
 
 
 %changelog
+* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 2:0.9-3
+- build_type_safety_c 0
+
 * Sat Mar 11 2023 Phantom X <megaphantomx at hotmail dot com> - 2:0.9-1
 - 0.9
 

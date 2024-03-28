@@ -1,21 +1,25 @@
-%global commit 49994d2856b66e6c6a9a8752ac47dd338a45166c
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
+%global commit dd5ae3c8f7305eeb45fe8b86be0af274b72c6585
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220908
+%global date 20240325
 %bcond_without snapshot
 
-%global commit1 9492bb98691cc67e1c1145570bb522b7e6e18fba
+%global commit1 b2f392480e00ca232c397610f42688b165b87640
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 EELEditor
 
-%global commit2 1c72377957c19f21faeccfef57dd5c46a31be7d9
+%global commit2 ba63ad32682b20e2d4fde4c8a4aafe4da3423cc5
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 GraphicEQWidget
 
-%global commit3 b8218ee319c767c5e9bbcd508d0f621d3f05a218
+%global commit3 06509713d85dc336c4a3b089ef9d265003aaf48e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 FlatTabWidget
 
-%global commit4 a5d7872d54b6d1d8f82d52aea6bd72eec86eb51d
+%global commit4 82a0c5240093e58b97ccbeb3716ee64e71a68d7c
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 LiquidEqualizerWidget
 
@@ -28,8 +32,8 @@
 %global pkgname JDSP4Linux
 
 Name:           jamesdsp
-Version:        2.4
-Release:        3%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -51,26 +55,25 @@ Source13:       %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcomm
 Source14:       %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 
 Patch0:         0001-use-shared-libraries.patch
-Patch1:         0001-gcc-13-build-fix.patch
 
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 BuildRequires:  gcc-c++
 BuildRequires:  ImageMagick
-BuildRequires:  qcodeeditor-devel
-BuildRequires:  cmake(qt5advanceddocking)
 BuildRequires:  pkgconfig(glibmm-2.4)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libspa-0.2)
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5DBus)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Network)
-BuildRequires:  pkgconfig(Qt5Svg)
-BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  pkgconfig(Qt5Xml)
+BuildRequires:  pkgconfig(Qt6Core)
+BuildRequires:  pkgconfig(Qt6DBus)
+BuildRequires:  pkgconfig(Qt6Gui)
+BuildRequires:  pkgconfig(Qt6Network)
+BuildRequires:  pkgconfig(Qt6Svg)
+BuildRequires:  pkgconfig(Qt6Widgets)
+BuildRequires:  pkgconfig(Qt6Xml)
+
+BuildRequires:  qt6-qtbase-private-devel
 
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -78,11 +81,14 @@ Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-pipewire = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{name}-pipewire%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Provides:       bundle(asyncplusplus)
-Provides:       bundle(http-flaviotordini)
-Provides:       bundle(qtpromise)
-Provides:       bundle(qcustomplot)
-Provides:       bundle(qtcsv)
+Provides:       bundle(asyncplusplus) = 0~git
+Provides:       bundle(http-flaviotordini) = 0~git
+Provides:       bundle(libqtadvanceddocking) = 0~git
+Provides:       bundle(qtpromise) = 0~git
+Provides:       bundle(qcodeeditor) = 0~git
+Provides:       bundle(qcustomplot) = 0~git
+Provides:       bundle(qtcsv) = 0~git
+Provides:       bundle(WAF) = 0~git
 Provides:       bundle(%{srcname1}) = 0~git%{shortcommit1}
 Provides:       bundle(%{srcname2}) = 0~git%{shortcommit2}
 Provides:       bundle(%{srcname3}) = 0~git%{shortcommit3}
@@ -100,11 +106,14 @@ BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(libpulse)
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       bundle(asyncplusplus)
-Provides:       bundle(http-flaviotordini)
-Provides:       bundle(qtpromise)
-Provides:       bundle(qcustomplot)
-Provides:       bundle(qtcsv)
+Provides:       bundle(asyncplusplus) = 0~git
+Provides:       bundle(http-flaviotordini) = 0~git
+Provides:       bundle(libqtadvanceddocking) = 0~git
+Provides:       bundle(qtpromise) = 0~git
+Provides:       bundle(qcodeeditor) = 0~git
+Provides:       bundle(qcustomplot) = 0~git
+Provides:       bundle(qtcsv) = 0~git
+Provides:       bundle(WAF) = 0~git
 Provides:       bundle(%{srcname1}) = 0~git%{shortcommit1}
 Provides:       bundle(%{srcname2}) = 0~git%{shortcommit2}
 Provides:       bundle(%{srcname3}) = 0~git%{shortcommit3}
@@ -139,23 +148,10 @@ tar -xf %{S:12} -C src/subprojects/%{srcname2} --strip-components 1
 tar -xf %{S:13} -C src/subprojects/%{srcname3} --strip-components 1
 tar -xf %{S:14} -C src/subprojects/%{srcname4} --strip-components 1
 
-for dir in asyncplusplus http qtcsv qtpromise ;do
+for dir in asyncplusplus qtcsv qtpromise WAF ;do
   cp -p 3rdparty/${dir}/LICENSE LICENSE.${dir}
 done
 cp -p 3rdparty/qcustomplot/GPL.txt LICENSE.qcustomplot
-
-rm -rf src/subprojects/EELEditor/{3rdparty,QCodeEditor}
-
-sed \
-  -e '/QCodeEditor.pri/d' \
-  -e '/docking-system/d' \
-  -i src/subprojects/EELEditor/src/EELEditor.pri
-
-cat >> src/subprojects/EELEditor/src/EELEditor.pri <<EOF
-
-LIBS += -lqt5advanceddocking -lQCodeEditor
-INCLUDEPATH += %{_includedir}/qt5advanceddocking %{_includedir}/QCodeEditor
-EOF
 
 sed \
   -e '/TARGET =/s|lib%{name}|%{name}|g' \
@@ -198,19 +194,19 @@ EOF
 
 %build
 pushd lib%{name}
-%qmake_qt5 lib%{name}.pro PREFIX=%{_prefix} LIBDIR=%{_libdir}
+%qmake_qt6 lib%{name}.pro PREFIX=%{_prefix} LIBDIR=%{_libdir}
 %make_build
 popd
 
 mkdir buildpw
 pushd buildpw
-%qmake_qt5 ../src/src.pro PREFIX=%{_prefix}
+%qmake_qt6 ../src/src.pro PREFIX=%{_prefix}
 %make_build
 popd
 
 mkdir buildpa
 pushd buildpa
-%qmake_qt5 ../src/src.pro "CONFIG += USE_PULSEAUDIO"
+%qmake_qt6 ../src/src.pro "CONFIG += USE_PULSEAUDIO"
 %make_build
 popd
 
@@ -271,6 +267,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-pulse.desktop
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.7.0-1.20240325gitdd5ae3c
+- 2.7.0
+- Qt 6
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-3.20220908git49994d2
 - Update qt5advanceddocking BR
 

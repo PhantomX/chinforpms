@@ -2,7 +2,7 @@
 
 %global __jar_repack %{nil}
 
-%global pkgyear 2023
+%global pkgyear 2024
 %global pkgname IRPF%{pkgyear}
 
 %global jre_ver 11

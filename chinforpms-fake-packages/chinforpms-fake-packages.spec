@@ -2,7 +2,7 @@
 %global fakever   1000
 
 Name:           chinforpms-fake-packages
-Version:        5
+Version:        6
 Release:        1%{?dist}
 Summary:        A package to obsolete and provides packages
 
@@ -14,6 +14,8 @@ BuildArch:      noarch
 
 Provides:       bash-completion = %{fakeepoch}:%{fakever}-%{release}
 Obsoletes:      bash-completion < %{fakeepoch}:%{fakever}-%{release}
+Provides:       bash-completion-devel = %{fakeepoch}:%{fakever}-%{release}
+Obsoletes:      bash-completion-devel < %{fakeepoch}:%{fakever}-%{release}
 
 Provides:       games-menus = %{fakeepoch}:%{fakever}-%{release}
 Obsoletes:      games-menus < %{fakeepoch}:%{fakever}-%{release}
@@ -75,6 +77,9 @@ install -pm0755 gconftool-2 \
 
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6-1
+- Add bash-completion-devel
+
 * Wed Nov 24 2021 Phantom X <megaphantomx at bol dot com dot br> - 5-1
 - xdg-desktop-*
 

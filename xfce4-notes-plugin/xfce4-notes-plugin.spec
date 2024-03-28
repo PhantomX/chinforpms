@@ -1,10 +1,14 @@
+%if 0%{?fedora} >= 40
+%global build_type_safety_c 0
+%endif
+
 %global minor_version %%(echo %{version} | cut -d. -f1-2)
 %global xfceversion 4.14
 
 %global vc_url https://gitlab.xfce.org/panel-plugins/%{name}
 
 Name:           xfce4-notes-plugin
-Version:        1.10.0
+Version:        1.11.0
 Release:        100%{?dist}
 Summary:        Notes plugin for the Xfce panel
 
@@ -14,7 +18,7 @@ License:        GPL-2.0-or-later
 URL:            https://docs.xfce.org/panel-plugins/%{name}
 Source0:        https://archive.xfce.org/src/panel-plugins/%{name}/%{minor_version}/%{name}-%{version}.tar.bz2
 
-Patch0:         0001-Disable-automatic-autostart.patch
+Patch0:         0001-Disable-automatic-autostart-settings.patch
 
 BuildRequires:  make
 BuildRequires:  gcc-c++
@@ -66,9 +70,13 @@ desktop-file-validate \
 %{_datadir}/applications/xfce4-notes.desktop
 %{_datadir}/icons/hicolor/*/*/*
 %{_datadir}/xfce4/panel/plugins/*.desktop
-%{_datadir}/%{name}/
+%{_datadir}/xfce4/notes/gtk-3.0/gtk.css
+
 
 %changelog
+* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.0-100
+- 1.11.0
+
 * Sat Mar 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1.10.0-100
 - 1.10.0
 
