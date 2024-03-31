@@ -60,8 +60,8 @@ BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
 BuildRequires:  cmake(Qt%{qt_ver}Network)
 BuildRequires:  cmake(Qt%{qt_ver}Widgets)
 %if %{with qt6}
-BuildRequires:  cmake(Qt6OpenGL)
-BuildRequires:  cmake(Qt6OpenGLWidgets)
+BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
+BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 BuildRequires:  extra-cmake-modules
 BuildRequires:  pkgconfig(egl)

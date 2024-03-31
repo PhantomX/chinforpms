@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 09578d522b203458d8196001bc5130de8c4e619a
+%global commit 48e86d6e84c0027ccade556e90fef170c7e3d803
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240326
+%global date 20240330
 %bcond_without snapshot
 
 # Enable system boost
@@ -28,6 +28,8 @@
 %bcond_with mbedtls
 # Disable Qt build
 %bcond_without qt
+# build with qt6 instead 5
+%bcond_without qt6
 # Build tests
 %bcond_with tests
 # Enable webservice
@@ -81,6 +83,7 @@
 %global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
+%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://git.suyu.dev/suyu
 
@@ -94,7 +97,7 @@
 
 Name:           suyu
 Version:        0.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -132,6 +135,9 @@ Patch0:         %{vc_url}/%{name}/pulls/65.patch#/%{name}-gl-pr65.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
+Patch12:        0001-Fix-48e86d6.patch
+
+Patch500:       %{vc_url}/%{name}/commit/66cf0c1b0c9452637266f4faf7077fd5d2daa88d.patch#/%{name}-gl-revert-66cf0c1.patch
 
 ExclusiveArch:  x86_64
 
@@ -192,14 +198,19 @@ BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(sdl2) >= 2.28.2
 %if %{with qt}
-BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(Qt5Gui)
-BuildRequires:  pkgconfig(Qt5Multimedia)
-BuildRequires:  pkgconfig(Qt5OpenGL)
-BuildRequires:  pkgconfig(Qt5WebEngineCore)
-BuildRequires:  pkgconfig(Qt5WebEngineWidgets)
-BuildRequires:  pkgconfig(Qt5Widgets)
-BuildRequires:  qt5-linguist
+BuildRequires:  cmake(Qt%{qt_ver}Core)
+BuildRequires:  cmake(Qt%{qt_ver}DBus)
+BuildRequires:  cmake(Qt%{qt_ver}Gui)
+BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
+BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
+BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
+BuildRequires:  cmake(Qt%{qt_ver}WebEngineCore)
+BuildRequires:  cmake(Qt%{qt_ver}WebEngineWidgets)
+BuildRequires:  cmake(Qt%{qt_ver}Widgets)
+%if %{with qt6}
+BuildRequires:  cmake(Qt%{qt_ver}6OpenGL)
+BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
+%endif
 %endif
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
@@ -244,7 +255,9 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{name} -p1
+%autosetup -n %{name} -N -p1
+%patch -P 500 -p1 -R
+%autopatch -M 499 -p1
 
 pushd externals
 rm -rf \
@@ -346,6 +359,9 @@ sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
   %{!?with_clang:-DSUYU_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
   -DENABLE_QT_TRANSLATION:BOOL=ON \
+%if %{with qt6}
+  -DENABLE_QT6:BOOL=ON \
+%endif
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
@@ -415,6 +431,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Mar 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-4.20240330git48e86d6
+- Qt6
+
 * Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-1.20240319gitfec573f
 - 0.0.2
 

@@ -8,7 +8,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.258
+Version:        0.264
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 

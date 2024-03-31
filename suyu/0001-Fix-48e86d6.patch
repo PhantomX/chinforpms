@@ -1,0 +1,72 @@
+From 06c31702da2c865522f561f8913bd8751629fe0d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 30 Mar 2024 17:44:46 -0300
+Subject: [PATCH] Fix 48e86d6
+
+---
+ CMakeLists.txt | 42 +++++++++++++++++++++---------------------
+ 1 file changed, 21 insertions(+), 21 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 143924d..6658305 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -456,6 +456,27 @@ endif()
+ set(THREADS_PREFER_PTHREAD_FLAG ON)
+ find_package(Threads REQUIRED)
+ 
++# Include source code
++# ===================
++
++# This function should be passed a list of all files in a target. It will automatically generate
++# file groups following the directory hierarchy, so that the layout of the files in IDEs matches the
++# one in the filesystem.
++function(create_target_directory_groups target_name)
++    # Place any files that aren't in the source list in a separate group so that they don't get in
++    # the way.
++    source_group("Other Files" REGULAR_EXPRESSION ".")
++
++    get_target_property(target_sources "${target_name}" SOURCES)
++
++    foreach(file_name IN LISTS target_sources)
++        get_filename_component(dir_name "${file_name}" PATH)
++        # Group names use '\' as a separator even though the entire rest of CMake uses '/'...
++        string(REPLACE "/" "\\" group_name "${dir_name}")
++        source_group("${group_name}" FILES "${file_name}")
++    endforeach()
++endfunction()
++
+ add_subdirectory(externals)
+ 
+ # Qt5 requires that we find components, so it doesn't fit our pretty little find package function
+@@ -665,27 +686,6 @@ if (CLANG_FORMAT)
+     unset(CCOMMENT)
+ endif()
+ 
+-# Include source code
+-# ===================
+-
+-# This function should be passed a list of all files in a target. It will automatically generate
+-# file groups following the directory hierarchy, so that the layout of the files in IDEs matches the
+-# one in the filesystem.
+-function(create_target_directory_groups target_name)
+-    # Place any files that aren't in the source list in a separate group so that they don't get in
+-    # the way.
+-    source_group("Other Files" REGULAR_EXPRESSION ".")
+-
+-    get_target_property(target_sources "${target_name}" SOURCES)
+-
+-    foreach(file_name IN LISTS target_sources)
+-        get_filename_component(dir_name "${file_name}" PATH)
+-        # Group names use '\' as a separator even though the entire rest of CMake uses '/'...
+-        string(REPLACE "/" "\\" group_name "${dir_name}")
+-        source_group("${group_name}" FILES "${file_name}")
+-    endforeach()
+-endfunction()
+-
+ # Prevent boost from linking against libs when building
+ target_link_libraries(Boost::headers INTERFACE Boost::disable_autolinking)
+ # Adjustments for MSVC + Ninja
+-- 
+2.44.0
+
