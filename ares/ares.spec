@@ -9,6 +9,7 @@
 %global date 20231221
 %bcond_with snapshot
 
+%bcond_with native
 %bcond_with libao
 %bcond_with openal
 
@@ -16,14 +17,15 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global rashader_ver 0.2.7
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        136
+Version:        137
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
-License:        GPL-3.0-only AND BSD-2-Clause
+License:        ISC AND GPL-3.0-only AND BSD-2-Clause AND BSD-3-Clause AND MIT
 
 URL:            https://ares-emu.net/
 
@@ -49,6 +51,7 @@ BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(libchdr)
+BuildRequires:  pkgconfig(librashader) >= %{rashader_ver}
 %if %{with openal}
 BuildRequires:  pkgconfig(openal)
 %endif
@@ -60,6 +63,7 @@ BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xv)
 
 Requires:       hicolor-icon-theme
+Requires:       librashader%{?_isa} >= %{rashader_ver}
 Requires:       vulkan-loader%{?_isa}
 
 
@@ -67,11 +71,14 @@ Requires:       vulkan-loader%{?_isa}
 ares is a multi-system emulator with an uncompromising focus on
 accuracy and code readability.
 
+It requires a CPU with SSE4.2 instructions.
+
+
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 499 -p1
 
-rm -rf thirdparty/{libchdr,MoltenVK}
+rm -rf thirdparty/{libchdr,librashader,MoltenVK}
 
 find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
 
@@ -84,6 +91,8 @@ cp -a nall/file-buffer.hpp nall/file-buffer-chd.hpp
 sed -i -e 's|-L/usr/local/lib ||g' -i hiro/GNUmakefile
 
 sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
+
+sed -e 's|-flto=auto |-flto=%{_smp_build_ncpus} |' -i nall/GNUmakefile
 
 %if %{without libao}
   sed -e "/ruby +=/s|audio.ao\b||" -i ruby/GNUmakefile
@@ -99,7 +108,10 @@ export options="$LDFLAGS $(pkg-config --libs libchdr)"
 
 for build in desktop-ui ; do
 %make_build -C $build verbose compiler=g++ \
-  build=optimized local=false system_chdr=true hiro=gtk3 \
+  build=optimized system_chdr=true system_rashader=true hiro=gtk3 \
+%if %{without native}
+  local=false \
+%endif
   lto=true \
 %{nil}
 done
@@ -109,11 +121,8 @@ done
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 desktop-ui/out/%{name} %{buildroot}%{_bindir}/
 
-mkdir -p %{buildroot}%{_datadir}/%{name}/
-cp -rp %{name}/System/* %{buildroot}%{_datadir}/%{name}/
-
 mkdir -p %{buildroot}%{_datadir}/%{name}/Shaders/
-cp -rp %{name}/Shaders/* %{buildroot}%{_datadir}/%{name}/Shaders/
+cp -rp thirdparty/slang-shaders/* %{buildroot}%{_datadir}/%{name}/Shaders/
 mkdir -p %{buildroot}%{_datadir}/%{name}/Database/
 cp -rp mia/Database/* %{buildroot}%{_datadir}/%{name}/Database/
 
@@ -140,12 +149,18 @@ done
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{_datadir}/%{name}
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/Database/
+%{_datadir}/%{name}/Shaders/
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/*.*
 
 
 %changelog
+* Tue Apr 02 2024 Phantom X <megaphantomx at hotmail dot com> - 137-1
+- 137
+- BR: librashader
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 136-1
 - 136
 

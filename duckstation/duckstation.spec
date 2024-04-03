@@ -20,9 +20,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit c09e9edc4a25fb40fae22e9c050b61cc3eefbe3c
+%global commit 41cc60e87e692c197a4ff9f9d8a229c8196744e3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240328
+%global date 20240401
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -43,7 +43,7 @@
 
 Name:           duckstation
 Version:        0.1
-Release:        114%{?dist}
+Release:        115%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
@@ -125,7 +125,7 @@ BuildRequires:  minizip-ng-compat-devel
 Provides:       bundled(minizip) = %{minizip_ver}
 %endif
 %if %{with vulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.239
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.279
 %endif
 
 BuildRequires:  desktop-file-utils

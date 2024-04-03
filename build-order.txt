@@ -72,6 +72,7 @@ xcftools
 
 # 3
 libchdr
+librashader
 mesa
 mesa-libGL-xlib
 vulkan-tools

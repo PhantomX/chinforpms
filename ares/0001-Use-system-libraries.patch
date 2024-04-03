@@ -1,14 +1,34 @@
-From ac6fa669b2296d835ae4290b9110eef5a4f6c242 Mon Sep 17 00:00:00 2001
+From fcfe775b1f73827e0776a5fbe8915482ba2d9e71 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 13 Nov 2022 12:06:55 -0300
 Subject: [PATCH] Use system libraries
 
 ---
+ desktop-ui/GNUmakefile | 8 +++++++-
  thirdparty/GNUmakefile | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ 2 files changed, 15 insertions(+), 2 deletions(-)
 
+diff --git a/desktop-ui/GNUmakefile b/desktop-ui/GNUmakefile
+index a339698..36b05e9 100644
+--- a/desktop-ui/GNUmakefile
++++ b/desktop-ui/GNUmakefile
+@@ -7,7 +7,13 @@ sdl2 := true
+ local := true
+ lto := true
+ librashader	:= true
+-flags += -I. -I.. -I../ares -I../thirdparty -I../thirdparty/librashader/include -DMIA_LIBRARY
++flags += -I. -I.. -I../ares -I../thirdparty -DMIA_LIBRARY
++
++ifeq ($(system_rashader),true)
++flags += $(shell pkg-config --cflags librashader) -DLIBRA_RUNTIME_OPENGL
++else
++flags += -I../thirdparty/librashader/include 
++endif
+ 
+ nall.path := ../nall
+ include $(nall.path)/GNUmakefile
 diff --git a/thirdparty/GNUmakefile b/thirdparty/GNUmakefile
-index fb0f6b7..570c0dc 100644
+index 2a7244b..cc5b8b7 100644
 --- a/thirdparty/GNUmakefile
 +++ b/thirdparty/GNUmakefile
 @@ -6,6 +6,12 @@ $(object.path)/sljitAllocator.o: $(thirdparty.path)/sljitAllocator.cpp
@@ -25,13 +45,20 @@ index fb0f6b7..570c0dc 100644
  libchdr.objects += lzma_alloc lzma_bra86 lzma_braia64 lzma_cpuarch lzma_delta lzma_lfind
  libchdr.objects += lzma_86dec lzma_dec lcma_enc lzma_sort
 @@ -66,6 +72,7 @@ flags += -I$(libchdr.path)/deps/lzma-19.00/include -D_7ZIP_ST
- flags += -I$(libchdr.path)/deps/zlib-1.2.13
+ flags += -I$(libchdr.path)/deps/zlib-1.3.1
  flags += -I$(libchdr.path)/deps/zstd-1.5.5/lib
  flags += -DZSTD_DISABLE_ASM
 +endif
  
  # instruct glibc to declare fseeko/ftello
  flags += -D_LARGEFILE_SOURCE
+@@ -112,4 +119,4 @@ $(object.path)/ymfm-src-opq.o: $(ymfm.path)/src/ymfm_opq.cpp
+ $(object.path)/ymfm-src-opz.o: $(ymfm.path)/src/ymfm_opz.cpp
+ $(object.path)/ymfm-src-pcm.o: $(ymfm.path)/src/ymfm_pcm.cpp
+ $(object.path)/ymfm-src-ssg.o: $(ymfm.path)/src/ymfm_ssg.cpp
+-flags += -I$(ymfm.path)/src
+\ No newline at end of file
++flags += -I$(ymfm.path)/src
 -- 
 2.44.0
 
