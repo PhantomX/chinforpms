@@ -147,7 +147,7 @@ index 84201071dfac..1e7b9e53ec3d 100644
 +#endif
 +
  	reserve_ibft_region();
- 	dmi_setup();
+ 	x86_init.resources.dmi_setup();
  
 @@ -1064,19 +1072,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
@@ -1372,7 +1372,7 @@ index d0eb20f90b26..a99c045730e9 100644
  int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
  int security_locked_down(enum lockdown_reason what);
 +int security_lock_kernel_down(const char *where, enum lockdown_reason level);
- int lsm_fill_user_ctx(struct lsm_ctx __user *uctx, size_t *uctx_len,
+ int lsm_fill_user_ctx(struct lsm_ctx __user *uctx, u32 *uctx_len,
  		      void *val, size_t val_len, u64 id, u64 flags);
  #else /* CONFIG_SECURITY */
 @@ -1433,6 +1434,10 @@ static inline int security_locked_down(enum lockdown_reason what)
@@ -1384,7 +1384,7 @@ index d0eb20f90b26..a99c045730e9 100644
 +	return 0;
 +}
  static inline int lsm_fill_user_ctx(struct lsm_ctx __user *uctx,
- 				    size_t *uctx_len, void *val, size_t val_len,
+ 				    u32 *uctx_len, void *val, size_t val_len,
  				    u64 id, u64 flags)
 diff --git a/kernel/module/main.c b/kernel/module/main.c
 index b0b99348e1a8..c35cc48d782c 100644

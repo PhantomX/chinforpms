@@ -6,9 +6,9 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20240223
-# 6.7
-# pf7
+# 20240403
+# 6.8
+# pf4
 
 set -e
 
@@ -63,8 +63,6 @@ pfd="
 "
 
 pfm="
-BACKLIGHT_DDCCI
-DDCCI
 V4L2_LOOPBACK
 "
 

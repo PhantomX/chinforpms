@@ -26,7 +26,7 @@
 %endif
 
 Name:           gtk4
-Version:        4.14.1
+Version:        4.14.2
 Release:        100%{?dist}
 Summary:        GTK graphical user interface library
 
@@ -279,6 +279,9 @@ desktop-file-validate $RPM_BUILD_ROOT%{_datadir}/applications/*.desktop
 %{_mandir}/man1/gtk4-widget-factory.1*
 
 %changelog
+* Wed Apr 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.2-100
+- 4.14.2
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.1-100
 - 4.14.1
 

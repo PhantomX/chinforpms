@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.2
+%define specrpmversion 6.8.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -214,12 +214,12 @@ Summary: The Linux kernel
 # https://gitlab.com/post-factum/pf-kernel/
 # pf applies stable patches without updating stable_update number
 # stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 3
+%global post_factum 4
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit de7817223cb21e830c80b234fac20b3115513812
+%global pfcommit 496d4c5bc5db94e6cfea3d99cb674d9e1e7edded
 %global pf_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
 %global pfcoprhash 870d4982f716927de674c133908fb310
 %if "%{pfcommit}" == "0"
@@ -245,7 +245,7 @@ Summary: The Linux kernel
 %endif
 %endif
 
-%global opensuse_id 4b0ca589d4bf654c3f695093e9b4a68d984b3af4
+%global opensuse_id b5e6a9ba1f966e4bc7924b1b73c50c37c9cbfc93
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 # libexec dir is not used by the linker, so the shared object there
@@ -1081,8 +1081,30 @@ Patch5005:  %{pf_url}/ff18f7d3c6cbbd2932789d384eccf1db301ab37c.patch#/pf-revert-
 Patch5006:  %{pf_url}/e7e55653a5f9a1837d936cb5b0a507b0f7bec78d.patch#/pf-revert-e7e5565.patch
 Patch5007:  %{pf_url}/248bf6f07f19efdde2028742044745704d72eb57.patch#/pf-revert-248bf6f.patch
 Patch5008:  %{pf_url}/4cb0dd12456c901b3e55e47382aaf2189f8b90c7.patch#/pf-revert-4cb0dd1.patch
-Patch5009:  %{pf_url}/d2b40c9ea0dfbe3a34eaf55e0427e807feac7ac8.patch#/pf-revert-d2b40c9.patch
-Patch5010:  %{pf_url}/ed88ac9bf8fd1694c850a88110dcc9146e370529.patch#/pf-revert-ed88ac9.patch
+Patch5009:  %{pf_url}/a787f2610885985cbafc812d2b4c4861850c7175.patch#/pf-revert-a787f26.patch
+Patch5010:  %{pf_url}/eb1627dc5a804701d7b0de79ba5f86a07d0e5335.patch#/pf-revert-eb1627d.patch
+# btrfs
+Patch5020:  %{pf_url}/69ed978012694087828a472e2b801090149137df.patch#/pf-revert-69ed978.patch
+Patch5021:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-revert-50f3726.patch
+Patch5022:  %{pf_url}/6b51f821467bf1d5234cf63b7f60ae3b606058ef.patch#/pf-revert-6b51f82.patch
+Patch5023:  %{pf_url}/d2b40c9ea0dfbe3a34eaf55e0427e807feac7ac8.patch#/pf-revert-d2b40c9.patch
+Patch5024:  %{pf_url}/60e1ee833477c467bbd697a0b549b7c697509819.patch#/pf-revert-60e1ee8.patch
+Patch5025:  %{pf_url}/b44a961859587a28dccf1f6cfc10ffdf9213decc.patch#/pf-revert-b44a961.patch
+Patch5026:  %{pf_url}/236a498b71c5912e402e696321f35bf61efec7bf.patch#/pf-revert-236a498.patch
+Patch5027:  %{pf_url}/aa2f6ac9c1daf91633db6e7a6955829015275b59.patch#/pf-revert-aa2f6ac.patch
+Patch5028:  %{pf_url}/86ccc946133357106d10e43c976318ecb976e382.patch#/pf-revert-86ccc94.patch
+Patch5029:  %{pf_url}/147fa7036b8e48e49ce88f4d4425a245c4980f46.patch#/pf-revert-147fa70.patch
+# md
+Patch5050:  %{pf_url}/49c86d3ff1164c3bb69d63833f5cb0ee66fcb500.patch#/pf-revert-49c86d3.patch
+Patch5051:  %{pf_url}/7c062aa8fb8c9404c993fa4c8645396fb81a6afe.patch#/pf-revert-7c062aa.patch
+Patch5052:  %{pf_url}/1997bab0c5e5b7409b82b609f8563ae169fa8c87.patch#/pf-revert-1997bab.patch
+Patch5053:  %{pf_url}/5e5c148782cb38976123d7040df8a7c0fb9e4527.patch#/pf-revert-5e5c148.patch
+Patch5054:  %{pf_url}/030eb7bcf1811f98dddc5d2e8a558e116a46fa17.patch#/pf-revert-030eb7b.patch
+Patch5055:  %{pf_url}/8abee95f74d7ff54c1f5f43268a0f298dc34f416.patch#/pf-revert-8abee95.patch
+Patch5056:  %{pf_url}/4e3fd83948e73d8ee3fd20989a92501eac977dcc.patch#/pf-revert-4e3fd83.patch
+Patch5057:  %{pf_url}/ed88ac9bf8fd1694c850a88110dcc9146e370529.patch#/pf-revert-ed88ac9.patch
+Patch5058:  %{pf_url}/34582610ff02fdb41ce7d1d91f17b8fc79abe48b.patch#/pf-revert-3458261.patch
+Patch5059:  %{pf_url}/fc373111b5e0897c3a215d38753434886eebc8aa.patch#/pf-revert-fc37311.patch
 
 %if 0%{?pf_stable_extra}
 %if !0%{?pf_stable_full}
@@ -1944,6 +1966,26 @@ ApplyPatch %{PATCH5007} -R
 ApplyPatch %{PATCH5008} -R
 ApplyPatch %{PATCH5009} -R
 ApplyPatch %{PATCH5010} -R
+ApplyPatch %{PATCH5029} -R
+ApplyPatch %{PATCH5028} -R
+ApplyPatch %{PATCH5027} -R
+ApplyPatch %{PATCH5026} -R
+ApplyPatch %{PATCH5025} -R
+ApplyPatch %{PATCH5024} -R
+ApplyPatch %{PATCH5023} -R
+ApplyPatch %{PATCH5022} -R
+ApplyPatch %{PATCH5021} -R
+ApplyPatch %{PATCH5020} -R
+ApplyPatch %{PATCH5059} -R
+ApplyPatch %{PATCH5058} -R
+ApplyPatch %{PATCH5057} -R
+ApplyPatch %{PATCH5056} -R
+ApplyPatch %{PATCH5055} -R
+ApplyPatch %{PATCH5054} -R
+ApplyPatch %{PATCH5053} -R
+ApplyPatch %{PATCH5052} -R
+ApplyPatch %{PATCH5051} -R
+ApplyPatch %{PATCH5050} -R
 %if 0%{?stable_update} && 0%{?pf_stable_extra}
 %if 0%{?pf_stable_full}
 xzcat %{PATCH6000} | filterdiff -p1 -x Makefile > pf_stable_extra.patch
@@ -1953,6 +1995,9 @@ filterdiff -p1 -x Makefile %{PATCH6000} > pf_stable_extra.patch
 ApplyPatch pf_stable_extra.patch
 rm -f pf_stable_extra.patch
 %endif
+ApplyPatch %{PATCH5021}
+ApplyPatch %{PATCH5022}
+ApplyPatch %{PATCH5029}
 %else
 # released_kernel with possible stable updates
 %if 0%{?stable_update} && 0%{?released_kernel}
@@ -4064,6 +4109,9 @@ fi\
 #
 #
 %changelog
+* Wed Apr 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.3-500.chinfo
+- 6.8.3 - pf4
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.2-500.chinfo
 - 6.8.2 - pf3
 
