@@ -23,7 +23,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases. Tests
  * **deluge** - Updated, no GConf support
- * **devedeng** - Boolean dependencies for video players and disc burners
  * **easytag** - Tests
  * **eiciel-gtk3** - GTK3 eiciel without nautilus plugin
  * **engrampa** - Split caja extension

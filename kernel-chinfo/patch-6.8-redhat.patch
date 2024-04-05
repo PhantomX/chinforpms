@@ -7,6 +7,7 @@
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
+ drivers/bluetooth/hci_qca.c                        |  13 +-
  drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
@@ -36,10 +37,10 @@
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 38 files changed, 673 insertions(+), 177 deletions(-)
+ 39 files changed, 674 insertions(+), 189 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 33d8e822f6f1..0451e4e79e5c 100644
+index c436247d750c..fba81833741a 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -124,10 +125,10 @@ index d1f3b56e7afc..eaefd0d7cfff 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 84201071dfac..1e7b9e53ec3d 100644
+index 97dd70285741..efc3fbc9e9f3 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -21,6 +21,7 @@
+@@ -20,6 +20,7 @@
  #include <linux/root_dev.h>
  #include <linux/hugetlb.h>
  #include <linux/tboot.h>
@@ -135,7 +136,7 @@ index 84201071dfac..1e7b9e53ec3d 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -901,6 +902,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -900,6 +901,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -149,7 +150,7 @@ index 84201071dfac..1e7b9e53ec3d 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1064,19 +1072,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1063,19 +1071,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -281,6 +282,37 @@ index 1a63200ea437..a911e976a596 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 8a60ad7acd70..4ecbcb1644cc 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -7,7 +7,6 @@
+  *
+  *  Copyright (C) 2007 Texas Instruments, Inc.
+  *  Copyright (c) 2010, 2012, 2018 The Linux Foundation. All rights reserved.
+- *  Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
+  *
+  *  Acknowledgements:
+  *  This file is based on hci_ll.c, which was...
+@@ -1904,17 +1903,7 @@ static int qca_setup(struct hci_uart *hu)
+ 	case QCA_WCN6750:
+ 	case QCA_WCN6855:
+ 	case QCA_WCN7850:
+-
+-		/* Set BDA quirk bit for reading BDA value from fwnode property
+-		 * only if that property exist in DT.
+-		 */
+-		if (fwnode_property_present(dev_fwnode(hdev->dev.parent), "local-bd-address")) {
+-			set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
+-			bt_dev_info(hdev, "setting quirk bit to read BDA from fwnode later");
+-		} else {
+-			bt_dev_dbg(hdev, "local-bd-address` is not present in the devicetree so not setting quirk bit for BDA");
+-		}
+-
++		set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
+ 		hci_set_aosp_capable(hdev);
+ 
+ 		ret = qca_read_soc_version(hdev, &ver, soc_type);
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -355,7 +387,7 @@ index a2d0009560d0..4f3486e6a84b 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 4fcda50acfa4..bbbcff15f587 100644
+index 1ea14e86a741..ae3518be391e 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -33,6 +33,7 @@
@@ -366,7 +398,7 @@ index 4fcda50acfa4..bbbcff15f587 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -990,40 +991,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -992,40 +993,101 @@ int efi_mem_type(unsigned long phys_addr)
  	return -EINVAL;
  }
  
@@ -978,7 +1010,7 @@ index cd1210026ac5..448d146c6757 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 2ebbe51a7efe..503f79c60365 100644
+index eff7f5df08e2..b58145ce7775 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4433,6 +4433,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1013,7 +1045,7 @@ index 2ebbe51a7efe..503f79c60365 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index bdd0acf7fa3c..2adde1beb158 100644
+index d5d3eea006c1..583d0fa2877d 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1031,7 +1063,7 @@ index bdd0acf7fa3c..2adde1beb158 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4069,6 +4077,8 @@ static int __init init_sd(void)
+@@ -4084,6 +4092,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -1041,10 +1073,10 @@ index bdd0acf7fa3c..2adde1beb158 100644
  	if (err)
  		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index e38a4124f610..0a607946e5f9 100644
+index 64e54163f05e..aaaa9bca0ee5 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5806,6 +5806,13 @@ static void hub_event(struct work_struct *work)
+@@ -5815,6 +5815,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -1149,7 +1181,7 @@ index c74f47711f0b..e7bbf3b7a938 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 76458b6d53da..b80d5835be72 100644
+index f9b5baf1b5f4..60df2a4b2815 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
 @@ -411,6 +411,8 @@ LSM_HOOK(void, LSM_RET_VOID, bpf_prog_free_security, struct bpf_prog_aux *aux)
@@ -1364,7 +1396,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index d0eb20f90b26..a99c045730e9 100644
+index 3180d823e023..110bca09a1c3 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -494,6 +494,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
@@ -1536,10 +1568,10 @@ index cd84d8ea1dfb..e4c70a0312bc 100644
  
  const struct lsm_id lockdown_lsmid = {
 diff --git a/security/security.c b/security/security.c
-index 7035ee35a393..e1d54a896ef9 100644
+index a344b8fa5530..51b5bea3b0c7 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5511,6 +5511,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5517,6 +5517,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

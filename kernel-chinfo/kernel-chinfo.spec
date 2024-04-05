@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.3
+%define specrpmversion 6.8.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -219,9 +219,9 @@ Summary: The Linux kernel
 %if 0%{?post_factum}
 %global pftag pf%{post_factum}
 # Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 496d4c5bc5db94e6cfea3d99cb674d9e1e7edded
+%global pfcommit 5ce0a6576b16cc38c4fbf710d32420c0cd1f183a
 %global pf_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
-%global pfcoprhash 870d4982f716927de674c133908fb310
+%global pfcoprhash a1861309b7973a0b620ab6c929de62a4
 %if "%{pfcommit}" == "0"
 %global pfrange v%{patchversion}-%{pftag}
 %else
@@ -1083,6 +1083,7 @@ Patch5007:  %{pf_url}/248bf6f07f19efdde2028742044745704d72eb57.patch#/pf-revert-
 Patch5008:  %{pf_url}/4cb0dd12456c901b3e55e47382aaf2189f8b90c7.patch#/pf-revert-4cb0dd1.patch
 Patch5009:  %{pf_url}/a787f2610885985cbafc812d2b4c4861850c7175.patch#/pf-revert-a787f26.patch
 Patch5010:  %{pf_url}/eb1627dc5a804701d7b0de79ba5f86a07d0e5335.patch#/pf-revert-eb1627d.patch
+Patch5011:  %{pf_url}/735b5659b8d722f5a086ec0d33babcc1504f2da0.patch#/pf-revert-735b565.patch
 # btrfs
 Patch5020:  %{pf_url}/69ed978012694087828a472e2b801090149137df.patch#/pf-revert-69ed978.patch
 Patch5021:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-revert-50f3726.patch
@@ -1094,6 +1095,9 @@ Patch5026:  %{pf_url}/236a498b71c5912e402e696321f35bf61efec7bf.patch#/pf-revert-
 Patch5027:  %{pf_url}/aa2f6ac9c1daf91633db6e7a6955829015275b59.patch#/pf-revert-aa2f6ac.patch
 Patch5028:  %{pf_url}/86ccc946133357106d10e43c976318ecb976e382.patch#/pf-revert-86ccc94.patch
 Patch5029:  %{pf_url}/147fa7036b8e48e49ce88f4d4425a245c4980f46.patch#/pf-revert-147fa70.patch
+Patch5030:  %{pf_url}/63f318cd46300b676c106223bd30087ef4a57591.patch#/pf-revert-63f318c.patch
+Patch5031:  %{pf_url}/7a0be4fc176d2b10ea079f0086cd0b0439601b75.patch#/pf-revert-7a0be4f.patch
+Patch5032:  %{pf_url}/c5bbf5ea3f23dcf2dc070eab4a1d8daa25d2f2e1.patch#/pf-revert-c5bbf5e.patch
 # md
 Patch5050:  %{pf_url}/49c86d3ff1164c3bb69d63833f5cb0ee66fcb500.patch#/pf-revert-49c86d3.patch
 Patch5051:  %{pf_url}/7c062aa8fb8c9404c993fa4c8645396fb81a6afe.patch#/pf-revert-7c062aa.patch
@@ -1966,6 +1970,10 @@ ApplyPatch %{PATCH5007} -R
 ApplyPatch %{PATCH5008} -R
 ApplyPatch %{PATCH5009} -R
 ApplyPatch %{PATCH5010} -R
+ApplyPatch %{PATCH5011} -R
+ApplyPatch %{PATCH5032} -R
+ApplyPatch %{PATCH5031} -R
+ApplyPatch %{PATCH5030} -R
 ApplyPatch %{PATCH5029} -R
 ApplyPatch %{PATCH5028} -R
 ApplyPatch %{PATCH5027} -R
@@ -4109,6 +4117,9 @@ fi\
 #
 #
 %changelog
+* Thu Apr 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.4-500.chinfo
+- 6.8.4 - pf4
+
 * Wed Apr 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.3-500.chinfo
 - 6.8.3 - pf4
 

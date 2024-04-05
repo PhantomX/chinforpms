@@ -21,6 +21,7 @@ some seasonal packages too, these can return when needed
  * **cowsrevenge** - Do not have interest anymore
  * **curlew** - Do not have interest anymore
  * **decaf-emu** - needs SSE4.1
+ * **devedeng** - Boolean dependencies for video players and disc burners
  * **dosbox-staging** - Fedora included
  * **dosbox-x** - Do not have interest anymore
  * **dropboxd** - Do not have interest anymore, upstream bad decisions
