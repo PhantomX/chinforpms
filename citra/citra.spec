@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a442389a6055768997bc6748c967b1ae249ac584
+%global commit 0c2f076dc4257b2b5b6ea4826f0831e77d8f4d56
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240324
+%global date 20240406
 %bcond_without snapshot
 
 # Enable system boost
@@ -117,8 +117,9 @@
 %global vc_url  https://github.com/PabloMK7
 
 Name:           citra
-Version:        8433057
+Version:        0
 Release:        1%{?dist}
+Epoch:          1
 Summary:        A Nintendo 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
@@ -164,7 +165,6 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %dnl Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
-Patch12:        0001-Disable-telemetry-initial-dialog.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -498,6 +498,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Apr 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:0-1.20240406git0c2f076
+- r0c2f076
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 8433057-1.20240324gita442389
 - 8433057
 

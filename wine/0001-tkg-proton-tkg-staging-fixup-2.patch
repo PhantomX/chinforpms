@@ -1,0 +1,30 @@
+From 654293b0778918864e8ea47b284e59905a5775dd Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 6 Apr 2024 08:04:32 -0300
+Subject: [PATCH] tkg: proton tkg staging fixup 2
+
+---
+ dlls/wbemprox/builtin.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
+
+diff --git a/dlls/wbemprox/builtin.c b/dlls/wbemprox/builtin.c
+index 71ebf09..853e9a5 100644
+--- a/dlls/wbemprox/builtin.c
++++ b/dlls/wbemprox/builtin.c
+@@ -2950,11 +2950,10 @@ static enum fill_status fill_networkadapter( struct table *table, const struct e
+         rec->description          = wcsdup( aa->Description );
+         rec->device_id            = wcsdup( device_id );
+         rec->guid                 = get_networkadapter_guid( &aa->Luid );
+-        rec->index                = aa->u.s.IfIndex;
+-        rec->interface_index      = aa->u.s.IfIndex;
++        rec->index                = aa->IfIndex;
++        rec->interface_index      = aa->IfIndex;
+         rec->mac_address          = get_mac_address( aa->PhysicalAddress, aa->PhysicalAddressLength );
+         rec->manufacturer         = L"The Proton Project";
+-        rec->netconnection_id     = NULL; /* FIXME Windows seems to fill this when it's connected and in use */
+         rec->name                 = wcsdup( aa->FriendlyName );
+         rec->netenabled           = connection_status ? -1 : 0;
+         rec->netconnection_status = connection_status;
+-- 
+2.44.0
+

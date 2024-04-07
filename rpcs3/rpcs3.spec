@@ -38,16 +38,16 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 41f05f686451fb1335c582c266f0051bc6cffe4d
+%global commit 517f0e1bacbb6f5dd6fac5c70196fcc82832cf0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240328
+%global date 20240405
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Tools
 
-%global commit11 ced3ce8d5ecc5aef8a5156fea206a37b33774bf3
+%global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
@@ -63,7 +63,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 66596ad9e1d7efa8479656872cf09c9c1870a02e
+%global commit15 8970ff4c34034dbb3594943d11f8c9d4c5512bd5
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -107,8 +107,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.31.16267
-Release:        3%{?dist}
+Version:        0.0.31.16295
+Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0

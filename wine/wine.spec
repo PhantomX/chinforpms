@@ -102,7 +102,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.5
+%global wine_stagingver 9.6
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -113,7 +113,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ac3142b6b9264c3e8ccb8b36fa234fcedaa128f9
+%global tkg_id d119a7b7af14b3caa68bae83a8a87a877894ea01
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -126,7 +126,7 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%bcond_without childwindow
+%bcond_with childwindow
 # fastsync/winesync
 %bcond_without fastsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -158,8 +158,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.5
-Release:        101%{?dist}
+Version:        9.6
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -233,8 +233,6 @@ Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-wh
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
 
-Patch901:        0001-Fix-staging-windows.networking.connectivity.dll.patch
-
 # https://github.com/Tk-Glitch/PKGBUILDS/wine-tkg-git/wine-tkg-patches
 Patch1000:       FS_bypass_compositor.patch
 Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
@@ -255,12 +253,9 @@ Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.pat
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/rdr2/0001-proton-bcrypt_rdr2_fixes7.mypatch#/%{name}-tkg-0001-proton-bcrypt_rdr2_fixes7.patch
-Patch1036:       %{tkg_url}/hotfixes/rdr2/0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.mypatch#/%{name}-tkg-0002-bcrypt-Add-support-for-calculating-secret-ecc-keys2.patch
-Patch1037:       %{tkg_url}/hotfixes/rdr2/0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.mypatch#/%{name}-tkg-0003-bcrypt-Add-support-for-OAEP-padded-asymmetric-key-de3.patch
-Patch1038:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1039:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
-Patch1040:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1036:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
+Patch1037:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 
@@ -279,6 +274,8 @@ Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
 Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
+Patch1097:       0001-tkg-proton-tkg-staging-fixup-1.patch
+Patch1098:       0001-tkg-proton-tkg-staging-fixup-2.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -889,8 +886,6 @@ This package adds the opencl driver for wine.
 
 tar -xf %{SOURCE900} --strip-components=1
 
-%patch -P 901 -p1
-
 %if %{without fshack}
 %patch -P 1000 -p1
 %endif
@@ -921,7 +916,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
+%patch -P 1097 -p1
 %patch -P 1027 -p1
+%patch -P 1098 -p1
 %if %{without childwindow}
 %patch -P 1095 -p1
 %endif
@@ -935,14 +932,11 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
-%patch -P 1032 -p1
+%dnl %patch -P 1032 -p1
 %patch -P 1034 -p1
-%dnl %patch -P 1035 -p1
-%dnl %patch -P 1036 -p1
-%dnl %patch -P 1037 -p1
-%patch -P 1038 -p1
-%patch -P 1039 -p1
-%patch -P 1040 -p1
+%patch -P 1035 -p1
+%patch -P 1036 -p1
+%patch -P 1037 -p1
 
 %patch -P 1093 -p1
 %patch -P 1089 -p1
@@ -2553,6 +2547,10 @@ fi
 
 
 %changelog
+* Sat Apr 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.6-100
+- 9.6
+- Disable childwindow and OPWR patch for the time
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.5-101
 - tkg sync
 
