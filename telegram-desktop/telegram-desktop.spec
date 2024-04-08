@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        4.16.1
+Version:        4.16.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -227,7 +227,7 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 %if %{without minizip}
-rm -rf Telegram/minizip
+rm -rf Telegram/minizip Telegram/ThirdParty/minizip
 %endif
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -357,6 +357,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Apr 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.4-100
+- 4.16.4
+
 * Wed Apr 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.1-100
 - 4.16.1
 
