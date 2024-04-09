@@ -1,0 +1,32 @@
+From 9f001328262de06d80a99bc2d5180300c96002cc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 8 Apr 2024 22:46:46 -0300
+Subject: [PATCH] Prevent escape warning
+
+---
+ nsz/__init__.py | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/nsz/__init__.py b/nsz/__init__.py
+index 00f5b0d..189625a 100644
+--- a/nsz/__init__.py
++++ b/nsz/__init__.py
+@@ -126,14 +126,7 @@ def main():
+ 		argOutFolder = Path(argOutFolderToPharse).resolve() if args.output else None
+ 		
+ 		Print.info('')
+-		Print.info('             NSZ v4.6   ,;:;;,')
+-		Print.info('                       ;;;;;')
+-		Print.info('               .=\',    ;:;;:,')
+-		Print.info('              /_\', "=. \';:;:;')
+-		Print.info('              @=:__,  \,;:;:\'')
+-		Print.info('                _(\.=  ;:;;\'')
+-		Print.info('               `"_(  _/="`')
+-		Print.info('                `"\'')
++		Print.info('             NSZ v4.6         ')
+ 		Print.info('')
+ 		
+ 		barManager = enlighten.get_manager()
+-- 
+2.44.0
+

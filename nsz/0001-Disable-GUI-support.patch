@@ -1,0 +1,53 @@
+From 169c35738ba5c281ab6d702f0b46d74e2676d43f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 8 Apr 2024 22:48:13 -0300
+Subject: [PATCH] Disable GUI support
+
+---
+ nsz/__init__.py | 2 +-
+ setup.py        | 9 +--------
+ 2 files changed, 2 insertions(+), 9 deletions(-)
+
+diff --git a/nsz/__init__.py b/nsz/__init__.py
+index 189625a..f2e3a25 100644
+--- a/nsz/__init__.py
++++ b/nsz/__init__.py
+@@ -106,7 +106,7 @@ def main():
+ 			try:
+ 				from nsz.gui.NSZ_GUI import GUI
+ 			except ImportError:
+-				Print.error("Failed to import the GUI - is it installed?")
++				Print.error("Failed to import the GUI - support is disabled by packager")
+ 				return
+ 			args = GUI().run()
+ 			if args == None:
+diff --git a/setup.py b/setup.py
+index eed2278..33cd56d 100644
+--- a/setup.py
++++ b/setup.py
+@@ -15,7 +15,7 @@ setuptools.setup(
+ 	long_description=long_description,
+ 	long_description_content_type="text/markdown",
+ 	url="https://github.com/nicoboss/nsz",
+-	packages=['nsz', 'nsz.Fs', 'nsz.nut', 'nsz.gui', 'nsz.gui.txt', 'nsz.gui.shaders', 'nsz.gui.layout', 'nsz.gui.json', 'nsz.gui.fonts'],
++	packages=['nsz', 'nsz.Fs', 'nsz.nut'],
+ 	classifiers=[
+ 		"Programming Language :: Python :: 3",
+ 		"License :: OSI Approved :: MIT License",
+@@ -26,13 +26,6 @@ setuptools.setup(
+ 		'zstandard',
+ 		'enlighten',
+ 	],
+-	extras_require={
+-		'gui': [
+-			'pywin32;platform_system=="Windows"',
+-			'pypiwin32;platform_system=="Windows"',
+-			'kivy'
+-		]
+-	},
+ 	entry_points = {'console_scripts': ['nsz = nsz:main']},
+ 	keywords = ['nsz', 'xcz', 'ncz', 'nsp', 'xci', 'nca', 'Switch'],
+ 	python_requires='>=3.6',
+-- 
+2.44.0
+

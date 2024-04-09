@@ -56,6 +56,7 @@ mesa-freeworld
 -mupen64plus-rsp-cxd4
 ninfs
 nstool
+nsz
 pcsx2
 pcsx2_patches
 pkgrip

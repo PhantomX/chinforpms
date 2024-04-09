@@ -113,7 +113,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d119a7b7af14b3caa68bae83a8a87a877894ea01
+%global tkg_id f3a37c08fd0ec09f1f5184d2661603c45be63a62
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -274,8 +274,6 @@ Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
 Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
-Patch1097:       0001-tkg-proton-tkg-staging-fixup-1.patch
-Patch1098:       0001-tkg-proton-tkg-staging-fixup-2.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -916,9 +914,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%patch -P 1097 -p1
 %patch -P 1027 -p1
-%patch -P 1098 -p1
 %if %{without childwindow}
 %patch -P 1095 -p1
 %endif

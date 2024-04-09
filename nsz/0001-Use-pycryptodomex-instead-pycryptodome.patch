@@ -1,0 +1,78 @@
+From 04aa40701492c5bc048494eb9bcfbe1317a71311 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 8 Apr 2024 22:05:34 -0300
+Subject: [PATCH] Use pycryptodomex instead pycryptodome
+
+---
+ nsz/IndependentNczDecompressor.py | 4 ++--
+ nsz/nut/aes128.py                 | 4 ++--
+ requirements-gui.txt              | 2 +-
+ requirements.txt                  | 2 +-
+ setup.py                          | 2 +-
+ 5 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/nsz/IndependentNczDecompressor.py b/nsz/IndependentNczDecompressor.py
+index 3bcd6f6..5ee4a73 100644
+--- a/nsz/IndependentNczDecompressor.py
++++ b/nsz/IndependentNczDecompressor.py
+@@ -4,8 +4,8 @@
+ from sys import argv
+ from pathlib import Path
+ from hashlib import sha256
+-from Crypto.Cipher import AES
+-from Crypto.Util import Counter
++from Cryptodome.Cipher import AES
++from Cryptodome.Util import Counter
+ from binascii import hexlify as hx
+ from zstandard import ZstdDecompressor
+ 
+diff --git a/nsz/nut/aes128.py b/nsz/nut/aes128.py
+index 76120d9..3f29f4a 100644
+--- a/nsz/nut/aes128.py
++++ b/nsz/nut/aes128.py
+@@ -2,8 +2,8 @@
+ # SciresM, 2017
+ from struct import unpack as up, pack as pk
+ from binascii import hexlify as hx, unhexlify as uhx
+-from Crypto.Cipher import AES
+-from Crypto.Util import Counter
++from Cryptodome.Cipher import AES
++from Cryptodome.Util import Counter
+ 
+ def sxor(s1, s2):
+ 	assert(len(s1) == len(s2))
+diff --git a/requirements-gui.txt b/requirements-gui.txt
+index df3585e..cab7a38 100644
+--- a/requirements-gui.txt
++++ b/requirements-gui.txt
+@@ -1,4 +1,4 @@
+-pycryptodome
++pycryptodomex
+ zstandard
+ enlighten
+ pywin32;platform_system == "Windows"
+diff --git a/requirements.txt b/requirements.txt
+index b54fe5c..09da50a 100644
+--- a/requirements.txt
++++ b/requirements.txt
+@@ -1,3 +1,3 @@
+-pycryptodome
++pycryptodomex
+ zstandard
+ enlighten
+diff --git a/setup.py b/setup.py
+index 0ac290c..eed2278 100644
+--- a/setup.py
++++ b/setup.py
+@@ -22,7 +22,7 @@ setuptools.setup(
+ 		"Operating System :: OS Independent",
+ 	],
+ 	install_requires=[
+-		'pycryptodome',
++		'pycryptodomex',
+ 		'zstandard',
+ 		'enlighten',
+ 	],
+-- 
+2.44.0
+
