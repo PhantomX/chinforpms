@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.4
+%define specrpmversion 6.8.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,44 +209,15 @@ Summary: The Linux kernel
 %define pkg_release %{specrelease}
 
 %global tkg 0
-
-# Apply post-factum patches? (pf release number to enable, 0 to disable)
-# https://gitlab.com/post-factum/pf-kernel/
-# pf applies stable patches without updating stable_update number
-# stable_update above needs to match pf applied stable patches to proper rpm updates
-%global post_factum 4
-%global pf_url https://codeberg.org/pf-kernel/linux/commit
-%if 0%{?post_factum}
-%global pftag pf%{post_factum}
-# Set a git commit hash to use it instead tag, 0 to use above tag
-%global pfcommit 5ce0a6576b16cc38c4fbf710d32420c0cd1f183a
-%global pf_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
-%global pfcoprhash a1861309b7973a0b620ab6c929de62a4
-%if "%{pfcommit}" == "0"
-%global pfrange v%{patchversion}-%{pftag}
-%else
-%global pfrange %(c=%{pfcommit}; echo ${c:0:7})
-%endif
-%global pfpatch pf-kernel-v%{patchversion}-%{pfrange}.pfpatch
-%dnl %global pf_patch https://codeberg.org/pf-kernel/linux/compare/v%{patchversion}...%{pfcommit}.diff#/%{pfpatch}
-%global pf_patch https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms-kernel/%{name}/%{pfpatch}/%{pfcoprhash}/%{pfpatch}
-
-# Apply a patch range from stable repository, extending pf unmantained branches
-# Root Makefile are stripped from patching
-%global pf_stable_extra 1
-%if 0%{?pf_stable_extra}
-# Use official patch instead diff from git
-%global pf_stable_full 1
-%global st_first_commit e8f897f4afef0031fe618a8e94127a0934896aba
-%global st_last_commit 03a22b591c5443ba269e8570c6fef411251fe1b8
-%global short_st_first %(c=%{st_first_commit}; echo ${c:0:7})
-%global short_st_last %(c=%{st_last_commit}; echo ${c:0:7})
-%global stable_extra_patch https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch/?h=linux-%{patchversion}.y&id=%{st_last_commit}&id2=%{st_first_commit}#/kernel-stable-v%{patchversion}-%{short_st_first}-%{short_st_last}.patch
-%endif
-%endif
+%global post_factum 1
 
 %global opensuse_id b5e6a9ba1f966e4bc7924b1b73c50c37c9cbfc93
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
+
+%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
+%global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
+%global pf_url https://codeberg.org/pf-kernel/linux/commit
+%global tkg_url https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -740,9 +711,6 @@ BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
-%if 0%{?pf_stable_extra}
-BuildRequires: patchutils
-%endif
 BuildRequires: python3-devel
 BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
@@ -1067,60 +1035,12 @@ Source4000: README.rst
 Source4001: rpminspect.yaml
 Source4002: gating.yaml
 
-%global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
-%global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
-
 # Here should be only the patches up to the upstream canonical Linus tree.
 
-%if 0%{?post_factum}
-Patch5000:  %{pf_patch}
-Patch5002:  https://gitlab.com/cki-project/kernel-ark/-/commit/e04ed37ee7a38d7b21d8811666ec556c83f55931.patch#/kernel-ark-revert-e04ed37.patch
-Patch5003:  %{pf_url}/4190f58a10e079bbbb487cc0520db13ee09aa05e.patch#/pf-revert-4190f58.patch
-Patch5004:  %{pf_url}/74b6fc23b9977f6a093645fd35cba8a41d3904f9.patch#/pf-revert-74b6fc2.patch
-Patch5005:  %{pf_url}/ff18f7d3c6cbbd2932789d384eccf1db301ab37c.patch#/pf-revert-ff18f7d.patch
-Patch5006:  %{pf_url}/e7e55653a5f9a1837d936cb5b0a507b0f7bec78d.patch#/pf-revert-e7e5565.patch
-Patch5007:  %{pf_url}/248bf6f07f19efdde2028742044745704d72eb57.patch#/pf-revert-248bf6f.patch
-Patch5008:  %{pf_url}/4cb0dd12456c901b3e55e47382aaf2189f8b90c7.patch#/pf-revert-4cb0dd1.patch
-Patch5009:  %{pf_url}/a787f2610885985cbafc812d2b4c4861850c7175.patch#/pf-revert-a787f26.patch
-Patch5010:  %{pf_url}/eb1627dc5a804701d7b0de79ba5f86a07d0e5335.patch#/pf-revert-eb1627d.patch
-Patch5011:  %{pf_url}/735b5659b8d722f5a086ec0d33babcc1504f2da0.patch#/pf-revert-735b565.patch
-# btrfs
-Patch5020:  %{pf_url}/69ed978012694087828a472e2b801090149137df.patch#/pf-revert-69ed978.patch
-Patch5021:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-revert-50f3726.patch
-Patch5022:  %{pf_url}/6b51f821467bf1d5234cf63b7f60ae3b606058ef.patch#/pf-revert-6b51f82.patch
-Patch5023:  %{pf_url}/d2b40c9ea0dfbe3a34eaf55e0427e807feac7ac8.patch#/pf-revert-d2b40c9.patch
-Patch5024:  %{pf_url}/60e1ee833477c467bbd697a0b549b7c697509819.patch#/pf-revert-60e1ee8.patch
-Patch5025:  %{pf_url}/b44a961859587a28dccf1f6cfc10ffdf9213decc.patch#/pf-revert-b44a961.patch
-Patch5026:  %{pf_url}/236a498b71c5912e402e696321f35bf61efec7bf.patch#/pf-revert-236a498.patch
-Patch5027:  %{pf_url}/aa2f6ac9c1daf91633db6e7a6955829015275b59.patch#/pf-revert-aa2f6ac.patch
-Patch5028:  %{pf_url}/86ccc946133357106d10e43c976318ecb976e382.patch#/pf-revert-86ccc94.patch
-Patch5029:  %{pf_url}/147fa7036b8e48e49ce88f4d4425a245c4980f46.patch#/pf-revert-147fa70.patch
-Patch5030:  %{pf_url}/63f318cd46300b676c106223bd30087ef4a57591.patch#/pf-revert-63f318c.patch
-Patch5031:  %{pf_url}/7a0be4fc176d2b10ea079f0086cd0b0439601b75.patch#/pf-revert-7a0be4f.patch
-Patch5032:  %{pf_url}/c5bbf5ea3f23dcf2dc070eab4a1d8daa25d2f2e1.patch#/pf-revert-c5bbf5e.patch
-# md
-Patch5050:  %{pf_url}/49c86d3ff1164c3bb69d63833f5cb0ee66fcb500.patch#/pf-revert-49c86d3.patch
-Patch5051:  %{pf_url}/7c062aa8fb8c9404c993fa4c8645396fb81a6afe.patch#/pf-revert-7c062aa.patch
-Patch5052:  %{pf_url}/1997bab0c5e5b7409b82b609f8563ae169fa8c87.patch#/pf-revert-1997bab.patch
-Patch5053:  %{pf_url}/5e5c148782cb38976123d7040df8a7c0fb9e4527.patch#/pf-revert-5e5c148.patch
-Patch5054:  %{pf_url}/030eb7bcf1811f98dddc5d2e8a558e116a46fa17.patch#/pf-revert-030eb7b.patch
-Patch5055:  %{pf_url}/8abee95f74d7ff54c1f5f43268a0f298dc34f416.patch#/pf-revert-8abee95.patch
-Patch5056:  %{pf_url}/4e3fd83948e73d8ee3fd20989a92501eac977dcc.patch#/pf-revert-4e3fd83.patch
-Patch5057:  %{pf_url}/ed88ac9bf8fd1694c850a88110dcc9146e370529.patch#/pf-revert-ed88ac9.patch
-Patch5058:  %{pf_url}/34582610ff02fdb41ce7d1d91f17b8fc79abe48b.patch#/pf-revert-3458261.patch
-Patch5059:  %{pf_url}/fc373111b5e0897c3a215d38753434886eebc8aa.patch#/pf-revert-fc37311.patch
-
-%if 0%{?pf_stable_extra}
-%if !0%{?pf_stable_full}
-Patch6000: %{stable_extra_patch}
-%endif
-%endif
-%endif
-
 # For a stable release kernel
-%if 0%{?stable_update} && ((0%{?released_kernel} && !0%{?post_factum}) || (0%{?post_factum} && 0%{?pf_stable_full}))
+%if 0%{?stable_update} && 0%{?released_kernel}
 %define    stable_patch_00  patch-%{specversion}.xz
-Patch6000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
+Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch_00}
 %endif
 
 ## Patches needed for building this package
@@ -1151,16 +1071,91 @@ Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 
 %if 0%{?tkg}
-Patch2090: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
-Patch2091: https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
+Patch2090: %{tkg_url}/%{patchversion}/0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch#/tkg-0001-mm-Support-soft-dirty-flag-reset-for-VA-range.patch
+Patch2091: %{tkg_url}/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-reset.patch#/tkg-0002-mm-Support-soft-dirty-flag-read-with-reset.patch
 %endif
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 %global graysky2_id c409515574bd4d69af45ad74d4e7ba7151010516
-Patch7000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.8-rc4+.patch
+Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.8-rc4+.patch
 
-Patch7010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+
+%if 0%{?post_factum}
+# amd-pstate
+Patch7001:  %{pf_url}/641e7552801c73818653ee50d6913f48245b856a.patch#/pf-cb-641e755.patch
+Patch7002:  %{pf_url}/c5c351d3e348bc9be9e70d5758bd31defb03cc1d.patch#/pf-cb-c5c351d.patch
+Patch7003:  %{pf_url}/ca5d8e68074f82ddebce83e03a80092d76308c6e.patch#/pf-cb-ca5d8e6.patch
+Patch7004:  %{pf_url}/cc6f40b5f1d5037d99185b9d6db44eb44647b31a.patch#/pf-cb-cc6f40b.patch
+Patch7005:  %{pf_url}/09c29d7bfa5ba2af29142715ba510df7600055b5.patch#/pf-cb-09c29d7.patch
+Patch7006:  %{pf_url}/dee082f6177b353eff3350f48836f8f107cb44f8.patch#/pf-cb-dee082f.patch
+Patch7007:  %{pf_url}/1d20d933b45e2a14c886548cc51841bbd45f10c1.patch#/pf-cb-1d20d93.patch
+Patch7008:  %{pf_url}/7de6e958046bd8611e7054e0d6756e41add9aaf6.patch#/pf-cb-7de6e95.patch
+Patch7009:  %{pf_url}/08cfb0e23d892b043aac2b972bb1cae423a98a3d.patch#/pf-cb-08cfb0e.patch
+Patch7010:  %{pf_url}/5553679999685998f44243f007dfa8d9b645f92f.patch#/pf-cb-5553679.patch
+Patch7011:  %{pf_url}/99507dc09f53c4b975cbe0e1b4b79a42ad47c8e4.patch#/pf-cb-99507dc.patch
+Patch7012:  %{pf_url}/91132f11a605caf5211e93e32f06bb841bc61f6e.patch#/pf-cb-91132f1.patch
+Patch7013:  %{pf_url}/16470f705c25e9f606286fc2313f3f011b48031d.patch#/pf-cb-16470f7.patch
+Patch7014:  %{pf_url}/6f97d23a475a6298e145d28fd03082646c641be6.patch#/pf-cb-6f97d23.patch
+Patch7015:  %{pf_url}/35f6eb6acba76baf46cbce9a908006ec763ab1c7.patch#/pf-cb-35f6eb6.patch
+Patch7016:  %{pf_url}/cdce4abbb2968a438c0afb9c2d280eaa8109cf6f.patch#/pf-cb-cdce4ab.patch
+Patch7017:  %{pf_url}/c8a44230ae99b7c541bc5a658c64d5f1146c45ce.patch#/pf-cb-c8a4423.patch
+Patch7018:  %{pf_url}/dc33c5dbd381f342986d86b8c926c3ab757feafb.patch#/pf-cb-dc33c5d.patch
+Patch7019:  %{pf_url}/9ff16d889879eea21c1b37f14e9f1fffd6d36071.patch#/pf-cb-9ff16d8.patch
+Patch7020:  %{pf_url}/12e71a0895d14e9febd86fbd08b9914fea0d5e1f.patch#/pf-cb-12e71a0.patch
+Patch7021:  %{pf_url}/09ad896945849fda14294735f5fef1411647908c.patch#/pf-cb-09ad896.patch
+Patch7022:  %{pf_url}/86a4b05c7af435840a36d64d0356f73fbcfd363d.patch#/pf-cb-86a4b05.patch
+Patch7023:  %{pf_url}/e390850be93cd4715f3babf163a011ac6c516380.patch#/pf-cb-e390850.patch
+Patch7024:  %{pf_url}/9379bbed75a9f025515bb4e65dd9f7b61c141d16.patch#/pf-cb-9379bbe.patch
+Patch7025:  %{pf_url}/dd56ba85f39d7ab1a7441a9eeb6b2327bb273f3a.patch#/pf-cb-dd56ba8.patch
+Patch7026:  %{pf_url}/ac420ace1abc6c32aa5d142d2a9b553c4dec4df5.patch#/pf-cb-ac420ac.patch
+Patch7027:  %{pf_url}/0bfd4a370e74645a0c6f3234facedc326580c9da.patch#/pf-cb-0bfd4a3.patch
+# bbr
+Patch7050:  %{pf_url}/7dd5db3e5182e5728c3fdd859d2c713335ee706a.patch#/pf-cb-7dd5db3.patch
+# block
+Patch7060:  %{pf_url}/e66b22c22de9257bc2c0b34326d258887a347399.patch#/pf-cb-e66b22c.patch
+Patch7061:  %{pf_url}/6f98e2059e1902621baa67892148f5eac44a3978.patch#/pf-cb-6f98e20.patch
+Patch7062:  %{pf_url}/46f44d5389ca3d2c8dfd7dcb3f961ab20ea914ad.patch#/pf-cb-46f44d5.patch
+Patch7063:  %{pf_url}/458f213da09e768b427d7d8891bf6967f2b6e6c0.patch#/pf-cb-458f213.patch
+Patch7064:  %{pf_url}/832f3d248d4d1809d0ae50065e989d2e2cf7fde3.patch#/pf-cb-832f3d2.patch
+Patch7065:  %{pf_url}/1626c25ee395eab7d4f42ffda6d463bc9eaf151c.patch#/pf-cb-1626c25.patch
+Patch7066:  %{pf_url}/c3c3ce96305c3374dd65dcd75e1f22998c17d7c0.patch#/pf-cb-c3c3ce9.patch
+Patch7067:  %{pf_url}/d0504b7a470b4f7b1a4e71efe601adabf084f750.patch#/pf-cb-d0504b7.patch
+# fixes
+Patch7100:  %{pf_url}/9e943ab3c8bb617187aa696eeae5781c81e8050a.patch#/pf-cb-9e943ab.patch
+Patch7101:  %{pf_url}/95f6f5d9133ed95da262ff8265ba2694b19ec2e1.patch#/pf-cb-95f6f5d.patch
+Patch7102:  %{pf_url}/a218b3f2736576ba62646b1bab43edaedf9e3b70.patch#/pf-cb-a218b3f.patch
+Patch7103:  %{pf_url}/79516fb573458d0bb8da5abca6edba4a48e4107a.patch#/pf-cb-79516fb.patch
+Patch7104:  %{pf_url}/7feccb8fc4c6280f9b783e2ac038b8225d3e84cd.patch#/pf-cb-7feccb8.patch
+Patch7105:  %{pf_url}/0f0b8ed975348b61d233d3ce0c65faaf85c1f582.patch#/pf-cb-0f0b8ed.patch
+Patch7106:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-cb-50f3726.patch
+Patch7107:  %{pf_url}/6b51f821467bf1d5234cf63b7f60ae3b606058ef.patch#/pf-cb-6b51f82.patch
+Patch7108:  %{pf_url}/147fa7036b8e48e49ce88f4d4425a245c4980f46.patch#/pf-cb-147fa70.patch
+Patch7109:  %{pf_url}/d5a2c4281133eb7c56285dc7444f5054d59f9259.patch#/pf-cb-d5a2c42.patch
+Patch7110:  %{pf_url}/82262734c84a25000a96186bf12c495a179c5b0f.patch#/pf-cb-8226273.patch
+# zstd
+Patch7200:  %{pf_url}/1b8b450e0a8b6c07229f9ae7e03fbc31e5b14d7f.patch#/pf-cb-1b8b450.patch
+Patch7201:  %{pf_url}/ef8fac5ecb019624f2e38cdcdb7e697873bc96e1.patch#/pf-cb-ef8fac5.patch
+Patch7202:  %{pf_url}/5b59dc7236c3f4bdeb85755f1f8f81ae7545b08d.patch#/pf-cb-5b59dc7.patch
+Patch7203:  %{pf_url}/9089fe4e2cb3eff89d5ad359ddcbe811a4f7af1e.patch#/pf-cb-9089fe4.patch
+Patch7204:  %{pf_url}/d885d3e38500529e4df2425d206608c5cd37757c.patch#/pf-cb-d885d3e.patch
+Patch7205:  %{pf_url}/91377d4a7c106b3cb98bcb674a8f4e86467ae8cb.patch#/pf-cb-91377d4.patch
+Patch7206:  %{pf_url}/2216eeb4d869c393f81212145b775725fcaf9e39.patch#/pf-cb-2216eeb.patch
+# ksm
+Patch7220:  %{pf_url}/8d4a931c41533999c0c3a4ae4655705a65631444.patch#/pf-cb-8d4a931.patch
+# v4l2loopback
+Patch7230:  %{pf_url}/519ac3f772453b98143d71da4b13db626788bf7f.patch#/pf-cb-519ac3f.patch
+Patch7231:  %{pf_url}/e8c31c140e168d77d52ec7290d2080d1f2dc5498.patch#/pf-cb-e8c31c1.patch
+# uvcvideo
+Patch7240:  %{pf_url}/07015936767a820784b39794cbad773f97e8e2f7.patch#/pf-cb-0701593.patch
+Patch7241:  %{pf_url}/79c792bdfc1f2ad46d4e3a8364ff7a23ecc2bd71.patch#/pf-cb-79c792b.patch
+Patch7242:  %{pf_url}/b23f715cb965b1b54a9e2dc3f88c9ef4421d58c2.patch#/pf-cb-b23f715.patch
+Patch7243:  %{pf_url}/01916c357477bae685d2331d578a327393aa9dee.patch#/pf-cb-01916c3.patch
+Patch7244:  %{pf_url}/d9e2c4fbda630a1503715619950f4b172975f290.patch#/pf-cb-d9e2c4f.patch
+Patch7245:  %{pf_url}/5bf14c6c85ac73bfd1fd01d11337e4f8cc2de1ca.patch#/pf-cb-5bf14c6.patch
+Patch7246:  %{pf_url}/884a61751d979ee9974c08a71c72e88e73bdd87e.patch#/pf-cb-884a617.patch
+%endif
 
 # END OF PATCH DEFINITIONS
 
@@ -1960,58 +1955,87 @@ cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
 
 %if 0%{?post_factum}
-ApplyPatch %{PATCH5000}
-ApplyPatch %{PATCH5002} -R
-ApplyPatch %{PATCH5003} -R
-ApplyPatch %{PATCH5004} -R
-ApplyPatch %{PATCH5005} -R
-ApplyPatch %{PATCH5006} -R
-ApplyPatch %{PATCH5007} -R
-ApplyPatch %{PATCH5008} -R
-ApplyPatch %{PATCH5009} -R
-ApplyPatch %{PATCH5010} -R
-ApplyPatch %{PATCH5011} -R
-ApplyPatch %{PATCH5032} -R
-ApplyPatch %{PATCH5031} -R
-ApplyPatch %{PATCH5030} -R
-ApplyPatch %{PATCH5029} -R
-ApplyPatch %{PATCH5028} -R
-ApplyPatch %{PATCH5027} -R
-ApplyPatch %{PATCH5026} -R
-ApplyPatch %{PATCH5025} -R
-ApplyPatch %{PATCH5024} -R
-ApplyPatch %{PATCH5023} -R
-ApplyPatch %{PATCH5022} -R
-ApplyPatch %{PATCH5021} -R
-ApplyPatch %{PATCH5020} -R
-ApplyPatch %{PATCH5059} -R
-ApplyPatch %{PATCH5058} -R
-ApplyPatch %{PATCH5057} -R
-ApplyPatch %{PATCH5056} -R
-ApplyPatch %{PATCH5055} -R
-ApplyPatch %{PATCH5054} -R
-ApplyPatch %{PATCH5053} -R
-ApplyPatch %{PATCH5052} -R
-ApplyPatch %{PATCH5051} -R
-ApplyPatch %{PATCH5050} -R
-%if 0%{?stable_update} && 0%{?pf_stable_extra}
-%if 0%{?pf_stable_full}
-xzcat %{PATCH6000} | filterdiff -p1 -x Makefile > pf_stable_extra.patch
-%else
-filterdiff -p1 -x Makefile %{PATCH6000} > pf_stable_extra.patch
+# amd-pstate
+ApplyPatch %{PATCH7001}
+ApplyPatch %{PATCH7002}
+ApplyPatch %{PATCH7003}
+ApplyPatch %{PATCH7004}
+ApplyPatch %{PATCH7005}
+ApplyPatch %{PATCH7006}
+ApplyPatch %{PATCH7007}
+ApplyPatch %{PATCH7008}
+ApplyPatch %{PATCH7009}
+ApplyPatch %{PATCH7010}
+ApplyPatch %{PATCH7011}
+ApplyPatch %{PATCH7012}
+ApplyPatch %{PATCH7013}
+ApplyPatch %{PATCH7014}
+ApplyPatch %{PATCH7015}
+ApplyPatch %{PATCH7016}
+ApplyPatch %{PATCH7017}
+ApplyPatch %{PATCH7018}
+ApplyPatch %{PATCH7019}
+ApplyPatch %{PATCH7020}
+ApplyPatch %{PATCH7021}
+ApplyPatch %{PATCH7022}
+ApplyPatch %{PATCH7023}
+ApplyPatch %{PATCH7024}
+ApplyPatch %{PATCH7025}
+ApplyPatch %{PATCH7026}
+ApplyPatch %{PATCH7027}
+# bbr
+ApplyPatch %{PATCH7050}
+# block
+ApplyPatch %{PATCH7060}
+ApplyPatch %{PATCH7061}
+ApplyPatch %{PATCH7062}
+ApplyPatch %{PATCH7063}
+ApplyPatch %{PATCH7064}
+ApplyPatch %{PATCH7065}
+ApplyPatch %{PATCH7066}
+ApplyPatch %{PATCH7067}
+# fixes
+ApplyPatch %{PATCH7100}
+ApplyPatch %{PATCH7101}
+ApplyPatch %{PATCH7102}
+ApplyPatch %{PATCH7103}
+ApplyPatch %{PATCH7104}
+ApplyPatch %{PATCH7105}
+ApplyPatch %{PATCH7109}
+ApplyPatch %{PATCH7110}
+# zstd
+ApplyPatch %{PATCH7200}
+ApplyPatch %{PATCH7201}
+ApplyPatch %{PATCH7202}
+ApplyPatch %{PATCH7203}
+ApplyPatch %{PATCH7204}
+ApplyPatch %{PATCH7205}
+ApplyPatch %{PATCH7206}
+# ksm
+ApplyPatch %{PATCH7220}
+# v4l2loopback
+ApplyPatch %{PATCH7230}
+ApplyPatch %{PATCH7231}
+# uvcvideo
+ApplyPatch %{PATCH7240}
+ApplyPatch %{PATCH7241}
+ApplyPatch %{PATCH7242}
+ApplyPatch %{PATCH7243}
+ApplyPatch %{PATCH7244}
+ApplyPatch %{PATCH7245}
+ApplyPatch %{PATCH7246}
 %endif
-ApplyPatch pf_stable_extra.patch
-rm -f pf_stable_extra.patch
-%endif
-ApplyPatch %{PATCH5021}
-ApplyPatch %{PATCH5022}
-ApplyPatch %{PATCH5029}
-%else
+
 # released_kernel with possible stable updates
 %if 0%{?stable_update} && 0%{?released_kernel}
 # This is special because the kernel spec is hell and nothing is consistent
-ApplyPatch %{PATCH6000}
+ApplyPatch %{PATCH5000}
 %endif
+
+%if 0%{?post_factum}
+ApplyPatch %{PATCH7106}
+ApplyPatch %{PATCH7107}
+ApplyPatch %{PATCH7108}
 %endif
 
 %if !%{nopatches}
@@ -2032,9 +2056,9 @@ ApplyPatch %{PATCH2090}
 ApplyPatch %{PATCH2091}
 %endif
 
-ApplyPatch %{PATCH7000}
+ApplyPatch %{PATCH6000}
 
-ApplyPatch %{PATCH7010}
+ApplyPatch %{PATCH6010}
 
 # END OF PATCH APPLICATIONS
 
@@ -4117,6 +4141,9 @@ fi\
 #
 #
 %changelog
+* Wed Apr 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.5-500.chinfo
+- 6.8.5
+
 * Thu Apr 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.4-500.chinfo
 - 6.8.4 - pf4
 

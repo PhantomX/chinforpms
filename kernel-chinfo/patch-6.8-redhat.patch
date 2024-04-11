@@ -7,14 +7,12 @@
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 ++
  drivers/ata/libahci.c                              |  18 +++
- drivers/bluetooth/hci_qca.c                        |  13 +-
  drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 +++++++++++----
  drivers/firmware/efi/secureboot.c                  |  38 +++++
  drivers/firmware/sysfb.c                           |  18 ++-
- drivers/gpu/drm/amd/amdgpu/amdgpu_device.c         |   2 +
  drivers/hid/hid-rmi.c                              |  66 --------
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++++++------
@@ -37,10 +35,10 @@
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 39 files changed, 674 insertions(+), 189 deletions(-)
+ 37 files changed, 671 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index c436247d750c..fba81833741a 100644
+index f29a75b75861..90586379d1e8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -125,7 +123,7 @@ index d1f3b56e7afc..eaefd0d7cfff 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 97dd70285741..efc3fbc9e9f3 100644
+index 3998109195da..cedcd208de44 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -20,6 +20,7 @@
@@ -136,7 +134,7 @@ index 97dd70285741..efc3fbc9e9f3 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -900,6 +901,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -901,6 +902,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -150,7 +148,7 @@ index 97dd70285741..efc3fbc9e9f3 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1063,19 +1071,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1065,19 +1073,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -282,37 +280,6 @@ index 1a63200ea437..a911e976a596 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 8a60ad7acd70..4ecbcb1644cc 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -7,7 +7,6 @@
-  *
-  *  Copyright (C) 2007 Texas Instruments, Inc.
-  *  Copyright (c) 2010, 2012, 2018 The Linux Foundation. All rights reserved.
-- *  Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
-  *
-  *  Acknowledgements:
-  *  This file is based on hci_ll.c, which was...
-@@ -1904,17 +1903,7 @@ static int qca_setup(struct hci_uart *hu)
- 	case QCA_WCN6750:
- 	case QCA_WCN6855:
- 	case QCA_WCN7850:
--
--		/* Set BDA quirk bit for reading BDA value from fwnode property
--		 * only if that property exist in DT.
--		 */
--		if (fwnode_property_present(dev_fwnode(hdev->dev.parent), "local-bd-address")) {
--			set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
--			bt_dev_info(hdev, "setting quirk bit to read BDA from fwnode later");
--		} else {
--			bt_dev_dbg(hdev, "local-bd-address` is not present in the devicetree so not setting quirk bit for BDA");
--		}
--
-+		set_bit(HCI_QUIRK_USE_BDADDR_PROPERTY, &hdev->quirks);
- 		hci_set_aosp_capable(hdev);
- 
- 		ret = qca_read_soc_version(hdev, &ver, soc_type);
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
@@ -611,19 +578,6 @@ index 3c197db42c9d..16e4a2e90fae 100644
  		pd = sysfb_create_simplefb(si, &mode);
  		if (!IS_ERR(pd))
  			goto unlock_mutex;
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-index 94bdb5fa6ebc..1fbaf7b81d69 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_device.c
-@@ -4524,6 +4524,8 @@ int amdgpu_device_prepare(struct drm_device *dev)
- 	if (r)
- 		goto unprepare;
- 
-+	flush_delayed_work(&adev->gfx.gfx_off_delay_work);
-+
- 	for (i = 0; i < adev->num_ip_blocks; i++) {
- 		if (!adev->ip_blocks[i].status.valid)
- 			continue;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -970,7 +924,7 @@ index 42eaebb3bf5c..7a35119c3144 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index cd1210026ac5..448d146c6757 100644
+index ad33161f2374..a4bca95d8322 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1045,7 +999,7 @@ index eff7f5df08e2..b58145ce7775 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index d5d3eea006c1..583d0fa2877d 100644
+index 35200a7a7355..738378291882 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -118,6 +118,14 @@ static const char *sd_cache_types[] = {
@@ -1462,7 +1416,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 267b9a0a3abc..12612f58ca58 100644
+index 6568f8177e39..14d8237af366 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -1473,7 +1427,7 @@ index 267b9a0a3abc..12612f58ca58 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1992,6 +1993,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1995,6 +1996,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1486,7 +1440,7 @@ index 267b9a0a3abc..12612f58ca58 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2052,6 +2059,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2055,6 +2062,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);
