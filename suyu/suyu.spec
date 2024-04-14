@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 48e86d6e84c0027ccade556e90fef170c7e3d803
+%global commit 2b16baf506886ab7df9c4df0b48ae43e047aa593
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240330
+%global date 20240410
 %bcond_without snapshot
 
 # Enable system boost
@@ -93,11 +93,11 @@
 %global shortcommit 0
 %endif
 
-%global appname org.suyu_emu.%{name}
+%global appname dev.suyu_emu.%{name}
 
 Name:           suyu
 Version:        0.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -131,13 +131,9 @@ Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{src
 
 %dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
 
-Patch0:         %{vc_url}/%{name}/pulls/65.patch#/%{name}-gl-pr65.patch
-
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Fix-48e86d6.patch
-
-Patch500:       %{vc_url}/%{name}/commit/66cf0c1b0c9452637266f4faf7077fd5d2daa88d.patch#/%{name}-gl-revert-66cf0c1.patch
 
 ExclusiveArch:  x86_64
 
@@ -208,7 +204,7 @@ BuildRequires:  cmake(Qt%{qt_ver}WebEngineCore)
 BuildRequires:  cmake(Qt%{qt_ver}WebEngineWidgets)
 BuildRequires:  cmake(Qt%{qt_ver}Widgets)
 %if %{with qt6}
-BuildRequires:  cmake(Qt%{qt_ver}6OpenGL)
+BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 %endif
@@ -256,7 +252,6 @@ This is the Qt frontend.
 
 %prep
 %autosetup -n %{name} -N -p1
-%patch -P 500 -p1 -R
 %autopatch -M 499 -p1
 
 pushd externals

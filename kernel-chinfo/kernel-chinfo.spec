@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.5
+%define specrpmversion 6.8.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1127,7 +1127,6 @@ Patch7100:  %{pf_url}/9e943ab3c8bb617187aa696eeae5781c81e8050a.patch#/pf-cb-9e94
 Patch7101:  %{pf_url}/95f6f5d9133ed95da262ff8265ba2694b19ec2e1.patch#/pf-cb-95f6f5d.patch
 Patch7102:  %{pf_url}/a218b3f2736576ba62646b1bab43edaedf9e3b70.patch#/pf-cb-a218b3f.patch
 Patch7103:  %{pf_url}/79516fb573458d0bb8da5abca6edba4a48e4107a.patch#/pf-cb-79516fb.patch
-Patch7104:  %{pf_url}/7feccb8fc4c6280f9b783e2ac038b8225d3e84cd.patch#/pf-cb-7feccb8.patch
 Patch7105:  %{pf_url}/0f0b8ed975348b61d233d3ce0c65faaf85c1f582.patch#/pf-cb-0f0b8ed.patch
 Patch7106:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-cb-50f3726.patch
 Patch7107:  %{pf_url}/6b51f821467bf1d5234cf63b7f60ae3b606058ef.patch#/pf-cb-6b51f82.patch
@@ -1155,6 +1154,17 @@ Patch7243:  %{pf_url}/01916c357477bae685d2331d578a327393aa9dee.patch#/pf-cb-0191
 Patch7244:  %{pf_url}/d9e2c4fbda630a1503715619950f4b172975f290.patch#/pf-cb-d9e2c4f.patch
 Patch7245:  %{pf_url}/5bf14c6c85ac73bfd1fd01d11337e4f8cc2de1ca.patch#/pf-cb-5bf14c6.patch
 Patch7246:  %{pf_url}/884a61751d979ee9974c08a71c72e88e73bdd87e.patch#/pf-cb-884a617.patch
+# aes-xts
+Patch7300:  %{pf_url}/e3e25e3ad3c60ae55c0c1e8318c84b91926eb7d8.patch#/pf-cb-e3e25e3.patch
+Patch7301:  %{pf_url}/c27cefb53314e868c51ea32a11e8ef26c6ccdd9e.patch#/pf-cb-c27cefb.patch
+Patch7302:  %{pf_url}/ee7386a28acb97ea2229e3fad6268a6cb0ed2112.patch#/pf-cb-ee7386a.patch
+Patch7303:  %{pf_url}/984e45d04d5f5d19520f2817c91155894facfca7.patch#/pf-cb-984e45d.patch
+Patch7304:  %{pf_url}/703d558ecb5373cd079bfd9dd0c7f3f4d4f46ccf.patch#/pf-cb-703d558.patch
+Patch7305:  %{pf_url}/5b597d0f4b148eef949a54055da95ef44e4247d0.patch#/pf-cb-5b597d0.patch
+Patch7306:  %{pf_url}/68afbbe7595f8fbda4b610f3e64a1b71d54f0a9a.patch#/pf-cb-68afbbe.patch
+Patch7307:  %{pf_url}/87aae2841a8f1ca5be684914746b76c47bc03e1c.patch#/pf-cb-87aae28.patch
+Patch7308:  %{pf_url}/a12d00e2a783991513774f21e23c2724bfe5bd95.patch#/pf-cb-a12d00e.patch
+Patch7309:  %{pf_url}/51a5ce39e960e659e146cdb9c05662b660a5bdd6.patch#/pf-cb-51a5ce3.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1999,7 +2009,6 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7104}
 ApplyPatch %{PATCH7105}
 ApplyPatch %{PATCH7109}
 ApplyPatch %{PATCH7110}
@@ -2024,6 +2033,17 @@ ApplyPatch %{PATCH7243}
 ApplyPatch %{PATCH7244}
 ApplyPatch %{PATCH7245}
 ApplyPatch %{PATCH7246}
+# aes-xts
+ApplyPatch %{PATCH7300}
+ApplyPatch %{PATCH7301}
+ApplyPatch %{PATCH7302}
+ApplyPatch %{PATCH7303}
+ApplyPatch %{PATCH7304}
+ApplyPatch %{PATCH7305}
+ApplyPatch %{PATCH7306}
+ApplyPatch %{PATCH7307}
+ApplyPatch %{PATCH7308}
+ApplyPatch %{PATCH7309}
 %endif
 
 # released_kernel with possible stable updates
@@ -4141,6 +4161,9 @@ fi\
 #
 #
 %changelog
+* Sat Apr 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.6-500.chinfo
+- 6.8.6
+
 * Wed Apr 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.5-500.chinfo
 - 6.8.5
 

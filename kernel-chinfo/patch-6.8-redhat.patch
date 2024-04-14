@@ -29,13 +29,14 @@
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
+ net/bluetooth/l2cap_core.c                         |   3 +-
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 37 files changed, 671 insertions(+), 177 deletions(-)
+ 40 files changed, 681 insertions(+), 183 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index f29a75b75861..90586379d1e8 100644
@@ -1415,6 +1416,20 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
+diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
+index ab5a9d42fae7..706d2478ddb3 100644
+--- a/net/bluetooth/l2cap_core.c
++++ b/net/bluetooth/l2cap_core.c
+@@ -4054,8 +4054,7 @@ static int l2cap_connect_req(struct l2cap_conn *conn,
+ 		return -EPROTO;
+ 
+ 	hci_dev_lock(hdev);
+-	if (hci_dev_test_flag(hdev, HCI_MGMT) &&
+-	    !test_and_set_bit(HCI_CONN_MGMT_CONNECTED, &hcon->flags))
++	if (hci_dev_test_flag(hdev, HCI_MGMT))
+ 		mgmt_device_connected(hdev, hcon, NULL, 0);
+ 	hci_dev_unlock(hdev);
+ 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
 index 6568f8177e39..14d8237af366 100644
 --- a/scripts/mod/modpost.c
