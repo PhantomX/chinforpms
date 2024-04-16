@@ -26,7 +26,7 @@
 
 Name:           spideroakone
 Version:        7.5.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
@@ -86,8 +86,14 @@ Provides:       SpiderOak = %{version}-%{release}
 %global __requires_exclude %__requires_exclude|^libcrypto\\.so.*$
 %global __requires_exclude %__requires_exclude|^libgmp\\.so.*$
 %global __requires_exclude %__requires_exclude|^libpng12\\.so.*$
+%if !0%{?with_curl}
+%global __requires_exclude %__requires_exclude|^libcurl\\.so.*$
+%endif
 %if !0%{?with_dbusmenuqt}
 %global __requires_exclude %__requires_exclude|^libdbusmenu-qt\\.so.*$
+%endif
+%if !0%{?with_ffi}
+%global __requires_exclude %__requires_exclude|^libffi\\.so.*$
 %endif
 %if !0%{?with_pyqt}
 %global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
@@ -275,7 +281,10 @@ done
 
 
 %changelog
-* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 3:7.5.0-11
+* Mon Apr 15 2024 - 3:7.5.0-12
+- Add missing __requires_exclude
+
+* Thu Mar 16 2023 - 3:7.5.0-11
 - Fix python switch
 
 * Wed Mar 30 2022 - 3:7.5.0-10

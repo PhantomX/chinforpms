@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e671af683a976a54f49c5f9fa7732ac228d9a0ce
+%global commit d49480f8069b9b38961935b7f07d3edc7f949825
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240323
+%global date 20240406
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -155,9 +155,9 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3589
+Version:        0.2.0.3594
 Release:        1%{?dist}
-Summary:        Experimental PlayStation Vita emulator 
+Summary:        Experimental PlayStation Vita emulator
 
 License:        GPL-2.0-or-later AND BSD-2-Clause AND MIT AND ( 0BSD AND MIT ) AND GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND GPL-2.0-only AND CC0-1.0
 URL:            https://vita3k.org/
@@ -493,7 +493,7 @@ desktop-file-install \
   %{pkgname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-ln -s ../../../../%{name}/data/image/icon.png \
+ln -s ../../../../%{pkgname}/data/image/icon.png \
   %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{pkgname}.png
 
 for res in 16 22 24 32 36 48 64 72 96 ;do
