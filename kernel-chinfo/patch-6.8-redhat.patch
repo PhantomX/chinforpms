@@ -29,17 +29,16 @@
  include/linux/security.h                           |   5 +
  kernel/module/main.c                               |   2 +
  kernel/module/signing.c                            |   9 +-
- net/bluetooth/l2cap_core.c                         |   3 +-
  scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 40 files changed, 681 insertions(+), 183 deletions(-)
+ 37 files changed, 671 insertions(+), 177 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index f29a75b75861..90586379d1e8 100644
+index e6c0a00722ea..ac70a1596394 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -233,7 +232,7 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 617f3e0e963d..92d9066ab4c2 100644
+index eb4ca85d16ff..be8278b39b22 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1757,6 +1757,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -733,7 +732,7 @@ index 2e2cabc5f50a..8b44d990f978 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 42eaebb3bf5c..7a35119c3144 100644
+index ef9ea295f9e0..0103334e8f32 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -905,7 +904,7 @@ index 42eaebb3bf5c..7a35119c3144 100644
  	rmi_f34_remove_sysfs(rmi_dev);
  	rmi_free_function_list(rmi_dev);
  
-@@ -1219,9 +1237,15 @@ static int rmi_driver_probe(struct device *dev)
+@@ -1223,9 +1241,15 @@ static int rmi_driver_probe(struct device *dev)
  		}
  	}
  
@@ -1416,22 +1415,8 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/bluetooth/l2cap_core.c b/net/bluetooth/l2cap_core.c
-index ab5a9d42fae7..706d2478ddb3 100644
---- a/net/bluetooth/l2cap_core.c
-+++ b/net/bluetooth/l2cap_core.c
-@@ -4054,8 +4054,7 @@ static int l2cap_connect_req(struct l2cap_conn *conn,
- 		return -EPROTO;
- 
- 	hci_dev_lock(hdev);
--	if (hci_dev_test_flag(hdev, HCI_MGMT) &&
--	    !test_and_set_bit(HCI_CONN_MGMT_CONNECTED, &hcon->flags))
-+	if (hci_dev_test_flag(hdev, HCI_MGMT))
- 		mgmt_device_connected(hdev, hcon, NULL, 0);
- 	hci_dev_unlock(hdev);
- 
 diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index 6568f8177e39..14d8237af366 100644
+index ce686ebf5591..0d28efddb253 100644
 --- a/scripts/mod/modpost.c
 +++ b/scripts/mod/modpost.c
 @@ -22,6 +22,7 @@
@@ -1442,7 +1427,7 @@ index 6568f8177e39..14d8237af366 100644
  
  static bool module_enabled;
  /* Are we using CONFIG_MODVERSIONS? */
-@@ -1995,6 +1996,12 @@ static void write_buf(struct buffer *b, const char *fname)
+@@ -1997,6 +1998,12 @@ static void write_buf(struct buffer *b, const char *fname)
  	}
  }
  
@@ -1455,7 +1440,7 @@ index 6568f8177e39..14d8237af366 100644
  static void write_if_changed(struct buffer *b, const char *fname)
  {
  	char *tmp;
-@@ -2055,6 +2062,7 @@ static void write_mod_c_file(struct module *mod)
+@@ -2057,6 +2064,7 @@ static void write_mod_c_file(struct module *mod)
  	add_depends(&buf, mod);
  	add_moddevtable(&buf, mod);
  	add_srcversion(&buf, mod);

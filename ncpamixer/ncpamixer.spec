@@ -3,6 +3,8 @@
 %global date 20230820
 %bcond_with snapshot
 
+%bcond_without man
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -28,7 +30,9 @@ BuildRequires:  make
 BuildRequires:  pkgconfig(menuw)
 BuildRequires:  pkgconfig(ncursesw)
 BuildRequires:  pkgconfig(libpulse)
+%if %{with man}
 BuildRequires:  pandoc
+%endif
 Requires:       pulseaudio-daemon
 
 %description
@@ -53,7 +57,9 @@ sed  \
 
 %cmake_build
 
+%if %{with man}
 pandoc -s -t man src/man/%{name}.1.md -o %{name}.1
+%endif
 
 
 %install
@@ -67,7 +73,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
+%if %{with man}
 %{_mandir}/man1/%{name}.1*
+%endif
 
 
 %changelog

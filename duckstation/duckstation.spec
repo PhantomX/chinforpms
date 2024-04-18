@@ -16,13 +16,15 @@
 # Enable system fmt
 %bcond_without fmt
 %bcond_with minizip
+# Enable system rapidyml
+%bcond_with ryml
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 41cc60e87e692c197a4ff9f9d8a229c8196744e3
+%global commit d91870523311377229a3cd0f80c43d3992dd0d75
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240401
+%global date 20240417
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -42,12 +44,12 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1
-Release:        115%{?dist}
+Version:        0.1.6674
+Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0 AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -63,6 +65,7 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
+Patch8:         0001-Fix-build-with-Qt-6.6.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -84,6 +87,9 @@ BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
+%if %{with ryml}
+BuildRequires:  cmake(ryml) >= 0.4.1
+%endif
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(egl)
@@ -104,6 +110,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
+BuildRequires:  pkgconfig(shaderc)
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
 %else
@@ -153,7 +160,6 @@ Provides:       bundled(md5-deutsch) = %{md5_ver}
 Provides:       bundled(rainterface) = 0~git
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = %{simpleini_ver}
-Provides:       bundled(spirv-tools) = 0~git
 %dnl Provides:       bundled(zydis) = 0~git
 
 %if %{without nogui}
@@ -209,12 +215,18 @@ cp fmt/LICENSE.rst LICENSE.fmt.rst
 sed -e '/pkg_search_module/s|minizip|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 
+%if %{with ryml}
+  rm -rf rapidyaml
+%else
+sed -e '/find_package/s|ryml|\0_DISABLED|g' -i CMakeLists.txt
+cp soundtouch/COPYING.TXT COPYING.soundtouch
+%endif
 
 %if %{with soundtouch}
 rm -rf soundtouch
 %else
 sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
-cp soundtouch/COPYING.TXT COPYING.soundtouch
+cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
 %endif
 
 %if %{with vulkan}
@@ -225,7 +237,6 @@ cp soundtouch/COPYING.TXT COPYING.soundtouch
   sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 
-cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
@@ -374,6 +385,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.6674-1.20240417gitd918705
+- 0.1.6674
+- Use git describe number as version
+
 * Fri Jan 12 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1-108.20240110git5d3cf93
 - Add more font packages to requirements
 

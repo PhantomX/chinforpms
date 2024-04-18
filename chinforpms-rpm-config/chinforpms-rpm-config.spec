@@ -1,5 +1,5 @@
 Name:           chinforpms-rpm-config
-Version:        12
+Version:        13
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -41,6 +41,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Tue Apr 16 2024 Phantom X <megaphantomx at hotmail dot com> - 13-1
+- Simplify macros
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 12-1
 - Fedora 40 update
 

@@ -1,2 +1,5 @@
-optflags: i686 %{_chinforpms_flags_i686}
-optflags: x86_64 %{_chinforpms_flags_x86_64}
+optflags: i686 %{_chinforpms_flags_target_cpu}
+optflags: x86_64 %{_chinforpms_flags_target_cpu}
+optflags: x86_64_v2 %{_chinforpms_flags_target_cpu}
+optflags: x86_64_v3 %{_chinforpms_flags_target_cpu}
+optflags: x86_64_v4 %{_chinforpms_flags_target_cpu}

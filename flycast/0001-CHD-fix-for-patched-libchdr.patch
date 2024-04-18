@@ -1,0 +1,25 @@
+From b4f5df4a0bb3f2cb2f8a1c8a48d714b1237baa4c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Apr 2024 22:40:25 -0300
+Subject: [PATCH] CHD: fix for patched libchdr
+
+---
+ core/imgread/chd.cpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/core/imgread/chd.cpp b/core/imgread/chd.cpp
+index 0bb7417..510ff1e 100644
+--- a/core/imgread/chd.cpp
++++ b/core/imgread/chd.cpp
+@@ -27,8 +27,6 @@ struct CHDDisc : Disc
+ 
+ 		if (chd)
+ 			chd_close(chd);
+-		if (fp)
+-			std::fclose(fp);
+ 	}
+ };
+ 
+-- 
+2.44.0
+

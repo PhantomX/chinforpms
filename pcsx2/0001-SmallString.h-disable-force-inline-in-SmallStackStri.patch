@@ -1,0 +1,26 @@
+From 8b0d162acca4a8bdf833fa5ac52c79f3934b508f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Apr 2024 18:50:08 -0300
+Subject: [PATCH] SmallString.h: disable force inline in SmallStackString
+ template
+
+---
+ common/SmallString.h | 2 ++--
+ 1 file changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/common/SmallString.h b/common/SmallString.h
+index b2be736..76fd77e 100644
+--- a/common/SmallString.h
++++ b/common/SmallString.h
+@@ -343,7 +343,7 @@ private:
+ #endif
+ 
+ template <u32 L>
+-__fi SmallStackString<L> SmallStackString<L>::from_sprintf(const char* format, ...)
++SmallStackString<L> SmallStackString<L>::from_sprintf(const char* format, ...)
+ {
+ 	std::va_list ap;
+ 	va_start(ap, format);
+-- 
+2.44.0
+

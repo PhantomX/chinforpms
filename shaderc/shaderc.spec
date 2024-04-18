@@ -1,31 +1,30 @@
-%global commit f6d6dddfabfec1041c0dfb8e7ff3608a5f82227c
-%global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20210925
-%global gver .%{date}git%{shortcommit}
-
 # Glslang revision from packaged version
-%global glslang_version 6abdde3ce5119e8ca3dd4e5351aa3a70f25bb689
+%global glslang_version 436237a4ab2be3225acedc66016ea2aa82946b37
 
 Name:           shaderc
-Version:        2021.2
-Release:        101%{?gver}%{?dist}
-Summary:        A collection of tools, libraries, and tests for Vulkan shader compilation
+Version:        2024.0
+Release:        100%{?dist}
+Epoch:          1
+Summary:        Collection of tools, libraries, and tests for Vulkan shader compilation
 
-License:        ASL 2.0
+License:        Apache-2.0
 URL:            https://github.com/google/shaderc
-
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source:         %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 # Patch to unbundle 3rd party code
-Patch1:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
-Patch2:         glslang_linker_flags.patch
+Patch:          0001-Drop-third-party-code-in-CMakeLists.txt.patch
+Patch:          glslang_linker_flags.patch
+# Non semantic debug info patch from PCSX2
+Patch:          shaderc-non-semantic-debug-info.patch
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
-BuildRequires:  python3-devel
-BuildRequires:  glslang-devel
-BuildRequires:  spirv-headers-devel
+BuildRequires:  sed
 BuildRequires:  spirv-tools
+
+BuildRequires:  glslang-devel
+BuildRequires:  python3-devel
+BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools-devel
 
 %description
@@ -53,7 +52,7 @@ A library for compiling shader strings into SPIR-V.
 
 %package -n     libshaderc-devel
 Summary:        Development files for libshaderc
-Requires:       libshaderc%{?_isa} = %{version}-%{release}
+Requires:       libshaderc%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n libshaderc-devel
 A library for compiling shader strings into SPIR-V.
@@ -69,13 +68,14 @@ A library for compiling shader strings into SPIR-V.
 Static libraries for libshaderc.
 
 %prep
-%autosetup -p1 -n %{name}-%{commit}
+%autosetup -p1
 
-rm -rf third_party
+rm -r third_party
 
 # Stolen from Gentoo
 # Create build-version.inc since we want to use our packaged
 # SPIRV-Tools and glslang
+sed -i -e '/build-version/d' glslc/CMakeLists.txt
 echo \"shaderc $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' CHANGES)\" \
         > glslc/src/build-version.inc
 echo \"spirv-tools $(grep -m1 -o '^v[[:digit:]]\{4\}\.[[:digit:]]\(-dev\)\? [[:digit:]]\{4\}-[[:digit:]]\{2\}-[[:digit:]]\{2\}$' /usr/share/doc/spirv-tools/CHANGES)\" \
@@ -88,22 +88,18 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
 %build
 # We disable the tests because they don't work with our unbundling of 3rd party.
 # See https://github.com/google/shaderc/issues/470
-%cmake3 \
-  -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-  -DCMAKE_SKIP_RPATH=True \
-  -DSHADERC_SKIP_TESTS=True \
-  -DSHADERC_ENABLE_EXAMPLES=False \
-  -DPYTHON_EXE=%{__python3} \
-  -GNinja \
-%{nil}
-
-%cmake3_build
+%cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+       -DCMAKE_SKIP_RPATH=True \
+       -DSHADERC_SKIP_TESTS=True \
+       -DPYTHON_EXECUTABLE=%{python3} \
+       -GNinja
+%cmake_build
 
 %install
-%cmake3_install
+%cmake_install
 
 %check
-%ctest3
+%ctest
 
 %files -n glslc
 %doc glslc/README.asciidoc
@@ -128,20 +124,23 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
 %{_libdir}/pkgconfig/shaderc_combined.pc
 
 %changelog
-* Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-101.20210925gitf6d6ddd
-- Bump
+* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 2024.0-100
+- Add non semantic debug info patch
 
-* Thu Sep 16 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.2-100.20210825gitc42db58
-- 2021.2
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2021.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
 
-* Sun Jul 04 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.1-100.20210621git00c8f73
-- 2021.1
+* Sun May 30 11:26:42 CEST 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2021.0-2
+- Update to 2021.0
+- Fix changelog
+- Close: rhbz#1952332
 
-* Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 2021.0-100.20210316git3fe94c6
-- 2021.0-dev
+* Fri Mar  5 13:43:44 CET 2021 Robert-André Mauchin <zebob.m@gmail.com> - 2020.5-1
+- Update to 2020.5
+- Close: rhbz#1931006
 
-* Fri Jan 22 2021 Phantom X <megaphantomx at hotmail dot com> - 2020.5-100.20210118git73b54fa
-- 2020.5-dev
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2020.4-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
 * Sat Dec 26 15:21:39 CET 2020 Robert-André Mauchin <zebob.m@gmail.com> - 2020.4-1
 - Update to 2020.4

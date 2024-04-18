@@ -8,7 +8,7 @@
 %endif
 
 Name:           mednaffe
-Version:        0.9.2
+Version:        0.9.3
 Release:        1%{?dist}
 Summary:        A front-end (GUI) for mednafen emulator
 
@@ -68,6 +68,9 @@ install -pm 0644 %{S:1} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Tue Apr 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.9.3-1
+- 0.9.3
+
 * Wed Dec 29 2021 Phantom X <megaphantomx at hotmail dot com> - 0.9.2-1
 - 0.9.2
 

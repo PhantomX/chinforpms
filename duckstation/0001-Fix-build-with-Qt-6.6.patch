@@ -1,0 +1,239 @@
+From a93643ef1835f265a46b6d787887b5bf3f2d1c26 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 16 Apr 2024 23:20:07 -0300
+Subject: [PATCH] Fix build with Qt 6.6
+
+---
+ src/duckstation-qt/achievementsettingswidget.cpp      | 4 ++++
+ src/duckstation-qt/advancedsettingswidget.cpp         | 4 ++++
+ src/duckstation-qt/audiosettingswidget.cpp            | 4 ++++
+ src/duckstation-qt/consolesettingswidget.cpp          | 4 ++++
+ src/duckstation-qt/controllerglobalsettingswidget.cpp | 4 ++++
+ src/duckstation-qt/emulationsettingswidget.cpp        | 4 ++++
+ src/duckstation-qt/graphicssettingswidget.cpp         | 4 ++++
+ src/duckstation-qt/interfacesettingswidget.cpp        | 4 ++++
+ src/duckstation-qt/postprocessingsettingswidget.cpp   | 8 ++++++++
+ src/duckstation-qt/qtkeycodes.cpp                     | 8 ++++++++
+ src/duckstation-qt/settingwidgetbinder.h              | 4 ++++
+ src/duckstation-qt/setupwizarddialog.cpp              | 8 ++++++++
+ 12 files changed, 60 insertions(+)
+
+diff --git a/src/duckstation-qt/achievementsettingswidget.cpp b/src/duckstation-qt/achievementsettingswidget.cpp
+index d24dc22..f23db6b 100644
+--- a/src/duckstation-qt/achievementsettingswidget.cpp
++++ b/src/duckstation-qt/achievementsettingswidget.cpp
+@@ -16,6 +16,10 @@
+ #include <QtCore/QDateTime>
+ #include <QtWidgets/QMessageBox>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ AchievementSettingsWidget::AchievementSettingsWidget(SettingsWindow* dialog, QWidget* parent)
+   : QWidget(parent), m_dialog(dialog)
+ {
+diff --git a/src/duckstation-qt/advancedsettingswidget.cpp b/src/duckstation-qt/advancedsettingswidget.cpp
+index b24927b..338da54 100644
+--- a/src/duckstation-qt/advancedsettingswidget.cpp
++++ b/src/duckstation-qt/advancedsettingswidget.cpp
+@@ -8,6 +8,10 @@
+ #include "settingswindow.h"
+ #include "settingwidgetbinder.h"
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ static QCheckBox* addBooleanTweakOption(SettingsWindow* dialog, QTableWidget* table, QString name, std::string section,
+                                         std::string key, bool default_value)
+ {
+diff --git a/src/duckstation-qt/audiosettingswidget.cpp b/src/duckstation-qt/audiosettingswidget.cpp
+index 34ec950..40bc93d 100644
+--- a/src/duckstation-qt/audiosettingswidget.cpp
++++ b/src/duckstation-qt/audiosettingswidget.cpp
+@@ -11,6 +11,10 @@
+ 
+ #include <cmath>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ AudioSettingsWidget::AudioSettingsWidget(SettingsWindow* dialog, QWidget* parent) : QWidget(parent), m_dialog(dialog)
+ {
+   SettingsInterface* sif = dialog->getSettingsInterface();
+diff --git a/src/duckstation-qt/consolesettingswidget.cpp b/src/duckstation-qt/consolesettingswidget.cpp
+index 1150c5f..67d3b76 100644
+--- a/src/duckstation-qt/consolesettingswidget.cpp
++++ b/src/duckstation-qt/consolesettingswidget.cpp
+@@ -10,6 +10,10 @@
+ #include <QtWidgets/QMessageBox>
+ #include <QtWidgets/QPushButton>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ ConsoleSettingsWidget::ConsoleSettingsWidget(SettingsWindow* dialog, QWidget* parent)
+   : QWidget(parent), m_dialog(dialog)
+ {
+diff --git a/src/duckstation-qt/controllerglobalsettingswidget.cpp b/src/duckstation-qt/controllerglobalsettingswidget.cpp
+index 4367eb3..be38994 100644
+--- a/src/duckstation-qt/controllerglobalsettingswidget.cpp
++++ b/src/duckstation-qt/controllerglobalsettingswidget.cpp
+@@ -9,6 +9,10 @@
+ 
+ #include "util/sdl_input_source.h"
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ ControllerGlobalSettingsWidget::ControllerGlobalSettingsWidget(QWidget* parent, ControllerSettingsWindow* dialog)
+   : QWidget(parent), m_dialog(dialog)
+ {
+diff --git a/src/duckstation-qt/emulationsettingswidget.cpp b/src/duckstation-qt/emulationsettingswidget.cpp
+index 7c9611a..fd147ed 100644
+--- a/src/duckstation-qt/emulationsettingswidget.cpp
++++ b/src/duckstation-qt/emulationsettingswidget.cpp
+@@ -9,6 +9,10 @@
+ #include <QtWidgets/QMessageBox>
+ #include <limits>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ EmulationSettingsWidget::EmulationSettingsWidget(SettingsWindow* dialog, QWidget* parent)
+   : QWidget(parent), m_dialog(dialog)
+ {
+diff --git a/src/duckstation-qt/graphicssettingswidget.cpp b/src/duckstation-qt/graphicssettingswidget.cpp
+index 5aacd86..410e236 100644
+--- a/src/duckstation-qt/graphicssettingswidget.cpp
++++ b/src/duckstation-qt/graphicssettingswidget.cpp
+@@ -8,6 +8,10 @@
+ #include "settingswindow.h"
+ #include "settingwidgetbinder.h"
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ // For enumerating adapters.
+ #ifdef _WIN32
+ #include "util/d3d11_device.h"
+diff --git a/src/duckstation-qt/interfacesettingswidget.cpp b/src/duckstation-qt/interfacesettingswidget.cpp
+index 48d0a1c..77ae2c1 100644
+--- a/src/duckstation-qt/interfacesettingswidget.cpp
++++ b/src/duckstation-qt/interfacesettingswidget.cpp
+@@ -9,6 +9,10 @@
+ #include "settingswindow.h"
+ #include "settingwidgetbinder.h"
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ const char* InterfaceSettingsWidget::THEME_NAMES[] = {
+   QT_TRANSLATE_NOOP("MainWindow", "Native"),
+   QT_TRANSLATE_NOOP("MainWindow", "Fusion"),
+diff --git a/src/duckstation-qt/postprocessingsettingswidget.cpp b/src/duckstation-qt/postprocessingsettingswidget.cpp
+index 8b842c8..21e3d65 100644
+--- a/src/duckstation-qt/postprocessingsettingswidget.cpp
++++ b/src/duckstation-qt/postprocessingsettingswidget.cpp
+@@ -16,6 +16,10 @@
+ #include <QtWidgets/QMessageBox>
+ #include <QtWidgets/QSlider>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ PostProcessingSettingsWidget::PostProcessingSettingsWidget(SettingsWindow* dialog, QWidget* parent)
+   : QWidget(parent), m_dialog(dialog)
+ {
+@@ -348,7 +352,11 @@ void PostProcessingShaderConfigWidget::createUi()
+       QCheckBox* checkbox = new QCheckBox(QString::fromStdString(option.ui_name), this);
+       checkbox->setToolTip(tooltip);
+       checkbox->setChecked(option.value[0].int_value != 0);
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+       connect(checkbox, &QCheckBox::checkStateChanged, [this, &option](Qt::CheckState state) {
++#else
++      connect(checkbox, &QCheckBox::checkStateChanged, [this, &option](int state) {
++#endif
+         option.value[0].int_value = (state == Qt::Checked) ? 1 : 0;
+         updateConfigForOption(option);
+       });
+diff --git a/src/duckstation-qt/qtkeycodes.cpp b/src/duckstation-qt/qtkeycodes.cpp
+index 2a8c9f6..ec06b99 100644
+--- a/src/duckstation-qt/qtkeycodes.cpp
++++ b/src/duckstation-qt/qtkeycodes.cpp
+@@ -12,6 +12,10 @@
+ 
+ #include <QtGui/QKeyEvent>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ struct KeyCodeName
+ {
+   int code;
+@@ -180,7 +184,11 @@ static constexpr KeyCodeName s_qt_key_names[] = {{Qt::Key_Escape, "Escape", ICON
+                                                  {Qt::Key_twosuperior, "twosuperior", nullptr},
+                                                  {Qt::Key_threesuperior, "threesuperior", nullptr},
+                                                  {Qt::Key_acute, "acute", nullptr},
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+                                                  {Qt::Key_micro, "micro", nullptr},
++#else
++                                                 {Qt::Key_mu, "mu", nullptr},
++#endif
+                                                  {Qt::Key_paragraph, "paragraph", nullptr},
+                                                  {Qt::Key_periodcentered, "periodcentered", nullptr},
+                                                  {Qt::Key_cedilla, "cedilla", nullptr},
+diff --git a/src/duckstation-qt/settingwidgetbinder.h b/src/duckstation-qt/settingwidgetbinder.h
+index 36b53bd..ed1b675 100644
+--- a/src/duckstation-qt/settingwidgetbinder.h
++++ b/src/duckstation-qt/settingwidgetbinder.h
+@@ -29,6 +29,10 @@
+ #include <optional>
+ #include <type_traits>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ namespace SettingWidgetBinder {
+ static constexpr const char* NULLABLE_PROPERTY = "SettingWidgetBinder_isNullable";
+ static constexpr const char* IS_NULL_PROPERTY = "SettingWidgetBinder_isNull";
+diff --git a/src/duckstation-qt/setupwizarddialog.cpp b/src/duckstation-qt/setupwizarddialog.cpp
+index aa7931e..061c2c3 100644
+--- a/src/duckstation-qt/setupwizarddialog.cpp
++++ b/src/duckstation-qt/setupwizarddialog.cpp
+@@ -17,6 +17,10 @@
+ 
+ #include <QtWidgets/QMessageBox>
+ 
++#if (QT_VERSION < QT_VERSION_CHECK(6, 7, 0))
++#define checkStateChanged stateChanged
++#endif
++
+ SetupWizardDialog::SetupWizardDialog()
+ {
+   setupUi();
+@@ -328,7 +332,11 @@ void SetupWizardDialog::addPathToTable(const std::string& path, bool recursive)
+   m_ui.searchDirectoryList->setCellWidget(row, 1, cb);
+   cb->setChecked(recursive);
+ 
++#if (QT_VERSION >= QT_VERSION_CHECK(6, 7, 0))
+   connect(cb, &QCheckBox::checkStateChanged, [item](Qt::CheckState state) {
++#else
++  connect(cb, &QCheckBox::checkStateChanged, [item](int state) {
++#endif
+     const std::string path(item->text().toStdString());
+     if (state == Qt::Checked)
+     {
+-- 
+2.44.0
+

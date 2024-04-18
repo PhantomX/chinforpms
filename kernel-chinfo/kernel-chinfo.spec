@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.6
+%define specrpmversion 6.8.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id b5e6a9ba1f966e4bc7924b1b73c50c37c9cbfc93
+%global opensuse_id a2ed3b547600e8f01fb4b40b4b623835d9672199
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1165,6 +1165,11 @@ Patch7306:  %{pf_url}/68afbbe7595f8fbda4b610f3e64a1b71d54f0a9a.patch#/pf-cb-68af
 Patch7307:  %{pf_url}/87aae2841a8f1ca5be684914746b76c47bc03e1c.patch#/pf-cb-87aae28.patch
 Patch7308:  %{pf_url}/a12d00e2a783991513774f21e23c2724bfe5bd95.patch#/pf-cb-a12d00e.patch
 Patch7309:  %{pf_url}/51a5ce39e960e659e146cdb9c05662b660a5bdd6.patch#/pf-cb-51a5ce3.patch
+Patch7310:  %{pf_url}/5c5a0e684e41381dacff5ecb8590b3cc3b4bfe60.patch#/pf-cb-5c5a0e6.patch
+Patch7311:  %{pf_url}/a38fa2dbd0079972ad3807ef315f3b324f9cfa85.patch#/pf-cb-a38fa2d.patch
+Patch7312:  %{pf_url}/83cfebbe9ea9c65e5983a932ab9dc5c6d6c610e0.patch#/pf-cb-83cfebb.patch
+Patch7313:  %{pf_url}/a16b17a1e14cf6ddba6c036f2d59dc392c33fbcf.patch#/pf-cb-a16b17a.patch
+Patch7314:  %{pf_url}/6d032ba8824f28e4dbb0c43b0dd47dfb7067795b.patch#/pf-cb-6d032ba.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2044,6 +2049,11 @@ ApplyPatch %{PATCH7306}
 ApplyPatch %{PATCH7307}
 ApplyPatch %{PATCH7308}
 ApplyPatch %{PATCH7309}
+ApplyPatch %{PATCH7310}
+ApplyPatch %{PATCH7311}
+ApplyPatch %{PATCH7312}
+ApplyPatch %{PATCH7313}
+ApplyPatch %{PATCH7314}
 %endif
 
 # released_kernel with possible stable updates
@@ -4161,6 +4171,9 @@ fi\
 #
 #
 %changelog
+* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.7-500.chinfo
+- 6.8.7
+
 * Sat Apr 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.6-500.chinfo
 - 6.8.6
 

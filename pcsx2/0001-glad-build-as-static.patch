@@ -14,9 +14,9 @@ index 0f14df9..c190704 100644
 @@ -1,4 +1,4 @@
 -add_library(glad
 +add_library(glad STATIC
- 	src/glad.c
- )
- 
+ 	include/glad/gl.h
+ 	include/KHR/khrplatform.h
+ 	src/gl.c
 -- 
 2.33.1
 

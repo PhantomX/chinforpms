@@ -16,7 +16,7 @@ index 6226953..44c2d41 100644
 +add_library(imgui STATIC
  	include/imconfig.h
  	include/imgui.h
- 	include/imgui_internal.h
+ 	include/imgui_freetype.h
 -- 
 2.34.1
 

@@ -1,20 +1,22 @@
-From 02e17d44f6c8f13ee44dd8386427b68a3764a401 Mon Sep 17 00:00:00 2001
+From 61062f926f718f51d6db5ab3128e591faf74ac53 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                 | 70 ++++++++++++++++++++++
+ cmake/SearchForStuff.cmake                 | 77 ++++++++++++++++++++++
  pcsx2/CMakeLists.txt                       | 12 +++-
+ pcsx2/GS/GSDump.cpp                        |  4 ++
+ pcsx2/GS/GSLzma.cpp                        |  6 ++
  pcsx2/GS/MultiISA.cpp                      |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h |  4 +-
- 4 files changed, 83 insertions(+), 5 deletions(-)
+ 6 files changed, 100 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 71f7aed..22804c3 100644
+index e760556..6574072 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -100,29 +100,82 @@ if(ENABLE_TESTS)
+@@ -86,28 +86,88 @@ if(ENABLE_TESTS)
  	endif()
  endif()
  
@@ -25,11 +27,18 @@ index 71f7aed..22804c3 100644
 +else()
  add_subdirectory(3rdparty/rapidyaml/rapidyaml EXCLUDE_FROM_ALL)
 +endif()
++check_lib(LZMA lzmasdk-c)
++if(LZMA_FOUND)
++	alias_library(LZMA PkgConfig::LZMA)
++	add_library(LZMA::LZMA ALIAS PkgConfig::LZMA)
++	add_definitions("-D_SYSTEM_LZMA")
++else()
+ add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
++endif()
 +check_lib(CHDR libchdr)
 +if(CHDR_FOUND)
 +	alias_library(libchdr PkgConfig::CHDR)
 +else()
- add_subdirectory(3rdparty/lzma EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/libchdr EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(libchdr)
 +endif()
@@ -61,7 +70,6 @@ index 71f7aed..22804c3 100644
 +	alias_library(xbyak xbyak::xbyak)
 +endif()
  
- add_subdirectory(3rdparty/jpgd EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 +check_lib(CPUINFO libcpuinfo)
@@ -97,10 +105,10 @@ index 71f7aed..22804c3 100644
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
  
  if(USE_OPENGL)
-@@ -131,12 +184,24 @@ endif()
+@@ -115,12 +175,24 @@ if(USE_OPENGL)
+ endif()
  
  if(USE_VULKAN)
- 	add_subdirectory(3rdparty/glslang EXCLUDE_FROM_ALL)
 +	find_package(VulkanHeaders)
 +	if(VulkanHeaders_FOUND)
 +		message(STATUS "Using the system vulkan-headers")
@@ -122,7 +130,7 @@ index 71f7aed..22804c3 100644
  
  # Find the Qt components that we need.
  find_package(Qt6 6.6.2 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
-@@ -150,7 +215,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
+@@ -134,7 +206,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
@@ -136,10 +144,10 @@ index 71f7aed..22804c3 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index fb1ab1f..f0cf187 100644
+index 8094db3..21804e6 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1105,7 +1105,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1101,7 +1101,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -147,7 +155,7 @@ index fb1ab1f..f0cf187 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1163,13 +1162,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1154,13 +1153,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -171,6 +179,38 @@ index fb1ab1f..f0cf187 100644
  set_source_files_properties(PrecompiledHeader.cpp PROPERTIES HEADER_FILE_ONLY TRUE)
  if(COMMAND target_precompile_headers)
  	message("Using precompiled headers.")
+diff --git a/pcsx2/GS/GSDump.cpp b/pcsx2/GS/GSDump.cpp
+index 7c17d9e..d2e13b4 100644
+--- a/pcsx2/GS/GSDump.cpp
++++ b/pcsx2/GS/GSDump.cpp
+@@ -16,6 +16,10 @@
+ #include <XzEnc.h>
+ #include <zstd.h>
+ 
++#if defined(_SYSTEM_LZMA)
++#define CONTAINER_FROM_VTBL Z7_CONTAINER_FROM_VTBL
++#endif
++
+ GSDumpBase::GSDumpBase(std::string fn)
+ 	: m_filename(std::move(fn))
+ 	, m_frames(0)
+diff --git a/pcsx2/GS/GSLzma.cpp b/pcsx2/GS/GSLzma.cpp
+index ccf737b..b00af7b 100644
+--- a/pcsx2/GS/GSLzma.cpp
++++ b/pcsx2/GS/GSLzma.cpp
+@@ -22,6 +22,12 @@
+ 
+ #include <mutex>
+ 
++#if defined(_SYSTEM_LZMA)
++#define CONTAINER_FROM_VTBL Z7_CONTAINER_FROM_VTBL
++#define LookToRead2_Init LookToRead2_INIT
++#define False False7z
++#endif
++
+ using namespace GSDumpTypes;
+ 
+ GSDumpFile::GSDumpFile() = default;
 diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
 index d9f99aa..b88c94f 100644
 --- a/pcsx2/GS/MultiISA.cpp

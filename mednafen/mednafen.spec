@@ -13,13 +13,20 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global with_unstable 1
+%bcond_without v3
+%ifarch x86_64
+%if %{with v3}
+%global optflags %(echo %{optflags} | sed -e 's/-march=x86-64 /-march=x86-64-v3 /')
+%endif
+%endif
+
+%global with_unstable 0
 %if 0%{?with_unstable}
 %global unstable UNSTABLE
 %endif
 
 Name:           mednafen
-Version:        1.31.0
+Version:        1.32.1
 Release:        100%{?unstable:.%{unstable}}%{?dist}
 Epoch:          1
 Summary:        A multi-system emulator utilizing OpenGL and SDL
@@ -75,6 +82,12 @@ a joystick is preferred over a keyboard to play games, as the joystick will have
 slightly less latency, although the latency differences may not be perceptible
 to most people. 
 
+%ifarch x86_64
+%if %{with v3}
+It requires a CPU with SSE4.2 and AVX instructions.
+%endif
+%endif
+
 
 %prep
 %autosetup -n %{name}
@@ -114,6 +127,10 @@ rm -rf Documentation/*.def Documentation/*.php Documentation/generate.sh \
 
 
 %changelog
+* Tue Apr 16 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.32.1-100
+- 1.32.1
+- x86_64-v3 switch
+
 * Mon Nov 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1:1.31.0-100.UNSTABLE
 - 1.31.0
 

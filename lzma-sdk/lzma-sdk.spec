@@ -10,7 +10,7 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        23.01
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -153,6 +153,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 23.01-102
+- Add missing XZ symbols to library
+
 * Thu Jun 29 2023 Phantom X - 23.01-101
 - Header fix
 

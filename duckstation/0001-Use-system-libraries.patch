@@ -1,18 +1,18 @@
-From 6971a1c3350adc26651b43d45ac84cbee063c3e0 Mon Sep 17 00:00:00 2001
+From d22353a06ed30f58121c6ea865eeb2476c313eb9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 95 ++++++++++++++++++++++++++++++-
- src/core/texture_replacements.cpp |  2 +
- 2 files changed, 94 insertions(+), 3 deletions(-)
+ dep/CMakeLists.txt                | 102 +++++++++++++++++++++++++++++-
+ src/core/texture_replacements.cpp |   2 +
+ 2 files changed, 101 insertions(+), 3 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 183c08d..6baa5dc 100644
+index a3faa09..da0f8a4 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,28 +1,92 @@
+@@ -1,37 +1,115 @@
 +find_package(fmt 10.1)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -61,8 +61,6 @@ index 183c08d..6baa5dc 100644
 +else()
  add_subdirectory(rapidjson EXCLUDE_FROM_ALL)
 +endif()
- add_subdirectory(glslang EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(glslang)
  add_subdirectory(imgui EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(imgui)
  add_subdirectory(simpleini EXCLUDE_FROM_ALL)
@@ -105,8 +103,16 @@ index 183c08d..6baa5dc 100644
  add_subdirectory(reshadefx EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(reshadefx)
  add_subdirectory(rcheevos EXCLUDE_FROM_ALL)
-@@ -31,9 +95,16 @@ add_subdirectory(rapidyaml EXCLUDE_FROM_ALL)
+ disable_compiler_warnings_for_target(rcheevos)
++find_package(ryml)
++if(ryml_FOUND)
++  message(STATUS "Using the system rapidyml")
++  add_library(rapidyaml INTERFACE)
++  target_link_libraries(rapidyaml INTERFACE ryml::ryml)
++else()
+ add_subdirectory(rapidyaml EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(rapidyaml)
++endif()
  
  if(ENABLE_CUBEB)
 +  find_package(cubeb)
@@ -122,7 +128,7 @@ index 183c08d..6baa5dc 100644
  endif()
  
  if(ENABLE_OPENGL)
-@@ -47,9 +118,27 @@ if(ENABLE_DISCORD_PRESENCE)
+@@ -45,9 +123,27 @@ if(ENABLE_DISCORD_PRESENCE)
  endif()
  
  if(CPU_ARCH_X64)

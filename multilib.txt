@@ -33,7 +33,7 @@ ntsync
 SDL1
 -sdl12-compat
 -sdlcl
--shaderc
+shaderc
 -spirv-headers
 -spirv-tools
 taglib

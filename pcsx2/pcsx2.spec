@@ -18,10 +18,6 @@
 %global date 20220308
 %bcond_with snapshot
 
-%global commit10 c9706bdda0ac22b9856f1aa8261e5b9e15cd20c5
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 glslang
-
 %global commit12 9f4c61a31435a7a90a314fc68aeb386c92a09c0f
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
@@ -48,7 +44,7 @@
 
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
-%global imgui_ver 1.88
+%global imgui_ver 1.90.4
 %global jpgc_ver 1.05
 %global rcheevos_scommit 3d01191
 %global simpleini_ver 4.17
@@ -56,7 +52,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5656
+Version:        1.7.5715
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -68,7 +64,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %if %{without vulkan}
 Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
@@ -80,13 +75,13 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-common-build-as-static.patch
 Patch3:         0001-glad-build-as-static.patch
-Patch4:         0001-glslang-build-as-static.patch
+Patch4:         0001-Fix-build-with-Qt-6.6.patch
 Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
-Patch10:        0001-Console.h-disable-force-inline-in-printf-writer.patch
+Patch10:        0001-SmallString.h-disable-force-inline-in-SmallStackStri.patch
 
 ExclusiveArch:  x86_64
 
@@ -127,7 +122,6 @@ BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(liblz4)
-BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libpulse)
@@ -137,6 +131,7 @@ BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libzip) >= 1.8.0
 BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  cmake(ryml) >= 0.4.1
@@ -150,6 +145,7 @@ BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
+BuildRequires:  pkgconfig(shaderc)
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch)
 %else
@@ -183,7 +179,6 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(gsl) = %{gsl_ver}
-Provides:       bundled(glslang) = 0~git%{shortcommit10}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
 Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
@@ -211,8 +206,6 @@ rm -rf \
   libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 wil \
   winpixeventruntime xbyak xz zlib zstd zydis
 
-tar -xf %{S:10} -C glslang/glslang --strip-components 1
-
 %if %{with fmt}
 rm -rf fmt
 %else
@@ -233,7 +226,6 @@ tar -xf %{S:12} -C vulkan-headers --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
 %endif
 
-cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 #cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
@@ -365,6 +357,10 @@ desktop-file-install \
 
 
 %changelog
+* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 1.7.5715-1
+- 1.7.5715
+- BR: liblzma -> lzmasdk-c
+
 * Thu Oct 19 2023 Phantom X <megaphantomx at hotmail dot com> - 1.7.5136-1
 - 1.7.5136
 - BR: WebP

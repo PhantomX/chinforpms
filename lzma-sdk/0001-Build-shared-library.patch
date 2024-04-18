@@ -1,4 +1,4 @@
-From 965f9a3582bc9c45540e31caca0dd7e685291f1d Mon Sep 17 00:00:00 2001
+From 1bbd821445964917118290fa9da92e6916de1e89 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 09:38:07 -0300
 Subject: [PATCH] Build shared library
@@ -8,8 +8,8 @@ Subject: [PATCH] Build shared library
  C/7zip_gcc_c.mak         |  41 ++------
  C/LzmaDec.c              | 216 --------------------------------------
  C/LzmaDec.h              | 217 +++++++++++++++++++++++++++++++++++++++
- C/Util/Lzma/makefile.gcc |  27 ++++-
- 5 files changed, 252 insertions(+), 254 deletions(-)
+ C/Util/Lzma/makefile.gcc |  28 ++++-
+ 5 files changed, 253 insertions(+), 254 deletions(-)
 
 diff --git a/C/7zFile.h b/C/7zFile.h
 index f5069cd..b7847da 100644
@@ -28,7 +28,7 @@ index f5069cd..b7847da 100644
  
  #include "7zTypes.h"
 diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
-index f19a99b..e1e478d 100644
+index f19a99b..3730757 100644
 --- a/C/7zip_gcc_c.mak
 +++ b/C/7zip_gcc_c.mak
 @@ -23,9 +23,8 @@ CFLAGS_BASE_LIST = -c
@@ -576,7 +576,7 @@ index b0ce28f..ee5257a 100644
  /* ---------- LZMA Properties ---------- */
  
 diff --git a/C/Util/Lzma/makefile.gcc b/C/Util/Lzma/makefile.gcc
-index 2acb0b8..e2b5631 100644
+index 2acb0b8..8e83d37 100644
 --- a/C/Util/Lzma/makefile.gcc
 +++ b/C/Util/Lzma/makefile.gcc
 @@ -1,4 +1,6 @@
@@ -587,7 +587,7 @@ index 2acb0b8..e2b5631 100644
  
  include ../../../CPP/7zip/LzmaDec_gcc.mak
  
-@@ -16,6 +18,27 @@ OBJS = \
+@@ -16,6 +18,28 @@ OBJS = \
    $O/LzmaEnc.o \
    $O/LzmaUtil.o \
    $O/Threads.o \
@@ -613,9 +613,10 @@ index 2acb0b8..e2b5631 100644
 +  $O/XzCrc64.o \
 +  $O/XzCrc64Opt.o \
 +  $O/XzDec.o \
-+  $O/XzEnc.o
++  $O/XzEnc.o \
++  $O/XzIn.o
  
  include ../../7zip_gcc_c.mak
 -- 
-2.41.0
+2.44.0
 
