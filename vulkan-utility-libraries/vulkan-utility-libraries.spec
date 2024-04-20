@@ -3,7 +3,7 @@
 %global with_sdk 0
 
 Name:           vulkan-utility-libraries
-Version:        1.3.281
+Version:        1.3.283
 Release:        100%{?dist}
 Summary:        Vulkan utility libraries
 
@@ -65,9 +65,13 @@ Provides:       vulkan-validation-layers-devel%{?_isa} = %{version}-%{release}
 %{_includedir}/vulkan/
 %{_libdir}/cmake/VulkanUtilityLibraries/*.cmake
 %{_libdir}/libVulkanLayerSettings.a
+%{_libdir}/libVulkanSafeStruct.a
 
 
 %changelog
+* Sat Apr 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.283-100
+- 1.3.283
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.281-100
 - 1.3.281
 

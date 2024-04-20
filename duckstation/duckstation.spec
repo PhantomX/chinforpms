@@ -22,9 +22,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit d91870523311377229a3cd0f80c43d3992dd0d75
+%global commit 17b97368995f616886da89bfa888645c02a275c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240417
+%global date 20240418
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -44,7 +44,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6674
+Version:        0.1.6679
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -65,7 +65,6 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
-Patch8:         0001-Fix-build-with-Qt-6.6.patch
 
 ExclusiveArch:  x86_64 aarch64
 

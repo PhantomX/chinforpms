@@ -39,10 +39,10 @@ shaderc
 taglib
 -v4l-utils
 -vkd3d
-volk-vulkan
 vulkan-headers
 vulkan-loader
 vulkan-tools
+vulkan-volk
 vulkan-utility-libraries
 -webp-pixbuf-loader
 wine

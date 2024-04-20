@@ -52,7 +52,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5715
+Version:        1.7.5717
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -75,7 +75,6 @@ Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
 Patch2:         0001-common-build-as-static.patch
 Patch3:         0001-glad-build-as-static.patch
-Patch4:         0001-Fix-build-with-Qt-6.6.patch
 Patch5:         0001-imgui-build-as-static.patch
 Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch

@@ -1,8 +1,8 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.3.280
-Release:        101%{?dist}
+Version:        1.3.283
+Release:        100%{?dist}
 Summary:        Vulkan tools
 
 License:        Apache-2.0
@@ -14,13 +14,6 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Tools-sdk-%{version
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Tools-%{version}.tar.gz
 %endif
 
-Patch0:         %{url}/commit/b01c881e955072475fda4f557bd5ffe01dfcda45.patch#/%{name}-gh-b01c881.patch
-Patch1:         %{url}/commit/733fd2b522918f81f9c4669350dafd066f99c5d5.patch#/%{name}-gh-733fd2b.patch
-Patch2:         %{url}/commit/2225f5c3080488eaa6a46bd49b09d97cb50579ba.patch#/%{name}-gh-2225f5c.patch
-Patch3:         %{url}/commit/e5f1de89683f3e029f81189051372a3c379bd90a.patch#/%{name}-gh-e5f1de8.patch
-Patch4:         %{url}/commit/934b5f7c13374949527b71b9732b93b5bc0fcc3e.patch#/%{name}-gh-934b5f7.patch
-Patch5:         %{url}/commit/dfff155a761e1f37abf8b364f5cd50374453874c.patch#/%{name}-gh-dfff155.patch
-
 Patch10:        0001-cmake-change-volk-namespace.patch
 
 BuildRequires:  gcc
@@ -30,7 +23,7 @@ BuildRequires:  glslang
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  vulkan-loader-devel
-BuildRequires:  cmake(volk_vulkan)
+BuildRequires:  cmake(vulkan_volk)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-protocols)
@@ -95,6 +88,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Sat Apr 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.283-100
+- 1.3.283
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.280-101
 - Upstream updates
 

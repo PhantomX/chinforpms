@@ -12,7 +12,6 @@ glyr
 gob2
 gstreamer1
 gtk3
-gtk4
 libeatmydata
 libmirage
 -libogg
@@ -64,8 +63,8 @@ perl-X11-GUITest
 -qcodeeditor
 rapidyaml
 -spirv-tools
-volk-vulkan
 vulkan-loader
+vulkan-volk
 vulkan-utility-libraries
 xbyak
 xcftools
@@ -157,6 +156,7 @@ gogextract
 gpa
 grub2-distro-grub-fedora-theme
 -gtk3-nocsd
+gtk4-chinfo
 hdiffpatch
 -hollywood
 -htop

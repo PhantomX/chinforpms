@@ -18,7 +18,7 @@ index d770ca5..34f2046 100644
  find_package(VulkanHeaders QUIET CONFIG)
  find_package(VulkanLoader QUIET CONFIG)
 -find_package(volk QUIET CONFIG)
-+find_package(volk_vulkan QUIET CONFIG)
++find_package(vulkan_volk QUIET CONFIG)
  
  include(GNUInstallDirs)
  
@@ -31,7 +31,7 @@ index 71267a4..15eb296 100644
      add_subdirectory(android)
  
 -    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk_vulkan::volk_headers)
++    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers)
  elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
      add_executable(vkcube)
      target_sources(vkcube PRIVATE
@@ -40,7 +40,7 @@ index 71267a4..15eb296 100644
          target_link_libraries(vkcube PRIVATE rt)
      endif()
 -    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers Threads::Threads)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk_vulkan::volk_headers Threads::Threads)
++    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers Threads::Threads)
  elseif(WIN32)
      add_executable(vkcube WIN32)
      target_sources(vkcube PRIVATE
@@ -49,7 +49,7 @@ index 71267a4..15eb296 100644
          cube.frag.inc
      )
 -    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk_vulkan::volk_headers)
++    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers)
  else()
      message(FATAL_ERROR "Unsupported Platform!")
  endif()
@@ -58,7 +58,7 @@ index 71267a4..15eb296 100644
                     cube.frag.inc
                     ${OPTIONAL_WAYLAND_DATA_FILES})
 -    target_link_libraries(vkcubepp Vulkan::Headers volk::volk_headers Threads::Threads)
-+    target_link_libraries(vkcubepp Vulkan::Headers volk_vulkan::volk_headers Threads::Threads)
++    target_link_libraries(vkcubepp Vulkan::Headers vulkan_volk::volk_headers Threads::Threads)
      target_compile_definitions(vkcubepp PUBLIC ${CUBE_PLATFORM})
  else()
      add_executable(vkcubepp
@@ -67,7 +67,7 @@ index 71267a4..15eb296 100644
                     cube.vert.inc
                     cube.frag.inc)
 -    target_link_libraries(vkcubepp Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcubepp Vulkan::Headers volk_vulkan::volk_headers)
++    target_link_libraries(vkcubepp Vulkan::Headers vulkan_volk::volk_headers)
  endif()
  target_include_directories(vkcubepp PRIVATE .)
  target_compile_definitions(vkcubepp PRIVATE VK_NO_PROTOTYPES)
@@ -76,7 +76,7 @@ index 71267a4..15eb296 100644
          target_link_libraries(vkcube-wayland PRIVATE
              Vulkan::Headers
 -            volk::volk_headers
-+            volk_vulkan::volk_headers
++            vulkan_volk::volk_headers
              Threads::Threads
              PkgConfig::WAYLAND_CLIENT
          )
@@ -89,7 +89,7 @@ index facd696..fd285ee 100644
      Vulkan::Headers
      ${CMAKE_DL_LIBS}
 -    volk::volk_headers
-+    volk_vulkan::volk_headers
++    vulkan_volk::volk_headers
  )
  
  if(WIN32)

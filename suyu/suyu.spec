@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2b16baf506886ab7df9c4df0b48ae43e047aa593
+%global commit dfb9f06e5c46f251e4208adf1d4861e85b1d5eea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240410
+%global date 20240418
 %bcond_without snapshot
 
 # Enable system boost
@@ -96,8 +96,8 @@
 %global appname dev.suyu_emu.%{name}
 
 Name:           suyu
-Version:        0.0.2
-Release:        5%{?dist}
+Version:        0.0.3
+Release:        1%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -426,6 +426,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-1.20240418gitdfb9f06
+- 0.0.3
+
 * Sat Mar 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-4.20240330git48e86d6
 - Qt6
 
