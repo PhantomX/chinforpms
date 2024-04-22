@@ -52,6 +52,7 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  9.0.0
+%global winentsync  6.9
 %global winevulkan 1.3.279
 
 %global wineFAudio 24.02
@@ -102,7 +103,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.6
+%global wine_stagingver 9.7
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -113,7 +114,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f3a37c08fd0ec09f1f5184d2661603c45be63a62
+%global tkg_id ff45a43dd55665bf630b7a73e5b4d0fe45e80f89
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -129,6 +130,8 @@
 %bcond_with childwindow
 # fastsync/winesync
 %bcond_without fastsync
+# ntsync (disables fastsync and fsync)
+%bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
@@ -158,7 +161,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.6
+Version:        9.7
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -183,6 +186,7 @@ Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
 Source7:        wine-README-chinforpms-fshack
 Source8:        wine-README-chinforpms-fastsync
+Source9:        wine-README-chinforpms-ntsync
 
 Source50:       https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml/vk.xml#/vk-%{winevulkan}.xml
 
@@ -258,6 +262,11 @@ Patch1036:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch
 Patch1037:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
 Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
+Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
+Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
+Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
+Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
+Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -384,8 +393,11 @@ BuildRequires:  libappstream-glib
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
-%if 0%{?fastsync}
+%if (%{with fastsync} && %{without ntsync})
 BuildRequires:  winesync-devel >= %{winefastsync}
+%endif
+%if %{with ntsync}
+BuildRequires:  ntsync-devel >= %{winentsync}
 %endif
 %endif
 
@@ -409,8 +421,11 @@ Requires:       mesa-dri-drivers(x86-32)
 Recommends:     wine-dxvk(x86-32)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-32)
-%if 0%{?fastsync}
+%if (%{with fastsync} && %{without ntsync})
 Recommends:     winesync >= %{winefastsync}
+%endif
+%if %{with ntsync}
+Recommends:     ntsync >= %{winentsync}
 %endif
 
 # x86-64 parts
@@ -894,9 +909,11 @@ tar -xf %{SOURCE900} --strip-components=1
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
+%if %{without ntsync}
 %patch -P 1020 -p1
 %patch -P 1021 -p1
 %patch -P 1022 -p1
+%endif
 %if %{with fshack}
 %patch -P 702 -p1 -R
 %patch -P 1023 -p1
@@ -914,7 +931,13 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
+%if %{with ntsync}
+%patch -P 1051 -p1
+%patch -P 1053 -p1
+%patch -P 1052 -p1
+%else
 %patch -P 1027 -p1
+%endif
 %if %{without childwindow}
 %patch -P 1095 -p1
 %endif
@@ -922,8 +945,14 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{without childwindow}
 %patch -P 1096 -p1
 %endif
+%if %{with ntsync}
+%patch -P 1054 -p1
+%endif
 %patch -P 1029 -p1
-%if %{with fastsync}
+%if %{with ntsync}
+%patch -P 1055 -p1
+%endif
+%if (%{with fastsync} && %{without ntsync})
 %patch -P 1050 -p1
 %endif
 %patch -P 1030 -p1
@@ -982,8 +1011,13 @@ cat README.chinforpms %{SOURCE7} >> README.chinforpms.fshack
 touch -r README.chinforpms README.chinforpms.fshack
 mv -f README.chinforpms.fshack README.chinforpms
 %endif
-%if %{with fastsync}
+%if (%{with fastsync} && %{without ntsync})
 cat README.chinforpms %{SOURCE8} >> README.chinforpms.fastsync
+touch -r README.chinforpms README.chinforpms.fastsync
+mv -f README.chinforpms.fastsync README.chinforpms
+%endif
+%if %{with ntsync}
+cat README.chinforpms %{SOURCE9} >> README.chinforpms.ntsync
 touch -r README.chinforpms README.chinforpms.fastsync
 mv -f README.chinforpms.fastsync README.chinforpms
 %endif
@@ -1400,7 +1434,7 @@ fi
 %doc VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
-%if 0%{?wine_staging}
+%if (0%{?wine_staging} && %{without ntsync})
 %doc README.esync
 %endif
 %{_bindir}/msidb
@@ -2543,6 +2577,9 @@ fi
 
 
 %changelog
+* Sun Apr 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.7-100
+- 9.7
+
 * Sat Apr 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.6-100
 - 9.6
 - Disable childwindow and OPWR patch for the time
