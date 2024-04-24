@@ -1,3 +1,10 @@
+# qemu 9.0.0 errors with:
+# RPM build errors:
+#     Missing build-id in /tmp/rpmbuild/BUILDROOT/qemu-9.0.0-1.rc2.fc41.x86_64/usr/share/qemu/hppa-firmware.img
+#     Missing build-id in /tmp/rpmbuild/BUILDROOT/qemu-9.0.0-1.rc2.fc41.x86_64/usr/share/qemu/hppa-firmware64.img
+#     Generating build-id links failed
+%global  _missing_build_ids_terminate_build    0
+
 # Provide a way to skip tests via rpmbuild `--without`
 # This makes it easier to skip tests in copr repos, where
 # the qemu test suite is historically flakey
@@ -358,7 +365,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        8.2.2
+Version:        9.0.0
 Release:        100%{?dist}
 Epoch:          2
 
@@ -367,20 +374,6 @@ License:        Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND GPL-1
 URL:            http://www.qemu.org/
 
 Source0:        https://download.qemu.org/%{name}-%{ver}.tar.xz
-
-# https://patchwork.kernel.org/project/qemu-devel/patch/20231128143647.847668-1-crobinso@redhat.com/
-# Fix pvh.img ld build failure on fedora rawhide
-Patch: 0001-pc-bios-optionrom-Fix-pvh.img-ld-build-failure-on-fe.patch
-
-# Fix user-emulation of FIFREEZE and FITHAW ioctls
-# Posted upstream 20-02-2024
-# https://lists.nongnu.org/archive/html/qemu-devel/2024-02/msg03971.html
-Patch: qemu-fifreeze-fithaw.patch
-
-# ppc/spapr: Initialize max_cpus limit to SPAPR_IRQ_NR_IPIS
-# https://bugzilla.redhat.com/show_bug.cgi?id=2265982
-Patch: https://github.com/qemu/qemu/commit/2df5c1f5b014126595a26c6797089d284a3b211c.patch
-Patch: https://github.com/qemu/qemu/commit/c4f91d7b7be76c47015521ab0109c6e998a369b0.patch
 
 Source10: qemu-guest-agent.service
 Source11: 99-qemu-guest-agent.rules
@@ -2261,6 +2254,19 @@ popd
 %{_mandir}/man1/qemu-storage-daemon.1*
 %{_mandir}/man7/qemu-storage-daemon-qmp-ref.7*
 
+%{_datadir}/systemtap/tapset/qemu-img.stp
+%{_datadir}/systemtap/tapset/qemu-img-log.stp
+%{_datadir}/systemtap/tapset/qemu-img-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-io.stp
+%{_datadir}/systemtap/tapset/qemu-io-log.stp
+%{_datadir}/systemtap/tapset/qemu-io-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-nbd.stp
+%{_datadir}/systemtap/tapset/qemu-nbd-log.stp
+%{_datadir}/systemtap/tapset/qemu-nbd-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-storage-daemon.stp
+%{_datadir}/systemtap/tapset/qemu-storage-daemon-log.stp
+%{_datadir}/systemtap/tapset/qemu-storage-daemon-simpletrace.stp
+
 
 %files -n qemu-guest-agent
 %doc COPYING README.rst
@@ -2917,6 +2923,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-hppa-simpletrace.stp
 %{_mandir}/man1/qemu-system-hppa.1*
 %{_datadir}/%{name}/hppa-firmware.img
+%{_datadir}/%{name}/hppa-firmware64.img
 
 
 %files system-loongarch64
@@ -3136,6 +3143,10 @@ popd
 
 
 %changelog
+* Wed Apr 24 2024 Phantom X <megaphantomx at hotmail dot com> - 2:9.0.0-100
+- 9.0.0
+- Rawhide sync
+
 * Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2:8.2.2-100
 - 8.2.2
 

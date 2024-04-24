@@ -140,6 +140,9 @@
 # Enable when needed
 %bcond_with patchutils
 
+# https://bugs.winehq.org/show_bug.cgi?id=56529
+%global wine_staging_opts -W ddraw-GetPickRecords
+
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %endif
