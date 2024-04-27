@@ -6,7 +6,7 @@
 
 %bcond_without snap
 
-%global vivaldi_ver 6.6
+%global vivaldi_ver 6.7
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
@@ -25,7 +25,7 @@
 
 Name:           vivaldi-ffmpeg-codecs
 Version:        114023
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -83,10 +83,13 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
-* Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 114023-1
+* Fri Apr 26 2024 - 114023-2
+-  Set vivaldir_ver to 6.7
+
+* Mon Mar 04 2024 - 114023-1
 - 114023, vivaldir_ver 6.6
 
-* Sun Dec 24 2023 Phantom X <megaphantomx at hotmail dot com> - 112.0.5615.49-4
+* Sun Dec 24 2023 - 112.0.5615.49-4
 - Set vivaldir_ver to 6.5
 
 * Thu Oct 26 2023 - 112.0.5615.49-3

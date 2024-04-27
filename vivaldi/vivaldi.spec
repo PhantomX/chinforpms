@@ -16,7 +16,7 @@
 %global ffmpegcodec 114023
 
 Name:           vivaldi
-Version:        6.6.3271.61
+Version:        6.7.3329.17
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -48,6 +48,8 @@ Requires:       vivaldi-ffmpeg-codecs = %{ffmpegcodec}
 %global __requires_exclude ^libffmpeg\\.so.*$
 %global __requires_exclude %__requires_exclude|^libEGL\\.so.*$
 %global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
+%global __requires_exclude %__requires_exclude|^libqt.*_shim\\.so.*$
+%global __requires_exclude %__requires_exclude|^libQt.*\\.so.*$
 %global __requires_exclude %__requires_exclude|^libvk_swiftshader\\.so.*$
 
 
@@ -88,6 +90,8 @@ export LD_LIBRARY_PATH
 exec "${APP_PATH}/${APP_NAME}" "$@"
 EORF
 
+sed -e '/^FFMPEG_VERSION/aexport VIVALDI_FFMPEG_AUTO=0' -i opt/%{name}/%{name}
+
 
 %build
 
@@ -96,7 +100,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,update-*,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
@@ -135,7 +139,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/%{name}
 %{_libdir}/%{name}/%{name}-bin
 %{_libdir}/%{name}/chrome_crashpad_handler
-%{_libdir}/%{name}/update-*
 %{_libdir}/%{name}/*.bin
 %{_libdir}/%{name}/*.dat
 %{_libdir}/%{name}/*.json
@@ -153,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Apr 26 2024 - 6.7.3329.17-1
+- 6.7.3329.17
+
 * Fri Apr 12 2024 - 6.6.3271.61-1
 - 6.6.3271.61
 

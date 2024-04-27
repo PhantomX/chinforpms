@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 1e1c45be07bf5760e73414d9ed0253d6dedb8605
+%global commit af4ec50b16f267245350ab099dde62a38aec66bd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240214
+%global date 20240425
 %bcond_without snapshot
 
 %global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
@@ -27,7 +27,7 @@
 
 Name:           snes9x
 Version:        1.62.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -47,6 +47,7 @@ Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Remove-application-path-from-database-search.patch
 Patch3:         0001-format-security.patch
+Patch4:         0001-vma-set-missing-namespace.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -73,7 +74,7 @@ BuildRequires:   minizip-compat-devel
 %if %{defined fedora} && 0%{?fedora} >= 40
 BuildRequires:   minizip-ng-compat-devel
 %endif
-BuildRequires:   cmake(VulkanHeaders) >= 1.3.249
+BuildRequires:   cmake(VulkanHeaders) >= 1.3.280
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
 %endif

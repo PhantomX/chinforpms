@@ -87,7 +87,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.0.5
+Version:        24.0.6
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -105,6 +105,11 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
+
+# Work around for the meson bug until an upstream fix lands
+# https://bugzilla.redhat.com/show_bug.cgi?id=2277018
+# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28923
+Patch11:        %{vc_url}/-/merge_requests/28923.patch#/%{name}-gl-pr28923.patch
 
 # Without this patch, the OpenCL ICD calls into MesaOpenCL,
 # which for some reason calls back into the OpenCL ICD instead
@@ -786,6 +791,9 @@ popd
 
 
 %changelog
+* Fri Apr 26 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.6-100
+- 24.0.6
+
 * Thu Apr 11 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.5-100
 - 24.0.5
 
