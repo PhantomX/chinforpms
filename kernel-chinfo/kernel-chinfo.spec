@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.7
+%define specrpmversion 6.8.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1111,6 +1111,11 @@ Patch7024:  %{pf_url}/9379bbed75a9f025515bb4e65dd9f7b61c141d16.patch#/pf-cb-9379
 Patch7025:  %{pf_url}/dd56ba85f39d7ab1a7441a9eeb6b2327bb273f3a.patch#/pf-cb-dd56ba8.patch
 Patch7026:  %{pf_url}/ac420ace1abc6c32aa5d142d2a9b553c4dec4df5.patch#/pf-cb-ac420ac.patch
 Patch7027:  %{pf_url}/0bfd4a370e74645a0c6f3234facedc326580c9da.patch#/pf-cb-0bfd4a3.patch
+Patch7028:  %{pf_url}/942c2d1ad1b5e0418870e3ed48c419321dac0630.patch#/pf-cb-942c2d1.patch
+Patch7029:  %{pf_url}/3ea966004c2526cec388bf5e1918bfe774d8fb0f.patch#/pf-cb-3ea9660.patch
+Patch7030:  %{pf_url}/a12286fa8a17e639044441f13647328e2c54a6ae.patch#/pf-cb-a12286f.patch
+Patch7031:  %{pf_url}/bc3acabad847d3d3eca6f425093cbbf8f5f822d5.patch#/pf-cb-bc3acab.patch
+
 # bbr
 Patch7050:  %{pf_url}/7dd5db3e5182e5728c3fdd859d2c713335ee706a.patch#/pf-cb-7dd5db3.patch
 # block
@@ -1170,6 +1175,13 @@ Patch7311:  %{pf_url}/a38fa2dbd0079972ad3807ef315f3b324f9cfa85.patch#/pf-cb-a38f
 Patch7312:  %{pf_url}/83cfebbe9ea9c65e5983a932ab9dc5c6d6c610e0.patch#/pf-cb-83cfebb.patch
 Patch7313:  %{pf_url}/a16b17a1e14cf6ddba6c036f2d59dc392c33fbcf.patch#/pf-cb-a16b17a.patch
 Patch7314:  %{pf_url}/6d032ba8824f28e4dbb0c43b0dd47dfb7067795b.patch#/pf-cb-6d032ba.patch
+Patch7315:  %{pf_url}/a0a37b16a97db57aebd0c5935a6b333029403890.patch#/pf-cb-a0a37b1.patch
+Patch7316:  %{pf_url}/c2f4dc5836ec304caa229a2c054b93b890d4ff6e.patch#/pf-cb-c2f4dc5.patch
+Patch7317:  %{pf_url}/8832b4473470f70d14c9d6534234de50a95f3f1a.patch#/pf-cb-8832b44.patch
+Patch7318:  %{pf_url}/b3ab662d27ff006898d2b982537205d51ed24263.patch#/pf-cb-b3ab662.patch
+Patch7319:  %{pf_url}/b1c075117f9379a5a31405f5b13d716810b7c6db.patch#/pf-cb-b1c0751.patch
+Patch7320:  %{pf_url}/0785a849e46f66328efe02280f588b7417c13c9f.patch#/pf-cb-0785a84.patch
+
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1998,6 +2010,10 @@ ApplyPatch %{PATCH7024}
 ApplyPatch %{PATCH7025}
 ApplyPatch %{PATCH7026}
 ApplyPatch %{PATCH7027}
+ApplyPatch %{PATCH7028}
+ApplyPatch %{PATCH7029}
+ApplyPatch %{PATCH7030}
+ApplyPatch %{PATCH7031}
 # bbr
 ApplyPatch %{PATCH7050}
 # block
@@ -2054,6 +2070,12 @@ ApplyPatch %{PATCH7311}
 ApplyPatch %{PATCH7312}
 ApplyPatch %{PATCH7313}
 ApplyPatch %{PATCH7314}
+ApplyPatch %{PATCH7315}
+ApplyPatch %{PATCH7316}
+ApplyPatch %{PATCH7317}
+ApplyPatch %{PATCH7318}
+ApplyPatch %{PATCH7319}
+ApplyPatch %{PATCH7320}
 %endif
 
 # released_kernel with possible stable updates
@@ -4171,6 +4193,9 @@ fi\
 #
 #
 %changelog
+* Sat Apr 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.8-500.chinfo
+- 6.8.8
+
 * Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.7-500.chinfo
 - 6.8.7
 

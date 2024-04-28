@@ -1,1 +1,1 @@
-# CONFIG_ATH10K_AHB is not set
+CONFIG_ATH10K_AHB=y
