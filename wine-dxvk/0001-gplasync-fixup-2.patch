@@ -1,0 +1,27 @@
+From d17d7c4101ea3c793c7c9ab8616ea0b8fe81bb2f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 1 May 2024 16:59:39 -0300
+Subject: [PATCH] gplasync fixup 2
+
+---
+ src/dxvk/dxvk_graphics.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/src/dxvk/dxvk_graphics.cpp b/src/dxvk/dxvk_graphics.cpp
+index 6516115..61f3cde 100644
+--- a/src/dxvk/dxvk_graphics.cpp
++++ b/src/dxvk/dxvk_graphics.cpp
+@@ -1133,7 +1133,9 @@ namespace dxvk {
+       baseHandle = this->getBasePipeline(state);
+     else if(m_async && gplAsyncCache)
+       baseHandle = this->getOptimizedPipeline(state);
+-    else
++
++    // Fast-linking may fail in some situations
++    if (!baseHandle)
+       fastHandle = this->getOptimizedPipeline(state);
+ 
+     // Fast-linking may fail in some situations
+-- 
+2.45.0
+

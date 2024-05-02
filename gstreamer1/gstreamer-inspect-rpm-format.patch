@@ -1,26 +1,17 @@
-From 642d0d6fef226fb89eaecf0016f8e5e333b9023e Mon Sep 17 00:00:00 2001
+From 74a22350dacdd176ee7a6a93fa8393b75e0fcd06 Mon Sep 17 00:00:00 2001
 From: Wim Taymans <wtaymans@redhat.com>
-Date: Tue, 23 Jun 2015 10:28:29 +0200
+Date: Tue, 5 Mar 2024 10:05:36 +0100
 Subject: [PATCH] gst-inspect: add mode to output RPM requires format
 
 ---
- tools/gst-inspect.c | 279 +++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 263 insertions(+), 16 deletions(-)
+ subprojects/gstreamer/tools/gst-inspect.c | 277 ++++++++++++++++++++--
+ 1 file changed, 262 insertions(+), 15 deletions(-)
 
-diff --git a/tools/gst-inspect.c b/tools/gst-inspect.c
-index 8da042946..a057cba09 100644
---- a/tools/gst-inspect.c
-+++ b/tools/gst-inspect.c
-@@ -394,7 +394,7 @@ print_object_properties_info (GObject * obj, GObjectClass * obj_class,
- 
-     first_flag = TRUE;
-     n_print ("%sflags%s: ", PROP_ATTR_NAME_COLOR, RESET_COLOR);
--    readable = ! !(param->flags & G_PARAM_READABLE);
-+    readable = !!(param->flags & G_PARAM_READABLE);
-     if (readable && obj != NULL) {
-       g_object_get_property (obj, param->name, &value);
-     } else {
-@@ -1739,11 +1739,228 @@ print_tracer_info (GstPluginFeature * feature, gboolean print_names)
+diff --git gstreamer/tools/gst-inspect.c gstreamer/tools/gst-inspect.c
+index 7edd8634a5..d38bf1fbd8 100644
+--- gstreamer/tools/gst-inspect.c
++++ gstreamer/tools/gst-inspect.c
+@@ -1934,11 +1934,228 @@ print_tracer_info (GstPluginFeature * feature, gboolean print_names)
    return 0;
  }
  
@@ -250,7 +241,7 @@ index 8da042946..a057cba09 100644
  {
    GstPadDirection direction;
    const gchar *type_name;
-@@ -1769,6 +1986,13 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
+@@ -1966,6 +2183,13 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
      return;
    }
  
@@ -264,7 +255,7 @@ index 8da042946..a057cba09 100644
    /* decoder/demuxer sink pads should always be static and there should only
     * be one, the same applies to encoders/muxers and source pads */
    static_templates = gst_element_factory_get_static_pad_templates (factory);
-@@ -1805,15 +2029,20 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
+@@ -2002,15 +2226,20 @@ print_plugin_automatic_install_info_codecs (GstElementFactory * factory)
      gst_structure_remove_field (s, "rate");
      gst_structure_remove_field (s, "depth");
      gst_structure_remove_field (s, "clock-rate");
@@ -289,7 +280,7 @@ index 8da042946..a057cba09 100644
  {
    const gchar *const *protocols;
  
-@@ -1822,13 +2051,19 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
+@@ -2019,13 +2248,19 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
      switch (gst_element_factory_get_uri_type (factory)) {
        case GST_URI_SINK:
          while (*protocols != NULL) {
@@ -311,7 +302,7 @@ index 8da042946..a057cba09 100644
            ++protocols;
          }
          break;
-@@ -1839,7 +2074,7 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
+@@ -2036,7 +2271,7 @@ print_plugin_automatic_install_info_protocols (GstElementFactory * factory)
  }
  
  static void
@@ -320,7 +311,7 @@ index 8da042946..a057cba09 100644
  {
    GList *features, *l;
  
-@@ -1858,11 +2093,15 @@ print_plugin_automatic_install_info (GstPlugin * plugin)
+@@ -2055,11 +2290,15 @@ print_plugin_automatic_install_info (GstPlugin * plugin)
      if (feature_plugin == plugin) {
        GstElementFactory *factory;
  
@@ -339,7 +330,7 @@ index 8da042946..a057cba09 100644
      }
      if (feature_plugin)
        gst_object_unref (feature_plugin);
-@@ -1884,7 +2123,7 @@ print_all_plugin_automatic_install_info (void)
+@@ -2083,7 +2322,7 @@ print_all_plugin_automatic_install_info (void)
      plugin = (GstPlugin *) (plugins->data);
      plugins = g_list_next (plugins);
  
@@ -348,15 +339,7 @@ index 8da042946..a057cba09 100644
    }
    gst_plugin_list_free (orig_plugins);
  }
-@@ -1951,6 +2190,7 @@ main (int argc, char *argv[])
-   gboolean do_print_blacklist = FALSE;
-   gboolean plugin_name = FALSE;
-   gboolean print_aii = FALSE;
-+  gboolean print_aii_rpm = FALSE;
-   gboolean uri_handlers = FALSE;
-   gboolean check_exists = FALSE;
-   gboolean color_always = FALSE;
-@@ -1972,6 +2212,9 @@ main (int argc, char *argv[])
+@@ -2190,6 +2430,9 @@ real_main (int argc, char *argv[])
                "or all plugins provide.\n                                       "
                "Useful in connection with external automatic plugin "
                "installation mechanisms"), NULL},
@@ -366,7 +349,19 @@ index 8da042946..a057cba09 100644
      {"plugin", '\0', 0, G_OPTION_ARG_NONE, &plugin_name,
          N_("List the plugin contents"), NULL},
      {"types", 't', 0, G_OPTION_ARG_STRING, &types,
-@@ -2135,7 +2378,7 @@ main (int argc, char *argv[])
+--- a/tools/gst-inspect.c~	2024-04-30 08:50:02.603031028 -0500
++++ b/tools/gst-inspect.c	2024-04-30 08:51:26.239844637 -0500
+@@ -2408,6 +2408,7 @@
+   gboolean do_print_blacklist = FALSE;
+   gboolean plugin_name = FALSE;
+   gboolean print_aii = FALSE;
++  gboolean print_aii_rpm = FALSE;
+   gboolean uri_handlers = FALSE;
+   gboolean check_exists = FALSE;
+   gboolean check_version = FALSE;
+--- a/tools/gst-inspect.c~	2024-04-30 12:02:07.582204259 -0500
++++ b/tools/gst-inspect.c	2024-04-30 13:15:19.424682778 -0500
+@@ -2581,7 +2581,7 @@
        /* if there is such a plugin, print out info */
        if (plugin) {
          if (print_aii) {
@@ -375,7 +370,7 @@ index 8da042946..a057cba09 100644
          } else {
            print_plugin_info (plugin);
            print_plugin_features (plugin);
-@@ -2148,13 +2391,17 @@ main (int argc, char *argv[])
+@@ -2594,13 +2594,17 @@
  
            if (plugin) {
              if (print_aii) {
@@ -395,6 +390,3 @@ index 8da042946..a057cba09 100644
              g_clear_error (&error);
              exit_code = -1;
              goto done;
--- 
-2.26.2
-

@@ -31,7 +31,7 @@
 Name:           %{pkgname}-chinfo
 Version:        4.14.3
 Release:        1%{?dist}
-Summary:        GTK graphical user interface library
+Summary:        GTK graphical user interface library - chinforpms modifications
 
 Epoch:          1
 
@@ -94,10 +94,10 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
 
-Requires: gtk4%{?_isa} >= %{branch}
+Requires:       %{pkgname}%{?_isa} >= %{branch}
 
-Provides:      gtk4-classic = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:      gtk4-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-classic = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description

@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 2b70ba8f7798107308a0c34358a9e83e77017dfd
+%global commit dacb8b434b4da26b81ba859826b0dd15e2a7a765
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240419
+%global date 20240501
 %bcond_without snapshot
 
 %bcond_without gplasync
@@ -64,7 +64,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.3.1
-Release:        102%{?dist}
+Release:        103%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -82,14 +82,16 @@ Source3:        %{name}-README-chinforpms
 
 Patch10:        0001-gcc-14-build-fix.patch
 
-%if %{with gplasync}
-Patch200:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
-Patch201:      0001-dxvk.conf-gplasync-options.patch
-Source200:     %{gplasync_url}/README.md#/README.gplasync.md
-%endif
-
 Patch100:       0001-util-Add-d3d9.deferSurfaceCreation-to-some-games.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
+
+%if %{with gplasync}
+Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
+Patch501:      0001-dxvk.conf-gplasync-options.patch
+Patch502:      0001-gplasync-fixup-1.patch
+Patch503:      0001-gplasync-fixup-2.patch
+Source500:     %{gplasync_url}/README.md#/README.gplasync.md
+%endif
 
 %if %{without sysspirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
@@ -163,12 +165,18 @@ package or when debugging this package.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 499 -p1
+
+%if %{with gplasync}
+%patch -P 502 -p1
+%patch -P 500 -p1
+%patch -P 501 -p1
+%patch -P 503 -p1
+cp %{S:500} README.gplasync.md
+%endif
 
 cp %{S:1} README.%{pkgname}
-%if %{with gplasync}
-cp %{S:200} README.gplasync.md
-%endif
 
 %if %{with sysspirv}
 ln -s %{_includedir}/spirv include/spirv/include/spirv
