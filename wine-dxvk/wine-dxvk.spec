@@ -16,7 +16,7 @@
 %bcond_with sysspirv
 %bcond_without sysvulkan
 
-%global gplasync_id 618f3092fe4537f63008ab4b3f8c09414913fed6
+%global gplasync_id 557c021b63adf0d073169886e82d8557db8d2f71
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -88,8 +88,6 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 %if %{with gplasync}
 Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
-Patch502:      0001-gplasync-fixup-1.patch
-Patch503:      0001-gplasync-fixup-2.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -169,10 +167,8 @@ package or when debugging this package.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
-%patch -P 502 -p1
 %patch -P 500 -p1
 %patch -P 501 -p1
-%patch -P 503 -p1
 cp %{S:500} README.gplasync.md
 %endif
 

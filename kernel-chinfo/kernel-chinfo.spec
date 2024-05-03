@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.8
+%define specrpmversion 6.8.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1115,6 +1115,7 @@ Patch7028:  %{pf_url}/942c2d1ad1b5e0418870e3ed48c419321dac0630.patch#/pf-cb-942c
 Patch7029:  %{pf_url}/3ea966004c2526cec388bf5e1918bfe774d8fb0f.patch#/pf-cb-3ea9660.patch
 Patch7030:  %{pf_url}/a12286fa8a17e639044441f13647328e2c54a6ae.patch#/pf-cb-a12286f.patch
 Patch7031:  %{pf_url}/bc3acabad847d3d3eca6f425093cbbf8f5f822d5.patch#/pf-cb-bc3acab.patch
+Patch7032:  %{pf_url}/eafeaa077ea6356ff27144d61c74701f8fd0228d.patch#/pf-cb-eafeaa0.patch
 
 # bbr
 Patch7050:  %{pf_url}/7dd5db3e5182e5728c3fdd859d2c713335ee706a.patch#/pf-cb-7dd5db3.patch
@@ -2014,6 +2015,7 @@ ApplyPatch %{PATCH7028}
 ApplyPatch %{PATCH7029}
 ApplyPatch %{PATCH7030}
 ApplyPatch %{PATCH7031}
+ApplyPatch %{PATCH7032}
 # bbr
 ApplyPatch %{PATCH7050}
 # block
@@ -4193,6 +4195,9 @@ fi\
 #
 #
 %changelog
+* Thu May 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.9-500.chinfo
+- 6.8.9
+
 * Sat Apr 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.8-500.chinfo
 - 6.8.8
 
