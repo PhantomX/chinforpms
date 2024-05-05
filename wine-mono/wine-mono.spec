@@ -1,6 +1,3 @@
-# Disable LTO
-%global _lto_cflags %{nil}
-
 %undefine _auto_set_build_flags
 %undefine _hardened_build
 %undefine _package_note_file
@@ -22,7 +19,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        9.0.0
+Version:        9.1.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -42,8 +39,8 @@ Source0:        %{dl_url}/%{name}-%{version}-src.tar.xz
 Source1:        %{vc_url}/%{name}/raw/master/COPYING
 Source2:        %{vc_url}/%{name}/raw/master/README
 
-# to statically link in winpthreads
-Patch0:         %{name}-build-static.patch
+Patch0:         %{name}-7.3.0-iconv.patch
+Patch1:         %{name}-configure-c99.patch
 
 
 BuildArch:      noarch
@@ -107,17 +104,21 @@ chmod -R g-w %{name}-%{version}
 
 %else
 
-%patch -P 0 -p1 -b.static
+%patch -P 0 -p1 -b.iconv
+%patch -P 1 -p1 -b.c99
 
+# remove shipped compiler
+rm -rf llvm-mingw-*-ucrt-ubuntu-*-x86_64/*
 
 # Fix all Python shebangs
 %py3_shebang_fix .
 sed -i 's/GENMDESC_PRG=python/GENMDESC_PRG=python3/' mono/mono/mini/Makefile.am.in
-sed -i 's/CP_R=python /CP_R=python3 /' GNUmakefile
 
-# remove shipped compiler
-rm -rf llvm-mingw-20200325-ubuntu-18.04/*
 sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/' mono/configure.ac
+
+# workaround coreutils 9.2 behavior change to "cp -n" option (RHBZ#2208129)
+# https://github.com/madewokherd/wine-mono/issues/164
+sed -i 's~cp -n $(IMAGEDIR)/lib/mono/4.8-api/\*.dll $(IMAGEDIR)/lib/mono/4.5/~cp -n $(IMAGEDIR)/lib/mono/4.8-api/\*.dll $(IMAGEDIR)/lib/mono/4.5/ || true~' mono.make
 
 %endif
 
@@ -127,7 +128,7 @@ sed -i 's/$CPPFLAGS_FOR_BTLS $btls_cflags/$CPPFLAGS_FOR_BTLS -fPIC $btls_cflags/
 export BTLS_CFLAGS="-fPIC"
 export CPPFLAGS_FOR_BTLS="-fPIC"
 # Disable LLVM compiler as we do not ship a full, updated MinGW environment. Use GCC instead.
-echo 'AUTO_LLVM_MINGW=0' >> user-config.make
+echo "AUTO_LLVM_MINGW=0" > user-config.make
 # Disable WpfGfx as it requires LLVM to compile
 echo "ENABLE_DOTNET_CORE_WPFGFX=0" >> user-config.make
 %make_build image
@@ -177,6 +178,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Sat May 04 2024 Phantom X <megaphantomx at hotmail dot com> - 9.1.0-100
+- 9.1.0
+
 * Sat Feb 10 2024 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
 - 9.0.0
 

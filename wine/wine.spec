@@ -51,17 +51,17 @@
 %global no64bit   0
 %global winefastsync 5.16
 %global winegecko 2.47.4
-%global winemono  9.0.0
+%global winemono  9.1.0
 %global winentsync  6.9
 %global winevulkan 1.3.279
 
-%global wineFAudio 24.02
-%global winefluidsynth 2.3.4
+%global wineFAudio 24.05
+%global winefluidsynth 2.3.5
 %global winegsm 1.0.19
 %global winejpeg 9~f
 %global winelcms2 2.16
 %global winempg123 1.32.5
-%global winepng 1.6.42
+%global winepng 1.6.43
 %global wineopenldap 2.5.17
 %global winetiff 4.6.0
 %global winejxrlib 1.1
@@ -103,7 +103,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.7
+%global wine_stagingver 9.8
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -114,7 +114,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ff45a43dd55665bf630b7a73e5b4d0fe45e80f89
+%global tkg_id 8ad9f11375ffaad0e269c10654f8fbf17a3780f2
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -140,9 +140,6 @@
 # Enable when needed
 %bcond_with patchutils
 
-# https://bugs.winehq.org/show_bug.cgi?id=56529
-%global wine_staging_opts -W ddraw-GetPickRecords
-
 %if %{with fshack}
 %global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
 %endif
@@ -164,7 +161,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.7
+Version:        9.8
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -236,6 +233,8 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
 Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-whq-240556e.patch
 Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-whq-2bfe81e.patch
+# Breaks virtual desktop
+Patch703:        %{whq_url}/b86cc9e658959cee47e6e587fec4f7c26350ed76#/%{name}-whq-b86cc9e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -896,6 +895,7 @@ This package adds the opencl driver for wine.
 
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
+%patch -P 703 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2580,6 +2580,9 @@ fi
 
 
 %changelog
+* Sat May 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.8-100
+- 9.8
+
 * Sun Apr 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.7-100
 - 9.7
 

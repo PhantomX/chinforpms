@@ -29,7 +29,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.14.3
+Version:        4.14.4
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -171,6 +171,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sat May 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.4-1
+- 4.14.4
+
 * Sat Apr 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.3-1
 - Initial spec, rebased from gtk4 spec
 
