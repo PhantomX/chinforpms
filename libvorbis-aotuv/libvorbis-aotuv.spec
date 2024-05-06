@@ -7,22 +7,28 @@
 Name:           %{pkgname}-aotuv
 Summary:        The Vorbis General Audio Compression Codec - aoTuV optimized
 Version:        1.3.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 
 License:        BSD-3-Clause
 
 URL:            https://www.xiph.org/
-Source:         https://downloads.xiph.org/releases/vorbis/%{pkgname}-%{version}.tar.xz
-
-BuildRequires:  make
-BuildRequires:  gcc
-BuildRequires:  pkgconfig(ogg) >= 1.0
+Source0:        https://downloads.xiph.org/releases/vorbis/%{pkgname}-%{version}.tar.xz
 
 # https://ao-yumi.github.io/aotuv_web/index.html
 # https://freac.org
 Patch10:        https://freac.org/patches/%{pkgname}-1.3.7-aotuv-b6.03.patch
 Patch11:        https://freac.org/patches/%{pkgname}-1.3.7-aotuv-b6.03-lancer.patch
 Patch12:        0001-sharedbook-Revert-memory-leak-fix-to-please-Lancer-o.patch
+
+BuildRequires:  make
+BuildRequires:  gcc
+BuildRequires:  pkgconfig(ogg) >= 1.0
+
+Requires:       %{pkgname}%{?_isa} >= %{version}
+
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __requires_exclude ^libvorbis\\.so.*$
+
 
 %description
 Ogg Vorbis is a fully open, non-proprietary, patent- and royalty-free,
@@ -89,6 +95,9 @@ make check
 
 
 %changelog
+* Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-3
+- Provides and requires tweaks
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-2
 - build_type_safety_c 1
 

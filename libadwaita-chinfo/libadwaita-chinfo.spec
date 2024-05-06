@@ -7,7 +7,7 @@
 
 Name:           %{pkgname}-chinfo
 Version:        1.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
 License:        LGPL-2.1-or-later AND MIT
@@ -29,6 +29,9 @@ Requires:       %{pkgname}%{?_isa} >= %{version}
 
 Provides:       %{pkgname}-classic = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __requires_exclude ^libadwaita-%{apiver}\\.so.*$
 
 
 %description
@@ -82,5 +85,8 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1.5.0-2
+- Provides and requires tweaks
+
 * Wed May 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1.5.0-1
 - Initial spec, rebased from libadwaita spec

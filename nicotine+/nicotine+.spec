@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.3.2
+Version:        3.3.3
 Release:        100%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -82,19 +82,16 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 %pyproject_save_files py%{cname}
 
-%find_lang %{cname}
-
 
 %check
-%global __pytest xvfb-run /usr/bin/pytest
 # Tests requiring an Internet connection are disabled
-%dnl GDK_BACKEND=x11 %pytest --deselect=test/unit/test_version.py
+%pytest -k "not test_update_check"
 
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appdata_id}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.appdata.xml
 
 
-%files -f %{cname}.lang -f %{pyproject_files}
+%files -f %{pyproject_files}
 %license COPYING
 %doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
 %{_bindir}/%{cname}
@@ -105,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.3-100
+- 3.3.3
+
 * Mon Feb 26 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.2-100
 - 3.3.2
 

@@ -30,7 +30,7 @@
 
 Name:           %{pkgname}-chinfo
 Version:        4.14.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
 Epoch:          1
@@ -98,6 +98,9 @@ Requires:       %{pkgname}%{?_isa} >= %{branch}
 
 Provides:       %{pkgname}-classic = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
+%global __requires_exclude ^libgtk-4\\.so.*$
 
 
 %description
@@ -171,6 +174,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.4-2
+- Provides and requires tweaks
+
 * Sat May 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.4-1
 - 4.14.4
 
