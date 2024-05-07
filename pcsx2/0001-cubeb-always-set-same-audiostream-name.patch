@@ -1,26 +1,26 @@
-From 7c36f8e0accc8a9465cb1566cb9cec1034e61455 Mon Sep 17 00:00:00 2001
+From 52eaf357c6f9edb9458549f55e1cb7d635f39d78 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 17 Jan 2023 22:55:49 -0300
 Subject: [PATCH] cubeb: always set same audiostream name
 
 ---
- pcsx2/SPU2/SndOut_Cubeb.cpp | 3 +--
+ pcsx2/Host/CubebAudioStream.cpp | 3 +--
  1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/pcsx2/SPU2/SndOut_Cubeb.cpp b/pcsx2/SPU2/SndOut_Cubeb.cpp
-index 69b1d74..53f4e0e 100644
---- a/pcsx2/SPU2/SndOut_Cubeb.cpp
-+++ b/pcsx2/SPU2/SndOut_Cubeb.cpp
-@@ -307,8 +307,7 @@ public:
- 			}
- 		}
+diff --git a/pcsx2/Host/CubebAudioStream.cpp b/pcsx2/Host/CubebAudioStream.cpp
+index 0e2758b..397a52a 100644
+--- a/pcsx2/Host/CubebAudioStream.cpp
++++ b/pcsx2/Host/CubebAudioStream.cpp
+@@ -220,8 +220,7 @@ bool CubebAudioStream::Initialize(const char* driver_name, const char* device_na
  
--		char stream_name[32];
--		std::snprintf(stream_name, sizeof(stream_name), "%p", this);
-+		char stream_name[] = "PCSX2 AudioStream";
+ 	BaseInitialize(channel_setups[static_cast<size_t>(m_parameters.expansion_mode)].second, stretch_enabled);
  
- 		rv = cubeb_stream_init(m_context, &stream, stream_name, nullptr, nullptr, selected_device, &params,
- 			latency_frames, &Cubeb::DataCallback, &Cubeb::StateCallback, this);
+-	char stream_name[32];
+-	std::snprintf(stream_name, sizeof(stream_name), "%p", this);
++	char stream_name[] = "PCSX2 AudioStream";
+ 
+ 	rv = cubeb_stream_init(m_context, &stream, stream_name, nullptr, nullptr, selected_device, &params, latency_frames,
+ 		&CubebAudioStream::DataCallback, StateCallback, this);
 -- 
-2.39.0
+2.45.0
 

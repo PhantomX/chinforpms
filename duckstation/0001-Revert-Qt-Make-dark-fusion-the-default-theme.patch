@@ -1,4 +1,4 @@
-From 357c504dd3aa4088077f1bd4a932f18a850151c9 Mon Sep 17 00:00:00 2001
+From 462f1a82435a9c5feedd1e618baf33ca868faac2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 17 Aug 2021 18:39:56 -0300
 Subject: [PATCH] Revert Qt: Make dark fusion the default theme
@@ -9,11 +9,11 @@ This reverts commit 5cf16133cbb15eedfc3d61293daa8971ecfe3f18
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/src/duckstation-qt/interfacesettingswidget.cpp b/src/duckstation-qt/interfacesettingswidget.cpp
-index 66c96ca..48d0a1c 100644
+index 8bcdb6d..d28efa2 100644
 --- a/src/duckstation-qt/interfacesettingswidget.cpp
 +++ b/src/duckstation-qt/interfacesettingswidget.cpp
-@@ -25,7 +25,7 @@ const char* InterfaceSettingsWidget::THEME_VALUES[] = {
-   "",  "fusion", "darkfusion", "darkfusionblue", "cobaltsky","greymatter", "darkruby", "qdarkstyle", nullptr,
+@@ -39,7 +39,7 @@ const char* InterfaceSettingsWidget::THEME_VALUES[] = {
+   nullptr,
  };
  
 -const char* InterfaceSettingsWidget::DEFAULT_THEME_NAME = "darkfusion";
@@ -22,5 +22,5 @@ index 66c96ca..48d0a1c 100644
  InterfaceSettingsWidget::InterfaceSettingsWidget(SettingsWindow* dialog, QWidget* parent)
    : QWidget(parent), m_dialog(dialog)
 -- 
-2.44.0
+2.45.0
 

@@ -22,9 +22,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 17b97368995f616886da89bfa888645c02a275c3
+%global commit 7626a9bf9c63dbdd578c88231bd7982ac10c8f8a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240418
+%global date 20240505
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -44,7 +44,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6679
+Version:        0.1.6757
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -65,6 +65,7 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
+Patch8:         0001-cmake-discord-rpc-switch.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -108,7 +109,7 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
-BuildRequires:  pkgconfig(sdl2) >= 2.30.0
+BuildRequires:  pkgconfig(sdl2) >= 2.30.3
 BuildRequires:  pkgconfig(shaderc)
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
@@ -152,6 +153,7 @@ Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Suggests:       qt6-qttranslations
 
+Provides:       bundled(freesurround) = 0~git
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(glslang) = 0~git
 Provides:       bundled(imgui) = %{imgui_ver}
@@ -218,14 +220,14 @@ sed -e '/pkg_search_module/s|minizip|\0_DISABLED|g' -i CMakeLists.txt
   rm -rf rapidyaml
 %else
 sed -e '/find_package/s|ryml|\0_DISABLED|g' -i CMakeLists.txt
-cp soundtouch/COPYING.TXT COPYING.soundtouch
+cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
 %endif
 
 %if %{with soundtouch}
 rm -rf soundtouch
 %else
 sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
-cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
+cp soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
 %if %{with vulkan}
@@ -259,10 +261,6 @@ rename _ - *.ts
 
 sed -e 's|[Cc]ubed|Cubeb|g' -i %{name}-qt_pt_BR.ts
 popd
-
-sed \
-  -e '/ENABLE_DISCORD_PRESENCE/s| ON| OFF|g' \
-  -i CMakeLists.txt
 
 %if %{with snapshot}
 sed \

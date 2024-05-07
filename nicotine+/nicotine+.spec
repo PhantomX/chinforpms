@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.3.3
+Version:        3.3.4
 Release:        100%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -102,6 +102,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Tue May 07 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.4-100
+- 3.3.4
+
 * Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.3-100
 - 3.3.3
 

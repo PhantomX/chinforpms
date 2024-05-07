@@ -1,4 +1,4 @@
-From 61062f926f718f51d6db5ab3128e591faf74ac53 Mon Sep 17 00:00:00 2001
+From 2ed4ff86eceb4668eccce99529db8eb7a01e9e1a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -13,7 +13,7 @@ Subject: [PATCH] Use system libraries
  6 files changed, 100 insertions(+), 5 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index e760556..6574072 100644
+index b8339b1..6a288c9 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -86,28 +86,88 @@ if(ENABLE_TESTS)
@@ -103,9 +103,9 @@ index e760556..6574072 100644
  add_subdirectory(3rdparty/rapidjson EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/freesurround EXCLUDE_FROM_ALL)
  
- if(USE_OPENGL)
-@@ -115,12 +175,24 @@ if(USE_OPENGL)
+@@ -116,12 +176,24 @@ if(USE_OPENGL)
  endif()
  
  if(USE_VULKAN)
@@ -130,7 +130,7 @@ index e760556..6574072 100644
  
  # Find the Qt components that we need.
  find_package(Qt6 6.6.2 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
-@@ -134,7 +206,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
+@@ -135,7 +207,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
@@ -144,10 +144,10 @@ index e760556..6574072 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 8094db3..21804e6 100644
+index 4ecc6b5..3e3c3be 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1101,7 +1101,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1096,7 +1096,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -155,7 +155,7 @@ index 8094db3..21804e6 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1154,13 +1153,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1147,13 +1146,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -195,10 +195,10 @@ index 7c17d9e..d2e13b4 100644
  	: m_filename(std::move(fn))
  	, m_frames(0)
 diff --git a/pcsx2/GS/GSLzma.cpp b/pcsx2/GS/GSLzma.cpp
-index ccf737b..b00af7b 100644
+index 71c91ea..75ec55b 100644
 --- a/pcsx2/GS/GSLzma.cpp
 +++ b/pcsx2/GS/GSLzma.cpp
-@@ -22,6 +22,12 @@
+@@ -21,6 +21,12 @@
  
  #include <mutex>
  
@@ -225,10 +225,10 @@ index d9f99aa..b88c94f 100644
  #ifdef _WIN32
  #define strcasecmp _stricmp
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index 66a1f03..fa96247 100644
+index 1ff7563..d3b1045 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-@@ -11,8 +11,8 @@
+@@ -14,8 +14,8 @@
  #define XBYAK_NO_OP_NAMES
  #define XBYAK_ENABLE_OMITTED_OPERAND
  
@@ -236,9 +236,9 @@ index 66a1f03..fa96247 100644
 -#include "xbyak/xbyak_util.h"
 +#include "xbyak.h"
 +#include "xbyak_util.h"
- #include "GS/MultiISA.h"
- #include "common/Assertions.h"
  
+ /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
+ /// Should make combined SSE and AVX codegen much easier
 -- 
-2.44.0
+2.45.0
 

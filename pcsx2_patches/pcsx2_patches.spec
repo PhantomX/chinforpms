@@ -1,6 +1,6 @@
-%global commit 0f52d8a5eb1cefea8b416532ce6ba225271e267f
+%global commit b3a788e16ea12efac006cbbe1ece45b6b9b34326
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240416
+%global date 20240425
 
 BuildArch:      noarch
 

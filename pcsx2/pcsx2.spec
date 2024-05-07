@@ -47,12 +47,12 @@
 %global imgui_ver 1.90.4
 %global jpgc_ver 1.05
 %global rcheevos_scommit 3d01191
-%global simpleini_ver 4.17
+%global simpleini_ver 4.22
 %global soundtouch_ver 2.3.1
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5717
+Version:        1.7.5782
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -176,6 +176,7 @@ Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(freesurround) = 0~git
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(gsl) = %{gsl_ver}
 Provides:       bundled(imgui) = %{imgui_ver}
