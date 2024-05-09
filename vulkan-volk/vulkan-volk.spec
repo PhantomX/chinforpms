@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit a2ca5374023899c20d100dda86b8556b4188b952
+%global commit 3ca2bd9921b38f92b9bf5c26ce28808148d1e8bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240325
+%global date 20240506
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -11,9 +11,9 @@
 
 %global pkgname volk
 
-Name:           %{pkgname}-vulkan
-Version:        1.3.281
-Release:        1%{?dist}
+Name:           vulkan-%{pkgname}
+Version:        1.3.284
+Release:        100%{?dist}
 Summary:        Meta loader for Vulkan API 
 
 License:        MIT
@@ -25,7 +25,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
-Patch10:        0001-cmake-change-namespace-to-volk_vulkan.patch
+Patch10:        0001-cmake-change-namespace-to-vulkan_volk.patch
 Patch11:        0001-library-set-PIC.patch
 
 BuildRequires:  cmake3
@@ -46,6 +46,8 @@ by skipping loader dispatch overhead.
 %package        devel
 Summary:        Development files for %{name}
 Provides:       %{name}-static = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-volk-static = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{pkgname}-volk-devel < %{version}-%{release}
 
 %description    devel
 The %{name}-devel package contains libraries and header files for
@@ -71,11 +73,18 @@ developing applications that use %{name}.
 %files devel
 %license LICENSE.md
 %{_libdir}/lib*.a
-%{_includedir}/volk_vulkan/
-%{_libdir}/cmake/volk_vulkan/
+%{_includedir}/vulkan/volk/
+%{_libdir}/cmake/vulkan_volk/
 
 
 %changelog
+* Wed May 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.284-100.20240506git3ca2bd9
+- 1.3.284
+
+* Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.283-1.20240419git3a8068a
+- 1.3.283
+- volk-vulkan -> vulkan-volk
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.281-1.20240325gita2ca537
 - 1.3.281
 

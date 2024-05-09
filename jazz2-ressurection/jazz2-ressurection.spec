@@ -1,6 +1,6 @@
-%global commit 5323404dc21dae4ab9a8098756a0c0158d8c4b6a
+%global commit 1fb7dff45e177ed115aceb85c20df580d38cceca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240323
+%global date 20240426
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,7 +10,7 @@
 # Update simdjson
 %bcond_without simdjson
 
-%global simdjson_ver 3.8.0
+%global simdjson_ver 3.9.2
 
 %global binname jazz2
 %global pkgname jazz2-native
@@ -18,7 +18,7 @@
 
 Name:           jazz2-ressurection
 Version:        2.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
 License:        GPL-3.0 AND Apache-2.0

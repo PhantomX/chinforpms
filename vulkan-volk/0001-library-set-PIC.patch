@@ -13,10 +13,10 @@ index cac370e..d22dc28 100644
 +++ b/CMakeLists.txt
 @@ -33,6 +33,7 @@ endif()
  if(NOT VOLK_HEADERS_ONLY OR VOLK_INSTALL)
-   add_library(volk_vulkan STATIC volk.h volk.c)
-   add_library(volk_vulkan::volk_vulkan ALIAS volk_vulkan)
-+  set_property(TARGET volk_vulkan PROPERTY POSITION_INDEPENDENT_CODE 1)
-   target_include_directories(volk_vulkan PUBLIC
+   add_library(vulkan_volk STATIC volk.h volk.c)
+   add_library(vulkan_volk::vulkan_volk ALIAS vulkan_volk)
++  set_property(TARGET vulkan_volk PROPERTY POSITION_INDEPENDENT_CODE 1)
+   target_include_directories(vulkan_volk PUBLIC
      $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}>
      $<INSTALL_INTERFACE:include>
 -- 
