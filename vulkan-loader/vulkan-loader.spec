@@ -2,7 +2,7 @@
 
 Name:           vulkan-loader
 Version:        1.3.284
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Vulkan ICD desktop loader
 
 License:        Apache-2.0
@@ -17,6 +17,8 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Loader-sdk-%{versio
 %else
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Loader-%{version}.tar.gz
 %endif
+
+Patch0:         %{url}/commit/eb8c7b071a449be3d1331e0961c8fdd0a78efca9.patch#/%{name}-gh-eb8c7b0.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -102,6 +104,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \
 
 
 %changelog
+* Thu May 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.284-101
+- Add upstream fix
+
 * Wed May 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.284-100
 - 1.3.284
 

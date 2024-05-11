@@ -4,7 +4,6 @@
 %bcond_with snapshot
 
 %bcond_with check
-%bcond_with keeshare
 %bcond_with yubikey
 
 %if %{with snapshot}
@@ -16,7 +15,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.7
+Version:        2.7.8
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -36,9 +35,7 @@ Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 # Patch0: fixes GNOME quirks on Wayland sessions
 # Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
 Patch0:         xcb.patch
-Patch1:         %{vc_url}/pull/10451.patch#/%{name}-gh-pr10451.patch
-Patch2:         %{vc_url}/pull/10458.patch#/%{name}-gh-pr10458.patch
-Patch3:         %{vc_url}/pull/10459.patch#/%{name}-gh-pr10459.patch
+Patch1:         %{vc_url}/pull/10708.patch#/%{name}-gh-pr10708.patch
 %dnl Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
@@ -109,12 +106,11 @@ fi
   -DWITH_XC_NETWORKING:BOOL=ON \
   -DWITH_XC_AUTOTYPE:BOOL=ON \
   -DWITH_XC_BROWSER:BOOL=ON \
+  -DWITH_XC_BROWSER_PASSKEYS:BOOL=ON \
   -DWITH_XC_FDOSECRETS:BOOL=ON \
   -DWITH_XC_SSHAGENT:BOOL=ON \
-%if %{with keeshare}
   -DWITH_XC_KEESHARE:BOOL=ON \
   -DWITH_XC_KEESHARE_SECURE:BOOL=ON \
-%endif
   %{?with_yubikey:-DWITH_XC_YUBIKEY:BOOL=ON} \
   -DWITH_XC_UPDATECHECK:BOOL=OFF \
 %{nil}
@@ -163,6 +159,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Fri May 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.8-100
+- 2.7.8
+
 * Tue Mar 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.7-100
 - 2.7.7
 
