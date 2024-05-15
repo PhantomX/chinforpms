@@ -1,0 +1,15 @@
+# Symbol: INTERCONNECT_QCOM_MSM8909 [=n]
+# Type  : tristate
+# Defined at drivers/interconnect/qcom/Kconfig:11
+#   Prompt: Qualcomm MSM8909 interconnect driver
+#   Depends on: INTERCONNECT [=y] && INTERCONNECT_QCOM [=y] && QCOM_SMD_RPM [=m]
+#   Location:
+#     -> Device Drivers
+#       -> On-Chip Interconnect management support (INTERCONNECT [=y])
+#         -> Qualcomm MSM8909 interconnect driver (INTERCONNECT_QCOM_MSM8909 [=n])
+# Selects: INTERCONNECT_QCOM_SMD_RPM [=m]
+# 
+# 
+# 
+# Commit: 1cef9f2d1ef8 (interconnect: qcom: Add MSM8909 interconnect provider driver)
+# CONFIG_INTERCONNECT_QCOM_MSM8909 is not set

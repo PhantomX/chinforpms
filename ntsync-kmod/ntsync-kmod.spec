@@ -9,16 +9,16 @@
 
 %define repo chinforpms
 
-%global commit 67ecf76b95fcaf9a70e54b0d25b485f4e135e439
+%global commit 1e5c8fe80527908d2849b8ac7beb63b855cd4d54
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240214
+%global date 20240415
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global vc_url https://repo.or.cz/linux/zf.git/blob_plain
 
 Name:           ntsync-kmod
-Version:        6.8~rc3
+Version:        6.9~rc3
 Release:        1%{?dist}
 Summary:        NT synchronization primitive driver
 
@@ -73,6 +73,9 @@ done
 
 
 %changelog
+* Mon May 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9~rc3-1.20240415git1e5c8fe
+- 6.9-rc3
+
 * Wed Feb 21 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8~rc3-1.20240214git67ecf76
 - Initial spec
 

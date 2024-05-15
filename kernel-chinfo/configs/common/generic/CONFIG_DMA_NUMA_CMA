@@ -1,1 +1,1 @@
-CONFIG_DMA_NUMA_CMA=y
+# CONFIG_DMA_NUMA_CMA is not set

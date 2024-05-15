@@ -1,6 +1,6 @@
-%global commit 1572ea3e8d50514d3adaba1ad17272f57b5b331c
+%global commit 19fcbefe1a9c5e22f8111af251df27b41658bc77
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240325
+%global date 20240429
 %bcond_without snapshot
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        46%{?dist}
+Release:        47%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -32,7 +32,6 @@ Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcna
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
 Patch0:         0001-dep-cubeb-Add-cubeb_get_backend_names.patch
-Patch1:         %{url}/pull/768.patch#/%{name}-git-pr768.patch
 
 BuildRequires:  cmake
 BuildRequires:  make

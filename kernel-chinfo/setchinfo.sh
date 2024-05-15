@@ -6,9 +6,8 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20240403
-# 6.8
-# pf4
+# 20240514
+# 6.9
 
 set -e
 
@@ -51,25 +50,23 @@ MZEN
 MZEN2
 MZEN3
 MZEN4
+MZEN5
 MNATIVE_AMD
 MNATIVE_INTEL
 RHEL_DIFFERENCES
 "
 
-pf="
+defaultd="
 "
 
-pfd="
-"
-
-pfm="
+defaultm="
 V4L2_LOOPBACK
 "
 
-pfv="
+defaultv="
 "
 
-pfy="
+defaulty="
 USER_NS_UNPRIVILEGED
 "
 
@@ -82,15 +79,15 @@ DEBUG_DIR="${CONFIG_DIR}/debug"
 cd "${SCRIPT_DIR}"
 
 del(){
-  for i in ${default} ${pf} ${pfm} ${pfv} ${pfy} ${zen} ${zenv} ${zeny}
+  for i in ${default} ${defaultm} ${defaulty}
   do
-    if [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
+    if [ -n "${i}" ] && [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
       rm -fv "${OUTPUT_DIR}/CONFIG_${i%%=*}"
     fi
   done
-  for i in ${pfd}
+  for i in ${defaultd}
   do
-    if [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
+    if [ -n "${i}" ] && [ -e "${OUTPUT_DIR}/CONFIG_${i%%=*}" ] ;then
       rm -fv "${DEBUG_DIR}/CONFIG_${i%%=*}"
     fi
   done
@@ -98,25 +95,35 @@ del(){
 
 main(){
   del
-  for i in ${default} ${pf}
+  for i in ${default}
   do
-    echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
+    if [ -n "${i}" ] ;then
+      echo "# CONFIG_${i} is not set" > "${OUTPUT_DIR}/CONFIG_${i}"
+    fi
   done
-  for i in ${pfy}
+  for i in ${defaulty}
   do
-    echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
+    if [ -n "${i}" ] ;then
+      echo "CONFIG_${i}=y" > "${OUTPUT_DIR}/CONFIG_${i}"
+    fi
   done
-  for i in ${pfm}
+  for i in ${defaultm}
   do
-    echo "CONFIG_${i}=m" > "${OUTPUT_DIR}/CONFIG_${i}"
+    if [ -n "${i}" ] ;then
+      echo "CONFIG_${i}=m" > "${OUTPUT_DIR}/CONFIG_${i}"
+    fi
   done
-  for i in ${pfd}
+  for i in ${defaultd}
   do
-    echo "CONFIG_${i}=y" > "${DEBUG_DIR}/CONFIG_${i}"
+    if [ -n "${i}" ] ;then
+      echo "CONFIG_${i}=y" > "${DEBUG_DIR}/CONFIG_${i}"
+    fi
   done
-  for i in ${pfv}
+  for i in ${defaultv}
   do
-    echo "CONFIG_${i}" > "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+    if [ -n "${i}" ] ;then
+      echo "CONFIG_${i}" > "${OUTPUT_DIR}/CONFIG_${i%%=*}"
+    fi
   done
 }
 
@@ -125,15 +132,7 @@ if [ -w "${OUTPUT_DIR}" ] ;then
     del)
       del
       ;;
-    pf)
-      main
-      ;;
     *)
-      pf=
-      pfd=
-      pfm=
-      pfv=
-      pfy=
       main
       ;;
   esac

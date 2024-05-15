@@ -1,0 +1,15 @@
+# Symbol: USB_DEFAULT_AUTHORIZATION_MODE [=1]
+# Type  : integer
+# Range : [0 2]
+# Defined at drivers/usb/core/Kconfig:120
+#   Prompt: Default authorization mode for USB devices
+#   Depends on: USB_SUPPORT [=y] && USB [=y]
+#   Location:
+#     -> Device Drivers
+#       -> USB support (USB_SUPPORT [=y])
+#         -> Default authorization mode for USB devices (USB_DEFAULT_AUTHORIZATION_MODE [=1])
+# 
+# 
+# 
+# Commit: bec7e43b162c (usb: core: Make default authorization mode configurable)
+CONFIG_USB_DEFAULT_AUTHORIZATION_MODE=1

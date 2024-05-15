@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.8.9
+%define specrpmversion 6.9.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id a2ed3b547600e8f01fb4b40b4b623835d9672199
+%global opensuse_id 5a8a13e374b1391165a69067d492d705ea968d59
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -367,7 +367,8 @@ Summary: The Linux kernel
 %endif
 %global clang_make_opts HOSTCC=clang CC=clang LLVM_IAS=%{llvm_ias}
 %if %{with clang_lto}
-%global clang_make_opts %{clang_make_opts} LD=ld.lld HOSTLD=ld.lld AR=llvm-ar NM=llvm-nm HOSTAR=llvm-ar HOSTNM=llvm-nm
+# LLVM=1 enables use of all LLVM tools.
+%global clang_make_opts %{clang_make_opts} LLVM=1
 %endif
 %global make_opts %{make_opts} %{clang_make_opts}
 # clang does not support the -fdump-ipa-clones option
@@ -438,8 +439,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %endif
 
@@ -469,8 +468,6 @@ Summary: The Linux kernel
 %define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_cross 0
-%define with_cross_headers 0
 %define with_ipaclones 0
 %define with_headers 0
 %define with_efiuki 0
@@ -635,6 +632,9 @@ Summary: The Linux kernel
 %define cpupowerarchs i686 x86_64 ppc64le aarch64
 %endif
 
+# Architectures we build kernel livepatching selftests on
+%define klptestarches x86_64 ppc64le
+
 %if 0%{?use_vdso}
 %define _use_vdso 1
 %else
@@ -683,7 +683,7 @@ Summary: The Linux kernel
 
 
 Name: %{package_name}
-License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND BSD-2-Clause AND BSD-3-Clause AND BSD-3-Clause-Clear AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
+License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
 URL: https://www.kernel.org/
 Version: %{specrpmversion}
 Release: %{pkg_release}
@@ -711,7 +711,9 @@ BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
+BuildRequires: python3
 BuildRequires: python3-devel
+BuildRequires: python3-pyyaml
 BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
@@ -720,7 +722,7 @@ BuildRequires: glibc-static
 BuildRequires: rsync
 %endif
 %if %{with_doc}
-BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme, python3-pyyaml
+BuildRequires: xmlto, asciidoc, python3-sphinx, python3-sphinx_rtd_theme
 %endif
 %if %{with_sparse}
 BuildRequires: sparse
@@ -852,7 +854,10 @@ Source0: https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpm
 
 Source1: Makefile.rhelver
 
+Source10: redhatsecurebootca5.cer
+Source13: redhatsecureboot501.cer
 
+%if %{signkernel}
 # Name of the packaged file containing signing key
 %ifarch ppc64le
 %define signing_key_filename kernel-signing-ppc.cer
@@ -861,52 +866,41 @@ Source1: Makefile.rhelver
 %define signing_key_filename kernel-signing-s390.cer
 %endif
 
-%if %{?released_kernel}
-
-Source10: redhatsecurebootca5.cer
-Source11: redhatsecurebootca1.cer
-Source12: redhatsecureboot501.cer
-Source13: redhatsecureboot301.cer
-Source14: secureboot_s390.cer
-Source15: secureboot_ppc.cer
-
-%define secureboot_ca_0 %{SOURCE10}
-%define secureboot_ca_1 %{SOURCE11}
-%ifarch x86_64 aarch64
-%define secureboot_key_0 %{SOURCE12}
+# Fedora/ELN pesign macro expects to see these cert file names, see:
+# https://github.com/rhboot/pesign/blob/main/src/pesign-rpmbuild-helper.in#L216
+%if 0%{?fedora}%{?eln}
 %define pesign_name_0 redhatsecureboot501
-%define secureboot_key_1 %{SOURCE13}
-%define pesign_name_1 redhatsecureboot301
+%define secureboot_ca_0 %{SOURCE10}
+%define secureboot_key_0 %{SOURCE13}
+%endif
+
+# RHEL/centos certs come from system-sb-certs
+%if 0%{?rhel} && !0%{?eln}
+%define secureboot_ca_0 %{_datadir}/pki/sb-certs/secureboot-ca-%{_arch}.cer
+%define secureboot_key_0 %{_datadir}/pki/sb-certs/secureboot-kernel-%{_arch}.cer
+
+%if 0%{?centos}
+%define pesign_name_0 centossecureboot201
+%else
+%ifarch x86_64 aarch64
+%define pesign_name_0 redhatsecureboot501
 %endif
 %ifarch s390x
-%define secureboot_key_0 %{SOURCE14}
 %define pesign_name_0 redhatsecureboot302
 %endif
 %ifarch ppc64le
-%define secureboot_key_0 %{SOURCE15}
-%define pesign_name_0 redhatsecureboot303
+%define pesign_name_0 redhatsecureboot701
+%endif
+%endif
+# rhel && !eln
 %endif
 
-# released_kernel
-%else
-
-Source10: redhatsecurebootca4.cer
-Source11: redhatsecurebootca2.cer
-Source12: redhatsecureboot401.cer
-Source13: redhatsecureboot003.cer
-
-%define secureboot_ca_0 %{SOURCE10}
-%define secureboot_ca_1 %{SOURCE11}
-%define secureboot_key_0 %{SOURCE12}
-%define pesign_name_0 redhatsecureboot401
-%define secureboot_key_1 %{SOURCE13}
-%define pesign_name_1 redhatsecureboot003
-
-# released_kernel
+# signkernel
 %endif
 
 Source20: mod-denylist.sh
 Source21: mod-sign.sh
+Source22: filtermods.py
 
 %define modsign_cmd %{SOURCE21}
 
@@ -915,7 +909,6 @@ Source23: x509.genkey.rhel
 
 Source24: %{name}-aarch64-rhel.config
 Source25: %{name}-aarch64-debug-rhel.config
-Source26: mod-extra.list.rhel
 
 Source27: %{name}-ppc64le-rhel.config
 Source28: %{name}-ppc64le-debug-rhel.config
@@ -925,11 +918,7 @@ Source31: %{name}-s390x-zfcpdump-rhel.config
 Source32: %{name}-x86_64-rhel.config
 Source33: %{name}-x86_64-debug-rhel.config
 
-Source34: filter-x86_64.sh.rhel
-Source35: filter-aarch64.sh.rhel
-Source36: filter-ppc64le.sh.rhel
-Source37: filter-s390x.sh.rhel
-Source38: filter-modules.sh.rhel
+Source34: def_variants.yaml.rhel
 
 Source41: x509.genkey.centos
 # ARM64 64K page-size kernel config
@@ -939,7 +928,6 @@ Source43: %{name}-aarch64-64k-debug-rhel.config
 
 %if 0%{?include_fedora}
 Source50: x509.genkey.fedora
-Source51: mod-extra.list.fedora
 
 Source52: %{name}-aarch64-fedora.config
 Source53: %{name}-aarch64-debug-fedora.config
@@ -952,11 +940,7 @@ Source59: %{name}-s390x-debug-fedora.config
 Source60: %{name}-x86_64-fedora.config
 Source61: %{name}-x86_64-debug-fedora.config
 
-Source62: filter-x86_64.sh.fedora
-Source63: filter-aarch64.sh.fedora
-Source64: filter-ppc64le.sh.fedora
-Source65: filter-s390x.sh.fedora
-Source66: filter-modules.sh.fedora
+Source62: def_variants.yaml.fedora
 %endif
 
 Source70: partial-kgcov-snip.config
@@ -969,9 +953,6 @@ Source76: partial-clang_lto-aarch64-snip.config
 Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
-
-Source84: mod-internal.list
-Source85: mod-partner.list
 
 Source86: dracut-virt.conf
 
@@ -1001,9 +982,6 @@ Source300: kernel-abi-stablelists-%{kabiversion}.tar.xz
 Source301: kernel-kabi-dw-%{kabiversion}.tar.xz
 %endif
 
-# RT specific virt module
-Source400: mod-kvm.list
-
 %if %{include_rt}
 # realtime config files
 Source474: %{name}-aarch64-rt-rhel.config
@@ -1028,8 +1006,7 @@ Source3002: Patchlist.changelog
 # added for those wanting to do custom rebuilds with altered config opts.
 Source3011: kernel-local-cpu
 Source3012: kernel-local-cpu-native
-Source3013: kernel-local-pf
-Source3014: kernel-local-cpu-generic
+Source3013: kernel-local-cpu-generic
 
 Source4000: README.rst
 Source4001: rpminspect.yaml
@@ -1077,111 +1054,101 @@ Patch2091: %{tkg_url}/%{patchversion}/0002-mm-Support-soft-dirty-flag-read-with-
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
-%global graysky2_id c409515574bd4d69af45ad74d4e7ba7151010516
+%global graysky2_id 30db2170d3ddefa13a3dcffd05db66efff2fea7d
 Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-uarches-for-kernel-6.8-rc4+.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 %if 0%{?post_factum}
 # amd-pstate
-Patch7001:  %{pf_url}/641e7552801c73818653ee50d6913f48245b856a.patch#/pf-cb-641e755.patch
-Patch7002:  %{pf_url}/c5c351d3e348bc9be9e70d5758bd31defb03cc1d.patch#/pf-cb-c5c351d.patch
-Patch7003:  %{pf_url}/ca5d8e68074f82ddebce83e03a80092d76308c6e.patch#/pf-cb-ca5d8e6.patch
-Patch7004:  %{pf_url}/cc6f40b5f1d5037d99185b9d6db44eb44647b31a.patch#/pf-cb-cc6f40b.patch
-Patch7005:  %{pf_url}/09c29d7bfa5ba2af29142715ba510df7600055b5.patch#/pf-cb-09c29d7.patch
-Patch7006:  %{pf_url}/dee082f6177b353eff3350f48836f8f107cb44f8.patch#/pf-cb-dee082f.patch
-Patch7007:  %{pf_url}/1d20d933b45e2a14c886548cc51841bbd45f10c1.patch#/pf-cb-1d20d93.patch
-Patch7008:  %{pf_url}/7de6e958046bd8611e7054e0d6756e41add9aaf6.patch#/pf-cb-7de6e95.patch
-Patch7009:  %{pf_url}/08cfb0e23d892b043aac2b972bb1cae423a98a3d.patch#/pf-cb-08cfb0e.patch
-Patch7010:  %{pf_url}/5553679999685998f44243f007dfa8d9b645f92f.patch#/pf-cb-5553679.patch
-Patch7011:  %{pf_url}/99507dc09f53c4b975cbe0e1b4b79a42ad47c8e4.patch#/pf-cb-99507dc.patch
-Patch7012:  %{pf_url}/91132f11a605caf5211e93e32f06bb841bc61f6e.patch#/pf-cb-91132f1.patch
-Patch7013:  %{pf_url}/16470f705c25e9f606286fc2313f3f011b48031d.patch#/pf-cb-16470f7.patch
-Patch7014:  %{pf_url}/6f97d23a475a6298e145d28fd03082646c641be6.patch#/pf-cb-6f97d23.patch
-Patch7015:  %{pf_url}/35f6eb6acba76baf46cbce9a908006ec763ab1c7.patch#/pf-cb-35f6eb6.patch
-Patch7016:  %{pf_url}/cdce4abbb2968a438c0afb9c2d280eaa8109cf6f.patch#/pf-cb-cdce4ab.patch
-Patch7017:  %{pf_url}/c8a44230ae99b7c541bc5a658c64d5f1146c45ce.patch#/pf-cb-c8a4423.patch
-Patch7018:  %{pf_url}/dc33c5dbd381f342986d86b8c926c3ab757feafb.patch#/pf-cb-dc33c5d.patch
-Patch7019:  %{pf_url}/9ff16d889879eea21c1b37f14e9f1fffd6d36071.patch#/pf-cb-9ff16d8.patch
-Patch7020:  %{pf_url}/12e71a0895d14e9febd86fbd08b9914fea0d5e1f.patch#/pf-cb-12e71a0.patch
-Patch7021:  %{pf_url}/09ad896945849fda14294735f5fef1411647908c.patch#/pf-cb-09ad896.patch
-Patch7022:  %{pf_url}/86a4b05c7af435840a36d64d0356f73fbcfd363d.patch#/pf-cb-86a4b05.patch
-Patch7023:  %{pf_url}/e390850be93cd4715f3babf163a011ac6c516380.patch#/pf-cb-e390850.patch
-Patch7024:  %{pf_url}/9379bbed75a9f025515bb4e65dd9f7b61c141d16.patch#/pf-cb-9379bbe.patch
-Patch7025:  %{pf_url}/dd56ba85f39d7ab1a7441a9eeb6b2327bb273f3a.patch#/pf-cb-dd56ba8.patch
-Patch7026:  %{pf_url}/ac420ace1abc6c32aa5d142d2a9b553c4dec4df5.patch#/pf-cb-ac420ac.patch
-Patch7027:  %{pf_url}/0bfd4a370e74645a0c6f3234facedc326580c9da.patch#/pf-cb-0bfd4a3.patch
-Patch7028:  %{pf_url}/942c2d1ad1b5e0418870e3ed48c419321dac0630.patch#/pf-cb-942c2d1.patch
-Patch7029:  %{pf_url}/3ea966004c2526cec388bf5e1918bfe774d8fb0f.patch#/pf-cb-3ea9660.patch
-Patch7030:  %{pf_url}/a12286fa8a17e639044441f13647328e2c54a6ae.patch#/pf-cb-a12286f.patch
-Patch7031:  %{pf_url}/bc3acabad847d3d3eca6f425093cbbf8f5f822d5.patch#/pf-cb-bc3acab.patch
-Patch7032:  %{pf_url}/eafeaa077ea6356ff27144d61c74701f8fd0228d.patch#/pf-cb-eafeaa0.patch
-
+Patch7000:  %{pf_url}/023aad3424cd0097342f5021915ec0f4eaa34c72.patch#/pf-cb-023aad3.patch
+Patch7001:  %{pf_url}/dac2bbc34d5b1bf89385035e2276df3dc32f06ab.patch#/pf-cb-dac2bbc.patch
+Patch7002:  %{pf_url}/3127fd0177e50e0f9cfd7d7d0af622c15467a387.patch#/pf-cb-3127fd0.patch
+Patch7003:  %{pf_url}/122d025bca80112b43654c08a95cf5eae3c0d1c9.patch#/pf-cb-122d025.patch
+Patch7004:  %{pf_url}/fac789e5ac98acec20d8358075f00b7b94eb6bc4.patch#/pf-cb-fac789e.patch
+Patch7005:  %{pf_url}/8dd95104dd3faefa9f32502fa30dc4bcf2dd0df2.patch#/pf-cb-8dd9510.patch
+Patch7006:  %{pf_url}/49c32213a643b745cf16a58ab47fa2917a512a38.patch#/pf-cb-49c3221.patch
+Patch7007:  %{pf_url}/9935d70750b02fe68ea1e0c78d997fae2ba11e41.patch#/pf-cb-9935d70.patch
+Patch7008:  %{pf_url}/ce271bdc01cc662c18792133999d7a1b708a14ed.patch#/pf-cb-ce271bd.patch
+Patch7009:  %{pf_url}/de6aacf56736c174ec5f0bf03527504db6a3b243.patch#/pf-cb-de6aacf.patch
+Patch7010:  %{pf_url}/18bc0a81a859c1a3190a5dce59e2ab165a29405b.patch#/pf-cb-18bc0a8.patch
+Patch7011:  %{pf_url}/b8524591135b3ed6fdb1c48a3a13aa95d9bf05fc.patch#/pf-cb-b852459.patch
+Patch7012:  %{pf_url}/49c4b2eefbe8cea004c3f62f01f5e28c47e8640c.patch#/pf-cb-49c4b2e.patch
+Patch7013:  %{pf_url}/af0864992f2e4a1df62bbaba2ff42b7e7b935f2e.patch#/pf-cb-af08649.patch
+Patch7014:  %{pf_url}/384e408bc4441cbe4dccbce96ba10847234ac096.patch#/pf-cb-384e408.patch
+Patch7015:  %{pf_url}/3905851f660ba6dad0517884947d0a6966821256.patch#/pf-cb-3905851.patch
+Patch7016:  %{pf_url}/670eff0ab947ae0060f876e9a038976930186006.patch#/pf-cb-670eff0.patch
+Patch7017:  %{pf_url}/5abcf3fc3e9ff2fe763562cf2bb0eb80c57336b5.patch#/pf-cb-5abcf3f.patch
+Patch7018:  %{pf_url}/9860bdb8f766c47dde41210c9fa4beecf95dd3d7.patch#/pf-cb-9860bdb.patch
+Patch7019:  %{pf_url}/6f354c95be7ef4a7465442e482f22ab2088592a5.patch#/pf-cb-6f354c9.patch
+Patch7020:  %{pf_url}/458f59fc5498b67a76fb10db7a3853a924f8d373.patch#/pf-cb-458f59f.patch
+Patch7021:  %{pf_url}/9ffe619a26016c8e426f79c423606cd5d40e7667.patch#/pf-cb-9ffe619.patch
+Patch7022:  %{pf_url}/b531216f5ddeb3b8f5ee7a1d45b9fe4923206731.patch#/pf-cb-b531216.patch
+Patch7023:  %{pf_url}/435fc4ee9b456ff975992067b1bc2d3166e3ddb4.patch#/pf-cb-435fc4e.patch
+Patch7024:  %{pf_url}/c7517524e6fbdef71ff8b2d0c108d0b389b79c07.patch#/pf-cb-c751752.patch
+Patch7025:  %{pf_url}/ee4e6d6a9e19672130886731717334f9388a0738.patch#/pf-cb-ee4e6d6.patch
+Patch7026:  %{pf_url}/bf847c9d8b5cfd8c14cc24aba7b11b3cd2de757e.patch#/pf-cb-bf847c9.patch
+Patch7027:  %{pf_url}/12a6b94fbecb31b40c38de5624223a68c3549778.patch#/pf-cb-12a6b94.patch
+Patch7028:  %{pf_url}/200a597872e500801b2f4c2a31b3ec3d5add34e9.patch#/pf-cb-200a597.patch
 # bbr
-Patch7050:  %{pf_url}/7dd5db3e5182e5728c3fdd859d2c713335ee706a.patch#/pf-cb-7dd5db3.patch
+Patch7050:  %{pf_url}/be74f82f85cf782f185e15c55dc8d8bda4769588.patch#/pf-cb-be74f82.patch
 # block
-Patch7060:  %{pf_url}/e66b22c22de9257bc2c0b34326d258887a347399.patch#/pf-cb-e66b22c.patch
-Patch7061:  %{pf_url}/6f98e2059e1902621baa67892148f5eac44a3978.patch#/pf-cb-6f98e20.patch
-Patch7062:  %{pf_url}/46f44d5389ca3d2c8dfd7dcb3f961ab20ea914ad.patch#/pf-cb-46f44d5.patch
-Patch7063:  %{pf_url}/458f213da09e768b427d7d8891bf6967f2b6e6c0.patch#/pf-cb-458f213.patch
-Patch7064:  %{pf_url}/832f3d248d4d1809d0ae50065e989d2e2cf7fde3.patch#/pf-cb-832f3d2.patch
-Patch7065:  %{pf_url}/1626c25ee395eab7d4f42ffda6d463bc9eaf151c.patch#/pf-cb-1626c25.patch
-Patch7066:  %{pf_url}/c3c3ce96305c3374dd65dcd75e1f22998c17d7c0.patch#/pf-cb-c3c3ce9.patch
-Patch7067:  %{pf_url}/d0504b7a470b4f7b1a4e71efe601adabf084f750.patch#/pf-cb-d0504b7.patch
+Patch7060:  %{pf_url}/bc7e8857255b29555eae4a00bd2c9bf6dc3e7d05.patch#/pf-cb-bc7e885.patch
+Patch7061:  %{pf_url}/14ec7b122757e21dbafbb6fa9840d1f4d6c84223.patch#/pf-cb-14ec7b1.patch
+Patch7062:  %{pf_url}/c34a6c21f7ff4057cea1e2fb5976fc0cdd25f39b.patch#/pf-cb-c34a6c2.patch
+Patch7063:  %{pf_url}/d18f999b994d9778aea6ca723344215cb818670c.patch#/pf-cb-d18f999.patch
+Patch7064:  %{pf_url}/d935f3d0b6a37f70d165623077d94a836c231d80.patch#/pf-cb-d935f3d.patch
+Patch7065:  %{pf_url}/c53367e9365b515c65c2ba645ece20787b52c3b3.patch#/pf-cb-c53367e.patch
+Patch7066:  %{pf_url}/585dda51216d7d0126cffde474b37e939a305e23.patch#/pf-cb-585dda5.patch
+Patch7067:  %{pf_url}/92d2f9728b3e92d7c4d222e45293e723867aaf80.patch#/pf-cb-92d2f97.patch
+Patch7068:  %{pf_url}/27d2352a81fd66d5a420784d3336f32833d3f686.patch#/pf-cb-27d2352.patch
 # fixes
-Patch7100:  %{pf_url}/9e943ab3c8bb617187aa696eeae5781c81e8050a.patch#/pf-cb-9e943ab.patch
-Patch7101:  %{pf_url}/95f6f5d9133ed95da262ff8265ba2694b19ec2e1.patch#/pf-cb-95f6f5d.patch
-Patch7102:  %{pf_url}/a218b3f2736576ba62646b1bab43edaedf9e3b70.patch#/pf-cb-a218b3f.patch
-Patch7103:  %{pf_url}/79516fb573458d0bb8da5abca6edba4a48e4107a.patch#/pf-cb-79516fb.patch
-Patch7105:  %{pf_url}/0f0b8ed975348b61d233d3ce0c65faaf85c1f582.patch#/pf-cb-0f0b8ed.patch
-Patch7106:  %{pf_url}/50f3726f3c3ad06ae2249d216d4205e84062a4a5.patch#/pf-cb-50f3726.patch
-Patch7107:  %{pf_url}/6b51f821467bf1d5234cf63b7f60ae3b606058ef.patch#/pf-cb-6b51f82.patch
-Patch7108:  %{pf_url}/147fa7036b8e48e49ce88f4d4425a245c4980f46.patch#/pf-cb-147fa70.patch
-Patch7109:  %{pf_url}/d5a2c4281133eb7c56285dc7444f5054d59f9259.patch#/pf-cb-d5a2c42.patch
-Patch7110:  %{pf_url}/82262734c84a25000a96186bf12c495a179c5b0f.patch#/pf-cb-8226273.patch
+Patch7100:  %{pf_url}/0ebe1627d6667bd5c1ff164a734b8fa36704233a.patch#/pf-cb-0ebe162.patch
+Patch7101:  %{pf_url}/bab2518c5ec078e6081817a3862c1d848651d9b6.patch#/pf-cb-bab2518.patch
+Patch7102:  %{pf_url}/ce00606fb4bb131c02eb940968297f0869d30abe.patch#/pf-cb-ce00606.patch
+Patch7103:  %{pf_url}/deb847a041862fddff4fc16d4290389260b60dfb.patch#/pf-cb-deb847a.patch
 # zstd
-Patch7200:  %{pf_url}/1b8b450e0a8b6c07229f9ae7e03fbc31e5b14d7f.patch#/pf-cb-1b8b450.patch
-Patch7201:  %{pf_url}/ef8fac5ecb019624f2e38cdcdb7e697873bc96e1.patch#/pf-cb-ef8fac5.patch
-Patch7202:  %{pf_url}/5b59dc7236c3f4bdeb85755f1f8f81ae7545b08d.patch#/pf-cb-5b59dc7.patch
-Patch7203:  %{pf_url}/9089fe4e2cb3eff89d5ad359ddcbe811a4f7af1e.patch#/pf-cb-9089fe4.patch
-Patch7204:  %{pf_url}/d885d3e38500529e4df2425d206608c5cd37757c.patch#/pf-cb-d885d3e.patch
-Patch7205:  %{pf_url}/91377d4a7c106b3cb98bcb674a8f4e86467ae8cb.patch#/pf-cb-91377d4.patch
-Patch7206:  %{pf_url}/2216eeb4d869c393f81212145b775725fcaf9e39.patch#/pf-cb-2216eeb.patch
+Patch7200:  %{pf_url}/2b515b215286bf4a98187aca20f1e16be80d0423.patch#/pf-cb-2b515b2.patch
+Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0e0e.patch
 # ksm
-Patch7220:  %{pf_url}/8d4a931c41533999c0c3a4ae4655705a65631444.patch#/pf-cb-8d4a931.patch
+Patch7220:  %{pf_url}/332679d16797e49fe0e13025438c02b9f745f1d0.patch#/pf-cb-332679d.patch
 # v4l2loopback
-Patch7230:  %{pf_url}/519ac3f772453b98143d71da4b13db626788bf7f.patch#/pf-cb-519ac3f.patch
-Patch7231:  %{pf_url}/e8c31c140e168d77d52ec7290d2080d1f2dc5498.patch#/pf-cb-e8c31c1.patch
+Patch7230:  %{pf_url}/4044e0692e1003a60a52b0e39bd0e32a239c77aa.patch#/pf-cb-4044e06.patch
 # uvcvideo
-Patch7240:  %{pf_url}/07015936767a820784b39794cbad773f97e8e2f7.patch#/pf-cb-0701593.patch
-Patch7241:  %{pf_url}/79c792bdfc1f2ad46d4e3a8364ff7a23ecc2bd71.patch#/pf-cb-79c792b.patch
-Patch7242:  %{pf_url}/b23f715cb965b1b54a9e2dc3f88c9ef4421d58c2.patch#/pf-cb-b23f715.patch
-Patch7243:  %{pf_url}/01916c357477bae685d2331d578a327393aa9dee.patch#/pf-cb-01916c3.patch
-Patch7244:  %{pf_url}/d9e2c4fbda630a1503715619950f4b172975f290.patch#/pf-cb-d9e2c4f.patch
-Patch7245:  %{pf_url}/5bf14c6c85ac73bfd1fd01d11337e4f8cc2de1ca.patch#/pf-cb-5bf14c6.patch
-Patch7246:  %{pf_url}/884a61751d979ee9974c08a71c72e88e73bdd87e.patch#/pf-cb-884a617.patch
-# aes-xts
-Patch7300:  %{pf_url}/e3e25e3ad3c60ae55c0c1e8318c84b91926eb7d8.patch#/pf-cb-e3e25e3.patch
-Patch7301:  %{pf_url}/c27cefb53314e868c51ea32a11e8ef26c6ccdd9e.patch#/pf-cb-c27cefb.patch
-Patch7302:  %{pf_url}/ee7386a28acb97ea2229e3fad6268a6cb0ed2112.patch#/pf-cb-ee7386a.patch
-Patch7303:  %{pf_url}/984e45d04d5f5d19520f2817c91155894facfca7.patch#/pf-cb-984e45d.patch
-Patch7304:  %{pf_url}/703d558ecb5373cd079bfd9dd0c7f3f4d4f46ccf.patch#/pf-cb-703d558.patch
-Patch7305:  %{pf_url}/5b597d0f4b148eef949a54055da95ef44e4247d0.patch#/pf-cb-5b597d0.patch
-Patch7306:  %{pf_url}/68afbbe7595f8fbda4b610f3e64a1b71d54f0a9a.patch#/pf-cb-68afbbe.patch
-Patch7307:  %{pf_url}/87aae2841a8f1ca5be684914746b76c47bc03e1c.patch#/pf-cb-87aae28.patch
-Patch7308:  %{pf_url}/a12d00e2a783991513774f21e23c2724bfe5bd95.patch#/pf-cb-a12d00e.patch
-Patch7309:  %{pf_url}/51a5ce39e960e659e146cdb9c05662b660a5bdd6.patch#/pf-cb-51a5ce3.patch
-Patch7310:  %{pf_url}/5c5a0e684e41381dacff5ecb8590b3cc3b4bfe60.patch#/pf-cb-5c5a0e6.patch
-Patch7311:  %{pf_url}/a38fa2dbd0079972ad3807ef315f3b324f9cfa85.patch#/pf-cb-a38fa2d.patch
-Patch7312:  %{pf_url}/83cfebbe9ea9c65e5983a932ab9dc5c6d6c610e0.patch#/pf-cb-83cfebb.patch
-Patch7313:  %{pf_url}/a16b17a1e14cf6ddba6c036f2d59dc392c33fbcf.patch#/pf-cb-a16b17a.patch
-Patch7314:  %{pf_url}/6d032ba8824f28e4dbb0c43b0dd47dfb7067795b.patch#/pf-cb-6d032ba.patch
-Patch7315:  %{pf_url}/a0a37b16a97db57aebd0c5935a6b333029403890.patch#/pf-cb-a0a37b1.patch
-Patch7316:  %{pf_url}/c2f4dc5836ec304caa229a2c054b93b890d4ff6e.patch#/pf-cb-c2f4dc5.patch
-Patch7317:  %{pf_url}/8832b4473470f70d14c9d6534234de50a95f3f1a.patch#/pf-cb-8832b44.patch
-Patch7318:  %{pf_url}/b3ab662d27ff006898d2b982537205d51ed24263.patch#/pf-cb-b3ab662.patch
-Patch7319:  %{pf_url}/b1c075117f9379a5a31405f5b13d716810b7c6db.patch#/pf-cb-b1c0751.patch
-Patch7320:  %{pf_url}/0785a849e46f66328efe02280f588b7417c13c9f.patch#/pf-cb-0785a84.patch
+Patch7240:  %{pf_url}/5ce7b22739662759e8ccf62396371c9ef918c1c5.patch#/pf-cb-5ce7b22.patch
+Patch7241:  %{pf_url}/d52cd477dc83cb52a5ad09fbdcb729fc75b8a367.patch#/pf-cb-d52cd47.patch
+Patch7242:  %{pf_url}/215c65c1103664057ff90003ac3336709eab2ed2.patch#/pf-cb-215c65c.patch
+Patch7243:  %{pf_url}/7558fdbc034ebe48c60e8ef9ca7b13c5bf839c38.patch#/pf-cb-7558fdb.patch
+Patch7244:  %{pf_url}/91579ded455b2a8b7adeec8f952d3f37574cacfc.patch#/pf-cb-91579de.patch
+Patch7245:  %{pf_url}/9bdc17321b04563759efdf9daa93baeb74f28627.patch#/pf-cb-9bdc173.patch
+Patch7246:  %{pf_url}/e1ec523702a7468c2a4c6c59d16feeef24f0c864.patch#/pf-cb-e1ec523.patch
+# crypto
+Patch7300:  %{pf_url}/32a11056e219681120a168914b9898e1c354ac09.patch#/pf-cb-32a1105.patch
+Patch7301:  %{pf_url}/07e694fcb3b06d399b5db7f1cb2c173adbfedf71.patch#/pf-cb-07e694f.patch
+Patch7302:  %{pf_url}/c039b063a50ee8011398882185419de97987fedb.patch#/pf-cb-c039b06.patch
+Patch7303:  %{pf_url}/b35e1b8d7b1c75a2da361af29919bc1cc2d20b11.patch#/pf-cb-b35e1b8.patch
+Patch7304:  %{pf_url}/71636ad610050cd7c557bedf3858ebc54f4ae9d3.patch#/pf-cb-71636ad.patch
+Patch7305:  %{pf_url}/e067455cb2960df60cad27fb07e6deca89f8f97b.patch#/pf-cb-e067455.patch
+Patch7306:  %{pf_url}/ac7f799e93c11c98957af7b019e6ab33a5d45cb2.patch#/pf-cb-ac7f799.patch
+Patch7307:  %{pf_url}/1d2af8dc387d6d0743d1b9b45e2c6b523144e438.patch#/pf-cb-1d2af8d.patch
+Patch7308:  %{pf_url}/dfa4d5f8cacd3a5b61b05a839638e01fb07e99b2.patch#/pf-cb-dfa4d5f.patch
+Patch7309:  %{pf_url}/168679e8de7faee3b78b379c72351698ba2419d1.patch#/pf-cb-168679e.patch
+Patch7310:  %{pf_url}/cbd8db26d1daf8fcd9502b5d0d73750818952e9d.patch#/pf-cb-cbd8db2.patch
+Patch7311:  %{pf_url}/3b8436a7932bf7f8d5ba99c733c08337ea6cb5c8.patch#/pf-cb-3b8436a.patch
+Patch7312:  %{pf_url}/0d8aaeae29aa43f7f11f467bffa60b3042871c00.patch#/pf-cb-0d8aaea.patch
+Patch7313:  %{pf_url}/c15bc805bcb41b55dc8cebe4f8b4e7ad19f42875.patch#/pf-cb-c15bc80.patch
+Patch7314:  %{pf_url}/79f65d5305406aa83fa757fedf93884057d0711c.patch#/pf-cb-79f65d5.patch
+Patch7315:  %{pf_url}/28c1b5a7f2928185a48dceb46f1c5d44fb42075f.patch#/pf-cb-28c1b5a.patch
+Patch7316:  %{pf_url}/0864f6cefa7b187cbd4076c6a9651edbe4770a59.patch#/pf-cb-0864f6c.patch
+Patch7317:  %{pf_url}/349e5ad4cada3521245e8b84ed6fd254bd1ed4a9.patch#/pf-cb-349e5ad.patch
+Patch7318:  %{pf_url}/0c51720eade1aaea116aa60bd3aea43f54808cbe.patch#/pf-cb-0c51720.patch
+Patch7319:  %{pf_url}/2ce9ff9a6cb4266518e177770ac60ad723c33194.patch#/pf-cb-2ce9ff9.patch
+Patch7320:  %{pf_url}/c47ba2c96a1f286254d86aefeb2a534eeba570f2.patch#/pf-cb-c47ba2c.patch
+Patch7321:  %{pf_url}/03b679bbbbe423b798a34ecda63aa9f8e8ad5b93.patch#/pf-cb-03b679b.patch
+Patch7322:  %{pf_url}/1e050d8635f254af7b121815f543c43784d3aaca.patch#/pf-cb-1e050d8.patch
+Patch7323:  %{pf_url}/f54e5d5ba5d35c7a4a1585a8e32ef2aac677f4ec.patch#/pf-cb-f54e5d5.patch
+Patch7324:  %{pf_url}/7e7648e96eb851630c96379e2bc225d05ec26b78.patch#/pf-cb-7e7648e.patch
+Patch7325:  %{pf_url}/3192cded97424256eb7ffef7020433ee8597d5d3.patch#/pf-cb-3192cde.patch
 
 %endif
 
@@ -1332,7 +1299,8 @@ Summary: The perf library from kernel source
 This package contains the kernel source perf library.
 
 %package -n libperf-devel
-Summary: Developement files for the perf library from kernel source
+Summary: Development files for the perf library from kernel source
+Requires: libperf = %{specrpmversion}-%{release}
 %description -n libperf-devel
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
@@ -1686,9 +1654,9 @@ This package provides essential kernel modules for the %{?2:%{2}-}core kernel pa
 %define kernel_meta_package() \
 %package %{1}\
 summary: kernel meta-package for the %{1} kernel\
-Requires: kernel-%{1}-core-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}+%{uname_suffix %{1}}\
+Requires: kernel-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: kernel-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 %if "%{1}" == "rt" || "%{1}" == "rt-debug"\
 Requires: realtime-setup\
 %endif\
@@ -1706,7 +1674,8 @@ The meta-package for the %{1} kernel\
 %package %{?1:%{1}-}kvm\
 Summary: KVM modules for package kernel%{?1:-%{1}}\
 Group: System Environment/Kernel\
-Requires: kernel%{?1:-%{1}} = %{version}-%{release}\
+Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:%{1}}}\
+Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
 Provides: kernel%{?1:-%{1}}-kvm-%{_target_cpu} = %{version}-%{release}\
 AutoReq: no\
@@ -1927,11 +1896,21 @@ Prebuilt 64k unified kernel image for virtual machines.
 %kernel_ipaclones_package
 %endif
 
+%define log_msg() \
+  { set +x; } 2>/dev/null \
+  _log_msglineno=$(grep -n %{*} %{_specdir}/%{name}.spec | grep log_msg | cut -d":" -f1) \
+  echo "%{name}.spec:${_log_msglineno}: %{*}" \
+  set -x
+
 %prep
+%{log_msg "Start of prep stage"}
+
+%{log_msg "Sanity checks"}
+
 # do a few sanity-checks for --with *only builds
 %if %{with_baseonly}
 %if !%{with_up}
-echo "Cannot build --with baseonly, up build is disabled"
+%{log_msg "Cannot build --with baseonly, up build is disabled"}
 exit 1
 %endif
 %endif
@@ -1940,7 +1919,7 @@ exit 1
 if [ "%{patches}" != "%%{patches}" ] ; then
   for patch in %{patches} ; do
     if [ ! -f $patch ] ; then
-      echo "ERROR: Patch  ${patch##/*/}  listed in specfile but is missing"
+      %{log_msg "ERROR: Patch  ${patch##/*/}  listed in specfile but is missing"}
       exit 1
     fi
   done
@@ -1982,8 +1961,12 @@ mv linux-%{tarfile_release} linux-%{KVERREL}
 cd linux-%{KVERREL}
 cp -a %{SOURCE1} .
 
+%{log_msg "Start of patch applications"}
+%if !%{nopatches}
+
 %if 0%{?post_factum}
 # amd-pstate
+ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
 ApplyPatch %{PATCH7002}
 ApplyPatch %{PATCH7003}
@@ -2012,10 +1995,6 @@ ApplyPatch %{PATCH7025}
 ApplyPatch %{PATCH7026}
 ApplyPatch %{PATCH7027}
 ApplyPatch %{PATCH7028}
-ApplyPatch %{PATCH7029}
-ApplyPatch %{PATCH7030}
-ApplyPatch %{PATCH7031}
-ApplyPatch %{PATCH7032}
 # bbr
 ApplyPatch %{PATCH7050}
 # block
@@ -2027,27 +2006,19 @@ ApplyPatch %{PATCH7064}
 ApplyPatch %{PATCH7065}
 ApplyPatch %{PATCH7066}
 ApplyPatch %{PATCH7067}
+ApplyPatch %{PATCH7068}
 # fixes
 ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7105}
-ApplyPatch %{PATCH7109}
-ApplyPatch %{PATCH7110}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
-ApplyPatch %{PATCH7202}
-ApplyPatch %{PATCH7203}
-ApplyPatch %{PATCH7204}
-ApplyPatch %{PATCH7205}
-ApplyPatch %{PATCH7206}
 # ksm
 ApplyPatch %{PATCH7220}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # uvcvideo
 ApplyPatch %{PATCH7240}
 ApplyPatch %{PATCH7241}
@@ -2056,7 +2027,7 @@ ApplyPatch %{PATCH7243}
 ApplyPatch %{PATCH7244}
 ApplyPatch %{PATCH7245}
 ApplyPatch %{PATCH7246}
-# aes-xts
+# crypto
 ApplyPatch %{PATCH7300}
 ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
@@ -2078,6 +2049,11 @@ ApplyPatch %{PATCH7317}
 ApplyPatch %{PATCH7318}
 ApplyPatch %{PATCH7319}
 ApplyPatch %{PATCH7320}
+ApplyPatch %{PATCH7321}
+ApplyPatch %{PATCH7322}
+ApplyPatch %{PATCH7323}
+ApplyPatch %{PATCH7324}
+ApplyPatch %{PATCH7325}
 %endif
 
 # released_kernel with possible stable updates
@@ -2086,13 +2062,6 @@ ApplyPatch %{PATCH7320}
 ApplyPatch %{PATCH5000}
 %endif
 
-%if 0%{?post_factum}
-ApplyPatch %{PATCH7106}
-ApplyPatch %{PATCH7107}
-ApplyPatch %{PATCH7108}
-%endif
-
-%if !%{nopatches}
 ApplyOptionalPatch %{PATCH1}
 
 ApplyOptionalPatch %{PATCH999999}
@@ -2115,11 +2084,13 @@ ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6010}
 
 # END OF PATCH APPLICATIONS
+%{log_msg "End of patch applications"}
 
 %endif
 
 # Any further pre-build tree manipulations happen here.
 
+%{log_msg "Pre-build tree manipulations"}
 chmod +x scripts/checkpatch.pl
 mv COPYING COPYING-%{specrpmversion}-%{release}
 
@@ -2134,7 +2105,7 @@ rm -f localversion-next
 # This fixes errors such as
 # *** ERROR: ambiguous python shebang in /usr/bin/kvm_stat: #!/usr/bin/python. Change it to python3 (or python2) explicitly.
 # We patch all sources below for which we got a report/error.
-echo "Fixing Python shebangs..."
+%{log_msg "Fixing Python shebangs..."}
 %py3_shebang_fix \
     tools/kvm/kvm_stat/kvm_stat \
     scripts/show_delta \
@@ -2154,6 +2125,7 @@ fi
 mkdir configs
 cd configs
 
+%{log_msg "Copy additional source files into buildroot"}
 # Drop some necessary files from the source dir into the buildroot
 cp $RPM_SOURCE_DIR/%{name}-*.config .
 cp %{SOURCE3001} .
@@ -2162,15 +2134,12 @@ cat %{SOURCE3012} >> kernel-local
 echo 'CONFIG_NR_CPUS=%(nproc --all)' >> kernel-local
 %else
 %if %{with_generic}
-cat %{SOURCE3014} >> kernel-local
+cat %{SOURCE3013} >> kernel-local
 %else
 cat %{SOURCE3011} >> kernel-local
 %endif
 %endif
 
-%if 0%{?post_factum}
-cat %{SOURCE3013} >> kernel-local
-%endif
 cp %{SOURCE80} .
 # merge.py
 cp %{SOURCE3000} .
@@ -2183,6 +2152,7 @@ rm -f kernel-local
 FLAVOR=%{primary_target} SPECPACKAGE_NAME=%{name} SPECVERSION=%{specversion} SPECRPMVERSION=%{specrpmversion} ./generate_all_configs.sh %{debugbuildsenabled}
 
 # Collect custom defined config options
+%{log_msg "Collect custom defined config options"}
 PARTIAL_CONFIGS=""
 %if %{with_gcov}
 PARTIAL_CONFIGS="$PARTIAL_CONFIGS %{SOURCE70} %{SOURCE71}"
@@ -2208,6 +2178,7 @@ GetArch()
 }
 
 # Merge in any user-provided local config option changes
+%{log_msg "Merge in any user-provided local config option changes"}
 %ifnarch %nobuildarches
 for i in %{all_configs}
 do
@@ -2232,14 +2203,17 @@ done
 
 # Add DUP and kpatch certificates to system trusted keys for RHEL
 %if 0%{?rhel}
+%{log_msg "Add DUP and kpatch certificates to system trusted keys for RHEL"}
 %if %{signkernel}%{signmodules}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
 cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem > ../certs/rhel.pem
+%if %{signkernel}
 %ifarch s390x ppc64le
 openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
 cat secureboot.pem >> ../certs/rhel.pem
+%endif
 %endif
 for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
@@ -2249,11 +2223,13 @@ done
 
 # Adjust FIPS module name for RHEL
 %if 0%{?rhel}
+%{log_msg "Adjust FIPS module name for RHEL"}
 for i in *.config; do
   sed -i 's/CONFIG_CRYPTO_FIPS_NAME=.*/CONFIG_CRYPTO_FIPS_NAME="Red Hat Enterprise Linux %{rhel} - Kernel Cryptographic API"/' $i
 done
 %endif
 
+%{log_msg "Set process_configs.sh $OPTS"}
 cp %{SOURCE81} .
 OPTS=""
 %if %{with_configchecks}
@@ -2265,6 +2241,7 @@ for opt in %{clang_make_opts}; do
 done
 %endif
 
+%{log_msg "Generate redhat configs"}
 RHJOBS=%{?_smp_build_ncpus} SPECPACKAGE_NAME=%{name} ./process_configs.sh $OPTS %{specrpmversion} %{primary_target}
 
 # We may want to override files from the primary target in case of building
@@ -2279,20 +2256,21 @@ update_scripts() {
 	done
 }
 
+%{log_msg "Set scripts/SOURCES targets"}
 update_target=%{primary_target}
 if [ "%{primary_target}" == "rhel" ]; then
 : # no-op to avoid empty if-fi error
 %if 0%{?centos}
   update_scripts $update_target
-  echo "Updating scripts/sources to centos version"
+  %{log_msg "Updating scripts/sources to centos version"}
   update_target=centos
 %endif
 fi
 update_scripts $update_target
 
-# end of kernel config
 %endif
 
+%{log_msg "End of kernel config"}
 cd ..
 # # End of Configs stuff
 
@@ -2308,7 +2286,9 @@ cd ..
 ### build
 ###
 %build
+%{log_msg "Start of build stage"}
 
+%{log_msg "General arch build configuration"}
 rm -rf %{buildroot_unstripped} || true
 mkdir -p %{buildroot_unstripped}
 
@@ -2332,6 +2312,9 @@ cp_vmlinux()
 %define make %{__make} %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
 InitBuildVars() {
+    %{log_msg "InitBuildVars for $1"}
+
+    %{log_msg "InitBuildVars: Initialize build variables"}
     # Initialize the kernel .config file and create some variables that are
     # needed for the actual build process.
 
@@ -2343,12 +2326,13 @@ InitBuildVars() {
 
     KernelVer=%{specversion}-%{release}.%{_target_cpu}${Variant:++${Variant}}
 
+   %{log_msg "InitBuildVars: Update Makefile"}
     %if 0%{?stable_update}
     # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
     perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stable_update}/" Makefile
     %endif
 
-    # make sure EXTRAVERSION says what we want it to say
+     # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
     ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Variant:++${Variant}}/" Makefile
@@ -2357,6 +2341,7 @@ InitBuildVars() {
     # if we are post rc1 this should match anyway so this won't matter
     perl -p -i -e 's/^PATCHLEVEL.*/PATCHLEVEL = %{patchlevel}/' Makefile
 
+    %{log_msg "InitBuildVars: Copy files"}
     %{make} %{?_smp_mflags} mrproper
     cp configs/$Config .config
 
@@ -2365,23 +2350,26 @@ InitBuildVars() {
     %endif
 
     Arch=`head -1 .config | cut -b 3-`
-    echo USING ARCH=$Arch
+    %{log_msg "InitBuildVars: USING ARCH=$Arch"}
 
     KCFLAGS="%{?kcflags}"
 
     # add kpatch flags for base kernel
+    %{log_msg "InitBuildVars: Configure KCFLAGS"}
     if [ "$Variant" == "" ]; then
         KCFLAGS="$KCFLAGS%{?kpatch_kcflags: %{kpatch_kcflags}}"
     fi
 }
 
 BuildKernel() {
+    %{log_msg "BuildKernel for $4"}
     MakeTarget=$1
     KernelImage=$2
     DoVDSO=$3
     Variant=$4
     InstallName=${5:-vmlinuz}
 
+    %{log_msg "Setup variables"}
     DoModules=1
     if [ "$Variant" = "zfcpdump" ]; then
         DoModules=0
@@ -2396,22 +2384,25 @@ BuildKernel() {
     fi
 
 %if %{with_gcov}
+    %{log_msg "Setup build directories"}
     # Make build directory unique for each variant, so that gcno symlinks
     # are also unique for each variant.
     if [ -n "$Variant" ]; then
         ln -s $(pwd) ../linux-%{KVERREL}-${Variant}
     fi
-    echo "GCOV - continuing build in: $(pwd)"
+    %{log_msg "GCOV - continuing build in: $(pwd)"}
     pushd ../linux-%{KVERREL}${Variant:+-${Variant}}
     pwd > ../kernel${Variant:+-${Variant}}-gcov.list
 %endif
 
+    %{log_msg "Calling InitBuildVars for $Variant"}
     InitBuildVars $Variant
 
-    echo BUILDING A KERNEL FOR ${Variant} %{_target_cpu}...
+    %{log_msg "BUILDING A KERNEL FOR ${Variant} %{_target_cpu}..."}
 
     %{make} ARCH=$Arch olddefconfig >/dev/null
 
+    %{log_msg "Setup build-ids"}
     # This ensures build-ids are unique to allow parallel debuginfo
     perl -p -i -e "s/^CONFIG_BUILD_SALT.*/CONFIG_BUILD_SALT=\"%{KVERREL}\"/" .config
     %{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" %{?_smp_mflags} $MakeTarget %{?sparse_mflags} %{?kernel_mflags}
@@ -2419,6 +2410,7 @@ BuildKernel() {
     %{make} ARCH=$Arch KCFLAGS="$KCFLAGS" WITH_GCOV="%{?with_gcov}" %{?_smp_mflags} modules %{?sparse_mflags} || exit 1
     fi
 
+    %{log_msg "Setup RPM_BUILD_ROOT directories"}
     mkdir -p $RPM_BUILD_ROOT/%{image_install_path}
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/systemtap
@@ -2427,32 +2419,38 @@ BuildKernel() {
 %endif
 
 %ifarch aarch64
+    %{log_msg "Build dtb kernel"}
     %{make} ARCH=$Arch dtbs INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     %{make} ARCH=$Arch dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
     find arch/$Arch/boot/dts -name '*.dtb' -type f -delete
 %endif
 
+    %{log_msg "Cleanup temp btf files"}
     # Remove large intermediate files we no longer need to save space
     # (-f required for zfcpdump builds that do not enable BTF)
     rm -f vmlinux.o .tmp_vmlinux.btf
 
+    %{log_msg "Install files to RPM_BUILD_ROOT"}
     # Start installing the results
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
     install -m 644 .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/config
     install -m 644 System.map $RPM_BUILD_ROOT/boot/System.map-$KernelVer
     install -m 644 System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/System.map
 
+    %{log_msg "Create initrfamfs"}
     # We estimate the size of the initramfs because rpm needs to take this size
     # into consideration when performing disk space calculations. (See bz #530778)
     dd if=/dev/zero of=$RPM_BUILD_ROOT/boot/initramfs-$KernelVer.img bs=1M count=20
 
     if [ -f arch/$Arch/boot/zImage.stub ]; then
+      %{log_msg "Copy zImage.stub to RPM_BUILD_ROOT"}
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/%{image_install_path}/zImage.stub-$KernelVer || :
       cp arch/$Arch/boot/zImage.stub $RPM_BUILD_ROOT/lib/modules/$KernelVer/zImage.stub-$KernelVer || :
     fi
 
     %if %{signkernel}
+    %{log_msg "Copy kernel for signing"}
     if [ "$KernelImage" = vmlinux ]; then
         # We can't strip and sign $KernelImage in place, because
         # we need to preserve original vmlinux for debuginfo.
@@ -2465,46 +2463,50 @@ BuildKernel() {
     SignImage=$KernelImage
 
     %ifarch x86_64 aarch64
-    %pesign -s -i $SignImage -o vmlinuz.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-    %pesign -s -i vmlinuz.tmp -o vmlinuz.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
-    rm vmlinuz.tmp 
+    %{log_msg "Sign kernel image"}
+    %pesign -s -i $SignImage -o vmlinuz.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
     %endif
     %ifarch s390x ppc64le
     if [ -x /usr/bin/rpm-sign ]; then
-    rpm-sign --key "%{pesign_name_0}" --lkmsign $SignImage --output vmlinuz.signed
+      rpm-sign --key "%{pesign_name_0}" --lkmsign $SignImage --output vmlinuz.signed
     elif [ $DoModules -eq 1 ]; then
-    chmod +x scripts/sign-file
-    ./scripts/sign-file -p sha256 certs/signing_key.pem certs/signing_key.x509 $SignImage vmlinuz.signed
+      chmod +x scripts/sign-file
+      ./scripts/sign-file -p sha256 certs/signing_key.pem certs/signing_key.x509 $SignImage vmlinuz.signed
     else
-    mv $SignImage vmlinuz.signed
+      mv $SignImage vmlinuz.signed
     fi
     %endif
 
     if [ ! -s vmlinuz.signed ]; then
-        echo "pesigning failed"
+        %{log_msg "pesigning failed"}
         exit 1
     fi
     mv vmlinuz.signed $SignImage
     # signkernel
     %endif
+
+    %{log_msg "copy signed kernel"}
     $CopyKernel $KernelImage \
                 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     chmod 755 $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     cp $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/$InstallName
 
     # hmac sign the kernel for FIPS
-    echo "Creating hmac file: $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac"
+    %{log_msg "hmac sign the kernel for FIPS"}
+    %{log_msg "Creating hmac file: $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac"}
     ls -l $RPM_BUILD_ROOT/%{image_install_path}/$InstallName-$KernelVer
     (cd $RPM_BUILD_ROOT/%{image_install_path} && sha512hmac $InstallName-$KernelVer) > $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac;
     cp $RPM_BUILD_ROOT/%{image_install_path}/.vmlinuz-$KernelVer.hmac $RPM_BUILD_ROOT/lib/modules/$KernelVer/.vmlinuz.hmac
 
     if [ $DoModules -eq 1 ]; then
-    # Override $(mod-fw) because we don't want it to install any firmware
-    # we'll get it from the linux-firmware package and we don't want conflicts
-    %{make} %{?_smp_mflags} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
+      %{log_msg "Install modules in RPM_BUILD_ROOT"}
+      # Override $(mod-fw) because we don't want it to install any firmware
+      # we'll get it from the linux-firmware package and we don't want conflicts
+      %{make} %{?_smp_mflags} ARCH=$Arch INSTALL_MOD_PATH=$RPM_BUILD_ROOT modules_install KERNELRELEASE=$KernelVer mod-fw=
     fi
 
 %if %{with_gcov}
+    %{log_msg "install gcov-needed files to $BUILDROOT/$BUILD/"}
     # install gcov-needed files to $BUILDROOT/$BUILD/...:
     #   gcov_info->filename is absolute path
     #   gcno references to sources can use absolute paths (e.g. in out-of-tree builds)
@@ -2512,6 +2514,7 @@ BuildKernel() {
     find . \( -name '*.gcno' -o -name '*.[chS]' \) -exec install -D '{}' "$RPM_BUILD_ROOT/$(pwd)/{}" \;
 %endif
 
+    %{log_msg "Add VDSO files"}
     # add an a noop %%defattr statement 'cause rpm doesn't like empty file list files
     echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-ldsoconf.list
     if [ $DoVDSO -ne 0 ]; then
@@ -2525,6 +2528,7 @@ BuildKernel() {
         rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/vdso/.build-id
     fi
 
+    %{log_msg "Save headers/makefiles, etc. for kernel-headers"}
     # And save the headers/makefiles etc for building modules against
     #
     # This all looks scary, but the end result is supposed to be:
@@ -2559,12 +2563,12 @@ BuildKernel() {
     # NOTENOTE: script which dynamically adds exported kernel symbol
     # NOTENOTE: checksums to the rpm metadata provides list.
     # NOTENOTE: if you change the symvers name, update the backend too
-    echo "**** GENERATING kernel ABI metadata ****"
+    %{log_msg "GENERATING kernel ABI metadata"}
     %compression --stdout %compression_flags < Module.symvers > $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext
     cp $RPM_BUILD_ROOT/boot/symvers-$KernelVer.%compext $RPM_BUILD_ROOT/lib/modules/$KernelVer/symvers.%compext
 
 %if %{with_kabichk}
-    echo "**** kABI checking is enabled in kernel SPEC file. ****"
+    %{log_msg "kABI checking is enabled in kernel SPEC file."}
     chmod 0755 $RPM_SOURCE_DIR/check-kabi
     if [ -e $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Variant ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_%{_target_cpu}$Variant $RPM_BUILD_ROOT/Module.kabi
@@ -2572,19 +2576,19 @@ BuildKernel() {
         # for now, don't keep it around.
         rm $RPM_BUILD_ROOT/Module.kabi
     else
-        echo "**** NOTE: Cannot find reference Module.kabi file. ****"
+        %{log_msg "NOTE: Cannot find reference Module.kabi file."}
     fi
 %endif
 
 %if %{with_kabidupchk}
-    echo "**** kABI DUP checking is enabled in kernel SPEC file. ****"
+    %{log_msg "kABI DUP checking is enabled in kernel SPEC file."}
     if [ -e $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Variant ]; then
         cp $RPM_SOURCE_DIR/Module.kabi_dup_%{_target_cpu}$Variant $RPM_BUILD_ROOT/Module.kabi
         $RPM_SOURCE_DIR/check-kabi -k $RPM_BUILD_ROOT/Module.kabi -s Module.symvers || exit 1
         # for now, don't keep it around.
         rm $RPM_BUILD_ROOT/Module.kabi
     else
-        echo "**** NOTE: Cannot find DUP reference Module.kabi file. ****"
+        %{log_msg "NOTE: Cannot find DUP reference Module.kabi file."}
     fi
 %endif
 
@@ -2597,7 +2601,7 @@ BuildKernel() {
         mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
         tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
-        echo "**** GENERATING DWARF-based kABI baseline dataset ****"
+        %{log_msg "GENERATING DWARF-based kABI baseline dataset"}
         chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
         $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
             "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
@@ -2616,26 +2620,27 @@ BuildKernel() {
             mkdir -p $RPM_BUILD_ROOT/kabi-dwarf/stablelists
             tar -xvf %{SOURCE300} -C $RPM_BUILD_ROOT/kabi-dwarf/stablelists
 
-            echo "**** GENERATING DWARF-based kABI dataset ****"
+            %{log_msg "GENERATING DWARF-based kABI dataset"}
             chmod 0755 $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh
             $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh generate \
                 "$RPM_BUILD_ROOT/kabi-dwarf/stablelists/kabi-current/kabi_stablelist_%{_target_cpu}" \
                 "$(pwd)" \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}.tmp" || :
 
-            echo "**** kABI DWARF-based comparison report ****"
+            %{log_msg "kABI DWARF-based comparison report"}
             $RPM_BUILD_ROOT/kabi-dwarf/run_kabi-dw.sh compare \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}" \
                 "$RPM_BUILD_ROOT/kabi-dwarf/base/%{_target_cpu}${Variant:+.${Variant}}.tmp" || :
-            echo "**** End of kABI DWARF-based comparison report ****"
+            %{log_msg "End of kABI DWARF-based comparison report"}
         else
-            echo "**** Baseline dataset for kABI DWARF-BASED comparison report not found ****"
+            %{log_msg "Baseline dataset for kABI DWARF-BASED comparison report not found"}
         fi
 
         rm -rf $RPM_BUILD_ROOT/kabi-dwarf
     fi
 %endif
 
+    %{log_msg "Cleanup Makefiles/Kconfig files"}
     # then drop all but the needed Makefiles/Kconfig files
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/scripts
     rm -rf $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
@@ -2647,11 +2652,13 @@ BuildKernel() {
 %ifarch s390x
     # CONFIG_EXPOLINE_EXTERN=y produces arch/s390/lib/expoline/expoline.o
     # which is needed during external module build.
+    %{log_msg "Copy expoline.o"}
     if [ -f arch/s390/lib/expoline/expoline.o ]; then
       cp -a --parents arch/s390/lib/expoline/expoline.o $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
     fi
 %endif
 
+    %{log_msg "Copy additional files for make targets"}
     # Files for 'make scripts' to succeed with kernel-devel.
     mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/security/selinux/include
     cp -a --parents security/selinux/include/classmap.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
@@ -2745,6 +2752,7 @@ BuildKernel() {
     cp -a --parents tools/objtool/arch/x86/ $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
 %endif
+    %{log_msg "Clean up intermediate tools files"}
     # Clean up intermediate tools files
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools \( -iname "*.o" -o -iname "*.cmd" \) -exec rm -f {} +
 
@@ -2758,6 +2766,7 @@ BuildKernel() {
     eu-readelf -n vmlinux | grep "Build ID" | awk '{print $NF}' > vmlinux.id
     cp vmlinux.id $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/vmlinux.id
 
+    %{log_msg "Copy additional files for kernel-debuginfo rpm"}
     #
     # save the vmlinux file for kernel debugging into the kernel-debuginfo rpm
     # (use mv + symlink instead of cp to reduce disk space requirements)
@@ -2775,15 +2784,23 @@ BuildKernel() {
         cp %{vmlinux_decompressor} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux.decompressor
       fi
     fi
+
+    # build and copy the vmlinux-gdb plugin files into kernel-debuginfo
+    %{make} ARCH=$Arch %{?_smp_mflags} scripts_gdb
+    cp -a --parents scripts/gdb/{,linux/}*.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
+    # this should be a relative symlink (Kbuild creates an absolute one)
+    ln -s scripts/gdb/vmlinux-gdb.py $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux-gdb.py
+    %py_byte_compile %{python3} $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/scripts/gdb
 %endif
 
+    %{log_msg "Create modnames"}
     find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name "*.ko" -type f >modnames
 
     # mark modules executable so that strip-to-file can strip them
     xargs --no-run-if-empty chmod u+x < modnames
 
     # Generate a list of modules for block and networking.
-
+    %{log_msg "Generate a list of modules for block and networking"}
     grep -F /drivers/ modnames | xargs --no-run-if-empty nm -upA |
     sed -n 's,^.*/\([^/]*\.ko\):  *U \(.*\)$,\1 \2,p' > drivers.undef
 
@@ -2805,94 +2822,35 @@ BuildKernel() {
     collect_modules_list modesetting \
       'drm_crtc_init'
 
+    %{log_msg "detect missing or incorrect license tags"}
     # detect missing or incorrect license tags
     ( find $RPM_BUILD_ROOT/lib/modules/$KernelVer -name '*.ko' | xargs /sbin/modinfo -l | \
         grep -E -v 'GPL( v2)?$|Dual BSD/GPL$|Dual MPL/GPL$|GPL and additional rights$' ) && exit 1
 
-    remove_depmod_files()
-    {
-        # remove files that will be auto generated by depmod at rpm -i time
-        pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
-            # in case below list needs to be extended, remember to add a
-            # matching ghost entry in the files section as well
-            rm -f modules.{alias,alias.bin,builtin.alias.bin,builtin.bin} \
-                  modules.{dep,dep.bin,devname,softdep,symbols,symbols.bin}
-        popd
-    }
 
-    remove_depmod_files
-
-    # Identify modules in the kernel-modules-extras package
-    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer $(realpath configs/mod-extra.list)
-    # Identify modules in the kernel-modules-internal package
-    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE84} internal
-%if 0%{!?fedora:1}
-    # Identify modules in the kernel-modules-partner package
-    %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE85} partner
-%endif
-    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-    # Identify modules in the kernel-rt-kvm package
-        %{SOURCE20} $RPM_BUILD_ROOT lib/modules/$KernelVer %{SOURCE400} kvm
-    fi
-
-    #
-    # Generate the kernel-core and kernel-modules files lists
-    #
-
-    # Copy the System.map file for depmod to use, and create a backup of the
-    # full module tree so we can restore it after we're done filtering
-    cp System.map $RPM_BUILD_ROOT/.
-    cp configs/filter-*.sh $RPM_BUILD_ROOT/.
-    pushd $RPM_BUILD_ROOT
-    mkdir restore
-    cp -r lib/modules/$KernelVer/* restore/.
-
-    # don't include anything going into kernel-modules-extra in the file lists
-    xargs rm -rf < mod-extra.list
-    # don't include anything going into kernel-modules-internal in the file lists
-    xargs rm -rf < mod-internal.list
-%if 0%{!?fedora:1}
-    # don't include anything going into kernel-modules-partner in the file lists
-    xargs rm -rf < mod-partner.list
-%endif
-    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-      # don't include anything going into kernel-rt-kvm in the file lists
-      xargs rm -rf < mod-kvm.list
-    fi
-
-    if [ $DoModules -eq 1 ]; then
-    # Find all the module files and filter them out into the core and
-    # modules lists.  This actually removes anything going into -modules
-    # from the dir.
-    find lib/modules/$KernelVer/kernel -name *.ko | sort -n > modules.list
-    ./filter-modules.sh modules.list %{_target_cpu}
-    rm filter-*.sh
-
-    # Run depmod on the resulting module tree and make sure it isn't broken
-    depmod -b . -aeF ./System.map $KernelVer &> depmod.out
-    if [ -s depmod.out ]; then
-        echo "Depmod failure"
-        cat depmod.out
-        exit 1
-    else
-        rm depmod.out
-    fi
-    else
+    if [ $DoModules -eq 0 ]; then
+        %{log_msg "Create empty files for RPM packaging"}
         # Ensure important files/directories exist to let the packaging succeed
-        echo '%%defattr(-,-,-)' > modules.list
-        echo '%%defattr(-,-,-)' > k-d.list
-        mkdir -p lib/modules/$KernelVer/kernel
+        echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-modules-core.list
+        echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-modules.list
+        echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-modules-extra.list
+        echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-modules-internal.list
+        echo '%%defattr(-,-,-)' > ../kernel${Variant:+-${Variant}}-modules-partner.list
+        mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/kernel
         # Add files usually created by make modules, needed to prevent errors
         # thrown by depmod during package installation
-        touch lib/modules/$KernelVer/modules.order
-        touch lib/modules/$KernelVer/modules.builtin
+        touch $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.order
+        touch $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.builtin
     fi
 
+    # Copy the System.map file for depmod to use
+    cp System.map $RPM_BUILD_ROOT/.
+
     if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-        echo "Skipping efiuki build"
+        %{log_msg "Skipping efiuki build"}
     else
 %if %{with_efiuki}
-    popd
+        %{log_msg "Setup the EFI UKI kernel"}
 
     KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
     KernelUnifiedImage="$KernelUnifiedImageDir/$InstallName-virt.efi"
@@ -2912,12 +2870,11 @@ BuildKernel() {
 
 %if %{signkernel}
 
-    %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.tmp -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-    %pesign -s -i $KernelUnifiedImage.tmp -o $KernelUnifiedImage.signed -a %{secureboot_ca_1} -c %{secureboot_key_1} -n %{pesign_name_1}
-    rm -f $KernelUnifiedImage.tmp
+    %{log_msg "Sign the EFI UKI kernel"}
+    %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
 
     if [ ! -s $KernelUnifiedImage.signed ]; then
-      echo "pesigning failed"
+      %{log_msg "pesigning failed"}
       exit 1
     fi
     mv $KernelUnifiedImage.signed $KernelUnifiedImage
@@ -2925,72 +2882,136 @@ BuildKernel() {
 # signkernel
 %endif
 
-    pushd $RPM_BUILD_ROOT
 
 # with_efiuki
 %endif
     :  # in case of empty block
     fi # "$Variant" == "rt" || "$Variant" == "rt-debug"
 
+
+    #
+    # Generate the modules files lists
+    #
+    move_kmod_list()
+    {
+        local module_list="$1"
+        local subdir_name="$2"
+
+        mkdir -p "$RPM_BUILD_ROOT/lib/modules/$KernelVer/$subdirname"
+
+        set +x
+        while read -r kmod; do
+            local target_file="$RPM_BUILD_ROOT/lib/modules/$KernelVer/$subdir_name/$kmod"
+            local target_dir="${target_file%/*}"
+            mkdir -p "$target_dir"
+            mv "$RPM_BUILD_ROOT/lib/modules/$KernelVer/kernel/$kmod" "$target_dir"
+        done < <(sed -e 's|^kernel/||' "$module_list")
+        set -x
+    }
+
+    create_module_file_list()
+    {
+        # subdirectory within /lib/modules/$KernelVer where kmods should go
+        local module_subdir="$1"
+        # kmod list with relative paths produced by filtermods.py
+        local relative_kmod_list="$2"
+        # list with absolute paths to kmods and other files to be included
+        local absolute_file_list="$3"
+        # if 1, this adds also all kmod directories to absolute_file_list
+        local add_all_dirs="$4"
+
+        if [ "$module_subdir" == "kernel" ]; then
+            # make kmod paths absolute
+            sed -e 's|^kernel/|/lib/modules/'$KernelVer'/kernel/|' %{?zipsed} $relative_kmod_list > $absolute_file_list
+        else
+            # move kmods into subdirs if needed (internal, partner, extra,..)
+            move_kmod_list $relative_kmod_list $module_subdir
+            # make kmod paths absolute
+            sed -e 's|^kernel/|/lib/modules/'$KernelVer'/'$module_subdir'/|' $relative_kmod_list > $absolute_file_list
+            # run deny-mod script, this adds blacklist-* files to absolute_file_list
+            %{SOURCE20} "$RPM_BUILD_ROOT" lib/modules/$KernelVer $absolute_file_list
+%if %{zipmodules}
+            # deny-mod script works with kmods as they are now (not compressed),
+            # but if they will be we need to add compext to all
+            sed -i %{?zipsed} $absolute_file_list
+%endif
+            # add also dir for the case when there are no kmods
+            echo "%dir /lib/modules/$KernelVer/$module_subdir" >> $absolute_file_list
+        fi
+
+        if [ "$add_all_dirs" -eq 1 ]; then
+            (cd $RPM_BUILD_ROOT; find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n) > ../module-dirs.list
+            sed -e 's|^lib|%dir /lib|' ../module-dirs.list >> $absolute_file_list
+        fi
+    }
+
+    if [ $DoModules -eq 1 ]; then
+        # save modules.dep for debugging
+        cp $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.dep ../
+
+        %{log_msg "Create module list files for all kernel variants"}
+        variants_param=""
+        if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
+            variants_param="-r rt"
+        fi
+        # this creates ../modules-*.list output, where each kmod path is as it
+        # appears in modules.dep (relative to lib/modules/$KernelVer)
+        %{SOURCE22} -l "../filtermods-$KernelVer.log" sort -d $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.dep -c configs/def_variants.yaml $variants_param -o ..
+        if [ $? -ne 0 ]; then
+            echo "8< --- filtermods-$KernelVer.log ---"
+            cat "../filtermods-$KernelVer.log"
+            echo "--- filtermods-$KernelVer.log --- >8"
+
+            echo "8< --- modules.dep ---"
+            cat $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.dep
+            echo "--- modules.dep --- >8"
+            exit 1
+        fi
+
+        create_module_file_list "kernel" ../modules-core.list ../kernel${Variant:+-${Variant}}-modules-core.list 1
+        create_module_file_list "kernel" ../modules.list ../kernel${Variant:+-${Variant}}-modules.list 0
+        create_module_file_list "internal" ../modules-internal.list ../kernel${Variant:+-${Variant}}-modules-internal.list 0
+        create_module_file_list "extra" ../modules-extra.list ../kernel${Variant:+-${Variant}}-modules-extra.list 0
+        if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
+            create_module_file_list "kvm" ../modules-rt-kvm.list ../kernel${Variant:+-${Variant}}-modules-rt-kvm.list 0
+        fi
+%if 0%{!?fedora:1}
+        create_module_file_list "partner" ../modules-partner.list ../kernel${Variant:+-${Variant}}-modules-partner.list 1 0
+%endif
+    fi # $DoModules -eq 1
+
+    remove_depmod_files()
+    {
+        # remove files that will be auto generated by depmod at rpm -i time
+        pushd $RPM_BUILD_ROOT/lib/modules/$KernelVer/
+            # in case below list needs to be extended, remember to add a
+            # matching ghost entry in the files section as well
+            rm -f modules.{alias,alias.bin,builtin.alias.bin,builtin.bin} \
+                  modules.{dep,dep.bin,devname,softdep,symbols,symbols.bin}
+        popd
+    }
+
+    # Cleanup
+    %{log_msg "Cleanup build files"}
+    rm -f $RPM_BUILD_ROOT/System.map
+    %{log_msg "Remove depmod files"}
     remove_depmod_files
 
-    # Go back and find all of the various directories in the tree.  We use this
-    # for the dir lists in kernel-core
-    find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n > module-dirs.list
-
-    # Cleanup
-    rm System.map
-    # Just "cp -r" can be very slow: here, it rewrites _existing files_
-    # with open(O_TRUNC). Many filesystems synchronously wait for metadata
-    # update for such file rewrites (seen in strace as final close syscall
-    # taking a long time). On a rotational disk, cp was observed to take
-    # more than 5 minutes on ext4 and more than 15 minutes (!) on xfs.
-    # With --remove-destination, we avoid this, and copying
-    # (with enough RAM to cache it) takes 5 seconds:
-    cp -r --remove-destination restore/* lib/modules/$KernelVer/.
-    rm -rf restore
-    popd
-
-    # Make sure the files lists start with absolute paths or rpmbuild fails.
-    # Also add in the dir entries
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/k-d.list > ../kernel${Variant:+-${Variant}}-modules.list
-    sed -e 's/^lib*/%dir \/lib/' %{?zipsed} $RPM_BUILD_ROOT/module-dirs.list > ../kernel${Variant:+-${Variant}}-modules-core.list
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/modules.list >> ../kernel${Variant:+-${Variant}}-modules-core.list
-    sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-extra.list >> ../kernel${Variant:+-${Variant}}-modules-extra.list
-    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-        sed -e 's/^lib*/\/lib/' %{?zipsed} $RPM_BUILD_ROOT/mod-kvm.list >> ../kernel${Variant:+-${Variant}}-kvm.list
-    fi
-
-    # Cleanup
-    rm -f $RPM_BUILD_ROOT/k-d.list
-    rm -f $RPM_BUILD_ROOT/modules.list
-    rm -f $RPM_BUILD_ROOT/module-dirs.list
-    rm -f $RPM_BUILD_ROOT/mod-extra.list
-    rm -f $RPM_BUILD_ROOT/mod-internal.list
-%if 0%{!?fedora:1}
-    rm -f $RPM_BUILD_ROOT/mod-partner.list
-%endif
-    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-        rm -f $RPM_BUILD_ROOT/mod-kvm.list
-    fi
-
-%if %{signmodules}
-    if [ $DoModules -eq 1 ]; then
-    # Save the signing keys so we can sign the modules in __modsign_install_post
-    cp certs/signing_key.pem certs/signing_key.pem.sign${Variant:++${Variant}}
-    cp certs/signing_key.x509 certs/signing_key.x509.sign${Variant:++${Variant}}
-    fi
-%endif
-
     # Move the devel headers out of the root file system
+    %{log_msg "Move the devel headers to RPM_BUILD_ROOT"}
     mkdir -p $RPM_BUILD_ROOT/usr/src/kernels
     mv $RPM_BUILD_ROOT/lib/modules/$KernelVer/build $RPM_BUILD_ROOT/$DevelDir
 
+    # This is going to create a broken link during the build, but we don't use
+    # it after this point.  We need the link to actually point to something
+    # when kernel-devel is installed, and a relative link doesn't work across
+    # the F17 UsrMove feature.
     ln -sf ../../../src/kernels/$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/build
 
     # Generate vmlinux.h and put it to kernel-devel path
     # zfcpdump build does not have btf anymore
     if [ "$Variant" != "zfcpdump" ]; then
+	%{log_msg "Build the bootstrap bpftool to generate vmlinux.h"}
         # Build the bootstrap bpftool to generate vmlinux.h
         export BPFBOOTSTRAP_CFLAGS=$(echo "%{__global_compiler_flags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
         export BPFBOOTSTRAP_LDFLAGS=$(echo "%{__global_ldflags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
@@ -2999,33 +3020,41 @@ BuildKernel() {
         tools/bpf/bpftool/bootstrap/bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
     fi
 
+    %{log_msg "Cleanup kernel-devel and kernel-debuginfo files"}
     # prune junk from kernel-devel
     find $RPM_BUILD_ROOT/usr/src/kernels -name ".*.cmd" -delete
     # prune junk from kernel-debuginfo
     find $RPM_BUILD_ROOT/usr/src/kernels -name "*.mod.c" -delete
 
     # Red Hat UEFI Secure Boot CA cert, which can be used to authenticate the kernel
+    %{log_msg "Install certs"}
     mkdir -p $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer
-    %ifarch x86_64 aarch64
-       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20200609.cer
-       install -m 0644 %{secureboot_ca_1} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca-20140212.cer
-       ln -s kernel-signing-ca-20200609.cer $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
-    %else
-       install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
-    %endif
+%if %{signkernel}
+    install -m 0644 %{secureboot_ca_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
     %ifarch s390x ppc64le
-    if [ $DoModules -eq 1 ]; then
     if [ -x /usr/bin/rpm-sign ]; then
         install -m 0644 %{secureboot_key_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
-    else
-        install -m 0644 certs/signing_key.x509.sign${Variant:++${Variant}} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
-        openssl x509 -in certs/signing_key.pem.sign${Variant:++${Variant}} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
-        chmod 0644 $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
-    fi
     fi
     %endif
+%endif
+
+%if %{signmodules}
+    if [ $DoModules -eq 1 ]; then
+        # Save the signing keys so we can sign the modules in __modsign_install_post
+        cp certs/signing_key.pem certs/signing_key.pem.sign${Variant:++${Variant}}
+        cp certs/signing_key.x509 certs/signing_key.x509.sign${Variant:++${Variant}}
+        %ifarch s390x ppc64le
+        if [ ! -x /usr/bin/rpm-sign ]; then
+            install -m 0644 certs/signing_key.x509.sign${Variant:++${Variant}} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/kernel-signing-ca.cer
+            openssl x509 -in certs/signing_key.pem.sign${Variant:++${Variant}} -outform der -out $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+            chmod 0644 $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
+        fi
+        %endif
+    fi
+%endif
 
 %if %{with_ipaclones}
+    %{log_msg "install IPA clones"}
     MAXPROCS=$(echo %{?_smp_mflags} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
     if [ -z "$MAXPROCS" ]; then
         MAXPROCS=1
@@ -3055,7 +3084,6 @@ cd linux-%{KVERREL}
 
 %if %{with_debug}
 %if %{with_realtime}
-echo "building rt-debug"
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
 %endif
 
@@ -3068,7 +3096,6 @@ BuildKernel %make_target %kernel_image %{_use_vdso} 64k-debug
 %endif
 
 %if %{with_up}
-echo "building main debug package"
 BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 %endif
@@ -3097,7 +3124,13 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %if !%{with_debug} && !%{with_zfcpdump} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
+%{log_msg "Initialize userspace tools build environment"}
 InitBuildVars
+# Some tests build also modules, and need Module.symvers
+if ! [[ -e Module.symvers ]] && [[ -f $DevelDir/Module.symvers ]]; then
+    %{log_msg "Found Module.symvers in DevelDir, copying to ."}
+    cp "$DevelDir/Module.symvers" .
+fi
 %endif
 %endif
 
@@ -3107,6 +3140,7 @@ InitBuildVars
 %global perf_make \
   %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
+%{log_msg "Build perf"}
 # perf
 # make sure check-headers.sh is executable
 chmod +x tools/perf/check-headers.sh
@@ -3120,7 +3154,7 @@ chmod +x tools/perf/check-headers.sh
 %endif
 
 %global tools_make \
-  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" %{make} %{?make_opts}
+  CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" EXTRA_CFLAGS="${CFLAGS}" %{make} %{?make_opts}
 
 %if %{with_tools}
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
@@ -3128,44 +3162,56 @@ sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.conf
 # cpupower
 # make sure version-gen.sh is executable.
 chmod +x tools/power/cpupower/utils/version-gen.sh
+%{log_msg "build cpupower"}
 %{tools_make} %{?_smp_mflags} -C tools/power/cpupower CPUFREQ_BENCH=false DEBUG=false
 %ifarch x86_64
     pushd tools/power/cpupower/debug/x86_64
+    %{log_msg "build centrino-decode powernow-k8-decode"}
     %{tools_make} %{?_smp_mflags} centrino-decode powernow-k8-decode
     popd
 %endif
 %ifarch x86_64
    pushd tools/power/x86/x86_energy_perf_policy/
+   %{log_msg "build x86_energy_perf_policy"}
    %{tools_make}
    popd
    pushd tools/power/x86/turbostat
+   %{log_msg "build turbostat"}
    %{tools_make}
    popd
    pushd tools/power/x86/intel-speed-select
+   %{log_msg "build intel-speed-select"}
    %{tools_make}
    popd
    pushd tools/arch/x86/intel_sdsi
+   %{log_msg "build intel_sdsi"}
    %{tools_make} CFLAGS="${RPM_OPT_FLAGS}"
    popd
 %endif
 %endif
 pushd tools/thermal/tmon/
+%{log_msg "build tmon"}
 %{tools_make}
 popd
 pushd tools/iio/
+%{log_msg "build iio"}
 %{tools_make}
 popd
 pushd tools/gpio/
+%{log_msg "build gpio"}
 %{tools_make}
 popd
 # build VM tools
 pushd tools/mm/
+%{log_msg "build slabinfo page_owner_sort"}
 %{tools_make} slabinfo page_owner_sort
 popd
 pushd tools/verification/rv/
+%{log_msg "build rv"}
 %{tools_make}
 popd
 pushd tools/tracing/rtla
+%{log_msg "build rtla"}
 %{tools_make}
 popd
 %endif
@@ -3177,26 +3223,31 @@ fi
 %if %{with_bpftool}
 %global bpftool_make \
   %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts} VMLINUX_H="${RPM_VMLINUX_H}" V=1
+%{log_msg "build bpftool"}
 pushd tools/bpf/bpftool
 %{bpftool_make}
 popd
 %else
-echo "bpftools disabled ... disabling selftests"
+%{log_msg "bpftools disabled ... disabling selftests"}
 %endif
 
 %if %{with_selftests}
+%{log_msg "start build selftests"}
 # Unfortunately, samples/bpf/Makefile expects that the headers are installed
 # in the source tree. We installed them previously to $RPM_BUILD_ROOT/usr
 # but there's no way to tell the Makefile to take them from there.
+%{log_msg "install headers for selftests"}
 %{make} %{?_smp_mflags} headers_install
 
 # If we re building only tools without kernel, we need to generate config
 # headers and prepare tree for modules building. The modules_prepare target
 # will cover both.
 if [ ! -f include/generated/autoconf.h ]; then
+   %{log_msg "modules_prepare for selftests"}
    %{make} %{?_smp_mflags} modules_prepare
 fi
 
+%{log_msg "build samples/bpf"}
 %{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
 # Prevent bpf selftests to build bpftool repeatedly:
@@ -3211,10 +3262,19 @@ pushd tools/testing/selftests
   force_targets=""
 %endif
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm livepatch net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{log_msg "main selftests compile"}
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+
+%ifarch %{klptestarches}
+  # kernel livepatching selftest test_modules will build against
+  # /lib/modules/$(shell uname -r)/build tree unless KDIR is set
+  export KDIR=$(realpath $(pwd)/../../..)
+  %{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="livepatch" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install || true
+%endif
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
+%{log_msg "install selftests"}
 for dir in bpf bpf/no_alu32 bpf/progs; do
 	# In ARK, the rpm build continues even if some of the selftests
 	# cannot be built. It's not always possible to build selftests,
@@ -3231,15 +3291,19 @@ done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
 popd
 export -n BPFTOOL
+%{log_msg "end build selftests"}
 %endif
 
 %if %{with_doc}
+%{log_msg "start install docs"}
 # Make the HTML pages.
+%{log_msg "build html docs"}
 %{__make} PYTHON=/usr/bin/python3 htmldocs || %{doc_build_fail}
 
 # sometimes non-world-readable files sneak into the kernel source tree
 chmod -R a=rX Documentation
 find Documentation -type d | xargs chmod u+w
+%{log_msg "end install docs"}
 %endif
 
 # Module signing (modsign)
@@ -3251,17 +3315,17 @@ find Documentation -type d | xargs chmod u+w
 
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
-    echo "Signing kernel modules ..." \
+    %{log_msg "Signing kernel modules ..."} \
     modules_dirs="$(shopt -s nullglob; echo $RPM_BUILD_ROOT/lib/modules/%{KVERREL}*)" \
     for modules_dir in $modules_dirs; do \
         variant_suffix="${modules_dir#$RPM_BUILD_ROOT/lib/modules/%{KVERREL}}" \
         [ "$variant_suffix" == "+zfcpdump" ] && continue \
-        echo "Signing modules for %{KVERREL}${variant_suffix}" \
+        %{log_msg "Signing modules for %{KVERREL}${variant_suffix}"} \
         %{modsign_cmd} certs/signing_key.pem.sign${variant_suffix} certs/signing_key.x509.sign${variant_suffix} $modules_dir/ \
     done \
   fi \
   if [ "%{zipmodules}" -eq "1" ]; then \
-    echo "Compressing kernel modules ..." \
+    %{log_msg "Compressing kernel modules ..."} \
     find $RPM_BUILD_ROOT/lib/modules/ -type f -name '*.ko' | xargs -n 16 -P%{?_smp_build_ncpus} -r %compression %compression_flags; \
   fi \
 %{nil}
@@ -3705,7 +3769,7 @@ fi\
 rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%{-v*}}\
 /bin/kernel-install add %{KVERREL}%{?-v:+%{-v*}} /lib/modules/%{KVERREL}%{?-v:+%{-v*}}/vmlinuz%{?-u:-%{-u*}.efi} || exit $?\
 if [[ ! -e "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext" ]]; then\
-    ln -s "/lib/modules/%{KVERREL}%{?-v:+%{-v*}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
+    cp "/lib/modules/%{KVERREL}%{?-v:+%{-v*}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
     if command -v restorecon &>/dev/null; then\
         restorecon "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
     fi\
@@ -3914,7 +3978,10 @@ fi\
 %{_docdir}/libperf/html/libperf-counting.html
 %{_docdir}/libperf/html/libperf-sampling.html
 
+%if %{with_debuginfo}
 %files -f libperf-debuginfo.list -n libperf-debuginfo
+%endif
+
 # with_libperf
 %endif
 
@@ -4056,7 +4123,7 @@ fi\
 %ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
 %endif\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
-%ghost %attr(0600, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%ghost /boot/System.map-%{KVERREL}%{?3:+%{3}}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
@@ -4097,12 +4164,9 @@ fi\
 /usr/src/kernels/%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files %{?3:%{3}-}devel-matched}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-extra.list %{?3:%{3}-}modules-extra}\
-%config(noreplace) /etc/modprobe.d/*-blacklist.conf\
-%{expand:%%files %{?3:%{3}-}modules-internal}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/internal\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-internal.list %{?3:%{3}-}modules-internal}\
 %if 0%{!?fedora:1}\
-%{expand:%%files %{?3:%{3}-}modules-partner}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/partner\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-partner.list %{?3:%{3}-}modules-partner}\
 %endif\
 %if %{with_debuginfo}\
 %ifnarch noarch\
@@ -4110,8 +4174,7 @@ fi\
 %endif\
 %endif\
 %if "%{3}" == "rt" || "%{3}" == "rt-debug"\
-%{expand:%%files %{?3:%{3}-}kvm}\
-/lib/modules/%{KVERREL}%{?3:+%{3}}/kvm\
+%{expand:%%files -f kernel-%{?3:%{3}-}modules-rt-kvm.list %{?3:%{3}-}kvm}\
 %else\
 %if %{with_efiuki}\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
@@ -4195,6 +4258,9 @@ fi\
 #
 #
 %changelog
+* Tue May 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.0-500.chinfo
+- 6.9.0
+
 * Thu May 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.9-500.chinfo
 - 6.8.9
 
@@ -4377,45 +4443,6 @@ fi\
 * Tue Apr 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500.chinfo
 - 6.3.0 - pf1
 - Rawhide sync
-
-* Thu Apr 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.12-500.chinfo
-- 6.2.12 - pf6
-
-* Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.11-500.chinfo
-- 6.2.11 - pf6
-
-* Thu Apr 06 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.10-500.chinfo
-- 6.2.10 - pf5
-
-* Thu Mar 30 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.9-500.chinfo
-- 6.2.9 - pf5
-
-* Wed Mar 22 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.8-500.chinfo
-- 6.2.8 - pf5
-
-* Fri Mar 17 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.7-500.chinfo
-- 6.2.7 - pf5
-
-* Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.6-500.chinfo
-- 6.2.6 - pf4
-
-* Sat Mar 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.5-500.chinfo
-- 6.2.5 - pf4
-
-* Fri Mar 10 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.3-500.chinfo
-- 6.2.3 - pf4
-
-* Fri Mar 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.2-500.chinfo
-- 6.2.2 - pf3
-
-* Sun Feb 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-501.chinfo
-- 6.2.1 - pf2
-
-* Sat Feb 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.1-500.chinfo
-- 6.2.1 - pf2
-
-* Mon Feb 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.2.0-500.chinfo
-- 6.2.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

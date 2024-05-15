@@ -135,6 +135,7 @@ desktop-file-install \
     --add-mime-type="image/svg+xml-compressed;image/svg-xml;text/xml-svg" \
     --add-mime-type="image/x-dds" \
     --add-mime-type="image/x-xcf;image/x-compressed-xcf" \
+    --add-mime-type="image/webp" \
     %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 %find_lang %{name}

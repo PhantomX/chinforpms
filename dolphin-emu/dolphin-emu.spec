@@ -13,6 +13,7 @@
 %bcond_with enet
 %bcond_without fmt
 %bcond_with llvm
+%bcond_with mgba
 %bcond_with vulkan
 %bcond_with unittests
 
@@ -21,9 +22,9 @@
 %global enablejit 1
 %endif
 
-%global commit 1efda863e47b690f460f069502a4391b3c7d87c4
+%global commit 493a42d792e3140b3e708c58d2f685210aee796d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240326
+%global date 20240514
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -38,7 +39,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 b64ac2b25038bc9feb94ca759b5ba4d02642b3af
+%global commit5 a6cdbb4a529d85b74777597fcff037dde7bef66b
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -49,6 +50,10 @@
 %global commit7 2a85cd64459f6ba038d233a634d9440490dbba12
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 enet
+
+%global commit8 8739b22fbc90fdf0b4f6612ef9c0520f0ba44a51
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global srcname8 mgba
 
 %global commit18 c5641f2c22d117da7971504591a8f6a41ece488b
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
@@ -67,7 +72,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 41677
+%global baserelease 41956
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -108,6 +113,9 @@ Source6:       https://github.com/fmtlib/%{srcname6}/archive/%{commit6}/%{srcnam
 %if %{without enet}
 Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
+%if %{without mgba}
+Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+%endif
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
 %if %{with vulkan}
@@ -134,6 +142,8 @@ BuildRequires:  pkgconfig(egl)
 %endif
 %if %{with fmt}
 BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
+%else
+Provides:       bundled(fmt) = %{fmt_ver}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtest)
@@ -141,6 +151,8 @@ BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libcurl)
 %if %{with enet}
 BuildRequires:  pkgconfig(libenet) >= %{enet_ver}
+%else
+Provides:       bundled(enet) = %{enet_ver}
 %endif
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(liblz4)
@@ -150,7 +162,11 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  pkgconfig(libusb)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.0
+%if %{with mgba}
 BuildRequires:  mgba-devel
+%else
+Provides:       bundled(mgba) = 0~git%{shortcommit8}
+%endif
 BuildRequires:  pkgconfig(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  qt6-qtbase-private-devel
@@ -226,12 +242,7 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
-%if %{without enet}
-Provides:       bundled(enet) = %{enet_ver}
-%endif
-%if %{without fmt}
-Provides:       bundled(fmt) = %{fmt_ver}
-%endif
+
 
 %description
 Dolphin is a Gamecube, Wii and Triforce (the arcade machine based on the
@@ -302,7 +313,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
-  libiconv-* liblzma libspng libusb lz4 LZO mbedtls mGBA miniupnpc minizip OpenAL \
+  libiconv-* liblzma libspng libusb lz4 LZO mbedtls miniupnpc minizip OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if %{with vulkan}
@@ -322,6 +333,11 @@ rm -rf fmt
 tar -xf %{S:7} -C enet/enet --strip-components 1
 %else
 rm -rf enet
+%endif
+%if %{without mgba}
+tar -xf %{S:8} -C mGBA/mgba --strip-components 1
+%else
+rm -rf mGBA
 %endif
 tar -xf %{S:18} -C tinygltf/tinygltf --strip-components 1
 
