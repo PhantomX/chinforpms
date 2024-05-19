@@ -12,10 +12,10 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3a02490a1f37c7f437b99a2ef459ab886d08d79f
+%global commit 13b90874f9934f0a79a9ab2b9c4e1288ed2e6764
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240218
-%bcond_with snapshot
+%global date 20240513
+%bcond_without snapshot
 
 # Enable system fmt
 %bcond_without fmt
@@ -40,7 +40,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~73
+Version:        2.0~82
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 

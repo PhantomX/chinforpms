@@ -22,9 +22,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 7626a9bf9c63dbdd578c88231bd7982ac10c8f8a
+%global commit 1adaea9005376c59ac2e2cc36fad7f55802f528b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240505
+%global date 20240518
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -44,7 +44,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6757
+Version:        0.1.6828
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -66,6 +66,9 @@ Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-discord-rpc-switch.patch
+Patch9:         0001-cmake-shaderc-patched.patch
+
+Patch500:       %{vc_url}/commit/18160a8e06051a6294df481601e1c817ff6e268e.patch#/%{name}-gh-revert-18160a8.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -110,7 +113,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.3
-BuildRequires:  pkgconfig(shaderc)
+BuildRequires:  pkgconfig(shaderc-patched)
 %if %{with soundtouch}
 BuildRequires:  pkgconfig(soundtouch)
 %else
@@ -147,6 +150,7 @@ Requires:       google-noto-sans-kr-fonts
 Requires:       google-noto-sans-sc-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
+Requires:       libshaderc-patched%{?_isa}
 Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
@@ -195,7 +199,10 @@ This package provides the data files for duckstation.
 ####################################################
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 499 -p1
+
+%patch -P 500 -p1 -R
 
 ###Remove Bundled:
 pushd dep
@@ -227,6 +234,7 @@ cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
 rm -rf soundtouch
 %else
 sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
+sed -e 's|-Ofast||g' -i soundtouch/CMakeLists.txt
 cp soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
@@ -284,6 +292,8 @@ sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i src/duckstation-qt/qt{host,translations}.cpp
+
+sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
 
 
 %build

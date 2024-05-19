@@ -1,18 +1,18 @@
-From fca5c433dd27713da4537c06ec6d13a9b627c304 Mon Sep 17 00:00:00 2001
+From 9dbabdf98fe2d215d96b06c2ae673e28fc07cf9f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 17 Sep 2023 11:39:26 -0300
 Subject: [PATCH] Fix translation names
 
 ---
  pcsx2-qt/CMakeLists.txt   |  2 +-
- pcsx2-qt/Translations.cpp | 72 +++++++++++++++++++--------------------
- 2 files changed, 37 insertions(+), 37 deletions(-)
+ pcsx2-qt/Translations.cpp | 74 +++++++++++++++++++--------------------
+ 2 files changed, 38 insertions(+), 38 deletions(-)
 
 diff --git a/pcsx2-qt/CMakeLists.txt b/pcsx2-qt/CMakeLists.txt
-index b35fe27..3aaabd9 100644
+index a5db7b7..1f2c813 100644
 --- a/pcsx2-qt/CMakeLists.txt
 +++ b/pcsx2-qt/CMakeLists.txt
-@@ -208,7 +208,7 @@ elseif(APPLE)
+@@ -221,7 +221,7 @@ elseif(APPLE)
  	set(PCSX2_MACOS_LOCALIZATIONS)
  	foreach (TS_FILE IN LISTS TS_FILES)
  		get_filename_component(TS_FILE_NAME ${TS_FILE} NAME)
@@ -22,10 +22,10 @@ index b35fe27..3aaabd9 100644
  			string(REGEX REPLACE ${regex} "\\1" language ${TS_FILE_NAME})
  			string(REPLACE "-" "_" language ${language})
 diff --git a/pcsx2-qt/Translations.cpp b/pcsx2-qt/Translations.cpp
-index f2599b4..2a78eb8 100644
+index 1c6a9a9..f19ea76 100644
 --- a/pcsx2-qt/Translations.cpp
 +++ b/pcsx2-qt/Translations.cpp
-@@ -243,43 +243,43 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
+@@ -222,43 +222,43 @@ std::vector<std::pair<QString, QString>> QtHost::GetAvailableLanguageList()
  {
  	return {
  		{QCoreApplication::translate("InterfaceSettingsWidget", "System Language [Default]"), QStringLiteral("system")},
@@ -36,14 +36,7 @@ index f2599b4..2a78eb8 100644
 -		{QStringLiteral("Dansk (da-DK)"), QStringLiteral("da-DK")},
 -		{QStringLiteral("Deutsch (de-DE)"), QStringLiteral("de-DE")},
 -		{QStringLiteral("Ελληνικά (el-GR)"), QStringLiteral("el-GR")},
-+		{QStringLiteral("Afrikaans (af-ZA)"), QStringLiteral("af_ZA")},
-+		{QStringLiteral("عربي (ar-SA)"), QStringLiteral("ar_SA")},
-+		{QStringLiteral("Català (ca-ES)"), QStringLiteral("ca_ES")},
-+		{QStringLiteral("Čeština (cs-CZ)"), QStringLiteral("cs_CZ")},
-+		{QStringLiteral("Dansk (da-DK)"), QStringLiteral("da_DK")},
-+		{QStringLiteral("Deutsch (de-DE)"), QStringLiteral("de_DE")},
-+		{QStringLiteral("Ελληνικά (el-GR)"), QStringLiteral("el_GR")},
- 		{QStringLiteral("English (en)"), QStringLiteral("en")},
+-		{QStringLiteral("English (en)"), QStringLiteral("en-US")},
 -		{QStringLiteral("Español (Hispanoamérica) (es-419)"), QStringLiteral("es-419")},
 -		{QStringLiteral("Español (España) (es-ES)"), QStringLiteral("es-ES")},
 -		{QStringLiteral("فارسی (fa-IR)"), QStringLiteral("fa-IR")},
@@ -73,6 +66,14 @@ index f2599b4..2a78eb8 100644
 -		{QStringLiteral("Tiếng Việt (vi-VN)"), QStringLiteral("vi-VN")},
 -		{QStringLiteral("简体中文 (zh-CN)"), QStringLiteral("zh-CN")},
 -		{QStringLiteral("繁體中文 (zh-TW)"), QStringLiteral("zh-TW")},
++		{QStringLiteral("Afrikaans (af-ZA)"), QStringLiteral("af_ZA")},
++		{QStringLiteral("عربي (ar-SA)"), QStringLiteral("ar_SA")},
++		{QStringLiteral("Català (ca-ES)"), QStringLiteral("ca_ES")},
++		{QStringLiteral("Čeština (cs-CZ)"), QStringLiteral("cs_CZ")},
++		{QStringLiteral("Dansk (da-DK)"), QStringLiteral("da_DK")},
++		{QStringLiteral("Deutsch (de-DE)"), QStringLiteral("de_DE")},
++		{QStringLiteral("Ελληνικά (el-GR)"), QStringLiteral("el_GR")},
++		{QStringLiteral("English (en)"), QStringLiteral("en_US")},
 +		{QStringLiteral("Español (Hispanoamérica) (es-419)"), QStringLiteral("es_419")},
 +		{QStringLiteral("Español (España) (es-ES)"), QStringLiteral("es_ES")},
 +		{QStringLiteral("فارسی (fa-IR)"), QStringLiteral("fa_IR")},
@@ -106,5 +107,5 @@ index f2599b4..2a78eb8 100644
  }
  
 -- 
-2.41.0
+2.45.1
 

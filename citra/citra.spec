@@ -421,6 +421,7 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %if %{without webservice}
   -DENABLE_WEB_SERVICE:BOOL=OFF \
 %endif
+  -DUSE_DISCORD_PRESENCE:BOOL=OFF \
 %if %{with cryptopp}
   -DUSE_SYSTEM_CRYPTOPP:BOOL=ON \
 %endif

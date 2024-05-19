@@ -18,6 +18,9 @@
 %global date 20220308
 %bcond_with snapshot
 
+%global version10 2024.0
+%global srcname10 shaderc
+
 %global commit12 9f4c61a31435a7a90a314fc68aeb386c92a09c0f
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
@@ -29,6 +32,7 @@
 %bcond_with     native
 # Enable system fmt
 %bcond_without fmt
+%bcond_with shaderc
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
 %bcond_without  vulkan
@@ -52,17 +56,20 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5782
+Version:        1.7.5818
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_shaderc: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://github.com/PCSX2/pcsx2
 
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+%endif
+%if %{without shaderc}
+Source10:       https://github.com/google/%{srcname10}/archive/v%{version10}/%{srcname10}-%{version10}.tar.gz
 %endif
 %if %{without vulkan}
 Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
@@ -81,6 +88,11 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-SmallString.h-disable-force-inline-in-SmallStackStri.patch
+
+Patch500:       0001-cmake-shaderc-patched.patch
+Patch501:       0001-cmake-bundled-shaderc.patch
+Patch510:       %{url}/commit/f084e76f3620c96f362d70a6f2d8e8df3ea9085e.patch#/%{name}-gh-revert-f084e76.patch
+
 
 ExclusiveArch:  x86_64
 
@@ -144,7 +156,11 @@ BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
-BuildRequires:  pkgconfig(shaderc)
+%if %{with shaderc}
+BuildRequires:  pkgconfig(shaderc-patched)
+%else
+Provides:       bundled(shaderc-patched) = %{version10}
+%endif
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch)
 %else
@@ -196,9 +212,24 @@ this emulator anyway.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
+%autopatch -M 499 -p1
+
+%patch -P 510 -p1 -R
 
 rm -rf .git
+
+%if %{with shaderc}
+%patch -P 500 -p1
+%else
+mkdir 3rdparty/shaderc
+tar -xf %{S:10} -C 3rdparty/shaderc --strip-components 1
+%{__scm_apply_patch -p1 -q} -d 3rdparty/shaderc -i ../../.github/workflows/scripts/common/shaderc-changes.patch
+rm -rf 3rdparty/shaderc/third_party
+%patch -P 501 -p1
+sed -e '/find_package/s|Shaderc|\0_DISABLED|g' -i cmake/SearchForStuff.cmake
+cp -p 3rdparty/shaderc/LICENSE 3rdparty/LICENSE.shaderc
+%endif
 
 pushd 3rdparty
 rm -rf \
@@ -218,6 +249,7 @@ cp -p fmt/fmt/LICENSE LICENSE.fmt
 rm -rf soundtouch
 %else
 sed -e '/find_package/s|SoundTouch|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+sed -e 's|-Ofast||g' -i soundtouch/CMakeLists.txt
 cp -p soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 

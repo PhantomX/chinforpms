@@ -254,7 +254,8 @@ sdl2-controllermap
 sdl_gamecontrollerdb
 sdl-jstest
 -sdlcl
-shaderc
+-shaderc
+shaderc-patched
 skrooge
 -simple64
 smtube

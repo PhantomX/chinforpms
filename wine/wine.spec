@@ -3,7 +3,9 @@
 %global date 20240227
 %bcond_with snapshot
 
-%global build_type_safety_c 0
+# disable fortify as it breaks wine
+# http://bugs.winehq.org/show_bug.cgi?id=24606
+# http://bugs.winehq.org/show_bug.cgi?id=25073
 %define _fortify_level 0
 
 # Compiling the preloader fails with hardening enabled
@@ -52,8 +54,8 @@
 %global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  9.1.0
-%global winentsync  6.9
-%global winevulkan 1.3.279
+%global winentsync 6.9~rc3
+%global winevulkan 1.3.285
 
 %global wineFAudio 24.05
 %global winefluidsynth 2.3.5
@@ -103,7 +105,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.8
+%global wine_stagingver 9.9
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -114,7 +116,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8ad9f11375ffaad0e269c10654f8fbf17a3780f2
+%global tkg_id f019cc664323e248d3e616d482f68a55a1fa13b4
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -131,7 +133,7 @@
 # fastsync/winesync
 %bcond_without fastsync
 # ntsync (disables fastsync and fsync)
-%bcond_with ntsync
+%bcond_without ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
@@ -161,7 +163,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.8
+Version:        9.9
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -235,6 +237,9 @@ Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-wh
 Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-whq-2bfe81e.patch
 # Breaks virtual desktop
 Patch703:        %{whq_url}/b86cc9e658959cee47e6e587fec4f7c26350ed76#/%{name}-whq-b86cc9e.patch
+Patch704:        %{whq_url}/f74900ad1a580eda8fd4923cbd4881b42b042733#/%{name}-whq-f74900a.patch
+Patch705:        %{whq_url}/64a7ca75475d00af269c203349bc6fe386f16a22#/%{name}-whq-64a7ca7.patch
+Patch706:        %{whq_url}/f6791f59c3a5fe2aa178edc66861d358de912d22#/%{name}-whq-f6791f5.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -285,6 +290,8 @@ Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
 Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
+Patch1097:       0001-tkg-proton-cpu-topology-overrides-fixup-1.patch
+Patch1098:       0001-tkg-proton-cpu-topology-overrides-fixup-2.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -895,6 +902,9 @@ This package adds the opencl driver for wine.
 
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
+%patch -P 706 -p1 -R
+%patch -P 705 -p1 -R
+%patch -P 704 -p1 -R
 %patch -P 703 -p1 -R
 
 # setup and apply wine-staging patches
@@ -951,7 +961,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
+%patch -P 1097 -p1
 %patch -P 1029 -p1
+%patch -P 1098 -p1
 %if %{with ntsync}
 %patch -P 1055 -p1
 %endif
@@ -1042,12 +1054,11 @@ autoreconf -f
 
 
 %build
-# disable fortify as it breaks wine
-# http://bugs.winehq.org/show_bug.cgi?id=24606
-# http://bugs.winehq.org/show_bug.cgi?id=25073
-export CFLAGS="`echo %{build_cflags} | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'` -Wno-error"
+export CFLAGS="%{build_cflags} -ftree-vectorize"
 
-export CFLAGS="$CFLAGS -ftree-vectorize"
+%if 0%{?wine_staging}
+export CFLAGS+=" -Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types"
+%endif
 
 %ifarch aarch64
 %global toolchain clang
@@ -1897,7 +1908,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/ntdsapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntprint.%{winedll}
 %{_libdir}/wine/%{winedlldir}/objsel.%{winedll}
-%{_libdir}/wine/%{winesodir}/odbc32.so
 %{_libdir}/wine/%{winedlldir}/odbc32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/odbcbcp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/odbccp32.%{winedll}
@@ -2580,6 +2590,9 @@ fi
 
 
 %changelog
+* Sat May 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.9-100
+- 9.9
+
 * Sat May 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.8-100
 - 9.8
 

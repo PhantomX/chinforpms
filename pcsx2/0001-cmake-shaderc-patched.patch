@@ -1,0 +1,47 @@
+From d0b909119a04f2b74ec26e2a932e97d047771795 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 18 May 2024 18:52:21 -0300
+Subject: [PATCH] cmake: shaderc-patched
+
+---
+ cmake/FindShaderc.cmake                     | 4 ++--
+ pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/cmake/FindShaderc.cmake b/cmake/FindShaderc.cmake
+index 17d2296..a48b9e3 100644
+--- a/cmake/FindShaderc.cmake
++++ b/cmake/FindShaderc.cmake
+@@ -5,14 +5,14 @@
+ #  SHADERC_LIBRARIES - The libraries needed to use SHADERC
+ 
+ FIND_PATH(
+-    SHADERC_INCLUDE_DIR shaderc/shaderc.h
++    SHADERC_INCLUDE_DIR shaderc-patched/shaderc.h
+     HINTS /usr/include /usr/local/include
+     ${SHADERC_PATH_INCLUDES}
+ )
+ 
+ FIND_LIBRARY(
+     SHADERC_LIBRARY
+-    NAMES shaderc_shared
++    NAMES shaderc-patched_shared
+     PATHS ${ADDITIONAL_LIBRARY_PATHS} ${SHADERC_PATH_LIB}
+ )
+ 
+diff --git a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
+index b71e930..60b6c27 100644
+--- a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
++++ b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
+@@ -16,7 +16,7 @@
+ #include "common/Path.h"
+ 
+ #include "fmt/format.h"
+-#include "shaderc/shaderc.hpp"
++#include "shaderc-patched/shaderc.hpp"
+ 
+ #include <cstring>
+ #include <fstream>
+-- 
+2.45.1
+

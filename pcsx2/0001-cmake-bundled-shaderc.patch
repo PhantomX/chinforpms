@@ -1,0 +1,147 @@
+From d959a61b7f249d37025f06a3f1100e5d47100aa0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 18 May 2024 20:25:24 -0300
+Subject: [PATCH] cmake: bundled shaderc
+
+---
+ 3rdparty/shaderc/CMakeLists.txt               | 21 ++++++-------------
+ 3rdparty/shaderc/libshaderc/CMakeLists.txt    |  7 +------
+ .../shaderc/libshaderc_util/CMakeLists.txt    |  2 +-
+ .../shaderc/libshaderc_util/src/compiler.cc   |  2 +-
+ cmake/SearchForStuff.cmake                    |  7 ++++++-
+ 5 files changed, 15 insertions(+), 24 deletions(-)
+
+diff --git a/3rdparty/shaderc/CMakeLists.txt b/3rdparty/shaderc/CMakeLists.txt
+index 7c1a6d8..ed4fcb5 100644
+--- a/3rdparty/shaderc/CMakeLists.txt
++++ b/3rdparty/shaderc/CMakeLists.txt
+@@ -26,12 +26,12 @@ message(STATUS "Shaderc: build type is \"${CMAKE_BUILD_TYPE}\".")
+ 
+ option(SHADERC_ENABLE_WGSL_OUTPUT "Enable WGSL output" OFF)
+ 
+-option(SHADERC_SKIP_INSTALL "Skip installation" ${SHADERC_SKIP_INSTALL})
++option(SHADERC_SKIP_INSTALL "Skip installation" ON)
+ if(NOT ${SHADERC_SKIP_INSTALL})
+   set(SHADERC_ENABLE_INSTALL ON)
+ endif()
+ 
+-option(SHADERC_SKIP_TESTS "Skip building tests" ${SHADERC_SKIP_TESTS})
++option(SHADERC_SKIP_TESTS "Skip building tests" ON)
+ if(NOT ${SHADERC_SKIP_TESTS})
+   set(SHADERC_ENABLE_TESTS ON)
+ endif()
+@@ -41,7 +41,7 @@ else()
+   message(STATUS "Configuring Shaderc to avoid building tests.")
+ endif()
+ 
+-option(SHADERC_SKIP_EXAMPLES "Skip building examples" ${SHADERC_SKIP_EXAMPLES})
++option(SHADERC_SKIP_EXAMPLES "Skip building examples" ON)
+ if(NOT ${SHADERC_SKIP_EXAMPLES})
+   set(SHADERC_ENABLE_EXAMPLES ON)
+ endif()
+@@ -51,7 +51,7 @@ else()
+   message(STATUS "Configuring Shaderc to avoid building examples.")
+ endif()
+ 
+-option(SHADERC_SKIP_COPYRIGHT_CHECK "Skip copyright check" ${SHADERC_SKIP_COPYRIGHT_CHECK})
++option(SHADERC_SKIP_COPYRIGHT_CHECK "Skip copyright check" ON)
+ if(NOT ${SHADERC_SKIP_COPYRIGHT_CHECK})
+   set(SHADERC_ENABLE_COPYRIGHT_CHECK ON)
+ endif()
+@@ -123,19 +123,9 @@ endif()
+ 
+ # Configure subdirectories.
+ # We depend on these for later projects, so they should come first.
+-add_subdirectory(third_party)
+ 
+ add_subdirectory(libshaderc_util)
+ add_subdirectory(libshaderc)
+-if(${SHADERC_ENABLE_EXAMPLES})
+-    add_subdirectory(examples)
+-endif()
+-
+-add_custom_target(build-version
+-  ${Python_EXECUTABLE}
+-  ${CMAKE_CURRENT_SOURCE_DIR}/utils/update_build_version.py
+-  ${shaderc_SOURCE_DIR} ${spirv-tools_SOURCE_DIR} ${glslang_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}/build-version.inc
+-  COMMENT "Update build-version.inc in the Shaderc build directory (if necessary).")
+ 
+ function(define_pkg_config_file NAME LIBS)
+   add_custom_target(${NAME}-pkg-config ALL
+@@ -159,4 +149,5 @@ function(define_pkg_config_file NAME LIBS)
+   endif()
+ endfunction()
+ 
+-define_pkg_config_file(shaderc -lshaderc_shared)
++target_include_directories(shaderc_shared PUBLIC shaderc/libshaderc/include)
++add_library(Shaderc::shaderc_shared ALIAS shaderc_shared)
+diff --git a/3rdparty/shaderc/libshaderc/CMakeLists.txt b/3rdparty/shaderc/libshaderc/CMakeLists.txt
+index b15e5d7..84f5f76 100644
+--- a/3rdparty/shaderc/libshaderc/CMakeLists.txt
++++ b/3rdparty/shaderc/libshaderc/CMakeLists.txt
+@@ -24,17 +24,12 @@ set(SHADERC_SOURCES
+   src/shaderc_private.h
+ )
+ 
+-add_library(shaderc_shared SHARED ${SHADERC_SOURCES})
++add_library(shaderc_shared STATIC ${SHADERC_SOURCES})
+ shaderc_default_compile_options(shaderc_shared)
+ target_include_directories(shaderc_shared
+     PUBLIC include
+     PRIVATE ${glslang_SOURCE_DIR}
+             ${SPIRV-Headers_SOURCE_DIR}/include)
+-target_compile_definitions(shaderc_shared
+-    PRIVATE SHADERC_IMPLEMENTATION
+-    PUBLIC SHADERC_SHAREDLIB
+-)
+-set_target_properties(shaderc_shared PROPERTIES SOVERSION 1)
+ 
+ if(SHADERC_ENABLE_INSTALL)
+   install(
+diff --git a/3rdparty/shaderc/libshaderc_util/CMakeLists.txt b/3rdparty/shaderc/libshaderc_util/CMakeLists.txt
+index 69ba519..e97aaaa 100644
+--- a/3rdparty/shaderc/libshaderc_util/CMakeLists.txt
++++ b/3rdparty/shaderc/libshaderc_util/CMakeLists.txt
+@@ -47,7 +47,7 @@ add_definitions(-DENABLE_HLSL)
+ find_package(Threads)
+ target_link_libraries(shaderc_util PRIVATE
+   glslang SPIRV
+-  SPIRV-Tools-opt ${CMAKE_THREAD_LIBS_INIT})
++  SPIRV-Tools-opt MachineIndependent GenericCodeGen ${CMAKE_THREAD_LIBS_INIT})
+ 
+ shaderc_add_tests(
+   TEST_PREFIX shaderc_util
+diff --git a/3rdparty/shaderc/libshaderc_util/src/compiler.cc b/3rdparty/shaderc/libshaderc_util/src/compiler.cc
+index 1f9e6a5..b099cd6 100644
+--- a/3rdparty/shaderc/libshaderc_util/src/compiler.cc
++++ b/3rdparty/shaderc/libshaderc_util/src/compiler.cc
+@@ -20,7 +20,7 @@
+ #include <thread>
+ #include <tuple>
+ 
+-#include "SPIRV/GlslangToSpv.h"
++#include "glslang/SPIRV/GlslangToSpv.h"
+ #include "libshaderc_util/format.h"
+ #include "libshaderc_util/io_shaderc.h"
+ #include "libshaderc_util/message.h"
+diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
+index bf76609..59291bf 100644
+--- a/cmake/SearchForStuff.cmake
++++ b/cmake/SearchForStuff.cmake
+@@ -21,7 +21,12 @@ find_package(SDL2 2.30.3 REQUIRED)
+ find_package(Freetype 2.11.1 REQUIRED)
+ 
+ if(USE_VULKAN)
+-	find_package(Shaderc REQUIRED)
++	find_package(Shaderc)
++	if(Shaderc_FOUND)
++		message(STATUS "Using the system Shaderc")
++	else()
++		add_subdirectory(3rdparty/shaderc EXCLUDE_FROM_ALL)
++	endif()
+ endif()
+ 
+ # Platform-specific dependencies.
+-- 
+2.45.1
+

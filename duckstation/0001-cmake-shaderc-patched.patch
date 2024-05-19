@@ -1,0 +1,55 @@
+From c8759a4dd941e33fff9a7ea0cd77829d38b9ed94 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 18 May 2024 18:09:15 -0300
+Subject: [PATCH] cmake: shaderc-patched
+
+---
+ CMakeModules/FindShaderc.cmake | 4 ++--
+ src/util/gpu_device.cpp        | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeModules/FindShaderc.cmake b/CMakeModules/FindShaderc.cmake
+index 760184a..42ae737 100644
+--- a/CMakeModules/FindShaderc.cmake
++++ b/CMakeModules/FindShaderc.cmake
+@@ -5,13 +5,13 @@
+ #  SHADERC_LIBRARIES - The libraries needed to use SHADERC
+ 
+ find_path(
+-    SHADERC_INCLUDE_DIR shaderc/shaderc.h
++    SHADERC_INCLUDE_DIR shaderc-patched/shaderc.h
+     ${SHADERC_PATH_INCLUDES}
+ )
+ 
+ find_library(
+     SHADERC_LIBRARY
+-    NAMES shaderc_shared.1 shaderc_shared
++    NAMES shaderc-patched_shared.1 shaderc-patched_shared
+     PATHS ${ADDITIONAL_LIBRARY_PATHS} ${SHADERC_PATH_LIB}
+ )
+ 
+diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
+index 11b1902..825cbfc 100644
+--- a/src/util/gpu_device.cpp
++++ b/src/util/gpu_device.cpp
+@@ -38,7 +38,7 @@ Log_SetChannel(GPUDevice);
+ #endif
+ 
+ #if defined(ENABLE_VULKAN) || defined(__APPLE__)
+-#include "shaderc/shaderc.h"
++#include "shaderc-patched/shaderc.h"
+ #endif
+ 
+ std::unique_ptr<GPUDevice> g_gpu_device;
+@@ -1154,7 +1154,7 @@ bool dyn_shaderc::Open()
+   const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared");
+ #else
+   // Use versioned, bundle post-processing adds it..
+-  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared", 1);
++  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc-patched_shared", 1);
+ #endif
+   if (!s_library.Open(libname.c_str(), &error))
+   {
+-- 
+2.45.1
+

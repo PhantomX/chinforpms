@@ -1,0 +1,77 @@
+From d7f5c34e472c4fae0a8d67da5263bd6208769fe0 Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Fri, 17 May 2024 18:41:26 -0300
+Subject: [PATCH] tkg: proton cpu topology overrides fixup 1
+
+---
+ dlls/ntdll/unix/system.c | 36 +++++++++++++++++-------------------
+ 1 file changed, 17 insertions(+), 19 deletions(-)
+
+diff --git a/dlls/ntdll/unix/system.c b/dlls/ntdll/unix/system.c
+index 5ee3f41..12cf4db 100644
+--- a/dlls/ntdll/unix/system.c
++++ b/dlls/ntdll/unix/system.c
+@@ -1030,7 +1030,7 @@ static NTSTATUS create_logical_proc_info(void)
+ 
+             for (j = 0; j < 4; j++)
+             {
+-                CACHE_DESCRIPTOR cache = { .Associativity = 8, .LineSize = 64, .Type = CacheUnified, .Size = 64 * 1024 };
++                CACHE_DESCRIPTOR cache;
+                 ULONG_PTR mask = 0;
+ 
+                 snprintf(name, sizeof(name), cache_info, i, j, "shared_cpu_map");
+@@ -1044,25 +1044,23 @@ static NTSTATUS create_logical_proc_info(void)
+                 cache.Level = r;
+ 
+                 snprintf(name, sizeof(name), cache_info, i, j, "ways_of_associativity");
+-                if ((f = fopen(name, "r")))
+-                {
+-                    fscanf(f, "%u", &r);
+-                    fclose(f);
+-                    cache.Associativity = r;
+-                }
++                f = fopen(name, "r");
++                if(!f) continue;
++                fscanf(f, "%u", &r);
++                fclose(f);
++                cache.Associativity = r;
+ 
+                 snprintf(name, sizeof(name), cache_info, i, j, "coherency_line_size");
+-                if ((f = fopen(name, "r")))
+-                {
+-                    fscanf(f, "%u", &r);
+-                    fclose(f);
+-                    cache.LineSize = r;
+-                }
++                f = fopen(name, "r");
++                if(!f) continue;
++                fscanf(f, "%u", &r);
++                fclose(f);
++                cache.LineSize = r;
+ 
+                 snprintf(name, sizeof(name), cache_info, i, j, "size");
+-                if ((f = fopen(name, "r")))
+-                {
+-                    fscanf(f, "%u%c", &r, &op);
++                f = fopen(name, "r");
++                if(!f) continue;
++                fscanf(f, "%u%c", &r, &op);
+                     fclose(f);
+                     if(op != 'K')
+                         WARN("unknown cache size %u%c\n", r, op);
+@@ -1070,9 +1068,9 @@ static NTSTATUS create_logical_proc_info(void)
+                 }
+ 
+                 snprintf(name, sizeof(name), cache_info, i, j, "type");
+-                if ((f = fopen(name, "r")))
+-                {
+-                    fscanf(f, "%s", name);
++                f = fopen(name, "r");
++                if(!f) continue;
++                fscanf(f, "%s", name)
+                     fclose(f);
+                     if (!memcmp(name, "Data", 5))
+                         cache.Type = CacheData;
+-- 
+2.45.0
+
