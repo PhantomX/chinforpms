@@ -29,7 +29,7 @@ index 5e14392..f0324f4 100644
 +  list(APPEND CHDR_INCLUDES ${LZMA_INCLUDE_DIRS})
 +  list(APPEND CHDR_LIBS ${LZMA_LIBRARIES})
 +else()
- add_subdirectory(deps/lzma-22.01 EXCLUDE_FROM_ALL)
+ add_subdirectory(deps/lzma-24.05 EXCLUDE_FROM_ALL)
    list(APPEND CHDR_LIBS lzma)
    list(APPEND CHDR_INCLUDES lzma)
 +endif()

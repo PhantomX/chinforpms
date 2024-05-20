@@ -9,8 +9,8 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        23.01
-Release:        102%{?dist}
+Version:        24.05
+Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -30,10 +30,10 @@ ExclusiveArch:  x86_64
 BuildRequires:  asmc
 %endif
 
+BuildRequires:  7zip
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  p7zip
 
 
 %description
@@ -57,7 +57,9 @@ Requires:       %{?epoch:%{epoch}:}%{name}%{?_isa} = %{version}-%{release}
 Development libraries and headers for %{name}.
 
 %prep
-%autosetup -c -n lzma%{ver} -N -p1
+%autosetup -cTN
+7zz x -bso0 %{S:0}
+%_fixperms .
 
 rm -f lzma.exe
 
@@ -126,6 +128,7 @@ export IS_X64=1
 %endif
 
 %make_build -C C/Util/Lzma -f makefile.gcc clean MY_ASM=asmc64 LFLAGS_STRIP=
+mkdir -p C/Util/Lzma/_o
 %make_build -C C/Util/Lzma -f makefile.gcc all MY_ASM=asmc64 LFLAGS_STRIP=
 
 %install
@@ -153,10 +156,13 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 24.05-100
+- 24.05
+
 * Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 23.01-102
 - Add missing XZ symbols to library
 
-* Thu Jun 29 2023 Phantom X - 23.01-101
+* Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-101
 - Header fix
 
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-100

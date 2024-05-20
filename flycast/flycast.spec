@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7438094d7cdf191e6eb2a39e73cb0f512ea2a714
+%global commit 88f23958ace20840fb2666ccc42750a6f9b20d19
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240412
+%global date 20240517
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -51,7 +51,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -83,6 +83,7 @@ Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
 Patch5:         0001-UI-tweak-font-scale.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
+Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake

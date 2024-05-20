@@ -20,7 +20,7 @@
 
 Name:           hdiffpatch
 Version:        4.6.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -121,6 +121,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 4.6.9-2
+- lzma-sdk rebuild
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 4.6.9-1
 - 4.6.9
 

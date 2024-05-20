@@ -1,0 +1,64 @@
+From 1b4d0edd28b1a66f715424186a293fb08b4cb2d5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 19 May 2024 19:08:41 -0300
+Subject: [PATCH] vmaallocator: update vk::detail::resultCheck
+
+---
+ core/rend/vulkan/vmallocator.cpp | 2 +-
+ core/rend/vulkan/vmallocator.h   | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/core/rend/vulkan/vmallocator.cpp b/core/rend/vulkan/vmallocator.cpp
+index b284a4c..81d0211 100644
+--- a/core/rend/vulkan/vmallocator.cpp
++++ b/core/rend/vulkan/vmallocator.cpp
+@@ -69,5 +69,5 @@ void VMAllocator::Init(vk::PhysicalDevice physicalDevice, vk::Device device, vk:
+ #endif
+ 
+ 	VkResult rc = vmaCreateAllocator(&allocatorInfo, &allocator);
+-	vk::resultCheck(static_cast<vk::Result>(rc), "vmaCreateAllocator failed");
++	vk::detail::resultCheck(static_cast<vk::Result>(rc), "vmaCreateAllocator failed");
+ }
+diff --git a/core/rend/vulkan/vmallocator.h b/core/rend/vulkan/vmallocator.h
+index f94de21..bc7356c 100644
+--- a/core/rend/vulkan/vmallocator.h
++++ b/core/rend/vulkan/vmallocator.h
+@@ -64,7 +64,7 @@ public:
+ 			return allocInfo.pMappedData;
+ 		void *p;
+ 		VkResult res = vmaMapMemory(allocator, allocation, &p);
+-		vk::resultCheck(static_cast<vk::Result>(res), "vmaMapMemory failed");
++		vk::detail::resultCheck(static_cast<vk::Result>(res), "vmaMapMemory failed");
+ 		VkMemoryPropertyFlags flags;
+ 		vmaGetMemoryTypeProperties(allocator, allocInfo.memoryType, &flags);
+ 		if ((flags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) && (flags & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) == 0)
+@@ -114,7 +114,7 @@ public:
+ 		VmaAllocation vmaAllocation;
+ 		VmaAllocationInfo allocInfo;
+ 		VkResult rc = vmaAllocateMemory(allocator, (VkMemoryRequirements*)&memoryRequirements, &allocCreateInfo, &vmaAllocation, &allocInfo);
+-		vk::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemory failed");
++		vk::detail::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemory failed");
+ 		return Allocation(allocator, vmaAllocation, allocInfo);
+ 	}
+ 
+@@ -123,7 +123,7 @@ public:
+ 		VmaAllocation vmaAllocation;
+ 		VmaAllocationInfo allocInfo;
+ 		VkResult rc = vmaAllocateMemoryForImage(allocator, (VkImage)image, &allocCreateInfo, &vmaAllocation, &allocInfo);
+-		vk::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemoryForImage failed");
++		vk::detail::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemoryForImage failed");
+ 		vmaBindImageMemory(allocator, vmaAllocation, (VkImage)image);
+ 
+ 		return Allocation(allocator, vmaAllocation, allocInfo);
+@@ -134,7 +134,7 @@ public:
+ 		VmaAllocation vmaAllocation;
+ 		VmaAllocationInfo allocInfo;
+ 		VkResult rc = vmaAllocateMemoryForBuffer(allocator, (VkBuffer)buffer, &allocCreateInfo, &vmaAllocation, &allocInfo);
+-		vk::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemoryForBuffer failed");
++		vk::detail::resultCheck(static_cast<vk::Result>(rc), "vmaAllocateMemoryForBuffer failed");
+ 		vmaBindBufferMemory(allocator, vmaAllocation, (VkBuffer)buffer);
+ 
+ 		return Allocation(allocator, vmaAllocation, allocInfo);
+-- 
+2.45.1
+

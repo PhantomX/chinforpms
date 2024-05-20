@@ -1033,8 +1033,8 @@ mv -f README.chinforpms.fastsync README.chinforpms
 %endif
 %if %{with ntsync}
 cat README.chinforpms %{SOURCE9} >> README.chinforpms.ntsync
-touch -r README.chinforpms README.chinforpms.fastsync
-mv -f README.chinforpms.fastsync README.chinforpms
+touch -r README.chinforpms README.chinforpms.ntsync
+mv -f README.chinforpms.ntsync README.chinforpms
 %endif
 
 cp -p %{SOURCE502} README.tahoma

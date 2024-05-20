@@ -1,17 +1,17 @@
-%global commit 2648c221c9ce6b49600ed7d2eb45c9e6e593790f
+%global commit 86b272076d542287d3f03952e7d4efe283e815bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240210
+%global date 20240519
 %bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global drflac_ver 0.12.39
+%global drflac_ver 0.12.42
 
 Name:           libchdr
 Version:        0.2
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -38,8 +38,8 @@ Patch20:        0001-Use-system-libzstd.patch
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  make
-BuildRequires:  pkgconfig(libzstd) >= 1.5.5
-BuildRequires:  pkgconfig(lzmasdk-c)
+BuildRequires:  pkgconfig(libzstd) >= 1.5.6
+BuildRequires:  pkgconfig(lzmasdk-c) >= 24.05
 BuildRequires:  pkgconfig(zlib)
 
 Provides:       bundled(dr_flac) = %{drflac_ver}

@@ -1,4 +1,4 @@
-From 1bbd821445964917118290fa9da92e6916de1e89 Mon Sep 17 00:00:00 2001
+From 118831f1fd9a1eff273906b91ff0bab7aeaac4e3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 09:38:07 -0300
 Subject: [PATCH] Build shared library
@@ -28,14 +28,15 @@ index f5069cd..b7847da 100644
  
  #include "7zTypes.h"
 diff --git a/C/7zip_gcc_c.mak b/C/7zip_gcc_c.mak
-index f19a99b..3730757 100644
+index 195d23d..7fb23d1 100644
 --- a/C/7zip_gcc_c.mak
 +++ b/C/7zip_gcc_c.mak
-@@ -23,9 +23,8 @@ CFLAGS_BASE_LIST = -c
+@@ -22,10 +22,9 @@ CFLAGS_BASE_LIST = -c
+ # for ASM file
  # CFLAGS_BASE_LIST = -S
  
- FLAGS_FLTO =
 -FLAGS_FLTO = -flto
+ FLAGS_FLTO =
  
 -CFLAGS_BASE = $(MY_ARCH_2) -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
 +CFLAGS_BASE = -O2 $(CFLAGS_BASE_LIST) $(CFLAGS_WARN_WALL) $(CFLAGS_WARN) \
@@ -618,5 +619,5 @@ index 2acb0b8..8e83d37 100644
  
  include ../../7zip_gcc_c.mak
 -- 
-2.44.0
+2.45.1
 

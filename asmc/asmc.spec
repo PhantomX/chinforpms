@@ -1,6 +1,6 @@
-%global commit 12546367b8cd67af8ba56650404cf72dc3742814
+%global commit f3283c5fa332626a3e61964fe3e8e345a6386618
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240326
+%global date 20240510
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -20,7 +20,7 @@
 %endif
 
 Name:           asmc
-Version:        2.34.49
+Version:        2.34.59
 Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -75,7 +75,7 @@ for i in %{name}{,64} ;do
   mv source/%{name}/${i} stage1/
 done
 
-rm -f bin/*
+rm -rf bin/*
 
 mkdir stage2
 
@@ -111,6 +111,9 @@ install -pm0755 source/%{name}/%{name}64 %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.59-1.20240510gitf3283c5
+- 2.34.59
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 2.34.49-1.20240326git1254636
 - 2.34.49
 

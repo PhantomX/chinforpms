@@ -23,7 +23,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        23.01
+Version:        24.05
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -38,7 +38,7 @@ Source0:        %{name}-free-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch1:         0001-set-7zCon.sfx-path.patch
+#Patch1:         0001-set-7zCon.sfx-path.patch
 
 %if %{with asm}
 %if "%{asmopt}" == "asmc"
@@ -88,7 +88,7 @@ sed \
   -e 's|^CFLAGS =|CFLAGS +=|g' \
   -e 's|^CXXFLAGS =|CXXFLAGS +=|g' \
   -e 's|^LDFLAGS =|LDFLAGS +=|g' \
-  -e 's|$(LDFLAGS)|\0 -Wl,-z,noexecstack|g' \
+  -e 's| -z noexecstack| -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
   -e '/^MY_ASM/s|asmc|%{asmopt}%{asmc}|g' \
   -e '/^AFLAGS_ABI =/s|-elf64|\0 -DASMC64|g' \
@@ -105,10 +105,12 @@ export USE_ASM=1
 export DISABLE_RAR=1
 
 pushd CPP/7zip/Bundles/Alone2
+mkdir -p b/g%{platform}
 %make_build -f ../../%{makefile}.mak LFLAGS_STRIP=
 popd
 
 pushd CPP/7zip/Bundles/SFXCon
+mkdir -p _o
 %make_build -f makefile.gcc LFLAGS_STRIP=
 popd
 
@@ -129,6 +131,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 24.05-1
+- 24.05
+
 * Thu Jun 29 2023 Phantom X <megaphantomx at hotmail dot com> - 23.01-1
 - 23.01
 

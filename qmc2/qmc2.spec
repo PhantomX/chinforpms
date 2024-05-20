@@ -1,6 +1,6 @@
 %global commit f8b478a8fad5b51a6ed1a0a02da9f5ff470b0042
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230324
+%global date 20240324
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -18,7 +18,7 @@
 
 Name:           qmc2
 Version:        0.244
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -102,6 +102,10 @@ rm -rf src/lzma
 #fix opening documentation from the menu
 sed -i s@doc/html/@doc/@ src/qmc2main.cpp
 
+sed \
+  -e 's|egrep|grep -E|g' \
+  -i scripts/{generate-option-lists,os-detect,sdl-*}.sh
+
 
 %build
 %set_build_flags
@@ -171,6 +175,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.244-101.20240324gitf8b478a
+- lzma-sdk rebuild
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.244-100.20230324gitf8b478a
 - 0.244 snapshot
 
