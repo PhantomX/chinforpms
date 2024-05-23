@@ -3,10 +3,14 @@
 
 %ifnarch s390x
 %global with_hardware 1
+%global with_radeonsi 1
+%global with_vmware 1
 %global with_vulkan_hw 1
 %global with_vdpau 1
 %global with_va 1
 %if !0%{?rhel}
+%global with_r300 1
+%global with_r600 1
 %global with_nine 1
 %global with_nvk %{with vulkan_hw}
 %global with_omx 1
@@ -15,15 +19,24 @@
 %global base_vulkan ,amd
 %endif
 
+%ifnarch %{ix86}
+%if !0%{?rhel}
+%global with_teflon 1
+%endif
+%endif
+
 %ifarch %{ix86} x86_64
 %global with_crocus 1
 %global with_i915   1
+%global with_iris   1
+%global with_xa     1
 %if !0%{?rhel}
 %global with_intel_clc 1
 %endif
-%global with_iris   1
-%global with_xa     1
 %global intel_platform_vulkan ,intel,intel_hasvk
+%endif
+%ifarch x86_64
+%global with_intel_vk_rt 1
 %endif
 
 %ifarch aarch64 x86_64 %{ix86}
@@ -39,15 +52,6 @@
 %global with_v3d       1
 %global with_xa        1
 %global extra_platform_vulkan ,broadcom,freedreno,panfrost,imagination-experimental
-%endif
-
-%ifnarch s390x
-%if !0%{?rhel}
-%global with_r300 1
-%global with_r600 1
-%endif
-%global with_radeonsi 1
-%global with_vmware 1
 %endif
 
 %if !0%{?rhel}
@@ -67,7 +71,7 @@
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau-experimental}
+%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
 %global vulkan_layers device-select,overlay
 
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
@@ -87,7 +91,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.0.7
+Version:        24.1.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -106,18 +110,12 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
 
-# Work around for the meson bug until an upstream fix lands
-# https://bugzilla.redhat.com/show_bug.cgi?id=2277018
-# https://gitlab.freedesktop.org/mesa/mesa/-/merge_requests/28923
-Patch11:        %{vc_url}/-/merge_requests/28923.patch#/%{name}-gl-pr28923.patch
+Patch499:       mesa-20.1.1-fix-opencl.patch
 
-# Without this patch, the OpenCL ICD calls into MesaOpenCL,
-# which for some reason calls back into the OpenCL ICD instead
-# of calling its own function by the same name.
-Patch50:        mesa-20.1.1-fix-opencl.patch
-# Make VirtualBox great again
-# Broken by commit 2569215f43f6ce71fb8eb2181b36c6cf976bce2a
-Patch51:        mesa-22.3-make-vbox-great-again.patch
+# Fix https://bugs.winehq.org/show_bug.cgi?id=41930
+# https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094
+# Ported from https://gitlab.freedesktop.org/bvarner/mesa/-/tree/feature/osmesa-preserve-buffer
+Patch500:       mesa-24.0-osmesa-fix-civ3.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
@@ -181,6 +179,11 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm%{?llvm_pkgver}-devel >= 13.0.0
+%if 0%{?with_teflon}
+BuildRequires:  flatbuffers-devel
+BuildRequires:  flatbuffers-compiler
+BuildRequires:  xtensor-devel
+%endif
 %if 0%{?with_opencl} || 0%{?with_nvk}
 BuildRequires:  clang%{?llvm_pkgver}-devel
 BuildRequires:  bindgen
@@ -190,6 +193,8 @@ BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  spirv-llvm-translator%{?llvm_pkgver}-devel
 %endif
 %if 0%{?with_nvk}
+BuildRequires:  cbindgen
+BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2) 
 BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
 BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
@@ -203,6 +208,7 @@ BuildRequires:  python3-mako
 %if 0%{?with_intel_clc}
 BuildRequires:  python3-ply
 %endif
+BuildRequires:  python3-pycparser
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
@@ -390,6 +396,14 @@ Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 %{summary}.
 %endif
 
+%if 0%{?with_teflon}
+%package libTeflon
+Summary:        Mesa TensorFlow Lite delegate
+
+%description libTeflon
+%{summary}.
+%endif
+
 %if 0%{?with_nine}
 %package libd3d
 Summary:        Mesa Direct3D9 state tracker
@@ -461,6 +475,7 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %rewrite_wrap_file quote
 %rewrite_wrap_file syn
 %rewrite_wrap_file unicode-ident
+%rewrite_wrap_file paste
 %endif
 
 %meson \
@@ -477,6 +492,7 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
   -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
+  -Dteflon=%{?with_teflon:true}%{!?with_teflon:false} \
   -Dgallium-opencl=%{?with_opencl:icd}%{!?with_opencl:disabled} \
 %if 0%{?with_opencl}
   -Dgallium-rusticl=true \
@@ -493,10 +509,11 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Dgbm=enabled \
   -Dglx=dri \
   -Degl=enabled \
-  -Dglvnd=true \
+  -Dglvnd=enabled \
 %if 0%{?with_intel_clc}
   -Dintel-clc=enabled \
 %endif
+  -Dintel-rt=%{?with_intel_vk_rt:enabled}%{!?with_intel_vk_rt:disabled} \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -512,7 +529,10 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %endif
   -Dandroid-libbacktrace=disabled \
 %ifarch %{ix86}
-  -Dglx-read-only-text=true
+  -Dglx-read-only-text=true \
+%endif
+ %ifnarch x86_64
+  -Dintel-rt=disabled \
 %endif
   %{nil}
 
@@ -605,6 +625,11 @@ popd
 %endif
 %endif
 
+%if 0%{?with_teflon}
+%files libTeflon
+%{_libdir}/libteflon.so
+%endif
+
 %if 0%{?with_opencl}
 %files libOpenCL
 %{_libdir}/libMesaOpenCL.so.*
@@ -682,6 +707,7 @@ popd
 %endif
 %if 0%{?with_panfrost}
 %{_libdir}/dri/panfrost_dri.so
+%{_libdir}/dri/panthor_dri.so
 %endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
@@ -710,11 +736,14 @@ popd
 %{_libdir}/dri/pl111_dri.so
 %{_libdir}/dri/repaper_dri.so
 %{_libdir}/dri/rockchip_dri.so
+%{_libdir}/dri/rzg2l-du_dri.so
+%{_libdir}/dri/ssd130x_dri.so
 %{_libdir}/dri/st7586_dri.so
 %{_libdir}/dri/st7735r_dri.so
 %{_libdir}/dri/sti_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
 %{_libdir}/dri/udl_dri.so
+%{_libdir}/dri/zynqmp-dpsub_dri.so
 %endif
 %if 0%{?with_vulkan_hw}
 %{_libdir}/dri/zink_dri.so
@@ -791,6 +820,9 @@ popd
 
 
 %changelog
+* Wed May 22 2024 Phantom X <megaphantomx at hotmail dot com> - 24.1.0-100
+- 24.1.0
+
 * Wed May 08 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.7-100
 - 24.0.7
 

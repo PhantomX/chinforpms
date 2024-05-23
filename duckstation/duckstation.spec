@@ -22,9 +22,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 1adaea9005376c59ac2e2cc36fad7f55802f528b
+%global commit 8709624751930c319df2d134865361a291e7738c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240518
+%global date 20240522
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -44,7 +44,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6828
+Version:        0.1.6848
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -67,8 +67,7 @@ Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-discord-rpc-switch.patch
 Patch9:         0001-cmake-shaderc-patched.patch
-
-Patch500:       %{vc_url}/commit/18160a8e06051a6294df481601e1c817ff6e268e.patch#/%{name}-gh-revert-18160a8.patch
+Patch10:        0001-gcc-14-build-fix.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -84,7 +83,7 @@ BuildRequires:  make
 BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
-BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Core) >= 6.7
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Network)
@@ -201,8 +200,6 @@ This package provides the data files for duckstation.
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 499 -p1
-
-%patch -P 500 -p1 -R
 
 ###Remove Bundled:
 pushd dep

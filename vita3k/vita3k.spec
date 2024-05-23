@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d49480f8069b9b38961935b7f07d3edc7f949825
+%global commit a0b32184663c8babcde38044fc137b613f21fd23
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240406
+%global date 20240522
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -91,7 +91,7 @@
 %global shortcommit27 %(c=%{commit27}; echo ${c:0:7})
 %global srcname27 stb
 
-%global commit28 897aec5b062664d2485f4f9a213715d2e527e0ca
+%global commit28 37aff70dfa50cf6307b3fee6074d627dc2929143
 %global shortcommit28 %(c=%{commit28}; echo ${c:0:7})
 %global srcname28 tracy
 
@@ -155,7 +155,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3594
+Version:        0.2.0.3607
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -209,8 +209,8 @@ Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
-Patch13:        0001-gcc-14-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
+Patch501:       0001-vma-set-missing-namespace.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  x86_64
@@ -313,6 +313,7 @@ tar -xf %{S:10} -C %{srcname10} --strip-components 1
 tar -xf %{S:11} -C %{srcname11} --strip-components 1
 tar -xf %{S:12} -C %{srcname12} --strip-components 1
 tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
+%patch -P 501 -p1
 tar -xf %{S:13} -C %{srcname13} --strip-components 1
 tar -xf %{S:15} -C %{srcname15} --strip-components 1
 tar -xf %{S:16} -C %{srcname16} --strip-components 1
@@ -445,9 +446,6 @@ popd
 pushd external/ffmpeg/include
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
-%if %{with clang}
-  -e 's|-flto=[^ ]*||g' \
-%endif
   -i ffmpeg-linux_*.sh
 chmod +x ffmpeg-linux_*.sh
 %ifarch x86_64

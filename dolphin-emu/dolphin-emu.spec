@@ -22,9 +22,9 @@
 %global enablejit 1
 %endif
 
-%global commit 493a42d792e3140b3e708c58d2f685210aee796d
+%global commit cb71d849087c5b470b233b4f5c1ee9fde141483f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240514
+%global date 20240520
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -72,7 +72,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 41956
+%global baserelease 41968
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -367,7 +367,6 @@ sed \
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  -DAPPROVED_VENDORED_DEPENDENCIES=";" \
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
   %{?!enablejit:-DENABLE_GENERIC=ON} \

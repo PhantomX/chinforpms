@@ -1,0 +1,55 @@
+diff -up mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c.11~ mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c
+--- mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c.11~	2024-02-01 00:29:42.000000000 +0100
++++ mesa-24.0.0/src/gallium/frontends/osmesa/osmesa.c	2024-02-12 22:24:44.413930182 +0100
+@@ -216,6 +216,39 @@ osmesa_read_buffer(OSMesaContext osmesa,
+    pipe->texture_unmap(pipe, transfer);
+ }
+ 
++/* Writes the user storage (color buffer) to the color buffer of the backing context.
++ */
++static void
++osmesa_write_buffer(OSMesaContext osmesa, void *src, struct osmesa_buffer *osbuffer)
++{
++   struct pipe_resource *res = osbuffer->textures[ST_ATTACHMENT_FRONT_LEFT];
++   struct pipe_context *pipe = osmesa->st->pipe;
++
++   struct pipe_box box;
++   u_box_2d(0, 0, res->width0, res->height0, &box);
++
++   struct pipe_transfer *transfer = NULL;
++   uint8_t *dst = pipe->texture_map(pipe, res, 0, PIPE_MAP_WRITE, &box, &transfer);
++
++   unsigned bpp = util_format_get_blocksize(res->format);
++   int stride = bpp * osbuffer->width;
++   if (osmesa->user_row_length) {
++      stride = bpp * osmesa->user_row_length;
++   }
++
++   if (osmesa->y_up) {
++      dst = (uint8_t *)dst + (res->height0 - 1) * stride;
++      stride = -stride;
++   }
++
++   for (unsigned y = 0; y < res->height0; y++) {
++      memcpy(dst, src, bpp * res->width0);
++      src = (uint8_t *)src + transfer->stride;
++      dst += stride;
++   }
++
++   pipe->texture_unmap(pipe, transfer);
++}
+ 
+ /**
+  * Given an OSMESA_x format and a GL_y type, return the best
+@@ -782,10 +815,7 @@ OSMesaMakeCurrent(OSMesaContext osmesa,
+ 
+    st_api_make_current(osmesa->st, &osbuffer->base, &osbuffer->base);
+ 
+-   /* XXX: We should probably load the current color value into the buffer here
+-    * to match classic swrast behavior (context's fb starts with the contents of
+-    * your pixel buffer).
+-    */
++   osmesa_write_buffer(osmesa, buffer, osbuffer);
+ 
+    if (!osmesa->ever_used) {
+       /* one-time init, just postprocessing for now */

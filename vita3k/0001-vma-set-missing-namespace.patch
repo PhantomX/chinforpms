@@ -1,0 +1,25 @@
+From 8938a0b75bdbd13f090dacb5f4f5991daa6a99c3 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 22 May 2024 22:28:16 -0300
+Subject: [PATCH] vma: set missing namespace
+
+---
+ VulkanMemoryAllocator-Hpp/include/vk_mem_alloc_funcs.hpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc_funcs.hpp b/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc_funcs.hpp
+index 5510418..0550efb 100644
+--- a/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc_funcs.hpp
++++ b/VulkanMemoryAllocator-Hpp/include/vk_mem_alloc_funcs.hpp
+@@ -1,6 +1,8 @@
+ #ifndef VULKAN_MEMORY_ALLOCATOR_FUNCS_HPP
+ #define VULKAN_MEMORY_ALLOCATOR_FUNCS_HPP
+ 
++using namespace VULKAN_HPP_NAMESPACE::detail;
++
+ namespace VMA_HPP_NAMESPACE {
+ 
+ #ifndef VULKAN_HPP_DISABLE_ENHANCED_MODE
+-- 
+2.45.1
+

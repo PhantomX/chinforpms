@@ -23,7 +23,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.0.7
+Version:        24.1.0
 Release:        1%{?dist}
 
 License:        MIT
@@ -113,6 +113,7 @@ EOF
   -Dgallium-va=disabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
+  -Dteflon=false \
   -Dgallium-opencl=disabled \
   -Dgallium-rusticl=false \
   -Dvulkan-drivers="" \
@@ -123,7 +124,8 @@ EOF
   -Dgbm=disabled \
   -Dglx=xlib \
   -Degl=disabled \
-  -Dglvnd=false \
+  -Dglvnd=disabled \
+  -Dintel-rt=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=disabled \
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
@@ -173,6 +175,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Wed May 22 2024 Phantom X <megaphantomx at hotmail dot com> - 24.1.0-1
+- 24.1.0
+
 * Wed May 08 2024 Phantom X <megaphantomx at hotmail dot com> - 24.0.7-1
 - 24.0.7
 

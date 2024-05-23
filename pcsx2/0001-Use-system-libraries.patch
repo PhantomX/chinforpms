@@ -129,7 +129,7 @@ index b8339b1..6a288c9 100644
 +endif()
  
  # Find the Qt components that we need.
- find_package(Qt6 6.6.2 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
+ # Should be 6.7.1, but held back on 6.7.0 because of Flatpak.
 @@ -135,7 +207,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.

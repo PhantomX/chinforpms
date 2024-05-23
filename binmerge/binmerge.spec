@@ -1,6 +1,6 @@
-%global commit 3802aaff10ddfc58abc6f55900e68d2942ed7b9f
+%global commit aa827005c71f18c8723017e26738d5b1920b26af
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230908
+%global date 20240313
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -10,8 +10,8 @@ BuildArch:      noarch
 %endif
 
 Name:           binmerge
-Version:        1.0
-Release:        4%{?dist}
+Version:        1.0.3
+Release:        1%{?dist}
 Summary:        Tool to merge multiple bin/cue tracks into one
 
 License:        GPL-2.0-only
@@ -50,6 +50,9 @@ install -pm0755 %{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed May 22 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-1.20240313gitaa82700
+- 1.0.3
+
 * Fri Oct 01 2021 Phantom X <megaphantomx at hotmail dot com> - 1.0-2.20210703git7218522
 - Bump
 

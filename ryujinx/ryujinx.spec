@@ -30,8 +30,8 @@
 %global avalonia_ver2 11.0.4
 %global avalonia_ver3 11.0.0
 %global avalonia_build_services_ver 0.0.29
-%global avalonia_svg_ver 11.0.0.16
-%global concentus_ver 1.1.7
+%global avalonia_svg_ver 11.0.0.18
+%global concentus_ver 2.2.0
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.2.1.24
 %global excss_ver 4.2.3
@@ -126,13 +126,13 @@
 %global sharpziplib_ver 1.4.2
 %global silk_net_ver 2.16.0
 %global sixlabors_fonts_ver 1.0.0
-%global sixlabors_imagesharp_ver 2.1.7
+%global sixlabors_imagesharp_ver 2.1.8
 %global sixlabors_imagesharp_drawing_ver 1.0.0
 %global skiasharp_ver 2.88.7
 %global skiasharp_ver2 2.88.6
 %global skiasharp_ver3 2.88.3
 %global spb_ver 0.0.4-build32
-%global svg_model_ver 1.0.0.16
+%global svg_model_ver 1.0.0.18
 %global system_appcontext_ver 4.1.0
 %global system_buffers_ver 4.0.0
 %global system_buffers_ver2 4.3.0
@@ -251,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1279
+Version:        1.1.1318
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.0.7
+Version:        24.1.0
 Release:        100%{?dist}
 
 Epoch:          100
@@ -139,6 +139,7 @@ Enhances:       %{pkgname}%{?_isa}
   -Dgallium-va=enabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
+  -Dteflon=false \
   -Dgallium-opencl=disabled \
   -Dgallium-rusticl=false \
   -Dvulkan-drivers="" \
@@ -150,8 +151,8 @@ Enhances:       %{pkgname}%{?_isa}
   -Dgbm=enabled \
   -Dglx=dri \
   -Degl=enabled \
-  -Dglvnd=true \
-  -Dintel-clc=disabled \
+  -Dglvnd=enabled \
+  -Dintel-rt=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -213,6 +214,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed May 22 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.1.0-100
+- 24.1.0
+
 * Wed May 08 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.0.7-100
 - 24.0.7
 

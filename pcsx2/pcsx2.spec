@@ -32,7 +32,7 @@
 %bcond_with     native
 # Enable system fmt
 %bcond_without fmt
-%bcond_with shaderc
+%bcond_without shaderc
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
 %bcond_without  vulkan
@@ -56,7 +56,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5825
+Version:        1.7.5837
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -87,11 +87,11 @@ Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
-Patch10:        0001-SmallString.h-disable-force-inline-in-SmallStackStri.patch
+Patch10:        %{url}/commit/68bbc2cc9202063ca9c8ef142dafcef093d91d6b.patch#/%{name}-gh-68bbc2c.patch
+Patch11:        %{url}/commit/99e38bc458e89061fa0e3723b23d44ea4dbfd99b.patch#/%{name}-gh-99e38bc.patch
 
 Patch500:       0001-cmake-shaderc-patched.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
-Patch510:       %{url}/commit/f084e76f3620c96f362d70a6f2d8e8df3ea9085e.patch#/%{name}-gh-revert-f084e76.patch
 
 
 ExclusiveArch:  x86_64
@@ -146,7 +146,7 @@ BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(RapidJSON)
 BuildRequires:  cmake(ryml) >= 0.4.1
-BuildRequires:  cmake(Qt6Core) >= 6.6
+BuildRequires:  cmake(Qt6Core) >= 6.7
 BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6GuiTools)
@@ -158,6 +158,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  pkgconfig(sdl2) >= 2.30.0
 %if %{with shaderc}
 BuildRequires:  pkgconfig(shaderc-patched)
+Requires:       libshaderc-patched%{?_isa}
 %else
 Provides:       bundled(shaderc-patched) = %{version10}
 %endif
@@ -179,7 +180,6 @@ BuildRequires:  cmake(VulkanHeaders) >= 1.3.272
 %endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
-BuildRequires:  libaio-devel
 BuildRequires:  perl-interpreter
 
 Requires:       pcsx2_patches
@@ -214,8 +214,6 @@ this emulator anyway.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -M 499 -p1
-
-%patch -P 510 -p1 -R
 
 rm -rf .git
 

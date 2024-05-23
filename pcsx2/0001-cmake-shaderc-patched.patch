@@ -1,47 +1,55 @@
-From d0b909119a04f2b74ec26e2a932e97d047771795 Mon Sep 17 00:00:00 2001
+From 0045659c76258944f46813cbbf05c0373d888531 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:52:21 -0300
 Subject: [PATCH] cmake: shaderc-patched
 
 ---
  cmake/FindShaderc.cmake                     | 4 ++--
- pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/FindShaderc.cmake b/cmake/FindShaderc.cmake
-index 17d2296..a48b9e3 100644
+index 760184a..42ae737 100644
 --- a/cmake/FindShaderc.cmake
 +++ b/cmake/FindShaderc.cmake
-@@ -5,14 +5,14 @@
+@@ -5,13 +5,13 @@
  #  SHADERC_LIBRARIES - The libraries needed to use SHADERC
  
- FIND_PATH(
+ find_path(
 -    SHADERC_INCLUDE_DIR shaderc/shaderc.h
 +    SHADERC_INCLUDE_DIR shaderc-patched/shaderc.h
-     HINTS /usr/include /usr/local/include
      ${SHADERC_PATH_INCLUDES}
  )
  
- FIND_LIBRARY(
+ find_library(
      SHADERC_LIBRARY
--    NAMES shaderc_shared
-+    NAMES shaderc-patched_shared
+-    NAMES shaderc_shared.1 shaderc_shared
++    NAMES shaderc-patched_shared.1 shaderc-patched_shared
      PATHS ${ADDITIONAL_LIBRARY_PATHS} ${SHADERC_PATH_LIB}
  )
  
 diff --git a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
-index b71e930..60b6c27 100644
+index d4df386..86e8905 100644
 --- a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
 +++ b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
-@@ -16,7 +16,7 @@
+@@ -18,7 +18,7 @@
  #include "common/Path.h"
  
  #include "fmt/format.h"
--#include "shaderc/shaderc.hpp"
-+#include "shaderc-patched/shaderc.hpp"
+-#include "shaderc/shaderc.h"
++#include "shaderc-patched/shaderc.h"
  
  #include <cstring>
- #include <fstream>
+ #include <memory>
+@@ -142,7 +142,7 @@ bool dyn_shaderc::Open()
+ 	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared");
+ #else
+ 	// Use versioned, bundle post-processing adds it..
+-	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared", 1);
++	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc-patched_shared", 1);
+ #endif
+ 	if (!s_library.Open(libname.c_str(), &error))
+ 	{
 -- 
 2.45.1
 
