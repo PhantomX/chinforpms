@@ -16,7 +16,7 @@
 %global ffmpegcodec 114023
 
 Name:           vivaldi
-Version:        6.7.3329.31
+Version:        6.7.3329.35
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -156,7 +156,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
-* Wed May 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.3329.31-1
+* Fri May 24 2024 - 6.7.3329.35-1
+- 6.7.3329.35
+
+* Wed May 15 2024 - 6.7.3329.31-1
 - 6.7.3329.31
 
 * Tue May 14 2024 - 6.7.3329.29-1

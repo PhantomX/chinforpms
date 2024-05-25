@@ -1,7 +1,7 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.31.0
-Release:        101%{?dist}
+Version:        2.32.0
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -56,6 +56,7 @@ BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5PrintSupport)
 BuildRequires:  cmake(Qt5Qml)
 BuildRequires:  cmake(Qt5QuickWidgets)
+BuildRequires:  cmake(Qt5QuickControls2)
 BuildRequires:  cmake(Qt5Script)
 BuildRequires:  cmake(Qt5Sql)
 BuildRequires:  cmake(Qt5Svg)
@@ -151,6 +152,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.d
 
 
 %changelog
+* Fri May 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.32.0-100
+- 2.32.0
+
 * Wed Jan 24 2024 Phantom X - 1:2.31.0-101
 - Rebuild (qt5)
 

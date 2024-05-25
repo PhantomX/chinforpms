@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.0.1
+Version:        5.0.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -131,9 +131,7 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 Requires:       qt6-qtimageformats%{?_isa}
 
-# kcoreaddons-qt6
-BuildRequires:  extra-cmake-modules >= 5.98
-BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(KF6CoreAddons)
 
 %if %{with wayland}
 BuildRequires:  cmake(PlasmaWaylandProtocols) >= 1.6.0
@@ -192,7 +190,6 @@ Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(cld3) = 3.0.13~gitb48dc46
 Provides:       bundled(rlottie) = 0~git
 Provides:       bundled(libtgvoip) = 2.4.4
-Provides:       bundled(kf5-kcoreaddons) = 0~git%{kf5ver}
 Provides:       bundled(cppgir) = 0~git%{cppgir_ver}
 %if %{with bin}
 Provides:       bundled(qt6-qtcore) = 6.5.2
@@ -225,7 +222,7 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 %if %{without minizip}
 rm -rf Telegram/minizip Telegram/ThirdParty/minizip
@@ -233,7 +230,6 @@ rm -rf Telegram/minizip Telegram/ThirdParty/minizip
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i cmake/external/rlottie/CMakeLists.txt \
-  cmake/external/kcoreaddons/CMakeLists.txt \
   cmake/external/gsl/CMakeLists.txt
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
@@ -358,6 +354,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri May 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.2-100
+- 5.0.2
+- System kcoreaddons
+
 * Sun May 05 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.1-100
 - 5.0.1
 
