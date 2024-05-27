@@ -148,15 +148,15 @@ diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
 index 20d8b40..cdc6744 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
-@@ -26,7 +26,7 @@
- #include "ext/rcheevos/include/rc_hash.h"
- #include "ext/rcheevos/src/rhash/md5.h"
+@@ -33,7 +33,7 @@
+ #include "ext/rcheevos/include/rc_api_user.h"
+ #include "ext/rcheevos/include/rc_url.h"
  
 -#include "ext/rapidjson/include/rapidjson/document.h"
 +#include "rapidjson/document.h"
  
+ #include "Common/Crypto/md5.h"
  #include "Common/Log.h"
- #include "Common/File/Path.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
 index 6c88b29..1142966 100644
 --- a/Core/Util/PPGeDraw.cpp

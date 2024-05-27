@@ -1,0 +1,10 @@
+
+WINEESYNC override
+=================================
+Enable with WINEESYNC=1 environment variable
+
+WINEFSYNC override
+=================================
+Enable with WINEFSYNC=1 environment variable
+
+WINEFSYNC_SPINCOUNT=value

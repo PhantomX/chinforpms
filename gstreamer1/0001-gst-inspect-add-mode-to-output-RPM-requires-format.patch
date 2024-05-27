@@ -7,10 +7,10 @@ Subject: [PATCH] gst-inspect: add mode to output RPM requires format
  subprojects/gstreamer/tools/gst-inspect.c | 277 ++++++++++++++++++++--
  1 file changed, 262 insertions(+), 15 deletions(-)
 
-diff --git gstreamer/tools/gst-inspect.c gstreamer/tools/gst-inspect.c
+diff --git a/subprojects/gstreamer/tools/gst-inspect.c b/subprojects/gstreamer/tools/gst-inspect.c
 index 7edd8634a5..d38bf1fbd8 100644
---- gstreamer/tools/gst-inspect.c
-+++ gstreamer/tools/gst-inspect.c
+--- a/subprojects/gstreamer/tools/gst-inspect.c
++++ b/subprojects/gstreamer/tools/gst-inspect.c
 @@ -1934,11 +1934,228 @@ print_tracer_info (GstPluginFeature * feature, gboolean print_names)
    return 0;
  }
@@ -349,19 +349,7 @@ index 7edd8634a5..d38bf1fbd8 100644
      {"plugin", '\0', 0, G_OPTION_ARG_NONE, &plugin_name,
          N_("List the plugin contents"), NULL},
      {"types", 't', 0, G_OPTION_ARG_STRING, &types,
---- a/tools/gst-inspect.c~	2024-04-30 08:50:02.603031028 -0500
-+++ b/tools/gst-inspect.c	2024-04-30 08:51:26.239844637 -0500
-@@ -2408,6 +2408,7 @@
-   gboolean do_print_blacklist = FALSE;
-   gboolean plugin_name = FALSE;
-   gboolean print_aii = FALSE;
-+  gboolean print_aii_rpm = FALSE;
-   gboolean uri_handlers = FALSE;
-   gboolean check_exists = FALSE;
-   gboolean check_version = FALSE;
---- a/tools/gst-inspect.c~	2024-04-30 12:02:07.582204259 -0500
-+++ b/tools/gst-inspect.c	2024-04-30 13:15:19.424682778 -0500
-@@ -2581,7 +2581,7 @@
+@@ -2364,7 +2607,7 @@ real_main (int argc, char *argv[])
        /* if there is such a plugin, print out info */
        if (plugin) {
          if (print_aii) {
@@ -369,8 +357,8 @@ index 7edd8634a5..d38bf1fbd8 100644
 +          print_plugin_automatic_install_info (plugin, print_aii_rpm);
          } else {
            print_plugin_info (plugin);
-           print_plugin_features (plugin);
-@@ -2594,13 +2594,17 @@
+           print_plugin_status (plugin);
+@@ -2378,14 +2621,18 @@ real_main (int argc, char *argv[])
  
            if (plugin) {
              if (print_aii) {
@@ -378,6 +366,7 @@ index 7edd8634a5..d38bf1fbd8 100644
 +              print_plugin_automatic_install_info (plugin, print_aii_rpm);
              } else {
                print_plugin_info (plugin);
+               print_plugin_status (plugin);
                print_plugin_features (plugin);
              }
            } else {
@@ -390,3 +379,16 @@ index 7edd8634a5..d38bf1fbd8 100644
              g_clear_error (&error);
              exit_code = -1;
              goto done;
+-- 
+2.43.2
+
+--- a/a/a/tools/gst-inspect.c~	2024-04-30 08:50:02.603031028 -0500
++++ b/b/b/tools/gst-inspect.c	2024-04-30 08:51:26.239844637 -0500
+@@ -2408,6 +2408,7 @@
+   gboolean do_print_blacklist = FALSE;
+   gboolean plugin_name = FALSE;
+   gboolean print_aii = FALSE;
++  gboolean print_aii_rpm = FALSE;
+   gboolean uri_handlers = FALSE;
+   gboolean check_exists = FALSE;
+   gboolean check_version = FALSE;

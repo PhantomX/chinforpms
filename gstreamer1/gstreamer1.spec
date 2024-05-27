@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.22.12
+Version:        1.24.3
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -30,7 +30,7 @@ Source0:        gstreamer-%{version}.tar.xz
 Source0:        http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-%{version}.tar.xz
 %endif
 ## For GStreamer RPM provides
-Patch0:         gstreamer-inspect-rpm-format.patch
+Patch0:         0001-gst-inspect-add-mode-to-output-RPM-requires-format.patch
 Source1:        gstreamer1.prov
 Source2:        gstreamer1.attr
 
@@ -50,6 +50,7 @@ BuildRequires:  libunwind-devel
 %endif
 BuildRequires:  elfutils-devel
 BuildRequires:  bash-completion
+BuildRequires:  rustc
 
 
 %description
@@ -88,13 +89,18 @@ GStreamer streaming media framework.
 %endif
 
 %prep
-%autosetup -p1 -n gstreamer-%{version}
+%autosetup -p3 -n gstreamer-%{version}
 
 # Dirty multilib fix
-sed -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g" \
+sed \
+  -e "/GST_PLUGIN_SCANNER_INSTALLED/s|, 'gst-plugin-scanner|\0-%{__isa_bits}|g" \
+  -e "/GST_PTP_HELPER_INSTALLED/s|, 'gst-ptp-helper|\0-%{__isa_bits}|g" \
   -i meson.build
-sed -e '/EXESUFFIX/s| "gst-plugin-scanner|\0-%{__isa_bits}|g' \
+
+sed -e '/filenamev/s| "gst-plugin-scanner|\0-%{__isa_bits}|g' \
   -i gst/gstpluginloader.c
+sed -e '/filenamev/s| "gst-ptp-helper|\0-%{__isa_bits}|g' \
+  -i libs/gst/net/gstptpclock.c
 
 
 %build
@@ -114,6 +120,7 @@ sed -e '/EXESUFFIX/s| "gst-plugin-scanner|\0-%{__isa_bits}|g' \
 
 # Dirty multilib fix
 mv %{buildroot}%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner{,-%{__isa_bits}}
+mv %{buildroot}%{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper{,-%{__isa_bits}}
 
 for i in inspect launch stats typefind ;do
   bin=gst-$i-%{majorminor}
@@ -154,7 +161,13 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/libgstcontroller-%{majorminor}.so.*
 %{_libdir}/libgstnet-%{majorminor}.so.*
 
-%{_libexecdir}/gstreamer-%{majorminor}/
+%dir %{_libexecdir}/gstreamer-%{majorminor}/
+%{_libexecdir}/gstreamer-%{majorminor}/gst-completion-helper
+%{_libexecdir}/gstreamer-%{majorminor}/gst-hotdoc-plugins-scanner
+%{_libexecdir}/gstreamer-%{majorminor}/gst-plugins-doc-cache-generator
+%{_libexecdir}/gstreamer-%{majorminor}/gst-plugin-scanner-%{__isa_bits}
+%attr(755,root,root) %caps(cap_net_bind_service,cap_net_admin,cap_sys_nice=ep) %{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper-%{__isa_bits}
+%dnl %{_libexecdir}/gstreamer-%{majorminor}/gst-ptp-helper-test
 
 %dir %{_libdir}/gstreamer-%{majorminor}
 %{_libdir}/gstreamer-%{majorminor}/libgstcoreelements.so
@@ -166,10 +179,14 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/girepository-1.0/GstController-%{majorminor}.typelib
 %{_libdir}/girepository-1.0/GstNet-%{majorminor}.typelib
 
-%{_bindir}/gst-inspect-%{majorminor}*
-%{_bindir}/gst-launch-%{majorminor}*
-%{_bindir}/gst-stats-%{majorminor}*
-%{_bindir}/gst-typefind-%{majorminor}*
+%{_bindir}/gst-inspect-%{majorminor}
+%{_bindir}/gst-inspect-%{majorminor}-%{__isa_bits}
+%{_bindir}/gst-launch-%{majorminor}
+%{_bindir}/gst-launch-%{majorminor}-%{__isa_bits}
+%{_bindir}/gst-stats-%{majorminor}
+%{_bindir}/gst-stats-%{majorminor}-%{__isa_bits}
+%{_bindir}/gst-typefind-%{majorminor}
+%{_bindir}/gst-typefind-%{majorminor}-%{__isa_bits}
 
 %{_rpmconfigdir}/gstreamer1.prov
 %{_rpmconfigdir}/fileattrs/gstreamer1.attr
@@ -229,6 +246,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Mon May 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.24.3-100
+- 1.24.3
+
 * Wed May 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1.22.12-100
 - 1.22.12
 

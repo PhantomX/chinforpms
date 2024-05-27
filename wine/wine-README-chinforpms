@@ -12,16 +12,6 @@ WINE_DISABLE_WRITE_WATCH override
 =================================
 Enable with WINE_DISABLE_WRITE_WATCH=1 environment variable
 
-WINEESYNC override
-=================================
-Enable with WINEESYNC=1 environment variable
-
-WINEFSYNC override
-=================================
-Enable with WINEFSYNC=1 environment variable
-
-WINEFSYNC_SPINCOUNT=value
-
 WINE_LARGE_ADDRESS_AWARE override
 =================================
 Enable with WINE_LARGE_ADDRESS_AWARE=1 environment variable

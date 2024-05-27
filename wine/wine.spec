@@ -1,7 +1,7 @@
-%global commit c2a4f3810b17f9efa3c848b473b19f641f7881f6
+%global commit b210a204137dec8d2126ca909d762454fd47e963
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240227
-%bcond_with snapshot
+%global date 20240524
+%bcond_without snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -51,7 +51,6 @@
 %global with_debug 0
 %endif
 %global no64bit   0
-%global winefastsync 5.16
 %global winegecko 2.47.4
 %global winemono  9.1.0
 %global winentsync 6.9~rc3
@@ -105,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.9
+%global wine_stagingver 68925c8f61b9fdcc869565da7cb3124f898730bc
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -116,7 +115,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f019cc664323e248d3e616d482f68a55a1fa13b4
+%global tkg_id 512cdf8f7b6e87807cd42efb091da37d208dd7c5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -129,10 +128,8 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%bcond_with childwindow
-# fastsync/winesync
-%bcond_without fastsync
-# ntsync (disables fastsync and fsync)
+%bcond_without childwindow
+# ntsync (disables fsync)
 %bcond_without ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
@@ -164,7 +161,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.9
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -187,7 +184,7 @@ Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
 Source7:        wine-README-chinforpms-fshack
-Source8:        wine-README-chinforpms-fastsync
+Source8:        wine-README-chinforpms-fsync
 Source9:        wine-README-chinforpms-ntsync
 
 Source50:       https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml/vk.xml#/vk-%{winevulkan}.xml
@@ -255,20 +252,17 @@ Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fs
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
-Patch1025:       %{tkg_url}/misc/childwindow/OPWR-proton.patch#/%{name}-tkg-OPWR-proton.patch
 Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
 Patch1028:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
 Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
 Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
-Patch1032:       %{tkg_url}/hotfixes/proton_fs_hack_staging/winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.mypatch#/%{name}-tkg-winex11.drv_Add_a_GPU_for_each_Vulkan_device_that_was_not_tied_to_an_XRandR_provider.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1036:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
 Patch1037:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
-Patch1050:       %{tkg_url}/misc/fastsync/fastsync-staging-protonify.patch#/%{name}-tkg-fastsync-staging-protonify.patch
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
@@ -289,13 +283,11 @@ Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.pa
 Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
-Patch1096:       0001-tkg-no-childwindow-fixup-2.patch
 Patch1097:       0001-tkg-proton-cpu-topology-overrides-fixup-1.patch
 Patch1098:       0001-tkg-proton-cpu-topology-overrides-fixup-2.patch
 
 Patch1300:       nier.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
-Patch1302:       0001-staging-update-nvapi-and-nvencodeapi-autoconf.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
 
@@ -386,9 +378,6 @@ BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xcursor)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xfixes)
-%if %{with childwindow}
-BuildRequires:  pkgconfig(xpresent)
-%endif
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xmu)
@@ -402,9 +391,6 @@ BuildRequires:  libappstream-glib
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
-%if (%{with fastsync} && %{without ntsync})
-BuildRequires:  winesync-devel >= %{winefastsync}
-%endif
 %if %{with ntsync}
 BuildRequires:  ntsync-devel >= %{winentsync}
 %endif
@@ -430,9 +416,6 @@ Requires:       mesa-dri-drivers(x86-32)
 Recommends:     wine-dxvk(x86-32)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-32)
-%if (%{with fastsync} && %{without ntsync})
-Recommends:     winesync >= %{winefastsync}
-%endif
 %if %{with ntsync}
 Recommends:     ntsync >= %{winentsync}
 %endif
@@ -509,9 +492,6 @@ Requires:       libXcursor(x86-32)
 Requires:       libXfixes(x86-32)
 Requires:       libXi(x86-32)
 Requires:       libXinerama(x86-32)
-%if %{with childwindow}
-Requires:       libXpresent(x86-32)
-%endif
 Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXxf86vm(x86-32)
@@ -541,9 +521,6 @@ Requires:       libXcursor(x86-64)
 Requires:       libXfixes(x86-64)
 Requires:       libXi(x86-64)
 Requires:       libXinerama(x86-64)
-%if %{with childwindow}
-Requires:       libXpresent(x86-64)
-%endif
 Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXxf86vm(x86-64)
@@ -570,9 +547,6 @@ Requires:       gstreamer1-plugins-good
 Requires:       libgcrypt
 Requires:       libXcursor
 Requires:       libXfixes
-%if %{with childwindow}
-Requires:       libXpresent
-%endif
 Requires:       libXrender
 Requires:       libpcap
 Requires:       mesa-libOSMesa
@@ -933,7 +907,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %if %{with childwindow}
 %patch -P 1024 -p1
-%patch -P 1025 -p1
 %endif
 %if %{with sharedgpures}
 %patch -P 1060 -p1
@@ -951,13 +924,8 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %else
 %patch -P 1027 -p1
 %endif
-%if %{without childwindow}
 %patch -P 1095 -p1
-%endif
 %patch -P 1028 -p1
-%if %{without childwindow}
-%patch -P 1096 -p1
-%endif
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
@@ -967,12 +935,8 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{with ntsync}
 %patch -P 1055 -p1
 %endif
-%if (%{with fastsync} && %{without ntsync})
-%patch -P 1050 -p1
-%endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
-%dnl %patch -P 1032 -p1
 %patch -P 1034 -p1
 %patch -P 1035 -p1
 %patch -P 1036 -p1
@@ -985,7 +949,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1092 -p1
 %patch -P 1300 -p1
 %patch -P 1301 -p1
-%dnl %patch -P 1302 -p1
 %patch -P 1303 -p1
 %patch -P 1304 -p1
 
@@ -1026,15 +989,14 @@ cat README.chinforpms %{SOURCE7} >> README.chinforpms.fshack
 touch -r README.chinforpms README.chinforpms.fshack
 mv -f README.chinforpms.fshack README.chinforpms
 %endif
-%if (%{with fastsync} && %{without ntsync})
-cat README.chinforpms %{SOURCE8} >> README.chinforpms.fastsync
-touch -r README.chinforpms README.chinforpms.fastsync
-mv -f README.chinforpms.fastsync README.chinforpms
-%endif
 %if %{with ntsync}
 cat README.chinforpms %{SOURCE9} >> README.chinforpms.ntsync
 touch -r README.chinforpms README.chinforpms.ntsync
 mv -f README.chinforpms.ntsync README.chinforpms
+%else
+cat README.chinforpms %{SOURCE8} >> README.chinforpms.fsync
+touch -r README.chinforpms README.chinforpms.fsync
+mv -f README.chinforpms.fsync README.chinforpms
 %endif
 
 cp -p %{SOURCE502} README.tahoma
@@ -2590,6 +2552,9 @@ fi
 
 
 %changelog
+* Sun May 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.9-101.20240524gitb210a20
+- Reenable childwindow
+
 * Sat May 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.9-100
 - 9.9
 

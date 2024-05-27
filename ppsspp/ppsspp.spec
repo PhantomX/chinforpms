@@ -3,13 +3,18 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+%bcond_without clang
+%if %{with clang}
+%global toolchain clang
+%endif
+
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 768174e19ca80bccadc067bd2c7adc0d35fb4602
+%global commit 1754fd15040ede8ab8d8bc7f16a317aa65f6a888
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240327
+%global date 20240526
 %bcond_without snapshot
 
 # Enable Qt build
@@ -55,7 +60,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 88a671e3091b8a02cdda136d4de0345524fd2387
+%global commit9 e88f74992527b9ade48ae1591378ec2cf363bef9
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -74,7 +79,7 @@
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -122,8 +127,13 @@ ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 ExcludeArch: %{power64}
 
 BuildRequires:  cmake
+%if %{with clang}
+BuildRequires:  compiler-rt
+BuildRequires:  clang
+%else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+%endif
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 %if %{with ffmpeg}
@@ -299,9 +309,12 @@ sed \
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
+  -e '/--extra-cflags/i\    --cc="${CC:-gcc}" \\' \
   -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
   -i linux_*.sh
+
+sed -e "s|_cflags_speed='.*'|_cflags_speed=''|g" -i configure
 
 rm -rf */*/include
 rm -rf */*/lib
@@ -310,11 +323,8 @@ rm -rf wiiu
 popd
 %endif
 
-sed -e 's|std=c++11|std=c++17|' -i ext/native/tools/CMakeLists.txt
-
 
 %build
-%set_build_flags
 pushd ext/native/tools
 %cmake \
 %{nil}
@@ -405,7 +415,7 @@ rm -f %{buildroot}/usr/share/applications/*.desktop
   mv %{buildroot}%{_bindir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
 %endif
 
-install -pm0755 ext/native/tools/%{_vpath_builddir}/{atlastool,zimtool} \
+install -pm0755 ext/native/tools/%{_vpath_builddir}/build/{atlastool,zimtool} \
   %{buildroot}%{_bindir}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
