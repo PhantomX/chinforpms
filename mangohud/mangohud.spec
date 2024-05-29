@@ -7,7 +7,6 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%bcond_with app
 %bcond_with sysvulkan
 %ifnarch s390x
 %bcond_without tests
@@ -25,7 +24,7 @@
 %global ver    %%(echo %{version} | sed -z 's/\\./-/3')
 
 Name:           mangohud
-Version:        0.7.1
+Version:        0.7.2
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -38,6 +37,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{ver}/%{pkgname}-v%{ver}.tar.gz
 %endif
 Source3:        %{name}.in
+Source4:        README.Fedora.md
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
 %if %{without sysvulkan}
@@ -47,10 +47,6 @@ Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/
 Source14:       https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.zip
 Source15:       https://wrapdb.mesonbuild.com/v2/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-1-wrap.zip
 
-# MangoHud switched to bundled vulkan-headers since 0.6.9 version. This rebased
-# upstream patch which reverts this change.
-# https://github.com/flightlessmango/MangoHud/commit/bc282cf300ed5b6831177cf3e6753bc20f48e942
-Patch0:         mangohud-0.6.9-use-system-vulkan-headers.patch
 Patch1:         0001-Change-loader-files-names.patch
 
 BuildRequires:  appstream
@@ -70,8 +66,9 @@ BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(spdlog)
 BuildRequires:  pkgconfig(vulkan)
-BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  python3
 BuildRequires:  python3-mako
 BuildRequires:  unzip
@@ -124,6 +121,8 @@ unzip %{S:15} -d subprojects/
 
 rm -f include/nvml.h
 
+cp -p %{S:4} .
+
 cp -f -p %{S:3} bin/%{name}.in
 sed -e 's|@version@|%{version}-%{release}|g' -i bin/%{name}.in
 
@@ -152,9 +151,8 @@ sed \
   -Ddynamic_string_tokens=true \
   -Dglibcxx_asserts=false \
   -Duse_system_spdlog=enabled \
-  -Duse_system_vulkan=%{?with_sysvulkan:enabled}%{!?with_sysvulkan:disabled} \
-  -Dmangoapp=%{?with_app:true}%{!?with_app:false} \
-  -Dmangoapp_layer=%{?with_app:true}%{!?with_app:false} \
+  -Dmangoapp=true \
+  -Dmangoapp_layer=true \
   -Dmangohudctl=true \
   -Dinclude_doc=true \
   -Dwith_nvml=disabled \
@@ -185,14 +183,14 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 %files
 %license LICENSE
-%doc README.md data/%{pkgname}.conf
-%{_bindir}/mango*
+%doc README.md README.Fedora.md data/%{pkgname}.conf
+%{_bindir}/mangoapp
+%{_bindir}/mangohud
+%{_bindir}/mangohudctl
 %{_libdir}/%{name}/lib%{pkgname}.so
 %{_libdir}/%{name}/lib%{pkgname}_dlsym.so
 %{_libdir}/%{name}/lib%{pkgname}_opengl.so
-%if %{with app}
 %{_libdir}/%{name}/libMangoApp.so
-%endif
 %{_datadir}/icons/hicolor/*/apps/*.svg
 %{_datadir}/vulkan/implicit_layer.d/*.json
 %{_mandir}/man1/mango*.1*
@@ -203,6 +201,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Tue May 28 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.2-100
+- 0.7.2
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.1-100
 - 0.7.1
 

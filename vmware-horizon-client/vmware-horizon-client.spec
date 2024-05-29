@@ -1,20 +1,20 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
+# Adapted from: https://github.com/rathann/vmware-horizon-client
+
 %undefine _missing_build_ids_terminate_build
-%undefine _debugsource_packages
+%undefine _enable_debug_packages
 %undefine _unique_build_ids
 %global _build_id_links none
 %global _no_recompute_build_ids 1
 
-%global cart   23FQ4
-%global yymm   2212.1
+%global cart   25FQ1
+%global yymm   2312.1
 %global pdfver %(echo %{yymm} | tr -d '.' )
 %global pdfiver %(echo %{yymm} | cut -d. -f1 )
-%global ver    8.8.1
-%global rel    21219348
+%global ver    8.12.1
+%global rel    23543969
 %global fver   %{yymm}-%{ver}-%{rel}
-%global s4br_ver 16.0.0.0
-%global s4br_bld 20864211
 %ifarch x86_64
 %global mark64 ()(64bit)
 %global vhc_arch x64
@@ -22,6 +22,13 @@
 %global mark64 %nil
 %global vhc_arch armhf
 %endif
+%if 0%{?fedora} > 39
+%bcond bundled_ssl 0
+%else
+%bcond bundled_ssl 1
+%endif
+
+%global ffmpeg_ver 5.1.2
 
 Name:           vmware-horizon-client
 Version:        %{yymm}.%{ver}.%{rel}
@@ -41,9 +48,6 @@ Source14:       vmware-usbarbitrator.preset
 Source15:       vmware-ftsprhv.preset
 Source16:       vmware-ftscanhv.preset
 
-Patch0:         %{name}-fedora.patch
-Patch1:         %{name}-systemd.patch
-
 ExclusiveArch:  armv7hl x86_64
 
 BuildRequires:  chrpath
@@ -53,12 +57,10 @@ BuildRequires:  systemd-rpm-macros
 BuildRequires:  ImageMagick
 
 Provides:       bundled(atk) = 2.28.1
-Provides:       bundled(atkmm) = 2.22.7
 Provides:       bundled(boost) = 1.67
 Provides:       bundled(bzip2) = 1.0.6
 Provides:       bundled(c-ares) = 1.13.0
 Provides:       bundled(curl) = 7.74
-Provides:       bundled(glibmm24) = 2.44.0
 Provides:       bundled(gtkmm30) = 3.10.1
 Provides:       bundled(hal) = 0.5.12
 Provides:       bundled(icu) = 60.2
@@ -66,18 +68,43 @@ Provides:       bundled(libjpeg-turbo) = 1.4.2
 Provides:       bundled(libwebrtc) = 90
 Provides:       bundled(libxml2) = 2.9.9
 Provides:       bundled(mechanical-fonts) = 1.00
-Provides:       bundled(openssl) = 1.0.2y
+%if %{with bundled_ssl}
+Provides:       bundled(curl) = 8.5.0
+Provides:       bundled(openssl) = 3.0.12
+%endif
 Provides:       bundled(opus) = 1.1.4.60
-Provides:       bundled(pangomm) = 2.34.0
 Provides:       bundled(speex) = 1.2rc3
 Provides:       bundled(zlib) = 1.2.11
 Provides:       %{name}-seamless-window = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-media-provider < 2303.8.9.0.21435420
 Obsoletes:      %{name}-seamless-window < 5.2.0.14604769
 Requires:       %{_bindir}/pidof
 Requires:       libudev.so.1%{mark64}
 
 %global __provides_exclude_from ^%{_libdir}/(vmware|pcoip)/.*$
-%global __requires_exclude ^lib\(atkmm-1\\.6\\.so\\.1\|curl\\.so\\.4\|g\(io\|lib\)mm-2\\.4\\.so\\.1\|g\(dk\|tk\)mm-3\\.0\\.so\\.1\|pangomm-1\\.4\\.so\\.1\|\(crypto\|ssl\)\\.so\\.1\\.0\\.2\|udev\\.so\\.0\|\(cef\|clientSdkCPrimitive\|crtbora\|GLESv2\|json_linux-gcc-4.1.1_libmt\|vmware\(base\|-view-usbd\)\)\\.so).*$
+%global __requires_exclude ^libatkmm-.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libav(codec|util)\\.so.*$
+%global __requires_exclude %__requires_exclude|^libcef\\.so.*$
+%global __requires_exclude %__requires_exclude|^libclientSdkCPrimitive\\.so.*$
+%global __requires_exclude %__requires_exclude|^libcrtbora\\.so.*$
+%global __requires_exclude %__requires_exclude|^libgiomm-.*.so.*$
+%global __requires_exclude %__requires_exclude|^libglibmm-.*.so.*$
+%global __requires_exclude %__requires_exclude|^libgdkmm-.*.so.*$
+%global __requires_exclude %__requires_exclude|^libgtkmm-.*.so.*$
+%global __requires_exclude %__requires_exclude|^libpangomm-.*.so.*$
+%if %{with bundled_ssl}
+%global __requires_exclude %__requires_exclude|^libcrypto\\.so.*$
+%global __requires_exclude %__requires_exclude|^libcurl\\.so.*$
+%global __requires_exclude %__requires_exclude|^libssl\\.so.*$
+%endif
+%global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
+%global __requires_exclude %__requires_exclude|^libjson_linux-gcc-.*_libmt\\.so.*$
+%global __requires_exclude %__requires_exclude|^libMicrosoft.SlimCV.VBM\\.so.*$
+%global __requires_exclude %__requires_exclude|^libudev\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvmwarebase\\.so.*$
+%global __requires_exclude %__requires_exclude|^libvmware-view-usbd\\.so.*$
+%global __requires_exclude %__requires_exclude|^libx264\\.so.*$
+
 
 %description
 Remote access client for VMware Horizon.
@@ -102,19 +129,6 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description integrated-printing
 Integrated Printing support plugin for VMware Horizon Client.
 
-%package media-provider
-Summary:        Virtualization Pack for Skype for Business
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       bundled(hidapi) = 0.8.9
-Provides:       bundled(json-c) = 0.12.1
-Provides:       bundled(libjpeg-turbo) = 2.0.5
-Provides:       bundled(libsrtp) = 2.2.0
-Provides:       bundled(openssl) = 1.0.2y
-Provides:       bundled(webrtc) = 90
-
-%description media-provider
-Virtualization Pack for Skype for Business.
-
 %package mmr
 Summary:        Multimedia Redirection support plugin for VMware Horizon Client
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -128,12 +142,12 @@ Requires Horizon Agent 7.0 or later on the virtual desktop.
 
 %package pcoip
 Summary:        PCoIP support plugin for VMware Horizon Client
-Requires:       libavcodec.so.58%{mark64}
-Requires:       libavutil.so.56%{mark64}
+Provides:       bundled(libavcodec) = %{ffmpeg_ver}
+Provides:       bundled(libavformat) = %{ffmpeg_ver}
+Provides:       bundled(libavutil) = %{ffmpeg_ver}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(libpng) = 1.6.37
 Provides:       bundled(pcoip-soft-clients) = 3.75
-Provides:       bundled(openssl) = 1.0.2w
 
 %description pcoip
 PCoIP support plugin for VMware Horizon Client.
@@ -147,7 +161,7 @@ Requires:       libspeex.so.1%{mark64}
 Requires:       libtheoradec.so.1%{mark64}
 Requires:       libtheoraenc.so.1%{mark64}
 %ifarch x86_64
-Provides:       bundled(x264-libs) = 0.157
+Provides:       bundled(x264-libs) = 0.164
 %endif
 
 %description rtav
@@ -184,6 +198,7 @@ Requires Horizon Agent 7.6 or later on the virtual desktop.
 %package smartcard
 Summary:        SmartCard authentication support plugin for VMware Horizon Client
 Requires:       %{name}-pcoip = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       opensc%{_isa}
 
 %description smartcard
 SmartCard authentication support plugin for VMware Horizon Client.
@@ -263,72 +278,74 @@ for f in \
   tar xzf %{vhc_arch}/${f} -C %{_vpath_builddir} --strip-components=1
 done
 
-%ifarch x86_64
-mkdir -p %{_vpath_builddir}/lib/vmware/mediaprovider
-tar xzf SkypeForBusiness\ Redirection/VMware-Horizon-Media-Provider-%{s4br_ver}-%{s4br_bld}.%{vhc_arch}.tar.gz\
-  -C %{_vpath_builddir}/lib/vmware/mediaprovider \
-  --strip-components=2 \
-  VMware-Horizon-Media-Provider-%{s4br_ver}-%{s4br_bld}.%{vhc_arch}/lin64/\*.so
-%endif
-
-%patch0 -p3 -d %{_vpath_builddir}
-%ifarch x86_64
-%patch1 -p2 -d %{_vpath_builddir}
-%endif
-
 pushd %{_vpath_builddir}
-mv -v doc ../
+mv -v usr/share/doc/%{name} ../docs
 mv -v systemd ../
-mv -v vmware ../
-mv -v lib/vmware{/view/lib,}/libclientSdkCPrimitive.so
-mv -v lib{,/vmware}/libpcoip_client.so
+mv -v etc/vmware ../
+mv -v usr/lib/vmware{/view/lib,}/libclientSdkCPrimitive.so
+mv -v usr/lib{,/vmware}/libpcoip_client.so
 %ifarch armv7hl
-mv -v lib{,/vmware}/libpcoip_client_neon.so
-chmod 755 lib/vmware/libcurl.so.4
-chrpath -d lib/vmware/libcurl.so.4
+mv -v usr/lib{,/vmware}/libpcoip_client_neon.so
+chrpath -d usr/lib/vmware/libcurl.so.4
 %endif
 %ifarch x86_64
-mv -v lib/vmware/view/integratedPrinting/prlinuxcupsppd bin/
+mv -v usr/lib/vmware/view/integratedPrinting/prlinuxcupsppd usr/bin/
+mv -v usr/lib/vmware/view/usb/vmware-usbarbitrator usr/bin/
 
-pushd lib/vmware/view/html5mmr
+pushd usr/lib/vmware/view/html5mmr
 find . -type f | xargs chmod 644
-chmod 0755 \
-  HTML5VideoPlayer \
-  chrome_sandbox \
-  lib*.so \
-
 popd
 
-chmod 0755 lib/vmware/view/vdpService/webrtcRedir/libwebrtc_sharedlib.so
-chrpath -d lib/vmware/view/bin/ftscanhvd
+chrpath -d usr/lib/vmware/view/bin/ftscanhvd
 %endif
 
 rm -frv \
-  init.d \
-  lib/vmware/gcc \
-  lib/vmware/libcairomm-1.0.so.1 \
-  lib/vmware/libffi.so.6 \
-  lib/vmware/libpcre.so.1 \
-  lib/vmware/libpng16.so.16 \
-  lib/vmware/libsigc-2.0.so.0 \
-  lib/vmware/libv4l2.so.0 \
-  lib/vmware/libv4lconvert.so.0 \
-  lib/vmware/libXss.so.1 \
-  lib/vmware/libz.so.1 \
-  lib/vmware/view/crtbora \
-  lib/vmware/view/html5mmr/libhtml5Client.so \
-  lib/vmware/view/html5mmr/libvulkan.so.1 \
-  lib/vmware/view/integratedPrinting/{integrated-printing-setup.sh,README} \
-  lib/vmware/view/{software,vaapi{,2},vdpau} \
-  share/icons \
-  patches \
-  README* \
+  etc/init.d \
+  etc/udev \
+  usr/lib/vmware/fips.so \
+  usr/lib/vmware/gcc \
+  usr/lib/vmware/libatkmm-1.6.so.1 \
+  usr/lib/vmware/libcairomm-1.0.so.1 \
+%if %{without bundled_ssl}
+  usr/lib/vmware/libcrypto.so.3 \
+  usr/lib/vmware/libcurl.so.4 \
+  usr/lib/vmware/libssl.so.3 \
+%endif
+  usr/lib/vmware/libffi.so.6 \
+  usr/lib/vmware/libgdkmm-3.0.so.1 \
+  usr/lib/vmware/libgiomm-2.4.so.1 \
+  usr/lib/vmware/libglibmm-2.4.so.1 \
+  usr/lib/vmware/libpcre.so.1 \
+  usr/lib/vmware/libpangomm-1.4.so.1 \
+  usr/lib/vmware/libpng16.so.16 \
+  usr/lib/vmware/libsigc-2.0.so.0 \
+  usr/lib/vmware/libv4l2.so.0 \
+  usr/lib/vmware/libv4lconvert.so.0 \
+  usr/lib/vmware/libXss.so.1 \
+  usr/lib/vmware/libz.so.1 \
+  usr/lib/vmware/view/crtbora \
+  usr/lib/vmware/view/html5mmr/libhtml5Client.so \
+  usr/lib/vmware/view/html5mmr/libvulkan.so.1 \
+  usr/lib/vmware/view/integratedPrinting/{integrated-printing-setup.sh,README} \
+  usr/lib/vmware/view/urlRedirection/install-url-redirection.py \
+  usr/lib/vmware/view/vaapi{,2.7} \
+  usr/lib/vmware/view/vdpService/webrtcRedir/udevadm \
+  README \
+  ../docs/patches \
+  ../docs/scannerClient/README \
+  ../docs/serialPortClient/README \
+  usr/share/doc \
+  usr/share/icons/vmware-view.png \
+  usr/vmware \
+%{nil}
 
-rmdir lib/vmware/view/lib
+rmdir usr/lib/vmware/view/lib
 
-sed -e 's|/usr/lib/|%{_libdir}/|g' -i bin/vmware-view{,-lib-scan,-log-collector}
+sed -e 's|/usr/lib/|%{_libdir}/|g' -i usr/bin/vmware-view{,-lib-scan,-log-collector}
 
 popd
+
+find %{_vpath_builddir} -type f | xargs file | grep ELF | cut -d: -f1 | xargs chmod 0755
 
 
 %build
@@ -336,13 +353,13 @@ popd
 
 %install
 mkdir -p %{buildroot}%{_libdir}
-mv %{_vpath_builddir}/lib/* %{buildroot}%{_libdir}
+mv %{_vpath_builddir}/usr/lib/* %{buildroot}%{_libdir}
 
 mkdir -p %{buildroot}/%{_bindir}
-mv %{_vpath_builddir}/bin/* %{buildroot}%{_bindir}
+mv %{_vpath_builddir}/usr/bin/* %{buildroot}%{_bindir}
 
 mkdir -p %{buildroot}/%{_datadir}
-mv %{_vpath_builddir}/share/* %{buildroot}%{_datadir}
+mv %{_vpath_builddir}/usr/share/* %{buildroot}%{_datadir}
 
 mkdir -p %{buildroot}/var/log/vmware
 
@@ -381,14 +398,6 @@ mkdir -p %{buildroot}%{_libdir}/vmware/view/pkcs11
 ln -s \
   $(abs2rel %{buildroot}%{_libdir}/pkcs11 %{buildroot}%{_libdir}/vmware/view/pkcs11)/opensc-pkcs11.so \
   %{buildroot}%{_libdir}/vmware/view/pkcs11/libopenscpkcs11.so
-
-for v in software vaapi2 vdpau ; do
-  dir=%{buildroot}%{_libdir}/vmware/view/${v}
-  mkdir -p ${dir}
-  relpath=$(abs2rel %{buildroot}%{_libdir} %{buildroot}%{_libdir}/vmware/view/${v})
-  ln -s ${relpath}/libavcodec.so.58 ${dir}/
-  ln -s ${relpath}/libavutil.so.56 ${dir}/
-done
 
 mkdir -p %{buildroot}%{_datadir}/vmware/selinux/
 install -pm0644 %{name}-scannerclient-rpm.cil %{buildroot}%{_datadir}/vmware/selinux/
@@ -456,7 +465,7 @@ if [ $1 -eq 0 ]; then
 fi
 
 %files -f vmware-view.lang
-%license doc/open_source_licenses.txt
+%license docs/open_source_licenses.txt
 %doc vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
 %doc horizon-client-linux-installation.pdf
 %dir %{_sysconfdir}/vmware
@@ -476,20 +485,16 @@ fi
 %attr(0644,root,root) %config(noreplace) %ghost %{_libdir}/vmware/config
 %{_libdir}/vmware/view/dct
 %dir %{_libdir}/vmware/view/env
-%{_libdir}/vmware/view/env/env_utils.sh
 %{_libdir}/vmware/view/env/vmware-view.info
-%{_libdir}/vmware/libatkmm-1.6.so.1
 %{_libdir}/vmware/libclientSdkCPrimitive.so
 %{_libdir}/vmware/libcrtbora.so
-%{_libdir}/vmware/libcrypto.so.1.0.2
+%if %{with bundled_ssl}
+%{_libdir}/vmware/libcrypto.so.3
 %{_libdir}/vmware/libcurl.so.4
-%{_libdir}/vmware/libgdkmm-3.0.so.1
-%{_libdir}/vmware/libgiomm-2.4.so.1
-%{_libdir}/vmware/libglibmm-2.4.so.1
+%{_libdir}/vmware/libssl.so.3
+%endif
 %{_libdir}/vmware/libgtkmm-3.0.so.1
-%{_libdir}/vmware/libpangomm-1.4.so.1
 %{_libdir}/vmware/librtavCliLib.so
-%{_libdir}/vmware/libssl.so.1.0.2
 %{_libdir}/vmware/libudev.so.0
 %{_libdir}/vmware/libudpProxyLib.so
 %{_libdir}/vmware/libvmwarebase.so
@@ -527,6 +532,7 @@ fi
 %{_libdir}/vmware/libpcoip_client_neon.so
 %endif
 %{_libdir}/vmware/view/client/vmware-remotemks
+%{_libdir}/vmware/view/vdpService/libMicrosoft.SlimCV.VBM.so
 %{_libdir}/vmware/view/vdpService/libmksvchanclient.so
 %{_libdir}/vmware/view/vdpService/librdeSvc.so
 %{_libdir}/vmware/view/software
@@ -537,7 +543,7 @@ fi
 %files rtav
 %{_libdir}/pcoip/vchan_plugins/libviewMMDevRedir.so
 %ifarch x86_64
-%{_libdir}/vmware/libx264.so.157.6
+%{_libdir}/vmware/libx264.so.164.5
 %endif
 
 %files smartcard
@@ -567,11 +573,6 @@ fi
 %{_libdir}/vmware/view/integratedPrinting/vmware-print-redir-client
 %{_libdir}/vmware/view/vdpService/libvmwprvdpplugin.so
 
-%files media-provider
-%dir %{_libdir}/vmware/mediaprovider
-%{_libdir}/vmware/mediaprovider/libV264.so
-%{_libdir}/vmware/mediaprovider/libVMWMediaProvider.so
-
 %files mmr
 %{_libdir}/vmware/view/vdpService/libtsmmrClient.so
 
@@ -597,6 +598,9 @@ fi
 
 
 %changelog
+* Mon May 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2312.1.8.12.1.23543969-1
+- 2312.1
+
 * Fri Feb 17 2023 - 2212.1.8.8.1.21219348-1
 - 2212.1
 

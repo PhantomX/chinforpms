@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1754fd15040ede8ab8d8bc7f16a317aa65f6a888
+%global commit a851e82b287bff85681a0c21982f23d7bcde1f04
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240526
+%global date 20240528
 %bcond_without snapshot
 
 # Enable Qt build
@@ -79,7 +79,7 @@
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        104%{?dist}
+Release:        106%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -117,7 +117,6 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-Patch7:         0001-SDL-fix-high-CPU-usage-with-Vulkan.patch
 Patch8:         0001-Revert-Some-renaming-add-a-bunch-of-sanity-debug-ass.patch
 
 %if %{without sysffmpeg}
