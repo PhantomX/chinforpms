@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 0fcb0b7d8efd349a17abfc3231d38379e3f72ccc
+%global commit 53b81af70497b36928cb64d03e8798a30663ffaf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240504
+%global date 20240530
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -107,8 +107,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.32.16416
-Release:        1%{?dist}
+Version:        0.0.32.16554
+Release:        2%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -206,6 +206,7 @@ BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(pugixml)
@@ -217,6 +218,7 @@ Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 %endif
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(tinfo)
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-client)
@@ -229,7 +231,6 @@ BuildRequires:  cmake(yaml-cpp)
 Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
 %endif
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 
 BuildRequires:  cmake(Qt6Core) >= 6.4.0
 BuildRequires:  cmake(Qt6Concurrent)
@@ -266,8 +267,8 @@ written in C++.
 
 pushd 3rdparty
 rm -rf \
-  7z/src cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
-  MoltenVK OpenAL/libs pugixml XAudio2Redist xxHash
+  7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
+  MoltenVK OpenAL/libs pugixml XAudio2Redist xxHash zstd
 
 tar -xf %{S:10} -C SPIRV/SPIRV-Tools --strip-components 1
 tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1

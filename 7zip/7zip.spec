@@ -23,7 +23,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        24.05
+Version:        24.06
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -131,6 +131,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Fri May 31 2024 Phantom X <megaphantomx at hotmail dot com> - 24.06-1
+- 24.06
+
 * Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 24.05-1
 - 24.05
 

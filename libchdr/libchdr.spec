@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -96,6 +96,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Fri May 31 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-16.20240519git86b2720
+- lzma-sdk rebuild
+
 * Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-14.20240210git2648c22
 - BR: libzstd
 

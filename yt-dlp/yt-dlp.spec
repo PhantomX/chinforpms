@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2024.04.09
+Version:        2024.05.27
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -88,9 +88,6 @@ Fish command line completion support for %{name}.
 # remove pre-built file
 rm -f %{name}
 
-cp -a setup.py setup.py.installpath
-sed -i '/README.txt/d' setup.py
-
 # Remove interpreter shebang from module files.
 find yt_dlp -type f -exec sed -i -e '1{\@^#!.*@d}' {} +
 
@@ -157,6 +154,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri May 31 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.05.27-100
+- 2024.05.27
+
 * Wed Apr 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.04.09-100
 - 2024.04.09
 

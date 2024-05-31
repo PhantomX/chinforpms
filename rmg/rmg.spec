@@ -21,8 +21,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.5.9
-Release:        2%{?dist}
+Version:        0.6.0
+Release:        0%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -96,6 +96,7 @@ mkdir LICENSEdir READMEdir
 pushd Source/3rdParty
 
 rm -rf mupen64plus-core/subprojects/minizip/
+rm -rf mupen64plus-video-GLideN64/projects/msvc/
 rm -rf mupen64plus-video-parallel/vulkan-headers
 rm -rf discord-rpc fmt lzma SDL_GameControllerDB vosk-api
 

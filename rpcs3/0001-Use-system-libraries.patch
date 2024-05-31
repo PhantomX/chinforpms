@@ -1,18 +1,33 @@
-From f95aaf53e1be5d2bb681dcb9d1390ed5009318d0 Mon Sep 17 00:00:00 2001
+From fc81b13c7d904ffa2559e4325f3ad55bab648a06 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt         | 39 +++++++++++++++++++++++++++++++++
- rpcs3/Input/ds4_pad_handler.cpp |  4 ++++
- 2 files changed, 43 insertions(+)
+ 3rdparty/CMakeLists.txt         | 46 +++++++++++++++++++++++++++++++++
+ rpcs3/Input/ds4_pad_handler.cpp |  4 +++
+ 2 files changed, 50 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 6d9383d..bb91fbb 100644
+index d1a14ff..1e94e29 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
-@@ -73,7 +73,15 @@ endif()
+@@ -17,7 +17,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
+ add_subdirectory(zlib EXCLUDE_FROM_ALL)
+ 
+ # ZSTD
++pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
++if(ZSTD_FOUND)
++	message(STATUS "RPCS3: Using system ZSTD")
++	add_library(3rdparty_zstd INTERFACE)
++	target_link_libraries(3rdparty_zstd INTERFACE PkgConfig::ZSTD)
++else()
+ add_subdirectory(zstd EXCLUDE_FROM_ALL)
++endif()
+ 
+ # 7zip sdk
+ add_subdirectory(7zip EXCLUDE_FROM_ALL)
+@@ -81,7 +88,15 @@ endif()
  
  
  # hidapi
@@ -28,7 +43,7 @@ index 6d9383d..bb91fbb 100644
  
  
  # Vulkan
-@@ -82,7 +90,15 @@ add_subdirectory(glslang EXCLUDE_FROM_ALL)
+@@ -90,7 +105,15 @@ add_subdirectory(glslang EXCLUDE_FROM_ALL)
  
  
  # yaml-cpp
@@ -44,7 +59,7 @@ index 6d9383d..bb91fbb 100644
  
  
  # xxHash
-@@ -134,7 +150,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
+@@ -135,7 +158,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
  add_subdirectory(discord-rpc)
  
  # Cubeb
@@ -60,7 +75,7 @@ index 6d9383d..bb91fbb 100644
  
  # SoundTouch
  add_subdirectory(SoundTouch EXCLUDE_FROM_ALL)
-@@ -234,6 +258,7 @@ if(USE_FAUDIO)
+@@ -235,6 +266,7 @@ if(USE_FAUDIO)
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
@@ -68,7 +83,7 @@ index 6d9383d..bb91fbb 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -361,10 +386,24 @@ if(USE_SDL)
+@@ -347,10 +379,24 @@ if(USE_SDL)
  endif()
  
  # MINIUPNP
@@ -94,7 +109,7 @@ index 6d9383d..bb91fbb 100644
  # add nice ALIAS targets for ease of use
  if(USE_SYSTEM_LIBUSB)
 diff --git a/rpcs3/Input/ds4_pad_handler.cpp b/rpcs3/Input/ds4_pad_handler.cpp
-index bb46032..4f55c5f 100644
+index c1f96b9..f56f110 100644
 --- a/rpcs3/Input/ds4_pad_handler.cpp
 +++ b/rpcs3/Input/ds4_pad_handler.cpp
 @@ -4,6 +4,10 @@
@@ -109,5 +124,5 @@ index bb46032..4f55c5f 100644
  constexpr id_pair SONY_DS4_ID_1 = {0x054C, 0x05C4}; // CUH-ZCT1x
  constexpr id_pair SONY_DS4_ID_2 = {0x054C, 0x09CC}; // CUH-ZCT2x
 -- 
-2.40.1
+2.45.1
 

@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.9.2
+%define specrpmversion 6.9.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 9ecd539aa9c5ab000099870364551fac906d3a79
+%global opensuse_id 279162a4f064f477ee2440437b42b694c2b41df8
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1040,7 +1040,7 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/scsi-retry-alua-transition-in-progress#/openSUSE-scsi-retry-alua-transition-in-progress.patch
+Patch1013: %{opensuse_url}/scsi-core-alua-I-O-errors-for-ALUA-state-transitions.patch#/openSUSE-scsi-core-alua-I-O-errors-for-ALUA-state-transitions.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1091,6 +1091,9 @@ Patch7027:  %{pf_url}/12a6b94fbecb31b40c38de5624223a68c3549778.patch#/pf-cb-12a6
 Patch7028:  %{pf_url}/200a597872e500801b2f4c2a31b3ec3d5add34e9.patch#/pf-cb-200a597.patch
 Patch7029:  %{pf_url}/05f7f7b6b07760f6fa71d20324b4707d7df2cb24.patch#/pf-cb-05f7f7b.patch
 Patch7030:  %{pf_url}/82631ee914690541347ce1895b8929a1a5b0f2c7.patch#/pf-cb-82631ee.patch
+Patch7031:  %{pf_url}/fc99ae145abcf8096b9f89b4474e4e1b0ef517c4.patch#/pf-cb-fc99ae1.patch
+Patch7032:  %{pf_url}/418cf789780ffc70bebd5b665d9a8818c6b6c93d.patch#/pf-cb-418cf78.patch
+Patch7033:  %{pf_url}/feccbb9694da5cdf5d3366db442a657636c235e5.patch#/pf-cb-feccbb9.patch
 # bbr
 Patch7050:  %{pf_url}/be74f82f85cf782f185e15c55dc8d8bda4769588.patch#/pf-cb-be74f82.patch
 # block
@@ -1107,12 +1110,14 @@ Patch7100:  %{pf_url}/0ebe1627d6667bd5c1ff164a734b8fa36704233a.patch#/pf-cb-0ebe
 Patch7101:  %{pf_url}/bab2518c5ec078e6081817a3862c1d848651d9b6.patch#/pf-cb-bab2518.patch
 Patch7102:  %{pf_url}/ce00606fb4bb131c02eb940968297f0869d30abe.patch#/pf-cb-ce00606.patch
 Patch7103:  %{pf_url}/deb847a041862fddff4fc16d4290389260b60dfb.patch#/pf-cb-deb847a.patch
-Patch7104:  %{pf_url}/fed4ffa177e3bc6f73b073781e89c01407aeb8f1.patch#/pf-cb-fed4ffa.patch
 Patch7105:  %{pf_url}/ecdb409b1ad24c186df0cdeb21ace30e2b018edf.patch#/pf-cb-ecdb409.patch
 Patch7106:  %{pf_url}/12f6c0c489205a26addf6b4bbdb4575688e8674a.patch#/pf-cb-12f6c0c.patch
 Patch7107:  %{pf_url}/aea0dabf549f2a4465a3435b23770b7d64fc06ec.patch#/pf-cb-aea0dab.patch
 Patch7108:  %{pf_url}/06a4c4e15359d394f462b180172cadef7e8fd849.patch#/pf-cb-06a4c4e.patch
 Patch7109:  %{pf_url}/fd3fb00d6e28169883bbd989d156cc5dff6a61d6.patch#/pf-cb-fd3fb00.patch
+Patch7110:  %{pf_url}/7000cac62b07eac95955e8c02ab4a9cb5b480c0a.patch#/pf-cb-7000cac.patch
+Patch7111:  %{pf_url}/01900d6d53d74ad912c92e95975a9413bea3640a.patch#/pf-cb-01900d6.patch
+Patch7112:  %{pf_url}/d3c57b92fd8e64ee1f068571bf588a8318ed0720.patch#/pf-cb-d3c57b9.patch
 # zstd
 Patch7200:  %{pf_url}/2b515b215286bf4a98187aca20f1e16be80d0423.patch#/pf-cb-2b515b2.patch
 Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0e0e.patch
@@ -1120,14 +1125,11 @@ Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0
 Patch7220:  %{pf_url}/332679d16797e49fe0e13025438c02b9f745f1d0.patch#/pf-cb-332679d.patch
 # v4l2loopback
 Patch7230:  %{pf_url}/4044e0692e1003a60a52b0e39bd0e32a239c77aa.patch#/pf-cb-4044e06.patch
+Patch7231:  %{pf_url}/ce7ecbd66e1df34240aa5ae35869dd6103e9fe13.patch#/pf-cb-ce7ecbd.patch
 # uvcvideo
 Patch7240:  %{pf_url}/5ce7b22739662759e8ccf62396371c9ef918c1c5.patch#/pf-cb-5ce7b22.patch
 Patch7241:  %{pf_url}/d52cd477dc83cb52a5ad09fbdcb729fc75b8a367.patch#/pf-cb-d52cd47.patch
-Patch7242:  %{pf_url}/215c65c1103664057ff90003ac3336709eab2ed2.patch#/pf-cb-215c65c.patch
-Patch7243:  %{pf_url}/7558fdbc034ebe48c60e8ef9ca7b13c5bf839c38.patch#/pf-cb-7558fdb.patch
-Patch7244:  %{pf_url}/91579ded455b2a8b7adeec8f952d3f37574cacfc.patch#/pf-cb-91579de.patch
-Patch7245:  %{pf_url}/9bdc17321b04563759efdf9daa93baeb74f28627.patch#/pf-cb-9bdc173.patch
-Patch7246:  %{pf_url}/e1ec523702a7468c2a4c6c59d16feeef24f0c864.patch#/pf-cb-e1ec523.patch
+Patch7242:  %{pf_url}/7558fdbc034ebe48c60e8ef9ca7b13c5bf839c38.patch#/pf-cb-7558fdb.patch
 # crypto
 Patch7300:  %{pf_url}/32a11056e219681120a168914b9898e1c354ac09.patch#/pf-cb-32a1105.patch
 Patch7301:  %{pf_url}/07e694fcb3b06d399b5db7f1cb2c173adbfedf71.patch#/pf-cb-07e694f.patch
@@ -1137,9 +1139,6 @@ Patch7304:  %{pf_url}/71636ad610050cd7c557bedf3858ebc54f4ae9d3.patch#/pf-cb-7163
 Patch7305:  %{pf_url}/e067455cb2960df60cad27fb07e6deca89f8f97b.patch#/pf-cb-e067455.patch
 Patch7306:  %{pf_url}/ac7f799e93c11c98957af7b019e6ab33a5d45cb2.patch#/pf-cb-ac7f799.patch
 Patch7307:  %{pf_url}/1d2af8dc387d6d0743d1b9b45e2c6b523144e438.patch#/pf-cb-1d2af8d.patch
-Patch7308:  %{pf_url}/dfa4d5f8cacd3a5b61b05a839638e01fb07e99b2.patch#/pf-cb-dfa4d5f.patch
-Patch7309:  %{pf_url}/168679e8de7faee3b78b379c72351698ba2419d1.patch#/pf-cb-168679e.patch
-Patch7310:  %{pf_url}/cbd8db26d1daf8fcd9502b5d0d73750818952e9d.patch#/pf-cb-cbd8db2.patch
 Patch7311:  %{pf_url}/3b8436a7932bf7f8d5ba99c733c08337ea6cb5c8.patch#/pf-cb-3b8436a.patch
 Patch7312:  %{pf_url}/0d8aaeae29aa43f7f11f467bffa60b3042871c00.patch#/pf-cb-0d8aaea.patch
 Patch7313:  %{pf_url}/c15bc805bcb41b55dc8cebe4f8b4e7ad19f42875.patch#/pf-cb-c15bc80.patch
@@ -1155,6 +1154,9 @@ Patch7322:  %{pf_url}/1e050d8635f254af7b121815f543c43784d3aaca.patch#/pf-cb-1e05
 Patch7323:  %{pf_url}/f54e5d5ba5d35c7a4a1585a8e32ef2aac677f4ec.patch#/pf-cb-f54e5d5.patch
 Patch7324:  %{pf_url}/7e7648e96eb851630c96379e2bc225d05ec26b78.patch#/pf-cb-7e7648e.patch
 Patch7325:  %{pf_url}/3192cded97424256eb7ffef7020433ee8597d5d3.patch#/pf-cb-3192cde.patch
+Patch7326:  %{pf_url}/06968325fb09de5712e85a65143d7d8f464cda7b.patch#/pf-cb-0696832.patch
+Patch7327:  %{pf_url}/d014c6992952cbd36980e1e040c3f81f6a87f468.patch#/pf-cb-d014c69.patch
+Patch7328:  %{pf_url}/2a1b315c0d058b2ba8b0a24de9f8eeadef388ad0.patch#/pf-cb-2a1b315.patch
 
 %endif
 
@@ -2014,12 +2016,14 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7104}
 ApplyPatch %{PATCH7105}
 ApplyPatch %{PATCH7106}
 ApplyPatch %{PATCH7107}
 ApplyPatch %{PATCH7108}
 ApplyPatch %{PATCH7109}
+ApplyPatch %{PATCH7110}
+ApplyPatch %{PATCH7111}
+ApplyPatch %{PATCH7112}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2027,14 +2031,11 @@ ApplyPatch %{PATCH7201}
 ApplyPatch %{PATCH7220}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
+ApplyPatch %{PATCH7231}
 # uvcvideo
 ApplyPatch %{PATCH7240}
 ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
-ApplyPatch %{PATCH7243}
-ApplyPatch %{PATCH7244}
-ApplyPatch %{PATCH7245}
-ApplyPatch %{PATCH7246}
 # crypto
 ApplyPatch %{PATCH7300}
 ApplyPatch %{PATCH7301}
@@ -2044,9 +2045,6 @@ ApplyPatch %{PATCH7304}
 ApplyPatch %{PATCH7305}
 ApplyPatch %{PATCH7306}
 ApplyPatch %{PATCH7307}
-ApplyPatch %{PATCH7308}
-ApplyPatch %{PATCH7309}
-ApplyPatch %{PATCH7310}
 ApplyPatch %{PATCH7311}
 ApplyPatch %{PATCH7312}
 ApplyPatch %{PATCH7313}
@@ -2062,6 +2060,9 @@ ApplyPatch %{PATCH7322}
 ApplyPatch %{PATCH7323}
 ApplyPatch %{PATCH7324}
 ApplyPatch %{PATCH7325}
+ApplyPatch %{PATCH7326}
+ApplyPatch %{PATCH7327}
+ApplyPatch %{PATCH7328}
 %endif
 
 # released_kernel with possible stable updates
@@ -2076,6 +2077,9 @@ ApplyPatch %{PATCH7027}
 ApplyPatch %{PATCH7028}
 ApplyPatch %{PATCH7029}
 ApplyPatch %{PATCH7030}
+ApplyPatch %{PATCH7031}
+ApplyPatch %{PATCH7032}
+ApplyPatch %{PATCH7033}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
@@ -4274,6 +4278,9 @@ fi\
 #
 #
 %changelog
+* Thu May 30 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.3-500.chinfo
+- 6.9.3
+
 * Sat May 25 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.2-500.chinfo
 - 6.9.2
 
