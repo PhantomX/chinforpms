@@ -22,9 +22,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 619688a1350aef223bb1c43741fecf0bd0012de5
+%global commit e25bb4801c524aaae17b0628b58669b51c6c64eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240528
+%global date 20240531
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -44,7 +44,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6891
+Version:        0.1.6911
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -86,7 +86,6 @@ BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(Qt6Core) >= 6.7
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
-BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(RapidJSON)
 %if %{with ryml}

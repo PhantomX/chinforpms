@@ -24,10 +24,6 @@ WINE_IMF_SOURCE_READER_NO_FLUSH override (In The Medium fix)
 =================================
 Enable with WINE_IMF_SOURCE_READER_NO_FLUSH=1 environment variable
 
-WINE_LIMIT_RESOLUTION_NUMBER override (Nier fix)
-=================================
-Enable with WINE_LIMIT_RESOLUTION_NUMBER=1 environment variable
-
 WINE_SIMULATE_WRITECOPY override
 =================================
 Enable with WINE_SIMULATE_WRITECOPY=1 environment variable

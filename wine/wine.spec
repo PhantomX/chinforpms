@@ -1,7 +1,7 @@
 %global commit b210a204137dec8d2126ca909d762454fd47e963
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240524
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -66,7 +66,7 @@
 %global wineopenldap 2.5.17
 %global winetiff 4.6.0
 %global winejxrlib 1.1
-%global winevkd3d 1.11
+%global winevkd3d 1.12
 %global winexml2 2.11.7
 %global winexslt 1.1.39
 %global winezlib 1.3.1
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 68925c8f61b9fdcc869565da7cb3124f898730bc
+%global wine_stagingver 9.10
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 512cdf8f7b6e87807cd42efb091da37d208dd7c5
+%global tkg_id 71e3a6ce06d1eac0eb159d598904944a54c55eae
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,9 +128,9 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%bcond_without childwindow
+%bcond_with childwindow
 # ntsync (disables fsync)
-%bcond_without ntsync
+%bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 # Shared gpu resources
@@ -160,8 +160,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.9
-Release:        101%{?dist}
+Version:        9.10
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -232,11 +232,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
 Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-whq-240556e.patch
 Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-whq-2bfe81e.patch
-# Breaks virtual desktop
-Patch703:        %{whq_url}/b86cc9e658959cee47e6e587fec4f7c26350ed76#/%{name}-whq-b86cc9e.patch
-Patch704:        %{whq_url}/f74900ad1a580eda8fd4923cbd4881b42b042733#/%{name}-whq-f74900a.patch
-Patch705:        %{whq_url}/64a7ca75475d00af269c203349bc6fe386f16a22#/%{name}-whq-64a7ca7.patch
-Patch706:        %{whq_url}/f6791f59c3a5fe2aa178edc66861d358de912d22#/%{name}-whq-f6791f5.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -286,7 +281,7 @@ Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
 Patch1097:       0001-tkg-proton-cpu-topology-overrides-fixup-1.patch
 Patch1098:       0001-tkg-proton-cpu-topology-overrides-fixup-2.patch
 
-Patch1300:       nier.patch
+Patch1300:       0001-winex11-always-update-display-cache.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
@@ -876,10 +871,6 @@ This package adds the opencl driver for wine.
 
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
-%patch -P 706 -p1 -R
-%patch -P 705 -p1 -R
-%patch -P 704 -p1 -R
-%patch -P 703 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2552,6 +2543,10 @@ fi
 
 
 %changelog
+* Sat Jun 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.10-100
+- 9.10
+- Disable childwindow again
+
 * Sun May 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.9-101.20240524gitb210a20
 - Reenable childwindow
 
