@@ -52,7 +52,7 @@
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 7.5.1
+%global microsoft_identitymodel_ver 7.5.2
 %global microsoft_io_recyclablememorystream_ver 3.0.0
 # Must match dotnet
 %global microsoft_netcore_app_runtime_linux_x64_ver 8.0.3
@@ -251,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1321
+Version:        1.1.1325
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

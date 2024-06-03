@@ -1,6 +1,6 @@
-%global commit 1fb7dff45e177ed115aceb85c20df580d38cceca
+%global commit 2ec233fc401c382e9168b291bca7996264b0c6df
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240426
+%global date 20240501
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,15 +10,15 @@
 # Update simdjson
 %bcond_without simdjson
 
-%global simdjson_ver 3.9.2
+%global simdjson_ver 3.9.3
 
 %global binname jazz2
 %global pkgname jazz2-native
 %global vc_url https://github.com/deathkiller/jazz2-native
 
 Name:           jazz2-ressurection
-Version:        2.6.0
-Release:        3%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
 License:        GPL-3.0 AND Apache-2.0
@@ -52,6 +52,7 @@ BuildRequires:  pkgconfig(vorbis)
 BuildRequires:  pkgconfig(vorbisfile)
 BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
+Requires:       sdl_gamecontrollerdb
 
 Provides:       bundle(simdjson) = %{simdjson_ver}
 
@@ -96,6 +97,12 @@ sed -e '/README_INSTALL_DESTINATION/d' -i cmake/ncine_installation.cmake
 %install
 %cmake_install
 
+rm -f "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/Translations"/*.po
+
+rm -f "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/gamecontrollerdb.txt"
+ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
+  "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/gamecontrollerdb.txt"
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
@@ -111,6 +118,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Sun Jun 02 2024 Phantom X <megaphantomx at hotmail dot com> - 2.7.0-1.20240501git2ec233f
+- 2.7.0
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.0-2.20240323git5323404
 - Update simdjson
 
