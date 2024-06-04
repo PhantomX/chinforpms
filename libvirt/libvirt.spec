@@ -206,6 +206,18 @@
     %define with_modular_daemons 1
 %endif
 
+# Prefer nftables for future OS releases but keep using iptables
+# for existing ones
+%if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
+    %define prefer_nftables 1
+    %define firewall_backend_priority nftables,iptables
+%else
+    %define prefer_nftables 0
+    %define firewall_backend_priority iptables,nftables
+%endif
+
+
+
 # Force QEMU to run as non-root
 %define qemu_user  qemu
 %define qemu_group  qemu
@@ -277,7 +289,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 10.3.0
+Version: 10.4.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -341,7 +353,7 @@ BuildRequires: gcc
     %if %{with_libxl}
 BuildRequires: xen-devel
     %endif
-BuildRequires: glib2-devel >= 2.56
+BuildRequires: glib2-devel >= 2.58
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: pkgconfig(bash-completion) >= 2.0
@@ -361,8 +373,6 @@ BuildRequires: sanlock-devel >= 2.4
 BuildRequires: libpcap-devel >= 1.5.0
 BuildRequires: libnl3-devel
 BuildRequires: libselinux-devel
-BuildRequires: iptables
-BuildRequires: ebtables
 # For modprobe
 BuildRequires: kmod
 BuildRequires: cyrus-sasl-devel
@@ -599,7 +609,11 @@ Summary: Network driver plugin for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
 Requires: dnsmasq >= 2.41
+    %if %{prefer_nftables}
+Requires: nftables
+    %else
 Requires: iptables
+    %endif
 
 %description daemon-driver-network
 The network driver plugin for the libvirtd daemon, providing
@@ -820,6 +834,7 @@ Requires: gzip
 Requires: bzip2
 Requires: lzop
 Requires: xz
+Requires: zstd
 Requires: systemd-container
 Requires: swtpm-tools
         %if %{with_numad}
@@ -907,6 +922,7 @@ Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+Requires: libvirt-ssh-proxy = %{version}-%{release}
 Requires: qemu
 
 %description daemon-qemu
@@ -935,6 +951,7 @@ Requires: libvirt-daemon-driver-nodedev = %{version}-%{release}
 Requires: libvirt-daemon-driver-nwfilter = %{version}-%{release}
 Requires: libvirt-daemon-driver-secret = %{version}-%{release}
 Requires: libvirt-daemon-driver-storage = %{version}-%{release}
+Requires: libvirt-ssh-proxy = %{version}-%{release}
 Requires: qemu-kvm
 
 %description daemon-kvm
@@ -1103,6 +1120,13 @@ Requires: libvirt-daemon-driver-network = %{version}-%{release}
 %description nss
 Libvirt plugin for NSS for translating domain names into IP addresses.
 %endif
+
+%package ssh-proxy
+Summary: Libvirt SSH proxy
+Requires: libvirt-libs = %{version}-%{release}
+
+%description ssh-proxy
+Allows SSH into domains via VSOCK without need for network.
 
 %if %{with_mingw32}
 %package -n mingw32-libvirt
@@ -1376,9 +1400,11 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dtls_priority=%{tls_priority} \
            -Dsysctl_config=enabled \
            %{?arg_userfaultfd_sysctl} \
+           -Dssh_proxy=enabled \
            %{?enable_werror} \
            -Dexpensive_tests=enabled \
            -Dinit_script=systemd \
+           -Dfirewall_backend_priority=nftables,iptables \
            -Ddocs=enabled \
            -Dtests=enabled \
            -Drpath=disabled \
@@ -1460,6 +1486,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dstorage_zfs=disabled \
   -Dsysctl_config=disabled \
   -Duserfaultfd_sysctl=disabled \
+  -Dssh_proxy=disabled \
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
@@ -2117,6 +2144,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/libvirt/virtnetworkd.conf
 %{_datadir}/augeas/lenses/virtnetworkd.aug
 %{_datadir}/augeas/lenses/tests/test_virtnetworkd.aug
+%config(noreplace) %{_sysconfdir}/libvirt/network.conf
+%{_datadir}/augeas/lenses/libvirtd_network.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_network.aug
 %{_unitdir}/virtnetworkd.service
 %{_unitdir}/virtnetworkd.socket
 %{_unitdir}/virtnetworkd-ro.socket
@@ -2436,6 +2466,10 @@ exit 0
 %{_libdir}/libnss_libvirt.so.2
 %{_libdir}/libnss_libvirt_guest.so.2
 
+%files ssh-proxy
+%config(noreplace) %{_sysconfdir}/ssh/ssh_config.d/30-libvirt-ssh-proxy.conf
+%{_libexecdir}/libvirt-ssh-proxy
+
     %if %{with_lxc}
 %files login-shell
 %attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
@@ -2601,6 +2635,9 @@ exit 0
 
 
 %changelog
+* Mon Jun 03 2024 Phantom X <megaphantomx at hotmail dot com> - 10.4.0-100
+- 10.4.0
+
 * Thu May 02 2024 Phantom X <megaphantomx at hotmail dot com> - 10.3.0-100
 - 10.3.0
 

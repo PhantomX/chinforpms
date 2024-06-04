@@ -1,11 +1,11 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 91e144736b875844ec72ab2499d5d0af4c00f7c4
+%global commit 16d75d2da81422c802dc23e54865e2b57de79d2b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240209
+%global date 20240526
 %bcond_without snapshot
 
-%bcond_without systinyxml
+%bcond_without tinyxml
 
 %global commit2 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -23,7 +23,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 24.03
+%global commit5 24.06
 %global srcname5 FAudio
 
 %global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
@@ -36,13 +36,13 @@
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.4.1
-Release:        0.2%{?dist}
+Version:        2.4.2
+Release:        0.1%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - Zlib -- static dependency;
-# * S4 (tinyxml2) - zlib -- static dependency, if with_systinyxml 0;
+# * S4 (tinyxml2) - zlib -- static dependency, if with_tinyxml 0;
 # * S6 (c-hashmap) - BSD-3-Clause -- static dependency;
 # * S7 (SheenBidi) - ASL-2.0 -- static dependency;
 License:        VVVVVV AND Zlib AND BSD-3-Clause AND ASL-2.0
@@ -56,7 +56,7 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{pkgname}.png
 Source2:        https://github.com/lvandeve/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        https://github.com/icculus/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%if %{without systinyxml}
+%if %{without tinyxml}
 Source4:        https://github.com/leethomason/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
 Source5:        https://github.com/FNA-XNA/FAudio/archive/%{commit5}/%{srcname5}-%{commit5}.tar.gz
@@ -77,7 +77,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(FAudio)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(physfs)
-%if %{with systinyxml}
+%if %{with tinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %endif
 
@@ -88,7 +88,7 @@ Requires:       sdl_gamecontrollerdb
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = 0~git%{shortcommit2}
 #Provides:       bundled(physfs) = 0~git%%{shortcommit3}
-%if %{without systinyxml}
+%if %{without tinyxml}
 Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
 Provides:       bundled(c-hashmap) = 0~git%{shortcommit6}
@@ -105,7 +105,7 @@ Provides:       bundled(SheenBidi) = 0~git%{shortcommit7}
 tar -xf %{S:2} -C third_party/lodepng --strip-components 1
 tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
 
-%if %{without systinyxml}
+%if %{without tinyxml}
 tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
 sed \
   -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \
@@ -214,6 +214,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Mon Jun 03 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.2-0.1.20240526git16d75d2
+- 2.4.2 snapshot
+
 * Thu Jan 11 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-0.1.20240110git7ff2e81
 - 2.4.1 snapshot
 
