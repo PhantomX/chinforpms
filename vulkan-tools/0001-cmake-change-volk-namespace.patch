@@ -1,4 +1,4 @@
-From 03f3727aec3ca7fceb9d148df543b2e8738c9604 Mon Sep 17 00:00:00 2001
+From ddfe329f5c6e6443f67535d10d99751119dcef50 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Dec 2023 17:15:45 -0300
 Subject: [PATCH] cmake: change volk namespace
@@ -10,7 +10,7 @@ Subject: [PATCH] cmake: change volk namespace
  3 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d770ca5..34f2046 100644
+index d770ca5..b8823b5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -52,7 +52,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
@@ -23,7 +23,7 @@ index d770ca5..34f2046 100644
  include(GNUInstallDirs)
  
 diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
-index 71267a4..15eb296 100644
+index 880cf74..f6bb21e 100644
 --- a/cube/CMakeLists.txt
 +++ b/cube/CMakeLists.txt
 @@ -226,7 +226,7 @@ elseif (ANDROID)
@@ -32,10 +32,10 @@ index 71267a4..15eb296 100644
  
 -    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers)
 +    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers)
- elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
+ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
      add_executable(vkcube)
      target_sources(vkcube PRIVATE
-@@ -243,7 +243,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
+@@ -243,7 +243,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
      if (NEED_RT)
          target_link_libraries(vkcube PRIVATE rt)
      endif()
@@ -53,7 +53,7 @@ index 71267a4..15eb296 100644
  else()
      message(FATAL_ERROR "Unsupported Platform!")
  endif()
-@@ -294,7 +294,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
+@@ -293,7 +293,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
                     cube.vert.inc
                     cube.frag.inc
                     ${OPTIONAL_WAYLAND_DATA_FILES})
@@ -62,7 +62,7 @@ index 71267a4..15eb296 100644
      target_compile_definitions(vkcubepp PUBLIC ${CUBE_PLATFORM})
  else()
      add_executable(vkcubepp
-@@ -304,7 +304,7 @@ else()
+@@ -303,7 +303,7 @@ else()
                     ${PROJECT_SOURCE_DIR}/cube/cube.frag
                     cube.vert.inc
                     cube.frag.inc)
@@ -70,8 +70,8 @@ index 71267a4..15eb296 100644
 +    target_link_libraries(vkcubepp Vulkan::Headers vulkan_volk::volk_headers)
  endif()
  target_include_directories(vkcubepp PRIVATE .)
- target_compile_definitions(vkcubepp PRIVATE VK_NO_PROTOTYPES)
-@@ -347,7 +347,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
+ 
+@@ -345,7 +345,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
          )
          target_link_libraries(vkcube-wayland PRIVATE
              Vulkan::Headers
@@ -81,7 +81,7 @@ index 71267a4..15eb296 100644
              PkgConfig::WAYLAND_CLIENT
          )
 diff --git a/vulkaninfo/CMakeLists.txt b/vulkaninfo/CMakeLists.txt
-index facd696..fd285ee 100644
+index 7e51bb2..104c0a5 100644
 --- a/vulkaninfo/CMakeLists.txt
 +++ b/vulkaninfo/CMakeLists.txt
 @@ -109,7 +109,7 @@ endif()
@@ -94,5 +94,5 @@ index facd696..fd285ee 100644
  
  if(WIN32)
 -- 
-2.43.0
+2.45.2
 
