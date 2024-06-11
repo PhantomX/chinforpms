@@ -1,7 +1,7 @@
 %global commit e7e6d98b71b44c060cd0ec5f62fb8db5dd67b83a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240422
-%bcond_without snapshot
+%bcond_with snapshot
 
 %global with_python  1
 
@@ -24,8 +24,8 @@
 %global vc_url  https://git.claws-mail.org/?p=claws.git
 
 Name:           claws-mail
-Version:        4.2.0
-Release:        104%{?dist}
+Version:        4.3.0
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -41,6 +41,8 @@ Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/ch
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
+
+Patch0:         %{vc_url};a=patch;h=a890cdbde84467af7d74cc8656c11ccd749c1281#/%{name}-git-a890cdb.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -636,6 +638,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Mon Jun 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.0-100
+- 4.3.0
+
 * Thu Nov 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.2.0-100
 - 4.2.0
 - gdata plugin removed by upstream
