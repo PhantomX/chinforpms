@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -32,8 +32,9 @@ Patch15:        0003-dep-libchdr-Add-option-to-transfer-file-ownership.patch
 Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
 Patch17:        0005-dep-libchdr-Add-subtype-parsing-functions.patch
 Patch18:        0006-dep-libchdr-Add-chd_get_compressed_size.patch
-Patch19:        0001-Export-subtype-parsing-functions.patch
-Patch20:        0001-Use-system-libzstd.patch
+Patch19:        0001-3rdparty-libchdr-Allow-cancelling-precache.patch
+Patch20:        0001-Export-subtype-parsing-functions.patch
+Patch21:        0001-Use-system-libzstd.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -96,6 +97,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Wed Jun 12 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-17.20240519git86b2720
+- PCSX2 modification
+
 * Fri May 31 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-16.20240519git86b2720
 - lzma-sdk rebuild
 

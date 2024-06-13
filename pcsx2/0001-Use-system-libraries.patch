@@ -1,4 +1,4 @@
-From 2ed4ff86eceb4668eccce99529db8eb7a01e9e1a Mon Sep 17 00:00:00 2001
+From cd6e26e4df2f7f61e9c20640e9b16684521fb230 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -8,24 +8,30 @@ Subject: [PATCH] Use system libraries
  pcsx2/CMakeLists.txt                       | 12 +++-
  pcsx2/GS/GSDump.cpp                        |  4 ++
  pcsx2/GS/GSLzma.cpp                        |  6 ++
- pcsx2/GS/MultiISA.cpp                      |  2 +-
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h |  4 +-
- 6 files changed, 100 insertions(+), 5 deletions(-)
+ 5 files changed, 99 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index b8339b1..6a288c9 100644
+index c57f7ad..300661f 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -86,28 +86,88 @@ if(ENABLE_TESTS)
- 	endif()
- endif()
+@@ -73,34 +73,106 @@ endif()
  
+ set(CMAKE_FIND_FRAMEWORK ${FIND_FRAMEWORK_BACKUP})
+ 
++find_package(FastFloat)
++if(FastFloat_FOUND)
++	message(STATUS "Using the system fast_float")
++	alias_library(fast_float FastFloat::fast_float)
++else()
+ add_subdirectory(3rdparty/fast_float EXCLUDE_FROM_ALL)
++endif()
 +find_package(ryml)
 +if(ryml_FOUND)
 +	message(STATUS "Using the system rapidyml")
-+	alias_library(ryml ryml::ryml)
++	alias_library(rapidyaml::rapidyaml ryml::ryml)
 +else()
- add_subdirectory(3rdparty/rapidyaml/rapidyaml EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/rapidyaml EXCLUDE_FROM_ALL)
 +endif()
 +check_lib(LZMA lzmasdk-c)
 +if(LZMA_FOUND)
@@ -49,27 +55,6 @@ index b8339b1..6a288c9 100644
 +else()
  add_subdirectory(3rdparty/soundtouch EXCLUDE_FROM_ALL)
 +endif()
- 
- # rapidyaml includes fast_float as a submodule, saves us pulling it in directly.
- # Normally, we'd just pull in the cmake project, and link to it, but... it seems to enable
- # permissive mode, which breaks other parts of PCSX2. So, we'll just create a target here
- # for now.
- #add_subdirectory(3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float EXCLUDE_FROM_ALL)
-+find_package(FastFloat)
-+if(FastFloat_FOUND)
-+	message(STATUS "Using the system fast_float")
-+	alias_library(fast_float FastFloat::fast_float)
-+else()
- add_library(fast_float INTERFACE)
- target_include_directories(fast_float INTERFACE 3rdparty/rapidyaml/rapidyaml/ext/c4core/src/c4/ext/fast_float/include)
-+endif()
-+
-+find_package(xbyak)
-+if(xbyak_FOUND)
-+	message(STATUS "Using the system xbyak")
-+	alias_library(xbyak xbyak::xbyak)
-+endif()
- 
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 +check_lib(CPUINFO libcpuinfo)
@@ -105,16 +90,23 @@ index b8339b1..6a288c9 100644
  add_subdirectory(3rdparty/discord-rpc EXCLUDE_FROM_ALL)
  add_subdirectory(3rdparty/freesurround EXCLUDE_FROM_ALL)
  
-@@ -116,12 +176,24 @@ if(USE_OPENGL)
++find_package(xbyak)
++if(xbyak_FOUND)
++	message(STATUS "Using the system xbyak")
++	alias_library(xbyak xbyak::xbyak)
++endif()
++
+ if(USE_OPENGL)
+ 	add_subdirectory(3rdparty/glad EXCLUDE_FROM_ALL)
  endif()
  
  if(USE_VULKAN)
 +	find_package(VulkanHeaders)
 +	if(VulkanHeaders_FOUND)
 +		message(STATUS "Using the system vulkan-headers")
-+		alias_library(Vulkan-Headers Vulkan::Headers)
++		alias_library(vulkan-headers Vulkan::Headers)
 +	else()
- 	add_subdirectory(3rdparty/vulkan-headers EXCLUDE_FROM_ALL)
+ 	add_subdirectory(3rdparty/vulkan EXCLUDE_FROM_ALL)
 +	endif()
  endif()
  
@@ -130,7 +122,7 @@ index b8339b1..6a288c9 100644
  
  # Find the Qt components that we need.
  # Should be 6.7.1, but held back on 6.7.0 because of Flatpak.
-@@ -135,7 +207,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
+@@ -115,7 +187,12 @@ add_subdirectory(3rdparty/demangler EXCLUDE_FROM_ALL)
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
@@ -138,16 +130,16 @@ index b8339b1..6a288c9 100644
 +if(fmt_FOUND)
 +	message(STATUS "Using the system fmt")
 +else()
- add_subdirectory(3rdparty/fmt/fmt EXCLUDE_FROM_ALL)
+ add_subdirectory(3rdparty/fmt EXCLUDE_FROM_ALL)
 +endif()
  
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 4ecc6b5..3e3c3be 100644
+index adf2775..80f2394 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1096,7 +1096,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
+@@ -1091,7 +1091,6 @@ target_link_libraries(PCSX2_FLAGS INTERFACE
  	libchdr
  	libzip::zip
  	cpuinfo
@@ -155,7 +147,7 @@ index 4ecc6b5..3e3c3be 100644
  	cubeb
  	rcheevos
  	discord-rpc
-@@ -1147,13 +1146,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
+@@ -1142,13 +1141,22 @@ target_include_directories(PCSX2_FLAGS INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}"
  	"${CMAKE_BINARY_DIR}/pcsx2"
  	"${CMAKE_BINARY_DIR}/common/include"
@@ -180,7 +172,7 @@ index 4ecc6b5..3e3c3be 100644
  if(COMMAND target_precompile_headers)
  	message("Using precompiled headers.")
 diff --git a/pcsx2/GS/GSDump.cpp b/pcsx2/GS/GSDump.cpp
-index 7c17d9e..d2e13b4 100644
+index e645038..b702e15 100644
 --- a/pcsx2/GS/GSDump.cpp
 +++ b/pcsx2/GS/GSDump.cpp
 @@ -16,6 +16,10 @@
@@ -195,7 +187,7 @@ index 7c17d9e..d2e13b4 100644
  	: m_filename(std::move(fn))
  	, m_frames(0)
 diff --git a/pcsx2/GS/GSLzma.cpp b/pcsx2/GS/GSLzma.cpp
-index 71c91ea..75ec55b 100644
+index 87da896..23c4dfe 100644
 --- a/pcsx2/GS/GSLzma.cpp
 +++ b/pcsx2/GS/GSLzma.cpp
 @@ -21,6 +21,12 @@
@@ -211,21 +203,8 @@ index 71c91ea..75ec55b 100644
  using namespace GSDumpTypes;
  
  GSDumpFile::GSDumpFile() = default;
-diff --git a/pcsx2/GS/MultiISA.cpp b/pcsx2/GS/MultiISA.cpp
-index d9f99aa..b88c94f 100644
---- a/pcsx2/GS/MultiISA.cpp
-+++ b/pcsx2/GS/MultiISA.cpp
-@@ -2,7 +2,7 @@
- // SPDX-License-Identifier: LGPL-3.0+
- 
- #include "MultiISA.h"
--#include <xbyak/xbyak_util.h>
-+#include <xbyak_util.h>
- 
- #ifdef _WIN32
- #define strcasecmp _stricmp
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index 1ff7563..d3b1045 100644
+index c02f049..530983d 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 @@ -14,8 +14,8 @@
@@ -240,5 +219,5 @@ index 1ff7563..d3b1045 100644
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
  /// Should make combined SSE and AVX codegen much easier
 -- 
-2.45.0
+2.45.2
 

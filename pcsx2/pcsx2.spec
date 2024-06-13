@@ -32,10 +32,11 @@
 %bcond_with     native
 # Enable system fmt
 %bcond_without fmt
+%bcond_with rapidyml
 %bcond_without shaderc
 # Enable system soundtouch (needs no exception)
 %bcond_with soundtouch
-%bcond_without  vulkan
+%bcond_without vulkan
 
 %global appbin %{name}-qt
 %global appres PCSX2
@@ -50,13 +51,14 @@
 %global gsl_ver 4.0.0
 %global imgui_ver 1.90.4
 %global jpgc_ver 1.05
+%global rapidyml_ver 0.6.0
 %global rcheevos_scommit 3d01191
 %global simpleini_ver 4.22
 %global soundtouch_ver 2.3.1
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5845
+Version:        1.7.5886
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -143,7 +145,11 @@ BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
 BuildRequires:  cmake(RapidJSON)
-BuildRequires:  cmake(ryml) >= 0.4.1
+%if %{with rapidyml}
+BuildRequires:  cmake(ryml) >= %{rapidyml_ver}
+%else
+Provides:       bundled(rapidyml) = %{rapidyml_ver}
+%endif
 BuildRequires:  cmake(Qt6Core) >= 6.7
 BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
@@ -174,7 +180,7 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.272
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.287
 %endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
@@ -230,7 +236,7 @@ cp -p 3rdparty/shaderc/LICENSE 3rdparty/LICENSE.shaderc
 pushd 3rdparty
 rm -rf \
   cpuinfo cubeb d3d12memalloc ffmpeg GL gtest libchdr libwebp \
-  libpng libzip lzma qt rainterface rapidjson rapidyaml sdl2 wil \
+  libpng libzip lzma qt rainterface rapidjson sdl2 wil \
   winpixeventruntime xbyak xz zlib zstd zydis
 
 %if %{with fmt}
@@ -241,6 +247,12 @@ sed -e '/find_package/s|fmt|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
 cp -p fmt/fmt/LICENSE LICENSE.fmt
 %endif
 
+%if %{with rapidyml}
+rm -rf rapidyml
+%else
+sed -e '/find_package/s|ryml|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+%endif
+
 %if %{with soundtouch}
 rm -rf soundtouch
 %else
@@ -249,7 +261,10 @@ sed -e 's|-Ofast||g' -i soundtouch/CMakeLists.txt
 cp -p soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
-%if %{without vulkan}
+%if %{with vulkan}
+mv vulkan/include/vk_mem_alloc.h ../
+rm -rf vulkan
+%else
 tar -xf %{S:12} -C vulkan-headers --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
 %endif
