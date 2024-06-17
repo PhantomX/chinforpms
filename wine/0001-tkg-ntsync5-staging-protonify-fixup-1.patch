@@ -1,49 +1,25 @@
-From bc5adbe2006d953ab4b378367e9dee02f77b9141 Mon Sep 17 00:00:00 2001
-From: rpm-build <rpm-build>
-Date: Sun, 21 Apr 2024 16:11:22 -0300
+From bffa082b92bf6040107f15475bf4d4b6e57e499a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 14 Jun 2024 23:26:40 -0300
 Subject: [PATCH] tkg ntsync5 staging protonify fixup 1
 
 ---
- include/config.h.in | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/config.h.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/include/config.h.in b/include/config.h.in
-index c097dba..305d60a 100644
+index 6456c14..2da6750 100644
 --- a/include/config.h.in
 +++ b/include/config.h.in
-@@ -309,13 +309,13 @@
- /* Define to 1 if you have the `posix_fadvise' function. */
- #undef HAVE_POSIX_FADVISE
- 
--/* Define to 1 if you have the `posix_fallocate' function. */
-+/* Define to 1 if you have the 'posix_fallocate' function. */
- #undef HAVE_POSIX_FALLOCATE
- 
--/* Define to 1 if you have the `ppoll' function. */
-+/* Define to 1 if you have the 'ppoll' function. */
- #undef HAVE_PPOLL
- 
--/* Define to 1 if you have the `prctl' function. */
-+/* Define to 1 if you have the 'prctl' function. */
- #undef HAVE_PRCTL
- 
- /* Define to 1 if you have the `proc_pidinfo' function. */
-@@ -372,13 +372,13 @@
- /* Define to 1 if you have the `setprogname' function. */
- #undef HAVE_SETPROGNAME
- 
--/* Define to 1 if `interface_id' is a member of `sg_io_hdr_t'. */
-+/* Define to 1 if 'interface_id' is a member of 'sg_io_hdr_t'. */
- #undef HAVE_SG_IO_HDR_T_INTERFACE_ID
- 
+@@ -381,7 +381,7 @@
  /* Define to 1 if you have the `shm_open' function. */
  #undef HAVE_SHM_OPEN
  
 -/* Define to 1 if `si_fd' is a member of `siginfo_t'. */
-+/* Define to 1 if 'si_fd' is a member of 'siginfo_t'. */
++/* Define to 1 if 'si_fd' is a member of `siginfo_t'. */
  #undef HAVE_SIGINFO_T_SI_FD
  
  /* Define to 1 if you have the `sigprocmask' function. */
 -- 
-2.44.0
+2.45.2
 

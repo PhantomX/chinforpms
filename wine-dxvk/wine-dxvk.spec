@@ -7,16 +7,16 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 60cfafe027492deab236edf80333ee3de9fa5b76
+%global commit 3e5eb1660f69d73dd36ffee49e2e903c511a945e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240526
+%global date 20240614
 %bcond_without snapshot
 
 %bcond_without gplasync
-%bcond_with sysspirv
-%bcond_without sysvulkan
+%bcond_with spirv
+%bcond_without vulkan
 
-%global gplasync_id 557c021b63adf0d073169886e82d8557db8d2f71
+%global gplasync_id 1c20be2bd0ac202fa1fa52b2eaeb6bc14096e15f
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -64,11 +64,11 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.3.1
-Release:        105%{?dist}
+Release:        106%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
-License:        Zlib AND MIT%{!?with_sysvulkan: AND Apache-2.0}
+License:        Zlib AND MIT%{!?with_vulkan: AND Apache-2.0}
 URL:            https://github.com/doitsujin/%{pkgname}
 
 %if %{with snapshot}
@@ -91,10 +91,10 @@ Patch501:      0001-dxvk.conf-gplasync-options.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
-%if %{without sysspirv}
+%if %{without spirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
-%if %{without sysvulkan}
+%if %{without vulkan}
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
 Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
@@ -117,10 +117,10 @@ BuildRequires:  mingw32-headers >= 8.0
 BuildRequires:  mingw32-winpthreads-static >= 8.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-%if %{with sysspirv}
+%if %{with spirv}
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
-%if %{?with_sysvulkan}
+%if %{?with_vulkan}
 BuildRequires:  vulkan-headers >= 1.3.279
 %endif
 
@@ -174,13 +174,13 @@ cp %{S:500} README.gplasync.md
 
 cp %{S:1} README.%{pkgname}
 
-%if %{with sysspirv}
+%if %{with spirv}
 ln -s %{_includedir}/spirv include/spirv/include/spirv
 %else
 tar -xf %{S:5} -C include/spirv --strip-components 1
 cp -p include/spirv/LICENSE LICENSE.spirv
 %endif
-%if %{with sysvulkan}
+%if %{with vulkan}
 mkdir -p include/vulkan/include
 ln -s %{_includedir}/vk_video include/vulkan/include/vk_video
 ln -s %{_includedir}/vulkan include/vulkan/include/vulkan

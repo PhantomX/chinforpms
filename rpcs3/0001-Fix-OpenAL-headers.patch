@@ -1,0 +1,39 @@
+From f7ce33a276df6db24a41649bb06b4181c82b550e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 14 Jun 2024 21:13:02 -0300
+Subject: [PATCH] Fix OpenAL headers
+
+---
+ rpcs3/Emu/Cell/Modules/cellMic.h     | 2 +-
+ rpcs3/rpcs3qt/microphone_creator.cpp | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rpcs3/Emu/Cell/Modules/cellMic.h b/rpcs3/Emu/Cell/Modules/cellMic.h
+index 00eb7c8..3d04acf 100644
+--- a/rpcs3/Emu/Cell/Modules/cellMic.h
++++ b/rpcs3/Emu/Cell/Modules/cellMic.h
+@@ -3,7 +3,7 @@
+ #include "Utilities/Thread.h"
+ #include "Emu/Cell/timers.hpp"
+ 
+-#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
++#include "alext.h"
+ 
+ // Error Codes
+ enum CellMicInError : u32
+diff --git a/rpcs3/rpcs3qt/microphone_creator.cpp b/rpcs3/rpcs3qt/microphone_creator.cpp
+index 8f56bca..fa2d61b 100644
+--- a/rpcs3/rpcs3qt/microphone_creator.cpp
++++ b/rpcs3/rpcs3qt/microphone_creator.cpp
+@@ -4,7 +4,7 @@
+ #include "Utilities/StrFmt.h"
+ #include "Utilities/StrUtil.h"
+ 
+-#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
++#include "alext.h"
+ 
+ LOG_CHANNEL(cfg_log, "CFG");
+ 
+-- 
+2.45.2
+

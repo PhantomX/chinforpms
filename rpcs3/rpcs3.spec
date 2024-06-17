@@ -38,9 +38,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with sysyamlcpp
 
-%global commit 53b81af70497b36928cb64d03e8798a30663ffaf
+%global commit feff2ba09e3b4bba230e90e968304f87590fac43
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240530
+%global date 20240614
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -95,7 +95,9 @@
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
 %global srcname22 rtmidi
 
-%global stb_ver 2.27
+%global commit23 013ac3beddff3dbffafd5177e7972067cd2b5083
+%global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
+%global srcname23 stb
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -107,8 +109,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.32.16554
-Release:        2%{?dist}
+Version:        0.0.32.16611
+Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
 License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
@@ -148,12 +150,14 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 %if %{without sysrtmidi}
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
+Source23:       https://github.com/nothings/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
 Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
+Patch14:        0001-Fix-OpenAL-headers.patch
 
 ExclusiveArch:  x86_64
 
@@ -253,7 +257,7 @@ Provides:       bundled(spirv-tools) = 0~git%{shortcommit10}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
-Provides:       bundled(stb) = %{stb_ver}
+Provides:       bundled(stb) = 0~git%{shortcommit23}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
 
 %description
@@ -276,8 +280,9 @@ tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
 tar -xf %{S:13} -C glslang/glslang --strip-components 1
 tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
 tar -xf %{S:17} -C SPIRV/SPIRV-Headers --strip-components 1
+tar -xf %{S:23} -C stblib/stb --strip-components 1
 
-cp -p stblib/LICENSE LICENSE.stb
+cp -p stblib/stb/LICENSE LICENSE.stb
 cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch

@@ -1,4 +1,4 @@
-From 0e69b1459b70f61a7b26cee5a90b6dd3446959a3 Mon Sep 17 00:00:00 2001
+From ea142bf9919040dde4941b0e0dba23b0d28c61c2 Mon Sep 17 00:00:00 2001
 From: rpm-build <rpm-build>
 Date: Sat, 1 Jun 2024 19:26:14 -0300
 Subject: [PATCH] winex11: always update display cache
@@ -9,21 +9,21 @@ Fix virtual desktop custom resolutions from explorer /desktop command line
  1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/dlls/winex11.drv/window.c b/dlls/winex11.drv/window.c
-index b56f579..d7ab97b 100644
+index 3d350f4..34e2638 100644
 --- a/dlls/winex11.drv/window.c
 +++ b/dlls/winex11.drv/window.c
-@@ -2025,7 +2025,9 @@ void X11DRV_SetDesktopWindow( HWND hwnd )
+@@ -2037,7 +2037,9 @@ void X11DRV_SetDesktopWindow( HWND hwnd )
  
      if (!width && !height)  /* not initialized yet */
      {
 -        RECT rect = NtUserGetVirtualScreenRect();
 +        RECT rect;
-+        NtUserCallNoParam( NtUserCallNoParam_UpdateDisplayCache );
++        NtUserCallNoParam( NtUserCallNoParam_DisplayModeChanged );
 +        rect = NtUserGetVirtualScreenRect();
  
          SERVER_START_REQ( set_window_pos )
          {
-@@ -2058,7 +2060,11 @@ void X11DRV_SetDesktopWindow( HWND hwnd )
+@@ -2067,7 +2069,11 @@ void X11DRV_SetDesktopWindow( HWND hwnd )
      else
      {
          Window win = (Window)NtUserGetProp( hwnd, whole_window_prop );
@@ -31,11 +31,11 @@ index b56f579..d7ab97b 100644
 +        if (win && win != root_window)
 +        {
 +            X11DRV_init_desktop( win, width, height );
-+            NtUserCallNoParam( NtUserCallNoParam_UpdateDisplayCache );
++            NtUserCallNoParam( NtUserCallNoParam_DisplayModeChanged );
 +        };
      }
  }
  
 -- 
-2.45.1
+2.45.2
 

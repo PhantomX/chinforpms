@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.10
+%global wine_stagingver 9.11
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 71e3a6ce06d1eac0eb159d598904944a54c55eae
+%global tkg_id e043a9063ec3571fd884b59279d27bfff29cf9cb
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -160,7 +160,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.10
+Version:        9.11
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -277,9 +277,6 @@ Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.pa
 Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.patch#/%{name}-valve-ed14fff.patch
 Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
-Patch1095:       0001-tkg-no-childwindow-fixup-1.patch
-Patch1097:       0001-tkg-proton-cpu-topology-overrides-fixup-1.patch
-Patch1098:       0001-tkg-proton-cpu-topology-overrides-fixup-2.patch
 
 Patch1300:       0001-winex11-always-update-display-cache.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
@@ -915,14 +912,11 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %else
 %patch -P 1027 -p1
 %endif
-%patch -P 1095 -p1
 %patch -P 1028 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
-%patch -P 1097 -p1
 %patch -P 1029 -p1
-%patch -P 1098 -p1
 %if %{with ntsync}
 %patch -P 1055 -p1
 %endif
@@ -1564,6 +1558,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/comsvcs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/concrt140.%{winedll}
 %{_libdir}/wine/%{winedlldir}/connect.%{winedll}
+%{_libdir}/wine/%{winedlldir}/coremessaging.%{winedll}
 %{_libdir}/wine/%{winedlldir}/credui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/crtdll.%{winedll}
 %{_libdir}/wine/%{winesodir}/crypt32.so
@@ -2543,6 +2538,9 @@ fi
 
 
 %changelog
+* Sat Jun 15 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.11-100
+- 9.11
+
 * Sat Jun 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.10-100
 - 9.10
 - Disable childwindow again
