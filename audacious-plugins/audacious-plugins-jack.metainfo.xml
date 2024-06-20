@@ -6,7 +6,7 @@
 <name>Jack Audio Connection Kit output</name>
 <summary>Output plugin for Jack Audio Connection Kit (JACK) sound service</summary>
 <metadata_license>CC0-1.0</metadata_license>
-<project_license>LGPL-2.1+</project_license>
+<project_license>BSD-2-Clause</project_license>
 <kudos>
     <kudo>ModernToolkit</kudo>
 </kudos>

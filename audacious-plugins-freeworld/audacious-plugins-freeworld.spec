@@ -4,22 +4,22 @@
 %endif
 %{?aud_plugin_dep}
 
-# build with qt6 instead 5
-%bcond_without qt6
+# build with qt5 instead 6
+%bcond_with qt5
 
-%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
+%{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
 
 %global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
 
 Name:           audacious-plugins-freeworld
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3.1
+Version:        4.4
 Release:        100%{?dist}
 Summary:        Additional plugins for the Audacious media player
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.3
+%global aud_ver 4.4
 
 License:        BSD-2-Clause
 URL:            http://audacious-media-player.org/
@@ -128,6 +128,9 @@ install -pm0755 %{_vpath_builddir}/src/mms/mms.so %{buildroot}%{_libdir}/audacio
 
 
 %changelog
+* Wed Jun 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-100
+- 4.4
+
 * Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
 - 4.3.1
 

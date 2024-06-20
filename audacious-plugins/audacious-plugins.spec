@@ -1,12 +1,12 @@
 # build with GTK+2
 %bcond_without gtk
-# build with GTK+3 instead 2
-%bcond_without gtk3
-# build with qt6 instead 5
-%bcond_without qt6
+# build with GTK+2 instead 3
+%bcond_with gtk2
+# build with qt5 instead 6
+%bcond_with qt5
 
-%{?with_gtk3:%global gtk_ver 3}%{!?with_gtk3: %global gtk_ver 2}
-%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
+%{?with_gtk2:%global gtk_ver 2}%{!?with_gtk2: %global gtk_ver 3}
+%{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
 
 %global aud_plugin_api %(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION[ ]\\+' %{_includedir}/libaudcore/plugin.h 2>/dev/null | sed 's!.*_AUD_PLUGIN_VERSION[ ]*\\([0-9]\\+\\).*!\\1!')
 %if 0%{aud_plugin_api} > 0
@@ -20,12 +20,12 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3.1
+Version:        4.4
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.3
+%global aud_ver 4.4
 
 Summary: Plugins for the Audacious audio player
 URL:            http://audacious-media-player.org/
@@ -57,6 +57,7 @@ BuildRequires:  pkgconfig(dbus-glib-1)
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(fluidsynth)
 BuildRequires:  pkgconfig(jack)
+BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  pkgconfig(libbinio)
 BuildRequires:  pkgconfig(libbs2b)
 BuildRequires:  pkgconfig(libcddb)
@@ -85,6 +86,8 @@ BuildRequires:  pkgconfig(sndfile)
 BuildRequires:  pkgconfig(soxr)
 BuildRequires:  pkgconfig(wavpack)
 BuildRequires:  pkgconfig(vorbis)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcb-proto)
 BuildRequires:  lame-devel
 # ffaudio / ffmpeg
 BuildRequires:  pkgconfig(libavcodec) >= 56.60.100
@@ -94,12 +97,13 @@ BuildRequires:  pkgconfig(libavutil) >= 54.31.100
 BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Gui)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Widgets)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Multimedia)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Network)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGL)
-%if %{with qt6}
+BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGLWidgets)
+%if %{without qt5}
 BuildRequires:  qt6-qtbase-private-devel
 %else
-BuildRequires:  pkgconfig(Qt%{qt_ver}Multimedia)
 BuildRequires:  pkgconfig(Qt5X11Extras)
 %endif
 BuildRequires:  pkgconfig(ampache_browser_1)
@@ -183,8 +187,8 @@ fi
 %{!?aud_plugin_dep:echo 'No audacious(plugin-api) dependency!' && exit -1}
 
 %meson \
-  %{?with_gtk:-Dgtk=true%{?with_gtk3: -Dgtk3=true}}%{!?with_gtk:-Dgtk=false} \
-  %{?with_qt6:-Dqt6=true} \
+  %{?with_gtk:-Dgtk=true%{?with_gtk2: -Dgtk2=true}}%{!?with_gtk:-Dgtk=false} \
+  %{?with_qt5:-Dqt5=true} \
   -Dampache=true \
   -Dfilewriter-mp3=true \
   -Dflac=true \
@@ -227,6 +231,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Container/pls.so
 %{_libdir}/audacious/Container/xspf.so
 %dir %{_libdir}/audacious/Effect/
+%{_libdir}/audacious/Effect/background_music.so
 %{_libdir}/audacious/Effect/bitcrusher.so
 %{_libdir}/audacious/Effect/bs2b.so
 %{_libdir}/audacious/Effect/compressor.so
@@ -247,7 +252,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/General/cd-menu-items.so
 %{_libdir}/audacious/General/delete-files.so
 %{_libdir}/audacious/General/lirc.so
-%{_libdir}/audacious/General/lyricwiki-qt.so
+%{_libdir}/audacious/General/lyrics-qt.so
 %{_libdir}/audacious/General/mpris2.so
 %{_libdir}/audacious/General/notify.so
 %{_libdir}/audacious/General/playlist-manager-qt.so
@@ -277,7 +282,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Output/oss4.so
 %{_libdir}/audacious/Output/pipewire.so
 %{_libdir}/audacious/Output/pulse_audio.so
-%{!?with_qt6:%{_libdir}/audacious/Output/qtaudio.so}
+%{?with_qt5:%{_libdir}/audacious/Output/qtaudio.so}
 %{_libdir}/audacious/Output/sdlout.so
 %dir %{_libdir}/audacious/Visualization/
 %{_libdir}/audacious/Visualization/blur_scope-qt.so
@@ -294,6 +299,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/General/aosd.so
 %{_libdir}/audacious/General/gtkui.so
 %{_libdir}/audacious/General/hotkey.so
+%{_libdir}/audacious/General/lyrics-gtk.so
 %{_libdir}/audacious/General/playlist-manager.so
 %{_libdir}/audacious/General/search-tool.so
 %{_libdir}/audacious/General/skins.so
@@ -329,6 +335,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Wed Jun 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-100
+- 4.4
+
 * Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
 - 4.3.1
 

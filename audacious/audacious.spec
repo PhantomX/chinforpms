@@ -1,23 +1,23 @@
-# build with GTK+2
+# build with GTK+3
 %bcond_without gtk
-# build with GTK+3 instead 2
-%bcond_without gtk3
-# build with qt6 instead 5
-%bcond_without qt6
+# build with GTK+2 instead 3
+%bcond_with gtk2
+# build with qt5 instead 6
+%bcond_with qt5
 
-%{?with_gtk3:%global gtk_ver 3}%{!?with_gtk3: %global gtk_ver 2}
-%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
+%{?with_gtk2:%global gtk_ver 2}%{!?with_gtk2: %global gtk_ver 3}
+%{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
 
 %global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
 
 Name:           audacious
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.3.1
+Version:        4.4
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.3
+%global aud_ver 4.4
 
 # Audacious Generic Plugin API is defined in audacious-libs subpackage.
 
@@ -40,6 +40,7 @@ BuildRequires:  meson >= 0.57
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Core)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Gui)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Svg)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Widgets)
 
 # The automatic SONAME dependency is not enough
@@ -61,12 +62,19 @@ Requires:       qt%{qt_ver}-qtsvg%{?_isa}
 Provides:       xmms-gui
 
 %description
-Audacious is an advanced audio player. It is free, lightweight, currently
-based on GTK+ 2, runs on Linux and many other *nix platforms and is
-focused on audio quality and supporting a wide range of audio codecs.
-It still features an alternative skinned user interface (based on
-Winamp 2.x skins). Historically, it started as a fork of Beep Media
-Player (BMP), which itself forked from XMMS.
+Audacious is an open source audio player
+
+A descendant of XMMS, Audacious plays your music how you want it, without
+stealing away your computer’s resources from other tasks. Drag and drop
+folders and individual song files, search for artists and albums in your
+entire music library, or create and edit your own custom playlists. Listen
+to CDs or stream music from the Internet. Tweak the sound with the
+graphical equalizer or change the dynamic range with audio effects. Enjoy
+the modern Qt-themed interface or change things up with Winamp Classic
+skins. Use the plugins included with Audacious to fetch lyrics for your
+music, display a VU meter, and more.
+
+An alternative GTK3-based user interface can still be chosen, too.
 
 
 %package libs
@@ -108,8 +116,9 @@ api_min=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION_MIN' src/libaudcore/plugin.h 
 
 %build
 %meson \
-  %{?with_gtk:-Dgtk=true%{?with_gtk3: -Dgtk3=true}}%{!?with_gtk:-Dgtk=false} \
-  %{?with_qt6:-Dqt6=true} \
+  %{?with_gtk:-Dgtk=true%{?with_gtk2: -Dgtk2=true}}%{!?with_gtk:-Dgtk=false} \
+  %{?with_qt5:-Dqt5=true} \
+  -Dlibarchive=false \
   -Dbuildstamp="chinforpms package" \
 %{nil}
 
@@ -152,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Jun 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-100
+- 4.4
+
 * Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
 - 4.3.1
 
