@@ -6,7 +6,7 @@
 
 %bcond_without snap
 
-%global vivaldi_ver 6.7
+%global vivaldi_ver 6.8
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
@@ -16,16 +16,16 @@
 %global parch amd64
 %global pkgid 660647727
 %global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 37
+%global snaprev 41
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-%global ffmpeg_ver 114023
+%global ffmpeg_ver 115541
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        114023
-Release:        2%{?dist}
+Version:        115541
+Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -83,6 +83,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Thu Jun 20 2024 - 115541-1
+- 115541
+
 * Fri Apr 26 2024 - 114023-2
 -  Set vivaldir_ver to 6.7
 

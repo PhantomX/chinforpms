@@ -13,10 +13,10 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 114023
+%global ffmpegcodec 115541
 
 Name:           vivaldi
-Version:        6.7.3329.35
+Version:        6.8.3381.44
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -156,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Jun 20 2024 - 6.8.3381.44-1
+- 6.8.3381.44
+
 * Fri May 24 2024 - 6.7.3329.35-1
 - 6.7.3329.35
 

@@ -11,7 +11,7 @@
 %global vc_url  https://github.com/libsdl-org/SDL
 
 Name:           SDL2
-Version:        2.30.3
+Version:        2.30.4
 Release:        100%{?dist}
 Summary:        Cross-platform multimedia library
 
@@ -176,6 +176,9 @@ install -p -m 644 %{SOURCE2} %{buildroot}%{_includedir}/SDL2/SDL_revision.h
 %{_libdir}/cmake/SDL2/SDL2staticTargets*.cmake
 
 %changelog
+* Thu Jun 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.30.4-100
+- 2.30.4
+
 * Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 2.30.3-100
 - 2.30.3
 
