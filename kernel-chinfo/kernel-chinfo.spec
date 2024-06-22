@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.9.5
+%define specrpmversion 6.9.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1060,6 +1060,7 @@ Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 %if 0%{?post_factum}
+Patch5001:  %{kernel_url}/?id=6649e23edb3cb99d9376eabbb8978df747e07c68#/kernel-stable-revert-6649e23.patch
 # amd-pstate
 Patch7000:  %{pf_url}/023aad3424cd0097342f5021915ec0f4eaa34c72.patch#/pf-cb-023aad3.patch
 Patch7001:  %{pf_url}/dac2bbc34d5b1bf89385035e2276df3dc32f06ab.patch#/pf-cb-dac2bbc.patch
@@ -1097,6 +1098,8 @@ Patch7034:  %{pf_url}/880b0678ede0235718aadeec0209d697c5794326.patch#/pf-cb-880b
 Patch7035:  %{pf_url}/ed7c06d68887a7055192ec5921ddeafa881782d3.patch#/pf-cb-ed7c06d.patch
 Patch7036:  %{pf_url}/5dc318ad8bad88dcc92d7d73e28b5ca46e52c269.patch#/pf-cb-5dc318a.patch
 Patch7037:  %{pf_url}/c2f5a378a4f67827ba53be1f4be4c435e83a3c34.patch#/pf-cb-c2f5a37.patch
+Patch7038:  %{pf_url}/82989b66c9ac223695d7b96b5dca236aeb0252a8.patch#/pf-cb-82989b6.patch
+Patch7039:  %{pf_url}/f628b53171be2e120afa535d72417f21d953bfed.patch#/pf-cb-f628b53.patch
 # bbr
 Patch7050:  %{pf_url}/be74f82f85cf782f185e15c55dc8d8bda4769588.patch#/pf-cb-be74f82.patch
 # block
@@ -1113,10 +1116,10 @@ Patch7100:  %{pf_url}/0ebe1627d6667bd5c1ff164a734b8fa36704233a.patch#/pf-cb-0ebe
 Patch7101:  %{pf_url}/bab2518c5ec078e6081817a3862c1d848651d9b6.patch#/pf-cb-bab2518.patch
 Patch7102:  %{pf_url}/ce00606fb4bb131c02eb940968297f0869d30abe.patch#/pf-cb-ce00606.patch
 Patch7103:  %{pf_url}/deb847a041862fddff4fc16d4290389260b60dfb.patch#/pf-cb-deb847a.patch
-Patch7111:  %{pf_url}/01900d6d53d74ad912c92e95975a9413bea3640a.patch#/pf-cb-01900d6.patch
 Patch7113:  %{pf_url}/9145f4bfcf9d59418559436a66bcb073c025ded0.patch#/pf-cb-9145f4b.patch
 Patch7114:  %{pf_url}/6f9385bbdf4ccbd7f6af42f50372f119bd3c111a.patch#/pf-cb-6f9385b.patch
-Patch7115:  %{pf_url}/4f66eb50cf3185dd40d77784fdcc7802f230649a.patch#/pf-cb-4f66eb5.patch
+Patch7115:  %{pf_url}/21606a54e30fe44a315a22506ec4f4ce9308d41d.patch#/pf-cb-21606a5.patch
+Patch7116:  %{pf_url}/d0ce263a550e468e58bde68f96feceed8ea988e7.patch#/pf-cb-d0ce263.patch
 # zstd
 Patch7200:  %{pf_url}/2b515b215286bf4a98187aca20f1e16be80d0423.patch#/pf-cb-2b515b2.patch
 Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0e0e.patch
@@ -1166,6 +1169,7 @@ Patch7504:  %{pf_url}/946ee35af4ea50fb39d5bd2e0d9c83ed9a0ba37f.patch#/pf-cb-946e
 Patch7505:  %{pf_url}/95f66fbb48df5ebfaccea2821a18a55da9c3d870.patch#/pf-cb-95f66fb.patch
 Patch7506:  %{pf_url}/26eeeba73b40b4f95b1e885eeedefd0617bad697.patch#/pf-cb-26eeeba.patch
 Patch7507:  %{pf_url}/4bfec9b3e8308555def09ab75b55b4e4c882bf0e.patch#/pf-cb-4bfec9b.patch
+Patch7508:  %{pf_url}/dd20250f26151c747aacd3551079e7fe18ff100d.patch#/pf-cb-dd20250.patch
 
 %endif
 
@@ -1982,33 +1986,6 @@ cp -a %{SOURCE1} .
 %if !%{nopatches}
 
 %if 0%{?post_factum}
-# amd-pstate
-ApplyPatch %{PATCH7000}
-ApplyPatch %{PATCH7001}
-ApplyPatch %{PATCH7002}
-ApplyPatch %{PATCH7003}
-ApplyPatch %{PATCH7004}
-ApplyPatch %{PATCH7005}
-ApplyPatch %{PATCH7006}
-ApplyPatch %{PATCH7007}
-ApplyPatch %{PATCH7008}
-ApplyPatch %{PATCH7009}
-ApplyPatch %{PATCH7010}
-ApplyPatch %{PATCH7011}
-ApplyPatch %{PATCH7012}
-ApplyPatch %{PATCH7013}
-ApplyPatch %{PATCH7014}
-ApplyPatch %{PATCH7015}
-ApplyPatch %{PATCH7017}
-ApplyPatch %{PATCH7018}
-ApplyPatch %{PATCH7019}
-ApplyPatch %{PATCH7020}
-ApplyPatch %{PATCH7021}
-ApplyPatch %{PATCH7022}
-ApplyPatch %{PATCH7023}
-ApplyPatch %{PATCH7024}
-ApplyPatch %{PATCH7025}
-ApplyPatch %{PATCH7026}
 # bbr
 ApplyPatch %{PATCH7050}
 # block
@@ -2025,10 +2002,10 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7111}
 ApplyPatch %{PATCH7113}
 ApplyPatch %{PATCH7114}
 ApplyPatch %{PATCH7115}
+ApplyPatch %{PATCH7116}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2077,6 +2054,7 @@ ApplyPatch %{PATCH7504}
 ApplyPatch %{PATCH7505}
 ApplyPatch %{PATCH7506}
 ApplyPatch %{PATCH7507}
+ApplyPatch %{PATCH7508}
 %endif
 
 # released_kernel with possible stable updates
@@ -2086,7 +2064,36 @@ ApplyPatch %{PATCH5000}
 %endif
 
 %if 0%{?post_factum}
-# amd-pstate #2
+ApplyPatch %{PATCH5001} -R
+ApplyPatch %{PATCH7006} -R
+ApplyPatch %{PATCH7002} -R
+# amd-pstate
+ApplyPatch %{PATCH7000}
+ApplyPatch %{PATCH7001}
+ApplyPatch %{PATCH7002}
+ApplyPatch %{PATCH7003}
+ApplyPatch %{PATCH7004}
+ApplyPatch %{PATCH7005}
+ApplyPatch %{PATCH7006}
+ApplyPatch %{PATCH7007}
+ApplyPatch %{PATCH7008}
+ApplyPatch %{PATCH7009}
+ApplyPatch %{PATCH7010}
+ApplyPatch %{PATCH7011}
+ApplyPatch %{PATCH7012}
+ApplyPatch %{PATCH7013}
+ApplyPatch %{PATCH7014}
+ApplyPatch %{PATCH7015}
+ApplyPatch %{PATCH7017}
+ApplyPatch %{PATCH7018}
+ApplyPatch %{PATCH7019}
+ApplyPatch %{PATCH7020}
+ApplyPatch %{PATCH7021}
+ApplyPatch %{PATCH7022}
+ApplyPatch %{PATCH7023}
+ApplyPatch %{PATCH7024}
+ApplyPatch %{PATCH7025}
+ApplyPatch %{PATCH7026}
 ApplyPatch %{PATCH7027}
 ApplyPatch %{PATCH7028}
 ApplyPatch %{PATCH7029}
@@ -2097,6 +2104,8 @@ ApplyPatch %{PATCH7034}
 ApplyPatch %{PATCH7035}
 ApplyPatch %{PATCH7036}
 ApplyPatch %{PATCH7037}
+ApplyPatch %{PATCH7038}
+ApplyPatch %{PATCH7039}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
@@ -4295,6 +4304,9 @@ fi\
 #
 #
 %changelog
+* Fri Jun 21 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.6-500.chinfo
+- 6.9.6
+
 * Sun Jun 16 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.5-500.chinfo
 - 6.9.5
 

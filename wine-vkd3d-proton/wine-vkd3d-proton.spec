@@ -12,7 +12,7 @@
 %global commit b4eb56b547a8ffeb6642c10ede8a968090ed3d82
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240606
-%bcond_without snapshot
+%bcond_with snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -61,7 +61,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.13
-Release:        0.1%{?dist}
+Release:        1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -296,6 +296,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Jun 21 2024 Phantom X <megaphantomx at hotmail dot com> - 2.13-1
+- 2.13
+
 * Fri Jun 07 2024 Phantom X <megaphantomx at hotmail dot com> - 2.13-0.1.20240606gitb4eb56b
 - 2.13 snapshot
 

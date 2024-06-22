@@ -4,10 +4,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 685aa597c7ee7ad7cfd4dd782f40d21863b75899
+%global commit 0b629a015aca5ae3cc16c2b8bd826a093e3e4891
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240128
-%bcond_with snapshot
+%global date 20240612
+%bcond_without snapshot
 
 %bcond_with rust
 
@@ -21,8 +21,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.6.0
-Release:        0%{?dist}
+Version:        0.6.2
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -61,7 +61,6 @@ BuildRequires:  pkgconfig(lightning)
 BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
-BuildRequires:  pkgconfig(Qt6OpenGL)
 BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
@@ -188,6 +187,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat Jun 22 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.2-1.20240612git0b629a0
+- 0.6.2
+
 * Sun May 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.9-2
 - lzma-sdk rebuild
 
