@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b5126f979ca31e6f6519c70788da8c25a2cdf7d7
+%global commit 4f174f1c0b81266170aa8dac226be1b772f4c94d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240423
+%global date 20240515
 %bcond_without snapshot
 
 # Enable system boost
@@ -44,7 +44,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit4 2dd4fa8742fdac36468f8d8ea3e06e78215551f8
+%global commit4 fcd3e1e19c8d2df94bb6cb40d7f1c97a9872cf2b
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
 
@@ -118,7 +118,7 @@
 
 Name:           citra
 Version:        0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Epoch:          1
 Summary:        A Nintendo 3DS Emulator
 

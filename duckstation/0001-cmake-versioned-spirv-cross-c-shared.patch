@@ -1,0 +1,25 @@
+From 397729f7858aedaaada74e4533905e27bc570f28 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 25 Jun 2024 22:40:39 -0300
+Subject: [PATCH] cmake: versioned spirv-cross-c-shared
+
+---
+ src/util/gpu_device.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
+index 855ebbe..477f312 100644
+--- a/src/util/gpu_device.cpp
++++ b/src/util/gpu_device.cpp
+@@ -1246,7 +1246,7 @@ bool dyn_libs::OpenSpirvCross(Error* error)
+   if (s_spirv_cross_library.IsOpen())
+     return true;
+ 
+-  const std::string libname = DynamicLibrary::GetVersionedFilename("spirv-cross-c-shared");
++  const std::string libname = DynamicLibrary::GetVersionedFilename("spirv-cross-c-shared", 0);
+   if (!s_spirv_cross_library.Open(libname.c_str(), error))
+   {
+     Error::AddPrefix(error, "Failed to load spirv-cross: ");
+-- 
+2.45.2
+

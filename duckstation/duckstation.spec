@@ -1,6 +1,7 @@
 %undefine _cmake_shared_libs
 # no defined reference for "fastjmp_set"
 %global _lto_cflags -fno-lto
+%global build_type_safety_c 0
 
 %bcond_with clang
 %if %{with clang}
@@ -22,9 +23,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit e6a11abedc52c0f5a8d5289b9c46f323046828fc
+%global commit 8c1228a7aaf50b98ade67d2f37066f991da16cd3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240611
+%global date 20240624
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -39,12 +40,12 @@
 %global imgui_ver 1.90.1
 %global md5_ver 1.6
 %global minizip_ver 1.1
-%global rcheevos_scommit 3d01191
+%global rcheevos_scommit d54cf8f
 %global simpleini_ver 4.22
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.6928
+Version:        0.1.6985
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -68,6 +69,7 @@ Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-discord-rpc-switch.patch
 Patch9:         0001-cmake-shaderc-patched.patch
 Patch10:        0001-gcc-14-build-fix.patch
+Patch11:        0001-cmake-versioned-spirv-cross-c-shared.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -117,6 +119,7 @@ BuildRequires:  pkgconfig(soundtouch)
 %else
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
+BuildRequires:  cmake(spirv_cross_c_shared)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(wayland-egl)
@@ -151,6 +154,7 @@ Requires:       libGL%{?_isa}
 Requires:       libshaderc-patched%{?_isa}
 Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb
+Requires:       spirv-cross%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Suggests:       qt6-qttranslations
@@ -290,6 +294,8 @@ sed \
   -i src/duckstation-qt/qt{host,translations}.cpp
 
 sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
+
+sed -e '/Qt6/s|6\.7\.2|6.7.1|' -i CMakeLists.txt src/duckstation-qt/CMakeLists.txt
 
 
 %build

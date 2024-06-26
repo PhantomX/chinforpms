@@ -15,7 +15,7 @@
 %global commit 13b90874f9934f0a79a9ab2b9c4e1288ed2e6764
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240513
-%bcond_without snapshot
+%bcond_with snapshot
 
 # Enable system fmt
 %bcond_without fmt
@@ -40,7 +40,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~82
+Version:        2.0~86
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -206,6 +206,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Jun 23 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0~86-1
+- 2.0-86
+
 * Mon Feb 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0~65-1.20240218git3a02490
 - Add snapshot support
 

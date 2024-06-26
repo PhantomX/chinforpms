@@ -262,6 +262,7 @@ smtube
 -snx
 -snxvpn
 -speedtest-cli
+spirv-cross
 steamtinkerlaunch
 thrash-protect
 tyrian-data

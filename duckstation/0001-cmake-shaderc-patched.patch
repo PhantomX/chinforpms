@@ -1,4 +1,4 @@
-From c8759a4dd941e33fff9a7ea0cd77829d38b9ed94 Mon Sep 17 00:00:00 2001
+From 8f28db2139bf679315eb76c5c1369faa107993c5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:09:15 -0300
 Subject: [PATCH] cmake: shaderc-patched
@@ -29,27 +29,27 @@ index 760184a..42ae737 100644
  )
  
 diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
-index 11b1902..825cbfc 100644
+index 7fe6642..855ebbe 100644
 --- a/src/util/gpu_device.cpp
 +++ b/src/util/gpu_device.cpp
-@@ -38,7 +38,7 @@ Log_SetChannel(GPUDevice);
- #endif
+@@ -19,7 +19,7 @@
  
- #if defined(ENABLE_VULKAN) || defined(__APPLE__)
+ #include "fmt/format.h"
+ #include "imgui.h"
 -#include "shaderc/shaderc.h"
 +#include "shaderc-patched/shaderc.h"
- #endif
+ #include "spirv_cross/spirv_cross_c.h"
+ #include "xxhash.h"
  
- std::unique_ptr<GPUDevice> g_gpu_device;
-@@ -1154,7 +1154,7 @@ bool dyn_shaderc::Open()
-   const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared");
- #else
-   // Use versioned, bundle post-processing adds it..
--  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared", 1);
+@@ -1191,7 +1191,7 @@ bool dyn_libs::OpenShaderc(Error* error)
+   if (s_shaderc_library.IsOpen())
+     return true;
+ 
+-  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared");
 +  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc-patched_shared", 1);
- #endif
-   if (!s_library.Open(libname.c_str(), &error))
+   if (!s_shaderc_library.Open(libname.c_str(), error))
    {
+     Error::AddPrefix(error, "Failed to load shaderc: ");
 -- 
-2.45.1
+2.45.2
 

@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 88f23958ace20840fb2666ccc42750a6f9b20d19
+%global commit f9dcd08cf3b09379af5eb54459169a48a3aa5f10
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240517
+%global date 20240621
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -33,6 +33,10 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
+%global commit6 e88f74992527b9ade48ae1591378ec2cf363bef9
+%global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
+%global srcname6 rcheevos
+
 # Enable system glslang
 %bcond_without glslang
 %bcond_without vulkan
@@ -51,7 +55,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -76,12 +80,12 @@ Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/
 %if %{without glslang}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
+Source6:        https://github.com/RetroAchievements/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
-Patch5:         0001-UI-tweak-font-scale.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
 Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
 
@@ -132,6 +136,7 @@ Provides:       bundled(libelf) = %{libelf_ver}
 Provides:       bundled(LuaBridge) = 0~git%{shortcommit1}
 Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
+Provides:       bundled(rcheevos) = 0~git%{shortcommit6}
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(vixl)
 
@@ -158,6 +163,8 @@ tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
+tar -xf %{S:6} -C rcheevos/ --strip-components 1
+cp -p rcheevos/LICENSE LICENSE.rcheevos
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/LICENSE LICENSE.nowide
@@ -205,6 +212,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 %if %{with x11}
   -DSDL2_FOUND:BOOL=OFF \
 %endif
+  -DUSE_DISCORD:BOOL=OFF \
   -DUSE_HOST_CHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
   -DUSE_HOST_SDL:BOOL=ON \
