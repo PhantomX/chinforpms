@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 0b629a015aca5ae3cc16c2b8bd826a093e3e4891
+%global commit ce4321dcea998e523cd10ffccf3c3e72021448ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240612
+%global date 20240627
 %bcond_without snapshot
 
 %bcond_with rust
@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.6.2
+Version:        0.6.4
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -171,7 +171,7 @@ mkdir -p %{buildroot}%{_datadir}/%{pkgname}/Styles
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files
@@ -183,10 +183,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_datadir}/%{pkgname}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
-%{_metainfodir}/%{appname}.appdata.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
+* Thu Jun 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.4-1.20240627gitce4321d
+- 0.6.4
+
 * Sat Jun 22 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.2-1.20240612git0b629a0
 - 0.6.2
 

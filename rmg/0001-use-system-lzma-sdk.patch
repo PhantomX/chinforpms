@@ -48,7 +48,7 @@ index 21e545f..dea42cc 100644
 --- a/Source/RMG-Core/Rom.cpp
 +++ b/Source/RMG-Core/Rom.cpp
 @@ -19,13 +19,13 @@
- #include "CachedRomHeaderAndSettings.hpp"
+ #include "Utils/File.hpp"
  
  // lzma includes
 -#include "../3rdParty/lzma/7zTypes.h"
