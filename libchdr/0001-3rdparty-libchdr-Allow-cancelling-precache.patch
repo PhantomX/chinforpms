@@ -45,13 +45,13 @@ index 81cc14d8e..30c7ecfc7 100644
  #define PRECACHE_CHUNK_SIZE 16 * 1024 * 1024
  
 -  size_t count;
--  UINT64 size, done, req_count, last_update_done, update_interval;
+-  uint64_t size, done, req_count, last_update_done, update_interval;
 -
    if (chd->file_cache == NULL)
    {
 -    size = core_fsize(chd->file);
-+    const UINT64 size = core_fsize(chd->file);
-     if ((INT64)size <= 0)
++    const uint64_t size = core_fsize(chd->file);
+     if ((int64_t)size <= 0)
        return CHDERR_INVALID_DATA;
  
 @@ -1983,17 +1980,14 @@ CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t
@@ -62,11 +62,11 @@ index 81cc14d8e..30c7ecfc7 100644
 -    last_update_done = 0;
 -    update_interval = ((size + 99) / 100);
 -
-+		UINT64 done = 0;
++		uint64_t done = 0;
  		while (done < size)
  		{
 -			req_count = size - done;
-+			UINT64 req_count = size - done;
++			uint64_t req_count = size - done;
  			if (req_count > PRECACHE_CHUNK_SIZE)
  				req_count = PRECACHE_CHUNK_SIZE;
  

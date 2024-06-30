@@ -1,6 +1,6 @@
 %global __python %{__python3}
 Name:           vulkan-headers
-Version:        1.3.287
+Version:        1.3.289
 Release:        100%{?dist}
 Summary:        Vulkan Header files and API registry
 
@@ -19,7 +19,8 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar
 
 BuildRequires:  cmake3
 BuildRequires:  gcc
-BuildRequires:  make
+BuildRequires:  gcc-c++
+BuildRequires:  ninja-build
 BuildArch:      noarch
 
 %description
@@ -34,6 +35,7 @@ Vulkan Header files and API registry
 
 %build
 %cmake3 \
+  -G Ninja \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
 %{nil}
 
@@ -55,6 +57,9 @@ Vulkan Header files and API registry
 
 
 %changelog
+* Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.289-100
+- 1.3.289
+
 * Sun Jun 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.287-100
 - 1.3.287
 

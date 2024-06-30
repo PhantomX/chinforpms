@@ -22,16 +22,16 @@
 %global enablejit 1
 %endif
 
-%global commit cb71d849087c5b470b233b4f5c1ee9fde141483f
+%global commit f49659fbfc931fde6478d3c5d0fc445bfb62d3bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240520
+%global date 20240628
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Cross
 
-%global commit3 498e20dfd1343d99b9115201034bb0219801cdec
+%global commit3 009ecd192c1289c7529bff248a16cfe896254816
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
 
@@ -39,7 +39,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 a6cdbb4a529d85b74777597fcff037dde7bef66b
+%global commit5 d54cf8f1059cebc90a6f5ecdf03df69259f22054
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -72,7 +72,7 @@
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
 # Rev number - 20413
-%global baserelease 41968
+%global baserelease 42198
 %global sbuild %( echo $(( %{baserelease} - 20413 )) )
 
 Name:           dolphin-emu
@@ -122,8 +122,8 @@ Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcna
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
-Patch2:         %{vc_url}/pull/12611.patch#/%{name}-gh-pr12611.patch
 Patch11:        0001-system-library-support.patch
+Patch12:        0001-cmake-Downgrade-minizip-detection.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
@@ -313,7 +313,7 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
-  libiconv-* liblzma libspng libusb lz4 LZO mbedtls miniupnpc minizip OpenAL \
+  libiconv-* liblzma libspng libusb lz4 LZO mbedtls miniupnpc minizip-ng OpenAL \
   pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if %{with vulkan}

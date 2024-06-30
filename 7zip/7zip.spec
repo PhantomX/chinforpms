@@ -23,7 +23,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        24.06
+Version:        24.07
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -38,7 +38,7 @@ Source0:        %{name}-free-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-#Patch1:         0001-set-7zCon.sfx-path.patch
+Patch1:         0001-set-7zCon.sfx-path.patch
 
 %if %{with asm}
 %if "%{asmopt}" == "asmc"
@@ -131,6 +131,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 24.07-1
+- 24.07
+
 * Fri May 31 2024 Phantom X <megaphantomx at hotmail dot com> - 24.06-1
 - 24.06
 

@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit 955e5e47f41feb28e1f67aab1b293613bafc9af3
+%global commit 692bef4349111d5a1e24fa0fed79eee41496a09f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240607
+%global date 20240628
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 %global pkgname volk
 
 Name:           vulkan-%{pkgname}
-Version:        1.3.287
+Version:        1.3.289
 Release:        100%{?dist}
 Summary:        Meta loader for Vulkan API 
 
@@ -30,7 +30,7 @@ Patch11:        0001-library-set-PIC.patch
 
 BuildRequires:  cmake3
 BuildRequires:  gcc
-BuildRequires:  make
+BuildRequires:  ninja-build
 BuildRequires:  cmake(VulkanHeaders) >= %{version}
 
 
@@ -60,6 +60,7 @@ developing applications that use %{name}.
 
 %build
 %cmake3 \
+  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DVOLK_INSTALL:BOOL=ON \
 %{nil}
@@ -78,6 +79,9 @@ developing applications that use %{name}.
 
 
 %changelog
+* Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.289-100.20240628git692bef4
+- 1.3.289
+
 * Sun Jun 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.287-100.20240607git955e5e4
 - 1.3.287
 

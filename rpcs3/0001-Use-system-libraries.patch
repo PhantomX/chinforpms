@@ -120,9 +120,9 @@ index c1f96b9..f56f110 100644
 +#define hid_write_control hid_write
 +#endif
 +
+ using namespace reports;
+ 
  constexpr id_pair SONY_DS4_ID_0 = {0x054C, 0x0BA0}; // Dongle
- constexpr id_pair SONY_DS4_ID_1 = {0x054C, 0x05C4}; // CUH-ZCT1x
- constexpr id_pair SONY_DS4_ID_2 = {0x054C, 0x09CC}; // CUH-ZCT2x
 -- 
 2.45.1
 

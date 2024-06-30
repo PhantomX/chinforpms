@@ -22,9 +22,9 @@ index ee44d04..e1d3fa1 100644
 +  add_definitions(-DUSE_SHARED_ZLIBNG)
 +endif()
 +
- # https://github.com/zlib-ng/minizip-ng/commit/6c5f265a55f1a12a7a016cd2962feff91cff5d2e
- add_definitions(-DMZ_COMPAT_VERSION=110)  # This macro is for forwards compatibility with 4.0.4+
- dolphin_find_optional_system_library_pkgconfig(MINIZIP minizip>=3.0.0 minizip::minizip Externals/minizip)
+ dolphin_find_optional_system_library_pkgconfig(MINIZIP
+   "minizip-ng>=4.0.4;minizip>=4.0.4" minizip::minizip Externals/minizip-ng
+ )
 diff --git a/Source/Core/Common/Hash.cpp b/Source/Core/Common/Hash.cpp
 index 51182a0..7e92630 100644
 --- a/Source/Core/Common/Hash.cpp

@@ -17,7 +17,7 @@ index 0beed49..4c95439 100644
  CHD_EXPORT core_file *chd_core_file(chd_file *chd);
  
 +/* return the overall size of a CHD, and any of its parents */
-+CHD_EXPORT UINT64 chd_get_compressed_size(chd_file* chd);
++CHD_EXPORT uint64_t chd_get_compressed_size(chd_file* chd);
 +
  /* return an error string for the given CHD error */
  CHD_EXPORT const char *chd_error_string(chd_error err);
@@ -35,9 +35,9 @@ index d95a65d..151dd61 100644
  	return chd->file;
  }
  
-+CHD_EXPORT UINT64 chd_get_compressed_size(chd_file *chd)
++CHD_EXPORT uint64_t chd_get_compressed_size(chd_file *chd)
 +{
-+	UINT64 size = chd->file->fsize(chd->file);
++	uint64_t size = chd->file->fsize(chd->file);
 +	if (chd->parent)
 +		size += chd_get_compressed_size(chd->parent);
 +	return size;

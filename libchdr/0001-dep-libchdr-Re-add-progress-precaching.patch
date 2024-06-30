@@ -39,15 +39,15 @@ index 0de1cdd..7b4a209 100644
 -CHD_EXPORT chd_error chd_precache(chd_file *chd)
 +CHD_EXPORT chd_error chd_precache(chd_file* chd)
  {
--	INT64 count;
--	UINT64 size;
+-	int64_t count;
+-	uint64_t size;
 +  return chd_precache_progress(chd, NULL, NULL);
 +}
  
 -	if (chd->file_cache == NULL)
 -	{
 -		size = core_fsize(chd->file);
--		if ((INT64)size <= 0)
+-		if ((int64_t)size <= 0)
 -			return CHDERR_INVALID_DATA;
 -		chd->file_cache = malloc(size);
 -		if (chd->file_cache == NULL)
@@ -56,12 +56,12 @@ index 0de1cdd..7b4a209 100644
 +#define PRECACHE_CHUNK_SIZE 16 * 1024 * 1024
 +
 +  size_t count;
-+  UINT64 size, done, req_count, last_update_done, update_interval;
++  uint64_t size, done, req_count, last_update_done, update_interval;
 +
 +  if (chd->file_cache == NULL)
 +  {
 +    size = core_fsize(chd->file);
-+    if ((INT64)size <= 0)
++    if ((int64_t)size <= 0)
 +      return CHDERR_INVALID_DATA;
 +
 +		if (size > SIZE_MAX)

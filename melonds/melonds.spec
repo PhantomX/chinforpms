@@ -7,9 +7,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ba8d547dfa81539f4e8474152d92e866ad89241b
+%global commit db20771ef36bfa5bc0dc624cf245844507724107
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240418
+%global date 20240624
 %bcond_without snapshot
 
 # build with qt6 instead 5
@@ -28,7 +28,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -103,7 +103,7 @@ cp -p src/teakra/LICENSE LICENSE.teakra
 cp -p src/tiny-AES-c/unlicense.txt LICENSE.tiny-AES-c
 
 rm -rf \
-  src/frontend/qt_sdl/pcap src/xxhash
+  src/frontend/libslirp src/frontend/qt_sdl/pcap src/xxhash
 
 sed -e '/include/s|xxhash/||g' -i src/NDSCart.cpp
 
@@ -119,13 +119,14 @@ sed \
 
 
 %build
-%set_build_flags
 export LDFLAGS+=" -Wl,-z,noexecstack"
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DMELONDS_VERSION_SUFFIX:STRING="-%{release}" \
   -DENABLE_LTO:BOOL=OFF \
   -DENABLE_LTO_RELEASE:BOOL=OFF \
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
+  -DUSE_SYSTEM_LIBSLIRP:BOOL=ON \
 %if %{with qt6}
   -DUSE_QT6:BOOL=ON \
 %endif
