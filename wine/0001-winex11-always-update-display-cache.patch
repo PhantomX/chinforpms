@@ -23,19 +23,6 @@ index 3d350f4..34e2638 100644
  
          SERVER_START_REQ( set_window_pos )
          {
-@@ -2067,7 +2069,11 @@ void X11DRV_SetDesktopWindow( HWND hwnd )
-     else
-     {
-         Window win = (Window)NtUserGetProp( hwnd, whole_window_prop );
--        if (win && win != root_window) X11DRV_init_desktop( win, width, height );
-+        if (win && win != root_window)
-+        {
-+            X11DRV_init_desktop( win, width, height );
-+            NtUserCallNoParam( NtUserCallNoParam_DisplayModeChanged );
-+        };
-     }
- }
- 
 -- 
 2.45.2
 

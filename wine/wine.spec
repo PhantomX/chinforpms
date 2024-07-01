@@ -52,11 +52,11 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.4
-%global winemono  9.1.0
+%global winemono  9.2.0
 %global winentsync 6.9~rc3
 %global winevulkan 1.3.285
 
-%global wineFAudio 24.05
+%global wineFAudio 24.06
 %global winefluidsynth 2.3.5
 %global winegsm 1.0.19
 %global winejpeg 9~f
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.11
+%global wine_stagingver 9.12
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e043a9063ec3571fd884b59279d27bfff29cf9cb
+%global tkg_id fbba3830a9d55d4febd04abbbb45b5d475115da5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -128,7 +128,7 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # childwindow
-%bcond_with childwindow
+%bcond_without childwindow
 # ntsync (disables fsync)
 %bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -160,7 +160,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.11
+Version:        9.12
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -263,6 +263,8 @@ Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{nam
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
+Patch1056:       0001-tkg-cpu-topology-fixup-1.patch
+Patch1057:       0001-tkg-cpu-topology-fixup-2.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -916,7 +918,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
+%patch -P 1056 -p1
 %patch -P 1029 -p1
+%patch -P 1057 -p1
 %if %{with ntsync}
 %patch -P 1055 -p1
 %endif
@@ -1535,6 +1539,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/avifil32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/avrt.%{winedll}
 %{_libdir}/wine/%{winesodir}/bcrypt.so
+%{_libdir}/wine/%{winedlldir}/bcp47langs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/bcrypt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/bcryptprimitives.%{winedll}
 %{_libdir}/wine/%{winedlldir}/bluetoothapis.%{winedll}
@@ -1879,6 +1884,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/presentationfontcache.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/printui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/prntvpt.%{winedll}
+%{_libdir}/wine/%{winedlldir}/profapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/propsys.%{winedll}
 %{_libdir}/wine/%{winedlldir}/psapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/pstorec.%{winedll}
@@ -1901,6 +1907,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/riched32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rpcrt4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/robocopy.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/rometadata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rsabase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rsaenh.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rstrtmgr.%{winedll}
@@ -2538,6 +2545,9 @@ fi
 
 
 %changelog
+* Sun Jun 30 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.12-100
+- 9.12
+
 * Sat Jun 15 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.11-100
 - 9.11
 
