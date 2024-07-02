@@ -1,0 +1,25 @@
+From b84657698f46250a2ba03a0cd1d29d7c530a4b23 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 1 Jul 2024 23:13:28 -0300
+Subject: [PATCH] chd: use standard type
+
+---
+ Core/FileSystems/BlockDevices.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Core/FileSystems/BlockDevices.cpp b/Core/FileSystems/BlockDevices.cpp
+index 7c590e2..6364e77 100644
+--- a/Core/FileSystems/BlockDevices.cpp
++++ b/Core/FileSystems/BlockDevices.cpp
+@@ -524,7 +524,7 @@ bool NPDRMDemoBlockDevice::ReadBlock(int blockNumber, u8 *outPtr, bool uncached)
+ /*
+  * CHD file
+  */
+-static const UINT8 nullsha1[CHD_SHA1_BYTES] = { 0 };
++static const uint8_t nullsha1[CHD_SHA1_BYTES] = { 0 };
+ 
+ struct CHDImpl {
+ 	chd_file *chd = nullptr;
+-- 
+2.45.2
+

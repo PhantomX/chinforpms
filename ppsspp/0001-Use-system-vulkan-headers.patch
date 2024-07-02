@@ -1,4 +1,4 @@
-From 212140d9497940e2f218536bbd986ab618b83d32 Mon Sep 17 00:00:00 2001
+From fb9712aa5fc312d2e22436b4962e9b01794577ff Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 26 Aug 2021 08:20:38 -0300
 Subject: [PATCH] Use system vulkan headers
@@ -22,7 +22,7 @@ index a7ca178..578e8d8 100644
  
  // Hacky X11 header workaround
 diff --git a/libretro/libretro_vulkan.h b/libretro/libretro_vulkan.h
-index 9d9aa44..1e64c1e 100644
+index 3f10da9..4adf828 100644
 --- a/libretro/libretro_vulkan.h
 +++ b/libretro/libretro_vulkan.h
 @@ -27,7 +27,7 @@
@@ -32,8 +32,8 @@ index 9d9aa44..1e64c1e 100644
 -#include "ext/vulkan/vulkan.h"
 +#include <vulkan/vulkan.h>
  #include "libretro.h"
+ #include "LibretroGraphicsContext.h"
  
- #define RETRO_HW_RENDER_INTERFACE_VULKAN_VERSION 5
 -- 
-2.45.1
+2.45.2
 

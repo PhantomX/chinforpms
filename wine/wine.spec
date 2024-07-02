@@ -115,7 +115,7 @@
 %global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fbba3830a9d55d4febd04abbbb45b5d475115da5
+%global tkg_id 4a9c02b27a0bef0cddf155b253e02635c0164e73
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -263,8 +263,6 @@ Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{nam
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
-Patch1056:       0001-tkg-cpu-topology-fixup-1.patch
-Patch1057:       0001-tkg-cpu-topology-fixup-2.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -918,9 +916,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
-%patch -P 1056 -p1
 %patch -P 1029 -p1
-%patch -P 1057 -p1
 %if %{with ntsync}
 %patch -P 1055 -p1
 %endif

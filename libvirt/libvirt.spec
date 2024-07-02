@@ -289,7 +289,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 10.4.0
+Version: 10.5.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -1037,8 +1037,6 @@ capabilities of VirtualBox
 %package client
 Summary: Client side utilities of the libvirt library
 Requires: libvirt-libs = %{version}-%{release}
-# Needed by virt-pki-validate script.
-Requires: gnutls-utils
 
 # Ensure smooth upgrades
 Obsoletes: libvirt-bash-completion < 7.3.0
@@ -1060,8 +1058,6 @@ with some QEMU specific features of libvirt.
 
 %package libs
 Summary: Client side libraries
-# So remote clients can access libvirt over SSH tunnel
-Requires: cyrus-sasl
 # Needed by default sasl.conf - no onerous extra deps, since
 # 100's of other things on a system already pull in krb5-libs
 Requires: cyrus-sasl-gssapi
@@ -1334,6 +1330,8 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
 %meson \
            -Drunstatedir=%{_rundir} \
            -Dinitconfdir=%{_sysconfdir}/sysconfig \
+           -Dunitdir=%{_unitdir} \
+           -Dsysusersdir=%{_sysusersdir} \
            %{?arg_qemu} \
            %{?arg_openvz} \
            %{?arg_lxc} \
@@ -1490,8 +1488,9 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
-  -Dyajl=disabled
-    %mingw_ninja
+  -Dyajl=disabled \
+  %{?enable_werror}
+%mingw_ninja
 %endif
 
 
@@ -1607,7 +1606,8 @@ rm -rf $RPM_BUILD_ROOT%{mingw64_libexecdir}/libvirt-guests.sh
 %if %{with_native}
 # Building on slow archs, like emulated s390x in Fedora copr, requires
 # raising the test timeout
-VIR_TEST_DEBUG=1 %meson_test --no-suite syntax-check --timeout-multiplier 10
+export VIR_TEST_DEBUG=1
+%meson_test --no-suite syntax-check --timeout-multiplier 10
 %endif
 
 %define libvirt_rpmstatedir %{_localstatedir}/lib/rpm-state/libvirt
@@ -2525,7 +2525,7 @@ exit 0
 %{mingw32_bindir}/virt-admin.exe
 %{mingw32_bindir}/virt-xml-validate
 %{mingw32_bindir}/virt-pki-query-dn.exe
-%{mingw32_bindir}/virt-pki-validate
+%{mingw32_bindir}/virt-pki-validate.exe
 %{mingw32_bindir}/libvirt-lxc-0.dll
 %{mingw32_bindir}/libvirt-qemu-0.dll
 %{mingw32_bindir}/libvirt-admin-0.dll
@@ -2584,7 +2584,7 @@ exit 0
 %{mingw64_bindir}/virt-admin.exe
 %{mingw64_bindir}/virt-xml-validate
 %{mingw64_bindir}/virt-pki-query-dn.exe
-%{mingw64_bindir}/virt-pki-validate
+%{mingw64_bindir}/virt-pki-validate.exe
 %{mingw64_bindir}/libvirt-lxc-0.dll
 %{mingw64_bindir}/libvirt-qemu-0.dll
 %{mingw64_bindir}/libvirt-admin-0.dll
@@ -2635,6 +2635,9 @@ exit 0
 
 
 %changelog
+* Mon Jul 01 2024 Phantom X <megaphantomx at hotmail dot com> - 10.5.0-100
+- 10.5.0
+
 * Mon Jun 03 2024 Phantom X <megaphantomx at hotmail dot com> - 10.4.0-100
 - 10.4.0
 

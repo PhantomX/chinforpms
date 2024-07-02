@@ -2472,6 +2472,19 @@ BuildKernel() {
     rm -f vmlinux.o .tmp_vmlinux.btf
 
     %{log_msg "Install files to RPM_BUILD_ROOT"}
+
+    # Comment out specific config settings that may use resources not available
+    # to the end user so that the packaged config file can be easily reused with
+    # upstream make targets
+    %if %{signkernel}%{signmodules}
+      sed -i -e '/^CONFIG_SYSTEM_TRUSTED_KEYS/{
+        i\# The kernel was built with
+        s/^/# /
+        a\# We are resetting this value to facilitate local builds
+        a\CONFIG_SYSTEM_TRUSTED_KEYS=""
+        }' .config
+    %endif
+
     # Start installing the results
     install -m 644 .config $RPM_BUILD_ROOT/boot/config-$KernelVer
     install -m 644 .config $RPM_BUILD_ROOT/lib/modules/$KernelVer/config

@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a851e82b287bff85681a0c21982f23d7bcde1f04
+%global commit c737eca1a7a0628523bcf710e2fa0a4288c31352
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240528
+%global date 20240629
 %bcond_without snapshot
 
 # Enable Qt build
@@ -23,10 +23,11 @@
 %bcond_with egl
 
 # Enable system ffmpeg
-%bcond_with sysffmpeg
+%bcond_with ffmpeg
 %global bundleffmpegver 3.0.2
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without smallffmpeg
+%bcond_with miniupnpc
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -60,13 +61,17 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 e88f74992527b9ade48ae1591378ec2cf363bef9
+%global commit9 d54cf8f1059cebc90a6f5ecdf03df69259f22054
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
-%global commit10 288d3a7ebc1ad959f62d51da75baa3d27438c499
+%global commit10 be392bf6949adeeabad5082aa79d12aacbda781f
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 OpenXR-SDK
+
+%global commit11 27d13ca9beeb5541f5fbf11959dced03dac39972
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 miniupnp
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -79,11 +84,11 @@
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        106%{?dist}
+Release:        107%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_sysffmpeg: AND GPL-3.0-or-later}
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_ffmpeg: AND GPL-3.0-or-later}
 URL:            http://www.ppsspp.org/
 
 %if %{without snapshot}
@@ -91,7 +96,7 @@ Source0:        %{vc_url}/%{name}/releases/download/v%{version}/%{name}-%{versio
 %else
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/unknownbrackets/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 %if %{with smallffmpeg}
 Source2:        %{srcname2}-nobin-%{shortcommit2}.tar.xz
 %else
@@ -106,6 +111,9 @@ Source7:        https://github.com/KhronosGroup/%{srcname7}/archive/%{commit7}/%
 Source8:        https://github.com/Kingcom/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 Source9:        https://github.com/RetroAchievements/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+%if %{without miniupnpc}
+Source11:       https://github.com/miniupnp/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+%endif
 %endif
 Source100:       %{name}.appdata.xml
 Source101:       Makefile
@@ -117,9 +125,9 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-Patch8:         0001-Revert-Some-renaming-add-a-bunch-of-sanity-debug-ass.patch
+Patch7:         0001-chd-use-standard-type.patch
 
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 %endif
 # https://github.com/hrydgard/ppsspp/issues/8823
@@ -136,7 +144,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 %if %{with ffmpeg}
-%if %{with sysffmpeg}
+%if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -161,7 +169,11 @@ BuildRequires:  pkgconfig(libpng) >= 1.6
 BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.9
+%if %{with miniupnpc}
 BuildRequires:  pkgconfig(miniupnpc) >= 2.1
+%else
+Provides:       bundled(miniupnpc) = 0~git%{shortcommit11}
+%endif
 BuildRequires:  pkgconfig(RapidJSON)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(snappy)
@@ -235,7 +247,7 @@ Additional tools files for %{name}.
 
 %if %{with snapshot}
 tar -xf %{SOURCE1} -C assets/debugger --strip-components 1
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 tar -xf %{SOURCE2} -C ffmpeg --strip-components 1
 tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 %endif
@@ -250,13 +262,13 @@ tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,snappy}/*.{c,cpp,h}
-rm -rf ext/{discord-rpc,miniupnp,libchr,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
+rm -rf ext/{discord-rpc,libchr,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 
 find ext Core -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.y' \) -exec chmod -x {} ';'
 
-%if %{with sysffmpeg}
+%if %{with ffmpeg}
 rm -rf ffmpeg
 %else
 cp -p ffmpeg/LICENSE.md ext/LICENSE.ffmpeg.md
@@ -273,6 +285,13 @@ cp -p udis86/LICENSE LICENSE.udis86
 cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
 popd
 
+%if %{with miniupnpc}
+rm -rf ext/miniupnp
+%else
+tar -xf %{SOURCE11} -C ext/miniupnp --strip-components 1
+cp ext/miniupnp/LICENSE ext/LICENSE.miniupnp
+%endif
+
 sed -i \
   -e '/set(GIT_VERSION\b /s|".*"|"%{version}-%{release}"|g' \
   -e '/find_package/s|Git|\0_disabled|g' \
@@ -285,7 +304,7 @@ sed \
   -e 's|GIT_FOUND|GIT_FOUND_DISABLED|g' \
   -i ext/SPIRV-Cross/CMakeLists.txt
 
-cp Qt/PPSSPP.desktop %{name}.desktop
+cp Qt/PPSSPPQt.desktop %{name}.desktop
 
 sed \
   -e '/Wno-deprecated-register/d' \
@@ -304,7 +323,7 @@ sed \
   -e 's| -O3 | |g' \
   -i ext/armips/ext/tinyformat/Makefile
 
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
@@ -330,7 +349,7 @@ pushd ext/native/tools
 
 popd
 
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 pushd ffmpeg
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
@@ -360,12 +379,14 @@ popd
   -DUSING_GLES2:BOOL=ON \
 %endif
   -DOpenGL_GL_PREFERENCE=GLVND \
-%if %{with sysffmpeg}
+%if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
+%if %{with miniupnpc}
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
+%endif
   -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
