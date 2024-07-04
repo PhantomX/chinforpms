@@ -22,9 +22,9 @@
 %global enablejit 1
 %endif
 
-%global commit f49659fbfc931fde6478d3c5d0fc445bfb62d3bf
+%global commit 654ccb0b705c65acbb91d030e101b11e3da586d6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240628
+%global date 20240703
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -71,12 +71,10 @@
 %global pkgname dolphin
 %global vc_url  https://github.com/%{name}/%{pkgname}
 
-# Rev number - 20413
-%global baserelease 42198
-%global sbuild %( echo $(( %{baserelease} - 20413 )) )
+%global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        5.0.%{sbuild}
+Version:        2407.0.7
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -354,14 +352,18 @@ sed \
   -e "/LTO/s|-flto|-flto=%{_smp_build_ncpus}|g" \
   -i CMakeLists.txt
 
-%if %{with snapshot}
 sed \
   -e 's|GIT_FOUND|GIT_DISABLED|g' \
-  -e 's|${DOLPHIN_VERSION_MAJOR}.${DOLPHIN_VERSION_MINOR}|%{version}|g' \
-  -e 's|${DOLPHIN_WC_DESCRIBE} (no further info)|%{release}|g' \
   -i CMakeLists.txt CMake/ScmRevGen.cmake
-%endif
 
+sed \
+  -e 's|${DOLPHIN_WC_DESCRIBE}|%{version}|g' \
+  -e 's|${DOLPHIN_WC_REVISION}|%{release}|g' \
+  -e 's|${DOLPHIN_WC_BRANCH}|master|g' \
+  -e 's|${DOLPHIN_WC_COMMITS_AHEAD_MASTER}|0|g' \
+  -e 's|${DISTRIBUTOR}|%{distributor}|g' \
+  -e 's|${DOLPHIN_DEFAULT_UPDATE_TRACK}||g' \
+  -i Source/Core/Common/scmrev.h.in
 
 %build
 #Script to find xxhash is not implemented, just tell cmake it was found
@@ -395,6 +397,10 @@ sed \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DDISTRIBUTOR='%{distributor}' \
 %{nil}
+
+if ! grep SCM_REV_STR %{__cmake_builddir}/Source/Core/Common/scmrev.h ;then
+  cp -f Source/Core/Common/scmrev.h.in %{__cmake_builddir}/Source/Core/Common/scmrev.h
+fi
 
 %cmake_build
 
@@ -468,6 +474,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Jul 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2407.0.7-1.20240703git654ccb0
+- 2407.0.7
+
 * Wed Jun 07 2023 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.19552-1.20230607git44d9304
 - Use upstream version scheme
 
