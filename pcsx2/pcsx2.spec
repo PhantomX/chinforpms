@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5947
+Version:        1.7.5955
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -89,6 +89,7 @@ Patch6:         0001-simpleini-build-as-static.patch
 Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
+Patch10:        0001-cmake-use-system-discord-rpc.patch
 
 Patch500:       0001-cmake-shaderc-patched.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
@@ -110,6 +111,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  cmake(DiscordRPC)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
@@ -144,7 +146,6 @@ BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
-BuildRequires:  cmake(RapidJSON)
 %if %{with rapidyml}
 BuildRequires:  cmake(ryml) >= %{rapidyml_ver}
 %else
@@ -235,7 +236,7 @@ cp -p 3rdparty/shaderc/LICENSE 3rdparty/LICENSE.shaderc
 
 pushd 3rdparty
 rm -rf \
-  cpuinfo cubeb d3d12memalloc ffmpeg GL gtest libchdr libwebp \
+  cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg GL gtest libchdr libwebp \
   libpng libzip lzma qt rainterface rapidjson sdl2 wil \
   winpixeventruntime xbyak xz zlib zstd zydis
 
@@ -327,7 +328,6 @@ sed \
 %endif
   -DUSE_VTUNE:BOOL=OFF \
   -DCUBEB_API:BOOL=ON \
-  -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_SETCAP:BOOL=OFF \
   -DENABLE_TESTS:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \

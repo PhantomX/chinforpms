@@ -1,0 +1,44 @@
+From b4e49cdfccae6f1d5cb7f0dab39720ceab0320b0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 4 Jul 2024 19:48:21 -0300
+Subject: [PATCH] cmake: use system libraries
+
+---
+ CMakeLists.txt     | 7 ++++++-
+ src/CMakeLists.txt | 2 +-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 14f79f9..b92fcbe 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -15,7 +15,12 @@ execute_process(
+     ERROR_QUIET
+ )
+ 
+-set(RAPIDJSON "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson")
++find_package(RapidJSON)
++if(RapidJSON_FOUND)
++  message(STATUS "Using the system rapidjson")
++else()
++set(RAPIDJSON "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson/include")
++endif()
+ 
+ # add subdirs
+ 
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index da87b61..4b9598d 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -109,7 +109,7 @@ if(UNIX)
+     endif (APPLE)
+ endif(UNIX)
+ 
+-target_include_directories(discord-rpc PRIVATE ${RAPIDJSON}/include)
++target_include_directories(discord-rpc PRIVATE ${RAPIDJSON})
+ 
+ if (NOT ${ENABLE_IO_THREAD})
+     target_compile_definitions(discord-rpc PUBLIC -DDISCORD_DISABLE_IO_THREAD)
+-- 
+2.45.2
+

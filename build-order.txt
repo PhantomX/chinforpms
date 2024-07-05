@@ -118,6 +118,7 @@ deluge
 -devedeng
 devilspie2
 discimagecreator
+discord-rpc
 disk-indicator
 -dosbox-staging
 -dosbox-x

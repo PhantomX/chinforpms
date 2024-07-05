@@ -23,9 +23,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 34d5cdec9657a6ef1ff68875d08b11caee1eb2bb
+%global commit d021a61eb5f2c1a86e616d3c7cf621c4e1f747c5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240629
+%global date 20240704
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -45,7 +45,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.7004
+Version:        0.1.7064
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -66,10 +66,9 @@ Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
-Patch8:         0001-cmake-discord-rpc-switch.patch
+Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc-patched.patch
-Patch10:        0001-gcc-14-build-fix.patch
-Patch11:        0001-cmake-versioned-spirv-cross-c-shared.patch
+Patch10:        0001-cmake-versioned-spirv-cross-c-shared.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -81,15 +80,15 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake
-BuildRequires:  make
+BuildRequires:  ninja-build
 BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
-BuildRequires:  cmake(Qt6Core) >= 6.7
+BuildRequires:  cmake(DiscordRPC)
+BuildRequires:  cmake(Qt6Core) >= 6.7.1
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Widgets)
-BuildRequires:  cmake(RapidJSON)
 %if %{with ryml}
 BuildRequires:  cmake(ryml) >= 0.4.1
 %endif
@@ -144,6 +143,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 
 Requires:       coreutils
+Requires:       discord-rpc%{?_isa}
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       google-noto-sans-jp-fonts
@@ -179,6 +179,8 @@ Obsoletes:      %{name}-nogui < %{?epoch:%{epoch}:}%{version}-%{release}
 A Sony PlayStation (PSX) emulator, focusing on playability, speed, and long-term
 maintainability.
 
+It requires a CPU with SSE4.1 instructions.
+
 
 %if %{with nogui}
 %package nogui
@@ -207,8 +209,8 @@ This package provides the data files for duckstation.
 ###Remove Bundled:
 pushd dep
 rm -rf \
-  cpuinfo cubeb discord-rpc gsl libchdr libFLAC libjpeg libpng lzma msvc \
-  rapidjson xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
+  cpuinfo cubeb gsl libchdr libFLAC libjpeg libpng lzma msvc \
+  xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
 
 %if %{with fmt}
   rm -rf fmt
@@ -295,17 +297,18 @@ sed \
 
 sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
 
-sed -e '/Qt6/s|6\.7\.2|6.7.1|' -i CMakeLists.txt src/duckstation-qt/CMakeLists.txt
+echo 'target_include_directories(core PUBLIC %{_includedir}/discord-rpc)' \
+  >> src/core/CMakeLists.txt
 
 
 %build
 %cmake \
+  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{without nogui}
   -DBUILD_NOGUI_FRONTEND:BOOL=OFF \
 %endif
   -DUSE_WAYLAND:BOOL=ON \
-  -DENABLE_DISCORD_PRESENCE:BOOL=OFF \
 %{nil}
 
 %cmake_build
