@@ -26,13 +26,13 @@
 
 set -e
 
-ver=20240227
+ver=20240707
 
 name="DXVK"
 pkgname="wine-dxvk"
 datadir="/usr/share/wine/dxvk"
 dllsuffix=""
-dlls="dxgi d3d9 d3d11 d3d10core"
+dlls="dxgi d3d8 d3d9 d3d11 d3d10core"
 nodlls="d3d10 d3d10_1"
 
 wineext=dll

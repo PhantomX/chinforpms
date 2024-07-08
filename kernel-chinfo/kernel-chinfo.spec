@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.9.7
+%define specrpmversion 6.9.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1100,6 +1100,9 @@ Patch7037:  %{pf_url}/c2f5a378a4f67827ba53be1f4be4c435e83a3c34.patch#/pf-cb-c2f5
 Patch7038:  %{pf_url}/82989b66c9ac223695d7b96b5dca236aeb0252a8.patch#/pf-cb-82989b6.patch
 Patch7039:  %{pf_url}/f628b53171be2e120afa535d72417f21d953bfed.patch#/pf-cb-f628b53.patch
 Patch7040:  %{pf_url}/8752deb7f469cf25631cd6136eb1fab6a83f9d21.patch#/pf-cb-8752deb.patch
+Patch7041:  %{pf_url}/a76f4a725c85197d72a78f3dfe1f26eb7b705365.patch#/pf-cb-a76f4a7.patch
+Patch7042:  %{pf_url}/82aec6e63a16302db86cdf2f71dd78522de94019.patch#/pf-cb-82aec6e.patch
+Patch7043:  %{pf_url}/71dd682ee31aa56fcfe15e85bcb983c8c7847fb0.patch#/pf-cb-71dd682.patch
 # bbr
 Patch7050:  %{pf_url}/be74f82f85cf782f185e15c55dc8d8bda4769588.patch#/pf-cb-be74f82.patch
 # block
@@ -1167,6 +1170,7 @@ Patch7505:  %{pf_url}/95f66fbb48df5ebfaccea2821a18a55da9c3d870.patch#/pf-cb-95f6
 Patch7506:  %{pf_url}/26eeeba73b40b4f95b1e885eeedefd0617bad697.patch#/pf-cb-26eeeba.patch
 Patch7507:  %{pf_url}/4bfec9b3e8308555def09ab75b55b4e4c882bf0e.patch#/pf-cb-4bfec9b.patch
 Patch7508:  %{pf_url}/dd20250f26151c747aacd3551079e7fe18ff100d.patch#/pf-cb-dd20250.patch
+Patch7509:  %{pf_url}/ea84ff79a7d08bc2c09d3405ba701e5a8436d66b.patch#/pf-cb-ea84ff7.patch
 
 %endif
 
@@ -1982,6 +1986,16 @@ cp -a %{SOURCE1} .
 %{log_msg "Start of patch applications"}
 %if !%{nopatches}
 
+# released_kernel with possible stable updates
+%if 0%{?stable_update} && 0%{?released_kernel}
+# This is special because the kernel spec is hell and nothing is consistent
+ApplyPatch %{PATCH5000}
+%endif
+
+ApplyOptionalPatch %{PATCH1}
+
+ApplyOptionalPatch %{PATCH999999}
+
 %if 0%{?post_factum}
 # bbr
 ApplyPatch %{PATCH7050}
@@ -2049,19 +2063,11 @@ ApplyPatch %{PATCH7505}
 ApplyPatch %{PATCH7506}
 ApplyPatch %{PATCH7507}
 ApplyPatch %{PATCH7508}
-%endif
-
-# released_kernel with possible stable updates
-%if 0%{?stable_update} && 0%{?released_kernel}
-# This is special because the kernel spec is hell and nothing is consistent
-ApplyPatch %{PATCH5000}
-%endif
-
-%if 0%{?post_factum}
+ApplyPatch %{PATCH7509}
+# amd-pstate
 ApplyPatch %{PATCH5001} -R
 ApplyPatch %{PATCH7006} -R
 ApplyPatch %{PATCH7002} -R
-# amd-pstate
 ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
 ApplyPatch %{PATCH7002}
@@ -2100,11 +2106,10 @@ ApplyPatch %{PATCH7037}
 ApplyPatch %{PATCH7038}
 ApplyPatch %{PATCH7039}
 ApplyPatch %{PATCH7040}
+ApplyPatch %{PATCH7041}
+ApplyPatch %{PATCH7042}
+ApplyPatch %{PATCH7043}
 %endif
-
-ApplyOptionalPatch %{PATCH1}
-
-ApplyOptionalPatch %{PATCH999999}
 
 # openSUSE
 ApplyPatch %{PATCH1010}
@@ -4311,6 +4316,9 @@ fi\
 #
 #
 %changelog
+* Fri Jul 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.8-500.chinfo
+- 6.9.8
+
 * Thu Jun 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.7-500.chinfo
 - 6.9.7
 

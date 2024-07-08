@@ -7,9 +7,9 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit 3e5eb1660f69d73dd36ffee49e2e903c511a945e
+%global commit fe9c875fe910812a12b4542d9a6913b6fd191bc9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240614
+%global date 20240707
 %bcond_without snapshot
 
 %bcond_without gplasync
@@ -64,9 +64,9 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.3.1
-Release:        106%{?dist}
+Release:        107%{?dist}
 Epoch:          1
-Summary:        Vulkan-based D3D9, D3D10 and D3D11 implementation for Linux / Wine
+Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
 License:        Zlib AND MIT%{!?with_vulkan: AND Apache-2.0}
 URL:            https://github.com/doitsujin/%{pkgname}
@@ -137,17 +137,19 @@ Requires:       wine-desktop >= %{winecommonver}
 Enhances:       wine
 
 Obsoletes:      %{name} < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-d8vk < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-d9vk < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-dxvk-d3d9 < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-dxvk-dxgi < %{?epoch:%{epoch}:}%{version}-%{release}
 
+Provides:       wine-d8vk = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-d9vk = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-dxvk-d3d9 = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       wine-dxvk-dxgi = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %description
-Provides a Vulkan-based implementation of DXGI, D3D9, D3D10 and D3D11
+Provides a Vulkan-based implementation of DXGI, D3D8, D3D9, D3D10 and D3D11
 in order to run 3D applications on Linux using Wine.
 
 
@@ -258,10 +260,10 @@ done
 
 %install
 
-for dll in dxgi d3d9 d3d11 d3d10core ;do
+for dll in dxgi d3d8 d3d9 d3d11 d3d10core ;do
 
   case ${dll} in
-    dxgi|d3d9|d3d11)
+    dxgi|d3d8|d3d9|d3d11)
       dlldir=${dll}
       ;;
     d3d10core)
@@ -293,6 +295,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jul 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.1-107.20240707gitfe9c875
+- d8vk
+
 * Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.3.1-100
 - 2.3.1
 
