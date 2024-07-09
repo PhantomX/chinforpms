@@ -8,7 +8,7 @@
 %global samplelink http://samples.mameworld.info/wav
 
 Name:           mame-data-extras
-Version:        0.266
+Version:        0.267
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Tue Jul 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0.267-1
+- 0.267
+
 * Sun Jun 02 2024 Phantom X <megaphantomx at hotmail dot com> - 0.266-1
 - 0.266
 
