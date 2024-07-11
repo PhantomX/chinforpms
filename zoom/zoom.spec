@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        5.17.11.3835
+Version:        6.1.1.443
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -157,6 +157,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Wed Jul 10 2024 - 6.1.1.443-1
+- 6.1.1.443
+
 * Thu Mar 28 2024 - 5.17.11.3835-1
 - 5.17.11.3835
 
