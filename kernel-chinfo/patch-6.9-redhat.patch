@@ -575,7 +575,7 @@ index 3c197db42c9d..16e4a2e90fae 100644
 +	if (compatible && !skip_simpledrm) {
  		pd = sysfb_create_simplefb(si, &mode, parent);
  		if (!IS_ERR(pd))
- 			goto unlock_mutex;
+ 			goto put_device;
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c

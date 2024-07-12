@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.9.8
+%define specrpmversion 6.9.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1120,6 +1120,7 @@ Patch7101:  %{pf_url}/bab2518c5ec078e6081817a3862c1d848651d9b6.patch#/pf-cb-bab2
 Patch7102:  %{pf_url}/ce00606fb4bb131c02eb940968297f0869d30abe.patch#/pf-cb-ce00606.patch
 Patch7103:  %{pf_url}/deb847a041862fddff4fc16d4290389260b60dfb.patch#/pf-cb-deb847a.patch
 Patch7104:  %{pf_url}/9145f4bfcf9d59418559436a66bcb073c025ded0.patch#/pf-cb-9145f4b.patch
+Patch7105:  %{pf_url}/12bc064f6df0b6a9f0ae058dc3d44304dd04bb65.patch#/pf-cb-12bc064.patch
 # zstd
 Patch7200:  %{pf_url}/2b515b215286bf4a98187aca20f1e16be80d0423.patch#/pf-cb-2b515b2.patch
 Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0e0e.patch
@@ -1171,6 +1172,7 @@ Patch7506:  %{pf_url}/26eeeba73b40b4f95b1e885eeedefd0617bad697.patch#/pf-cb-26ee
 Patch7507:  %{pf_url}/4bfec9b3e8308555def09ab75b55b4e4c882bf0e.patch#/pf-cb-4bfec9b.patch
 Patch7508:  %{pf_url}/dd20250f26151c747aacd3551079e7fe18ff100d.patch#/pf-cb-dd20250.patch
 Patch7509:  %{pf_url}/ea84ff79a7d08bc2c09d3405ba701e5a8436d66b.patch#/pf-cb-ea84ff7.patch
+Patch7510:  %{pf_url}/145cc7b2543766a495442a687a02635b6e254309.patch#/pf-cb-145cc7b.patch
 
 %endif
 
@@ -2014,6 +2016,7 @@ ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
 ApplyPatch %{PATCH7104}
+ApplyPatch %{PATCH7105}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2054,6 +2057,7 @@ ApplyPatch %{PATCH7326}
 ApplyPatch %{PATCH7327}
 ApplyPatch %{PATCH7328}
 ApplyPatch %{PATCH7329}
+# amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
 ApplyPatch %{PATCH7502}
@@ -2064,6 +2068,7 @@ ApplyPatch %{PATCH7506}
 ApplyPatch %{PATCH7507}
 ApplyPatch %{PATCH7508}
 ApplyPatch %{PATCH7509}
+ApplyPatch %{PATCH7510}
 # amd-pstate
 ApplyPatch %{PATCH5001} -R
 ApplyPatch %{PATCH7006} -R
@@ -4316,6 +4321,9 @@ fi\
 #
 #
 %changelog
+* Thu Jul 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.9-500.chinfo
+- 6.9.9
+
 * Fri Jul 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.8-500.chinfo
 - 6.9.8
 
