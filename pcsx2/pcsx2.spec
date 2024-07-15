@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        1.7.5955
+Version:        2.0.3
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -160,7 +160,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
-BuildRequires:  pkgconfig(sdl2) >= 2.30.0
+BuildRequires:  pkgconfig(sdl2) >= 2.30.5
 %if %{with shaderc}
 BuildRequires:  pkgconfig(shaderc-patched)
 Requires:       libshaderc-patched%{?_isa}
@@ -400,6 +400,9 @@ desktop-file-install \
 
 
 %changelog
+* Sat Jul 13 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0.3-1
+- 2.0.3
+
 * Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 1.7.5715-1
 - 1.7.5715
 - BR: liblzma -> lzmasdk-c

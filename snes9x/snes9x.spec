@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit d514d135a7d3521e16e9ea599690e36e95c5c1aa
+%global commit 18096d9f682cf1cb22c90fac349838a226a8cb1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240618
+%global date 20240713
 %bcond_without snapshot
 
 %global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
@@ -14,6 +14,7 @@
 %global srcname11 glslang
 
 %bcond_with portaudio
+%bcond_with qt
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -26,8 +27,8 @@
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
-Version:        1.62.3
-Release:        11%{?dist}
+Version:        1.63
+Release:        1%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -116,6 +117,8 @@ Provides:       bundled(spirv-cross) = 0~git%{shortcommit10}
 
 This package contains a graphical user interface using GTK+.
 
+
+%if %{with qt}
 %package qt
 Summary:        Super Nintendo Entertainment System emulator - Qt version
 BuildRequires:  cmake(cubeb)
@@ -132,6 +135,7 @@ Provides:       bundled(spirv-cross) = 0~git%{shortcommit10}
 %description qt %_description
 
 This package contains a graphical user interface using Qt.
+%endif
 
 
 %prep
@@ -179,12 +183,14 @@ pushd gtk
 
 popd
 
+%if %{with qt}
 pushd qt
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %{nil}
 
 popd
+%endif
 
 # Build CLI version
 pushd unix
@@ -199,9 +205,11 @@ pushd gtk
 %cmake_build
 popd
 
+%if %{with qt}
 pushd qt
 %cmake_build
 popd
+%endif
 
 pushd unix
 %make_build
@@ -215,15 +223,16 @@ pushd gtk
 popd
 
 # Install CLI version
-mkdir -p %{buildroot}%{_bindir}
 install -p -m 0755 unix/%{name} %{buildroot}%{_bindir}
-
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 qt/%{__cmake_builddir}/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
 
 # Install AppData file
 install -d %{buildroot}%{_metainfodir}
-install -p -m 644 %{name}-{gtk,qt}.appdata.xml %{buildroot}%{_metainfodir}/
+install -p -m 644 %{name}-gtk.appdata.xml %{buildroot}%{_metainfodir}/
+
+%if %{with qt}
+install -pm0755 qt/%{__cmake_builddir}/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
+
+install -p -m 644 %{name}-qt.appdata.xml %{buildroot}%{_metainfodir}/
 
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
@@ -232,15 +241,18 @@ desktop-file-install \
   --set-value="%{name}-qt %F" \
   --add-category=Qt \
   %{name}-qt.desktop
-
+%endif
 
 %find_lang %{name}-gtk
 
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-gtk.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-gtk.appdata.xml
+%if %{with qt}
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-qt.appdata.xml
+%endif
 
 
 %files
@@ -263,14 +275,19 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.appdata.xml
 %{_datadir}/applications/%{name}-gtk.desktop
 
 
+%if %{with qt}
 %files qt
 %license LICENSE external/LICENSE.*
 %{_bindir}/%{name}-qt
 %{_datadir}/applications/%{name}-qt.desktop
 %{_metainfodir}/%{name}-qt.appdata.xml
+%endif
 
 
 %changelog
+* Sun Jul 14 2024 Phantom X <megaphantomx at hotmail dot com> - 1.63-1.20240713git18096d9
+- 1.63
+
 * Wed Aug 30 2023 Phantom X <megaphantomx at hotmail dot com> - 1.62.3-5.20230827git94fbbfe
 - Qt sub package
 

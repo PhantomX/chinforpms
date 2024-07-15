@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.12
+%global wine_stagingver 9.13
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -112,10 +112,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id a2fbe5ade7a8baf3747ca57b26680fee86fff9f0
+%global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4a9c02b27a0bef0cddf155b253e02635c0164e73
+%global tkg_id 4ff68d3fb6ee1892056eff9bcd9cac38f5c55993
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -160,7 +160,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.12
+Version:        9.13
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -228,10 +228,12 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 # build fixes
 
 # wine bugs/upstream/reverts
-#Patch???:      %%{whq_url}/commit#/%%{name}-whq-commit.patch
-Patch700:        %{whq_url}/bd89ab3040e30c11b34a95072d88f635ade03bdc#/%{name}-whq-bd89ab3.patch
-Patch701:        %{whq_url}/240556e2b8cb94fc9cc85949b7e043f392b1802a#/%{name}-whq-240556e.patch
-Patch702:        %{whq_url}/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6#/%{name}-whq-2bfe81e.patch
+#Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
+Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-bd89ab3.patch
+Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-240556e.patch
+Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.patch#/%{name}-whq-2bfe81e.patch
+Patch703:        %{whq_murl}/-/merge_requests/5925.patch#/%{name}-whq-mr5925.patch
+Patch704:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -359,6 +361,7 @@ BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(netapi)
 BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  opencl-headers
+BuildRequires:  pkgconfig(odbc)
 BuildRequires:  pkgconfig(osmesa)
 BuildRequires:  pkgconfig(sane-backends)
 BuildRequires:  pkgconfig(sdl2)
@@ -490,6 +493,7 @@ Requires:       libXxf86vm(x86-32)
 Requires:       libpcap(x86-32)
 Requires:       mesa-libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
+Requires:       unixODBC(x86-32)
 Requires:       samba-libs(x86-32)
 Requires:       SDL2(x86-32)
 Requires:       vulkan-loader(x86-32)
@@ -519,6 +523,7 @@ Requires:       libXxf86vm(x86-64)
 Requires:       libpcap(x86-64)
 Requires:       mesa-libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
+Requires:       unixODBC(x86-64)
 Requires:       samba-libs(x86-64)
 Requires:       SDL2(x86-64)
 Requires:       vulkan-loader(x86-64)
@@ -543,6 +548,7 @@ Requires:       libXrender
 Requires:       libpcap
 Requires:       mesa-libOSMesa
 Requires:       libv4l
+Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan-loader
 %if 0%{?wine_staging}
@@ -869,6 +875,9 @@ This package adds the opencl driver for wine.
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
 
+%patch -P 703 -p1
+%patch -P 704 -p1
+
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -922,7 +931,8 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
-%patch -P 1034 -p1
+# https://bugs.winehq.org/show_bug.cgi?id=51687#c7
+%dnl %patch -P 1034 -p1
 %patch -P 1035 -p1
 %patch -P 1036 -p1
 %patch -P 1037 -p1
@@ -1857,6 +1867,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/ntdsapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ntprint.%{winedll}
 %{_libdir}/wine/%{winedlldir}/objsel.%{winedll}
+%{_libdir}/wine/%{winesodir}/odbc32.so
 %{_libdir}/wine/%{winedlldir}/odbc32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/odbcbcp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/odbccp32.%{winedll}
@@ -2039,6 +2050,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.web.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
 %{_libdir}/wine/%{winesodir}/winebus.so
@@ -2541,6 +2553,9 @@ fi
 
 
 %changelog
+* Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.13-100
+- 9.13
+
 * Sun Jun 30 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.12-100
 - 9.12
 
