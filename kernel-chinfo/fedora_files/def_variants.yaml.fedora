@@ -137,6 +137,7 @@ rules:
   - drivers/input/touchscreen/.*: modules
   - drivers/input/.*: modules-core
   - drivers/interconnect/.*: modules-core
+  - drivers/iommu/.*test.ko: modules-internal
   - drivers/iommu/.*: modules-core
   - drivers/irqchip/.*: modules-core
 
@@ -258,6 +259,7 @@ rules:
   - drivers/pps/.*: modules-core
   - drivers/ptp/ptp_kvm.*: modules-rt-kvm
     if_variant_in: ["rt"]
+  - drivers/ptp/ptp_mock.*: modules-internal
   - drivers/ptp/ptp_dfl_tod.*: modules
   - drivers/ptp/.*: modules-core
   - drivers/pwm/.*: modules-core

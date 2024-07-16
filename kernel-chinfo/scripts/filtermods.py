@@ -706,13 +706,10 @@ def sort_kmods(depmod_pathname: str, config_str: str, variants=[], do_pictures='
 
 def abbrev_list_for_report(alist: list[KMod]) -> str:
     tmp_str = []
-    for kmod in alist[:2]:
+    for kmod in alist:
         if kmod.allowed_list:
             tmp_str.append('%s(%s)' % (kmod.name, ' '.join([x.name for x in kmod.allowed_list])))
     ret = ', '.join(tmp_str)
-    other_len = len(alist[2:])
-    if other_len > 0:
-        ret = ret + ' and %s other(s)' % (other_len)
     return ret
 
 

@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20231210");
+pref("chinfo.cfg.version", "20240715");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -269,6 +269,9 @@ pref("plugins.notifyMissingFlash", false);
 // Enable tracking protection
 pref("privacy.trackingprotection.enabled", true);
 pref("privacy.trackingprotection.pbmode.enabled", true);
+
+// Disable privacy-preserving attribution 
+pref("dom.private-attribution.submission.enabled", false);
 
 // Disable datareporting and telemetry
 pref("app.normandy.enabled", false);

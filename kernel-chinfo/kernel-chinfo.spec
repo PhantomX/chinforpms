@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.9.9
+%define specrpmversion 6.10.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id ad8659c479407dcc64c3899ad277bc2746fb9ea7
+%global opensuse_id 65f103636072c734b7b27bca073b050671740dd3
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -844,6 +844,14 @@ BuildRequires: systemd-boot-unsigned
 BuildRequires: systemd-udev >= 252-1
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
+# For UKI sb cert
+%if 0%{?rhel}%{?centos} && !0%{?eln}
+%if 0%{?centos}
+BuildRequires: centos-sb-certs >= 9.0-23
+%else
+BuildRequires: redhat-sb-certs >= 9.4-0.1
+%endif
+%endif
 %endif
 
 %if 0%{?released_kernel}
@@ -961,6 +969,27 @@ Source87: flavors
 Source100: rheldup3.x509
 Source101: rhelkpatch1.x509
 Source102: nvidiagpuoot001.x509
+Source103: rhelimaca1.x509
+Source104: rhelima.x509
+Source105: rhelima_centos.x509
+Source106: fedoraimaca.x509
+
+%if 0%{?fedora}%{?eln}
+%define ima_ca_cert %{SOURCE106}
+%endif
+
+%if 0%{?rhel} && !0%{?eln}
+%define ima_ca_cert %{SOURCE103}
+# rhel && !eln
+%endif
+
+%if 0%{?centos}
+%define ima_signing_cert %{SOURCE105}
+%else
+%define ima_signing_cert %{SOURCE104}
+%endif
+
+%define ima_cert_name ima.cer
 
 Source200: check-kabi
 
@@ -1040,7 +1069,7 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/scsi-core-alua-I-O-errors-for-ALUA-state-transitions.patch#/openSUSE-scsi-core-alua-I-O-errors-for-ALUA-state-transitions.patch
+Patch1013: %{opensuse_url}/fix-amdgpu-freezes.patch#/openSUSE-fix-amdgpu-freezes.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1060,119 +1089,91 @@ Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 %if 0%{?post_factum}
-Patch5001:  %{kernel_url}/?id=6649e23edb3cb99d9376eabbb8978df747e07c68#/kernel-stable-revert-6649e23.patch
 # amd-pstate
-Patch7000:  %{pf_url}/023aad3424cd0097342f5021915ec0f4eaa34c72.patch#/pf-cb-023aad3.patch
-Patch7001:  %{pf_url}/dac2bbc34d5b1bf89385035e2276df3dc32f06ab.patch#/pf-cb-dac2bbc.patch
-Patch7002:  %{pf_url}/3127fd0177e50e0f9cfd7d7d0af622c15467a387.patch#/pf-cb-3127fd0.patch
-Patch7003:  %{pf_url}/122d025bca80112b43654c08a95cf5eae3c0d1c9.patch#/pf-cb-122d025.patch
-Patch7004:  %{pf_url}/fac789e5ac98acec20d8358075f00b7b94eb6bc4.patch#/pf-cb-fac789e.patch
-Patch7005:  %{pf_url}/8dd95104dd3faefa9f32502fa30dc4bcf2dd0df2.patch#/pf-cb-8dd9510.patch
-Patch7006:  %{pf_url}/49c32213a643b745cf16a58ab47fa2917a512a38.patch#/pf-cb-49c3221.patch
-Patch7007:  %{pf_url}/9935d70750b02fe68ea1e0c78d997fae2ba11e41.patch#/pf-cb-9935d70.patch
-Patch7008:  %{pf_url}/ce271bdc01cc662c18792133999d7a1b708a14ed.patch#/pf-cb-ce271bd.patch
-Patch7009:  %{pf_url}/de6aacf56736c174ec5f0bf03527504db6a3b243.patch#/pf-cb-de6aacf.patch
-Patch7010:  %{pf_url}/18bc0a81a859c1a3190a5dce59e2ab165a29405b.patch#/pf-cb-18bc0a8.patch
-Patch7011:  %{pf_url}/b8524591135b3ed6fdb1c48a3a13aa95d9bf05fc.patch#/pf-cb-b852459.patch
-Patch7012:  %{pf_url}/49c4b2eefbe8cea004c3f62f01f5e28c47e8640c.patch#/pf-cb-49c4b2e.patch
-Patch7013:  %{pf_url}/af0864992f2e4a1df62bbaba2ff42b7e7b935f2e.patch#/pf-cb-af08649.patch
-Patch7014:  %{pf_url}/384e408bc4441cbe4dccbce96ba10847234ac096.patch#/pf-cb-384e408.patch
-Patch7015:  %{pf_url}/3905851f660ba6dad0517884947d0a6966821256.patch#/pf-cb-3905851.patch
-Patch7017:  %{pf_url}/5abcf3fc3e9ff2fe763562cf2bb0eb80c57336b5.patch#/pf-cb-5abcf3f.patch
-Patch7018:  %{pf_url}/9860bdb8f766c47dde41210c9fa4beecf95dd3d7.patch#/pf-cb-9860bdb.patch
-Patch7019:  %{pf_url}/6f354c95be7ef4a7465442e482f22ab2088592a5.patch#/pf-cb-6f354c9.patch
-Patch7020:  %{pf_url}/458f59fc5498b67a76fb10db7a3853a924f8d373.patch#/pf-cb-458f59f.patch
-Patch7021:  %{pf_url}/9ffe619a26016c8e426f79c423606cd5d40e7667.patch#/pf-cb-9ffe619.patch
-Patch7022:  %{pf_url}/b531216f5ddeb3b8f5ee7a1d45b9fe4923206731.patch#/pf-cb-b531216.patch
-Patch7023:  %{pf_url}/435fc4ee9b456ff975992067b1bc2d3166e3ddb4.patch#/pf-cb-435fc4e.patch
-Patch7024:  %{pf_url}/c7517524e6fbdef71ff8b2d0c108d0b389b79c07.patch#/pf-cb-c751752.patch
-Patch7025:  %{pf_url}/ee4e6d6a9e19672130886731717334f9388a0738.patch#/pf-cb-ee4e6d6.patch
-Patch7026:  %{pf_url}/bf847c9d8b5cfd8c14cc24aba7b11b3cd2de757e.patch#/pf-cb-bf847c9.patch
-Patch7027:  %{pf_url}/12a6b94fbecb31b40c38de5624223a68c3549778.patch#/pf-cb-12a6b94.patch
-Patch7028:  %{pf_url}/200a597872e500801b2f4c2a31b3ec3d5add34e9.patch#/pf-cb-200a597.patch
-Patch7030:  %{pf_url}/82631ee914690541347ce1895b8929a1a5b0f2c7.patch#/pf-cb-82631ee.patch
-Patch7031:  %{pf_url}/fc99ae145abcf8096b9f89b4474e4e1b0ef517c4.patch#/pf-cb-fc99ae1.patch
-Patch7032:  %{pf_url}/418cf789780ffc70bebd5b665d9a8818c6b6c93d.patch#/pf-cb-418cf78.patch
-Patch7034:  %{pf_url}/880b0678ede0235718aadeec0209d697c5794326.patch#/pf-cb-880b067.patch
-Patch7035:  %{pf_url}/ed7c06d68887a7055192ec5921ddeafa881782d3.patch#/pf-cb-ed7c06d.patch
-Patch7036:  %{pf_url}/5dc318ad8bad88dcc92d7d73e28b5ca46e52c269.patch#/pf-cb-5dc318a.patch
-Patch7037:  %{pf_url}/c2f5a378a4f67827ba53be1f4be4c435e83a3c34.patch#/pf-cb-c2f5a37.patch
-Patch7038:  %{pf_url}/82989b66c9ac223695d7b96b5dca236aeb0252a8.patch#/pf-cb-82989b6.patch
-Patch7039:  %{pf_url}/f628b53171be2e120afa535d72417f21d953bfed.patch#/pf-cb-f628b53.patch
-Patch7040:  %{pf_url}/8752deb7f469cf25631cd6136eb1fab6a83f9d21.patch#/pf-cb-8752deb.patch
-Patch7041:  %{pf_url}/a76f4a725c85197d72a78f3dfe1f26eb7b705365.patch#/pf-cb-a76f4a7.patch
-Patch7042:  %{pf_url}/82aec6e63a16302db86cdf2f71dd78522de94019.patch#/pf-cb-82aec6e.patch
-Patch7043:  %{pf_url}/71dd682ee31aa56fcfe15e85bcb983c8c7847fb0.patch#/pf-cb-71dd682.patch
-# bbr
-Patch7050:  %{pf_url}/be74f82f85cf782f185e15c55dc8d8bda4769588.patch#/pf-cb-be74f82.patch
-# block
-Patch7060:  %{pf_url}/bc7e8857255b29555eae4a00bd2c9bf6dc3e7d05.patch#/pf-cb-bc7e885.patch
-Patch7061:  %{pf_url}/14ec7b122757e21dbafbb6fa9840d1f4d6c84223.patch#/pf-cb-14ec7b1.patch
-Patch7062:  %{pf_url}/c34a6c21f7ff4057cea1e2fb5976fc0cdd25f39b.patch#/pf-cb-c34a6c2.patch
-Patch7063:  %{pf_url}/d18f999b994d9778aea6ca723344215cb818670c.patch#/pf-cb-d18f999.patch
-Patch7064:  %{pf_url}/d935f3d0b6a37f70d165623077d94a836c231d80.patch#/pf-cb-d935f3d.patch
-Patch7065:  %{pf_url}/c53367e9365b515c65c2ba645ece20787b52c3b3.patch#/pf-cb-c53367e.patch
-Patch7066:  %{pf_url}/585dda51216d7d0126cffde474b37e939a305e23.patch#/pf-cb-585dda5.patch
-Patch7067:  %{pf_url}/92d2f9728b3e92d7c4d222e45293e723867aaf80.patch#/pf-cb-92d2f97.patch
+Patch7000:  %{pf_url}/65fa2090a7f4691e8af256f12958dd8faa1608ce.patch#/pf-cb-65fa209.patch
+Patch7001:  %{pf_url}/7edce34a7a8a7e1c18bc4331e7380f24ab80fac6.patch#/pf-cb-7edce34.patch
+Patch7002:  %{pf_url}/4ae42c4d5db58f93cf356f0354d86cfb21755c01.patch#/pf-cb-4ae42c4.patch
+Patch7003:  %{pf_url}/6ea098c1e7fbfa5e75957b96f9a18cf3d25e15fa.patch#/pf-cb-6ea098c.patch
+Patch7004:  %{pf_url}/1e52d3bd0ed4ac7b13964ad64ef57e9242f3d8ae.patch#/pf-cb-1e52d3b.patch
+Patch7005:  %{pf_url}/d8559bb117ab83efb1c2545e54020b98423ff412.patch#/pf-cb-d8559bb.patch
+Patch7006:  %{pf_url}/91db5d9d5e1f7af994cbd5cef74cbe884b3aa034.patch#/pf-cb-91db5d9.patch
+Patch7007:  %{pf_url}/fcd7be9403d7f2c0c5ff1d4bba5d418cc333f2df.patch#/pf-cb-fcd7be9.patch
+Patch7008:  %{pf_url}/30e742b7b84ac0b6866324039505b73492f69936.patch#/pf-cb-30e742b.patch
+Patch7009:  %{pf_url}/98625cbd73756e9062bb75fb1587236333faf454.patch#/pf-cb-98625cb.patch
+Patch7010:  %{pf_url}/d41ad8f8193764796861e7e073c94f5adc5351d8.patch#/pf-cb-d41ad8f.patch
+Patch7011:  %{pf_url}/7cb8e052b6ece7e829eb432a82e27651ace17fa3.patch#/pf-cb-7cb8e05.patch
+Patch7012:  %{pf_url}/a558dc7889d089a5744cb1dc533dcc71b7505bab.patch#/pf-cb-a558dc7.patch
+Patch7013:  %{pf_url}/21c2feee40b2ee356a65f9b23af44306c1118659.patch#/pf-cb-21c2fee.patch
+Patch7014:  %{pf_url}/3ed976bf34c6cc0921f83f83ebec07036adfa106.patch#/pf-cb-3ed976b.patch
+Patch7015:  %{pf_url}/f78ead4e8bb09f8b88c4de433d8399098fdd2a98.patch#/pf-cb-f78ead4.patch
+Patch7016:  %{pf_url}/f3ad8e021dfba5ac224302f5767d8cb940bd472b.patch#/pf-cb-f3ad8e0.patch
+Patch7017:  %{pf_url}/73b198ab190285c903d0d732bc62d13aed577296.patch#/pf-cb-73b198a.patch
+Patch7018:  %{pf_url}/d1fc152b8d485254e550e02192abcbb807695f02.patch#/pf-cb-d1fc152.patch
+Patch7019:  %{pf_url}/23ee7779d281ab09db3603dd12696cd1f33399b6.patch#/pf-cb-23ee777.patch
+Patch7020:  %{pf_url}/cdf2e3fa1598d862b28014b080b2f5402fb9510d.patch#/pf-cb-cdf2e3f.patch
+Patch7021:  %{pf_url}/18a021e4bebcd7f7079d404957c6b93b569ec4b2.patch#/pf-cb-18a021e.patch
+Patch7022:  %{pf_url}/992e82ea03899a130f2fece5e13c9299e31a90cb.patch#/pf-cb-992e82e.patch
+# bbr3
+Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
+# iosched
+Patch7060:  %{pf_url}/532a1443b8d28371056c771b4b94ceae3fde67c1.patch#/pf-cb-532a144.patch
+Patch7061:  %{pf_url}/56831b6ffd25537bc6fed018802b4bf53db54eae.patch#/pf-cb-56831b6.patch
+Patch7062:  %{pf_url}/37617047f3cc742229fd46261a1bd69290dddb58.patch#/pf-cb-3761704.patch
+Patch7063:  %{pf_url}/fd41e83dac5585e1dd6f84df9253f1e4f3f7bd61.patch#/pf-cb-fd41e83.patch
+Patch7064:  %{pf_url}/31b94c6b3370bae23fea129e915bd079ddd29753.patch#/pf-cb-31b94c6.patch
+Patch7065:  %{pf_url}/32331118650a9ad146ba2b1cf86079b72b0047e7.patch#/pf-cb-3233111.patch
+Patch7066:  %{pf_url}/b35dd8fbbe16ab94cedec8585646de08cdbefcdc.patch#/pf-cb-b35dd8f.patch
+Patch7067:  %{pf_url}/9436927d9a182c0c3c3c6305f16d28ae15a8da61.patch#/pf-cb-9436927.patch
 # fixes
-Patch7100:  %{pf_url}/0ebe1627d6667bd5c1ff164a734b8fa36704233a.patch#/pf-cb-0ebe162.patch
-Patch7101:  %{pf_url}/bab2518c5ec078e6081817a3862c1d848651d9b6.patch#/pf-cb-bab2518.patch
-Patch7102:  %{pf_url}/ce00606fb4bb131c02eb940968297f0869d30abe.patch#/pf-cb-ce00606.patch
-Patch7103:  %{pf_url}/deb847a041862fddff4fc16d4290389260b60dfb.patch#/pf-cb-deb847a.patch
-Patch7104:  %{pf_url}/9145f4bfcf9d59418559436a66bcb073c025ded0.patch#/pf-cb-9145f4b.patch
-Patch7105:  %{pf_url}/12bc064f6df0b6a9f0ae058dc3d44304dd04bb65.patch#/pf-cb-12bc064.patch
+Patch7100:  %{pf_url}/7bff53340358d58ace35328fabf0b96b9a36da4e.patch#/pf-cb-7bff533.patch
+Patch7101:  %{pf_url}/7b9e3596c3ac433bf70b9c94f17f91c78818cde5.patch#/pf-cb-7b9e359.patch
+Patch7102:  %{pf_url}/ad2e5fdde60453754d7a524a163d8ea26e375cba.patch#/pf-cb-ad2e5fd.patch
+Patch7103:  %{pf_url}/e739f3faaa76c2bba642c26136c0b9a73e634ae5.patch#/pf-cb-e739f3f.patch
+Patch7104:  %{pf_url}/1425a66668ea608379b5307442a7bb7f46a912c4.patch#/pf-cb-1425a66.patch
+Patch7105:  %{pf_url}/b8a7a9a665067d871b1f0855ec96550037efbb08.patch#/pf-cb-b8a7a9a.patch
 # zstd
-Patch7200:  %{pf_url}/2b515b215286bf4a98187aca20f1e16be80d0423.patch#/pf-cb-2b515b2.patch
-Patch7201:  %{pf_url}/88a0e0e6e9412be515a8023f1dad0aee4f7b4bf9.patch#/pf-cb-88a0e0e.patch
+Patch7200:  %{pf_url}/68578a23043c775459234f67a3b099986600597e.patch#/pf-cb-68578a2.patch
+Patch7201:  %{pf_url}/35b1e59a35772edb7d4ae2225d5f4fc6cd7f5a49.patch#/pf-cb-35b1e59.patch
 # ksm
-Patch7220:  %{pf_url}/332679d16797e49fe0e13025438c02b9f745f1d0.patch#/pf-cb-332679d.patch
+Patch7220:  %{pf_url}/b77244c68edff082093fb5b6e97c44314ccffddd.patch#/pf-cb-b77244c.patch
 # v4l2loopback
-Patch7230:  %{pf_url}/4044e0692e1003a60a52b0e39bd0e32a239c77aa.patch#/pf-cb-4044e06.patch
-Patch7231:  %{pf_url}/ce7ecbd66e1df34240aa5ae35869dd6103e9fe13.patch#/pf-cb-ce7ecbd.patch
+Patch7230:  %{pf_url}/4bd55e65db5078d4b4bdef1ce0ce3f6151585d93.patch#/pf-cb-4bd55e6.patch
 # uvcvideo
-Patch7240:  %{pf_url}/5ce7b22739662759e8ccf62396371c9ef918c1c5.patch#/pf-cb-5ce7b22.patch
-Patch7241:  %{pf_url}/d52cd477dc83cb52a5ad09fbdcb729fc75b8a367.patch#/pf-cb-d52cd47.patch
-Patch7242:  %{pf_url}/7558fdbc034ebe48c60e8ef9ca7b13c5bf839c38.patch#/pf-cb-7558fdb.patch
+Patch7240:  %{pf_url}/101015107452d2b8a71bef8412e254466b3467c2.patch#/pf-cb-1010151.patch
+Patch7241:  %{pf_url}/620ff788263f28e7f27eb5485d5671b3d9300fd9.patch#/pf-cb-620ff78.patch
+Patch7242:  %{pf_url}/71d89357c1711e5bae16377374f5692aa40a21ca.patch#/pf-cb-71d8935.patch
+Patch7243:  %{pf_url}/02099055c95dd08b7f3b0f177f125d4c4ad43f65.patch#/pf-cb-0209905.patch
+Patch7244:  %{pf_url}/7be745a4d363a7de28ff65ab68440376b3bb4ffc.patch#/pf-cb-7be745a.patch
+Patch7245:  %{pf_url}/c95646e347efd04660023dbe8e78fbd650208d76.patch#/pf-cb-c95646e.patch
+Patch7246:  %{pf_url}/2a28ba856dea4ac460669722edb8862e726d1ad7.patch#/pf-cb-2a28ba8.patch
+Patch7247:  %{pf_url}/c1d04141d319959c0ffbb48e8a7696dc0756cb2f.patch#/pf-cb-c1d0414.patch
+Patch7248:  %{pf_url}/ccf7cf844b24dc627884431267d0a412eb66f4d4.patch#/pf-cb-ccf7cf8.patch
+Patch7249:  %{pf_url}/445d6fa73ab866a41f8b6d315a19ded333a57806.patch#/pf-cb-445d6fa.patch
+Patch7250:  %{pf_url}/fdfc3ed43864e6aa1ecd99c0f42985ce9bfc72d3.patch#/pf-cb-fdfc3ed.patch
+Patch7251:  %{pf_url}/9311877a04bc5ba11cec0cf9fa417a33ec1b0d7a.patch#/pf-cb-9311877.patch
+Patch7252:  %{pf_url}/da47925d303003600d1473666e9a5f48392482aa.patch#/pf-cb-da47925.patch
+Patch7253:  %{pf_url}/6974d9d353d9287e39d3201ee7391e443dc8191b.patch#/pf-cb-6974d9d.patch
+Patch7254:  %{pf_url}/709eac1cdeaea3a644599d1ef8019b67698c9295.patch#/pf-cb-709eac1.patch
+Patch7255:  %{pf_url}/bc78a60af946fa9a15c709b193fb77d624f639df.patch#/pf-cb-bc78a60.patch
+Patch7256:  %{pf_url}/11019fddafa0327a63c101c04a50df848e0f8ce8.patch#/pf-cb-11019fd.patch
+Patch7257:  %{pf_url}/2052a691d83fb1871f9c82c2165ab6f932df77a0.patch#/pf-cb-2052a69.patch
+Patch7258:  %{pf_url}/ce2d41cff1cbc1e7adcdcad2330a7d18008873e8.patch#/pf-cb-ce2d41c.patch
+Patch7259:  %{pf_url}/c2615dc8cc8f856f00ae5e41e03d1671440b658b.patch#/pf-cb-c2615dc.patch
 # crypto
-Patch7300:  %{pf_url}/32a11056e219681120a168914b9898e1c354ac09.patch#/pf-cb-32a1105.patch
-Patch7301:  %{pf_url}/07e694fcb3b06d399b5db7f1cb2c173adbfedf71.patch#/pf-cb-07e694f.patch
-Patch7302:  %{pf_url}/c039b063a50ee8011398882185419de97987fedb.patch#/pf-cb-c039b06.patch
-Patch7303:  %{pf_url}/b35e1b8d7b1c75a2da361af29919bc1cc2d20b11.patch#/pf-cb-b35e1b8.patch
-Patch7304:  %{pf_url}/71636ad610050cd7c557bedf3858ebc54f4ae9d3.patch#/pf-cb-71636ad.patch
-Patch7305:  %{pf_url}/e067455cb2960df60cad27fb07e6deca89f8f97b.patch#/pf-cb-e067455.patch
-Patch7306:  %{pf_url}/ac7f799e93c11c98957af7b019e6ab33a5d45cb2.patch#/pf-cb-ac7f799.patch
-Patch7307:  %{pf_url}/1d2af8dc387d6d0743d1b9b45e2c6b523144e438.patch#/pf-cb-1d2af8d.patch
-Patch7311:  %{pf_url}/3b8436a7932bf7f8d5ba99c733c08337ea6cb5c8.patch#/pf-cb-3b8436a.patch
-Patch7312:  %{pf_url}/0d8aaeae29aa43f7f11f467bffa60b3042871c00.patch#/pf-cb-0d8aaea.patch
-Patch7313:  %{pf_url}/c15bc805bcb41b55dc8cebe4f8b4e7ad19f42875.patch#/pf-cb-c15bc80.patch
-Patch7314:  %{pf_url}/79f65d5305406aa83fa757fedf93884057d0711c.patch#/pf-cb-79f65d5.patch
-Patch7315:  %{pf_url}/28c1b5a7f2928185a48dceb46f1c5d44fb42075f.patch#/pf-cb-28c1b5a.patch
-Patch7316:  %{pf_url}/0864f6cefa7b187cbd4076c6a9651edbe4770a59.patch#/pf-cb-0864f6c.patch
-Patch7317:  %{pf_url}/349e5ad4cada3521245e8b84ed6fd254bd1ed4a9.patch#/pf-cb-349e5ad.patch
-Patch7318:  %{pf_url}/0c51720eade1aaea116aa60bd3aea43f54808cbe.patch#/pf-cb-0c51720.patch
-Patch7319:  %{pf_url}/2ce9ff9a6cb4266518e177770ac60ad723c33194.patch#/pf-cb-2ce9ff9.patch
-Patch7320:  %{pf_url}/c47ba2c96a1f286254d86aefeb2a534eeba570f2.patch#/pf-cb-c47ba2c.patch
-Patch7321:  %{pf_url}/03b679bbbbe423b798a34ecda63aa9f8e8ad5b93.patch#/pf-cb-03b679b.patch
-Patch7322:  %{pf_url}/1e050d8635f254af7b121815f543c43784d3aaca.patch#/pf-cb-1e050d8.patch
-Patch7323:  %{pf_url}/f54e5d5ba5d35c7a4a1585a8e32ef2aac677f4ec.patch#/pf-cb-f54e5d5.patch
-Patch7324:  %{pf_url}/7e7648e96eb851630c96379e2bc225d05ec26b78.patch#/pf-cb-7e7648e.patch
-Patch7325:  %{pf_url}/3192cded97424256eb7ffef7020433ee8597d5d3.patch#/pf-cb-3192cde.patch
-Patch7326:  %{pf_url}/06968325fb09de5712e85a65143d7d8f464cda7b.patch#/pf-cb-0696832.patch
-Patch7327:  %{pf_url}/d014c6992952cbd36980e1e040c3f81f6a87f468.patch#/pf-cb-d014c69.patch
-Patch7328:  %{pf_url}/2a1b315c0d058b2ba8b0a24de9f8eeadef388ad0.patch#/pf-cb-2a1b315.patch
-Patch7329:  %{pf_url}/6624063433e23564e0192e9a20fcf02f823d53e7.patch#/pf-cb-6624063.patch
+Patch7300:  %{pf_url}/c45bb4293cb86f2cdd60b0409aa61a2055d925c0.patch#/pf-cb-c45bb42.patch
+Patch7301:  %{pf_url}/ebfe00bcb8455b6b752db231f7d2ea9ca2b37958.patch#/pf-cb-ebfe00b.patch
 # amd-rapl
-Patch7500:  %{pf_url}/307c749147b504a71e4f6fa238170fa390c3cd58.patch#/pf-cb-307c749.patch
-Patch7501:  %{pf_url}/8265ace20a2483065976401522045bd102744e76.patch#/pf-cb-8265ace.patch
-Patch7502:  %{pf_url}/29108dc632d55c8ed15261debcd09215947334cb.patch#/pf-cb-29108dc.patch
-Patch7503:  %{pf_url}/1e4ef4ef49de8210e48ac791b89847f58a6638eb.patch#/pf-cb-1e4ef4e.patch
-Patch7504:  %{pf_url}/946ee35af4ea50fb39d5bd2e0d9c83ed9a0ba37f.patch#/pf-cb-946ee35.patch
-Patch7505:  %{pf_url}/95f66fbb48df5ebfaccea2821a18a55da9c3d870.patch#/pf-cb-95f66fb.patch
-Patch7506:  %{pf_url}/26eeeba73b40b4f95b1e885eeedefd0617bad697.patch#/pf-cb-26eeeba.patch
-Patch7507:  %{pf_url}/4bfec9b3e8308555def09ab75b55b4e4c882bf0e.patch#/pf-cb-4bfec9b.patch
-Patch7508:  %{pf_url}/dd20250f26151c747aacd3551079e7fe18ff100d.patch#/pf-cb-dd20250.patch
-Patch7509:  %{pf_url}/ea84ff79a7d08bc2c09d3405ba701e5a8436d66b.patch#/pf-cb-ea84ff7.patch
-Patch7510:  %{pf_url}/145cc7b2543766a495442a687a02635b6e254309.patch#/pf-cb-145cc7b.patch
+Patch7500:  %{pf_url}/e663824f99782d93eb50ffc236b1506b589eb58f.patch#/pf-cb-e663824.patch
+Patch7501:  %{pf_url}/535f3de6c47253ee54ceca049f5af91b7dbfd1cb.patch#/pf-cb-535f3de.patch
+Patch7502:  %{pf_url}/c554b0a6984a286702990dd69a47851f69c81526.patch#/pf-cb-c554b0a.patch
+Patch7503:  %{pf_url}/b1cce67a5b2c7a9c6418aaaa8bda9a6fc7d50612.patch#/pf-cb-b1cce67.patch
+Patch7504:  %{pf_url}/80cc2fa2786c8b5fab0e32b46068249c9c93a4c5.patch#/pf-cb-80cc2fa.patch
+Patch7505:  %{pf_url}/eae669a5afbd1f44738a67773a2a8e4b092c639a.patch#/pf-cb-eae669a.patch
+Patch7506:  %{pf_url}/d5e3e523b536bf2d6f46511179f5fb70938bbbb0.patch#/pf-cb-d5e3e52.patch
+Patch7507:  %{pf_url}/f288b6810efa6abd2523e433af30ccb0157756a8.patch#/pf-cb-f288b68.patch
+Patch7508:  %{pf_url}/8ada13f55d8069f4c07d37f5bfda1698f449ebca.patch#/pf-cb-8ada13f.patch
+Patch7509:  %{pf_url}/c59f4e3b1fdb30b2d92f9893e6bb8a0e9b3f4629.patch#/pf-cb-c59f4e3.patch
+Patch7510:  %{pf_url}/da16f6995453d1c2ccfef18a2e45a4d8993abc73.patch#/pf-cb-da16f69.patch
 
 %endif
 
@@ -1341,7 +1342,7 @@ This package provides debug information for the libperf package.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so(\.debug)?|XXX' -o libperf-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_libdir}/libperf.so.*(\.debug)?|XXX' -o libperf-debuginfo.list}
 # with_libperf
 %endif
 
@@ -1429,7 +1430,7 @@ analysing the logical and timing behavior of Linux.
 # output with bpftool -V.
 %define bpftoolversion  %specrpmversion
 %else
-%define bpftoolversion 7.4.0
+%define bpftoolversion 7.5.0
 %endif
 
 %package -n bpftool
@@ -1999,9 +2000,33 @@ ApplyOptionalPatch %{PATCH1}
 ApplyOptionalPatch %{PATCH999999}
 
 %if 0%{?post_factum}
-# bbr
+# amd-pstate
+ApplyPatch %{PATCH7000}
+ApplyPatch %{PATCH7001}
+ApplyPatch %{PATCH7002}
+ApplyPatch %{PATCH7003}
+ApplyPatch %{PATCH7004}
+ApplyPatch %{PATCH7005}
+ApplyPatch %{PATCH7006}
+ApplyPatch %{PATCH7007}
+ApplyPatch %{PATCH7008}
+ApplyPatch %{PATCH7009}
+ApplyPatch %{PATCH7010}
+ApplyPatch %{PATCH7011}
+ApplyPatch %{PATCH7012}
+ApplyPatch %{PATCH7013}
+ApplyPatch %{PATCH7014}
+ApplyPatch %{PATCH7015}
+ApplyPatch %{PATCH7016}
+ApplyPatch %{PATCH7017}
+ApplyPatch %{PATCH7018}
+ApplyPatch %{PATCH7019}
+ApplyPatch %{PATCH7020}
+ApplyPatch %{PATCH7021}
+ApplyPatch %{PATCH7022}
+# bbr3
 ApplyPatch %{PATCH7050}
-# block
+# iosched
 ApplyPatch %{PATCH7060}
 ApplyPatch %{PATCH7061}
 ApplyPatch %{PATCH7062}
@@ -2024,39 +2049,30 @@ ApplyPatch %{PATCH7201}
 ApplyPatch %{PATCH7220}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # uvcvideo
 ApplyPatch %{PATCH7240}
 ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
+ApplyPatch %{PATCH7243}
+ApplyPatch %{PATCH7244}
+ApplyPatch %{PATCH7245}
+ApplyPatch %{PATCH7246}
+ApplyPatch %{PATCH7247}
+ApplyPatch %{PATCH7248}
+ApplyPatch %{PATCH7249}
+ApplyPatch %{PATCH7250}
+ApplyPatch %{PATCH7251}
+ApplyPatch %{PATCH7252}
+ApplyPatch %{PATCH7253}
+ApplyPatch %{PATCH7254}
+ApplyPatch %{PATCH7255}
+ApplyPatch %{PATCH7256}
+ApplyPatch %{PATCH7257}
+ApplyPatch %{PATCH7258}
+ApplyPatch %{PATCH7259}
 # crypto
 ApplyPatch %{PATCH7300}
 ApplyPatch %{PATCH7301}
-ApplyPatch %{PATCH7302}
-ApplyPatch %{PATCH7303}
-ApplyPatch %{PATCH7304}
-ApplyPatch %{PATCH7305}
-ApplyPatch %{PATCH7306}
-ApplyPatch %{PATCH7307}
-ApplyPatch %{PATCH7311}
-ApplyPatch %{PATCH7312}
-ApplyPatch %{PATCH7313}
-ApplyPatch %{PATCH7314}
-ApplyPatch %{PATCH7315}
-ApplyPatch %{PATCH7316}
-ApplyPatch %{PATCH7317}
-ApplyPatch %{PATCH7318}
-ApplyPatch %{PATCH7319}
-ApplyPatch %{PATCH7320}
-ApplyPatch %{PATCH7321}
-ApplyPatch %{PATCH7322}
-ApplyPatch %{PATCH7323}
-ApplyPatch %{PATCH7324}
-ApplyPatch %{PATCH7325}
-ApplyPatch %{PATCH7326}
-ApplyPatch %{PATCH7327}
-ApplyPatch %{PATCH7328}
-ApplyPatch %{PATCH7329}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2069,51 +2085,6 @@ ApplyPatch %{PATCH7507}
 ApplyPatch %{PATCH7508}
 ApplyPatch %{PATCH7509}
 ApplyPatch %{PATCH7510}
-# amd-pstate
-ApplyPatch %{PATCH5001} -R
-ApplyPatch %{PATCH7006} -R
-ApplyPatch %{PATCH7002} -R
-ApplyPatch %{PATCH7000}
-ApplyPatch %{PATCH7001}
-ApplyPatch %{PATCH7002}
-ApplyPatch %{PATCH7003}
-ApplyPatch %{PATCH7004}
-ApplyPatch %{PATCH7005}
-ApplyPatch %{PATCH7006}
-ApplyPatch %{PATCH7007}
-ApplyPatch %{PATCH7008}
-ApplyPatch %{PATCH7009}
-ApplyPatch %{PATCH7010}
-ApplyPatch %{PATCH7011}
-ApplyPatch %{PATCH7012}
-ApplyPatch %{PATCH7013}
-ApplyPatch %{PATCH7014}
-ApplyPatch %{PATCH7015}
-ApplyPatch %{PATCH7017}
-ApplyPatch %{PATCH7018}
-ApplyPatch %{PATCH7019}
-ApplyPatch %{PATCH7020}
-ApplyPatch %{PATCH7021}
-ApplyPatch %{PATCH7022}
-ApplyPatch %{PATCH7023}
-ApplyPatch %{PATCH7024}
-ApplyPatch %{PATCH7025}
-ApplyPatch %{PATCH7026}
-ApplyPatch %{PATCH7027}
-ApplyPatch %{PATCH7028}
-ApplyPatch %{PATCH7030}
-ApplyPatch %{PATCH7031}
-ApplyPatch %{PATCH7032}
-ApplyPatch %{PATCH7034}
-ApplyPatch %{PATCH7035}
-ApplyPatch %{PATCH7036}
-ApplyPatch %{PATCH7037}
-ApplyPatch %{PATCH7038}
-ApplyPatch %{PATCH7039}
-ApplyPatch %{PATCH7040}
-ApplyPatch %{PATCH7041}
-ApplyPatch %{PATCH7042}
-ApplyPatch %{PATCH7043}
 %endif
 
 # openSUSE
@@ -2251,10 +2222,11 @@ do
 done
 %endif
 
+%if %{signkernel}%{signmodules}
+
 # Add DUP and kpatch certificates to system trusted keys for RHEL
 %if 0%{?rhel}
 %{log_msg "Add DUP and kpatch certificates to system trusted keys for RHEL"}
-%if %{signkernel}%{signmodules}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
@@ -2265,10 +2237,16 @@ openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
 cat secureboot.pem >> ../certs/rhel.pem
 %endif
 %endif
+
+# rhel
+%endif
+
+openssl x509 -inform der -in %{ima_ca_cert} -out imaca.pem
+cat imaca.pem >> ../certs/rhel.pem
+
 for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
 done
-%endif
 %endif
 
 # Adjust FIPS module name for RHEL
@@ -2376,13 +2354,13 @@ InitBuildVars() {
 
     KernelVer=%{specversion}-%{release}.%{_target_cpu}${Variant:++${Variant}}
 
-   %{log_msg "InitBuildVars: Update Makefile"}
+    %{log_msg "InitBuildVars: Update Makefile"}
     %if 0%{?stable_update}
     # make sure SUBLEVEL is incremented on a stable release.  Sigh 3.x.
     perl -p -i -e "s/^SUBLEVEL.*/SUBLEVEL = %{?stable_update}/" Makefile
     %endif
 
-     # make sure EXTRAVERSION says what we want it to say
+    # make sure EXTRAVERSION says what we want it to say
     # Trim the release if this is a CI build, since KERNELVERSION is limited to 64 characters
     ShortRel=$(perl -e "print \"%{release}\" =~ s/\.pr\.[0-9A-Fa-f]{32}//r")
     perl -p -i -e "s/^EXTRAVERSION.*/EXTRAVERSION = -${ShortRel}.%{_target_cpu}${Variant:++${Variant}}/" Makefile
@@ -2787,6 +2765,8 @@ BuildKernel() {
     cp -a --parents arch/arm/include/asm/opcodes.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
 %endif
     cp -a include $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/include
+    # Cross-reference from include/perf/events/sof.h
+    cp -a sound/soc/sof/sof-audio.h $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/sound/soc/sof
 %ifarch i686 x86_64
     # files for 'make prepare' to succeed with kernel-devel
     cp -a --parents arch/x86/entry/syscalls/syscall_32.tbl $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/
@@ -2915,6 +2895,19 @@ BuildKernel() {
 %if %{with_efiuki}
         %{log_msg "Setup the EFI UKI kernel"}
 
+        # RHEL/CentOS specific .SBAT entries
+%if 0%{?centos}
+        SBATsuffix="centos"
+%else
+        SBATsuffix="rhel"
+%endif
+        SBAT=$(cat <<- EOF
+	linux,1,Red Hat,linux,$KernelVer,mailto:secalert@redhat.com
+	linux.$SBATsuffix,1,Red Hat,linux,$KernelVer,mailto:secalert@redhat.com
+	kernel-uki-virt.$SBATsuffix,1,Red Hat,kernel-uki-virt,$KernelVer,mailto:secalert@redhat.com
+EOF
+)
+
     KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
     KernelUnifiedImage="$KernelUnifiedImageDir/$InstallName-virt.efi"
 
@@ -2926,25 +2919,37 @@ BuildKernel() {
            --kver "$KernelVer" \
            --kmoddir "$RPM_BUILD_ROOT/lib/modules/$KernelVer/" \
            --logfile=$(mktemp) \
+%if 0%{?rhel} && !0%{?eln}
+           --sbat "$SBAT" \
+%endif
            --uefi \
            --kernel-image $(realpath $KernelImage) \
            --kernel-cmdline 'console=tty0 console=ttyS0' \
     $KernelUnifiedImage
 
 %if %{signkernel}
-
     %{log_msg "Sign the EFI UKI kernel"}
-    %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+%if 0%{?fedora}%{?eln}
+        %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+%else
+%if 0%{?centos}
+        UKI_secureboot_name=centossecureboot204
+%else
+        UKI_secureboot_name=redhatsecureboot504
+%endif
+        UKI_secureboot_cert=%{_datadir}/pki/sb-certs/secureboot-uki-virt-%{_arch}.cer
 
-    if [ ! -s $KernelUnifiedImage.signed ]; then
-      %{log_msg "pesigning failed"}
-      exit 1
-    fi
-    mv $KernelUnifiedImage.signed $KernelUnifiedImage
+        %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c $UKI_secureboot_cert -n $UKI_secureboot_name
+# 0%{?fedora}%{?eln}
+%endif
+        if [ ! -s $KernelUnifiedImage.signed ]; then
+            echo "pesigning failed"
+            exit 1
+        fi
+        mv $KernelUnifiedImage.signed $KernelUnifiedImage
 
 # signkernel
 %endif
-
 
 # with_efiuki
 %endif
@@ -2960,7 +2965,7 @@ BuildKernel() {
         local module_list="$1"
         local subdir_name="$2"
 
-        mkdir -p "$RPM_BUILD_ROOT/lib/modules/$KernelVer/$subdirname"
+        mkdir -p "$RPM_BUILD_ROOT/lib/modules/$KernelVer/$subdir_name"
 
         set +x
         while read -r kmod; do
@@ -2982,25 +2987,28 @@ BuildKernel() {
         local absolute_file_list="$3"
         # if 1, this adds also all kmod directories to absolute_file_list
         local add_all_dirs="$4"
+        local run_mod_deny="$5"
 
-        if [ "$module_subdir" == "kernel" ]; then
-            # make kmod paths absolute
-            sed -e 's|^kernel/|/lib/modules/'$KernelVer'/kernel/|' %{?zipsed} $relative_kmod_list > $absolute_file_list
-        else
+        if [ "$module_subdir" != "kernel" ]; then
             # move kmods into subdirs if needed (internal, partner, extra,..)
             move_kmod_list $relative_kmod_list $module_subdir
-            # make kmod paths absolute
-            sed -e 's|^kernel/|/lib/modules/'$KernelVer'/'$module_subdir'/|' $relative_kmod_list > $absolute_file_list
+        fi
+
+        # make kmod paths absolute
+        sed -e 's|^kernel/|/lib/modules/'$KernelVer'/'$module_subdir'/|' $relative_kmod_list > $absolute_file_list
+
+        if [ "$run_mod_deny" -eq 1 ]; then
             # run deny-mod script, this adds blacklist-* files to absolute_file_list
             %{SOURCE20} "$RPM_BUILD_ROOT" lib/modules/$KernelVer $absolute_file_list
-%if %{zipmodules}
-            # deny-mod script works with kmods as they are now (not compressed),
-            # but if they will be we need to add compext to all
-            sed -i %{?zipsed} $absolute_file_list
-%endif
-            # add also dir for the case when there are no kmods
-            echo "%dir /lib/modules/$KernelVer/$module_subdir" >> $absolute_file_list
         fi
+
+%if %{zipmodules}
+        # deny-mod script works with kmods as they are now (not compressed),
+        # but if they will be we need to add compext to all
+        sed -i %{?zipsed} $absolute_file_list
+%endif
+        # add also dir for the case when there are no kmods
+        echo "%dir /lib/modules/$KernelVer/$module_subdir" >> $absolute_file_list
 
         if [ "$add_all_dirs" -eq 1 ]; then
             (cd $RPM_BUILD_ROOT; find lib/modules/$KernelVer/kernel -mindepth 1 -type d | sort -n) > ../module-dirs.list
@@ -3019,8 +3027,9 @@ BuildKernel() {
         fi
         # this creates ../modules-*.list output, where each kmod path is as it
         # appears in modules.dep (relative to lib/modules/$KernelVer)
-        %{SOURCE22} -l "../filtermods-$KernelVer.log" sort -d $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.dep -c configs/def_variants.yaml $variants_param -o ..
-        if [ $? -ne 0 ]; then
+        ret=0
+        %{SOURCE22} -l "../filtermods-$KernelVer.log" sort -d $RPM_BUILD_ROOT/lib/modules/$KernelVer/modules.dep -c configs/def_variants.yaml $variants_param -o .. || ret=$?
+        if [ $ret -ne 0 ]; then
             echo "8< --- filtermods-$KernelVer.log ---"
             cat "../filtermods-$KernelVer.log"
             echo "--- filtermods-$KernelVer.log --- >8"
@@ -3031,15 +3040,15 @@ BuildKernel() {
             exit 1
         fi
 
-        create_module_file_list "kernel" ../modules-core.list ../kernel${Variant:+-${Variant}}-modules-core.list 1
-        create_module_file_list "kernel" ../modules.list ../kernel${Variant:+-${Variant}}-modules.list 0
-        create_module_file_list "internal" ../modules-internal.list ../kernel${Variant:+-${Variant}}-modules-internal.list 0
-        create_module_file_list "extra" ../modules-extra.list ../kernel${Variant:+-${Variant}}-modules-extra.list 0
+        create_module_file_list "kernel" ../modules-core.list ../kernel${Variant:+-${Variant}}-modules-core.list 1 0
+        create_module_file_list "kernel" ../modules.list ../kernel${Variant:+-${Variant}}-modules.list 0 0
+        create_module_file_list "internal" ../modules-internal.list ../kernel${Variant:+-${Variant}}-modules-internal.list 0 1
+        create_module_file_list "kernel" ../modules-extra.list ../kernel${Variant:+-${Variant}}-modules-extra.list 0 1
         if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-            create_module_file_list "kvm" ../modules-rt-kvm.list ../kernel${Variant:+-${Variant}}-modules-rt-kvm.list 0
+            create_module_file_list "kvm" ../modules-rt-kvm.list ../kernel${Variant:+-${Variant}}-modules-rt-kvm.list 0 1
         fi
 %if 0%{!?fedora:1}
-        create_module_file_list "partner" ../modules-partner.list ../kernel${Variant:+-${Variant}}-modules-partner.list 1 0
+        create_module_file_list "partner" ../modules-partner.list ../kernel${Variant:+-${Variant}}-modules-partner.list 1 1
 %endif
     fi # $DoModules -eq 1
 
@@ -3099,6 +3108,11 @@ BuildKernel() {
         install -m 0644 %{secureboot_key_0} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{signing_key_filename}
     fi
     %endif
+%endif
+
+%if 0%{?rhel}
+    # Red Hat IMA code-signing cert, which is used to authenticate package files
+    install -m 0644 %{ima_signing_cert} $RPM_BUILD_ROOT%{_datadir}/doc/kernel-keys/$KernelVer/%{ima_cert_name}
 %endif
 
 %if %{signmodules}
@@ -3213,6 +3227,7 @@ chmod +x tools/perf/check-headers.sh
 %if %{with_libperf}
 %global libperf_make \
   %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" %{?cross_opts} -C tools/lib/perf V=1
+  %{log_msg "build libperf"}
 %{libperf_make} JOBS=%{_smp_build_ncpus} DESTDIR=$RPM_BUILD_ROOT
 %endif
 
@@ -3282,6 +3297,7 @@ popd
 if [ -f $DevelDir/vmlinux.h ]; then
   RPM_VMLINUX_H=$DevelDir/vmlinux.h
 fi
+echo "${RPM_VMLINUX_H}" > ../vmlinux_h_path
 
 %if %{with_bpftool}
 %global bpftool_make \
@@ -3326,7 +3342,7 @@ pushd tools/testing/selftests
 %endif
 
 %{log_msg "main selftests compile"}
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf mm net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding iommu" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 %ifarch %{klptestarches}
   # kernel livepatching selftest test_modules will build against
@@ -3441,6 +3457,9 @@ find Documentation -type d | xargs chmod u+w
 %install
 
 cd linux-%{KVERREL}
+
+# re-define RPM_VMLINUX_H, because it doesn't carry over from %build
+RPM_VMLINUX_H="$(cat ../vmlinux_h_path)"
 
 %if %{with_doc}
 docdir=$RPM_BUILD_ROOT%{_datadir}/doc/kernel-doc-%{specversion}-%{pkgrelease}
@@ -3631,6 +3650,12 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/mm/{} \;
 popd
+# install cgroup selftests
+pushd tools/testing/selftests/cgroup
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
+popd
 # install drivers/net/mlxsw selftests
 pushd tools/testing/selftests/drivers/net/mlxsw
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
@@ -3685,6 +3710,12 @@ pushd tools/testing/selftests/memfd
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/memfd/{} \;
+popd
+# install iommu selftests
+pushd tools/testing/selftests/iommu
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
 popd
 %endif
 
@@ -4192,7 +4223,7 @@ fi\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/config\
 /lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
-%ghost %attr(0600, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.%compext\
+%ghost %attr(0644, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.%compext\
 %ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
 %ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
 %{expand:%%files -f kernel-%{?3:%{3}-}modules-core.list %{?3:%{3}-}modules-core}\
@@ -4321,6 +4352,9 @@ fi\
 #
 #
 %changelog
+* Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.0-500.chinfo
+- 6.10.0
+
 * Thu Jul 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.9-500.chinfo
 - 6.9.9
 
@@ -4498,38 +4532,6 @@ fi\
 
 * Mon Jun 26 2023 Phantom X <megaphantomx at hotmail dot com> - 6.4.0-500.chinfo
 - 6.4.0 - pf1
-
-* Wed Jun 21 2023  Phantom X <megaphantomx at hotmail dot com> - 6.3.9-500.chinfo
-- 6.3.9 - pf6
-
-* Wed Jun 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.8-500.chinfo
-- 6.3.8 - pf5
-
-* Fri Jun 09 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.7-500.chinfo
-- 6.3.7 - pf5
-
-* Mon Jun 05 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.6-500.chinfo
-- 6.3.6 - pf5
-
-* Tue May 30 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.5-500.chinfo
-- 6.3.5 - pf4
-- Fix kernel-rpm-macros usage
-
-* Thu May 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.4-500.chinfo
-- 6.3.4 - pf4
-
-* Wed May 17 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.3-500.chinfo
-- 6.3.3 - pf4
-
-* Thu May 11 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.2-500.chinfo
-- 6.3.2 - pf4
-
-* Mon May 01 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.1-500.chinfo
-- 6.3.1 - pf2
-
-* Tue Apr 25 2023 Phantom X <megaphantomx at hotmail dot com> - 6.3.0-500.chinfo
-- 6.3.0 - pf1
-- Rawhide sync
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
