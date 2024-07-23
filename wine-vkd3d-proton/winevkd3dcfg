@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20240227
+ver=20240722
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -34,8 +34,6 @@ datadir="/usr/share/wine/vkd3d-proton"
 dllsuffix=""
 dlls="d3d12 d3d12core"
 nodlls=""
-
-wineext=dll
 
 unset winebits
 enabled=0
@@ -77,7 +75,7 @@ checkcfg(){
       else
         disabled=1
       fi
-      if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+      if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
         enabledlnk=1
       else
         disabledlnk=1
@@ -117,7 +115,7 @@ setcfg(){
       lib_path="${datadir}/${lib}"
       arch_path="${wine_path}/${winearchdir}"
       for dll in ${dlls} ;do
-        if ! [ -f "${lib_path}/${dll}${dllsuffix}.${wineext}" ];then
+        if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll" ];then
           echo "Missing ${dll}${dllsuffix}.dll in ${datadir}/${lib}/."
           dllmissing=1
         fi
@@ -149,9 +147,9 @@ setcfg(){
         else
           enabled=1
         fi
-        if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
           rm -f "${native_path}/${dll}.dll"
-          ln -sf "${lib_path}/${dll}${dllsuffix}.${wineext}" "${native_path}/${dll}.dll"
+          ln -sf "${lib_path}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
           retval=$?
           if [ "${retval}" -eq 0 ] ;then
             enabledlnk=1
@@ -209,7 +207,7 @@ unsetcfg(){
             disabled=0
           fi
         fi
-        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.${wineext}")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
           rm -f "${native_path}/${dll}.dll"
           retval=$?
           if [ "${retval}" -eq 0 ] ;then

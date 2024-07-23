@@ -107,10 +107,10 @@ developing applications that use libadwaita-qt6.
 
 mkdir qt6build
 pushd qt6build
-%{cmake} -S .. \
+%define _vpath_srcdir ..
+%{cmake} \
   -DUSE_QT6:BOOL=ON \
 %{nil}
-
 popd
 
 %cmake_build

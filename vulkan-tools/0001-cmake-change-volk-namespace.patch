@@ -1,4 +1,4 @@
-From ddfe329f5c6e6443f67535d10d99751119dcef50 Mon Sep 17 00:00:00 2001
+From 56fd0e0ae578f6fc8e1be514f067bb877f5e9f76 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Dec 2023 17:15:45 -0300
 Subject: [PATCH] cmake: change volk namespace
@@ -10,18 +10,18 @@ Subject: [PATCH] cmake: change volk namespace
  3 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d770ca5..b8823b5 100644
+index 2dc2a63..34d5c34 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -52,7 +52,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
+@@ -56,7 +56,7 @@ endif()
+ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
  
- find_package(VulkanHeaders QUIET CONFIG)
- find_package(VulkanLoader QUIET CONFIG)
--find_package(volk QUIET CONFIG)
-+find_package(vulkan_volk QUIET CONFIG)
- 
- include(GNUInstallDirs)
- 
+ find_package(VulkanHeaders QUIET REQUIRED CONFIG)
+-find_package(volk QUIET REQUIRED CONFIG)
++find_package(vulkan_volk QUIET REQUIRED CONFIG)
+ if ((APPLE OR BUILD_TESTS) AND NOT ANDROID)
+     find_package(VulkanLoader QUIET REQUIRED CONFIG)
+ endif()
 diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
 index 880cf74..f6bb21e 100644
 --- a/cube/CMakeLists.txt

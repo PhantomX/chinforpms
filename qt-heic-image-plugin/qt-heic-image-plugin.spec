@@ -51,7 +51,8 @@ images.
 
 mkdir qt6build
 pushd qt6build
-%{cmake} -S .. \
+%define _vpath_srcdir ..
+%{cmake} \
   -DQT_MAJOR_VERSION:STRING=6 \
   -DKDE_INSTALL_QTPLUGINDIR:PATH=%{_qt6_plugindir} \
 %{nil}

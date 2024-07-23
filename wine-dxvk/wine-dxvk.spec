@@ -1,22 +1,33 @@
+BuildArch:      noarch
+
 %undefine _annotated_build
 %undefine _auto_set_build_flags
+
+# disable fortify as it breaks wine
+# http://bugs.winehq.org/show_bug.cgi?id=24606
+# http://bugs.winehq.org/show_bug.cgi?id=25073
+# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 %define _fortify_level 0
+
 %undefine _hardened_build
 %undefine _package_note_file
 %global _default_patch_fuzz 2
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global commit ba47af53da6b0d704a487192f3a0b1c10af4c950
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+
+%global commit 10ab85c3baeca3d7ae226361bca4aaa3f63c6fa7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240711
+%global date 20240721
 %bcond_without snapshot
 
 %bcond_without gplasync
 %bcond_with spirv
 %bcond_without vulkan
 
-%global gplasync_id 1c20be2bd0ac202fa1fa52b2eaeb6bc14096e15f
+%global gplasync_id e28151b9782bf68609b8f8b930b0a1eef52042b7
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -45,14 +56,12 @@
 %if %{with snapshot}
 %global gplasync_ver master
 %else
-%global gplasync_ver 2.3.1-1
+%global gplasync_ver 2.4-1
 %endif
 
-%global winecommonver 5.3
+%global winecommonver 7.1
 
 %global pkgname dxvk
-
-BuildArch:      noarch
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -64,7 +73,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -202,21 +211,17 @@ sed -e 's|@VCS_TAG@|v%{version}-%{release}|g' -i version.h.in
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 
+
+%build
+export WINEPREFIX="$(pwd)/%{_vpath_builddir}/wine-build"
+
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
 
-# disable fortify as it breaks wine
-# http://bugs.winehq.org/show_bug.cgi?id=24606
-# http://bugs.winehq.org/show_bug.cgi?id=25073
-# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'`"
+export CFLAGS="%{build_cflags} -Wno-error"
 
-TEMP_CFLAGS="`echo "$TEMP_CFLAGS" | sed -e 's/-O2\b/-O3/'`"
-
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error"
-
-export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
+export CFLAGS="`echo $CFLAGS | sed \
   -e 's/-m64//' \
   -e 's/-m32//' \
   -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
@@ -229,10 +234,12 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fcf-protection//' \
   `"
 
-TEMP_LDFLAGS="-Wl,-O1,--sort-common"
+export CXXFLAGS="${CFLAGS}"
 
-TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
-TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
+export LDFLAGS="-Wl,-O1,--sort-common"
+
+TEMP_CFLAGS="`mesonarray "${CFLAGS}"`"
+TEMP_LDFLAGS="`mesonarray "${LDFLAGS}"`"
 
 sed \
   -e "/-DNOMINMAX/a\  '$TEMP_CFLAGS'," \
@@ -242,19 +249,18 @@ sed \
 %endif
   -i meson.build
 
-%build
-export WINEPREFIX="$(pwd)/%{_vpath_builddir}/wine-build"
-
+%define _vpath_srcdir ..
 for i in %{targetbits}
 do
-meson \
-  --wrap-mode=nodownload \
-  --cross-file build-%{cfname}${i}.txt \
-  --buildtype "plain" \
-  %{_vpath_builddir}${i}
+mkdir build${i}
+pushd build${i}
+%meson \
+  --cross-file %{_vpath_srcdir}/build-%{cfname}${i}.txt \
+%{nil}
 
-%ninja_build -C %{_vpath_builddir}${i}
+%meson_build
 
+popd
 done
 
 
@@ -275,7 +281,7 @@ for dll in dxgi d3d8 d3d9 d3d11 d3d10core ;do
     instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
     dllname=${dll}
     mkdir -p ${instdir}
-    install -pm%{instmode} %{_vpath_builddir}${i}/src/${dlldir}/${dll}.%{winedll} \
+    install -pm%{instmode} build${i}/%{_vpath_builddir}/src/${dlldir}/${dll}.%{winedll} \
       ${instdir}/${dllname}.%{winedll}
   done
 done

@@ -1,18 +1,29 @@
+BuildArch:      noarch
+
 %undefine _annotated_build
 %undefine _auto_set_build_flags
+
+# disable fortify as it breaks wine
+# http://bugs.winehq.org/show_bug.cgi?id=24606
+# http://bugs.winehq.org/show_bug.cgi?id=25073
+# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
 %define _fortify_level 0
+
 %undefine _hardened_build
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%bcond_with sysspirv
-%bcond_without sysvulkan
+%global with_optim 3
+%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+
+%bcond_with spirv
+%bcond_without vulkan
 
 # Need be set for release builds too
-%global commit b4eb56b547a8ffeb6642c10ede8a968090ed3d82
+%global commit ebe7279e7960d204f5b1bd3d89408929140cdd0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240606
-%bcond_with snapshot
+%global date 20240711
+%bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -47,11 +58,9 @@
 
 %global valve_url https://github.com/ValveSoftware/dxvk
 
-%global winecommonver 5.3
+%global winecommonver 7.1
 
 %global pkgname vkd3d-proton
-
-BuildArch:      noarch
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -61,7 +70,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -76,10 +85,10 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
-%if %{without sysvulkan}
+%if %{without vulkan}
 Source4:        %{kg_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 %endif
-%if %{without sysspirv}
+%if %{without spirv}
 Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 
@@ -104,10 +113,10 @@ BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw32-headers >= 7.0
 BuildRequires:  mingw32-winpthreads-static >= 7.0
 BuildRequires:  mingw-w64-tools >= 7.0
-%if %{with sysspirv}
+%if %{with spirv}
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
-%if %{with sysvulkan}
+%if %{with vulkan}
 BuildRequires:  vulkan-headers >= 1.3.279
 %endif
 BuildRequires:  gcc
@@ -152,10 +161,10 @@ package or when debugging this package.
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
 tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-components 1
-%if %{without sysvulkan}
+%if %{without vulkan}
 tar -xf %{S:4} -C khronos/Vulkan-Headers --strip-components 1
 %endif
-%if %{without sysspirv}
+%if %{without spirv}
 tar -xf %{S:5} -C khronos/SPIRV-Headers --strip-components 1
 rm -rf subprojects/dxil-spirv/third_party/spirv-headers
 ln -sf ../../../khronos/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
@@ -163,7 +172,7 @@ ln -sf ../../../khronos/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-h
 
 find -type f -name '*.h' -exec chmod -x {} ';'
 
-%if %{with sysvulkan}
+%if %{with vulkan}
 mkdir -p khronos/Vulkan-Headers/include
 ln -sf %{_includedir}/vulkan \
   khronos/Vulkan-Headers/include/vulkan
@@ -171,7 +180,7 @@ ln -sf %{_includedir}/vk_video \
   khronos/Vulkan-Headers/include/vk_video
 %endif
 
-%if %{with sysspirv}
+%if %{with spirv}
 mkdir -p khronos/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
   khronos/SPIRV-Headers/include/spirv
@@ -201,19 +210,15 @@ cp %{S:11} .
 
 cp -p subprojects/dxil-spirv/LICENSE.MIT LICENSE.MIT.dxil-spirv
 
+
+%build
 mesonarray(){
   echo -n "$1" | sed -e "s|\s\s\s\s\s| |g" -e "s|\s\s\s| |g" -e "s|\s\s| |g" -e 's|^\s||g' -e "s|\s*$||g" -e "s|\\\\||g" -e "s|'|\\\'|g" -e "s| |', '|g"
 }
 
-# disable fortify as it breaks wine
-# http://bugs.winehq.org/show_bug.cgi?id=24606
-# http://bugs.winehq.org/show_bug.cgi?id=25073
-# https://bugzilla.redhat.com/show_bug.cgi?id=1406093
-TEMP_CFLAGS="`echo "%{build_cflags}" | sed -e 's/-Wp,-D_FORTIFY_SOURCE=[0-9]//'`"
+export CFLAGS="%{build_cflags} -Wno-error"
 
-TEMP_CFLAGS="$TEMP_CFLAGS -Wno-error"
-
-export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
+export TEMP_CFLAGS="`echo $CFLAGS | sed \
   -e 's/-m64//' \
   -e 's/-m32//' \
   -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
@@ -226,10 +231,12 @@ export TEMP_CFLAGS="`echo $TEMP_CFLAGS | sed \
   -e 's/-fcf-protection//' \
   `"
 
-TEMP_LDFLAGS="-Wl,-O1,--sort-common"
+export CXXFLAGS="${CFLAGS}"
 
-TEMP_CFLAGS="`mesonarray "${TEMP_CFLAGS}"`"
-TEMP_LDFLAGS="`mesonarray "${TEMP_LDFLAGS}"`"
+export LDFLAGS="-Wl,-O1,--sort-common"
+
+TEMP_CFLAGS="`mesonarray "${CFLAGS}"`"
+TEMP_LDFLAGS="`mesonarray "${LDFLAGS}"`"
 
 sed \
   -e "/^c_args/s|]|, '$TEMP_CFLAGS'\0|g" \
@@ -243,19 +250,18 @@ sed \
   -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" \
   -i build-win64.txt
 
-
-%build
+%define _vpath_srcdir ..
 for i in %{targetbits}
 do
-meson \
-  --wrap-mode=nodownload \
-  --cross-file build-%{cfname}${i}.txt \
-  --buildtype "plain" \
-  %{_vpath_builddir}${i} \
+mkdir build${i}
+pushd build${i}
+%meson \
+  --cross-file %{_vpath_srcdir}/build-%{cfname}${i}.txt \
 %{nil}
 
-%ninja_build -C %{_vpath_builddir}${i}
+%meson_build
 
+popd
 done
 
 
@@ -276,7 +282,7 @@ for dll in d3d12 d3d12core ;do
     instdir=%{buildroot}%{_datadir}/wine/%{pkgname}/${i}
     dllname=${dll}
     mkdir -p ${instdir}
-    install -pm%{instmode} %{_vpath_builddir}${i}/libs/${dlldir}/${dll}.%{winedll} \
+    install -pm%{instmode} build${i}/%{_vpath_builddir}/libs/${dlldir}/${dll}.%{winedll} \
       ${instdir}/${dllname}.%{winedll}
   done
 done

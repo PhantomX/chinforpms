@@ -1,20 +1,22 @@
-From f08fff49c899a5b2e5aee8b329695d1aee2f9038 Mon Sep 17 00:00:00 2001
+From e420d82800c93188efca3c70c234cb790e6f42f3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 13 Jan 2024 17:00:31 -0300
 Subject: [PATCH] dxvk.conf: gplasync options
 
 ---
- dxvk.conf | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ dxvk.conf | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/dxvk.conf b/dxvk.conf
-index 8226078..a3ee4b5 100644
+index 453024f..ee29138 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
-@@ -721,4 +721,19 @@
+@@ -709,3 +709,21 @@
+ # - True/False
  
- # d3d8.useShadowBuffers = False
- 
+ # d3d9.countLosableResources = True
++
++
 +# Sets the async pipeline compiler
 +# 
 +# Behaves like the DXVK_ASYNC environment variable.
@@ -29,7 +31,7 @@ index 8226078..a3ee4b5 100644
 +# Behaves like the DXVK_GPLASYNCCACHE environment variable.
 +# Like DXVK_GPLASYNCCACHE, always take precedence, if enabled.
 +# Supported values: True, False
- 
++
 +# dxvk.gplAsyncCache = False
 -- 
 2.45.2
