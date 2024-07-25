@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.0
+%define specrpmversion 6.10.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 65f103636072c734b7b27bca073b050671740dd3
+%global opensuse_id cee765ea30a48b8adf2780315068e0a346dadb0c
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1070,6 +1070,7 @@ Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
 Patch1013: %{opensuse_url}/fix-amdgpu-freezes.patch#/openSUSE-fix-amdgpu-freezes.patch
+Patch1014: %{opensuse_url}/Revert-drm-amd-display-FEC-overhead-should-be-checke.patch#/openSUSE-Revert-drm-amd-display-FEC-overhead-should-be-checke.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1113,6 +1114,7 @@ Patch7019:  %{pf_url}/23ee7779d281ab09db3603dd12696cd1f33399b6.patch#/pf-cb-23ee
 Patch7020:  %{pf_url}/cdf2e3fa1598d862b28014b080b2f5402fb9510d.patch#/pf-cb-cdf2e3f.patch
 Patch7021:  %{pf_url}/18a021e4bebcd7f7079d404957c6b93b569ec4b2.patch#/pf-cb-18a021e.patch
 Patch7022:  %{pf_url}/992e82ea03899a130f2fece5e13c9299e31a90cb.patch#/pf-cb-992e82e.patch
+Patch7023:  %{pf_url}/dacab2f60fefe24a72331ee1dfa0eb5fa8c9efb2.patch#/pf-cb-dacab2f.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
 # iosched
@@ -2024,6 +2026,7 @@ ApplyPatch %{PATCH7019}
 ApplyPatch %{PATCH7020}
 ApplyPatch %{PATCH7021}
 ApplyPatch %{PATCH7022}
+ApplyPatch %{PATCH7023}
 # bbr3
 ApplyPatch %{PATCH7050}
 # iosched
@@ -2092,6 +2095,7 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 %dnl ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
+ApplyPatch %{PATCH1014}
 
 ApplyPatch %{PATCH2000}
 
@@ -4352,6 +4356,9 @@ fi\
 #
 #
 %changelog
+* Wed Jul 24 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.1-500.chinfo
+- 6.10.1
+
 * Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.0-500.chinfo
 - 6.10.0
 
