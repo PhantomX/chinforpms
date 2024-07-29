@@ -23,9 +23,9 @@
 %bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit b4c929898e83691529facbd59e37609311d53e8d
+%global commit 1771bfad583443f2a9093461197406c278c348c9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240713
+%global date 20240723
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -45,7 +45,7 @@
 %global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.7135
+Version:        0.1.7220
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 

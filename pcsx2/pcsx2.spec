@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.0.3
+Version:        2.1.29
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -400,6 +400,9 @@ desktop-file-install \
 
 
 %changelog
+* Fri Jul 26 2024 Phantom X <megaphantomx at hotmail dot com> - 2.1.29-1
+- 2.1.29
+
 * Sat Jul 13 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0.3-1
 - 2.0.3
 

@@ -109,9 +109,9 @@ diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
 index 8329dc0..5479b42 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
-@@ -18,7 +18,7 @@
- #include "ppsspp_config.h"
+@@ -19,7 +19,7 @@
  #include <set>
+ #include <algorithm>
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"

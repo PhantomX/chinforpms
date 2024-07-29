@@ -1,6 +1,6 @@
-%global commit 9b669d72063bd57cddab0d9e411e6f669bbfb7aa
+%global commit c5d63b240f2a5e3b2b46d4c6fb55906d47c3148a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240514
+%global date 20240723
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           sdl_gamecontrollerdb
 Version:        0
-Release:        65%{?dist}
+Release:        66%{?dist}
 Summary:        A database of game controller mappings
 
 License:        Zlib AND MIT
