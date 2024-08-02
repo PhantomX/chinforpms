@@ -2,16 +2,14 @@
 %bcond_with static
 # Use bundled abseil-cpp
 %bcond_without absl
-# Use bundled openh264
-%bcond_without openh264
 
 %if %{with static}
 %global debug_package %{nil}
 %endif
 
-%global commit0 4a60ce1ab9fdb962004c6a959f682ace3db50cbd
+%global commit0 e9d103e2480e0983bf464debc371b049cdd83648
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20240728
+%global date 20240730
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -28,7 +26,6 @@
 %global absl_ver 39f46fa
 %global libsrtp_ver 94ac00d
 %global pffft_ver 483453d
-%global openh264_ver 6f26bce
 
 %global cvc_url https://chromium.googlesource.com
 
@@ -36,17 +33,16 @@
 
 Name:           tg_owt
 Version:        0
-Release:        136%{?dist}
+Release:        137%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
 # abseil-cpp - Apache-2.0
 # libsrtp - BSD-3-Clause
 # libyuv - BSD-3-Clause
-# openh264 - BSD-2-Clause
 # pffft - BSD-3-Clause
 # rnnoise - BSD-3-Clause
-License:        BSD-3-Clause%{!?with_openh264: AND BSD-2-Clause}%{!?with_absl: AND Apache-2.0}
+License:        BSD-3-Clause%{!?with_absl: AND Apache-2.0}
 URL:            https://github.com/desktop-app/%{name}
 
 ExclusiveArch:  x86_64 aarch64
@@ -58,9 +54,8 @@ Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcnam
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch10:        0001-rtc_event_log-fix-build.patch
+Patch10:        0001-fix-missing-symbols.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
-Patch1001:      0001-fix-build-with-bundled-openh264.patch
 
 %if %{with absl}
 BuildRequires:  cmake(absl) >= 20220623
@@ -78,11 +73,8 @@ BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
-%if %{with openh264}
 BuildRequires:  pkgconfig(openh264)
-%endif
 BuildRequires:  pkgconfig(opus)
-BuildRequires:  pkgconfig(protobuf)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcomposite)
@@ -128,9 +120,6 @@ Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
-%if %{without openh264}
-Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
-%endif
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
 
@@ -154,9 +143,7 @@ Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
 Requires:       pkgconfig(libpulse)
-%if %{with openh264}
 Requires:       pkgconfig(openh264)
-%endif
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
 Requires:       pkgconfig(vpx) >= 1.10.0
@@ -191,9 +178,6 @@ Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
 Provides:       bundled(libyuv) = 0~git%{shortcommit1}
-%if %{without openh264}
-Provides:       bundled(openh264) = 1.10.0~git%{openh264_ver}
-%endif
 Provides:       bundled(sigslot) = 0~git
 Provides:       bundled(spl_sqrt_floor) = 0~git
 Provides:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -239,14 +223,6 @@ cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
 cp -f -p src/third_party/libyuv/PATENTS legal/PATENTS.libyuv
 cp -f -p src/third_party/libyuv/README.chromium legal/README.libyuv
-%if %{with openh264}
-sed -e '/libopenh264.cmake/d' -i CMakeLists.txt
-rm -rf src/third_party/openh264/*
-%else
-%patch -P 1001 -p1
-cp -f -p src/third_party/openh264/src/LICENSE legal/LICENSE.openh264
-cp -f -p src/third_party/openh264/README.chromium legal/README.openh264
-%endif
 cp -f -p src/rtc_base/third_party/base64/LICENSE legal/LICENSE.base64
 cp -f -p src/rtc_base/third_party/base64/README.chromium legal/README.base64
 cp -f -p src/rtc_base/third_party/sigslot/LICENSE legal/LICENSE.sigslot
@@ -276,7 +252,6 @@ sed \
 %if %{with static}
   -DBUILD_SHARED_LIBS:BOOL=OFF \
 %endif
-  -DTG_OWT_USE_PROTOBUF:BOOL=ON \
   -DTG_OWT_BUILD_AUDIO_BACKENDS:BOOL=OFF \
   -DTG_OWT_DLOPEN_PIPEWIRE:BOOL=OFF \
   -DTG_OWT_PACKAGED_BUILD:BOOL=ON \

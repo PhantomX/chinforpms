@@ -78,6 +78,7 @@ vulkan-tools
 
 # 4
 7zip
+ada
 adriconf
 adwaita-qt
 -aisleriot

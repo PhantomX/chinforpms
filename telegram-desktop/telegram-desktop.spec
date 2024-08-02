@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.2.5
+Version:        5.3.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -76,6 +76,7 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
+Patch207:       0001-libwebrtc-fix-build.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -85,6 +86,7 @@ BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(range-v3)
 BuildRequires:  cmake(tl-expected)
 
+BuildRequires:  cmake(ada)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  boost-devel
 BuildRequires:  cmake(fmt)
@@ -354,6 +356,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Aug 02 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.3.1-100
+- 5.3.1
+
 * Sun Jul 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.2.5-100
 - 5.2.5
 
