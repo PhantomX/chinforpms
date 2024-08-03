@@ -1,7 +1,17 @@
-diff -up shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt.orig shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt
---- shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt.orig	2021-03-05 13:50:35.469018657 +0100
-+++ shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt	2021-03-05 13:52:02.679524176 +0100
-@@ -112,20 +112,10 @@ endif(MSVC)
+From 4794046c91301a87e9fac2bf741a45f13763a39c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Aug 2024 12:20:17 -0300
+Subject: [PATCH] Drop third party code in CMakeLists.txt
+
+---
+ CMakeLists.txt | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7c1a6d8..43bea40 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -123,19 +123,9 @@ endif()
  
  # Configure subdirectories.
  # We depend on these for later projects, so they should come first.
@@ -9,7 +19,6 @@ diff -up shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt.orig sh
  
  add_subdirectory(libshaderc_util)
  add_subdirectory(libshaderc)
- add_subdirectory(glslc)
 -if(${SHADERC_ENABLE_EXAMPLES})
 -    add_subdirectory(examples)
 -endif()
@@ -22,3 +31,6 @@ diff -up shaderc-24275a11d81a6b33ef345878f8a4ef929c95a116/CMakeLists.txt.orig sh
  
  function(define_pkg_config_file NAME LIBS)
    add_custom_target(${NAME}-pkg-config ALL
+-- 
+2.45.2
+

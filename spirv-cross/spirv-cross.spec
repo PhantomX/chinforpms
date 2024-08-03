@@ -10,8 +10,8 @@
 %global pkgname SPIRV-Cross
 
 Name:           spirv-cross
-Version:        1.3.283.0
-Release:        1%{?gver}%{?dist}
+Version:        1.3.290.0
+Release:        1%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
 License:        Apache-2.0
@@ -86,6 +86,9 @@ sed \
 
 
 %changelog
+* Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.290.0-1
+- 1.3.290.0
+
 * Wed Jun 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.283.0-1
 - Initial spec
 

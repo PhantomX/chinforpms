@@ -497,7 +497,7 @@ ln -s ../../../../%{pkgname}/data/image/icon.png \
 for res in 16 22 24 32 36 48 64 72 96 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert data/image/icon.png -filter Lanczos -resize ${res}x${res} \
+  magick data/image/icon.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{pkgname}.png
 done
 

@@ -106,7 +106,7 @@ ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_datadir}/icons/hico
 for res in 16 24 32 48 64 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{rname}.png -filter Lanczos -resize ${res}x${res} \
+  magick %{rname}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 

@@ -1,0 +1,50 @@
+From f4a0ce241a86d1da2806d8ee6e9284c3cb53189c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Aug 2024 16:14:16 -0300
+Subject: [PATCH] VKShaderCache: update shaderc
+
+---
+ pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
+index c2fc39f..7edf4be 100644
+--- a/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
++++ b/pcsx2/GS/Renderers/Vulkan/VKShaderCache.cpp
+@@ -114,6 +114,7 @@ static void FillPipelineCacheHeader(VK_PIPELINE_CACHE_HEADER* header)
+ 	X(shaderc_result_get_length) \
+ 	X(shaderc_result_get_num_warnings) \
+ 	X(shaderc_result_get_bytes) \
++	X(shaderc_result_get_compilation_status) \
+ 	X(shaderc_result_get_error_message)
+ 
+ // TODO: NOT thread safe, yet.
+@@ -211,7 +212,7 @@ std::optional<VKShaderCache::SPIRVCodeVector> VKShaderCache::CompileShaderToSPV(
+ 	if (!dyn_shaderc::Open())
+ 		return ret;
+ 
+-	shaderc_compile_options_t options = dyn_shaderc::shaderc_compile_options_initialize();
++	const shaderc_compile_options_t options = dyn_shaderc::shaderc_compile_options_initialize();
+ 	pxAssertRel(options, "shaderc_compile_options_initialize() failed");
+ 
+ 	dyn_shaderc::shaderc_compile_options_set_source_language(options, shaderc_source_language_glsl);
+@@ -221,10 +222,12 @@ std::optional<VKShaderCache::SPIRVCodeVector> VKShaderCache::CompileShaderToSPV(
+ 	dyn_shaderc::shaderc_compile_options_set_optimization_level(
+ 		options, debug ? shaderc_optimization_level_zero : shaderc_optimization_level_performance);
+ 
+-	shaderc_compilation_result_t result;
+-	const shaderc_compilation_status status = dyn_shaderc::shaderc_compile_into_spv(
+-		dyn_shaderc::s_compiler, source.data(), source.length(), static_cast<shaderc_shader_kind>(stage), "source",
+-		"main", options, &result);
++	const shaderc_compilation_result_t result =
++		dyn_shaderc::shaderc_compile_into_spv(dyn_shaderc::s_compiler, source.data(), source.length(),
++																			static_cast<shaderc_shader_kind>(stage), "source", "main", options);
++	const shaderc_compilation_status status =
++		result ? dyn_shaderc::shaderc_result_get_compilation_status(result) : shaderc_compilation_status_internal_error;
++
+ 	if (status != shaderc_compilation_status_success)
+ 	{
+ 		const std::string_view errors(result ? dyn_shaderc::shaderc_result_get_error_message(result) :
+-- 
+2.45.2
+

@@ -114,7 +114,7 @@ desktop-file-edit \
 for res in 16 24 32 48 64 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert deploy/%{name}.png -filter Lanczos -resize ${res}x${res} \
+  magick deploy/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appname}.png
 done
 

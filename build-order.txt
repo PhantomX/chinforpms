@@ -263,6 +263,7 @@ skrooge
 smtube
 -snx
 -snxvpn
+soundtouch-patched
 -speedtest-cli
 spirv-cross
 steamtinkerlaunch

@@ -124,7 +124,7 @@ install -pm0644 usr/share/icons/hicolor/scalable/apps/%{name}.svg \
 for res in 16 24 32 48 64 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert usr/share/icons/hicolor/256x256/apps/%{name}.png -filter Lanczos -resize ${res}x${res} \
+  magick usr/share/icons/hicolor/256x256/apps/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 

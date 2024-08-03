@@ -1,0 +1,55 @@
+From cfff7fc271be76cf0639793a6bee03c704bc26d9 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Aug 2024 11:56:11 -0300
+Subject: [PATCH] cmake: soundtouch-patched
+
+---
+ CMakeModules/DuckStationDependencies.cmake | 2 +-
+ src/util/CMakeLists.txt                    | 2 +-
+ src/util/audio_stream.cpp                  | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
+index 79713d5..c17e2df 100644
+--- a/CMakeModules/DuckStationDependencies.cmake
++++ b/CMakeModules/DuckStationDependencies.cmake
+@@ -18,7 +18,7 @@ find_package(JPEG REQUIRED) # No version because flatpak uses libjpeg-turbo.
+ find_package(Freetype 2.11.1 REQUIRED)
+ find_package(cpuinfo REQUIRED)
+ find_package(DiscordRPC 3.4.0 REQUIRED)
+-find_package(SoundTouch 2.3.3 REQUIRED)
++find_package(SoundTouchPatched 2.3.3 REQUIRED)
+ 
+ if(NOT WIN32)
+   find_package(CURL REQUIRED)
+diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
+index 5565fbf..512d8fd 100644
+--- a/src/util/CMakeLists.txt
++++ b/src/util/CMakeLists.txt
+@@ -73,7 +73,7 @@ target_precompile_headers(util PRIVATE "pch.h")
+ target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
+ target_link_libraries(util PUBLIC common simpleini imgui)
+-target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
++target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouchPatched::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
+ 
+ if(ENABLE_X11)
+   target_compile_definitions(util PRIVATE "-DENABLE_X11=1")
+diff --git a/src/util/audio_stream.cpp b/src/util/audio_stream.cpp
+index 3af43f0..c1f2f74 100644
+--- a/src/util/audio_stream.cpp
++++ b/src/util/audio_stream.cpp
+@@ -13,8 +13,8 @@
+ #include "common/small_string.h"
+ #include "common/timer.h"
+ 
+-#include "soundtouch/SoundTouch.h"
+-#include "soundtouch/SoundTouchDLL.h"
++#include "soundtouch-patched/SoundTouch.h"
++#include "soundtouch-patched/SoundTouchDLL.h"
+ 
+ #ifndef __ANDROID__
+ #include "freesurround_decoder.h"
+-- 
+2.45.2
+

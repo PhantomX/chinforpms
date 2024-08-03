@@ -264,7 +264,7 @@ install -pm0644 usr/share/pixmaps/SpiderOakONEGlobalSync.png \
 for res in 16 24 32 48 64 72 96 128 192 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
+  magick usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/%{name}.png
 done
 

@@ -66,7 +66,7 @@ install -pm0644 flatpak/org.freedesktop.%{name}.png \
 for res in 16 22 24 32 48 64 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert flatpak/org.freedesktop.%{name}.png -filter Lanczos -resize ${res}x${res}  \
+  magick flatpak/org.freedesktop.%{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/org.freedesktop.%{name}.png
 done
 

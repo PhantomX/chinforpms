@@ -135,9 +135,9 @@ install -pm0644 usr/share/pixmaps/application-x-*.png \
 for res in 16 24 32 48 64 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}
   mkdir -p ${dir}/{apps,mimetypes}
-  convert usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
+  magick usr/share/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/apps/%{appname}.png
-  convert usr/share/pixmaps/application-x-%{name}.png -filter Lanczos -resize ${res}x${res}  \
+  magick usr/share/pixmaps/application-x-%{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/mimetypes/application-x-%{name}.png
 done
 

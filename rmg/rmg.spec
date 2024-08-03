@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit ce4321dcea998e523cd10ffccf3c3e72021448ff
+%global commit 9b5cc05b9f1dea27c7ae8a8353413a04fb80ecdf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240627
+%global date 20240728
 %bcond_without snapshot
 
 %bcond_with rust
@@ -21,8 +21,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.6.4
-Release:        2%{?dist}
+Version:        0.6.5
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -187,6 +187,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.5-1.20240728git9b5cc05
+- 0.6.5
+
 * Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.4-2.20240627gitce4321d
 - lzma-sdk rebuild
 

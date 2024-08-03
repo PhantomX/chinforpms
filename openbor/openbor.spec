@@ -131,7 +131,7 @@ install -pm0644 engine/resources/OpenBOR_Icon_128x128.png \
 for res in 16 22 24 32 36 48 64 72 96 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert engine/resources/OpenBOR_Icon_128x128.png -strip -filter Lanczos -resize ${res}x${res} \
+  magick engine/resources/OpenBOR_Icon_128x128.png -strip -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 

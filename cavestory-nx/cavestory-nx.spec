@@ -83,7 +83,7 @@ desktop-file-install \
 for res in 16 22 24 32 36 48 64 72 96 128 192 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert data/%{name}.png -filter Lanczos -resize ${res}x${res} \
+  magick data/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 

@@ -1,25 +1,30 @@
 # Glslang revision from packaged version
 %global glslang_version 436237a4ab2be3225acedc66016ea2aa82946b37
 
+%global commit feb2460bf3a504d67011246edeb810c45ea58826
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20240728
+
+%global dist .%{date}git%{shortcommit}%{?dist}
+
 %global pkgname shaderc
 
 Name:           %{pkgname}-patched
-Version:        2024.1
+Version:        2024.3
 Release:        1%{?dist}
 Epoch:          1
 Summary:        Collection of tools, libraries, and tests for Vulkan shader compilation
 
 License:        Apache-2.0
-URL:            https://github.com/google/shaderc
+URL:            https://github.com/stenzek/shaderc
 
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
 # Patch to unbundle 3rd party code
 Patch0:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
 Patch1:         glslang_linker_flags.patch
-# Changes from DuckStation/PCSX2
 Patch10:        0001-shared-patched-cmake.patch
-Patch11:        0002-shaderc-patched-code-changes.patch
+
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -64,7 +69,7 @@ Development files for lib%{name}.
 
 
 %prep
-%autosetup -n %{pkgname}-%{version} -p1
+%autosetup -n %{pkgname}-%{commit} -p1
 
 rm -rf third_party
 
@@ -104,6 +109,9 @@ sed -e '/^#include/s|shaderc/|%{name}/|g' -i %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.3-1.20240728gitfeb2460
+- 2024.3
+
 * Sat May 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.1-1
 - Initial spec
 

@@ -74,7 +74,7 @@ desktop-file-install \
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/{24x24,16x16}/apps
 install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/24x24/apps/
-convert %{name}.png -filter Lanczos -resize 16x16 \
+magick %{name}.png -filter Lanczos -resize 16x16 \
   %{buildroot}%{_datadir}/icons/hicolor/16x16/apps/%{name}.png
 
 

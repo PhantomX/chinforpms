@@ -1,18 +1,18 @@
-From 14b6e69b7a6e099ff99daba702b2a0c3d439a504 Mon Sep 17 00:00:00 2001
+From 990609d707c992b4e561fe1d1ddca3087521032e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 88 +++++++++++++++++++++++++++++--
+ dep/CMakeLists.txt                | 81 +++++++++++++++++++++++++++++--
  src/core/texture_replacements.cpp |  2 +
- 2 files changed, 87 insertions(+), 3 deletions(-)
+ 2 files changed, 80 insertions(+), 3 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 4e9e809..a458031 100644
+index 816f4a6..d9ca2bf 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,32 +1,96 @@
+@@ -1,30 +1,87 @@
 +find_package(fmt 10.1)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -65,15 +65,6 @@ index 4e9e809..a458031 100644
 +else()
  add_subdirectory(vulkan EXCLUDE_FROM_ALL)
 +endif()
-+pkg_search_module(soundtouch IMPORTED_TARGET soundtouch)
-+if(soundtouch_FOUND)
-+  message(STATUS "Using the system soundtouch")
-+  add_library(soundtouch INTERFACE)
-+  target_link_libraries(soundtouch INTERFACE PkgConfig::soundtouch)
-+else()
- add_subdirectory(soundtouch EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(soundtouch)
-+endif()
  add_subdirectory(googletest EXCLUDE_FROM_ALL)
 +find_package(FastFloat)
 +if(FastFloat_FOUND)
@@ -109,7 +100,7 @@ index 4e9e809..a458031 100644
  add_subdirectory(kissfft EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(kissfft)
  add_subdirectory(freesurround EXCLUDE_FROM_ALL)
-@@ -38,9 +102,27 @@ if(ENABLE_OPENGL)
+@@ -36,9 +93,27 @@ if(ENABLE_OPENGL)
  endif()
  
  if(CPU_ARCH_X64)
@@ -141,7 +132,7 @@ index 4e9e809..a458031 100644
  
  if(CPU_ARCH_ARM32 OR CPU_ARCH_ARM64)
 diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index f88a317..66cf69c 100644
+index 57fa075..e6caef6 100644
 --- a/src/core/texture_replacements.cpp
 +++ b/src/core/texture_replacements.cpp
 @@ -16,9 +16,11 @@

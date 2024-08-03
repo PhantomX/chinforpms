@@ -1,17 +1,17 @@
-From 9ac0c0311fd1ab0117cbb45bdc49b96ed686b98c Mon Sep 17 00:00:00 2001
+From d445aa7e8387a15ec7df907981374ed13c7dd30a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 17:53:40 -0300
-Subject: [PATCH 1/2] shared-patched: cmake
+Subject: [PATCH] shared-patched: cmake
 
 ---
- CMakeLists.txt                                | 10 ++--
+ CMakeLists.txt                                |  4 +--
  .../{shaderc.pc.in => shaderc-patched.pc.in}  |  2 +-
- libshaderc/CMakeLists.txt                     | 53 ++++---------------
- 3 files changed, 15 insertions(+), 50 deletions(-)
+ libshaderc/CMakeLists.txt                     | 28 ++++++-------------
+ 3 files changed, 12 insertions(+), 22 deletions(-)
  rename cmake/{shaderc.pc.in => shaderc-patched.pc.in} (93%)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 689f033..86f6883 100644
+index 43bea40..8a48bcd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
@@ -23,30 +23,11 @@ index 689f033..86f6883 100644
  enable_testing()
  
  if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
-@@ -117,13 +117,15 @@ if(MSVC)
-   endif()
- endif(MSVC)
- 
-+if(NOT WIN32)
-+  add_definitions("-fvisibility=hidden")
-+endif()
- 
- # Configure subdirectories.
- # We depend on these for later projects, so they should come first.
- 
- add_subdirectory(libshaderc_util)
- add_subdirectory(libshaderc)
--add_subdirectory(glslc)
- 
- function(define_pkg_config_file NAME LIBS)
-   add_custom_target(${NAME}-pkg-config ALL
-@@ -147,6 +149,4 @@ function(define_pkg_config_file NAME LIBS)
+@@ -149,4 +149,4 @@ function(define_pkg_config_file NAME LIBS)
    endif()
  endfunction()
  
 -define_pkg_config_file(shaderc -lshaderc_shared)
--define_pkg_config_file(shaderc_static "-lshaderc ${EXTRA_STATIC_PKGCONFIG_LIBS} -lshaderc_util")
--define_pkg_config_file(shaderc_combined -lshaderc_combined)
 +define_pkg_config_file(shaderc-patched -lshaderc-patched_shared)
 diff --git a/cmake/shaderc.pc.in b/cmake/shaderc-patched.pc.in
 similarity index 93%
@@ -65,7 +46,7 @@ index 6d217bf..84600c8 100644
  Version: @CURRENT_VERSION@
  URL: https://github.com/google/shaderc
 diff --git a/libshaderc/CMakeLists.txt b/libshaderc/CMakeLists.txt
-index df9a88d..be1becf 100644
+index bc0504e..74a9db6 100644
 --- a/libshaderc/CMakeLists.txt
 +++ b/libshaderc/CMakeLists.txt
 @@ -12,7 +12,7 @@
@@ -77,58 +58,49 @@ index df9a88d..be1becf 100644
  
  # Even though shaderc.hpp is a headers-only library, adding
  # a dependency here will force clients of the library to rebuild
-@@ -24,24 +24,17 @@ set(SHADERC_SOURCES
+@@ -24,16 +24,17 @@ set(SHADERC_SOURCES
    src/shaderc_private.h
  )
  
--add_library(shaderc STATIC ${SHADERC_SOURCES})
--shaderc_default_compile_options(shaderc)
--target_include_directories(shaderc
+-add_library(shaderc_shared SHARED ${SHADERC_SOURCES})
+-shaderc_default_compile_options(shaderc_shared)
+-target_include_directories(shaderc_shared
 +add_library(shaderc-patched_shared SHARED ${SHADERC_SOURCES})
 +shaderc_default_compile_options(shaderc-patched_shared)
 +target_include_directories(shaderc-patched_shared
      PUBLIC include
      PRIVATE ${glslang_SOURCE_DIR}
              ${SPIRV-Headers_SOURCE_DIR}/include)
--
--add_library(shaderc_shared SHARED ${SHADERC_SOURCES})
--shaderc_default_compile_options(shaderc_shared)
--target_include_directories(shaderc_shared
--    PUBLIC include
--    PRIVATE ${glslang_SOURCE_DIR}
--            ${SPIRV-Headers_SOURCE_DIR}/include)
 -target_compile_definitions(shaderc_shared
 +target_compile_definitions(shaderc-patched_shared
      PRIVATE SHADERC_IMPLEMENTATION
      PUBLIC SHADERC_SHAREDLIB
  )
--set_target_properties(shaderc_shared PROPERTIES SOVERSION 1)
 +set_target_properties(shaderc-patched_shared PROPERTIES SOVERSION 1)
  
  if(SHADERC_ENABLE_INSTALL)
    install(
-@@ -52,9 +45,9 @@ if(SHADERC_ENABLE_INSTALL)
+@@ -44,9 +45,9 @@ if(SHADERC_ENABLE_INSTALL)
        include/shaderc/shaderc.h
        include/shaderc/shaderc.hpp
      DESTINATION
 -      ${CMAKE_INSTALL_INCLUDEDIR}/shaderc)
 +      ${CMAKE_INSTALL_INCLUDEDIR}/shaderc-patched)
  
--  install(TARGETS shaderc shaderc_shared
+-  install(TARGETS shaderc_shared
 +  install(TARGETS shaderc-patched_shared
      LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
      RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
      BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
-@@ -69,19 +62,7 @@ set(SHADERC_LIBS
+@@ -61,18 +62,7 @@ set(SHADERC_LIBS
    SPIRV-Tools
  )
  
--target_link_libraries(shaderc PRIVATE ${SHADERC_LIBS})
 -target_link_libraries(shaderc_shared PRIVATE ${SHADERC_LIBS})
 -
 -shaderc_add_tests(
--  TEST_PREFIX shaderc
--  LINK_LIBS shaderc
+-  TEST_PREFIX shaderc_shared
+-  LINK_LIBS shaderc_shared SPIRV-Tools
 -  INCLUDE_DIRS include ${shaderc_SOURCE_DIR}/libshaderc_util/include ${glslang_SOURCE_DIR}
 -               ${spirv-tools_SOURCE_DIR}/include
 -               ${SPIRV-Headers_SOURCE_DIR}/include
@@ -138,31 +110,8 @@ index df9a88d..be1becf 100644
 -    shaderc_private)
 +target_link_libraries(shaderc-patched_shared PRIVATE ${SHADERC_LIBS})
  
- shaderc_add_tests(
-   TEST_PREFIX shaderc_shared
-@@ -94,22 +75,6 @@ shaderc_add_tests(
-     shaderc_cpp
-     shaderc_private)
- 
--shaderc_combine_static_lib(shaderc_combined shaderc)
--
--if(SHADERC_ENABLE_INSTALL)
--  install(TARGETS shaderc_combined DESTINATION ${CMAKE_INSTALL_LIBDIR})
--endif(SHADERC_ENABLE_INSTALL)
--
--shaderc_add_tests(
--  TEST_PREFIX shaderc_combined
--  LINK_LIBS shaderc_combined ${CMAKE_THREAD_LIBS_INIT}
--  INCLUDE_DIRS include ${shaderc_SOURCE_DIR}/libshaderc_util/include ${glslang_SOURCE_DIR}
--               ${spirv-tools_SOURCE_DIR}/include
--               ${SPIRV-Headers_SOURCE_DIR}/include
--  TEST_NAMES
--    shaderc
--    shaderc_cpp)
--
  if(${SHADERC_ENABLE_TESTS})
    add_executable(shaderc_c_smoke_test ./src/shaderc_c_smoke_test.c)
-   shaderc_default_c_compile_options(shaderc_c_smoke_test)
 -- 
-2.45.1
+2.45.2
 

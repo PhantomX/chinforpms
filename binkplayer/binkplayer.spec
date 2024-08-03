@@ -84,7 +84,7 @@ install -pm0644 %{name}.png %{buildroot}%{_datadir}/icons/hicolor/96x96/apps/
 for res in 16 22 24 32 48 64 72 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{name}.png -filter Lanczos -resize ${res}x${res}  \
+  magick %{name}.png -filter Lanczos -resize ${res}x${res}  \
     ${dir}/%{name}.png
 done
 

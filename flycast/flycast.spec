@@ -245,7 +245,7 @@ install -pm0644 shell/linux/%{name}.png %{buildroot}%{_datadir}/pixmaps/
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{buildroot}%{_datadir}/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res} \
+  magick %{buildroot}%{_datadir}/pixmaps/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{name}.png
 done
 

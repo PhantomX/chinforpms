@@ -19,13 +19,11 @@
 %bcond_with minizip
 # Enable system rapidyml
 %bcond_with ryml
-# Enable system soundtouch (needs no exception)
-%bcond_with soundtouch
 %bcond_without vulkan
 
-%global commit 1771bfad583443f2a9093461197406c278c348c9
+%global commit 5b590d434bbdc54c16ea35a2e7284f0d26baa1d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240723
+%global date 20240802
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -42,15 +40,14 @@
 %global minizip_ver 1.1
 %global rcheevos_scommit d54cf8f
 %global simpleini_ver 4.22
-%global soundtouch_ver 2.3.1
 
 Name:           duckstation
-Version:        0.1.7220
+Version:        0.1.7271
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND OFL-1.1
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -69,6 +66,7 @@ Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc-patched.patch
 Patch10:        0001-cmake-versioned-spirv-cross-c-shared.patch
+Patch11:        0001-cmake-soundtouch-patched.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -111,13 +109,9 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
-BuildRequires:  pkgconfig(sdl2) >= 2.30.3
+BuildRequires:  pkgconfig(sdl2) >= 2.30.6
 BuildRequires:  pkgconfig(shaderc-patched)
-%if %{with soundtouch}
-BuildRequires:  pkgconfig(soundtouch)
-%else
-Provides:       bundled(soundtouch) = %{soundtouch_ver}
-%endif
+BuildRequires:  cmake(SoundTouchPatched) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -230,14 +224,6 @@ sed -e '/pkg_search_module/s|minizip|\0_DISABLED|g' -i CMakeLists.txt
 %else
 sed -e '/find_package/s|ryml|\0_DISABLED|g' -i CMakeLists.txt
 cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
-%endif
-
-%if %{with soundtouch}
-rm -rf soundtouch
-%else
-sed -e '/pkg_search_module/s|soundtouch|\0_DISABLED|g' -i CMakeLists.txt
-sed -e 's|-Ofast||g' -i soundtouch/CMakeLists.txt
-cp soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
 %if %{with vulkan}
@@ -355,7 +341,7 @@ install -pm0644 scripts/%{appname}.png \
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert scripts/%{appname}.png -filter Lanczos -resize ${res}x${res} \
+  magick scripts/%{appname}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appname}.png
 done
 

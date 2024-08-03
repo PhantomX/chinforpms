@@ -149,7 +149,7 @@ install -pm0644 %{SOURCE3} \
 for s in 16x16 24x24 32x32 36x36 48x48 ; do
   src=%{buildroot}%{_datadir}/icons/Bluecurve/96x96/filesystems/link.png
   dir=%{buildroot}%{_datadir}/icons/Bluecurve/${s}/filesystems
-  convert ${src} -filter Lanczos -resize ${s} \
+  magick ${src} -filter Lanczos -resize ${s} \
     ${dir}/link.png || exit 1
 done
 
@@ -195,7 +195,7 @@ missresize() {
             if [ -L ${file} ] ;then
               ln -s $(echo $(readlink ${file}) | sed -e "s|${basedir}|${newres}|g") ${file2} || return $?
             else
-              convert ${file} -filter Lanczos -resize ${newres} ${file2} || return $?
+              magick ${file} -filter Lanczos -resize ${newres} ${file2} || return $?
             fi
           fi
         done

@@ -34,7 +34,7 @@
 %bcond_without fmt
 %bcond_with rapidyml
 %bcond_without shaderc
-# Enable system soundtouch (needs no exception)
+# Enable system soundtouch-patched
 %bcond_with soundtouch
 %bcond_without vulkan
 
@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.29
+Version:        2.1.56
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -93,6 +93,8 @@ Patch10:        0001-cmake-use-system-discord-rpc.patch
 
 Patch500:       0001-cmake-shaderc-patched.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
+Patch502:       0001-VKShaderCache-update-shaderc.patch
+Patch503:       0001-cmake-soundtouch-patched.patch
 
 
 ExclusiveArch:  x86_64
@@ -168,7 +170,7 @@ Requires:       libshaderc-patched%{?_isa}
 Provides:       bundled(shaderc-patched) = %{version10}
 %endif
 %if %{with soundtouch}
-BuildRequires:  cmake(SoundTouch)
+BuildRequires:  cmake(SoundTouchPatched)
 %else
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif
@@ -224,6 +226,7 @@ rm -rf .git
 
 %if %{with shaderc}
 %patch -P 500 -p1
+%patch -P 502 -p1
 %else
 mkdir 3rdparty/shaderc
 tar -xf %{S:10} -C 3rdparty/shaderc --strip-components 1
@@ -232,6 +235,10 @@ rm -rf 3rdparty/shaderc/third_party
 %patch -P 501 -p1
 sed -e '/find_package/s|Shaderc|\0_DISABLED|g' -i cmake/SearchForStuff.cmake
 cp -p 3rdparty/shaderc/LICENSE 3rdparty/LICENSE.shaderc
+%endif
+
+%if %{with soundtouch}
+%patch -P 503 -p1
 %endif
 
 pushd 3rdparty
@@ -365,7 +372,7 @@ ln -sf ../../../../PCSX2/resources/icons/AppIconLarge.png \
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert bin/resources/icons/AppIconLarge.png -filter Lanczos -resize ${res}x${res} \
+  magick bin/resources/icons/AppIconLarge.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appres}.png
 done
 
