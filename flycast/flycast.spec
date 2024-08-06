@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f9dcd08cf3b09379af5eb54459169a48a3aa5f10
+%global commit 45bf218df428123f739714ef4e65e1b96c0959b7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240621
+%global date 20240729
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -33,12 +33,13 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
-%global commit6 e88f74992527b9ade48ae1591378ec2cf363bef9
+%global commit6 563230b1c249774b4852c944dc7cdcb952c9e8e8
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 rcheevos
 
 # Enable system glslang
 %bcond_without glslang
+%bcond_without vma
 %bcond_without vulkan
 # Build with x11 instead SDL
 %bcond_with x11
@@ -55,7 +56,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -76,7 +77,9 @@ Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{s
 %if %{without vulkan}
 Source3:        https://github.com/KhronosGroup/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
+%if %{without vma}
 Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
 %if %{without glslang}
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
@@ -122,6 +125,11 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(sdl2)
 %endif
 BuildRequires:  pkgconfig(zlib)
+%if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator)
+%else
+Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit4}
+%endif
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %endif
@@ -158,7 +166,10 @@ tar -xf %{S:2} -C breakpad/ --strip-components 1
 tar -xf %{S:3} -C Vulkan-Headers/ --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../../CMakeLists.txt
 %endif
+%if %{without vma}
+sed -e '/find_package/s|VulkanMemoryAllocator|\0_DISABLED|g' -i ../../CMakeLists.txt
 tar -xf %{S:4} -C VulkanMemoryAllocator/ --strip-components 1
+%endif
 %if %{without glslang}
 tar -xf %{S:5} -C glslang/ --strip-components 1
 cp -p glslang/LICENSE.txt LICENSE.glslang

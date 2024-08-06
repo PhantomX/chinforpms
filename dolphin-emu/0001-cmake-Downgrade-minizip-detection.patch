@@ -17,8 +17,8 @@ index d8eb4f7..ab784db 100644
  
 +add_definitions(-DMZ_COMPAT_VERSION=110)  # This macro is for forwards compatibility with 4.0.4+
  dolphin_find_optional_system_library_pkgconfig(MINIZIP
--  "minizip-ng>=4.0.4;minizip>=4.0.4" minizip::minizip Externals/minizip-ng
-+  minizip>=3.0.10 minizip::minizip Externals/minizip-ng
+-  "minizip>=4.0.4" minizip::minizip Externals/minizip-ng
++  "minizip>=3.0.10" minizip::minizip Externals/minizip-ng
  )
  
  dolphin_find_optional_system_library(LZO Externals/LZO)

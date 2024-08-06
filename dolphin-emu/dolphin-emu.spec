@@ -14,6 +14,7 @@
 %bcond_without fmt
 %bcond_with llvm
 %bcond_with mgba
+%bcond_without vma
 %bcond_with vulkan
 %bcond_with unittests
 
@@ -22,9 +23,9 @@
 %global enablejit 1
 %endif
 
-%global commit 654ccb0b705c65acbb91d030e101b11e3da586d6
+%global commit 68fe6779eb8c9a1594cb8975b3e9edbbd428c405
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240703
+%global date 20240805
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -74,7 +75,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2407.0.7
+Version:        2407.136
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -102,7 +103,9 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
 Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+%if %{without vma}
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%endif
 Source4:        https://github.com/epezent/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/RetroAchievements/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{without fmt}
@@ -122,6 +125,7 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
 Patch11:        0001-system-library-support.patch
 Patch12:        0001-cmake-Downgrade-minizip-detection.patch
+Patch13:        0001-GeneralPane-add-missing-ANALYTICS-definitions.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
@@ -192,7 +196,12 @@ BuildRequires:  minizip-ng-compat-devel
 %endif
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
-BuildRequires:  vulkan-headers
+BuildRequires:  cmake(VulkanHeaders)
+%if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
+%else
+Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit3}
+%endif
 BuildRequires:  xxhash-devel
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
@@ -319,7 +328,9 @@ rm -rf \
 %endif
 
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
+%if %{without vma}
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
+%endif
 tar -xf %{S:4} -C implot/implot --strip-components 1
 tar -xf %{S:5} -C rcheevos/rcheevos --strip-components 1
 %if %{without fmt}

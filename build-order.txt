@@ -63,6 +63,7 @@ perl-X11-GUITest
 -qcodeeditor
 rapidyaml
 -spirv-tools
+VulkanMemoryAllocator
 vulkan-loader
 vulkan-volk
 vulkan-utility-libraries
