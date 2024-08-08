@@ -1,0 +1,41 @@
+From 30ea32f093b867ca0f612705c413aedf3538c6ba Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 7 Aug 2024 20:49:41 -0300
+Subject: [PATCH] cmake: fixes
+
+---
+ CMakeLists.txt | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bfb5fe3..b5113ec 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -25,7 +25,7 @@ target_include_directories(VulkanMemoryAllocator-Hpp
+ target_link_libraries(VulkanMemoryAllocator-Hpp
+     INTERFACE
+         Vulkan::Vulkan
+-        VulkanMemoryAllocator::VulkanMemoryAllocator
++        GPUOpen::VulkanMemoryAllocator
+ )
+ 
+ install(
+@@ -43,7 +43,7 @@ install(
+     FILES
+         ${CMAKE_CURRENT_SOURCE_DIR}/cmake/VulkanMemoryAllocator-HppConfig.cmake
+     DESTINATION
+-        lib/cmake/VulkanMemoryAllocator-Hpp
++        share/cmake/VulkanMemoryAllocator-Hpp
+ )
+ 
+ install(
+@@ -55,5 +55,5 @@ install(
+     EXPORT VulkanMemoryAllocator-HppTargets
+     FILE VulkanMemoryAllocator-HppTargets.cmake
+     NAMESPACE VulkanMemoryAllocator-Hpp::
+-    DESTINATION lib/cmake/VulkanMemoryAllocator-Hpp
++    DESTINATION share/cmake/VulkanMemoryAllocator-Hpp
+ )
+-- 
+2.46.0
+

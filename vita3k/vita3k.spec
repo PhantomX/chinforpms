@@ -12,13 +12,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a0b32184663c8babcde38044fc137b613f21fd23
+%global commit f5175e88e0cdb7d639518e94758a7d39e8102e65
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240522
+%global date 20240806
 
 %bcond_with capstone
 %bcond_with ffmpeg
 %bcond_with fmt
+%bcond_with spdlog
+%bcond_without vma
 %bcond_with yamlcpp
 # Needs dispatch header
 %bcond_with xxhash
@@ -51,7 +53,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 640e0c02d48e19076e976b395d919c815a27ae5d
+%global commit18 b50e685db996c167e6c831dcef582aba6e14276a
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -63,11 +65,11 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 googletest
 
-%global commit21 c6e0284ac58b3f205c95365478888f7b53b077e2
+%global commit21 cb16be3a3fc1f9cd146ae24d52b615f8a05fa93d
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 imgui
 
-%global commit22 ea49dd3c6803088d50b496e3fe981501543b7cbc
+%global commit22 63c7fed4b31c50c8a529b6c15ae7d7d9e89812a6
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
 %global srcname22 imgui_club
 
@@ -75,7 +77,7 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 libfat16
 
-%global commit24 800f58283fbc1f3950abd881357fb44c22f3f44e
+%global commit24 c099aaee9a24a35ad93e06513b41aeb503d848d0
 %global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
 %global srcname24 nativefiledialog-extended
 
@@ -87,11 +89,11 @@
 %global shortcommit26 %(c=%{commit26}; echo ${c:0:7})
 %global srcname26 psvpfstools
 
-%global commit27 5736b15f7ea0ffb08dd38af21067c314d6a3aae9
+%global commit27 f7f20f39fe4f206c6f19e26ebfef7b261ee59ee4
 %global shortcommit27 %(c=%{commit27}; echo ${c:0:7})
 %global srcname27 stb
 
-%global commit28 37aff70dfa50cf6307b3fee6074d627dc2929143
+%global commit28 075395620a504c0cdcaf9bab3d196db16a043de7
 %global shortcommit28 %(c=%{commit28}; echo ${c:0:7})
 %global srcname28 tracy
 
@@ -99,7 +101,7 @@
 %global shortcommit29 %(c=%{commit29}; echo ${c:0:7})
 %global srcname29 unicorn
 
-%global commit30 bbb2c95d41cd4037df86529217387979745426b6
+%global commit30 61a943c67da5008b100bdcabff812ecd7816425d
 %global shortcommit30 %(c=%{commit30}; echo ${c:0:7})
 %global srcname30 vita-toolchain
 
@@ -118,6 +120,10 @@
 %global commit34 6dd38b8a1dbaa7863aa907045f32308a56a6ff5d
 %global shortcommit34 %(c=%{commit34}; echo ${c:0:7})
 %global srcname34 concurrentqueue
+
+%global commit35 27cb4c76708608465c413f6d0e6b8d99a4d84302
+%global shortcommit35 %(c=%{commit35}; echo ${c:0:7})
+%global srcname35 spdlog
 
 %global commit120 66afe099f1cf1f79c270471e9c0f02139072057d
 %global shortcommit120 %(c=%{commit120}; echo ${c:0:7})
@@ -155,7 +161,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3607
+Version:        0.2.0.3626
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -166,8 +172,10 @@ Source0:        %{vc_url}/%{pkgname}/archive/%{commit}/%{pkgname}-%{shortcommit}
 
 Source10:       %{vc_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+%if %{without vma}
 Source12:       https://github.com/Macdu/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source120:      https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname120}/archive/%{commit120}/%{srcname120}-%{shortcommit120}.tar.gz
+%endif
 Source13:       https://github.com/aantron/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 Source15:       %{vc_url}/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
@@ -205,6 +213,9 @@ Source32:       https://github.com/aquynh/%{srcname32}/archive/%{commit32}/%{src
 Source33:       https://github.com/Cyan4973/%{srcname33}/archive/%{commit33}/%{srcname33}-%{shortcommit33}.tar.gz
 %endif
 Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%{srcname34}-%{shortcommit34}.tar.gz
+%if %{without spdlog}
+Source35:       https://github.com/gabime/%{srcname35}/archive/%{commit35}/%{srcname35}-%{shortcommit35}.tar.gz
+%endif
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
@@ -248,7 +259,7 @@ BuildRequires:  pkgconfig(x11)
 Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
 %endif
 %if %{with fmt}
-BuildRequires:  pkgconfig(fmt) >= 10.1
+BuildRequires:  pkgconfig(fmt) >= 11.0.1
 %else
 Provides:       bundled(%{srcname18}) = 0~git%{shortcommit18}
 %endif
@@ -262,9 +273,18 @@ BuildRequires:  pkgconfig(libxxhash)
 Provides:       bundled(libxxhash) = 0~git%{shortcommit33}
 %endif
 BuildRequires:  cmake(pugixml)
-BuildRequires:  cmake(spdlog)
+%if %{with spdlog}
+BuildRequires:  cmake(spdlog) >= 1.14.1
+%else
+Provides:       bundled(%{srcname35}) = 0~git%{shortcommit35}
+%endif
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
+%if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator-Hpp) >= 3.1.0
+%else
+Provides:       bundled(VulkanMemoryAllocator-Hpp) = 0~git%{shortcommit3}
+%endif
 %if %{with yamlcpp}
 BuildRequires:  cmake(yaml-cpp)
 %else
@@ -311,9 +331,12 @@ Provides:       bundled(miniz) = %{miniz_ver}
 pushd external
 tar -xf %{S:10} -C %{srcname10} --strip-components 1
 tar -xf %{S:11} -C %{srcname11} --strip-components 1
+%if %{without vma}
 tar -xf %{S:12} -C %{srcname12} --strip-components 1
 tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
 %patch -P 501 -p1
+cp -p VulkanMemoryAllocator-Hpp/LICENSE COPYING.vma-hpp
+%endif
 tar -xf %{S:13} -C %{srcname13} --strip-components 1
 tar -xf %{S:15} -C %{srcname15} --strip-components 1
 tar -xf %{S:16} -C %{srcname16} --strip-components 1
@@ -349,7 +372,7 @@ tar -xf %{S:300} -C %{srcname30}/%{srcname300} --strip-components 1
 %if %{without yamlcpp}
 tar -xf %{S:31} -C %{srcname31} --strip-components 1
 cp -p yaml-cpp/LICENSE LICENSE.yaml-cpp
-sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i CMakeLists.txt
+sed -e '/find_package/s|yaml-cpp|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 %if %{without capstone}
 tar -xf %{S:32} -C %{srcname32} --strip-components 1
@@ -358,10 +381,14 @@ sed -e '/find_package/s|capstone|\0_DISABLED|g' -i CMakeLists.txt
 %if %{without xxhash}
 tar -xf %{S:33} -C %{srcname33} --strip-components 1
 cp -p xxHash/LICENSE LICENSE.xxhash
-sed -e 's|xxhash_FOUND|xxhash_DISABLED|g' -i CMakeLists.txt
+sed -e '/pkg_search_module/s|libxxhash|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 tar -xf %{S:34} -C %{srcname34} --strip-components 1
-
+%if %{without spdlog}
+tar -xf %{S:35} -C %{srcname35} --strip-components 1
+cp -p spdlog/LICENSE LICENSE.spdlog
+sed -e '/find_package/s|spdlog|\0_DISABLED|g' -i CMakeLists.txt
+%endif
 cp -p LibAtrac9/LICENSE LICENSE.LibAtrac9
 cp -p better-enums/LICENSE.md LICENSE.better-enums.md
 %if %{without capstone}
@@ -386,7 +413,6 @@ cp -p stb/LICENSE LICENSE.stb
 cp -p tracy/LICENSE LICENSE.tracy
 cp -p unicorn/COPYING COPYING.unicorn
 cp -p vita-toolchain/COPYING COPYING.vita-toolchain
-cp -p VulkanMemoryAllocator-Hpp/LICENSE COPYING.vma-hpp
 popd
 
 sed \

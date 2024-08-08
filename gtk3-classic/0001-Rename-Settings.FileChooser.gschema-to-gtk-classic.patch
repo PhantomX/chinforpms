@@ -1,0 +1,155 @@
+From 04ef6757ce38d675e4db60584ded0987cd9e89f5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 7 Aug 2024 11:54:30 -0300
+Subject: [PATCH] Rename Settings.FileChooser.gschema to gtk-classic
+
+---
+ gtk/gtkfilechooserutils.c                    |  2 +-
+ gtk/meson.build                              |  2 +-
+ gtk/org.gtk.Settings.FileChooser.gschema.xml | 30 ++++++++++----------
+ 3 files changed, 17 insertions(+), 17 deletions(-)
+
+diff --git a/gtk/gtkfilechooserutils.c b/gtk/gtkfilechooserutils.c
+index 7965ab0..fdf7ac3 100644
+--- a/gtk/gtkfilechooserutils.c
++++ b/gtk/gtkfilechooserutils.c
+@@ -455,7 +455,7 @@ _gtk_file_chooser_get_settings_for_widget (GtkWidget *widget)
+ 
+   if (G_UNLIKELY (settings == NULL))
+     {
+-      settings = g_settings_new ("org.gtk.Settings.FileChooser");
++      settings = g_settings_new ("org.gtk-classic.Settings.FileChooser");
+       g_settings_delay (settings);
+ 
+       g_object_set_qdata_full (G_OBJECT (gtksettings),
+diff --git a/gtk/meson.build b/gtk/meson.build
+index ea866d8..b8af7c6 100644
+--- a/gtk/meson.build
++++ b/gtk/meson.build
+@@ -933,7 +933,7 @@ endif
+ gtk_deps += libintl_dep
+ 
+ gtk_settings_schemas = [
+-  'org.gtk.Settings.FileChooser.gschema.xml',
++  'org.gtk-classic.Settings.FileChooser.gschema.xml',
+   'org.gtk.Settings.ColorChooser.gschema.xml',
+   'org.gtk.Settings.EmojiChooser.gschema.xml',
+   'org.gtk.Settings.Debug.gschema.xml',
+diff --git a/gtk/org.gtk.Settings.FileChooser.gschema.xml b/gtk/org.gtk.Settings.FileChooser.gschema.xml
+index 92a5dd3..682b531 100644
+--- a/gtk/org.gtk.Settings.FileChooser.gschema.xml
++++ b/gtk/org.gtk.Settings.FileChooser.gschema.xml
+@@ -17,49 +17,49 @@
+ -->
+ <schemalist>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.LocationMode'>
++  <enum id='org.gtk-classic.Settings.FileChooser.LocationMode'>
+     <value nick='path-bar' value='0'/>
+     <value nick='filename-entry' value='1'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.SortColumn'>
++  <enum id='org.gtk-classic.Settings.FileChooser.SortColumn'>
+     <value nick='name' value='0'/>
+     <value nick='size' value='1'/>
+     <value nick='type' value='2'/>
+     <value nick='modified' value='3'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.SortOrder'>
++  <enum id='org.gtk-classic.Settings.FileChooser.SortOrder'>
+     <value nick='ascending' value='0'/>
+     <value nick='descending' value='1'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.StartupMode'>
++  <enum id='org.gtk-classic.Settings.FileChooser.StartupMode'>
+     <value nick='recent' value='0'/>
+     <value nick='cwd' value='1'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.ClockFormat'>
++  <enum id='org.gtk-classic.Settings.FileChooser.ClockFormat'>
+     <value nick='24h' value='0'/>
+     <value nick='12h' value='1'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.DateFormat'>
++  <enum id='org.gtk-classic.Settings.FileChooser.DateFormat'>
+     <value nick='regular' value='0'/>
+     <value nick='with-time' value='1'/>
+   </enum>
+ 
+-  <enum id='org.gtk.Settings.FileChooser.TypeFormat'>
++  <enum id='org.gtk-classic.Settings.FileChooser.TypeFormat'>
+     <value nick='mime' value='0'/>
+     <value nick='description' value='1'/>
+     <value nick='category' value='2'/>
+   </enum>
+ 
+-  <schema id='org.gtk.Settings.FileChooser' path='/org/gtk/settings/file-chooser/'>
++  <schema id='org.gtk-classic.Settings.FileChooser' path='/org/gtk-classic/settings/file-chooser/'>
+     <key name='last-folder-uri' type='s'>
+       <default>""</default>
+     </key>
+-    <key name='location-mode' enum='org.gtk.Settings.FileChooser.LocationMode'>
++    <key name='location-mode' enum='org.gtk-classic.Settings.FileChooser.LocationMode'>
+       <default>'filename-entry'</default>
+       <summary>Location mode</summary>
+       <description>
+@@ -101,7 +101,7 @@
+ 	Controls whether the file chooser shows a column with file types.
+       </description>
+     </key>
+-    <key name='sort-column' enum='org.gtk.Settings.FileChooser.SortColumn'>
++    <key name='sort-column' enum='org.gtk-classic.Settings.FileChooser.SortColumn'>
+       <default>'name'</default>
+       <summary>Sort column</summary>
+       <description>
+@@ -110,7 +110,7 @@
+ 	the list of files.
+       </description>
+     </key>
+-    <key name='sort-order' enum='org.gtk.Settings.FileChooser.SortOrder'>
++    <key name='sort-order' enum='org.gtk-classic.Settings.FileChooser.SortOrder'>
+       <default>'ascending'</default>
+       <summary>Sort order</summary>
+       <description>
+@@ -132,7 +132,7 @@
+ 	The size (width, height) of the GtkFileChooserDialog's window, in pixels.
+       </description>
+     </key>
+-    <key name='startup-mode' enum='org.gtk.Settings.FileChooser.StartupMode'>
++    <key name='startup-mode' enum='org.gtk-classic.Settings.FileChooser.StartupMode'>
+       <default>'cwd'</default>
+       <summary>Startup mode</summary>
+       <description>
+@@ -148,21 +148,21 @@
+ 	Width in pixels of the file chooser's places sidebar.
+       </description>
+     </key>
+-    <key name="clock-format" enum="org.gtk.Settings.FileChooser.ClockFormat">
++    <key name="clock-format" enum="org.gtk-classic.Settings.FileChooser.ClockFormat">
+       <default>'24h'</default>
+       <summary>Time format</summary>
+       <description>
+         Whether the time is shown in 24h or 12h format.
+       </description>
+     </key>
+-    <key name="date-format" enum="org.gtk.Settings.FileChooser.DateFormat">
++    <key name="date-format" enum="org.gtk-classic.Settings.FileChooser.DateFormat">
+       <default>'with-time'</default>
+       <summary>Date format</summary>
+       <description>
+         The amount of detail to show in the Modified column.
+       </description>
+     </key>
+-    <key name="type-format" enum="org.gtk.Settings.FileChooser.TypeFormat">
++    <key name="type-format" enum="org.gtk-classic.Settings.FileChooser.TypeFormat">
+       <default>'category'</default>
+       <summary>Type format</summary>
+       <description>
+-- 
+2.46.0
+

@@ -23,9 +23,9 @@
 %global enablejit 1
 %endif
 
-%global commit 68fe6779eb8c9a1594cb8975b3e9edbbd428c405
+%global commit 8b1046595befe9e3d4a24aef8349bcac72d36b33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240805
+%global date 202408075
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -75,7 +75,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2407.136
+Version:        2407.150
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -125,7 +125,6 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
 Patch11:        0001-system-library-support.patch
 Patch12:        0001-cmake-Downgrade-minizip-detection.patch
-Patch13:        0001-GeneralPane-add-missing-ANALYTICS-definitions.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 

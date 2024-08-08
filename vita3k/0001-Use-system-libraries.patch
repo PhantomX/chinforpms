@@ -1,14 +1,14 @@
-From 8f824af7bef6fce0ed168f29bc45db3dda537d89 Mon Sep 17 00:00:00 2001
+From d0f8f54c9583b612e98185d0bb70679ebf604efc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Nov 2023 10:41:37 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- external/CMakeLists.txt | 87 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 86 insertions(+), 1 deletion(-)
+ external/CMakeLists.txt | 92 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 91 insertions(+), 1 deletion(-)
 
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index 50dc2f0..ec555cf 100644
+index a6c579b..0a4ab2f 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
 @@ -26,7 +26,9 @@ function(check_submodules_present)
@@ -115,7 +115,7 @@ index 50dc2f0..ec555cf 100644
  
  if(USE_DISCORD_RICH_PRESENCE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/discord_game_sdk.zip")
-@@ -231,23 +273,58 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
+@@ -231,23 +273,63 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
  target_compile_definitions(dlmalloc PUBLIC ONLY_MSPACES=1)
  target_compile_definitions(dlmalloc PUBLIC USE_LOCK=0)
  
@@ -132,13 +132,12 @@ index 50dc2f0..ec555cf 100644
  add_library(CLI11 INTERFACE)
  target_include_directories(CLI11 INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/cli11")
  
+ add_library(vulkan INTERFACE)
 +find_package(VulkanHeaders)
 +if(VulkanHeaders_FOUND)
 +	message(STATUS "Using the system vulkan-headers")
-+	add_library(vulkan INTERFACE)
 +	target_link_libraries(vulkan INTERFACE Vulkan::Headers)
 +else()
- add_library(vulkan INTERFACE)
  target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include")
  if(APPLE)
  	target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/MoltenVK")
@@ -146,9 +145,15 @@ index 50dc2f0..ec555cf 100644
 +endif()
  
  add_library(vma INTERFACE)
++find_package(VulkanMemoryAllocator-Hpp)
++if(VulkanMemoryAllocator-Hpp_FOUND)
++	message(STATUS "Using the system vma")
++	target_link_libraries(vma INTERFACE VulkanMemoryAllocator-Hpp::VulkanMemoryAllocator-Hpp)
++else()
  target_include_directories(vma INTERFACE
  	"${CMAKE_CURRENT_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/include"
  	"${CMAKE_CURRENT_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/VulkanMemoryAllocator/include")
++endif()
  
 +if (VITA3K_FORCE_SYSTEM_FFMPEG)
 +	pkg_search_module(avformat IMPORTED_TARGET libavformat)
@@ -174,7 +179,7 @@ index 50dc2f0..ec555cf 100644
  
  if(APPLE)
   	execute_process(
-@@ -328,6 +405,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
+@@ -328,6 +410,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
  
  target_include_directories(libatrac9 PUBLIC LibAtrac9/C/src)
  
@@ -188,7 +193,7 @@ index 50dc2f0..ec555cf 100644
  option(BUILD_SHARED_LIBS "Build shared library" OFF)
  option(XXHASH_BUILD_XXHSUM "Build the xxhsum binary" OFF)
  option(XXH_X86DISPATCH_ALLOW_AVX "Allow building XXH3 with AVX even if it crashes on SSE2-Only CPUs" OFF)
-@@ -336,6 +420,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+@@ -338,6 +427,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
  if(XXH_X86DISPATCH_ALLOW_AVX)
  	target_compile_definitions(xxhash PRIVATE XXH_X86DISPATCH_ALLOW_AVX)
  endif()
@@ -197,5 +202,5 @@ index 50dc2f0..ec555cf 100644
  # Tracy
  option(TRACY_ENABLE_ON_CORE_COMPONENTS
 -- 
-2.44.0
+2.46.0
 
