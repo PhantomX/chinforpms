@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.3
+%define specrpmversion 6.10.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id d3b5079756dc69418195726e8751696f96604015
+%global opensuse_id c06374691d10d1e8eefd913bf7e5e9331989023b
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1112,8 +1112,9 @@ Patch7018:  %{pf_url}/d1fc152b8d485254e550e02192abcbb807695f02.patch#/pf-cb-d1fc
 Patch7021:  %{pf_url}/18a021e4bebcd7f7079d404957c6b93b569ec4b2.patch#/pf-cb-18a021e.patch
 Patch7022:  %{pf_url}/992e82ea03899a130f2fece5e13c9299e31a90cb.patch#/pf-cb-992e82e.patch
 Patch7023:  %{pf_url}/dacab2f60fefe24a72331ee1dfa0eb5fa8c9efb2.patch#/pf-cb-dacab2f.patch
-Patch7024:  %{pf_url}/4f728fe6183eabb978d703744505a1bd57e10b9b.patch#/pf-cb-4f728fe.patch
-Patch7025:  %{pf_url}/acba906e9bc1a965ee455b54f72328c0eb7c3705.patch#/pf-cb-acba906.patch
+Patch7024:  %{pf_url}/acba906e9bc1a965ee455b54f72328c0eb7c3705.patch#/pf-cb-acba906.patch
+Patch7025:  %{pf_url}/aec50ff32b9f524212fa810ac46940ae26eb945d.patch#/pf-cb-aec50ff.patch
+Patch7026:  %{pf_url}/09047dc3cf03374be93b26a3d62759d66059dd4e.patch#/pf-cb-09047dc.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
 # iosched
@@ -1139,6 +1140,10 @@ Patch7109:  %{pf_url}/8d6e05429401bd16c875bcae97e6a283a744cc0d.patch#/pf-cb-8d6e
 Patch7110:  %{pf_url}/eb5f202fcb21bcde243fe5b14757632c0545d82f.patch#/pf-cb-eb5f202.patch
 Patch7111:  %{pf_url}/eb39f3b994af0c9a95bc198944af0e569c7777c5.patch#/pf-cb-eb39f3b.patch
 Patch7112:  %{pf_url}/9220cfac539292d822c7f8f3c0a200a67d3f9728.patch#/pf-cb-9220cfa.patch
+Patch7113:  %{pf_url}/2e0d009881189142d2247d520f75a5cfee2906cd.patch#/pf-cb-2e0d009.patch
+Patch7114:  %{pf_url}/8d53b1e80393751ef08f6313b8fda94de966dc4c.patch#/pf-cb-8d53b1e.patch
+Patch7115:  %{pf_url}/efba49abb9488e466f66998cc989ebc641e06da2.patch#/pf-cb-efba49a.patch
+Patch7116:  %{pf_url}/a686ddf85d73e17cab7b768ff2cf98aa86b99307.patch#/pf-cb-a686ddf.patch
 # zstd
 Patch7200:  %{pf_url}/68578a23043c775459234f67a3b099986600597e.patch#/pf-cb-68578a2.patch
 Patch7201:  %{pf_url}/35b1e59a35772edb7d4ae2225d5f4fc6cd7f5a49.patch#/pf-cb-35b1e59.patch
@@ -2030,6 +2035,7 @@ ApplyPatch %{PATCH7022}
 ApplyPatch %{PATCH7023}
 ApplyPatch %{PATCH7024}
 ApplyPatch %{PATCH7025}
+ApplyPatch %{PATCH7026}
 # bbr3
 ApplyPatch %{PATCH7050}
 # iosched
@@ -2055,6 +2061,10 @@ ApplyPatch %{PATCH7109}
 ApplyPatch %{PATCH7110}
 ApplyPatch %{PATCH7111}
 ApplyPatch %{PATCH7112}
+ApplyPatch %{PATCH7113}
+ApplyPatch %{PATCH7114}
+ApplyPatch %{PATCH7115}
+ApplyPatch %{PATCH7116}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4362,6 +4372,9 @@ fi\
 #
 #
 %changelog
+* Sun Aug 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.4-500.chinfo
+- 6.10.4
+
 * Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.3-500.chinfo
 - 6.10.3
 

@@ -68,6 +68,11 @@ done
 for i in bonk coreaudio coreaudioconnect faac fdkaac mac twinvq voaacenc wave wma ;do
   rm -rf components/encoder/$i
 done
+	rm -rf include/support/MAC
+	rm -rf include/support/vo-aacenc
+	rm -f include/support/faac.h
+	rm -f include/support/faacfg.h
+	rm -f include/support/neaacdec.h
 %else
 %setup -q -n %{name}-%{ver}
 %endif

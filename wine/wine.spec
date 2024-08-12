@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.14
+%global wine_stagingver 9.15
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id f2039da837253205ee6727519570d030ee4a9eb8
+%global tkg_id 3046bf121a8eb3c34c40f46a5ad3ced4df6f3f26
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -160,7 +160,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.14
+Version:        9.15
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -280,7 +280,6 @@ Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.pa
 Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
 Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 
-Patch1300:       0001-winex11-always-update-display-cache.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
 Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
@@ -942,7 +941,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1094 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
-%patch -P 1300 -p1
 %patch -P 1301 -p1
 %patch -P 1303 -p1
 %patch -P 1304 -p1
@@ -2553,6 +2551,9 @@ fi
 
 
 %changelog
+* Sun Aug 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.15-100
+- 9.15
+
 * Sun Jul 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.14-100
 - 9.14
 

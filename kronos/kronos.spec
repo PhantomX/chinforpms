@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1930e4b243c1ea21c510f194ba4ca66c5eb24581
+%global commit 18371424f21ef71b57e7e2eea962739418acca60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230216
+%global date 20240729
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -29,8 +29,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.5.0
-Release:        2%{?dist}
+Version:        2.6.1
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -45,7 +45,7 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
-Patch1:         0001-Revert-Implement-erase-write-limits-on-OpenGL-core.patch
+Patch500:       %{vc_url}/commit/981ba051918a7b05c833ed3fabed4f41e6c09603.patch#/%{name}-gh-revert-981ba05.patch
 
 BuildRequires:  cmake3
 BuildRequires:  make
@@ -62,14 +62,14 @@ BuildRequires:  pkgconfig(xmu)
 %endif
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(x11)
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  cmake(SDL2)
 #BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5Multimedia)
 BuildRequires:  cmake(Qt5OpenGL)
 BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  pkgconfig(zlib)
+BuildRequires:  cmake(zlib)
 Requires:       hicolor-icon-theme
 
 %description
@@ -77,7 +77,10 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 499 -p1
+
+%patch -P 500 -p1 -R
 
 rm -rf win_template
 rm -rf yabause/.vs
@@ -118,7 +121,7 @@ sed \
   -DYAB_NETWORK:BOOL=ON \
   -DYAB_USE_SCSPMIDI:BOOL=ON \
   -DYAB_WANT_OPENAL:BOOL=OFF \
-  -DYAB_WANT_SOFT_RENDERING:BOOL=ON \
+  -DYAB_WANT_SOFT_RENDERING:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \
 %{nil}
 
@@ -142,8 +145,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
-* Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-2.20230216git1930e4b
-- build_type_safety_c 0
+* Mon Aug 12 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.1-1.20240729git1837142
+- 2.6.1
 
 * Sun Feb 19 2023 Phantom X <megaphantomx at hotmail dot com> - 2.5.0-1.20230216git1930e4b
 - 2.5.0

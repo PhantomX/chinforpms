@@ -29,7 +29,7 @@ BuildRequires:  cmake
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  VulkanMemoryAllocator-devel >= %{vma_ver}
-BuildRequires:  vulkan-loader-devel
+BuildRequires:  pkgconfig(vulkan)
 
 BuildArch:      noarch
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval

@@ -11,7 +11,7 @@
 %endif
 
 %global pkgver 2024
-%global pkgrel 1210
+%global pkgrel 1214
 %global repo https://shop.softmaker.com/repo
 %global pkgdir office%{pkgver}
 %global dist %{?dist}
@@ -173,6 +173,9 @@ install -pm0644 mime/%{name}-%{pkgver}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Thu Aug 08 2024 - 1:2024.1214-1
+- 2024.1214
+
 * Thu Mar 28 2024 - 1:2024.1210-1
 - 2024.1204
 

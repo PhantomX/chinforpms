@@ -1,4 +1,4 @@
-From 52118bc8f2eed79cba4afbbcd188d947b8a2fbf4 Mon Sep 17 00:00:00 2001
+From 70c28c0377c9101b806037a2c6a01b3f5a9dc89c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 8 Jan 2023 12:08:32 -0300
 Subject: [PATCH] Use system libraries
@@ -8,12 +8,12 @@ Subject: [PATCH] Use system libraries
  1 file changed, 16 insertions(+)
 
 diff --git a/yabause/src/CMakeLists.txt b/yabause/src/CMakeLists.txt
-index 5a37d68..fd91bd9 100755
+index 7db01a4..927b551 100755
 --- a/yabause/src/CMakeLists.txt
 +++ b/yabause/src/CMakeLists.txt
-@@ -181,12 +181,28 @@ set(kronos_SOURCES
- 	)
- add_definitions(-DIMPROVED_SAVESTATES)
+@@ -175,12 +175,28 @@ add_definitions(-DIMPROVED_SAVESTATES)
+ 
+ # add_definitions(-DBUP_DEBUG)
  
 +find_package(PkgConfig REQUIRED)
 +
@@ -41,5 +41,5 @@ index 5a37d68..fd91bd9 100755
  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tools/nanovg)
  set(kronos_SOURCES ${kronos_SOURCES} tools/nanovg/nanovg.c)
 -- 
-2.39.0
+2.46.0
 

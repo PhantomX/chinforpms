@@ -43,6 +43,11 @@ ifeq ($(SANITIZE),1)
 	rm -rf $(DIRNAME)/components/encoder/voaacenc
 	rm -rf $(DIRNAME)/components/encoder/wave
 	rm -rf $(DIRNAME)/components/encoder/wma
+	rm -rf $(DIRNAME)/include/support/MAC
+	rm -rf $(DIRNAME)/include/support/vo-aacenc
+	rm -f $(DIRNAME)/include/support/faac.h
+	rm -f $(DIRNAME)/include/support/faacfg.h
+	rm -f $(DIRNAME)/include/support/neaacdec.h
 	cp $(CLEAN_PATCH) $(DIRNAME)/
 	patch -p1 -d $(DIRNAME) -i $(CLEAN_PATCH)
 	rm -f $(DIRNAME)/$(CLEAN_PATCH)

@@ -14,33 +14,35 @@
 
 %bcond_with     native
 # Enable system ffmpeg
-%bcond_without  sysffmpeg
+%bcond_without  ffmpeg
 %global bundleffmpegver 4.2.1
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without  smallffmpeg
 # Enable system flatbuffers
-%bcond_without  sysflatbuffers
+%bcond_without  flatbuffers
 %global bundleflatbuffers 23.5.26
 # Enable system hidapi
-%bcond_without  syshidapi
+%bcond_without  hidapi
 %global bundlehidapi 0.12.0
 # Enable system llvm
-%bcond_without  sysllvm
+%bcond_without  llvm
 %global bundlellvm 16.0
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 # Enable system rtmidi
 %if 0%{?fedora} > 41
-%bcond_without  sysrtmidi
+%bcond_without  rtmidi
 %endif
 %global bundlertmidi 6.0.0
+%bcond_with vma
+%global bundlevma 2.3.0
 
 # Enable system yaml-cpp (need -fexceptions support)
-%bcond_with sysyamlcpp
+%bcond_with yamlcpp
 
-%global commit 33851d51ab93c3c73be18a6cb5ed7723219ee1e3
+%global commit 2806348f73a05291f65dba77967f0bf9c6e35070
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240701
+%global date 20240809
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -109,7 +111,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.32.16659
+Version:        0.0.32.16791
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -125,29 +127,29 @@ Source10:       %{kg_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortc
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
-%if %{without syshidapi}
+%if %{without hidapi}
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
-%if %{without sysyamlcpp}
+%if %{without yamlcpp}
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
 Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
-%if %{without sysllvm}
+%if %{without llvm}
 Source18:       https://github.com/llvm/llvm-project/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 %if %{with smallffmpeg}
 Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
 %else
 Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %endif
 %endif
-%if %{without sysflatbuffers}
+%if %{without flatbuffers}
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
-%if %{without sysrtmidi}
+%if %{without rtmidi}
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source23:       https://github.com/nothings/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
@@ -175,18 +177,18 @@ BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(FAudio)
-%if %{with sysllvm}
+%if %{with llvm}
 BuildRequires:  llvm%{?llvm_pkgver}-devel >= %{bundlellvm}
 %else
 Provides:       bundled(llvm) = %{bundlellvm}~git%{shortcommit18}
 %endif
-%if %{with sysflatbuffers}
+%if %{with flatbuffers}
 BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
 BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
-%if %{with sysffmpeg}
+%if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec) >= %{bundleffmpegver}
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -200,7 +202,7 @@ BuildRequires:  pkgconfig(libva-x11)
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}~git%{shortcommit20}
 %endif
 BuildRequires:  pkgconfig(libudev)
-%if %{with syshidapi}
+%if %{with hidapi}
 BuildRequires:  pkgconfig(hidapi-hidraw) >= %{bundlehidapi}
 %else
 Provides:       bundled(hidapi) = %{bundlehidapi}~git%{shortcommit14}
@@ -214,7 +216,7 @@ BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  pkgconfig(pugixml)
-%if %{with sysrtmidi}
+%if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
 %else
 BuildRequires:  pkgconfig(alsa)
@@ -223,13 +225,18 @@ Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(tinfo)
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
+%if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator) >= %{bundlevma}
+%else
+Provides:       bundled(VulkanMemoryAllocator) = %{bundlevma}
+%endif
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(x11)
-%if %{with sysyamlcpp}
+%if %{with yamlcpp}
 BuildRequires:  cmake(yaml-cpp)
 %else
 Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
@@ -290,7 +297,7 @@ cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
 
-%if %{without sysllvm}
+%if %{without llvm}
 tar -xf %{S:18} -C 3rdparty/llvm/llvm --strip-components 1
 
 mkdir ittapi
@@ -310,7 +317,7 @@ sed \
 %endif
 %endif
 
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
 
 cp -p 3rdparty/ffmpeg/LICENSE.md 3rdparty/LICENSE.ffmpeg.md
@@ -334,7 +341,7 @@ popd
 rm -rf 3rdparty/ffmpeg
 %endif
 
-%if %{without syshidapi}
+%if %{without hidapi}
 tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
 cp -p 3rdparty/hidapi/hidapi/LICENSE.txt 3rdparty/LICENSE.hidapi
 sed -e 's|hidapi_FOUND|hidapi_DISABLED|g' -i 3rdparty/CMakeLists.txt
@@ -342,14 +349,14 @@ sed -e 's|hidapi_FOUND|hidapi_DISABLED|g' -i 3rdparty/CMakeLists.txt
 rm -rf 3rdparty/hidapi
 %endif
 
-%if %{without sysflatbuffers}
+%if %{without flatbuffers}
 tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
 cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
 %else
 rm -rf 3rdparty/flatbuffers
 %endif
 
-%if %{without sysyamlcpp}
+%if %{without yamlcpp}
 tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
 cp -p 3rdparty/yaml-cpp/yaml-cpp/LICENSE 3rdparty/LICENSE.yaml-cpp
 sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
@@ -357,12 +364,20 @@ sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
 rm -rf 3rdparty/yaml-cpp
 %endif
 
-%if %{without sysrtmidi}
+%if %{without rtmidi}
 tar -xf %{S:22} -C 3rdparty/rtmidi/rtmidi --strip-components 1
 cp -p 3rdparty/rtmidi/rtmidi/LICENSE 3rdparty/LICENSE.rtmidi
 sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i 3rdparty/CMakeLists.txt
 %else
 rm -rf 3rdparty/rtmidi
+%endif
+
+%if %{with vma}
+sed \
+  -e '/include/s|"3rdparty/GPUOpen/include/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
+  -i rpcs3/Emu/RSX/{GL,VK}/upscalers/fsr1/fsr_pass.cpp \
+     rpcs3/Emu/RSX/VK/VKMemAlloc.cpp rpcs3/Emu/RSX/VK/vkutils/{mem_allocator,memory}.h
+rm -f 3rdparty/GPUOpen/include/vk_mem_alloc.h
 %endif
 
 sed \
@@ -380,7 +395,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_p
 %build
 %set_build_flags
 
-%if %{without sysffmpeg}
+%if %{without ffmpeg}
 pushd 3rdparty/ffmpeg
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
@@ -402,16 +417,16 @@ popd
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=OFF \
 %endif
   -DWITH_LLVM:BOOL=ON \
-%if %{without sysllvm}
+%if %{without llvm}
   -DBUILD_LLVM:BOOL=ON \
 %endif
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
   -DUSE_DISCORD_RPC:BOOL=OFF \
-%if %{with sysflatbuffers}
+%if %{with flatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
 %endif
   -DUSE_SYSTEM_CURL:BOOL=ON \
-%if %{with sysffmpeg}
+%if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \

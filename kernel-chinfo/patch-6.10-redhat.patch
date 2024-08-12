@@ -16,6 +16,8 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +++--
  drivers/iommu/iommu.c                              |  22 +
+ drivers/media/pci/intel/ipu-bridge.c               |  40 ++++--
+ .../broadcom/brcm80211/brcmfmac/cfg80211.c         |  13 +-
  drivers/pci/quirks.c                               |  24 +
  drivers/usb/core/hub.c                             |   7 +
  include/linux/efi.h                                |  22 +-
@@ -924,6 +926,92 @@ index 9df7cc75c1bc..60d541ae39e8 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/media/pci/intel/ipu-bridge.c b/drivers/media/pci/intel/ipu-bridge.c
+index 61750cc98d70..a0e9a71580b5 100644
+--- a/drivers/media/pci/intel/ipu-bridge.c
++++ b/drivers/media/pci/intel/ipu-bridge.c
+@@ -43,28 +43,46 @@
+  * becoming apparent in the future.
+  *
+  * Do not add an entry for a sensor that is not actually supported.
++ *
++ * Please keep the list sorted by ACPI HID.
+  */
+ static const struct ipu_sensor_config ipu_supported_sensors[] = {
++	/* Himax HM11B1 */
++	IPU_SENSOR_CONFIG("HIMX11B1", 1, 384000000),
++	/* Himax HM2170 */
++	IPU_SENSOR_CONFIG("HIMX2170", 1, 384000000),
++	/* Himax HM2172 */
++	IPU_SENSOR_CONFIG("HIMX2172", 1, 384000000),
++	/* GalaxyCore GC0310 */
++	IPU_SENSOR_CONFIG("INT0310", 0),
+ 	/* Omnivision OV5693 */
+ 	IPU_SENSOR_CONFIG("INT33BE", 1, 419200000),
++	/* Omnivision OV2740 */
++	IPU_SENSOR_CONFIG("INT3474", 1, 180000000),
+ 	/* Omnivision OV8865 */
+ 	IPU_SENSOR_CONFIG("INT347A", 1, 360000000),
+ 	/* Omnivision OV7251 */
+ 	IPU_SENSOR_CONFIG("INT347E", 1, 319200000),
++	/* Hynix Hi-556 */
++	IPU_SENSOR_CONFIG("INT3537", 1, 437000000),
++	/* Omnivision OV01A10 / OV01A1S */
++	IPU_SENSOR_CONFIG("OVTI01A0", 1, 400000000),
++	IPU_SENSOR_CONFIG("OVTI01AS", 1, 400000000),
++	/* Omnivision OV02C10 */
++	IPU_SENSOR_CONFIG("OVTI02C1", 1, 400000000),
++	/* Omnivision OV02E10 */
++	IPU_SENSOR_CONFIG("OVTI02E1", 1, 360000000),
++	/* Omnivision OV08A10 */
++	IPU_SENSOR_CONFIG("OVTI08A1", 1, 500000000),
++	/* Omnivision OV08x40 */
++	IPU_SENSOR_CONFIG("OVTI08F4", 1, 400000000),
++	/* Omnivision OV13B10 */
++	IPU_SENSOR_CONFIG("OVTI13B1", 1, 560000000),
++	IPU_SENSOR_CONFIG("OVTIDB10", 1, 560000000),
+ 	/* Omnivision OV2680 */
+ 	IPU_SENSOR_CONFIG("OVTI2680", 1, 331200000),
+-	/* Omnivision ov8856 */
++	/* Omnivision OV8856 */
+ 	IPU_SENSOR_CONFIG("OVTI8856", 3, 180000000, 360000000, 720000000),
+-	/* Omnivision ov2740 */
+-	IPU_SENSOR_CONFIG("INT3474", 1, 180000000),
+-	/* Hynix hi556 */
+-	IPU_SENSOR_CONFIG("INT3537", 1, 437000000),
+-	/* Omnivision ov13b10 */
+-	IPU_SENSOR_CONFIG("OVTIDB10", 1, 560000000),
+-	/* GalaxyCore GC0310 */
+-	IPU_SENSOR_CONFIG("INT0310", 0),
+-	/* Omnivision ov01a10 */
+-	IPU_SENSOR_CONFIG("OVTI01A0", 1, 400000000),
+ };
+ 
+ static const struct ipu_property_names prop_names = {
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+index 5fe0e671ecb3..826b768196e2 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c
+@@ -4320,9 +4320,16 @@ brcmf_pmksa_v3_op(struct brcmf_if *ifp, struct cfg80211_pmksa *pmksa,
+ 		/* Single PMK operation */
+ 		pmk_op->count = cpu_to_le16(1);
+ 		length += sizeof(struct brcmf_pmksa_v3);
+-		memcpy(pmk_op->pmk[0].bssid, pmksa->bssid, ETH_ALEN);
+-		memcpy(pmk_op->pmk[0].pmkid, pmksa->pmkid, WLAN_PMKID_LEN);
+-		pmk_op->pmk[0].pmkid_len = WLAN_PMKID_LEN;
++		if (pmksa->bssid)
++			memcpy(pmk_op->pmk[0].bssid, pmksa->bssid, ETH_ALEN);
++		if (pmksa->pmkid) {
++			memcpy(pmk_op->pmk[0].pmkid, pmksa->pmkid, WLAN_PMKID_LEN);
++			pmk_op->pmk[0].pmkid_len = WLAN_PMKID_LEN;
++		}
++		if (pmksa->ssid && pmksa->ssid_len) {
++			memcpy(pmk_op->pmk[0].ssid.SSID, pmksa->ssid, pmksa->ssid_len);
++			pmk_op->pmk[0].ssid.SSID_len = pmksa->ssid_len;
++		}
+ 		pmk_op->pmk[0].time_left = cpu_to_le32(alive ? BRCMF_PMKSA_NO_EXPIRY : 0);
+ 	}
+ 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 568410e64ce6..6afbaee83950 100644
 --- a/drivers/pci/quirks.c
