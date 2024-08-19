@@ -21,9 +21,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 5b590d434bbdc54c16ea35a2e7284f0d26baa1d5
+%global commit b3c18ff8c77c0864b92ef5f95ec5500a9fb0b6a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240802
+%global date 20240818
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -42,7 +42,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7271
+Version:        0.1.7375
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -65,7 +65,6 @@ Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc-patched.patch
-Patch10:        0001-cmake-versioned-spirv-cross-c-shared.patch
 Patch11:        0001-cmake-soundtouch-patched.patch
 
 ExclusiveArch:  x86_64 aarch64

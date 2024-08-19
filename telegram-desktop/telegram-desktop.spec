@@ -39,7 +39,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.3.1
+Version:        5.4.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -76,7 +76,6 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
-Patch207:       0001-libwebrtc-fix-build.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -356,6 +355,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Aug 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.4.1-100
+- 5.4.1
+
 * Fri Aug 02 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.3.1-100
 - 5.3.1
 

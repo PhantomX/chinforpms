@@ -35,7 +35,7 @@
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.2.1.24
 %global excss_ver 4.2.3
-%global dynamicdata_ver 8.4.1
+%global dynamicdata_ver 9.0.1
 %global fluent_avalonia_ver 2.0.5
 %global harfbuzzsharp_ver 7.3.0
 %global harfbuzzsharp_ver2 2.8.2.3
@@ -52,7 +52,7 @@
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 6.0.0
-%global microsoft_identitymodel_ver 7.6.2
+%global microsoft_identitymodel_ver 8.0.1
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
 %global microsoft_netcore_app_runtime_linux_x64_ver 8.0.3
@@ -179,7 +179,7 @@
 %global system_numerics_vectors_ver3 4.5.0
 %global system_objectmodel_ver 4.0.12
 %global system_private_uri_ver 4.3.0
-%global system_reactive_ver 6.0.0
+%global system_reactive_ver 6.0.1
 %global system_reflection_ver 4.1.0
 %global system_reflection_ver2 4.3.0
 %global system_reflection_emit_ver 4.0.1
@@ -251,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1359
+Version:        1.1.1376
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

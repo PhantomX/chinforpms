@@ -40,7 +40,7 @@ index 3af43f0..c1f2f74 100644
 --- a/src/util/audio_stream.cpp
 +++ b/src/util/audio_stream.cpp
 @@ -13,8 +13,8 @@
- #include "common/small_string.h"
+ #include "common/settings_interface.h"
  #include "common/timer.h"
  
 -#include "soundtouch/SoundTouch.h"

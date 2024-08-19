@@ -1,4 +1,4 @@
-From 5f7e642b127da1c14d662d33256b2fed3ab0fa6d Mon Sep 17 00:00:00 2001
+From 6e0d36b4b2ef4ffec912a6cadd4afcbb1339e706 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 3 Jan 2023 18:40:09 -0300
 Subject: [PATCH] Set datadir to RPM packaging
@@ -9,10 +9,10 @@ Subject: [PATCH] Set datadir to RPM packaging
  2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/pcsx2-qt/Translations.cpp b/pcsx2-qt/Translations.cpp
-index 6cf291d..cfc2e62 100644
+index d8f1ca6..27be2b0 100644
 --- a/pcsx2-qt/Translations.cpp
 +++ b/pcsx2-qt/Translations.cpp
-@@ -116,12 +116,12 @@ void QtHost::InstallTranslator()
+@@ -121,12 +121,12 @@ void QtHost::InstallTranslator(QWidget* dialog_parent)
  #ifdef __APPLE__
  	const QString base_dir = QStringLiteral("%1/../Resources/translations").arg(qApp->applicationDirPath());
  #else
@@ -27,7 +27,7 @@ index 6cf291d..cfc2e62 100644
  	bool has_base_ts = QFile::exists(base_path);
  	if (!has_base_ts)
  	{
-@@ -129,7 +129,7 @@ void QtHost::InstallTranslator()
+@@ -134,7 +134,7 @@ void QtHost::InstallTranslator(QWidget* dialog_parent)
  		const int index = language.lastIndexOf('-');
  		if (index > 0)
  		{
@@ -37,18 +37,18 @@ index 6cf291d..cfc2e62 100644
  		}
  	}
 diff --git a/pcsx2/Pcsx2Config.cpp b/pcsx2/Pcsx2Config.cpp
-index 8700ad6..599d4b9 100644
+index 9a715c0..7e71aea 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
-@@ -1687,7 +1687,7 @@ void EmuFolders::SetResourcesDirectory()
- {
- #ifndef __APPLE__
- 	// On Windows/Linux, these are in the binary directory.
--	Resources = Path::Combine(AppRoot, "resources");
-+	Resources = "_RPM_DATADIR_/resources";
- #else
- 	// On macOS, this is in the bundle resources directory.
- 	Resources = Path::Canonicalize(Path::Combine(AppRoot, "../Resources"));
+@@ -1882,7 +1882,7 @@ bool EmuFolders::SetResourcesDirectory()
+ #ifndef __APPLE__  
+ 	#ifndef PCSX2_APP_DATADIR
+ 		// On Windows/Linux, these are in the binary directory.
+-		Resources = Path::Combine(AppRoot, "resources");
++		Resources = "_RPM_DATADIR_/resources";
+ 	#else
+ 		Resources = Path::Canonicalize(Path::Combine(AppRoot, PCSX2_APP_DATADIR "/resources"));
+ 	#endif
 -- 
-2.41.0
+2.46.0
 

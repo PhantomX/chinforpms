@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 e9d103e2480e0983bf464debc371b049cdd83648
+%global commit0 dc17143230b5519f3c1a8da0079e00566bd4c5a8
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20240730
+%global date 20240804
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -33,7 +33,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        137%{?dist}
+Release:        138%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -54,7 +54,6 @@ Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcnam
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch10:        0001-fix-missing-symbols.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 
 %if %{with absl}
