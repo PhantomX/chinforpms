@@ -8,9 +8,11 @@
 # https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
 %global apiid 611335
 %global apihash d524b414d21f4d37f08684c1df41ac9c
+%global ltdp_id b7a73c0b8a8b3527f69959ce3ceb35f8dbde8a8e
 
 %global cvc_url https://chromium.googlesource.com
 %global da_url https://github.com/desktop-app
+%global ltdp_url https://github.com/Layerex/telegram-desktop-patches/raw/%{ltdp_id}
 
 %bcond_with bin
 
@@ -20,6 +22,7 @@
 %bcond_without minizip
 %bcond_without wayland
 %bcond_without x11
+%bcond_with ltdp
 
 %if %{with bin}
 %global debug_package %{nil}
@@ -40,7 +43,7 @@
 
 Name:           telegram-desktop
 Version:        5.4.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -76,6 +79,12 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
+
+Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
+Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
+Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltdp-0003-Disable-invite-peeking-restrictions.patch
+Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disable-accounts-limit.patch
+Patch1014:       %{ltdp_url}/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -213,7 +222,6 @@ business messaging needs.
 %prep
 # Unpacking Telegram Desktop source archive...
 %autosetup -N -n %{srcname}-%{version}-full
-%autopatch -p1 -M 999
 
 %if %{with bin}
 mkdir bin
@@ -221,6 +229,15 @@ tar xvf %{S:1} -C bin --strip-components 1
 
 sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.service
 %else
+%autopatch -p1 -M 999
+
+%if %{with ltdp}
+%patch -P 1010 -p1
+%patch -P 1011 -p1
+%patch -P 1012 -p1
+%patch -P 1013 -p1
+%patch -P 1014 -p1
+%endif
 
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
@@ -355,6 +372,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Mon Aug 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.4.1-101
+- Optional telegram-desktop-patches support
+
 * Sun Aug 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.4.1-100
 - 5.4.1
 

@@ -7,7 +7,6 @@
  drivers/acpi/irq.c                                 |  17 +-
  drivers/acpi/scan.c                                |   9 +
  drivers/ata/libahci.c                              |  18 +
- drivers/ata/libata-scsi.c                          |  15 ++-
  drivers/char/ipmi/ipmi_dmi.c                       |  15 +
  drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
  drivers/firmware/efi/Makefile                      |   1 +
@@ -280,32 +279,6 @@ index 83431aae74d8..f2a9c0d644af 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
-diff --git a/drivers/ata/libata-scsi.c b/drivers/ata/libata-scsi.c
-index 076fbeadce01..4e0847601103 100644
---- a/drivers/ata/libata-scsi.c
-+++ b/drivers/ata/libata-scsi.c
-@@ -941,8 +941,19 @@ static void ata_gen_passthru_sense(struct ata_queued_cmd *qc)
- 				   &sense_key, &asc, &ascq);
- 		ata_scsi_set_sense(qc->dev, cmd, sense_key, asc, ascq);
- 	} else {
--		/* ATA PASS-THROUGH INFORMATION AVAILABLE */
--		ata_scsi_set_sense(qc->dev, cmd, RECOVERED_ERROR, 0, 0x1D);
-+		/*
-+		 * ATA PASS-THROUGH INFORMATION AVAILABLE
-+		 *
-+		 * Note: we are supposed to call ata_scsi_set_sense(), which
-+		 * respects the D_SENSE bit, instead of unconditionally
-+		 * generating the sense data in descriptor format. However,
-+		 * because hdparm, hddtemp, and udisks incorrectly assume sense
-+		 * data in descriptor format, without even looking at the
-+		 * RESPONSE CODE field in the returned sense data (to see which
-+		 * format the returned sense data is in), we are stuck with
-+		 * being bug compatible with older kernels.
-+		 */
-+		scsi_build_sense(cmd, 1, RECOVERED_ERROR, 0, 0x1D);
- 	}
- }
- 
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
 index bbf7029e224b..cf7faa970dd6 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c

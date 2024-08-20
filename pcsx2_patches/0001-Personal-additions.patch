@@ -1,0 +1,231 @@
+From aab5853ee864028c91b6cedb2cbf8b6b27fffb54 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 20 Aug 2024 00:33:00 -0300
+Subject: [PATCH] Personal additions
+
+---
+ patches/SLPM-55008_721DEBE4.pnach |  8 +++++++
+ patches/SLPM-66660_9E8F0454.pnach |  8 +++++++
+ patches/SLPS-25674_2113EA2E.pnach |  5 +++++
+ patches/SLPS-25698_5192FAD0.pnach | 20 +++++++++++++++++
+ patches/SLPS-25842_E84AA114.pnach | 26 ++++++++++++++++++++++
+ patches/SLUS-20212_AA4E5A95.pnach | 14 ++++++++++++
+ patches/SLUS-20393_5A1410AB.pnach | 19 ++++++++++++++++
+ patches/SLUS-21059_652050D2.pnach | 36 +++++++++++++++++++++++++++++++
+ patches/SLUS-21317_72CE7A78.pnach |  9 ++++++++
+ 9 files changed, 145 insertions(+)
+ create mode 100644 patches/SLPM-55008_721DEBE4.pnach
+ create mode 100644 patches/SLPM-66660_9E8F0454.pnach
+ create mode 100644 patches/SLPS-25698_5192FAD0.pnach
+ create mode 100644 patches/SLPS-25842_E84AA114.pnach
+ create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
+ create mode 100644 patches/SLUS-20393_5A1410AB.pnach
+ create mode 100644 patches/SLUS-21317_72CE7A78.pnach
+
+diff --git a/patches/SLPM-55008_721DEBE4.pnach b/patches/SLPM-55008_721DEBE4.pnach
+new file mode 100644
+index 0000000..efd885e
+--- /dev/null
++++ b/patches/SLPM-55008_721DEBE4.pnach
+@@ -0,0 +1,8 @@
++gametitle=Sengoku Basara X (SLPM-55008)
++
++[No-Interlacing]
++description=480p native sdtv mode unlock + extend resolution 640x480 v3 (disable antialias option in game menu)
++gsinterlacemode=1
++author=felixthecat1970
++patch=0,EE,201004E4,extended,A2620016
++patch=0,EE,0010CF00,extended,24040000
+diff --git a/patches/SLPM-66660_9E8F0454.pnach b/patches/SLPM-66660_9E8F0454.pnach
+new file mode 100644
+index 0000000..91af312
+--- /dev/null
++++ b/patches/SLPM-66660_9E8F0454.pnach
+@@ -0,0 +1,8 @@
++gametitle=Hokuto no Ken Shinpan no Sousousei Kengou Retsuden (SLPM-66660)
++
++[No-Interlacing]
++description=Native 480p sdtv mode + extend 640x480 v2 (disable antialias option in game menu)
++gsinterlacemode=1
++author=felixthecat1970
++patch=0,EE,20292720,extended,A38286E8
++
+diff --git a/patches/SLPS-25674_2113EA2E.pnach b/patches/SLPS-25674_2113EA2E.pnach
+index df05d5d..146beb7 100644
+--- a/patches/SLPS-25674_2113EA2E.pnach
++++ b/patches/SLPS-25674_2113EA2E.pnach
+@@ -5,4 +5,9 @@ gsaspectratio=16:9
+ author=Esppiral
+ patch=1,EE,00979744,word,3f400000
+ 
++[No-Interlacing]
++description=Enable Progressive Mode
++gsinterlacemode=1
++author=punk7890
++patch=1,EE,003776D4,extended,00000002
+ 
+diff --git a/patches/SLPS-25698_5192FAD0.pnach b/patches/SLPS-25698_5192FAD0.pnach
+new file mode 100644
+index 0000000..56a09a9
+--- /dev/null
++++ b/patches/SLPS-25698_5192FAD0.pnach
+@@ -0,0 +1,20 @@
++gametitle=Fatal Fury - Battle Archives 2 (SLPS-25698)
++
++[No-Interlacing]
++description=No interleacing + SDTV progressive 240p test 2 - ISO patch use PS2 Patch engine
++gsinterlacemode=1
++//Intro + Vid (1 write memory addresses > for ISO PATCH *SLPS_256.98)
++patch=0,EE,2010A9EC,extended,3C060050
++patch=0,EE,2010A9F4,extended,3C070001
++patch=0,EE,2010ACF4,extended,24020002
++patch=0,EE,2010ACF8,extended,24020002
++patch=0,EE,2010B838,extended,03E00008
++patch=0,EE,2010B83C,extended,00000000
++
++//Main menu + Games (2nd re-write memory addresses, > for ISO patch *SELECT.ELF)
++patch=1,EE,E0050035,extended,0010011C // *no for iso patch
++patch=1,EE,201fb284,extended,3c050000
++patch=1,EE,201fb28c,extended,3c060050
++patch=1,EE,201fb294,extended,3c070001
++patch=1,EE,2024DE34,extended,24020002
++patch=1,EE,2024DE38,extended,24020002
+diff --git a/patches/SLPS-25842_E84AA114.pnach b/patches/SLPS-25842_E84AA114.pnach
+new file mode 100644
+index 0000000..278723d
+--- /dev/null
++++ b/patches/SLPS-25842_E84AA114.pnach
+@@ -0,0 +1,26 @@
++gametitle=Tales of Destiny: Director's Cut Translation (SLPS-25842)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++author=nemesis2000
++
++patch=1,EE,0015DD04,word,3C013F20
++patch=1,EE,0015DD08,word,34216D3A
++patch=1,EE,0015E190,word,00000000
++patch=1,EE,0015E198,word,3C013F40
++patch=1,EE,0015E19C,word,4481C800
++patch=1,EE,0015E1A4,word,46196b42
++patch=1,EE,0015E1A8,word,E7AD0040
++patch=1,EE,0015E20C,word,3C0143D6
++
++//No interlacing by asasega
++//patch=1,EE,201A7054,word,00000000
++//patch=1,EE,201A70DC,word,00000000
++
++
++[No-Interlacing]
++description=Attempts to disable interlaced offset rendering.
++gsinterlacemode=1
++patch=1,EE,20109FA8,extended,A620066C
++
++
+diff --git a/patches/SLUS-20212_AA4E5A95.pnach b/patches/SLUS-20212_AA4E5A95.pnach
+new file mode 100644
+index 0000000..dc89f12
+--- /dev/null
++++ b/patches/SLUS-20212_AA4E5A95.pnach
+@@ -0,0 +1,14 @@
++gametitle=Bloody Roar 3 (SLUS-20212)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++description=Widescreen Hack
++patch=1,EE,201f4454,extended,3F400000
++
++
++[No-Interlacing]
++description=Attempts to disable interlaced offset rendering.
++gsinterlacemode=1
++patch=1,EE,201CF8DC,word,00000000
++
++
+diff --git a/patches/SLUS-20393_5A1410AB.pnach b/patches/SLUS-20393_5A1410AB.pnach
+new file mode 100644
+index 0000000..852a1e7
+--- /dev/null
++++ b/patches/SLUS-20393_5A1410AB.pnach
+@@ -0,0 +1,19 @@
++gametitle=Onimusha 2 [NTSC-U] (Undub)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++author=nemesis2000 (pnach by Little Giant)
++//gameplay
++patch=1,EE,2010285c,word,3c013f40
++patch=1,EE,20102860,word,44810000
++patch=1,EE,20102868,word,4600c602
++
++
++[No-Interlacing]
++description=Attempts to disable interlaced offset rendering.
++gsinterlacemode=1
++patch=1,EE,0172A37D,extended,00000000
++patch=1,EE,20100F4C,extended,00000000
++patch=1,EE,201011B4,extended,00000000
++patch=1,EE,20183CB4,extended,00007025
++patch=1,EE,2019CAB4,extended,24047900
+diff --git a/patches/SLUS-21059_652050D2.pnach b/patches/SLUS-21059_652050D2.pnach
+index fbdfcea..e8ca7fb 100644
+--- a/patches/SLUS-21059_652050D2.pnach
++++ b/patches/SLUS-21059_652050D2.pnach
+@@ -31,3 +31,39 @@ patch=1,EE,00222494,word,44810000
+ patch=1,EE,00222498,word,46006302
+ 
+ 
++[No-Interlacing]
++description=Enhancement test *Updated correct PS parameters
++gsinterlacemode=1
++
++//Workaround
++patch=0,EE,2010207C,extended,3c050000
++patch=0,EE,20102084,extended,3c060050
++patch=0,EE,2010208C,extended,3c070001
++patch=0,EE,20102EAC,extended,3C0701E0
++
++//Framebuffer - Progressive - No interleacing - No black lines HW mode
++patch=1,EE,E0028870,extended,01FFEF20
++patch=1,EE,2010230C,extended,34029400
++patch=1,EE,203EF450,extended,00000001 // Official Progressive mode
++
++//Intro Mini Game
++patch=1,EE,E0010001,extended,01FFECF4
++patch=1,EE,2010230C,extended,34029078
++
++patch=1,EE,E0012c70,extended,01FFEF20 // Devil W. Game
++patch=1,EE,2026033C,extended,34029400
++
++patch=1,EE,E0033df0,extended,01FFEF20 // Tek 1 sdtv mode 240p
++patch=1,EE,2014F454,extended,3c050000
++patch=1,EE,2014F45C,extended,3C060050
++patch=1,EE,2014F464,extended,3c070001
++
++patch=1,EE,E0036570,extended,01FFEF20 // Tek 2 sdtv mode 240p
++patch=1,EE,2015E494,extended,3c050000
++patch=1,EE,2015E49C,extended,3C060050
++patch=1,EE,2015E4A4,extended,3c070001
++
++patch=1,EE,E003F370,extended,01FFEF20 // Tek 3 sdtv mode 480p extended
++patch=1,EE,201E4F54,extended,3c050000
++patch=1,EE,201E4F5C,extended,3C060050
++patch=1,EE,201E4F64,extended,3c070001
+diff --git a/patches/SLUS-21317_72CE7A78.pnach b/patches/SLUS-21317_72CE7A78.pnach
+new file mode 100644
+index 0000000..185964f
+--- /dev/null
++++ b/patches/SLUS-21317_72CE7A78.pnach
+@@ -0,0 +1,9 @@
++gametitle=Street Fighter Alpha Anthology (SLUS-213.17) 
++
++[No-Interlacing]
++description=Auto enable progressive mode
++author=felixthecat1970
++gsinterlacemode=1
++patch=0,EE,001489A0,extended,24050000 //autoprogressive mode load
++patch=0,EE,001489A4,extended,24060050
++patch=0,EE,201492C4,extended,24040002
+-- 
+2.46.0
+

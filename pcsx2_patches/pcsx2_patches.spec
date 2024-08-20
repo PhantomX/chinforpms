@@ -8,7 +8,7 @@ BuildArch:      noarch
 
 Name:           pcsx2_patches
 Version:        %{date}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later
@@ -16,6 +16,8 @@ URL:            https://github.com/PCSX2/%{name}
 
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source1:        https://github.com/PCSX2/pcsx2/raw/e3eae7fbe83aad3952e3ed6a8e56fc016b51a9c3/COPYING.GPLv3
+
+Patch10:        0001-Personal-additions.patch
 
 BuildRequires:  zip
 
@@ -49,6 +51,9 @@ install -pm0644 patches.zip %{buildroot}%{_datadir}/PCSX2/resources/
 
 
 %changelog
+* Tue Aug 20 2024 Phantom X <megaphantomx at hotmail dot com> - 20240812-2.20240812git9ea7fca
+- Add extra patches
+
 * Sat Aug 20 2022 Phantom X <megaphantomx at hotmail dot com> - 20220807-1.20220807git5dde7f4
 - Initial spec
 
