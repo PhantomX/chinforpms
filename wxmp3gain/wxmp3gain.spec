@@ -1,15 +1,15 @@
 %global commit 5e748cd7f97ec5ab212c604fca6f9550f3e98099
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20230401
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           wxmp3gain
-Version:        4.1
-Release:        0.1%{?dist}
+Version:        4.2
+Release:        1%{?dist}
 Summary:        Free front-end for the MP3gain
 
 License:        GPL-3.0-or-later
@@ -47,7 +47,7 @@ sed \
   -e '/CMAKE_DOC_DIR/d' \
   -i CMakeLists.txt
 
-sed -e 's|/usr/share/wxlame|%{_datadir}/%{name}|g' -i src/Constants.hpp*
+sed -e 's|/usr/share/|%{_datadir}/|g' -i src/Constants.hpp*
 
 
 %build
@@ -79,6 +79,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Aug 22 2024 Phantom X <megaphantomx at hotmail dot com> - 4.2-1
+- 4.2
+
 * Thu May 18 2023 Phantom X <megaphantomx at hotmail dot com> - 4.1-0.1.20230401git5e748cd
 - wxGTK 3.2
 

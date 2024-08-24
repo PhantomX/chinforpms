@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e9e16210e84fcfc1ec27bacb1b3c69c00af9934c
+%global commit 840915e52d38cb076c7934ea8388a51cef49217e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240724
+%global date 20240819
 %bcond_without snapshot
 
 # Enable Qt build
@@ -28,6 +28,7 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without smallffmpeg
 %bcond_with miniupnpc
+%bcond_with local
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -61,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 d54cf8f1059cebc90a6f5ecdf03df69259f22054
+%global commit9 563230b1c249774b4852c944dc7cdcb952c9e8e8
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -84,7 +85,7 @@
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        108%{?dist}
+Release:        109%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -126,6 +127,9 @@ Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 Patch7:         0001-chd-use-standard-type.patch
+%if %{with local}
+Patch499:       0001-Local-changes.patch
+%endif
 
 %if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}

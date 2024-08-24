@@ -40,9 +40,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit fbcd8e32b8e97bede9745c8b2d4f91487b6bfed3
+%global commit 1c16ada670bb396e98b33ec4510c1b3efb534724
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240818
+%global date 20240822
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -111,7 +111,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.32.16843
+Version:        0.0.32.16857
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -154,8 +154,6 @@ Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{src
 %endif
 Source23:       https://github.com/nothings/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
 Source99:       Makefile
-
-Patch0:         %{vc_url}/%{name}/pull/15939.patch#/%{name}-gh-pr15939.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
@@ -393,8 +391,6 @@ sed \
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_pad_handler.cpp
-
-echo 'target_link_libraries(rpcs3_emu PRIVATE EGL::EGL)' >> rpcs3/Emu/CMakeLists.txt
 
 
 %build

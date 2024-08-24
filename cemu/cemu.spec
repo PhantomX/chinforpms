@@ -40,7 +40,7 @@
 %global pat     %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~86
+Version:        2.0~95
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -168,7 +168,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 bin/%{pkgname}_release %{buildroot}%{_bindir}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}
-cp -rp bin/{gameProfiles,resources,shaderCache} \
+cp -rp bin/{gameProfiles,resources} \
   %{buildroot}%{_datadir}/%{pkgname}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
