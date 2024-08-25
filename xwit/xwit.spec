@@ -27,7 +27,7 @@ individual key autorepeat settings, move the mouse cursor, etc.
 %prep
 %autosetup -n %{name}-%{version}.orig -a 1
 for i in $(<debian/patches/series);do
-  patch -p1 -F1 -s -i debian/patches/$i
+  %{__scm_apply_patch -p1 -q} -i debian/patches/$i
 done
 
 cp -p debian/copyright LICENSE

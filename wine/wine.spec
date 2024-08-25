@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.15
+%global wine_stagingver 9.16
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3046bf121a8eb3c34c40f46a5ad3ced4df6f3f26
+%global tkg_id e5e156ccec589b047723b60dfebcc349a4dd67c7
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -147,6 +147,7 @@
 %global whq_murl  https://gitlab.winehq.org/wine/wine
 %global whqs_url  https://source.winehq.org/patches/data
 %global valve_url https://github.com/ValveSoftware/wine
+%global vk_url https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml
 
 %global staging_banner Chinforpms Staging
 
@@ -160,7 +161,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.15
+Version:        9.16
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -187,7 +188,8 @@ Source7:        wine-README-chinforpms-fshack
 Source8:        wine-README-chinforpms-fsync
 Source9:        wine-README-chinforpms-ntsync
 
-Source50:       https://raw.githubusercontent.com/KhronosGroup/Vulkan-Docs/v%{winevulkan}/xml/vk.xml#/vk-%{winevulkan}.xml
+Source50:       %{vk_url}/vk.xml#/vk-%{winevulkan}.xml
+Source51:       %{vk_url}/video.xml#/video-%{winevulkan}.xml
 
 # desktop files
 Source100:      wine-notepad.desktop
@@ -265,6 +267,7 @@ Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{nam
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
+Patch1056:       0001-tkg-proton-tkg-additions-fixup.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -290,7 +293,9 @@ Patch5000:      0001-chinforpms-message.patch
 # END of staging patches
 
 %if !0%{?no64bit}
-ExclusiveArch:  %{ix86} x86_64 aarch64
+# Fedora 36 Clang doesn't build PE binaries on ARM at the moment
+# Wine 9.15 and higher requires ARM MinGW binaries (dlltool)
+ExclusiveArch:  %{ix86} x86_64
 %else
 ExclusiveArch:  %{ix86}
 %endif
@@ -301,7 +306,7 @@ BuildRequires:  git-core
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  make
-%ifarch aarch64
+%ifarch %{arm} aarch64
 BuildRequires:  clang >= 5.0
 BuildRequires:  lld
 %else
@@ -920,7 +925,11 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %else
 %patch -P 1027 -p1
 %endif
-%patch -P 1028 -p1
+cp -a %{P:1028} .
+cp -a %{P:1056} .
+%patch -P 1056 -p1
+%{__scm_apply_patch -p1 -q} -i wine-tkg-proton-tkg-additions.patch
+%dnl %patch -P 1028 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
@@ -997,6 +1006,7 @@ cp -p %{SOURCE502} README.tahoma
 sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
 
 cp -p %{SOURCE50} ./dlls/winevulkan/vk-%{winevulkan}.xml
+cp -p %{SOURCE51} ./dlls/winevulkan/video-%{winevulkan}.xml
 
 find . \( -name "*.orig" -o -name "*.cjk" \) -delete
 
@@ -2551,6 +2561,9 @@ fi
 
 
 %changelog
+* Sat Aug 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.16-100
+- 9.16
+
 * Sun Aug 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.15-100
 - 9.15
 

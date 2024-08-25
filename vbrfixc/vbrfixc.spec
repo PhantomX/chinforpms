@@ -28,7 +28,7 @@ the LAME part of the VBR tag while replacing the seek/bitrate info.
 %prep
 %autosetup -p1 -a 1
 for i in $(<debian/patches/series);do
-  patch -p1 -F1 -s -i debian/patches/$i
+  %{__scm_apply_patch -p1 -q} -i debian/patches/$i
 done
 
 # Remove old autoconf and replace with single Makefile

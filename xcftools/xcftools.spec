@@ -35,7 +35,7 @@ the Gimp to even be installed.
 %autosetup -p1 -a 1
 sed -e '/remove_strip/d' -i debian/patches/series
 for i in $(<debian/patches/series);do
-  patch -p1 -F1 -s -i debian/patches/$i
+  %{__scm_apply_patch -p1 -q} -i debian/patches/$i
 done
 
 # To avoid strip before install (that will generate an empty debuginfo)
