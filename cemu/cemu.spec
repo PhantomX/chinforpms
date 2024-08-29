@@ -37,10 +37,12 @@
 %global appname info.%{name}.%{pkgname}
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
-%global pat     %%(echo %%{ver} | cut -s -d- -f2)
+%global vermajor   %%(echo %%{ver} | cut -s -d. -f1)
+%global verminor   %%(echo %%{ver} | cut -s -d. -f2 | cut -d- -f1)
+%global verpatch   %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.0~95
+Version:        2.1
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -144,10 +146,6 @@ sed \
   -e '/InsertColumn/s/kListIconWidth/&+8/;/SetColumnWidth/s/last_col_width/&-1/' \
   -i src/gui/components/wxGameList.cpp
 
-%if "%{pat}"
-sed -e "/#define EMULATOR_VERSION_MINOR/s/[0-9]\+/%{pat}/;s/-/./" -i src/Common/version.h
-%endif
-
 sed -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/s| ON| OFF|g' -i CMakeLists.txt
 
 
@@ -158,6 +156,8 @@ sed -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/s| ON| OFF|g' -i CMakeLists.txt
   -DENABLE_VCPKG:BOOL=OFF \
   -DENABLE_DISCORD_RPC:BOOL=OFF \
   -DPORTABLE:BOOL=OFF \
+  -DEMULATOR_VERSION_MAJOR="%{vermajor}" \
+  -DEMULATOR_VERSION_MINOR="%{verminor}" \
 %{nil}
 
 %cmake_build
@@ -206,6 +206,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Tue Aug 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.1-1
+- 2.1
+
 * Sun Jun 23 2024 Phantom X <megaphantomx at hotmail dot com> - 2.0~86-1
 - 2.0-86
 

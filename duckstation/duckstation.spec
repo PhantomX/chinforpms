@@ -21,9 +21,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit b3c18ff8c77c0864b92ef5f95ec5500a9fb0b6a9
+%global commit 71ca14a77a3fdc62b5b67d778ec121958bc32628
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240818
+%global date 20240826
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -42,7 +42,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7375
+Version:        0.1.7454
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -66,6 +66,7 @@ Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc-patched.patch
 Patch11:        0001-cmake-soundtouch-patched.patch
+Patch12:        0001-cmake-lunasvg-patched.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -98,6 +99,7 @@ BuildRequires:  pkgconfig(fmt) >= 10.1
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
+BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
@@ -108,8 +110,9 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  cmake(lunasvgPatched) >= 2.4.1
 BuildRequires:  pkgconfig(sdl2) >= 2.30.6
-BuildRequires:  pkgconfig(shaderc-patched)
+BuildRequires:  cmake(ShadercPatched)
 BuildRequires:  cmake(SoundTouchPatched) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
 BuildRequires:  pkgconfig(vulkan)

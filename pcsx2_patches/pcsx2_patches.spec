@@ -1,14 +1,15 @@
-%global commit 9ea7fca481e1e4c2263ca69f9a5c9a70c92626dc
+%global commit 81c1b6a511ab9f97d652c3517d3c41485e2902a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240812
+%global date 20240827
 
 BuildArch:      noarch
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           pcsx2_patches
-Version:        %{date}
-Release:        2%{?dist}
+Version:        363
+Epoch:          1
+Release:        1%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later
@@ -51,6 +52,9 @@ install -pm0644 patches.zip %{buildroot}%{_datadir}/PCSX2/resources/
 
 
 %changelog
+* Wed Aug 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:363-1.20240827git81c1b6a
+- Use commit number as version
+
 * Tue Aug 20 2024 Phantom X <megaphantomx at hotmail dot com> - 20240812-2.20240812git9ea7fca
 - Add extra patches
 

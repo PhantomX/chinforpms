@@ -1,6 +1,6 @@
-%global commit f87bf9e6a7c67a06487a1ef710c0d9c548ae6f01
+%global commit 72b934e1e10c041ec6986f5f2fb4f143d8f6b941
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240323
+%global date 20240820
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -9,9 +9,11 @@ BuildArch:      noarch
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global appname io.github.winetricks.Winetricks
+
 Name:           winetricks
 Version:        20240105
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 Summary:        Work around common problems in Wine
 
@@ -33,6 +35,7 @@ ExcludeArch:    ppc64 ppc64le
 BuildRequires:  make
 BuildRequires:  wine-common
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 
 Requires:       wine-common
 Requires:       cabextract gzip unzip wget which
@@ -58,10 +61,11 @@ sed -i -e s:steam:: -e s:flash:: tests/*
 %install
 %make_install
 # some tarballs do not install appdata
-install -m0644 -D -t %{buildroot}%{_datadir}/metainfo src/%{name}.appdata.xml
+install -m0644 -D -t %{buildroot}%{_datadir}/metainfo src/%{appname}.metainfo.xml
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files
@@ -72,7 +76,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/bash-completion/completions/%{name}
 %{_datadir}/icons/hicolor/scalable/apps/%{name}.svg
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_datadir}/metainfo/%{appname}.metainfo.xml
 
 
 %changelog

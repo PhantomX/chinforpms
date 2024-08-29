@@ -1,9 +1,9 @@
 # Glslang revision from packaged version
 %global glslang_version 436237a4ab2be3225acedc66016ea2aa82946b37
 
-%global commit feb2460bf3a504d67011246edeb810c45ea58826
+%global commit f60bb80e255144e71776e2ad570d89b78ea2ab4f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240728
+%global date 20240824
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -11,7 +11,7 @@
 
 Name:           %{pkgname}-patched
 Version:        2024.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        Collection of tools, libraries, and tests for Vulkan shader compilation
 
@@ -27,6 +27,7 @@ Patch10:        0001-shared-patched-cmake.patch
 
 
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  sed
@@ -85,6 +86,7 @@ sed -i 's|SPIRV/GlslangToSpv.h|glslang/SPIRV/GlslangToSpv.h|' libshaderc_util/sr
   -DSHADERC_SKIP_TESTS:BOOL=ON \
   -DSHADERC_ENABLE_COPYRIGHT_CHECK:BOOL=ON \
   -DPYTHON_EXECUTABLE=%{python3} \
+  -DSHADERC_ENABLE_INSTALL:BOOL=ON \
   -GNinja \
 %{nil}
 
@@ -106,7 +108,7 @@ sed -e '/^#include/s|shaderc/|%{name}/|g' -i %{buildroot}%{_includedir}/%{name}/
 %files -n lib%{name}-devel
 %{_includedir}/%{name}/
 %{_libdir}/lib%{name}_shared.so
-%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/cmake/ShadercPatched
 
 %changelog
 * Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.3-1.20240728gitfeb2460

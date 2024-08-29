@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.95
+Version:        2.1.118
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -164,7 +164,7 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.30.5
 %if %{with shaderc}
-BuildRequires:  pkgconfig(shaderc-patched)
+BuildRequires:  cmake(ShadercPatched)
 Requires:       libshaderc-patched%{?_isa}
 %else
 Provides:       bundled(shaderc-patched) = %{version10}
@@ -227,6 +227,7 @@ rm -rf .git
 %if %{with shaderc}
 %patch -P 500 -p1
 %patch -P 502 -p1
+rm -f cmake/FindShaderc.cmake
 %else
 mkdir 3rdparty/shaderc
 tar -xf %{S:10} -C 3rdparty/shaderc --strip-components 1

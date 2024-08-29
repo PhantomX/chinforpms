@@ -185,8 +185,9 @@ ladspa-tap-plugins
 libstrangle
 -liveprogide
 -linux-steam-integration
--lutris
+lunasvc-patched
 lunzip
+-lutris
 -lzip
 makeppf
 manaplus

@@ -1,34 +1,81 @@
-From d445aa7e8387a15ec7df907981374ed13c7dd30a Mon Sep 17 00:00:00 2001
+From 9cecebfe8324a3e38625b81c8b96b3d7d63d36bd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 17:53:40 -0300
 Subject: [PATCH] shared-patched: cmake
 
 ---
- CMakeLists.txt                                |  4 +--
- .../{shaderc.pc.in => shaderc-patched.pc.in}  |  2 +-
- libshaderc/CMakeLists.txt                     | 28 ++++++-------------
- 3 files changed, 12 insertions(+), 22 deletions(-)
+ CMakeLists.txt                                 | 16 ++++++++--------
+ ShadercConfig.cmake.in                         |  6 +++---
+ cmake/{shaderc.pc.in => shaderc-patched.pc.in} |  2 +-
+ libshaderc/CMakeLists.txt                      | 18 +++++-------------
+ 4 files changed, 17 insertions(+), 25 deletions(-)
  rename cmake/{shaderc.pc.in => shaderc-patched.pc.in} (93%)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 43bea40..8a48bcd 100644
+index 625e924..55eefb4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,7 +14,7 @@
  
  cmake_minimum_required(VERSION 3.17.2)
  
--project(shaderc)
-+project(shaderc-patched)
+-project(shaderc VERSION 2024.3 LANGUAGES C CXX)
++project(shaderc-patched VERSION 2024.3 LANGUAGES C CXX)
  enable_testing()
  
  if ("${CMAKE_BUILD_TYPE}" STREQUAL "")
-@@ -149,4 +149,4 @@ function(define_pkg_config_file NAME LIBS)
-   endif()
- endfunction()
+@@ -153,26 +153,26 @@ endfunction()
  
--define_pkg_config_file(shaderc -lshaderc_shared)
-+define_pkg_config_file(shaderc-patched -lshaderc-patched_shared)
+ if(SHADERC_ENABLE_INSTALL)
+   include(CMakePackageConfigHelpers)
+-  set(SHADERC_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/Shaderc")
++  set(SHADERC_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/ShadercPatched")
+   install(
+     EXPORT ShadercTargets
+-    FILE ShadercTargets.cmake
+-    NAMESPACE Shaderc::
++    FILE ShadercPatchedTargets.cmake
++    NAMESPACE ShadercPatched::
+     DESTINATION "${SHADERC_INSTALL_CMAKEDIR}"
+   )
+   configure_package_config_file(ShadercConfig.cmake.in
+-    "${CMAKE_CURRENT_BINARY_DIR}/ShadercConfig.cmake"
++    "${CMAKE_CURRENT_BINARY_DIR}/ShadercPatchedConfig.cmake"
+     INSTALL_DESTINATION "${SHADERC_INSTALL_CMAKEDIR}"
+   )
+   write_basic_package_version_file(
+-    "${CMAKE_CURRENT_BINARY_DIR}/ShadercConfigVersion.cmake"
++    "${CMAKE_CURRENT_BINARY_DIR}/ShadercPatchedConfigVersion.cmake"
+     VERSION "${CMAKE_PROJECT_VERSION}"
+     COMPATIBILITY SameMajorVersion
+   )
+   install(
+     FILES
+-      "${CMAKE_CURRENT_BINARY_DIR}/ShadercConfig.cmake"
+-      "${CMAKE_CURRENT_BINARY_DIR}/ShadercConfigVersion.cmake"
++      "${CMAKE_CURRENT_BINARY_DIR}/ShadercPatchedConfig.cmake"
++      "${CMAKE_CURRENT_BINARY_DIR}/ShadercPatchedConfigVersion.cmake"
+       DESTINATION "${SHADERC_INSTALL_CMAKEDIR}"
+   )
+ endif()
+diff --git a/ShadercConfig.cmake.in b/ShadercConfig.cmake.in
+index bfdf945..f2e27b6 100644
+--- a/ShadercConfig.cmake.in
++++ b/ShadercConfig.cmake.in
+@@ -1,10 +1,10 @@
+ @PACKAGE_INIT@
+ 
+-include("${CMAKE_CURRENT_LIST_DIR}/ShadercTargets.cmake")
++include("${CMAKE_CURRENT_LIST_DIR}/ShadercPatchedTargets.cmake")
+ 
+ check_required_components(Shaderc)
+ 
+-get_target_property(TEMP_SHADERC_LOCATION Shaderc::shaderc_shared LOCATION)
+-message(STATUS "Found Shaderc: ${TEMP_SHADERC_LOCATION}")
++get_target_property(TEMP_SHADERC_LOCATION ShadercPatched::shaderc_shared LOCATION)
++message(STATUS "Found ShadercPatched: ${TEMP_SHADERC_LOCATION}")
+ unset(TEMP_SHADERC_LOCATION)
+ 
 diff --git a/cmake/shaderc.pc.in b/cmake/shaderc-patched.pc.in
 similarity index 93%
 rename from cmake/shaderc.pc.in
@@ -46,7 +93,7 @@ index 6d217bf..84600c8 100644
  Version: @CURRENT_VERSION@
  URL: https://github.com/google/shaderc
 diff --git a/libshaderc/CMakeLists.txt b/libshaderc/CMakeLists.txt
-index bc0504e..74a9db6 100644
+index 4192998..70376e8 100644
 --- a/libshaderc/CMakeLists.txt
 +++ b/libshaderc/CMakeLists.txt
 @@ -12,7 +12,7 @@
@@ -58,46 +105,29 @@ index bc0504e..74a9db6 100644
  
  # Even though shaderc.hpp is a headers-only library, adding
  # a dependency here will force clients of the library to rebuild
-@@ -24,16 +24,17 @@ set(SHADERC_SOURCES
-   src/shaderc_private.h
- )
- 
--add_library(shaderc_shared SHARED ${SHADERC_SOURCES})
--shaderc_default_compile_options(shaderc_shared)
--target_include_directories(shaderc_shared
-+add_library(shaderc-patched_shared SHARED ${SHADERC_SOURCES})
-+shaderc_default_compile_options(shaderc-patched_shared)
-+target_include_directories(shaderc-patched_shared
-     PUBLIC include
-     PRIVATE ${glslang_SOURCE_DIR}
-             ${SPIRV-Headers_SOURCE_DIR}/include)
--target_compile_definitions(shaderc_shared
-+target_compile_definitions(shaderc-patched_shared
-     PRIVATE SHADERC_IMPLEMENTATION
+@@ -35,6 +35,9 @@ target_compile_definitions(shaderc_shared
      PUBLIC SHADERC_SHAREDLIB
  )
-+set_target_properties(shaderc-patched_shared PROPERTIES SOVERSION 1)
  
++set_target_properties(shaderc_shared PROPERTIES OUTPUT_NAME "shaderc-patched_shared")
++set_target_properties(shaderc_shared PROPERTIES SOVERSION 1)
++
  if(SHADERC_ENABLE_INSTALL)
    install(
-@@ -44,9 +45,9 @@ if(SHADERC_ENABLE_INSTALL)
+     FILES
+@@ -44,7 +47,7 @@ if(SHADERC_ENABLE_INSTALL)
        include/shaderc/shaderc.h
        include/shaderc/shaderc.hpp
      DESTINATION
 -      ${CMAKE_INSTALL_INCLUDEDIR}/shaderc)
 +      ${CMAKE_INSTALL_INCLUDEDIR}/shaderc-patched)
  
--  install(TARGETS shaderc_shared
-+  install(TARGETS shaderc-patched_shared
-     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-     BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
-@@ -61,18 +62,7 @@ set(SHADERC_LIBS
-   SPIRV-Tools
- )
+   install(TARGETS shaderc_shared
+     EXPORT ShadercTargets
+@@ -65,17 +68,6 @@ set(SHADERC_LIBS
  
--target_link_libraries(shaderc_shared PRIVATE ${SHADERC_LIBS})
--
+ target_link_libraries(shaderc_shared PRIVATE ${SHADERC_LIBS})
+ 
 -shaderc_add_tests(
 -  TEST_PREFIX shaderc_shared
 -  LINK_LIBS shaderc_shared SPIRV-Tools
@@ -108,10 +138,10 @@ index bc0504e..74a9db6 100644
 -    shaderc
 -    shaderc_cpp
 -    shaderc_private)
-+target_link_libraries(shaderc-patched_shared PRIVATE ${SHADERC_LIBS})
- 
+-
  if(${SHADERC_ENABLE_TESTS})
    add_executable(shaderc_c_smoke_test ./src/shaderc_c_smoke_test.c)
+   shaderc_default_c_compile_options(shaderc_c_smoke_test)
 -- 
-2.45.2
+2.46.0
 
