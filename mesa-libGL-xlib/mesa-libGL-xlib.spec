@@ -23,7 +23,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.1.5
+Version:        24.2.1
 Release:        1%{?dist}
 
 License:        MIT
@@ -68,6 +68,7 @@ BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
+BuildRequires:  python3-pyyaml
 BuildRequires:  pkgconfig(libzstd)
 Recommends:     x2goserver
 Requires:       %{pkgname}-libglapi%{?_isa} >= %{version}
@@ -107,7 +108,7 @@ EOF
 %meson \
   -Dplatforms=x11 \
   -Ddri3=disabled \
-  -Dgallium-drivers=swrast \
+  -Dgallium-drivers=softpipe \
   -Dgallium-vdpau=disabled \
   -Dgallium-omx=disabled \
   -Dgallium-va=disabled \
@@ -175,6 +176,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 24.2.1-1
+- 24.2.1
+
 * Wed Jul 31 2024 Phantom X <megaphantomx at hotmail dot com> - 24.1.5-1
 - 24.1.5
 

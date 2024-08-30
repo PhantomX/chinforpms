@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.6
+%define specrpmversion 6.10.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1141,7 +1141,6 @@ Patch7111:  %{pf_url}/eb39f3b994af0c9a95bc198944af0e569c7777c5.patch#/pf-cb-eb39
 Patch7112:  %{pf_url}/9220cfac539292d822c7f8f3c0a200a67d3f9728.patch#/pf-cb-9220cfa.patch
 Patch7113:  %{pf_url}/2e0d009881189142d2247d520f75a5cfee2906cd.patch#/pf-cb-2e0d009.patch
 Patch7114:  %{pf_url}/8d53b1e80393751ef08f6313b8fda94de966dc4c.patch#/pf-cb-8d53b1e.patch
-Patch7115:  %{pf_url}/a686ddf85d73e17cab7b768ff2cf98aa86b99307.patch#/pf-cb-a686ddf.patch
 # zstd
 Patch7200:  %{pf_url}/68578a23043c775459234f67a3b099986600597e.patch#/pf-cb-68578a2.patch
 Patch7201:  %{pf_url}/35b1e59a35772edb7d4ae2225d5f4fc6cd7f5a49.patch#/pf-cb-35b1e59.patch
@@ -2059,7 +2058,6 @@ ApplyPatch %{PATCH7111}
 ApplyPatch %{PATCH7112}
 ApplyPatch %{PATCH7113}
 ApplyPatch %{PATCH7114}
-ApplyPatch %{PATCH7115}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4366,6 +4364,9 @@ fi\
 #
 #
 %changelog
+* Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.7-500.chinfo
+- 6.10.7
+
 * Mon Aug 19 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.6-500.chinfo
 - 6.10.6
 

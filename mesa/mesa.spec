@@ -12,11 +12,13 @@
 %global with_r300 1
 %global with_r600 1
 %global with_nine 1
-%global with_nvk %{with vulkan_hw}
+%if 0%{?with_vulkan_hw}
+%global with_nvk %{with_vulkan_hw}
+%endif
 %global with_omx 1
 %global with_opencl 1
 %endif
-%global base_vulkan ,amd
+%global base_vulkan %{?with_vulkan_hw:,amd}%{!?with_vulkan_hw:%{nil}}
 %endif
 
 %ifnarch %{ix86}
@@ -33,25 +35,27 @@
 %if !0%{?rhel}
 %global with_intel_clc 1
 %endif
-%global intel_platform_vulkan ,intel,intel_hasvk
+%global intel_platform_vulkan %{?with_vulkan_hw:,intel,intel_hasvk}%{!?with_vulkan_hw:%{nil}}
 %endif
 %ifarch x86_64
+%if !0%{?with_vulkan_hw}
 %global with_intel_vk_rt 1
+%endif
 %endif
 
 %ifarch aarch64 x86_64 %{ix86}
 %if !0%{?rhel}
 %global with_lima      1
 %global with_vc4       1
-%endif
 %global with_etnaviv   1
-%global with_freedreno 1
 %global with_kmsro     1
-%global with_panfrost  1
 %global with_tegra     1
+%endif
+%global with_freedreno 1
+%global with_panfrost  1
 %global with_v3d       1
 %global with_xa        1
-%global extra_platform_vulkan ,broadcom,freedreno,panfrost,imagination-experimental
+%global extra_platform_vulkan %{?with_vulkan_hw:,broadcom,freedreno,panfrost,imagination-experimental}%{!?with_vulkan_hw:%{nil}}
 %endif
 
 %if !0%{?rhel}
@@ -91,7 +95,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.1.5
+Version:        24.2.1
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -209,6 +213,7 @@ BuildRequires:  python3-mako
 BuildRequires:  python3-ply
 %endif
 BuildRequires:  python3-pycparser
+BuildRequires:  python3-pyyaml
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 %if 0%{?with_vulkan_hw}
@@ -483,7 +488,7 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Ddri3=enabled \
   -Dosmesa=true \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_kmsro:,kmsro}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
+  -Dgallium-drivers=swrast,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink} \
 %else
   -Dgallium-drivers=swrast,virgl \
 %endif
@@ -655,7 +660,9 @@ popd
 %files dri-drivers
 %dir %{_datadir}/drirc.d
 %{_datadir}/drirc.d/00-mesa-defaults.conf
+%{_libdir}/libgallium-*.so
 %{_libdir}/dri/kms_swrast_dri.so
+%{_libdir}/dri/libdril_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
 
@@ -743,6 +750,7 @@ popd
 %{_libdir}/dri/sti_dri.so
 %{_libdir}/dri/sun4i-drm_dri.so
 %{_libdir}/dri/udl_dri.so
+%{_libdir}/dri/vkms_dri.so
 %{_libdir}/dri/zynqmp-dpsub_dri.so
 %endif
 %if 0%{?with_vulkan_hw}
@@ -756,6 +764,7 @@ popd
 
 %if 0%{?with_va}
 %files va-drivers
+%{_libdir}/dri/libgallium_drv_video.so
 %{_libdir}/dri/nouveau_drv_video.so
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_drv_video.so
@@ -768,6 +777,7 @@ popd
 
 %if 0%{?with_vdpau}
 %files vdpau-drivers
+%{_libdir}/vdpau/libvdpau_gallium.so.1*
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %if 0%{?with_r600}
 %{_libdir}/vdpau/libvdpau_r600.so.1*
@@ -820,6 +830,9 @@ popd
 
 
 %changelog
+* Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 24.2.1-100
+- 24.2.1
+
 * Wed Jul 31 2024 Phantom X <megaphantomx at hotmail dot com> - 24.1.5-100
 - 24.1.5
 

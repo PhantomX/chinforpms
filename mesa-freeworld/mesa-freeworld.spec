@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.1.5
+Version:        24.2.1
 Release:        100%{?dist}
 
 Epoch:          100
@@ -95,6 +95,7 @@ BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
+BuildRequires:  python3-pyyaml
 BuildRequires:  pkgconfig(libzstd)
 
 %description
@@ -190,6 +191,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 %files -n %{pkgname}-va-drivers-freeworld
 %license docs/license.rst
+%{_libdir}/dri/libgallium_drv_video.so
 %{_libdir}/dri/nouveau_drv_video.so
 %{_libdir}/dri/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
@@ -202,6 +204,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 %files -n %{pkgname}-vdpau-drivers-freeworld
 %license docs/license.rst
+%{_libdir}/vdpau/libvdpau_gallium.so.1*
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %if 0%{?with_r600}
@@ -214,6 +217,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.1-100
+- 24.2.1
+
 * Wed Jul 31 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.1.5-100
 - 24.1.5
 
