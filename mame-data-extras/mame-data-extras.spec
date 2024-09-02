@@ -2,25 +2,25 @@
 %global __strip /bin/true
 
 %global cheatver 0264
-%global historyver 266
-%global infover 0266
+%global historyver 269
+%global infover 0269
+%global cheat_url https://www.mamecheat.co.uk
+%global history_url https://www.arcade-history.com
+%global info_url https://www.mameworld.info/mameinfo
 
-%global samplelink http://samples.mameworld.info/wav
+%global samplelink https://www.mameworld.info/samples/wav
 
 Name:           mame-data-extras
-Version:        0.267
+Version:        0.269
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
 License:        LicenseRef-Fedora-UltraPermissive
 URL:            http://mamedev.org
 
-# http://cheat.retrogames.com/
-Source0:       http://cheat.retrogames.com/download/cheat%{cheatver}.zip
-# http://www.arcade-history.com/
-Source1:       http://www.arcade-history.com/dats/history%{historyver}.zip
-# http://mameinfo.mameworld.info/
-Source2:       http://www.mameworld.info/mameinfo/download/Mameinfo%{infover}.zip
+Source0:       %{cheat_url}/download/cheat%{cheatver}.zip
+Source1:       %{history_url}/dats/history%{historyver}.zip
+Source2:       %{info_url}/files+/Mameinfo%{infover}.zip
 
 # http://www.mameworld.net/mrdo/mame_art
 Source10:       scanlines_apertures.zip
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Sat Aug 31 2024 Phantom X <megaphantomx at hotmail dot com> - 0.269-1
+- 0.269
+
 * Tue Jul 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0.267-1
 - 0.267
 

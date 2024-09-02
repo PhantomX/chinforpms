@@ -16,7 +16,7 @@
 %global ffmpegcodec 115541
 
 Name:           vivaldi
-Version:        6.8.3381.57
+Version:        6.9.3447.37
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -156,6 +156,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Aug 30 2024 - 6.9.3447.37-1
+- 6.9.3447.37
+
 * Sat Aug 24 2024 - 6.8.3381.57-1
 - 6.8.3381.57
 

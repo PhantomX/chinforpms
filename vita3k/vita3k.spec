@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f5175e88e0cdb7d639518e94758a7d39e8102e65
+%global commit f01a4e9b63583aa901f37a54523360be33034ccb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240806
+%global date 20240825
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -161,7 +161,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3626
+Version:        0.2.0.3631
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
