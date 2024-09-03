@@ -1,12 +1,12 @@
-%global commit 842c15192041f8e71c512851834f4dadb1a554fb
+%global commit 144f3a3f1209994d8d9e8a87964a989cb9911c1e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240704
+%global date 20240802
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           discord-rpc
 Version:        3.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Discord Rich Presence library
 
 License:        MIT

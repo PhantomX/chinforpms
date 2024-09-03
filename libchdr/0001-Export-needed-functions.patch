@@ -1,16 +1,16 @@
-From 3c0f60b0069929887301fd1eb4737637c6666c4c Mon Sep 17 00:00:00 2001
+From 10ac7ed599f3fccfa695e942d44e1912446a5c48 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 9 Nov 2023 00:25:50 -0300
-Subject: [PATCH] Export subtype parsing functions
+Subject: [PATCH] Export needed functions
 
 ---
- include/libchdr/cdrom.h | 18 ++++++++++++++++--
- src/libchdr_cdrom.c     |  4 ++--
+ include/libchdr/cdrom.h | 26 ++++++++++++++++++++------
+ src/libchdr_cdrom.c     | 10 +++++-----
  src/link.T              |  2 +-
- 3 files changed, 19 insertions(+), 5 deletions(-)
+ 3 files changed, 26 insertions(+), 12 deletions(-)
 
 diff --git a/include/libchdr/cdrom.h b/include/libchdr/cdrom.h
-index 0e97847..5534817 100644
+index 715a19c..234f2d4 100644
 --- a/include/libchdr/cdrom.h
 +++ b/include/libchdr/cdrom.h
 @@ -54,8 +54,22 @@ enum
@@ -38,8 +38,22 @@ index 0e97847..5534817 100644
  
  
  #define CD_FLAG_GDROM   0x00000001  /* disc is a GD-ROM, all tracks should be stored with GD-ROM metadata */
+@@ -68,10 +82,10 @@ bool cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint3
+ #ifdef WANT_RAW_DATA_SECTOR
+ /* ECC utilities */
+ int ecc_verify(const uint8_t *sector);
+-void ecc_generate(uint8_t *sector);
++CHD_EXPORT void ecc_generate(uint8_t *sector);
+ void ecc_clear(uint8_t *sector);
+-uint32_t edc_compute(const uint8_t* data, uint32_t length);
+-void edc_set(uint8_t* dst, uint32_t edc);
++CHD_EXPORT uint32_t edc_compute(const uint8_t* data, uint32_t length);
++CHD_EXPORT void edc_set(uint8_t* dst, uint32_t edc);
+ #endif
+ 
+ 
 diff --git a/src/libchdr_cdrom.c b/src/libchdr_cdrom.c
-index aa06b49..1f7f265 100644
+index d34f88e..8adee31 100644
 --- a/src/libchdr_cdrom.c
 +++ b/src/libchdr_cdrom.c
 @@ -20,7 +20,7 @@
@@ -60,17 +74,44 @@ index aa06b49..1f7f265 100644
  {
  	// https://github.com/mamedev/mame/blob/d2d54fb8ed53a2e86d308067da8414f85b5929b0/src/lib/util/cdrom.cpp#L767
    if (!strcmp(typestring, "RW"))
+@@ -413,7 +413,7 @@ int ecc_verify(const uint8_t *sector)
+  * @param [in,out]  sector  If non-null, the sector.
+  */
+ 
+-void ecc_generate(uint8_t *sector)
++CHD_EXPORT void ecc_generate(uint8_t *sector)
+ {
+ 	int byte;
+ 	/* first verify P bytes */
+@@ -473,7 +473,7 @@ static const uint32_t edc_table[256] = {
+ 	0x71c0fc00, 0xe151fd01, 0xe0e1fe01, 0x7070ff00
+ };
+ 
+-uint32_t edc_compute(const uint8_t* data, uint32_t length)
++CHD_EXPORT uint32_t edc_compute(const uint8_t* data, uint32_t length)
+ {
+   uint32_t edc = 0;
+   for (uint32_t i = 0; i < length; i++)
+@@ -481,7 +481,7 @@ uint32_t edc_compute(const uint8_t* data, uint32_t length)
+   return edc;
+ }
+ 
+-void edc_set(uint8_t* dst, uint32_t edc)
++CHD_EXPORT void edc_set(uint8_t* dst, uint32_t edc)
+ {
+   // store in little-endian byte order
+   memcpy(dst, &edc, sizeof(edc));
 diff --git a/src/link.T b/src/link.T
-index ea37716..6112c2d 100644
+index ea37716..368749f 100644
 --- a/src/link.T
 +++ b/src/link.T
 @@ -1,5 +1,5 @@
  {
 -   global: chd_*;
-+   global: chd_*; cdrom_*;
++   global: chd_*; cdrom_*; ecc_*; edc_*;
     local: *;
  };
  
 -- 
-2.41.0
+2.46.0
 

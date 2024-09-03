@@ -13,8 +13,8 @@ index 14f79f9..b92fcbe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,12 @@ execute_process(
-     ERROR_QUIET
- )
+ set(CMAKE_C_VISIBILITY_PRESET hidden)
+ set(CMAKE_CXX_VISIBILITY_PRESET hidden)
  
 -set(RAPIDJSON "${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/rapidjson")
 +find_package(RapidJSON)
