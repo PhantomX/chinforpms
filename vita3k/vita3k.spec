@@ -461,7 +461,6 @@ pushd external/ffmpeg
 sed -e '/target_link_libraries/s|INTERFACE|\0 va va-drm va-x11 X11|g' -i CMakeLists.txt
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
-  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
   -i include/ffmpeg-linux_*.sh
 popd

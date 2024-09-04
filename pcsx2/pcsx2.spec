@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.118
+Version:        2.1.126
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -162,7 +162,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
-BuildRequires:  pkgconfig(sdl2) >= 2.30.5
+BuildRequires:  pkgconfig(sdl2) >= 2.30.7
 %if %{with shaderc}
 BuildRequires:  cmake(ShadercPatched)
 Requires:       libshaderc-patched%{?_isa}

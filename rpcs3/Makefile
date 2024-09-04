@@ -1,5 +1,5 @@
 NAME = ffmpeg-core
-VERSION ?= bf019f8c88bc64638fccef62840e935ab2689a4a
+VERSION ?= 10d0ebc0b8c7c4f0b242c9998c8bdc4e55bb5067
 
 TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
 DLSTR = ${VERSION}

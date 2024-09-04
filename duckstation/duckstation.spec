@@ -1,6 +1,5 @@
 %undefine _cmake_shared_libs
-# no defined reference for "fastjmp_set"
-%global _lto_cflags -fno-lto
+%dnl %global _lto_cflags -fno-lto
 %global build_type_safety_c 0
 
 %bcond_with clang
@@ -15,15 +14,15 @@
 %bcond_with nogui
 
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 %bcond_with minizip
 # Enable system rapidyml
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 7d40228765a7f29d5651918a5c1c4863f55d2c79
+%global commit d9079d7e38e3e34224f12ae35e9ad57d713339f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240901
+%global date 20240903
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -33,7 +32,7 @@
 %global appname org.%{name}.DuckStation
 %global vc_url  https://github.com/stenzek/%{name}
 
-%global fmt_ver 10.1.1
+%global fmt_ver 11.0.2
 %global glad_ver 0.1.33
 %global imgui_ver 1.90.1
 %global md5_ver 1.6
@@ -42,7 +41,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7478
+Version:        0.1.7495
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -95,7 +94,7 @@ BuildRequires:  qt6-qtbase-private-devel
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
 %if %{with fmt}
-BuildRequires:  pkgconfig(fmt) >= 10.1
+BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
@@ -111,7 +110,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(lunasvgPatched) >= 2.4.1
-BuildRequires:  pkgconfig(sdl2) >= 2.30.6
+BuildRequires:  pkgconfig(sdl2) >= 2.30.7
 BuildRequires:  cmake(ShadercPatched)
 BuildRequires:  cmake(SoundTouchPatched) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
@@ -212,7 +211,7 @@ rm -rf \
   rm -rf fmt
 %else
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
-cp fmt/LICENSE.rst LICENSE.fmt.rst
+cp fmt/LICENSE LICENSE.fmt
 %endif
 
 %if %{with minizip}
@@ -287,6 +286,9 @@ sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
 
 echo 'target_include_directories(core PUBLIC %{_includedir}/discord-rpc)' \
   >> src/core/CMakeLists.txt
+
+echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)' \
+  >> src/common/CMakeLists.txt
 
 
 %build

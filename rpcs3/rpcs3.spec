@@ -1,6 +1,11 @@
-%global _lto_cflags -fno-lto
 %undefine _hardened_build
 %undefine _cmake_shared_libs
+
+# Enable unsupported lto support
+%bcond_with     lto
+%if %{without lto}
+%global _lto_cflags -fno-lto
+%endif
 
 %bcond_with     clang
 %if %{with clang}
@@ -15,7 +20,7 @@
 %bcond_with     native
 # Enable system ffmpeg
 %bcond_without  ffmpeg
-%global bundleffmpegver 4.2.1
+%global bundleffmpegver 5.2.1
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without  smallffmpeg
 # Enable system flatbuffers
@@ -40,9 +45,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 1c16ada670bb396e98b33ec4510c1b3efb534724
+%global commit 23f9eb57e54d0ea2ae63045cd378d9e7bcd08301
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240822
+%global date 20240903
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -85,7 +90,7 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
 
-%global commit20 9a2df87789ebfecf64d35d732e5847662fbd5520
+%global commit20 10d0ebc0b8c7c4f0b242c9998c8bdc4e55bb5067
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
@@ -111,7 +116,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.32.16857
+Version:        0.0.33.16889
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -146,6 +151,7 @@ Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
 Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %endif
 %endif
+Source200:      ffmpeg-linux_x86-64.sh
 %if %{without flatbuffers}
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
@@ -321,9 +327,9 @@ sed \
 %if %{without ffmpeg}
 tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
 
-cp -p 3rdparty/ffmpeg/LICENSE.md 3rdparty/LICENSE.ffmpeg.md
+cp -p 3rdparty/ffmpeg/copyright 3rdparty/copyright.ffmpeg
 
-sed -e 's|${FFMPEG_LIB_SWRESAMPLE}|\0 va va-drm va-x11|g' -i 3rdparty/CMakeLists.txt
+cp -p %{S:200} 3rdparty/ffmpeg/include/
 
 pushd 3rdparty/ffmpeg
 rm -rf linux/*/*
@@ -331,11 +337,13 @@ rm -rf macos/*/*
 rm -rf windows/*/*
 
 sed \
+  -e '/target_link_libraries/s|INTERFACE|\0 va va-drm va-x11 X11|g' \
+  -e 's|${CMAKE_CURRENT_SOURCE_DIR}|${CMAKE_BINARY_DIR}|g' \
+  -i CMakeLists.txt
+sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
-  -e 's|disable-yasm|\0 --enable-vaapi --enable-hwaccel=h264_vaapi|g' \
-  -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
-  -i linux_*.sh
+  -i include/ffmpeg-linux_*.sh
 
 popd
 %else
@@ -392,20 +400,26 @@ sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_pad_handler.cpp
 
+%if %{with lto}
+  sed -e '/FOUND_LTO/s|-flto|-fenabled_lto|g' -i CMakeLists.txt
+%endif
+
 
 %build
-%set_build_flags
-
 %if %{without ffmpeg}
-pushd 3rdparty/ffmpeg
+pushd 3rdparty/ffmpeg/include
 sed \
   -e "/extra-cflags/s|-O3|$CFLAGS|g" \
-  -i linux_*.sh
-./linux_x86-64.sh
+  -i ffmpeg-linux_*.sh
+chmod +x ffmpeg-linux_*.sh
+%ifarch x86_64
+%{?with_clang:CFLAGS=} ./ffmpeg-linux_x86-64.sh
+%endif
 %make_build
 make install
-mv linux/x86_64/lib/*.a linux/x86_64/
 popd
+mkdir -p %{__cmake_builddir}/external/ffmpeg/lib
+mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffmpeg/lib/
 %endif
 
 %cmake \
@@ -481,6 +495,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Sep 04 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.33.16889-1.20240903git23f9eb5
+- 0.0.33.16889
+
 * Sun May 05 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.32.16416-1.20240504git0fcb0b7
 - 0.0.32.16416
 

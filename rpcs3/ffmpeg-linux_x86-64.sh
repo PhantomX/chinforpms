@@ -60,13 +60,20 @@ DEMUXERS="\
 VIDEO_ENCODERS="\
     --enable-encoder=ffv1 \
     --enable-encoder=mjpeg \
-    --enable-encoder=mpeg4"
+    --enable-encoder=mpeg4 \
+    --enable-encoder=h264"
 
 AUDIO_ENCODERS="\
-    --enable-encoder=pcm_s16le"
+    --enable-encoder=pcm_s16le \
+    --enable-encoder=mp3 \
+    --enable-encoder=ac3 \
+    --enable-encoder=aac"
 
 MUXERS="\
-    --enable-muxer=avi"
+    --enable-muxer=avi \
+    --enable-muxer=h264 \
+    --enable-muxer=mjpeg \
+    --enable-muxer=mp4"
 
 PARSERS="\
     --enable-parser=h264 \
@@ -81,7 +88,6 @@ PROTOCOLS="\
     --enable-protocol=file"
 
 EXTRA="\
-    --enable-bsf=mjpeg2jpeg \
     --enable-indev=dshow"
 
 ./configure \
