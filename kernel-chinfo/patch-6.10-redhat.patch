@@ -1,42 +1,70 @@
- Makefile                                           |  20 +-
+ Documentation/virt/kvm/api.rst                     |   3 +
+ Makefile                                           |  12 ++
+ arch/arm/Kconfig                                   |   4 +-
+ arch/arm64/Kconfig                                 |   2 +-
+ arch/powerpc/include/asm/kvm_host.h                |   3 +
+ arch/powerpc/include/uapi/asm/kvm.h                |   3 +
+ arch/powerpc/kvm/book3s_hv.c                       |  18 +++
+ arch/powerpc/kvm/book3s_hv.h                       |   3 +
+ arch/powerpc/kvm/book3s_hv_nestedv2.c              |  18 +++
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  98 +++-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ arch/x86/kernel/setup.c                            |  22 ++-
+ certs/extract-cert.c                               |  25 +---
+ crypto/drbg.c                                      |  18 ++-
+ crypto/rng.c                                       | 149 ++++++++++++++++++---
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
+ drivers/char/random.c                              | 122 +++++++++++++++++
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
+ drivers/firmware/efi/efi.c                         | 124 ++++++++++++-----
+ drivers/firmware/efi/secureboot.c                  |  38 ++++++
+ drivers/hid/hid-rmi.c                              |  66 ---------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++-------
+ drivers/iommu/iommu.c                              |  22 +++
  drivers/media/pci/intel/ipu-bridge.c               |  40 ++++--
- drivers/pci/quirks.c                               |  24 +
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ include/linux/crypto.h                             |   1 +
+ include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
- include/linux/module.h                             |   5 +
- include/linux/rh_kabi.h                            | 172 +++++++++++++++++++++
+ include/linux/random.h                             |  10 ++
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
- kernel/module/main.c                               |   7 +
  kernel/module/signing.c                            |   9 +-
- scripts/mod/modpost.c                              |   8 +
+ scripts/sign-file.c                                |  29 +---
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
+ security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
- security/security.c                                |  12 +
- 78 files changed, 2557 insertions(+), 268 deletions(-)
+ security/security.c                                |  12 ++
+ 47 files changed, 827 insertions(+), 256 deletions(-)
 
+diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
+index eec8df1dde06..88f49dd10cd0 100644
+--- a/Documentation/virt/kvm/api.rst
++++ b/Documentation/virt/kvm/api.rst
+@@ -2445,8 +2445,11 @@ registers, find a list below:
+   PPC     KVM_REG_PPC_PSSCR               64
+   PPC     KVM_REG_PPC_DEC_EXPIRY          64
+   PPC     KVM_REG_PPC_PTCR                64
++  PPC     KVM_REG_PPC_HASHKEYR            64
++  PPC     KVM_REG_PPC_HASHPKEYR           64
+   PPC     KVM_REG_PPC_DAWR1               64
+   PPC     KVM_REG_PPC_DAWRX1              64
++  PPC     KVM_REG_PPC_DEXCR               64
+   PPC     KVM_REG_PPC_TM_GPR0             64
+   ...
+   PPC     KVM_REG_PPC_TM_GPR31            64
 diff --git a/Makefile b/Makefile
-index b25b5b44af10..57f5aed0475a 100644
+index ab77d171e268..c46aa8337181 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -58,21 +86,149 @@ index b25b5b44af10..57f5aed0475a 100644
  # We are using a recursive build, so we need to do a little thinking
  # to get the ordering right.
  #
-@@ -1256,7 +1268,13 @@ define filechk_version.h
- 	((c) > 255 ? 255 : (c)))';                                       \
- 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
- 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
--	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
-+	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
-+	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
-+	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
-+	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
-+	echo '#define RHEL_RELEASE_CODE \
-+		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
-+	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
- endef
+diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+index ee5115252aac..7f3796df8404 100644
+--- a/arch/arm/Kconfig
++++ b/arch/arm/Kconfig
+@@ -1224,9 +1224,9 @@ config HIGHMEM
+ 	  If unsure, say n.
  
- $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
+ config HIGHPTE
+-	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
++	bool "Allocate 2nd-level pagetables from highmem"
+ 	depends on HIGHMEM
+-	default y
++	default n
+ 	help
+ 	  The VM uses one page of physical memory for each page table.
+ 	  For systems with a lot of processes, this can use a lot of
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index 11bbdc15c6e5..9cecc1448e3c 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1364,7 +1364,7 @@ endchoice
+ 
+ config ARM64_FORCE_52BIT
+ 	bool "Force 52-bit virtual addresses for userspace"
+-	depends on ARM64_VA_BITS_52 && EXPERT
++	depends on ARM64_VA_BITS_52
+ 	help
+ 	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
+ 	  to maintain compatibility with older software by providing 48-bit VAs
+diff --git a/arch/powerpc/include/asm/kvm_host.h b/arch/powerpc/include/asm/kvm_host.h
+index 8abac532146e..6a0c771d3ce8 100644
+--- a/arch/powerpc/include/asm/kvm_host.h
++++ b/arch/powerpc/include/asm/kvm_host.h
+@@ -599,6 +599,9 @@ struct kvm_vcpu_arch {
+ 	ulong dawrx0;
+ 	ulong dawr1;
+ 	ulong dawrx1;
++	ulong dexcr;
++	ulong hashkeyr;
++	ulong hashpkeyr;
+ 	ulong ciabr;
+ 	ulong cfar;
+ 	ulong ppr;
+diff --git a/arch/powerpc/include/uapi/asm/kvm.h b/arch/powerpc/include/uapi/asm/kvm.h
+index 1691297a766a..eaeda001784e 100644
+--- a/arch/powerpc/include/uapi/asm/kvm.h
++++ b/arch/powerpc/include/uapi/asm/kvm.h
+@@ -645,6 +645,9 @@ struct kvm_ppc_cpu_char {
+ #define KVM_REG_PPC_SIER3	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc3)
+ #define KVM_REG_PPC_DAWR1	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc4)
+ #define KVM_REG_PPC_DAWRX1	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc5)
++#define KVM_REG_PPC_DEXCR	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc6)
++#define KVM_REG_PPC_HASHKEYR	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc7)
++#define KVM_REG_PPC_HASHPKEYR	(KVM_REG_PPC | KVM_REG_SIZE_U64 | 0xc8)
+ 
+ /* Transactional Memory checkpointed state:
+  * This is all GPRs, all VSX regs and a subset of SPRs
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index d8352e4d9cdc..36068c3ed8a7 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -2349,6 +2349,15 @@ static int kvmppc_get_one_reg_hv(struct kvm_vcpu *vcpu, u64 id,
+ 	case KVM_REG_PPC_DAWRX1:
+ 		*val = get_reg_val(id, kvmppc_get_dawrx1_hv(vcpu));
+ 		break;
++	case KVM_REG_PPC_DEXCR:
++		*val = get_reg_val(id, kvmppc_get_dexcr_hv(vcpu));
++		break;
++	case KVM_REG_PPC_HASHKEYR:
++		*val = get_reg_val(id, kvmppc_get_hashkeyr_hv(vcpu));
++		break;
++	case KVM_REG_PPC_HASHPKEYR:
++		*val = get_reg_val(id, kvmppc_get_hashpkeyr_hv(vcpu));
++		break;
+ 	case KVM_REG_PPC_CIABR:
+ 		*val = get_reg_val(id, kvmppc_get_ciabr_hv(vcpu));
+ 		break;
+@@ -2592,6 +2601,15 @@ static int kvmppc_set_one_reg_hv(struct kvm_vcpu *vcpu, u64 id,
+ 	case KVM_REG_PPC_DAWRX1:
+ 		kvmppc_set_dawrx1_hv(vcpu, set_reg_val(id, *val) & ~DAWRX_HYP);
+ 		break;
++	case KVM_REG_PPC_DEXCR:
++		kvmppc_set_dexcr_hv(vcpu, set_reg_val(id, *val));
++		break;
++	case KVM_REG_PPC_HASHKEYR:
++		kvmppc_set_hashkeyr_hv(vcpu, set_reg_val(id, *val));
++		break;
++	case KVM_REG_PPC_HASHPKEYR:
++		kvmppc_set_hashpkeyr_hv(vcpu, set_reg_val(id, *val));
++		break;
+ 	case KVM_REG_PPC_CIABR:
+ 		kvmppc_set_ciabr_hv(vcpu, set_reg_val(id, *val));
+ 		/* Don't allow setting breakpoints in hypervisor code */
+diff --git a/arch/powerpc/kvm/book3s_hv.h b/arch/powerpc/kvm/book3s_hv.h
+index 47b2c815641e..a404c9b221c1 100644
+--- a/arch/powerpc/kvm/book3s_hv.h
++++ b/arch/powerpc/kvm/book3s_hv.h
+@@ -116,6 +116,9 @@ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(dawr0, 64, KVMPPC_GSID_DAWR0)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(dawr1, 64, KVMPPC_GSID_DAWR1)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(dawrx0, 64, KVMPPC_GSID_DAWRX0)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(dawrx1, 64, KVMPPC_GSID_DAWRX1)
++KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(dexcr, 64, KVMPPC_GSID_DEXCR)
++KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(hashkeyr, 64, KVMPPC_GSID_HASHKEYR)
++KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(hashpkeyr, 64, KVMPPC_GSID_HASHPKEYR)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(ciabr, 64, KVMPPC_GSID_CIABR)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(wort, 64, KVMPPC_GSID_WORT)
+ KVMPPC_BOOK3S_HV_VCPU_ACCESSOR(ppr, 64, KVMPPC_GSID_PPR)
+diff --git a/arch/powerpc/kvm/book3s_hv_nestedv2.c b/arch/powerpc/kvm/book3s_hv_nestedv2.c
+index 342f58314770..eeecea8f202b 100644
+--- a/arch/powerpc/kvm/book3s_hv_nestedv2.c
++++ b/arch/powerpc/kvm/book3s_hv_nestedv2.c
+@@ -193,6 +193,15 @@ static int gs_msg_ops_vcpu_fill_info(struct kvmppc_gs_buff *gsb,
+ 		case KVMPPC_GSID_DAWRX1:
+ 			rc = kvmppc_gse_put_u32(gsb, iden, vcpu->arch.dawrx1);
+ 			break;
++		case KVMPPC_GSID_DEXCR:
++			rc = kvmppc_gse_put_u64(gsb, iden, vcpu->arch.dexcr);
++			break;
++		case KVMPPC_GSID_HASHKEYR:
++			rc = kvmppc_gse_put_u64(gsb, iden, vcpu->arch.hashkeyr);
++			break;
++		case KVMPPC_GSID_HASHPKEYR:
++			rc = kvmppc_gse_put_u64(gsb, iden, vcpu->arch.hashpkeyr);
++			break;
+ 		case KVMPPC_GSID_CIABR:
+ 			rc = kvmppc_gse_put_u64(gsb, iden, vcpu->arch.ciabr);
+ 			break;
+@@ -445,6 +454,15 @@ static int gs_msg_ops_vcpu_refresh_info(struct kvmppc_gs_msg *gsm,
+ 		case KVMPPC_GSID_DAWRX1:
+ 			vcpu->arch.dawrx1 = kvmppc_gse_get_u32(gse);
+ 			break;
++		case KVMPPC_GSID_DEXCR:
++			vcpu->arch.dexcr = kvmppc_gse_get_u64(gse);
++			break;
++		case KVMPPC_GSID_HASHKEYR:
++			vcpu->arch.hashkeyr = kvmppc_gse_get_u64(gse);
++			break;
++		case KVMPPC_GSID_HASHPKEYR:
++			vcpu->arch.hashpkeyr = kvmppc_gse_get_u64(gse);
++			break;
+ 		case KVMPPC_GSID_CIABR:
+ 			vcpu->arch.ciabr = kvmppc_gse_get_u64(gse);
+ 			break;
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -99,7 +255,7 @@ index 3a7d6e172211..8163a2173247 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 90c2c786bb35..ce2456f531f1 100644
+index 610e6f794511..4fc7aca3f572 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -121,7 +277,7 @@ index 90c2c786bb35..ce2456f531f1 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 05c5aa951da7..09c1ad947f46 100644
+index 05c5aa951da7..da521c6f1cf2 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -132,7 +288,7 @@ index 05c5aa951da7..09c1ad947f46 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -902,6 +977,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -902,6 +903,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -146,7 +302,7 @@ index 05c5aa951da7..09c1ad947f46 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1064,19 +1146,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1064,19 +1072,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -167,6 +323,323 @@ index 05c5aa951da7..09c1ad947f46 100644
  
  	reserve_initrd();
  
+diff --git a/certs/extract-cert.c b/certs/extract-cert.c
+index 70e9ec89d87d..f5fb74916cee 100644
+--- a/certs/extract-cert.c
++++ b/certs/extract-cert.c
+@@ -21,7 +21,6 @@
+ #include <openssl/bio.h>
+ #include <openssl/pem.h>
+ #include <openssl/err.h>
+-#include <openssl/engine.h>
+ 
+ /*
+  * OpenSSL 3.0 deprecates the OpenSSL's ENGINE API.
+@@ -122,28 +121,8 @@ int main(int argc, char **argv)
+ 		fclose(f);
+ 		exit(0);
+ 	} else if (!strncmp(cert_src, "pkcs11:", 7)) {
+-		ENGINE *e;
+-		struct {
+-			const char *cert_id;
+-			X509 *cert;
+-		} parms;
+-
+-		parms.cert_id = cert_src;
+-		parms.cert = NULL;
+-
+-		ENGINE_load_builtin_engines();
+-		drain_openssl_errors();
+-		e = ENGINE_by_id("pkcs11");
+-		ERR(!e, "Load PKCS#11 ENGINE");
+-		if (ENGINE_init(e))
+-			drain_openssl_errors();
+-		else
+-			ERR(1, "ENGINE_init");
+-		if (key_pass)
+-			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0), "Set PKCS#11 PIN");
+-		ENGINE_ctrl_cmd(e, "LOAD_CERT_CTRL", 0, &parms, NULL, 1);
+-		ERR(!parms.cert, "Get X.509 from PKCS#11");
+-		write_cert(parms.cert);
++		fprintf(stderr, "Error: pkcs11 not implemented\n");
++		exit(1);
+ 	} else {
+ 		BIO *b;
+ 		X509 *x509;
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 3addce90930c..730b03de596a 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1494,13 +1494,14 @@ static int drbg_generate(struct drbg_state *drbg,
+  * Wrapper around drbg_generate which can pull arbitrary long strings
+  * from the DRBG without hitting the maximum request limitation.
+  *
+- * Parameters: see drbg_generate
++ * Parameters: see drbg_generate, except @reseed, which triggers reseeding
+  * Return codes: see drbg_generate -- if one drbg_generate request fails,
+  *		 the entire drbg_generate_long request fails
+  */
+ static int drbg_generate_long(struct drbg_state *drbg,
+ 			      unsigned char *buf, unsigned int buflen,
+-			      struct drbg_string *addtl)
++			      struct drbg_string *addtl,
++			      bool reseed)
+ {
+ 	unsigned int len = 0;
+ 	unsigned int slice = 0;
+@@ -1510,6 +1511,8 @@ static int drbg_generate_long(struct drbg_state *drbg,
+ 		slice = ((buflen - len) / drbg_max_request_bytes(drbg));
+ 		chunk = slice ? drbg_max_request_bytes(drbg) : (buflen - len);
+ 		mutex_lock(&drbg->drbg_mutex);
++		if (reseed)
++			drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+ 		err = drbg_generate(drbg, buf + len, chunk, addtl);
+ 		mutex_unlock(&drbg->drbg_mutex);
+ 		if (0 > err)
+@@ -1936,6 +1939,7 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+ 	struct drbg_state *drbg = crypto_rng_ctx(tfm);
+ 	struct drbg_string *addtl = NULL;
+ 	struct drbg_string string;
++	int err;
+ 
+ 	if (slen) {
+ 		/* linked list variable is now local to allow modification */
+@@ -1943,7 +1947,15 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+ 		addtl = &string;
+ 	}
+ 
+-	return drbg_generate_long(drbg, dst, dlen, addtl);
++	err = drbg_generate_long(drbg, dst, dlen, addtl,
++				 (crypto_tfm_get_flags(crypto_rng_tfm(tfm)) &
++				  CRYPTO_TFM_REQ_NEED_RESEED) ==
++				 CRYPTO_TFM_REQ_NEED_RESEED);
++
++	crypto_tfm_clear_flags(crypto_rng_tfm(tfm),
++			       CRYPTO_TFM_REQ_NEED_RESEED);
++
++	return err;
+ }
+ 
+ /*
+diff --git a/crypto/rng.c b/crypto/rng.c
+index 9d8804e46422..5ccb0485ff4b 100644
+--- a/crypto/rng.c
++++ b/crypto/rng.c
+@@ -12,10 +12,13 @@
+ #include <linux/atomic.h>
+ #include <linux/cryptouser.h>
+ #include <linux/err.h>
++#include <linux/fips.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/random.h>
++#include <linux/sched.h>
++#include <linux/sched/signal.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+@@ -23,7 +26,9 @@
+ 
+ #include "internal.h"
+ 
+-static DEFINE_MUTEX(crypto_default_rng_lock);
++static ____cacheline_aligned_in_smp DEFINE_MUTEX(crypto_reseed_rng_lock);
++static struct crypto_rng *crypto_reseed_rng;
++static ____cacheline_aligned_in_smp DEFINE_MUTEX(crypto_default_rng_lock);
+ struct crypto_rng *crypto_default_rng;
+ EXPORT_SYMBOL_GPL(crypto_default_rng);
+ static int crypto_default_rng_refcnt;
+@@ -106,31 +111,37 @@ struct crypto_rng *crypto_alloc_rng(const char *alg_name, u32 type, u32 mask)
+ }
+ EXPORT_SYMBOL_GPL(crypto_alloc_rng);
+ 
+-int crypto_get_default_rng(void)
++static int crypto_get_rng(struct crypto_rng **rngp)
+ {
+ 	struct crypto_rng *rng;
+ 	int err;
+ 
+-	mutex_lock(&crypto_default_rng_lock);
+-	if (!crypto_default_rng) {
++	if (!*rngp) {
+ 		rng = crypto_alloc_rng("stdrng", 0, 0);
+ 		err = PTR_ERR(rng);
+ 		if (IS_ERR(rng))
+-			goto unlock;
++			return err;
+ 
+ 		err = crypto_rng_reset(rng, NULL, crypto_rng_seedsize(rng));
+ 		if (err) {
+ 			crypto_free_rng(rng);
+-			goto unlock;
++			return err;
+ 		}
+ 
+-		crypto_default_rng = rng;
++		*rngp = rng;
+ 	}
+ 
+-	crypto_default_rng_refcnt++;
+-	err = 0;
++	return 0;
++}
++
++int crypto_get_default_rng(void)
++{
++	int err;
+ 
+-unlock:
++	mutex_lock(&crypto_default_rng_lock);
++	err = crypto_get_rng(&crypto_default_rng);
++	if (!err)
++		crypto_default_rng_refcnt++;
+ 	mutex_unlock(&crypto_default_rng_lock);
+ 
+ 	return err;
+@@ -146,24 +157,33 @@ void crypto_put_default_rng(void)
+ EXPORT_SYMBOL_GPL(crypto_put_default_rng);
+ 
+ #if defined(CONFIG_CRYPTO_RNG) || defined(CONFIG_CRYPTO_RNG_MODULE)
+-int crypto_del_default_rng(void)
++static int crypto_del_rng(struct crypto_rng **rngp, int *refcntp,
++		      struct mutex *lock)
+ {
+ 	int err = -EBUSY;
+ 
+-	mutex_lock(&crypto_default_rng_lock);
+-	if (crypto_default_rng_refcnt)
++	mutex_lock(lock);
++	if (refcntp && *refcntp)
+ 		goto out;
+ 
+-	crypto_free_rng(crypto_default_rng);
+-	crypto_default_rng = NULL;
++	crypto_free_rng(*rngp);
++	*rngp = NULL;
+ 
+ 	err = 0;
+ 
+ out:
+-	mutex_unlock(&crypto_default_rng_lock);
++	mutex_unlock(lock);
+ 
+ 	return err;
+ }
++
++int crypto_del_default_rng(void)
++{
++	return crypto_del_rng(&crypto_default_rng, &crypto_default_rng_refcnt,
++			      &crypto_default_rng_lock) ?:
++	       crypto_del_rng(&crypto_reseed_rng, NULL,
++			      &crypto_reseed_rng_lock);
++}
+ EXPORT_SYMBOL_GPL(crypto_del_default_rng);
+ #endif
+ 
+@@ -217,5 +237,102 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
+ }
+ EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
+ 
++static ssize_t crypto_devrandom_read_iter(struct iov_iter *iter, bool reseed)
++{
++	struct crypto_rng *rng;
++	u8 tmp[256];
++	ssize_t ret;
++
++	if (unlikely(!iov_iter_count(iter)))
++		return 0;
++
++	if (reseed) {
++		u32 flags = 0;
++
++		/* If reseeding is requested, acquire a lock on
++		 * crypto_reseed_rng so it is not swapped out until
++		 * the initial random bytes are generated.
++		 *
++		 * The algorithm implementation is also protected with
++		 * a separate mutex (drbg->drbg_mutex) around the
++		 * reseed-and-generate operation.
++		 */
++		mutex_lock(&crypto_reseed_rng_lock);
++
++		/* If crypto_default_rng is not set, it will be seeded
++		 * at creation in __crypto_get_default_rng and thus no
++		 * reseeding is needed.
++		 */
++		if (crypto_reseed_rng)
++			flags |= CRYPTO_TFM_REQ_NEED_RESEED;
++
++		ret = crypto_get_rng(&crypto_reseed_rng);
++		if (ret) {
++			mutex_unlock(&crypto_reseed_rng_lock);
++			return ret;
++		}
++
++		rng = crypto_reseed_rng;
++		crypto_tfm_set_flags(crypto_rng_tfm(rng), flags);
++	} else {
++		ret = crypto_get_default_rng();
++		if (ret)
++			return ret;
++		rng = crypto_default_rng;
++	}
++
++	for (;;) {
++		size_t i, copied;
++		int err;
++
++		i = min_t(size_t, iov_iter_count(iter), sizeof(tmp));
++		err = crypto_rng_get_bytes(rng, tmp, i);
++		if (err) {
++			ret = err;
++			break;
++		}
++
++		copied = copy_to_iter(tmp, i, iter);
++		ret += copied;
++
++		if (!iov_iter_count(iter))
++			break;
++
++		if (need_resched()) {
++			if (signal_pending(current))
++				break;
++			schedule();
++		}
++	}
++
++	if (reseed)
++		mutex_unlock(&crypto_reseed_rng_lock);
++	else
++		crypto_put_default_rng();
++	memzero_explicit(tmp, sizeof(tmp));
++
++	return ret;
++}
++
++static const struct random_extrng crypto_devrandom_rng = {
++	.extrng_read_iter = crypto_devrandom_read_iter,
++	.owner = THIS_MODULE,
++};
++
++static int __init crypto_rng_init(void)
++{
++	if (fips_enabled)
++		random_register_extrng(&crypto_devrandom_rng);
++	return 0;
++}
++
++static void __exit crypto_rng_exit(void)
++{
++	random_unregister_extrng();
++}
++
++late_initcall(crypto_rng_init);
++module_exit(crypto_rng_exit);
++
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Random Number Generator");
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 20d757687e3d..90a13f20f052 100644
 --- a/drivers/acpi/apei/hest.c
@@ -230,7 +703,7 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 503773707e01..2fead21fcb07 100644
+index cdc5a74092c7..45679565878f 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1793,6 +1793,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -339,6 +812,203 @@ index e12b531f5c2f..082707f8dff8 100644
  	mutex_lock(&ipmi_interfaces_mutex);
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 2597cb43f438..d860f4f6ba2c 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -51,6 +51,7 @@
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
+ #include <linux/uaccess.h>
++#include <linux/rcupdate.h>
+ #include <linux/suspend.h>
+ #include <linux/siphash.h>
+ #include <linux/sched/isolation.h>
+@@ -309,6 +310,11 @@ static void crng_fast_key_erasure(u8 key[CHACHA_KEY_SIZE],
+ 	memzero_explicit(first_block, sizeof(first_block));
+ }
+ 
++/*
++ * Hook for external RNG.
++ */
++static const struct random_extrng __rcu *extrng;
++
+ /*
+  * This function returns a ChaCha state that you may use for generating
+  * random data. It also returns up to 32 bytes on its own of random data
+@@ -739,6 +745,9 @@ static void __cold _credit_init_bits(size_t bits)
+ }
+ 
+ 
++static const struct file_operations extrng_random_fops;
++static const struct file_operations extrng_urandom_fops;
++
+ /**********************************************************************
+  *
+  * Entropy collection routines.
+@@ -956,6 +965,19 @@ void __init add_bootloader_randomness(const void *buf, size_t len)
+ 		credit_init_bits(len * 8);
+ }
+ 
++void random_register_extrng(const struct random_extrng *rng)
++{
++	rcu_assign_pointer(extrng, rng);
++}
++EXPORT_SYMBOL_GPL(random_register_extrng);
++
++void random_unregister_extrng(void)
++{
++	RCU_INIT_POINTER(extrng, NULL);
++	synchronize_rcu();
++}
++EXPORT_SYMBOL_GPL(random_unregister_extrng);
++
+ #if IS_ENABLED(CONFIG_VMGENID)
+ static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
+ 
+@@ -1365,6 +1387,7 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+ {
+ 	struct iov_iter iter;
+ 	int ret;
++	const struct random_extrng *rng;
+ 
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+@@ -1376,6 +1399,21 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+ 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
+ 		return -EINVAL;
+ 
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (rng) {
++		ret = import_ubuf(ITER_DEST, ubuf, len, &iter);
++		if (unlikely(ret))
++			return ret;
++		ret = rng->extrng_read_iter(&iter, !!(flags & GRND_RANDOM));
++		module_put(rng->owner);
++		return ret;
++	}
++
+ 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
+ 		if (flags & GRND_NONBLOCK)
+ 			return -EAGAIN;
+@@ -1396,6 +1434,12 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
+ 
++static __poll_t extrng_poll(struct file *file, poll_table * wait)
++{
++	/* extrng pool is always full, always read, no writes */
++	return EPOLLIN | EPOLLRDNORM;
++}
++
+ static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+@@ -1536,7 +1580,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 	return fasync_helper(fd, filp, on, &fasync);
+ }
+ 
++static int random_open(struct inode *inode, struct file *filp)
++{
++	const struct random_extrng *rng;
++
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (!rng)
++		return 0;
++
++	filp->f_op = &extrng_random_fops;
++	filp->private_data = rng->owner;
++
++	return 0;
++}
++
++static int urandom_open(struct inode *inode, struct file *filp)
++{
++	const struct random_extrng *rng;
++
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (!rng)
++		return 0;
++
++	filp->f_op = &extrng_urandom_fops;
++	filp->private_data = rng->owner;
++
++	return 0;
++}
++
++static int extrng_release(struct inode *inode, struct file *filp)
++{
++	module_put(filp->private_data);
++	return 0;
++}
++
++static ssize_t
++extrng_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
++{
++	return rcu_dereference_raw(extrng)->extrng_read_iter(iter, false);
++}
++
+ const struct file_operations random_fops = {
++	.open  = random_open,
+ 	.read_iter = random_read_iter,
+ 	.write_iter = random_write_iter,
+ 	.poll = random_poll,
+@@ -1549,6 +1644,7 @@ const struct file_operations random_fops = {
+ };
+ 
+ const struct file_operations urandom_fops = {
++	.open  = urandom_open,
+ 	.read_iter = urandom_read_iter,
+ 	.write_iter = random_write_iter,
+ 	.unlocked_ioctl = random_ioctl,
+@@ -1559,6 +1655,32 @@ const struct file_operations urandom_fops = {
+ 	.splice_write = iter_file_splice_write,
+ };
+ 
++static const struct file_operations extrng_random_fops = {
++	.open  = random_open,
++	.read_iter  = extrng_read_iter,
++	.write_iter = random_write_iter,
++	.poll  = extrng_poll,
++	.unlocked_ioctl = random_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
++	.fasync = random_fasync,
++	.llseek = noop_llseek,
++	.release = extrng_release,
++	.splice_read = copy_splice_read,
++	.splice_write = iter_file_splice_write,
++};
++
++static const struct file_operations extrng_urandom_fops = {
++	.open  = urandom_open,
++	.read_iter  = extrng_read_iter,
++	.write_iter = random_write_iter,
++	.unlocked_ioctl = random_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
++	.fasync = random_fasync,
++	.llseek = noop_llseek,
++	.release = extrng_release,
++	.splice_read = copy_splice_read,
++	.splice_write = iter_file_splice_write,
++};
+ 
+ /********************************************************************
+  *
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index a2d0009560d0..4f3486e6a84b 100644
 --- a/drivers/firmware/efi/Makefile
@@ -1022,6 +1692,34 @@ index 568410e64ce6..6afbaee83950 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
+index 6b64af7d4927..a7ad470b8b8c 100644
+--- a/drivers/scsi/sd.c
++++ b/drivers/scsi/sd.c
+@@ -120,6 +120,14 @@ static const char *sd_cache_types[] = {
+ 	"write back, no read (daft)"
+ };
+ 
++static const char *sd_probe_types[] = { "async", "sync" };
++
++static char sd_probe_type[6] = "async";
++module_param_string(probe, sd_probe_type, sizeof(sd_probe_type),
++		    S_IRUGO|S_IWUSR);
++MODULE_PARM_DESC(probe, "async or sync. Setting to 'sync' disables asynchronous "
++		 "device number assignments (sda, sdb, ...).");
++
+ static void sd_set_flush_flag(struct scsi_disk *sdkp)
+ {
+ 	bool wc = false, fua = false;
+@@ -4253,6 +4261,8 @@ static int __init init_sd(void)
+ 		goto err_out_class;
+ 	}
+ 
++	if (!strcmp(sd_probe_type, "sync"))
++		sd_template.gendrv.probe_type = PROBE_FORCE_SYNCHRONOUS;
+ 	err = scsi_register_driver(&sd_template.gendrv);
+ 	if (err)
+ 		goto err_out_driver;
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 4b93c0bd1d4b..b98906237306 100644
 --- a/drivers/usb/core/hub.c
@@ -1040,6 +1738,18 @@ index 4b93c0bd1d4b..b98906237306 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+index b164da5e129e..59021b8609a7 100644
+--- a/include/linux/crypto.h
++++ b/include/linux/crypto.h
+@@ -133,6 +133,7 @@
+ #define CRYPTO_TFM_REQ_FORBID_WEAK_KEYS	0x00000100
+ #define CRYPTO_TFM_REQ_MAY_SLEEP	0x00000200
+ #define CRYPTO_TFM_REQ_MAY_BACKLOG	0x00000400
++#define CRYPTO_TFM_REQ_NEED_RESEED	0x00000800
+ 
+ /*
+  * Miscellaneous stuff.
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 418e555459da..fdd941287ae1 100644
 --- a/include/linux/efi.h
@@ -1109,10 +1819,10 @@ index 418e555459da..fdd941287ae1 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 44488b1ab9a9..f76c91083b0f 100644
+index 855db460e08b..7a8c28cd7510 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -437,6 +437,8 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
+@@ -438,6 +438,8 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
  #endif /* CONFIG_BPF_SYSCALL */
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1121,197 +1831,34 @@ index 44488b1ab9a9..f76c91083b0f 100644
  
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
-diff --git a/include/linux/module.h b/include/linux/module.h
-index 330ffb59efe5..8a7c2ccbb4fa 100644
---- a/include/linux/module.h
-+++ b/include/linux/module.h
-@@ -418,6 +418,7 @@ struct module {
- 	struct module_attribute *modinfo_attrs;
- 	const char *version;
- 	const char *srcversion;
-+	const char *rhelversion;
- 	struct kobject *holders_dir;
+diff --git a/include/linux/random.h b/include/linux/random.h
+index b0a940af4fff..8a52424fd0d5 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -9,6 +9,13 @@
  
- 	/* Exported symbols */
-diff --git a/include/linux/rh_kabi.h b/include/linux/rh_kabi.h
-new file mode 100644
-index 000000000000..e0d3353802bb
---- /dev/null
-+++ b/include/linux/rh_kabi.h
-@@ -0,0 +1,172 @@
-+/*
-+ * rh_kabi.h - Red Hat kABI abstraction header
-+ *
-+ * Copyright (c) 2014 Don Zickus
-+ * Copyright (c) 2015-2017 Jiri Benc
-+ * Copyright (c) 2015 Sabrina Dubroca, Hannes Frederic Sowa
-+ * Copyright (c) 2016-2018 Prarit Bhargava
-+ * Copyright (c) 2017 Paolo Abeni, Larry Woodman
-+ *
-+ * This file is released under the GPLv2.
-+ * See the file COPYING for more details.
-+ *
-+ * These kabi macros hide the changes from the kabi checker and from the
-+ * process that computes the exported symbols' checksums.
-+ * They have 2 variants: one (defined under __GENKSYMS__) used when
-+ * generating the checksums, and the other used when building the kernel's
-+ * binaries.
-+ *
-+ * The use of these macros does not guarantee that the usage and modification
-+ * of code is correct.  As with all Red Hat only changes, an engineer must
-+ * explain why the use of the macro is valid in the patch containing the
-+ * changes.
-+ *
-+ */
+ #include <uapi/linux/random.h>
+ 
++struct iov_iter;
 +
-+#ifndef _LINUX_RH_KABI_H
-+#define _LINUX_RH_KABI_H
++struct random_extrng {
++	ssize_t (*extrng_read_iter)(struct iov_iter *iter, bool reseed);
++	struct module *owner;
++};
 +
-+#include <linux/compiler.h>
-+#include <linux/stringify.h>
+ struct notifier_block;
+ 
+ void add_device_randomness(const void *buf, size_t len);
+@@ -157,6 +164,9 @@ int random_prepare_cpu(unsigned int cpu);
+ int random_online_cpu(unsigned int cpu);
+ #endif
+ 
++void random_register_extrng(const struct random_extrng *rng);
++void random_unregister_extrng(void);
 +
-+/*
-+ * RH_KABI_CONST
-+ *   Adds a new const modifier to a function parameter preserving the old
-+ *   checksum.
-+ *
-+ * RH_KABI_DEPRECATE
-+ *   Mark the element as deprecated and make it unusable by modules while
-+ *   preserving kABI checksums.
-+ *
-+ * RH_KABI_DEPRECATE_FN
-+ *   Mark the function pointer as deprecated and make it unusable by modules
-+ *   while preserving kABI checksums.
-+ *
-+ * RH_KABI_EXTEND
-+ *   Simple macro for adding a new element to a struct.
-+ *
-+ *   Warning: only use if a hole exists for _all_ arches.  Use pahole to verify.
-+ *
-+ * RH_KABI_FILL_HOLE
-+ *   Simple macro for filling a hole in a struct.
-+ *
-+ * RH_KABI_RENAME
-+ *   Simple macro for renaming an element without changing its type.  This
-+ *   macro can be used in bitfields, for example.
-+ *
-+ *   NOTE: does not include the final ';'
-+ *
-+ * RH_KABI_REPLACE
-+ *   Simple replacement of _orig with a union of _orig and _new.
-+ *
-+ *   The RH_KABI_REPLACE* macros attempt to add the ability to use the '_new'
-+ *   element while preserving size alignment with the '_orig' element.
-+ *
-+ *   The #ifdef __GENKSYMS__ preserves the kABI agreement, while the anonymous
-+ *   union structure preserves the size alignment (assuming the '_new' element
-+ *   is not bigger than the '_orig' element).
-+ *
-+ * RH_KABI_REPLACE_UNSAFE
-+ *   Unsafe version of RH_KABI_REPLACE.  Only use for typedefs.
-+ *
-+ * RH_KABI_FORCE_CHANGE
-+ *   Force change of the symbol checksum.  The argument of the macro is a
-+ *   version for cases we need to do this more than once.
-+ *
-+ *   This macro does the opposite: it changes the symbol checksum without
-+ *   actually changing anything about the exported symbol.  It is useful for
-+ *   symbols that are not whitelisted, we're changing them in an
-+ *   incompatible way and want to prevent 3rd party modules to silently
-+ *   corrupt memory.  Instead, by changing the symbol checksum, such modules
-+ *   won't be loaded by the kernel.  This macro should only be used as a
-+ *   last resort when all other KABI workarounds have failed.
-+ *
-+ * NOTE
-+ *   Don't use ';' after these macros as it messes up the kABI checker by
-+ *   changing what the resulting token string looks like.  Instead let this
-+ *   macro add the ';' so it can be properly hidden from the kABI checker
-+ *   (mainly for RH_KABI_EXTEND, but applied to all macros for uniformity).
-+ *
-+ */
-+#ifdef __GENKSYMS__
-+
-+# define RH_KABI_CONST
-+# define RH_KABI_EXTEND(_new)
-+# define RH_KABI_FILL_HOLE(_new)
-+# define RH_KABI_FORCE_CHANGE(ver)		__attribute__((rh_kabi_change ## ver))
-+# define RH_KABI_RENAME(_orig, _new)		_orig
-+
-+# define _RH_KABI_DEPRECATE(_type, _orig)	_type _orig
-+# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)	_type (*_orig)(_args)
-+# define _RH_KABI_REPLACE(_orig, _new)		_orig
-+# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_orig
-+
-+#else
-+
-+# define RH_KABI_ALIGN_WARNING ".  Disable CONFIG_RH_KABI_SIZE_ALIGN_CHECKS if debugging."
-+
-+# define RH_KABI_CONST				const
-+# define RH_KABI_EXTEND(_new)			_new;
-+# define RH_KABI_FILL_HOLE(_new)		_new;
-+# define RH_KABI_FORCE_CHANGE(ver)
-+# define RH_KABI_RENAME(_orig, _new)		_new
-+
-+
-+#if IS_BUILTIN(CONFIG_RH_KABI_SIZE_ALIGN_CHECKS)
-+# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)			\
-+	union {								\
-+		_Static_assert(sizeof(struct{_new;}) <= sizeof(struct{_orig;}), \
-+			       __FILE__ ":" __stringify(__LINE__) ": "  __stringify(_new) " is larger than " __stringify(_orig) RH_KABI_ALIGN_WARNING); \
-+		_Static_assert(__alignof__(struct{_new;}) <= __alignof__(struct{_orig;}), \
-+			       __FILE__ ":" __stringify(__LINE__) ": "  __stringify(_orig) " is not aligned the same as " __stringify(_new) RH_KABI_ALIGN_WARNING); \
-+	}
-+#else
-+# define __RH_KABI_CHECK_SIZE_ALIGN(_orig, _new)
-+#endif
-+
-+# define _RH_KABI_DEPRECATE(_type, _orig)	_type rh_reserved_##_orig
-+# define _RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
-+	_type (* rh_reserved_##_orig)(_args)
-+# define _RH_KABI_REPLACE(_orig, _new)			  \
-+	union {						  \
-+		_new;					  \
-+		struct {				  \
-+			_orig;				  \
-+		} __UNIQUE_ID(rh_kabi_hide);		  \
-+		__RH_KABI_CHECK_SIZE_ALIGN(_orig, _new);  \
-+	}
-+# define _RH_KABI_REPLACE_UNSAFE(_orig, _new)	_new
-+
-+#endif /* __GENKSYMS__ */
-+
-+/* semicolon added wrappers for the RH_KABI_REPLACE macros */
-+# define RH_KABI_DEPRECATE(_type, _orig)	_RH_KABI_DEPRECATE(_type, _orig);
-+# define RH_KABI_DEPRECATE_FN(_type, _orig, _args...)  \
-+	_RH_KABI_DEPRECATE_FN(_type, _orig, _args);
-+# define RH_KABI_REPLACE(_orig, _new)		_RH_KABI_REPLACE(_orig, _new);
-+# define RH_KABI_REPLACE_UNSAFE(_orig, _new)	_RH_KABI_REPLACE_UNSAFE(_orig, _new);
-+/*
-+ * Macro for breaking up a random element into two smaller chunks using an
-+ * anonymous struct inside an anonymous union.
-+ */
-+# define RH_KABI_REPLACE2(orig, _new1, _new2)	RH_KABI_REPLACE(orig, struct{ _new1; _new2;})
-+
-+# define RH_KABI_RESERVE(n)		_RH_KABI_RESERVE(n);
-+/*
-+ * Simple wrappers to replace standard Red Hat reserved elements.
-+ */
-+# define RH_KABI_USE(n, _new)		RH_KABI_REPLACE(_RH_KABI_RESERVE(n), _new)
-+/*
-+ * Macros for breaking up a reserved element into two smaller chunks using
-+ * an anonymous struct inside an anonymous union.
-+ */
-+# define RH_KABI_USE2(n, _new1, _new2)	RH_KABI_REPLACE(_RH_KABI_RESERVE(n), struct{ _new1; _new2; })
-+
-+/*
-+ * We tried to standardize on Red Hat reserved names.  These wrappers
-+ * leverage those common names making it easier to read and find in the
-+ * code.
-+ */
-+# define _RH_KABI_RESERVE(n)		unsigned long rh_reserved##n
-+
-+#endif /* _LINUX_RH_KABI_H */
-
+ #ifndef MODULE
+ extern const struct file_operations random_fops, urandom_fops;
+ #endif
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1347,26 +1894,6 @@ index de3af33e6ff5..0a37270070e4 100644
  static inline int lsm_fill_user_ctx(struct lsm_ctx __user *uctx,
  				    u32 *uctx_len, void *val, size_t val_len,
  				    u64 id, u64 flags)
-diff --git a/kernel/module/main.c b/kernel/module/main.c
-index d18a94b973e1..ee713c33b736 100644
---- a/kernel/module/main.c
-+++ b/kernel/module/main.c
-@@ -530,6 +532,7 @@ static struct module_attribute modinfo_##field = {                    \
- 
- MODINFO_ATTR(version);
- MODINFO_ATTR(srcversion);
-+MODINFO_ATTR(rhelversion);
- 
- static struct {
- 	char name[MODULE_NAME_LEN + 1];
-@@ -982,6 +985,7 @@ struct module_attribute *modinfo_attrs[] = {
- 	&module_uevent,
- 	&modinfo_version,
- 	&modinfo_srcversion,
-+	&modinfo_rhelversion,
- 	&modinfo_initstate,
- 	&modinfo_coresize,
- #ifdef CONFIG_ARCH_WANTS_MODULES_DATA_IN_VMALLOC
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
 index a2ff4242e623..f0d2be1ee4f1 100644
 --- a/kernel/module/signing.c
@@ -1390,39 +1917,60 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/scripts/mod/modpost.c b/scripts/mod/modpost.c
-index f48d72d22dc2..288e0dbe6463 100644
---- a/scripts/mod/modpost.c
-+++ b/scripts/mod/modpost.c
-@@ -22,6 +22,7 @@
- #include <errno.h>
- #include "modpost.h"
- #include "../../include/linux/license.h"
-+#include "../../include/generated/uapi/linux/version.h"
+diff --git a/scripts/sign-file.c b/scripts/sign-file.c
+index 3edb156ae52c..0114ae1dbf7f 100644
+--- a/scripts/sign-file.c
++++ b/scripts/sign-file.c
+@@ -27,7 +27,6 @@
+ #include <openssl/evp.h>
+ #include <openssl/pem.h>
+ #include <openssl/err.h>
+-#include <openssl/engine.h>
  
- static bool module_enabled;
- /* Are we using CONFIG_MODVERSIONS? */
-@@ -1993,6 +1994,12 @@ static void write_buf(struct buffer *b, const char *fname)
+ /*
+  * OpenSSL 3.0 deprecates the OpenSSL's ENGINE API.
+@@ -99,16 +98,6 @@ static void display_openssl_errors(int l)
  	}
  }
  
-+static void add_rhelversion(struct buffer *b, struct module *mod)
-+{
-+	buf_printf(b, "MODULE_INFO(rhelversion, \"%d.%d\");\n", RHEL_MAJOR,
-+		   RHEL_MINOR);
-+}
-+
- static void write_if_changed(struct buffer *b, const char *fname)
- {
- 	char *tmp;
-@@ -2053,6 +2060,7 @@ static void write_mod_c_file(struct module *mod)
- 	add_depends(&buf, mod);
- 	add_moddevtable(&buf, mod);
- 	add_srcversion(&buf, mod);
-+	add_rhelversion(&buf, mod);
+-static void drain_openssl_errors(void)
+-{
+-	const char *file;
+-	int line;
+-
+-	if (ERR_peek_error() == 0)
+-		return;
+-	while (ERR_get_error_line(&file, &line)) {}
+-}
+-
+ #define ERR(cond, fmt, ...)				\
+ 	do {						\
+ 		bool __cond = (cond);			\
+@@ -144,22 +133,8 @@ static EVP_PKEY *read_private_key(const char *private_key_name)
+ 	EVP_PKEY *private_key;
  
- 	ret = snprintf(fname, sizeof(fname), "%s.mod.c", mod->name);
- 	if (ret >= sizeof(fname)) {
+ 	if (!strncmp(private_key_name, "pkcs11:", 7)) {
+-		ENGINE *e;
+-
+-		ENGINE_load_builtin_engines();
+-		drain_openssl_errors();
+-		e = ENGINE_by_id("pkcs11");
+-		ERR(!e, "Load PKCS#11 ENGINE");
+-		if (ENGINE_init(e))
+-			drain_openssl_errors();
+-		else
+-			ERR(1, "ENGINE_init");
+-		if (key_pass)
+-			ERR(!ENGINE_ctrl_cmd_string(e, "PIN", key_pass, 0),
+-			    "Set PKCS#11 PIN");
+-		private_key = ENGINE_load_private_key(e, private_key_name,
+-						      NULL, NULL);
+-		ERR(!private_key, "%s", private_key_name);
++		fprintf(stderr, "Error: pkcs11 not implemented\n");
++		exit(1);
+ 	} else {
+ 		BIO *b;
+ 
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 191e0461d6d5..e6f418b3e948 100755
 --- a/scripts/tags.sh
@@ -1497,10 +2045,10 @@ index cd84d8ea1dfb..e4c70a0312bc 100644
  
  const struct lsm_id lockdown_lsmid = {
 diff --git a/security/security.c b/security/security.c
-index e5ca08789f74..7032265d85ba 100644
+index 8cee5b6c6e6d..489e25946bf9 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5570,6 +5570,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5596,6 +5596,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

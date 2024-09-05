@@ -1,6 +1,10 @@
 %undefine _cmake_shared_libs
-%dnl %global _lto_cflags -fno-lto
 %global build_type_safety_c 0
+
+%bcond_without     lto
+%if %{without lto}
+%global _lto_cflags -fno-lto
+%endif
 
 %bcond_with clang
 %if %{with clang}
@@ -287,8 +291,10 @@ sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
 echo 'target_include_directories(core PUBLIC %{_includedir}/discord-rpc)' \
   >> src/core/CMakeLists.txt
 
+%if %{with lto}
 echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)' \
   >> src/common/CMakeLists.txt
+%endif
 
 
 %build

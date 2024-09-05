@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.7
+%define specrpmversion 6.10.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -211,7 +211,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id c06374691d10d1e8eefd913bf7e5e9331989023b
+%global opensuse_id 82ae1ec2d37d0d7a9f02186fac50b83acda9fbc9
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1069,7 +1069,9 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/fix-amdgpu-freezes.patch#/openSUSE-fix-amdgpu-freezes.patch
+Patch1013: %{opensuse_url}/drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch#/openSUSE-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
+Patch1014: %{opensuse_url}/drm-amd-display-Avoid-race-between-dcn10_set_drr-and.patch#/openSUSE-drm-amd-display-Avoid-race-between-dcn10_set_drr-and.patch
+Patch1015: %{opensuse_url}/drm-amd-display-Avoid-race-between-dcn35_set_drr-and.patch#/openSUSE-drm-amd-display-Avoid-race-between-dcn35_set_drr-and.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1110,10 +1112,27 @@ Patch7018:  %{pf_url}/d1fc152b8d485254e550e02192abcbb807695f02.patch#/pf-cb-d1fc
 Patch7021:  %{pf_url}/18a021e4bebcd7f7079d404957c6b93b569ec4b2.patch#/pf-cb-18a021e.patch
 Patch7022:  %{pf_url}/992e82ea03899a130f2fece5e13c9299e31a90cb.patch#/pf-cb-992e82e.patch
 Patch7023:  %{pf_url}/dacab2f60fefe24a72331ee1dfa0eb5fa8c9efb2.patch#/pf-cb-dacab2f.patch
-Patch7024:  %{pf_url}/acba906e9bc1a965ee455b54f72328c0eb7c3705.patch#/pf-cb-acba906.patch
-Patch7025:  %{pf_url}/aec50ff32b9f524212fa810ac46940ae26eb945d.patch#/pf-cb-aec50ff.patch
-Patch7026:  %{pf_url}/09047dc3cf03374be93b26a3d62759d66059dd4e.patch#/pf-cb-09047dc.patch
-Patch7027:  %{pf_url}/2ed5d5f968a75d0984dc161726ec53c6c98e7778.patch#/pf-cb-2ed5d5f.patch
+Patch7024:  %{pf_url}/aec50ff32b9f524212fa810ac46940ae26eb945d.patch#/pf-cb-aec50ff.patch
+Patch7025:  %{pf_url}/09047dc3cf03374be93b26a3d62759d66059dd4e.patch#/pf-cb-09047dc.patch
+Patch7026:  %{pf_url}/3e9ec6e71966769f07af7a8fad27b2b8771bf743.patch#/pf-cb-3e9ec6e.patch
+Patch7027:  %{pf_url}/a819a195ff69c780dd59e23cf60a6cf98c170981.patch#/pf-cb-a819a19.patch
+Patch7028:  %{pf_url}/3d0edaa185f5c19a1690a168f42acddc476ce78a.patch#/pf-cb-3d0edaa.patch
+Patch7029:  %{pf_url}/7f7a85182225c2c936636c0c6e522a75e8fa0ac4.patch#/pf-cb-7f7a851.patch
+Patch7030:  %{pf_url}/1124d8347f4c1e4fe9b7871261de71297b6e036f.patch#/pf-cb-1124d83.patch
+Patch7031:  %{pf_url}/e3e0426e4024cf6dcb077643973d61182b7de311.patch#/pf-cb-e3e0426.patch
+Patch7032:  %{pf_url}/1e19f1d3c63dc14300670218ae98222651dd665e.patch#/pf-cb-1e19f1d.patch
+Patch7033:  %{pf_url}/e5e73ccf56b26acf1fb2d4d0c5417298a4def954.patch#/pf-cb-e5e73cc.patch
+Patch7034:  %{pf_url}/90370ac408fddbb098eb620f57dd9eec4457adaf.patch#/pf-cb-90370ac.patch
+Patch7035:  %{pf_url}/44e0de1d0c4a831744d9c2258850643ea8ea9623.patch#/pf-cb-44e0de1.patch
+Patch7036:  %{pf_url}/609243f643859cc7f8215b4815953708fbf2684b.patch#/pf-cb-609243f.patch
+Patch7037:  %{pf_url}/1ac34b8f114dbd7344ba7c18a967dc89e1b5c434.patch#/pf-cb-1ac34b8.patch
+Patch7038:  %{pf_url}/f2ee6653b357d1e3938f0e826b92f997872d2da7.patch#/pf-cb-f2ee665.patch
+Patch7039:  %{pf_url}/f2523a7c1cf9f0d20f4f3cd079427741524358c0.patch#/pf-cb-f2523a7.patch
+Patch7040:  %{pf_url}/c880c58b8e9aecf5a2bc29da11147eceda921afc.patch#/pf-cb-c880c58.patch
+Patch7041:  %{pf_url}/cc39a4b11ed8ab87266756dec85ac075bcccae9d.patch#/pf-cb-cc39a4b.patch
+Patch7042:  %{pf_url}/16091a24e8d6e64a9084413fc3ccb5064e8fc103.patch#/pf-cb-16091a2.patch
+Patch7043:  %{pf_url}/34e666126948495bc826372023ffb4424d490ba9.patch#/pf-cb-34e6661.patch
+Patch7044:  %{pf_url}/ac3eac106ca1598ad84c59aca3df412ddabba5da.patch#/pf-cb-ac3eac1.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
 # iosched
@@ -2027,10 +2046,26 @@ ApplyPatch %{PATCH7018}
 ApplyPatch %{PATCH7021}
 ApplyPatch %{PATCH7022}
 ApplyPatch %{PATCH7023}
-ApplyPatch %{PATCH7024}
 ApplyPatch %{PATCH7025}
 ApplyPatch %{PATCH7026}
 ApplyPatch %{PATCH7027}
+ApplyPatch %{PATCH7028}
+ApplyPatch %{PATCH7029}
+ApplyPatch %{PATCH7030}
+ApplyPatch %{PATCH7031}
+ApplyPatch %{PATCH7032}
+ApplyPatch %{PATCH7033}
+ApplyPatch %{PATCH7034}
+ApplyPatch %{PATCH7035}
+ApplyPatch %{PATCH7036}
+ApplyPatch %{PATCH7037}
+ApplyPatch %{PATCH7038}
+ApplyPatch %{PATCH7039}
+ApplyPatch %{PATCH7040}
+ApplyPatch %{PATCH7041}
+ApplyPatch %{PATCH7042}
+ApplyPatch %{PATCH7043}
+ApplyPatch %{PATCH7044}
 # bbr3
 ApplyPatch %{PATCH7050}
 # iosched
@@ -2104,6 +2139,8 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 %dnl ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1013}
+ApplyPatch %{PATCH1014}
+ApplyPatch %{PATCH1015}
 
 ApplyPatch %{PATCH2000}
 
@@ -4364,6 +4401,9 @@ fi\
 #
 #
 %changelog
+* Wed Sep 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-500.chinfo
+- 6.10.8
+
 * Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.7-500.chinfo
 - 6.10.7
 
