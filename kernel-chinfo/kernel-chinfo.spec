@@ -185,7 +185,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.10.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1135,15 +1135,6 @@ Patch7043:  %{pf_url}/34e666126948495bc826372023ffb4424d490ba9.patch#/pf-cb-34e6
 Patch7044:  %{pf_url}/ac3eac106ca1598ad84c59aca3df412ddabba5da.patch#/pf-cb-ac3eac1.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
-# iosched
-Patch7060:  %{pf_url}/532a1443b8d28371056c771b4b94ceae3fde67c1.patch#/pf-cb-532a144.patch
-Patch7061:  %{pf_url}/56831b6ffd25537bc6fed018802b4bf53db54eae.patch#/pf-cb-56831b6.patch
-Patch7062:  %{pf_url}/37617047f3cc742229fd46261a1bd69290dddb58.patch#/pf-cb-3761704.patch
-Patch7063:  %{pf_url}/fd41e83dac5585e1dd6f84df9253f1e4f3f7bd61.patch#/pf-cb-fd41e83.patch
-Patch7064:  %{pf_url}/31b94c6b3370bae23fea129e915bd079ddd29753.patch#/pf-cb-31b94c6.patch
-Patch7065:  %{pf_url}/32331118650a9ad146ba2b1cf86079b72b0047e7.patch#/pf-cb-3233111.patch
-Patch7066:  %{pf_url}/b35dd8fbbe16ab94cedec8585646de08cdbefcdc.patch#/pf-cb-b35dd8f.patch
-Patch7067:  %{pf_url}/9436927d9a182c0c3c3c6305f16d28ae15a8da61.patch#/pf-cb-9436927.patch
 # fixes
 Patch7100:  %{pf_url}/7bff53340358d58ace35328fabf0b96b9a36da4e.patch#/pf-cb-7bff533.patch
 Patch7101:  %{pf_url}/7b9e3596c3ac433bf70b9c94f17f91c78818cde5.patch#/pf-cb-7b9e359.patch
@@ -2068,15 +2059,6 @@ ApplyPatch %{PATCH7043}
 ApplyPatch %{PATCH7044}
 # bbr3
 ApplyPatch %{PATCH7050}
-# iosched
-ApplyPatch %{PATCH7060}
-ApplyPatch %{PATCH7061}
-ApplyPatch %{PATCH7062}
-ApplyPatch %{PATCH7063}
-ApplyPatch %{PATCH7064}
-ApplyPatch %{PATCH7065}
-ApplyPatch %{PATCH7066}
-ApplyPatch %{PATCH7067}
 # fixes
 ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
@@ -4401,6 +4383,9 @@ fi\
 #
 #
 %changelog
+* Fri Sep 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-501.chinfo
+- Remove iosched patches
+
 * Wed Sep 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-500.chinfo
 - 6.10.8
 

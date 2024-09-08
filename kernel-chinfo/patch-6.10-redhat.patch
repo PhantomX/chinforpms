@@ -32,6 +32,7 @@
  drivers/pci/quirks.c                               |  24 ++++
  drivers/scsi/sd.c                                  |  10 ++
  drivers/usb/core/hub.c                             |   7 +
+ fs/xfs/libxfs/xfs_ialloc_btree.c                   |   2 +-
  include/linux/crypto.h                             |   1 +
  include/linux/efi.h                                |  22 ++-
  include/linux/lsm_hook_defs.h                      |   2 +
@@ -45,7 +46,7 @@
  security/lockdown/Kconfig                          |  13 ++
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 ++
- 47 files changed, 827 insertions(+), 256 deletions(-)
+ 48 files changed, 828 insertions(+), 257 deletions(-)
 
 diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
 index eec8df1dde06..88f49dd10cd0 100644
@@ -64,7 +65,7 @@ index eec8df1dde06..88f49dd10cd0 100644
    ...
    PPC     KVM_REG_PPC_TM_GPR31            64
 diff --git a/Makefile b/Makefile
-index ab77d171e268..c46aa8337181 100644
+index 2e5ac6ab3d47..838301b19917 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -1693,7 +1694,7 @@ index 568410e64ce6..6afbaee83950 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/scsi/sd.c b/drivers/scsi/sd.c
-index 6b64af7d4927..a7ad470b8b8c 100644
+index 7d2a294ebc3d..c2536099932b 100644
 --- a/drivers/scsi/sd.c
 +++ b/drivers/scsi/sd.c
 @@ -120,6 +120,14 @@ static const char *sd_cache_types[] = {
@@ -1711,7 +1712,7 @@ index 6b64af7d4927..a7ad470b8b8c 100644
  static void sd_set_flush_flag(struct scsi_disk *sdkp)
  {
  	bool wc = false, fua = false;
-@@ -4253,6 +4261,8 @@ static int __init init_sd(void)
+@@ -4255,6 +4263,8 @@ static int __init init_sd(void)
  		goto err_out_class;
  	}
  
@@ -1738,6 +1739,19 @@ index 4b93c0bd1d4b..b98906237306 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/xfs/libxfs/xfs_ialloc_btree.c b/fs/xfs/libxfs/xfs_ialloc_btree.c
+index 42e9fd47f6c7..ffef1c75dd57 100644
+--- a/fs/xfs/libxfs/xfs_ialloc_btree.c
++++ b/fs/xfs/libxfs/xfs_ialloc_btree.c
+@@ -749,7 +749,7 @@ xfs_finobt_count_blocks(
+ 	if (error)
+ 		return error;
+ 
+-	cur = xfs_inobt_init_cursor(pag, tp, agbp);
++	cur = xfs_finobt_init_cursor(pag, tp, agbp);
+ 	error = xfs_btree_count_blocks(cur, tree_blocks);
+ 	xfs_btree_del_cursor(cur, error);
+ 	xfs_trans_brelse(tp, agbp);
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index b164da5e129e..59021b8609a7 100644
 --- a/include/linux/crypto.h

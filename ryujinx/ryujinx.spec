@@ -35,7 +35,7 @@
 %global crc32_net_ver 1.2.0
 %global discordrichpresence_ver 1.2.1.24
 %global excss_ver 4.2.3
-%global dynamicdata_ver 9.0.1
+%global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
 %global harfbuzzsharp_ver 7.3.0
 %global harfbuzzsharp_ver2 2.8.2.3
@@ -51,7 +51,7 @@
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
-%global microsoft_extensions_dependencymodel_ver 6.0.0
+%global microsoft_extensions_dependencymodel_ver 8.0.0
 %global microsoft_identitymodel_ver 8.0.1
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
@@ -124,9 +124,9 @@
 %global securifybv_ver 0.1.0
 %global shaderc_net_ver 0.1.0
 %global sharpziplib_ver 1.4.2
-%global silk_net_ver 2.16.0
+%global silk_net_ver 2.21.0
 %global sixlabors_fonts_ver 1.0.0
-%global sixlabors_imagesharp_ver 2.1.8
+%global sixlabors_imagesharp_ver 2.1.9
 %global sixlabors_imagesharp_drawing_ver 1.0.0
 %global skiasharp_ver 2.88.7
 %global skiasharp_ver2 2.88.6
@@ -229,9 +229,9 @@
 %global system_text_encoding_codepages_ver2 5.0.0
 %global system_text_encoding_codepages_ver3 4.5.1
 %global system_text_encoding_extensions_ver 4.0.11
-%global system_text_encodings_web_ver 6.0.0
+%global system_text_encodings_web_ver 8.0.0
 %global system_text_encodings_web_ver2 4.7.2
-%global system_text_json_ver 6.0.0
+%global system_text_json_ver 8.0.0
 %global system_text_json_ver2 4.7.2
 %global system_text_regularexpressions_ver 4.1.0
 %global system_threading_ver 4.0.11
@@ -251,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1376
+Version:        1.1.1385
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 
@@ -552,6 +552,8 @@ Source470:      %{nuget_url}/microsoft.netcore.platforms.%{microsoft_netcore_pla
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
 %global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470}
 %endif
+
+Patch0:         %{vc_url}/%{appname}/pull/7285.patch#/%{name}-gh-pr7285.patch
 
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch

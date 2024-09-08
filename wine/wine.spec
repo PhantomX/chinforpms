@@ -52,9 +52,9 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.4
-%global winemono  9.2.0
+%global winemono  9.3.0
 %global winentsync 6.9~rc3
-%global winevulkan 1.3.285
+%global winevulkan 1.3.295
 
 %global wineFAudio 24.06
 %global winefluidsynth 2.3.5
@@ -66,7 +66,7 @@
 %global wineopenldap 2.5.17
 %global winetiff 4.6.0
 %global winejxrlib 1.1
-%global winevkd3d 1.12
+%global winevkd3d 1.13
 %global winexml2 2.11.7
 %global winexslt 1.1.39
 %global winezlib 1.3.1
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.16
+%global wine_stagingver 9.17
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e5e156ccec589b047723b60dfebcc349a4dd67c7
+%global tkg_id c4982f9ee170d505bb81a7654acfd2ca9adedcd6
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -161,7 +161,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.16
+Version:        9.17
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -267,7 +267,6 @@ Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{nam
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
-Patch1056:       0001-tkg-proton-tkg-additions-fixup.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -925,11 +924,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %else
 %patch -P 1027 -p1
 %endif
-cp -a %{P:1028} .
-cp -a %{P:1056} .
-%patch -P 1056 -p1
-%{__scm_apply_patch -p1 -q} -i wine-tkg-proton-tkg-additions.patch
-%dnl %patch -P 1028 -p1
+%patch -P 1028 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
@@ -945,9 +940,9 @@ cp -a %{P:1056} .
 %patch -P 1036 -p1
 %patch -P 1037 -p1
 
-%patch -P 1093 -p1
-%patch -P 1089 -p1
-%patch -P 1094 -p1
+%dnl %patch -P 1093 -p1
+%dnl %patch -P 1089 -p1
+%dnl %patch -P 1094 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
 %patch -P 1301 -p1
@@ -1568,6 +1563,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/clock.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/clusapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cng.%{winesys}
+%{_libdir}/wine/%{winedlldir}/colorcnv.%{winedll}
 %{_libdir}/wine/%{winedlldir}/combase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comcat.%{winedll}
 %{_libdir}/wine/%{winedlldir}/comctl32.%{winedll}
@@ -1735,6 +1731,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/ksuser.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ktmw32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/l3codeca.%{wineacm}
+%{_libdir}/wine/%{winedlldir}/l3codecx.%{wineax}
 %{_libdir}/wine/%{winedlldir}/light.%{winemsstyles}
 %{_libdir}/wine/%{winedlldir}/loadperf.%{winedll}
 %{_libdir}/wine/%{winesodir}/localspl.so
@@ -1752,8 +1749,11 @@ fi
 %{_libdir}/wine/%{winedlldir}/mciwave.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mf3216.%{winedll}
+%{_libdir}/wine/%{winedlldir}/mfasfsrcsnk.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mferror.%{winedll}
+%{_libdir}/wine/%{winedlldir}/mfh264enc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfmediaengine.%{winedll}
+%{_libdir}/wine/%{winedlldir}/mfmp4srcsnk.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfplat.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfplay.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mfreadwrite.%{winedll}
@@ -1845,6 +1845,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/msvcrtd.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvfw32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msvidc32.%{winedll}
+%{_libdir}/wine/%{winedlldir}/msvproc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mswsock.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msxml2.%{winedll}
@@ -1917,6 +1918,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/rasapi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rasdlg.%{winedll}
 %{_libdir}/wine/%{winedlldir}/regapi.%{winedll}
+%{_libdir}/wine/%{winedlldir}/resampledmo.%{winedll}
 %{_libdir}/wine/%{winedlldir}/resutils.%{winedll}
 %{_libdir}/wine/%{winedlldir}/riched20.%{winedll}
 %{_libdir}/wine/%{winedlldir}/riched32.%{winedll}
@@ -2086,12 +2088,14 @@ fi
 %{_libdir}/wine/%{winedlldir}/winsta.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wintypes.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wlanui.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wmadmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmic.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wmiutils.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmvcore.%{winedll}
+%{_libdir}/wine/%{winedlldir}/wmvdecod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/spoolss.%{winedll}
 %{_libdir}/wine/%{winesodir}/winscard.so
 %{_libdir}/wine/%{winedlldir}/winscard.%{winedll}
@@ -2561,6 +2565,9 @@ fi
 
 
 %changelog
+* Sat Sep 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.17-100
+- 9.17
+
 * Sat Aug 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.16-100
 - 9.16
 
