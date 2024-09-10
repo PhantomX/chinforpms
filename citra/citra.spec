@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e55e619328afdcb25df701f07e315fdf10bee71c
+%global commit 3e5bbac5a1fad6ba8dfa97d0760d142c9011260a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240725
+%global date 20240901
 %bcond_without snapshot
 
 # Enable system boost
@@ -31,8 +31,9 @@
 %bcond_without soundtouch
 # Enable webservice
 %bcond_with webservice
+%bcond_without vma
 # Enable system vulkan
-%bcond_with vulkan
+%bcond_without vulkan
 # Build tests
 %bcond_with tests
 
@@ -92,11 +93,11 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 SPIRV-Headers
 
-%global commit16 0e89587db3ebee4d463f191bd296374c5fafc8ea
+%global commit16 009ecd192c1289c7529bff248a16cfe896254816
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 VulkanMemoryAllocator
 
-%global commit17 217e93c664ec6704ec2d8c36fa116c1a4a1e2d40
+%global commit17 595c8d4794410a4e64b98dc58d27c0310d7ea2fd
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Vulkan-Headers
 
@@ -108,7 +109,7 @@
 
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
-%global vkh_ver 1.3.277
+%global vkh_ver 1.3.292
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -118,7 +119,7 @@
 
 Name:           citra
 Version:        0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Epoch:          1
 Summary:        A Nintendo 3DS Emulator
 
@@ -156,7 +157,9 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 Source14:       https://github.com/yuzu-emu/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+%if %{without vma}
 Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%endif
 %if %{without vulkan}
 Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
@@ -221,7 +224,7 @@ BuildRequires:  cmake(OpenAL) >= 1.23.1
 BuildRequires:  pkgconfig(sdl2)
 %if %{with qt}
 BuildRequires:  cmake(Qt6Concurrent)
-BuildRequires:  cmake(Qt6Core) >= 6.6.0
+BuildRequires:  cmake(Qt6Core) >= 6.7.2
 BuildRequires:  cmake(Qt6DBus)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
@@ -232,6 +235,11 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(SoundTouch)
 %else
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
+%endif
+%if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
+%else
+Provides:       bundled(vma) = ~git%{?shortcommit16}
 %endif
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
@@ -256,7 +264,6 @@ Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 %endif
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(sirit) = 0~git%{?shortcommit14}
-Provides:       bundled(vma) = ~git%{?shortcommit16}
 Provides:       bundled(faad2) = ~git%{?shortcommit18}
 
 
@@ -312,7 +319,9 @@ tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 tar -xf %{S:13} -C externals/glslang --strip-components 1
 tar -xf %{S:14} -C externals/sirit --strip-components 1
 tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
+%if %{without vma}
 tar -xf %{S:16} -C externals/vma --strip-components 1
+%endif
 %if %{without vulkan}
 tar -xf %{S:17} -C externals/vulkan-headers/ --strip-components 1
 %endif
@@ -348,7 +357,9 @@ cp -p sirit/LICENSE.txt LICENSE.sirit
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
 %endif
 cp -p teakra/LICENSE LICENSE.teakra
+%if %{without vma}
 cp -p vma/LICENSE.txt LICENSE.vma
+%endif
 popd
 
 
@@ -433,6 +444,9 @@ export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
   -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
+%if %{with vma}
+  -DUSE_SYSTEM_VMA:BOOL=ON \
+%endif
 %if %{with vulkan}
   -DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON \
 %endif

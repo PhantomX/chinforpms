@@ -182,10 +182,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.8
+%define specrpmversion 6.10.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1133,6 +1133,8 @@ Patch7041:  %{pf_url}/cc39a4b11ed8ab87266756dec85ac075bcccae9d.patch#/pf-cb-cc39
 Patch7042:  %{pf_url}/16091a24e8d6e64a9084413fc3ccb5064e8fc103.patch#/pf-cb-16091a2.patch
 Patch7043:  %{pf_url}/34e666126948495bc826372023ffb4424d490ba9.patch#/pf-cb-34e6661.patch
 Patch7044:  %{pf_url}/ac3eac106ca1598ad84c59aca3df412ddabba5da.patch#/pf-cb-ac3eac1.patch
+Patch7045:  %{pf_url}/3f0cc21eda56fb9117c0cfb363857ea9a30bcf87.patch#/pf-cb-3f0cc21.patch
+Patch7046:  %{pf_url}/059ef39189365661777a7ac6b1468afd6ac07ee2.patch#/pf-cb-059ef39.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
 # fixes
@@ -2057,6 +2059,8 @@ ApplyPatch %{PATCH7041}
 ApplyPatch %{PATCH7042}
 ApplyPatch %{PATCH7043}
 ApplyPatch %{PATCH7044}
+ApplyPatch %{PATCH7045}
+ApplyPatch %{PATCH7046}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -4383,6 +4387,9 @@ fi\
 #
 #
 %changelog
+* Sun Sep 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.9-500.chinfo
+- 6.10.9
+
 * Fri Sep 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-501.chinfo
 - Remove iosched patches
 

@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.8
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD-2-Clause
@@ -104,6 +104,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Mon Sep 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.8-104
+- Rebuild (qt5)
+
 * Tue Jun 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1.8-103
 - Rebuild (qt5)
 
