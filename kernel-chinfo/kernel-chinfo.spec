@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.10.9
+%define specrpmversion 6.10.10
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1069,7 +1069,6 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch#/openSUSE-drm-amdgpu-always-allocate-cleared-VRAM-for-GEM-allo.patch
 Patch1014: %{opensuse_url}/drm-amd-display-Avoid-race-between-dcn10_set_drr-and.patch#/openSUSE-drm-amd-display-Avoid-race-between-dcn10_set_drr-and.patch
 Patch1015: %{opensuse_url}/drm-amd-display-Avoid-race-between-dcn35_set_drr-and.patch#/openSUSE-drm-amd-display-Avoid-race-between-dcn35_set_drr-and.patch
 
@@ -1135,13 +1134,13 @@ Patch7043:  %{pf_url}/34e666126948495bc826372023ffb4424d490ba9.patch#/pf-cb-34e6
 Patch7044:  %{pf_url}/ac3eac106ca1598ad84c59aca3df412ddabba5da.patch#/pf-cb-ac3eac1.patch
 Patch7045:  %{pf_url}/3f0cc21eda56fb9117c0cfb363857ea9a30bcf87.patch#/pf-cb-3f0cc21.patch
 Patch7046:  %{pf_url}/059ef39189365661777a7ac6b1468afd6ac07ee2.patch#/pf-cb-059ef39.patch
+Patch7047:  %{pf_url}/c342fdecc60408d5ec6f2b2548536a998ebd41c6.patch#/pf-cb-c342fde.patch
 # bbr3
 Patch7050:  %{pf_url}/0f8b7103af11286f08d3228b952997b14bd837f0.patch#/pf-cb-0f8b710.patch
 # fixes
 Patch7100:  %{pf_url}/7bff53340358d58ace35328fabf0b96b9a36da4e.patch#/pf-cb-7bff533.patch
 Patch7101:  %{pf_url}/7b9e3596c3ac433bf70b9c94f17f91c78818cde5.patch#/pf-cb-7b9e359.patch
 Patch7102:  %{pf_url}/ad2e5fdde60453754d7a524a163d8ea26e375cba.patch#/pf-cb-ad2e5fd.patch
-Patch7103:  %{pf_url}/e739f3faaa76c2bba642c26136c0b9a73e634ae5.patch#/pf-cb-e739f3f.patch
 Patch7104:  %{pf_url}/de4bf4a2e24dbaf4fecb83cfad3afb711e5db9c9.patch#/pf-cb-de4bf4a.patch
 Patch7105:  %{pf_url}/44ae6b73b01625e5f3fb0bf022bb43fa8101ddd4.patch#/pf-cb-44ae6b7.patch
 Patch7106:  %{pf_url}/03e0283f95938f567f8e35bb5e3506a25399f326.patch#/pf-cb-03e0283.patch
@@ -2061,13 +2060,13 @@ ApplyPatch %{PATCH7043}
 ApplyPatch %{PATCH7044}
 ApplyPatch %{PATCH7045}
 ApplyPatch %{PATCH7046}
+ApplyPatch %{PATCH7047}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
 ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
-ApplyPatch %{PATCH7103}
 ApplyPatch %{PATCH7104}
 ApplyPatch %{PATCH7105}
 ApplyPatch %{PATCH7106}
@@ -2124,7 +2123,6 @@ ApplyPatch %{PATCH7510}
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 %dnl ApplyPatch %{PATCH1012}
-ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1014}
 ApplyPatch %{PATCH1015}
 
@@ -4387,6 +4385,9 @@ fi\
 #
 #
 %changelog
+* Fri Sep 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.10-500.chinfo
+- 6.10.10
+
 * Sun Sep 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.9-500.chinfo
 - 6.10.9
 

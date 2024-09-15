@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1ec5dd0db6063d1d9912f46b7663dfc06fb65f7a
+%global commit 9c0c5926f854eac1fd422bd8bfb1974d7a9e703a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240821
+%global date 20240912
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           kronos
 Version:        2.6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -107,6 +107,9 @@ sed \
   -e '/^install(/d' \
   -e '/mini18n-shared/d' \
   -i yabause/src/tools/mini18n/src/CMakeLists.txt
+
+sed -e 's|_VERSION@|\0-%{release}|' -i yabause/src/config.h.in
+sed -e 's|${YAB_VERSION}|%{version}-%{release}|' -i yabause/src/CMakeLists.txt
 
 
 %build
