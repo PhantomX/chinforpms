@@ -1,1 +1,1 @@
-CONFIG_CXL=m
+# CONFIG_CXL is not set

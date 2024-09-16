@@ -148,7 +148,8 @@ parsenewconfigs()
         /usr/bin/awk -v BASE="$tmpdir" '
                 BEGIN { inpatch=0;
 			outfile="none";
-                        symbol="none"; }
+                        symbol="none";
+                        commit=""; }
                 /^Symbol: .*$/ {
                         split($0, a, " ");
                         symbol="CONFIG_"a[2];
@@ -160,9 +161,11 @@ parsenewconfigs()
 			}
                         else {
                                 if (symbol != "none") {
+                                    print "# Commit: "commit >> outfile
                                     system("cat " outfile " " BASE "/" symbol " > " BASE "/tmpf");
                                     system("mv " BASE "/tmpf " BASE "/" symbol);
                                     symbol="none"
+                                    commit=""
 				}
                                 outfile="none"
 				inpatch = 0;
@@ -172,6 +175,15 @@ parsenewconfigs()
                         if (inpatch == 1 && outfile != "none") {
                                 print "# "$0 >> outfile;
                         }
+                }
+                /^Defined at .*$/ {
+                        split($0, x, " ");
+                        filenum=x[3];
+                        split(filenum, x, ":");
+                        file=x[1]
+                        line=x[2]
+                        cmd="git blame -L " line "," line " " file " | cut -d \" \" -f1 | xargs git log --pretty=format:\"%C(auto)%h %C(cyan)('%s')\" -1"
+                        cmd | getline commit
                 }
 
 

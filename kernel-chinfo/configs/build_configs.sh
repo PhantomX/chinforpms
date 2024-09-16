@@ -54,6 +54,8 @@ function combine_config_layer()
 	fi
 
 	# avoid picking up editor backup files
+	# shellcheck disable=SC2046
+	# shellcheck disable=SC2010
 	cat $(ls -1 "$dir"/CONFIG_* | grep -v "~$") > "$file"
 }
 
@@ -106,6 +108,8 @@ function merge_configs()
 		echo "# powerpc" > "$name";;
 	"s390x")
 		echo "# s390" > "$name";;
+	"riscv64")
+		echo "# riscv" > "$name";;
 	*)
 		echo "# $arch" > "$name";;
 	esac
@@ -161,14 +165,16 @@ function build_flavor()
 			fi
 
 			merge_configs "$arch" "$configs" "$order" "$flavor" "$count" &
+			# shellcheck disable=SC2004
 			waitpids[$count]=$!
 			((count++))
 			while [ "$(jobs | grep -c Running)" -ge "$RHJOBS" ]; do :; done
 		fi
 	done < "$control_file"
 
+	# shellcheck disable=SC2048
 	for pid in ${waitpids[*]}; do
-		wait $pid
+		wait "$pid"
 	done
 }
 

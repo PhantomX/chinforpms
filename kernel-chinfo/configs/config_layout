@@ -19,3 +19,7 @@ s390x-zfcpdump=generic:generic-s390x:generic-s390x-zfcpdump
 # aarch64
 aarch64=generic:generic-arm-aarch64
 aarch64-debug=generic:generic-arm-aarch64:debug:debug-arm-aarch64
+
+# riscv64
+riscv64=generic:generic-riscv:generic-riscv-riscv64
+riscv64-debug=generic:generic-riscv:generic-riscv-riscv64:debug:debug-riscv-riscv64

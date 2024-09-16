@@ -36,3 +36,7 @@ aarch64=generic:generic-arm:generic-arm-aarch64
 aarch64-debug=generic:generic-arm:generic-arm-aarch64:debug:debug-arm-aarch64
 aarch64-16k=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k
 aarch64-16k-debug=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k:debug:debug-arm-aarch64:debug-arm-aarch64-16k
+
+# riscv64
+riscv64=generic:generic-riscv:generic-riscv-riscv64
+riscv64-debug=generic:generic-riscv:generic-riscv-riscv64:debug:debug-riscv-riscv64

@@ -1,0 +1,5 @@
+addFilter("E: rpm-buildroot-usage *")
+addFilter("E: use-of-RPM_SOURCE_DIR *")
+addFilter("W: mixed-use-of-spaces-and-tabs *")
+addFilter("W: patch-not-applied *")
+addFilter("W: unversioned-explicit-provides *")
