@@ -6,9 +6,9 @@
 
 %global pkgname soundtouch
 
-Name:           %{pkgname}-patched
+Name:           %{pkgname}_ds
 Version:        2.3.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Audio Processing library for changing Tempo, Pitch and Playback Rates
 
 License:        LGPL-2.1-or-later
@@ -16,7 +16,7 @@ URL:            https://github.com/stenzek/%{pkgname}
 
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
-Patch0:         0001-Rename-to-patched.patch
+Patch0:         0001-Rename-to-_ds.patch
 
 
 BuildRequires:  cmake
@@ -70,10 +70,13 @@ sed -e '/-Ofast/d' -i CMakeLists.txt
 %files devel
 %{_includedir}/%{name}
 %{_libdir}/lib%{name}.so
-%{_libdir}/cmake/SoundTouchPatched
+%{_libdir}/cmake/SoundTouch_ds
 
 
 %changelog
+* Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-2.20240802git463ade3
+- Rename to soundtouch_ds
+
 * Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 2.3.3-1.20240802git463ade3
 - Initial spec
 

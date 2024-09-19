@@ -1,7 +1,7 @@
 From 77a91cfefc783bfe917e252f1af76b511137442b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:52:21 -0300
-Subject: [PATCH] cmake: shaderc-patched
+Subject: [PATCH] cmake: shaderc_ds
 
 ---
  cmake/SearchForStuff.cmake                  | 2 +-
@@ -17,7 +17,7 @@ index 650d226..2d5b789 100644
  
  if(USE_VULKAN)
 -	find_package(Shaderc REQUIRED)
-+	find_package(ShadercPatched REQUIRED)
++	find_package(Shaderc_ds REQUIRED)
  endif()
  
  # Platform-specific dependencies.
@@ -30,7 +30,7 @@ index f360178..c2fc39f 100644
  
  #include "fmt/format.h"
 -#include "shaderc/shaderc.h"
-+#include "shaderc-patched/shaderc.h"
++#include "shaderc_ds/shaderc.h"
  
  #include <cstring>
  #include <memory>
@@ -39,7 +39,7 @@ index f360178..c2fc39f 100644
  #else
  	// Use versioned, bundle post-processing adds it..
 -	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared", 1);
-+	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc-patched_shared", 1);
++	const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_ds", 1);
  #endif
  	if (!s_library.Open(libname.c_str(), &error))
  	{

@@ -7,9 +7,9 @@
 %global pkgname lunasvg
 
 
-Name:           %{pkgname}-patched
+Name:           %{pkgname}_ds
 Version:        2.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Standalone SVG rendering library in C++
 
 License:        MIT AND FTL
@@ -69,10 +69,13 @@ ln -sf %{_includedir}/stb/stb_image_write.h 3rdparty/stb/
 %files devel
 %{_includedir}/%{name}_c.h
 %{_libdir}/lib%{name}.so
-%{_libdir}/cmake/%{pkgname}Patched
+%{_libdir}/cmake/%{name}
 
 
 %changelog
+* Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-2.20240825git9af1ac7
+- Rename to lunasvg_ds
+
 * Wed Aug 28 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-1.20240825git9af1ac7
 - Initial spec
 

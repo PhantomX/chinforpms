@@ -251,7 +251,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1385
+Version:        1.1.1393
 Release:        1%{?dist}
 Summary:        Experimental Nintendo Switch Emulator
 

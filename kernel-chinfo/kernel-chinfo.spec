@@ -1134,6 +1134,7 @@ Patch7015:  %{pf_url}/ca6e33945758b060526d661791fad55a54cedfc1.patch#/pf-cb-ca6e
 Patch7016:  %{pf_url}/58ad524e6417430891ce52a7c4e34df02a290224.patch#/pf-cb-58ad524.patch
 Patch7017:  %{pf_url}/9adca60db39f318eaf3173be19eb53445f63ec3c.patch#/pf-cb-9adca60.patch
 Patch7018:  %{pf_url}/e83728849386eab55ed1598e5e6ac3b499b61edd.patch#/pf-cb-e837288.patch
+Patch7019:  %{pf_url}/58f0f0d34fed59abb65cad43a4a2ad33cbe80bcb.patch#/pf-cb-58f0f0d.patch
 # bbr3
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
@@ -2045,6 +2046,7 @@ ApplyPatch %{PATCH7015}
 ApplyPatch %{PATCH7016}
 ApplyPatch %{PATCH7017}
 ApplyPatch %{PATCH7018}
+ApplyPatch %{PATCH7019}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes

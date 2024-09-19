@@ -9,7 +9,7 @@ Subject: [PATCH] Rename to patched
  lunasvgConfig.cmake.in                       |  6 ++---
  source/lunasvg_c.cpp                         |  2 +-
  4 files changed, 19 insertions(+), 13 deletions(-)
- rename include/{lunasvg_c.h => lunasvg-patched_c.h} (100%)
+ rename include/{lunasvg_c.h => lunasvg_ds_c.h} (100%)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 2ab7582..a12ddcb 100755
@@ -35,7 +35,7 @@ index 2ab7582..a12ddcb 100755
    add_library(lunasvg STATIC)
  endif()
  
-+set_target_properties(lunasvg PROPERTIES OUTPUT_NAME "lunasvg-patched")
++set_target_properties(lunasvg PROPERTIES OUTPUT_NAME "lunasvg_ds")
 +
  add_subdirectory(include)
  add_subdirectory(source)
@@ -45,7 +45,7 @@ index 2ab7582..a12ddcb 100755
  endif()
  install(FILES
 -    include/lunasvg_c.h
-+    include/lunasvg-patched_c.h
++    include/lunasvg_ds_c.h
      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
  )
  
@@ -54,23 +54,23 @@ index 2ab7582..a12ddcb 100755
  
  include(CMakePackageConfigHelpers)
 -set(LUNASVG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/lunasvg")
-+set(LUNASVG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/lunasvgPatched")
++set(LUNASVG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/lunasvg_ds")
  install(
    EXPORT lunasvgTargets
 -  FILE lunasvgTargets.cmake
 -  NAMESPACE lunasvg::
-+  FILE lunasvgPatchedTargets.cmake
-+  NAMESPACE lunasvgPatched::
++  FILE lunasvg_dsTargets.cmake
++  NAMESPACE lunasvg_ds::
    DESTINATION "${LUNASVG_INSTALL_CMAKEDIR}"
  )
  configure_package_config_file(lunasvgConfig.cmake.in
 -  "${CMAKE_CURRENT_BINARY_DIR}/lunasvgConfig.cmake"
-+  "${CMAKE_CURRENT_BINARY_DIR}/lunasvgPatchedConfig.cmake"
++  "${CMAKE_CURRENT_BINARY_DIR}/lunasvg_dsConfig.cmake"
    INSTALL_DESTINATION "${LUNASVG_INSTALL_CMAKEDIR}"
  )
  write_basic_package_version_file(
 -  "${CMAKE_CURRENT_BINARY_DIR}/lunasvgConfigVersion.cmake"
-+  "${CMAKE_CURRENT_BINARY_DIR}/lunasvgPatchedConfigVersion.cmake"
++  "${CMAKE_CURRENT_BINARY_DIR}/lunasvg_dsConfigVersion.cmake"
    VERSION "${CMAKE_PROJECT_VERSION}"
    COMPATIBILITY SameMajorVersion
  )
@@ -78,14 +78,14 @@ index 2ab7582..a12ddcb 100755
    FILES
 -    "${CMAKE_CURRENT_BINARY_DIR}/lunasvgConfig.cmake"
 -    "${CMAKE_CURRENT_BINARY_DIR}/lunasvgConfigVersion.cmake"
-+    "${CMAKE_CURRENT_BINARY_DIR}/lunasvgPatchedConfig.cmake"
-+    "${CMAKE_CURRENT_BINARY_DIR}/lunasvgPatchedConfigVersion.cmake"
++    "${CMAKE_CURRENT_BINARY_DIR}/lunasvg_dsConfig.cmake"
++    "${CMAKE_CURRENT_BINARY_DIR}/lunasvg_dsConfigVersion.cmake"
      DESTINATION "${LUNASVG_INSTALL_CMAKEDIR}"
  )
-diff --git a/include/lunasvg_c.h b/include/lunasvg-patched_c.h
+diff --git a/include/lunasvg_c.h b/include/lunasvg_ds_c.h
 similarity index 100%
 rename from include/lunasvg_c.h
-rename to include/lunasvg-patched_c.h
+rename to include/lunasvg_ds_c.h
 diff --git a/lunasvgConfig.cmake.in b/lunasvgConfig.cmake.in
 index 7f207a0..f5a4d74 100644
 --- a/lunasvgConfig.cmake.in
@@ -94,14 +94,14 @@ index 7f207a0..f5a4d74 100644
  @PACKAGE_INIT@
  
 -include("${CMAKE_CURRENT_LIST_DIR}/lunasvgTargets.cmake")
-+include("${CMAKE_CURRENT_LIST_DIR}/lunasvgPatchedTargets.cmake")
++include("${CMAKE_CURRENT_LIST_DIR}/lunasvg_dsTargets.cmake")
  
  check_required_components(lunasvg)
  
 -get_target_property(TEMP_LUNASVG_LOCATION lunasvg::lunasvg LOCATION)
 -message(STATUS "Found lunasvg: ${TEMP_LUNASVG_LOCATION}")
-+get_target_property(TEMP_LUNASVG_LOCATION lunasvgPatched::lunasvg LOCATION)
-+message(STATUS "Found lunasvgPatched: ${TEMP_LUNASVG_LOCATION}")
++get_target_property(TEMP_LUNASVG_LOCATION lunasvg_ds::lunasvg LOCATION)
++message(STATUS "Found lunasvg_ds: ${TEMP_LUNASVG_LOCATION}")
  unset(TEMP_LUNASVG_LOCATION)
 diff --git a/source/lunasvg_c.cpp b/source/lunasvg_c.cpp
 index 8c95b27..de5f029 100644
@@ -112,7 +112,7 @@ index 8c95b27..de5f029 100644
   */
  
 -#include "lunasvg_c.h"
-+#include "lunasvg-patched_c.h"
++#include "lunasvg_ds_c.h"
  
  using namespace lunasvg;
  

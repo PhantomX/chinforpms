@@ -1,3 +1,5 @@
+# DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
+
 %undefine _cmake_shared_libs
 %global build_type_safety_c 0
 
@@ -24,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit f4e847050250851c1e0210c1a3a370d7eac577d3
+%global commit 025560f3d6d17d6a262322c21457538537708a3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240907
+%global date 20240915
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -45,12 +47,12 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7516
+Version:        0.1.7566
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        GPL-3.0-only AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND OFL-1.1
+License:        CC-BY-NC-4.0 AND MIT AND BSD-3-Clause AND AND LGPL-2.1-only AND OFL-1.1
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -67,9 +69,9 @@ Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
-Patch9:         0001-cmake-shaderc-patched.patch
-Patch11:        0001-cmake-soundtouch-patched.patch
-Patch12:        0001-cmake-lunasvg-patched.patch
+Patch9:         0001-cmake-shaderc_ds.patch
+Patch11:        0001-cmake-soundtouch_ds.patch
+Patch12:        0001-cmake-lunasvg_ds.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -113,10 +115,10 @@ BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
-BuildRequires:  cmake(lunasvgPatched) >= 2.4.1
+BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
 BuildRequires:  pkgconfig(sdl2) >= 2.30.7
-BuildRequires:  cmake(ShadercPatched)
-BuildRequires:  cmake(SoundTouchPatched) >= 2.3.3
+BuildRequires:  cmake(Shaderc_ds)
+BuildRequires:  cmake(SoundTouch_ds) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -150,7 +152,7 @@ Requires:       google-noto-sans-kr-fonts
 Requires:       google-noto-sans-sc-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
-Requires:       libshaderc-patched%{?_isa}
+Requires:       libshaderc_ds%{?_isa}
 Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       spirv-cross%{?_isa}
@@ -239,6 +241,7 @@ cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
   sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 
+cp -p ffmpeg/COPYING.LGPLv2.1 LICENSE.ffmpeg
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
@@ -393,6 +396,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.7566-1.20240907gitf4e8470
+- Update licensing
+
 * Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.6674-1.20240417gitd918705
 - 0.1.6674
 - Use git describe number as version

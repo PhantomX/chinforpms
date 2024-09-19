@@ -1,7 +1,7 @@
 From 67716827f2ee27c47063ee808f43c7525aa103f6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Aug 2024 15:42:46 -0300
-Subject: [PATCH] cmake: soundtouch-patched
+Subject: [PATCH] cmake: soundtouch_ds
 
 ---
  cmake/SearchForStuff.cmake | 8 ++++----
@@ -20,10 +20,10 @@ index 0bb399b..3403936 100644
 -if(SoundTouch_FOUND)
 -	message(STATUS "Using the system soundtouch")
 -	alias_library(soundtouch SoundTouch::SoundTouch)
-+find_package(SoundTouchPatched)
-+if(SoundTouchPatched_FOUND)
-+	message(STATUS "Using the system soundtouch-patched")
-+	alias_library(SoundTouch::SoundTouch SoundTouchPatched::SoundTouchDLL)
++find_package(SoundTouch_ds)
++if(SoundTouch_ds_FOUND)
++	message(STATUS "Using the system soundtouch_ds")
++	alias_library(SoundTouch::SoundTouch SoundTouch_ds::SoundTouchDLL)
  else()
  add_subdirectory(3rdparty/soundtouch EXCLUDE_FROM_ALL)
  endif()
@@ -36,7 +36,7 @@ index ce24f6d..29a6366 100644
  #include "common/Timer.h"
  
 -#include "SoundTouch.h"
-+#include "soundtouch-patched/SoundTouch.h"
++#include "soundtouch_ds/SoundTouch.h"
  
  #include <algorithm>
  #include <bit>

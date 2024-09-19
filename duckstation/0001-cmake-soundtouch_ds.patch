@@ -1,7 +1,7 @@
 From aa76436bf8938c8f1fcb988f06ffcacd8c7961dc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Aug 2024 11:56:11 -0300
-Subject: [PATCH] cmake: soundtouch-patched
+Subject: [PATCH] cmake: soundtouch_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 2 +-
@@ -18,7 +18,7 @@ index 6a1756e..1a089d6 100644
  find_package(cpuinfo REQUIRED)
  find_package(DiscordRPC 3.4.0 REQUIRED)
 -find_package(SoundTouch 2.3.3 REQUIRED)
-+find_package(SoundTouchPatched 2.3.3 REQUIRED)
++find_package(SoundTouch_ds 2.3.3 REQUIRED)
  
  if(NOT WIN32)
    find_package(CURL REQUIRED)
@@ -31,7 +31,7 @@ index 7bff73b..44b5679 100644
  target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_link_libraries(util PUBLIC common simpleini imgui)
 -target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx kissfft)
-+target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouchPatched::SoundTouchDLL xxhash Zstd::Zstd reshadefx kissfft)
++target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx kissfft)
  
  if(ENABLE_X11)
    target_compile_definitions(util PRIVATE "-DENABLE_X11=1")
@@ -45,8 +45,8 @@ index 9841ce4..e5396f1 100644
  #include "kiss_fftr.h"
 -#include "soundtouch/SoundTouch.h"
 -#include "soundtouch/SoundTouchDLL.h"
-+#include "soundtouch-patched/SoundTouch.h"
-+#include "soundtouch-patched/SoundTouchDLL.h"
++#include "soundtouch_ds/SoundTouch.h"
++#include "soundtouch_ds/SoundTouchDLL.h"
  
  #include <algorithm>
  #include <cmath>

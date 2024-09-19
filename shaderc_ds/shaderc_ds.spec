@@ -1,17 +1,17 @@
 # Glslang revision from packaged version
 %global glslang_version 436237a4ab2be3225acedc66016ea2aa82946b37
 
-%global commit f60bb80e255144e71776e2ad570d89b78ea2ab4f
+%global commit 3c12f7af773c547973138bee6d6ac70d91729479
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240824
+%global date 20240913
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname shaderc
 
-Name:           %{pkgname}-patched
+Name:           %{pkgname}_ds
 Version:        2024.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Epoch:          1
 Summary:        Collection of tools, libraries, and tests for Vulkan shader compilation
 
@@ -23,7 +23,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 # Patch to unbundle 3rd party code
 Patch0:         0001-Drop-third-party-code-in-CMakeLists.txt.patch
 Patch1:         glslang_linker_flags.patch
-Patch10:        0001-shared-patched-cmake.patch
+Patch10:        0001-Rename-to-_ds.patch
 
 
 BuildRequires:  cmake
@@ -103,14 +103,17 @@ sed -e '/^#include/s|shaderc/|%{name}/|g' -i %{buildroot}%{_includedir}/%{name}/
 %files -n lib%{name}
 %doc AUTHORS CHANGES CONTRIBUTORS README.md
 %license LICENSE
-%{_libdir}/lib%{name}_shared.so.1*
+%{_libdir}/lib%{name}.so.1*
 
 %files -n lib%{name}-devel
 %{_includedir}/%{name}/
-%{_libdir}/lib%{name}_shared.so
-%{_libdir}/cmake/ShadercPatched
+%{_libdir}/lib%{name}.so
+%{_libdir}/cmake/Shaderc_ds
 
 %changelog
+* Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.3-3.20240913git3c12f7a
+- Rename to shaderc_ds
+
 * Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.3-1.20240728gitfeb2460
 - 2024.3
 

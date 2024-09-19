@@ -1,0 +1,42 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: "Jan Alexander Steffens (heftig)" <heftig@archlinux.org>
+Date: Sun, 15 Sep 2024 19:05:46 +0000
+Subject: [PATCH] vhba: Fix compat with kernel 6.11
+
+Upstream commit 0edb555a65d1ef047a9805051c36922b52a38a9d changed the
+return value of the `remove` callback from `int` to `void`.
+---
+ vhba-module/vhba.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/vhba-module/vhba.c b/vhba-module/vhba.c
+index e2331d4dc788..7531223355e5 100644
+--- a/vhba-module/vhba.c
++++ b/vhba-module/vhba.c
+@@ -1049,20 +1049,26 @@ static int vhba_probe (struct platform_device *pdev)
+     return 0;
+ }
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
+ static int vhba_remove (struct platform_device *pdev)
++#else
++static void vhba_remove (struct platform_device *pdev)
++#endif
+ {
+     struct vhba_host *vhost;
+     struct Scsi_Host *shost;
+ 
+     vhost = platform_get_drvdata(pdev);
+     shost = vhost->shost;
+ 
+     scsi_remove_host(shost);
+     scsi_host_put(shost);
+ 
+     kfree(vhost->commands);
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 11, 0)
+     return 0;
++#endif
+ }
+ 
+ static void vhba_release (struct device * dev)

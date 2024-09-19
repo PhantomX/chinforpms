@@ -34,7 +34,7 @@
 %bcond_without fmt
 %bcond_with rapidyml
 %bcond_without shaderc
-# Enable system soundtouch-patched
+# Enable system soundtouch_ds
 %bcond_with soundtouch
 %bcond_without vulkan
 
@@ -58,7 +58,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.126
+Version:        2.1.155
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -91,10 +91,10 @@ Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-cmake-use-system-discord-rpc.patch
 
-Patch500:       0001-cmake-shaderc-patched.patch
+Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
 Patch502:       0001-VKShaderCache-update-shaderc.patch
-Patch503:       0001-cmake-soundtouch-patched.patch
+Patch503:       0001-cmake-soundtouch_ds.patch
 
 
 ExclusiveArch:  x86_64
@@ -164,13 +164,13 @@ BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  pkgconfig(sdl2) >= 2.30.7
 %if %{with shaderc}
-BuildRequires:  cmake(ShadercPatched)
-Requires:       libshaderc-patched%{?_isa}
+BuildRequires:  cmake(Shaderc_ds)
+Requires:       libshaderc_ds%{?_isa}
 %else
-Provides:       bundled(shaderc-patched) = %{version10}
+Provides:       bundled(shaderc_ds) = %{version10}
 %endif
 %if %{with soundtouch}
-BuildRequires:  cmake(SoundTouchPatched)
+BuildRequires:  cmake(SoundTouch_ds)
 %else
 Provides:       bundled(soundtouch) = %{soundtouch_ver}
 %endif

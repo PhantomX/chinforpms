@@ -18,9 +18,9 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit eb8d1885bde916b3476229a9220952ad0f639ff9
+%global commit 5cf0783edb6618d50f7e3d2bafe669f3dba6e3ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240824
+%global date 20240917
 %bcond_without snapshot
 
 %bcond_without gplasync
@@ -73,7 +73,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.4
-Release:        103%{?dist}
+Release:        104%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -88,8 +88,6 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 Source1:        README.%{pkgname}-mingw
 Source2:        wine%{pkgname}cfg
 Source3:        %{name}-README-chinforpms
-
-Patch10:        0001-gcc-14-build-fix.patch
 
 Patch100:       0001-util-Add-d3d9.deferSurfaceCreation-to-some-games.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch

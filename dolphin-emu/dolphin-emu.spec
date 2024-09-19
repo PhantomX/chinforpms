@@ -23,9 +23,9 @@
 %global enablejit 1
 %endif
 
-%global commit 8b1046595befe9e3d4a24aef8349bcac72d36b33
+%global commit 6851ed73f41f43b9a2da23e7f4cb58f58a904fe2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202408075
+%global date 20240916
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -75,7 +75,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2407.150
+Version:        2409.37
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -175,7 +175,7 @@ BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
-BuildRequires:  pkgconfig(sdl2) >= 2.26.0
+BuildRequires:  pkgconfig(sdl2) >= 2.30.6
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
@@ -484,6 +484,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Sep 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2409.37-1.20240916git6851ed7
+- 2409.37
+
 * Wed Jul 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2407.0.7-1.20240703git654ccb0
 - 2407.0.7
 

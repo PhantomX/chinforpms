@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.2.2
+Version:        24.2.3
 Release:        100%{?dist}
 
 Epoch:          100
@@ -101,6 +101,14 @@ BuildRequires:  pkgconfig(libzstd)
 %description
 %{summary}.
 
+%package -n     %{pkgname}-dri-drivers-freeworld
+Summary:        Mesa-based DRI drivers - freeworld
+Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
+Requires:       %{pkgname}-libglapi%{?_isa} >= %{version}
+
+%description -n %{pkgname}-dri-drivers-freeworld
+%{summary}.
+
 
 %package -n     %{pkgname}-va-drivers-freeworld
 Summary:        Mesa-based VAAPI drivers - freeworld
@@ -108,6 +116,7 @@ Obsoletes:      %{pkgname}-va-drivers < %{?epoch:%{epoch}:}
 Provides:       %{pkgname}-va-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}-va-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
+Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Enhances:       %{pkgname}%{?_isa}
 
 %description -n %{pkgname}-va-drivers-freeworld
@@ -120,6 +129,7 @@ Obsoletes:      %{pkgname}-vdpau-drivers < %{?epoch:%{epoch}:}
 Provides:       %{pkgname}-vdpau-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}-vdpau-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
+Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Enhances:       %{pkgname}%{?_isa}
 
 %description -n %{pkgname}-vdpau-drivers-freeworld
@@ -128,6 +138,8 @@ Enhances:       %{pkgname}%{?_isa}
 
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
+
+echo %{version}-freeworld > VERSION
 
 %build
 %meson \
@@ -177,7 +189,9 @@ Enhances:       %{pkgname}%{?_isa}
 # libvdpau opens the versioned name, don't bother including the unversioned
 rm -vf %{buildroot}%{_libdir}/vdpau/*.so
 
+mv %{buildroot}%{_libdir}/libgallium-*-freeworld.so .
 rm -rf %{buildroot}%{_libdir}/*.so*
+mv libgallium-*-freeworld.so %{buildroot}%{_libdir}/
 rm -rf %{buildroot}%{_libdir}/dri/*_dri.so*
 rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}
@@ -188,10 +202,12 @@ mkdir -p %{buildroot}%{_metainfodir}
 install -pm0644 %{S:2} %{buildroot}%{_metainfodir}
 install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
+%files -n %{pkgname}-dri-drivers-freeworld
+%license docs/license.rst
+%{_libdir}/libgallium-*-freeworld.so
 
 %files -n %{pkgname}-va-drivers-freeworld
 %license docs/license.rst
-%{_libdir}/dri/libgallium_drv_video.so
 %{_libdir}/dri/nouveau_drv_video.so
 %{_libdir}/dri/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
@@ -204,7 +220,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 %files -n %{pkgname}-vdpau-drivers-freeworld
 %license docs/license.rst
-%{_libdir}/vdpau/libvdpau_gallium.so.1*
+%dir %{_libdir}/vdpau
 %{_libdir}/vdpau/libvdpau_nouveau.so.1*
 %{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
 %if 0%{?with_r600}
@@ -217,6 +233,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Sep 18 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.3-100
+- 24.2.3
+
 * Fri Sep 06 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.2-100
 - 24.2.2
 

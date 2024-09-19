@@ -53,7 +53,7 @@ index 0cc19d6..46b2a1a 100644
 +
    // If stretch is enabled, we prefer the aspect ratio of the window.
    if (aspect_mode == AspectMode::Stretch)
-     return (static_cast<float>(m_backbuffer_width) / static_cast<float>(m_backbuffer_height));
+   {
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
 index d7ab34f..f972135 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h

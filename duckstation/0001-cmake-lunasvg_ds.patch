@@ -1,7 +1,7 @@
 From 2c93593917af5d16f5506897a430004ac477bd8e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 28 Aug 2024 20:35:25 -0300
-Subject: [PATCH] cmake: lunasvg-patched
+Subject: [PATCH] cmake: lunasvg_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 2 +-
@@ -18,10 +18,10 @@ index 1a089d6..42f6e13 100644
  find_package(JPEG REQUIRED)
  find_package(Freetype 2.13.2 REQUIRED) # 2.13.3, but flatpak is still on 2.13.2.
 -find_package(lunasvg 2.4.1 REQUIRED)
-+find_package(lunasvgPatched 2.4.1 REQUIRED)
++find_package(lunasvg_ds 2.4.1 REQUIRED)
  find_package(cpuinfo REQUIRED)
  find_package(DiscordRPC 3.4.0 REQUIRED)
- find_package(SoundTouchPatched 2.3.3 REQUIRED)
+ find_package(SoundTouch_ds 2.3.3 REQUIRED)
 diff --git a/dep/imgui/CMakeLists.txt b/dep/imgui/CMakeLists.txt
 index f93e0ff..1b1f7c1 100644
 --- a/dep/imgui/CMakeLists.txt
@@ -31,7 +31,7 @@ index f93e0ff..1b1f7c1 100644
  target_include_directories(imgui PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${CMAKE_CURRENT_SOURCE_DIR}/src")
  target_include_directories(imgui INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/include")
 -target_link_libraries(imgui PUBLIC Freetype::Freetype lunasvg::lunasvg)
-+target_link_libraries(imgui PUBLIC Freetype::Freetype lunasvgPatched::lunasvg)
++target_link_libraries(imgui PUBLIC Freetype::Freetype lunasvg_ds::lunasvg)
 diff --git a/dep/imgui/src/imgui_freetype.cpp b/dep/imgui/src/imgui_freetype.cpp
 index aa778d5..d8d88c0 100644
 --- a/dep/imgui/src/imgui_freetype.cpp
@@ -41,7 +41,7 @@ index aa778d5..d8d88c0 100644
  #include FT_BBOX_H              // <freetype/ftbbox.h>
  #include <algorithm>
 -#include <lunasvg_c.h>
-+#include <lunasvg-patched_c.h>
++#include <lunasvg_ds_c.h>
  #if !((FREETYPE_MAJOR >= 2) && (FREETYPE_MINOR >= 12))
  #error IMGUI_ENABLE_FREETYPE_LUNASVG requires FreeType version >= 2.12
  #endif

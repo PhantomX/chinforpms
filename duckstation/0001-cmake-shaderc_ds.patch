@@ -1,7 +1,7 @@
 From fd9b23f2d48558b0a2edbdc760797b5df0bea9d1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:09:15 -0300
-Subject: [PATCH] cmake: shaderc-patched
+Subject: [PATCH] cmake: shaderc_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 4 ++--
@@ -18,13 +18,13 @@ index 1cc70b3..6a1756e 100644
  
  if(ENABLE_VULKAN)
 -  find_package(Shaderc REQUIRED)
-+  find_package(ShadercPatched REQUIRED)
++  find_package(Shaderc_ds REQUIRED)
    find_package(spirv_cross_c_shared REQUIRED)
  
    if(LINUX)
      # We need to add the rpath for shaderc to the executable.
 -    get_target_property(SHADERC_LIBRARY Shaderc::shaderc_shared IMPORTED_LOCATION)
-+    get_target_property(SHADERC_LIBRARY ShadercPatched::shaderc_shared IMPORTED_LOCATION)
++    get_target_property(SHADERC_LIBRARY Shaderc_ds::shaderc_shared IMPORTED_LOCATION)
      get_filename_component(SHADERC_LIBRARY_DIRECTORY ${SHADERC_LIBRARY} DIRECTORY)
      list(APPEND CMAKE_BUILD_RPATH ${SHADERC_LIBRARY_DIRECTORY})
      get_target_property(SPIRV_CROSS_LIBRARY spirv-cross-c-shared IMPORTED_LOCATION)
@@ -37,7 +37,7 @@ index b57d72d..7bff73b 100644
  if(ENABLE_VULKAN OR APPLE)
    # shaderc is loaded dynamically to reduce module loads on startup.
 -  get_target_property(SHADERC_INCLUDE_DIR Shaderc::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
-+  get_target_property(SHADERC_INCLUDE_DIR ShadercPatched::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
++  get_target_property(SHADERC_INCLUDE_DIR Shaderc_ds::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
    target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR})
  endif()
  
@@ -50,7 +50,7 @@ index 3ab0120..e3bfdc6 100644
  #include "fmt/format.h"
  #include "imgui.h"
 -#include "shaderc/shaderc.h"
-+#include "shaderc-patched/shaderc.h"
++#include "shaderc_ds/shaderc.h"
  #include "spirv_cross/spirv_cross_c.h"
  #include "xxhash.h"
  
@@ -58,8 +58,8 @@ index 3ab0120..e3bfdc6 100644
    if (s_shaderc_library.IsOpen())
      return true;
  
--  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc_shared");
-+  const std::string libname = DynamicLibrary::GetVersionedFilename("shaderc-patched_shared", 1);
+-  const std::string libname = DynamicLibrary::GetVersionedFilename(SHADERC_LIB_NAME);
++  const std::string libname = DynamicLibrary::GetVersionedFilename(SHADERC_LIB_NAME, 1);
    if (!s_shaderc_library.Open(libname.c_str(), error))
    {
      Error::AddPrefix(error, "Failed to load shaderc: ");

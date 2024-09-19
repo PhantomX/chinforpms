@@ -12,13 +12,15 @@
 
 Name:           vhba-kmod
 Version:        20240202
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPL-2.0-only
 URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.xz
 Source1:        vhba-kmod-excludekernel-filter.txt
+
+Patch0:         https://gitlab.archlinux.org/archlinux/packaging/packages/vhba-module/-/raw/3e76141e8df8fdc96710f476f03fedf7ad234725/0001-vhba-Fix-compat-with-kernel-6.11.patch
 
 # get the needed BuildRequires (in parts depending on what we build for)
 BuildRequires:  %{_bindir}/kmodtool
@@ -44,6 +46,8 @@ kmodtool  --target %{_target_cpu}  --repo %{repo} --kmodname %{name} %{?buildfor
 
 %setup -q -c -T -a 0
 
+%patch -P 0 -p2 -d %{orig_name}-%{version}
+
 for kernel_version in %{?kernel_versions} ; do
   cp -a %{orig_name}-%{version} _kmod_build_${kernel_version%%___*}
 done
@@ -61,6 +65,9 @@ done
 
 
 %changelog
+* Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 20240202-2
+- Linux 6.11 fix
+
 * Sat Feb 17 2024 Phantom X <megaphantomx at hotmail dot com> - 20240202-1
 - 20240202
 
