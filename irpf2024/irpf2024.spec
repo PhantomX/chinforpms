@@ -8,7 +8,7 @@
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.0
+Version:        1.4
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -108,5 +108,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
+* Fri Sep 20 2024 - 1.4-1
+- 1.4
+
 * Wed Mar 13 2024 - 1.0-1
 - Initial spec

@@ -18,11 +18,12 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 5cf0783edb6618d50f7e3d2bafe669f3dba6e3ea
+%global commit 43c27670ef76b41ed75ab40a920f03fec97efcc0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240917
+%global date 20240919
 %bcond_without snapshot
 
+%bcond_with debug
 %bcond_without gplasync
 %bcond_with spirv
 %bcond_without vulkan
@@ -73,7 +74,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.4
-Release:        104%{?dist}
+Release:        105%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -160,17 +161,6 @@ Provides a Vulkan-based implementation of DXGI, D3D8, D3D9, D3D10 and D3D11
 in order to run 3D applications on Linux using Wine.
 
 
-%package mingw-debuginfo
-Summary:        Debug information for package %{name}
-AutoReq:        0
-AutoProv:       1
-BuildArch:      noarch
-%description mingw-debuginfo
-This package provides debug information for package %{name}.
-Debug information is useful when developing applications that use this
-package or when debugging this package.
-
-
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 499 -p1
@@ -247,6 +237,25 @@ sed \
 %endif
   -i meson.build
 
+%if %{without debug}
+mkdir bin
+# -Wl -S to build working stripped PEs
+cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/x86_64-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+cat > bin/i686-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/i686-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+for i in bin/*-gcc ;do
+  sed -e 's|-gcc|-g++|g' ${i} > ${i%gcc}g++
+done
+sed -e 's|gcc|g++|g' -i bin/*-g++
+chmod 0755 bin/*g*
+export PATH="$(pwd)/bin:$PATH"
+%endif
+
 %define _vpath_srcdir ..
 for i in %{targetbits}
 do
@@ -294,11 +303,11 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 %{_bindir}/wine%{pkgname}cfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
-%files mingw-debuginfo
-%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
-
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.4-105.20240919git43c2767
+- Debug switch
+
 * Thu Jul 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.4-100.20240711gitba47af5
 - 2.4
 

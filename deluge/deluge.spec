@@ -1,6 +1,6 @@
-%global commit 7f3f7f69ee78610e95bea07d99f699e9310c4e08
+%global commit 8df36c454be320571005231a1c77cedb656557e1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240219
+%global date 20240910
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           deluge
 Version:        2.1.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1

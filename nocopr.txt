@@ -29,7 +29,7 @@ flycast
 -freac-superfast-codecs-freeworld
 -gens-gs
 -gflash-player
-glow
+-glow
 -gstreamer1-plugins-ugly
 hactool
 hakuneko-desktop

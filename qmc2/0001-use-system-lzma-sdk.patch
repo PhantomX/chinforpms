@@ -1,14 +1,14 @@
-From 416c1f82d9b3a627e80d32324b620815d5089dd8 Mon Sep 17 00:00:00 2001
+From 6c7119e622a41a543231283059a55a1029663cff Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 13 Sep 2022 14:35:27 -0300
 Subject: [PATCH] use system lzma-sdk
 
 ---
  Makefile                   |  7 ++++
- qmc2.pro                   | 72 +++++++++++++++++++++-----------------
- src/arcade/qmc2-arcade.pro | 67 +++++++++++++++++++----------------
+ qmc2.pro                   | 74 +++++++++++++++++++++-----------------
+ src/arcade/qmc2-arcade.pro | 67 ++++++++++++++++++----------------
  src/sevenzipfile.h         |  8 +++++
- 4 files changed, 91 insertions(+), 63 deletions(-)
+ 4 files changed, 92 insertions(+), 64 deletions(-)
 
 diff --git a/Makefile b/Makefile
 index 4b66ecd..141741d 100644
@@ -36,7 +36,7 @@ index 4b66ecd..141741d 100644
  ARCADE_DEFINES += QMC2_ARCADE_BUNDLED_ZLIB
  endif
 diff --git a/qmc2.pro b/qmc2.pro
-index 0b4c216..4aed2b7 100644
+index e1a7f4c..19a111c 100644
 --- a/qmc2.pro
 +++ b/qmc2.pro
 @@ -10,8 +10,7 @@ HEADERS += src/qftp/qftp.h \
@@ -49,7 +49,7 @@ index 0b4c216..4aed2b7 100644
  TEMPLATE = app
  FORMS += ui/qmc2main.ui \
  	ui/options.ui \
-@@ -163,35 +162,7 @@ SOURCES += src/qmc2main.cpp \
+@@ -163,36 +162,7 @@ SOURCES += src/qmc2main.cpp \
  	src/setupwizard.cpp \
  	src/clickablelabel.cpp \
  	src/htmleditor/htmleditor.cpp \
@@ -81,12 +81,13 @@ index 0b4c216..4aed2b7 100644
 -	src/lzma/Ppmd7.c \
 -	src/lzma/Ppmd7Dec.c \
 -	src/lzma/Ppmd7Enc.c \
--	src/lzma/Sha256.c
+-	src/lzma/Sha256.c \
+-	src/lzma/Sha256Opt.c
 +	src/htmleditor/highlighter.cpp
  HEADERS += src/qmc2main.h \
  	src/options.h \
  	src/docbrowser.h \
-@@ -303,7 +274,44 @@ TRANSLATIONS += data/lng/qmc2_de.ts \
+@@ -304,7 +274,45 @@ TRANSLATIONS += data/lng/qmc2_de.ts \
  	data/lng/qmc2_us.ts
  RESOURCES += qmc2.qrc
  QMAKE_MAKEFILE = Makefile.qmake
@@ -122,7 +123,8 @@ index 0b4c216..4aed2b7 100644
 +		src/lzma/Ppmd7.c \
 +		src/lzma/Ppmd7Dec.c \
 +		src/lzma/Ppmd7Enc.c \
-+		src/lzma/Sha256.c
++		src/lzma/Sha256.c \
++		src/lzma/Sha256Opt.c
 +
 +	DEFINES += _7ZIP_PPMD_SUPPORT _7ZIP_ST
 +} else {
@@ -255,5 +257,5 @@ index 7b33844..b03af78 100644
  
  class SevenZipMetaData
 -- 
-2.44.0
+2.46.1
 

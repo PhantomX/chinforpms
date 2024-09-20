@@ -19,8 +19,8 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.6.9
-Release:        4%{?dist}
+Version:        4.8.0
+Release:        1%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -121,6 +121,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 4.8.0-1
+- 4.8.0
+
 * Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 4.6.9-4
 - lzma-sdk rebuild
 

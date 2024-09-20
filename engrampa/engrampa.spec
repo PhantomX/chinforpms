@@ -17,11 +17,11 @@
 %global vc_url https://git.mate-desktop.org/%{name}
 
 Name:          engrampa
-Version:       %{branch}.1
+Version:       %{branch}.2
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
-Release:       0.1%{?git_rel}%{?dist}
+Release:       0.2%{?git_rel}%{?dist}
 %endif
 Epoch:         1
 Summary:       MATE Desktop file archiver
@@ -34,8 +34,6 @@ URL:           http://mate-desktop.org
 %{?rel_build:Source0:     http://pub.mate-desktop.org/releases/%{branch}/%{name}-%{version}.tar.xz}
 # Source for snapshot-builds.
 %{!?rel_build:Source0:    %{vc_url}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
-
-Patch1:         %{vc_url}/patch/?id=28ec395b81efebb06b7c67c849da14389233c923#/%{name}-git-28ec395.patch
 
 BuildRequires: gcc
 BuildRequires: make
@@ -129,6 +127,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.28.2-100
+- 1.28.2
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.28.1-100
 - 1.28.1
 

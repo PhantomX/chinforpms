@@ -4,7 +4,7 @@ chinforpms-rpm-config
 # 1
 asmc
 buildsys-build-chinforpms
-c-vtapi
+-c-vtapi
 -compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601
@@ -38,6 +38,7 @@ xwit
 zarchive
 
 # 2
+7zip
 -aom
 -compat-gcc-32
 -dxil-spirv
@@ -46,12 +47,11 @@ ff7tk
 libadwaita
 cpuinfo
 libbacktrace
-libdeflate
+-libdeflate
 -libqtadvanceddocking
 -libliftoff
 -libvorbis
 libvorbis-aotuv
-lzma-sdk
 -pygtk2
 -python-markups
 python-pynput
@@ -60,7 +60,7 @@ python-pynput
 perl-LWP-UserAgent-Cached
 perl-X11-GUITest
 -qcodeeditor
-rapidyaml
+-rapidyaml
 -spirv-tools
 VulkanMemoryAllocator
 vulkan-loader
@@ -70,15 +70,18 @@ xbyak
 xcftools
 
 # 3
+lzma-sdk
+
+# 4
 libchdr
 librashader
 mesa
 mesa-libGL-xlib
+SDL2
 VulkanMemoryAllocator-Hpp
 vulkan-tools
 
-# 4
-7zip
+# 5
 ada
 adriconf
 adwaita-qt
@@ -124,7 +127,7 @@ discord-rpc
 disk-indicator
 -dosbox-staging
 -dosbox-x
-easytag
+-easytag
 eiciel-gtk3
 -emojione-picker
 FAudio
@@ -185,7 +188,7 @@ ladspa-tap-plugins
 libstrangle
 -liveprogide
 -linux-steam-integration
-lunasvc-patched
+lunasvc_sg
 lunzip
 -lutris
 -lzip
@@ -241,7 +244,7 @@ qmp3gain
 qmpdclient
 qt-heic-image-plugin
 qt-jpegxl-image-plugin
-qt-virustotal-uploader
+-qt-virustotal-uploader
 qt5ct
 qt6ct
 -quiterss
@@ -260,13 +263,13 @@ sdl_gamecontrollerdb
 sdl-jstest
 -sdlcl
 -shaderc
-shaderc-patched
+shaderc_ds
 skrooge
 -simple64
 smtube
 -snx
 -snxvpn
-soundtouch-patched
+soundtouch_ds
 -speedtest-cli
 spirv-cross
 ss-save-parser
@@ -290,8 +293,8 @@ vhba-kmod
 -wiibafu
 wiimms-iso-tools
 -wimlib
-winesync
-winesync-kmod
+-winesync
+-winesync-kmod
 wxmp3gain
 wxmp3val
 -ueberzug
@@ -314,7 +317,7 @@ zenity
 zenstates
 zram-init
 
-# 5
+# 6
 audacious-plugins
 -belle-sip
 -belr
@@ -329,20 +332,20 @@ freac
 whdd
 wine
 
-# 6
+# 7
 -belcard
 mingw-wine-gecko
-wine-d8vk
+-wine-d8vk
 wine-dxvk
 wine-mono
 wine-nine
 wine-vkd3d-proton
 
-# 6
+# 8
 -mediastreamer
 
-# 7
+# 9
 -linphone
 
-# 8
+# 10
 -linphoneqt

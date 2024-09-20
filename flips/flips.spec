@@ -1,6 +1,6 @@
-%global commit eb3b86f0f5c8a61ab9b3d982ab949877b9060ea1
+%global commit 07162cac69114bdb4b8a2302d131604c29df853b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240309
+%global date 20240905
 %bcond_without snapshot
 
 %ifnarch %{ix86} ppc64 s390x
@@ -15,7 +15,7 @@
 
 Name:           flips
 Version:        1.40
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPL-3.0-or-later
@@ -65,7 +65,6 @@ sed \
 
 
 %build
-%set_build_flags
 RPM_CXX_FLAGS="$CXXFLAGS"
 # make.sh flags
 RPM_CXX_FLAGS+=" -fomit-frame-pointer -fmerge-all-constants -fvisibility=hidden"

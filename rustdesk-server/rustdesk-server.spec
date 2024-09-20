@@ -13,15 +13,17 @@
 %global vc_url  https://github.com/rustdesk/%{name}
 %global rustdesk_id dbab22cbbcc51e5c188e76d4bffdcc331fab7e55
 
+%global ver    %%(echo %{version} | sed -z 's/\\./-/3')
+
 Name:           rustdesk-server
-Version:        1.1.9
+Version:        1.1.11.1
 Release:        1%{?dist}
 Summary:        RustDesk server program
 
 License:        AGPL-3.0-only
 URL:            https://rustdesk.com/
 
-Source0:        %{vc_url}/releases/download/%{version}/%{name}-linux-%{parch}.zip#/%{name}-%{version}-linux-%{parch}.zip
+Source0:        %{vc_url}/releases/download/%{ver}/%{name}-linux-%{parch}.zip#/%{name}-%{ver}-linux-%{parch}.zip
 Source1:        %{vc_url}/raw/%{rustdesk_id}/LICENSE
 Source2:        %{vc_url}/raw/%{rustdesk_id}/README.md
 Source3:        %{name}-hbbr.service
@@ -89,6 +91,9 @@ install -pm0644 %{S:6} %{buildroot}%{_prefix}/lib/firewalld/services/%{name}.xml
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.11.1-1
+- 1.1.11-1
+
 * Tue Jan 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.9-1
 - 1.1.9
 

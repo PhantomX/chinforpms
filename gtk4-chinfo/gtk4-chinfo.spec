@@ -5,8 +5,8 @@
 %global with_tracker 0
 
 %global glib2_version 2.76.0
-%global pango_version 1.50.0
-%global cairo_version 1.14.0
+%global pango_version 1.52.0
+%global cairo_version 1.18.0
 %global gdk_pixbuf_version 2.30.0
 %global wayland_protocols_version 1.31
 %global wayland_version 1.21.0
@@ -29,7 +29,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.14.5
+Version:        4.16.1
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -136,7 +136,6 @@ export CFLAGS+=' -fno-strict-aliasing -DG_DISABLE_CAST_CHECKS -DG_DISABLE_ASSERT
         -Dman-pages=false \
         -Dintrospection=disabled \
         -Dbuild-demos=false \
-        -Ddemos=false \
         -Dbuild-testsuite=false \
         -Dbuild-examples=false \
         -Dbuild-tests=false \
@@ -174,6 +173,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.1-1
+- 4.16.1
+
 * Sat Aug 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.14.5-1
 - 4.14.5
 

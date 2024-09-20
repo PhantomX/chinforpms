@@ -1,13 +1,13 @@
 %global apiver  1
-%global gtk_version 4.13.4
+%global gtk_version 4.15.2
 %global glib_version 2.76.0
 
 %global pkgname libadwaita
 %global tarball_version %%(echo %{version} | tr '~' '.')
 
 Name:           %{pkgname}-chinfo
-Version:        1.5.0
-Release:        2%{?dist}
+Version:        1.6.0
+Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
 License:        LGPL-2.1-or-later AND MIT
@@ -85,6 +85,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.6.0-1
+- 1.6.0
+
 * Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1.5.0-2
 - Provides and requires tweaks
 

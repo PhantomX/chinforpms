@@ -1,6 +1,6 @@
-%global commit b02ba93a5d725378205e9e664dfa20682ed69a4c
+%global commit b88336b779e30d732fe83ee43e761df3401cc6b4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240305
+%global date 20240916
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           xarchiver
 Version:        0.5.4.23
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Desktop Environment independent archive manager
 
 Epoch:          1

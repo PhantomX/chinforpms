@@ -3,7 +3,7 @@
 
 # Comma-separated blacklist of RPCs to disable, or empty list to enable all.
 #
-# You can get the list of RPC commands using "qemu-ga --blacklist='?'".
+# You can get the list of RPC commands using "qemu-ga -b '?'"
 # There should be no spaces between commas and commands in the blacklist.
 #BLACKLIST_RPC=guest-file-open,guest-file-close,guest-file-read,guest-file-write,guest-file-seek,guest-file-flush,guest-exec,guest-exec-status
 

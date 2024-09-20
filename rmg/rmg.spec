@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 9b5cc05b9f1dea27c7ae8a8353413a04fb80ecdf
+%global commit 1b45907ab26a5e8532bfc3c41d70c4611fb61028
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240728
+%global date 20240909
 %bcond_without snapshot
 
 %bcond_with rust
@@ -22,7 +22,7 @@
 
 Name:           rmg
 Version:        0.6.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT

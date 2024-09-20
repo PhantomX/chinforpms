@@ -17,7 +17,7 @@
 
 Name:           gstreamer1
 Version:        1.24.7
-Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
+Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPL-2.1-or-later
@@ -50,6 +50,11 @@ BuildRequires:  libunwind-devel
 %endif
 BuildRequires:  elfutils-devel
 BuildRequires:  bash-completion
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11 
+BuildRequires:  bash-completion-devel
+%else
+BuildRequires:  bash-completion
+%endif
 BuildRequires:  rustc
 
 
@@ -246,6 +251,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.24.7-101
+- BR: bash-completion-devel
+
 * Thu Aug 22 2024 Phantom X <megaphantomx at hotmail dot com> - 1.24.7-100
 - 1.24.7
 

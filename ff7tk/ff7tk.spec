@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit 9006e58e5c3482eef4f3fada64fc0536b1003b48
+%global commit 562bc35098a2702836920b47a16ca847d45e0223
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240310
+%global date 20240908
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,7 +10,7 @@
 %endif
 
 Name:           ff7tk
-Version:        1.0.0.0
+Version:        1.2.0.0
 Release:        1%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
@@ -99,6 +99,9 @@ rmdir -p %{buildroot}%{_datadir}/%{name} || :
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.0.0-1.20240908git562bc35
+- 1.2.0.0
+
 * Tue Mar 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.0.0-1.20240310git9006e58
 - 1.0.0.0
 

@@ -10,8 +10,8 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.4.0
-Release:        101%{?dist}
+Version:        3.4.1
+Release:        100%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
 License:        GPL-3.0-or-later
@@ -121,6 +121,9 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 3.4.1-100
+- 3.4.1
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 3.4.0-101
 - BR: Qt5LinguistTools
 

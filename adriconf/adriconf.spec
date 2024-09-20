@@ -1,5 +1,5 @@
 Name:           adriconf
-Version:        2.7.1
+Version:        2.7.2
 Release:        1%{?dist}
 Summary:        Advanced DRI Configurator
 
@@ -8,7 +8,7 @@ URL:            https://gitlab.freedesktop.org/mesa/%{name}
 
 Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
 
-Patch0:         %{url}/-/commit/eb7a9e5c2f8d66317548301d884bff4ec5da395b.patch#/%{name}-gl-eb7a9e5.patch
+Patch0:         %{url}/-/commit/26b7f8b0e82ea83a1275ab5d91e33df9d8ceaa68.patch#/%{name}-gl-26b7f8b.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -91,6 +91,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.freedeskto
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.7.2-1
+- 2.7.2
+
 * Fri Sep 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.7.1-1
 - 2.7.1
 

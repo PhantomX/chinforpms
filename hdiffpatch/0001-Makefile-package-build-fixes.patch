@@ -1,31 +1,44 @@
-From efd0226fac38db346dd4e8c9d7f0ea262395c1dc Mon Sep 17 00:00:00 2001
+From 74f0ef782e52258057a26979f5061f13f4ad3151 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 17 Mar 2022 13:53:39 -0300
 Subject: [PATCH] Makefile: package build fixes
 
 ---
- Makefile | 61 +++++++++++++++++++++++++++++++++++++++++++-------------
- 1 file changed, 47 insertions(+), 14 deletions(-)
+ Makefile | 63 ++++++++++++++++++++++++++++++++++++++++++--------------
+ 1 file changed, 48 insertions(+), 15 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index be7128b..9da0723 100644
+index 42dc21c..736d8a4 100644
 --- a/Makefile
 +++ b/Makefile
-@@ -4,11 +4,11 @@ MT       := 1
+@@ -2,7 +2,7 @@
+ DIR_DIFF := 1
+ MT       := 1
+ # used libdeflate?
+-LDEF     := 1
++LDEF     := 0
  # 0: not need zlib;  1: compile zlib source code;  2: used -lz to link zlib lib;
- ZLIB     := 2
+ ifeq ($(LDEF),0)
+   ZLIB     := 2
+@@ -10,7 +10,7 @@ else
+   ZLIB     := 1
+ endif
  # 0: not need lzma;  1: compile lzma source code;  2: used -llzma to link lzma lib;
 -LZMA     := 1
 +LZMA     := 2
+ # lzma decompressor used arm64 asm optimize? 
  ARM64ASM := 0
- RISCV32  := 0
+ # lzma only can used software CRC? (no hardware CRC)
+@@ -18,7 +18,7 @@ USE_CRC_EMU := 0
+ # supported atomic uint64?
+ ATOMIC_U64 := 1
  # 0: not need zstd;  1: compile zstd source code;  2: used -lzstd to link zstd lib;
 -ZSTD     := 1
 +ZSTD     := 2
  MD5      := 1
  STATIC_CPP := 0
  # used clang?
-@@ -35,6 +35,15 @@ ifeq ($(BZIP2),0)
+@@ -56,6 +56,15 @@ else
    endif
  endif
  
@@ -41,7 +54,7 @@ index be7128b..9da0723 100644
  HDIFF_OBJ  := 
  HPATCH_OBJ := \
      libHDiffPatch/HPatch/patch.o \
-@@ -57,7 +66,7 @@ else
+@@ -78,7 +87,7 @@ else
  	HPATCH_OBJ += bsdiff_wrapper/bspatch_wrapper.o
  endif
  
@@ -50,7 +63,7 @@ index be7128b..9da0723 100644
  ifeq ($(DIR_DIFF),0)
  else
    ifeq ($(MD5),0)
-@@ -98,6 +107,7 @@ else
+@@ -119,6 +128,7 @@ else
    HDIFF_OBJ  += vcdiff_wrapper/vcdiff_wrapper.o
    ifeq ($(LZMA),0)
    else
@@ -58,7 +71,7 @@ index be7128b..9da0723 100644
  	HPATCH_OBJ+=$(LZMA_PATH)/7zCrc.o \
  				$(LZMA_PATH)/7zCrcOpt.o \
  				$(LZMA_PATH)/7zStream.o \
-@@ -112,6 +122,7 @@ else
+@@ -133,6 +143,7 @@ else
  				$(LZMA_PATH)/XzCrc64Opt.o \
  				$(LZMA_PATH)/XzDec.o
  	HDIFF_OBJ +=$(LZMA_PATH)/XzEnc.o
@@ -66,7 +79,7 @@ index be7128b..9da0723 100644
    endif
  endif
  
-@@ -208,7 +219,7 @@ endif
+@@ -237,7 +248,7 @@ endif
  
  
  DEF_FLAGS := \
@@ -75,7 +88,7 @@ index be7128b..9da0723 100644
      -D_IS_NEED_ALL_CompressPlugin=0 \
      -D_IS_NEED_DEFAULT_CompressPlugin=0 \
      -D_IS_NEED_ALL_ChecksumPlugin=0 \
-@@ -238,6 +249,9 @@ else
+@@ -266,6 +277,9 @@ else
  	ifeq ($(BZIP2),1)
          DEF_FLAGS += -I$(BZ2_PATH)
  	endif
@@ -85,18 +98,18 @@ index be7128b..9da0723 100644
  endif
  ifeq ($(ZLIB),0)
  else
-@@ -245,6 +259,9 @@ else
+@@ -273,6 +287,9 @@ else
  	ifeq ($(ZLIB),1)
-         DEF_FLAGS += -I$(ZLIB_PATH)
+     DEF_FLAGS += -I$(ZLIB_PATH)
  	endif
 +	ifeq ($(ZLIB),2)
 +        DEF_FLAGS += $(shell pkg-config --cflags-only-I zlib)
 +	endif
  endif
- ifeq ($(DIR_DIFF),0)
-   DEF_FLAGS += -D_IS_NEED_DIR_DIFF_PATCH=0
-@@ -289,6 +306,9 @@ else
-       DEF_FLAGS += -DUSE_CRC_EMU
+ ifeq ($(LDEF),0)
+ else
+@@ -330,6 +347,9 @@ else
+       endif
      endif
    endif
 +  ifeq ($(LZMA),2)
@@ -105,7 +118,7 @@ index be7128b..9da0723 100644
  endif
  ifeq ($(ZSTD),0)
  else
-@@ -297,6 +317,9 @@ else
+@@ -338,6 +358,9 @@ else
      DEF_FLAGS += -DZSTD_HAVE_WEAK_SYMBOLS=0 -DZSTD_TRACE=0 -DZSTD_DISABLE_ASM=1 -DZSTDLIB_VISIBLE= -DZSTDLIB_HIDDEN= \
  	               -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common -I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
  	endif
@@ -115,7 +128,7 @@ index be7128b..9da0723 100644
  endif
  
  ifeq ($(MT),0)
-@@ -321,7 +344,7 @@ ifeq ($(ZSTD),2)
+@@ -362,7 +385,7 @@ ifeq ($(ZSTD),2)
    PATCH_LINK += -lzstd		# link zstd
  endif
  ifeq ($(LZMA),2)
@@ -124,7 +137,7 @@ index be7128b..9da0723 100644
  endif
  ifeq ($(MT),0)
  else
-@@ -351,15 +374,15 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
+@@ -392,15 +415,15 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
  
  .PHONY: all install clean
  
@@ -146,7 +159,7 @@ index be7128b..9da0723 100644
  
  ifeq ($(OS),Windows_NT) # mingw?
    RM := del /Q /F
-@@ -368,17 +391,27 @@ else
+@@ -409,17 +432,27 @@ else
    RM := rm -f
    DEL_HDIFF_OBJ := $(HDIFF_OBJ)
  endif
@@ -178,5 +191,5 @@ index be7128b..9da0723 100644
  uninstall:
  	$(RM)  $(INSTALL_BIN)/hdiffz  $(INSTALL_BIN)/hpatchz
 -- 
-2.44.0
+2.46.1
 

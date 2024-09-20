@@ -16,18 +16,19 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
+%bcond_with debug
 %bcond_with spirv
 %bcond_without vulkan
 
 # Need be set for release builds too
-%global commit b73d5b073d9765ae9eeb0d67d7c977edc3a93d02
+%global commit 2ce6df665fbf66c268da9f33b6fb69fe2a51b8c7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240713
+%global date 20240719
 %bcond_without snapshot
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 96d5276d5df5a00e10f1dcdbf6591bfc5b251ca1
+%global commit1 b4fac5eac7dc2aab43480572917ab2558173b457
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -70,7 +71,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -142,17 +143,6 @@ Provides:       wine-vkd3d-d3d12 = %{?epoch:%{epoch}:}%{version}-%{release}
 VKD3D-Proton is a fork of VKD3D, which aims to implement the full Direct3D 12
 API on top of Vulkan. The project serves as the development effort for Direct3D
 12 support in Proton.
-
-
-%package mingw-debuginfo
-Summary:        Debug information for package %{name}
-AutoReq:        0
-AutoProv:       1
-BuildArch:      noarch
-%description mingw-debuginfo
-This package provides debug information for package %{name}.
-Debug information is useful when developing applications that use this
-package or when debugging this package.
 
 
 %prep
@@ -250,6 +240,25 @@ sed \
   -e "/^c_link_args =/acpp_args = ['$TEMP_CFLAGS']" \
   -i build-win64.txt
 
+%if %{without debug}
+mkdir bin
+# -Wl -S to build working stripped PEs
+cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/x86_64-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+cat > bin/i686-w64-mingw32-gcc <<'EOF'
+#!/usr/bin/sh
+exec %{_bindir}/i686-w64-mingw32-gcc -Wl,-S "$@"
+EOF
+for i in bin/*-gcc ;do
+  sed -e 's|-gcc|-g++|g' ${i} > ${i%gcc}g++
+done
+sed -e 's|gcc|g++|g' -i bin/*-g++
+chmod 0755 bin/*g*
+export PATH="$(pwd)/bin:$PATH"
+%endif
+
 %define _vpath_srcdir ..
 for i in %{targetbits}
 do
@@ -297,11 +306,11 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 %{_bindir}/winevkd3dcfg
 %{_datadir}/wine/%{pkgname}/*/*.dll
 
-%files mingw-debuginfo
-%{_prefix}/lib/debug/%{_datadir}/wine/%{pkgname}/*/*.debug
-
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.13-5.20240719git2ce6df6
+- Debug switch
+
 * Fri Jun 21 2024 Phantom X <megaphantomx at hotmail dot com> - 2.13-1
 - 2.13
 

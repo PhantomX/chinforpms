@@ -10,7 +10,7 @@
 %global pkgname EccEdc
 
 Name:           eccedc
-Version:        20230606
+Version:        20240901
 Release:        1%{?dist}
 Summary:        Checks or fix user data of the 2048 byte per sector of CD by using ecc/edc
 
@@ -64,6 +64,9 @@ install -pm0755 %{pkgname}/%{pkgname}.out %{buildroot}%{_bindir}/%{pkgname}
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 20240901-1
+- 20240901
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20230606-1
 - 20230606
 

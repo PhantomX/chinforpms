@@ -4,7 +4,7 @@
 %bcond_with tests
 
 Name:           noise-suppression-for-voice
-Version:        1.03
+Version:        1.10
 Release:        1%{?dist}
 Summary:        A real-time noise suppression plugin for voice
 
@@ -12,9 +12,6 @@ License:        GPL-3.0 AND BSD-3-Clause
 URL:            https://github.com/werman/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-
-Patch0:         %{url}/commit/226f03bbc317e11b0eb2c22d55e17898d79ed0c0.patch#/%{name}-gh-226f03b.patch
-Patch1:         %{url}/commit/c1cf4307c75abed8e3ecccdd23a35f7782feaf69.patch#/%{name}-gh-c1cf430.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -66,7 +63,7 @@ This packages provides the LV2 plugin.
 %prep
 %autosetup -p1
 
-cp -p src/rnnoise/COPYING.txt COPYING.rnnoise.txt
+cp -p external/rnnoise/COPYING COPYING.rnnoise
 cp -p external/JUCE/LICENSE.md LICENSE.JUCE.md
 
 # use the system version of ladspa.h
@@ -93,14 +90,14 @@ rm -f ladspa.h
 
 
 %files -n ladspa-%{name}-plugin
-%license LICENSE COPYING.rnnoise.txt
+%license LICENSE COPYING.rnnoise
 %doc README.md
 %{_libdir}/ladspa/*.so
 
 
 %if %{with lv2}
 %files -n lv2-%{name}-plugin
-%license LICENSE LICENSE.JUCE.md COPYING.rnnoise.txt
+%license LICENSE LICENSE.JUCE.md COPYING.rnnoise
 %doc README.md
 %{_libdir}/lv2/rnnoise_mono.lv2/*.so
 %{_libdir}/lv2/rnnoise_mono.lv2/*.ttl
@@ -110,6 +107,9 @@ rm -f ladspa.h
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.10-1
+- 1.10
+
 * Tue Aug 22 2023 Phantom X <megaphantomx at hotmail dot com> - 1.03-1
 - Initial spec
 

@@ -1,14 +1,14 @@
 %global _default_patch_fuzz 1
 
-%global commit0 7ead8c1ea2f4aeafe9c5b9ef8a9461a9ba781aa8
+%global commit0 86885d14049fab06ef8a33aac51664230ca09200
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20240308
+%global date 20240805
 
 %global dist .%{date}git%{shortcommit0}%{?dist}
 
 Name:           libbacktrace
 Version:        1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Library to produce symbolic backtraces
 
 License:        BSD-3-Clause

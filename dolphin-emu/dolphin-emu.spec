@@ -76,7 +76,7 @@
 
 Name:           dolphin-emu
 Version:        2409.37
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
 Epoch:          1
@@ -119,12 +119,12 @@ Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcn
 %endif
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
+Patch0:        %{vc_url}/pull/12923.patch#/%{name}-gh-pr12923.patch
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
 %endif
 Patch11:        0001-system-library-support.patch
-Patch12:        0001-cmake-Downgrade-minizip-detection.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
 
@@ -187,12 +187,7 @@ BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
 BuildRequires:  mbedtls-devel >= 2.28.0
-%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
-BuildRequires:  minizip-compat-devel
-%endif
-%if %{defined fedora} && 0%{?fedora} >= 40
-BuildRequires:  minizip-ng-compat-devel
-%endif
+BuildRequires:  minizip-ng-compat-devel >= 4.0.4
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  cmake(VulkanHeaders)
@@ -290,6 +285,9 @@ This package provides the data files for dolphin-emu.
 
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
+
+# Workaround to fix cmake bug with minizip-ng pkgconfig
+sed 's/ZLIB::ZLIB/ZLIB::ZLIB z/' -i Source/Core/*/CMakeLists.txt
 
 #Font license, just making things more generic
 sed 's| this directory | %{name}/Sys/GC |g' \
@@ -484,6 +482,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2409.37-2.20240916git6851ed7
+- Fix build with zlib-ng
+
 * Wed Sep 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2409.37-1.20240916git6851ed7
 - 2409.37
 

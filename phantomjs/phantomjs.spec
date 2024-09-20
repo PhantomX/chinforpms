@@ -4,7 +4,7 @@
 
 Name:           phantomjs
 Version:        2.1.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Minimalistic headless WebKit-based browser with JavaScript API
 
 License:        BSD-3-Clause
@@ -13,6 +13,7 @@ URL:            http://phantomjs.org/
 Source0:        https://github.com/ariya/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        http://http.debian.net/debian/pool/main/p/%{name}/%{name}_%{debian_patch}.debian.tar.xz
 Patch0:         %{name}-qmake-qt5.patch
+Patch1:         0001-python-2to3.patch
 
 BuildRequires:  gcc-c++
 BuildRequires:  python3-devel
@@ -46,8 +47,7 @@ ${patch_command} -i debian/patches/build-qtpath.patch
 ${patch_command} -i debian/patches/unlock-qt.patch
 
 %patch -P 0 -p1
-
-2to3 --write --nobackups .
+%patch -P 1 -p1
 
 
 %build
@@ -69,6 +69,9 @@ install -pm0644 debian/%{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.1.1-4
+- Remove 2to3 usage
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 2.1.1-3
 - Apply qmake patch
 

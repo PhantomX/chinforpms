@@ -2,7 +2,7 @@
 
 Name:           cdemu-client
 Version:        3.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        CDEmu CLI client
 
 License:        GPL-2.0-only
@@ -11,7 +11,11 @@ Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.x
 
 BuildArch:      noarch
 
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11 
+BuildRequires:  bash-completion-devel
+%else
 BuildRequires:  bash-completion
+%endif
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  intltool
@@ -56,11 +60,14 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 %{_bindir}/*
 %{_datadir}/applications/*.desktop
 %{_datadir}/pixmaps/*.svg
-%{bash_completions_dir}/completions/cdemu
+%{bash_completions_dir}/cdemu
 %{_datadir}/icons/hicolor/scalable/apps/*.svg
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-2
+- BR: bash-completion-devel
+
 * Fri Dec 03 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-1
 - R: cdemu-daemon
 

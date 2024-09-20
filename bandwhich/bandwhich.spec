@@ -6,7 +6,7 @@
 %global vc_id   acd1b0a95dbc2ee245648f2d5ef75494cf1cba54
 
 Name:           bandwhich
-Version:        0.22.2
+Version:        0.23.0
 Release:        1%{?dist}
 Summary:        Terminal bandwidth utilization tool
 
@@ -50,6 +50,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.23.0-1
+- 0.23.0
+
 * Wed Mar 06 2024 Phantom X <megaphantomx at hotmail dot com> - 0.22.2-1
 - 0.22.2
 

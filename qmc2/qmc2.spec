@@ -1,6 +1,6 @@
-%global commit f8b478a8fad5b51a6ed1a0a02da9f5ff470b0042
+%global commit 1fb6d2b7429f6b1b709ed836f79ec2a9d11493d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240324
+%global date 20240720
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -18,7 +18,7 @@
 
 Name:           qmc2
 Version:        0.244
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -48,7 +48,7 @@ BuildRequires:  minizip-ng-devel
 %endif
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
-BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
+BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
 BuildRequires:  pkgconfig(Qt5)
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5Gui)

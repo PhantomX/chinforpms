@@ -290,7 +290,7 @@
 Summary: Library providing a simple virtualization API
 Name: libvirt
 Version: 10.7.0
-Release: 100%{?dist}
+Release: 101%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
 
@@ -430,8 +430,8 @@ BuildRequires: libcurl-devel
 BuildRequires: libwsman-devel >= 2.6.3
     %endif
 BuildRequires: audit-libs-devel
-# we need /usr/sbin/dtrace
 BuildRequires: systemtap-sdt-devel
+BuildRequires: /usr/bin/dtrace
 # For mount/umount in FS driver
 BuildRequires: util-linux
 # For showmount in FS driver (netfs discovery)
@@ -2635,6 +2635,9 @@ exit 0
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 10.7.0-101
+- Rawhide sync
+
 * Mon Sep 02 2024 Phantom X <megaphantomx at hotmail dot com> - 10.7.0-100
 - 10.7.0
 

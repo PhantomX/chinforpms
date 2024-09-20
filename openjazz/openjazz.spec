@@ -1,7 +1,7 @@
 %global commit 71eb6e50adf0b4e6c7fcb426791bd3e72eae5a2b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240217
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -10,7 +10,7 @@
 %global binname OpenJazz
 
 Name:           openjazz
-Version:        20231028
+Version:        20240919
 Release:        1%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
@@ -72,6 +72,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 20240919-1
+- 20240919
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20231028-1.20240217git71eb6e5
 - 20231028
 

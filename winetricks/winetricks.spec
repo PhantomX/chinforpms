@@ -1,6 +1,6 @@
-%global commit 72b934e1e10c041ec6986f5f2fb4f143d8f6b941
+%global commit b8d145a95171e3d9a58ed0bd37bf2bae64d8230f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240820
+%global date 20240919
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           winetricks
 Version:        20240105
-Release:        102%{?dist}
+Release:        103%{?dist}
 
 Summary:        Work around common problems in Wine
 

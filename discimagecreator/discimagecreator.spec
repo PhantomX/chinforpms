@@ -10,7 +10,7 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20240101
+Version:        20240901
 Release:        1%{?dist}
 Summary:        Disc and disk image creation tool 
 
@@ -81,6 +81,9 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 20240901-1
+- 20240901
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 20240101-1
 - 20240101
 

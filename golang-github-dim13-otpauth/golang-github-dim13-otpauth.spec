@@ -2,9 +2,9 @@
 
 # https://github.com/dim13/otpauth
 
-%global commit 36a9db9948feab1fc993fe635861fd78bcd015bc
+%global commit 948f0dbb5b7191fc9825c657d6aadc4176b08531
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240314
+%global date 20240706
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -29,7 +29,7 @@ Requires:  %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 }
 
 Name:           %{goname}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Google Authenticator migration decoder 
 License:        ISC
 URL:            %{gourl}

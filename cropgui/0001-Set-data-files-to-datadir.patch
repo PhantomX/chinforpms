@@ -1,4 +1,4 @@
-From 98b32543f6cbdcfe9562abc001836054232fcc00 Mon Sep 17 00:00:00 2001
+From 3a41201ed5af528c6887e60e23ef521ba0abdade Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 22 Jun 2019 00:35:32 -0300
 Subject: [PATCH] Set data files to datadir
@@ -8,7 +8,7 @@ Subject: [PATCH] Set data files to datadir
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/cropgtk.py b/cropgtk.py
-index e994d41..4f9550a 100755
+index 89ad4c3..872730e 100755
 --- a/cropgtk.py
 +++ b/cropgtk.py
 @@ -15,6 +15,10 @@
@@ -22,14 +22,14 @@ index e994d41..4f9550a 100755
  from cropgui_common import *
  from cropgui_common import _
  
-@@ -27,7 +31,6 @@ from gi.repository import Gdk as gdk
- import filechooser
+@@ -29,7 +33,6 @@ import filechooser
  from gi.repository import GdkPixbuf as GdkPixbuf
  
+ import argparse
 -import sys
  import traceback
  import imghdr
  
 -- 
-2.21.0
+2.46.1
 

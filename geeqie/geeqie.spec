@@ -1,8 +1,8 @@
 %global _lto_cflags %{nil}
 
-%global commit 787f3dd15fb68da16e5a9b88774a26ffb99450e9
+%global commit d0def46f34d5eee88f48074fa3f798ee30580aa8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240326
+%global date 20240919
 %bcond_without snapshot
 
 %bcond_with map
@@ -17,7 +17,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -37,6 +37,12 @@ BuildRequires:  yelp-tools
 
 # for /usr/bin/appstream-util
 BuildRequires:  libappstream-glib
+BuildRequires:  pandoc
+%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11 
+BuildRequires:  bash-completion-devel
+%else
+BuildRequires:  bash-completion
+%endif
 
 BuildRequires:  pkgconfig(ddjvuapi)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
@@ -121,7 +127,10 @@ mkdir -p %{buildroot}%{_pkgdocdir}/html
 %meson_install
 
 # guard against missing HTML tree
-[ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] && exit 1
+if [ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] ;then
+  rm -rf %{buildroot}%{_pkgdocdir}/html/*
+  cp -rp %{_vpath_builddir}/doc/html/* %{buildroot}%{_pkgdocdir}/html/
+fi
 
 # We want these _docdir files in GQ_HELPDIR.
 install -p -m 0644 NEWS README* TODO \
@@ -153,9 +162,13 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/%{appname}.desktop
 %{_metainfodir}/%{appname}.appdata.xml
+%{bash_completions_dir}/%{name}
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4-101.20240919gitd0def46
+- BR: pandoc
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4-100.20240326git787f3dd
 - 2.4
 

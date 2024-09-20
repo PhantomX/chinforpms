@@ -17,8 +17,8 @@ index 418a191..1481aca 100644
  
 +#include <cstdint>
  #include "ecm.h"
+ #ifdef __linux__
  #pragma GCC diagnostic ignored "-Wconversion"
- 
 -- 
 2.39.2
 

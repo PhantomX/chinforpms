@@ -1,7 +1,7 @@
 %global commit 0d9515e2d2d55bfe4ed0e7ab19a47ca693a85f67
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240818
-%bcond_without snapshot
+%bcond_with snapshot
 
 BuildArch:      noarch
 
@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           pipe-viewer
-Version:        0.5.2
+Version:        0.5.3
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
@@ -142,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.3-1
+- 0.5.3
+
 * Mon Aug 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.2-1.20240818git0d9515e
 - 0.5.2
 
