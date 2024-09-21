@@ -124,7 +124,7 @@ install -pm0644 %{name}/target-%{name}/resource/%{name}.svg \
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{name}/target-%{name}/resource/%{name}.png \
+  magick %{name}/target-%{name}/resource/%{name}.png \
     -filter Lanczos -resize ${res}x${res} ${dir}/%{name}.png
 done
 

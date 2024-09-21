@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3e5bbac5a1fad6ba8dfa97d0760d142c9011260a
+%global commit 0ec72a122de5839ea50970835c29045b30386810
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240901
+%global date 20240915
 %bcond_without snapshot
 
 # Enable system boost
@@ -118,8 +118,8 @@
 %global vc_url  https://github.com/PabloMK7
 
 Name:           citra
-Version:        0
-Release:        6%{?dist}
+Version:        0.10107
+Release:        1%{?dist}
 Epoch:          1
 Summary:        A Nintendo 3DS Emulator
 
@@ -513,6 +513,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-qt.desktop
 
 
 %changelog
+* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:0.10107-1.20240915git0ec72a1
+- Use number of commits as minor version
+
 * Sat Apr 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:0-1.20240406git0c2f076
 - r0c2f076
 

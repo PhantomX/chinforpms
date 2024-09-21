@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9c0c5926f854eac1fd422bd8bfb1974d7a9e703a
+%global commit 9bc596ae50f3e2e7e1775cce86f76b60a4b198de
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240912
+%global date 20240920
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           kronos
 Version:        2.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain

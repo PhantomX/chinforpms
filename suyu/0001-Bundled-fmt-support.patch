@@ -1,0 +1,29 @@
+From 16b59927f25ec96838f6b9ff66da2780ed604883 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Sep 2024 23:02:16 -0300
+Subject: [PATCH] Bundled fmt support
+
+---
+ CMakeLists.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 75e2190..62f078a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -479,6 +479,12 @@ endfunction()
+ 
+ add_subdirectory(externals)
+ 
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
++add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
++endif()
++
+ # Qt5 requires that we find components, so it doesn't fit our pretty little find package function
+ # Qt6 sets Vulkan::Headers, so Qt search has to come after externals, so it doesn't get to do it.
+ if(ENABLE_QT)
+-- 
+2.46.1
+

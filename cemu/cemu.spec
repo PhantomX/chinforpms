@@ -12,13 +12,13 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 13b90874f9934f0a79a9ab2b9c4e1288ed2e6764
+%global commit 8508c625407e80a5a7fcb9cf02c5355d018ff64b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240513
-%bcond_with snapshot
+%global date 20240920
+%bcond_without snapshot
 
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 
 %global commit1 f65bcf481ab34cd07d3909aab1479f409fa79f2f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -42,7 +42,7 @@
 %global verpatch   %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.1
+Version:        2.2
 Release:        1%{?dist}
 Summary:        A Nintendo Wii U Emulator
 
@@ -129,7 +129,10 @@ tar -xf %{S:1} -C imgui --strip-components 1
 %if %{without fmt}
 mkdir fmt
 tar -xf %{S:2} -C fmt --strip-components 1
-sed -e '/^find_package(fmt/s|9 REQUIRED|%{fmt_ver}|' -i ../CMakeLists.txt
+sed \
+  -e '/^find_package(fmt/s|REQUIRED||' \
+  -e 's|^find_package(fmt|\0_DISABLED|' \
+  -i ../CMakeLists.txt
 %endif
 
 cp -p imgui/LICENSE.txt LICENSE.imgui
@@ -206,6 +209,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.2-1.20240920git8508c62
+- 2.2
+
 * Tue Aug 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.1-1
 - 2.1
 

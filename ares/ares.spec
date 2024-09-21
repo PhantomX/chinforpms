@@ -80,7 +80,7 @@ It requires a CPU with SSE4.2 instructions.
 
 rm -rf thirdparty/{libchdr,librashader,MoltenVK}
 
-find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec chmod -x {} ';'
+find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name '*.slang*' \) -exec chmod -x {} ';'
 
 find -name '.gitignore' -delete
 

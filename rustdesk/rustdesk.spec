@@ -38,6 +38,7 @@ Recommends:     rustdesk-server
 %global __requires_exclude ^libapp\\.so.*$
 %global __requires_exclude %__requires_exclude|^libdesktop_drop_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libdesktop_multi_window_plugin\\.so.*$
+%global __requires_exclude %__requires_exclude|^libfile_selector_linux_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libflutter_custom_cursor_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libflutter_linux_gtk\\.so.*$
 %global __requires_exclude %__requires_exclude|^librustdesk\\.so.*$

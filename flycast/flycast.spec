@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 45bf218df428123f739714ef4e65e1b96c0959b7
+%global commit 92555c68c6b2934cc1ad7f8930a443c600782565
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240729
+%global date 20240920
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -56,7 +56,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -215,6 +215,8 @@ sed \
 %endif
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
+
+sed -e '/glm.hpp/a#define GLM_ENABLE_EXPERIMENTAL 1' -i core/rend/transform_matrix.h
 
 
 %build

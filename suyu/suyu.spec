@@ -24,6 +24,8 @@
 %bcond_without dynarmic
 # Enable system ffmpeg
 %bcond_without ffmpeg
+# Enable system fmt
+%bcond_with fmt
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -79,6 +81,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 FFmpeg
 
+%global fmt_ver 10.2.1
 %global glad_ver 0.1.29
 %global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
@@ -97,7 +100,7 @@
 
 Name:           suyu
 Version:        0.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Nintendo Switch Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -128,12 +131,16 @@ Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{src
 %if %{without ffmpeg}
 Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
+%if %{without fmt}
+Source12:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
+%endif
 
 %dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Fix-48e86d6.patch
+Patch13:        0001-Bundled-fmt-support.patch
 
 ExclusiveArch:  x86_64
 
@@ -167,7 +174,11 @@ BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
-BuildRequires:  pkgconfig(fmt) >= 9
+%if %{with fmt}
+BuildRequires:  cmake(fmt) >= 9
+%else
+Provides:       bundled(fmt) = %{fmt_ver}
+%endif
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
@@ -286,6 +297,14 @@ tar -xf %{S:9} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
 tar -xf %{S:10} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
 tar -xf %{S:11} -C externals/ffmpeg/ffmpeg --strip-components 1
+%endif
+%if %{without fmt}
+mkdir -p externals/fmt
+tar -xf %{S:12} -C externals/fmt --strip-components 1
+sed \
+  -e '/^find_package(fmt/s|REQUIRED||' \
+  -e 's|^find_package(fmt|\0_DISABLED|' \
+  -i CMakeLists.txt
 %endif
 
 find . -type f -exec chmod -x {} ';'
@@ -426,6 +445,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-2.20240418gitdfb9f06
+- fmt switch
+
 * Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-1.20240418gitdfb9f06
 - 0.0.3
 

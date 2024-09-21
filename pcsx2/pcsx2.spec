@@ -25,13 +25,9 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
 
-%global commit13 5cfd28d476c6859617878f951931b8ce7d36b9df
-%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
-%global srcname13 fmt
-
 %bcond_with     native
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 %bcond_with rapidyml
 %bcond_without shaderc
 # Enable system soundtouch_ds
@@ -49,6 +45,7 @@
 
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
+%global fmt_ver 10.2.1
 %global imgui_ver 1.91.0
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
@@ -58,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.155
+Version:        2.1.163
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -75,9 +72,6 @@ Source10:       https://github.com/google/%{srcname10}/archive/v%{version10}/%{s
 %endif
 %if %{without vulkan}
 Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
-%endif
-%if %{without fmt}
-Source13:       https://github.com/fmtlib/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
@@ -119,9 +113,9 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
 %if %{with fmt}
-BuildRequires:  pkgconfig(fmt) >= 10.1.1
+BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
 %else
-Provides:       bundled(fmt) = 0~git%{shortcommit13}
+Provides:       bundled(fmt) = %{fmt_ver}
 %endif
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
@@ -251,9 +245,8 @@ rm -rf \
 %if %{with fmt}
 rm -rf fmt
 %else
-tar -xf %{S:13} -C fmt/fmt --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
-cp -p fmt/fmt/LICENSE LICENSE.fmt
+cp -p fmt/LICENSE LICENSE.fmt
 %endif
 
 %if %{with rapidyml}

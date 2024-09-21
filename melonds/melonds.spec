@@ -7,9 +7,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit db20771ef36bfa5bc0dc624cf245844507724107
+%global commit 2179ca2a417e356f23a09cd88707b20c1bcaf66f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240624
+%global date 20240918
 %bcond_without snapshot
 
 # build with qt6 instead 5
@@ -28,7 +28,7 @@
 
 Name:           melonds
 Version:        0.9.5
-Release:        16%{?dist}
+Release:        17%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD

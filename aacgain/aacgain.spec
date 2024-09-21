@@ -3,7 +3,7 @@
 %global date 20200102
 %bcond_without snapshot
 
-%global commit1 baf67bb94d5772373bf2d2e9801e8c4d4df46f36
+%global commit1 a65ecabd13a6b991781d75856e1b6870ce00fc70
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 faad2
 

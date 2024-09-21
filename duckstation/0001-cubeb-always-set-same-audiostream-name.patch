@@ -1,4 +1,4 @@
-From 7935a676d35a73410404ec5a1ea31cb9e02079e0 Mon Sep 17 00:00:00 2001
+From 5db1fb50c585cf90df4a4699cd70080a738cecc6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 15 Mar 2021 19:27:28 -0300
 Subject: [PATCH] cubeb: always set same audiostream name
@@ -8,12 +8,12 @@ Subject: [PATCH] cubeb: always set same audiostream name
  1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/src/util/cubeb_audio_stream.cpp b/src/util/cubeb_audio_stream.cpp
-index 8bd0f29..000386c 100644
+index 9cc93bc..4ff8646 100644
 --- a/src/util/cubeb_audio_stream.cpp
 +++ b/src/util/cubeb_audio_stream.cpp
-@@ -235,8 +235,7 @@ bool CubebAudioStream::Initialize(const char* driver_name, const char* device_na
+@@ -191,8 +191,7 @@ bool CubebAudioStream::Initialize(const char* driver_name, const char* device_na
  
-   BaseInitialize(channel_setups[static_cast<size_t>(m_parameters.expansion_mode)].second);
+   BaseInitialize();
  
 -  char stream_name[32];
 -  std::snprintf(stream_name, sizeof(stream_name), "%p", this);
@@ -22,5 +22,5 @@ index 8bd0f29..000386c 100644
    rv = cubeb_stream_init(m_context, &stream, stream_name, nullptr, nullptr, selected_device, &params, latency_frames,
                           &CubebAudioStream::DataCallback, StateCallback, this);
 -- 
-2.45.0
+2.46.1
 

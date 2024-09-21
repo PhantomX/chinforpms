@@ -19,7 +19,7 @@
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
 %bcond_without bundled_fonts
-%bcond_without minizip
+%bcond_with minizip
 %bcond_without wayland
 %bcond_without x11
 %bcond_with ltdp
@@ -242,7 +242,7 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 # Unbundling libraries...
 rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
-%if %{without minizip}
+%if %{with minizip}
 rm -rf Telegram/minizip Telegram/ThirdParty/minizip
 %endif
 
@@ -273,6 +273,10 @@ sed \
 cp -p %{S:20} thunar-sendto-%{name}.desktop
 
 sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{appname}.desktop
+
+%if 0%{?fedora} >= 41
+sed -e "/#include <openssl\/engine.h>/d" -i Telegram/SourceFiles/core/utils.cpp
+%endif
 
 
 %build
@@ -374,6 +378,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 %changelog
 * Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.5.6-100
 - 5.5.6
+- openssl fix from RPMFusion
 
 * Sun Sep 15 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.5.5-100
 - 5.5.5

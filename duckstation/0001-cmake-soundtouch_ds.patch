@@ -30,8 +30,8 @@ index 7bff73b..44b5679 100644
  target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_link_libraries(util PUBLIC common simpleini imgui)
--target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx kissfft)
-+target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx kissfft)
+-target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
++target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
  
  if(ENABLE_X11)
    target_compile_definitions(util PRIVATE "-DENABLE_X11=1")
@@ -39,10 +39,10 @@ diff --git a/src/util/audio_stream.cpp b/src/util/audio_stream.cpp
 index 9841ce4..e5396f1 100644
 --- a/src/util/audio_stream.cpp
 +++ b/src/util/audio_stream.cpp
-@@ -14,8 +14,8 @@
+@@ -12,8 +12,8 @@
+ #include "common/settings_interface.h"
  #include "common/timer.h"
  
- #include "kiss_fftr.h"
 -#include "soundtouch/SoundTouch.h"
 -#include "soundtouch/SoundTouchDLL.h"
 +#include "soundtouch_ds/SoundTouch.h"

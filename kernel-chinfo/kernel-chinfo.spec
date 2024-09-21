@@ -1139,10 +1139,9 @@ Patch7019:  %{pf_url}/58f0f0d34fed59abb65cad43a4a2ad33cbe80bcb.patch#/pf-cb-58f0
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
 Patch7100:  %{pf_url}/bc7075c316e3c89986cdc0df145d8753ba73c731.patch#/pf-cb-bc7075c.patch
-Patch7101:  %{pf_url}/8ac5ceccf9d07f86db555ab8aec39c95efd810f7.patch#/pf-cb-8ac5cec.patch
-Patch7102:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fafd3.patch
-Patch7103:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
-Patch7104:  %{pf_url}/561ac317b5ed031cf566ea886e0a70dc10bd4f71.patch#/pf-cb-561ac31.patch
+Patch7101:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fafd3.patch
+Patch7102:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
+Patch7103:  %{pf_url}/561ac317b5ed031cf566ea886e0a70dc10bd4f71.patch#/pf-cb-561ac31.patch
 # zstd
 Patch7200:  %{pf_url}/5cb1b6e0be8548c2e6a34202becd539c13fdb91f.patch#/pf-cb-5cb1b6e.patch
 Patch7201:  %{pf_url}/79c6f85410667790f173edf3822a6258942fe4d3.patch#/pf-cb-79c6f85.patch
@@ -2054,7 +2053,6 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7104}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}

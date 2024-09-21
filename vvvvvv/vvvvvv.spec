@@ -23,7 +23,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 24.06
+%global commit5 24.09
 %global srcname5 FAudio
 
 %global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
@@ -36,7 +36,7 @@
 %global pkgname VVVVVV
 
 Name:           vvvvvv
-Version:        2.4.2
+Version:        2.5
 Release:        0.1%{?dist}
 Summary:        2D puzzle platform video game
 
@@ -214,6 +214,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5-0.1.20240526git16d75d2
+- 2.5 snapshot
+
 * Mon Jun 03 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.2-0.1.20240526git16d75d2
 - 2.4.2 snapshot
 

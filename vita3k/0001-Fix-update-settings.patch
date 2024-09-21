@@ -20,8 +20,8 @@ index e88e089..6dcb4d9 100644
          SetTooltipEx(lang.emulator["check_for_updates_description"].c_str());
 +#endif
          ImGui::Separator();
-         const auto perfomance_overley_size = ImGui::CalcTextSize(lang.emulator["performance_overlay"].c_str()).x;
-         ImGui::SetCursorPosX((ImGui::GetWindowWidth() / 2.f) - (perfomance_overley_size / 2.f));
+         const auto performance_overlay_size = ImGui::CalcTextSize(lang.emulator["performance_overlay"].c_str()).x;
+         ImGui::SetCursorPosX((ImGui::GetWindowWidth() / 2.f) - (performance_overlay_size / 2.f));
 -- 
 2.46.0
 

@@ -8,7 +8,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 libmbedtls
 
-%global commit12 4613d1a5936d6bc7a7e891abf88340ac3c9ad349
+%global commit12 5d50d02f8f3b8918bdfbbb599b8c4c1628660d89
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 libpietendo
 
@@ -26,7 +26,7 @@
 %global vc_url  https://github.com/jakcron
 
 Name:           nstool
-Version:        1.9.0
+Version:        1.9.1
 Release:        1%{?dist}
 Summary:        A tool to view information about file formats for the Nintendo Switch
 
@@ -109,5 +109,8 @@ install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.9.1-1
+- 1.9.1
+
 * Mon Mar 25 2024 Phantom X <megaphantomx at hotmail dot com> - 1.9.0-1
 - Initial spec

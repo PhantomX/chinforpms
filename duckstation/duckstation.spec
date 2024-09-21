@@ -20,15 +20,15 @@
 %bcond_with nogui
 
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
 %bcond_with minizip
 # Enable system rapidyml
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 025560f3d6d17d6a262322c21457538537708a3a
+%global commit 96ece5de1c0c788a1bd0c37a78f96695d655a032
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240915
+%global date 20240919
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7566
+Version:        0.1.7573
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 

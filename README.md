@@ -4,7 +4,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 
-> Builds are tested with Fedora release **38**, currently. Rawhide have very limited support and older releases have none. 
+> Builds are tested with Fedora release **41**, currently. Rawhide have very limited support and older releases have none. 
 
 > *Epoch* is used without regard, running **dnf distro-sync** is recommended sometimes.
 
@@ -23,7 +23,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **bluecurve-icon-theme** - Extra symbolic links for cursors, more hardcoded icon sizes
  * **claws-mail** - Can't wait Fedora releases. Tests
  * **deluge** - Updated, no GConf support
- * **easytag** - Tests
  * **eiciel-gtk3** - GTK3 eiciel without nautilus plugin
  * **engrampa** - Split caja extension
  * **FAudio** - Tests
@@ -33,18 +32,14 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
                     correct multilib plugins registry, as
                     _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
- * **gtk3** - Revert some features ditched in 3.10 release, some _Debian_,
-              _Ubuntu_ and [_gtk3-classic](https://github.com/lah7/gtk3-classic) patches
  * **keepassxc** - Post script and cosmetic fixes
  * **kernel** - _blk-mq_ and BFQ enabled by default, [CPU optimizations](https://github.com/graysky2/kernel_gcc_patch) and some
                 [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source) and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches
                 (kernel-local must be edited to modify gcc optimizations)
- * **krename** - Updated, KF5
  * **libmirage** - Can't wait Fedora releases and better matching with cdemu builds from here
  * **libvirt, qemu, virt-manager** - Updated
- * **manaplus** - Updated, SDL2
  * **mednafen** - No Haswell optimizations
- * **mesa** - Can't wait Fedora releases. iXit patches
+ * **mesa** - Can't wait Fedora releases.
  * **ppsspp** - Build options, no Qt frontend
  * **protontricks** - Can't wait Fedora releases
  * **qmc2** - No game-menus

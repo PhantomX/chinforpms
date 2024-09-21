@@ -35,7 +35,7 @@
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 # Enable system rtmidi
-%if 0%{?fedora} > 41
+%if 0%{?fedora} > 42
 %bcond_without  rtmidi
 %endif
 %global bundlertmidi 6.0.0
@@ -45,9 +45,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 23f9eb57e54d0ea2ae63045cd378d9e7bcd08301
+%global commit 466a93dca59fabd4231c3e994dd59e6bed1a8b9c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240903
+%global date 20240920
 %bcond_without snapshot
 
 %global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
@@ -94,7 +94,7 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
-%global commit21 0100f6a5779831fa7a651e4b67ef389a8752bd9b
+%global commit21 595bf0007ab1929570c7671f091313c8fc20644e
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 flatbuffers
 
@@ -116,7 +116,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.33.16889
+Version:        0.0.33.16939
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
