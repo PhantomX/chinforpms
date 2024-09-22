@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Wine Display Settings
+Name[pt_BR]=Configurações de Exibição do Wine
+Exec=wine control desk.cpl
+Icon=desk
+Terminal=false
+Type=Application
+Categories=X-Wine;

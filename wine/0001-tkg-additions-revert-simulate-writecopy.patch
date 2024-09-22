@@ -1,0 +1,97 @@
+From 781f9b7833713e0877111a569396fdbb19e8fa11 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 21 Sep 2024 20:43:30 -0300
+Subject: [PATCH] tkg-additions: revert simulate writecopy
+
+---
+ dlls/ntdll/unix/loader.c       |  5 -----
+ dlls/ntdll/unix/unix_private.h |  1 -
+ dlls/ntdll/unix/virtual.c      | 30 +-----------------------------
+ 3 files changed, 1 insertion(+), 35 deletions(-)
+
+diff --git a/dlls/ntdll/unix/loader.c b/dlls/ntdll/unix/loader.c
+index 5bbab80..9133612 100644
+--- a/dlls/ntdll/unix/loader.c
++++ b/dlls/ntdll/unix/loader.c
+@@ -1043,7 +1043,6 @@ const unixlib_entry_t unix_call_wow64_funcs[] =
+ 
+ BOOL ac_odyssey;
+ BOOL fsync_simulate_sched_quantum;
+-BOOL simulate_writecopy;
+ 
+ static void hacks_init(void)
+ {
+@@ -1065,10 +1064,6 @@ static void hacks_init(void)
+     if (fsync_simulate_sched_quantum)
+         ERR("HACK: Simulating sched quantum in fsync.\n");
+ 
+-    env_str = getenv("WINE_SIMULATE_WRITECOPY");
+-    if (env_str) simulate_writecopy = atoi(env_str);
+-    else if (main_argc > 1 && strstr(main_argv[1], "UplayWebCore.exe")) simulate_writecopy = TRUE;
+-
+     env_str = getenv("SteamGameId");
+     if (env_str && !strcmp(env_str, "50130"))
+         setenv("WINESTEAMNOEXEC", "1", 0);
+diff --git a/dlls/ntdll/unix/unix_private.h b/dlls/ntdll/unix/unix_private.h
+index da8911e..0d0006b 100644
+--- a/dlls/ntdll/unix/unix_private.h
++++ b/dlls/ntdll/unix/unix_private.h
+@@ -192,7 +192,6 @@ extern struct ldt_copy __wine_ldt_copy;
+ 
+ extern BOOL ac_odyssey;
+ extern BOOL fsync_simulate_sched_quantum;
+-extern BOOL simulate_writecopy;
+ 
+ extern void init_environment(void);
+ extern void init_startup_info(void);
+diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
+index b1659b4..eaf7942 100644
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -1122,8 +1122,7 @@ static const char *get_prot_str( BYTE prot )
+     buffer[0] = (prot & VPROT_COMMITTED) ? 'c' : '-';
+     buffer[1] = (prot & VPROT_GUARD) ? 'g' : ((prot & VPROT_WRITEWATCH) ? 'H' : '-');
+     buffer[2] = (prot & VPROT_READ) ? 'r' : '-';
+-    buffer[3] = (prot & VPROT_WRITECOPY) ? (prot & VPROT_WRITTEN ? 'w' : 'W')
+-        : ((prot & VPROT_WRITE) ? 'w' : '-');
++    buffer[3] = (prot & VPROT_WRITECOPY) ? 'W' : ((prot & VPROT_WRITE) ? 'w' : '-');
+     buffer[4] = (prot & VPROT_EXEC) ? 'x' : '-';
+     buffer[5] = 0;
+     return buffer;
+@@ -5040,33 +5039,6 @@ NTSTATUS WINAPI NtProtectVirtualMemory( HANDLE process, PVOID *addr_ptr, SIZE_T
+         {
+             old = get_win32_prot( vprot, view->protect );
+             status = set_protection( view, base, size, new_prot );
+-
+-            if (simulate_writecopy && status == STATUS_SUCCESS
+-                && ((old == PAGE_WRITECOPY || old == PAGE_EXECUTE_WRITECOPY)))
+-            {
+-                TRACE("Setting VPROT_WRITTEN.\n");
+-
+-                set_page_vprot_bits(base, size, VPROT_WRITTEN, 0);
+-                vprot |= VPROT_WRITTEN;
+-                old = get_win32_prot( vprot, view->protect );
+-            }
+-            else if (status == STATUS_SUCCESS && (view->protect & SEC_IMAGE) &&
+-                    base == (void*)NtCurrentTeb()->Peb->ImageBaseAddress)
+-            {
+-                /* GTA5 HACK: Mark first page as copied. */
+-                const WCHAR gta5W[] = { 'g','t','a','5','.','e','x','e',0 };
+-                WCHAR *name, *p;
+-
+-                name = NtCurrentTeb()->Peb->ProcessParameters->ImagePathName.Buffer;
+-                p = wcsrchr(name, '\\');
+-                p = p ? p+1 : name;
+-
+-                if(!wcsicmp(p, gta5W))
+-                {
+-                    FIXME("HACK: changing GTA5.exe vprot\n");
+-                    set_page_vprot_bits(base, page_size, VPROT_WRITTEN, 0);
+-                }
+-            }
+         }
+         else status = STATUS_NOT_COMMITTED;
+     }
+-- 
+2.46.1
+

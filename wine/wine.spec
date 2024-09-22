@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.17
+%global wine_stagingver 9.18
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id c4982f9ee170d505bb81a7654acfd2ca9adedcd6
+%global tkg_id 033fda90bbfb3afbeacb25747ec3e3ee3b1408af
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -127,8 +127,6 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# childwindow
-%bcond_without childwindow
 # ntsync (disables fsync)
 %bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
@@ -161,7 +159,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.17
+Version:        9.18
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -206,6 +204,7 @@ Source110:      wine-iexplore.desktop
 Source111:      wine-inetcpl.desktop
 Source112:      wine-joycpl.desktop
 Source113:      wine-taskmgr.desktop
+Source114:      wine-desk.desktop
 
 # AppData files
 Source150:      wine.appdata.xml
@@ -250,7 +249,6 @@ Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_po
 Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1024:       %{tkg_url}/misc/childwindow/childwindow-proton.patch#/%{name}-tkg-childwindow-proton.patch
 Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
 Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
 Patch1028:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
@@ -267,6 +265,7 @@ Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{nam
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
+Patch1056:       0001-tkg-additions-revert-simulate-writecopy.patch
 
 Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
 Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
@@ -346,6 +345,9 @@ BuildRequires:  pkgconfig(gstreamer-audio-1.0)
 BuildRequires:  pkgconfig(gstreamer-video-1.0)
 BuildRequires:  pkgconfig(krb5)
 BuildRequires:  pkgconfig(lcms2)
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libgphoto2)
 BuildRequires:  libieee1284-devel
@@ -905,9 +907,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 702 -p1 -R
 %patch -P 1023 -p1
 %endif
-%if %{with childwindow}
-%patch -P 1024 -p1
-%endif
 %if %{with sharedgpures}
 %patch -P 1060 -p1
 %patch -P 1061 -p1
@@ -925,6 +924,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1027 -p1
 %endif
 %patch -P 1028 -p1
+%patch -P 1056 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
@@ -1216,9 +1216,13 @@ install -p -m 644 programs/iexplore/iexplore.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/iexplore.svg
 sed -i -e "$PROGRAM_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/iexplore.svg
 
+install -p -m 644 dlls/desk.cpl/desk.svg \
+  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/desk.svg
+sed -i -e "$MAIN_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/desk.svg
+
 install -p -m 644 dlls/joy.cpl/joy.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/joycpl.svg
-sed -i -e '3s/368/64/' %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/joycpl.svg
+sed -i -e "$MAIN_ICONFIX" %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/joycpl.svg
 
 install -p -m 644 programs/taskmgr/taskmgr.svg \
  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/taskmgr.svg
@@ -1290,6 +1294,10 @@ desktop-file-install \
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
   %{SOURCE113}
+
+desktop-file-install \
+  --dir=%{buildroot}%{_datadir}/applications \
+  %{SOURCE114}
 
 desktop-file-install \
   --dir=%{buildroot}%{_datadir}/applications \
@@ -1611,6 +1619,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dcomp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ddraw.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ddrawex.%{winedll}
+%{_libdir}/wine/%{winedlldir}/desk.%{winecpl}
 %{_libdir}/wine/%{winedlldir}/devenum.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhcpcsvc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dhcpcsvc6.%{winedll}
@@ -2065,6 +2074,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
 %{_libdir}/wine/%{winesodir}/winebus.so
 %{_libdir}/wine/%{winedlldir}/winebus.%{winesys}
+%{_libdir}/wine/%{winesodir}/winedmo.so
+%{_libdir}/wine/%{winedlldir}/winedmo.%{winedll}
 %{_libdir}/wine/%{winesodir}/winegstreamer.so
 %{_libdir}/wine/%{winedlldir}/winegstreamer.%{winedll}
 %{_libdir}/wine/%{winedlldir}/winehid.%{winesys}
@@ -2482,6 +2493,7 @@ fi
 %{_datadir}/fonts/wine-wingdings-fonts
 
 %files desktop
+%{_datadir}/applications/wine-desk.desktop
 %{_datadir}/applications/wine-iexplore.desktop
 %{_datadir}/applications/wine-inetcpl.desktop
 %{_datadir}/applications/wine-joycpl.desktop
@@ -2565,6 +2577,9 @@ fi
 
 
 %changelog
+* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.18-100
+- 9.18
+
 * Sat Sep 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.17-100
 - 9.17
 

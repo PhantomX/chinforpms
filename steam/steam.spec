@@ -5,13 +5,13 @@
 
 %global appstream_id com.valvesoftware.Steam
 
-%global udev_id 13443480a64fe8f10676606bd57da6de89f8ccb1
+%global udev_id e2971e45063f6b327ccedbf18e168bda6749155c
 
 # If firewalld macro is not defined, define it here:
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.79
+Version:        1.0.0.81
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -215,6 +215,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.81-100
+- 1.0.0.81
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.79-100
 - 1.0.0.79
 

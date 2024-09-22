@@ -16,8 +16,8 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.24.7
-Release:        101%{?gitcommit:.git%{shortcommit}}%{?dist}
+Version:        1.24.8
+Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
 License:        LGPL-2.1-or-later
@@ -251,6 +251,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 1.24.8-100
+- 1.24.8
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.24.7-101
 - BR: bash-completion-devel
 

@@ -29,7 +29,7 @@
 
 %global cvc_url https://chromium.googlesource.com
 
-%global dist .%{date}git%{shortcommit0}
+%global dist .%{date}git%{shortcommit0}%{?dist}
 
 Name:           tg_owt
 Version:        0
