@@ -1,4 +1,4 @@
-From 0a7d203db62f3fbdec7c3a5742b328ffb4cb3283 Mon Sep 17 00:00:00 2001
+From 6f4fcbb1767ea569412d2146af854c642f134104 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 1 Feb 2024 22:57:13 -0300
 Subject: [PATCH] Set GTK3 as default
@@ -8,19 +8,19 @@ Subject: [PATCH] Set GTK3 as default
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/pynicotine/gtkgui/__init__.py b/pynicotine/gtkgui/__init__.py
-index 6ad7e7a..bb586a8 100644
+index 92dd7b7..62be258 100644
 --- a/pynicotine/gtkgui/__init__.py
 +++ b/pynicotine/gtkgui/__init__.py
 @@ -24,7 +24,7 @@ from pynicotine.logfacility import log
  
  def get_default_gtk_version():
  
--    if sys.platform in {"win32", "darwin"}:
-+    if sys.platform in {"win32", "darwin"} or "gnome" in os.environ.get("XDG_CURRENT_DESKTOP", "").lower():
+-    if sys.platform in {"darwin", "win32"}:
++    if sys.platform in {"darwin", "win32"} or "gnome" in os.environ.get("XDG_CURRENT_DESKTOP", "").lower():
          return "4"
  
      try:
-@@ -55,7 +55,7 @@ def get_default_gtk_version():
+@@ -54,7 +54,7 @@ def get_default_gtk_version():
      except ModuleNotFoundError:
          pass
  
@@ -30,5 +30,5 @@ index 6ad7e7a..bb586a8 100644
  
  def check_gtk_version(gtk_api_version):
 -- 
-2.43.0
+2.46.1
 

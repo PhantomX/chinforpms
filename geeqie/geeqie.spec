@@ -3,7 +3,7 @@
 %global commit d0def46f34d5eee88f48074fa3f798ee30580aa8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240919
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with map
 
@@ -16,8 +16,8 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.4
-Release:        101%{?dist}
+Version:        2.5
+Release:        100%{?dist}
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -166,6 +166,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5-100
+- 2.5
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4-101.20240919gitd0def46
 - BR: pandoc
 

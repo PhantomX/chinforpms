@@ -1,31 +1,24 @@
-%global commit 2d6337beb6fa8be83d9164b45b53fd3b3300fb34
+%global commit 0184edd5aea3f0bcbaca418d133023d005d16875
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20220203
+%global date 20240519
 %bcond_without snapshot
-
-%global commit1 5f44724e8fcdebf8a6b9fd009543c9dcfae4ea32
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 libpe
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global vc_url  https://github.com/merces
-
-Name:           pev
-Version:        0.81
-Release:        2%{?dist}
+Name:           readpe
+Version:        0.84
+Release:        1%{?dist}
 Summary:        PE file analysis toolkit
 
 License:        GPL-2.0-only
-URL:            https://pev.sourceforge.net/
+URL:            https://github.com/mentebinaria/%{name}
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
-Source1:        %{vc_url}/libpe/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://prdownloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         %{name}-optimization.patch
@@ -36,13 +29,16 @@ BuildRequires:  gcc
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 Requires:       libpe%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      pev < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       pev = %{?epoch:%{epoch}:}%{version}-%{release}
+
 
 %description
 pev is a little command-line based tool for PE (Windows executables) analysis.
 
 %package -n libpe
 Summary:        %{summary} library
-License:        LGPLv3
+License:        LGPL-3.0-only
 
 %description -n libpe
 The libpe package contains the dynamic libraries needed for %{name} and
@@ -50,7 +46,7 @@ plugins.
 
 %package -n libpe-devel
 Summary:        %{summary} development files
-License:        LGPLv3
+License:        LGPL-3.0-only
 Requires:       libpe%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description -n libpe-devel
@@ -60,29 +56,48 @@ plugins building.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%{?with_snapshot:tar xf %{S:1} -C lib/libpe --strip-components 1}
+sed -e 's|-O2 ||g' -i src/Makefile lib/libpe/Makefile
 
 %build
 %make_build \
   prefix=%{_prefix} \
-  libdir=%{_libdir}
+  libdir=%{_libdir} \
+  pluginsdir=%{_libdir}/%{name}/plugins \
+  docdir=%{_pkgdocdir} \
+  SHAREDIR=%{_datadir}/%{name} \
+%{nil}
 
 %install
-%make_install INSTALL="install -p" \
+%make_install \
   prefix=%{_prefix} \
-  libdir=%{_libdir}
+  libdir=%{_libdir} \
+  pluginsdir=%{_libdir}/%{name}/plugins \
+  docdir=%{_pkgdocdir} \
+  SHAREDIR=%{_datadir}/%{name} \
+%{nil}
 
 chmod 0755 %{buildroot}%{_libdir}/libpe.so*
 
-mkdir -p %{buildroot}%{_includedir}/pev
+mkdir -p %{buildroot}%{_includedir}/%{name}
 install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
 
 %files
 %license LICENSE*
 %doc README.md
-%{_bindir}/*
-%{_libdir}/%{name}/
+%{_bindir}/ofs2rva
+%{_bindir}/pedis
+%{_bindir}/pehash
+%{_bindir}/peldd
+%{_bindir}/pepack
+%{_bindir}/peres
+%{_bindir}/pescan
+%{_bindir}/pesec
+%{_bindir}/pestr
+%{_bindir}/readpe
+%{_bindir}/rva2ofs
+%dir %{_libdir}/%{name}
+%{_libdir}/%{name}/plugins
 %{_mandir}/man1/*.1*
 %{_datadir}/%{name}/
 
@@ -97,6 +112,10 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog
+* Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 0.84-1.20240519git0184edd
+- 0.84
+- Renamed from pev
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 0.81-2.20220203git2d6337b
 - Last archived snapshot
 
