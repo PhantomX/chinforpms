@@ -4,4 +4,4 @@
 # Old wiki:
 # https://fedoraproject.org/wiki/Starting_services_by_default
 
-enable vmware-usbarbitrator.service
+enable vmware-eucusbarbitrator.service

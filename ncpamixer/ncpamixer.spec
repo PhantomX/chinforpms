@@ -11,7 +11,7 @@
 
 Name:           ncpamixer
 Version:        1.3.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        ncurses PulseAudio Mixer
 
 License:        MIT
@@ -22,6 +22,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         %{url}/commit/9c7db262e5f785f62a28cd300ac600d453d7de2d.patch#/%{name}-gh-9c7db26.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -65,8 +67,10 @@ pandoc -s -t man src/man/%{name}.1.md -o %{name}.1
 %install
 %cmake_install
 
+%if %{with man}
 mkdir -p %{buildroot}%{_mandir}/man1
 install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
+%endif
 
 
 %files
@@ -79,6 +83,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Thu Sep 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-2
+- Upstream patch to fix build
+
 * Tue Oct 10 2023 Phantom X <megaphantomx at bol dot com dot br> - 1.3.7-1
 - Initial spec
 

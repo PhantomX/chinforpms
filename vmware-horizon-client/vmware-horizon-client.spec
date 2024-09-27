@@ -3,17 +3,17 @@
 # Adapted from: https://github.com/rathann/vmware-horizon-client
 
 %undefine _missing_build_ids_terminate_build
-%undefine _enable_debug_packages
+%global debug_package %{nil}
 %undefine _unique_build_ids
 %global _build_id_links none
 %global _no_recompute_build_ids 1
 
-%global cart   25FQ1
-%global yymm   2312.1
+%global cart   25FQ2
+%global yymm   2406
 %global pdfver %(echo %{yymm} | tr -d '.' )
 %global pdfiver %(echo %{yymm} | cut -d. -f1 )
-%global ver    8.12.1
-%global rel    23543969
+%global ver    8.13.0
+%global rel    9995429239
 %global fver   %{yymm}-%{ver}-%{rel}
 %ifarch x86_64
 %global mark64 ()(64bit)
@@ -28,7 +28,10 @@
 %bcond bundled_ssl 1
 %endif
 
-%global ffmpeg_ver 5.1.2
+%global cef_ver 126.0.6478.127
+%global ffmpeg_ver 6.1.1
+%global libpng_ver 1.6.37
+%global webrtc_ver 90
 
 Name:           vmware-horizon-client
 Version:        %{yymm}.%{ver}.%{rel}
@@ -39,12 +42,13 @@ License:        VMware
 URL:            https://www.vmware.com/products/horizon.html
 
 # https://customerconnect.vmware.com/en/downloads/info/slug/desktop_end_user_computing/vmware_horizon_clients/horizon_8
-Source0:        https://download3.vmware.com/software/CART%{cart}_LIN_%{yymm}_TARBALL/VMware-Horizon-Client-Linux-%{yymm}-%{ver}-%{rel}.tar.gz
-Source1:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/rn/vmware-horizon-client-for-linux-%{pdfver}-release-notes/vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
-Source2:        https://docs.vmware.com/en/VMware-Horizon-Client-for-Linux/%{pdfiver}/horizon-client-linux-installation.pdf
+Source0:        https://download3.omnissa.com/software/CART%{cart}_LIN_%{yymm}_TARBALL/VMware-Horizon-Client-Linux-%{yymm}-%{ver}-%{rel}.tar.gz
+%dnl Source1:        https://docs.omnissa.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/rn/vmware-horizon-client-for-linux-%{pdfver}-release-notes/vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
+%dnl Source2:        https://docs.omnissa.com/en/VMware-Horizon-Client-for-Linux/%{pdfiver}/horizon-client-linux-installation.pdf
+Source3:        https://docs.broadcom.com/doc/end-user-agreement-english#/end-user-agreement-english.pdf
 Source10:       usbarb.rules
-Source11:       vmware-usbarbitrator.service
-Source14:       vmware-usbarbitrator.preset
+Source11:       vmware-eucusbarbitrator.service
+Source14:       vmware-eucusbarbitrator.preset
 Source15:       vmware-ftsprhv.preset
 Source16:       vmware-ftscanhv.preset
 
@@ -65,7 +69,7 @@ Provides:       bundled(gtkmm30) = 3.10.1
 Provides:       bundled(hal) = 0.5.12
 Provides:       bundled(icu) = 60.2
 Provides:       bundled(libjpeg-turbo) = 1.4.2
-Provides:       bundled(libwebrtc) = 90
+Provides:       bundled(libwebrtc) = %{webrtc_ver}
 Provides:       bundled(libxml2) = 2.9.9
 Provides:       bundled(mechanical-fonts) = 1.00
 %if %{with bundled_ssl}
@@ -98,7 +102,6 @@ Requires:       libudev.so.1%{mark64}
 %global __requires_exclude %__requires_exclude|^libssl\\.so.*$
 %endif
 %global __requires_exclude %__requires_exclude|^libGLESv2\\.so.*$
-%global __requires_exclude %__requires_exclude|^libjson_linux-gcc-.*_libmt\\.so.*$
 %global __requires_exclude %__requires_exclude|^libMicrosoft.SlimCV.VBM\\.so.*$
 %global __requires_exclude %__requires_exclude|^libudev\\.so.*$
 %global __requires_exclude %__requires_exclude|^libvmwarebase\\.so.*$
@@ -113,8 +116,8 @@ Requires Horizon Agent 7.0 or later on the virtual desktop.
 
 %package html5mmr
 Summary:        HTML5 Multimedia Redirection support plugin for VMware Horizon Client
-Provides:       bundled(chromium-embedded-framework) = 87.0.4280.20
-Provides:       bundled(webrtc) = 90
+Provides:       bundled(chromium-embedded-framework) = %{cef_ver}
+Provides:       bundled(webrtc) = %{webrtc_ver}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description html5mmr
@@ -146,7 +149,7 @@ Provides:       bundled(libavcodec) = %{ffmpeg_ver}
 Provides:       bundled(libavformat) = %{ffmpeg_ver}
 Provides:       bundled(libavutil) = %{ffmpeg_ver}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       bundled(libpng) = 1.6.37
+Provides:       bundled(libpng) = %{libpng_ver}
 Provides:       bundled(pcoip-soft-clients) = 3.75
 
 %description pcoip
@@ -236,7 +239,8 @@ USB Redirection support plugin for VMware Horizon Client.
 
 %prep
 %autosetup -N -n VMware-Horizon-Client-Linux-%{yymm}-%{ver}-%{rel}
-cp -p %{S:1} %{S:2} ./
+%dnl cp -p %{S:1} %{S:2} ./
+cp -p %{S:3} ./
 
 cp -p %{S:10} %{S:11} %{S:14} %{S:15} %{S:16} ./
 
@@ -282,7 +286,7 @@ pushd %{_vpath_builddir}
 mv -v usr/share/doc/%{name} ../docs
 mv -v systemd ../
 mv -v etc/vmware ../
-mv -v usr/lib/vmware{/view/lib,}/libclientSdkCPrimitive.so
+mv -v usr/lib{,/vmware}/libclientSdkCPrimitive.so
 mv -v usr/lib{,/vmware}/libpcoip_client.so
 %ifarch armv7hl
 mv -v usr/lib{,/vmware}/libpcoip_client_neon.so
@@ -290,7 +294,7 @@ chrpath -d usr/lib/vmware/libcurl.so.4
 %endif
 %ifarch x86_64
 mv -v usr/lib/vmware/view/integratedPrinting/prlinuxcupsppd usr/bin/
-mv -v usr/lib/vmware/view/usb/vmware-usbarbitrator usr/bin/
+mv -v usr/lib/vmware/view/usb/vmware-eucusbarbitrator usr/bin/
 
 pushd usr/lib/vmware/view/html5mmr
 find . -type f | xargs chmod 644
@@ -311,35 +315,24 @@ rm -frv \
   usr/lib/vmware/libcurl.so.4 \
   usr/lib/vmware/libssl.so.3 \
 %endif
-  usr/lib/vmware/libffi.so.6 \
   usr/lib/vmware/libgdkmm-3.0.so.1 \
   usr/lib/vmware/libgiomm-2.4.so.1 \
   usr/lib/vmware/libglibmm-2.4.so.1 \
-  usr/lib/vmware/libpcre.so.1 \
   usr/lib/vmware/libpangomm-1.4.so.1 \
   usr/lib/vmware/libpng16.so.16 \
   usr/lib/vmware/libsigc-2.0.so.0 \
-  usr/lib/vmware/libv4l2.so.0 \
-  usr/lib/vmware/libv4lconvert.so.0 \
-  usr/lib/vmware/libXss.so.1 \
   usr/lib/vmware/libz.so.1 \
-  usr/lib/vmware/view/crtbora \
-  usr/lib/vmware/view/html5mmr/libhtml5Client.so \
   usr/lib/vmware/view/html5mmr/libvulkan.so.1 \
   usr/lib/vmware/view/integratedPrinting/{integrated-printing-setup.sh,README} \
   usr/lib/vmware/view/urlRedirection/install-url-redirection.py \
   usr/lib/vmware/view/vaapi{,2.7} \
-  usr/lib/vmware/view/vdpService/webrtcRedir/udevadm \
   README \
   ../docs/patches \
   ../docs/scannerClient/README \
   ../docs/serialPortClient/README \
   usr/share/doc \
   usr/share/icons/vmware-view.png \
-  usr/vmware \
 %{nil}
-
-rmdir usr/lib/vmware/view/lib
 
 sed -e 's|/usr/lib/|%{_libdir}/|g' -i usr/bin/vmware-view{,-lib-scan,-log-collector}
 
@@ -381,8 +374,8 @@ abs2rel(){
 
 mkdir -p %{buildroot}%{_presetdir}
 mkdir -p %{buildroot}%{_unitdir}
-install -pm0644 vmware-usbarbitrator.service %{buildroot}%{_unitdir}/
-install -pm0644 vmware-usbarbitrator.preset %{buildroot}%{_presetdir}/96-vmware-usbarbitrator.preset
+install -pm0644 vmware-eucusbarbitrator.service %{buildroot}%{_unitdir}/
+install -pm0644 vmware-eucusbarbitrator.preset %{buildroot}%{_presetdir}/96-vmware-eucusbarbitrator.preset
 %ifarch x86_64
 mv systemd/system/ftsprhv.service %{buildroot}%{_unitdir}/
 mv systemd/system/ftscanhv.service %{buildroot}%{_unitdir}/
@@ -414,7 +407,7 @@ desktop-file-install \
 for res in 16 22 24 32 36 48 64 72 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  convert %{buildroot}%{_datadir}/pixmaps/vmware-view.png \
+  magick %{buildroot}%{_datadir}/pixmaps/vmware-view.png \
     -filter Lanczos -resize ${res}x${res} ${dir}/vmware-view.png
 done
 
@@ -452,22 +445,23 @@ exit 0
 
 %post usb
 %{_sbindir}/semodule -i %{_datadir}/vmware/selinux/%{name}-usb-rpm.cil
-%systemd_post vmware-usbarbitrator.service
+%systemd_post vmware-eucusbarbitrator.service
 exit 0
 
 %preun usb
-%systemd_preun vmware-usbarbitrator.service
+%systemd_preun vmware-eucusbarbitrator.service
 
 %postun usb
-%systemd_postun_with_restart vmware-usbarbitrator.service
+%systemd_postun_with_restart vmware-eucusbarbitrator.service
 if [ $1 -eq 0 ]; then
   %{_sbindir}/semodule -r %{name}-usb-rpm || :
 fi
 
 %files -f vmware-view.lang
 %license docs/open_source_licenses.txt
-%doc vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
-%doc horizon-client-linux-installation.pdf
+%license end-user-agreement-english.pdf
+%dnl vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
+%dnl %doc horizon-client-linux-installation.pdf
 %dir %{_sysconfdir}/vmware
 %config %{_sysconfdir}/vmware/bootstrap
 %attr(0644,root,root) %config(noreplace) %ghost %{_sysconfdir}/vmware/config
@@ -480,7 +474,6 @@ fi
 %{_bindir}/vmware-view
 %{_bindir}/vmware-view-lib-scan
 %{_bindir}/vmware-view-log-collector
-%{_bindir}/vmware-view-usbdloader
 %dir %{_libdir}/vmware
 %attr(0644,root,root) %config(noreplace) %ghost %{_libdir}/vmware/config
 %{_libdir}/vmware/view/dct
@@ -527,6 +520,7 @@ fi
 %{_libdir}/pcoip/vchan_plugins/libvdpservice.so
 %{_libdir}/pcoip/vchan_plugins/librdpvcbridge.so
 %{_libdir}/vmware/rdpvcbridge/freerdp_plugins.conf
+%{_libdir}/vmware/libffi.so
 %{_libdir}/vmware/libpcoip_client.so
 %ifarch armv7hl
 %{_libdir}/vmware/libpcoip_client_neon.so
@@ -553,9 +547,9 @@ fi
 
 %files usb
 %attr(0640,root,root) %config(noreplace) %{_sysconfdir}/vmware/usbarb.rules
-%{_presetdir}/96-vmware-usbarbitrator.preset
-%{_unitdir}/vmware-usbarbitrator.service
-%{_bindir}/vmware-usbarbitrator
+%{_presetdir}/96-vmware-eucusbarbitrator.preset
+%{_unitdir}/vmware-eucusbarbitrator.service
+%{_bindir}/vmware-eucusbarbitrator
 %dir %{_libdir}/vmware/view/usb
 %{_libdir}/vmware/view/usb/libvmware-view-usbd.so
 %{_libdir}/vmware/view/vdpService/libusbRedirectionClient.so
@@ -563,7 +557,6 @@ fi
 
 %ifarch x86_64
 %files html5mmr
-%{_libdir}/vmware/libjson_linux-gcc-4.1.1_libmt.so
 %{_libdir}/vmware/view/html5mmr
 %{_libdir}/vmware/view/vdpService/libhtml5Client.so
 
@@ -598,7 +591,11 @@ fi
 
 
 %changelog
-* Mon May 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2312.1.8.12.1.23543969-1
+* Mon Sep 23 2024 - 2406.8.13.0.9995429239-1
+- 2406
+- Sync with rathann
+
+* Mon May 27 2024 - 2312.1.8.12.1.23543969-1
 - 2312.1
 
 * Fri Feb 17 2023 - 2212.1.8.8.1.21219348-1

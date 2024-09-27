@@ -1,0 +1,11 @@
+[Unit]
+Description=VMware EUC USB Arbitration Service. Allows USB devices plugged into the HOST to be usable by the guest.
+
+[Service]
+EnvironmentFile=/etc/vmware/bootstrap
+Type=simple
+ExecStart=/usr/bin/vmware-eucusbarbitrator -f
+ExecStop=/usr/bin/vmware-eucusbarbitrator --kill
+
+[Install]
+WantedBy=multi-user.target
