@@ -1,0 +1,24 @@
+From bf756ab8a518c5a89161e2ef5768eafc47701392 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 28 Sep 2024 17:42:56 -0300
+Subject: [PATCH] lib7zip: add libexec/p7zip search path
+
+---
+ src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp b/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
+index 9aa31a1..df88a46 100644
+--- a/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
++++ b/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
+@@ -176,6 +176,7 @@ HMODULE Load7ZLibrary(const wstring & name)
+ 
+   std::vector<const char *> lib_search_pathlist;
+ 
++  lib_search_pathlist.push_back("/usr/libexec/p7zip");
+   lib_search_pathlist.push_back("/usr/local/lib");
+   lib_search_pathlist.push_back("/usr/lib");
+   lib_search_pathlist.push_back("/usr/lib/p7zip");
+-- 
+2.46.2
+

@@ -234,6 +234,7 @@ ps3iso-utils
 psv-save-converter
 psxmemcardmgr
 pulsemixer
+punes
 -purple-rocketchat
 -python-pafy
 python-pypng

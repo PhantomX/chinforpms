@@ -1,0 +1,37 @@
+From 73c666071b1ded07f31937e0e6f1bebf21df47c5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 28 Sep 2024 17:36:00 -0300
+Subject: [PATCH] p7zip: hardening flags
+
+Add support for $(CPPFLAGS) and do not override $(CXXFLAGS)
+and $(CFLAGS)
+
+Bug-Debian: https://bugs.debian.org/#682167
+---
+ src/extra/p7zip-17.04/makefile.glb | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/extra/p7zip-17.04/makefile.glb b/src/extra/p7zip-17.04/makefile.glb
+index 16902f8..cdebebb 100644
+--- a/src/extra/p7zip-17.04/makefile.glb
++++ b/src/extra/p7zip-17.04/makefile.glb
+@@ -1,14 +1,14 @@
+ 
+ RM=rm -f
+ 
+-CFLAGS=-c -std=gnu11 -I.\
++CFLAGS+=$(CPPFLAGS) -c -std=gnu11 -I. \
+ -I../../../../C \
+ -I../../../../CPP/myWindows \
+ -I../../../../CPP/include_windows \
+ -I../../../../CPP \
+ $(ALLFLAGS) $(ALLFLAGS_C)
+ 
+-CXXFLAGS=-c -std=gnu++11 -I.\
++CXXFLAGS+=$(CPPFLAGS) -c -std=gnu++11 -I. \
+ -I../../../../C \
+ -I../../../../CPP/myWindows \
+ -I../../../../CPP/include_windows \
+-- 
+2.46.2
+

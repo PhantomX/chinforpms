@@ -1,0 +1,49 @@
+From 94046635dc66213f32c232dc8a36676d693d8bb0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 28 Sep 2024 17:38:46 -0300
+Subject: [PATCH] p7zip: Revert commit c104127
+
+https://github.com/jinfeihan57/p7zip/issues/112
+---
+ src/extra/p7zip-17.04/CPP/7zip/Archive/Zip/ZipItem.cpp | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/src/extra/p7zip-17.04/CPP/7zip/Archive/Zip/ZipItem.cpp b/src/extra/p7zip-17.04/CPP/7zip/Archive/Zip/ZipItem.cpp
+index 353e895..74a4129 100644
+--- a/src/extra/p7zip-17.04/CPP/7zip/Archive/Zip/ZipItem.cpp
++++ b/src/extra/p7zip-17.04/CPP/7zip/Archive/Zip/ZipItem.cpp
+@@ -1,9 +1,11 @@
+ // Archive/ZipItem.cpp
+ 
++#if 0
+ #if (!defined _WIN32) && (!defined __CYGWIN__) && (!defined __APPLE__)
+ #include <iconv.h>
+ #include <locale.h>
+ #endif
++#endif
+ 
+ #include "StdAfx.h"
+ 
+@@ -354,7 +356,8 @@ void CItem::GetUnicodeString(UString &res, const AString &s, bool isComment, boo
+     }
+     #endif
+   }
+-  
++
++#if 0
+   #if (!defined _WIN32) && (!defined __CYGWIN__) && (!defined __APPLE__)
+   // Convert OEM char set to UTF-8 if needed
+   // Use system locale to select code page
+@@ -435,7 +438,8 @@ void CItem::GetUnicodeString(UString &res, const AString &s, bool isComment, boo
+     }    
+   }
+   #endif
+-  
++#endif
++
+   if (isUtf8)
+     if (ConvertUTF8ToUnicode(s, res) || ignore_Utf8_Errors)
+       return;
+-- 
+2.46.2
+

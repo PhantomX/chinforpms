@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0264
-%global historyver 269
-%global infover 0269
+%global historyver 270
+%global infover 0270
 %global cheat_url https://www.mamecheat.co.uk
 %global history_url https://www.arcade-history.com
 %global info_url https://www.mameworld.info/mameinfo
@@ -11,7 +11,7 @@
 %global samplelink https://www.mameworld.info/samples/wav
 
 Name:           mame-data-extras
-Version:        0.269
+Version:        0.270
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Sat Sep 28 2024 Phantom X <megaphantomx at hotmail dot com> - 0.270-1
+- 0.270
+
 * Sat Aug 31 2024 Phantom X <megaphantomx at hotmail dot com> - 0.269-1
 - 0.269
 
