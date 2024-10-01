@@ -1,19 +1,19 @@
-From 25ed49f10d8a415f001f76c4818322f0e21d2dde Mon Sep 17 00:00:00 2001
+From c50687fee067051aa7bda5cd0d2fa5cb9a934949 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  dep/CMakeLists.txt                | 81 +++++++++++++++++++++++++++++--
- src/core/texture_replacements.cpp |  2 +
- 2 files changed, 80 insertions(+), 3 deletions(-)
+ src/core/gpu_hw_texture_cache.cpp |  4 +-
+ 2 files changed, 81 insertions(+), 4 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 4b79ce8..5e41a45 100644
+index 4b79ce8..f4f062e 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
 @@ -1,30 +1,87 @@
-+find_package(fmt 10.1)
++find_package(fmt 11.0)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
 +  add_library(fmt INTERFACE)
@@ -131,22 +131,29 @@ index 4b79ce8..5e41a45 100644
  endif()
  
  if(CPU_ARCH_ARM32 OR CPU_ARCH_ARM64)
-diff --git a/src/core/texture_replacements.cpp b/src/core/texture_replacements.cpp
-index 03f6dc5..8613bbd 100644
---- a/src/core/texture_replacements.cpp
-+++ b/src/core/texture_replacements.cpp
-@@ -16,9 +16,11 @@
+diff --git a/src/core/gpu_hw_texture_cache.cpp b/src/core/gpu_hw_texture_cache.cpp
+index 5d9eef5..a8f9e4a 100644
+--- a/src/core/gpu_hw_texture_cache.cpp
++++ b/src/core/gpu_hw_texture_cache.cpp
+@@ -25,9 +25,11 @@
  
- #include "fmt/format.h"
+ #define XXH_STATIC_LINKING_ONLY
  #include "xxhash.h"
 +#ifndef SYSTEM_XXHASH
- #if defined(CPU_ARCH_X86) || defined(CPU_ARCH_X64)
+ #ifdef CPU_ARCH_SSE
  #include "xxh_x86dispatch.h"
  #endif
 +#endif
  
- #include <cinttypes>
- #include <tuple>
+ #include <algorithm>
+ #include <cmath>
+@@ -3288,4 +3290,4 @@ void GPUTextureCache::ApplyTextureReplacements(SourceKey key, HashType tex_hash,
+   entry->texture = std::move(replacement_tex);
+ 
+   g_gpu->RestoreDeviceContext();
+-}
+\ No newline at end of file
++}
 -- 
-2.46.1
+2.46.2
 

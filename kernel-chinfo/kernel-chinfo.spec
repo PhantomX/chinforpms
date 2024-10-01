@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.11.0
+%define specrpmversion 6.11.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 4df1650393a6e227b2f72ae9e6845e8399c5ea15
-%global opensuse_id eb496b3110d337cbe1d00aa5d06ca8ff296ea925
+%global opensuse_id 3bf25fe62a6fa6917b82db7062fe69fec6167460
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1094,8 +1094,9 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
+Patch1013: %{opensuse_url}/drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch#/openSUSE-drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch
 Patch1014: %{opensuse_url}/drm-amd-display-Fix-a-typo-in-revert-commit.patch#/openSUSE-drm-amd-display-Fix-a-typo-in-revert-commit.patch
-Patch1015: %{opensuse_url}/drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch#/openSUSE-drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch
+Patch1015: %{opensuse_url}/block-Fix-elv_iosched_local_module-handling-of-none-.patch#/openSUSE-block-Fix-elv_iosched_local_module-handling-of-none-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1115,7 +1116,6 @@ Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 %if 0%{?post_factum}
 # amd-pstate
-Patch7000:  %{pf_url}/5617437e24188af39091f3579aec860d56d667a8.patch#/pf-cb-5617437.patch
 Patch7001:  %{pf_url}/5accbf67315bb0dba7773bf3a39ade67c92a5101.patch#/pf-cb-5accbf6.patch
 Patch7002:  %{pf_url}/09bab14655e4f48b8b7bdb773d1da0068e56fcb1.patch#/pf-cb-09bab14.patch
 Patch7003:  %{pf_url}/f5040487ec2555f2979c8224d71f60724f43d46b.patch#/pf-cb-f504048.patch
@@ -1142,11 +1142,13 @@ Patch7100:  %{pf_url}/bc7075c316e3c89986cdc0df145d8753ba73c731.patch#/pf-cb-bc70
 Patch7101:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fafd3.patch
 Patch7102:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
 Patch7103:  %{pf_url}/561ac317b5ed031cf566ea886e0a70dc10bd4f71.patch#/pf-cb-561ac31.patch
+Patch7104:  %{pf_url}/fe103e4b63af38f294a63b19753a70b3adfa74a7.patch#/pf-cb-fe103e4.patch
 # zstd
 Patch7200:  %{pf_url}/5cb1b6e0be8548c2e6a34202becd539c13fdb91f.patch#/pf-cb-5cb1b6e.patch
 Patch7201:  %{pf_url}/79c6f85410667790f173edf3822a6258942fe4d3.patch#/pf-cb-79c6f85.patch
 # ksm
 Patch7220:  %{pf_url}/3b3fa0ff020b168ee6f1a9919b70c387cbac2dc5.patch#/pf-cb-3b3fa0f.patch
+Patch7221:  %{pf_url}/fe472af27c1cb97c819b78add1d5a6b7df40e461.patch#/pf-cb-fe472af.patch
 # v4l2loopback
 Patch7230:  %{pf_url}/298c48887b0fda9be2e91c38e56930b438174aae.patch#/pf-cb-298c488.patch
 # cpuidle
@@ -2026,7 +2028,6 @@ ApplyOptionalPatch %{PATCH999999}
 
 %if 0%{?post_factum}
 # amd-pstate
-ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
 ApplyPatch %{PATCH7002}
 ApplyPatch %{PATCH7003}
@@ -2053,11 +2054,13 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
+ApplyPatch %{PATCH7104}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
 # ksm
 ApplyPatch %{PATCH7220}
+ApplyPatch %{PATCH7221}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
 # cpuidle
@@ -2093,6 +2096,7 @@ ApplyPatch %{PATCH7516}
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 %dnl ApplyPatch %{PATCH1012}
+ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1014}
 ApplyPatch %{PATCH1015}
 
@@ -4403,6 +4407,9 @@ fi\
 #
 #
 %changelog
+* Mon Sep 30 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.1-500.chinfo
+- 6.11.1
+
 * Sun Sep 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.0-500.chinfo
 - 6.11.0
 

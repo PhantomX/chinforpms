@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.163
+Version:        2.1.177
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -119,13 +119,12 @@ Provides:       bundled(fmt) = %{fmt_ver}
 %endif
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
-BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(ice)
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
@@ -137,7 +136,7 @@ BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
-BuildRequires:  pkgconfig(libzip) >= 1.8.0
+BuildRequires:  pkgconfig(libzip) >= 1.11.0
 BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)

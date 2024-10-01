@@ -30,7 +30,7 @@ BASERELEASE="$(grep "%define baserelease" ${KERNELSPEC} | cut -d ' ' -f 3)"
 BUILDID="$(grep "^%global buildid" ${KERNELSPEC}| cut -d ' ' -f 3)"
 SRCVERSION="${BASERELEASE}${BUILDID}${VARIANTID}"
 # shellcheck disable=SC1083
-cd "$(rpm -E %{_builddir})/kernel-$TARBALL_RELEASE/linux-$SPECRPMVERSION-${SRCVERSION}.fc"*/
+cd "$(rpm -E %{_builddir})/kernel${VARIANT}-${SPECRPMVERSION}-build/kernel-${TARBALL_RELEASE}/linux-${SPECRPMVERSION}-${SRCVERSION}.fc"*/
 KVER="${SPECRPMVERSION}-${SRCVERSION}"
 
 # ARCH_LIST below has the default list of supported architectures

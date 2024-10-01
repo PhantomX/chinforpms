@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 96ece5de1c0c788a1bd0c37a78f96695d655a032
+%global commit 75babc74cb3949de6f5f18f47490d816a7e38b38
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240919
+%global date 20240929
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7573
+Version:        0.1.7646
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -104,6 +104,11 @@ BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
+BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavformat)
+BuildRequires:  pkgconfig(libavutil)
+BuildRequires:  pkgconfig(libswresample)
+BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)
