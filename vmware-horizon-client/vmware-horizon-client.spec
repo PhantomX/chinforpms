@@ -35,7 +35,7 @@
 
 Name:           vmware-horizon-client
 Version:        %{yymm}.%{ver}.%{rel}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Remote access client for VMware Horizon
 
 License:        VMware
@@ -46,7 +46,6 @@ Source0:        https://download3.omnissa.com/software/CART%{cart}_LIN_%{yymm}_T
 %dnl Source1:        https://docs.omnissa.com/en/VMware-Horizon-Client-for-Linux/%{yymm}/rn/vmware-horizon-client-for-linux-%{pdfver}-release-notes/vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
 %dnl Source2:        https://docs.omnissa.com/en/VMware-Horizon-Client-for-Linux/%{pdfiver}/horizon-client-linux-installation.pdf
 Source3:        https://docs.broadcom.com/doc/end-user-agreement-english#/end-user-agreement-english.pdf
-Source10:       usbarb.rules
 Source11:       vmware-eucusbarbitrator.service
 Source14:       vmware-eucusbarbitrator.preset
 Source15:       vmware-ftsprhv.preset
@@ -64,7 +63,6 @@ Provides:       bundled(atk) = 2.28.1
 Provides:       bundled(boost) = 1.67
 Provides:       bundled(bzip2) = 1.0.6
 Provides:       bundled(c-ares) = 1.13.0
-Provides:       bundled(curl) = 7.74
 Provides:       bundled(gtkmm30) = 3.10.1
 Provides:       bundled(hal) = 0.5.12
 Provides:       bundled(icu) = 60.2
@@ -84,6 +82,7 @@ Obsoletes:      %{name}-media-provider < 2303.8.9.0.21435420
 Obsoletes:      %{name}-seamless-window < 5.2.0.14604769
 Requires:       %{_bindir}/pidof
 Requires:       libudev.so.1%{mark64}
+Requires:       vmware-common%{?_isa}
 
 %global __provides_exclude_from ^%{_libdir}/(vmware|pcoip)/.*$
 %global __requires_exclude ^libatkmm-.*\\.so.*$
@@ -242,7 +241,7 @@ USB Redirection support plugin for VMware Horizon Client.
 %dnl cp -p %{S:1} %{S:2} ./
 cp -p %{S:3} ./
 
-cp -p %{S:10} %{S:11} %{S:14} %{S:15} %{S:16} ./
+cp -p %{S:11} %{S:14} %{S:15} %{S:16} ./
 
 cat > %{name}-scannerclient-rpm.cil << 'EOF'
 (typeattributeset cil_gen_require init_t)
@@ -358,15 +357,12 @@ mkdir -p %{buildroot}/var/log/vmware
 
 mkdir -p %{buildroot}%{_sysconfdir}/teradici
 mkdir -p %{buildroot}%{_sysconfdir}/vmware{/udpProxy,/vdp/host_overlay_plugins,-vix}
-echo 'BINDIR="%{_bindir}"' > %{buildroot}%{_sysconfdir}/vmware/bootstrap
 echo 'BINDIR="%{_bindir}"' > %{buildroot}%{_sysconfdir}/vmware-vix/bootstrap
 
 echo "%{_libdir}/pcoip/vchan_plugins/libvdpservice.so" \
   > %{buildroot}%{_sysconfdir}/vmware/vdp/host_overlay_plugins/config
 
 mv vmware/*.conf %{buildroot}%{_sysconfdir}/vmware/
-
-install -pm0644 usbarb.rules %{buildroot}%{_sysconfdir}/vmware/
 
 abs2rel(){
   realpath -m --relative-to="$2" "$1"
@@ -462,9 +458,6 @@ fi
 %license end-user-agreement-english.pdf
 %dnl vmware-horizon-client-for-linux-%{pdfver}-release-notes.pdf
 %dnl %doc horizon-client-linux-installation.pdf
-%dir %{_sysconfdir}/vmware
-%config %{_sysconfdir}/vmware/bootstrap
-%attr(0644,root,root) %config(noreplace) %ghost %{_sysconfdir}/vmware/config
 %attr(0644,root,root) %config(noreplace) %ghost %{_sysconfdir}/vmware/view-keycombos-config
 %dir %{_sysconfdir}/vmware/udpProxy
 %attr(0644,root,root) %config(noreplace) %ghost %{_sysconfdir}/vmware/udpProxy/config
@@ -546,7 +539,6 @@ fi
 %{_libdir}/vmware/view/pkcs11/libopenscpkcs11.so
 
 %files usb
-%attr(0640,root,root) %config(noreplace) %{_sysconfdir}/vmware/usbarb.rules
 %{_presetdir}/96-vmware-eucusbarbitrator.preset
 %{_unitdir}/vmware-eucusbarbitrator.service
 %{_bindir}/vmware-eucusbarbitrator
@@ -591,6 +583,9 @@ fi
 
 
 %changelog
+* Tue Oct 01 2024 - 2406.8.13.0.9995429239-2
+- BR: vmware-common
+
 * Mon Sep 23 2024 - 2406.8.13.0.9995429239-1
 - 2406
 - Sync with rathann

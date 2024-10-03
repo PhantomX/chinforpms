@@ -1,0 +1,100 @@
+From 9cef4ceba40d66492ff775af793ff70e6e7551a9 Mon Sep 17 00:00:00 2001
+From: MutantAura <domw0401@gmail.com>
+Date: Wed, 4 Sep 2024 21:39:37 +0100
+Subject: [PATCH] Remove event logic in favour of single init function.
+
+---
+ src/Ryujinx/AppHost.cs                          | 17 ++++++++---------
+ src/Ryujinx/UI/Models/StatusInitEventArgs.cs    | 16 ----------------
+ .../UI/ViewModels/MainWindowViewModel.cs        | 13 -------------
+ 3 files changed, 8 insertions(+), 38 deletions(-)
+ delete mode 100644 src/Ryujinx/UI/Models/StatusInitEventArgs.cs
+
+diff --git a/src/Ryujinx/AppHost.cs b/src/Ryujinx/AppHost.cs
+index 0db8ef4143d7..7d14709f4559 100644
+--- a/src/Ryujinx/AppHost.cs
++++ b/src/Ryujinx/AppHost.cs
+@@ -120,7 +120,6 @@ private enum CursorStates
+         private readonly object _lockObject = new();
+ 
+         public event EventHandler AppExit;
+-        public event EventHandler<StatusInitEventArgs> StatusInitEvent;
+         public event EventHandler<StatusUpdatedEventArgs> StatusUpdatedEvent;
+ 
+         public VirtualFileSystem VirtualFileSystem { get; }
+@@ -1044,14 +1043,14 @@ private void RenderLoop()
+ 
+         public void InitStatus()
+         {
+-            StatusInitEvent?.Invoke(this, new StatusInitEventArgs(
+-                ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
+-                {
+-                    GraphicsBackend.Vulkan => "Vulkan",
+-                    GraphicsBackend.OpenGl => "OpenGL",
+-                    _ => throw new NotImplementedException()
+-                },
+-                $"GPU: {_renderer.GetHardwareInfo().GpuDriver}"));
++            _viewModel.BackendText = ConfigurationState.Instance.Graphics.GraphicsBackend.Value switch
++            {
++                GraphicsBackend.Vulkan => "Vulkan",
++                GraphicsBackend.OpenGl => "OpenGL",
++                _ => throw new NotImplementedException()
++            };
++
++            _viewModel.GpuNameText = $"GPU: {_renderer.GetHardwareInfo().GpuDriver}";
+         }
+ 
+         public void UpdateStatus()
+diff --git a/src/Ryujinx/UI/Models/StatusInitEventArgs.cs b/src/Ryujinx/UI/Models/StatusInitEventArgs.cs
+deleted file mode 100644
+index 4b08737e9653..000000000000
+--- a/src/Ryujinx/UI/Models/StatusInitEventArgs.cs
++++ /dev/null
+@@ -1,16 +0,0 @@
+-using System;
+-
+-namespace Ryujinx.Ava.UI.Models
+-{
+-    internal class StatusInitEventArgs : EventArgs
+-    {
+-        public string GpuBackend { get; }
+-        public string GpuName { get; }
+-
+-        public StatusInitEventArgs(string gpuBackend, string gpuName)
+-        {
+-            GpuBackend = gpuBackend;
+-            GpuName = gpuName;
+-        }
+-    }
+-}
+diff --git a/src/Ryujinx/UI/ViewModels/MainWindowViewModel.cs b/src/Ryujinx/UI/ViewModels/MainWindowViewModel.cs
+index bd9f165b92bd..6e18f4265fcb 100644
+--- a/src/Ryujinx/UI/ViewModels/MainWindowViewModel.cs
++++ b/src/Ryujinx/UI/ViewModels/MainWindowViewModel.cs
+@@ -1182,7 +1182,6 @@ private void InitializeGame()
+         {
+             RendererHostControl.WindowCreated += RendererHost_Created;
+ 
+-            AppHost.StatusInitEvent += Init_StatusBar;
+             AppHost.StatusUpdatedEvent += Update_StatusBar;
+             AppHost.AppExit += AppHost_AppExit;
+ 
+@@ -1209,18 +1208,6 @@ private async Task HandleRelaunch()
+             }
+         }
+ 
+-        private void Init_StatusBar(object sender, StatusInitEventArgs args)
+-        {
+-            if (ShowMenuAndStatusBar && !ShowLoadProgress)
+-            {
+-                Dispatcher.UIThread.InvokeAsync(() =>
+-                {
+-                    GpuNameText = args.GpuName;
+-                    BackendText = args.GpuBackend;
+-                });
+-            }
+-        }
+-
+         private void Update_StatusBar(object sender, StatusUpdatedEventArgs args)
+         {
+             if (ShowMenuAndStatusBar && !ShowLoadProgress)

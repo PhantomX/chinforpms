@@ -6,12 +6,12 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit da073fce6127243fcd93b736cde951c4e835e508
+%global commit a09b06434b4103fbab812fb523b9682c88926bbd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20230314
+%global date 20241002
 
 %if %{without bin}
-%bcond_with snapshot
+%bcond_without snapshot
 %else
 %bcond_without snapshot
 %endif
@@ -247,13 +247,13 @@
 %global tmds_dbus_protocol_ver 0.15.0
 
 %global appname Ryujinx
-%global vc_url  https://github.com/%{appname}
+%global vc_url  https://github.com/%{appname}-NX
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1402
+Version:        1.1.1404
 Release:        1%{?dist}
-Summary:        Experimental Nintendo Switch Emulator
+Summary:        Experimental NX Emulator
 
 License:        MIT
 URL:            https://ryujinx.org/
@@ -553,7 +553,7 @@ Source470:      %{nuget_url}/microsoft.netcore.platforms.%{microsoft_netcore_pla
 %global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470}
 %endif
 
-Patch0:         %{vc_url}/%{appname}/pull/7285.patch#/%{name}-gh-pr7285.patch
+Patch0:         %{name}-pr7285.patch
 
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch

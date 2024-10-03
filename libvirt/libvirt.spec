@@ -11,7 +11,7 @@
     %if 0%{?rhel} > 8
         %define arches_qemu_kvm     x86_64 aarch64 s390x
     %else
-        %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x
+        %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x riscv64
     %endif
 %endif
 
@@ -289,8 +289,8 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 10.7.0
-Release: 101%{?dist}
+Version: 10.8.0
+Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
 
@@ -366,7 +366,7 @@ BuildRequires: libblkid-devel >= 2.17
 BuildRequires: augeas
 BuildRequires: systemd-devel >= 185
 BuildRequires: libpciaccess-devel >= 0.10.9
-BuildRequires: yajl-devel
+BuildRequires: json-c-devel
     %if %{with_sanlock}
 BuildRequires: sanlock-devel >= 2.4
     %endif
@@ -434,8 +434,6 @@ BuildRequires: systemtap-sdt-devel
 BuildRequires: /usr/bin/dtrace
 # For mount/umount in FS driver
 BuildRequires: util-linux
-# For showmount in FS driver (netfs discovery)
-BuildRequires: nfs-utils
     %if %{with_numad}
 BuildRequires: numad
     %endif
@@ -674,7 +672,7 @@ an implementation of the secret key APIs.
 Summary: Storage driver plugin including base backends for the libvirtd daemon
 Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-libs = %{version}-%{release}
-Requires: nfs-utils
+Recommends: nfs-utils
 # For mkfs
 Requires: util-linux
 # For storage wiping with different algorithms
@@ -1374,7 +1372,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dapparmor_profiles=disabled \
            -Dsecdriver_apparmor=disabled \
            -Dudev=enabled \
-           -Dyajl=enabled \
+           -Djson_c=enabled \
            %{?arg_sanlock} \
            -Dlibpcap=enabled \
            %{?arg_nbdkit} \
@@ -1446,6 +1444,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dfuse=disabled \
   -Dglusterfs=disabled \
   -Dhost_validate=disabled \
+  -Djson_c=disabled \
   -Dlibiscsi=disabled \
   -Dnbdkit=disabled \
   -Dnbdkit_config_default=disabled \
@@ -1488,7 +1487,6 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dtests=disabled \
   -Dudev=disabled \
   -Dwireshark_dissector=disabled \
-  -Dyajl=disabled \
   %{?enable_werror}
 %mingw_ninja
 %endif
@@ -2635,6 +2633,9 @@ exit 0
 
 
 %changelog
+* Wed Oct 02 2024 Phantom X <megaphantomx at hotmail dot com> - 10.8.0-100
+- 10.8.0
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 10.7.0-101
 - Rawhide sync
 

@@ -93,7 +93,9 @@ vasm
 vita3k
 vivaldi
 vivaldi-ffmpeg-codecs
+vmware-common
 vmware-horizon-client
+vmware-vmrc
 vvvvvv
 vvvvvv-data
 -wine-freeworld
