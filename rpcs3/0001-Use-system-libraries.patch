@@ -79,7 +79,7 @@ index d1a14ff..1e94e29 100644
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
-+			add_library(FAudio ALIAS FAudio::FAudio)
++			add_library(FAudio ALIAS FAudio::FAudio-shared)
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)

@@ -17,7 +17,7 @@ index 47ab0d0..efefcb3 100644
  	});
  
 +#if 0
- #if !defined(ARCH_ARM64) && (defined(_WIN32) || defined(__linux__) || defined(__APPLE__))
+ #if (!defined(ARCH_ARM64) || defined(__APPLE__)) && (defined(_WIN32) || defined(__linux__) || defined(__APPLE__))
  	if (const auto update_value = m_gui_settings->GetValue(gui::m_check_upd_start).toString(); update_value != gui::update_off)
  	{
 @@ -285,6 +286,7 @@ bool main_window::Init([[maybe_unused]] bool with_cli_boot)

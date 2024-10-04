@@ -17,7 +17,7 @@ index 5751aa7..a739c88 100644
  else()
 +    find_package(FAudio CONFIG)
 +    add_library(faudio-shared INTERFACE)
-+    target_link_libraries(faudio-shared INTERFACE FAudio::FAudio)
++    target_link_libraries(faudio-shared INTERFACE FAudio::FAudio-shared)
 +    add_library(FAudio ALIAS faudio-shared)
 +
      target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 FAudio)

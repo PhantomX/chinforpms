@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.2.3
+Version:        24.2.4
 Release:        100%{?dist}
 
 Epoch:          100
@@ -112,11 +112,9 @@ Requires:       %{pkgname}-libglapi%{?_isa} >= %{version}
 
 %package -n     %{pkgname}-va-drivers-freeworld
 Summary:        Mesa-based VAAPI drivers - freeworld
-Obsoletes:      %{pkgname}-va-drivers < %{?epoch:%{epoch}:}
-Provides:       %{pkgname}-va-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{pkgname}-va-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
 Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Conflicts:      %{pkgname}-va-drivers%{?_isa}
 Enhances:       %{pkgname}%{?_isa}
 
 %description -n %{pkgname}-va-drivers-freeworld
@@ -125,11 +123,9 @@ Enhances:       %{pkgname}%{?_isa}
 
 %package -n     %{pkgname}-vdpau-drivers-freeworld
 Summary:        Mesa-based VDPAU drivers- freeworld
-Obsoletes:      %{pkgname}-vdpau-drivers < %{?epoch:%{epoch}:}
-Provides:       %{pkgname}-vdpau-drivers = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       %{pkgname}-vdpau-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
 Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Conflicts:      %{pkgname}-vdpau-drivers%{?_isa}
 Enhances:       %{pkgname}%{?_isa}
 
 %description -n %{pkgname}-vdpau-drivers-freeworld
@@ -233,6 +229,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Oct 03 2024 Phantom X <megaphantomx at hotmail dot com> - 24.2.4-100
+- 24.2.4
+
 * Wed Sep 18 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.3-100
 - 24.2.3
 

@@ -45,14 +45,10 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 466a93dca59fabd4231c3e994dd59e6bed1a8b9c
+%global commit 6bb01066fba5cf2b569d31b4ddad7caf235bfaa7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240920
+%global date 20241003
 %bcond_without snapshot
-
-%global commit10 360d469b9eac54d6c6e20f609f9ec35e3a5380ad
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 SPIRV-Tools
 
 %global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
@@ -77,10 +73,6 @@
 %global commit16 456c68f452da09d8ca84b375faa2b1397713eaba
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
-
-%global commit17 e867c06631767a2d96424cbec530f9ee5e78180f
-%global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
-%global srcname17 SPIRV-Headers
 
 %global commit18 cd89023f797900e4492da58b7bed36f702120011
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
@@ -116,7 +108,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.33.16939
+Version:        0.0.33.17010
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -128,7 +120,6 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
-Source10:       %{kg_url}/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
@@ -139,7 +130,6 @@ Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{sr
 %if %{without yamlcpp}
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
-Source17:       %{kg_url}/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %if %{without llvm}
 Source18:       https://github.com/llvm/llvm-project/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
@@ -267,7 +257,6 @@ Requires:       libGL%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(spirv-tools) = 0~git%{shortcommit10}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
@@ -288,19 +277,16 @@ rm -rf \
   7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
   MoltenVK OpenAL/libs pugixml XAudio2Redist xxHash zstd
 
-tar -xf %{S:10} -C SPIRV/SPIRV-Tools --strip-components 1
 tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
 tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
 tar -xf %{S:13} -C glslang/glslang --strip-components 1
 tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
-tar -xf %{S:17} -C SPIRV/SPIRV-Headers --strip-components 1
 tar -xf %{S:23} -C stblib/stb --strip-components 1
 
 cp -p stblib/stb/LICENSE LICENSE.stb
 cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
-cp -p SPIRV/SPIRV-Tools/LICENSE LICENSE.SPIRV-Tools
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
 
