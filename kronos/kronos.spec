@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9bc596ae50f3e2e7e1775cce86f76b60a4b198de
+%global commit 380da9532d971e88802e3a13655a658f73a48761
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240920
+%global date 20241003
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -29,8 +29,8 @@
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.6.1
-Release:        4%{?dist}
+Version:        2.6.2
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -148,6 +148,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.2-1.20241003git380da95
+- 2.6.2
+
 * Mon Aug 12 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.1-1.20240729git1837142
 - 2.6.1
 

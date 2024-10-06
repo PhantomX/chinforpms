@@ -1,5 +1,5 @@
 Name:           firefox-chinfo-prefs
-Version:        20240715
+Version:        20241004
 Release:        1%{?dist}
 Summary:        Chinforinfula default preferences for Firefox
 
@@ -31,6 +31,9 @@ install -pm0644 %{SOURCE0} %{buildroot}%{_sysconfdir}/firefox/defaults/pref/chin
 
 
 %changelog
+* Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 20241004-1
+- 20241004
+
 * Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 20240715-1
 - 20240715
 

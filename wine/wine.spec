@@ -54,7 +54,7 @@
 %global winegecko 2.47.4
 %global winemono  9.3.0
 %global winentsync 6.9~rc3
-%global winevulkan 1.3.295
+%global winevulkan 1.3.296
 
 %global wineFAudio 24.06
 %global winefluidsynth 2.3.5
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.18
+%global wine_stagingver 9.19
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 033fda90bbfb3afbeacb25747ec3e3ee3b1408af
+%global tkg_id 3091eb2d0a99e1ba32f8ddbafd28a0a2bafceef5
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -131,8 +131,6 @@
 %bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
-# Shared gpu resources
-%bcond_with sharedgpures
 
 # Enable when needed
 %bcond_with patchutils
@@ -159,7 +157,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.18
+Version:        9.19
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -257,29 +255,19 @@ Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.pat
 Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1036:       %{tkg_url}/hotfixes/autoconf-opencl-hotfix/opencl-fixup.mypatch#/%{name}-tkg-opencl-fixup.patch
-Patch1037:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1036:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1037:       %{tkg_url}/hotfixes/legacy_ntdll_writecopy/legacy-ntdll-writecopy.mypatch#/%{name}-tkg-legacy-ntdll-writecopy.patch
+Patch1038:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
 
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
 Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
 Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
 Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
-Patch1056:       0001-tkg-additions-revert-simulate-writecopy.patch
 
-Patch1060:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-driver.patch#/%{name}-tkg-sharedgpures-driver.patch
-Patch1061:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-textures.patch#/%{name}-tkg-sharedgpures-textures.patch
-Patch1062:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fixup-staging.patch#/%{name}-tkg-sharedgpures-fixup-staging.patch
-Patch1063:       %{tkg_url}/proton/shared-gpu-resources/sharedgpures-fences.patch#/%{name}-tkg-sharedgpures-fences.patch
-# https://github.com/Frogging-Family/wine-tkg-git/issues/1005
-Patch1064:       0001-sharedgpures-fixup.patch
-
-Patch1089:       %{tkg_curl}/0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches-.mypatch#/%{name}-tkg-0001-ntdll-Use-kernel-soft-dirty-flags-for-write-watches.patch
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.patch#/%{name}-valve-c08ed66.patch
 Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.patch#/%{name}-valve-ed14fff.patch
-Patch1093:       0001-ntdll-kernel-soft-dirty-flags-fixup-1.patch
-Patch1094:       0001-ntdll-kernel-soft-dirty-flags-fixup-2.patch
 
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
@@ -907,12 +895,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 702 -p1 -R
 %patch -P 1023 -p1
 %endif
-%if %{with sharedgpures}
-%patch -P 1060 -p1
-%patch -P 1061 -p1
-%patch -P 1062 -p1
-%patch -P 1063 -p1
-%endif
 %patch -P 1026 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
@@ -924,7 +906,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1027 -p1
 %endif
 %patch -P 1028 -p1
-%patch -P 1056 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
 %endif
@@ -939,10 +920,8 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1035 -p1
 %patch -P 1036 -p1
 %patch -P 1037 -p1
+%patch -P 1038 -p1
 
-%dnl %patch -P 1093 -p1
-%dnl %patch -P 1089 -p1
-%dnl %patch -P 1094 -p1
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
 %patch -P 1301 -p1
@@ -1962,9 +1941,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdocvw.%{winedll}
 %{_libdir}/wine/%{winedlldir}/schedsvc.%{winedll}
-%if %{with sharedgpures}
-%{_libdir}/wine/%{winedlldir}/sharedgpures.%{winesys}
-%endif
 %{_libdir}/wine/%{winedlldir}/shell32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shfolder.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shlwapi.%{winedll}
@@ -2577,6 +2553,9 @@ fi
 
 
 %changelog
+* Sun Oct 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.19-100
+- 9.19
+
 * Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.18-100
 - 9.18
 

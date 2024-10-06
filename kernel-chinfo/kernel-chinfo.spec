@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.11.1
+%define specrpmversion 6.11.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1094,9 +1094,6 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch#/openSUSE-btrfs-8447-serialize-subvolume-mounts-with-potentially-mi.patch
-Patch1013: %{opensuse_url}/drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch#/openSUSE-drm-amd-display-Fix-Synaptics-Cascaded-DSC-Determina.patch
-Patch1014: %{opensuse_url}/drm-amd-display-Fix-a-typo-in-revert-commit.patch#/openSUSE-drm-amd-display-Fix-a-typo-in-revert-commit.patch
-Patch1015: %{opensuse_url}/block-Fix-elv_iosched_local_module-handling-of-none-.patch#/openSUSE-block-Fix-elv_iosched_local_module-handling-of-none-.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1135,6 +1132,10 @@ Patch7016:  %{pf_url}/58ad524e6417430891ce52a7c4e34df02a290224.patch#/pf-cb-58ad
 Patch7017:  %{pf_url}/9adca60db39f318eaf3173be19eb53445f63ec3c.patch#/pf-cb-9adca60.patch
 Patch7018:  %{pf_url}/e83728849386eab55ed1598e5e6ac3b499b61edd.patch#/pf-cb-e837288.patch
 Patch7019:  %{pf_url}/58f0f0d34fed59abb65cad43a4a2ad33cbe80bcb.patch#/pf-cb-58f0f0d.patch
+Patch7020:  %{pf_url}/fb42ff2c053b4b13c60ff059218d29a1bfe42392.patch#/pf-cb-fb42ff2.patch
+Patch7021:  %{pf_url}/321a1f9b074db9e2c04528055481926162e5ac38.patch#/pf-cb-321a1f9.patch
+Patch7022:  %{pf_url}/77714cb5114e286ea095e9ced3e891346eaea806.patch#/pf-cb-77714cb.patch
+Patch7023:  %{pf_url}/2d78bc2b89f61b4b46e8b9fc5323de125cec3caf.patch#/pf-cb-2d78bc2.patch
 # bbr3
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
@@ -2047,6 +2048,10 @@ ApplyPatch %{PATCH7016}
 ApplyPatch %{PATCH7017}
 ApplyPatch %{PATCH7018}
 ApplyPatch %{PATCH7019}
+ApplyPatch %{PATCH7020}
+ApplyPatch %{PATCH7021}
+ApplyPatch %{PATCH7022}
+ApplyPatch %{PATCH7023}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -2096,9 +2101,6 @@ ApplyPatch %{PATCH7516}
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 %dnl ApplyPatch %{PATCH1012}
-ApplyPatch %{PATCH1013}
-ApplyPatch %{PATCH1014}
-ApplyPatch %{PATCH1015}
 
 ApplyPatch %{PATCH2000}
 
@@ -4407,6 +4409,9 @@ fi\
 #
 #
 %changelog
+* Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.2-500.chinfo
+- 6.11.2
+
 * Mon Sep 30 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.1-500.chinfo
 - 6.11.1
 

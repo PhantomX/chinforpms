@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20240715");
+pref("chinfo.cfg.version", "20241004");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -19,6 +19,7 @@ pref("browser.download.manager.addToRecentDocs", false);
 pref("browser.helperApps.deleteTempFileOnExit", true);
 pref("browser.contentblocking.enabled", true);
 pref("browser.ctrlTab.previews", false);
+pref("browser.tabs.hoverPreview.enabled", false);
 pref("browser.fixup.alternate.enabled", false);
 pref("browser.fixup.hide_user_pass", true);
 pref("browser.link.open_newwindow", 3);
