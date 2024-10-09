@@ -82,7 +82,6 @@ VulkanMemoryAllocator-Hpp
 vulkan-tools
 
 # 5
-ada
 adriconf
 adwaita-qt
 -aisleriot

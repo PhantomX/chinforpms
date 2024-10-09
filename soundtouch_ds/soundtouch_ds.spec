@@ -1,6 +1,6 @@
-%global commit 463ade388f3a51da078dc9ed062bf28e4ba29da7
+%global commit b281fda49645c158c2085e1f2e0c3b82c84379ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240802
+%global date 20241001
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -8,7 +8,7 @@
 
 Name:           %{pkgname}_ds
 Version:        2.3.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Audio Processing library for changing Tempo, Pitch and Playback Rates
 
 License:        LGPL-2.1-or-later

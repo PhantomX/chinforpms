@@ -136,8 +136,8 @@ index 5d9eef5..a8f9e4a 100644
 --- a/src/core/gpu_hw_texture_cache.cpp
 +++ b/src/core/gpu_hw_texture_cache.cpp
 @@ -25,9 +25,11 @@
- 
  #define XXH_STATIC_LINKING_ONLY
+ #endif
  #include "xxhash.h"
 +#ifndef SYSTEM_XXHASH
  #ifdef CPU_ARCH_SSE

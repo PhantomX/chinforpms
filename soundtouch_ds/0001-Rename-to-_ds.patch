@@ -1,4 +1,4 @@
-From 694137b2ce0e8743d2f587f0396850b933a277ba Mon Sep 17 00:00:00 2001
+From 23786759d86a51ebc5d646cca19e2898ac3f8df2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Aug 2024 11:29:09 -0300
 Subject: [PATCH] Rename to _ds
@@ -9,7 +9,7 @@ Subject: [PATCH] Rename to _ds
  2 files changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1aec853..cd355cf 100644
+index d9bc15d..e2d34cc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,5 +1,5 @@
@@ -19,31 +19,33 @@ index 1aec853..cd355cf 100644
  set(CMAKE_CXX_STANDARD 17)
  
  include(GNUInstallDirs)
-@@ -69,7 +69,7 @@ install(
-     include/STTypes.h
-     include/SoundTouch.h
+@@ -72,7 +72,7 @@ install(
+     include/soundtouch/STTypes.h
+     include/soundtouch/SoundTouch.h
    DESTINATION
 -    "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch"
 +    "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch_ds"
  )
  
  
-@@ -88,12 +88,12 @@ if(SOUNDTOUCH_DLL)
-   target_compile_definitions(SoundTouchDLL PRIVATE DLL_EXPORTS)
-   target_include_directories(SoundTouchDLL PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+@@ -92,14 +92,14 @@ if(SOUNDTOUCH_DLL)
+   target_include_directories(SoundTouchDLL INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>)
+   target_include_directories(SoundTouchDLL PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/include/soundtouch")
    target_link_libraries(SoundTouchDLL PRIVATE SoundTouch)
 -  set_target_properties(SoundTouchDLL PROPERTIES OUTPUT_NAME "soundtouch")
 +  set_target_properties(SoundTouchDLL PROPERTIES OUTPUT_NAME "soundtouch_ds")
-   set_target_properties(SoundTouchDLL PROPERTIES VERSION ${CMAKE_PROJECT_VERSION})
-   if(NOT WIN32)
-     set_target_properties(SoundTouchDLL PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
+   if(NOT ANDROID)
+     set_target_properties(SoundTouchDLL PROPERTIES VERSION ${CMAKE_PROJECT_VERSION})
+     if(NOT WIN32)
+       set_target_properties(SoundTouchDLL PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
+     endif()
    endif()
--  install(FILES source/SoundTouchDLL/SoundTouchDLL.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch")
-+  install(FILES source/SoundTouchDLL/SoundTouchDLL.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch_ds")
+-  install(FILES include/soundtouch/SoundTouchDLL.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch")
++  install(FILES include/soundtouch/SoundTouchDLL.h DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/soundtouch_ds")
    install(TARGETS SoundTouchDLL EXPORT SoundTouchTargets)
  endif()
  
-@@ -101,25 +101,25 @@ endif()
+@@ -107,25 +107,25 @@ endif()
  
  # CMake config
  include(CMakePackageConfigHelpers)
@@ -77,7 +79,7 @@ index 1aec853..cd355cf 100644
    DESTINATION "${SOUNDTOUCH_INSTALL_CMAKEDIR}"
  )
 diff --git a/SoundTouchConfig.cmake.in b/SoundTouchConfig.cmake.in
-index 3e6ef89..b271cc2 100644
+index 3e6ef89..ef05a13 100644
 --- a/SoundTouchConfig.cmake.in
 +++ b/SoundTouchConfig.cmake.in
 @@ -1,11 +1,11 @@
@@ -95,5 +97,5 @@ index 3e6ef89..b271cc2 100644
    message(STATUS "Found SoundTouchDLL: ${SoundTouchDLL_LOCATION}")
  endif()
 -- 
-2.45.2
+2.46.2
 

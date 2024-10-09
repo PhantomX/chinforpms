@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 75babc74cb3949de6f5f18f47490d816a7e38b38
+%global commit fb7dd7bc698b0bf8222efdd4dbbf826b2ff441e7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240929
+%global date 20241008
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7646
+Version:        0.1.7676
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -142,6 +142,7 @@ Provides:       bundled(minizip) = %{minizip_ver}
 %endif
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.279
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %endif
 
 BuildRequires:  desktop-file-utils
@@ -239,8 +240,9 @@ cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
 %endif
 
 %if %{with vulkan}
-  mkdir -p ../src/vulkan
-  mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
+%dnl  mkdir -p ../src/vulkan
+%dnl  mv vulkan/include/vulkan/vk_mem_alloc.h ../src/vulkan/
+  sed -e '/vk_mem_alloc\.h/s|vulkan\/||' -i ../src/util/vulkan_loader.h
   rm -rf vulkan
 %else
   sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt

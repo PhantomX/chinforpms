@@ -1,0 +1,28 @@
+From bbcea558408850ad5665eed1d461026dc561e395 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 8 Oct 2024 17:58:37 -0300
+Subject: [PATCH] ltdp: 0002 fixup 2
+
+---
+ Telegram/SourceFiles/core/click_handler_types.cpp | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/Telegram/SourceFiles/core/click_handler_types.cpp b/Telegram/SourceFiles/core/click_handler_types.cpp
+index be140e2..b6579f4 100644
+--- a/Telegram/SourceFiles/core/click_handler_types.cpp
++++ b/Telegram/SourceFiles/core/click_handler_types.cpp
+@@ -366,11 +366,6 @@ void MonospaceClickHandler::onClick(ClickContext context) const {
+ 		return;
+ 	}
+ 	const auto my = context.other.value<ClickHandlerContext>();
+-	if (const auto controller = my.sessionWindow.get()) {
+-		auto &data = controller->session().data();
+-		const auto item = data.message(my.itemId);
+-		controller->showToast(tr::lng_text_copied(tr::now));
+-	}
+ 	TextUtilities::SetClipboardText(TextForMimeData::Simple(_text.trimmed()));
+ }
+ 
+-- 
+2.46.2
+

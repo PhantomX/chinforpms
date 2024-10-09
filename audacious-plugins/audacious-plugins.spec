@@ -21,7 +21,7 @@
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
 Version:        4.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
@@ -335,6 +335,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-101
+- Rebuild (ffmpeg)
+
 * Wed Jun 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-100
 - 4.4
 

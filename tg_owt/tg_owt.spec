@@ -33,7 +33,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        138%{?dist}
+Release:        139%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -54,6 +54,7 @@ Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcnam
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
+Patch10:        %{url}/pull/128.patch#/%{name}-gh-pr128.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 
 %if %{with absl}
@@ -304,6 +305,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 0-139.20240804gitdc17143
+- Rebuild (ffmpeg)
+
 * Sat May 13 2023 Phantom X <megaphantomx at hotmail dot com> - 0-131.20230501gitdcb5069
 - System openh264
 

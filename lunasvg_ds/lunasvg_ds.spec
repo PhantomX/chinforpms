@@ -1,6 +1,6 @@
-%global commit 9af1ac7b90658a279b372add52d6f77a4ebb482c
+%global commit 70b2fc188ae9628f4313335a0d628eef10c842dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240825
+%global date 20241001
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -9,7 +9,7 @@
 
 Name:           %{pkgname}_ds
 Version:        2.4.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Standalone SVG rendering library in C++
 
 License:        MIT AND FTL
@@ -17,7 +17,7 @@ URL:            https://github.com/stenzek/%{pkgname}
 
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
-Patch0:         0001-Rename-to-patched.patch
+Patch0:         0001-Rename-to-_ds.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build

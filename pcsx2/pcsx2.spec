@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.1.177
+Version:        2.1.193
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -146,7 +146,7 @@ BuildRequires:  cmake(ryml) >= %{rapidyml_ver}
 %else
 Provides:       bundled(rapidyml) = %{rapidyml_ver}
 %endif
-BuildRequires:  cmake(Qt6Core) >= 6.7
+BuildRequires:  cmake(Qt6Core) >= 6.7.2
 BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6GuiTools)
@@ -176,7 +176,8 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.287
+BuildRequires:  cmake(VulkanHeaders) >= 1.3.296
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  gettext
@@ -263,7 +264,7 @@ cp -p soundtouch/COPYING.TXT COPYING.soundtouch
 %endif
 
 %if %{with vulkan}
-mv vulkan/include/vk_mem_alloc.h ../
+%dnl mv vulkan/include/vk_mem_alloc.h ../
 rm -rf vulkan
 %else
 tar -xf %{S:12} -C vulkan-headers --strip-components 1

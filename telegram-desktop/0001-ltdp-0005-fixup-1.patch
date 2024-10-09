@@ -1,0 +1,24 @@
+From 08425ac5249a54302880764fdee9447a63a1fd9e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 8 Oct 2024 18:01:26 -0300
+Subject: [PATCH] ltdp: 0005 fixup 1
+
+---
+ Telegram/SourceFiles/data/data_stories.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Telegram/SourceFiles/data/data_stories.cpp b/Telegram/SourceFiles/data/data_stories.cpp
+index 0d9671f..f0c1d03 100644
+--- a/Telegram/SourceFiles/data/data_stories.cpp
++++ b/Telegram/SourceFiles/data/data_stories.cpp
+@@ -7,6 +7,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+ */
+ #include "data/data_stories.h"
+ 
++#include "api/api_report.h"
+ #include "base/unixtime.h"
+ #include "apiwrap.h"
+ #include "core/application.h"
+-- 
+2.46.2
+

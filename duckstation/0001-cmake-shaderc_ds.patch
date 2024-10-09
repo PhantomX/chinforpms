@@ -35,12 +35,12 @@ index b57d72d..7bff73b 100644
 @@ -171,7 +171,7 @@ endif()
  
  if(ENABLE_VULKAN OR APPLE)
-   # shaderc is loaded dynamically to reduce module loads on startup.
+   # shaderc/spirv-cross is loaded dynamically to reduce module loads on startup.
 -  get_target_property(SHADERC_INCLUDE_DIR Shaderc::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
 +  get_target_property(SHADERC_INCLUDE_DIR Shaderc_ds::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
-   target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR})
+   get_target_property(SPIRV_CROSS_INCLUDE_DIR spirv-cross-c-shared INTERFACE_INCLUDE_DIRECTORIES)
+   target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR} ${SPIRV_CROSS_INCLUDE_DIR})
  endif()
- 
 diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
 index 3ab0120..e3bfdc6 100644
 --- a/src/util/gpu_device.cpp
@@ -51,7 +51,7 @@ index 3ab0120..e3bfdc6 100644
  #include "imgui.h"
 -#include "shaderc/shaderc.h"
 +#include "shaderc_ds/shaderc.h"
- #include "spirv_cross/spirv_cross_c.h"
+ #include "spirv_cross_c.h"
  #include "xxhash.h"
  
 @@ -1308,7 +1308,7 @@ bool dyn_libs::OpenShaderc(Error* error)

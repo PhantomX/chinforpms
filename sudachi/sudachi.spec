@@ -13,10 +13,10 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ee365bad9501c73ff49936e72ec91cd9c3ce5c24
+%global commit dfb9f06e5c46f251e4208adf1d4861e85b1d5eea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241006
-%bcond_without snapshot
+%global date 20240418
+%bcond_with snapshot
 
 # Enable system boost
 %bcond_without boost
@@ -25,7 +25,7 @@
 # Enable system ffmpeg
 %bcond_without ffmpeg
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -37,6 +37,7 @@
 %bcond_without vma
 # Enable webservice
 %bcond_without webservice
+%bcond_without vma
 
 %global commit1 07c614f91b0af5335e1f9c0653c2d75e7b5f53bd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -89,7 +90,7 @@
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://git.suyu.dev/suyu
+%global vc_url   https://github.com/emuplace/sudachi.emuplace.app
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -97,20 +98,20 @@
 %global shortcommit 0
 %endif
 
-%global appname dev.suyu_emu.%{name}
+%global appname org.sudachi_emu.%{name}
 
-Name:           suyu
-Version:        0.0.3
-Release:        3%{?dist}
-Summary:        A Nintendo Switch Emulator
+Name:           sudachi
+Version:        1.0.11
+Release:        1%{?dist}
+Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
-URL:            https://suyu-emu.org
+URL:            https://sudachi.emuplace.app/
 
 %if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
+Source0:        %{vc_url}/releases/download/v%{version}/latest.zip#/%{name}-%{version}.zip
 %endif
 
 %if %{without dynarmic}
@@ -138,12 +139,11 @@ Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{src
 Source12:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
 
-%dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
-
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Fix-48e86d6.patch
 Patch13:        0001-Bundled-fmt-support.patch
+Patch14:        0001-video_core-system-ffmpeg-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -178,7 +178,7 @@ BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 %if %{with fmt}
-BuildRequires:  cmake(fmt) >= 11
+BuildRequires:  cmake(fmt) >= 9
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
@@ -249,27 +249,29 @@ Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
 Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit9}
 
-Obsoletes:      yuzu < 9999
-
 
 %description
-suyu is an open-source Nintendo Switch emulator written in C++.
+suyu is an open-source NX emulator written in C++.
 
 
 %package qt
-Summary:        A Nintendo Switch Emulator (Qt frontend)
+Summary:        A NX Emulator (Qt frontend)
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       hicolor-icon-theme
-Obsoletes:      yuzu-qt < 9999
 
 %description qt
-suyu is an open-source Nintendo Switch emulator written in C++.
+suyu is an open-source NX emulator written in C++.
 
 This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{name} -N -p1
+%autosetup -c -N -p1
+
+find \( -name '*.txt' -or -name '*.cmake' -or -name '*.md' -or -name '*.xml' \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.desktop' -or -name '*.rules' -or -name '*.theme' \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.c*' -or -name '*.h*' -or -name '*.qrc' -or -name '*.json' \) -exec sed -i 's/\r$//' {} \;
+
 %autopatch -M 499 -p1
 
 pushd externals
@@ -374,7 +376,7 @@ sed \
 
 sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 
-%dnl cp -f %{S:20} dist/compatibility_list/
+sed '/create_target_directory_groups/d' -i externals/glad/CMakeLists.txt
 
 
 %build
@@ -390,22 +392,22 @@ sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-  -DSUYU_CHECK_SUBMODULES:BOOL=OFF \
-  -DSUYU_ENABLE_PORTABLE:BOOL=OFF \
-  -DSUYU_ROOM:BOOL=ON \
-  -DSUYU_USE_FASTER_LD:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+  -DSUDACHI_CHECK_SUBMODULES:BOOL=OFF \
+  -DSUDACHI_ENABLE_PORTABLE:BOOL=OFF \
+  -DSUDACHI_ROOM:BOOL=ON \
+  -DSUDACHI_USE_FASTER_LD:BOOL=OFF \
+  -DSUDACHI_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DSUDACHI_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DSUDACHI_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
 %if %{with ffmpeg}
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=OFF \
+  -DSUDACHI_USE_BUNDLED_FFMPEG:BOOL=OFF \
 %else
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=ON \
+  -DSUDACHI_USE_BUNDLED_FFMPEG:BOOL=ON \
 %endif
-  -DSUYU_USE_BUNDLED_LIBUSB:BOOL=OFF \
-  -DSUYU_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DSUYU_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?with_tests:-DSUYU_TESTS:BOOL=OFF} \
+  -DSUDACHI_USE_BUNDLED_LIBUSB:BOOL=OFF \
+  -DSUDACHI_USE_BUNDLED_OPUS:BOOL=OFF \
+  -DSUDACHI_USE_QT_WEB_ENGINE:BOOL=ON \
+  %{!?with_tests:-DSUDACHI_TESTS:BOOL=OFF} \
 %if %{without webservice}
   -DENABLE_WEB_SERVICE:BOOL=OFF \
 %endif
@@ -436,7 +438,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %files
-%license LICENSE.txt externals/LICENSE.*
+%license LICENSE.md externals/LICENSE.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %{_bindir}/%{name}-room
@@ -445,7 +447,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 %if %{with qt}
 %files qt
-%license LICENSE.txt
+%license LICENSE.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
@@ -456,18 +458,5 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-2.20240418gitdfb9f06
-- fmt switch
-
-* Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-1.20240418gitdfb9f06
-- 0.0.3
-
-* Sat Mar 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-4.20240330git48e86d6
-- Qt6
-
-* Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-1.20240319gitfec573f
-- 0.0.2
-
-* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20240309gitd02af37
+* Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.11-1
 - Initial spec
-

@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 0ec72a122de5839ea50970835c29045b30386810
+%global commit 7d00f47c5ead75db0a9f24d70aa4b609e85125d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240915
+%global date 20240928
 %bcond_without snapshot
 
 # Enable system boost
@@ -118,7 +118,7 @@
 %global vc_url  https://github.com/PabloMK7
 
 Name:           citra
-Version:        0.10107
+Version:        0.10112
 Release:        1%{?dist}
 Epoch:          1
 Summary:        A Nintendo 3DS Emulator
@@ -168,6 +168,7 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %dnl Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
+Patch11:        https://github.com/PabloMK7/citra/pull/248.patch#/%{name}-gh-pr278.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build

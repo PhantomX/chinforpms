@@ -1,0 +1,29 @@
+From 8fdf2d242f04bfb8c4d2498082ebacff1c938f99 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Sep 2024 23:02:16 -0300
+Subject: [PATCH] Bundled fmt support
+
+---
+ CMakeLists.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 0911893..d83b0bb 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -395,6 +395,12 @@ endfunction(set_sudachi_qt_components)
+ 
+ add_subdirectory(externals)
+ 
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
++add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
++endif()
++
+ # Qt5 requires that we find components, so it doesn't fit our pretty little find package function
+ if(ENABLE_QT)
+     set(QT_VERSION 5.15)
+-- 
+2.46.2
+
