@@ -31,6 +31,7 @@ mesa-libGL-xlib
 -mingw-winpthreads
 ntsync
 SDL1
+SDL2
 -sdl12-compat
 -sdlcl
 shaderc

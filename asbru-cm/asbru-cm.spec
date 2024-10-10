@@ -1,6 +1,6 @@
-%global commit 8dce5689a0d733d9e3329ad6de2ca0c93e0fc3e2
+%global commit f428765d9e0d46375b7f2bfde77b6ea1845eaf0b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20221112
+%global date 20240823
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -15,7 +15,7 @@ BuildArch:      noarch
 
 Name:           asbru-cm
 Version:        6.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPL-3.0-or-later

@@ -1,48 +1,35 @@
-%?mingw_package_header
-
-#%%global snapshot_date 20160204
-#%%global snapshot_rev 38410ad06264949efcb331f7a63575c6be31c5e4
-#%%global snapshot_rev_short %%(echo %%snapshot_rev | cut -c1-6)
-#%%global branch trunk
-
-#%%global pre rc2
-
-# Set this to zero when mingw-gcc bootstrap is completed
-%global bootstrap 0
+%global mingw_build_ucrt64 1
+%{?mingw_package_header}
 
 # Run the testsuite
 %global enable_tests 0
 
 Name:           mingw-winpthreads
-Version:        10.0.0
+Version:        12.0.0
 Release:        100%{?dist}
 Summary:        MinGW pthread library
 
 # The main license of winpthreads is MIT, but parts of this library
 # are derived from the "Posix Threads library for Microsoft Windows"
 # http://locklessinc.com/articles/pthreads_on_windows/
-License:        MIT and BSD
+License:        BSD-3-Clause AND MIT AND LicenseRef-Fedora-Public-Domain
 URL:            http://mingw-w64.sourceforge.net/
-%if 0%{?snapshot_date}
-# To regenerate a snapshot:
-# Use your regular webbrowser to open https://sourceforge.net/p/mingw-w64/mingw-w64/ci/%{snapshot_rev}/tarball
-# This triggers the SourceForge instructure to generate a snapshot
-# After that you can pull in the archive with:
-# spectool -g mingw-headers.spec
-Source0:        http://sourceforge.net/code-snapshots/git/m/mi/mingw-w64/mingw-w64.git/mingw-w64-mingw-w64-%{snapshot_rev}.zip
-%else
 Source0:        http://downloads.sourceforge.net/mingw-w64/mingw-w64-v%{version}%{?pre:-%{pre}}.tar.bz2
-%endif
 
 BuildArch:      noarch
 
 BuildRequires:  make
-BuildRequires:  mingw32-filesystem >= 132
-BuildRequires:  mingw64-filesystem >= 132
+BuildRequires:  mingw32-filesystem >= 133
 BuildRequires:  mingw32-gcc-c++
-BuildRequires:  mingw64-gcc-c++
 BuildRequires:  mingw32-crt
+
+BuildRequires:  mingw64-filesystem >= 133
+BuildRequires:  mingw64-gcc-c++
 BuildRequires:  mingw64-crt
+
+BuildRequires:  ucrt64-filesystem >= 133
+BuildRequires:  ucrt64-gcc-c++
+BuildRequires:  ucrt64-crt
 
 %if 0%{?enable_tests}
 BuildRequires:  wine-wow
@@ -63,12 +50,10 @@ Win32 does not, and is unlikely to ever, support pthreads
 natively. This project seeks to provide a freely available and
 high-quality solution to this problem.
 
+
 # Win32
 %package -n mingw32-winpthreads
 Summary:        MinGW pthread library for the win32 target
-Obsoletes:      mingw32-pthreads < 2.8.0-25.20110511cvs
-Provides:       mingw32-pthreads = 2.8.0-25.20110511cvs
-Conflicts:      mingw32-headers < 2.0.999-0.22.trunk.20130428
 
 %description -n mingw32-winpthreads
 The POSIX 1003.1-2001 standard defines an application programming
@@ -84,21 +69,19 @@ Win32 does not, and is unlikely to ever, support pthreads
 natively. This project seeks to provide a freely available and
 high-quality solution to this problem.
 
+
 %package -n mingw32-winpthreads-static
 Summary:        Static version of the MinGW Windows pthreads library
 Requires:       mingw32-winpthreads = %{version}-%{release}
-Obsoletes:      mingw32-pthreads-static < 2.8.0-25.20110511cvs
-Provides:       mingw32-pthreads-static = 2.8.0-25.20110511cvs
 
 %description -n mingw32-winpthreads-static
 Static version of the MinGW Windows pthreads library.
+
 
 # Win64
 %package -n mingw64-winpthreads
 Summary:        MinGW pthread library for the win64 target
 Obsoletes:      mingw64-pthreads < 2.8.0-25.20110511cvs
-Provides:       mingw64-pthreads = 2.8.0-25.20110511cvs
-Conflicts:      mingw64-headers < 2.0.999-0.22.trunk.20130428
 
 %description -n mingw64-winpthreads
 The POSIX 1003.1-2001 standard defines an application programming
@@ -114,47 +97,70 @@ Win32 does not, and is unlikely to ever, support pthreads
 natively. This project seeks to provide a freely available and
 high-quality solution to this problem.
 
+
 %package -n mingw64-winpthreads-static
 Summary:        Static version of the MinGW Windows pthreads library
 Requires:       mingw64-winpthreads = %{version}-%{release}
-Obsoletes:      mingw64-pthreads-static < 2.8.0-25.20110511cvs
-Provides:       mingw64-pthreads-static = 2.8.0-25.20110511cvs
 
 %description -n mingw64-winpthreads-static
 Static version of the MinGW Windows pthreads library.
 
 
-%?mingw_debug_package
+%package -n ucrt64-winpthreads
+Summary:        MinGW pthread library for the win64 target
+
+%description -n ucrt64-winpthreads
+The POSIX 1003.1-2001 standard defines an application programming
+interface (API) for writing multithreaded applications. This interface
+is known more commonly as pthreads. A good number of modern operating
+systems include a threading library of some kind: Solaris (UI)
+threads, Win32 threads, DCE threads, DECthreads, or any of the draft
+revisions of the pthreads standard. The trend is that most of these
+systems are slowly adopting the pthreads standard API, with
+application developers following suit to reduce porting woes.
+
+Win32 does not, and is unlikely to ever, support pthreads
+natively. This project seeks to provide a freely available and
+high-quality solution to this problem.
+
+
+%package -n ucrt64-winpthreads-static
+Summary:        Static version of the MinGW Windows pthreads library
+Requires:       ucrt64-winpthreads = %{version}-%{release}
+
+%description -n ucrt64-winpthreads-static
+Static version of the MinGW Windows pthreads library.
+
+%{?mingw_debug_package}
 
 
 %prep
-%if 0%{?snapshot_date}
-rm -rf mingw-w64-v%{version}
-mkdir mingw-w64-v%{version}
-cd mingw-w64-v%{version}
-unzip %{S:0}
-%autosetup -p1 -D -T -n mingw-w64-v%{version}/mingw-w64-mingw-w64-%{snapshot_rev}
-%else
 %autosetup -p1 -n mingw-w64-v%{version}%{?pre:-%{pre}}
-%endif
 
 
 %build
-%if 0%{bootstrap}
-    MINGW32_CFLAGS="-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions"
-    MINGW32_LDFLAGS=" "
-    MINGW64_CFLAGS="-O2 -g -pipe -Wall -Wp,-D_FORTIFY_SOURCE=2 -fexceptions"
-    MINGW64_LDFLAGS=" "
-%endif
-
 pushd mingw-w64-libraries/winpthreads
+    # Filter out -fstack-protector and -lssp from LDFLAGS as libssp is not yet potentially built with the bootstrap gcc
+    export MINGW32_CONFIGURE_ARGS="--with-default-msvcrt=msvcrt"
+    export MINGW64_CONFIGURE_ARGS="--with-default-msvcrt=msvcrt"
+    export UCRT64_CONFIGURE_ARGS="--with-default-msvcrt=ucrt" 
+    MINGW32_LDFLAGS="`echo %{mingw32_ldflags} | sed 's|-fstack-protector||' | sed 's|-lssp||'`"
+    MINGW64_LDFLAGS="`echo %{mingw64_ldflags} | sed 's|-fstack-protector||' | sed 's|-lssp||'`"
+    UCRT64_LDFLAGS="`echo %{ucrt64_ldflags} | sed 's|-fstack-protector||' | sed 's|-lssp||'`"
     %mingw_configure
-    %mingw_make %{?smp_mflags}
+    %mingw_make_build
 popd
 
 
-%if 0%{?enable_tests}
+%install
+pushd mingw-w64-libraries/winpthreads
+    %mingw_make_install
+popd
+# Drop all .la files
+find %{buildroot} -name "*.la" -delete
 
+
+%if 0%{?enable_tests}
 %check
 # Prepare a wine prefix
 export WINEPREFIX=/tmp/wine-winpthreads
@@ -169,17 +175,7 @@ popd
 # Clean up the wine prefix
 wineserver --kill || :
 rm -rf /tmp/wine-winpthreads
-
 %endif
-
-
-%install
-pushd mingw-w64-libraries/winpthreads
-    %mingw_make install DESTDIR=$RPM_BUILD_ROOT
-popd
-
-# Drop all .la files
-find $RPM_BUILD_ROOT -name "*.la" -delete
 
 
 # Win32
@@ -218,25 +214,89 @@ find $RPM_BUILD_ROOT -name "*.la" -delete
 %{mingw64_libdir}/libwinpthread.a
 %{mingw64_libdir}/libpthread.a
 
+# ucrt64
+%files -n ucrt64-winpthreads
+%license COPYING
+%{ucrt64_bindir}/libwinpthread-1.dll
+%{ucrt64_libdir}/libwinpthread.dll.a
+%{ucrt64_libdir}/libpthread.dll.a
+%{ucrt64_includedir}/pthread.h
+%{ucrt64_includedir}/pthread_compat.h
+%{ucrt64_includedir}/pthread_signal.h
+%{ucrt64_includedir}/pthread_time.h
+%{ucrt64_includedir}/pthread_unistd.h
+%{ucrt64_includedir}/sched.h
+%{ucrt64_includedir}/semaphore.h
+
+%files -n ucrt64-winpthreads-static
+%{ucrt64_libdir}/libwinpthread.a
+%{ucrt64_libdir}/libpthread.a
+
 
 %changelog
-* Sat Apr 09 2022 Phantom X <megaphantomx at hotmail dot com> - 10.0.0-100
-- 10.0.0
+* Thu Sep 26 2024 Phantom X <megaphantomx at hotmail dot com> - 12.0.0-100
+- Pass --with-default-msvcrt= when building
 
-* Mon May 24 2021 Phantom X <megaphantomx at hotmail dot com> - 9.0.0-100
-- 9.0.0
+* Thu Jul 18 2024 Fedora Release Engineering <releng@fedoraproject.org> - 12.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
-* Sat May 01 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-103
-- Rebuild
+* Tue Jul 16 2024 Sandro Mani <manisandro@gmail.com> - 12.0.0-1
+- Update to 12.0.0
 
-* Sun Jan 31 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-102
-- Another rebuild
+* Thu Jan 25 2024 Fedora Release Engineering <releng@fedoraproject.org> - 11.0.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
-* Fri Jan 29 2021 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-101
-- Rebuild
+* Sun Jan 21 2024 Fedora Release Engineering <releng@fedoraproject.org> - 11.0.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
-* Wed Oct 07 2020 Phantom X <megaphantomx at hotmail dot com> - 8.0.0-100
-- 8.0.0
+* Thu Aug 17 2023 Sandro Mani <manisandro@gmail.com> - 11.0.1-1
+- Update to 11.0.1
+
+* Thu Jul 20 2023 Fedora Release Engineering <releng@fedoraproject.org> - 11.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
+* Sun Apr 30 2023 Sandro Mani <manisandro@gmail.com> - 11.0.0-1
+- Update to 11.0.0
+
+* Thu Jan 19 2023 Fedora Release Engineering <releng@fedoraproject.org> - 10.0.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
+
+* Wed May 04 2022 Sandro Mani <manisandro@gmail.com> - 10.0.0-2
+- Rebuild for standard dll provides move to mingw-crt
+- Spec cleanups
+
+* Tue Apr 26 2022 Sandro Mani <manisandro@gmail.com> - 10.0.0-1
+- Update to 10.0.0
+
+* Fri Mar 25 2022 Sandro Mani <manisandro@gmail.com> - 9.0.0-7
+- Rebuild with mingw-gcc-12
+
+* Fri Mar 25 2022 Sandro Mani <manisandro@gmail.com> - 9.0.0-6
+- Rebuild with gcc-12
+
+* Wed Feb 23 2022 Marc-André Lureau <marcandre.lureau@redhat.com> - 9.0.0-5
+- Add ucrt64 target (bootstrap=0)
+
+* Wed Feb 23 2022 Marc-André Lureau <marcandre.lureau@redhat.com> - 9.0.0-4
+- Add ucrt64 target (bootstrap=1)
+
+* Thu Jan 20 2022 Fedora Release Engineering <releng@fedoraproject.org> - 9.0.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Thu Jul 22 2021 Fedora Release Engineering <releng@fedoraproject.org> - 9.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Fri Jul 09 2021 Sandro Mani <manisandro@gmail.com> - 9.0.0-1
+- Update to 9.0.0
+
+* Mon May 17 2021 Sandro Mani <manisandro@gmail.com> - 8.0.2-1
+- Update to 8.0.2
+
+* Tue Jan 26 2021 Fedora Release Engineering <releng@fedoraproject.org> - 8.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Tue Jan 19 2021 Sandro Mani <manisandro@gmail.com> - 8.0.0-1
+- Update to 8.0.0
 
 * Tue Jul 28 2020 Fedora Release Engineering <releng@fedoraproject.org> - 7.0.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
