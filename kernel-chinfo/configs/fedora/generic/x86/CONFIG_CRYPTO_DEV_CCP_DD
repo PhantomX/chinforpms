@@ -1,0 +1,3 @@
+# this must be builtin to match Fedora's I2C_DESIGNWARE_PLATFORM=y so that
+# I2C_DESIGNWARE_AMDPSP becomes available
+CONFIG_CRYPTO_DEV_CCP_DD=y

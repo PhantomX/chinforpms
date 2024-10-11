@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.11.2
+%define specrpmversion 6.11.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 4df1650393a6e227b2f72ae9e6845e8399c5ea15
-%global opensuse_id 3bf25fe62a6fa6917b82db7062fe69fec6167460
+%global opensuse_id 006a2b4f54ea8081d692c34fd38bd1c2b57d8bd1
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1114,7 +1114,6 @@ Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 %if 0%{?post_factum}
 # amd-pstate
 Patch7001:  %{pf_url}/5accbf67315bb0dba7773bf3a39ade67c92a5101.patch#/pf-cb-5accbf6.patch
-Patch7002:  %{pf_url}/09bab14655e4f48b8b7bdb773d1da0068e56fcb1.patch#/pf-cb-09bab14.patch
 Patch7003:  %{pf_url}/f5040487ec2555f2979c8224d71f60724f43d46b.patch#/pf-cb-f504048.patch
 Patch7004:  %{pf_url}/0bfe420823e276ce9f9ab1f650db2635fa3b4547.patch#/pf-cb-0bfe420.patch
 Patch7005:  %{pf_url}/ce532ff561718c026287f57eb06d1dbba923935a.patch#/pf-cb-ce532ff.patch
@@ -1142,8 +1141,7 @@ Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b
 Patch7100:  %{pf_url}/bc7075c316e3c89986cdc0df145d8753ba73c731.patch#/pf-cb-bc7075c.patch
 Patch7101:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fafd3.patch
 Patch7102:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
-Patch7103:  %{pf_url}/561ac317b5ed031cf566ea886e0a70dc10bd4f71.patch#/pf-cb-561ac31.patch
-Patch7104:  %{pf_url}/fe103e4b63af38f294a63b19753a70b3adfa74a7.patch#/pf-cb-fe103e4.patch
+Patch7103:  %{pf_url}/585c713c3232c35848cbd5b11c295e8ee938b5b1.patch#/pf-cb-585c713.patch
 # zstd
 Patch7200:  %{pf_url}/5cb1b6e0be8548c2e6a34202becd539c13fdb91f.patch#/pf-cb-5cb1b6e.patch
 Patch7201:  %{pf_url}/79c6f85410667790f173edf3822a6258942fe4d3.patch#/pf-cb-79c6f85.patch
@@ -2030,7 +2028,6 @@ ApplyOptionalPatch %{PATCH999999}
 %if 0%{?post_factum}
 # amd-pstate
 ApplyPatch %{PATCH7001}
-ApplyPatch %{PATCH7002}
 ApplyPatch %{PATCH7003}
 ApplyPatch %{PATCH7004}
 ApplyPatch %{PATCH7005}
@@ -2059,7 +2056,6 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
-ApplyPatch %{PATCH7104}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4409,6 +4405,9 @@ fi\
 #
 #
 %changelog
+* Thu Oct 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.3-500.chinfo
+- 6.11.3
+
 * Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.2-500.chinfo
 - 6.11.2
 

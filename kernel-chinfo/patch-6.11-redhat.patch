@@ -19,10 +19,13 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
+ drivers/hid/amd-sfh-hid/amd_sfh_client.c           |  14 +-
+ drivers/hid/hid-lenovo.c                           |   8 +
  drivers/hid/hid-rmi.c                              |  66 -----
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
  drivers/iommu/iommu.c                              |  22 ++
+ drivers/net/wireless/realtek/rtw89/pci.c           |  48 +++-
  drivers/pci/quirks.c                               |  24 ++
  drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
@@ -766,6 +769,105 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
+diff --git a/drivers/hid/amd-sfh-hid/amd_sfh_client.c b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+index 4b59687ff5d8..3438d392920f 100644
+--- a/drivers/hid/amd-sfh-hid/amd_sfh_client.c
++++ b/drivers/hid/amd-sfh-hid/amd_sfh_client.c
+@@ -236,9 +236,9 @@ int amd_sfh_hid_client_init(struct amd_mp2_dev *privdata)
+ 	cl_data->in_data = in_data;
+ 
+ 	for (i = 0; i < cl_data->num_hid_devices; i++) {
+-		in_data->sensor_virt_addr[i] = dma_alloc_coherent(dev, sizeof(int) * 8,
+-								  &cl_data->sensor_dma_addr[i],
+-								  GFP_KERNEL);
++		in_data->sensor_virt_addr[i] = dmam_alloc_coherent(dev, sizeof(int) * 8,
++								   &cl_data->sensor_dma_addr[i],
++								   GFP_KERNEL);
+ 		if (!in_data->sensor_virt_addr[i]) {
+ 			rc = -ENOMEM;
+ 			goto cleanup;
+@@ -331,7 +331,6 @@ int amd_sfh_hid_client_init(struct amd_mp2_dev *privdata)
+ int amd_sfh_hid_client_deinit(struct amd_mp2_dev *privdata)
+ {
+ 	struct amdtp_cl_data *cl_data = privdata->cl_data;
+-	struct amd_input_data *in_data = cl_data->in_data;
+ 	int i, status;
+ 
+ 	for (i = 0; i < cl_data->num_hid_devices; i++) {
+@@ -351,12 +350,5 @@ int amd_sfh_hid_client_deinit(struct amd_mp2_dev *privdata)
+ 	cancel_delayed_work_sync(&cl_data->work_buffer);
+ 	amdtp_hid_remove(cl_data);
+ 
+-	for (i = 0; i < cl_data->num_hid_devices; i++) {
+-		if (in_data->sensor_virt_addr[i]) {
+-			dma_free_coherent(&privdata->pdev->dev, 8 * sizeof(int),
+-					  in_data->sensor_virt_addr[i],
+-					  cl_data->sensor_dma_addr[i]);
+-		}
+-	}
+ 	return 0;
+ }
+diff --git a/drivers/hid/hid-lenovo.c b/drivers/hid/hid-lenovo.c
+index e5e72aa5260a..24654c7ecb04 100644
+--- a/drivers/hid/hid-lenovo.c
++++ b/drivers/hid/hid-lenovo.c
+@@ -473,6 +473,7 @@ static int lenovo_input_mapping(struct hid_device *hdev,
+ 		return lenovo_input_mapping_tp10_ultrabook_kbd(hdev, hi, field,
+ 							       usage, bit, max);
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		return lenovo_input_mapping_x1_tab_kbd(hdev, hi, field, usage, bit, max);
+ 	default:
+ 		return 0;
+@@ -583,6 +584,7 @@ static ssize_t attr_fn_lock_store(struct device *dev,
+ 		break;
+ 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		ret = lenovo_led_set_tp10ubkbd(hdev, TP10UBKBD_FN_LOCK_LED, value);
+ 		if (ret)
+ 			return ret;
+@@ -776,6 +778,7 @@ static int lenovo_event(struct hid_device *hdev, struct hid_field *field,
+ 		return lenovo_event_cptkbd(hdev, field, usage, value);
+ 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		return lenovo_event_tp10ubkbd(hdev, field, usage, value);
+ 	default:
+ 		return 0;
+@@ -1056,6 +1059,7 @@ static int lenovo_led_brightness_set(struct led_classdev *led_cdev,
+ 		break;
+ 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		ret = lenovo_led_set_tp10ubkbd(hdev, tp10ubkbd_led[led_nr], value);
+ 		break;
+ 	}
+@@ -1286,6 +1290,7 @@ static int lenovo_probe(struct hid_device *hdev,
+ 		break;
+ 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		ret = lenovo_probe_tp10ubkbd(hdev);
+ 		break;
+ 	default:
+@@ -1372,6 +1377,7 @@ static void lenovo_remove(struct hid_device *hdev)
+ 		break;
+ 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
+ 	case USB_DEVICE_ID_LENOVO_X1_TAB:
++	case USB_DEVICE_ID_LENOVO_X1_TAB3:
+ 		lenovo_remove_tp10ubkbd(hdev);
+ 		break;
+ 	}
+@@ -1421,6 +1427,8 @@ static const struct hid_device_id lenovo_devices[] = {
+ 	 */
+ 	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
+ 		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X1_TAB) },
++	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
++		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X1_TAB3) },
+ 	{ }
+ };
+ 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1151,6 +1253,90 @@ index ed6c5cb60c5a..70cb770b78bb 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/net/wireless/realtek/rtw89/pci.c b/drivers/net/wireless/realtek/rtw89/pci.c
+index 02afeb3acce4..5aef7fa37878 100644
+--- a/drivers/net/wireless/realtek/rtw89/pci.c
++++ b/drivers/net/wireless/realtek/rtw89/pci.c
+@@ -3026,24 +3026,54 @@ static void rtw89_pci_declaim_device(struct rtw89_dev *rtwdev,
+ 	pci_disable_device(pdev);
+ }
+ 
+-static void rtw89_pci_cfg_dac(struct rtw89_dev *rtwdev)
++static bool rtw89_pci_chip_is_manual_dac(struct rtw89_dev *rtwdev)
+ {
+-	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
+ 	const struct rtw89_chip_info *chip = rtwdev->chip;
+ 
+-	if (!rtwpci->enable_dac)
+-		return;
+-
+ 	switch (chip->chip_id) {
+ 	case RTL8852A:
+ 	case RTL8852B:
+ 	case RTL8851B:
+ 	case RTL8852BT:
+-		break;
++		return true;
+ 	default:
+-		return;
++		return false;
++	}
++}
++
++static bool rtw89_pci_is_dac_compatible_bridge(struct rtw89_dev *rtwdev)
++{
++	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
++	struct pci_dev *bridge = pci_upstream_bridge(rtwpci->pdev);
++
++	if (!rtw89_pci_chip_is_manual_dac(rtwdev))
++		return true;
++
++	if (!bridge)
++		return false;
++
++	switch (bridge->vendor) {
++	case PCI_VENDOR_ID_INTEL:
++		return true;
++	case PCI_VENDOR_ID_ASMEDIA:
++		if (bridge->device == 0x2806)
++			return true;
++		break;
+ 	}
+ 
++	return false;
++}
++
++static void rtw89_pci_cfg_dac(struct rtw89_dev *rtwdev)
++{
++	struct rtw89_pci *rtwpci = (struct rtw89_pci *)rtwdev->priv;
++
++	if (!rtwpci->enable_dac)
++		return;
++
++	if (!rtw89_pci_chip_is_manual_dac(rtwdev))
++		return;
++
+ 	rtw89_pci_config_byte_set(rtwdev, RTW89_PCIE_L1_CTRL, RTW89_PCIE_BIT_EN_64BITS);
+ }
+ 
+@@ -3061,6 +3091,9 @@ static int rtw89_pci_setup_mapping(struct rtw89_dev *rtwdev,
+ 		goto err;
+ 	}
+ 
++	if (!rtw89_pci_is_dac_compatible_bridge(rtwdev))
++		goto no_dac;
++
+ 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(36));
+ 	if (!ret) {
+ 		rtwpci->enable_dac = true;
+@@ -3073,6 +3106,7 @@ static int rtw89_pci_setup_mapping(struct rtw89_dev *rtwdev,
+ 			goto err_release_regions;
+ 		}
+ 	}
++no_dac:
+ 
+ 	resource_len = pci_resource_len(pdev, bar_id);
+ 	rtwpci->mmap = pci_iomap(pdev, bar_id, resource_len);
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index a2ce4e08edf5..07dd75b1f580 100644
 --- a/drivers/pci/quirks.c

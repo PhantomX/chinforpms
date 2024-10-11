@@ -1,30 +1,24 @@
 %global commit c3cf3fe53df2b93b8780146c4693ead68373b052
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200922
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global src_hash a62703eda7d59393538b2f22d5b0c791
-
-%global gl_url  https://gitlab.com/xboxdrv/xboxdrv
-# zerojay fork
-%global zj_url  https://github.com/zerojay/xboxdrv
-
 Name:           xboxdrv
-Version:        0.8.8
-Release:        109%{?dist}
+Version:        0.8.13
+Release:        1%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPL-3.0-or-later
-URL:            https://xboxdrv.gitlab.io
+URL:            https://github.com/xiota/%{name}
 
 %if %{with snapshot}
-Source0:        %{zj_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{shortcommit}.tar.xz/%{src_hash}/%{name}-linux-%{version}.tar.bz2
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Source1:        %{name}.service
@@ -36,39 +30,16 @@ Source4:        org.seul.Xboxdrv.service
 # Borrowed and modified from Lutris
 Source5:        org.seul.xboxdrvctl.policy
 Source6:        org.seul.xboxdrv.policy
+# Gentoo
+Source7:        %{name}.udev-rules
 
-%if %{without snapshot}
-# Fix 60 seconds delay
-Patch1:         xboxdrv-mr262.patch
-# Fix "pure virtual function called" crash and related hang
-Patch2:         xboxdrv-pr220.patch
-%else
-Patch10:         xboxdrv-pr220-zj.patch
-%endif
-# Don't submit transfers when controller is disconnecting
-Patch3:         xboxdrv-pr221.patch
-# Ensure string2btn matches btn2string's output
-Patch4:         xboxdrv-pr227.patch
-# https://bugs.gentoo.org/show_bug.cgi?id=594674
-Patch5:         xboxdrv-0.8.8-fix-c++14.patch
-%if %{without snapshot}
-Patch6:         https://github.com/xboxdrv/xboxdrv/commit/ac6ebb1228962220482ea03743cadbe18754246c.patch#/%{name}-gh-ac6ebb1.patch
-%endif
-# https://aur.archlinux.org/cgit/aur.git/plain/scons-py3.patch?h=xboxdrv
-Patch7:         %{name}-scons-py3.patch
-Patch8:         xboxdrv-commit-3ca002d.patch
-# https://aur.archlinux.org/packages/xboxdrv/#comment-822087
-Patch9:         0001-scons-fix-build.patch
-
-BuildRequires:  pkgconfig(libudev)
-BuildRequires:  pkgconfig(x11)
 BuildRequires:  gcc-c++
-BuildRequires:  scons
-BuildRequires:  libusbx-devel
-BuildRequires:  boost-devel
+BuildRequires:  meson
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(dbus-glib-1)
-BuildRequires:  pkgconfig
+BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libusb-1.0)
+BuildRequires:  pkgconfig(x11)
 BuildRequires:  python3-devel
 BuildRequires:  systemd
 Requires:       python3-dbus
@@ -82,29 +53,28 @@ Xbox1 gamepads, Xbox360 USB gamepads and Xbox360 wireless gamepads,
 both first and third party.
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:linux-%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 %py3_shebang_fix \
   examples/responsecurve-generator.py \
   xboxdrvctl
 
+sed \
+  -e "/find_program/s|'python'|'%{__python3}'|" \
+  -e '/dbus-1/s|sysconfdir|datadir|' \
+  -i meson.build
+
 
 %build
-%set_build_flags
-scons %{?_smp_mflags} \
- CC=$CC \
- CXX=$CXX \
- BUILD=custom \
- CCFLAGS="$CFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
- CXXFLAGS="$CXXFLAGS -Wl,-z,relro -fPIC -pie -Wl,-z,now" \
- CPPFLAGS=" -ansi -pedantic" \
- LINKFLAGS="$LDFLAGS -fPIC -pie -Wl,-z,now"
+%meson
+%meson_build
 
 %install
-make install PREFIX=%{_prefix} DESTDIR=%{buildroot}
+%meson_install
 
-chmod 644 %{buildroot}%{_mandir}/man1/xboxdrv*
-install -pm 644 doc/xboxdrv-daemon.1 %{buildroot}%{_mandir}/man1
+rm -rf %{buildroot}%{_sysconfdir}/*
+rm -rf %{buildroot}%{_docdir}
+rm -rf %{buildroot}%{_libdir}
 
 # Install dbus rule
 mkdir -p %{buildroot}%{_datadir}/dbus-1/system.d
@@ -119,6 +89,9 @@ install -pm0644 %{S:4} %{buildroot}%{_datadir}/dbus-1/system-services/
 
 mkdir -p %{buildroot}%{_datadir}/polkit-1/actions
 install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
+
+mkdir -p %{buildroot}%{_udevrulesdir}
+install -pm0644 %{S:7} %{buildroot}%{_udevrulesdir}/99-xbox-controller.rules
 
 
 %preun
@@ -143,9 +116,19 @@ install -pm0644 %{S:5} %{S:6} %{buildroot}%{_datadir}/polkit-1/actions/
 %{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*.service
 %{_datadir}/polkit-1/actions/*.policy
+%{_udevrulesdir}/99-xbox-controller.rules
 
 
 %changelog
+* Thu Oct 10 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8.13-1
+- 0.8.13
+- udev rules from Gentoo
+
+* Mon Oct 07 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8.12-1
+- 0.8.12 xiota fork
+- meson build
+- Boost removed
+
 * Sun Feb 11 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-109.20200922gitc3cf3fe
 - zerojay fork
 
