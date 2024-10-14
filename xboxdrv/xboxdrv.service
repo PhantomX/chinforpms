@@ -1,12 +1,17 @@
 [Unit]
 Description=Xbox controller driver daemon
 Documentation=man:xboxdrv(1)
+BindsTo=sys-subsystem-usb-xbox-controller0.device
+After=sys-subsystem-usb-xbox-controller0.device
 
 [Service]
 Type=dbus
 User=root
 BusName=org.seul.Xboxdrv
-ExecStart=/usr/bin/xboxdrv -c /etc/xboxdrv/xboxdrv.conf --daemon --dbus system
+ExecStart=/usr/bin/xboxdrv -c /etc/xboxdrv/xboxdrv.conf --silent --daemon --dbus system
+KillSignal=SIGINT
+# xboxdrv can not stop gracefully if controller gets unplugged
+TimeoutStopSec=2
 
 ProtectSystem=strict
 TemporaryFileSystem=/etc:ro

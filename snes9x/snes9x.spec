@@ -1,8 +1,10 @@
 %undefine _cmake_shared_libs
 
-%global commit 0727b4a474bf496d06ad42dd7ecc5527996aff3a
+%bcond_without vma
+
+%global commit 0c228f0e0cae7039bd321f539652e9044250895d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240915
+%global date 20241012
 %bcond_without snapshot
 
 %global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
@@ -22,13 +24,14 @@
 
 %global glad_ver 2.0.3
 %global imgui_ver 1.89.5
+%global vma_ver 3.1.0
 
 %global vc_url  https://github.com/snes9xgit/%{name}
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
 Version:        1.63
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -69,13 +72,13 @@ BuildRequires:   pkgconfig(xv)
 BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
-%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
-BuildRequires:   minizip-compat-devel
-%endif
-%if %{defined fedora} && 0%{?fedora} >= 40
 BuildRequires:   minizip-ng-compat-devel
-%endif
 BuildRequires:   cmake(VulkanHeaders) >= 1.3.280
+%if %{with vma}
+BuildRequires:   cmake(VulkanMemoryAllocator) >= %{vma_ver}
+%else
+Provides:        bundled(VulkanMemoryAllocator) = %{vma_ver}
+%endif
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
 %endif
@@ -154,7 +157,11 @@ cp -p fmt/LICENSE.rst LICENSE.fmt
 cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
+%if %{with vma}
+rm -rf VulkanMemoryAllocator-Hpp
+%else
 cp -p VulkanMemoryAllocator-Hpp/LICENSE LICENSE.VulkanMemoryAllocator
+%endif
 popd
 
 sed \
@@ -164,6 +171,12 @@ sed \
 cp -p gtk/data/%{name}-gtk.desktop %{name}-qt.desktop
 cp -p %{SOURCE1} .
 sed -e 's|%{name}-gtk|%{name}-qt|g' %{name}-gtk.appdata.xml > %{name}-qt.appdata.xml
+
+%if %{with vma}
+sed \
+  -e 's|external/VulkanMemoryAllocator-Hpp/include/||' \
+  -i common/video/vulkan/vulkan_context.hpp
+%endif
 
 
 pushd unix

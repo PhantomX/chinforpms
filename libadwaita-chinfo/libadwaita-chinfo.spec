@@ -4,9 +4,10 @@
 
 %global pkgname libadwaita
 %global tarball_version %%(echo %{version} | tr '~' '.')
+%global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        1.6.0
+Version:        1.6.1
 Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
@@ -25,7 +26,7 @@ BuildRequires:  pkgconfig(fribidi)
 BuildRequires:  pkgconfig(glib-2.0) >= %{glib_version}
 BuildRequires:  pkgconfig(gtk4) >= %{gtk_version}
 
-Requires:       %{pkgname}%{?_isa} >= %{version}
+Requires:       %{pkgname}%{?_isa} >= %{branch}
 
 Provides:       %{pkgname}-classic = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}-classic%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -85,6 +86,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sun Oct 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1.6.1-1
+- 1.6.1
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.6.0-1
 - 1.6.0
 
