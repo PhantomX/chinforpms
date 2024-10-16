@@ -15,7 +15,7 @@ BuildArch:      noarch
 %global vc_url  https://github.com/%{pkgname}/%{pkgname}
 
 Name:           nicotine+
-Version:        3.3.5
+Version:        3.3.6
 Release:        100%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
@@ -61,6 +61,10 @@ that users want and/or need.
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
+rm -rf pynicotine/plugins/examplars
+
+sed -e 's|gtk4-broadwayd|broadwayd|g' -i pynicotine/tests/integration/test_startup.py
+
 %generate_buildrequires
 %pyproject_buildrequires -r
 
@@ -93,7 +97,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 %files -f %{pyproject_files}
 %license COPYING
-%doc AUTHORS.md NEWS.md README.md TRANSLATORS.md
+%doc AUTHORS.md NEWS.md README.md
 %{_bindir}/%{cname}
 %{_datadir}/applications/%{appdata_id}.desktop
 %{_datadir}/icons/hicolor/*/*/*.{png,svg}
@@ -102,6 +106,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Tue Oct 15 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.6-100
+- 3.3.6
+
 * Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 3.3.5-100
 - 3.3.5
 
