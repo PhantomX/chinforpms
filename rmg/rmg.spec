@@ -7,7 +7,7 @@
 %global commit 1b45907ab26a5e8532bfc3c41d70c4611fb61028
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240909
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with rust
 
@@ -21,8 +21,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.6.5
-Release:        2%{?dist}
+Version:        0.6.6
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -48,12 +48,7 @@ BuildRequires:  cargo
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(freetype2)
-%if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
-BuildRequires:  minizip-compat-devel
-%endif
-%if %{defined fedora} && 0%{?fedora} >= 40
 BuildRequires:  minizip-ng-compat-devel
-%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
@@ -187,6 +182,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Oct 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.6-1
+- 0.6.6
+
 * Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.5-1.20240728git9b5cc05
 - 0.6.5
 

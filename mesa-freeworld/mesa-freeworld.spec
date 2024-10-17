@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.2.4
+Version:        24.2.5
 Release:        100%{?dist}
 
 Epoch:          100
@@ -49,6 +49,8 @@ Source0:        https://mesa.freedesktop.org/archive/%{pkgname}-%{ver}.tar.xz
 %endif
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
+
+Patch3:        %{vc_url}/-/merge_requests/30988.patch#/%{pkgname}-gl-mr30988.patch
 
 BuildRequires:  meson >= 1.0.0
 BuildRequires:  gcc
@@ -229,6 +231,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Oct 16 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.5-100
+- 24.2.5
+
 * Thu Oct 03 2024 Phantom X <megaphantomx at hotmail dot com> - 24.2.4-100
 - 24.2.4
 
