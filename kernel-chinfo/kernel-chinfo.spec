@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.11.3
+%define specrpmversion 6.11.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1135,6 +1135,9 @@ Patch7020:  %{pf_url}/fb42ff2c053b4b13c60ff059218d29a1bfe42392.patch#/pf-cb-fb42
 Patch7021:  %{pf_url}/321a1f9b074db9e2c04528055481926162e5ac38.patch#/pf-cb-321a1f9.patch
 Patch7022:  %{pf_url}/77714cb5114e286ea095e9ced3e891346eaea806.patch#/pf-cb-77714cb.patch
 Patch7023:  %{pf_url}/2d78bc2b89f61b4b46e8b9fc5323de125cec3caf.patch#/pf-cb-2d78bc2.patch
+Patch7024:  %{pf_url}/91080b9f8b30aa8e05cebc8777695b00b988bcc6.patch#/pf-cb-91080b9.patch
+Patch7025:  %{pf_url}/eef3357453ab7b249c48f8d5649a06db9e11a703.patch#/pf-cb-eef3357.patch
+Patch7026:  %{pf_url}/1ab09b04e6a0c57407db2850b2b2e8e0ab6b09a5.patch#/pf-cb-1ab09b0.patch
 # bbr3
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
@@ -1142,6 +1145,8 @@ Patch7100:  %{pf_url}/bc7075c316e3c89986cdc0df145d8753ba73c731.patch#/pf-cb-bc70
 Patch7101:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fafd3.patch
 Patch7102:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
 Patch7103:  %{pf_url}/585c713c3232c35848cbd5b11c295e8ee938b5b1.patch#/pf-cb-585c713.patch
+Patch7104:  %{pf_url}/7f6a3ce960d0d77f390e00bcae0e0a3fad683e92.patch#/pf-cb-7f6a3ce.patch
+Patch7105:  %{pf_url}/4fd3ea8ab8517ce324ebd35a3228f0b80301efb1.patch#/pf-cb-4fd3ea8.patch
 # zstd
 Patch7200:  %{pf_url}/5cb1b6e0be8548c2e6a34202becd539c13fdb91f.patch#/pf-cb-5cb1b6e.patch
 Patch7201:  %{pf_url}/79c6f85410667790f173edf3822a6258942fe4d3.patch#/pf-cb-79c6f85.patch
@@ -2049,6 +2054,9 @@ ApplyPatch %{PATCH7020}
 ApplyPatch %{PATCH7021}
 ApplyPatch %{PATCH7022}
 ApplyPatch %{PATCH7023}
+ApplyPatch %{PATCH7024}
+ApplyPatch %{PATCH7025}
+ApplyPatch %{PATCH7026}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -2056,6 +2064,8 @@ ApplyPatch %{PATCH7100}
 ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
+ApplyPatch %{PATCH7104}
+ApplyPatch %{PATCH7105}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4405,6 +4415,9 @@ fi\
 #
 #
 %changelog
+* Thu Oct 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.4-500.chinfo
+- 6.11.4
+
 * Thu Oct 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.3-500.chinfo
 - 6.11.3
 
