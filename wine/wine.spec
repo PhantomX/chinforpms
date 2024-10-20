@@ -56,19 +56,21 @@
 %global winentsync 6.9~rc3
 %global winevulkan 1.3.296
 
-%global wineFAudio 24.06
-%global winefluidsynth 2.3.5
+%global winecapstone 5.0.3
+%global wineFAudio 24.10
+%global winefluidsynth 2.3.6
 %global winegsm 1.0.19
 %global winejpeg 9~f
 %global winelcms2 2.16
-%global winempg123 1.32.5
-%global winepng 1.6.43
+%global wineldap 2.5.18
+%global winempg123 1.32.7
+%global winepng 1.6.44
 %global wineopenldap 2.5.17
-%global winetiff 4.6.0
+%global winetiff 4.7.0
 %global winejxrlib 1.1
 %global winevkd3d 1.13
-%global winexml2 2.11.7
-%global winexslt 1.1.39
+%global winexml2 2.12.8
+%global winexslt 1.1.42
 %global winezlib 1.3.1
 %global winezydis 4.1.0
 
@@ -104,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 9.19
+%global wine_stagingver 9.20
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3091eb2d0a99e1ba32f8ddbafd28a0a2bafceef5
+%global tkg_id 020e5a482a221437df397cc1758a0b0d5d9f2808
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -157,7 +159,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.19
+Version:        9.20
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -552,9 +554,11 @@ Recommends:     gstreamer1-plugins-ugly
 
 Provides:       bundled(fluidsynth) = %{winefluidsynth}
 Provides:       bundled(gsm) = %{winegsm}
+Provides:       bundled(capstone) = %{winecapstone}
 Provides:       bundled(libFAudio) = %{wineFAudio}
 Provides:       bundled(libjpeg) = %{winejpeg}
 Provides:       bundled(lcms2) = %{winelcms2}
+Provides:       bundled(openldap) = %{wineldap}
 Provides:       bundled(mpg123) = %{winempg123}
 Provides:       bundled(libpng) = %{winepng}
 Provides:       bundled(libtiff) = %{winetiff}
@@ -1489,6 +1493,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/secedit.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/servicemodelreg.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/services.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/sort.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/start.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/tasklist.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/termsv.%{wineexe}
@@ -2553,6 +2558,9 @@ fi
 
 
 %changelog
+* Sat Oct 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.20-100
+- 9.20
+
 * Sun Oct 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.19-100
 - 9.19
 
