@@ -1,4 +1,4 @@
-From fd9b23f2d48558b0a2edbdc760797b5df0bea9d1 Mon Sep 17 00:00:00 2001
+From c896f792db6a888d0650955352c02f935bdf2885 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:09:15 -0300
 Subject: [PATCH] cmake: shaderc_ds
@@ -10,42 +10,42 @@ Subject: [PATCH] cmake: shaderc_ds
  3 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
-index 1cc70b3..6a1756e 100644
+index fe3df91..8453837 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
-@@ -39,12 +39,12 @@ if(ENABLE_WAYLAND)
+@@ -42,12 +42,12 @@ if(BUILD_QT_FRONTEND)
+   find_package(Qt6 6.8.0 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
  endif()
  
- if(ENABLE_VULKAN)
--  find_package(Shaderc REQUIRED)
-+  find_package(Shaderc_ds REQUIRED)
-   find_package(spirv_cross_c_shared REQUIRED)
+-find_package(Shaderc REQUIRED)
++find_package(Shaderc_ds REQUIRED)
+ find_package(spirv_cross_c_shared REQUIRED)
  
-   if(LINUX)
-     # We need to add the rpath for shaderc to the executable.
--    get_target_property(SHADERC_LIBRARY Shaderc::shaderc_shared IMPORTED_LOCATION)
-+    get_target_property(SHADERC_LIBRARY Shaderc_ds::shaderc_shared IMPORTED_LOCATION)
-     get_filename_component(SHADERC_LIBRARY_DIRECTORY ${SHADERC_LIBRARY} DIRECTORY)
-     list(APPEND CMAKE_BUILD_RPATH ${SHADERC_LIBRARY_DIRECTORY})
-     get_target_property(SPIRV_CROSS_LIBRARY spirv-cross-c-shared IMPORTED_LOCATION)
+ if(LINUX AND NOT (ALLOW_INSTALL AND INSTALL_SELF_CONTAINED))
+   # We need to add the rpath for shaderc to the executable.
+-  get_target_property(SHADERC_LIBRARY Shaderc::shaderc_shared IMPORTED_LOCATION)
++  get_target_property(SHADERC_LIBRARY Shaderc_ds::shaderc_shared IMPORTED_LOCATION)
+   get_filename_component(SHADERC_LIBRARY_DIRECTORY ${SHADERC_LIBRARY} DIRECTORY)
+   list(APPEND CMAKE_BUILD_RPATH ${SHADERC_LIBRARY_DIRECTORY})
+   get_target_property(SPIRV_CROSS_LIBRARY spirv-cross-c-shared IMPORTED_LOCATION)
 diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
-index b57d72d..7bff73b 100644
+index 7a74378..e0953b1 100644
 --- a/src/util/CMakeLists.txt
 +++ b/src/util/CMakeLists.txt
-@@ -171,7 +171,7 @@ endif()
- 
- if(ENABLE_VULKAN OR APPLE)
-   # shaderc/spirv-cross is loaded dynamically to reduce module loads on startup.
--  get_target_property(SHADERC_INCLUDE_DIR Shaderc::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
-+  get_target_property(SHADERC_INCLUDE_DIR Shaderc_ds::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
-   get_target_property(SPIRV_CROSS_INCLUDE_DIR spirv-cross-c-shared INTERFACE_INCLUDE_DIRECTORIES)
-   target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR} ${SPIRV_CROSS_INCLUDE_DIR})
+@@ -169,7 +169,7 @@ if(ENABLE_VULKAN)
  endif()
+ 
+ # shaderc/spirv-cross is loaded dynamically to reduce module loads on startup.
+-get_target_property(SHADERC_INCLUDE_DIR Shaderc::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
++get_target_property(SHADERC_INCLUDE_DIR Shaderc_ds::shaderc_shared INTERFACE_INCLUDE_DIRECTORIES)
+ get_target_property(SPIRV_CROSS_INCLUDE_DIR spirv-cross-c-shared INTERFACE_INCLUDE_DIRECTORIES)
+ target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR} ${SPIRV_CROSS_INCLUDE_DIR})
+ 
 diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
-index 3ab0120..e3bfdc6 100644
+index b3b90af..28169b4 100644
 --- a/src/util/gpu_device.cpp
 +++ b/src/util/gpu_device.cpp
-@@ -21,7 +21,7 @@
+@@ -19,7 +19,7 @@
  
  #include "fmt/format.h"
  #include "imgui.h"
@@ -54,7 +54,7 @@ index 3ab0120..e3bfdc6 100644
  #include "spirv_cross_c.h"
  #include "xxhash.h"
  
-@@ -1308,7 +1308,7 @@ bool dyn_libs::OpenShaderc(Error* error)
+@@ -1287,7 +1287,7 @@ bool dyn_libs::OpenShaderc(Error* error)
    if (s_shaderc_library.IsOpen())
      return true;
  
@@ -64,5 +64,5 @@ index 3ab0120..e3bfdc6 100644
    {
      Error::AddPrefix(error, "Failed to load shaderc: ");
 -- 
-2.46.0
+2.47.0
 

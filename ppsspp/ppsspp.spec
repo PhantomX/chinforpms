@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 0f909051eed74c6fe7ca0ea3f3179cbb9862bcf3
+%global commit c16682c4c72319b0d637745f3565fb96176596bb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240919
+%global date 20241020
 %bcond_without snapshot
 
 # Enable Qt build
@@ -62,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 563230b1c249774b4852c944dc7cdcb952c9e8e8
+%global commit9 32917bdddf4982e62047862c6633e7671aaaf2cb
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -81,11 +81,11 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
-%global vma_ver 3.0.0
+%global vma_ver 3.1.0
 
 Name:           ppsspp
 Version:        1.17.1
-Release:        110%{?dist}
+Release:        111%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -126,7 +126,6 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-Patch7:         0001-chd-use-standard-type.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -186,7 +185,7 @@ BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(zlib)
-BuildRequires:  vulkan-headers >= 1.3.211
+BuildRequires:  vulkan-headers >= 1.3.236
 %if %{with qt}
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)

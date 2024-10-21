@@ -21,6 +21,7 @@ dbeaver-ce
 -discord
 -dropboxd
 duckstation
+duckstation_chtdb
 f5cli
 f5vpn
 f5vpn-filesystem

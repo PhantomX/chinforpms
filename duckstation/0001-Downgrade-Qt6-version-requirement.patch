@@ -1,0 +1,77 @@
+From 1536aa9388b62e2ef20878911fb469fe48fc823a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 20 Oct 2024 21:26:56 -0300
+Subject: [PATCH] Downgrade Qt6 version requirement
+
+Partially revert b277035734bb75c434d8e0d64360704e7b732543 until Fedora catchup
+---
+ CMakeModules/DuckStationDependencies.cmake | 2 +-
+ src/duckstation-qt/logwindow.cpp           | 4 ++++
+ src/duckstation-qt/qthost.cpp              | 4 ++++
+ src/duckstation-qt/qthost.h                | 5 +++++
+ 4 files changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
+index 451c4b5..3da93c6 100644
+--- a/CMakeModules/DuckStationDependencies.cmake
++++ b/CMakeModules/DuckStationDependencies.cmake
+@@ -39,7 +39,7 @@ if(ENABLE_WAYLAND)
+ endif()
+ 
+ if(BUILD_QT_FRONTEND)
+-  find_package(Qt6 6.8.0 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
++  find_package(Qt6 6.7.2 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
+ endif()
+ 
+ find_package(Shaderc_ds REQUIRED)
+diff --git a/src/duckstation-qt/logwindow.cpp b/src/duckstation-qt/logwindow.cpp
+index 359cb5c..50059ee 100644
+--- a/src/duckstation-qt/logwindow.cpp
++++ b/src/duckstation-qt/logwindow.cpp
+@@ -294,7 +294,11 @@ void LogWindow::logCallback(void* pUserParam, const char* channelName, const cha
+ 
+   const QLatin1StringView qchannel((level <= Log::Level::Warning) ? functionName : channelName);
+ 
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+   if (QThread::isMainThread())
++#else
++  if (g_emu_thread->isOnUIThread())
++#endif
+   {
+     this_ptr->appendMessage(qchannel, static_cast<u32>(level), qmessage);
+   }
+diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
+index 489b9bd..146f848 100644
+--- a/src/duckstation-qt/qthost.cpp
++++ b/src/duckstation-qt/qthost.cpp
+@@ -1741,7 +1741,11 @@ void EmuThread::queueAuxiliaryRenderWindowInputEvent(Host::AuxiliaryRenderWindow
+                                                      Host::AuxiliaryRenderWindowEventParam param2,
+                                                      Host::AuxiliaryRenderWindowEventParam param3)
+ {
++#if QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)
+   DebugAssert(QThread::isMainThread());
++#else
++  DebugAssert(isOnUIThread());
++#endif
+   QMetaObject::invokeMethod(this, "processAuxiliaryRenderWindowInputEvent", Qt::QueuedConnection,
+                             Q_ARG(void*, userdata), Q_ARG(quint32, static_cast<quint32>(event)),
+                             Q_ARG(quint32, param1.uint_param), Q_ARG(quint32, param2.uint_param),
+diff --git a/src/duckstation-qt/qthost.h b/src/duckstation-qt/qthost.h
+index 8fccd97..c9a4417 100644
+--- a/src/duckstation-qt/qthost.h
++++ b/src/duckstation-qt/qthost.h
+@@ -89,6 +89,11 @@ public:
+   static void start();
+   static void stop();
+ 
++#if QT_VERSION < QT_VERSION_CHECK(6, 8, 0)
++  ALWAYS_INLINE bool isCurrentThread() const { return QThread::currentThread() == this; }
++  ALWAYS_INLINE bool isOnUIThread() const { return QThread::currentThread() == m_ui_thread; }
++#endif
++
+   ALWAYS_INLINE QEventLoop* getEventLoop() const { return m_event_loop; }
+ 
+   ALWAYS_INLINE bool isFullscreen() const { return m_is_fullscreen; }
+-- 
+2.47.0
+

@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit fb7dd7bc698b0bf8222efdd4dbbf826b2ff441e7
+%global commit 32e62725ddfef9c49f26a50ee6a16103eae18eea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241008
+%global date 20241020
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -40,14 +40,14 @@
 
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.33
-%global imgui_ver 1.90.1
+%global imgui_ver 1.90.4
 %global md5_ver 1.6
 %global minizip_ver 1.1
 %global rcheevos_scommit d54cf8f
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7676
+Version:        0.1.7757
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -72,6 +72,7 @@ Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch11:        0001-cmake-soundtouch_ds.patch
 Patch12:        0001-cmake-lunasvg_ds.patch
+Patch13:        0001-Downgrade-Qt6-version-requirement.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -88,7 +89,7 @@ BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(DiscordRPC)
-BuildRequires:  cmake(Qt6Core) >= 6.7.1
+BuildRequires:  cmake(Qt6Core) >= 6.7.2
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Widgets)
@@ -121,7 +122,7 @@ BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
-BuildRequires:  pkgconfig(sdl2) >= 2.30.7
+BuildRequires:  pkgconfig(sdl2) >= 2.30.8
 BuildRequires:  cmake(Shaderc_ds)
 BuildRequires:  cmake(SoundTouch_ds) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
@@ -203,6 +204,7 @@ DuckStation emulator without a graphical user interface.
 Summary:        DuckStation emulator data files
 BuildArch:      noarch
 Requires:       (%{name} = %{?epoch:%{epoch}:}%{version}-%{release} or %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release})
+Requires:       duckstation_chtdb
 
 %description data
 This package provides the data files for duckstation.
@@ -297,6 +299,7 @@ sed \
   -i src/duckstation-qt/qt{host,translations}.cpp
 
 sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
+sed -e '/INSTALL_RPATH_USE_LINK_PATH/d' -i src/util/CMakeLists.txt
 
 echo 'target_include_directories(core PUBLIC %{_includedir}/discord-rpc)' \
   >> src/core/CMakeLists.txt

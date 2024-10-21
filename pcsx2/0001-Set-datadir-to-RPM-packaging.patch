@@ -41,14 +41,14 @@ index 3e112c9..ba842a1 100644
 --- a/pcsx2/Pcsx2Config.cpp
 +++ b/pcsx2/Pcsx2Config.cpp
 @@ -1885,7 +1885,7 @@ bool EmuFolders::SetResourcesDirectory()
- #ifndef __APPLE__  
- 	#ifndef PCSX2_APP_DATADIR
- 		// On Windows/Linux, these are in the binary directory.
--		Resources = Path::Combine(AppRoot, "resources");
-+		Resources = "_RPM_DATADIR_/resources";
- 	#else
- 		Resources = Path::Canonicalize(Path::Combine(AppRoot, PCSX2_APP_DATADIR "/resources"));
- 	#endif
+ #ifndef __APPLE__
+ #ifndef PCSX2_APP_DATADIR
+ 	// On Windows/Linux, these are in the binary directory.
+-	Resources = Path::Combine(AppRoot, "resources");
++	Resources = "_RPM_DATADIR_/resources";
+ #else
+ 	Resources = Path::Canonicalize(Path::Combine(AppRoot, PCSX2_APP_DATADIR "/resources"));
+ #endif
 -- 
 2.46.0
 

@@ -19,7 +19,7 @@ index 265a50d..d6e311b 100644
  
  option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
  if(BUILD_LTO)
-@@ -49,10 +50,17 @@ else()
+@@ -49,11 +50,18 @@ else()
  endif()
  
  # zstd
@@ -31,6 +31,7 @@ index 265a50d..d6e311b 100644
 +else()
  option(ZSTD_BUILD_SHARED "BUILD SHARED LIBRARIES" OFF)
  option(ZSTD_BUILD_PROGRAMS "BUILD PROGRAMS" OFF)
+ option(ZSTD_LEGACY_SUPPORT "LEGACY SUPPORT" OFF)
  add_subdirectory(deps/zstd-1.5.6/build/cmake EXCLUDE_FROM_ALL)
  list(APPEND CHDR_LIBS libzstd_static)
 +endif()

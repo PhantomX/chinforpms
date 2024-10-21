@@ -1,19 +1,22 @@
-From aab5853ee864028c91b6cedb2cbf8b6b27fffb54 Mon Sep 17 00:00:00 2001
+From acf05f0dee5ce0cab4b70a3e7381a2473c123d60 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
 
 ---
- patches/SLPM-55008_721DEBE4.pnach |  8 +++++++
- patches/SLPM-66660_9E8F0454.pnach |  8 +++++++
- patches/SLPS-25674_2113EA2E.pnach |  5 +++++
- patches/SLPS-25698_5192FAD0.pnach | 20 +++++++++++++++++
- patches/SLPS-25842_E84AA114.pnach | 26 ++++++++++++++++++++++
- patches/SLUS-20212_AA4E5A95.pnach | 14 ++++++++++++
- patches/SLUS-20393_5A1410AB.pnach | 19 ++++++++++++++++
- patches/SLUS-21059_652050D2.pnach | 36 +++++++++++++++++++++++++++++++
- patches/SLUS-21317_72CE7A78.pnach |  9 ++++++++
- 9 files changed, 145 insertions(+)
+ patches/SCUS-97436_32A1C752.pnach | 143 ++++++++++++++++++++++++
+ patches/SCUS-97436_73FEFB84.pnach | 173 ++++++++++++++++++++++++++++++
+ patches/SLPM-55008_721DEBE4.pnach |   8 ++
+ patches/SLPM-66660_9E8F0454.pnach |   8 ++
+ patches/SLPS-25674_2113EA2E.pnach |   5 +
+ patches/SLPS-25698_5192FAD0.pnach |  20 ++++
+ patches/SLPS-25842_E84AA114.pnach |  26 +++++
+ patches/SLUS-20212_AA4E5A95.pnach |  14 +++
+ patches/SLUS-20393_5A1410AB.pnach |  19 ++++
+ patches/SLUS-21059_652050D2.pnach |  36 +++++++
+ patches/SLUS-21317_72CE7A78.pnach |   9 ++
+ 11 files changed, 461 insertions(+)
+ create mode 100644 patches/SCUS-97436_73FEFB84.pnach
  create mode 100644 patches/SLPM-55008_721DEBE4.pnach
  create mode 100644 patches/SLPM-66660_9E8F0454.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
@@ -22,9 +25,339 @@ Subject: [PATCH] Personal additions
  create mode 100644 patches/SLUS-20393_5A1410AB.pnach
  create mode 100644 patches/SLUS-21317_72CE7A78.pnach
 
+diff --git a/patches/SCUS-97436_32A1C752.pnach b/patches/SCUS-97436_32A1C752.pnach
+index b6c5693..b97f5a1 100644
+--- a/patches/SCUS-97436_32A1C752.pnach
++++ b/patches/SCUS-97436_32A1C752.pnach
+@@ -64,3 +64,146 @@ patch=1,EE,1023F3DA,extended,8442
+ 
+ patch=1,EE,20662B30,extended,00010000
+ patch=1,EE,20662B34,extended,00060014
++
++
++[Disable Licence/Mission Assists]
++comment=Disable ASM and TCS in licences and mission races.
++author=TheAdmiester
++
++// QUICK_MENU::ApplyLicenseRaceOption
++patch=1,EE,1010C1FC,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistAsm
++patch=1,EE,1010C20C,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistTcs
++
++// QUICK_MENU::ApplyMissionRaceOption
++patch=1,EE,1010C254,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistAsm
++patch=1,EE,1010C264,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistTcs
++
++
++[Increase B-Spec Speed Multiplier]
++comment=Allow B-Spec's speedup mode to go to 16x
++author=TheAdmiester (original GT4 NTSC from Vyerq)
++
++// Change limiter check from 3 to 16
++patch=1,EE,201F2D0C,extended,28420010 
++
++// Change override value from 3 to 16 if somehow over limiter
++patch=1,EE,201F2D14,extended,24020010
++
++
++[Disable Bumper Cam Pitching/Crash Effect]
++comment=Removes pitching and blurry shaking crash effect from bumper cam
++author=TheAdmiester
++
++// Overwrite the first instruction of Automobile::DriverCameraExtension::UpdatePitchLPF with an early return
++// NOPing the call to this function may have the same effect but it's used as a return value so this seemed safer
++patch=1,EE,2020B594,extended,03E00008
++
++// Change the check in Automobile::DriverCameraExtension::Crash to always false
++// Replaces bnel v0,zero,0x0020B760 with bne zero,zero,0x0020B760
++patch=1,EE,2020B744,extended,14000006
++
++
++[Disable Car Lights Lens Flares]
++comment=Disables the lens flares cast from all cars' brake/headlights. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from RaceCarModel::setLampFlare
++patch=1,EE,201BF650,extended,03E00008
++patch=1,EE,201BF654,extended,00000000
++
++
++[Disable G-Meter]
++comment=Hides the G-meter from all views
++author=TheAdmiester
++
++// RaceDisplay::render_panel, bool is set to false just before checking this function - if skipped then it will never set to true to render
++// Change beq v0,zero,0x001C5DE4 to bne v0,zero,0x001C5DE4
++patch=1,EE,201C5DD0,extended,14400004
++
++
++[Disable Replay HUD]
++comment=Hide replay song, GT logo, fast forward indicator, etc.
++author=TheAdmiester
++
++// NOP the call to RaceMusicDisplay::update inside RaceDisplay::update
++patch=1,EE,201C44C8,extended,00000000
++
++// Skip the branch in RaceDisplay::update that runs when replay mode is active
++patch=1,EE,201C443C,extended,08071130
++
++
++[Disable Suggested Gear]
++comment=Hides the suggested gear indicator from all views
++author=TheAdmiester
++
++// Skip a call to RaceSuggestedGearDisplay::render_main
++// Change beq v0,zero,0x001CD6E0 to beq zero,zero,0x001CD6E0
++patch=1,EE,201CD6D0,extended,10000003
++
++
++[Disable Sun Lens Flare]
++comment=Disables the lens flare that appears on some tracks when facing the sun. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from CourseEnvPtr::setSun
++patch=1,EE,2029E758,extended,03E00008
++patch=1,EE,2029E75C,extended,00000000
++
++
++[Disable Track Lights Lens Flares]
++comment=Disables the lens flares that appear on light sources on evening/night tracks. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from CourseData::setFlare
++patch=1,EE,2029D590,extended,03E00008
++patch=1,EE,2029D594,extended,00000000
++
++
++[Disable Wind Noise]
++comment=Disables wind noise
++author=TheAdmiester
++
++// Pretend we're in the incorrect draw mode for turbulence to be calculated in Automobile::getTurbulence
++// Change bnel v0, zero, 0x002127E0 to beq zero, zero, 0x002127E0 to always branch
++patch=1,EE,202126BC,extended,10000048
++
++
++[Toyota Prius HUD for All Cars]
++comment=Forces the game to load the Toyota Prius speed/fuel economy HUD without the hybrid display
++author=TheAdmiester
++
++// Change beq,v0,zero,0x001C7790 to bne,zero,zero,0x001C7790
++// This is checked pre-race or when the camera is changed
++patch=1,EE,201C777C,extended,14000004
++
++// Unsure of what this is checking, but stopping it from branching selects average MPG for display instead of live
++// Change beq v1,zero,0x0022C880 to bne zero,zero,0x0022C880
++patch=1,EE,2022C870,extended,14000004
++
++// Uncomment this to switch back to live - checked constantly during the race so no restart needed
++//patch=1,EE,2022C870,extended,10600003
++
++
++[Toggle Car Lights]
++comment=Press L3+Up/L3+Down to switch lights on/off
++author=TheAdmiester (Original by Vyerq)
++
++patch=1,EE,D089B0DC,extended,0200FFED 
++// This is a call to GT4Model::CarModel::setTimeZone inside RaceCarModel::update
++// Instead of passing in the car's "day/night mode" as a parameter, we pass in a hardcoded 1 or 0 depending on toggle
++patch=1,EE,201BEADC,extended,24050001
++// Similar here, except the same check is being run in RaceCarModel::setLampFlare to draw the actual lens flares from the lights
++patch=1,EE,201BF690,extended,24020001
++
++patch=1,EE,D089B0DC,extended,0200FFBD 
++patch=1,EE,201BEADC,extended,24050000
++patch=1,EE,201BF690,extended,24020000
++
++
++[Enable Toyota Pod Squatting]
++comment=Enables Toyota Pod functionality for all cars
++author=TheAdmiester
++
++// Set a lui v0,0x1 to always return true in isToyotaPod
++// Enables squatting when stationary on handbrake press, may have more effects
++patch=1,EE,2021F6A8,extended,3C020001
+diff --git a/patches/SCUS-97436_73FEFB84.pnach b/patches/SCUS-97436_73FEFB84.pnach
+new file mode 100644
+index 0000000..80320b7
+--- /dev/null
++++ b/patches/SCUS-97436_73FEFB84.pnach
+@@ -0,0 +1,173 @@
++gametitle=Gran Turismo 4 Spec II [SCUS-97436]
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++comment=Widescreen Text
++author=Aero_
++// Corrects Text Aspect Ratio for Widescreen
++patch=1,EE,2033D7DC,extended,3C013F40 // lui at, 0x3F40
++patch=1,EE,2033D7E0,extended,34210000 // ori at, 0x0000
++
++
++[Far chase camera]
++description=Added GT4 First Preview camera mode
++author=Silent
++
++// Swap 4-byte instructions to 2-byte ones to make space
++patch=1,EE,2023F37C,extended,84E30000
++patch=1,EE,1023F380,extended,0002
++patch=1,EE,1023F390,extended,0004
++patch=1,EE,2023F3A0,extended,84E30000
++
++patch=1,EE,1023F3B0,extended,0004
++patch=1,EE,0023F3C8,extended,40
++patch=1,EE,1023F3DA,extended,8442
++
++patch=1,EE,20662B30,extended,00010000
++patch=1,EE,20662B34,extended,00060014
++
++
++[Disable Licence/Mission Assists]
++comment=Disable ASM and TCS in licences and mission races.
++author=TheAdmiester
++
++// QUICK_MENU::ApplyLicenseRaceOption
++patch=1,EE,1010C1FC,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistAsm
++patch=1,EE,1010C20C,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistTcs
++
++// QUICK_MENU::ApplyMissionRaceOption
++patch=1,EE,1010C254,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistAsm
++patch=1,EE,1010C264,extended,0000 // Parameter passed into RaceOrganization::setSteerAssistTcs
++
++
++[Increase B-Spec Speed Multiplier]
++comment=Allow B-Spec's speedup mode to go to 16x
++author=TheAdmiester (original GT4 NTSC from Vyerq)
++
++// Change limiter check from 3 to 16
++patch=1,EE,201F2D0C,extended,28420010 
++
++// Change override value from 3 to 16 if somehow over limiter
++patch=1,EE,201F2D14,extended,24020010
++
++
++[Disable Car Lights Lens Flares]
++comment=Disables the lens flares cast from all cars' brake/headlights. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from RaceCarModel::setLampFlare
++patch=1,EE,201BF650,extended,03E00008
++patch=1,EE,201BF654,extended,00000000
++
++
++[Disable Penalties]
++comment=Remove penalties from missions and special condition events
++author=TheAdmiester
++
++// Return early from AutomobileGetCrashPenalty
++patch=1,EE,20223300,extended,03E00008
++patch=1,EE,20223304,extended,00000000
++
++
++[Disable Replay HUD]
++comment=Hide replay song, GT logo, fast forward indicator, etc.
++author=TheAdmiester
++
++// NOP the call to RaceMusicDisplay::update inside RaceDisplay::update
++patch=1,EE,201C44C8,extended,00000000
++
++// Skip the branch in RaceDisplay::update that runs when replay mode is active
++patch=1,EE,201C443C,extended,08071130
++
++
++[Disable Sun Lens Flare]
++comment=Disables the lens flare that appears on some tracks when facing the sun. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from CourseEnvPtr::setSun
++patch=1,EE,2029E758,extended,03E00008
++patch=1,EE,2029E75C,extended,00000000
++
++
++[Disable Track Lights Lens Flares]
++comment=Disables the lens flares that appear on light sources on evening/night tracks. Useful for PCSX2 performance.
++author=TheAdmiester
++
++// Return early from CourseData::setFlare
++patch=1,EE,2029D590,extended,03E00008
++patch=1,EE,2029D594,extended,00000000
++
++
++[Disable Wind Noise]
++comment=Disables wind noise
++author=TheAdmiester
++
++// Pretend we're in the incorrect draw mode for turbulence to be calculated in Automobile::getTurbulence
++// Change bnel v0, zero, 0x002127E0 to beq zero, zero, 0x002127E0 to always branch
++patch=1,EE,202126BC,extended,10000048
++
++
++[Enable High Chase Camera]
++comment=Add the high chase camera from GT4 Prologue
++author=TheAdmiester
++
++// Edit each check of usingRaisedCam to pass (beq v0,zero changed to bne v0,v0)
++patch=1,EE,2068AEB8,extended,1442000A
++patch=1,EE,2068AF90,extended,1442000A
++patch=1,EE,2068B030,extended,1442000A
++patch=1,EE,2068B08C,extended,1442000A
++
++
++[Toyota Prius HUD for All Cars]
++comment=Forces the game to load the Toyota Prius speed/fuel economy HUD without the hybrid display
++author=TheAdmiester
++
++// Change beq,v0,zero,0x001C7790 to bne,zero,zero,0x001C7790
++// This is checked pre-race or when the camera is changed
++patch=1,EE,201C777C,extended,14000004
++
++// Unsure of what this is checking, but stopping it from branching selects average MPG for display instead of live
++// Change beq v1,zero,0x0022C880 to bne zero,zero,0x0022C880
++patch=1,EE,2022C870,extended,14000004
++
++// Uncomment this to switch back to live - checked constantly during the race so no restart needed
++//patch=1,EE,2022C870,extended,10600003
++
++
++[Toggle Car Lights]
++comment=Press L3+Up/L3+Down to switch lights on/off
++author=TheAdmiester (Original by Vyerq)
++
++patch=1,EE,D089B0DC,extended,0200FFED 
++// This is a call to GT4Model::CarModel::setTimeZone inside RaceCarModel::update
++// Instead of passing in the car's "day/night mode" as a parameter, we pass in a hardcoded 1 or 0 depending on toggle
++patch=1,EE,201BEADC,extended,24050001
++// Similar here, except the same check is being run in RaceCarModel::setLampFlare to draw the actual lens flares from the lights
++patch=1,EE,201BF690,extended,24020001
++
++patch=1,EE,D089B0DC,extended,0200FFBD 
++patch=1,EE,201BEADC,extended,24050000
++patch=1,EE,201BF690,extended,24020000
++
++
++[Enable Toyota Pod Squatting]
++comment=Enables Toyota Pod functionality for all cars
++author=TheAdmiester
++
++// Set a lui v0,0x1 to always return true in isToyotaPod
++// Enables squatting when stationary on handbrake press, may have more effects
++patch=1,EE,2021F6A8,extended,3C020001
++
++
++[Uncap Displayed A-spec Points]
++comment=Allows you to see how many points over 200 a race *would* result in (actual is capped at 255 so does not save correctly)
++author=TheAdmiester
++
++// NOP the instruction that sets points back to 200.0 in RaceOrganization::getPreScore
++patch=1,EE,2028771C,extended,00000000
++
++// Set return register to actual integer value of points
++patch=1,EE,20287740,extended,00801020
++
++// Move the conditional jump we overwrote at 0x287740 just in case, and make unconditional
++patch=1,EE,20287744,extended,0C0A1DD8
 diff --git a/patches/SLPM-55008_721DEBE4.pnach b/patches/SLPM-55008_721DEBE4.pnach
 new file mode 100644
-index 0000000..efd885e
+index 0000000..28e2f72
 --- /dev/null
 +++ b/patches/SLPM-55008_721DEBE4.pnach
 @@ -0,0 +1,8 @@
@@ -38,7 +371,7 @@ index 0000000..efd885e
 +patch=0,EE,0010CF00,extended,24040000
 diff --git a/patches/SLPM-66660_9E8F0454.pnach b/patches/SLPM-66660_9E8F0454.pnach
 new file mode 100644
-index 0000000..91af312
+index 0000000..ac9a785
 --- /dev/null
 +++ b/patches/SLPM-66660_9E8F0454.pnach
 @@ -0,0 +1,8 @@
@@ -227,5 +560,5 @@ index 0000000..185964f
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.46.0
+2.47.0
 
