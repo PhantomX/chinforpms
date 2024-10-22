@@ -371,11 +371,27 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.1.0
-Release:        101%{?dist}
+Version:        9.1.1
+Release:        100%{?dist}
 Epoch:          2
 
-License:        Apache-2.0 AND BSD-2-Clause AND BSD-3-Clause AND FSFAP AND GPL-1.0-or-later AND GPL-2.0-only AND GPL-2.0-or-later AND GPL-2.0-or-later WITH GCC-exception-2.0 AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND MIT AND LicenseRef-Fedora-Public-Domain AND CC-BY-3.0
+License: %{shrink:
+    Apache-2.0 AND
+    BSD-2-Clause AND
+    BSD-3-Clause AND
+    FSFAP AND
+    GPL-1.0-or-later AND
+    GPL-2.0-only AND
+    GPL-2.0-or-later AND
+    GPL-2.0-or-later WITH GCC-exception-2.0 AND
+    LGPL-2.0-only AND
+    LGPL-2.0-or-later AND
+    LGPL-2.1-only AND
+    LGPL-2.1-or-later AND
+    MIT AND
+    LicenseRef-Fedora-Public-Domain AND
+    CC-BY-3.0
+}
 
 URL:            http://www.qemu.org/
 
@@ -3124,6 +3140,9 @@ popd
 
 
 %changelog
+* Mon Oct 21 2024 Phantom X <megaphantomx at hotmail dot com> - 2:9.1.1-100
+- 9.1.1
+
 * Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2:9.1.0-101
 - Rawhide sync
 

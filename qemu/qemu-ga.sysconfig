@@ -1,11 +1,12 @@
 # This is a systemd environment file, not a shell script.
 # It provides settings for "/lib/systemd/system/qemu-guest-agent.service".
 
-# Comma-separated blacklist of RPCs to disable, or empty list to enable all.
+# Extra arguments to pass to the guest QEMU, for example, to filter our
+# RPC commands. See 'qemu-ga(8)' man page for permissible arguments.
 #
-# You can get the list of RPC commands using "qemu-ga -b '?'"
-# There should be no spaces between commas and commands in the blacklist.
-#BLACKLIST_RPC=guest-file-open,guest-file-close,guest-file-read,guest-file-write,guest-file-seek,guest-file-flush,guest-exec,guest-exec-status
+# For example, to filter out a set of commands the --block-rpcs commands:
+#
+#QEMU_GA_ARGS=--block-rpcs=guest-file-open,guest-file-close,guest-file-read,guest-file-write,guest-file-seek,guest-file-flush,guest-exec,guest-exec-status
 
 # Fsfreeze hook script specification.
 #
