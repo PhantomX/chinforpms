@@ -1,0 +1,393 @@
+From 872be9ee706f28dce91b18fb9d55e9371ea9c43e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 24 Oct 2024 16:32:07 -0300
+Subject: [PATCH] Personal additions
+
+---
+ chtdb.txt | 191 ++++++++++++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 178 insertions(+), 13 deletions(-)
+
+diff --git a/chtdb.txt b/chtdb.txt
+index 76f462e..4ce096c 100644
+--- a/chtdb.txt
++++ b/chtdb.txt
+@@ -16679,6 +16679,8 @@ D00B077E AFA2
+ 800B0778 00C0
+ #Uncap FPS lock
+ A70378CA 1C402400
++#60 fps
++30037930 0001
+ 
+ ; [ Final Fantasy Chronicles - Chrono Trigger (USA, v1.1) (2001) (Square Electronic Arts) {SLUS-01363GH} <ctrigger> ]
+ :SLUS-01363
+@@ -29103,6 +29105,8 @@ A709A704 10000400
+ :SCUS-94194
+ #Always Place 1st (Arcade Mode)
+ A60B6F18 06000100
++#Stop Race Timer
++80093DBD 0000
+ #Unlock Bonus Items\High Speed Ring\A
+ 300816D8 0004
+ #Unlock Bonus Items\High Speed Ring\B
+@@ -29411,25 +29415,46 @@ D00375E4 0660
+ #Simulation Disc\Stop Race Timer (Really Helpful In License Tests)
+ 8002F810 0000
+ 80046E84 0000
++#Simulation Disc\Stop Race Timer (alt)
++8002F864 0000
++80046F64 0000
+ #Simulation Disc\Gold Licenses B
+ 50000AA4 0000
+ 801CC760 0400
++#Simulation Disc\Gold Licenses B (alt)
++500009A4 0000
++801CCDA4 0400
+ #Simulation Disc\Gold Licenses A
+ 50000AA4 0000
+ 801CC0F8 0400
++#Simulation Disc\Gold Licenses A (alt)
++500009A4 0000
++801CC73C 0400
+ #Simulation Disc\Gold Licenses I-C
+ 500009A4 0000
+ 801CBB34 0400
++#Simulation Disc\Gold Licenses I-C (alt)
++500009A4 0000
++801CC0D4 0400
+ #Simulation Disc\Gold Licenses I-B
+ 50000AA4 0000
+ 801CB428 0400
+ 801CBA90 0400
++#Simulation Disc\Gold Licenses I-B (alt)
++500009A4 0000
++801CBA6C 0400
+ #Simulation Disc\Gold Licenses I-A
+ 50000AA4 0000
+ 801CADC0 0400
++#Simulation Disc\Gold Licenses I-A (alt)
++500009A4 0000
++801CB404 0400
+ #Simulation Disc\Gold Super License
+ 50000AA4 0000
+ 801CA758 0400
++#Simulation Disc\Gold Super Licenses (alt)
++500009A4 0000
++801CAD9C 0400
+ #Simulation Disc\Any Car Can Play Any Circuit:With this cheat, it allows you to race cars with higher horse power in the lower class circuits. For ExampleYou can use the Dodge Viper in the first USA Nationals Circuit in the Gran Turismo League
+ D00148E0 000C
+ 800148E2 1000
+@@ -29445,6 +29470,22 @@ D00148E0 000C
+ 900107A0 3C0205F5
+ #Simulation Disc\Start With All Gold Licenses (Alternate)
+ 8005DDBA A270
++#Simulation Disc\Fixed Apricot Hill and added AR Mini to Event Generator
++A402442C 800229A8
++A7023007 6D61616D
++A7023009 53610053
++A702317C 494C6572
++A702317E 25535F76
++A7023180 3230696D
++A7023182 64696E
++A7023184 494C0000
++A0050CE8 0000
++90050CE8 8002317C
++A0050CEC 8002317C
++90050CEC 80023180
++A0050CF0 80023184
++90050CF0 0000
++00000000 FFFF
+ #In-Battle, go compete in GT World League and win. Then the game will say you completed GT. Sim Credits will then be unlocked on Arcade Disc
+ 50004402 0000
+ 801C9458 1111
+@@ -40471,6 +40512,11 @@ D0078FE8 2000
+ 800475AE 2400
+ #Infinite Bombs
+ 800398BE 2400
++#Infinite Arms Ammo
++8002DCE6 2400
++#Rapid Fire Arms Ammo
++D00D4948 8000
++800D4948 0000
+ #Unlock Another Mission
+ 300D4213 00FF
+ #Invincibility
+@@ -52179,15 +52225,29 @@ D0198CC0 0009
+ ; [ Street Fighter Collection (USA, v1.1) (1997) (Capcom Entertainment) {SLUS-00423, SLUS-00584} <sfcoll> ]
+ :SLUS-00423
+ :SLUS-00584
+-#P1 Infinite HP Super Street Fighter II
++#Street Fighter Alpha 2 Gold\Stop Timer
++8018F700 6310
++#Street Fighter Alpha 2 Gold\Play as Cammy in Versus Mode
++D019767A 0100
++8019765E 1E00
++#Street Fighter Alpha 2 Gold\Inf. Lv. 3 Super Combo Meter P1
++8019767E 0090
++#Street Fighter Alpha 2 Gold\Infinite Health P1
++80197614 0090
++#Street Fighter Alpha 2 Gold\One-Hit Kill P1
++D0197A10 0090
++80197A10 0000
++#Street Fighter Alpha 2 Gold\Infinite Health P2
++80197A10 0090
++#Super Street Fighter II\P1 Infinite HP
+ 80175118 0090
+-#No Health P2 Super Street Fighter II
++#Super Street Fighter II\No Health P2
+ 80175484 0000
+-#P1 Infinite HP Super Street Fighter II Turbo
++#Super Street Fighter II Turbo\P1 Infinite HP
+ 80175118 0090
+-#No Health P2 Super Street Fighter II Turbo
++#Super Street Fighter II Turbo\No Health P2
+ 80175484 0000
+-#Play as Akuma Super Street Fighter II Turbo
++#Super Street Fighter II Turbo\Play as Akuma
+ D01753CE 0100
+ 801753FC 0100
+ 
+@@ -52238,12 +52298,24 @@ D01753CE 0100
+ #P1 Only Needs 1 Win
+ E01E667E 0000
+ 301E667E 0001
++#P1 Infinite Excel Time
++D01E97B6 0094
++801E97B6 0096
+ #P2 No Health
+ 301EAFF8 0000
+ #Unlock Everything
+ 801F4F0E FFFF
+ 801F4F10 FFFF
+ 801F4F14 FFFF
++#Chun-Li & Nanase Have No Skirts
++E01E7FD2 000E
++801E6078 0000
++E01E7FD2 0002
++801E6192 0000
++E01E984E 000E
++801E62A8 0000
++E01E984E 0002
++801E63C0 0000
+ ;#### PATCHES LISTED BELOW ####
+ #Select Widescreen Aspect Ratio\16-9
+ A71F73E8 10000C00
+@@ -68021,10 +68093,11 @@ A71D2108 10000400
+ 80188B12 0000
+ #P2 Infinite Energy Bar:Advanced Attacks
+ 80188B1C 0400
+-;#Infinite Energy
+-;80187D00 006E
+-;#Widescreen 16-9
+-;A717ECCC 10000C00
++#Infinite Energy
++80187D00 006E
++;#### PATCHES LISTED BELOW ####
++#Widescreen 16-9
++A717ECCC 10000C00
+ 
+ ; [ Twisted Metal III (USA, v1.1) (1998) (989 Studios) {SCUS-94249} <twistmt3> ]
+ :SCUS-94249
+@@ -96111,6 +96184,7 @@ A709EF70 10000400
+ 9006DAA4 0001869F
+ 
+ ; [ Bassing Beat 2 (Japan) {SLPS-02859} ]
++:SLPS-02859
+ #Have 99999999 money
+ 9005A3A0 05F5E0FF
+ 
+@@ -100628,8 +100702,9 @@ D0051490 0100
+ 
+ ; [ Championship Surfer (Europe) {SLES-03427} ]
+ 
+-; [ Chaos Break (Europe) {SLES-03107} ]
++; [ Chaos Break (Europe) {SLES-03107 | SLUS-03107} ]
+ :SLES-03107
++:SLUS-03107
+ #Infinite Health
+ D00E524E 012C
+ 800E5250 012C
+@@ -100695,6 +100770,16 @@ A70F2B80 10000400
+ A70F2BA0 10000C00
+ #Dither Off
+ A70905D4 02000000
++#(M) PAL to NTSC (+centering)
++C1000000 0000
++D00B6CBC 0001
++8008FDC0 0010
++D00B6CBC 0100
++8008FDC0 0000
++D0096BA6 8C42
++80096BA4 0000
++D0096BA6 8C42
++80096BA6 2402
+ 
+ ; [ Chaos Break (Japan) {SLP-86363} ]
+ :SLP-86363
+@@ -116825,6 +116910,7 @@ D009FD5E 0030
+ ; [ G Darius (Japan) (Tentou Demo-ban) {SLP-80205} ]
+ 
+ ; [ G Darius (Japan, Asia) {SCPS-45202} ]
++:SCPS-45202
+ #Infinite Credits
+ 800AB508 0002
+ #Special Laser
+@@ -120106,6 +120192,7 @@ D0061D46 AE43
+ 800F5E9C 000F
+ 
+ ; [ Hamster Monogatari (Japan) {SLPS-02724} ]
++:SLPS-02724
+ #Have 99990 money
+ 80135B58 270F
+ 
+@@ -125342,6 +125429,7 @@ A70107C8 10000400
+ 900C6BA8 0098967F
+ 
+ ; [ Kokumeikan (Japan) Rev 1 {SLPS-91033} ]
++:SLPS-91033
+ #Infinite HP / Maximum Hp Level
+ 800A4ABA 6464
+ #No Poison/Confused Status
+@@ -129068,8 +129156,9 @@ D009BEC2 BEFF
+ #Select Weapon Slot 2\Drill Arm
+ 3008C22F 0011
+ 
+-; [ Mega Man X3 (Europe) {SLES-00503} ]
++; [ Mega Man X3 (Europe) {SLES-00503 | SLUS-00353} ]
+ :SLES-00503
++:SLUS-00353
+ #Infinite Health
+ 800D9090 9000
+ #Bug Hole
+@@ -129123,6 +129212,19 @@ E0135194 0040
+ #Zero has Beam-Sabre
+ E00D9115 0002
+ 300D9116 0001
++;#### PATCHES LISTED BELOW ####
++#(M) PAL to NTSC (+centering)
++C1000000 0000
++D003CB78 0001
++8003CB78 0000
++D0089248 0010
++80089248 0000
++D00C269C 0001
++800C269C 0000
++D01484E4 0010
++801484E4 0000
++D0164C60 0001
++80164C60 0000
+ 
+ ; [ Mega Man X4 (Europe) {SLES-01176} ]
+ :SLES-01176
+@@ -129974,6 +130076,7 @@ D00ACD48 0061
+ ; [ Metal Gear Solid: Integral (Japan, Asia) {SCPS-45412 | SCPS-45413 | SCPS-45414} ]
+ 
+ ; [ Metal Jacket (Japan) {SLPS-00008} ]
++:SLPS-00008
+ #Infinite Jump Fly Jets
+ 8007A16C 03E8
+ #Infinite Machine Gun
+@@ -129987,7 +130090,29 @@ D00ACD48 0061
+ 
+ ; [ Metal Slug X (Europe) {SLES-03575} ]
+ ; [ Metal Slug X: Super Vehicle-001 (Japan) {SLP-86456} ]
++
+ ; [ Metal Slug: Super Vehicle-001 (Japan, Asia) {SCPS-45097} ]
++:SCPS-45097
++#Infinite Vulcan Armor
++80018412 0030
++#Infinite Vulcan Cannon
++8001843C 070A
++#Infinite Time
++8001ECC0 0063
++#All POWs Saved
++300100F2 000E
++#Infinite Lives P1
++800181A2 0600
++#Infinite Bombs P1
++300182EC 0063
++#Infinite Ammo P1
++800182EE 000A
++#Infinite Lives P2
++80018142 0600
++#Infinite Bombs P2
++8001838C 000A
++#Infinite Ammo P2
++8001838E 000A
+ 
+ ; [ Metamor Panic: Doki Doki Youma Busters!! (Japan) {SLPS-00039} ]
+ :SLPS-00039
+@@ -136742,6 +136867,7 @@ D018F750 0808
+ 801A74B6 03E7
+ 
+ ; [ Pandora Max Series Vol. 5: Gochachiru (Japan) (Genteiban) {SLPS-02944} ]
++:SLPS-02944
+ #Have 999 money
+ 801A2038 03E7
+ 
+@@ -154828,6 +154954,10 @@ D1112762 0000
+ :SLPS-00040
+ #P1 Infinite Energy
+ 80128A0A 007D
++#P1 No Energy
++80129A3E 0000
++#P2 Infinite Energy
++80129A3A 007D
+ #P2 No Energy
+ 80129A3A 0000
+ #Use all characters
+@@ -154990,9 +155120,44 @@ D00A90F8 0002
+ #Play As The Cpu In Arcade Mode .Using this code, the P2 pad will control the opponent in 1P Arcade Mode.
+ 300AAB41 0000
+ 
++; [ Tekken 3 (Japan, Asia) {SCPS-45213 | SLPS-01300} ]
++:SCPS-45213
++:SLPS-01300
++#Enable All Characters
++800992C8 FFFF
++800992CA 001F
++#Enable All Movies In Theatre
++800992D0 FFFF
++800992D2 001F
++800992D5 0109
++#Enable Tekken Ball and Theater modes
++800992FE 0101
++#Fight as Tiger. Press start on Eddy
++800992CC 0102
++#Unlimited Time
++800AF064 0E10
++#No Enemies
++800AC342 0000
++800ADBCE 0000
++#Have All Keys
++800992F0 0103
++#No Health Enemies
++800AC342 0000
++800ADBCE 0000
++#Inf Health 1P
++300AAAB6 008C
++#No Health P1
++800AAAB6 0000
++#Press Select KO P1
++D00AA0E0 0100
++300AC342 0000
++#No Health P2
++800AC342 0000
++#Inf Health P2
++300AC342 008C
++
+ ; [ Tekken 3 (France) Demo {SCED-01384} ]
+ ; [ Tekken 3 (Japan) Rev 1 {SLPS-91202} ]
+-; [ Tekken 3 (Japan, Asia) {SCPS-45213} ]
+ ; [ Tekken 3 aka Euro Demo 36 (Europe) Demo {SCED-01146} ]
+ ; [ Tekkyuu: True Pinball (Japan) {SLPS-00365} ]
+ 
+@@ -168893,4 +169058,4 @@ A70F13C4 02000000
+ #Total Time 0
+ 80089166 00000000
+ #Drive/Crash Around at 172 MPH
+-800F6DB0 0000FFFF
+\ No newline at end of file
++800F6DB0 0000FFFF
+-- 
+2.47.0
+

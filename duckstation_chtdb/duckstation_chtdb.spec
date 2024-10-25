@@ -1,14 +1,17 @@
-%global commit 57027a2973141356282a42957b2af42164776bf8
+%global commit daca7821b40a6bed80d205ca0ac1c4d4de970921
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241020
+%global date 20241021
 BuildArch:      noarch
+
+# Rebuild files
+%bcond_without rebuild
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname chtdb
 
 Name:           duckstation_%{pkgname}
-Version:        6
+Version:        7
 Release:        1%{?dist}
 Summary:        DuckStation emulator patches
 
@@ -17,13 +20,18 @@ URL:            https://github.com/duckstation/%{pkgname}
 
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
+Patch10:        0001-Personal-additions.patch
+
 BuildRequires:  zip
+%if %{with rebuild}
+BuildRequires:  python3
+%endif
 
 Requires:       duckstation-data
 
 
 %description
-PCSX2 patch files.
+DuckStation patch files.
 
 
 %prep
@@ -31,6 +39,11 @@ PCSX2 patch files.
 
 
 %build
+%if %{with rebuild}
+rm -f cheats/*
+%{python3} chtdb.py export chtdb.txt cheats
+%endif
+
 pushd cheats
 zip -9 -q ../cheats.zip *.cht
 popd
@@ -53,6 +66,10 @@ install -pm0644 patches.zip %{buildroot}%{_datadir}/duckstation/resources/
 
 
 %changelog
+* Thu Oct 24 2024 Phantom X <megaphantomx at hotmail dot com> - 7-1.20241021gitdaca782
+- Add extra cheats and patches
+- Rebuild support (needs python3)
+
 * Mon Oct 21 2024 Phantom X <megaphantomx at hotmail dot com> - 6-1.20241020git57027a2
 - Initial spec
 

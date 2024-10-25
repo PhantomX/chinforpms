@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 396e7d994a546831cac42946f8d2de329db01777
+%global commit 7d2216c289d6aef3573ae2bf2609f84532a2bb70
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241021
+%global date 20241023
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7761
+Version:        0.1.7771
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -120,8 +120,10 @@ BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(libzip) >= 1.11.1
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
+BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
 BuildRequires:  pkgconfig(sdl2) >= 2.30.8
 BuildRequires:  cmake(Shaderc_ds)
 BuildRequires:  cmake(SoundTouch_ds) >= 2.3.3

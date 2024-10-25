@@ -14,9 +14,10 @@
 %global pkgrel 1
 
 %global ffmpegcodec 115541
+%global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        6.9.3447.54
+Version:        7.0.3495.6
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -40,7 +41,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Requires:       vivaldi-ffmpeg-codecs = %{ffmpegcodec}
+Requires:       vivaldi-ffmpeg-codecs = %{vivaldi_ver}.%{ffmpegcodec}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -156,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Oct 24 2024 Phantom X <megaphantomx at hotmail dot com> - 7.0.3495.6-1
+- 7.0.3495.6
+
 * Mon Oct 14 2024 - 6.9.3447.54-1
 - 6.9.3447.54
 

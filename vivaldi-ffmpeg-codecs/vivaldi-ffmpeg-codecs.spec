@@ -6,7 +6,6 @@
 
 %bcond_without snap
 
-%global vivaldi_ver 6.9
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
@@ -21,23 +20,24 @@
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-%global ffmpeg_ver 115541
+%global ffmpeg_ver %%(echo %{version} | cut -d. -f3)
+%global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        115541
-Release:        2%{?dist}
+Version:        7.0.115541
+Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
 URL:            https://ffmpeg.org/
 
 %if %{with snap}
-Source0:        https://api.snapcraft.io/api/v1/snaps/download/%{snapid}_%{snaprev}.snap#/%{name}-%{version}.snap
+Source0:        https://api.snapcraft.io/api/v1/snaps/download/%{snapid}_%{snaprev}.snap#/%{name}-%{ffmpeg_ver}.snap
 Source1:        copyright
 ExclusiveArch:  x86_64
 BuildRequires:  squashfs-tools
 %else
-Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{version}-%{pkgdistro}_%{parch}.deb
+Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{ffmpeg_ver}-%{pkgdistro}_%{parch}.deb
 ExclusiveArch:  x86_64 aarch64
 %endif
 
@@ -56,7 +56,7 @@ ExclusiveArch:  x86_64 aarch64
 unsquashfs -n -d %{name} %{S:0}
 
 cp %{S:1} .
-mv %{name}/chromium-ffmpeg-%{version}/chromium-ffmpeg/libffmpeg.so .
+mv %{name}/chromium-ffmpeg-%{ffmpeg_ver}/chromium-ffmpeg/libffmpeg.so .
 %else
 ar p %{S:0} data.tar.xz | tar xJ -C .
 mv usr/lib/chromium-browser/libffmpeg.so .
@@ -64,8 +64,8 @@ mv usr/share/doc/%{pkgname}/copyright .
 %endif
 
 RVER="$(grep -aom1 'N-[0-9]\+-' libffmpeg.so | cut -d- -f2)"
-if [ "${RVER}" != "%{version}" ] ;then
-  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{version} "
+if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
+  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{ffmpeg_ver} "
   echo "Edit Version and try again"
   exit 1
 fi
@@ -83,6 +83,10 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Thu Oct 24 2024 Phantom X <megaphantomx at hotmail dot com> - 7.0.115541-1
+- Set vivaldir_ver to 7.0
+- Rework version tag
+
 * Fri Aug 30 2024 - 115541-2
 - Set vivaldir_ver to 6.9
 

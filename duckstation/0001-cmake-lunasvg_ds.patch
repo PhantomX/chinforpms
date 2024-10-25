@@ -55,8 +55,8 @@ index 91995bb..378f1d4 100644
  target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_link_libraries(util PUBLIC common simpleini imgui)
--target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
-+target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp lunasvg_ds::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
+-target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
++target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg_ds::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
  
  if(ENABLE_X11)
    target_compile_definitions(util PRIVATE "-DENABLE_X11=1")

@@ -19,9 +19,9 @@ index 6a1756e..1a089d6 100644
  find_package(DiscordRPC 3.4.0 REQUIRED)
 -find_package(SoundTouch 2.3.3 REQUIRED)
 +find_package(SoundTouch_ds 2.3.3 REQUIRED)
+ find_package(libzip 1.11.1 REQUIRED)
  
  if(NOT WIN32)
-   find_package(CURL REQUIRED)
 diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
 index 7bff73b..44b5679 100644
 --- a/src/util/CMakeLists.txt
@@ -30,8 +30,8 @@ index 7bff73b..44b5679 100644
  target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_link_libraries(util PUBLIC common simpleini imgui)
--target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
-+target_link_libraries(util PRIVATE libchdr JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
+-target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
++target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
  
  if(ENABLE_X11)
    target_compile_definitions(util PRIVATE "-DENABLE_X11=1")

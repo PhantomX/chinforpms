@@ -1,18 +1,19 @@
-From c50687fee067051aa7bda5cd0d2fa5cb9a934949 Mon Sep 17 00:00:00 2001
+From 449f8d6a715a13255e301d730ba3f442fa0a3f4f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- dep/CMakeLists.txt                | 81 +++++++++++++++++++++++++++++--
+ dep/CMakeLists.txt                | 96 +++++++++++++++++++++++++++++--
  src/core/gpu_hw_texture_cache.cpp |  4 +-
- 2 files changed, 81 insertions(+), 4 deletions(-)
+ src/util/compress_helpers.cpp     |  4 ++
+ 3 files changed, 98 insertions(+), 6 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 4b79ce8..f4f062e 100644
+index 4b79ce8..58008f8 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,30 +1,87 @@
+@@ -1,30 +1,98 @@
 +find_package(fmt 11.0)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -31,17 +32,30 @@ index 4b79ce8..f4f062e 100644
 +else()
  add_subdirectory(minizip EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(minizip)
+-add_subdirectory(lzma EXCLUDE_FROM_ALL)
+-disable_compiler_warnings_for_target(lzma)
 +endif()
 +pkg_search_module(libchdr IMPORTED_TARGET libchdr)
++pkg_search_module(lzma IMPORTED_TARGET lzmasdk-c)
++if(libchdr_FOUND AND NOT lzma_FOUND)
++  message(FATAL_ERROR "System libchdr found but no system lzma")
++endif()
 +if(libchdr_FOUND)
 +  message(STATUS "Using the system libchdr")
 +  add_library(libchdr INTERFACE)
 +  target_link_libraries(libchdr INTERFACE PkgConfig::libchdr)
 +else()
- add_subdirectory(lzma EXCLUDE_FROM_ALL)
- disable_compiler_warnings_for_target(lzma)
  add_subdirectory(libchdr EXCLUDE_FROM_ALL)
  disable_compiler_warnings_for_target(libchdr)
++endif()
++if(lzma_FOUND)
++  message(STATUS "Using the system lzma")
++  add_library(lzma INTERFACE)
++  target_compile_definitions(lzma INTERFACE SYSTEM_LZMA=1)
++  target_link_libraries(lzma INTERFACE PkgConfig::lzma)
++else()
++add_subdirectory(lzma EXCLUDE_FROM_ALL)
++disable_compiler_warnings_for_target(lzma)
 +endif()
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
@@ -100,7 +114,7 @@ index 4b79ce8..f4f062e 100644
  
  if(ENABLE_OPENGL)
    add_subdirectory(glad EXCLUDE_FROM_ALL)
-@@ -32,9 +89,27 @@ if(ENABLE_OPENGL)
+@@ -32,9 +100,27 @@ if(ENABLE_OPENGL)
  endif()
  
  if(CPU_ARCH_X64)
@@ -132,10 +146,10 @@ index 4b79ce8..f4f062e 100644
  
  if(CPU_ARCH_ARM32 OR CPU_ARCH_ARM64)
 diff --git a/src/core/gpu_hw_texture_cache.cpp b/src/core/gpu_hw_texture_cache.cpp
-index 5d9eef5..a8f9e4a 100644
+index 29d8f6a..3a6c3eb 100644
 --- a/src/core/gpu_hw_texture_cache.cpp
 +++ b/src/core/gpu_hw_texture_cache.cpp
-@@ -25,9 +25,11 @@
+@@ -27,9 +27,11 @@
  #define XXH_STATIC_LINKING_ONLY
  #endif
  #include "xxhash.h"
@@ -147,13 +161,28 @@ index 5d9eef5..a8f9e4a 100644
  
  #include <algorithm>
  #include <cmath>
-@@ -3288,4 +3290,4 @@ void GPUTextureCache::ApplyTextureReplacements(SourceKey key, HashType tex_hash,
+@@ -3306,4 +3308,4 @@ void GPUTextureCache::ApplyTextureReplacements(SourceKey key, HashType tex_hash,
    entry->texture = std::move(replacement_tex);
  
    g_gpu->RestoreDeviceContext();
 -}
 \ No newline at end of file
 +}
+diff --git a/src/util/compress_helpers.cpp b/src/util/compress_helpers.cpp
+index e20efc2..89fa859 100644
+--- a/src/util/compress_helpers.cpp
++++ b/src/util/compress_helpers.cpp
+@@ -21,6 +21,10 @@
+ #include <zstd.h>
+ #include <zstd_errors.h>
+ 
++#ifdef SYSTEM_LZMA
++#define False False7z
++#endif
++
+ LOG_CHANNEL(CompressHelpers);
+ 
+ // TODO: Use streaming API to avoid mallocing the whole input buffer. But one read() call is probably still faster..
 -- 
-2.46.2
+2.47.0
 

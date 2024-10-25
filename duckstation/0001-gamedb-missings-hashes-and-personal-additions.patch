@@ -1,17 +1,37 @@
-From 3e988879e5eff779b2c5583a97436cd8d9d863b5 Mon Sep 17 00:00:00 2001
+From 86679ee42587cb138a05bd3b06e8ecc9ab4be0c0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 10 Feb 2024 22:01:35 -0300
 Subject: [PATCH] gamedb: missings hashes and personal additions
 
 ---
- data/resources/gamedb.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ data/resources/gamedb.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/data/resources/gamedb.yaml b/data/resources/gamedb.yaml
-index 818018a..17614d9 100644
+index 3bd996c..68d17e0 100644
 --- a/data/resources/gamedb.yaml
 +++ b/data/resources/gamedb.yaml
-@@ -110748,6 +110748,7 @@ SLPS-00006:
+@@ -23687,6 +23687,9 @@ SLES-03107:
+   controllers:
+     - AnalogController
+     - DigitalController
++  codes:
++    - SLES-03107
++    - SLUS-03107
+   metadata:
+     publisher: "Eon Digital"
+     developer: "Taito"
+@@ -99404,6 +99407,9 @@ SLES-00503:
+     comments: "Notice bottom the line of FMV is a little odd but work fine."
+   controllers:
+     - DigitalController
++  codes:
++    - SLES-00503
++    - SLUS-00353
+   metadata:
+     publisher: "Virgin Interactive"
+     developer: "Capcom"
+@@ -113006,6 +113012,7 @@ SLPS-00006:
      - DigitalController
    codes:
      - HASH-520AF7ED8E12BC72
@@ -19,7 +39,7 @@ index 818018a..17614d9 100644
    metadata:
      publisher: "TechnoSoft"
      developer: "TechnoSoft"
-@@ -163595,6 +163596,7 @@ SLPS-00040:
+@@ -166869,6 +166876,7 @@ SLPS-00040:
    codes:
      - SLPS-00040
      - SLPS-91020
@@ -28,5 +48,5 @@ index 818018a..17614d9 100644
      publisher: "Namco"
      developer: "Namco"
 -- 
-2.43.0
+2.47.0
 
