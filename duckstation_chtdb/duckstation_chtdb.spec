@@ -1,6 +1,6 @@
-%global commit daca7821b40a6bed80d205ca0ac1c4d4de970921
+%global commit 6595f75475cb389c683e4d9c8fc569a20690ef60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241021
+%global date 20241026
 BuildArch:      noarch
 
 # Rebuild files
@@ -11,7 +11,7 @@ BuildArch:      noarch
 %global pkgname chtdb
 
 Name:           duckstation_%{pkgname}
-Version:        7
+Version:        8
 Release:        1%{?dist}
 Summary:        DuckStation emulator patches
 

@@ -1,7 +1,7 @@
 %global with_sdk 0
 
 Name:           vulkan-tools
-Version:        1.3.297
+Version:        1.3.300
 Release:        100%{?dist}
 Summary:        Vulkan tools
 
@@ -62,7 +62,7 @@ Vulkan tools
 %install
 %cmake3_install
 
-for bin in vkcube{,-wayland} vkcubepp vulkaninfo ;do
+for bin in vkcube vkcubepp vulkaninfo ;do
   mv %{buildroot}%{_bindir}/${bin}{,%{__isa_bits}}
 
 cat >> %{buildroot}%{_bindir}/${bin} <<EOF
@@ -88,6 +88,9 @@ done
 %{_bindir}/*
 
 %changelog
+* Sat Oct 26 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.300-100
+- 1.3.300
+
 * Wed Oct 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.297-100
 - 1.3.297
 

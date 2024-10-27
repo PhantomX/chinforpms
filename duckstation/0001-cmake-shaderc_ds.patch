@@ -14,7 +14,7 @@ index fe3df91..8453837 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
 @@ -42,12 +42,12 @@ if(BUILD_QT_FRONTEND)
-   find_package(Qt6 6.8.0 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
+   find_package(Qt6 6.7.0 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
  endif()
  
 -find_package(Shaderc REQUIRED)

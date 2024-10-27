@@ -1,13 +1,13 @@
-From 56fd0e0ae578f6fc8e1be514f067bb877f5e9f76 Mon Sep 17 00:00:00 2001
+From 751b0f75eee36f18dbd77e9251c428b220371b93 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Dec 2023 17:15:45 -0300
 Subject: [PATCH] cmake: change volk namespace
 
 ---
- CMakeLists.txt            |  2 +-
- cube/CMakeLists.txt       | 12 ++++++------
- vulkaninfo/CMakeLists.txt |  2 +-
- 3 files changed, 8 insertions(+), 8 deletions(-)
+ CMakeLists.txt            | 2 +-
+ cube/CMakeLists.txt       | 4 ++--
+ vulkaninfo/CMakeLists.txt | 2 +-
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 2dc2a63..34d5c34 100644
@@ -23,63 +23,27 @@ index 2dc2a63..34d5c34 100644
      find_package(VulkanLoader QUIET REQUIRED CONFIG)
  endif()
 diff --git a/cube/CMakeLists.txt b/cube/CMakeLists.txt
-index 880cf74..f6bb21e 100644
+index 4ecd3e3..b29451e 100644
 --- a/cube/CMakeLists.txt
 +++ b/cube/CMakeLists.txt
-@@ -226,7 +226,7 @@ elseif (ANDROID)
+@@ -283,7 +283,7 @@ endif()
  
-     add_subdirectory(android)
+ target_compile_definitions(vkcube PRIVATE ${ENABLED_CUBE_PLATFORMS})
+ target_include_directories(vkcube PRIVATE .)
+-target_link_libraries(vkcube  Vulkan::Headers volk::volk_headers)
++target_link_libraries(vkcube  Vulkan::Headers vulkan_volk::volk_headers)
  
--    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers)
- elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
-     add_executable(vkcube)
-     target_sources(vkcube PRIVATE
-@@ -243,7 +243,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
-     if (NEED_RT)
-         target_link_libraries(vkcube PRIVATE rt)
-     endif()
--    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers Threads::Threads)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers Threads::Threads)
- elseif(WIN32)
-     add_executable(vkcube WIN32)
-     target_sources(vkcube PRIVATE
-@@ -253,7 +253,7 @@ elseif(WIN32)
-         cube.vert.inc
-         cube.frag.inc
-     )
--    target_link_libraries(vkcube PRIVATE Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcube PRIVATE Vulkan::Headers vulkan_volk::volk_headers)
- else()
-     message(FATAL_ERROR "Unsupported Platform!")
- endif()
-@@ -293,7 +293,7 @@ elseif(CMAKE_SYSTEM_NAME MATCHES "Linux|BSD|GNU")
-                    cube.vert.inc
-                    cube.frag.inc
-                    ${OPTIONAL_WAYLAND_DATA_FILES})
--    target_link_libraries(vkcubepp Vulkan::Headers volk::volk_headers Threads::Threads)
-+    target_link_libraries(vkcubepp Vulkan::Headers vulkan_volk::volk_headers Threads::Threads)
-     target_compile_definitions(vkcubepp PUBLIC ${CUBE_PLATFORM})
- else()
-     add_executable(vkcubepp
-@@ -303,7 +303,7 @@ else()
-                    ${PROJECT_SOURCE_DIR}/cube/cube.frag
-                    cube.vert.inc
-                    cube.frag.inc)
--    target_link_libraries(vkcubepp Vulkan::Headers volk::volk_headers)
-+    target_link_libraries(vkcubepp Vulkan::Headers vulkan_volk::volk_headers)
- endif()
+ if (ANDROID)
+     install(TARGETS vkcube DESTINATION ${CMAKE_INSTALL_LIBDIR})
+@@ -356,7 +356,7 @@ endif()
+ 
  target_include_directories(vkcubepp PRIVATE .)
+ target_compile_definitions(vkcubepp PRIVATE ${ENABLED_CUBE_PLATFORMS})
+-target_link_libraries(vkcubepp  Vulkan::Headers volk::volk_headers)
++target_link_libraries(vkcubepp  Vulkan::Headers vulkan_volk::volk_headers)
  
-@@ -345,7 +345,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux|BSD")
-         )
-         target_link_libraries(vkcube-wayland PRIVATE
-             Vulkan::Headers
--            volk::volk_headers
-+            vulkan_volk::volk_headers
-             Threads::Threads
-             PkgConfig::WAYLAND_CLIENT
-         )
+ if (XCB_LINK_LIBRARIES )
+     target_compile_definitions(vkcubepp PUBLIC "XCB_LIBRARY=\"${XCB_LINK_LIBRARIES}\"")
 diff --git a/vulkaninfo/CMakeLists.txt b/vulkaninfo/CMakeLists.txt
 index 7e51bb2..104c0a5 100644
 --- a/vulkaninfo/CMakeLists.txt
@@ -94,5 +58,5 @@ index 7e51bb2..104c0a5 100644
  
  if(WIN32)
 -- 
-2.45.2
+2.47.0
 
