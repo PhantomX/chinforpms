@@ -11,7 +11,7 @@
 %global date 20241002
 
 %if %{without bin}
-%bcond_without snapshot
+%bcond_with snapshot
 %else
 %bcond_without snapshot
 %endif
@@ -37,8 +37,11 @@
 %global excss_ver 4.2.3
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
+%global gommon_ver 2.6.5
 %global harfbuzzsharp_ver 7.3.0
 %global harfbuzzsharp_ver2 2.8.2.3
+%global humanizer_ver 2.14.1
+%global jetbrains_annotations_ver 2023.2.0
 %global libhac_ver 0.19.0
 %global microcom_runtime_ver 0.11.0
 # Must match dotnet
@@ -75,6 +78,7 @@
 %global newtonsoft_json_ver 13.0.1
 %global opentk_ver 4.8.2
 %global opentk_redist_glfw_ver 3.3.8.39
+%global projektanker_icons_avalonia_ver 9.4.0
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
 %global runtime_any_system_diagnostics_tracing_ver 4.3.0
@@ -232,7 +236,7 @@
 %global system_text_encodings_web_ver 8.0.0
 %global system_text_encodings_web_ver2 4.7.2
 %global system_text_json_ver 8.0.0
-%global system_text_json_ver2 4.7.2
+%global system_text_json_ver2 8.0.3
 %global system_text_regularexpressions_ver 4.1.0
 %global system_threading_ver 4.0.11
 %global system_threading_ver2 4.3.0
@@ -247,11 +251,11 @@
 %global tmds_dbus_protocol_ver 0.15.0
 
 %global appname Ryujinx
-%global vc_url  https://github.com/%{appname}-NX
+%global vc_url  https://github.com/GreemDev
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.1.1404
+Version:        1.2.59
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -544,16 +548,70 @@ Source467:      %{nuget_url}/system.xml.xdocument.%{system_xml_xdocument_ver}.nu
 Source468:      %{nuget_url}/tmds.dbus.protocol.%{tmds_dbus_protocol_ver}.nupkg
 Source469:      %{nuget_url}/system.text.encoding.codepages.%{system_text_encoding_codepages_ver3}.nupkg
 Source470:      %{nuget_url}/microsoft.netcore.platforms.%{microsoft_netcore_platforms_ver5}.nupkg
+Source471:      %{nuget_url}/gommon.%{gommon_ver}.nupkg
+Source472:      %{nuget_url}/jetbrains.annotations.%{jetbrains_annotations_ver}.nupkg
+Source473:      %{nuget_url}/projektanker.icons.avalonia.%{projektanker_icons_avalonia_ver}.nupkg
+Source474:      %{nuget_url}/projektanker.icons.avalonia.fontawesome.%{projektanker_icons_avalonia_ver}.nupkg
+Source475:      %{nuget_url}/projektanker.icons.avalonia.materialdesign.%{projektanker_icons_avalonia_ver}.nupkg
+Source476:      %{nuget_url}/humanizer.%{humanizer_ver}.nupkg
+Source477:      %{nuget_url}/humanizer.core.%{humanizer_ver}.nupkg
+Source478:      %{nuget_url}/humanizer.core.af.%{humanizer_ver}.nupkg
+Source479:      %{nuget_url}/humanizer.core.ar.%{humanizer_ver}.nupkg
+Source480:      %{nuget_url}/humanizer.core.az.%{humanizer_ver}.nupkg
+Source481:      %{nuget_url}/humanizer.core.bg.%{humanizer_ver}.nupkg
+Source482:      %{nuget_url}/humanizer.core.bn-bd.%{humanizer_ver}.nupkg
+Source483:      %{nuget_url}/humanizer.core.cs.%{humanizer_ver}.nupkg
+Source484:      %{nuget_url}/humanizer.core.da.%{humanizer_ver}.nupkg
+Source485:      %{nuget_url}/humanizer.core.de.%{humanizer_ver}.nupkg
+Source486:      %{nuget_url}/humanizer.core.el.%{humanizer_ver}.nupkg
+Source487:      %{nuget_url}/humanizer.core.es.%{humanizer_ver}.nupkg
+Source488:      %{nuget_url}/humanizer.core.fa.%{humanizer_ver}.nupkg
+Source489:      %{nuget_url}/humanizer.core.fi-fi.%{humanizer_ver}.nupkg
+Source490:      %{nuget_url}/humanizer.core.fr.%{humanizer_ver}.nupkg
+Source491:      %{nuget_url}/humanizer.core.fr-be.%{humanizer_ver}.nupkg
+Source492:      %{nuget_url}/humanizer.core.he.%{humanizer_ver}.nupkg
+Source493:      %{nuget_url}/humanizer.core.hr.%{humanizer_ver}.nupkg
+Source494:      %{nuget_url}/humanizer.core.hu.%{humanizer_ver}.nupkg
+Source495:      %{nuget_url}/humanizer.core.hy.%{humanizer_ver}.nupkg
+Source496:      %{nuget_url}/humanizer.core.id.%{humanizer_ver}.nupkg
+Source497:      %{nuget_url}/humanizer.core.is.%{humanizer_ver}.nupkg
+Source498:      %{nuget_url}/humanizer.core.it.%{humanizer_ver}.nupkg
+Source499:      %{nuget_url}/humanizer.core.ja.%{humanizer_ver}.nupkg
+Source500:      %{nuget_url}/humanizer.core.ko-kr.%{humanizer_ver}.nupkg
+Source501:      %{nuget_url}/humanizer.core.ku.%{humanizer_ver}.nupkg
+Source502:      %{nuget_url}/humanizer.core.lv.%{humanizer_ver}.nupkg
+Source503:      %{nuget_url}/humanizer.core.ms-my.%{humanizer_ver}.nupkg
+Source504:      %{nuget_url}/humanizer.core.mt.%{humanizer_ver}.nupkg
+Source505:      %{nuget_url}/humanizer.core.nb.%{humanizer_ver}.nupkg
+Source506:      %{nuget_url}/humanizer.core.nb-no.%{humanizer_ver}.nupkg
+Source507:      %{nuget_url}/humanizer.core.nl.%{humanizer_ver}.nupkg
+Source508:      %{nuget_url}/humanizer.core.pl.%{humanizer_ver}.nupkg
+Source509:      %{nuget_url}/humanizer.core.pt.%{humanizer_ver}.nupkg
+Source510:      %{nuget_url}/humanizer.core.ro.%{humanizer_ver}.nupkg
+Source511:      %{nuget_url}/humanizer.core.ru.%{humanizer_ver}.nupkg
+Source512:      %{nuget_url}/humanizer.core.sk.%{humanizer_ver}.nupkg
+Source513:      %{nuget_url}/humanizer.core.sl.%{humanizer_ver}.nupkg
+Source514:      %{nuget_url}/humanizer.core.sr.%{humanizer_ver}.nupkg
+Source515:      %{nuget_url}/humanizer.core.sr-latn.%{humanizer_ver}.nupkg
+Source516:      %{nuget_url}/humanizer.core.sv.%{humanizer_ver}.nupkg
+Source517:      %{nuget_url}/humanizer.core.th-th.%{humanizer_ver}.nupkg
+Source518:      %{nuget_url}/humanizer.core.tr.%{humanizer_ver}.nupkg
+Source519:      %{nuget_url}/humanizer.core.uk.%{humanizer_ver}.nupkg
+Source520:      %{nuget_url}/humanizer.core.uz-cyrl-uz.%{humanizer_ver}.nupkg
+Source521:      %{nuget_url}/humanizer.core.uz-latn-uz.%{humanizer_ver}.nupkg
+Source522:      %{nuget_url}/humanizer.core.vi.%{humanizer_ver}.nupkg
+Source523:      %{nuget_url}/humanizer.core.zh-cn.%{humanizer_ver}.nupkg
+Source524:      %{nuget_url}/humanizer.core.zh-hans.%{humanizer_ver}.nupkg
+Source525:      %{nuget_url}/humanizer.core.zh-hant.%{humanizer_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
 %global nuget_files3 %{SOURCE300} %{SOURCE301} %{SOURCE302} %{SOURCE303} %{SOURCE304} %{SOURCE305} %{SOURCE306} %{SOURCE307} %{SOURCE308} %{SOURCE309} %{SOURCE310} %{SOURCE311} %{SOURCE312} %{SOURCE313} %{SOURCE314} %{SOURCE315} %{SOURCE316} %{SOURCE317} %{SOURCE318} %{SOURCE319} %{SOURCE320} %{SOURCE321} %{SOURCE322} %{SOURCE323} %{SOURCE324} %{SOURCE325} %{SOURCE326} %{SOURCE327} %{SOURCE328} %{SOURCE329} %{SOURCE330} %{SOURCE331} %{SOURCE332} %{SOURCE333} %{SOURCE334} %{SOURCE335} %{SOURCE336} %{SOURCE337} %{SOURCE338} %{SOURCE339} %{SOURCE340} %{SOURCE341} %{SOURCE342} %{SOURCE343} %{SOURCE344} %{SOURCE345} %{SOURCE346} %{SOURCE347} %{SOURCE348} %{SOURCE349}
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
-%global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470}
+%global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470} %{SOURCE471} %{SOURCE472} %{SOURCE473} %{SOURCE474} %{SOURCE475} %{SOURCE476} %{SOURCE477} %{SOURCE478} %{SOURCE479} %{SOURCE480} %{SOURCE481} %{SOURCE482} %{SOURCE483} %{SOURCE484} %{SOURCE485} %{SOURCE486} %{SOURCE487} %{SOURCE488} %{SOURCE489} %{SOURCE490} %{SOURCE491} %{SOURCE492} %{SOURCE493} %{SOURCE494} %{SOURCE495} %{SOURCE496} %{SOURCE497} %{SOURCE498} %{SOURCE499}
+%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525}
 %endif
-
-Patch0:         %{name}-pr7285.patch
 
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch
@@ -615,7 +673,7 @@ tar xvf %{S:199} -C dotnetbin
 
 mkdir -p nuget/{cache,packages}
 install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} \
-  %{nuget_files5} %{nuget_files6} \
+  %{nuget_files5} %{nuget_files6} %{nuget_files7} \
   nuget/cache/
 
 sed \
@@ -748,6 +806,10 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
+* Tue Oct 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.59-1
+- 1.2.59
+- Update source URLs.
+
 * Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.1217-1
 - 1.1.1217
 - Avalonia

@@ -106,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 16cfc61df8d3fb798727c32c80e71a32b5142740
+%global wine_stagingver 78bd3f0c6d0beb781b87dd9d54fd186e8f7628ef
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -117,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 34e383deeb978738c8ced6cabc92615159191b93
+%global tkg_id 06b4f5f4b806a9e16c90491a17b0a5e034e1c449
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -160,7 +160,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.20
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -235,12 +235,6 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.patch#/%{name}-whq-2bfe81e.patch
 Patch703:        %{whq_murl}/-/merge_requests/5925.patch#/%{name}-whq-mr5925.patch
 Patch704:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
-# Hangs with fsync
-Patch705:        %{whq_murl}/-/commit/e01b70851fae74c9a4067e00f4c48f17f319ed2d.patch#/%{name}-whq-e01b708.patch
-Patch706:        %{whq_murl}/-/commit/dc7bdc3db6aa057f0255765e18fb6f852244db4c.patch#/%{name}-whq-dc7bdc3.patch
-Patch707:        %{whq_murl}/-/commit/b6904756a4d922fcdfa4a2324654a8b4317db93b.patch#/%{name}-whq-b690475.patch
-Patch708:        %{whq_murl}/-/commit/291888be7400726792aa15985de8875ff0b02cf5.patch#/%{name}-whq-291888b.patch
-Patch709:        %{whq_murl}/-/commit/764162fc5c855ccd2d238bfc21361cc852e2685c.patch#/%{name}-whq-764162f.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -251,8 +245,7 @@ Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT
 
 # fsync
 Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
-Patch1021:       %{tkg_url}/proton/fsync/server_Abort_waiting_on_a_completion_port_when_closing_it.patch#/%{name}-tkg-server_Abort_waiting_on_a_completion_port_when_closing_it.patch
-Patch1022:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
+Patch1021:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
 # FS Hack
 Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
 Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
@@ -881,14 +874,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1
 %patch -P 704 -p1
 
-%if %{without ntsync}
-%patch -P 709 -p1 -R
-%patch -P 708 -p1 -R
-%patch -P 707 -p1 -R
-%patch -P 706 -p1 -R
-%patch -P 705 -p1 -R
-%endif
-
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
@@ -907,7 +892,6 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %if %{without ntsync}
 %patch -P 1020 -p1
 %patch -P 1021 -p1
-%patch -P 1022 -p1
 %endif
 %if %{with fshack}
 %patch -P 702 -p1 -R
