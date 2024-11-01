@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 dc17143230b5519f3c1a8da0079e00566bd4c5a8
+%global commit0 8198c4d8b91e22d68eb5c7327fd408e3b6abcc79
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20240804
+%global date 20241028
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -33,7 +33,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        139%{?dist}
+Release:        140%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -54,7 +54,6 @@ Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcnam
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch10:        %{url}/pull/128.patch#/%{name}-gh-pr128.patch
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 
 %if %{with absl}
@@ -91,12 +90,12 @@ BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  yasm
 
+BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(openssl)
 
 # dlopen

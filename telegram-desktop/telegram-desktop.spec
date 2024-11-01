@@ -42,7 +42,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.6.3
+Version:        5.7.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -78,11 +78,10 @@ Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
+Patch205:       0001-round_video_recorder.cpp-ffmpeg-7.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
-#Patch1008:       
-
-Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
+Patch1010:       0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
 Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltdp-0003-Disable-invite-peeking-restrictions.patch
 Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disable-accounts-limit.patch
@@ -175,6 +174,7 @@ BuildRequires:  pkgconfig(vpx) >= 1.10.0
 BuildRequires:  pkgconfig(webkitgtk-6.0)
 Requires:       webkitgtk6.0%{?_isa}
 
+BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -386,6 +386,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Nov 01 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.7.0-100
+- 5.7.0
+
 * Wed Oct 16 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.6.3-100
 - 5.6.3
 

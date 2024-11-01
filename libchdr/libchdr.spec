@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        21%{?dist}
+Release:        22%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -35,8 +35,9 @@ Patch18:        0006-dep-libchdr-Add-chd_get_compressed_size.patch
 Patch19:        0001-3rdparty-libchdr-Allow-cancelling-precache.patch
 Patch20:        0001-dep-libchdr-Add-EDC-computation-functions.patch
 Patch21:        0001-dep-libchdr-Update-and-fix-numerous-vulnerabilities.patch
-Patch22:        0001-Export-needed-functions.patch
-Patch23:        0001-Use-system-libzstd.patch
+Patch22:        0001-dep-libchdr-Correctness-fixes-for-9e5deb8.patch
+Patch23:        0001-Export-needed-functions.patch
+Patch24:        0001-Use-system-libzstd.patch
 
 
 BuildRequires:  cmake
