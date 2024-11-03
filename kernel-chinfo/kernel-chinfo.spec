@@ -185,7 +185,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.11.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 4df1650393a6e227b2f72ae9e6845e8399c5ea15
-%global opensuse_id 006a2b4f54ea8081d692c34fd38bd1c2b57d8bd1
+%global opensuse_id 97f5894b63a1d87380a143abc3e1c3044bd54573
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1146,7 +1146,7 @@ Patch7032:  %{pf_url}/62e2ed3103063e7415c81bb0cced6919a7788d5b.patch#/pf-cb-62e2
 Patch7033:  %{pf_url}/e9a89ecfadccf4ecd737f19ef969f68e8e4a0db8.patch#/pf-cb-e9a89ec.patch
 Patch7034:  %{pf_url}/cddbafb520bf5995387ab55a91f4f93557f9e8ff.patch#/pf-cb-cddbafb.patch
 Patch7035:  %{pf_url}/144960116376160a70fc7486bd502f6baf301048.patch#/pf-cb-1449601.patch
-Patch7036:  %{pf_url}/ccb68c42fc375aac8436d89082dda54379f8014b.patch#/pf-cb-ccb68c4.patch
+Patch7036:  %{pf_url}/5efd46e720efcb2a4e1cedecbb5e20987e3c3076.patch#/pf-cb-5efd46e.patch
 # bbr3
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
@@ -4439,6 +4439,9 @@ fi\
 #
 #
 %changelog
+* Sat Nov 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-501.chinfo
+- pf patch fix
+
 * Thu Oct 31 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-500.chinfo
 - 6.11.6
 

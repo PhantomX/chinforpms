@@ -255,7 +255,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.59
+Version:        1.2.67
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
