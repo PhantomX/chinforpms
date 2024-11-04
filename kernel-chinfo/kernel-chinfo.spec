@@ -185,7 +185,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.11.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 502
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1147,6 +1147,11 @@ Patch7033:  %{pf_url}/e9a89ecfadccf4ecd737f19ef969f68e8e4a0db8.patch#/pf-cb-e9a8
 Patch7034:  %{pf_url}/cddbafb520bf5995387ab55a91f4f93557f9e8ff.patch#/pf-cb-cddbafb.patch
 Patch7035:  %{pf_url}/144960116376160a70fc7486bd502f6baf301048.patch#/pf-cb-1449601.patch
 Patch7036:  %{pf_url}/5efd46e720efcb2a4e1cedecbb5e20987e3c3076.patch#/pf-cb-5efd46e.patch
+Patch7037:  %{pf_url}/eec0230573d0d3728cc03f59cfb5841b2fc2340b.patch#/pf-cb-eec0230.patch
+Patch7038:  %{pf_url}/7754f72bcb943dfd3f235792acc014609a8bf377.patch#/pf-cb-7754f72.patch
+Patch7039:  %{pf_url}/f86332350126a28b8f472c67a5908b0a71f94e03.patch#/pf-cb-f863323.patch
+Patch7040:  %{pf_url}/460d259c6a41ca3ed3d0264e9b8c839befb92ce6.patch#/pf-cb-460d259.patch
+Patch7041:  %{pf_url}/e10c3b94d2ed81cb12ffefe8109fe8cb456085a2.patch#/pf-cb-e10c3b9.patch
 # bbr3
 Patch7050:  %{pf_url}/7d1b1739e1799a164544752af97fa50b62e5cde7.patch#/pf-cb-7d1b173.patch
 # fixes
@@ -2078,6 +2083,11 @@ ApplyPatch %{PATCH7033}
 ApplyPatch %{PATCH7034}
 ApplyPatch %{PATCH7035}
 ApplyPatch %{PATCH7036}
+ApplyPatch %{PATCH7037}
+ApplyPatch %{PATCH7038}
+ApplyPatch %{PATCH7039}
+ApplyPatch %{PATCH7040}
+ApplyPatch %{PATCH7041}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -4439,6 +4449,9 @@ fi\
 #
 #
 %changelog
+* Sun Nov 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-502.chinfo
+- btrfs fixes
+
 * Sat Nov 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-501.chinfo
 - pf patch fix
 
