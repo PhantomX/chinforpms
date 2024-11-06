@@ -1,4 +1,4 @@
-From b4018405702469c6db62111ce3601a8cf2d9d0b1 Mon Sep 17 00:00:00 2001
+From d458fa5084fe0fd37672d3d1b80d00999d5b5435 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 9 Nov 2023 00:25:50 -0300
 Subject: [PATCH] Export needed functions
@@ -10,7 +10,7 @@ Subject: [PATCH] Export needed functions
  3 files changed, 25 insertions(+), 11 deletions(-)
 
 diff --git a/include/libchdr/cdrom.h b/include/libchdr/cdrom.h
-index dd18e6f..3e63dc5 100644
+index 27321e4..6ea2b56 100644
 --- a/include/libchdr/cdrom.h
 +++ b/include/libchdr/cdrom.h
 @@ -55,8 +55,22 @@ enum
@@ -53,7 +53,7 @@ index dd18e6f..3e63dc5 100644
  
  
 diff --git a/src/libchdr_cdrom.c b/src/libchdr_cdrom.c
-index 7acd539..6445ad3 100644
+index dacba66..e22e7dd 100644
 --- a/src/libchdr_cdrom.c
 +++ b/src/libchdr_cdrom.c
 @@ -20,7 +20,7 @@
@@ -73,7 +73,7 @@ index 7acd539..6445ad3 100644
 +CHD_EXPORT int cdrom_parse_subtype_string(const char* typestring, uint32_t* subtype, uint32_t* subsize)
  {
  	// https://github.com/mamedev/mame/blob/d2d54fb8ed53a2e86d308067da8414f85b5929b0/src/lib/util/cdrom.cpp#L767
-   if (!strcmp(typestring, "RW"))
+ 	if (!strcmp(typestring, "RW"))
 @@ -413,7 +413,7 @@ int ecc_verify(const uint8_t *sector)
   * @param [in,out]  sector  If non-null, the sector.
   */
@@ -90,17 +90,17 @@ index 7acd539..6445ad3 100644
 -uint32_t edc_compute(const uint8_t* data, uint32_t length)
 +CHD_EXPORT uint32_t edc_compute(const uint8_t* data, uint32_t length)
  {
-   uint32_t edc = 0;
-   for (uint32_t i = 0; i < length; i++)
+ 	uint32_t edc = 0;
+ 	for (uint32_t i = 0; i < length; i++)
 @@ -481,7 +481,7 @@ uint32_t edc_compute(const uint8_t* data, uint32_t length)
-   return edc;
+ 	return edc;
  }
  
 -void edc_set(uint8_t* dst, uint32_t edc)
 +CHD_EXPORT void edc_set(uint8_t* dst, uint32_t edc)
  {
-   // store in little-endian byte order
-   memcpy(dst, &edc, sizeof(edc));
+ 	// store in little-endian byte order
+ 	memcpy(dst, &edc, sizeof(edc));
 diff --git a/src/link.T b/src/link.T
 index ea37716..482dfb8 100644
 --- a/src/link.T

@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0264
-%global historyver 270
-%global infover 0270
+%global historyver 271
+%global infover 0271
 %global cheat_url https://www.mamecheat.co.uk
 %global history_url https://www.arcade-history.com
 %global info_url https://www.mameworld.info/mameinfo

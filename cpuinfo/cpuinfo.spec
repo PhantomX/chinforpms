@@ -1,6 +1,6 @@
-%global commit a5ff6df40ce528721cfc310c7ed43946d77404d5
+%global commit 8df44962d437a0477f07ba6b8843d0b6a48646a4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240911
+%global date 20241029
 %bcond_without snapshot
 
 %global commit1 1.6.1
@@ -19,7 +19,7 @@
 
 Name:           cpuinfo
 Version:        0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        CPU INFOrmation library
 
 License:        BSD-2-Clause

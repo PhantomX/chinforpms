@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        22%{?dist}
+Release:        23%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -23,21 +23,14 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+Patch0:         %{url}/pull/132.patch#/%{name}-gh-pr132.patch
+
 Patch10:        0001-Shared-library-fixes.patch
 Patch11:        0001-Use-system-lzma-sdk.patch
 Patch12:        0001-Do-not-build-static-library-if-INSTALL_STATIC_LIBS-O.patch
-Patch13:        0001-dep-libchdr-Re-add-progress-precaching.patch
-Patch14:        0002-dep-libchdr-Add-read_header-variants-for-user-provid.patch
-Patch15:        0003-dep-libchdr-Add-option-to-transfer-file-ownership.patch
-Patch16:        0004-dep-libchdr-Add-chd_is_matching_parent.patch
-Patch17:        0005-dep-libchdr-Add-subtype-parsing-functions.patch
-Patch18:        0006-dep-libchdr-Add-chd_get_compressed_size.patch
-Patch19:        0001-3rdparty-libchdr-Allow-cancelling-precache.patch
-Patch20:        0001-dep-libchdr-Add-EDC-computation-functions.patch
-Patch21:        0001-dep-libchdr-Update-and-fix-numerous-vulnerabilities.patch
-Patch22:        0001-dep-libchdr-Correctness-fixes-for-9e5deb8.patch
-Patch23:        0001-Export-needed-functions.patch
-Patch24:        0001-Use-system-libzstd.patch
+Patch13:        0001-Use-system-libzstd.patch
+Patch14:        0001-Updates-from-Stenzek.patch
+Patch15:        0001-Export-needed-functions.patch
 
 
 BuildRequires:  cmake
@@ -101,6 +94,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Wed Nov 06 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-23.20240929gitaaca599
+- Patchset cleanup
+
 * Fri Oct 25 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-21.20240929gitaaca599
 - Duckstation patchset update
 
