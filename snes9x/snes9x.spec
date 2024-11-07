@@ -1,10 +1,10 @@
 %undefine _cmake_shared_libs
 
-%bcond_without vma
+%bcond_with vma
 
-%global commit 0c228f0e0cae7039bd321f539652e9044250895d
+%global commit fd05ca7df5259a2cd0aa9204f331e0b05126c376
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241012
+%global date 20241028
 %bcond_without snapshot
 
 %global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
@@ -31,7 +31,7 @@
 
 Name:           snes9x
 Version:        1.63
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Super Nintendo Entertainment System emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -50,8 +50,8 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Remove-application-path-from-database-search.patch
-Patch3:         0001-format-security.patch
 Patch4:         0001-vma-set-missing-namespace.patch
+Patch5:         0001-vulkan-update-vk-detail-DynamicLoader.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -479,4 +479,3 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-qt.app
 
 * Sat Dec 18 2004 Matthias Saou <http://freshrpms.net/> 1.43-0
 - Initial RPM release.
-

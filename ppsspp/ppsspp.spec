@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 55b00d698262797e25c12a602a67875a046d21ce
+%global commit 2891f6374bc9287c5cc72205fba12203eff2fec5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241101
+%global date 20241106
 %bcond_without snapshot
 
 # Enable Qt build
@@ -74,6 +74,10 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 miniupnp
 
+%global commit12 ecf1e2f0fb58bf57aede582f64f3aaa27f4c6e2c
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 ppsspp-lua
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -84,8 +88,8 @@
 %global vma_ver 3.1.0
 
 Name:           ppsspp
-Version:        1.17.1
-Release:        112%{?dist}
+Version:        1.18.1
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -115,12 +119,12 @@ Source10:       https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}
 %if %{without miniupnpc}
 Source11:       https://github.com/miniupnp/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
+Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source100:       %{name}.appdata.xml
 Source101:       Makefile
 
 Patch0:         %{name}-noupdate.patch
-Patch1:         0001-Disable-Discord-support.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
@@ -261,6 +265,7 @@ tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
+tar -xf %{SOURCE12} -C ext/lua --strip-components 1
 %endif
 
 rm -rf ext/glew/GL
@@ -498,6 +503,9 @@ install -pm 0644 %{S:100} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Wed Nov 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1-100.20241106git2891f63
+- 1.18.1
+
 * Tue Feb 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.17.1-100.20240212gitf3635c4
 - 1.17.1
 

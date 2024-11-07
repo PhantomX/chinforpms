@@ -20,6 +20,6 @@ index f1805da..daad3b1 100644
 +	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false, CfgFlag::DEFAULT),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion, CfgFlag::DEFAULT),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, CfgFlag::PER_GAME),
- 	ConfigSetting("DiscordPresence", &g_Config.bDiscordPresence, true, CfgFlag::DEFAULT),  // Or maybe it makes sense to have it per-game? Race conditions abound...
+ 	ConfigSetting("DiscordRichPresence", &g_Config.bDiscordRichPresence, false, CfgFlag::DEFAULT),
 -- 
 2.20.1
