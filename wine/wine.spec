@@ -1,7 +1,7 @@
 %global commit 3a736901cdd588ba7fbb4318e5f5069793268a01
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20241025
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -106,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 78bd3f0c6d0beb781b87dd9d54fd186e8f7628ef
+%global wine_stagingver 9.21
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -117,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 06b4f5f4b806a9e16c90491a17b0a5e034e1c449
+%global tkg_id 29cbd842784cf0b9fe9a887af4ae1aefebc356f4
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -159,8 +159,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.20
-Release:        102%{?dist}
+Version:        9.21
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -1594,6 +1594,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/d3dx11_42.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dx11_43.%{winedll}
 %{_libdir}/wine/%{winedlldir}/d3dxof.%{winedll}
+%{_libdir}/wine/%{winedlldir}/dataexchange.%{winedll}
 %{_libdir}/wine/%{winedlldir}/davclnt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dbgeng.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dbghelp.%{winedll}
@@ -1693,6 +1694,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/icmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ieframe.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ieproxy.%{winedll}
+%{_libdir}/wine/%{winedlldir}/iertutil.%{winedll}
 %{_libdir}/wine/%{winedlldir}/imaadp32.%{wineacm}
 %{_libdir}/wine/%{winedlldir}/imagehlp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/imm32.%{winedll}
@@ -2082,6 +2084,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmic.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/wmilib.%{winesys}
 %{_libdir}/wine/%{winedlldir}/wmiutils.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmvcore.%{winedll}
@@ -2556,6 +2559,9 @@ fi
 
 
 %changelog
+* Sat Nov 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.21-100
+- 9.21
+
 * Sat Oct 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.20-100
 - 9.20
 

@@ -23,7 +23,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.2.6
+Version:        24.3.0~rc1
 Release:        1%{?dist}
 
 License:        MIT
@@ -44,11 +44,10 @@ BuildRequires:  gettext
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.110
+BuildRequires:  pkgconfig(libdrm) >= 2.4.121
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
-BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xfixes) >= 2.0
@@ -58,6 +57,7 @@ BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb-dri2) >= 1.8
 BuildRequires:  pkgconfig(dri2proto) >= 2.8
 BuildRequires:  pkgconfig(glproto) >= 1.4.14
+BuildRequires:  pkgconfig(xshmfence) >= 1.1
 BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xrandr) >= 1.3
 BuildRequires:  bison
@@ -107,10 +107,8 @@ EOF
 %build
 %meson \
   -Dplatforms=x11 \
-  -Ddri3=disabled \
   -Dgallium-drivers=softpipe \
   -Dgallium-vdpau=disabled \
-  -Dgallium-omx=disabled \
   -Dgallium-va=disabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
@@ -132,7 +130,6 @@ EOF
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
   -Db_ndebug=true \
   -Dbuild-tests=false \
-  -Dselinux=true \
   -Dlmsensors=disabled \
   -Dlibunwind=enabled \
   -Dandroid-libbacktrace=disabled \
@@ -176,6 +173,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Sat Nov 09 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0~rc1-1
+- 24.3.0-rc1
+
 * Wed Oct 30 2024 Phantom X <megaphantomx at hotmail dot com> - 24.2.6-1
 - 24.2.6
 

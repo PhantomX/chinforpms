@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        23%{?dist}
+Release:        24%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)

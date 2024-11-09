@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.2.6
+Version:        24.3.0~rc1
 Release:        100%{?dist}
 
 Epoch:          100
@@ -60,11 +60,10 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.110
+BuildRequires:  pkgconfig(libdrm) >= 2.4.121
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
-BuildRequires:  pkgconfig(libselinux)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xdamage) >= 1.1
@@ -89,7 +88,7 @@ BuildRequires:  pkgconfig(vdpau) >= 1.1
 BuildRequires:  pkgconfig(libva) >= 1.8.0
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm%{?llvm_pkgver}-devel >= 11.0.0
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= 15.0.0
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
@@ -140,11 +139,9 @@ echo %{version}-freeworld > VERSION
 %build
 %meson \
   -Dplatforms=x11 \
-  -Ddri3=enabled \
   -Dosmesa=false \
   -Dgallium-drivers=virgl,nouveau%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
   -Dgallium-vdpau=enabled \
-  -Dgallium-omx=disabled \
   -Dgallium-va=enabled \
   -Dgallium-xa=disabled \
   -Dgallium-nine=false \
@@ -157,7 +154,7 @@ echo %{version}-freeworld > VERSION
   -Dgles1=disabled \
   -Dgles2=disabled \
   -Dopengl=true \
-  -Dgbm=enabled \
+  -Dgbm=disabled \
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=enabled \
@@ -168,7 +165,6 @@ echo %{version}-freeworld > VERSION
   -Dvalgrind=%{?with_valgrind:enabled}%{!?with_valgrind:disabled} \
   -Db_ndebug=true \
   -Dbuild-tests=false \
-  -Dselinux=true \
   -Dlmsensors=disabled \
   -Dandroid-libbacktrace=disabled \
 %ifarch %{ix86}
@@ -229,6 +225,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sat Nov 09 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.3.0~rc1-100
+- 24.3.0-rc1
+
 * Wed Oct 30 2024 Phantom X <megaphantomx at hotmail dot com> - 100:24.2.6-100
 - 24.2.6
 
