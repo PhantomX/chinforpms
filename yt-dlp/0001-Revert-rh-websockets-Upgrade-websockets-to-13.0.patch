@@ -22,8 +22,8 @@ index f54980d..c8c053c 100644
 -    "websockets>=13.0",
 +    "websockets>=12.0",
  ]
- 
- [project.optional-dependencies]
+ curl-cffi = [
+     "curl-cffi==0.5.10; os_name=='nt' and implementation_name=='cpython'",
 diff --git a/test/test_websockets.py b/test/test_websockets.py
 index 06112cc..43f20ac 100644
 --- a/test/test_websockets.py

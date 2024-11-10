@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        24.10
+Version:        24.11
 Release:        100%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -95,6 +95,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Sun Nov 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:24.11-100
+- 24.11
+
 * Wed Oct 02 2024 Phantom X <megaphantomx at hotmail dot com> - 1:24.10-100
 - 24.10
 

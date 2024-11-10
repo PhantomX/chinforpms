@@ -45,9 +45,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 7b92cbcb9a233585c830c59ca4d442cd13bfc03f
+%global commit 2262ac1684cc9f770b5212f23648ca1b1b1737b3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241014
+%global date 20241106
 %bcond_without snapshot
 
 %global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
@@ -66,7 +66,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 8970ff4c34034dbb3594943d11f8c9d4c5512bd5
+%global commit15 bdd62314f00fca0e216bf8c963c8eeff6327e0cb
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -108,7 +108,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.33.17374
+Version:        0.0.34.17098
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -151,7 +151,6 @@ Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{src
 Source23:       https://github.com/nothings/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/16200.patch#/%{name}-gh-pr16200.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
@@ -482,6 +481,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Nov 10 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.34.17098-1.20241106git2262ac1
+- 0.0.34
+
 * Wed Sep 04 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.33.16889-1.20240903git23f9eb5
 - 0.0.33.16889
 
