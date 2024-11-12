@@ -117,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 29cbd842784cf0b9fe9a887af4ae1aefebc356f4
+%global tkg_id 4583dc43b65f2680d77dfb24ca6395806c404daa
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -160,7 +160,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.21
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -2559,6 +2559,9 @@ fi
 
 
 %changelog
+* Sun Nov 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.21-101
+- tkg fixes
+
 * Sat Nov 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:9.21-100
 - 9.21
 
