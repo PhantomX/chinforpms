@@ -1,6 +1,6 @@
-%global commit aaca599e18e43933fc193bd1b715c368c306208b
+%global commit b3974651d869c2f804e9879b063c23280d2ae617
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240929
+%global date 20241110
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        24%{?dist}
+Release:        25%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -22,8 +22,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-Patch0:         %{url}/pull/132.patch#/%{name}-gh-pr132.patch
 
 Patch10:        0001-Shared-library-fixes.patch
 Patch11:        0001-Use-system-lzma-sdk.patch

@@ -12,9 +12,9 @@ index 5e14392..f0324f4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -7,6 +7,7 @@ if(CMAKE_PROJECT_NAME STREQUAL "chdr")
- endif()
  option(INSTALL_STATIC_LIBS "Install static libraries" OFF)
  option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
+ option(WITH_SYSTEM_ZSTD "Use system provided zstd library" OFF)
 +option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
  
  option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)

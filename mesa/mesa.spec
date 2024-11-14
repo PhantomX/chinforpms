@@ -94,7 +94,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.3.0~rc1
+Version:        24.3.0~rc2
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -588,12 +588,12 @@ popd
 %{_libdir}/pkgconfig/osmesa.pc
 
 %files libgbm
+%{_libdir}/gbm/dri_gbm.so
 %{_libdir}/libgbm.so.1
 %{_libdir}/libgbm.so.1.*
 %files libgbm-devel
 %{_libdir}/libgbm.so
 %{_includedir}/gbm.h
-%{_libdir}/gbm/dri_gbm.so
 %{_libdir}/pkgconfig/gbm.pc
 
 %if 0%{?with_xa}
@@ -806,6 +806,9 @@ popd
 
 
 %changelog
+* Wed Nov 13 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0~rc2-100
+- 24.3.0-rc2
+
 * Sat Nov 09 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0~rc1-100
 - 24.3.0-rc1
 

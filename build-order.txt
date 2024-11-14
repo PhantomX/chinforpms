@@ -166,6 +166,7 @@ gtk4-chinfo
 hdiffpatch
 -hollywood
 -htop
+iat
 image-analyzer
 input-leap
 ipager

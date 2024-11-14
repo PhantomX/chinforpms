@@ -42,7 +42,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.7.2
+Version:        5.7.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -78,18 +78,14 @@ Patch201:       %{name}-realmute.patch
 # Always display scrollbars
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
-Patch205:       0001-round_video_recorder.cpp-ffmpeg-7.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
 Patch1010:       0001-Disable-sponsored-messages.patch
-Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
+Patch1011:       https://github.com/drizt/telegram-desktop-patches/raw/refs/heads/up-to-5.6.3/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
 Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltdp-0003-Disable-invite-peeking-restrictions.patch
 Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disable-accounts-limit.patch
-Patch1014:       %{ltdp_url}/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
-Patch1020:       0001-ltdp-0002-fixup-1.patch
-Patch1021:       0001-ltdp-0002-fixup-2.patch
-Patch1022:       0001-ltdp-0005-fixup-1.patch
-Patch1023:       0001-ltdp-0005-fixup-2.patch
+Patch1014:       https://github.com/drizt/telegram-desktop-patches/raw/refs/heads/up-to-5.6.3/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
+
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -239,14 +235,10 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 
 %if %{with ltdp}
 %patch -P 1010 -p1
-%patch -P 1020 -p1
 %patch -P 1011 -p1
-%patch -P 1021 -p1
 %patch -P 1012 -p1
 %patch -P 1013 -p1
-%patch -P 1022 -p1
 %patch -P 1014 -p1
-%patch -P 1023 -p1
 %endif
 
 # Unbundling libraries...
@@ -386,6 +378,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Nov 14 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.7.3-100
+- 5.7.3
+
 * Tue Nov 05 2024 Phantom X <megaphantomx at hotmail dot com> - 1:5.7.2-100
 - 5.7.2
 
