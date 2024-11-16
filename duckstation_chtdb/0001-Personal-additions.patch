@@ -248,8 +248,8 @@ index 76f462e..4ce096c 100644
  800A4ABA 6464
  #No Poison/Confused Status
 @@ -129068,8 +129156,9 @@ D009BEC2 BEFF
- #Select Weapon Slot 2\Drill Arm
- 3008C22F 0011
+ Option = Hunter Seeker:0x0010
+ Option = Drill Arm:0x0011
  
 -; [ Mega Man X3 (Europe) {SLES-00503} ]
 +; [ Mega Man X3 (Europe) {SLES-00503 | SLUS-00353} ]

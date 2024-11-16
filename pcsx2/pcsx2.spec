@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.2.0
+Version:        2.3.16
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -84,8 +84,6 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-cmake-use-system-discord-rpc.patch
-
-Patch20:        %{url}/pull/11958.patch#/%{name}-gh-pr11958.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
@@ -311,9 +309,6 @@ sed \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i pcsx2/Pcsx2Config.cpp pcsx2-qt/Translations.cpp
 
-echo 'set_source_files_properties(CDVD/ChdFileReader.cpp PROPERTIES COMPILE_FLAGS -fpermissive)' \
-  >> pcsx2/CMakeLists.txt
-
 
 %build
 
@@ -406,6 +401,9 @@ desktop-file-install \
 
 
 %changelog
+* Thu Nov 14 2024 Phantom X <megaphantomx at hotmail dot com> - 2.3.16-1
+- 2.3.16
+
 * Thu Oct 31 2024 Phantom X <megaphantomx at hotmail dot com> - 2.2.0-1
 - 2.2.0
 

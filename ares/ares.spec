@@ -21,7 +21,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        140
+Version:        141
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -157,6 +157,9 @@ done
 
 
 %changelog
+* Fri Nov 15 2024 Phantom X <megaphantomx at hotmail dot com> - 141-1
+- 141
+
 * Tue Aug 27 2024 Phantom X <megaphantomx at hotmail dot com> - 140-1
 - 140
 

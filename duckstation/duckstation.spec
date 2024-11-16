@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit 9733d8a0d15c0ec400564c54c848f7377b051bf2
+%global commit 3cf7a94d1e07043dba7890be194684e3288d7254
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241031
+%global date 20241113
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7817
+Version:        0.1.7893
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -119,7 +119,7 @@ BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(libzip) >= 1.10.1
+BuildRequires:  pkgconfig(libzip) >= 1.11.1
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
@@ -133,7 +133,10 @@ BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(WebP)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  cmake(xbyak)
+BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)

@@ -6,10 +6,10 @@
 %global soname_ver 1
 %global api_ver 1
 
-%global vendor_hash cd906f06ac3c122109f5c321a1ffebbe
+%global vendor_hash 45b3bbdbc62375ec34e3ebea1e960849
 
 Name:           librashader
-Version:        0.4.3
+Version:        0.5.1
 Release:        1%{?dist}
 Summary:        RetroArch shaders for all
 
@@ -17,6 +17,7 @@ License:        MPL-2.0 OR GPL-3.0-only%{?with_vendor: AND ((0BSD OR MIT OR Apac
 URL:            https://github.com/SnowflakePowered/%{name}
 Source0:        %{url}/archive/%{name}-v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
+# rust2rpm -t fedora -V --no-rpmautospec --ignore-missing-license-files ./Cargo.toml %%{version}
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 
@@ -25,17 +26,24 @@ Patch0:         0001-RPM-fixes.patch
 ExclusiveArch:  %{rust_arches}
 
 BuildRequires:  cargo-rpm-macros >= 24
+BuildRequires:  cmake
 BuildRequires:  rust-packaging
 BuildRequires:  gcc
 BuildRequires:  g++
+BuildRequires:  make
 BuildRequires:  patchelf
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xrandr)
 Requires:       libglvnd-glx%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 %if %{with vendor}
-Provides:       bundled(crate(ab_glyph)) = 0.2.28
+# for i in * ;do echo "Provides:       bundled(crate(${i%%-*})) = ${i##*-}";done
+Provides:       bundled(crate(ab_glyph)) = 0.2.29
 Provides:       bundled(crate(ab_glyph_rasterizer)) = 0.1.8
-Provides:       bundled(crate(adler)) = 1.0.2
 Provides:       bundled(crate(adler2)) = 2.0.0
 Provides:       bundled(crate(ahash)) = 0.7.8
 Provides:       bundled(crate(ahash)) = 0.8.11
@@ -44,21 +52,26 @@ Provides:       bundled(crate(allocator-api2)) = 0.2.18
 Provides:       bundled(crate(android-activity)) = 0.5.2
 Provides:       bundled(crate(android-properties)) = 0.2.2
 Provides:       bundled(crate(android_system_properties)) = 0.1.5
+Provides:       bundled(crate(anstream)) = 0.3.2
+Provides:       bundled(crate(anstyle)) = 1.0.8
+Provides:       bundled(crate(anstyle-parse)) = 0.2.5
+Provides:       bundled(crate(anstyle-query)) = 1.1.1
+Provides:       bundled(crate(anstyle-wincon)) = 1.0.2
+Provides:       bundled(crate(anyhow)) = 1.0.89
 Provides:       bundled(crate(arc-swap)) = 1.7.1
 Provides:       bundled(crate(array-concat)) = 0.5.3
 Provides:       bundled(crate(array-init)) = 2.1.0
 Provides:       bundled(crate(arrayref)) = 0.3.9
 Provides:       bundled(crate(arrayvec)) = 0.7.6
-Provides:       bundled(crate(asdsad)) = asdsad
 Provides:       bundled(crate(ash)) = 0.38.0+1.3.281
 Provides:       bundled(crate(ash-window)) = 0.13.0
 Provides:       bundled(crate(as-raw-xcb-connection)) = 1.0.1
-Provides:       bundled(crate(async-trait)) = 0.1.82
+Provides:       bundled(crate(async-trait)) = 0.1.83
 Provides:       bundled(crate(atomic-waker)) = 1.1.2
-Provides:       bundled(crate(atty)) = 0.2.14
-Provides:       bundled(crate(autocfg)) = 1.3.0
+Provides:       bundled(crate(autocfg)) = 1.4.0
 Provides:       bundled(crate(auto_ops)) = 0.3.0
 Provides:       bundled(crate(base64)) = 0.13.1
+Provides:       bundled(crate(base64)) = 0.22.1
 Provides:       bundled(crate(bincode-2.0.0)) = rc.3
 Provides:       bundled(crate(bincode_derive-2.0.0)) = rc.3
 Provides:       bundled(crate(bitflags)) = 1.3.2
@@ -79,23 +92,25 @@ Provides:       bundled(crate(bytemuck)) = 1.18.0
 Provides:       bundled(crate(bytemuck_derive)) = 1.7.1
 Provides:       bundled(crate(byteorder)) = 1.5.0
 Provides:       bundled(crate(byteorder-lite)) = 0.1.0
-Provides:       bundled(crate(bytes)) = 1.7.1
+Provides:       bundled(crate(bytes)) = 1.7.2
 Provides:       bundled(crate(calloop)) = 0.12.4
 Provides:       bundled(crate(calloop-wayland-source)) = 0.2.0
-Provides:       bundled(crate(cbindgen)) = 0.26.0
-Provides:       bundled(crate(cc)) = 1.1.18
+Provides:       bundled(crate(carlog)) = 0.1.0
+Provides:       bundled(crate(cbindgen)) = 0.27.0
+Provides:       bundled(crate(cc)) = 1.1.28
 Provides:       bundled(crate(cesu8)) = 1.1.0
 Provides:       bundled(crate(cfg_aliases)) = 0.1.1
 Provides:       bundled(crate(cfg-if)) = 1.0.0
-Provides:       bundled(crate(clap)) = 3.2.25
-Provides:       bundled(crate(clap)) = 4.1.0
-Provides:       bundled(crate(clap_derive)) = 4.1.0
-Provides:       bundled(crate(clap_lex)) = 0.2.4
-Provides:       bundled(crate(clap_lex)) = 0.3.3
+Provides:       bundled(crate(clap)) = 4.3.0
+Provides:       bundled(crate(clap_builder)) = 4.3.0
+Provides:       bundled(crate(clap_derive)) = 4.3.0
+Provides:       bundled(crate(clap_lex)) = 0.5.1
 Provides:       bundled(crate(cmake)) = 0.1.51
 Provides:       bundled(crate(cocoa)) = 0.25.0
 Provides:       bundled(crate(cocoa-foundation)) = 0.1.2
 Provides:       bundled(crate(codespan-reporting)) = 0.11.1
+Provides:       bundled(crate(colorchoice)) = 1.0.2
+Provides:       bundled(crate(colored)) = 2.1.0
 Provides:       bundled(crate(color_quant)) = 1.1.0
 Provides:       bundled(crate(com)) = 0.6.0
 Provides:       bundled(crate(combine)) = 4.6.7
@@ -115,11 +130,11 @@ Provides:       bundled(crate(crc-catalog)) = 2.4.0
 Provides:       bundled(crate(crossbeam-deque)) = 0.8.5
 Provides:       bundled(crate(crossbeam-epoch)) = 0.9.18
 Provides:       bundled(crate(crossbeam-utils)) = 0.8.20
+Provides:       bundled(crate(crunchy)) = 0.2.2
 Provides:       bundled(crate(crypto-common)) = 0.1.6
-Provides:       bundled(crate(cty)) = 0.2.2
 Provides:       bundled(crate(cursor-icon)) = 1.1.0
 Provides:       bundled(crate(d3d12)) = 22.0.0
-Provides:       bundled(crate(d3d12-descriptor-heap)) = 0.1.2
+Provides:       bundled(crate(d3d12-descriptor-heap)) = 0.2.0
 Provides:       bundled(crate(data-encoding)) = 2.6.0
 Provides:       bundled(crate(digest)) = 0.10.7
 Provides:       bundled(crate(dirs-next)) = 1.0.2
@@ -135,9 +150,10 @@ Provides:       bundled(crate(env_logger)) = 0.10.2
 Provides:       bundled(crate(equivalent)) = 1.0.1
 Provides:       bundled(crate(errno)) = 0.3.9
 Provides:       bundled(crate(fastrand)) = 2.1.1
-Provides:       bundled(crate(fdeflate)) = 0.3.4
+Provides:       bundled(crate(fdeflate)) = 0.3.5
 Provides:       bundled(crate(fixedbitset)) = 0.4.2
-Provides:       bundled(crate(flate2)) = 1.0.33
+Provides:       bundled(crate(flate2)) = 1.0.34
+Provides:       bundled(crate(fnv)) = 1.0.7
 Provides:       bundled(crate(foreign-types)) = 0.5.0
 Provides:       bundled(crate(foreign-types-macros)) = 0.2.3
 Provides:       bundled(crate(foreign-types-shared)) = 0.3.1
@@ -148,15 +164,14 @@ Provides:       bundled(crate(gethostname)) = 0.4.3
 Provides:       bundled(crate(getrandom)) = 0.2.15
 Provides:       bundled(crate(gfx-maths)) = 0.2.9
 Provides:       bundled(crate(gif)) = 0.13.1
-Provides:       bundled(crate(gl)) = 0.14.0
-Provides:       bundled(crate(glfw)) = 0.47.0
-Provides:       bundled(crate(glfw)) = 0.49.1
-Provides:       bundled(crate(glfw-sys)) = 4.0.0+3.3.5
+Provides:       bundled(crate(glfw)) = 0.58.0
+Provides:       bundled(crate(glfw-sys)) = 5.0.0+3.3.9
 Provides:       bundled(crate(gl_generator)) = 0.14.0
 Provides:       bundled(crate(glob)) = 0.3.1
 Provides:       bundled(crate(glow)) = 0.13.1
-Provides:       bundled(crate(glslang)) = 0.4.0
-Provides:       bundled(crate(glslang-sys)) = 0.4.0
+Provides:       bundled(crate(glow)) = 0.14.1
+Provides:       bundled(crate(glslang)) = 0.6.0
+Provides:       bundled(crate(glslang-sys)) = 0.6.1+46ef757
 Provides:       bundled(crate(glutin_wgl_sys)) = 0.6.0
 Provides:       bundled(crate(gpu-alloc)) = 0.6.0
 Provides:       bundled(crate(gpu-allocator)) = 0.26.0
@@ -164,21 +179,23 @@ Provides:       bundled(crate(gpu-allocator)) = 0.27.0
 Provides:       bundled(crate(gpu-alloc-types)) = 0.3.0
 Provides:       bundled(crate(gpu-descriptor)) = 0.3.0
 Provides:       bundled(crate(gpu-descriptor-types)) = 0.2.0
+Provides:       bundled(crate(half)) = 2.4.1
 Provides:       bundled(crate(halfbrown)) = 0.2.5
 Provides:       bundled(crate(hashbrown)) = 0.12.3
 Provides:       bundled(crate(hashbrown)) = 0.14.5
+Provides:       bundled(crate(hashbrown)) = 0.15.0
 Provides:       bundled(crate(hassle-rs)) = 0.11.0
 Provides:       bundled(crate(heck)) = 0.4.1
-Provides:       bundled(crate(hermit-abi)) = 0.1.19
 Provides:       bundled(crate(hermit-abi)) = 0.4.0
 Provides:       bundled(crate(hexf-parse)) = 0.2.1
 Provides:       bundled(crate(humantime)) = 2.1.0
 Provides:       bundled(crate(icrate)) = 0.0.4
 Provides:       bundled(crate(image)) = 0.25.2
+Provides:       bundled(crate(image-compare)) = 0.4.1
 Provides:       bundled(crate(image-webp)) = 0.1.3
-Provides:       bundled(crate(indexmap)) = 1.9.3
-Provides:       bundled(crate(indexmap)) = 2.5.0
+Provides:       bundled(crate(indexmap)) = 2.6.0
 Provides:       bundled(crate(is-terminal)) = 0.4.13
+Provides:       bundled(crate(itertools)) = 0.12.1
 Provides:       bundled(crate(itoa)) = 1.0.11
 Provides:       bundled(crate(jni)) = 0.21.1
 Provides:       bundled(crate(jni-sys)) = 0.3.0
@@ -189,8 +206,9 @@ Provides:       bundled(crate(js-sys)) = 0.3.70
 Provides:       bundled(crate(khronos_api)) = 3.1.0
 Provides:       bundled(crate(khronos-egl)) = 6.0.0
 Provides:       bundled(crate(lazy_static)) = 1.5.0
-Provides:       bundled(crate(libc)) = 0.2.158
+Provides:       bundled(crate(libc)) = 0.2.159
 Provides:       bundled(crate(libloading)) = 0.8.5
+Provides:       bundled(crate(libm)) = 0.2.8
 Provides:       bundled(crate(libredox)) = 0.0.2
 Provides:       bundled(crate(libredox)) = 0.1.3
 Provides:       bundled(crate(linked-hash-map)) = 0.5.6
@@ -200,12 +218,10 @@ Provides:       bundled(crate(lock_api)) = 0.4.12
 Provides:       bundled(crate(log)) = 0.4.22
 Provides:       bundled(crate(mach-siegbert-vogt-dxcsa)) = 0.1.3
 Provides:       bundled(crate(malloc_buf)) = 0.0.6
-Provides:       bundled(crate(matches)) = 0.1.10
 Provides:       bundled(crate(memchr)) = 2.7.4
 Provides:       bundled(crate(memmap2)) = 0.9.5
 Provides:       bundled(crate(metal)) = 0.29.0
 Provides:       bundled(crate(minimal-lexical)) = 0.2.1
-Provides:       bundled(crate(miniz_oxide)) = 0.7.4
 Provides:       bundled(crate(miniz_oxide)) = 0.8.0
 Provides:       bundled(crate(naga)) = 22.1.0
 Provides:       bundled(crate(ndk)) = 0.8.0
@@ -236,26 +252,26 @@ Provides:       bundled(crate(objc2-metal)) = 0.2.2
 Provides:       bundled(crate(objc2-metal-kit)) = 0.2.2
 Provides:       bundled(crate(objc2-quartz-core)) = 0.2.2
 Provides:       bundled(crate(objc-sys)) = 0.3.5
-Provides:       bundled(crate(once_cell)) = 1.20.0
+Provides:       bundled(crate(once_cell)) = 1.20.2
 Provides:       bundled(crate(orbclient)) = 0.3.47
+Provides:       bundled(crate(ordered-float)) = 4.3.0
 Provides:       bundled(crate(ordered-multimap)) = 0.4.3
-Provides:       bundled(crate(os_str_bytes)) = 6.6.1
-Provides:       bundled(crate(owned_ttf_parser)) = 0.24.0
+Provides:       bundled(crate(owned_ttf_parser)) = 0.25.0
 Provides:       bundled(crate(parking_lot)) = 0.12.3
 Provides:       bundled(crate(parking_lot_core)) = 0.9.10
 Provides:       bundled(crate(paste)) = 1.0.15
 Provides:       bundled(crate(pathdiff)) = 0.2.1
 Provides:       bundled(crate(percent-encoding)) = 2.3.1
 Provides:       bundled(crate(persy)) = 1.5.1
-Provides:       bundled(crate(pest)) = 2.7.12
-Provides:       bundled(crate(pest_derive)) = 2.7.12
-Provides:       bundled(crate(pest_generator)) = 2.7.12
-Provides:       bundled(crate(pest_meta)) = 2.7.12
+Provides:       bundled(crate(pest)) = 2.7.13
+Provides:       bundled(crate(pest_derive)) = 2.7.13
+Provides:       bundled(crate(pest_generator)) = 2.7.13
+Provides:       bundled(crate(pest_meta)) = 2.7.13
 Provides:       bundled(crate(petgraph)) = 0.6.5
 Provides:       bundled(crate(pin-project-lite)) = 0.2.14
-Provides:       bundled(crate(pkg-config)) = 0.3.30
+Provides:       bundled(crate(pkg-config)) = 0.3.31
 Provides:       bundled(crate(platform-dirs)) = 0.3.0
-Provides:       bundled(crate(png)) = 0.17.13
+Provides:       bundled(crate(png)) = 0.17.14
 Provides:       bundled(crate(polling)) = 3.7.3
 Provides:       bundled(crate(pollster)) = 0.3.0
 Provides:       bundled(crate(pp-rs)) = 0.2.1
@@ -263,31 +279,29 @@ Provides:       bundled(crate(ppv-lite86)) = 0.2.20
 Provides:       bundled(crate(presser)) = 0.3.1
 Provides:       bundled(crate(proc-macro2)) = 1.0.86
 Provides:       bundled(crate(proc-macro-crate)) = 3.2.0
-Provides:       bundled(crate(proc-macro-error)) = 1.0.4
-Provides:       bundled(crate(proc-macro-error-attr)) = 1.0.4
 Provides:       bundled(crate(profiling)) = 1.0.15
 Provides:       bundled(crate(quick-error)) = 2.0.1
-Provides:       bundled(crate(quick-xml)) = 0.36.1
+Provides:       bundled(crate(quick-xml)) = 0.36.2
 Provides:       bundled(crate(quote)) = 1.0.37
 Provides:       bundled(crate(radium)) = 0.7.0
 Provides:       bundled(crate(rand)) = 0.8.5
 Provides:       bundled(crate(rand_chacha)) = 0.3.1
 Provides:       bundled(crate(rand_core)) = 0.6.4
 Provides:       bundled(crate(range-alloc)) = 0.1.3
-Provides:       bundled(crate(raw-window-handle)) = 0.4.3
-Provides:       bundled(crate(raw-window-handle)) = 0.5.2
 Provides:       bundled(crate(raw-window-handle)) = 0.6.2
 Provides:       bundled(crate(raw-window-metal)) = 0.4.0
 Provides:       bundled(crate(rayon)) = 1.10.0
 Provides:       bundled(crate(rayon-core)) = 1.12.1
 Provides:       bundled(crate(redox_syscall)) = 0.3.5
 Provides:       bundled(crate(redox_syscall)) = 0.4.1
-Provides:       bundled(crate(redox_syscall)) = 0.5.4
+Provides:       bundled(crate(redox_syscall)) = 0.5.7
 Provides:       bundled(crate(redox_users)) = 0.4.6
-Provides:       bundled(crate(regex)) = 1.10.6
-Provides:       bundled(crate(regex-automata)) = 0.4.7
-Provides:       bundled(crate(regex-syntax)) = 0.8.4
+Provides:       bundled(crate(regex)) = 1.11.0
+Provides:       bundled(crate(regex-automata)) = 0.4.8
+Provides:       bundled(crate(regex-syntax)) = 0.8.5
 Provides:       bundled(crate(renderdoc-sys)) = 1.1.0
+Provides:       bundled(crate(rmp)) = 0.8.14
+Provides:       bundled(crate(rmp-serde)) = 1.3.0
 Provides:       bundled(crate(ron)) = 0.7.1
 Provides:       bundled(crate(rspirv-0.12.0+sdk)) = 1.3.268.0
 Provides:       bundled(crate(rustc-hash)) = 1.1.0
@@ -300,8 +314,10 @@ Provides:       bundled(crate(scoped-tls)) = 1.0.1
 Provides:       bundled(crate(scopeguard)) = 1.2.0
 Provides:       bundled(crate(sctk-adwaita)) = 0.8.3
 Provides:       bundled(crate(serde)) = 1.0.210
+Provides:       bundled(crate(serde_bytes)) = 0.11.15
 Provides:       bundled(crate(serde_derive)) = 1.0.210
 Provides:       bundled(crate(serde_json)) = 1.0.128
+Provides:       bundled(crate(serde_spanned)) = 0.6.8
 Provides:       bundled(crate(sha2)) = 0.10.8
 Provides:       bundled(crate(shlex)) = 1.3.0
 Provides:       bundled(crate(simd-adler32)) = 0.3.7
@@ -311,40 +327,46 @@ Provides:       bundled(crate(smallvec)) = 1.13.2
 Provides:       bundled(crate(smartstring)) = 1.0.1
 Provides:       bundled(crate(smithay-client-toolkit)) = 0.18.1
 Provides:       bundled(crate(smol_str)) = 0.2.2
+Provides:       bundled(crate(spirq)) = 1.2.2
 Provides:       bundled(crate(spirv-0.3.0+sdk)) = 1.3.268.0
-Provides:       bundled(crate(spirv-cross2)) = 0.4.2
+Provides:       bundled(crate(spirv-cross2)) = 0.4.6
 Provides:       bundled(crate(spirv-cross2-derive)) = 0.1.0
-Provides:       bundled(crate(spirv-cross-sys)) = 0.4.0
+Provides:       bundled(crate(spirv-cross-sys)) = 0.4.2+b28b355
 Provides:       bundled(crate(spirv-to-dxil)) = 0.4.7
 Provides:       bundled(crate(spirv-to-dxil-sys)) = 0.4.7
+Provides:       bundled(crate(spq-core)) = 1.0.5
+Provides:       bundled(crate(spq-spvasm)) = 0.1.4
 Provides:       bundled(crate(sptr)) = 0.3.2
+Provides:       bundled(crate(stable_deref_trait)) = 1.2.0
 Provides:       bundled(crate(static_assertions)) = 1.1.0
 Provides:       bundled(crate(strict-num)) = 0.1.1
 Provides:       bundled(crate(strsim)) = 0.10.0
 Provides:       bundled(crate(syn)) = 1.0.109
-Provides:       bundled(crate(syn)) = 2.0.77
+Provides:       bundled(crate(syn)) = 2.0.79
 Provides:       bundled(crate(tap)) = 1.0.1
-Provides:       bundled(crate(tempfile)) = 3.12.0
+Provides:       bundled(crate(tempfile)) = 3.13.0
 Provides:       bundled(crate(termcolor)) = 1.4.1
-Provides:       bundled(crate(textwrap)) = 0.16.1
-Provides:       bundled(crate(thiserror)) = 1.0.63
-Provides:       bundled(crate(thiserror-impl)) = 1.0.63
+Provides:       bundled(crate(thiserror)) = 1.0.64
+Provides:       bundled(crate(thiserror-impl)) = 1.0.64
 Provides:       bundled(crate(tiff)) = 0.9.1
 Provides:       bundled(crate(tiny-skia)) = 0.11.4
 Provides:       bundled(crate(tiny-skia-path)) = 0.11.4
 Provides:       bundled(crate(toml)) = 0.5.11
+Provides:       bundled(crate(toml)) = 0.8.19
 Provides:       bundled(crate(toml_datetime)) = 0.6.8
-Provides:       bundled(crate(toml_edit)) = 0.22.20
+Provides:       bundled(crate(toml_edit)) = 0.22.22
 Provides:       bundled(crate(tracing)) = 0.1.40
 Provides:       bundled(crate(tracing-core)) = 0.1.32
-Provides:       bundled(crate(ttf-parser)) = 0.24.1
+Provides:       bundled(crate(triomphe)) = 0.1.13
+Provides:       bundled(crate(ttf-parser)) = 0.25.0
 Provides:       bundled(crate(typenum)) = 1.17.0
-Provides:       bundled(crate(ucd-trie)) = 0.1.6
+Provides:       bundled(crate(ucd-trie)) = 0.1.7
 Provides:       bundled(crate(unicode-ident)) = 1.0.13
 Provides:       bundled(crate(unicode-segmentation)) = 1.12.0
-Provides:       bundled(crate(unicode-width)) = 0.1.13
-Provides:       bundled(crate(unicode-xid)) = 0.2.5
+Provides:       bundled(crate(unicode-width)) = 0.1.14
+Provides:       bundled(crate(unicode-xid)) = 0.2.6
 Provides:       bundled(crate(unsigned-varint)) = 0.8.0
+Provides:       bundled(crate(utf8parse)) = 0.2.2
 Provides:       bundled(crate(vec_extract_if_polyfill)) = 0.1.0
 Provides:       bundled(crate(version_check)) = 0.9.5
 Provides:       bundled(crate(virtue)) = 0.0.13
@@ -415,7 +437,7 @@ Provides:       bundled(crate(windows_x86_64_msvc)) = 0.42.2
 Provides:       bundled(crate(windows_x86_64_msvc)) = 0.48.5
 Provides:       bundled(crate(windows_x86_64_msvc)) = 0.52.6
 Provides:       bundled(crate(winit)) = 0.29.15
-Provides:       bundled(crate(winnow)) = 0.6.18
+Provides:       bundled(crate(winnow)) = 0.6.20
 Provides:       bundled(crate(wyz)) = 0.5.1
 Provides:       bundled(crate(x11-dl)) = 2.21.0
 Provides:       bundled(crate(x11rb)) = 0.13.1
@@ -516,6 +538,9 @@ install -pm0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
 
 %changelog
+* Fri Nov 15 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.1-1
+- 0.5.1
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.4.3-1
 - 0.4.3
 

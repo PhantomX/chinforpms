@@ -1,0 +1,90 @@
+From 0bcc9467c868b89a24271105988663667d704dd0 Mon Sep 17 00:00:00 2001
+From: Stenzek <stenzek@gmail.com>
+Date: Mon, 10 Jun 2024 02:27:12 +1000
+Subject: [PATCH] 3rdparty/libchdr: Allow cancelling precache
+
+---
+ include/libchdr/chd.h |  6 ++++--
+ src/libchdr_chd.c     | 16 +++++++++-------
+ 2 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/include/libchdr/chd.h b/include/libchdr/chd.h
+index 7cb4b61..3c4e892 100644
+--- a/include/libchdr/chd.h
++++ b/include/libchdr/chd.h
+@@ -48,6 +48,7 @@ extern "C" {
+ 
+ #include <libchdr/coretypes.h>
+ #include <libchdr/chdconfig.h>
++#include <stdbool.h>
+ 
+ /***************************************************************************
+ 
+@@ -290,7 +291,8 @@ enum _chd_error
+ 	CHDERR_INVALID_STATE,
+ 	CHDERR_OPERATION_PENDING,
+ 	CHDERR_NO_ASYNC_OPERATION,
+-	CHDERR_UNSUPPORTED_FORMAT
++	CHDERR_UNSUPPORTED_FORMAT,
++	CHDERR_CANCELLED,
+ };
+ typedef enum _chd_error chd_error;
+ 
+@@ -382,7 +384,7 @@ CHD_EXPORT chd_error chd_open(const char *filename, int mode, chd_file *parent,
+ 
+ /* precache underlying file */
+ CHD_EXPORT chd_error chd_precache(chd_file *chd);
+-CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t pos, size_t total, void* param), void* param);
++CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, bool(*progress)(size_t pos, size_t total, void* param), void* param);
+ 
+ /* close a CHD file */
+ CHD_EXPORT void chd_close(chd_file *chd);
+diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
+index e966ffe..d21b963 100644
+--- a/src/libchdr_chd.c
++++ b/src/libchdr_chd.c
+@@ -2083,12 +2083,12 @@ CHD_EXPORT chd_error chd_precache(chd_file* chd)
+ 	return chd_precache_progress(chd, NULL, NULL);
+ }
+ 
+-CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t pos, size_t total, void* param), void* param)
++CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, bool(*progress)(size_t pos, size_t total, void* param), void* param)
+ {
+ #define PRECACHE_CHUNK_SIZE 16 * 1024 * 1024
+ 
+ 	size_t count;
+-	uint64_t done, req_count, last_update_done, update_interval;
++	uint64_t done, req_count;
+ 
+ 	if (chd->file_cache == NULL)
+ 	{
+@@ -2099,8 +2099,6 @@ CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t
+ 			return CHDERR_READ_ERROR;
+ 
+ 		done = 0;
+-		last_update_done = 0;
+-		update_interval = ((chd->file_size + 99) / 100);
+ 
+ 		while (done < chd->file_size)
+ 		{
+@@ -2117,10 +2115,14 @@ CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t
+ 			}
+ 
+ 			done += req_count;
+-			if (progress != NULL && (done - last_update_done) >= update_interval && done != chd->file_size)
++			if (progress != NULL)
+ 			{
+-				last_update_done = done;
+-				progress(done, chd->file_size, param);
++				if (!progress(done, chd->file_size, param))
++				{
++					free(chd->file_cache);
++					chd->file_cache = NULL;
++					return CHDERR_CANCELLED;
++				}
+ 			}
+ 		}
+ 	}
+-- 
+2.47.0
+

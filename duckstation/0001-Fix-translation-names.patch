@@ -21,7 +21,7 @@ index f50e315..6d2b729 100644
    translations/duckstation-qt_fr.ts
    translations/duckstation-qt_he.ts
    translations/duckstation-qt_id.ts
-@@ -160,11 +160,11 @@ set(TS_FILES
+@@ -160,12 +160,12 @@ set(TS_FILES
    translations/duckstation-qt_ko.ts
    translations/duckstation-qt_nl.ts
    translations/duckstation-qt_pl.ts
@@ -30,6 +30,7 @@ index f50e315..6d2b729 100644
 +  translations/duckstation-qt_pt_BR.ts
 +  translations/duckstation-qt_pt_PT.ts
    translations/duckstation-qt_ru.ts
+   translations/duckstation-qt_sv.ts
    translations/duckstation-qt_tr.ts
 -  translations/duckstation-qt_zh-CN.ts
 +  translations/duckstation-qt_zh_CN.ts
@@ -49,7 +50,7 @@ index 1e944fd..52c4e83 100644
                                                                              {"Français", "fr"},
                                                                              {"עברית", "he"},
                                                                              {"Bahasa Indonesia", "id"},
-@@ -192,11 +192,11 @@ std::span<const std::pair<const char*, const char*>> Host::GetAvailableLanguageL
+@@ -192,12 +192,12 @@ std::span<const std::pair<const char*, const char*>> Host::GetAvailableLanguageL
                                                                              {"Italiano", "it"},
                                                                              {"Nederlands", "nl"},
                                                                              {"Polski", "pl"},
@@ -58,6 +59,7 @@ index 1e944fd..52c4e83 100644
 +                                                                            {"Português (Pt)", "pt_PT"},
 +                                                                            {"Português (Br)", "pt_BR"},
                                                                              {"Русский", "ru"},
+                                                                             {"Svenska", "sv"},
                                                                              {"Türkçe", "tr"},
 -                                                                            {"简体中文", "zh-CN"}};
 +                                                                            {"简体中文", "zh_CN"}};

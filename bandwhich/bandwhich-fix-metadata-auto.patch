@@ -1,0 +1,32 @@
+--- bandwhich-0.23.1/Cargo.toml	2024-10-08T06:56:26+00:00
++++ bandwhich-0.23.1/Cargo.toml	2024-11-15T21:34:18.192400+00:00
+@@ -24,7 +24,6 @@
+ default = []
+ # UI tests temporarily disabled by default, until big refactor is done
+ ui_test = []
+-
+ [dependencies]
+ anyhow = { version = "1.0.89", features = ["backtrace"] }
+ async-trait = "0.1.83"
+@@ -51,13 +50,6 @@
+ [target.'cfg(any(target_os = "android", target_os = "linux"))'.dependencies]
+ procfs = "0.17.0"
+ 
+-[target.'cfg(any(target_os = "macos", target_os = "freebsd"))'.dependencies]
+-regex = "1.11.0"
+-
+-[target.'cfg(target_os = "windows")'.dependencies]
+-netstat2 = "0.9.1"
+-sysinfo = "0.32.0"
+-
+ [dev-dependencies]
+ insta = "1.40.0"
+ packet-builder = { version = "0.7.0", git = "https://github.com/cyqsimon/packet_builder.git", branch = "patch-update" }
+@@ -73,7 +65,3 @@
+ clap_mangen = "0.2.23"
+ derivative = "2.2.0"
+ strum = { version = "0.26.3", features = ["derive"] }
+-
+-[target.'cfg(target_os = "windows")'.build-dependencies]
+-http_req = "0.12.0"
+-zip = "2.2.0"

@@ -4,7 +4,6 @@ aacgain
 ares
 audacious-plugins-freeworld
 -authy
-bandwhich
 bh-fonts
 binkplayer
 blastem-bindata

@@ -93,6 +93,7 @@ asbru-cm
 atool
 audacious
 -authenticator
+bandwhich
 -barrier
 -bashdb
 -bcg729

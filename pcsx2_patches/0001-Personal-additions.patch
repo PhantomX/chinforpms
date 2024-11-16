@@ -1,4 +1,4 @@
-From acf05f0dee5ce0cab4b70a3e7381a2473c123d60 Mon Sep 17 00:00:00 2001
+From 081663c7d8ff4ee6a2591e926307ceb8a27daad7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -6,8 +6,6 @@ Subject: [PATCH] Personal additions
 ---
  patches/SCUS-97436_32A1C752.pnach | 143 ++++++++++++++++++++++++
  patches/SCUS-97436_73FEFB84.pnach | 173 ++++++++++++++++++++++++++++++
- patches/SLPM-55008_721DEBE4.pnach |   8 ++
- patches/SLPM-66660_9E8F0454.pnach |   8 ++
  patches/SLPS-25674_2113EA2E.pnach |   5 +
  patches/SLPS-25698_5192FAD0.pnach |  20 ++++
  patches/SLPS-25842_E84AA114.pnach |  26 +++++
@@ -15,10 +13,8 @@ Subject: [PATCH] Personal additions
  patches/SLUS-20393_5A1410AB.pnach |  19 ++++
  patches/SLUS-21059_652050D2.pnach |  36 +++++++
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 11 files changed, 461 insertions(+)
+ 9 files changed, 445 insertions(+)
  create mode 100644 patches/SCUS-97436_73FEFB84.pnach
- create mode 100644 patches/SLPM-55008_721DEBE4.pnach
- create mode 100644 patches/SLPM-66660_9E8F0454.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
  create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
@@ -355,34 +351,6 @@ index 0000000..80320b7
 +
 +// Move the conditional jump we overwrote at 0x287740 just in case, and make unconditional
 +patch=1,EE,20287744,extended,0C0A1DD8
-diff --git a/patches/SLPM-55008_721DEBE4.pnach b/patches/SLPM-55008_721DEBE4.pnach
-new file mode 100644
-index 0000000..28e2f72
---- /dev/null
-+++ b/patches/SLPM-55008_721DEBE4.pnach
-@@ -0,0 +1,8 @@
-+gametitle=Sengoku Basara X (SLPM-55008)
-+
-+[No-Interlacing]
-+description=480p native sdtv mode unlock + extend resolution 640x480 v3 (disable antialias option in game menu)
-+gsinterlacemode=1
-+author=felixthecat1970
-+patch=0,EE,201004E4,extended,A2620016
-+patch=0,EE,0010CF00,extended,24040000
-diff --git a/patches/SLPM-66660_9E8F0454.pnach b/patches/SLPM-66660_9E8F0454.pnach
-new file mode 100644
-index 0000000..ac9a785
---- /dev/null
-+++ b/patches/SLPM-66660_9E8F0454.pnach
-@@ -0,0 +1,8 @@
-+gametitle=Hokuto no Ken Shinpan no Sousousei Kengou Retsuden (SLPM-66660)
-+
-+[No-Interlacing]
-+description=Native 480p sdtv mode + extend 640x480 v2 (disable antialias option in game menu)
-+gsinterlacemode=1
-+author=felixthecat1970
-+patch=0,EE,20292720,extended,A38286E8
-+
 diff --git a/patches/SLPS-25674_2113EA2E.pnach b/patches/SLPS-25674_2113EA2E.pnach
 index df05d5d..146beb7 100644
 --- a/patches/SLPS-25674_2113EA2E.pnach
