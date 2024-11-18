@@ -1,6 +1,4 @@
  Makefile                                           |  40 +++
- arch/arm/boot/dts/broadcom/bcm2837.dtsi            |   2 +-
- arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
@@ -19,7 +17,6 @@
  drivers/firmware/efi/Makefile                      |   1 +
  drivers/firmware/efi/efi.c                         | 124 ++++++---
  drivers/firmware/efi/secureboot.c                  |  38 +++
- drivers/hid/hid-lenovo.c                           |   8 +
  drivers/hid/hid-rmi.c                              |  66 -----
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++
  drivers/input/rmi4/rmi_driver.c                    | 124 +++++----
@@ -42,7 +39,7 @@
  48 files changed, 975 insertions(+), 242 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index df9c90cdd1c5..5dc83cc389bf 100644
+index 3e48c8d84540..973bfa6438ed 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -106,35 +103,6 @@ index df9c90cdd1c5..5dc83cc389bf 100644
  $(MODORDER): $(build-dir)
  	@:
  
-diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 173159e93c99..5074a7e9f9b8 100644
---- a/arch/arm/Kconfig
-+++ b/arch/arm/Kconfig
-@@ -1227,9 +1227,9 @@ config HIGHMEM
- 	  If unsure, say n.
- 
- config HIGHPTE
--	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
-+	bool "Allocate 2nd-level pagetables from highmem"
- 	depends on HIGHMEM
--	default y
-+	default n
- 	help
- 	  The VM uses one page of physical memory for each page table.
- 	  For systems with a lot of processes, this can use a lot of
-diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index a2f8ff354ca6..e185f3e75a5c 100644
---- a/arch/arm64/Kconfig
-+++ b/arch/arm64/Kconfig
-@@ -1365,7 +1365,7 @@ endchoice
- 
- config ARM64_FORCE_52BIT
- 	bool "Force 52-bit virtual addresses for userspace"
--	depends on ARM64_VA_BITS_52 && EXPERT
-+	depends on ARM64_VA_BITS_52
- 	help
- 	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
- 	  to maintain compatibility with older software by providing 48-bit VAs
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -767,67 +735,6 @@ index 000000000000..de0a3714a5d4
 +		}
 +	}
 +}
-diff --git a/drivers/hid/hid-lenovo.c b/drivers/hid/hid-lenovo.c
-index e5e72aa5260a..24654c7ecb04 100644
---- a/drivers/hid/hid-lenovo.c
-+++ b/drivers/hid/hid-lenovo.c
-@@ -473,6 +473,7 @@ static int lenovo_input_mapping(struct hid_device *hdev,
- 		return lenovo_input_mapping_tp10_ultrabook_kbd(hdev, hi, field,
- 							       usage, bit, max);
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		return lenovo_input_mapping_x1_tab_kbd(hdev, hi, field, usage, bit, max);
- 	default:
- 		return 0;
-@@ -583,6 +584,7 @@ static ssize_t attr_fn_lock_store(struct device *dev,
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		ret = lenovo_led_set_tp10ubkbd(hdev, TP10UBKBD_FN_LOCK_LED, value);
- 		if (ret)
- 			return ret;
-@@ -776,6 +778,7 @@ static int lenovo_event(struct hid_device *hdev, struct hid_field *field,
- 		return lenovo_event_cptkbd(hdev, field, usage, value);
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		return lenovo_event_tp10ubkbd(hdev, field, usage, value);
- 	default:
- 		return 0;
-@@ -1056,6 +1059,7 @@ static int lenovo_led_brightness_set(struct led_classdev *led_cdev,
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		ret = lenovo_led_set_tp10ubkbd(hdev, tp10ubkbd_led[led_nr], value);
- 		break;
- 	}
-@@ -1286,6 +1290,7 @@ static int lenovo_probe(struct hid_device *hdev,
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		ret = lenovo_probe_tp10ubkbd(hdev);
- 		break;
- 	default:
-@@ -1372,6 +1377,7 @@ static void lenovo_remove(struct hid_device *hdev)
- 		break;
- 	case USB_DEVICE_ID_LENOVO_TP10UBKBD:
- 	case USB_DEVICE_ID_LENOVO_X1_TAB:
-+	case USB_DEVICE_ID_LENOVO_X1_TAB3:
- 		lenovo_remove_tp10ubkbd(hdev);
- 		break;
- 	}
-@@ -1421,6 +1427,8 @@ static const struct hid_device_id lenovo_devices[] = {
- 	 */
- 	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
- 		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X1_TAB) },
-+	{ HID_DEVICE(BUS_USB, HID_GROUP_GENERIC,
-+		     USB_VENDOR_ID_LENOVO, USB_DEVICE_ID_LENOVO_X1_TAB3) },
- 	{ }
- };
- 
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
 index d4af17fdba46..154f0403cbf4 100644
 --- a/drivers/hid/hid-rmi.c
@@ -1214,10 +1121,10 @@ index ed6c5cb60c5a..70cb770b78bb 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index a2ce4e08edf5..07dd75b1f580 100644
+index dccb60c1d9cc..c7ec62f076c3 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4433,6 +4433,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4452,6 +4452,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -1348,10 +1255,10 @@ index 6bf3c4fe8511..67e5400f7644 100644
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index 855db460e08b..7a8c28cd7510 100644
+index 19c333fafe11..db33ee7f55d5 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -438,6 +438,8 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
+@@ -439,6 +439,8 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
  #endif /* CONFIG_BPF_SYSCALL */
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
@@ -1546,10 +1453,10 @@ index cd84d8ea1dfb..e4c70a0312bc 100644
  
  const struct lsm_id lockdown_lsmid = {
 diff --git a/security/security.c b/security/security.c
-index 8cee5b6c6e6d..489e25946bf9 100644
+index 43166e341526..b8cf110aeb58 100644
 --- a/security/security.c
 +++ b/security/security.c
-@@ -5596,6 +5596,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -5630,6 +5630,18 @@ int security_locked_down(enum lockdown_reason what)
  }
  EXPORT_SYMBOL(security_locked_down);
  

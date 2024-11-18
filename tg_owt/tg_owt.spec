@@ -7,24 +7,19 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 8198c4d8b91e22d68eb5c7327fd408e3b6abcc79
+%global commit0 300895038e2fa9b8e41b082ad697ee0f2f610884
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20241028
+%global date 20241116
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
-
-%global commit2 a566a9cfcd619e8327784aa7cff4a1276dc1e895
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 libsrtp
 
 %global commit3 8c0b94e793a66495e0b1f34a5eb26bd7dc672db0
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 abseil-cpp
 
 %global absl_ver 39f46fa
-%global libsrtp_ver 94ac00d
 %global pffft_ver 483453d
 
 %global cvc_url https://chromium.googlesource.com
@@ -33,12 +28,11 @@
 
 Name:           tg_owt
 Version:        0
-Release:        140%{?dist}
+Release:        141%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
 # abseil-cpp - Apache-2.0
-# libsrtp - BSD-3-Clause
 # libyuv - BSD-3-Clause
 # pffft - BSD-3-Clause
 # rnnoise - BSD-3-Clause
@@ -49,7 +43,6 @@ ExclusiveArch:  x86_64 aarch64
 
 Source0:        %{url}/archive/%{commit0}/%{name}-%{shortcommit0}.tar.gz
 Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcname1}-%{shortcommit1}.tar.gz
-Source2:        https://github.com/cisco/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %if %{without absl}
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
@@ -72,6 +65,7 @@ BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(libsrtp2)
 BuildRequires:  pkgconfig(openh264)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(vpx) >= 1.10.0
@@ -114,7 +108,6 @@ Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
 Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
-Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
 Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
@@ -142,6 +135,7 @@ Requires:       pkgconfig(libdrm)
 Requires:       pkgconfig(libjpeg)
 Requires:       pkgconfig(libpipewire-0.3)
 Requires:       pkgconfig(libpulse)
+Requires:       pkgconfig(libsrtp2)
 Requires:       pkgconfig(openh264)
 Requires:       pkgconfig(opus)
 Requires:       pkgconfig(usrsctp)
@@ -172,7 +166,6 @@ Provides:       bundled(fft) = 0~git
 Provides:       bundled(fft4g) = 0~git
 Provides:       bundled(g711) = 0~git
 Provides:       bundled(g722) = 0~git
-Provides:       bundled(libsrtp) = 2.2.0~git%{libsrtp_ver}
 Provides:       bundled(pffft) = 0~git%{pffft_ver}
 Provides:       bundled(portaudio) = 0~git
 Provides:       bundled(libwebm) = 0~git
@@ -198,7 +191,6 @@ Requires:       cmake(Crc32c)
 %autopatch -p1 -M 999
 
 tar -xf %{S:1} -C src/third_party/libyuv
-tar -xf %{S:2} -C src/third_party/libsrtp --strip-components 1
 
 rm -rf src/third_party/crc32c
 sed -e '/libcrc32c.cmake/d' -i CMakeLists.txt
@@ -216,7 +208,6 @@ tar -xf %{S:3} -C src/third_party/abseil-cpp --strip-components 1
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
 cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif
-cp -f -p src/third_party/libsrtp/LICENSE legal/LICENSE.libsrtp
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
 cp -f -p src/third_party/pffft/README.chromium legal/README.pffft
 cp -f -p src/third_party/libyuv/LICENSE legal/LICENSE.libyuv
@@ -304,6 +295,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 0-141.20241116git3008950
+- External libsrtp
+
 * Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 0-139.20240804gitdc17143
 - Rebuild (ffmpeg)
 

@@ -20,8 +20,8 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.4
-Release:        101%{?dist}
+Version:        4.4.2
+Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
@@ -101,6 +101,7 @@ BuildRequires:  pkgconfig(Qt%{qt_ver}Multimedia)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Network)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGL)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGLWidgets)
+BuildRequires:  pkgconfig(Qt%{qt_ver}Svg)
 %if %{without qt5}
 BuildRequires:  qt6-qtbase-private-devel
 %else
@@ -109,6 +110,7 @@ BuildRequires:  pkgconfig(Qt5X11Extras)
 BuildRequires:  pkgconfig(ampache_browser_1)
 
 %{?with_gtk:BuildRequires: pkgconfig(gtk+-%{gtk_ver}.0)}
+%{?with_gtk:BuildRequires: pkgconfig(gdk-x11-%{gtk_ver}.0)}
 
 %global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
@@ -282,7 +284,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Output/oss4.so
 %{_libdir}/audacious/Output/pipewire.so
 %{_libdir}/audacious/Output/pulse_audio.so
-%{?with_qt5:%{_libdir}/audacious/Output/qtaudio.so}
+%{_libdir}/audacious/Output/qtaudio.so
 %{_libdir}/audacious/Output/sdlout.so
 %dir %{_libdir}/audacious/Visualization/
 %{_libdir}/audacious/Visualization/blur_scope-qt.so
@@ -335,6 +337,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.2-100
+- 4.4.2
+
 * Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4-101
 - Rebuild (ffmpeg)
 

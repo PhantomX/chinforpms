@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8108e63907fc676f898522d20c762a4de3cd2a21
+%global commit b7163dda83bfd7a67632ea6239681c0a507af3bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241021
+%global date 20241115
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -56,7 +56,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -92,6 +92,7 @@ Patch4:         0001-lzma-sdk-23.01-support.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
 Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
 Patch8:         0001-vulkan_context.cpp-add-missing-header.patch
+Patch9:         0001-vulkan-update-vk-detail-DynamicLoader.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -204,7 +205,6 @@ sed \
 
 sed \
   -e '/LINK_FLAGS_RELEASE -s/d' \
-  -e 's|IMPORTED_TARGET ao|IMPORTED_TARGET ao_DISABLED|g' \
   -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
 
@@ -227,12 +227,13 @@ sed -e '/glm.hpp/a#define GLM_ENABLE_EXPERIMENTAL 1' -i core/rend/transform_matr
   -DSDL2_FOUND:BOOL=OFF \
 %endif
   -DUSE_DISCORD:BOOL=OFF \
-  -DUSE_HOST_CHDR:BOOL=ON \
+  -DUSE_HOST_LIBCHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
   -DUSE_HOST_SDL:BOOL=ON \
 %if %{with glslang}
   -DUSE_HOST_GLSLANG:BOOL=ON \
 %endif
+  -DUSE_LIBAO:BOOL=OFF \
   -DCMAKE_BUILD_TYPE:STRING=Release \
 %{nil}
 

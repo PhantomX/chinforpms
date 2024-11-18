@@ -182,7 +182,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.11.8
+%define specrpmversion 6.11.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 4df1650393a6e227b2f72ae9e6845e8399c5ea15
-%global opensuse_id 97f5894b63a1d87380a143abc3e1c3044bd54573
+%global opensuse_id 2d9142bb37e4b24aea571714fb8731803fe1166b
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
@@ -1155,6 +1155,7 @@ Patch7101:  %{pf_url}/24fafd3c03ae554b966072b8c43338db35ba4612.patch#/pf-cb-24fa
 Patch7102:  %{pf_url}/5c09a97ec26fc68a93c8eccb526b4ed70c119eb8.patch#/pf-cb-5c09a97.patch
 Patch7103:  %{pf_url}/585c713c3232c35848cbd5b11c295e8ee938b5b1.patch#/pf-cb-585c713.patch
 Patch7104:  %{pf_url}/f19a402a9f52c0f294a251853e15b4cd7c7be485.patch#/pf-cb-f19a402.patch
+Patch7105:  %{pf_url}/6e4a2dc4636c6be7f584fe7f2acc30be1f4f67e3.patch#/pf-cb-6e4a2dc.patch
 # zstd
 Patch7200:  %{pf_url}/5cb1b6e0be8548c2e6a34202becd539c13fdb91f.patch#/pf-cb-5cb1b6e.patch
 Patch7201:  %{pf_url}/79c6f85410667790f173edf3822a6258942fe4d3.patch#/pf-cb-79c6f85.patch
@@ -2089,6 +2090,7 @@ ApplyPatch %{PATCH7101}
 ApplyPatch %{PATCH7102}
 ApplyPatch %{PATCH7103}
 ApplyPatch %{PATCH7104}
+ApplyPatch %{PATCH7105}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4443,6 +4445,9 @@ fi\
 #
 #
 %changelog
+* Sun Nov 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.9-500.chinfo
+- 6.11.9
+
 * Thu Nov 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.8-500.chinfo
 - 6.11.8
 

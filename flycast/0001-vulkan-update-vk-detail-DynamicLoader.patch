@@ -1,0 +1,25 @@
+From d367236192180eb5ac304bf715845ada2366ddb3 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 16 Nov 2024 11:39:30 -0300
+Subject: [PATCH] vulkan: update vk::detail::DynamicLoader
+
+---
+ core/rend/vulkan/vulkan_context.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/core/rend/vulkan/vulkan_context.cpp b/core/rend/vulkan/vulkan_context.cpp
+index 0fed035..4870dd2 100644
+--- a/core/rend/vulkan/vulkan_context.cpp
++++ b/core/rend/vulkan/vulkan_context.cpp
+@@ -147,7 +147,7 @@ bool VulkanContext::InitInstance(const char** extensions, uint32_t extensions_co
+ #if defined(__ANDROID__) && HOST_CPU == CPU_ARM64
+ 		vkGetInstanceProcAddr = loadVulkanDriver();
+ #else
+-		static vk::DynamicLoader dl;
++		static vk::detail::DynamicLoader dl;
+ 		vkGetInstanceProcAddr = dl.getProcAddress<PFN_vkGetInstanceProcAddr>("vkGetInstanceProcAddr");
+ #endif
+ 		if (vkGetInstanceProcAddr == nullptr) {
+-- 
+2.47.0
+
