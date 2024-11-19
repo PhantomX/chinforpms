@@ -42,7 +42,7 @@ rules:
   - drivers/cdx/.*: modules-core
   - drivers/char/mwave.*: modules
   - drivers/char/.*: modules-core
-  - drivers/clk/.*test.*: modules-internal
+  - drivers/clk/.*(test|kunit).*: modules-internal
   - drivers/clk/.*: modules-core
   - drivers/counter/.*: modules-core
   - drivers/cpufreq/.*: modules-core
@@ -424,6 +424,7 @@ rules:
   - kernel/.*: modules-core
 
   - lib/.*(test|kunit).*: modules-internal
+    exact_pkg: True
   - lib/.*: modules-core
 
   - mm/kasan/kasan_test: modules-internal

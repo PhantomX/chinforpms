@@ -28,7 +28,7 @@ BuildArch:      noarch
 %bcond_with spirv
 %bcond_without vulkan
 
-%global gplasync_id 4f61262bd294050ae3c44657bc72de9831764279
+%global gplasync_id 74f1b72883a70924deb17755dda7a060aa031f4d
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -44,9 +44,6 @@ BuildArch:      noarch
 
 %{?mingw_package_header}
 
-# Disable sse3 flags
-%bcond_without nosse3
-
 %global libext %{nil}
 %global cfname win
 %global targetbits 64 32
@@ -57,7 +54,7 @@ BuildArch:      noarch
 %if %{with snapshot}
 %global gplasync_ver master
 %else
-%global gplasync_ver master
+%global gplasync_ver 2.5-1
 %endif
 
 %global winecommonver 7.1
@@ -73,7 +70,7 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.5
+Version:        2.5.1
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -232,9 +229,6 @@ TEMP_LDFLAGS="`mesonarray "${LDFLAGS}"`"
 sed \
   -e "/-DNOMINMAX/a\  '$TEMP_CFLAGS'," \
   -e "/static-libstdc++/a\  '$TEMP_LDFLAGS'," \
-%if %{without nosse3}
-  -e "/-msse3/d" \
-%endif
   -i meson.build
 
 %if %{without debug}
@@ -306,6 +300,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-100
+- 2.5.1
+
 * Mon Nov 11 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.5-100
 - 2.5
 

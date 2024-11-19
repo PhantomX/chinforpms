@@ -5,7 +5,7 @@ clog
 *.orig
 *.sign
 kernel-[234].*/
-/more-uarches-for-kernel-*.patch
+/more-ISA-levels-and-uarches-for-kernel-*.patch
 /agdf-*.patch
 /algodev-*.patch
 /configs/.flavors
