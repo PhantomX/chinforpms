@@ -1,5 +1,5 @@
 %global orig_name vhba-module
-%global debug_package %{nil}
+BuildArch:      noarch
 
 Name:           vhba
 Version:        20240917
@@ -13,7 +13,7 @@ Source1:        vhba.udev
 Source2:        vhba.modules
 
 Provides:       %{name}-kmod-common = %{version}
-Requires:       %{name}-kmod >= %{version}
+Requires:       (kmod(vhba.ko) or %{name}-kmod)
 
 BuildRequires:  systemd
 

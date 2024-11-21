@@ -53,7 +53,6 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  9.3.0
-%global winentsync 6.9~rc3
 %global winevulkan 1.3.296
 
 %global winecapstone 5.0.3
@@ -129,7 +128,7 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# ntsync (disables fsync)
+# ntsync (disables fsync, needs full patched modules and kernel-headers)
 %bcond_with ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
@@ -381,7 +380,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
 %if %{with ntsync}
-BuildRequires:  ntsync-devel >= %{winentsync}
+BuildRequires:  kernel-headers >= 6.12
 %endif
 %endif
 

@@ -183,7 +183,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.12.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -212,11 +212,14 @@ Summary: The Linux kernel
 %global graysky2_id 44598c402184de0de4c9f0addce5771bf0eae0c4
 %global opensuse_id 52785e2ad3bef4c4f55dea98bc24125427b9a5aa
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
+%global vhba_ver 20240917
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
 %global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
 %global pf_url https://codeberg.org/pf-kernel/linux/commit
 %global tkg_url https://github.com/Frogging-Family/linux-tkg/raw/%{tkg_id}/linux-tkg-patches
+%global vhba_url https://downloads.sourceforge.net/cdemu
+%global zen_url https://github.com/zen-kernel/zen-kernel
 
 # libexec dir is not used by the linker, so the shared object there
 # should not be exported to RPM provides
@@ -1136,6 +1139,8 @@ Source4000: README.rst
 Source4001: rpminspect.yaml
 Source4002: gating.yaml
 
+Source6020: %{vhba_url}/vhba-module/vhba-module-%{vhba_ver}.tar.xz
+
 # Here should be only the patches up to the upstream canonical Linus tree.
 
 # For a stable release kernel
@@ -1168,12 +1173,15 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
+Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...2a928305f9f05314494227eef1b52cbdf78c7722.patch#/zen-v%{patchversion}-ntsync.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
 Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-ISA-levels-and-uarches-for-kernel-6.1.79+.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+
+Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
@@ -1459,7 +1467,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/bootconfig(\.debug)?|.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o %{package_name}-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/bootconfig(\.debug)?|.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 %package -n rtla
 %if 0%{gemini}
@@ -2090,7 +2098,7 @@ ApplyOptionalPatch()
   fi
 }
 
-%setup -q -n kernel-%{tarfile_release} -c
+%setup -q -n kernel-%{tarfile_release} -c -a6020
 mv linux-%{tarfile_release} linux-%{KVERREL}
 
 cd linux-%{KVERREL}
@@ -2180,10 +2188,13 @@ ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}
+ApplyPatch %{PATCH2001}
 
 ApplyPatch %{PATCH6000}
 
 ApplyPatch %{PATCH6010}
+
+ApplyPatch %{PATCH6020}
 
 # END OF PATCH APPLICATIONS
 %{log_msg "End of patch applications"}
@@ -2195,6 +2206,9 @@ ApplyPatch %{PATCH6010}
 %{log_msg "Pre-build tree manipulations"}
 chmod +x scripts/checkpatch.pl
 mv COPYING COPYING-%{specrpmversion}-%{release}
+
+cp -a ../vhba-module-%{vhba_ver}/vhba.c drivers/scsi/vhba/
+sed -e 's|_RPM_VHBA_VER_|%{vhba_ver}|' -i drivers/scsi/vhba/Makefile
 
 # on linux-next prevent scripts/setlocalversion from mucking with our version numbers
 rm -f localversion-next localversion-rt
@@ -2377,6 +2391,10 @@ if [ "%{primary_target}" == "rhel" ]; then
 %endif
 fi
 update_scripts $update_target
+
+sed \
+ -e '/drivers\/scsi\/stex.ko/a\  - drivers\/scsi\/vhba.*: modules-extra' \
+ -i def_variants.yaml
 
 %endif
 
@@ -4520,6 +4538,9 @@ fi\
 #
 #
 %changelog
+* Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-501.chinfo
+- Add full ntsync and vhba modules (patches from Zen)
+
 * Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-500.chinfo
 - 6.12.0
 

@@ -16,6 +16,7 @@ gstreamer1
 -gstreamer1-plugins-ugly-free
 gtk3-classic
 -gtk3-nocsd
+kernel-chinfo-headers
 libeatmydata
 -libogg
 -libvorbis
@@ -29,7 +30,6 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
-ntsync
 SDL1
 SDL2
 -sdl12-compat

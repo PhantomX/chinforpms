@@ -6,8 +6,8 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20240915
-# 6.11
+# 20241120
+# 6.12
 
 set -e
 
@@ -66,7 +66,9 @@ defaultd="
 "
 
 defaultm="
+NTSYNC
 V4L2_LOOPBACK
+VHBA
 "
 
 defaultv="

@@ -2,7 +2,7 @@
 
 Name:           gcdemu
 Version:        3.2.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Gtk3-based CDEmu client
 
 License:        GPL-2.0-only
@@ -16,6 +16,7 @@ BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
 BuildRequires:  python3-devel
+Requires:       cdemu-daemon
 Requires:       python3
 Requires:       python3-gobject
 Requires:       gobject-introspection
@@ -70,6 +71,9 @@ done
 
 
 %changelog
+* Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-2
+- R: cdemu-daemon
+
 * Mon Nov 01 2021 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-1
 - 3.2.6
 

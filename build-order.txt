@@ -216,7 +216,7 @@ ncpamixer
 nicotine+
 noise-suppression-for-voice
 ntsync
-ntsync-kmod
+-ntsync-kmod
 -nvtop
 openbor
 openjazz
@@ -278,6 +278,7 @@ ss-save-parser
 steamtinkerlaunch
 thrash-protect
 tyrian-data
+unbound-chroot
 unbound-update-roothints
 vbrfix
 vhba

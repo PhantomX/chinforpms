@@ -1,0 +1,67 @@
+From 26f4c6fd4074cbf5d05df08b5e225075845c1bbf Mon Sep 17 00:00:00 2001
+From: "Jan Alexander Steffens (heftig)" <heftig@archlinux.org>
+Date: Mon, 26 Apr 2021 22:12:46 +0200
+Subject: [PATCH] ZEN: Add VHBA driver
+
+remote https://github.com/cdemu/cdemu
+tag    vhba-module-20240202
+---
+ drivers/scsi/Kconfig       | 2 ++
+ drivers/scsi/Makefile      | 1 +
+ drivers/scsi/vhba/Kconfig  | 9 +++++++++
+ drivers/scsi/vhba/Makefile | 4 ++++
+ 4 files changed, 16 insertions(+)
+ create mode 100644 drivers/scsi/vhba/Kconfig
+ create mode 100644 drivers/scsi/vhba/Makefile
+
+diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+index 37c24ff..bd52d1e 100644
+--- a/drivers/scsi/Kconfig
++++ b/drivers/scsi/Kconfig
+@@ -1522,4 +1522,6 @@ endif # SCSI_LOWLEVEL
+ 
+ source "drivers/scsi/device_handler/Kconfig"
+ 
++source "drivers/scsi/vhba/Kconfig"
++
+ endmenu
+diff --git a/drivers/scsi/Makefile b/drivers/scsi/Makefile
+index 1313ddf..5942e8f 100644
+--- a/drivers/scsi/Makefile
++++ b/drivers/scsi/Makefile
+@@ -153,6 +153,7 @@ obj-$(CONFIG_CHR_DEV_SCH)	+= ch.o
+ obj-$(CONFIG_SCSI_ENCLOSURE)	+= ses.o
+ 
+ obj-$(CONFIG_SCSI_HISI_SAS) += hisi_sas/
++obj-$(CONFIG_VHBA)		+= vhba/
+ 
+ # This goes last, so that "real" scsi devices probe earlier
+ obj-$(CONFIG_SCSI_DEBUG)	+= scsi_debug.o
+diff --git a/drivers/scsi/vhba/Kconfig b/drivers/scsi/vhba/Kconfig
+new file mode 100644
+index 0000000..e70a381
+--- /dev/null
++++ b/drivers/scsi/vhba/Kconfig
+@@ -0,0 +1,9 @@
++config VHBA
++	tristate "Virtual (SCSI) Host Bus Adapter"
++	depends on SCSI
++	help
++	  This is the in-kernel part of CDEmu, a CD/DVD-ROM device
++	  emulator.
++
++	  This driver can also be built as a module. If so, the module
++	  will be called vhba.
+diff --git a/drivers/scsi/vhba/Makefile b/drivers/scsi/vhba/Makefile
+new file mode 100644
+index 0000000..9895009
+--- /dev/null
++++ b/drivers/scsi/vhba/Makefile
+@@ -0,0 +1,4 @@
++VHBA_VERSION := _RPM_VHBA_VER_
++
++obj-$(CONFIG_VHBA)		+= vhba.o
++ccflags-y := -DVHBA_VERSION=\"$(VHBA_VERSION)\" -Werror
+-- 
+2.47.0
+
