@@ -1,0 +1,94 @@
+From 0c5f9b2fb53bf24b93e30055c9bc164fa80ab240 Mon Sep 17 00:00:00 2001
+From: Dave Airlie <airlied@localhost.localdomain>
+Date: Thu, 21 Nov 2024 08:36:42 +1000
+Subject: [PATCH] venus: handle device probing properly.
+
+Currently if you try to probe the virtio ICD on a non-virtio system
+it will fail in CreateInstance which causes the loader to spit on the
+screen.
+
+However instance creation shouldn't fail, the driver should just
+not enumerate any devices in this case. It's a bit tricky to ensure
+this, but return instance and then handle instance destruction
+and fail device enumeration.
+
+Cc: mesa-stable
+---
+ src/virtio/vulkan/vn_instance.c        | 20 +++++++++++++-------
+ src/virtio/vulkan/vn_physical_device.c |  4 ++++
+ 2 files changed, 17 insertions(+), 7 deletions(-)
+
+diff --git a/src/virtio/vulkan/vn_instance.c b/src/virtio/vulkan/vn_instance.c
+index 43f46cfaa28..239d7b93732 100644
+--- a/src/virtio/vulkan/vn_instance.c
++++ b/src/virtio/vulkan/vn_instance.c
+@@ -276,6 +276,7 @@ vn_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
+       return vn_error(NULL, result);
+    }
+ 
++   VkInstance instance_handle = vn_instance_to_handle(instance);
+    /* ring_idx = 0 reserved for CPU timeline */
+    instance->ring_idx_used_mask = 0x1;
+ 
+@@ -294,6 +295,10 @@ vn_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
+    }
+ 
+    result = vn_instance_init_renderer(instance);
++   if (result == VK_ERROR_INITIALIZATION_FAILED) {
++      *pInstance = instance_handle;
++      return VK_SUCCESS;
++   }
+    if (result != VK_SUCCESS)
+       goto out_mtx_destroy;
+ 
+@@ -333,7 +338,6 @@ vn_CreateInstance(const VkInstanceCreateInfo *pCreateInfo,
+       local_create_info.pApplicationInfo = &local_app_info;
+    }
+ 
+-   VkInstance instance_handle = vn_instance_to_handle(instance);
+    result = vn_call_vkCreateInstance(instance->ring.ring, pCreateInfo, NULL,
+                                      &instance_handle);
+    if (result != VK_SUCCESS)
+@@ -407,16 +411,18 @@ vn_DestroyInstance(VkInstance _instance,
+    mtx_destroy(&instance->physical_device.mutex);
+    mtx_destroy(&instance->ring_idx_mutex);
+ 
+-   vn_call_vkDestroyInstance(instance->ring.ring, _instance, NULL);
++   if (instance->renderer) {
++      vn_call_vkDestroyInstance(instance->ring.ring, _instance, NULL);
+ 
+-   vn_instance_fini_ring(instance);
++      vn_instance_fini_ring(instance);
+ 
+-   vn_renderer_shmem_pool_fini(instance->renderer,
+-                               &instance->reply_shmem_pool);
++      vn_renderer_shmem_pool_fini(instance->renderer,
++                                  &instance->reply_shmem_pool);
+ 
+-   vn_renderer_shmem_pool_fini(instance->renderer, &instance->cs_shmem_pool);
++      vn_renderer_shmem_pool_fini(instance->renderer, &instance->cs_shmem_pool);
+ 
+-   vn_renderer_destroy(instance->renderer, alloc);
++      vn_renderer_destroy(instance->renderer, alloc);
++   }
+ 
+    driDestroyOptionCache(&instance->dri_options);
+    driDestroyOptionInfo(&instance->available_dri_options);
+diff --git a/src/virtio/vulkan/vn_physical_device.c b/src/virtio/vulkan/vn_physical_device.c
+index 3022a79e7c0..6ef24a285d0 100644
+--- a/src/virtio/vulkan/vn_physical_device.c
++++ b/src/virtio/vulkan/vn_physical_device.c
+@@ -1500,6 +1500,10 @@ enumerate_physical_devices(struct vn_instance *instance,
+    struct vn_physical_device *physical_devs = NULL;
+    VkResult result;
+ 
++   if (!instance->renderer) {
++       *out_count = 0;
++       return VK_SUCCESS;
++   }
+    uint32_t count = 0;
+    result = vn_call_vkEnumeratePhysicalDevices(
+       ring, vn_instance_to_handle(instance), &count, NULL);
+-- 
+2.47.0
+

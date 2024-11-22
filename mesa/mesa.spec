@@ -74,7 +74,7 @@
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 
-%global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
+%global vulkan_drivers swrast,virtio%{?base_vulkan}%{?intel_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}
 %global vulkan_layers device-select,overlay
 
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
@@ -94,7 +94,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.3.0~rc2
+Version:        24.3.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -112,6 +112,10 @@ Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
+
+# silence some vulkan loader issues            
+Patch20:        broadcom-fix-init-error.patch            
+Patch21:        0001-venus-handle-device-probing-properly.patch
 
 Patch499:       mesa-20.1.1-fix-opencl.patch
 
@@ -765,6 +769,8 @@ popd
 %endif
 
 %files vulkan-drivers
+%{_libdir}/libvulkan_virtio.so
+%{_datadir}/vulkan/icd.d/virtio_icd.*.json
 %{_libdir}/libVkLayer_MESA_device_select.so
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_vulkan_hw}
@@ -806,6 +812,10 @@ popd
 
 
 %changelog
+* Thu Nov 21 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0-100
+- 24.3.0
+- Rawhide sync
+
 * Wed Nov 13 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0~rc2-100
 - 24.3.0-rc2
 

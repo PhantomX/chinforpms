@@ -10,10 +10,7 @@
 %global commit 2179ca2a417e356f23a09cd88707b20c1bcaf66f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240918
-%bcond_without snapshot
-
-# build with qt6 instead 5
-%bcond_without qt6
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -23,12 +20,13 @@
 %global appname net.kuribo64.%{pkgname}
 %global vc_url  https://github.com/Arisotura/%{pkgname}
 
+%global ver %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
+
 %global fatfs_ver 86631
-%{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 Name:           melonds
-Version:        0.9.5
-Release:        17%{?dist}
+Version:        1.0~rc
+Release:        1%{?dist}
 Summary:        A Nintendo DS emulator
 
 # fatfs - BSD
@@ -42,7 +40,7 @@ URL:            http://melonds.kuribo64.net/
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{ver}/%{pkgname}-%{ver}.tar.gz
 %endif
 Source1:        net.kuribo64.%{pkgname}.metainfo.xml
 
@@ -54,15 +52,13 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
 BuildRequires:  make
-BuildRequires:  cmake(Qt%{qt_ver}Core)
-BuildRequires:  cmake(Qt%{qt_ver}Gui)
-BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
-BuildRequires:  cmake(Qt%{qt_ver}Network)
-BuildRequires:  cmake(Qt%{qt_ver}Widgets)
-%if %{with qt6}
-BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
-BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
-%endif
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6OpenGL)
+BuildRequires:  cmake(Qt6OpenGLWidgets)
 BuildRequires:  extra-cmake-modules
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
@@ -96,7 +92,7 @@ Provides:       bundled(tiny-AES-c)
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 cp -p src/fatfs/LICENSE.txt LICENSE.fatfs
 cp -p src/teakra/LICENSE LICENSE.teakra
@@ -127,9 +123,6 @@ export LDFLAGS+=" -Wl,-z,noexecstack"
   -DENABLE_LTO_RELEASE:BOOL=OFF \
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DUSE_SYSTEM_LIBSLIRP:BOOL=ON \
-%if %{with qt6}
-  -DUSE_QT6:BOOL=ON \
-%endif
 %{nil}
 
 %cmake_build
@@ -158,6 +151,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Nov 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0~rc-1
+- 1.0rc
+
 * Sat Jan 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.9.5-12.20240117git7897bd3
 - Reenable Qt 6
 

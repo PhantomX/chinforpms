@@ -1,0 +1,12 @@
+diff -up mesa-24.3.0-rc2/src/broadcom/vulkan/v3dv_device.c.dma mesa-24.3.0-rc2/src/broadcom/vulkan/v3dv_device.c
+--- mesa-24.3.0-rc2/src/broadcom/vulkan/v3dv_device.c.dma	2024-11-21 06:23:26.161397655 +1000
++++ mesa-24.3.0-rc2/src/broadcom/vulkan/v3dv_device.c	2024-11-21 06:23:54.215480420 +1000
+@@ -1530,7 +1530,7 @@ enumerate_devices(struct vk_instance *vk
+    }
+ 
+    if (render_fd < 0)
+-      result = VK_ERROR_INITIALIZATION_FAILED;
++      result = VK_ERROR_INCOMPATIBLE_DRIVER;
+    else
+       result = create_physical_device(instance, render_fd, primary_fd);
+ 
