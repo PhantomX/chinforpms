@@ -1,6 +1,6 @@
-%global commit 359464ad8a80c7bdf99093bf3028acb99d54caaa
+%global commit 2641bc502e16b1fb7372b43e94d4b894cbc71279
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240915
+%global date 20241111
 %bcond_without snapshot
 
 %bcond_without qt
@@ -15,8 +15,8 @@
 %global appname io.github.input_leap.InputLeap
 
 Name:           input-leap
-Version:        2.4.0
-Release:        5%{?dist}
+Version:        3.0.2
+Release:        1%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only
@@ -127,6 +127,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat Nov 23 2024 Phantom X <megaphantomx at hotmail dot com> - 3.0.2-1.20241111git2641bc5
+- 3.0.2
+
 * Tue Feb 27 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-3.20240226git6cfeacd
 - Qt 6
 

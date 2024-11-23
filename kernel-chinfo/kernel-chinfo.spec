@@ -180,10 +180,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.0
+%define specrpmversion 6.12.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -345,7 +345,7 @@ Summary: The Linux kernel
 %global with_native  %{?_with_native:1} %{?!_with_native:0}
 
 # Use kernel-local-cpu-generic (CONFIG_GENERIC_CPU=y)
-%global with_generic %{?_with_generic:1} %{?!_with_generic:0}
+%global with_generic %{?_with_generic:0} %{?!_with_generic:1}
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -4538,6 +4538,9 @@ fi\
 #
 #
 %changelog
+* Fri Nov 22 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.1-500.chinfo
+- 6.12.1
+
 * Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-501.chinfo
 - Add full ntsync and vhba modules (patches from Zen)
 

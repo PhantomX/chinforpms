@@ -6,15 +6,12 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20241120
+# 20241122
 # 6.12
 
 set -e
 
 default="
-GENERIC_CPU2
-GENERIC_CPU3
-GENERIC_CPU4
 MALDERLAKE
 MAMD_CPU_V2
 MAMD_CPU_V3
@@ -72,6 +69,7 @@ VHBA
 "
 
 defaultv="
+X86_64_VERSION=1
 "
 
 defaulty="
