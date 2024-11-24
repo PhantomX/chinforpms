@@ -1,6 +1,6 @@
-%global commit 414eaee7aacc0d2ccdf281663c3d3bc65a8dbedd
+%global commit f3a69a9cf174c4f31c5e7cd2a6c9b17b7eaa535a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240918
+%global date 20241122
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -12,8 +12,8 @@ BuildArch:      noarch
 %global pkgname SDL_GameControllerDB
 
 Name:           sdl_gamecontrollerdb
-Version:        0
-Release:        67%{?dist}
+Version:        1458
+Release:        1%{?dist}
 Summary:        A database of game controller mappings
 
 License:        Zlib AND MIT
@@ -54,6 +54,9 @@ install -pm0644 gamecontrollerdb.txt %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Sat Nov 23 2024 Phantom X <megaphantomx at hotmail dot com> - 1458-1.20241122gitf3a69a9
+- Use commit number as version
+
 * Mon Feb 12 2024 Phantom X <megaphantomx at hotmail dot com> - 0-63.20240210gitae51c99
 - Add another extra GUID
 

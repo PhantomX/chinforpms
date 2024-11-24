@@ -1,4 +1,4 @@
-From 44ca0dec289b4f831f0b6c1528f10bccc543b9cb Mon Sep 17 00:00:00 2001
+From 5f09bc19c970d66acfc2ae0b857dfa0e85ae1f09 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 2 Mar 2019 23:43:44 -0300
 Subject: [PATCH] Disable check for new versions
@@ -9,17 +9,18 @@ This is a package
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Core/Config.cpp b/Core/Config.cpp
-index f1805da..daad3b1 100644
+index 3792308..0660482 100644
 --- a/Core/Config.cpp
 +++ b/Core/Config.cpp
-@@ -394,7 +394,7 @@ static ConfigSetting generalSettings[] = {
- 	ConfigSetting("IgnoreBadMemAccess", &g_Config.bIgnoreBadMemAccess, true, CfgFlag::DEFAULT),
+@@ -207,7 +207,7 @@ static const ConfigSetting generalSettings[] = {
  	ConfigSetting("CurrentDirectory", &g_Config.currentDirectory, "", CfgFlag::DEFAULT),
  	ConfigSetting("ShowDebuggerOnLoad", &g_Config.bShowDebuggerOnLoad, false, CfgFlag::DEFAULT),
+ 	ConfigSetting("ShowImDebugger", &g_Config.bShowImDebugger, false, CfgFlag::DONT_SAVE),
 -	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, true, CfgFlag::DEFAULT),
 +	ConfigSetting("CheckForNewVersion", &g_Config.bCheckForNewVersion, false, CfgFlag::DEFAULT),
  	ConfigSetting("Language", &g_Config.sLanguageIni, &DefaultLangRegion, CfgFlag::DEFAULT),
  	ConfigSetting("ForceLagSync2", &g_Config.bForceLagSync, false, CfgFlag::PER_GAME),
  	ConfigSetting("DiscordRichPresence", &g_Config.bDiscordRichPresence, false, CfgFlag::DEFAULT),
 -- 
-2.20.1
+2.47.0
+

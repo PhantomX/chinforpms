@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2891f6374bc9287c5cc72205fba12203eff2fec5
+%global commit d799424fca5432d5e41eb2d7d055edbe5fcc8f3c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241106
+%global date 20241123
 %bcond_without snapshot
 
 # Enable Qt build
@@ -74,7 +74,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 miniupnp
 
-%global commit12 ecf1e2f0fb58bf57aede582f64f3aaa27f4c6e2c
+%global commit12 f3271af11ab8591164b871e36520a7210964f3f6
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 ppsspp-lua
 
@@ -89,7 +89,7 @@
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -124,7 +124,7 @@ Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortc
 Source100:       %{name}.appdata.xml
 Source101:       Makefile
 
-Patch0:         %{name}-noupdate.patch
+Patch0:         0001-Disable-check-for-new-versions.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
 Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch

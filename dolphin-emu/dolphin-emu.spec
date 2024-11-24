@@ -23,9 +23,9 @@
 %global enablejit 1
 %endif
 
-%global commit d1ac40a72bf82c03580e435efb8b5c8666d7e2f3
+%global commit e0c387416dafd35e1d5bb0c6dca962d4a7538286
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241005
+%global date 20241123
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
@@ -75,7 +75,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2409.102
+Version:        2409.316
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -181,7 +181,7 @@ BuildRequires:  pkgconfig(sfml-system)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
-BuildRequires:  pkgconfig(zlib-ng)
+BuildRequires:  pkgconfig(zlib)
 %if %{with llvm}
 BuildRequires:  llvm-devel
 %endif
