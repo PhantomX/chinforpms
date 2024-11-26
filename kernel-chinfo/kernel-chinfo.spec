@@ -340,12 +340,12 @@ Summary: The Linux kernel
 %endif
 
 ### CPU optimizations
-### with native take precedence, next is generic, then one set in kernel-local-cpu
+### with native take precedence, next is tune, then one set in kernel-local-cpu-generic
 # Use kernel-local-cpu-native (CONFIG_MNATIVE=y)
 %global with_native  %{?_with_native:1} %{?!_with_native:0}
 
-# Use kernel-local-cpu-generic (CONFIG_GENERIC_CPU=y)
-%global with_generic %{?_with_generic:0} %{?!_with_generic:1}
+# Use kernel-local-cpu-tune
+%global with_tune %{?_with_tune:1} %{?!_with_tune:0}
 
 %if 0%{?fedora}
 # Kernel headers are being split out into a separate package
@@ -1131,7 +1131,7 @@ Source3002: Patchlist.changelog
 
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
-Source3011: kernel-local-cpu
+Source3011: kernel-local-cpu-tune
 Source3012: kernel-local-cpu-native
 Source3013: kernel-local-cpu-generic
 
@@ -2249,10 +2249,10 @@ cp %{SOURCE3001} .
 cat %{SOURCE3012} >> kernel-local
 echo 'CONFIG_NR_CPUS=%(nproc --all)' >> kernel-local
 %else
-%if %{with_generic}
-cat %{SOURCE3013} >> kernel-local
-%else
+%if %{with_tune}
 cat %{SOURCE3011} >> kernel-local
+%else
+cat %{SOURCE3013} >> kernel-local
 %endif
 %endif
 
