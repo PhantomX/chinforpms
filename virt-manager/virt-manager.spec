@@ -3,28 +3,27 @@
 %global with_guestfs               0
 %global default_hvs                "qemu,xen,lxc"
 
-
 # End local config
 
 Name: virt-manager
-Version: 3.0.0
-Release: 100%{?dist}
-%global verrel %{version}-%{release}
+Version: 5.0.0
+Release: 1%{?dist}
+%global verrel %{?epoch:%{epoch}:}%{version}-%{release}
 
 Summary: Desktop tool for managing virtual machines via libvirt
-License: GPLv2+
+License: GPL-2.0-or-later
 BuildArch: noarch
 URL: https://virt-manager.org/
-Source0: https://virt-manager.org/download/sources/%{name}/%{name}-%{version}.tar.gz
-
+Source0: https://releases.pagure.org/%{name}/%{name}-%{version}.tar.xz
 
 Requires: virt-manager-common = %{verrel}
-Requires: python3-gobject
-Requires: gtk3
+Requires: python3-gobject >= 3.31.3
+Requires: gtk3 >= 3.22.0
 Requires: libvirt-glib >= 0.0.9
 Requires: gtk-vnc2
+%if 0%{?fedora}
 Requires: spice-gtk3
-
+%endif
 
 # We can work with gtksourceview 3 or gtksourceview4, pick the latest one
 Requires: gtksourceview4
@@ -35,7 +34,12 @@ Requires: gtksourceview4
 # Unfortunately nothing in our chain has an explicit dep on some kind
 # of usable gsettings backend, so we explicitly depend on dconf so that
 # user settings actually persist across app runs.
+#
+# That said, we skip this dep for flatpak, where dconf isn't used in
+# the runtime. gsettings defaults to ini file in that case
+%if ! 0%{?flatpak}
 Requires: dconf
+%endif
 
 # The vte291 package is actually the latest vte with API version 2.91, while
 # the vte3 package is effectively a compat package with API version 2.90.
@@ -51,9 +55,9 @@ Recommends: libvirt-daemon-config-network
 Suggests: python3-libguestfs
 
 BuildRequires: gettext
-BuildRequires: /usr/bin/pod2man
 BuildRequires: python3-devel
 BuildRequires: python3-docutils
+BuildRequires: meson
 
 
 %description
@@ -74,8 +78,8 @@ Requires: python3-requests
 Requires: libosinfo >= 0.2.10
 # Required for gobject-introspection infrastructure
 Requires: python3-gobject-base
-# Required for pulling files from iso media with isoinfo
-Requires: genisoimage
+# Required for pulling files from iso media
+Requires: xorriso
 
 %description common
 Common files used by the different virt-manager interfaces, as well as
@@ -100,44 +104,42 @@ machine).
 
 
 %prep
-%setup -q
+%autosetup -p1
 
 
 %build
-%if %{default_hvs}
-%global _default_hvs --default-hvs %{default_hvs}
+%if 0%{?rhel}
+%global _default_graphics -Ddefault_graphics=vnc
 %endif
 
-./setup.py configure \
-    %{?_default_hvs}
+%meson \
+    -Ddefault-hvs=%{default_hvs} \
+    %{?_default_graphics} \
+    -Dupdate-icon-cache=false \
+    -Dcompile-schemas=false \
+    -Dtests=disabled
+
+%meson_build
 
 
 %install
-./setup.py \
-    --no-update-icon-cache --no-compile-schemas \
-    install -O1 --root=%{buildroot}
+%meson_install
+
 %find_lang %{name}
 
 %if 0%{?py_byte_compile:1}
 # https://docs.fedoraproject.org/en-US/packaging-guidelines/Python_Appendix/#manual-bytecompilation
-%py_byte_compile %{python3} %{buildroot}%{_datadir}/virt-manager/
+%py_byte_compile %{__python3} %{buildroot}%{_datadir}/virt-manager/
 %endif
 
-# Replace '#!/usr/bin/env python3' with '#!/usr/bin/python3'
-# The format is ideal for upstream, but not a distro. See:
-# https://fedoraproject.org/wiki/Features/SystemPythonExecutablesUseSystemPython
-for f in $(find %{buildroot} -type f -executable -print); do
-    sed -i "1 s|^#!/usr/bin/env python3|#!%{__python3}|" $f || :
-done
 
 
 %files
-%doc README.md COPYING NEWS.md
 %{_bindir}/%{name}
 
 %{_mandir}/man1/%{name}.1*
 
-%{_datadir}/%{name}/ui/*.ui
+%{_datadir}/%{name}/ui
 %{_datadir}/%{name}/virtManager
 
 %{_datadir}/%{name}/icons
@@ -149,8 +151,10 @@ done
 
 
 %files common -f %{name}.lang
-%dir %{_datadir}/%{name}
+%license COPYING
+%doc README.md NEWS.md
 
+%dir %{_datadir}/%{name}
 %{_datadir}/%{name}/virtinst
 
 
@@ -169,16 +173,97 @@ done
 
 
 %changelog
-* Fri Sep 18 2020 Phantom X <megaphantomx at hotmail dot com> - 3.0.0-100
-- 3.0.0
-- Rawhide sync
+* Wed Nov 27 2024 Phantom X <megaphantomx at hotmail dot com> - 5.0.0-1
+- 5.0.0
 
-* Mon Aug 05 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.2.1-100
-- 2.2.1
-- Rawhide sync
+* Tue Sep 10 2024 Cole Robinson <crobinso@redhat.com> - 4.1.0-9
+- Add sev-snp changes for feature ConfidentialVirtHostAMDSEVSNP
 
-* Wed Jun 19 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.2.0-100
-- Fedora 30 build
+* Mon Aug 05 2024 Cole Robinson <crobinso@redhat.com> - 4.1.0-8
+- Fix flatpak build
+- Add /usr/share/virt-manager/ui/ to rpm db (bz 2283244)
+
+* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 4.1.0-7
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
+
+* Wed Jun 26 2024 Daniel. P. Berrange <berrange@redhat.com> - 4.1.0-6
+- Fix compat with latest python 3.13 (rhbz #2294201)
+
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 4.1.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
+
+* Fri Sep 29 2023 Sandro Bonazzola <sbonazzo@redhat.com> - 4.1.0-4
+- Drop spice-gtk3 on Fedora ELN as in CentOS Stream 9
+- Resolves: fedora#2237969
+
+* Sat Jul 22 2023 Fedora Release Engineering <releng@fedoraproject.org> - 4.1.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
+
+* Sat Jan 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 4.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
+
+* Thu Aug 04 2022 Cole Robinson <crobinso@redhat.com> - 4.1.0-1
+- Update to version 4.1.0
+
+* Wed Aug  3 2022 Daniel. P. Berrange <berrange@redhat.com> - 4.0.0-3
+- Fix compat with setuptools >= 61 (rhbz#2113754)
+
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 4.0.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
+* Wed Mar 02 2022 Cole Robinson <crobinso@redhat.com> - 4.0.0-1
+- Update to version 4.0.0
+
+* Sun Feb 20 2022 Cole Robinson <crobinso@redhat.com> - 3.2.0-6
+- Update to latest git snapshot
+
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 3.2.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.2.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 3.2.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
+
+* Mon Jan 11 2021 Cole Robinson <crobinso@redhat.com> - 3.2.0-2
+- Fix 'domain not found' race (bz #1901081)
+
+* Sat Nov 14 2020 Cole Robinson <crobinso@redhat.com> - 3.2.0-1
+- Update to version 3.2.0
+- Slim down filesystem device editor UI
+- Fix TOCTTOU virt-install bugs (Martin Pitt)
+- Several other bug fixes
+
+* Wed Sep 30 2020 Cole Robinson <crobinso@redhat.com> - 3.1.0-1
+- Update to version 3.1.0
+
+* Tue Sep 15 2020 Cole Robinson <crobinso@redhat.com> - 3.0.0-1
+- Update to version 3.0.0
+
+* Mon Aug 31 2020 Cole Robinson <aintdiscole@gmail.com> - 2.2.1-6
+- spec: Switch to latest Fedora bytecompile macros
+
+* Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.2.1-5
+- Second attempt - Rebuilt for
+  https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.2.1-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Fri Jan 31 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.2.1-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
+* Sat Jul 27 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.2.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Wed Jul 03 2019 Cole Robinson <crobinso@redhat.com> - 2.2.1-1
+- Rebased to version 2.2.1
+- CVE-2019-10183: Replace --unattended user-password and admin-password with
+  user-password-file and admin-password-file (Fabiano Fidêncio)
+- Consistent --memballoon default across non-x86 (Andrea Bolognani)
+- virt-install: add --numatune memnode.* (Athina Plaskasoviti)
+- Drop hard dep on gtksourceview4, gtksourceview3 is fine as well
 
 * Tue Jun 18 2019 Cole Robinson <crobinso@redhat.com> - 2.2.0-2
 - Add missing dep on gtksourceview
@@ -1063,7 +1148,7 @@ done
 - Disable wizard sensitivity while creating VM
 
 * Thu Oct 19 2006 Daniel P. Berrange <berrange@redhat.com> - 0.2.5-1.fc7
-- Switch to use python-virtinst instead of python-xeninst due to 
+- Switch to use python-virtinst instead of python-xeninst due to
   renaming of original package
 - Disable keyboard accelerators when grabbing mouse to avoid things like
   Ctrl-W closing the local window, instead of remote window bz 210364
