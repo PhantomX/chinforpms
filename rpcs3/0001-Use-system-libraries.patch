@@ -1,4 +1,4 @@
-From fc81b13c7d904ffa2559e4325f3ad55bab648a06 Mon Sep 17 00:00:00 2001
+From 44aa03b439ea38834e5593502a1b15d7c9db5a66 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
@@ -9,10 +9,10 @@ Subject: [PATCH] Use system libraries
  2 files changed, 50 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index d1a14ff..1e94e29 100644
+index 57a45d7..ea6ebf8 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
-@@ -17,7 +17,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
+@@ -20,7 +20,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
  add_subdirectory(zlib EXCLUDE_FROM_ALL)
  
  # ZSTD
@@ -27,7 +27,7 @@ index d1a14ff..1e94e29 100644
  
  # 7zip sdk
  add_subdirectory(7zip EXCLUDE_FROM_ALL)
-@@ -81,7 +88,15 @@ endif()
+@@ -84,7 +91,15 @@ endif()
  
  
  # hidapi
@@ -43,7 +43,7 @@ index d1a14ff..1e94e29 100644
  
  
  # Vulkan
-@@ -90,7 +105,15 @@ add_subdirectory(glslang EXCLUDE_FROM_ALL)
+@@ -92,7 +107,15 @@ add_subdirectory(glslang EXCLUDE_FROM_ALL)
  
  
  # yaml-cpp
@@ -59,7 +59,7 @@ index d1a14ff..1e94e29 100644
  
  
  # xxHash
-@@ -135,7 +158,15 @@ target_include_directories(3rdparty_stblib INTERFACE stblib/include)
+@@ -135,7 +158,15 @@ add_subdirectory(stblib)
  add_subdirectory(discord-rpc)
  
  # Cubeb
@@ -83,7 +83,7 @@ index d1a14ff..1e94e29 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -347,10 +379,24 @@ if(USE_SDL)
+@@ -338,10 +370,24 @@ if(USE_SDL)
  endif()
  
  # MINIUPNP
@@ -106,13 +106,13 @@ index d1a14ff..1e94e29 100644
  add_subdirectory(rtmidi EXCLUDE_FROM_ALL)
 +endif()
  
- # add nice ALIAS targets for ease of use
- if(USE_SYSTEM_LIBUSB)
+ # OPENCV
+ add_subdirectory(opencv EXCLUDE_FROM_ALL)
 diff --git a/rpcs3/Input/ds4_pad_handler.cpp b/rpcs3/Input/ds4_pad_handler.cpp
-index c1f96b9..f56f110 100644
+index 3cbd0fb..588f4bd 100644
 --- a/rpcs3/Input/ds4_pad_handler.cpp
 +++ b/rpcs3/Input/ds4_pad_handler.cpp
-@@ -4,6 +4,10 @@
+@@ -6,6 +6,10 @@
  
  LOG_CHANNEL(ds4_log, "DS4");
  
@@ -124,5 +124,5 @@ index c1f96b9..f56f110 100644
  
  constexpr id_pair SONY_DS4_ID_0 = {0x054C, 0x0BA0}; // Dongle
 -- 
-2.45.1
+2.47.1
 

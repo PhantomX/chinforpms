@@ -45,9 +45,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 2262ac1684cc9f770b5212f23648ca1b1b1737b3
+%global commit 926de68a793fb4ac9767dc875f5fffadb351c874
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241106
+%global date 20241128
 %bcond_without snapshot
 
 %global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
@@ -108,7 +108,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.34.17098
+Version:        0.0.34.17165
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -212,6 +212,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
+BuildRequires:  cmake(OpenCV)
 BuildRequires:  pkgconfig(pugixml)
 %if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
@@ -240,7 +241,7 @@ Provides:       bundled(yaml-cpp) = 0~git%{shortcommit16}
 %endif
 BuildRequires:  pkgconfig(zlib)
 
-BuildRequires:  cmake(Qt6Core) >= 6.4.0
+BuildRequires:  cmake(Qt6Core) >= 6.8.0
 BuildRequires:  cmake(Qt6Concurrent)
 BuildRequires:  cmake(Qt6DBus)
 BuildRequires:  cmake(Qt6Gui)
@@ -433,6 +434,7 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
+  -DUSE_SYSTEM_OPENCV:BOOL=ON \
   -DUSE_SDL:BOOL=ON \
   -DUSE_SYSTEM_SDL:BOOL=ON \
   -DUSE_SYSTEM_XXHASH:BOOL=ON \
