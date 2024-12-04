@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ee365bad9501c73ff49936e72ec91cd9c3ce5c24
+%global commit 085c2d53cee3dc620703e721f513501c2feff85b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241006
+%global date 20241203
 %bcond_without snapshot
 
 # Enable system boost
@@ -25,7 +25,7 @@
 # Enable system ffmpeg
 %bcond_without ffmpeg
 # Enable system fmt
-%bcond_without fmt
+%bcond_with fmt
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -42,35 +42,35 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dynarmic
 
-%global commit2 2f382df218d7e8516dee3b3caccb819a62b571a2
+%global commit2 05973d8aeb1a4d12f59aadfb86d20decadba82d1
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 VulkanMemoryAllocator
 
-%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
+%global commit3 149b6b0ddb741a90c998033b5c633667d0e093ba
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
-%global commit4 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
+%global commit4 f7862c3dd7ad35becc2741f268e3402e89a37666
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 simpleini
 
-%global commit5 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
+%global commit5 36d5e2ddaa54c70d2f29081510c66f4fc98e5e53
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 a609330e4c6374f741d3b369269f7848255e1954
+%global commit6 4f5b003e760b1fd62c5c22eff09f4c5934bfdfc5
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
-%global commit7 10ef5735d842b31025f1257ae78899f50a40fb14
+%global commit7 4a970bc302d671476122cbc6b43cc89fbf4a96ec
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
 %global srcname7 cpp-jwt
 
-%global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
+%global commit8 29ac2b5c5584056c5fdcd7b41e75870fa4a276f5
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 404d39004570a26c734a9d1fa29ab4d63089c599
+%global commit9 97929690234f2b4add36b33657fe3fe09bd57dfd
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
@@ -78,7 +78,7 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 tz
 
-%global commit11 9c1294eaddb88cb0e044c675ccae059a85fc9c6c
+%global commit11 4100a2da297bddfacc634f93d0634fc34869cbf1
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 FFmpeg
 
@@ -89,7 +89,8 @@
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://git.suyu.dev/suyu
+%global vc_url   https://git.citron-emu.org/%{pkgname}
+%global uevc_url https://github.com/uzuy-emu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -97,20 +98,21 @@
 %global shortcommit 0
 %endif
 
-%global appname dev.suyu_emu.%{name}
+%global pkgname Citron
+%global appname org.%{name}_emu.%{name}
 
-Name:           suyu
-Version:        0.0.3
-Release:        4%{?dist}
+Name:           citron
+Version:        0
+Release:        1%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
-URL:            https://suyu-emu.org
+URL:            https://citron-emu.org
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/archive/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/archive/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 %if %{without dynarmic}
@@ -119,7 +121,7 @@ Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{sr
 %if %{without vma}
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
-Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{uevc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{with webservice}
@@ -127,7 +129,7 @@ Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcn
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        %{uevc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -135,15 +137,14 @@ Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{src
 Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %endif
 %if %{without fmt}
-Source12:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
+Source12:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
-
-%dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
-Patch12:        0001-Fix-48e86d6.patch
-Patch13:        0001-Bundled-fmt-support.patch
+Patch12:        0001-Bundled-fmt-support.patch
+Patch13:        0001-cmake-downgrade-required-boost.patch
+Patch14:        0001-cmake-update-required-xbyak.patch
 
 ExclusiveArch:  x86_64
 
@@ -157,11 +158,11 @@ BuildRequires:  clang
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
-BuildRequires:  llvm-devel >= 17.0.2
+BuildRequires:  llvm-devel >= 19.1.3
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 %if %{with boost}
-BuildRequires:  boost-devel >= 1.79.0
+BuildRequires:  boost-devel >= 1.83.0
 %endif
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
@@ -213,7 +214,7 @@ BuildRequires:  pkgconfig(sdl2) >= 2.28.2
 BuildRequires:  cmake(Qt%{qt_ver}Core)
 BuildRequires:  cmake(Qt%{qt_ver}DBus)
 BuildRequires:  cmake(Qt%{qt_ver}Gui)
-BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
+%dnl BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
 BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}WebEngineCore)
@@ -256,7 +257,7 @@ Obsoletes:      yuzu < 9999
 
 
 %description
-suyu is an open-source NX emulator written in C++.
+%{name} is an open-source NX emulator written in C++.
 
 
 %package qt
@@ -266,7 +267,7 @@ Requires:       hicolor-icon-theme
 Obsoletes:      yuzu-qt < 9999
 
 %description qt
-suyu is an open-source NX emulator written in C++.
+%{name} is an open-source NX emulator written in C++.
 
 This is the Qt frontend.
 
@@ -384,38 +385,37 @@ sed \
 
 sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 
-%dnl cp -f %{S:20} dist/compatibility_list/
-
 
 %build
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  %{!?with_clang:-DSUYU_ENABLE_LTO:BOOL=ON} \
+  %{!?with_clang:-DCITRON_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
-  -DENABLE_QT_TRANSLATION:BOOL=ON \
+  -DENABLE_QT_TRANSLATION:BOOL=OFF \
 %if %{with qt6}
   -DENABLE_QT6:BOOL=ON \
 %endif
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-  -DSUYU_CHECK_SUBMODULES:BOOL=OFF \
-  -DSUYU_ENABLE_PORTABLE:BOOL=OFF \
-  -DSUYU_ROOM:BOOL=ON \
-  -DSUYU_USE_FASTER_LD:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+  -DCITRON_CHECK_SUBMODULES:BOOL=OFF \
+  -DCITRON_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
+  -DCITRON_ENABLE_PORTABLE:BOOL=OFF \
+  -DCITRON_ROOM:BOOL=ON \
+  -DCITRON_USE_FASTER_LD:BOOL=OFF \
+  -DCITRON_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DCITRON_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DCITRON_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
 %if %{with ffmpeg}
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=OFF \
+  -DCITRON_USE_BUNDLED_FFMPEG:BOOL=OFF \
 %else
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=ON \
+  -DCITRON_USE_BUNDLED_FFMPEG:BOOL=ON \
 %endif
-  -DSUYU_USE_BUNDLED_LIBUSB:BOOL=OFF \
-  -DSUYU_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DSUYU_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?with_tests:-DSUYU_TESTS:BOOL=OFF} \
+  -DCITRON_USE_BUNDLED_LIBUSB:BOOL=OFF \
+  -DCITRON_USE_BUNDLED_OPUS:BOOL=OFF \
+  -DCITRON_USE_QT_WEB_ENGINE:BOOL=ON \
+  %{!?with_tests:-DCITRON_TESTS:BOOL=OFF} \
 %if %{without webservice}
   -DENABLE_WEB_SERVICE:BOOL=OFF \
 %endif
@@ -446,7 +446,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %files
-%license LICENSE.txt externals/LICENSE.*
+%license LICENSE externals/LICENSE.*
 %doc README.md
 %{_bindir}/%{name}-cmd
 %{_bindir}/%{name}-room
@@ -455,7 +455,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 %if %{with qt}
 %files qt
-%license LICENSE.txt
+%license LICENSE
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
@@ -466,21 +466,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-4.20241006gitee365ba
-- Fix tzdb_to_nx to not need network
-
-* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-2.20240418gitdfb9f06
-- fmt switch
-
-* Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-1.20240418gitdfb9f06
-- 0.0.3
-
-* Sat Mar 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-4.20240330git48e86d6
-- Qt6
-
-* Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-1.20240319gitfec573f
-- 0.0.2
-
-* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20240309gitd02af37
+* Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0-1.20241203git085c2d5
 - Initial spec
 
