@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 15a9e614aa7d61c803ff36a9b9f51d6afac43342
+%global commit 7c04fd250a21fe7e3996cbf69750e3e57b76f5ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241109
+%global date 20241203
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -150,7 +150,7 @@
 %global ffmpeg_ver 5.1.4
 %global glad_ver 2.0.4
 %global miniz_ver 3.0.0
-%global vk_ver 1.3.261
+%global vk_ver 1.4.303
 
 %global pkgname Vita3K
 %global vc_url  https://github.com/%{pkgname}
@@ -161,7 +161,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3686
+Version:        0.2.0.3696
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -220,6 +220,7 @@ Source35:       https://github.com/gabime/%{srcname35}/archive/%{commit35}/%{src
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
+Patch13:        0001-Vulkan-1.4-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch501:       0001-vma-set-missing-namespace.patch
 

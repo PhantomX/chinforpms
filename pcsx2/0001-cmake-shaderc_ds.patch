@@ -12,12 +12,13 @@ diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
 index 650d226..2d5b789 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -21,7 +21,7 @@ find_package(SDL2 2.30.4 REQUIRED)
+@@ -21,7 +21,8 @@ find_package(SDL2 2.30.4 REQUIRED)
  find_package(Freetype 2.11.1 REQUIRED)
  
  if(USE_VULKAN)
 -	find_package(Shaderc REQUIRED)
 +	find_package(Shaderc_ds REQUIRED)
++	add_definitions("-DSHADERC_PCSX2_CUSTOM")
  endif()
  
  # Platform-specific dependencies.

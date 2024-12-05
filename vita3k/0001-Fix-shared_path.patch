@@ -1,40 +1,30 @@
-From 983c78dc0b89f511e587eb03bad39b0007fc27c5 Mon Sep 17 00:00:00 2001
+From 0dd03ae765fb934385330845b267b2d25da7faef Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 9 Dec 2023 14:12:48 -0300
 Subject: [PATCH] Fix shared_path
 
 ---
- vita3k/app/src/app_init.cpp | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ vita3k/app/src/app_init.cpp | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/vita3k/app/src/app_init.cpp b/vita3k/app/src/app_init.cpp
-index 3540b8c..bc9c105 100644
+index f433b26..53194c9 100644
 --- a/vita3k/app/src/app_init.cpp
 +++ b/vita3k/app/src/app_init.cpp
-@@ -207,10 +207,11 @@ void init_paths(Root &root_paths) {
+@@ -209,11 +209,10 @@ void init_paths(Root &root_paths) {
          }
  
          // shared path
 -        if (env_home != NULL)
-+        if (XDG_DATA_HOME != NULL) {
-+            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / app_name / "");
-+        } else if (env_home != NULL) {
-             root_paths.set_shared_path(fs::path(env_home) / ".local/share" / app_name / "");
+-            root_paths.set_shared_path(fs::path(env_home) / ".local/share" / app_name / "");
 -
--        if (XDG_DATA_DIRS != NULL) {
-+        } else if (XDG_DATA_DIRS != NULL) {
-             auto env_paths = string_utils::split_string(XDG_DATA_DIRS, ':');
-             for (auto &i : env_paths) {
-                 if (fs::exists(fs::path(i) / app_name)) {
-@@ -218,8 +219,6 @@ void init_paths(Root &root_paths) {
-                     break;
-                 }
-             }
--        } else if (XDG_DATA_HOME != NULL) {
--            root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / app_name / "");
+         if (XDG_DATA_HOME != NULL) {
+             root_paths.set_shared_path(fs::path(XDG_DATA_HOME) / app_name / "");
++        } else if (env_home != NULL) {
++            root_paths.set_shared_path(fs::path(env_home) / ".local/share" / app_name / "");
          }
- #endif
-     }
+ 
+         // patch path should be in shared path
 -- 
-2.43.0
+2.47.1
 

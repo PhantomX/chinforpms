@@ -28,7 +28,7 @@
 Name:           nstool
 Version:        1.9.1
 Release:        1%{?dist}
-Summary:        A tool to view information about file formats for the Nintendo Switch
+Summary:        A tool to view information about file formats for the NX console
 
 License:        MIT AND Apache-2.0
 URL:            %{vc_url}/%{name}
@@ -55,7 +55,7 @@ Provides:       bundled(libtoolchain) = %{toolchain_ver}
 
 %description
 %{name} is a tool to view information about, decrypt, and extract common file
-formats for the Nintendo Switch, especially Nintendo Content Archives. 
+formats for the NX console, especially NCA files.
 
 
 %prep

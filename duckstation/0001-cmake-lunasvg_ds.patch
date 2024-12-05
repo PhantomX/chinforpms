@@ -73,13 +73,6 @@ index 5524a8f..bb0dc40 100644
  
  #include <jpeglib.h>
  #include <png.h>
-@@ -922,4 +922,4 @@ bool WebPFileSaver(const RGBA8Image& image, std::string_view filename, std::FILE
-   }
- 
-   return true;
--}
-\ No newline at end of file
-+}
 -- 
 2.47.0
 

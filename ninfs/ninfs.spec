@@ -17,7 +17,7 @@ BuildArch:      noarch
 Name:           ninfs
 Version:        2.0
 Release:        1%{?dist}
-Summary:        FUSE program to extract data from Nintendo® game consoles
+Summary:        FUSE program to extract data from some game consoles
 
 License:        MIT
 URL:            https://github.com/ihaveamac/ninfs
@@ -43,7 +43,7 @@ Requires:       hicolor-icon-theme
 
 
 %description
-ninfs is a FUSE program to extract data from Nintendo® game consoles. It works by
+ninfs is a FUSE program to extract data from some game consoles. It works by
 presenting a virtual filesystem with the contents of your games, NAND, or SD
 card contents, and you can browse and copy out just the files that you need.
 
@@ -54,7 +54,7 @@ card contents, and you can browse and copy out just the files that you need.
 cat > %{name}.desktop <<'EOF'
 [Desktop Entry]
 Name=%{name}
-Comment=Mount Nintendo® contents
+Comment=Mount some consoles contents
 Exec=%{name} gui
 Icon=%{name}
 Terminal=false

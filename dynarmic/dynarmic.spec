@@ -22,7 +22,7 @@
 
 Name:           dynarmic
 Version:        6.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
@@ -33,8 +33,6 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-Patch501:       %{url}/commit/732a65769479ca7fe4278bc4ad5aa5156606e0fe.patch#/%{name}-gh-revert732a657.patch
 
 ExclusiveArch:  x86_64
 
@@ -71,8 +69,6 @@ with %{name}.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -M 500 -p1
-
-%patch -P 501 -p1 -R
 
 rm -rf externals/{catch,fmt,oaknut,robin-map,xbyak}
 
@@ -116,6 +112,9 @@ sed \
 
 
 %changelog
+* Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-2.20240302gitfa6cc2e
+- Remove the revert commit
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-1.20240302gitfa6cc2e
 - 6.7.0
 

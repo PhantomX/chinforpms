@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7d00f47c5ead75db0a9f24d70aa4b609e85125d8
+%global commit cdce02607abf1b43cdf93c6f367825158f23a467
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240928
+%global date 20241012
 %bcond_without snapshot
 
 # Enable system boost
@@ -118,10 +118,10 @@
 %global vc_url  https://github.com/PabloMK7
 
 Name:           citra
-Version:        0.10112
+Version:        0.10113
 Release:        1%{?dist}
 Epoch:          1
-Summary:        A Nintendo 3DS Emulator
+Summary:        A 3DS Emulator
 
 License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://citra-emu.org
@@ -155,7 +155,7 @@ Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
-Source14:       https://github.com/yuzu-emu/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{without vma}
 Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
@@ -168,7 +168,6 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %dnl Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        https://github.com/PabloMK7/citra/pull/248.patch#/%{name}-gh-pr278.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -196,7 +195,6 @@ BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
 BuildRequires:  cmake(dynarmic) >= 6.6.1
 %else
-BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
 %endif
 BuildRequires:  pkgconfig(gamemode)
@@ -231,12 +229,14 @@ BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Multimedia)
 BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
 %endif
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch)
 %else
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 %endif
+BuildRequires:  cmake(tsl-robin-map)
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
@@ -269,17 +269,17 @@ Provides:       bundled(faad2) = ~git%{?shortcommit18}
 
 
 %description
-Citra is an experimental open-source Nintendo 3DS emulator/debugger
+Citra is an experimental open-source 3DS emulator/debugger
 written in C++.
 
 
 %package qt
-Summary:        A Nintendo 3DS Emulator (Qt frontend)
+Summary:        A 3DS Emulator (Qt frontend)
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       hicolor-icon-theme
 
 %description qt
-Citra is an experimental open-source Nintendo 3DS emulator/debugger
+Citra is an experimental open-source 3DS emulator/debugger
 written in C++.
 
 This is the Qt frontend.

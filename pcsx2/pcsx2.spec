@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.25
+Version:        2.3.42
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -87,7 +87,6 @@ Patch10:        0001-cmake-use-system-discord-rpc.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
-Patch502:       0001-VKShaderCache-update-shaderc.patch
 Patch503:       0001-cmake-soundtouch_ds.patch
 
 
@@ -129,6 +128,7 @@ BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(libcpuinfo)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libpcap)
 BuildRequires:  pkgconfig(libpng)
@@ -180,6 +180,7 @@ BuildRequires:  cmake(VulkanHeaders) >= 1.3.296
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %endif
 BuildRequires:  fonts-rpm-macros
+BuildRequires:  extra-cmake-modules
 BuildRequires:  gettext
 BuildRequires:  perl-interpreter
 
@@ -220,7 +221,6 @@ rm -rf .git
 
 %if %{with shaderc}
 %patch -P 500 -p1
-%patch -P 502 -p1
 rm -f cmake/FindShaderc.cmake
 %else
 mkdir 3rdparty/shaderc

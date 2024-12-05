@@ -26,7 +26,7 @@
 Name:           bsnes
 Version:        115
 Release:        11%{?dist}
-Summary:        Nintendo SNES emulator
+Summary:        SNES emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause
 
@@ -64,7 +64,7 @@ BuildRequires:  pkgconfig(xv)
 Requires:       hicolor-icon-theme
 
 %description
-bsnes is a Super Nintendo / Super Famicom emulator that began development on
+bsnes is a SNES / SFC emulator that began development on
 October 14th, 2004. It focuses on performance, features, and ease of use.
 
 

@@ -27,7 +27,7 @@
 Name:           melonds
 Version:        1.0~rc
 Release:        1%{?dist}
-Summary:        A Nintendo DS emulator
+Summary:        A NDS emulator
 
 # fatfs - BSD
 # sha1-reid - Public Domain
@@ -88,7 +88,7 @@ Provides:       bundled(tiny-AES-c)
 
 
 %description
-%{pkgname} is a Nintendo DS emulator.
+%{pkgname} is a NDS emulator.
 
 
 %prep

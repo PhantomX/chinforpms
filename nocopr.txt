@@ -13,6 +13,7 @@ cdrtools
 cemu
 chinforpms-fake-packages
 citra
+-citron
 -cowsrevenge
 -czkawka
 dbeaver-ce
@@ -80,11 +81,13 @@ softmaker-office
 -soulseekqt
 spideroakone
 steam
+-sudachi
 supermodel
 suyu
 -teamviewer
 telegram-desktop
 tg_owt
+torzu
 tush
 -uasm
 vasm

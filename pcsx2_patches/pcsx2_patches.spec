@@ -1,12 +1,12 @@
-%global commit 5cc1d09a72c0afcd04e2ca089a6b279108328fda
+%global commit 8287e31b16eb8e068f9706c897eacf914c93228f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241123
+%global date 20241204
 BuildArch:      noarch
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           pcsx2_patches
-Version:        419
+Version:        421
 Epoch:          1
 Release:        1%{?dist}
 Summary:        PCSX2 emulator patches

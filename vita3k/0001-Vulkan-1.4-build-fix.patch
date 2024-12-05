@@ -1,0 +1,25 @@
+From 55f86e24e5e234d35e096cfa34816fe6543307d7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 4 Dec 2024 19:08:54 -0300
+Subject: [PATCH] Vulkan 1.4 build fix
+
+---
+ vita3k/renderer/src/vulkan/renderer.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/vita3k/renderer/src/vulkan/renderer.cpp b/vita3k/renderer/src/vulkan/renderer.cpp
+index 474ff41..1751a5b 100644
+--- a/vita3k/renderer/src/vulkan/renderer.cpp
++++ b/vita3k/renderer/src/vulkan/renderer.cpp
+@@ -504,7 +504,7 @@ bool VKState::create(SDL_Window *window, std::unique_ptr<renderer::State> &state
+ 
+         try {
+             device = physical_device.createDevice(device_info.get());
+-        } catch (vk::NotPermittedKHRError &) {
++        } catch (vk::NotPermittedError &) {
+             // according to the vk spec, when using a priority higher than medium
+             // we can get this error (although I think it will only possibly happen
+             // for realtime priority)
+-- 
+2.47.1
+

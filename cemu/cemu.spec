@@ -44,7 +44,7 @@
 Name:           cemu
 Version:        2.4
 Release:        1%{?dist}
-Summary:        A Nintendo Wii U Emulator
+Summary:        A Wii U Emulator
 
 License:        MPL-2.0 AND MIT AND MIT-0 AND Apache-2.0
 URL:            https://cemu.info/

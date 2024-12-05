@@ -1,0 +1,65 @@
+From 1bcc1c8bc269148f603ed06036247b5b2723ecf5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 4 Dec 2024 11:06:13 -0300
+Subject: [PATCH] Update for latest dynarmic
+
+---
+ src/core/arm/dynarmic/arm_dynarmic_32.cpp | 6 +++---
+ src/core/arm/dynarmic/arm_dynarmic_64.cpp | 6 +++---
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/src/core/arm/dynarmic/arm_dynarmic_32.cpp b/src/core/arm/dynarmic/arm_dynarmic_32.cpp
+index 36478f7..b7b050f 100644
+--- a/src/core/arm/dynarmic/arm_dynarmic_32.cpp
++++ b/src/core/arm/dynarmic/arm_dynarmic_32.cpp
+@@ -192,9 +192,9 @@ std::shared_ptr<Dynarmic::A32::Jit> ArmDynarmic32::MakeJit(Common::PageTable* pa
+         config.detect_misaligned_access_via_page_table = 16 | 32 | 64 | 128;
+         config.only_detect_misalignment_via_page_table_on_page_boundary = true;
+ 
+-        config.fastmem_pointer = page_table->fastmem_arena;
++        config.fastmem_pointer = reinterpret_cast<uintptr_t>(page_table->fastmem_arena);
+ 
+-        config.fastmem_exclusive_access = config.fastmem_pointer != nullptr;
++        config.fastmem_exclusive_access = config.fastmem_pointer != 0;
+         config.recompile_on_exclusive_fastmem_failure = true;
+     }
+ 
+@@ -251,7 +251,7 @@ std::shared_ptr<Dynarmic::A32::Jit> ArmDynarmic32::MakeJit(Common::PageTable* pa
+             config.only_detect_misalignment_via_page_table_on_page_boundary = false;
+         }
+         if (!Settings::values.cpuopt_fastmem) {
+-            config.fastmem_pointer = nullptr;
++            config.fastmem_pointer = 0;
+             config.fastmem_exclusive_access = false;
+         }
+         if (!Settings::values.cpuopt_fastmem_exclusives) {
+diff --git a/src/core/arm/dynarmic/arm_dynarmic_64.cpp b/src/core/arm/dynarmic/arm_dynarmic_64.cpp
+index c811c8a..52c2f36 100644
+--- a/src/core/arm/dynarmic/arm_dynarmic_64.cpp
++++ b/src/core/arm/dynarmic/arm_dynarmic_64.cpp
+@@ -239,11 +239,11 @@ std::shared_ptr<Dynarmic::A64::Jit> ArmDynarmic64::MakeJit(Common::PageTable* pa
+         config.detect_misaligned_access_via_page_table = 16 | 32 | 64 | 128;
+         config.only_detect_misalignment_via_page_table_on_page_boundary = true;
+ 
+-        config.fastmem_pointer = page_table->fastmem_arena;
++        config.fastmem_pointer = reinterpret_cast<uintptr_t>(page_table->fastmem_arena);
+         config.fastmem_address_space_bits = address_space_bits;
+         config.silently_mirror_fastmem = false;
+ 
+-        config.fastmem_exclusive_access = config.fastmem_pointer != nullptr;
++        config.fastmem_exclusive_access = config.fastmem_pointer != 0;
+         config.recompile_on_exclusive_fastmem_failure = true;
+     }
+ 
+@@ -310,7 +310,7 @@ std::shared_ptr<Dynarmic::A64::Jit> ArmDynarmic64::MakeJit(Common::PageTable* pa
+             config.only_detect_misalignment_via_page_table_on_page_boundary = false;
+         }
+         if (!Settings::values.cpuopt_fastmem) {
+-            config.fastmem_pointer = nullptr;
++            config.fastmem_pointer = 0;
+             config.fastmem_exclusive_access = false;
+         }
+         if (!Settings::values.cpuopt_fastmem_exclusives) {
+-- 
+2.47.1
+

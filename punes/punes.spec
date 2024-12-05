@@ -20,7 +20,7 @@
 Name:           punes
 Version:        0.111
 Release:        2%{?dist}
-Summary:        Nintendo Entertainment System emulator
+Summary:        NES emulator
 
 License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT
 URL:            https://github.com/punesemu/%{pkgname}
@@ -76,8 +76,7 @@ Provides:       bundled(xdelta) = %{xdelta_ver}
 
 
 %description
-puNES is a Qt-based Nintendo Entertainment System emulator and NSF/NSF2/NSFe
-Music Player.
+puNES is a Qt-based NES emulator and NSF/NSF2/NSFe Music Player.
 
 
 %prep

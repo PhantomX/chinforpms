@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ee365bad9501c73ff49936e72ec91cd9c3ce5c24
+%global commit bb142c965770e0f66eac5c7682defc7f26347a43
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241006
+%global date 20241112
 %bcond_without snapshot
 
 # Enable system boost
@@ -38,58 +38,42 @@
 # Enable webservice
 %bcond_without webservice
 
-%global commit1 07c614f91b0af5335e1f9c0653c2d75e7b5f53bd
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 dynarmic
-
-%global commit2 2f382df218d7e8516dee3b3caccb819a62b571a2
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 VulkanMemoryAllocator
-
-%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
-%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
-%global srcname3 sirit
-
-%global commit4 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
-%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
-%global srcname4 simpleini
-
-%global commit5 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 SPIRV-Headers
-
-%global commit6 a609330e4c6374f741d3b369269f7848255e1954
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
-%global srcname6 cpp-httplib
-
-%global commit7 10ef5735d842b31025f1257ae78899f50a40fb14
-%global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
-%global srcname7 cpp-jwt
-
-%global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
-%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 mbedtls
-
-%global commit9 404d39004570a26c734a9d1fa29ab4d63089c599
-%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
-%global srcname9 tzdb_to_nx
-
-%global commit10 16ce126a87c5f130cde8b8dce73b38952a19f085
+%global commit10 2f382df218d7e8516dee3b3caccb819a62b571a2
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 tz
+%global srcname10 VulkanMemoryAllocator
 
-%global commit11 9c1294eaddb88cb0e044c675ccae059a85fc9c6c
+%global commit11 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 FFmpeg
+%global srcname11 simpleini
 
-%global fmt_ver 10.2.1
+%global commit12 a609330e4c6374f741d3b369269f7848255e1954
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:6})
+%global srcname12 cpp-httplib
+
+%global commit13 10ef5735d842b31025f1257ae78899f50a40fb14
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:6})
+%global srcname13 cpp-jwt
+
+%global commit14 97929690234f2b4add36b33657fe3fe09bd57dfd
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 tzdb_to_nx
+
+%global commit140 16ce126a87c5f130cde8b8dce73b38952a19f085
+%global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
+%global srcname140 tz
+
+%global commit15 e0db1f51d6ddf9eb2c1314c23d063a29255b607a
+%global shortcommit12 %(c=%{commit15}; echo ${c:0:7})
+%global srcname15 FFmpeg
+
+%global fmt_ver 11.0.2
 %global glad_ver 0.1.29
 %global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://git.suyu.dev/suyu
+%global vc_url   https://notabug.org/litucks/torzu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -97,54 +81,45 @@
 %global shortcommit 0
 %endif
 
-%global appname dev.suyu_emu.%{name}
+%global appname onion.%{name}_emu.%{name}
 
-Name:           suyu
-Version:        0.0.3
-Release:        5%{?dist}
+
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "\\\\.", "-"); print(ver)}
+
+Name:           torzu
+Version:        2024.08.10
+Release:        1%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
-URL:            https://suyu-emu.org
+URL:            http://vub63vv26q6v27xzv2dtcd25xumubshogm67yrpaz2rculqxs7jlfqad.onion/torzu-emu/torzu
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/%{vc_tarball}-%{version}/%{vc_name}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{name}-%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
-%if %{without dynarmic}
-Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
-%endif
 %if %{without vma}
-Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source10:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
-Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source11:        https://github.com/brofield/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %if %{with webservice}
-Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source12:        https://github.com/yhirose/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+Source13:        https://github.com/arun11299/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
-%if !%{with mbedtls}
-Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
-%endif
-Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
-Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source14:        https://github.com/lat9nq/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source140:       https://github.com/eggert/%{srcname140}/archive/%{commit140}/%{srcname140}-%{shortcommit140}.tar.gz
 %if %{without ffmpeg}
-Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source15:       https://github.com/FFmpeg/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %endif
 %if %{without fmt}
-Source12:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
+Source16:        https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
-
-%dnl Source20:       https://api.suyu.dev/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Fix-48e86d6.patch
-Patch13:        0001-Bundled-fmt-support.patch
-Patch14:        0001-Update-for-latest-dynarmic.patch
 
 ExclusiveArch:  x86_64
 
@@ -195,7 +170,7 @@ BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(x11)
-Provides:       bundled(ffmpeg) = 0~git%{?shortcommit11}
+Provides:       bundled(ffmpeg) = 0~git%{?shortcommit15}
 %endif
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
@@ -205,7 +180,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
 BuildRequires:  mbedtls >= 2.6.10
 %else
-Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
+Provides:       bundled(mbedtls) = 0~git
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
@@ -226,12 +201,14 @@ BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 %endif
+BuildRequires:  cmake(SPIRV-Headers)
+BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
-Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit2}
+Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit10}
 %endif
 BuildRequires:  cmake(xbyak) >= 7
 BuildRequires:  pkgconfig(zlib)
@@ -244,20 +221,20 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile) = 0~git
-Provides:       bundled(sirit) = 0~git%{?shortcommit3}
-Provides:       bundled(simpleini) = 0~git%{?shortcommit4}
+Provides:       bundled(sirit) = 0~git
+Provides:       bundled(simpleini) = 0~git%{?shortcommit11}
 %if %{with webservice}
-Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
-Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
+Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit12}
+Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit713}
 %endif
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
-Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit9}
+Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit140}
 
 Obsoletes:      yuzu < 9999
 
 
 %description
-suyu is an open-source NX emulator written in C++.
+%{name} is an open-source NX emulator written in C++.
 
 
 %package qt
@@ -267,7 +244,7 @@ Requires:       hicolor-icon-theme
 Obsoletes:      yuzu-qt < 9999
 
 %description qt
-suyu is an open-source NX emulator written in C++.
+%{name} is an open-source NX emulator written in C++.
 
 This is the Qt frontend.
 
@@ -286,34 +263,31 @@ rm -rf mbedtls
 popd
 
 %if %{without dynarmic}
-tar -xf %{S:1} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 %if %{without vma}
 mkdir -p externals/VulkanMemoryAllocator
-tar -xf %{S:2} -C externals/VulkanMemoryAllocator --strip-components 1
+tar -xf %{S:10} -C externals/VulkanMemoryAllocator --strip-components 1
 %endif
-tar -xf %{S:3} -C externals/sirit --strip-components 1
 mkdir -p externals/simpleini
-tar -xf %{S:4} -C externals/simpleini --strip-components 1
-tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
+tar -xf %{S:11} -C externals/simpleini --strip-components 1
 %if %{with webservice}
-tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
-tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
+tar -xf %{S:12} -C externals/cpp-httplib --strip-components 1
+tar -xf %{S:13} -C externals/cpp-jwt --strip-components 1
 %endif
-%if %{without mbedtls}
-tar -xf %{S:8} -C externals/mbedtls --strip-components 1
+%if %{with mbedtls}
+rm -rf externals/mbedtls
 %endif
 mkdir -p externals/nx_tzdb/tzdb_to_nx
-tar -xf %{S:9} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
-tar -xf %{S:10} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
+tar -xf %{S:14} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
+tar -xf %{S:140} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
-tar -xf %{S:11} -C externals/ffmpeg/ffmpeg --strip-components 1
+tar -xf %{S:15} -C externals/ffmpeg/ffmpeg --strip-components 1
 %endif
 %if %{without fmt}
 mkdir -p externals/fmt
-tar -xf %{S:12} -C externals/fmt --strip-components 1
+tar -xf %{S:16} -C externals/fmt --strip-components 1
 sed \
   -e '/^find_package(fmt/s|REQUIRED||' \
   -e 's|^find_package(fmt|\0_DISABLED|' \
@@ -362,12 +336,12 @@ sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
 sed \
   -e 's|@GIT_REV@|%{commit}|g' \
-  -e 's|@GIT_BRANCH@|main|g' \
+  -e 's|@GIT_BRANCH@|master|g' \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
   -e 's|@BUILD_DATE@|%(date +%F)|g' \
-  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
-  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
+  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:%{ver}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
+  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:%{ver}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
 sed -e '/find_program/s|GIT git|GIT cp|g' -i externals/nx_tzdb/CMakeLists.txt
@@ -385,7 +359,10 @@ sed \
 
 sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 
-%dnl cp -f %{S:20} dist/compatibility_list/
+sed -e 's|yuzu|%{name}|g' \
+  -i src/common/fs/fs_paths.h dist/%{appname}.{desktop,metainfo.xml}
+
+sed -e '/\/yuzu\//!s|yuzu|%{name}|g' -i dist/languages/*.ts
 
 
 %build
@@ -401,22 +378,24 @@ sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-  -DSUYU_CHECK_SUBMODULES:BOOL=OFF \
-  -DSUYU_ENABLE_PORTABLE:BOOL=OFF \
-  -DSUYU_ROOM:BOOL=ON \
-  -DSUYU_USE_FASTER_LD:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
-  -DSUYU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+  -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
+  -DYUZU_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
+  -DYUZU_ENABLE_PORTABLE:BOOL=OFF \
+  -DYUZU_ROOM:BOOL=ON \
+  -DYUZU_USE_FASTER_LD:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
 %if %{with ffmpeg}
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
 %else
-  -DSUYU_USE_BUNDLED_FFMPEG:BOOL=ON \
+  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=ON \
 %endif
-  -DSUYU_USE_BUNDLED_LIBUSB:BOOL=OFF \
-  -DSUYU_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DSUYU_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?with_tests:-DSUYU_TESTS:BOOL=OFF} \
+  -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
+  -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
+  %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
 %if %{without webservice}
   -DENABLE_WEB_SERVICE:BOOL=OFF \
 %endif
@@ -438,6 +417,8 @@ sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
 %install
 %cmake_install
 
+rename yuzu %{name} %{buildroot}%{_bindir}/*
+
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
 rm -rf %{buildroot}%{_libdir}
@@ -451,7 +432,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 %doc README.md
 %{_bindir}/%{name}-cmd
 %{_bindir}/%{name}-room
-%dnl %{_mandir}/man6/%{name}.6*
 
 
 %if %{with qt}
@@ -462,29 +442,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/mime/packages/%{appname}.xml
 %{_metainfodir}/%{appname}.metainfo.xml
-%dnl %{_mandir}/man6/%{name}-qt.6*
 %endif
 
 
 %changelog
-* Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-5.20241006gitee365ba
-- Fix for latest dynarmic
-
-* Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-4.20241006gitee365ba
-- Fix tzdb_to_nx to not need network
-
-* Sat Sep 21 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-2.20240418gitdfb9f06
-- fmt switch
-
-* Fri Apr 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.3-1.20240418gitdfb9f06
-- 0.0.3
-
-* Sat Mar 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-4.20240330git48e86d6
-- Qt6
-
-* Wed Mar 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.0.2-1.20240319gitfec573f
-- 0.0.2
-
-* Sat Mar 09 2024 Phantom X <megaphantomx at hotmail dot com> - 0-0.1.20240309gitd02af37
+* Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2024.08.10-1.20241112gitbb142c9
 - Initial spec
-

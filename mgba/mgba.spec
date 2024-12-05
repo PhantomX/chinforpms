@@ -22,7 +22,7 @@
 Name:           mgba
 Version:        0.11.0
 Release:        0.28%{?dist}
-Summary:        A Nintendo Gameboy Advance Emulator
+Summary:        A Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
 URL:            http://mgba.io

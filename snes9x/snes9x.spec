@@ -32,7 +32,7 @@
 Name:           snes9x
 Version:        1.63
 Release:        5%{?dist}
-Summary:        Super Nintendo Entertainment System emulator
+Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
 URL:            http://www.snes9x.com/
@@ -89,15 +89,15 @@ Requires:        vulkan-loader%{?_isa}
 
 
 %global _description %{expand:
-Snes9x is a portable, freeware Super Nintendo Entertainment System (SNES)
-emulator. It basically allows you to play most games designed for the SNES
-and Super Famicom Nintendo game systems on your computer.}
+Snes9x is a portable, freeware SNES emulator. It basically allows you to
+play most games designed for the SNES and SFC game systems on your
+computer.}
 
 %description %_description
 
 
 %package        common
-Summary:        Super Nintendo Entertainment System emulator - common files
+Summary:        SNES emulator - common files
 BuildArch:      noarch
 Requires:       hicolor-icon-theme
 
@@ -108,7 +108,7 @@ This package contains common file to %{name} sub packages.
 
 
 %package gtk
-Summary:        Super Nintendo Entertainment System emulator - GTK version
+Summary:        SNES emulator - GTK version
 BuildRequires:  pkgconfig(gtkmm-3.0)
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(glad) = %{glad_ver}
@@ -123,7 +123,7 @@ This package contains a graphical user interface using GTK+.
 
 %if %{with qt}
 %package qt
-Summary:        Super Nintendo Entertainment System emulator - Qt version
+Summary:        SNES emulator - Qt version
 BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6Widgets)

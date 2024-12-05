@@ -34,7 +34,7 @@ BuildRequires:  %{py3_dist zstandard}
 
 
 %description
-NSZ is a Nintendo® Switch homebrew compatible NSP/XCI compressor/decompressor.
+NSZ is a NX homebrew compatible NSP/XCI compressor/decompressor.
 
 
 %prep

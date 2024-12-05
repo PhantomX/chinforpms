@@ -3,7 +3,7 @@
 Name:           python-%{srcname}
 Version:        0.1.3
 Release:        1%{?dist}
-Summary:        Nintendo Switch XTSN crypto for Python
+Summary:        NX XTSN crypto for Python
 
 License:        MIT
 URL:            https://github.com/luigoalma/%{srcname}
@@ -18,7 +18,7 @@ BuildRequires:  gcc-c++
 
 
 %global _description %{expand:
-%{srcname} is the Nintendo Switch XTSN crypto for Python.}
+%{srcname} is the NX XTSN crypto for Python.}
 
 %description %_description
 

@@ -1,4 +1,4 @@
-From 081663c7d8ff4ee6a2591e926307ceb8a27daad7 Mon Sep 17 00:00:00 2001
+From 636abe7582525b894bb5bccd36691b6678e20baa Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -11,9 +11,9 @@ Subject: [PATCH] Personal additions
  patches/SLPS-25842_E84AA114.pnach |  26 +++++
  patches/SLUS-20212_AA4E5A95.pnach |  14 +++
  patches/SLUS-20393_5A1410AB.pnach |  19 ++++
- patches/SLUS-21059_652050D2.pnach |  36 +++++++
+ patches/SLUS-21059_652050D2.pnach |  40 ++++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 9 files changed, 445 insertions(+)
+ 9 files changed, 448 insertions(+), 1 deletion(-)
  create mode 100644 patches/SCUS-97436_73FEFB84.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
@@ -469,49 +469,54 @@ index 0000000..852a1e7
 +patch=1,EE,20183CB4,extended,00007025
 +patch=1,EE,2019CAB4,extended,24047900
 diff --git a/patches/SLUS-21059_652050D2.pnach b/patches/SLUS-21059_652050D2.pnach
-index fbdfcea..e8ca7fb 100644
+index ea512fe..704a19a 100644
 --- a/patches/SLUS-21059_652050D2.pnach
 +++ b/patches/SLUS-21059_652050D2.pnach
-@@ -31,3 +31,39 @@ patch=1,EE,00222494,word,44810000
- patch=1,EE,00222498,word,46006302
- 
- 
+@@ -34,4 +34,42 @@ patch=1,EE,00222498,word,46006302
+ [480p Mode]
+ author=PeterDelta
+ description=SDTV 480p mode at start.
+-patch=1,EE,003EF450,extended,01
+\ No newline at end of file
++patch=1,EE,003EF450,extended,01
++
++
 +[No-Interlacing]
-+description=Enhancement test *Updated correct PS parameters
++author=felixthecat1970
++description=Do not use with Widescreen or 480p mode patches.
 +gsinterlacemode=1
++//Recomended "SoftWare mode" enable CRC hack level "Debug (none)" for show special effects in scenarios.
++//Hardware mode keep enabled CRC hack level "Automatic (Default)" for disable broken effects in scenarios "PCSX2 Graphics Bug"
 +
-+//Workaround
-+patch=0,EE,2010207C,extended,3c050000
-+patch=0,EE,20102084,extended,3c060050
-+patch=0,EE,2010208C,extended,3c070001
-+patch=0,EE,20102EAC,extended,3C0701E0
++patch=0,EE,00D05EC8,extended,24050000
++patch=0,EE,00D05ECC,extended,24060050
++patch=0,EE,20D05ED4,extended,24070001
 +
-+//Framebuffer - Progressive - No interleacing - No black lines HW mode
-+patch=1,EE,E0028870,extended,01FFEF20
-+patch=1,EE,2010230C,extended,34029400
-+patch=1,EE,203EF450,extended,00000001 // Official Progressive mode
++patch=1,EE,E0078870,extended,01FFEF20
++patch=1,EE,202DE308,extended,AC940004
++patch=1,EE,202F06DC,extended,341B0001
++patch=1,EE,202F08FC,extended,A07B0000
++patch=1,EE,0031DA9C,extended,30630000
++patch=1,EE,00335A38,extended,24020001
++patch=1,EE,20335A5C,extended,00031C02
++patch=1,EE,20335E58,extended,00042402
 +
-+//Intro Mini Game
-+patch=1,EE,E0010001,extended,01FFECF4
-+patch=1,EE,2010230C,extended,34029078
++patch=1,EE,E0048870,extended,01FFEF20
++patch=1,EE,D03E453A,extended,0100
++patch=1,EE,0032B448,extended,40 //original code nemesis 2000
++patch=1,EE,D03E453A,extended,0000
++patch=1,EE,0032B448,extended,80
 +
-+patch=1,EE,E0012c70,extended,01FFEF20 // Devil W. Game
-+patch=1,EE,2026033C,extended,34029400
++patch=1,EE,E0020001,extended,0027E448
++patch=1,EE,2027E448,extended,00500000
++patch=1,EE,203F7330,extended,00500000
 +
-+patch=1,EE,E0033df0,extended,01FFEF20 // Tek 1 sdtv mode 240p
-+patch=1,EE,2014F454,extended,3c050000
-+patch=1,EE,2014F45C,extended,3C060050
-+patch=1,EE,2014F464,extended,3c070001
-+
-+patch=1,EE,E0036570,extended,01FFEF20 // Tek 2 sdtv mode 240p
-+patch=1,EE,2015E494,extended,3c050000
-+patch=1,EE,2015E49C,extended,3C060050
-+patch=1,EE,2015E4A4,extended,3c070001
-+
-+patch=1,EE,E003F370,extended,01FFEF20 // Tek 3 sdtv mode 480p extended
-+patch=1,EE,201E4F54,extended,3c050000
-+patch=1,EE,201E4F5C,extended,3C060050
-+patch=1,EE,201E4F64,extended,3c070001
++patch=1,EE,E0052C70,extended,01FFEF20
++patch=1,EE,2022E8FC,extended,000D6C3A
++patch=1,EE,2022E50C,extended,000E743A
++patch=1,EE,2021C9C0,extended,3C013F40 //orignal code by ElHecht
++patch=1,EE,2021C9CC,extended,4481F000
++patch=1,EE,2021C9D0,extended,461EBDC3
 diff --git a/patches/SLUS-21317_72CE7A78.pnach b/patches/SLUS-21317_72CE7A78.pnach
 new file mode 100644
 index 0000000..185964f
@@ -528,5 +533,5 @@ index 0000000..185964f
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.47.0
+2.47.1
 

@@ -26,9 +26,9 @@
 %bcond_with ryml
 %bcond_without vulkan
 
-%global commit e987b56aaec67d88f6294dafe4672b1ae3f9c2d5
+%global commit fe3b4154b7279598db2a2f9d61eff0bef5f80eac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241123
+%global date 20241203
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.7940
+Version:        0.1.8082
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -118,8 +118,10 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip) >= 1.11.1
+BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
@@ -295,7 +297,7 @@ sed \
 %else
   -e 's| date="@GIT_DATE@"||g' \
 %endif
-  scripts/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
+  scripts/packaging/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
 
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
@@ -359,16 +361,16 @@ ln -sf ../../../fonts/google-noto-sans-sc-fonts/NotoSansSC-Regular.otf \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  scripts/%{appname}.desktop
+  scripts/packaging/%{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
-install -pm0644 scripts/%{appname}.png \
+install -pm0644 scripts/packaging/%{appname}.png \
   %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/
 
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  magick scripts/%{appname}.png -filter Lanczos -resize ${res}x${res} \
+  magick scripts/packaging/%{appname}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appname}.png
 done
 

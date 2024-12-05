@@ -3,7 +3,7 @@
 Name:           python-%{srcname}
 Version:        0.7.5
 Release:        1%{?dist}
-Summary:        Python library to interact with Nintendo 3DS files
+Summary:        Python library to interact with 3DS files
 
 License:        MIT
 URL:            https://github.com/ihaveamac/%{srcname}
@@ -18,7 +18,7 @@ BuildRequires:  %{py3_dist pycryptodomex}
 
 
 %global _description %{expand:
-%{srcname} is a Python library to interact with Nintendo 3DS files.}
+%{srcname} is a Python library to interact with 3DS files.}
 
 %description %_description
 

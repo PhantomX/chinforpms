@@ -65,8 +65,8 @@ for more details):
 * WonderSwan
 * GameBoy (Color)
 * GameBoy Advance
-* Nintendo Entertainment System
-* Super Nintendo Entertainment System/Super Famicom
+* NES
+* SNES/SFC
 * Virtual Boy
 * PC Engine/TurboGrafx 16 (CD)
 * SuperGrafx

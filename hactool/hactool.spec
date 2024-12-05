@@ -6,7 +6,7 @@
 Name:           hactool
 Version:        1.4.0
 Release:        2%{?dist}
-Summary:        A tool to view information about file formats for the Nintendo Switch
+Summary:        A tool to view information about file formats for the NX console
 
 License:        ISC
 URL:            https://github.com/SciresM/%{name}
@@ -25,7 +25,7 @@ Provides:       bundled(mbedtls) = 2.6.1
 
 %description
 %{name} is a tool to view information about, decrypt, and extract common file
-formats for the Nintendo Switch, especially Nintendo Content Archives. 
+formats for the NX, especially NCA files. 
 
 
 %prep

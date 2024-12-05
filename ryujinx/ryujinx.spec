@@ -648,7 +648,7 @@ Requires:       hicolor-icon-theme
 
 
 %description
-Ryujinx is an open-source Nintendo Switch emulator, written in C#. This emulator
+Ryujinx is an open-source NX emulator, written in C#. This emulator
 aims at providing excellent accuracy and performance, a user-friendly interface
 and consistent builds.
 

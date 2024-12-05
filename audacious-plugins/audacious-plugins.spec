@@ -146,7 +146,7 @@ at a wide demographic audience. Most users of Audacious do not need this.
 For example, included are input plugins for exotic audio file formats,
 SID music (from Commodore 64 and compatibles), AdLib/OPL2 emulation,
 console game music, the Portable Sound Format PSF1/PSF2, Vortex AM/YM
-emulation, Nintendo DS Sound Format 2SF.
+emulation, NDS Sound Format 2SF.
 
 
 %package amidi
