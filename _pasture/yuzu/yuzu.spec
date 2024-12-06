@@ -119,7 +119,7 @@
 Name:           yuzu
 Version:        %{vc_version}
 Release:        1%{?dist}
-Summary:        A Nintendo Switch Emulator
+Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
 URL:            https://yuzu-emu.org
@@ -251,16 +251,16 @@ Provides:       %{name}%{?repo:-%{repo}}%{?_isa} = %{version}-%{release}
 %endif
 
 %description
-Yuzu is an open-source Nintendo Switch emulator written in C++.
+Yuzu is an open-source NX emulator written in C++.
 
 
 %package qt
-Summary:        A Nintendo Switch Emulator (Qt frontend)
+Summary:        A NX Emulator (Qt frontend)
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       hicolor-icon-theme
 
 %description qt
-Yuzu is an open-source Nintendo Switch emulator written in C++.
+Yuzu is an open-source NX emulator written in C++.
 
 This is the Qt frontend.
 

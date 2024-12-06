@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.1
+%define specrpmversion 6.12.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1168,6 +1168,8 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1012: 0001-openSUSE-vfs-fixup-1.patch
+Patch1013: 0001-openSUSE-vfs-fixup-2.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1192,7 +1194,6 @@ Patch6952:  %{pf_url}/2f67aa51f8a91621a9677b045168826db28b9b54.patch#/pf-cb-2f67
 Patch7000:  %{pf_url}/45d8131260dca8eedcbd21fdc5ab206901ee014c.patch#/pf-cb-45d8131.patch
 Patch7001:  %{pf_url}/bc20faded0b8eb03a6b2f7d608e4117f3132aa37.patch#/pf-cb-bc20fad.patch
 Patch7002:  %{pf_url}/90964ea1aab0e55f58bc2f4dfd8dbc79f8b7b4bc.patch#/pf-cb-90964ea.patch
-Patch7003:  %{pf_url}/29844504bbf41b79834e43eb125e79d0c0a6cbd3.patch#/pf-cb-2984450.patch
 Patch7004:  %{pf_url}/21399aaaa0aa2fdb7077be0aa851fb646f3b6ae3.patch#/pf-cb-21399aa.patch
 Patch7005:  %{pf_url}/d3f6303ebc33dd2d8a93f90cde8da9fcd72e808e.patch#/pf-cb-d3f6303.patch
 Patch7006:  %{pf_url}/aa97435d6f613fe4b3d32e24c5a6623a0c305d2a.patch#/pf-cb-aa97435.patch
@@ -1202,7 +1203,6 @@ Patch7009:  %{pf_url}/0626b7fc1bbadddc13b6ccef8254613e99b6b710.patch#/pf-cb-0626
 Patch7010:  %{pf_url}/e01b3de719e724d13deb69ddf923c5fd6a0b5772.patch#/pf-cb-e01b3de.patch
 Patch7011:  %{pf_url}/019abc5003e537048fca357376bd85db971ba886.patch#/pf-cb-019abc5.patch
 Patch7012:  %{pf_url}/2314bcdc07e19081b92cd1b7f87378350c65f221.patch#/pf-cb-2314bcd.patch
-Patch7013:  %{pf_url}/f9d1d5f70e595273e12985bd4c694695d5c9df75.patch#/pf-cb-f9d1d5f.patch
 Patch7014:  %{pf_url}/24e2cdb1109bebb5dbf11916f3bc3815c0b5c88e.patch#/pf-cb-24e2cdb.patch
 Patch7015:  %{pf_url}/0113a767e63b31013fb38dd90e51126a75f01101.patch#/pf-cb-0113a76.patch
 Patch7016:  %{pf_url}/a5f35124ba311cce22f57ba2a62928f12bc0d215.patch#/pf-cb-a5f3512.patch
@@ -1218,7 +1218,6 @@ Patch7025:  %{pf_url}/f3b93b96ff6dbe8ffb36102c24ec23bfa6287375.patch#/pf-cb-f3b9
 # bbr3
 Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
 # fixes
-Patch7100:  %{pf_url}/36f8a81f78c5e51674292e9abcfdc149bc77463c.patch#/pf-cb-36f8a81.patch
 # zstd
 Patch7200:  %{pf_url}/4322f1cce1bde9e644116d1cf180cb52c797c836.patch#/pf-cb-4322f1c.patch
 Patch7201:  %{pf_url}/fba099d14a1bc542734067366d01f4437157c122.patch#/pf-cb-fba099d.patch
@@ -1233,6 +1232,13 @@ Patch7241:  %{pf_url}/5880a2c9f5988aac156e77907834630385c5ea9c.patch#/pf-cb-5880
 Patch7300:  %{pf_url}/1639bef3f959e19bf98823d80454b0c00dacc827.patch#/pf-cb-1639bef.patch
 Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df57f.patch
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
+# fs
+Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
+Patch7401:  %{pf_url}/33d3fd2e63a1bde2ca021fea03292e2e351e3d71.patch#/pf-cb-33d3fd2.patch
+Patch7402:  %{pf_url}/abe7934769b4505fc4ed28482774a1f594f732ad.patch#/pf-cb-abe7934.patch
+Patch7403:  %{pf_url}/a9e361c0c6fe7e26bfcdbfebf1517b3f6b58a52c.patch#/pf-cb-a9e361c.patch
+Patch7404:  %{pf_url}/2ce23afbb88885ebf2d7e8a26523f24379e1cef9.patch#/pf-cb-2ce23af.patch
+Patch7405:  %{pf_url}/5f8346185d7906134a1d26429416bf02af65c9a4.patch#/pf-cb-5f83461.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -1248,6 +1254,7 @@ Patch7510:  %{pf_url}/df7b15233f7e333c6dacf5fa55b1f2be29c7f741.patch#/pf-cb-df7b
 Patch7511:  %{pf_url}/07713dc00024b0d97d621e4b5e8027881e46fbdb.patch#/pf-cb-07713dc.patch
 Patch7512:  %{pf_url}/80e731aeb044b900254647599ab583b36802eb0c.patch#/pf-cb-80e731a.patch
 Patch7513:  %{pf_url}/0723b9957b75ceb2cda80ca70bd2d345ea6e95b9.patch#/pf-cb-0723b99.patch
+Patch7514:  %{pf_url}/6d44c7b75c2a6e0cefb4d736da4778bcb9eacf5c.patch#/pf-cb-6d44c7b.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2125,7 +2132,6 @@ ApplyPatch %{PATCH6952}
 ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
 ApplyPatch %{PATCH7002}
-ApplyPatch %{PATCH7003}
 ApplyPatch %{PATCH7004}
 ApplyPatch %{PATCH7005}
 ApplyPatch %{PATCH7006}
@@ -2135,7 +2141,6 @@ ApplyPatch %{PATCH7009}
 ApplyPatch %{PATCH7010}
 ApplyPatch %{PATCH7011}
 ApplyPatch %{PATCH7012}
-ApplyPatch %{PATCH7013}
 ApplyPatch %{PATCH7014}
 ApplyPatch %{PATCH7015}
 ApplyPatch %{PATCH7016}
@@ -2151,7 +2156,6 @@ ApplyPatch %{PATCH7025}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
-ApplyPatch %{PATCH7100}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2166,6 +2170,13 @@ ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7300}
 ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
+# fs
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2181,10 +2192,13 @@ ApplyPatch %{PATCH7510}
 ApplyPatch %{PATCH7511}
 ApplyPatch %{PATCH7512}
 ApplyPatch %{PATCH7513}
+ApplyPatch %{PATCH7514}
 %endif
 
 # openSUSE
+ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1010}
+ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}
@@ -4538,6 +4552,9 @@ fi\
 #
 #
 %changelog
+* Thu Dec 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
+- 6.12.2
+
 * Fri Nov 22 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.1-500.chinfo
 - 6.12.1
 
