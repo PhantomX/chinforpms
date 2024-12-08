@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.2
+%define specrpmversion 6.12.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1215,6 +1215,26 @@ Patch7022:  %{pf_url}/2ed77578899d15cd747f1d4844d606455892f2d3.patch#/pf-cb-2ed7
 Patch7023:  %{pf_url}/0b454d6bb609aa64e5012c4acd474352805f9ad5.patch#/pf-cb-0b454d6.patch
 Patch7024:  %{pf_url}/9d60ded6633d95c5cdc471cb4dce78435d8fb8d4.patch#/pf-cb-9d60ded.patch
 Patch7025:  %{pf_url}/f3b93b96ff6dbe8ffb36102c24ec23bfa6287375.patch#/pf-cb-f3b93b9.patch
+Patch7026:  %{pf_url}/cded82e0fdfdaf1b9bafe669237d0efeb8cb26c7.patch#/pf-cb-cded82e.patch
+Patch7027:  %{pf_url}/5adce0f678da966f277919467653bb86ad8e4806.patch#/pf-cb-5adce0f.patch
+Patch7028:  %{pf_url}/a7067a3948fc6bf19c66840c3d7fdc7286278f62.patch#/pf-cb-a7067a3.patch
+Patch7029:  %{pf_url}/ea4b5a826d6b6058855416a732c31efec7d7db9c.patch#/pf-cb-ea4b5a8.patch
+Patch7030:  %{pf_url}/e53adc69a21b5cb98916570512beacde3e3b5230.patch#/pf-cb-e53adc6.patch
+Patch7031:  %{pf_url}/11b2cb03b810f34d3a5920a012602e3dc941dd71.patch#/pf-cb-11b2cb0.patch
+Patch7032:  %{pf_url}/4e06ff1c624be1362729f0ce764e6fd6fa166291.patch#/pf-cb-4e06ff1.patch
+Patch7033:  %{pf_url}/0677ecb790afa7b2f4cbf3c01db0a734fe4c5d17.patch#/pf-cb-0677ecb.patch
+Patch7034:  %{pf_url}/954f437b240b0261cf8255c711ed13a3cfe0f647.patch#/pf-cb-954f437.patch
+Patch7035:  %{pf_url}/ed6d7e9fb2f68c472dfd950beb8d8af596943e51.patch#/pf-cb-ed6d7e9.patch
+Patch7036:  %{pf_url}/99d4a9bcf143cb82933a6fa5170ac9619096f690.patch#/pf-cb-99d4a9b.patch
+Patch7037:  %{pf_url}/a5b2b13b7ce6c64814c4e5217aff918668cb3e26.patch#/pf-cb-a5b2b13.patch
+Patch7038:  %{pf_url}/06b673ea73505d00b16b88042205feba2a1e6320.patch#/pf-cb-06b673e.patch
+Patch7039:  %{pf_url}/b9fa02ba8a4b98b865f891e276f2ac4536b2b7f3.patch#/pf-cb-b9fa02b.patch
+Patch7040:  %{pf_url}/089ada190abdb425390782213948a11ba1fa3556.patch#/pf-cb-089ada1.patch
+Patch7041:  %{pf_url}/80580cf7abd722a17b345241aba08b69483fac6d.patch#/pf-cb-80580cf.patch
+Patch7042:  %{pf_url}/77ef7d700a91ae9458a181ca7402dbb3efa9c21b.patch#/pf-cb-77ef7d7.patch
+Patch7043:  %{pf_url}/7d27abe5b14e0ce8fca858ff96779cc121c481fa.patch#/pf-cb-7d27abe.patch
+Patch7044:  %{pf_url}/b42aadf20fda3fb9b6ba0f18700fa4f56058357e.patch#/pf-cb-b42aadf.patch
+Patch7045:  %{pf_url}/fc1966259a5c55c256a93db212d03ac6c172b7bb.patch#/pf-cb-fc19662.patch
 # bbr3
 Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
 # fixes
@@ -2153,6 +2173,26 @@ ApplyPatch %{PATCH7022}
 ApplyPatch %{PATCH7023}
 ApplyPatch %{PATCH7024}
 ApplyPatch %{PATCH7025}
+ApplyPatch %{PATCH7026}
+ApplyPatch %{PATCH7027}
+ApplyPatch %{PATCH7028}
+ApplyPatch %{PATCH7029}
+ApplyPatch %{PATCH7030}
+ApplyPatch %{PATCH7031}
+ApplyPatch %{PATCH7032}
+ApplyPatch %{PATCH7033}
+ApplyPatch %{PATCH7034}
+ApplyPatch %{PATCH7035}
+ApplyPatch %{PATCH7036}
+ApplyPatch %{PATCH7037}
+ApplyPatch %{PATCH7038}
+ApplyPatch %{PATCH7039}
+ApplyPatch %{PATCH7040}
+ApplyPatch %{PATCH7041}
+ApplyPatch %{PATCH7042}
+ApplyPatch %{PATCH7043}
+ApplyPatch %{PATCH7044}
+ApplyPatch %{PATCH7045}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -4552,6 +4592,9 @@ fi\
 #
 #
 %changelog
+* Fri Dec 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
+- 6.12.3
+
 * Thu Dec 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
 - 6.12.2
 

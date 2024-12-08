@@ -4,7 +4,7 @@
 
 Name:           xfwm4
 Version:        4.18.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPL-2.0-or-later
@@ -59,6 +59,7 @@ NOCONFIGURE=1 xdt-autogen
 
 
 %build
+export CFLAGS+=" -DSHOW_POSITION"
 %configure  --disable-static
 
 %make_build
@@ -88,6 +89,9 @@ done
 
 
 %changelog
+* Fri Dec 06 2024 Phantom X <megaphantomx at hotmail dot com> - 4.18.0-101
+- Enable SHOW_POSITION
+
 * Mon Dec 19 2022 Phantom X <megaphantomx at hotmail dot com> - 4.18.0-100
 - 4.18.0
 
