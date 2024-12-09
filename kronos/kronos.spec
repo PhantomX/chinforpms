@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 380da9532d971e88802e3a13655a658f73a48761
+%global commit 837973fd6dd295a5694432c1f091b2221e93da36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241003
+%global date 20241201
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -30,7 +30,7 @@
 
 Name:           kronos
 Version:        2.6.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -45,7 +45,6 @@ Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
-Patch500:       %{vc_url}/commit/981ba051918a7b05c833ed3fabed4f41e6c09603.patch#/%{name}-gh-revert-981ba05.patch
 
 BuildRequires:  cmake3
 BuildRequires:  make
@@ -79,8 +78,6 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
 %autopatch -M 499 -p1
-
-%patch -P 500 -p1 -R
 
 rm -rf win_template
 rm -rf yabause/.vs

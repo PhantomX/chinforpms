@@ -25,10 +25,11 @@
 # Enable system rapidyml
 %bcond_with ryml
 %bcond_without vulkan
+%bcond_with local
 
-%global commit fe3b4154b7279598db2a2f9d61eff0bef5f80eac
+%global commit 9b0a9062974ae90cab47e82ea9141daa3b08968f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241203
+%global date 20241208
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +48,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8082
+Version:        0.1.8081
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -72,6 +73,9 @@ Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch11:        0001-cmake-soundtouch_ds.patch
 Patch12:        0001-cmake-lunasvg_ds.patch
+%if %{with local}
+Patch499:       0001-Local-changes.patch
+%endif
 
 ExclusiveArch:  x86_64 aarch64
 
