@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.3
+%define specrpmversion 6.12.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -210,7 +210,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 44598c402184de0de4c9f0addce5771bf0eae0c4
-%global opensuse_id 52785e2ad3bef4c4f55dea98bc24125427b9a5aa
+%global opensuse_id 16f65311bcc5d3f4b353a4ed8f734b9b0de27cad
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20240917
 
@@ -1168,8 +1168,6 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1012: 0001-openSUSE-vfs-fixup-1.patch
-Patch1013: 0001-openSUSE-vfs-fixup-2.patch
 
 %global patchwork_url https://patchwork.kernel.org/patch
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1254,11 +1252,6 @@ Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
 # fs
 Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
-Patch7401:  %{pf_url}/33d3fd2e63a1bde2ca021fea03292e2e351e3d71.patch#/pf-cb-33d3fd2.patch
-Patch7402:  %{pf_url}/abe7934769b4505fc4ed28482774a1f594f732ad.patch#/pf-cb-abe7934.patch
-Patch7403:  %{pf_url}/a9e361c0c6fe7e26bfcdbfebf1517b3f6b58a52c.patch#/pf-cb-a9e361c.patch
-Patch7404:  %{pf_url}/2ce23afbb88885ebf2d7e8a26523f24379e1cef9.patch#/pf-cb-2ce23af.patch
-Patch7405:  %{pf_url}/5f8346185d7906134a1d26429416bf02af65c9a4.patch#/pf-cb-5f83461.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -2212,11 +2205,6 @@ ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
 # fs
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2236,9 +2224,7 @@ ApplyPatch %{PATCH7514}
 %endif
 
 # openSUSE
-ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1010}
-ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}
@@ -4592,6 +4578,9 @@ fi\
 #
 #
 %changelog
+* Mon Dec 09 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
+- 6.12.4
+
 * Fri Dec 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
 - 6.12.3
 
