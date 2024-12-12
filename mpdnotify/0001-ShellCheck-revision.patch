@@ -1,0 +1,52 @@
+From 042842931382c70ae8735fe8af498f2511644d30 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 11 Dec 2024 20:38:51 -0300
+Subject: [PATCH] ShellCheck revision
+
+---
+ mpdnotify | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
+
+diff --git a/mpdnotify b/mpdnotify
+index 1ccc249..e5db425 100755
+--- a/mpdnotify
++++ b/mpdnotify
+@@ -27,6 +27,7 @@ if [[ ! -f "$CFG_FILE" ]]; then
+     echo " Create $XDG_CONFIG_HOME/mpdnotify.conf for this user."
+     exit 1
+ else
++    # shellcheck source=/dev/null
+     . "$CFG_FILE"
+ fi
+ 
+@@ -55,7 +56,7 @@ art="$MUSIC_DIR/${file%/*}"
+ if [[ -d $art ]]; then
+     # find every file that matches IMG_REG set the first matching file to be the
+     # cover.
+-    cover="$(find "$art/" -maxdepth 1 -type f | egrep -i -m1 "$IMG_REG")"
++    cover="$(find "$art/" -maxdepth 1 -type f -o -type l | grep -E -i -m1 "$IMG_REG")"
+ fi
+ 
+ # when no cover is found, use DEFAULT_ART as cover
+@@ -68,13 +69,13 @@ text="$(escape "$title\n$song")"
+ # using 'hint' they'll be removed automatically (gnome-shell 3.01)
+ if [[ -n $cover ]]; then
+ 
+-    if [[ -n $COVER_RESIZE ]]; then
+-        convert "$cover" -thumbnail $COVER_RESIZE -gravity center \
+-            -background "$COVER_BACKGROUND" -extent $COVER_RESIZE "$TEMP_PATH" >> "$LOGFILE" 2>&1
++    if [[ -n "$COVER_RESIZE" ]]; then
++        magick "$cover" -thumbnail "$COVER_RESIZE" -gravity center \
++            -background "$COVER_BACKGROUND" -extent "$COVER_RESIZE" "$TEMP_PATH" >> "$LOGFILE" 2>&1
+         cover="$TEMP_PATH"
+     fi
+ 
+-    notify-send -u $URGENCY -t 5000 --hint=int:transient:1 "$NOTIFY_TITLE" "$text" -i "$cover" >> "$LOGFILE" 2>&1
++    notify-send -u "$URGENCY" -t 5000 --hint=int:transient:1 "$NOTIFY_TITLE" "$text" -i "$cover" >> "$LOGFILE" 2>&1
+ else
+-    notify-send -u $URGENCY -t 5000 --hint=int:transient:1 "$NOTIFY_TITLE" "$text" >> "$LOGFILE" 2>&1
++    notify-send -u "$URGENCY" -t 5000 --hint=int:transient:1 "$NOTIFY_TITLE" "$text" >> "$LOGFILE" 2>&1
+ fi
+-- 
+2.47.1
+

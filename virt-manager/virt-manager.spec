@@ -1,7 +1,7 @@
 # -*- rpm-spec -*-
 
-%global with_guestfs               0
-%global default_hvs                "qemu,xen,lxc"
+%global default_hvs         "qemu,xen,lxc"
+%global have_spice          %{defined fedora}
 
 # End local config
 
@@ -21,7 +21,7 @@ Requires: python3-gobject >= 3.31.3
 Requires: gtk3 >= 3.22.0
 Requires: libvirt-glib >= 0.0.9
 Requires: gtk-vnc2
-%if 0%{?fedora}
+%if %{have_spice}
 Requires: spice-gtk3
 %endif
 
@@ -108,7 +108,7 @@ machine).
 
 
 %build
-%if 0%{?rhel}
+%if ! %{have_spice}
 %global _default_graphics -Ddefault_graphics=vnc
 %endif
 

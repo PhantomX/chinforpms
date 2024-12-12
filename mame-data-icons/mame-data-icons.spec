@@ -36,7 +36,7 @@ sed 's/\r//' -i README
 mkdir -p png
 rm -f '('*.ico
 rm -f '!'*.ico
-find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} convert FILE[1] png/FILE.png
+find -maxdepth 1 -name '*.ico' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} magick FILE[1] png/FILE.png
 rename '.ico' '' png/*.png
 find png -maxdepth 1 -name '*.png' -print0 | xargs -0 -r -I FILE -P %{_smp_build_ncpus} optipng -quiet -preserve FILE
 

@@ -139,7 +139,7 @@ for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   for icon in %{name} ;do
-    convert %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/${icon}.png \
+    magick %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/${icon}.png \
       -filter Lanczos -resize ${res}x${res} ${dir}/${icon}.png
   done
 done
