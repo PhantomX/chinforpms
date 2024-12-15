@@ -1,0 +1,29 @@
+From 2f727d03cc524dd2639128f03a66d84bd47f1cb7 Mon Sep 17 00:00:00 2001
+From: Oleksandr Natalenko <oleksandr@natalenko.name>
+Date: Wed, 11 Dec 2024 08:50:50 +0100
+Subject: [PATCH] kbuild-6.12: adopt proposed upstream change for generic CPUs
+
+Link: https://lore.kernel.org/lkml/20241210144945.2325330-4-arnd@kernel.org/
+Signed-off-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+---
+ arch/x86/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 74e94c9..a5d9001 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -184,8 +184,8 @@ else
+         cflags-$(CONFIG_MCORE2)		+= -march=core2
+         cflags-$(CONFIG_MATOM)		+= -march=bonnell
+         ifeq ($(CONFIG_X86_64_VERSION),1)
+-          cflags-$(CONFIG_GENERIC_CPU)		+= -mtune=generic
+-          rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
++          cflags-$(CONFIG_GENERIC_CPU)		+= -march=x86-64 -mtune=generic
++          rustflags-$(CONFIG_GENERIC_CPU)	+= -Ctarget-cpu=x86-64 -Ztune-cpu=generic
+         else
+           cflags-$(CONFIG_GENERIC_CPU)		+= -march=x86-64-v$(CONFIG_X86_64_VERSION)
+           rustflags-$(CONFIG_GENERIC_CPU)	+= -Ctarget-cpu=x86-64-v$(CONFIG_X86_64_VERSION)
+-- 
+2.47.1
+

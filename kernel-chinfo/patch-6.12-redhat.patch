@@ -39,6 +39,7 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
  drivers/input/rmi4/rmi_driver.c                    | 124 +--
  drivers/iommu/iommu.c                              |  22 +
+ drivers/net/wireless/realtek/rtl8xxxu/core.c       |  20 +
  drivers/pci/quirks.c                               |  24 +
  drivers/scsi/sd.c                                  |  10 +
  drivers/usb/core/hub.c                             |   7 +
@@ -48,18 +49,15 @@
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   5 +
  kernel/module/signing.c                            |   9 +-
- net/ipv4/udp.c                                     |  14 +-
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |   1 +
  security/security.c                                |  12 +
- tools/tracing/rtla/src/utils.c                     |  36 +-
- tools/tracing/rtla/src/utils.h                     |   2 +
- 58 files changed, 2991 insertions(+), 275 deletions(-)
+ 59 files changed, 3011 insertions(+), 275 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index e81030ec6831..2f36f6150bbc 100644
+index 87dc2f810860..3e3b75cc9921 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -3960,6 +3958,85 @@ index 83c8e617a2c5..27f9b4517095 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/net/wireless/realtek/rtl8xxxu/core.c b/drivers/net/wireless/realtek/rtl8xxxu/core.c
+index f95898f68d68..4ce0c05c5129 100644
+--- a/drivers/net/wireless/realtek/rtl8xxxu/core.c
++++ b/drivers/net/wireless/realtek/rtl8xxxu/core.c
+@@ -8147,6 +8147,8 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x817e, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x8186, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x818a, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x317f, 0xff, 0xff, 0xff),
+@@ -8157,12 +8159,18 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x050d, 0x1102, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x050d, 0x11f2, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe033, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x07b8, 0x8188, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x07b8, 0x8189, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9041, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x0846, 0x9043, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0b05, 0x17ba, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(USB_VENDOR_ID_REALTEK, 0x1e1e, 0xff, 0xff, 0xff),
+@@ -8179,6 +8187,10 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3357, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3358, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x13d3, 0x3359, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330b, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x2019, 0x4902, 0xff, 0xff, 0xff),
+@@ -8193,6 +8205,8 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x4856, 0x0091, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x9846, 0x9041, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0xcdab, 0x8010, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x04f2, 0xaff7, 0xff, 0xff, 0xff),
+@@ -8218,6 +8232,8 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0586, 0x341f, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe033, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x06f8, 0xe035, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0b05, 0x17ab, 0xff, 0xff, 0xff),
+@@ -8226,6 +8242,8 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0df6, 0x0070, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x0df6, 0x0077, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x0789, 0x016d, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x07aa, 0x0056, 0xff, 0xff, 0xff),
+@@ -8248,6 +8266,8 @@ static const struct usb_device_id dev_table[] = {
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330a, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
++{USB_DEVICE_AND_INTERFACE_INFO(0x2001, 0x330d, 0xff, 0xff, 0xff),
++	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x2019, 0xab2b, 0xff, 0xff, 0xff),
+ 	.driver_info = (unsigned long)&rtl8192cu_fops},
+ {USB_DEVICE_AND_INTERFACE_INFO(0x20f4, 0x624d, 0xff, 0xff, 0xff),
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index dccb60c1d9cc..c7ec62f076c3 100644
 --- a/drivers/pci/quirks.c
@@ -4218,41 +4295,6 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  }
  
  int module_sig_check(struct load_info *info, int flags)
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 2849b273b131..ff85242720a0 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1516,7 +1516,6 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 	struct sk_buff_head *list = &sk->sk_receive_queue;
- 	int rmem, err = -ENOMEM;
- 	spinlock_t *busy = NULL;
--	bool becomes_readable;
- 	int size, rcvbuf;
- 
- 	/* Immediately drop when the receive queue is full.
-@@ -1557,19 +1556,12 @@ int __udp_enqueue_schedule_skb(struct sock *sk, struct sk_buff *skb)
- 	 */
- 	sock_skb_set_dropcount(sk, skb);
- 
--	becomes_readable = skb_queue_empty(list);
- 	__skb_queue_tail(list, skb);
- 	spin_unlock(&list->lock);
- 
--	if (!sock_flag(sk, SOCK_DEAD)) {
--		if (becomes_readable ||
--		    sk->sk_data_ready != sock_def_readable ||
--		    READ_ONCE(sk->sk_peek_off) >= 0)
--			INDIRECT_CALL_1(sk->sk_data_ready,
--					sock_def_readable, sk);
--		else
--			sk_wake_async_rcu(sk, SOCK_WAKE_WAITD, POLL_IN);
--	}
-+	if (!sock_flag(sk, SOCK_DEAD))
-+		INDIRECT_CALL_1(sk->sk_data_ready, sock_def_readable, sk);
-+
- 	busylock_release(busy);
- 	return 0;
- 
 diff --git a/scripts/tags.sh b/scripts/tags.sh
 index 191e0461d6d5..e6f418b3e948 100755
 --- a/scripts/tags.sh
@@ -4349,81 +4391,3 @@ index c5981e558bc2..431202cd09c1 100644
  /**
   * security_bdev_alloc() - Allocate a block device LSM blob
   * @bdev: block device
-diff --git a/tools/tracing/rtla/src/utils.c b/tools/tracing/rtla/src/utils.c
-index 9ac71a66840c..6fae234aaf36 100644
---- a/tools/tracing/rtla/src/utils.c
-+++ b/tools/tracing/rtla/src/utils.c
-@@ -211,29 +211,25 @@ long parse_ns_duration(char *val)
- /*
-  * This is a set of helper functions to use SCHED_DEADLINE.
-  */
--#ifdef __x86_64__
--# define __NR_sched_setattr	314
--# define __NR_sched_getattr	315
--#elif __i386__
--# define __NR_sched_setattr	351
--# define __NR_sched_getattr	352
--#elif __arm__
--# define __NR_sched_setattr	380
--# define __NR_sched_getattr	381
--#elif __aarch64__ || __riscv
--# define __NR_sched_setattr	274
--# define __NR_sched_getattr	275
--#elif __powerpc__
--# define __NR_sched_setattr	355
--# define __NR_sched_getattr	356
--#elif __s390x__
--# define __NR_sched_setattr	345
--# define __NR_sched_getattr	346
-+#ifndef __NR_sched_setattr
-+# ifdef __x86_64__
-+#  define __NR_sched_setattr	314
-+# elif __i386__
-+#  define __NR_sched_setattr	351
-+# elif __arm__
-+#  define __NR_sched_setattr	380
-+# elif __aarch64__ || __riscv
-+#  define __NR_sched_setattr	274
-+# elif __powerpc__
-+#  define __NR_sched_setattr	355
-+# elif __s390x__
-+#  define __NR_sched_setattr	345
-+# endif
- #endif
- 
- #define SCHED_DEADLINE		6
- 
--static inline int sched_setattr(pid_t pid, const struct sched_attr *attr,
-+static inline int syscall_sched_setattr(pid_t pid, const struct sched_attr *attr,
- 				unsigned int flags) {
- 	return syscall(__NR_sched_setattr, pid, attr, flags);
- }
-@@ -243,7 +239,7 @@ int __set_sched_attr(int pid, struct sched_attr *attr)
- 	int flags = 0;
- 	int retval;
- 
--	retval = sched_setattr(pid, attr, flags);
-+	retval = syscall_sched_setattr(pid, attr, flags);
- 	if (retval < 0) {
- 		err_msg("Failed to set sched attributes to the pid %d: %s\n",
- 			pid, strerror(errno));
-diff --git a/tools/tracing/rtla/src/utils.h b/tools/tracing/rtla/src/utils.h
-index d44513e6c66a..99c9cf81bcd0 100644
---- a/tools/tracing/rtla/src/utils.h
-+++ b/tools/tracing/rtla/src/utils.h
-@@ -46,6 +46,7 @@ update_sum(unsigned long long *a, unsigned long long *b)
- 	*a += *b;
- }
- 
-+#ifndef SCHED_ATTR_SIZE_VER0
- struct sched_attr {
- 	uint32_t size;
- 	uint32_t sched_policy;
-@@ -56,6 +57,7 @@ struct sched_attr {
- 	uint64_t sched_deadline;
- 	uint64_t sched_period;
- };
-+#endif /* SCHED_ATTR_SIZE_VER0 */
- 
- int parse_prio(char *arg, struct sched_attr *sched_param);
- int parse_cpu_set(char *cpu_list, cpu_set_t *set);
