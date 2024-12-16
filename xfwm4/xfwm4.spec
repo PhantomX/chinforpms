@@ -3,8 +3,8 @@
 %global vc_url https://gitlab.xfce.org/xfce/%{name}
 
 Name:           xfwm4
-Version:        4.18.0
-Release:        101%{?dist}
+Version:        4.20.0
+Release:        100%{?dist}
 Summary:        Next generation window manager for Xfce
 
 License:        GPL-2.0-or-later
@@ -24,7 +24,8 @@ BuildRequires:  make
 BuildRequires:  gettext
 BuildRequires:  intltool >= 0.35
 BuildRequires:  pkgconfig(epoxy) >= 1.0
-BuildRequires:  pkgconfig(gtk+-3.0) >= 3.22
+BuildRequires:  pkgconfig(glib-2.0) >= 2.72.0
+BuildRequires:  pkgconfig(gtk+-3.0) >= 3.24
 BuildRequires:  pkgconfig(libstartup-notification-1.0) >= 0.5
 BuildRequires:  pkgconfig(libxfce4kbd-private-3) >= 4.12
 BuildRequires:  pkgconfig(libxfce4ui-2) >= 4.12
@@ -89,6 +90,9 @@ done
 
 
 %changelog
+* Sun Dec 15 2024 Phantom X <megaphantomx at hotmail dot com> - 4.20.0-100
+- 4.20.0
+
 * Fri Dec 06 2024 Phantom X <megaphantomx at hotmail dot com> - 4.18.0-101
 - Enable SHOW_POSITION
 

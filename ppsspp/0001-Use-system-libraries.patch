@@ -1,4 +1,4 @@
-From 6c600b3c1cdb82fd47ff7fed40bf2049ef5e787f Mon Sep 17 00:00:00 2001
+From cff036116344988f6349e7ce06205e203d7d55ad Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -20,16 +20,17 @@ Subject: [PATCH] Use system libraries
  GPU/GLES/TextureCacheGLES.cpp         |  2 +-
  GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
  UI/CwCheatScreen.cpp                  |  2 +-
+ UI/ImDebugger/ImMemView.cpp           |  2 +-
  Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
  ext/CMakeLists.txt                    |  8 ++++++++
- 19 files changed, 43 insertions(+), 18 deletions(-)
+ 20 files changed, 44 insertions(+), 19 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 20a0b97..4c1c3b3 100644
+index 6147359..8c4f785 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1573,11 +1573,20 @@ add_library(xbrz STATIC
+@@ -1682,11 +1682,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -51,7 +52,7 @@ index 20a0b97..4c1c3b3 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2320,6 +2329,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2447,6 +2456,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -67,7 +68,7 @@ index 20a0b97..4c1c3b3 100644
  	find_package(ZSTD REQUIRED)
  	target_include_directories(${CoreLibName} PRIVATE ${ZSTD_INCLUDE_DIR})
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index a9e5dec..baac5d4 100644
+index 862c0e4..20c7c44 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,7 @@
@@ -80,7 +81,7 @@ index a9e5dec..baac5d4 100644
  #include "Common/Log.h"
  
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 1532d43..153a154 100644
+index b2d74ef..6564cfe 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -93,7 +94,7 @@ index 1532d43..153a154 100644
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index 8b2e427..113f4be 100644
+index 6b42450..a081897 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
 @@ -33,7 +33,7 @@
@@ -106,7 +107,7 @@ index 8b2e427..113f4be 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 8329dc0..5479b42 100644
+index a06d76b..8bfab9b 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -19,7 +19,7 @@
@@ -119,7 +120,7 @@ index 8329dc0..5479b42 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index b428b31..f478cd3 100644
+index b3906be..0d00231 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -132,7 +133,7 @@ index b428b31..f478cd3 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 1cdeeb0..e2ec8cf 100644
+index a85f01a..7f7131a 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -24,7 +24,7 @@
@@ -145,7 +146,7 @@ index 1cdeeb0..e2ec8cf 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 20d8b40..cdc6744 100644
+index 921838c..9f98e31 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
 @@ -33,7 +33,7 @@
@@ -158,7 +159,7 @@ index 20d8b40..cdc6744 100644
  #include "Common/Crypto/md5.h"
  #include "Common/Log.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 6c88b29..1142966 100644
+index 94ca1c6..95c838b 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -171,7 +172,7 @@ index 6c88b29..1142966 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 70f0f21..ea36f02 100644
+index dd96e98..6ee7a06 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -184,7 +185,7 @@ index 70f0f21..ea36f02 100644
  #include "Common/Common.h"
  #include "Common/Data/Convert/ColorConv.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index a9f84e5..aac41fd 100644
+index 7bd847e..8f4bbc9 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -23,7 +23,7 @@
@@ -197,7 +198,7 @@ index a9f84e5..aac41fd 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 465981e..aacb5f5 100644
+index 18d3218..555fbf4 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -36,7 +36,7 @@
@@ -210,10 +211,10 @@ index 465981e..aacb5f5 100644
  
  // For depth depal
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index 04a1aaf..80ba41d 100644
+index 1cd2ed6..a36bddd 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
 +++ b/GPU/Directx9/TextureCacheDX9.cpp
-@@ -32,7 +32,7 @@
+@@ -33,7 +33,7 @@
  #include "GPU/Common/TextureDecoder.h"
  #include "Core/Config.h"
  
@@ -223,7 +224,7 @@ index 04a1aaf..80ba41d 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 94dcf0d..8473948 100644
+index 2057d25..178aecf 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -18,7 +18,7 @@
@@ -236,7 +237,7 @@ index 94dcf0d..8473948 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 0521759..29b1ed9 100644
+index 1520358..fc7b2c8 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -249,7 +250,7 @@ index 0521759..29b1ed9 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 1b63895..d565563 100644
+index 2cf3225..ef23b1a 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -261,11 +262,24 @@ index 1b63895..d565563 100644
  #include "Common/UI/UI.h"
  
  #include "Common/Data/Text/I18n.h"
+diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
+index e871876..b9d2fd0 100644
+--- a/UI/ImDebugger/ImMemView.cpp
++++ b/UI/ImDebugger/ImMemView.cpp
+@@ -7,7 +7,7 @@
+ #include "ext/imgui/imgui_internal.h"
+ #include "ext/imgui/imgui_impl_thin3d.h"
+ 
+-#include "ext/xxhash.h"
++#include "xxhash.h"
+ #include "Common/StringUtils.h"
+ #include "Core/Config.h"
+ #include "Core/MemMap.h"
 diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 8d9809f..df85d7b 100644
+index 71d05e8..0f46f07 100644
 --- a/Windows/Debugger/CtrlDisAsmView.cpp
 +++ b/Windows/Debugger/CtrlDisAsmView.cpp
-@@ -23,7 +23,7 @@
+@@ -24,7 +24,7 @@
  
  #include "Common/CommonWindows.h"
  #include "Common/Data/Encoding/Utf8.h"
@@ -275,7 +289,7 @@ index 8d9809f..df85d7b 100644
  
  #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 12e4f85..c1433a8 100644
+index 413dbc3..1f96916 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -4,7 +4,7 @@
@@ -288,10 +302,10 @@ index 12e4f85..c1433a8 100644
  #include "Core/Config.h"
  #include "Core/MemMap.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index fe6b714..5303f70 100644
+index a6e06e1..97f72e8 100644
 --- a/ext/CMakeLists.txt
 +++ b/ext/CMakeLists.txt
-@@ -38,7 +38,15 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+@@ -42,7 +42,15 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
  	add_subdirectory(discord-rpc-build)
  endif()
  
@@ -308,5 +322,5 @@ index fe6b714..5303f70 100644
  if(ANDROID)
      if (ARM64)
 -- 
-2.43.0
+2.47.1
 
