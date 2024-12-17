@@ -1,18 +1,19 @@
-From 0ed4fabfa41820720e6cf1570c33d6b94dc3c824 Mon Sep 17 00:00:00 2001
+From 2589ea7027d653ee760c89613c58cb3676d4b10f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 4 Sep 2020 11:08:58 -0300
 Subject: [PATCH] Disable overlay-scrolling
 
+gtk-overlay-scrolling property is ignored, only way to enable is GTK_OVERLAY_SCROLLING=1
 ---
- gdk/wayland/gdkscreen-wayland.c      |    2 +-
- gtk/gtkscrolledwindow.c              |    8 +-
- 3 files changed, 1873 insertions(+), 5 deletions(-)
+ gdk/wayland/gdkscreen-wayland.c | 2 +-
+ gtk/gtkscrolledwindow.c         | 8 ++++----
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/gdk/wayland/gdkscreen-wayland.c b/gdk/wayland/gdkscreen-wayland.c
-index 0c82095..3976ef1 100644
+index 5e79e70..c4aa213 100644
 --- a/gdk/wayland/gdkscreen-wayland.c
 +++ b/gdk/wayland/gdkscreen-wayland.c
-@@ -536,7 +536,7 @@ static TranslationEntry translations[] = {
+@@ -537,7 +537,7 @@ static TranslationEntry translations[] = {
    { FALSE, "org.gnome.desktop.interface", "toolbar-style", "gtk-toolbar-style", G_TYPE_STRING, { .s = "both-horiz"} },
    { FALSE, "org.gnome.desktop.interface", "toolbar-icons-size", "gtk-toolbar-icon-size", G_TYPE_STRING, { .s = "large"} },
    { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
@@ -22,10 +23,10 @@ index 0c82095..3976ef1 100644
    { FALSE, "org.gnome.desktop.peripherals.mouse", "drag-threshold", "gtk-dnd-drag-threshold", G_TYPE_INT, {.i = 8 } },
    { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
 diff --git a/gtk/gtkscrolledwindow.c b/gtk/gtkscrolledwindow.c
-index 95c910f..1637d3f 100644
+index f4c09d0..0a9c543 100644
 --- a/gtk/gtkscrolledwindow.c
 +++ b/gtk/gtkscrolledwindow.c
-@@ -713,7 +713,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
+@@ -711,7 +711,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
        g_param_spec_boolean ("overlay-scrolling",
                              P_("Overlay Scrolling"),
                              P_("Overlay scrolling mode"),
@@ -34,26 +35,20 @@ index 95c910f..1637d3f 100644
                              GTK_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
  
    /**
-@@ -2148,7 +2148,7 @@ gtk_scrolled_window_init (GtkScrolledWindow *scrolled_window)
-   priv->max_content_width = -1;
-   priv->max_content_height = -1;
+@@ -4546,10 +4546,10 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
  
--  priv->overlay_scrolling = TRUE;
-+  priv->overlay_scrolling = FALSE;
+   g_object_get (settings, "gtk-overlay-scrolling", &overlay_scrolling, NULL);
  
-   priv->drag_gesture = gtk_gesture_drag_new (widget);
-   gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (priv->drag_gesture), TRUE);
-@@ -4448,8 +4448,8 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
- 
-   use_indicators = overlay_scrolling && priv->overlay_scrolling;
+-  use_indicators = overlay_scrolling && priv->overlay_scrolling;
++  use_indicators = FALSE;
  
 -  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "0") == 0)
 -    use_indicators = FALSE;
-+  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "1") == 0)
++  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "0") == 1)
 +    use_indicators = TRUE;
  
    if (priv->use_indicators != use_indicators)
      {
 -- 
-2.26.2
+2.47.1
 

@@ -30,7 +30,7 @@
 
 Name:           %{pkgname}-chinfo
 Version:        4.16.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
 Epoch:          1
@@ -173,6 +173,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon Dec 16 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.7-2
+- Fix overlay scrolling patch
+
 * Sun Nov 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.7-1
 - 4.16.7
 

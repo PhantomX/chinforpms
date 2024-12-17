@@ -37,7 +37,7 @@
 
 Name:           %{pkgname}-classic
 Version:        3.24.43
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          2
@@ -190,7 +190,10 @@ export CFLAGS+=" -fno-strict-aliasing"
         -Dcloudproviders=true \
 %endif
         -Dgtk_doc=false \
+        -Ddemos=false \
+        -Dexamples=false \
         -Dinstalled_tests=false \
+        -Dtests=false \
         -Dman=false \
 %if 0%{?with_sysprof}
         -Dprofiler=true \
@@ -243,6 +246,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Mon Dec 16 2024 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.43-2
+- Fix overlay scrolling patch
+
 * Wed Aug 07 2024 Phantom X <megaphantomx at hotmail dot com> - 1:3.24.43-1
 - Initial spec, rebased from gtk3 spec
 
