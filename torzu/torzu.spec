@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit bb142c965770e0f66eac5c7682defc7f26347a43
+%global commit 02cfee3f184e6fdcc3b483ef399fb5d2bb1e8ec7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241112
+%global date 20241215
 %bcond_without snapshot
 
 # Enable system boost
@@ -88,7 +88,7 @@
 
 Name:           torzu
 Version:        2024.08.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}

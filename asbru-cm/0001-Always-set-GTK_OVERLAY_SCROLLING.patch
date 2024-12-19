@@ -1,0 +1,24 @@
+From 433aea5dcb2c61bef8b352c7da38a187dd252089 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 17 Dec 2024 09:40:01 -0300
+Subject: [PATCH] Always set GTK_OVERLAY_SCROLLING
+
+---
+ asbru-cm | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/asbru-cm b/asbru-cm
+index 3933df5..98384cc 100755
+--- a/asbru-cm
++++ b/asbru-cm
+@@ -84,6 +84,7 @@ BEGIN {
+     # Workaround to unexpected SSH disconnections due to wrong handling of the WINCH event in some Gnome versions
+     # See https://www.perlmonks.org/?node_id=11109454
+     delete $ENV{'GTK_OVERLAY_SCROLLING'};
++    $ENV{'GTK_OVERLAY_SCROLLING'} = 1;
+ 
+     # Ensure ASBRU_ENV_FOR_EXTERNAL is defined
+     # (it should be defined when running inside AppImage, otherwise must remain empty)
+-- 
+2.47.1
+

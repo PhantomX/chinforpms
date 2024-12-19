@@ -45,7 +45,7 @@ index f4c09d0..0a9c543 100644
 -  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "0") == 0)
 -    use_indicators = FALSE;
 +  if (g_strcmp0 (g_getenv ("GTK_OVERLAY_SCROLLING"), "0") == 1)
-+    use_indicators = TRUE;
++    use_indicators = overlay_scrolling && priv->overlay_scrolling;
  
    if (priv->use_indicators != use_indicators)
      {

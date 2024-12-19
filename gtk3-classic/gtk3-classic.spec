@@ -37,7 +37,7 @@
 
 Name:           %{pkgname}-classic
 Version:        3.24.43
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          2
@@ -246,6 +246,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Dec 17 2024 Phantom X - 2:3.24.43-3
+- Again
+
 * Mon Dec 16 2024 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.43-2
 - Fix overlay scrolling patch
 

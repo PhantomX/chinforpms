@@ -1,4 +1,4 @@
-From d152f8dc0034c9270f3bf0eaf625d853703d2281 Mon Sep 17 00:00:00 2001
+From fd5cdeff7441a1c460c8824bad753df49ba38170 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 5 Nov 2024 22:10:33 -0300
 Subject: [PATCH] Updates from Stenzek
@@ -15,13 +15,12 @@ dep/libchdr: Add chd_get_compressed_size()
 dep/libchdr: Add EDC computation functions
 CDImageCHD: Show precaching in MB
 dep/libchdr: Fix mismatched function pointer type
-
 ---
- include/libchdr/cdrom.h |  26 +++++--
- include/libchdr/chd.h   |  15 +++-
- src/libchdr_cdrom.c     |  75 ++++++++++++++++++++
- src/libchdr_chd.c       | 147 ++++++++++++++++++++++++++++++----------
- 4 files changed, 221 insertions(+), 42 deletions(-)
+ include/libchdr/cdrom.h |  26 ++++++--
+ include/libchdr/chd.h   |  12 ++++
+ src/libchdr_cdrom.c     |  75 +++++++++++++++++++++
+ src/libchdr_chd.c       | 144 ++++++++++++++++++++++++++--------------
+ 4 files changed, 201 insertions(+), 56 deletions(-)
 
 diff --git a/include/libchdr/cdrom.h b/include/libchdr/cdrom.h
 index 816e6a5..27321e4 100644
@@ -90,7 +89,7 @@ index 816e6a5..27321e4 100644
 +#endif  /* __CDROM_H__ */
 \ No newline at end of file
 diff --git a/include/libchdr/chd.h b/include/libchdr/chd.h
-index ed052ef..7cb4b61 100644
+index 82e638f..3d2fffb 100644
 --- a/include/libchdr/chd.h
 +++ b/include/libchdr/chd.h
 @@ -258,6 +258,7 @@ extern "C" {
@@ -109,7 +108,7 @@ index ed052ef..7cb4b61 100644
  
  /* close a CHD file */
  CHD_EXPORT void chd_close(chd_file *chd);
-@@ -388,19 +390,30 @@ CHD_EXPORT void chd_close(chd_file *chd);
+@@ -388,6 +390,9 @@ CHD_EXPORT void chd_close(chd_file *chd);
  /* return the associated core_file */
  CHD_EXPORT core_file *chd_core_file(chd_file *chd);
  
@@ -119,18 +118,13 @@ index ed052ef..7cb4b61 100644
  /* return an error string for the given CHD error */
  CHD_EXPORT const char *chd_error_string(chd_error err);
  
- 
--
- /* ----- CHD header management ----- */
- 
- /* return a pointer to the extracted CHD header data */
- CHD_EXPORT const chd_header *chd_get_header(chd_file *chd);
+@@ -400,9 +405,16 @@ CHD_EXPORT const chd_header *chd_get_header(chd_file *chd);
  
  /* read CHD header data from file into the pointed struct */
-+CHD_EXPORT chd_error chd_read_header_core_file(core_file *file, chd_header *header);
+ CHD_EXPORT chd_error chd_read_header_core_file(core_file *file, chd_header *header);
 +
 +/* reads CHD header from the C file into the pointed struct */
-+CHD_EXPORT chd_error chd_read_header_file(FILE *file, chd_header *header);
+ CHD_EXPORT chd_error chd_read_header_file(FILE *file, chd_header *header);
 +
 +/* reads CHD header from the specified filename into the pointed struct */
  CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header);
@@ -233,7 +227,7 @@ index 112ea2e..dacba66 100644
 +
  #endif /* WANT_RAW_DATA_SECTOR */
 diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
-index db202d3..23ecf72 100644
+index 83f5d2a..4f7c119 100644
 --- a/src/libchdr_chd.c
 +++ b/src/libchdr_chd.c
 @@ -220,9 +220,9 @@ struct _zlib_codec_data
@@ -303,19 +297,19 @@ index db202d3..23ecf72 100644
  }
  
  /*-------------------------------------------------
-@@ -2062,25 +2071,54 @@ cleanup:
+@@ -2069,25 +2078,54 @@ cleanup:
      memory
  -------------------------------------------------*/
  
 -CHD_EXPORT chd_error chd_precache(chd_file *chd)
 +CHD_EXPORT chd_error chd_precache(chd_file* chd)
- {
--	int64_t count;
++{
 +	return chd_precache_progress(chd, NULL, NULL);
 +}
 +
 +CHD_EXPORT chd_error chd_precache_progress(chd_file* chd, void(*progress)(size_t pos, size_t total, void* param), void* param)
-+{
+ {
+-	int64_t count;
 +#define PRECACHE_CHUNK_SIZE 16 * 1024 * 1024
 +
 +	size_t count;
@@ -366,7 +360,7 @@ index db202d3..23ecf72 100644
  	return CHDERR_NONE;
  }
  
-@@ -2248,6 +2286,14 @@ CHD_EXPORT core_file *chd_core_file(chd_file *chd)
+@@ -2269,6 +2307,14 @@ CHD_EXPORT core_file *chd_core_file(chd_file *chd)
  	return chd->file;
  }
  
@@ -381,81 +375,87 @@ index db202d3..23ecf72 100644
  /*-------------------------------------------------
      chd_error_string - return an error string for
      the given CHD error
-@@ -2311,37 +2357,70 @@ CHD_EXPORT const chd_header *chd_get_header(chd_file *chd)
-     chd_read_header - read CHD header data
- 	from file into the pointed struct
- -------------------------------------------------*/
--CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header)
-+CHD_EXPORT chd_error chd_read_header_core_file(core_file* file, chd_header* header)
+@@ -2335,13 +2381,8 @@ CHD_EXPORT const chd_header *chd_get_header(chd_file *chd)
+ 
+ CHD_EXPORT chd_error chd_read_header_core_file(core_file *file, chd_header *header)
  {
 -	chd_error err = CHDERR_NONE;
  	chd_file chd;
 -
--	/* punt if NULL */
--	if (filename == NULL || header == NULL)
--		EARLY_EXIT(err = CHDERR_INVALID_PARAMETER);
+-	/* verify parameters */
+-	if (file == NULL || header == NULL)
+-		return CHDERR_INVALID_PARAMETER;
 -
--	/* open the file */
--	chd.file = core_stdio_fopen(filename);
--	if (chd.file == NULL)
--		EARLY_EXIT(err = CHDERR_FILE_NOT_FOUND);
 +	chd_error err;
-+	chd.file = file;
+ 	chd.file = file;
  
  	/* attempt to read the header */
- 	err = header_read(&chd, header);
- 	if (err != CHDERR_NONE)
--		EARLY_EXIT(err);
-+		return err;
+@@ -2360,19 +2401,14 @@ CHD_EXPORT chd_error chd_read_header_core_file(core_file *file, chd_header *head
  
- 	/* validate the header */
--	err = header_validate(header);
--	if (err != CHDERR_NONE)
--		EARLY_EXIT(err);
-+	return header_validate(header);
-+}
- 
--cleanup:
--	if (chd.file != NULL)
--		core_fclose(chd.file);
-+CHD_EXPORT chd_error chd_read_header_file(FILE *file, chd_header *header)
-+{
+ CHD_EXPORT chd_error chd_read_header_file(FILE *file, chd_header *header)
+ {
+-	chd_error err;
+-	core_file *stream = malloc(sizeof(core_file));
+-	if (!stream)
+-		return CHDERR_OUT_OF_MEMORY;
+-	stream->argp = file;
+-	stream->fsize = core_stdio_fsize;
+-	stream->fread = core_stdio_fread;
+-	stream->fclose = core_stdio_fclose_nonowner;
+-	stream->fseek = core_stdio_fseek;
 +	core_file stream;
 +	stream.argp = file;
 +	stream.fsize = core_stdio_fsize;
 +	stream.fread = core_stdio_fread;
 +	stream.fclose = core_stdio_fclose_nonowner;
 +	stream.fseek = core_stdio_fseek;
-+
-+	return chd_read_header_core_file(&stream, header);
-+}
  
-+CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header)
-+{
+-	err = chd_read_header_core_file(stream, header);
+-	core_fclose(stream);
+-	return err;
++	return chd_read_header_core_file(&stream, header);
+ }
+ 
+ /*-------------------------------------------------
+@@ -2382,29 +2418,39 @@ CHD_EXPORT chd_error chd_read_header_file(FILE *file, chd_header *header)
+ 
+ CHD_EXPORT chd_error chd_read_header(const char *filename, chd_header *header)
+ {
 +	core_file *file;
-+	chd_error err;
-+	if (filename == NULL)
+ 	chd_error err;
+-	core_file *file = NULL;
+-
+ 	if (filename == NULL)
+-	{
+-		err = CHDERR_INVALID_PARAMETER;
+-		goto cleanup;
+-	}
 +		return CHDERR_INVALID_PARAMETER;
-+
-+	file = core_stdio_fopen(filename);
+ 
+-	/* open the file */
+ 	file = core_stdio_fopen(filename);
+-	if (file == 0)
 +	if (file == NULL)
 +		return CHDERR_FILE_NOT_FOUND;
 +
 +	err = chd_read_header_core_file(file, header);
 +	core_fclose(file);
- 	return err;
- }
- 
-+CHD_EXPORT int chd_is_matching_parent(const chd_header* header, const chd_header* parent_header)
++	return err;
++}
++
++CHD_EXPORT int chd_is_matching_parent(const chd_header *header, const chd_header *parent_header)
 +{
 +	/* check MD5 if it isn't empty */
 +	if (memcmp(nullmd5, header->parentmd5, sizeof(header->parentmd5)) != 0 &&
 +	    memcmp(nullmd5, parent_header->md5, sizeof(parent_header->md5)) != 0 &&
 +	    memcmp(parent_header->md5, header->parentmd5, sizeof(header->parentmd5)) != 0)
-+	{
+ 	{
+-		err = CHDERR_FILE_NOT_FOUND;
+-		goto cleanup;
 +		return 0;
-+	}
-+
+ 	}
+ 
+-	err = chd_read_header_core_file(file, header);
 +	/* check SHA1 if it isn't empty */
 +	if (memcmp(nullsha1, header->parentsha1, sizeof(header->parentsha1)) != 0 &&
 +	    memcmp(nullsha1, parent_header->sha1, sizeof(parent_header->sha1)) != 0 &&
@@ -463,13 +463,15 @@ index db202d3..23ecf72 100644
 +	{
 +		return 0;
 +	}
-+
+ 
+-	cleanup:
+-	if (file != NULL)
+-		core_fclose(file);
+-	return err;
 +	return 1;
-+}
-+
+ }
+ 
  /***************************************************************************
-     CORE DATA READ/WRITE
- ***************************************************************************/
 -- 
-2.47.0
+2.47.1
 
