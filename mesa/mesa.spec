@@ -94,7 +94,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.3.1
+Version:        24.3.2
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -735,6 +735,9 @@ popd
 %{_libdir}/dri/vkms_dri.so
 %{_libdir}/dri/zynqmp-dpsub_dri.so
 %endif
+%if 0%{?with_vulkan_hw}
+%{_libdir}/dri/zink_dri.so
+%endif
 
 %if 0%{?with_va}
 %files va-drivers
@@ -791,7 +794,6 @@ popd
 %{_libdir}/libvulkan_powervr_mesa.so
 %{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
 %endif
-%{_libdir}/dri/zink_dri.so
 %endif
 
 %files vulkan-lavapipe-layer
@@ -806,6 +808,9 @@ popd
 
 
 %changelog
+* Thu Dec 19 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.2-100
+- 24.3.2
+
 * Thu Dec 05 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.1-100
 - 24.3.1
 
