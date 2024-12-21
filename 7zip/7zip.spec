@@ -12,7 +12,6 @@
 %endif
 %ifarch x86_64
 %global platform _x64
-%global asmc 64
 %endif
 %ifarch arm
 %global platform _arm64
@@ -23,7 +22,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        24.08
+Version:        24.09
 Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
@@ -90,9 +89,8 @@ sed \
   -e 's|^LDFLAGS =|LDFLAGS +=|g' \
   -e 's| -z noexecstack| -Wl,-z,noexecstack|g' \
   -e '/LDFLAGS/s| -s | |g' \
-  -e '/^MY_ASM/s|asmc|%{asmopt}%{asmc}|g' \
   -e '/^AFLAGS_ABI =/s|-elf64|\0 -DASMC64|g' \
-  -e '/^AFLAGS =/s|-nologo|\0 -fpic|g' \
+  -e '/^AFLAGS =/s|-nologo|\0 -c -fpic|g' \
   -i CPP/7zip/7zip_gcc.mak
 
 sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main.cpp
@@ -131,6 +129,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{na
 
 
 %changelog
+* Fri Dec 20 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-1
+- 24.09
+
 * Sun Aug 18 2024 Phantom X <megaphantomx at hotmail dot com> - 24.08-1
 - 24.08
 

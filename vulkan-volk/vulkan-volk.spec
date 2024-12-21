@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
-%global commit e767d0ee782709f2bd2df148927ddab02f2dbfe4
+%global commit 0b17a763ba5643e32da1b2152f8140461b3b7345
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241202
+%global date 20241220
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 %global pkgname volk
 
 Name:           vulkan-%{pkgname}
-Version:        1.4.303
+Version:        1.4.304
 Release:        100%{?dist}
 Summary:        Meta loader for Vulkan API 
 
@@ -79,6 +79,9 @@ developing applications that use %{name}.
 
 
 %changelog
+* Fri Dec 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.4.304-100.20241220git0b17a76
+- 1.4.304
+
 * Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 1.4.303-100.20241202gite767d0e
 - 1.4.303
 

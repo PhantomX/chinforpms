@@ -9,7 +9,7 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        24.08
+Version:        24.09
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -93,7 +93,8 @@ sed \
   -e 's|-Wall -Werror -Wextra ||g' \
   -e 's|CFLAGS =|CFLAGS +=|' \
   -e 's|CXXFLAGS =|CXXFLAGS +=|' \
-  -e '/^MY_ASM/s|asmc|asmc64|g' \
+  -e '/^AFLAGS_ABI =/s|-elf64|\0 -DASMC64|g' \
+  -e 's|^AFLAGS =|\0 -nologo -c -fpic|g' \
   -i C/7zip_gcc_c.mak
 
 cat > lzmasdk-c.pc <<'EOF'
@@ -127,9 +128,9 @@ export USE_ASM=1
 export IS_X64=1
 %endif
 
-%make_build -C C/Util/Lzma -f makefile.gcc clean MY_ASM=asmc64 LFLAGS_STRIP=
+%make_build -C C/Util/Lzma -f makefile.gcc clean LFLAGS_STRIP=
 mkdir -p C/Util/Lzma/_o
-%make_build -C C/Util/Lzma -f makefile.gcc all MY_ASM=asmc64 LFLAGS_STRIP=
+%make_build -C C/Util/Lzma -f makefile.gcc all LFLAGS_STRIP=
 
 %install
 mkdir -p %{buildroot}%{_libdir}
@@ -156,6 +157,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Sat Dec 21 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-100
+- 24.09
+
 * Sun Aug 18 2024 Phantom X <megaphantomx at hotmail dot com> - 24.08-100
 - 24.08
 

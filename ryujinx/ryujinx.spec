@@ -1,4 +1,5 @@
 %bcond_with bin
+%bcond_without canary
 %bcond_without local_dotnet 1
 
 %global debug_package %{nil}
@@ -6,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit a09b06434b4103fbab812fb523b9682c88926bbd
+%global commit c77c1acd08ccf68835d216342810a640c5b36c80
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241002
+%global date 20241220
 
 %if %{without bin}
 %bcond_with snapshot
@@ -22,8 +23,8 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 8.0.203
-%global local_dotnet_url_id 656a3402-6889-400f-927f-7f956856e58b/93750973d6eedd17c6d963658e7ec214
+%global local_dotnet_ver 9.0.101
+%global local_dotnet_url_id d74fd2dd-3384-4952-924b-f5d492326e35/e91d8295d4cbe82ba3501e411d78c9b8
 
 %global avalonia_angle_windows_natives_ver 2.1.0.2023020321
 %global avalonia_ver 11.0.10
@@ -37,7 +38,7 @@
 %global excss_ver 4.2.3
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
-%global gommon_ver 2.6.5
+%global gommon_ver 2.6.8
 %global harfbuzzsharp_ver 7.3.0
 %global harfbuzzsharp_ver2 2.8.2.3
 %global humanizer_ver 2.14.1
@@ -45,7 +46,7 @@
 %global libhac_ver 0.19.0
 %global microcom_runtime_ver 0.11.0
 # Must match dotnet
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 8.0.3
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 9.0.0
 %global microsoft_bcl_timeprovider_ver 8.0.1
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_analyzers_ver2 3.0.0
@@ -59,7 +60,7 @@
 %global microsoft_identitymodel_ver 8.1.2
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
-%global microsoft_netcore_app_runtime_linux_x64_ver 8.0.3
+%global microsoft_netcore_app_runtime_linux_x64_ver 9.0.0
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.1.2
@@ -144,7 +145,7 @@
 %global system_buffers_ver2 4.3.0
 %global system_buffers_ver3 4.5.1
 %global system_codedom_ver 4.4.0
-%global system_codedom_ver2 8.0.0
+%global system_codedom_ver2 9.0.0
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
@@ -169,11 +170,11 @@
 %global system_io_compression_zipfile_ver 4.0.1
 %global system_io_filesystem_ver 4.0.1
 %global system_io_filesystem_primitives_ver 4.0.1
-%global system_io_hashing 8.0.0
+%global system_io_hashing 9.0.0
 %global system_io_pipelines_ver 6.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 8.0.0
+%global system_management_ver 9.0.0
 %global system_memory_ver 4.5.5
 %global system_memory_ver2 4.5.4
 %global system_net_http_ver 4.1.0
@@ -257,7 +258,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.76
+Version:        1.2.103
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -274,7 +275,7 @@ Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%
 %if %{with snapshot}
 Source0:        %{vc_url}/%{appname}/archive/%{commit}/%{appname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{appname}/archive/%{version}/%{appname}-%{version}.tar.gz
+Source0:        %{vc_url}/%{appname}/archive/%{?with_canary:Canary-}%{version}/%{appname}-%{version}.tar.gz
 %endif
 %if %{with local_dotnet}
 Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
@@ -657,7 +658,7 @@ and consistent builds.
 %if %{with bin}
 %autosetup -N -c
 %else
-%autosetup -n %{appname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{appname}%{?with_canary:-Canary}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 %endif
 
 %if %{with bin}
@@ -810,6 +811,9 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
+* Sat Dec 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.103-1
+- 1.2.103 canary
+
 * Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.76-1
 - 1.2.76
 

@@ -1,6 +1,6 @@
-%global commit de51b344894f06f6c489da8d29eb5b1d51d3c466
+%global commit 058c3bf8d0677fd702d33bd6d0caa9122d04d9ea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240913
+%global date 20241220
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -20,7 +20,7 @@
 %endif
 
 Name:           asmc
-Version:        2.35.07
+Version:        2.36.12
 Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -36,10 +36,12 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
+BuildRequires:  gcc
+BuildRequires:  make
+BuildRequires:  binutils
 %if !0%{?bootstrap}
 BuildRequires:  asmc
 %endif
-BuildRequires:  gcc
 
 %description
 %{summary}.
@@ -50,9 +52,8 @@ BuildRequires:  gcc
 
 sed \
   -e '/^all:/s| clean||g' \
-  -e 's|gcc |\0$(CFLAGS) |' \
-  -e '/gcc/s| -s | |' \
-  -e '/gcc/s|$@|\0 $(LDFLAGS)|' \
+  -e '/link/s| -s$||' \
+  -e 's/,-pie//' \
   -e '/chmod/d' \
   -i source/%{name}/makefile
 
@@ -66,51 +67,44 @@ mkdir stage1
   bsbin="../../bin/%{name}%{platform}"
 %else
   rm -rf bin/*
-  bsbin=%{name}%{platform}
+  bsbin=%{name}
 %endif
 
-for i in %{name}{,64} ;do
-  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=${bsbin} || :
-  %make_build -C source/%{name} -f ./makefile ${i} CC=${bsbin} YACC=1
-  mv source/%{name}/${i} stage1/
-done
+%make_build -C source/%{name} -f ./makefile clean YACC=1 CC=${bsbin} || :
+%make_build -C source/%{name} -f ./makefile %{name}%{platform} CC=${bsbin} YACC=1
+mv source/%{name}/%{name}%{platform} stage1/
 
 rm -rf bin/*
 
 mkdir stage2
 
-for i in %{name}{,64} ;do
-  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage1/%{name}%{platform}
-  %make_build -C source/%{name} -f ./makefile ${i} YACC=1 CC=../../stage1/%{name}%{platform}
-  mv source/%{name}/${i} stage2/
-done
+%make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage1/%{name}%{platform}
+%make_build -C source/%{name} -f ./makefile %{name}%{platform} YACC=1 CC=../../stage1/%{name}%{platform}
+mv source/%{name}/%{name}%{platform} stage2/
 
-for i in %{name}{,64} ;do
-  %make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage2/%{name}%{platform}
-  %make_build -C source/%{name} -f ./makefile ${i} YACC=1 CC=../../stage2/%{name}%{platform}
-done
+%make_build -C source/%{name} -f ./makefile clean YACC=1 CC=../../stage2/%{name}%{platform}
+%make_build -C source/%{name} -f ./makefile %{name}%{platform} YACC=1 CC=../../stage2/%{name}%{platform}
 
 
 %check
-for i in %{name}{,64} ;do
-  cmp stage2/${i} source/%{name}/${i}
-done
+cmp stage2/%{name}%{platform} source/%{name}/%{name}%{platform}
 
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 source/%{name}/%{name} %{buildroot}%{_bindir}/
-install -pm0755 source/%{name}/%{name}64 %{buildroot}%{_bindir}/
+install -pm0755 source/%{name}/%{name}%{platform} %{buildroot}%{_bindir}/%{name}
 
 
 %files
 %license LICENSE
 %doc readme.md doc
 %{_bindir}/%{name}
-%{_bindir}/%{name}64
 
 
 %changelog
+* Fri Dec 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.36.12-1.20240913gitde51b34
+- 2.36.12
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.35.07-1.20240913gitde51b34
 - 2.35.07
 
