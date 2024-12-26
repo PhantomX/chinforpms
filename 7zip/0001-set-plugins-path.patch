@@ -1,0 +1,42 @@
+From 9f0c7dab234538f042f021d7723c3e6ec445d1e6 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 27 Nov 2021 08:35:01 -0300
+Subject: [PATCH] set plugins path
+
+---
+ CPP/7zip/UI/Client7z/Client7z.cpp | 5 +----
+ CPP/7zip/UI/Console/Main.cpp      | 2 +-
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/CPP/7zip/UI/Client7z/Client7z.cpp b/CPP/7zip/UI/Client7z/Client7z.cpp
+index b1e43da..0b00f85 100644
+--- a/CPP/7zip/UI/Client7z/Client7z.cpp
++++ b/CPP/7zip/UI/Client7z/Client7z.cpp
+@@ -840,10 +840,7 @@ int Z7_CDECL main(int numArgs, const char *args[])
+   dllPrefix = NDLL::GetModuleDirPrefix();
+   #else
+   {
+-    AString s (args[0]);
+-    int sep = s.ReverseFind_PathSepar();
+-    s.DeleteFrom(sep + 1);
+-    dllPrefix = s;
++    dllPrefix = "_RPMLIBEXECDIR_";
+   }
+   #endif
+ 
+diff --git a/CPP/7zip/UI/Console/Main.cpp b/CPP/7zip/UI/Console/Main.cpp
+index dabd696..b86a8f7 100644
+--- a/CPP/7zip/UI/Console/Main.cpp
++++ b/CPP/7zip/UI/Console/Main.cpp
+@@ -214,7 +214,7 @@ static const char * const kUnsupportedArcTypeMessage = "Unsupported archive type
+ // static const char * const kUnsupportedUpdateArcType = "Can't create archive for that type";
+ 
+ #ifndef Z7_EXTRACT_ONLY
+-#define kDefaultSfxModule "7zCon.sfx"
++#define kDefaultSfxModule "_RPMLIBEXECDIR_/7zCon.sfx"
+ #endif
+ 
+ Z7_ATTR_NORETURN
+-- 
+2.47.1
+

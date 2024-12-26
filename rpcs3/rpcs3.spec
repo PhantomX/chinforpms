@@ -45,9 +45,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 926de68a793fb4ac9767dc875f5fffadb351c874
+%global commit 385710672ff18fad7dd4cea787ebe2aa696b7a81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241128
+%global date 20241222
 %bcond_without snapshot
 
 %global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
@@ -73,6 +73,10 @@
 %global commit16 456c68f452da09d8ca84b375faa2b1397713eaba
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
+
+%global commit17 fecf2f0af3bd23cbba553ceedc2bc6c1cd410fc1
+%global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
+%global srcname17 Fusion
 
 %global commit18 cd89023f797900e4492da58b7bed36f702120011
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
@@ -108,7 +112,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.34.17165
+Version:        0.0.34.17229
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -130,6 +134,7 @@ Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{sr
 %if %{without yamlcpp}
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
+Source17:       https://github.com/xioTechnologies/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %if %{without llvm}
 Source18:       https://github.com/llvm/llvm-project/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
@@ -260,6 +265,7 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
+Provides:       bundled(Fusion) = 0~git%{shortcommit17}
 Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(stb) = 0~git%{shortcommit23}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
@@ -282,10 +288,12 @@ tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
 tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
 tar -xf %{S:13} -C glslang/glslang --strip-components 1
 tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
+tar -xf %{S:17} -C fusion/fusion --strip-components 1
 tar -xf %{S:23} -C stblib/stb --strip-components 1
 
 cp -p stblib/stb/LICENSE LICENSE.stb
 cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
+cp -p fusion/fusion/LICENSE.md LICENSE.fusion.md
 cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
@@ -382,6 +390,11 @@ sed \
   -e '/RPCS3_GIT_BRANCH/s|local_build|master|g' \
   -e '/RPCS3_GIT_FULL_BRANCH/s|local_build|local_build|g' \
   -i %{name}/git-version.cmake
+
+sed \
+  -e '/Examples\//d' \
+  -e '/Python-C/d' \
+  -i 3rdparty/fusion/fusion/CMakeLists.txt
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 

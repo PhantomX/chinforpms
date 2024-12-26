@@ -12,6 +12,7 @@
 %endif
 
 %global lib7zip_ver 53abfeb
+%global sevenzip_ver 17.04
 %global xdelta_ver 3.1.0
 
 %global pkgname puNES
@@ -19,7 +20,7 @@
 
 Name:           punes
 Version:        0.111
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        NES emulator
 
 License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT
@@ -33,7 +34,7 @@ Source0:        %{pkgname}-free-%{version}.tar.xz
 %endif
 Source10:       Makefile
 
-Patch0:         0001-lib7zip-add-libexec-p7zip-search-path.patch
+Patch0:         0001-lib7zip-add-libdir-punes-search-path.patch
 Patch10:        0001-p7zip-remove-rar.patch
 Patch11:        0001-p7zip-hardening-flags.patch
 Patch12:        0001-p7zip-Revert-commit-c104127.patch
@@ -41,6 +42,7 @@ Patch12:        0001-p7zip-Revert-commit-c104127.patch
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
+BuildRequires:  make
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gl)
@@ -65,12 +67,19 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 
-Requires:       p7zip-plugins%{?_isa}
+%ifarch %{ix86}
+BuildRequires:  nasm
+%endif
+%ifarch x86_64
+BuildRequires:  yasm
+%endif
+
 Requires:       hicolor-icon-theme
 
 Provides:       bundled(filter-c) = 0~git
 Provides:       bundled(kissfft) = 1.3.0
 Provides:       bundled(lib7zip) = 0~git%{lib7zip_ver}
+Provides:       bundled(p7zip) = %{sevenzip_ver}
 Provides:       bundled(singleapplication) = 3.5.1
 Provides:       bundled(xdelta) = %{xdelta_ver}
 
@@ -91,6 +100,7 @@ cp -p lib7zip-%{lib7zip_ver}/COPYING COPYING.lib7zip
 cp -p kissfft/COPYING COPYING.kissfft
 cp -p NTSC-CRT/LICENSE LICENSE.NTSC-CRT
 cp -p PAL-CRT/LICENSE LICENSE.PAL-CRT
+cp -p p7zip-%{sevenzip_ver}/DOC/copying.txt COPYING.p7zip
 cp -p qkeycode/LICENSE LICENSE.qkeycode
 cp -p singleapplication/LICENSE LICENSE.singleapplication
 cp -p xdelta-%{xdelta_ver}/COPYING COPYING.xdelta
@@ -109,7 +119,31 @@ sed \
   -i compiled.h.in
 %endif
 
+sed \
+  -e 's|_RPMLIBDIR_|%{_libdir}/%{name}|g' \
+  -i src/extra/lib7zip-%{lib7zip_ver}/src/OSFunctions_UnixLike.cpp
+
+
 %build
+pushd src/extra/p7zip-%{sevenzip_ver}
+pushd CPP/7zip/CMAKE/
+sh ./generate.sh
+popd
+%ifarch %{ix86}
+cp -f makefile.linux_x86_asm_gcc_4.X makefile.machine
+%endif
+%ifarch x86_64
+cp -f makefile.linux_amd64_asm makefile.machine
+%endif
+
+%make_build common7z \
+    OPTFLAGS="$CFLAGS" \
+    LDFLAGS="$LDFLAGS" \
+    DEST_HOME=%{_prefix} \
+    DEST_BIN=%{_bindir} \
+    DEST_SHARE=%{_libdir}/%{name}
+popd
+
 %cmake \
   -G Ninja \
 %if %{without ffmpeg}
@@ -129,6 +163,8 @@ sed \
 %install
 %cmake_install
 
+mkdir -p %{buildroot}%{_libdir}/%{name}
+install -pm0755 src/extra/p7zip-%{sevenzip_ver}/bin/7z.so %{buildroot}%{_libdir}/%{name}/
 
 desktop-file-edit \
   --remove-key="GenericName" \
@@ -146,6 +182,7 @@ appstream-util validate-relax --nonet \
 %license COPYING* src/extra/LICENSE.*
 %doc README.md
 %{_bindir}/%{name}
+%{_libdir}/%{name}/7z.so
 %{_datadir}/%{pkgname}/
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.png
@@ -153,6 +190,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Dec 25 2024 Phantom X <megaphantomx at hotmail dot com> - 0.111-3.20240901git315c6d3
+- Bundle p7zip
+
 * Sun Oct 06 2024 Phantom X <megaphantomx at hotmail dot com> - 0.111-2.20240901git315c6d3
 - Rebuild (ffmpeg)
 

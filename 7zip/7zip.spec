@@ -8,22 +8,24 @@
 %global platform %{nil}
 %if %{with asm}
 %ifarch %{ix86}
-%global platform _x86
+%global platform x86
+%global isx86 1
 %endif
 %ifarch x86_64
-%global platform _x64
+%global platform x64
+%global isx64 1
 %endif
 %ifarch arm
-%global platform _arm64
+%global platform arm64
+%global isarm64 1
 %endif
 %endif
-%global makefile cmpl_gcc%{platform}
 
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
 Version:        24.09
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
@@ -37,7 +39,7 @@ Source0:        %{name}-free-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
-Patch1:         0001-set-7zCon.sfx-path.patch
+Patch1:         0001-set-plugins-path.patch
 
 %if %{with asm}
 %if "%{asmopt}" == "asmc"
@@ -54,11 +56,26 @@ BuildRequires:  make
 BuildRequires:  %{asmopt}
 %endif
 
+Obsoletes:      p7zip < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
 
 %description
 7-Zip is a file archiver with a very high compression ratio.
 
 This build do not have RAR support.
+
+
+%package plugins
+Summary:        Additional plugins for 7zip
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      p7zip-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip-plugins = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description plugins
+Additional plugins that can be used with 7zip to extend its abilities.
 
 
 %prep
@@ -93,42 +110,83 @@ sed \
   -e '/^AFLAGS =/s|-nologo|\0 -c -fpic|g' \
   -i CPP/7zip/7zip_gcc.mak
 
-sed -e 's|__RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' -i CPP/7zip/UI/Console/Main.cpp
+sed \
+  -e 's|_RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' \
+  -i CPP/7zip/UI/Console/Main.cpp CPP/7zip/UI/Client7z/Client7z.cpp
+
+for i in 7za 7zz 7z ;do
+cat > ${i}.wrapper <<EOF
+#!/usr/bin/sh
+exec "%{_libexecdir}/%{name}/${i}" "\$@"
+EOF
+done
 
 
 %build
-%if %{with asm}
-export USE_ASM=1
-%endif
 export DISABLE_RAR=1
 
-pushd CPP/7zip/Bundles/Alone2
-mkdir -p b/g%{platform}
-%make_build -f ../../%{makefile}.mak LFLAGS_STRIP=
-popd
+for build in Bundles/{Alone,Alone2,Format7zF,SFXCon} UI/Console; do
+  %make_build -C CPP/7zip/${build} -f ../../cmpl_gcc.mak LFLAGS_STRIP= \
+    PLATFORM=%{platform} IS_X86=%{?isx86} IS_X64=%{?isx64} IS_ARM64=%{?isarm64} \
+    %{?with_asm:USE_ASM=1 MY_ASM=%{asmopt}}
+done
 
-pushd CPP/7zip/Bundles/SFXCon
-mkdir -p _o
-%make_build -f makefile.gcc LFLAGS_STRIP=
-popd
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 CPP/7zip/Bundles/Alone2/b/g%{platform}/7zz %{buildroot}%{_bindir}/
+for i in 7za 7zz 7z ;do
+  install -pm0755 ${i}.wrapper %{buildroot}%{_bindir}/${i}
+done
 
 mkdir -p %{buildroot}%{_libexecdir}/%{name}
-install -pm0755 CPP/7zip/Bundles/SFXCon/_o/7zCon %{buildroot}%{_libexecdir}/%{name}/7zCon.sfx
+install -pm0755 CPP/7zip/Bundles/Alone/b/g/7za %{buildroot}%{_libexecdir}/%{name}/
+install -pm0755 CPP/7zip/Bundles/Alone2/b/g/7zz %{buildroot}%{_libexecdir}/%{name}/
+install -pm0755 CPP/7zip/Bundles/Format7zF/b/g/7z.so %{buildroot}%{_libexecdir}/%{name}/
+install -pm0755 CPP/7zip/UI/Console/b/g/7z %{buildroot}%{_libexecdir}/%{name}/
+install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{name}/7zCon.sfx
+
+ln -s %{name} %{buildroot}%{_libexecdir}/p7zip
+
+
+%pretrans -p <lua>
+-- Define the path to directory being replaced below.
+-- DO NOT add a trailing slash at the end.
+path = "%{_libexecdir}/p7zip"
+st = posix.stat(path)
+if st and st.type == "directory" then
+  status = os.rename(path, path .. ".rpmmoved")
+  if not status then
+    suffix = 0
+    while not status do
+      suffix = suffix + 1
+      status = os.rename(path .. ".rpmmoved", path .. ".rpmmoved." .. suffix)
+    end
+    os.rename(path, path .. ".rpmmoved")
+  end
+end
 
 
 %files
 %license copying.txt License.txt
 %doc DOC/*.txt
+%{_bindir}/7za
 %{_bindir}/7zz
 %dir %{_libexecdir}/%{name}
+%{_libexecdir}/%{name}/7za
+%{_libexecdir}/%{name}/7zz
 %{_libexecdir}/%{name}/7zCon.sfx
+%{_libexecdir}/p7zip
+
+%files plugins
+%{_bindir}/7z
+%{_libexecdir}/%{name}/7z
+%{_libexecdir}/%{name}/7z.so
 
 
 %changelog
+* Wed Dec 25 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-2
+- Rewrite to replace p7zip
+
 * Fri Dec 20 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-1
 - 24.09
 

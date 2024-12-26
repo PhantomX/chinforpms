@@ -1,19 +1,19 @@
-From 636abe7582525b894bb5bccd36691b6678e20baa Mon Sep 17 00:00:00 2001
+From 0ca2a9210c2346354feb296ace7fc1ab625fae4a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
 
 ---
- patches/SCUS-97436_32A1C752.pnach | 143 ++++++++++++++++++++++++
- patches/SCUS-97436_73FEFB84.pnach | 173 ++++++++++++++++++++++++++++++
+ patches/SCUS-97436_32A1C752.pnach | 151 +++++++++++++++++++++++
+ patches/SCUS-97436_73FEFB84.pnach | 199 ++++++++++++++++++++++++++++++
  patches/SLPS-25674_2113EA2E.pnach |   5 +
- patches/SLPS-25698_5192FAD0.pnach |  20 ++++
- patches/SLPS-25842_E84AA114.pnach |  26 +++++
+ patches/SLPS-25698_5192FAD0.pnach |  20 +++
+ patches/SLPS-25842_E84AA114.pnach |  26 ++++
  patches/SLUS-20212_AA4E5A95.pnach |  14 +++
- patches/SLUS-20393_5A1410AB.pnach |  19 ++++
- patches/SLUS-21059_652050D2.pnach |  40 ++++++-
+ patches/SLUS-20393_5A1410AB.pnach |  19 +++
+ patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 9 files changed, 448 insertions(+), 1 deletion(-)
+ 9 files changed, 482 insertions(+), 1 deletion(-)
  create mode 100644 patches/SCUS-97436_73FEFB84.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
@@ -22,10 +22,10 @@ Subject: [PATCH] Personal additions
  create mode 100644 patches/SLUS-21317_72CE7A78.pnach
 
 diff --git a/patches/SCUS-97436_32A1C752.pnach b/patches/SCUS-97436_32A1C752.pnach
-index b6c5693..b97f5a1 100644
+index b6c5693..0577a20 100644
 --- a/patches/SCUS-97436_32A1C752.pnach
 +++ b/patches/SCUS-97436_32A1C752.pnach
-@@ -64,3 +64,146 @@ patch=1,EE,1023F3DA,extended,8442
+@@ -64,3 +64,154 @@ patch=1,EE,1023F3DA,extended,8442
  
  patch=1,EE,20662B30,extended,00010000
  patch=1,EE,20662B34,extended,00060014
@@ -49,7 +49,7 @@ index b6c5693..b97f5a1 100644
 +author=TheAdmiester (original GT4 NTSC from Vyerq)
 +
 +// Change limiter check from 3 to 16
-+patch=1,EE,201F2D0C,extended,28420010 
++patch=1,EE,201F2D0C,extended,28420010
 +
 +// Change override value from 3 to 16 if somehow over limiter
 +patch=1,EE,201F2D14,extended,24020010
@@ -133,6 +133,14 @@ index b6c5693..b97f5a1 100644
 +patch=1,EE,202126BC,extended,10000048
 +
 +
++[No Tire Restrictions]
++comment=Removes the requirement for specific tires in all events.
++author=TheAdmiester (Original by Code Master)
++
++// Set value in adhoc getNeedTire to always match
++patch=1,EE,2018E2A8,extended,24050000
++
++
 +[Toyota Prius HUD for All Cars]
 +comment=Forces the game to load the Toyota Prius speed/fuel economy HUD without the hybrid display
 +author=TheAdmiester
@@ -153,14 +161,14 @@ index b6c5693..b97f5a1 100644
 +comment=Press L3+Up/L3+Down to switch lights on/off
 +author=TheAdmiester (Original by Vyerq)
 +
-+patch=1,EE,D089B0DC,extended,0200FFED 
++patch=1,EE,D089B0DC,extended,0200FFED
 +// This is a call to GT4Model::CarModel::setTimeZone inside RaceCarModel::update
 +// Instead of passing in the car's "day/night mode" as a parameter, we pass in a hardcoded 1 or 0 depending on toggle
 +patch=1,EE,201BEADC,extended,24050001
 +// Similar here, except the same check is being run in RaceCarModel::setLampFlare to draw the actual lens flares from the lights
 +patch=1,EE,201BF690,extended,24020001
 +
-+patch=1,EE,D089B0DC,extended,0200FFBD 
++patch=1,EE,D089B0DC,extended,0200FFBD
 +patch=1,EE,201BEADC,extended,24050000
 +patch=1,EE,201BF690,extended,24020000
 +
@@ -174,10 +182,10 @@ index b6c5693..b97f5a1 100644
 +patch=1,EE,2021F6A8,extended,3C020001
 diff --git a/patches/SCUS-97436_73FEFB84.pnach b/patches/SCUS-97436_73FEFB84.pnach
 new file mode 100644
-index 0000000..80320b7
+index 0000000..43d833f
 --- /dev/null
 +++ b/patches/SCUS-97436_73FEFB84.pnach
-@@ -0,0 +1,173 @@
+@@ -0,0 +1,199 @@
 +gametitle=Gran Turismo 4 Spec II [SCUS-97436]
 +
 +[Widescreen 16:9]
@@ -225,7 +233,7 @@ index 0000000..80320b7
 +author=TheAdmiester (original GT4 NTSC from Vyerq)
 +
 +// Change limiter check from 3 to 16
-+patch=1,EE,201F2D0C,extended,28420010 
++patch=1,EE,201F2D0C,extended,28420010
 +
 +// Change override value from 3 to 16 if somehow over limiter
 +patch=1,EE,201F2D14,extended,24020010
@@ -238,6 +246,15 @@ index 0000000..80320b7
 +// Return early from RaceCarModel::setLampFlare
 +patch=1,EE,201BF650,extended,03E00008
 +patch=1,EE,201BF654,extended,00000000
++
++
++[Disable G-Meter]
++comment=Hides the G-meter from all views
++author=TheAdmiester
++
++// RaceDisplay::render_panel, bool is set to false just before checking this function - if skipped then it will never set to true to render
++// Change beq v0,zero,0x001C5DE4 to bne v0,zero,0x001C5DE4
++patch=1,EE,201C5DD0,extended,14400004
 +
 +
 +[Disable Penalties]
@@ -258,6 +275,15 @@ index 0000000..80320b7
 +
 +// Skip the branch in RaceDisplay::update that runs when replay mode is active
 +patch=1,EE,201C443C,extended,08071130
++
++
++[Disable Suggested Gear]
++comment=Hides the suggested gear indicator from all views
++author=TheAdmiester
++
++// Skip a call to RaceSuggestedGearDisplay::render_main
++// Change beq v0,zero,0x001CD6E0 to beq zero,zero,0x001CD6E0
++patch=1,EE,201CD6D0,extended,10000003
 +
 +
 +[Disable Sun Lens Flare]
@@ -298,6 +324,14 @@ index 0000000..80320b7
 +patch=1,EE,2068B08C,extended,1442000A
 +
 +
++[No Tire Restrictions]
++comment=Removes the requirement for specific tires in all events.
++author=TheAdmiester (Original by Code Master)
++
++// Set value in adhoc getNeedTire to always match
++patch=1,EE,2018E2A8,extended,24050000
++
++
 +[Toyota Prius HUD for All Cars]
 +comment=Forces the game to load the Toyota Prius speed/fuel economy HUD without the hybrid display
 +author=TheAdmiester
@@ -318,14 +352,14 @@ index 0000000..80320b7
 +comment=Press L3+Up/L3+Down to switch lights on/off
 +author=TheAdmiester (Original by Vyerq)
 +
-+patch=1,EE,D089B0DC,extended,0200FFED 
++patch=1,EE,D089B0DC,extended,0200FFED
 +// This is a call to GT4Model::CarModel::setTimeZone inside RaceCarModel::update
 +// Instead of passing in the car's "day/night mode" as a parameter, we pass in a hardcoded 1 or 0 depending on toggle
 +patch=1,EE,201BEADC,extended,24050001
 +// Similar here, except the same check is being run in RaceCarModel::setLampFlare to draw the actual lens flares from the lights
 +patch=1,EE,201BF690,extended,24020001
 +
-+patch=1,EE,D089B0DC,extended,0200FFBD 
++patch=1,EE,D089B0DC,extended,0200FFBD
 +patch=1,EE,201BEADC,extended,24050000
 +patch=1,EE,201BF690,extended,24020000
 +

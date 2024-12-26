@@ -57,8 +57,7 @@ Requires:       %{?epoch:%{epoch}:}%{name}%{?_isa} = %{version}-%{release}
 Development libraries and headers for %{name}.
 
 %prep
-%autosetup -cTN
-7zz x -bso0 %{S:0}
+%autosetup -cN
 %_fixperms .
 
 rm -f lzma.exe

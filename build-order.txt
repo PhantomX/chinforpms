@@ -20,7 +20,7 @@ libvirt
 libxspf
 lzlib
 -mingw-headers
-p7zip
+-p7zip
 -python-iniherit
 -python-markdown-math
 -python-pyfavicon

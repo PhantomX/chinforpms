@@ -1,0 +1,37 @@
+From c95260f93270454b5ca6843c657135cf67916a59 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 25 Dec 2024 18:42:07 -0300
+Subject: [PATCH] lib7zip: add libdir/punes search path
+
+---
+ .../lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp   | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
+
+diff --git a/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp b/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
+index 9aa31a1..4d67041 100644
+--- a/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
++++ b/src/extra/lib7zip-53abfeb/src/OSFunctions_UnixLike.cpp
+@@ -176,19 +176,7 @@ HMODULE Load7ZLibrary(const wstring & name)
+ 
+   std::vector<const char *> lib_search_pathlist;
+ 
+-  lib_search_pathlist.push_back("/usr/local/lib");
+-  lib_search_pathlist.push_back("/usr/lib");
+-  lib_search_pathlist.push_back("/usr/lib/p7zip");
+-  lib_search_pathlist.push_back("/usr/local/lib/p7zip");
+-
+-  lib_search_pathlist.push_back("/usr/local/lib64");
+-  lib_search_pathlist.push_back("/usr/lib64");
+-  lib_search_pathlist.push_back("/usr/lib64/p7zip");
+-  lib_search_pathlist.push_back("/usr/local/lib64/p7zip");
+-  // Flatpack support
+-  lib_search_pathlist.push_back("/app/lib/p7zip");
+-
+-  lib_search_pathlist.push_back(".");
++  lib_search_pathlist.push_back("_RPMLIBDIR_");
+ 
+   for(std::vector<const char *>::iterator lib_search_pathlistIt = lib_search_pathlist.begin();
+       lib_search_pathlistIt != lib_search_pathlist.end();
+-- 
+2.47.1
+
