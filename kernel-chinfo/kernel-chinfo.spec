@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.6
+%define specrpmversion 6.12.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1173,7 +1173,7 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...2a928305f9f05314494227eef1b52cbdf78c7722.patch#/zen-v%{patchversion}-ntsync.patch
+Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...4871bb89577d78a3d55b44e47c3a4f677dbdc89b.patch#/zen-v%{patchversion}-ntsync.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1256,10 +1256,7 @@ Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
 # fs
 Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
-Patch7401:  %{pf_url}/bbc58c1b449e1e93ec0bdef302b43b97b8e16952.patch#/pf-cb-bbc58c1.patch
-Patch7402:  %{pf_url}/2ca980239c09eab5fbe64910ff6ccdc8aa61015e.patch#/pf-cb-2ca9802.patch
-Patch7403:  %{pf_url}/fc7eee9bf0ecb327a38249b1efdf337c7c3acc8b.patch#/pf-cb-fc7eee9.patch
-Patch7404:  %{pf_url}/5e131f29d00d0a2359d28bee3c1ac478fa1f1c8a.patch#/pf-cb-5e131f2.patch
+Patch7401:  %{pf_url}/2ca980239c09eab5fbe64910ff6ccdc8aa61015e.patch#/pf-cb-2ca9802.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -2220,9 +2217,6 @@ ApplyPatch %{PATCH7302}
 # fs
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -4600,6 +4594,9 @@ fi\
 #
 #
 %changelog
+* Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.7-500.chinfo
+- 6.12.7
+
 * Thu Dec 19 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.6-500.chinfo
 - 6.12.6
 

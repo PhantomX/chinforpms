@@ -4,10 +4,10 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 1b45907ab26a5e8532bfc3c41d70c4611fb61028
+%global commit 5144e1748be108f2544d306070eb77336492ede7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240909
-%bcond_with snapshot
+%global date 20241229
+%bcond_without snapshot
 
 %bcond_with rust
 
@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.6.6
+Version:        0.6.9
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -57,10 +57,12 @@ BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
+BuildRequires:  pkgconfig(Qt6WebSockets)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(SDL2_net)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
@@ -141,6 +143,10 @@ sed -e 's|_RPMVERSION_|%{version}|g' -i Source/RMG-Core/CMakeLists.txt
 
 
 %build
+export OPTFLAGS="%{optflags}"
+export V=1
+export LDCONFIG=/bin/true
+
 %cmake \
   -DPORTABLE_INSTALL:BOOL=OFF \
   -DUPDATER:BOOL=OFF \
@@ -153,6 +159,9 @@ sed -e 's|_RPMVERSION_|%{version}|g' -i Source/RMG-Core/CMakeLists.txt
 
 
 %install
+export OPTFLAGS="%{optflags}"
+export V=1
+export LDCONFIG=/bin/true
 %cmake_install
 
 rm -f %{buildroot}%{_libdir}/lib%{pkgname}-Core.so
@@ -182,6 +191,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Dec 30 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.9-1.20241229git5144e17
+- 0.6.9
+
 * Wed Oct 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.6-1
 - 0.6.6
 

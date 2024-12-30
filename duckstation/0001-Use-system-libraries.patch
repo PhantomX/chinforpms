@@ -161,13 +161,6 @@ index 29d8f6a..3a6c3eb 100644
  
  #include <algorithm>
  #include <cmath>
-@@ -3306,4 +3308,4 @@ void GPUTextureCache::ApplyTextureReplacements(SourceKey key, HashType tex_hash,
-   entry->texture = std::move(replacement_tex);
- 
-   g_gpu->RestoreDeviceContext();
--}
-\ No newline at end of file
-+}
 diff --git a/src/util/compress_helpers.cpp b/src/util/compress_helpers.cpp
 index e20efc2..89fa859 100644
 --- a/src/util/compress_helpers.cpp

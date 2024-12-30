@@ -25,7 +25,7 @@
 
 Name:           7zip
 Version:        24.09
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
@@ -55,6 +55,7 @@ BuildRequires:  make
 %if %{with asm}
 BuildRequires:  %{asmopt}
 %endif
+Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Obsoletes:      p7zip < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       p7zip = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -69,13 +70,20 @@ This build do not have RAR support.
 
 %package plugins
 Summary:        Additional plugins for 7zip
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      p7zip-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       p7zip-plugins = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       p7zip-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description plugins
 Additional plugins that can be used with 7zip to extend its abilities.
+
+
+%package common
+Summary:        Common files for 7zip
+
+%description common
+Common files for 7zip, like the SFX module.
 
 
 %prep
@@ -148,7 +156,7 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 ln -s %{name} %{buildroot}%{_libexecdir}/p7zip
 
 
-%pretrans -p <lua>
+%pretrans common -p <lua>
 -- Define the path to directory being replaced below.
 -- DO NOT add a trailing slash at the end.
 path = "%{_libexecdir}/p7zip"
@@ -167,23 +175,28 @@ end
 
 
 %files
-%license copying.txt License.txt
-%doc DOC/*.txt
 %{_bindir}/7za
 %{_bindir}/7zz
-%dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/7za
 %{_libexecdir}/%{name}/7zz
-%{_libexecdir}/%{name}/7zCon.sfx
-%{_libexecdir}/p7zip
 
 %files plugins
 %{_bindir}/7z
 %{_libexecdir}/%{name}/7z
 %{_libexecdir}/%{name}/7z.so
 
+%files common
+%license copying.txt License.txt
+%doc DOC/*.txt
+%dir %{_libexecdir}/%{name}
+%{_libexecdir}/%{name}/7zCon.sfx
+%{_libexecdir}/p7zip
+
 
 %changelog
+* Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-3
+- Add common package
+
 * Wed Dec 25 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-2
 - Rewrite to replace p7zip
 
