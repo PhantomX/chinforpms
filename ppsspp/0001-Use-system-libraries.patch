@@ -1,4 +1,4 @@
-From cff036116344988f6349e7ce06205e203d7d55ad Mon Sep 17 00:00:00 2001
+From bc5a2892f946bb8811ed6e338f11dcea5d0019a1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -21,16 +21,15 @@ Subject: [PATCH] Use system libraries
  GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
  UI/CwCheatScreen.cpp                  |  2 +-
  UI/ImDebugger/ImMemView.cpp           |  2 +-
- Windows/Debugger/CtrlDisAsmView.cpp   |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
  ext/CMakeLists.txt                    |  8 ++++++++
- 20 files changed, 44 insertions(+), 19 deletions(-)
+ 19 files changed, 43 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6147359..8c4f785 100644
+index fcf7400..773a9fe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1682,11 +1682,20 @@ add_library(xbrz STATIC
+@@ -1681,11 +1681,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -52,7 +51,7 @@ index 6147359..8c4f785 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2447,6 +2456,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2448,6 +2457,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -133,10 +132,10 @@ index b3906be..0d00231 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index a85f01a..7f7131a 100644
+index a11ac03..c478a75 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -24,7 +24,7 @@
+@@ -22,7 +22,7 @@
  #include <mutex>
  
  #include "ext/cityhash/city.h"
@@ -146,10 +145,10 @@ index a85f01a..7f7131a 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 921838c..9f98e31 100644
+index ffc65f2..deef689 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
-@@ -33,7 +33,7 @@
+@@ -27,7 +27,7 @@
  #include "ext/rcheevos/include/rc_api_user.h"
  #include "ext/rcheevos/include/rc_url.h"
  
@@ -159,12 +158,12 @@ index 921838c..9f98e31 100644
  #include "Common/Crypto/md5.h"
  #include "Common/Log.h"
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 94ca1c6..95c838b 100644
+index 4d8121a..1e6fb8f 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
  
- #include <algorithm>
+ #include <algorithm>  // std::remove
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
@@ -172,7 +171,7 @@ index 94ca1c6..95c838b 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index dd96e98..6ee7a06 100644
+index 985c5d6..51359bb 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -183,33 +182,33 @@ index dd96e98..6ee7a06 100644
 +#include "xxhash.h"
  
  #include "Common/Common.h"
- #include "Common/Data/Convert/ColorConv.h"
+ #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 7bd847e..8f4bbc9 100644
+index c6c9aa7..e728a1f 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
-@@ -23,7 +23,7 @@
+@@ -22,7 +22,7 @@
  #include <png.h>
  
  #include "ext/basis_universal/basisu_transcoder.h"
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
  
- #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Format/IniFile.h"
+ #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 18d3218..555fbf4 100644
+index a43e2d8..e0314fd 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -36,7 +36,7 @@
- #include "GPU/Common/TextureDecoder.h"
+@@ -30,7 +30,7 @@
+ #include "GPU/D3D11/D3D11Util.h"
  #include "Core/Config.h"
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
- #include "Common/Math/math_util.h"
  
  // For depth depal
+ struct DepthPushConstants {
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
 index 1cd2ed6..a36bddd 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp
@@ -224,11 +223,11 @@ index 1cd2ed6..a36bddd 100644
  
  // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 2057d25..178aecf 100644
+index 7cb60f8..ba991cd 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
-@@ -18,7 +18,7 @@
- #include <algorithm>
+@@ -17,7 +17,7 @@
+ 
  #include <cstring>
  
 -#include "ext/xxhash.h"
@@ -237,7 +236,7 @@ index 2057d25..178aecf 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 1520358..fc7b2c8 100644
+index 74ee0f3..e233857 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -250,7 +249,7 @@ index 1520358..fc7b2c8 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 2cf3225..ef23b1a 100644
+index cc27eaa..e4fd39d 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -263,7 +262,7 @@ index 2cf3225..ef23b1a 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index e871876..b9d2fd0 100644
+index 6a42948..11533c5 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -7,7 +7,7 @@
@@ -275,32 +274,19 @@ index e871876..b9d2fd0 100644
  #include "Common/StringUtils.h"
  #include "Core/Config.h"
  #include "Core/MemMap.h"
-diff --git a/Windows/Debugger/CtrlDisAsmView.cpp b/Windows/Debugger/CtrlDisAsmView.cpp
-index 71d05e8..0f46f07 100644
---- a/Windows/Debugger/CtrlDisAsmView.cpp
-+++ b/Windows/Debugger/CtrlDisAsmView.cpp
-@@ -24,7 +24,7 @@
- 
- #include "Common/CommonWindows.h"
- #include "Common/Data/Encoding/Utf8.h"
--#include "ext/xxhash.h"
-+#include "xxhash.h"
- #include "Common/System/Display.h"
- 
- #include <CommDlg.h>
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 413dbc3..1f96916 100644
+index bd378cc..e01f66b 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
-@@ -4,7 +4,7 @@
- #include <iomanip>
+@@ -2,7 +2,7 @@
+ #include <cmath>
  #include <sstream>
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
  #include "Common/StringUtils.h"
  #include "Core/Config.h"
- #include "Core/MemMap.h"
+ #include "Core/System.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
 index a6e06e1..97f72e8 100644
 --- a/ext/CMakeLists.txt

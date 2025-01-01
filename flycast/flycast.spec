@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b7163dda83bfd7a67632ea6239681c0a507af3bf
+%global commit f3a33642f882ed0a1683102d737df7d1c57a0e4d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241115
+%global date 20241230
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -56,7 +56,7 @@
 
 Name:           flycast
 Version:        2.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -113,6 +113,8 @@ BuildRequires:  pkgconfig(glslang) >= 12.3.1
 %else
 Provides:       bundled(glslang) = git~0%{shortcommit5}
 %endif
+BuildRequires:  pkgconfig(libcdio)
+BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
@@ -234,6 +236,7 @@ sed -e '/glm.hpp/a#define GLM_ENABLE_EXPERIMENTAL 1' -i core/rend/transform_matr
   -DUSE_HOST_GLSLANG:BOOL=ON \
 %endif
   -DUSE_LIBAO:BOOL=OFF \
+  -DUSE_LIBCDIO:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING=Release \
 %{nil}
 

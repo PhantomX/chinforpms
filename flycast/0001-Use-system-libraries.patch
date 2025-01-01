@@ -1,4 +1,4 @@
-From aa2256afb4e1f3e2b8ca3991c1c5317177b37f72 Mon Sep 17 00:00:00 2001
+From 36af149bf142049dda28ecba6117ae9d1723e99c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libraries
@@ -11,19 +11,19 @@ Subject: [PATCH] Use system libraries
  4 files changed, 71 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 060b19e..0c7875c 100644
+index c07d104..b2335d7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -75,6 +75,8 @@ option(ENABLE_GDB_SERVER "Build with GDB debugging support" OFF)
- option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler" OFF)
+@@ -78,6 +78,8 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
  option(USE_DISCORD "Use Discord Presence API" OFF)
+ option(USE_LIBCDIO "Use libcdio for CDROM access" OFF)
 +option(USE_HOST_LZMA "Use host lzma-sdk" OFF)
 +option(USE_HOST_SPIRV "Use host glslang/spirv" OFF)
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -389,13 +391,26 @@ if(USE_OPENMP)
+@@ -392,13 +394,26 @@ if(USE_OPENMP)
  	endif()
  endif()
  
@@ -50,19 +50,19 @@ index 060b19e..0c7875c 100644
  target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
  
  if(USE_VULKAN)
-@@ -482,10 +497,10 @@ if(NOT LIBRETRO)
+@@ -494,10 +509,10 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
 -find_package(PkgConfig)
- if(PKG_CONFIG_FOUND AND USE_HOST_LIBCHDR AND NOT LIBRETRO)
+ if(PKG_CONFIG_FOUND AND USE_HOST_LIBCHDR)
  	pkg_check_modules(LIBCHDR IMPORTED_TARGET libchdr)
  	target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::LIBCHDR)
-+	target_compile_definitions(${PROJECT_NAME} INTERFACE USE_HOST_CHDR)
++	target_compile_definitions(${PROJECT_NAME} INTERFACE USE_HOST_LIBCHDR)
  else()
  	add_subdirectory(core/deps/libchdr EXCLUDE_FROM_ALL)
  	target_link_libraries(${PROJECT_NAME} PRIVATE chdr-static)
-@@ -733,8 +748,26 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -767,8 +782,26 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -89,7 +89,7 @@ index 060b19e..0c7875c 100644
  add_subdirectory(core/deps/libelf)
  target_link_libraries(${PROJECT_NAME} PRIVATE elf)
  if(NOT LIBRETRO)
-@@ -813,9 +846,13 @@ if(LIBRETRO)
+@@ -847,9 +880,13 @@ if(LIBRETRO)
  	endif()
  endif()
  
@@ -105,7 +105,7 @@ index 060b19e..0c7875c 100644
  		core/archive/archive.cpp
  		core/archive/archive.h
  		core/archive/rzip.cpp
-@@ -1358,11 +1395,21 @@ if(USE_VULKAN)
+@@ -1395,11 +1432,21 @@ if(USE_VULKAN)
  		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_METAL_EXT)
  	endif()
  
@@ -127,7 +127,7 @@ index 060b19e..0c7875c 100644
  	target_link_libraries(${PROJECT_NAME} PRIVATE GPUOpen::VulkanMemoryAllocator)
  
  	if(ANDROID AND NOT LIBRETRO AND "arm64" IN_LIST ARCHITECTURE)
-@@ -1566,7 +1613,12 @@ if("arm64" IN_LIST ARCHITECTURE)
+@@ -1603,7 +1650,12 @@ if("arm64" IN_LIST ARCHITECTURE)
  	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
  if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
@@ -209,5 +209,5 @@ index 53db47f..c475681 100644
  	{
  		Archive *sz_archive = new SzArchive();
 -- 
-2.47.0
+2.47.1
 

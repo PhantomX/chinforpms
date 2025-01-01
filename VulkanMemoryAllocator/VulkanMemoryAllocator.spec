@@ -11,7 +11,7 @@
 
 Summary:        Easy to integrate Vulkan memory allocation library
 Name:           VulkanMemoryAllocator
-Version:        3.1.0
+Version:        3.2.0
 Release:        100%{?dist}
 Epoch:          1
 
@@ -85,6 +85,9 @@ sed -e '/\/doc\//d' -i CMakeLists.txt
 
 
 %changelog
+* Mon Dec 30 2024 Phantom X <megaphantomx at hotmail dot com> - 1:3.2.0-100
+- 3.2.0
+
 * Mon Aug 05 2024 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.0-100
 - 3.1.0
 
