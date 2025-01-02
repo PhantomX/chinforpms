@@ -1,0 +1,25 @@
+From 4c7a76147d575274b36240f26b6fcef78de57628 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 1 Jan 2025 17:20:28 -0300
+Subject: [PATCH] Use system fonts
+
+---
+ src/main.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main.cpp b/src/main.cpp
+index 210e747..870a515 100644
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -333,7 +333,7 @@ int main(int argc, char **argv) {
+     const mgl::vec2i monitor_position_query_value = wayland ? create_window_get_center_position(display) : mgl::vec2i(win->cursor_position.x, win->cursor_position.y);
+     const mgl_monitor *focused_monitor = find_monitor_at_position(window, monitor_position_query_value);
+ 
+-    const std::string noto_sans_bold_filepath = resources_path + "fonts/NotoSans-Bold.ttf";
++    const std::string noto_sans_bold_filepath = "_RPM_FONTDIR_/NotoSans-Bold.ttf";
+     mgl::MemoryMappedFile font_file;
+     if(!font_file.load(noto_sans_bold_filepath.c_str(), mgl::MemoryMappedFile::LoadOptions{true, false}))
+         return 1;
+-- 
+2.47.1
+

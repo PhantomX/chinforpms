@@ -160,6 +160,10 @@ gnome-themes-extra
 golang-github-dim13-otpauth
 gogextract
 gpa
+gpu-screen-recorder
+gpu-screen-recorder-gtk
+gpu-screen-recorder-notification
+gpu-screen-recorder-ui
 grub2-distro-grub-fedora-theme
 gtk3-classic
 -gtk3-nocsd

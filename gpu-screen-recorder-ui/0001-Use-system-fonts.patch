@@ -1,0 +1,36 @@
+From 4c38735cb32c0eb4d1fc76a051572723fbc2e9e4 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 1 Jan 2025 17:17:23 -0300
+Subject: [PATCH] Use system fonts
+
+---
+ src/Theme.cpp | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/src/Theme.cpp b/src/Theme.cpp
+index a6d1050..45ec9aa 100644
+--- a/src/Theme.cpp
++++ b/src/Theme.cpp
+@@ -54,10 +54,10 @@ namespace gsr {
+ 
+         theme = new Theme();
+ 
+-        if(!theme->body_font_file.load((resources_path + "fonts/NotoSans-Regular.ttf").c_str(), mgl::MemoryMappedFile::LoadOptions{true, false}))
++        if(!theme->body_font_file.load("_RPM_FONTDIR_/NotoSans-Regular.ttf", mgl::MemoryMappedFile::LoadOptions{true, false}))
+             goto error;
+ 
+-        if(!theme->title_font_file.load((resources_path + "fonts/NotoSans-Bold.ttf").c_str(), mgl::MemoryMappedFile::LoadOptions{true, false}))
++        if(!theme->title_font_file.load("_RPM_FONTDIR_/NotoSans-Bold.ttf", mgl::MemoryMappedFile::LoadOptions{true, false}))
+             goto error;
+ 
+         if(!theme->combobox_arrow_texture.load_from_file((resources_path + "images/combobox_arrow.png").c_str()))
+@@ -152,4 +152,4 @@ namespace gsr {
+         assert(color_theme);
+         return *color_theme;
+     }
+-}
+\ No newline at end of file
++}
+-- 
+2.47.1
+
