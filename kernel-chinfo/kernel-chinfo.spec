@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.7
+%define specrpmversion 6.12.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -210,7 +210,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 44598c402184de0de4c9f0addce5771bf0eae0c4
-%global opensuse_id 16f65311bcc5d3f4b353a4ed8f734b9b0de27cad
+%global opensuse_id 7bf843fa84f0c6900261df6c34292e05e3dc13d1
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20240917
 
@@ -1276,6 +1276,20 @@ Patch7514:  %{pf_url}/6d44c7b75c2a6e0cefb4d736da4778bcb9eacf5c.patch#/pf-cb-6d44
 # ovpn-dco
 Patch7600:  %{pf_url}/5881b18ceff6e39f9bfd2a92569a1627c22fcd91.patch#/pf-cb-5881b18.patch
 Patch7601:  %{pf_url}/3b22e80a75a7146b2f272cd698ee527efd40c5ee.patch#/pf-cb-3b22e80.patch
+# invlpgb
+Patch7650:  %{pf_url}/77bb942393ca853d56ae2d3421d044f8dd0ecbc4.patch#/pf-cb-77bb942.patch
+Patch7651:  %{pf_url}/1af747ad5487aead6cf65c3ac0011822e8752032.patch#/pf-cb-1af747a.patch
+Patch7652:  %{pf_url}/24911aa63196f6f2bd80dae63e9f527e64a4fa29.patch#/pf-cb-24911aa.patch
+Patch7653:  %{pf_url}/0c7229307839eca07bcc1bf4eb88578102dfb384.patch#/pf-cb-0c72293.patch
+Patch7654:  %{pf_url}/55973c9588f861ffce01a80ee01b134007fb5892.patch#/pf-cb-55973c9.patch
+Patch7655:  %{pf_url}/ee997a28484183107a9042a0966aedb18bf22e07.patch#/pf-cb-ee997a2.patch
+Patch7656:  %{pf_url}/80d7a7eb9889977b6b19a9e0a960d8f7ebaa330f.patch#/pf-cb-80d7a7e.patch
+Patch7657:  %{pf_url}/973fd71bb4d1d568bdd338e6de770f3ff7253a65.patch#/pf-cb-973fd71.patch
+Patch7658:  %{pf_url}/5c75b155011fd6f23603159ae51cc921578d4ac1.patch#/pf-cb-5c75b15.patch
+Patch7659:  %{pf_url}/5b1eab8dfd9f0e8f6f501efe37527fef4df7c043.patch#/pf-cb-5b1eab8.patch
+Patch7660:  %{pf_url}/68d0a041639ac3f803d4ce5e0e39faa0a05834e0.patch#/pf-cb-68d0a04.patch
+Patch7661:  %{pf_url}/af875e8d7410288a65987a92f64aea38658e92be.patch#/pf-cb-af875e8.patch
+Patch7662:  %{pf_url}/26bfa210ca38c2dc6f76d2c40715f815778a988d.patch#/pf-cb-26bfa21.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2236,6 +2250,20 @@ ApplyPatch %{PATCH7514}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
+# invlpgb
+ApplyPatch %{PATCH7650}
+ApplyPatch %{PATCH7651}
+ApplyPatch %{PATCH7652}
+ApplyPatch %{PATCH7653}
+ApplyPatch %{PATCH7654}
+ApplyPatch %{PATCH7655}
+ApplyPatch %{PATCH7656}
+ApplyPatch %{PATCH7657}
+ApplyPatch %{PATCH7658}
+ApplyPatch %{PATCH7659}
+ApplyPatch %{PATCH7660}
+ApplyPatch %{PATCH7661}
+ApplyPatch %{PATCH7662}
 %endif
 
 # openSUSE
@@ -4594,6 +4622,9 @@ fi\
 #
 #
 %changelog
+* Thu Jan 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo
+- 6.12.8
+
 * Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.7-500.chinfo
 - 6.12.7
 
