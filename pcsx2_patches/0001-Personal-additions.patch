@@ -1,4 +1,4 @@
-From 0ca2a9210c2346354feb296ace7fc1ab625fae4a Mon Sep 17 00:00:00 2001
+From 07a6463ad93e286fbb1b7d50ef2b53dc38ff43d9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -6,15 +6,17 @@ Subject: [PATCH] Personal additions
 ---
  patches/SCUS-97436_32A1C752.pnach | 151 +++++++++++++++++++++++
  patches/SCUS-97436_73FEFB84.pnach | 199 ++++++++++++++++++++++++++++++
- patches/SLPS-25674_2113EA2E.pnach |   5 +
+ patches/SLPS-25450_4D7B34BA.pnach |  26 ++++
+ patches/SLPS-25674_2113EA2E.pnach |   6 +-
  patches/SLPS-25698_5192FAD0.pnach |  20 +++
- patches/SLPS-25842_E84AA114.pnach |  26 ++++
- patches/SLUS-20212_AA4E5A95.pnach |  14 +++
+ patches/SLPS-25842_E84AA114.pnach |  24 ++++
+ patches/SLUS-20212_AA4E5A95.pnach |  12 ++
  patches/SLUS-20393_5A1410AB.pnach |  19 +++
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 9 files changed, 482 insertions(+), 1 deletion(-)
+ 10 files changed, 504 insertions(+), 2 deletions(-)
  create mode 100644 patches/SCUS-97436_73FEFB84.pnach
+ create mode 100644 patches/SLPS-25450_4D7B34BA.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
  create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
@@ -385,20 +387,52 @@ index 0000000..43d833f
 +
 +// Move the conditional jump we overwrote at 0x287740 just in case, and make unconditional
 +patch=1,EE,20287744,extended,0C0A1DD8
+diff --git a/patches/SLPS-25450_4D7B34BA.pnach b/patches/SLPS-25450_4D7B34BA.pnach
+new file mode 100644
+index 0000000..de5ebd9
+--- /dev/null
++++ b/patches/SLPS-25450_4D7B34BA.pnach
+@@ -0,0 +1,26 @@
++gametitle=Tales of Rebirth Translation (NTSC-J)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++comment=Widescreen hack
++
++//gameplay
++patch=1,EE,0015c8e8,word,00000000
++patch=1,EE,0015c8f0,word,3c013f40
++patch=1,EE,0015c8f4,word,4481c800
++patch=1,EE,0015c8fc,word,46196b42
++patch=1,EE,0015c900,word,e7ad0040
++
++//sprite fix
++patch=1,EE,001574a4,word,3c013f20
++patch=1,EE,001574a8,word,34216d3a
++
++//render fix
++patch=1,EE,0015c964,word,3c0143d6
++
++
++[No-Interlacing]
++description=Attempts to disable interlaced offset rendering.
++gsinterlacemode=1
++patch=1,EE,2019AB84,extended,00000000
++patch=1,EE,2019AC0C,extended,00000000
 diff --git a/patches/SLPS-25674_2113EA2E.pnach b/patches/SLPS-25674_2113EA2E.pnach
-index df05d5d..146beb7 100644
+index df05d5d..340d3ae 100644
 --- a/patches/SLPS-25674_2113EA2E.pnach
 +++ b/patches/SLPS-25674_2113EA2E.pnach
-@@ -5,4 +5,9 @@ gsaspectratio=16:9
+@@ -5,4 +5,8 @@ gsaspectratio=16:9
  author=Esppiral
  patch=1,EE,00979744,word,3f400000
  
+-
 +[No-Interlacing]
 +description=Enable Progressive Mode
 +gsinterlacemode=1
 +author=punk7890
 +patch=1,EE,003776D4,extended,00000002
- 
 diff --git a/patches/SLPS-25698_5192FAD0.pnach b/patches/SLPS-25698_5192FAD0.pnach
 new file mode 100644
 index 0000000..56a09a9
@@ -427,10 +461,10 @@ index 0000000..56a09a9
 +patch=1,EE,2024DE38,extended,24020002
 diff --git a/patches/SLPS-25842_E84AA114.pnach b/patches/SLPS-25842_E84AA114.pnach
 new file mode 100644
-index 0000000..278723d
+index 0000000..52733b3
 --- /dev/null
 +++ b/patches/SLPS-25842_E84AA114.pnach
-@@ -0,0 +1,26 @@
+@@ -0,0 +1,24 @@
 +gametitle=Tales of Destiny: Director's Cut Translation (SLPS-25842)
 +
 +[Widescreen 16:9]
@@ -455,14 +489,12 @@ index 0000000..278723d
 +description=Attempts to disable interlaced offset rendering.
 +gsinterlacemode=1
 +patch=1,EE,20109FA8,extended,A620066C
-+
-+
 diff --git a/patches/SLUS-20212_AA4E5A95.pnach b/patches/SLUS-20212_AA4E5A95.pnach
 new file mode 100644
-index 0000000..dc89f12
+index 0000000..98badf1
 --- /dev/null
 +++ b/patches/SLUS-20212_AA4E5A95.pnach
-@@ -0,0 +1,14 @@
+@@ -0,0 +1,12 @@
 +gametitle=Bloody Roar 3 (SLUS-20212)
 +
 +[Widescreen 16:9]
@@ -475,8 +507,6 @@ index 0000000..dc89f12
 +description=Attempts to disable interlaced offset rendering.
 +gsinterlacemode=1
 +patch=1,EE,201CF8DC,word,00000000
-+
-+
 diff --git a/patches/SLUS-20393_5A1410AB.pnach b/patches/SLUS-20393_5A1410AB.pnach
 new file mode 100644
 index 0000000..852a1e7
@@ -503,7 +533,7 @@ index 0000000..852a1e7
 +patch=1,EE,20183CB4,extended,00007025
 +patch=1,EE,2019CAB4,extended,24047900
 diff --git a/patches/SLUS-21059_652050D2.pnach b/patches/SLUS-21059_652050D2.pnach
-index ea512fe..704a19a 100644
+index ea512fe..a093754 100644
 --- a/patches/SLUS-21059_652050D2.pnach
 +++ b/patches/SLUS-21059_652050D2.pnach
 @@ -34,4 +34,42 @@ patch=1,EE,00222498,word,46006302
@@ -548,16 +578,16 @@ index ea512fe..704a19a 100644
 +patch=1,EE,E0052C70,extended,01FFEF20
 +patch=1,EE,2022E8FC,extended,000D6C3A
 +patch=1,EE,2022E50C,extended,000E743A
-+patch=1,EE,2021C9C0,extended,3C013F40 //orignal code by ElHecht
++patch=1,EE,2021C9C0,extended,3C013F40 //original code by ElHecht
 +patch=1,EE,2021C9CC,extended,4481F000
 +patch=1,EE,2021C9D0,extended,461EBDC3
 diff --git a/patches/SLUS-21317_72CE7A78.pnach b/patches/SLUS-21317_72CE7A78.pnach
 new file mode 100644
-index 0000000..185964f
+index 0000000..e573932
 --- /dev/null
 +++ b/patches/SLUS-21317_72CE7A78.pnach
 @@ -0,0 +1,9 @@
-+gametitle=Street Fighter Alpha Anthology (SLUS-213.17) 
++gametitle=Street Fighter Alpha Anthology (SLUS-213.17)
 +
 +[No-Interlacing]
 +description=Auto enable progressive mode

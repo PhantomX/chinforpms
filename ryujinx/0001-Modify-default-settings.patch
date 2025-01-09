@@ -4,13 +4,13 @@ Date: Thu, 11 Apr 2024 22:21:09 -0300
 Subject: [PATCH] Modify default settings
 
 ---
- src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs | 6 +++---
+ src/Ryujinx/Utilities/Configuration/ConfigurationState.cs | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs b/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
+diff --git a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
 index b301256..c5b9ca4 100644
---- a/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
-+++ b/src/Ryujinx.UI.Common/Configuration/ConfigurationState.cs
+--- a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
++++ b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
 @@ -171,8 +171,8 @@ namespace Ryujinx.UI.Common.Configuration
              System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;

@@ -1,4 +1,4 @@
-From c2db192533266439f40b67758a0182015bd8bf0e Mon Sep 17 00:00:00 2001
+From 4f3c165bc7cad8ed50e7e6d83badcae97854329d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 14 Dec 2020 19:05:24 -0300
 Subject: [PATCH] New Aspect ratio mode for RESHDP - Force fitting 4:3
@@ -12,23 +12,23 @@ From https://github.com/MoArtis/dolphin, MoArtis <mathieuphilippe.dev@gmail.com>
  4 files changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
-index c419cab..21523ac 100644
+index bd94cde..8b6cc76 100644
 --- a/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
 +++ b/Source/Core/DolphinQt/Config/Graphics/GeneralWidget.cpp
-@@ -56,7 +56,7 @@ void GeneralWidget::CreateWidgets()
+@@ -73,7 +73,7 @@ void GeneralWidget::CreateWidgets()
+   m_previous_backend = m_backend_combo->currentIndex();
  
-   m_backend_combo = new ToolTipComboBox();
    m_aspect_combo = new ConfigChoice({tr("Auto"), tr("Force 16:9"), tr("Force 4:3"),
 -                                     tr("Stretch to Window"), tr("Custom"), tr("Custom (Stretch)")},
 +                                     tr("Stretch to Window"), tr("Fit 4:3 (RESHDP)"), tr("Custom"), tr("Custom (Stretch)")},
-                                     Config::GFX_ASPECT_RATIO);
+                                     Config::GFX_ASPECT_RATIO, m_game_layer);
    m_custom_aspect_label = new QLabel(tr("Custom Aspect Ratio:"));
    m_custom_aspect_label->setHidden(true);
 diff --git a/Source/Core/DolphinQt/HotkeyScheduler.cpp b/Source/Core/DolphinQt/HotkeyScheduler.cpp
-index ff18fa5..aa716db 100644
+index a35d96f..d49d308 100644
 --- a/Source/Core/DolphinQt/HotkeyScheduler.cpp
 +++ b/Source/Core/DolphinQt/HotkeyScheduler.cpp
-@@ -407,6 +407,9 @@ void HotkeyScheduler::Run()
+@@ -413,6 +413,9 @@ void HotkeyScheduler::Run()
          case AspectMode::ForceWide:
            OSD::AddMessage("Force 16:9");
            break;
@@ -39,10 +39,10 @@ index ff18fa5..aa716db 100644
            OSD::AddMessage("Custom");
            break;
 diff --git a/Source/Core/VideoCommon/Present.cpp b/Source/Core/VideoCommon/Present.cpp
-index 0cc19d6..46b2a1a 100644
+index 6813c7a..7ad38af 100644
 --- a/Source/Core/VideoCommon/Present.cpp
 +++ b/Source/Core/VideoCommon/Present.cpp
-@@ -343,6 +343,11 @@ float Presenter::CalculateDrawAspectRatio(bool allow_stretch) const
+@@ -403,6 +403,11 @@ float Presenter::CalculateDrawAspectRatio(bool allow_stretch) const
    if (!allow_stretch && aspect_mode == AspectMode::Stretch)
      aspect_mode = AspectMode::Auto;
  
@@ -55,7 +55,7 @@ index 0cc19d6..46b2a1a 100644
    if (aspect_mode == AspectMode::Stretch)
    {
 diff --git a/Source/Core/VideoCommon/VideoConfig.h b/Source/Core/VideoCommon/VideoConfig.h
-index d7ab34f..f972135 100644
+index 5cce23b..5f476f7 100644
 --- a/Source/Core/VideoCommon/VideoConfig.h
 +++ b/Source/Core/VideoCommon/VideoConfig.h
 @@ -25,6 +25,7 @@ enum class AspectMode : int
@@ -67,5 +67,5 @@ index d7ab34f..f972135 100644
    CustomStretch,  // Forced absolute custom AR
    Raw,            // Forced squared pixels
 -- 
-2.44.0
+2.47.1
 

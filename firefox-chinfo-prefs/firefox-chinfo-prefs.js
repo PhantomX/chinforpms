@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20241004");
+pref("chinfo.cfg.version", "20250108");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -38,6 +38,7 @@ pref("browser.tabs.loadBookmarksInTabs", true);
 pref("browser.tabs.opentabfor.middleclick", false);
 //pref("browser.tabs.remote.allowLinkedWebInFileUriProcess", false);
 pref("browser.tabs.searchclipboardfor.middleclick", false);
+pref("browser.translations.automaticallyPopup", false);
 pref("browser.uidensity", 1);
 pref("browser.uitour.enabled", false);
 pref("browser.urlbar.clickSelectsAll", false);

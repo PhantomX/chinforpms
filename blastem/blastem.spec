@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 0775f5e0c468
-%global date 20240905
+%global commit e3575bb1273a
+%global date 20250105
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 
 Name:           blastem
 Version:        0.6.3
-Release:        0.20%{?dist}
+Release:        0.21%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
@@ -47,7 +47,7 @@ TMMS support and menu.bin is not included.
 
 rm -rf zlib android
 
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c zip.c
+sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c system.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
