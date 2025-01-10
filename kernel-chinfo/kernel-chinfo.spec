@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.8
+%define specrpmversion 6.12.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1235,11 +1235,12 @@ Patch7043:  %{pf_url}/3fc7f1b8768cf7fc02aa7e02a3a73da0171b1961.patch#/pf-cb-3fc7
 Patch7044:  %{pf_url}/805710e58a2f2749a36dc50c7e8d97d41d75abf3.patch#/pf-cb-805710e.patch
 Patch7045:  %{pf_url}/33bd5e47d1a38fa374857b7392dc7437a6a45e2d.patch#/pf-cb-33bd5e4.patch
 Patch7046:  %{pf_url}/711d4600103932269d232a9fefd5ab588daa020e.patch#/pf-cb-711d460.patch
+Patch7047:  %{pf_url}/798bd5ca3ea76eac5d326166d0ef651ed0b29686.patch#/pf-cb-798bd5c.patch
+Patch7048:  %{pf_url}/d620f3806f10fbe56df3e0f7bf12f90f7406086f.patch#/pf-cb-d620f38.patch
 # bbr3
 Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
 # fixes
 Patch7100:  %{pf_url}/1c45e81769d174d02a26a61e3919313fa3b16120.patch#/pf-cb-1c45e81.patch
-Patch7101:  %{pf_url}/f766daff0fb145f2e40a714bb0acfd011748a459.patch#/pf-cb-f766daf.patch
 # zstd
 Patch7200:  %{pf_url}/4322f1cce1bde9e644116d1cf180cb52c797c836.patch#/pf-cb-4322f1c.patch
 Patch7201:  %{pf_url}/fba099d14a1bc542734067366d01f4437157c122.patch#/pf-cb-fba099d.patch
@@ -1256,7 +1257,6 @@ Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
 # fs
 Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
-Patch7401:  %{pf_url}/2ca980239c09eab5fbe64910ff6ccdc8aa61015e.patch#/pf-cb-2ca9802.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -2209,11 +2209,12 @@ ApplyPatch %{PATCH7043}
 ApplyPatch %{PATCH7044}
 ApplyPatch %{PATCH7045}
 ApplyPatch %{PATCH7046}
+ApplyPatch %{PATCH7047}
+ApplyPatch %{PATCH7048}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
 ApplyPatch %{PATCH7100}
-ApplyPatch %{PATCH7101}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2230,7 +2231,6 @@ ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
 # fs
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -4622,6 +4622,9 @@ fi\
 #
 #
 %changelog
+* Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo
+- 6.12.9
+
 * Thu Jan 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo
 - 6.12.8
 

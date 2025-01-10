@@ -12,13 +12,14 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7c04fd250a21fe7e3996cbf69750e3e57b76f5ca
+%global commit 69a04925a6800dd44bd8acb3cb8e0cd416ff1532
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241203
+%global date 20250109
 
 %bcond_with capstone
 %bcond_with ffmpeg
 %bcond_with fmt
+%bcond_with nfd
 %bcond_with spdlog
 %bcond_without vma
 %bcond_with yamlcpp
@@ -161,7 +162,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3696
+Version:        0.2.0.3723
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -192,7 +193,9 @@ Source20:       https://github.com/google/%{srcname20}/archive/%{commit20}/%{src
 Source21:       %{oc_url}/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 Source22:       %{oc_url}/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 Source23:       %{vc_url}/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
+%if %{without nfd}
 Source24:       https://github.com/btzy/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
+%endif
 Source25:       %{vc_url}/%{srcname25}/archive/%{commit25}/%{srcname25}-%{shortcommit25}.tar.gz
 Source26:       %{vc_url}/%{srcname26}/archive/%{commit26}/%{srcname26}-%{shortcommit26}.tar.gz
 Source260:      %{kw_url}/%{srcname260}/archive/%{commit260}/%{srcname260}-%{shortcommit260}.tar.gz
@@ -223,6 +226,7 @@ Patch12:        0001-Fix-update-settings.patch
 Patch13:        0001-Vulkan-1.4-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch501:       0001-vma-set-missing-namespace.patch
+Patch502:       0001-Disable-vulkan-validation-layers.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  x86_64
@@ -273,6 +277,11 @@ BuildRequires:  pkgconfig(libxxhash)
 %else
 Provides:       bundled(libxxhash) = 0~git%{shortcommit33}
 %endif
+%if %{with nfd}
+BuildRequires:  nativefiledialog-extended-devel >= 1.2.0
+%else
+Provides:       bundled(%{srcname24}) = 0~git%{shortcommit24}
+%endif
 BuildRequires:  cmake(pugixml)
 %if %{with spdlog}
 BuildRequires:  cmake(spdlog) >= 1.14.1
@@ -282,6 +291,7 @@ Provides:       bundled(%{srcname35}) = 0~git%{shortcommit35}
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %if %{with vma}
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 BuildRequires:  cmake(VulkanMemoryAllocator-Hpp) >= 3.1.0
 %else
 Provides:       bundled(VulkanMemoryAllocator-Hpp) = 0~git%{shortcommit3}
@@ -311,7 +321,6 @@ Provides:       bundled(%{srcname20}) = 0~git%{shortcommit20}
 Provides:       bundled(%{srcname21}) = 0~git%{shortcommit21}
 Provides:       bundled(%{srcname22}) = 0~git%{shortcommit22}
 Provides:       bundled(%{srcname23}) = 0~git%{shortcommit23}
-Provides:       bundled(%{srcname24}) = 0~git%{shortcommit24}
 Provides:       bundled(%{srcname25}) = 0~git%{shortcommit25}
 Provides:       bundled(%{srcname26}) = 0~git%{shortcommit26}
 Provides:       bundled(%{srcname27}) = 0~git%{shortcommit27}
@@ -332,9 +341,12 @@ Provides:       bundled(miniz) = %{miniz_ver}
 pushd external
 tar -xf %{S:10} -C %{srcname10} --strip-components 1
 tar -xf %{S:11} -C %{srcname11} --strip-components 1
-%if %{without vma}
+%if %{with vma}
+%patch -P 502 -p1 -d ../
+%else
 tar -xf %{S:12} -C %{srcname12} --strip-components 1
 tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
+sed -e '/find_package/s|VulkanMemoryAllocator|\0_DISABLED|g' -i CMakeLists.txt
 %patch -P 501 -p1
 cp -p VulkanMemoryAllocator-Hpp/LICENSE COPYING.vma-hpp
 %endif
@@ -359,7 +371,11 @@ tar -xf %{S:20} -C %{srcname20} --strip-components 1
 tar -xf %{S:21} -C %{srcname21} --strip-components 1
 tar -xf %{S:22} -C %{srcname22} --strip-components 1
 tar -xf %{S:23} -C %{srcname23} --strip-components 1
+%if %{without nfd}
 tar -xf %{S:24} -C %{srcname24} --strip-components 1
+sed -e '/find_package/s|nfd|\0_DISABLED|g' -i CMakeLists.txt
+cp -p nativefiledialog-extended/LICENSE LICENSE.nativefiledialog-extended
+%endif
 tar -xf %{S:25} -C %{srcname25} --strip-components 1
 tar -xf %{S:26} -C %{srcname26} --strip-components 1
 tar -xf %{S:260} -C %{srcname26}/%{srcname260} --strip-components 1
@@ -407,7 +423,6 @@ cp -p imgui/LICENSE.txt LICENSE.imgui
 cp -p imgui_club/LICENSE.txt LICENSE.imgui_club
 cp -p libfat16/LICENSE LICENSE.libfat16
 cp -p miniz/LICENSE LICENSE.miniz
-cp -p nativefiledialog-extended/LICENSE LICENSE.nativefiledialog-extended
 cp -p printf/LICENSE LICENSE.printf
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p stb/LICENSE LICENSE.stb

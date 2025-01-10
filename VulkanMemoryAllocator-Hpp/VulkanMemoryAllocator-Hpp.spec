@@ -1,18 +1,20 @@
-%global commit 871913da6a4b132b567d7b65c509600363c0041e
+%global commit 5e2b0bebc2f03bc255a1754d4dba135f5971eda8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202406718
-%bcond_with snapshot
+%global date 20250108
+%bcond_without snapshot
+
+BuildArch:      noarch
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global vma_ver 3.1.0
+%global vma_ver 3.2.0
 
 Summary:        C++ bindings for VulkanMemoryAllocator
 Name:           VulkanMemoryAllocator-Hpp
 Version:        3.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        Apache-2.0
 URL:            https://github.com/YaaZ/%{name}
@@ -23,15 +25,11 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         0001-cmake-fixes.patch
-
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
-BuildRequires:  VulkanMemoryAllocator-devel >= %{vma_ver}
-BuildRequires:  pkgconfig(vulkan)
 
-BuildArch:      noarch
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
 
@@ -72,6 +70,9 @@ The Vulkan Memory Allocator Hpp development package.
 
 
 %changelog
+* Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-2.20250108git5e2b0be.20250108git5e2b0be
+- 1.4 headers support
+
 * Wed Aug 07 2024 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-1
 - Initial spec
 
