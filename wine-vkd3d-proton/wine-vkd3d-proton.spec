@@ -70,7 +70,7 @@ BuildArch:      noarch
 %global kg_url https://github.com/KhronosGroup
 
 Name:           wine-%{pkgname}
-Version:        2.14
+Version:        2.14.1
 Release:        1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -309,6 +309,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Fri Jan 10 2025 Phantom X <megaphantomx at hotmail dot com> - 2.14.1-1
+- 2.14.1
+
 * Fri Dec 13 2024 Phantom X <megaphantomx at hotmail dot com> - 2.14-1
 - 2.14
 

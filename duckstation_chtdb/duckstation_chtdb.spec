@@ -1,6 +1,6 @@
-%global commit 7e95e25247b33e4f97433c1ecef0ba2bb417399f
+%global commit c992cf23f61ce64374f9a4b7db190deeecd70506
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241210
+%global date 20250110
 BuildArch:      noarch
 
 # Rebuild files
@@ -11,14 +11,14 @@ BuildArch:      noarch
 %global pkgname chtdb
 
 Name:           duckstation_%{pkgname}
-Version:        13
+Version:        15
 Release:        1%{?dist}
 Summary:        DuckStation emulator patches
 
 License:        MIT
 URL:            https://github.com/duckstation/%{pkgname}
 
-Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 
 Patch10:        0001-Personal-additions.patch
 

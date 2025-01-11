@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.78
+Version:        2.3.100
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -177,7 +177,7 @@ BuildRequires:  cmake(xbyak)
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.296
-BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.2.0
 %endif
 BuildRequires:  fonts-rpm-macros
 BuildRequires:  extra-cmake-modules
