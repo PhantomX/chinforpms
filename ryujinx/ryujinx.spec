@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 3e5b2bda38678ecad8db2bcef203c5af02d7ab59
+%global commit c2ae49eb47d91194cd98888108ff980476dd1c6f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250104
+%global date 20250112
 
 %if %{without bin}
 %bcond_with snapshot
@@ -36,11 +36,12 @@
 %global communitytoolkit_mvvm_ver 8.4.0
 %global concentus_ver 2.2.0
 %global crc32_net_ver 1.2.0
+%global csfastfloat_ver 4.1.5
 %global discordrichpresence_ver 1.2.1.24
 %global excss_ver 4.2.3
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
-%global gommon_ver 2.7.0.1
+%global gommon_ver 2.7.0.2
 %global harfbuzzsharp_ver 7.3.0
 %global harfbuzzsharp_ver2 2.8.2.3
 %global humanizer_ver 2.14.1
@@ -131,6 +132,7 @@
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_sdl2_cs_ver 2.30.0-build32
 %global securifybv_ver 0.1.0
+%global sep_ver 0.6.0
 %global shaderc_net_ver 0.1.0
 %global sharpmetal_ver 1.0.0-preview21
 %global sharpziplib_ver 1.4.2
@@ -261,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.207
+Version:        1.2.238
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -614,6 +616,8 @@ Source527:      %{nuget_url}/microsoft.bcl.timeprovider.%{microsoft_bcl_timeprov
 Source528:      %{nuget_url}/sharpmetal.%{sharpmetal_ver}.nupkg
 Source529:      %{nuget_url}/commandlineparser.%{commandlineparser_ver}.nupkg
 Source530:      %{nuget_url}/communitytoolkit.mvvm.%{communitytoolkit_mvvm_ver}.nupkg
+Source531:      %{nuget_url}/sep.%{sep_ver}.nupkg
+Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
@@ -621,7 +625,7 @@ Source530:      %{nuget_url}/communitytoolkit.mvvm.%{communitytoolkit_mvvm_ver}.
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
 %global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470} %{SOURCE471} %{SOURCE472} %{SOURCE473} %{SOURCE474} %{SOURCE475} %{SOURCE476} %{SOURCE477} %{SOURCE478} %{SOURCE479} %{SOURCE480} %{SOURCE481} %{SOURCE482} %{SOURCE483} %{SOURCE484} %{SOURCE485} %{SOURCE486} %{SOURCE487} %{SOURCE488} %{SOURCE489} %{SOURCE490} %{SOURCE491} %{SOURCE492} %{SOURCE493} %{SOURCE494} %{SOURCE495} %{SOURCE496} %{SOURCE497} %{SOURCE498} %{SOURCE499}
-%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530}
+%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532}
 %endif
 
 Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch

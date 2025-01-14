@@ -1,0 +1,26 @@
+From 603bc41e9025abd62c3c24b3d4fbc9285d1a8c57 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 12 Jan 2025 10:19:25 -0300
+Subject: [PATCH] fix build
+
+memgzio fixes from https://github.com/yshui/playgsf/commit/7ca1fbbb010d50f17f196efa2cf1fcd90d53bb32
+---
+ VBA/psftag.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/VBA/psftag.c b/VBA/psftag.c
+index 3093cd9..28615d4 100644
+--- a/VBA/psftag.c
++++ b/VBA/psftag.c
+@@ -7,6 +7,8 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <unistd.h>
++#include <sys/types.h>
+ 
+ #include "psftag.h"
+ 
+-- 
+2.47.1
+

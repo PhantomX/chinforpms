@@ -12,7 +12,7 @@
 %define specrpmversion 6.12.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define srcversion %{baserelease}%{?buildid}%{?variantid}
 
@@ -124,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-501.chinfo
+- 6.12.9
+
 * Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-500.chinfo
 - 6.12.9
 

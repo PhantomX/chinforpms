@@ -183,7 +183,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.12.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1174,6 +1174,7 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...4871bb89577d78a3d55b44e47c3a4f677dbdc89b.patch#/zen-v%{patchversion}-ntsync.patch
+Patch2002: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...6960238e894267da7a06ad453cebe17c2cf72f4a.patch#/zen-v%{patchversion}-invlpgb.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1237,6 +1238,7 @@ Patch7045:  %{pf_url}/33bd5e47d1a38fa374857b7392dc7437a6a45e2d.patch#/pf-cb-33bd
 Patch7046:  %{pf_url}/711d4600103932269d232a9fefd5ab588daa020e.patch#/pf-cb-711d460.patch
 Patch7047:  %{pf_url}/798bd5ca3ea76eac5d326166d0ef651ed0b29686.patch#/pf-cb-798bd5c.patch
 Patch7048:  %{pf_url}/d620f3806f10fbe56df3e0f7bf12f90f7406086f.patch#/pf-cb-d620f38.patch
+Patch7049:  %{pf_url}/01f72a790c8ea44613430932833a9dcc3ee94694.patch#/pf-cb-01f72a7.patch
 # bbr3
 Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
 # fixes
@@ -1257,6 +1259,8 @@ Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
 # fs
 Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
+Patch7401:  %{pf_url}/effc895ed66fb852b68b7270492fdbea1178327c.patch#/pf-cb-effc895.patch
+Patch7402:  %{pf_url}/a1f895b8c1d8aaf507e19875b1fb014315d4b10a.patch#/pf-cb-a1f895b.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -1276,20 +1280,6 @@ Patch7514:  %{pf_url}/6d44c7b75c2a6e0cefb4d736da4778bcb9eacf5c.patch#/pf-cb-6d44
 # ovpn-dco
 Patch7600:  %{pf_url}/5881b18ceff6e39f9bfd2a92569a1627c22fcd91.patch#/pf-cb-5881b18.patch
 Patch7601:  %{pf_url}/3b22e80a75a7146b2f272cd698ee527efd40c5ee.patch#/pf-cb-3b22e80.patch
-# invlpgb
-Patch7650:  %{pf_url}/77bb942393ca853d56ae2d3421d044f8dd0ecbc4.patch#/pf-cb-77bb942.patch
-Patch7651:  %{pf_url}/1af747ad5487aead6cf65c3ac0011822e8752032.patch#/pf-cb-1af747a.patch
-Patch7652:  %{pf_url}/24911aa63196f6f2bd80dae63e9f527e64a4fa29.patch#/pf-cb-24911aa.patch
-Patch7653:  %{pf_url}/0c7229307839eca07bcc1bf4eb88578102dfb384.patch#/pf-cb-0c72293.patch
-Patch7654:  %{pf_url}/55973c9588f861ffce01a80ee01b134007fb5892.patch#/pf-cb-55973c9.patch
-Patch7655:  %{pf_url}/ee997a28484183107a9042a0966aedb18bf22e07.patch#/pf-cb-ee997a2.patch
-Patch7656:  %{pf_url}/80d7a7eb9889977b6b19a9e0a960d8f7ebaa330f.patch#/pf-cb-80d7a7e.patch
-Patch7657:  %{pf_url}/973fd71bb4d1d568bdd338e6de770f3ff7253a65.patch#/pf-cb-973fd71.patch
-Patch7658:  %{pf_url}/5c75b155011fd6f23603159ae51cc921578d4ac1.patch#/pf-cb-5c75b15.patch
-Patch7659:  %{pf_url}/5b1eab8dfd9f0e8f6f501efe37527fef4df7c043.patch#/pf-cb-5b1eab8.patch
-Patch7660:  %{pf_url}/68d0a041639ac3f803d4ce5e0e39faa0a05834e0.patch#/pf-cb-68d0a04.patch
-Patch7661:  %{pf_url}/af875e8d7410288a65987a92f64aea38658e92be.patch#/pf-cb-af875e8.patch
-Patch7662:  %{pf_url}/26bfa210ca38c2dc6f76d2c40715f815778a988d.patch#/pf-cb-26bfa21.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2211,6 +2201,7 @@ ApplyPatch %{PATCH7045}
 ApplyPatch %{PATCH7046}
 ApplyPatch %{PATCH7047}
 ApplyPatch %{PATCH7048}
+ApplyPatch %{PATCH7049}
 # bbr3
 ApplyPatch %{PATCH7050}
 # fixes
@@ -2231,6 +2222,8 @@ ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
 # fs
 ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2250,20 +2243,6 @@ ApplyPatch %{PATCH7514}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
-# invlpgb
-ApplyPatch %{PATCH7650}
-ApplyPatch %{PATCH7651}
-ApplyPatch %{PATCH7652}
-ApplyPatch %{PATCH7653}
-ApplyPatch %{PATCH7654}
-ApplyPatch %{PATCH7655}
-ApplyPatch %{PATCH7656}
-ApplyPatch %{PATCH7657}
-ApplyPatch %{PATCH7658}
-ApplyPatch %{PATCH7659}
-ApplyPatch %{PATCH7660}
-ApplyPatch %{PATCH7661}
-ApplyPatch %{PATCH7662}
 %endif
 
 # openSUSE
@@ -2272,6 +2251,7 @@ ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
+ApplyPatch %{PATCH2002}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -4622,7 +4602,10 @@ fi\
 #
 #
 %changelog
-* Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo
+* Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-501.chinfo
+- invlpgb (patches from Zen)
+
+* Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-500.chinfo
 - 6.12.9
 
 * Thu Jan 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo

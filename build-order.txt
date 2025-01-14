@@ -232,6 +232,7 @@ perl-rename
 pev
 phantomjs
 pipe-viewer
+playgsf
 plzip
 protontricks
 ps3iso-utils

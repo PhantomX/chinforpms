@@ -1,0 +1,53 @@
+From 115ce536ae87c5f66a63220939257ffd4ca605ef Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 12 Jan 2025 11:57:41 -0300
+Subject: [PATCH] build system updates
+
+---
+ Makefile.in  | 11 +++++------
+ configure.in |  4 ++--
+ 2 files changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/Makefile.in b/Makefile.in
+index cc83752..88691bd 100644
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -2,15 +2,14 @@ CC=@CC@
+ CPP=@CXX@
+ LD=$(CPP)
+ 
+-CFLAGS=@CFLAGS@ -fPIC -fpermissive -std=gnu++14
+-CXXFLAGS=@CXXFLAGS@ -fPIC -fpermissive -std=gnu++14
+-LDFLAGS=@LDFLAGS@ -fPIC -fpermissive -no-pie -lSDL2
++CFLAGS=@CFLAGS@ -fPIC -std=gnu++14
++CXXFLAGS=@CXXFLAGS@ -fPIC -std=gnu++14)
++LDFLAGS=@LDFLAGS@ -fPIC -no-pie
+ 
+-OBJS=gsf.o VBA/GBA.o VBA/Globals.o VBA/Sound.o VBA/Util.o VBA/bios.o VBA/memgzio.o VBA/snd_interp.o VBA/unzip.o linuxmain.o VBA/psftag.o \
+-     libresample/src/filterkit.o libresample/src/resample.o libresample/src/resamplesubs.o
++OBJS=gsf.o VBA/GBA.o VBA/Globals.o VBA/Sound.o VBA/Util.o VBA/bios.o VBA/memgzio.o VBA/snd_interp.o VBA/unzip.o linuxmain.o VBA/psftag.o
+ 
+ all: $(OBJS) 
+-	$(LD) $(LDFLAGS) $(OBJS) -o playgsf
++	$(LD) $(OBJS) $(LDFLAGS) -o playgsf
+ 
+ %.o: %.c %.h
+ 	$(CC) $(CFLAGS) -c $< -o $@
+diff --git a/configure.in b/configure.in
+index 0439cbf..f26f6eb 100644
+--- a/configure.in
++++ b/configure.in
+@@ -13,8 +13,8 @@ AC_CHECK_LIB(ao, ao_initialize, has_libao=yes , [
+ 	exit
+ ])
+ 
+-CFLAGS="-fPIC -DLINUX -I./VBA -DVERSION_STR=\\\"0.07\\\" -DHA_VERSION_STR=\\\"0.11\\\" -I./libresample/include"
+-LDFLAGS="-fPIC -lz -lao"
++CFLAGS="$CFLAGS -DLINUX -I./VBA -DVERSION_STR=\\\"0.07\\\" -DHA_VERSION_STR=\\\"0.11\\\" $(pkg-config --cflags ao libresample sdl2 zlib)"
++LDFLAGS="$LDFLAGS $(pkg-config --libs ao sdl2 zlib) -lresample"
+ 
+ use_c_core=yes
+ auto_c_core=yes
+-- 
+2.47.1
+

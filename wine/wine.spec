@@ -1,7 +1,7 @@
-%global commit 3a736901cdd588ba7fbb4318e5f5069793268a01
+%global commit f2eebf36266fa0c3809472701763a6e468cd5ba3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241025
-%bcond_with snapshot
+%global date 20250113
+%bcond_without snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -63,6 +63,7 @@
 %global winelcms2 2.16
 %global wineldap 2.5.18
 %global winempg123 1.32.9
+%global winentsync 6.12
 %global winepng 1.6.44
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
@@ -116,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 975bc35af94f7387798fb491b7cda245ae4423ab
+%global tkg_id 41f7e2477bb25179439698fa86613408ba9afed0
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -129,7 +130,7 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 # ntsync (disables fsync, needs full patched modules and kernel-headers)
-%bcond_with ntsync
+%bcond_without ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
 
@@ -159,7 +160,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.0~rc5
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          1
@@ -261,12 +262,12 @@ Patch1037:       %{tkg_url}/hotfixes/legacy_ntdll_writecopy/legacy-ntdll-writeco
 Patch1038:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
 
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
-Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
-Patch1053:       0001-tkg-ntsync5-staging-protonify-fixup-1.patch
-Patch1054:       0001-tkg-ntsync5-cpu-topology-fixup-1.patch
-Patch1055:       0001-tkg-ntsync5-cpu-topology-fixup-2.patch
-Patch1056:       0001-tkg-cpu-topology-fixup-1.patch
-Patch1057:       0001-tkg-cpu-topology-fixup-2.patch
+Patch1052:       %{tkg_url}/misc/fastsync/ntsync7-staging-protonify.patch#/%{name}-tkg-ntsync7-staging-protonify.patch
+Patch1053:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-alt.patch#/%{name}-tkg-ntsync-config.h.in-alt.patch
+Patch1054:       0001-tkg-ntsync7-staging-protonify-fixup-1.patch
+Patch1055:       0001-tkg-cpu-topology-fixup-1.patch
+Patch1056:       0001-tkg-cpu-topology-fixup-2.patch
+
 
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.patch#/%{name}-valve-c08ed66.patch
@@ -905,20 +906,18 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 700 -p1 -R
 %if %{with ntsync}
 %patch -P 1051 -p1
-%patch -P 1053 -p1
-%patch -P 1052 -p1
 %else
 %patch -P 1027 -p1
 %endif
 %patch -P 1028 -p1
 %if %{with ntsync}
 %patch -P 1054 -p1
-%endif
-%patch -P 1056 -p1
-%patch -P 1029 -p1
-%patch -P 1057 -p1
-%if %{with ntsync}
+%patch -P 1053 -p1
+%patch -P 1052 -p1
+%else
 %patch -P 1055 -p1
+%patch -P 1029 -p1
+%patch -P 1056 -p1
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
@@ -2567,6 +2566,9 @@ fi
 
 
 %changelog
+* Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.0~rc5-101.20250113gitf2eebf3
+- Try ntsync7
+
 * Sat Jan 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.0~rc5-100
 - 10.0-rc5
 
