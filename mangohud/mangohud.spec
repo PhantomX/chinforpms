@@ -36,7 +36,6 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{ver}/%{pkgname}-v%{ver}.tar.gz
 %endif
-Source3:        %{name}.in
 Source4:        README.Fedora.md
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
 Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
@@ -123,8 +122,10 @@ rm -f include/nvml.h
 
 cp -p %{S:4} .
 
-cp -f -p %{S:3} bin/%{name}.in
-sed -e 's|@version@|%{version}-%{release}|g' -i bin/%{name}.in
+sed \
+  -e 's|@ld_libdir_mangohud@|/usr/\\$LIB/%{name}/|g' \
+  -e 's|@version@|%{version}-%{release}|g' \
+  -i bin/%{name}.in
 
 %py3_shebang_fix bin/mangoplot.py
 

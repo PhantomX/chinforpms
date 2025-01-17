@@ -16,7 +16,7 @@
 %global commit 837973fd6dd295a5694432c1f091b2221e93da36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20241201
-%bcond_without snapshot
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -26,11 +26,12 @@
 %bcond_with egl
 
 %global pkgname Kronos
+%global over %{version}_official_release
 %global vc_url https://github.com/FCare/%{pkgname}
 
 Name:           kronos
-Version:        2.6.2
-Release:        2%{?dist}
+Version:        2.7.0
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 # junzip - Public Domain
@@ -41,7 +42,7 @@ URL:            http://fcare.github.io/
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{vc_url}/archive/%{over}_official_release/%{pkgname}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
@@ -76,7 +77,7 @@ Kronos is a Sega Saturn emulator forked from uoYabause.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{over}} -N -p1
 %autopatch -M 499 -p1
 
 rm -rf win_template
@@ -145,6 +146,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Jan 17 2025 Phantom X <megaphantomx at hotmail dot com> - 2.7.0-1
+- 2.7.0
+
 * Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2.6.2-1.20241003git380da95
 - 2.6.2
 
