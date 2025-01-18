@@ -1,6 +1,6 @@
-%global commit 2c41c52835697128307d6a10d11d0f10802acbb2
+%global commit acfc2d510829e29aeda1c2471952f3174afd49d6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240912
+%global date 20250118
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -10,14 +10,14 @@
 # Update simdjson
 %bcond_without simdjson
 
-%global simdjson_ver 3.10.1
+%global simdjson_ver 3.11.6
 
 %global binname jazz2
 %global pkgname jazz2-native
 %global vc_url https://github.com/deathkiller/jazz2-native
 
 Name:           jazz2-ressurection
-Version:        2.8.0
+Version:        3.1.0
 Release:        1%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
@@ -35,6 +35,7 @@ Source11:       https://github.com/simdjson/simdjson/releases/download/v%{simdjs
 %endif
 
 Patch10:        0001-JoyMappingDb-add-some-controllers.patch
+Patch11:        0001-Use-NCINE_LINUX_PACKAGE-for-config-path.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -46,6 +47,7 @@ BuildRequires:  pkgconfig(glew)
 BuildRequires:  cmake(glfw3)
 BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(simdjson)
+BuildRequires:  pkgconfig(libdw)
 BuildRequires:  pkgconfig(libopenmpt)
 BuildRequires:  pkgconfig(ogg)
 BuildRequires:  pkgconfig(vorbis)
@@ -83,6 +85,7 @@ sed -e '/README_INSTALL_DESTINATION/d' -i cmake/ncine_installation.cmake
 %build
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DNCINE_LINUX_PACKAGE="%{name}" \
   -DNCINE_VERSION:STRING="%{version}" \
   -DNCINE_LINKTIME_OPTIMIZATION:BOOL=OFF \
   -DNCINE_STRIP_BINARIES:BOOL=OFF \
@@ -97,11 +100,11 @@ sed -e '/README_INSTALL_DESTINATION/d' -i cmake/ncine_installation.cmake
 %install
 %cmake_install
 
-rm -f "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/Translations"/*.po
+rm -f %{buildroot}%{_datadir}/%{name}/Content/Translations/*.po
 
-rm -f "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/gamecontrollerdb.txt"
+rm -f %{buildroot}%{_datadir}/%{name}/Content/gamecontrollerdb.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
-  "%{buildroot}%{_datadir}/Jazz² Resurrection/Content/gamecontrollerdb.txt"
+  %{buildroot}%{_datadir}/%{name}/Content/gamecontrollerdb.txt
 
 
 %check
@@ -112,12 +115,16 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 %license LICENSE
 %doc README.md
 %{_bindir}/%{binname}
-"%{_datadir}/Jazz² Resurrection"
+%{_datadir}/%{name}
 %{_datadir}/applications/%{binname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{binname}.*
 
 
 %changelog
+* Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-1.20250118gitacfc2d5
+- 3.1.0
+- Use %%{name} as NCINE_LINUX_PACKAGE
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.8.0-1.20240912git2c41c52
 - 2.8.0
 

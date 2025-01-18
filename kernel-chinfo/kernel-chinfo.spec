@@ -180,10 +180,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.9
+%define specrpmversion 6.12.10
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1241,8 +1241,6 @@ Patch7048:  %{pf_url}/d620f3806f10fbe56df3e0f7bf12f90f7406086f.patch#/pf-cb-d620
 Patch7049:  %{pf_url}/01f72a790c8ea44613430932833a9dcc3ee94694.patch#/pf-cb-01f72a7.patch
 # bbr3
 Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
-# fixes
-Patch7100:  %{pf_url}/1c45e81769d174d02a26a61e3919313fa3b16120.patch#/pf-cb-1c45e81.patch
 # zstd
 Patch7200:  %{pf_url}/4322f1cce1bde9e644116d1cf180cb52c797c836.patch#/pf-cb-4322f1c.patch
 Patch7201:  %{pf_url}/fba099d14a1bc542734067366d01f4437157c122.patch#/pf-cb-fba099d.patch
@@ -1259,8 +1257,6 @@ Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df
 Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
 # fs
 Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
-Patch7401:  %{pf_url}/effc895ed66fb852b68b7270492fdbea1178327c.patch#/pf-cb-effc895.patch
-Patch7402:  %{pf_url}/a1f895b8c1d8aaf507e19875b1fb014315d4b10a.patch#/pf-cb-a1f895b.patch
 # amd-rapl
 Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
 Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
@@ -2204,8 +2200,6 @@ ApplyPatch %{PATCH7048}
 ApplyPatch %{PATCH7049}
 # bbr3
 ApplyPatch %{PATCH7050}
-# fixes
-ApplyPatch %{PATCH7100}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -2222,8 +2216,6 @@ ApplyPatch %{PATCH7301}
 ApplyPatch %{PATCH7302}
 # fs
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -4602,6 +4594,9 @@ fi\
 #
 #
 %changelog
+* Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.10-500.chinfo
+- 6.12.10
+
 * Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-501.chinfo
 - invlpgb (patches from Zen)
 

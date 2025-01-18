@@ -1,0 +1,32 @@
+From 53acf9aa2107e5d077087069b0c5a2ac0bcc0c27 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 18 Jan 2025 10:30:15 -0300
+Subject: [PATCH] Use NCINE_LINUX_PACKAGE for config path
+
+---
+ Sources/Jazz2/PreferencesCache.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Sources/Jazz2/PreferencesCache.cpp b/Sources/Jazz2/PreferencesCache.cpp
+index 5393b82..2b0fff1 100644
+--- a/Sources/Jazz2/PreferencesCache.cpp
++++ b/Sources/Jazz2/PreferencesCache.cpp
+@@ -119,7 +119,7 @@ namespace Jazz2
+ 			// Save config file next to `Source` directory
+ 			auto& resolver = ContentResolver::Get();
+ 			_configPath = fs::CombinePath(fs::GetDirectoryName(resolver.GetSourcePath()), "Jazz2.config"_s);
+-#	elif defined(DEATH_TARGET_UNIX) && defined(NCINE_PACKAGED_CONTENT_PATH)
++#	elif defined(DEATH_TARGET_UNIX) && defined(NCINE_LINUX_PACKAGE)
+ 			_configPath = fs::CombinePath(fs::GetSavePath(NCINE_LINUX_PACKAGE), "Jazz2.config"_s);
+ #	else
+ 			_configPath = fs::CombinePath(fs::GetSavePath("Jazz² Resurrection"_s), "Jazz2.config"_s);
+@@ -607,4 +607,4 @@ namespace Jazz2
+ 			}
+ 		}
+ 	}
+-}
+\ No newline at end of file
++}
+-- 
+2.48.1
+
