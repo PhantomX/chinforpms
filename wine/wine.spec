@@ -106,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.0-rc6
+%global wine_stagingver 10.0
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -159,7 +159,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.0~rc6
+Version:        10.0
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2566,6 +2566,9 @@ fi
 
 
 %changelog
+* Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.0-100
+- 10.0
+
 * Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.0~rc6-100
 - 10.0-rc6
 

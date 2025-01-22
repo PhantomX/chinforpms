@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.12.10
+%define specrpmversion 6.13.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,8 +209,8 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global graysky2_id 44598c402184de0de4c9f0addce5771bf0eae0c4
-%global opensuse_id 7bf843fa84f0c6900261df6c34292e05e3dc13d1
+%global graysky2_id 8b4675b3a96547b73fa92f87f6a6b3a2e387ac06
+%global opensuse_id 1513344735c0a14b33dd5bcf60e87c7805fd554e
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20240917
 
@@ -270,8 +270,6 @@ Summary: The Linux kernel
 %define with_libperf   %{?_without_libperf:0} %{?!_without_libperf:1}
 # tools
 %define with_tools     %{?_without_tools:0} %{?!_without_tools:1}
-# bpftool
-%define with_bpftool   %{?_without_bpftool:0} %{?!_without_bpftool:1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
 # kernel-abi-stablelists
@@ -279,6 +277,7 @@ Summary: The Linux kernel
 %define with_kernel_abi_stablelists 0
 # internal samples and selftests
 %define with_selftests %{?_without_selftests:0} %{?!_without_selftests:1}
+%define with_selftests 0
 #
 # Additional options for user-friendly one-off kernel building:
 #
@@ -443,7 +442,6 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_libperf 0
 %define with_tools 0
-%define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_ipaclones 0
@@ -456,7 +454,6 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_libperf 0
 %define with_tools 0
-%define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_ipaclones 0
@@ -473,7 +470,6 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_libperf 0
 %define with_tools 0
-%define with_bpftool 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
 %define with_ipaclones 0
@@ -492,7 +488,6 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
-%define with_bpftool 1
 %define with_selftests 1
 %endif
 
@@ -541,16 +536,6 @@ Summary: The Linux kernel
 %define use_vdso 1
 %endif
 
-# selftests require bpftool to be built.  If bpftools is disabled, then disable selftests
-%if %{with_bpftool} == 0
-%define with_selftests 0
-%endif
-
-# bpftool needs debuginfo to work
-%if %{with_debuginfo} == 0
-%define with_bpftool 0
-%endif
-
 %ifnarch noarch
 %define with_kernel_abi_stablelists 0
 %endif
@@ -582,7 +567,6 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_perf 0
 %define with_libperf 0
-%define with_bpftool 0
 %define with_selftests 0
 %define with_debug 0
 %endif
@@ -684,16 +668,15 @@ Summary: The Linux kernel
 %define with_perf 0
 %define with_libperf 0
 %define with_tools 0
-%define with_bpftool 0
 %define with_selftests 0
 %define _enable_debug_packages 0
 %endif
 
 # Architectures we build tools/cpupower on
 %if 0%{?fedora}
-%define cpupowerarchs %{ix86} x86_64 ppc64le aarch64
+%define cpupowerarchs %{ix86} x86_64 ppc64le aarch64 riscv64
 %else
-%define cpupowerarchs i686 x86_64 ppc64le aarch64
+%define cpupowerarchs i686 x86_64 ppc64le aarch64 riscv64
 %endif
 
 # Architectures we build kernel livepatching selftests on
@@ -752,7 +735,7 @@ Summary: The Linux kernel
 
 
 Name: %{package_name}
-License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
+License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2 AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
 URL: https://www.kernel.org/
 Version: %{specrpmversion}
 Release: %{pkg_release}
@@ -779,7 +762,7 @@ BuildRequires: kmod, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk, %compression
 BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
 %if 0%{?fedora}
-BuildRequires: rust, rust-src, bindgen
+BuildRequires: rust, rust-src, bindgen, rustfmt
 %endif
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
@@ -832,12 +815,8 @@ BuildRequires: libnl3-devel
 %if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
 %endif
-%if %{with_bpftool}
-BuildRequires: python3-docutils
-BuildRequires: zlib-devel binutils-devel llvm-devel
-%endif
 %if %{with_selftests}
-BuildRequires: clang llvm-devel fuse-devel
+BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel
 %ifarch x86_64 riscv64
 BuildRequires: lld
 %endif
@@ -1169,12 +1148,13 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 
-%global patchwork_url https://patchwork.kernel.org/patch
+%global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...4871bb89577d78a3d55b44e47c3a4f677dbdc89b.patch#/zen-v%{patchversion}-ntsync.patch
-Patch2002: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...6960238e894267da7a06ad453cebe17c2cf72f4a.patch#/zen-v%{patchversion}-invlpgb.patch
+Patch2002: %{patchwork_url}/series/919645/mbox/#/patchwork-mm-remove-unnecessary-calls-to-lru_add_drain.patch
+Patch2003: %{patchwork_url}/project/linux-mm/patch/20250120024104.1924753-12-riel@surriel.com/mbox/#/patchwork-v6-11-12-x86-mm-enable-AMD-translation-cache-extensions.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1187,95 +1167,57 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/c9771e868f64bb143dcf890a48cb54f99b2ab052.patch#/pf-cb-c9771e8.patch
-Patch6951:  %{pf_url}/1c811970faedf6d662a897c1ff447f4d29f87fe6.patch#/pf-cb-1c81197.patch
-Patch6952:  %{pf_url}/2f67aa51f8a91621a9677b045168826db28b9b54.patch#/pf-cb-2f67aa5.patch
+Patch6950:  %{pf_url}/df6b7782be85e72ddab2a45f45e71313f6f376a4.patch#/pf-cb-df6b778.patch
+Patch6951:  %{pf_url}/c8c6be540b11270826d452cdfdb1882153a3caf4.patch#/pf-cb-c8c6be5.patch
+Patch6952:  %{pf_url}/fd0832d081ed15a9805f5557d42263d5091c92d5.patch#/pf-cb-fd0832d.patch
 # amd-pstate
-Patch7000:  %{pf_url}/45d8131260dca8eedcbd21fdc5ab206901ee014c.patch#/pf-cb-45d8131.patch
-Patch7001:  %{pf_url}/bc20faded0b8eb03a6b2f7d608e4117f3132aa37.patch#/pf-cb-bc20fad.patch
-Patch7002:  %{pf_url}/90964ea1aab0e55f58bc2f4dfd8dbc79f8b7b4bc.patch#/pf-cb-90964ea.patch
-Patch7004:  %{pf_url}/21399aaaa0aa2fdb7077be0aa851fb646f3b6ae3.patch#/pf-cb-21399aa.patch
-Patch7005:  %{pf_url}/d3f6303ebc33dd2d8a93f90cde8da9fcd72e808e.patch#/pf-cb-d3f6303.patch
-Patch7006:  %{pf_url}/aa97435d6f613fe4b3d32e24c5a6623a0c305d2a.patch#/pf-cb-aa97435.patch
-Patch7007:  %{pf_url}/1a35504b9c2ee2ac0cedb826672f075258f9e5e3.patch#/pf-cb-1a35504.patch
-Patch7008:  %{pf_url}/0fbaf7c5f42b0f9892fb9e394f76320e1ba1d558.patch#/pf-cb-0fbaf7c.patch
-Patch7009:  %{pf_url}/0626b7fc1bbadddc13b6ccef8254613e99b6b710.patch#/pf-cb-0626b7f.patch
-Patch7010:  %{pf_url}/e01b3de719e724d13deb69ddf923c5fd6a0b5772.patch#/pf-cb-e01b3de.patch
-Patch7011:  %{pf_url}/019abc5003e537048fca357376bd85db971ba886.patch#/pf-cb-019abc5.patch
-Patch7012:  %{pf_url}/2314bcdc07e19081b92cd1b7f87378350c65f221.patch#/pf-cb-2314bcd.patch
-Patch7014:  %{pf_url}/24e2cdb1109bebb5dbf11916f3bc3815c0b5c88e.patch#/pf-cb-24e2cdb.patch
-Patch7015:  %{pf_url}/0113a767e63b31013fb38dd90e51126a75f01101.patch#/pf-cb-0113a76.patch
-Patch7016:  %{pf_url}/a5f35124ba311cce22f57ba2a62928f12bc0d215.patch#/pf-cb-a5f3512.patch
-Patch7017:  %{pf_url}/0c5ede0132a929ab55f589b106ba4da90576edcb.patch#/pf-cb-0c5ede0.patch
-Patch7018:  %{pf_url}/a3c80638b8fbe8c9bd11b57e7440fed7d61f2053.patch#/pf-cb-a3c8063.patch
-Patch7019:  %{pf_url}/b7b6bacd1659b908912942afd8e2f58d0f2c799f.patch#/pf-cb-b7b6bac.patch
-Patch7020:  %{pf_url}/922b27eb16d826cf11121865dd0d6a8ddd5ad948.patch#/pf-cb-922b27e.patch
-Patch7021:  %{pf_url}/e930b573586cbeb0243025919b7a3face5f9cdc4.patch#/pf-cb-e930b57.patch
-Patch7022:  %{pf_url}/2ed77578899d15cd747f1d4844d606455892f2d3.patch#/pf-cb-2ed7757.patch
-Patch7023:  %{pf_url}/0b454d6bb609aa64e5012c4acd474352805f9ad5.patch#/pf-cb-0b454d6.patch
-Patch7024:  %{pf_url}/9d60ded6633d95c5cdc471cb4dce78435d8fb8d4.patch#/pf-cb-9d60ded.patch
-Patch7025:  %{pf_url}/f3b93b96ff6dbe8ffb36102c24ec23bfa6287375.patch#/pf-cb-f3b93b9.patch
-Patch7026:  %{pf_url}/236186efc3c3288f832e00c35d91a62f59238ede.patch#/pf-cb-236186e.patch
-Patch7027:  %{pf_url}/69ecea4d6b9818b6aabc2e331ab848e63a2dd6b9.patch#/pf-cb-69ecea4.patch
-Patch7028:  %{pf_url}/bd445a4d70e39a8c2f5c14111d4bc60631fbbd8d.patch#/pf-cb-bd445a4.patch
-Patch7029:  %{pf_url}/45c1f277dcd846e0e6e3999b324b60c1621027be.patch#/pf-cb-45c1f27.patch
-Patch7030:  %{pf_url}/a1860bfe9de97d0644b4604426a14a3263ebb3cc.patch#/pf-cb-a1860bf.patch
-Patch7031:  %{pf_url}/fe2565ad950e33b711f411c2c4e5b375d9c884f0.patch#/pf-cb-fe2565a.patch
-Patch7032:  %{pf_url}/3629db1e080d0eca1f4dd28fbb824d8d51546f86.patch#/pf-cb-3629db1.patch
-Patch7033:  %{pf_url}/b2fd2f0b0cc40757ca8f94015472ce76c1d9e4dd.patch#/pf-cb-b2fd2f0.patch
-Patch7034:  %{pf_url}/74965d92499d34888ffb15ae3bbb2395af794ae4.patch#/pf-cb-74965d9.patch
-Patch7035:  %{pf_url}/eb348abf552ba377284b5860b7f35602c8354d32.patch#/pf-cb-eb348ab.patch
-Patch7036:  %{pf_url}/e4b39b26acb78b3bf92aa517957246a8e713b20d.patch#/pf-cb-e4b39b2.patch
-Patch7037:  %{pf_url}/a75d8af82e3c22dfafa8a6881e34a014c8dfb667.patch#/pf-cb-a75d8af.patch
-Patch7038:  %{pf_url}/54bc783c6f2df495fe75409452100b0c73cda3a4.patch#/pf-cb-54bc783.patch
-Patch7039:  %{pf_url}/4b3afbe0d936c473715da4dfbd9bd5802773d097.patch#/pf-cb-4b3afbe.patch
-Patch7040:  %{pf_url}/907bd4d5a6611b96b4760155cef69e00c1161612.patch#/pf-cb-907bd4d.patch
-Patch7041:  %{pf_url}/516b5e09bdd0f087bbfbdf4e5a8e3aa5483d74c4.patch#/pf-cb-516b5e0.patch
-Patch7042:  %{pf_url}/f7ebf912037ae5b1754e9d20914c629f5b90f299.patch#/pf-cb-f7ebf91.patch
-Patch7043:  %{pf_url}/3fc7f1b8768cf7fc02aa7e02a3a73da0171b1961.patch#/pf-cb-3fc7f1b.patch
-Patch7044:  %{pf_url}/805710e58a2f2749a36dc50c7e8d97d41d75abf3.patch#/pf-cb-805710e.patch
-Patch7045:  %{pf_url}/33bd5e47d1a38fa374857b7392dc7437a6a45e2d.patch#/pf-cb-33bd5e4.patch
-Patch7046:  %{pf_url}/711d4600103932269d232a9fefd5ab588daa020e.patch#/pf-cb-711d460.patch
-Patch7047:  %{pf_url}/798bd5ca3ea76eac5d326166d0ef651ed0b29686.patch#/pf-cb-798bd5c.patch
-Patch7048:  %{pf_url}/d620f3806f10fbe56df3e0f7bf12f90f7406086f.patch#/pf-cb-d620f38.patch
-Patch7049:  %{pf_url}/01f72a790c8ea44613430932833a9dcc3ee94694.patch#/pf-cb-01f72a7.patch
+Patch7000:  %{pf_url}/aefe0f95668517e93d499b0379ae48cd2ebb5aff.patch#/pf-cb-aefe0f9.patch
+Patch7001:  %{pf_url}/a4b4d168e7ffc73f17878a85c55ba844f54bdada.patch#/pf-cb-a4b4d16.patch
+Patch7002:  %{pf_url}/40bd1dcbdc562b0dfdc287722f4804bfc616d8f6.patch#/pf-cb-40bd1dc.patch
+Patch7003:  %{pf_url}/fd9b980679df1bfe55c25fd082d2cfd7791be157.patch#/pf-cb-fd9b980.patch
+Patch7004:  %{pf_url}/7bcda8b0155060f04f16541ebd94604e32e642f3.patch#/pf-cb-7bcda8b.patch
+Patch7005:  %{pf_url}/24b1ba3d16e876aa7fe3fc498e79b43bdf8d9e40.patch#/pf-cb-24b1ba3.patch
+Patch7006:  %{pf_url}/086a93ccb26d66d3eb95b58a1f3890e053b14ced.patch#/pf-cb-086a93c.patch
+Patch7007:  %{pf_url}/0e707942e60f701b8047fb5645597442a54593a3.patch#/pf-cb-0e70794.patch
+Patch7008:  %{pf_url}/70fd2761631d949a2edd31ca59ef72d5d178810f.patch#/pf-cb-70fd276.patch
+Patch7009:  %{pf_url}/6b4bd2b3ef4d1b94e4387451823863491d5704e2.patch#/pf-cb-6b4bd2b.patch
+Patch7010:  %{pf_url}/6528866a7386da4a694d91b225e4ac1dd652d352.patch#/pf-cb-6528866.patch
+Patch7011:  %{pf_url}/20d4a3cf8c3907d9a176b77208a8a3c7787010e0.patch#/pf-cb-20d4a3c.patch
+Patch7012:  %{pf_url}/862f481c7a08a71c3e6a771448aaaf371f5704df.patch#/pf-cb-862f481.patch
+Patch7013:  %{pf_url}/59dd2ff0bef702e3b9850b98997e3e74fd590dda.patch#/pf-cb-59dd2ff.patch
+Patch7014:  %{pf_url}/071e2b0c40770e57fb721cc9da86b8342efc10cf.patch#/pf-cb-071e2b0.patch
+Patch7015:  %{pf_url}/f1a399e03cb9e27a6422b7f81cb985b7d1b94a5b.patch#/pf-cb-f1a399e.patch
+Patch7016:  %{pf_url}/866b9d1d5a72b6c9e5f61ddd9f64d1dac06120b8.patch#/pf-cb-866b9d1.patch
+Patch7017:  %{pf_url}/4112645174eb9d1049a637548759f8795019783d.patch#/pf-cb-4112645.patch
+Patch7018:  %{pf_url}/25ad8489c73550db366844c73879bdac07388d1e.patch#/pf-cb-25ad848.patch
+Patch7019:  %{pf_url}/85aae5b1bd97624d7f6d38f8c3aa5c8d4ff0a801.patch#/pf-cb-85aae5b.patch
+Patch7020:  %{pf_url}/f48d4b86ba49bd168b19a92080006fa5ee5b5334.patch#/pf-cb-f48d4b8.patch
+Patch7021:  %{pf_url}/c77a5d1cc3a4e33127363f29e18dee93c113b22f.patch#/pf-cb-c77a5d1.patch
 # bbr3
-Patch7050:  %{pf_url}/a1f04ded36fb527bc23efdb969b1893c82e61a6e.patch#/pf-cb-a1f04de.patch
+Patch7050:  %{pf_url}/aa2658ab3fba8f0f16c6d9c838776502980974ed.patch#/pf-cb-aa2658a.patch
 # zstd
-Patch7200:  %{pf_url}/4322f1cce1bde9e644116d1cf180cb52c797c836.patch#/pf-cb-4322f1c.patch
-Patch7201:  %{pf_url}/fba099d14a1bc542734067366d01f4437157c122.patch#/pf-cb-fba099d.patch
+Patch7200:  %{pf_url}/fa9ae31017febb38dd967c777a114278ae78c128.patch#/pf-cb-fa9ae31.patch
+Patch7201:  %{pf_url}/ff832b211b3f925e86704aac906a6cedae1247e7.patch#/pf-cb-ff832b2.patch
 # pksm
-Patch7220:  %{pf_url}/c9ed6345b0eab3e56c3a1293e4d106051c387988.patch#/pf-cb-c9ed634.patch
+Patch7220:  %{pf_url}/32bef160156719a0cfef8df94697ace27847644b.patch#/pf-cb-32bef16.patch
 # v4l2loopback
-Patch7230:  %{pf_url}/38101644d121e9bcb2752438a833d0ec444e78c4.patch#/pf-cb-3810164.patch
+Patch7230:  %{pf_url}/64f0795e7509fc7e6608f704e465e650ac124ffe.patch#/pf-cb-64f0795.patch
 # cpuidle
-Patch7240:  %{pf_url}/0d0436efb8e81036fb0e3d1b3ae81ca66c938b7d.patch#/pf-cb-0d0436e.patch
-Patch7241:  %{pf_url}/5880a2c9f5988aac156e77907834630385c5ea9c.patch#/pf-cb-5880a2c.patch
-# crypto
-Patch7300:  %{pf_url}/1639bef3f959e19bf98823d80454b0c00dacc827.patch#/pf-cb-1639bef.patch
-Patch7301:  %{pf_url}/56df57f741a210bdd592380dad32fb6390104c0c.patch#/pf-cb-56df57f.patch
-Patch7302:  %{pf_url}/ff09a2ac28081e5c4326b48b3beaeaa33503087f.patch#/pf-cb-ff09a2a.patch
-# fs
-Patch7400:  %{pf_url}/6dcff342607e622aefe732d08bd7cf2fc9da1bd4.patch#/pf-cb-6dcff34.patch
+Patch7240:  %{pf_url}/338018473e4c5402157f872a9519441585e4945d.patch#/pf-cb-3380184.patch
 # amd-rapl
-Patch7500:  %{pf_url}/6393f62f4ffa45fb4b9c62bbd9e7080878796342.patch#/pf-cb-6393f62.patch
-Patch7501:  %{pf_url}/035d8a3beef6c7ee74dfb2402886b98e596f5481.patch#/pf-cb-035d8a3.patch
-Patch7502:  %{pf_url}/c3a7ea877dd02854f8ec33e0e3ddb9287df028ce.patch#/pf-cb-c3a7ea8.patch
-Patch7503:  0001-pf-amd-rapl-fixup-1.patch
-Patch7504:  %{pf_url}/c98956193fec79b4114cf143845d2c08a9dc8cc8.patch#/pf-cb-c989561.patch
-Patch7505:  0001-pf-amd-rapl-fixup-2.patch
-Patch7506:  %{pf_url}/cf3beef5f9f044dd6788281f71d0f199d02dda2c.patch#/pf-cb-cf3beef.patch
-Patch7507:  %{pf_url}/4021af34f692b9bd42d531323cdffe6a58ccddc9.patch#/pf-cb-4021af3.patch
-Patch7508:  %{pf_url}/c1a102f9dbd3961347c6d2e718a38b86afbbbd0c.patch#/pf-cb-c1a102f.patch
-Patch7509:  %{pf_url}/d41e34db8ba3f2fb227604765116604718f7a78f.patch#/pf-cb-d41e34d.patch
-Patch7510:  %{pf_url}/df7b15233f7e333c6dacf5fa55b1f2be29c7f741.patch#/pf-cb-df7b152.patch
-Patch7511:  %{pf_url}/07713dc00024b0d97d621e4b5e8027881e46fbdb.patch#/pf-cb-07713dc.patch
-Patch7512:  %{pf_url}/80e731aeb044b900254647599ab583b36802eb0c.patch#/pf-cb-80e731a.patch
-Patch7513:  %{pf_url}/0723b9957b75ceb2cda80ca70bd2d345ea6e95b9.patch#/pf-cb-0723b99.patch
-Patch7514:  %{pf_url}/6d44c7b75c2a6e0cefb4d736da4778bcb9eacf5c.patch#/pf-cb-6d44c7b.patch
+Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
+Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
+Patch7502:  %{pf_url}/ee53b9552a62e92b1d02c7eb40c3e7da1a307587.patch#/pf-cb-ee53b95.patch
+Patch7503:  %{pf_url}/6b9879519b5162ec74967b1112da72b69d72d50d.patch#/pf-cb-6b98795.patch
+Patch7504:  %{pf_url}/9e318314192a8aea75fb981054e02725422f6b60.patch#/pf-cb-9e31831.patch
+Patch7505:  %{pf_url}/a75124ce73d9efcc9dcec497db955b28a716dede.patch#/pf-cb-a75124c.patch
+Patch7506:  %{pf_url}/6c75b44d06517ed32da87ed602fafeb771c6b278.patch#/pf-cb-6c75b44.patch
+Patch7507:  %{pf_url}/19ff53de1b6b5acd8f00b7afb139d93f34565393.patch#/pf-cb-19ff53d.patch
+Patch7508:  %{pf_url}/355f98122aa6ff428bd4fc453d74916486acdd90.patch#/pf-cb-355f981.patch
+Patch7509:  %{pf_url}/bd48904b4c68ed438ec4a9f9ab7d2234d7680f75.patch#/pf-cb-bd48904.patch
+Patch7510:  %{pf_url}/24a3281385239a76fc439b33b1d1f814934143be.patch#/pf-cb-24a3281.patch
 # ovpn-dco
-Patch7600:  %{pf_url}/5881b18ceff6e39f9bfd2a92569a1627c22fcd91.patch#/pf-cb-5881b18.patch
-Patch7601:  %{pf_url}/3b22e80a75a7146b2f272cd698ee527efd40c5ee.patch#/pf-cb-3b22e80.patch
+Patch7600:  %{pf_url}/23a6656da644ea5cc1f0fc30107d745ad0943f80.patch#/pf-cb-23a6656.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1504,6 +1446,9 @@ Epoch: %{gemini}
 Summary: Real-Time Linux Analysis tools
 Requires: libtraceevent
 Requires: libtracefs
+%ifarch %{cpupowerarchs}
+Requires: kernel-tools-libs = %{version}-%{release}
+%endif
 %description -n rtla
 The rtla meta-tool includes a set of commands that aims to analyze
 the real-time properties of Linux. Instead of testing Linux as a black box,
@@ -1523,47 +1468,11 @@ analysing the logical and timing behavior of Linux.
 # with_tools
 %endif
 
-%if %{with_bpftool}
-
-%if 0%{?fedora}
-# bpftoolverion doesn't bump with stable updates so let's stick with
-# upstream kernel version for the package name. We still get correct
-# output with bpftool -V.
-%define bpftoolversion  %specrpmversion
-%else
-%define bpftoolversion 7.5.0
-%endif
-
-%package -n bpftool
-Summary: Inspection and simple manipulation of eBPF programs and maps
-Version: %{bpftoolversion}
-%description -n bpftool
-This package contains the bpftool, which allows inspection and simple
-manipulation of eBPF programs and maps.
-
-%package -n bpftool-debuginfo
-Summary: Debug information for package bpftool
-Version: %{bpftoolversion}
-Group: Development/Debug
-Requires: %{name}-debuginfo-common-%{_target_cpu} = %{specrpmversion}-%{release}
-AutoReqProv: no
-%description -n bpftool-debuginfo
-This package provides debug information for the bpftool package.
-
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_sbindir}/bpftool(\.debug)?|XXX' -o bpftool-debuginfo.list}
-
-# Setting "Version:" above overrides the internal {version} macro,
-# need to restore it here
-%define version %{specrpmversion}
-
-# with_bpftool
-%endif
-
 %if %{with_selftests}
 
 %package selftests-internal
 Summary: Kernel samples and selftests
-Requires: binutils, bpftool, iproute-tc, nmap-ncat, python3, fuse-libs, keyutils
+Requires: binutils, bpftool, fuse-libs, iproute-tc, iputils, keyutils, nmap-ncat, python3
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -2153,6 +2062,7 @@ ApplyPatch %{PATCH6952}
 ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
 ApplyPatch %{PATCH7002}
+ApplyPatch %{PATCH7003}
 ApplyPatch %{PATCH7004}
 ApplyPatch %{PATCH7005}
 ApplyPatch %{PATCH7006}
@@ -2162,6 +2072,7 @@ ApplyPatch %{PATCH7009}
 ApplyPatch %{PATCH7010}
 ApplyPatch %{PATCH7011}
 ApplyPatch %{PATCH7012}
+ApplyPatch %{PATCH7013}
 ApplyPatch %{PATCH7014}
 ApplyPatch %{PATCH7015}
 ApplyPatch %{PATCH7016}
@@ -2170,34 +2081,6 @@ ApplyPatch %{PATCH7018}
 ApplyPatch %{PATCH7019}
 ApplyPatch %{PATCH7020}
 ApplyPatch %{PATCH7021}
-ApplyPatch %{PATCH7022}
-ApplyPatch %{PATCH7023}
-ApplyPatch %{PATCH7024}
-ApplyPatch %{PATCH7025}
-ApplyPatch %{PATCH7026}
-ApplyPatch %{PATCH7027}
-ApplyPatch %{PATCH7028}
-ApplyPatch %{PATCH7029}
-ApplyPatch %{PATCH7030}
-ApplyPatch %{PATCH7031}
-ApplyPatch %{PATCH7032}
-ApplyPatch %{PATCH7033}
-ApplyPatch %{PATCH7034}
-ApplyPatch %{PATCH7035}
-ApplyPatch %{PATCH7036}
-ApplyPatch %{PATCH7037}
-ApplyPatch %{PATCH7038}
-ApplyPatch %{PATCH7039}
-ApplyPatch %{PATCH7040}
-ApplyPatch %{PATCH7041}
-ApplyPatch %{PATCH7042}
-ApplyPatch %{PATCH7043}
-ApplyPatch %{PATCH7044}
-ApplyPatch %{PATCH7045}
-ApplyPatch %{PATCH7046}
-ApplyPatch %{PATCH7047}
-ApplyPatch %{PATCH7048}
-ApplyPatch %{PATCH7049}
 # bbr3
 ApplyPatch %{PATCH7050}
 # zstd
@@ -2209,13 +2092,6 @@ ApplyPatch %{PATCH7220}
 ApplyPatch %{PATCH7230}
 # cpuidle
 ApplyPatch %{PATCH7240}
-ApplyPatch %{PATCH7241}
-# crypto
-ApplyPatch %{PATCH7300}
-ApplyPatch %{PATCH7301}
-ApplyPatch %{PATCH7302}
-# fs
-ApplyPatch %{PATCH7400}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2228,13 +2104,8 @@ ApplyPatch %{PATCH7507}
 ApplyPatch %{PATCH7508}
 ApplyPatch %{PATCH7509}
 ApplyPatch %{PATCH7510}
-ApplyPatch %{PATCH7511}
-ApplyPatch %{PATCH7512}
-ApplyPatch %{PATCH7513}
-ApplyPatch %{PATCH7514}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
-ApplyPatch %{PATCH7601}
 %endif
 
 # openSUSE
@@ -2244,6 +2115,7 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
+ApplyPatch %{PATCH2003}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -2447,10 +2319,6 @@ if [ "%{primary_target}" == "rhel" ]; then
 %endif
 fi
 update_scripts $update_target
-
-sed \
- -e '/drivers\/scsi\/stex.ko/a\  - drivers\/scsi\/vhba.*: modules-extra' \
- -i def_variants.yaml
 
 %endif
 
@@ -3434,6 +3302,13 @@ chmod +x tools/perf/check-headers.sh
 %global tools_make \
   CFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS}" EXTRA_CFLAGS="${CFLAGS}" %{make} %{?make_opts}
 
+%ifarch %{cpupowerarchs}
+    # link against in-tree libcpupower for idle state support
+    %global rtla_make %{tools_make} LDFLAGS="${LDFLAGS} -L../../power/cpupower" INCLUDES="-I../../power/cpupower/lib"
+%else
+    %global rtla_make %{tools_make}
+%endif
+
 %if %{with_tools}
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
 %ifarch %{cpupowerarchs}
@@ -3494,7 +3369,7 @@ pushd tools/verification/rv/
 popd
 pushd tools/tracing/rtla
 %{log_msg "build rtla"}
-%{tools_make}
+%{rtla_make}
 popd
 %endif
 
@@ -3502,17 +3377,6 @@ if [ -f $DevelDir/vmlinux.h ]; then
   RPM_VMLINUX_H=$DevelDir/vmlinux.h
 fi
 echo "${RPM_VMLINUX_H}" > ../vmlinux_h_path
-
-%if %{with_bpftool}
-%global bpftool_make \
-  %{__make} EXTRA_CFLAGS="${RPM_OPT_FLAGS}" EXTRA_CXXFLAGS="${RPM_OPT_FLAGS}" EXTRA_LDFLAGS="%{__global_ldflags}" DESTDIR=$RPM_BUILD_ROOT %{?make_opts} VMLINUX_H="${RPM_VMLINUX_H}" V=1
-%{log_msg "build bpftool"}
-pushd tools/bpf/bpftool
-%{bpftool_make}
-popd
-%else
-%{log_msg "bpftools disabled ... disabling selftests"}
-%endif
 
 %if %{with_selftests}
 %{log_msg "start build selftests"}
@@ -3533,9 +3397,6 @@ fi
 %{log_msg "build samples/bpf"}
 %{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
-# Prevent bpf selftests to build bpftool repeatedly:
-export BPFTOOL=$(pwd)/tools/bpf/bpftool/bpftool
-
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
 # doesn't seem possible to do in the install section.
@@ -3546,7 +3407,7 @@ pushd tools/testing/selftests
 %endif
 
 %{log_msg "main selftests compile"}
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp netfilter tc-testing memfd drivers/net/bonding iommu cachestat" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp net/netfilter tc-testing memfd drivers/net/bonding iommu cachestat" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 %ifarch %{klptestarches}
   # kernel livepatching selftest test_modules will build against
@@ -3573,7 +3434,6 @@ done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
 popd
-export -n BPFTOOL
 %{log_msg "end build selftests"}
 %endif
 
@@ -3780,7 +3640,7 @@ chmod 0755 %{buildroot}%{_libdir}/libcpupower.so*
    %{tools_make} DESTDIR=%{buildroot} install
    popd
    pushd tools/arch/x86/intel_sdsi
-   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}" DESTDIR=%{buildroot} install
+   %{tools_make} CFLAGS="${RPM_OPT_FLAGS}" DESTDIR=%{buildroot} BINDIR=%{_sbindir} install
    popd
 %endif
 pushd tools/thermal/tmon
@@ -3821,14 +3681,6 @@ rm -f %{buildroot}%{_bindir}/timerlat
         ln -sf rtla ./%{_bindir}/timerlat
 )
 popd
-%endif
-
-%if !%{with_automotive}
-%if %{with_bpftool}
-pushd tools/bpf/bpftool
-%{bpftool_make} prefix=%{_prefix} bash_compdir=%{_sysconfdir}/bash_completion.d/ mandir=%{_mandir} install doc-install
-popd
-%endif
 %endif
 
 %if %{with_selftests}
@@ -3906,11 +3758,11 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{}
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
-# install netfilter selftests
-pushd tools/testing/selftests/netfilter
-find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
-find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
-find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/netfilter/{} \;
+# install net/netfilter selftests
+pushd tools/testing/selftests/net/netfilter
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/netfilter/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/netfilter/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/netfilter/{} \;
 popd
 
 # install memfd selftests
@@ -4232,7 +4084,7 @@ fi\
 %endif
 
 %if %{with_kabidw_base}
-%ifarch x86_64 s390x ppc64 ppc64le aarch64
+%ifarch x86_64 s390x ppc64 ppc64le aarch64 riscv64
 %files %{name}-kabidw-base-internal
 %defattr(-,root,root)
 /kabidw-base/%{_target_cpu}/*
@@ -4259,6 +4111,7 @@ fi\
 %{_sysconfdir}/bash_completion.d/perf
 %doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
 %{_docdir}/perf-tip/tips.txt
+%{_includedir}/perf/perf_dlfilter.h
 
 %files -n python3-perf
 %{python3_sitearch}/*
@@ -4283,7 +4136,6 @@ fi\
 %{_includedir}/perf/bpf_perf.h
 %{_includedir}/perf/core.h
 %{_includedir}/perf/cpumap.h
-%{_includedir}/perf/perf_dlfilter.h
 %{_includedir}/perf/event.h
 %{_includedir}/perf/evlist.h
 %{_includedir}/perf/evsel.h
@@ -4383,31 +4235,6 @@ fi\
 %{_mandir}/man1/rv.1.gz
 
 # with_tools
-%endif
-
-%if !%{with_automotive}
-%if %{with_bpftool}
-%files -n bpftool
-%{_sbindir}/bpftool
-%{_sysconfdir}/bash_completion.d/bpftool
-%{_mandir}/man8/bpftool-cgroup.8.gz
-%{_mandir}/man8/bpftool-gen.8.gz
-%{_mandir}/man8/bpftool-iter.8.gz
-%{_mandir}/man8/bpftool-link.8.gz
-%{_mandir}/man8/bpftool-map.8.gz
-%{_mandir}/man8/bpftool-prog.8.gz
-%{_mandir}/man8/bpftool-perf.8.gz
-%{_mandir}/man8/bpftool.8.gz
-%{_mandir}/man8/bpftool-net.8.gz
-%{_mandir}/man8/bpftool-feature.8.gz
-%{_mandir}/man8/bpftool-btf.8.gz
-%{_mandir}/man8/bpftool-struct_ops.8.gz
-
-%if %{with_debuginfo}
-%files -f bpftool-debuginfo.list -n bpftool-debuginfo
-%defattr(-,root,root)
-%endif
-%endif
 %endif
 
 %if %{with_selftests}
@@ -4594,6 +4421,9 @@ fi\
 #
 #
 %changelog
+* Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.0-500.chinfo
+- 6.13.0
+
 * Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.10-500.chinfo
 - 6.12.10
 
@@ -4780,36 +4610,6 @@ fi\
 
 * Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
 - 6.7.0 - pf1
-
-* Fri Jan 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.10-500.chinfo
-- 6.6.10 - pf6
-
-* Mon Jan 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.6.9-500.chinfo
-- 6.6.9 - pf6
-
-* Wed Dec 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.8-500.chinfo
-- 6.6.8 - pf5
-
-* Thu Dec 14 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.7-500.chinfo
-- 6.6.7 - pf5
-
-* Fri Dec 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.5-500.chinfo
-- 6.6.5 - pf3
-
-* Sun Dec 03 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.4-500.chinfo
-- 6.6.4 - pf3
-
-* Tue Nov 28 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.3-500.chinfo
-- 6.6.3 - pf3
-
-* Mon Nov 20 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.2-500.chinfo
-- 6.6.2 - pf3
-
-* Wed Nov 08 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.1-500.chinfo
-- 6.6.1 - pf2
-
-* Tue Oct 31 2023 Phantom X <megaphantomx at hotmail dot com> - 6.6.0-500.chinfo
-- 6.6.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

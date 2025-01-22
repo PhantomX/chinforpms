@@ -1,0 +1,15 @@
+# Symbol: RESET_MESON_AUX [=n]
+# Type  : tristate
+# Defined at drivers/reset/amlogic/Kconfig:14
+#   Prompt: Meson Reset Auxiliary Driver
+#   Depends on: RESET_CONTROLLER [=y] && (ARCH_MESON [=y] || COMPILE_TEST [=n])
+#   Location:
+#     -> Device Drivers
+#       -> Reset Controller Support (RESET_CONTROLLER [=y])
+#         -> Meson Reset Auxiliary Driver (RESET_MESON_AUX [=n])
+# Selects: AUXILIARY_BUS [=y] && RESET_MESON_COMMON [=m]
+# 
+# 
+# 
+# Commit: fb4c31587adf (reset: amlogic: add auxiliary reset driver support)
+CONFIG_RESET_MESON_AUX=y

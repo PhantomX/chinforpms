@@ -6,8 +6,8 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20241214
-# 6.12
+# 20250121
+# 6.13
 
 set -e
 
@@ -28,7 +28,8 @@ MEXCAVATOR
 MGOLDMONT
 MGOLDMONTPLUS
 MHASWELL
-MICELAKE
+MICELAKE_CLIENT
+MICELAKE_SERVER
 MINTEL_CPU_V2
 MINTEL_CPU_V3
 MINTEL_CPU_V4
