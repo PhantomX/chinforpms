@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit c2ae49eb47d91194cd98888108ff980476dd1c6f
+%global commit 13d411e4deae65c8ab3e155643037ddb86767594
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250112
+%global date 20250122
 
 %if %{without bin}
 %bcond_with snapshot
@@ -27,14 +27,14 @@
 %global local_dotnet_url_id d74fd2dd-3384-4952-924b-f5d492326e35/e91d8295d4cbe82ba3501e411d78c9b8
 
 %global avalonia_angle_windows_natives_ver 2.1.0.2023020321
-%global avalonia_ver 11.0.10
+%global avalonia_ver 11.0.13
 %global avalonia_ver2 11.0.4
 %global avalonia_ver3 11.0.0
 %global avalonia_build_services_ver 0.0.29
-%global avalonia_svg_ver 11.0.0.18
+%global avalonia_svg_ver 11.0.0.19
 %global commandlineparser_ver 2.9.1
 %global communitytoolkit_mvvm_ver 8.4.0
-%global concentus_ver 2.2.0
+%global concentus_ver 2.2.2
 %global crc32_net_ver 1.2.0
 %global csfastfloat_ver 4.1.5
 %global discordrichpresence_ver 1.2.1.24
@@ -42,8 +42,8 @@
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
 %global gommon_ver 2.7.0.2
-%global harfbuzzsharp_ver 7.3.0
-%global harfbuzzsharp_ver2 2.8.2.3
+%global harfbuzzsharp_ver 7.3.0.2
+%global harfbuzzsharp_ver2 7.3.0
 %global humanizer_ver 2.14.1
 %global jetbrains_annotations_ver 2023.2.0
 %global libhac_ver 0.19.0
@@ -60,7 +60,7 @@
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
 %global microsoft_extensions_dependencymodel_ver 8.0.0
-%global microsoft_identitymodel_ver 8.1.2
+%global microsoft_identitymodel_ver 8.3.0
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
 %global microsoft_netcore_app_runtime_linux_x64_ver 9.0.0
@@ -136,15 +136,15 @@
 %global shaderc_net_ver 0.1.0
 %global sharpmetal_ver 1.0.0-preview21
 %global sharpziplib_ver 1.4.2
-%global silk_net_ver 2.21.0
+%global silk_net_ver 2.22.0
 %global sixlabors_fonts_ver 1.0.0
 %global sixlabors_imagesharp_ver 2.1.9
 %global sixlabors_imagesharp_drawing_ver 1.0.0
-%global skiasharp_ver 2.88.7
-%global skiasharp_ver2 2.88.6
-%global skiasharp_ver3 2.88.3
+%global skiasharp_ver 2.88.9
+%global skiasharp_ver2 2.88.8
+%global skiasharp_ver3 2.88.7
 %global spb_ver 0.0.4-build32
-%global svg_model_ver 1.0.0.18
+%global svg_model_ver 1.0.0.19
 %global system_appcontext_ver 4.1.0
 %global system_buffers_ver 4.0.0
 %global system_buffers_ver2 4.3.0
@@ -259,11 +259,11 @@
 %global tmds_dbus_protocol_ver 0.15.0
 
 %global appname Ryujinx
-%global vc_url  https://github.com/GreemDev
+%global vc_url  https://github.com/Ryubing
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.238
+Version:        1.2.285
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
