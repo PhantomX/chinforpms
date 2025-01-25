@@ -13,11 +13,11 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 115541
+%global ffmpegcodec 118356
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        7.0.3495.29
+Version:        7.1.3570.39
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Jan 23 2025 - 7.1.3570.39-1
+- 7.1.3570.39
+
 * Wed Jan 08 2025 - 7.0.3495.29-1
 - 7.0.3495.29
 
