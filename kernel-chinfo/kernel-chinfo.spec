@@ -1152,9 +1152,8 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/compare/adc218676eef25575469234709c2d87185ca223a...4871bb89577d78a3d55b44e47c3a4f677dbdc89b.patch#/zen-v%{patchversion}-ntsync.patch
-Patch2002: %{patchwork_url}/series/919645/mbox/#/patchwork-mm-remove-unnecessary-calls-to-lru_add_drain.patch
-Patch2003: %{patchwork_url}/project/linux-mm/patch/20250120024104.1924753-12-riel@surriel.com/mbox/#/patchwork-v6-11-12-x86-mm-enable-AMD-translation-cache-extensions.patch
+Patch2001: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...85bbeed7a41f2fef552db580d2546d3937fa4a46.patch#/zen-v%{patchversion}-ntsync.patch
+Patch2002: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...19e56b2c9af8517d54e2878a379ee95801aa7aac.patch#/zen-v%{patchversion}-invlpgb.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -2115,7 +2114,6 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
-ApplyPatch %{PATCH2003}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}

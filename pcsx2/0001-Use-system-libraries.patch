@@ -131,8 +131,8 @@ index ff66f9c..173a61e 100644
  endif()
  
  # Prevent fmt from being built with exceptions, or being thrown at call sites.
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_EXCEPTIONS=0")
-+find_package(fmt 9)
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DFMT_USE_EXCEPTIONS=0 -DFMT_USE_RTTI=0")
++find_package(fmt 11)
 +if(fmt_FOUND)
 +	message(STATUS "Using the system fmt")
 +else()

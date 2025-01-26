@@ -31,9 +31,12 @@
 %global bundlehidapi 0.12.0
 # Enable system llvm
 %bcond_without  llvm
-%global bundlellvm 16.0
+%global bundlellvm 18.1.8
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
+# Enable system pugixml
+%bcond_with pugixml
+%global bundlepugixml 1.15.0
 # Enable system rtmidi
 %if 0%{?fedora} > 42
 %bcond_without  rtmidi
@@ -45,10 +48,14 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 1b87e186c45a21de83e9fdc859af3e0c92ae8509
+%global commit 67703b49d8605b867299b87beafdd671c2d4c947
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250110
+%global date 20250124
 %bcond_without snapshot
+
+%global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 pugixml
 
 %global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
@@ -112,7 +119,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.34.17339
+Version:        0.0.34.17411
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -123,6 +130,9 @@ URL:            https://rpcs3.net/
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
+%endif
+%if %{without pugixml}
+Source10:       https://github.com/zeux/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 %endif
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
@@ -218,7 +228,11 @@ BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
 BuildRequires:  cmake(OpenCV)
-BuildRequires:  pkgconfig(pugixml)
+%if %{with pugixml}
+BuildRequires:  pkgconfig(pugixml) >= %{bundlepugixml}
+%else
+Provides:       bundled(pugixml) = %{bundlepugixml}
+%endif
 %if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
 %else
@@ -282,7 +296,7 @@ written in C++.
 pushd 3rdparty
 rm -rf \
   7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
-  MoltenVK OpenAL/libs pugixml XAudio2Redist xxHash zstd
+  MoltenVK OpenAL/libs XAudio2Redist xxHash zstd
 
 tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
 tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
@@ -343,6 +357,13 @@ sed \
 popd
 %else
 rm -rf 3rdparty/ffmpeg
+%endif
+
+%if %{with pugixml}
+rm -rf 3rdparty/pugixml
+%else
+tar -xf %{S:10} -C 3rdparty/pugixml --strip-components 1
+cp -p 3rdparty/pugixml/LICENSE.md 3rdparty/LICENSE.pugixml.md
 %endif
 
 %if %{without hidapi}
@@ -446,7 +467,9 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
 %endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
+%if %{with pugixml}
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
+%endif
   -DUSE_SYSTEM_OPENCV:BOOL=ON \
   -DUSE_SDL:BOOL=ON \
   -DUSE_SYSTEM_SDL:BOOL=ON \

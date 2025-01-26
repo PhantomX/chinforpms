@@ -27,7 +27,7 @@
 
 %bcond_with     native
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
 %bcond_with rapidyml
 %bcond_without shaderc
 # Enable system soundtouch_ds
@@ -45,8 +45,8 @@
 
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
-%global fmt_ver 10.2.1
-%global imgui_ver 1.91.0
+%global fmt_ver 11.0.0
+%global imgui_ver 1.91.7
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
 %global rcheevos_scommit 3d01191
@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.100
+Version:        2.3.131
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
