@@ -25,7 +25,7 @@
 
 Name:           mangohud
 Version:        0.7.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -127,6 +127,10 @@ sed \
   -e 's|@version@|%{version}-%{release}|g' \
   -i bin/%{name}.in
 
+sed \
+  -e 's|@ld_libdir_mangohud_abs@|/usr/$LIB/%{name}|' \
+  -i src/%{name}.json.in src/app/layer.json.in
+
 %py3_shebang_fix bin/mangoplot.py
 
 %if %{with tests}
@@ -202,6 +206,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Sun Jan 26 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.2-101
+- Fix vulkan loader files
+
 * Tue May 28 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.2-100
 - 0.7.2
 
