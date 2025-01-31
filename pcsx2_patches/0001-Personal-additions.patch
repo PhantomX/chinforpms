@@ -1,4 +1,4 @@
-From 07a6463ad93e286fbb1b7d50ef2b53dc38ff43d9 Mon Sep 17 00:00:00 2001
+From 4f3765c3ff219db5c06ab7432dd621d7b2f865a5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -12,19 +12,21 @@ Subject: [PATCH] Personal additions
  patches/SLPS-25842_E84AA114.pnach |  24 ++++
  patches/SLUS-20212_AA4E5A95.pnach |  12 ++
  patches/SLUS-20393_5A1410AB.pnach |  19 +++
+ patches/SLUS-20782_8999FCF4.pnach |   7 ++
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 10 files changed, 504 insertions(+), 2 deletions(-)
+ 11 files changed, 511 insertions(+), 2 deletions(-)
  create mode 100644 patches/SCUS-97436_73FEFB84.pnach
  create mode 100644 patches/SLPS-25450_4D7B34BA.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
  create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
  create mode 100644 patches/SLUS-20393_5A1410AB.pnach
+ create mode 100644 patches/SLUS-20782_8999FCF4.pnach
  create mode 100644 patches/SLUS-21317_72CE7A78.pnach
 
 diff --git a/patches/SCUS-97436_32A1C752.pnach b/patches/SCUS-97436_32A1C752.pnach
-index b6c5693..0577a20 100644
+index 04f2659..193619c 100644
 --- a/patches/SCUS-97436_32A1C752.pnach
 +++ b/patches/SCUS-97436_32A1C752.pnach
 @@ -64,3 +64,154 @@ patch=1,EE,1023F3DA,extended,8442
@@ -532,6 +534,19 @@ index 0000000..852a1e7
 +patch=1,EE,201011B4,extended,00000000
 +patch=1,EE,20183CB4,extended,00007025
 +patch=1,EE,2019CAB4,extended,24047900
+diff --git a/patches/SLUS-20782_8999FCF4.pnach b/patches/SLUS-20782_8999FCF4.pnach
+new file mode 100644
+index 0000000..1195dd9
+--- /dev/null
++++ b/patches/SLUS-20782_8999FCF4.pnach
+@@ -0,0 +1,7 @@
++gametitle=Blood Will Tell: Tezuka Osamu's Dororo SLUS_207.82 (Undub)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++description=Widescreen Hack
++patch=1,EE,001b8cbc,word,3c023f06
++patch=1,EE,001b8cc4,word,34426666
 diff --git a/patches/SLUS-21059_652050D2.pnach b/patches/SLUS-21059_652050D2.pnach
 index ea512fe..a093754 100644
 --- a/patches/SLUS-21059_652050D2.pnach
@@ -597,5 +612,5 @@ index 0000000..e573932
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.47.1
+2.48.1
 
