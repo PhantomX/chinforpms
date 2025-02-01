@@ -184,7 +184,7 @@ kdocker
 keepassxc
 -kernel-tools
 -kid3
--krename
+krename
 -kristall
 kse
 -ladspa-bs2b-plugins

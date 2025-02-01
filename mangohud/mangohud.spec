@@ -9,7 +9,7 @@
 
 %bcond_with sysvulkan
 %ifnarch s390x
-%bcond_without tests
+%bcond_with tests
 %endif
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
@@ -21,11 +21,12 @@
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
 
-%global ver    %%(echo %{version} | sed -z 's/\\./-/3')
+%global ver     %%(echo %{version} | sed -z 's/\\./-/3')
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.7.2
-Release:        101%{?dist}
+Version:        0.8.0~rc1
+Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
 License:        MIT
@@ -119,6 +120,7 @@ unzip %{S:14} -d subprojects/
 unzip %{S:15} -d subprojects/
 
 rm -f include/nvml.h
+sed -e '/nvml\.h/d' -i src/nvidia.cpp
 
 cp -p %{S:4} .
 
@@ -129,7 +131,7 @@ sed \
 
 sed \
   -e 's|@ld_libdir_mangohud_abs@|/usr/$LIB/%{name}|' \
-  -i src/%{name}.json.in src/app/layer.json.in
+  -i src/%{name}.json.in
 
 %py3_shebang_fix bin/mangoplot.py
 
@@ -156,8 +158,6 @@ sed \
   -Ddynamic_string_tokens=true \
   -Dglibcxx_asserts=false \
   -Duse_system_spdlog=enabled \
-  -Dmangoapp=true \
-  -Dmangoapp_layer=true \
   -Dmangohudctl=true \
   -Dinclude_doc=true \
   -Dwith_nvml=disabled \
@@ -193,9 +193,8 @@ rm -rf %{buildroot}%{_datadir}/doc
 %{_bindir}/mangohud
 %{_bindir}/mangohudctl
 %{_libdir}/%{name}/lib%{pkgname}.so
-%{_libdir}/%{name}/lib%{pkgname}_dlsym.so
 %{_libdir}/%{name}/lib%{pkgname}_opengl.so
-%{_libdir}/%{name}/libMangoApp.so
+%{_libdir}/%{name}/lib%{pkgname}_shim.so
 %{_datadir}/icons/hicolor/*/apps/*.svg
 %{_datadir}/vulkan/implicit_layer.d/*.json
 %{_mandir}/man1/mango*.1*
@@ -206,6 +205,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Fri Jan 31 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0~rc1-100
+- 0.8.0-rc1
+
 * Sun Jan 26 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.2-101
 - Fix vulkan loader files
 

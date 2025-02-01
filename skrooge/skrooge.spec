@@ -1,90 +1,87 @@
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        2.33.0
+Version:        25.1.0
 Release:        100%{?dist}
 
 Epoch:          1
 
 License:        GPL-2.0-or-later
-URL:            https://skrooge.org
+URL:            http://skrooge.org
 Source0:        https://download.kde.org/stable/skrooge/skrooge-%{version}.tar.xz
 
 ## upstream patches
 
+
+ExclusiveArch:  %{qt6_qtwebengine_arches}
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
 BuildRequires:  make
-BuildRequires:  cmake(Grantlee5)
-BuildRequires:  cmake(KF5Activities)
-BuildRequires:  cmake(KF5Archive)
-BuildRequires:  cmake(KF5Completion)
-BuildRequires:  cmake(KF5Config)
-BuildRequires:  cmake(KF5ConfigWidgets)
-BuildRequires:  cmake(KF5CoreAddons)
-BuildRequires:  cmake(KF5DBusAddons)
-BuildRequires:  cmake(KF5KDELibs4Support)
-BuildRequires:  cmake(KF5DesignerPlugin)
-BuildRequires:  cmake(KF5DocTools)
-BuildRequires:  cmake(KF5GuiAddons)
-BuildRequires:  cmake(KF5I18n)
-BuildRequires:  cmake(KF5IconThemes)
-BuildRequires:  cmake(KF5ItemViews)
-BuildRequires:  cmake(KF5IconThemes)
-BuildRequires:  cmake(KF5KIO)
-BuildRequires:  cmake(KF5JobWidgets)
-BuildRequires:  cmake(KF5NewStuff)
-BuildRequires:  cmake(KF5Notifications)
-BuildRequires:  cmake(KF5NotifyConfig)
-BuildRequires:  cmake(KF5Parts)
-BuildRequires:  cmake(KF5Runner)
-BuildRequires:  cmake(KF5Wallet)
-BuildRequires:  cmake(KF5WidgetsAddons)
-BuildRequires:  cmake(KF5WindowSystem)
-BuildRequires:  cmake(KF5XmlGui)
-BuildRequires:  kf5-rpm-macros
+BuildRequires:  kf6-rpm-macros
 BuildRequires:  libappstream-glib
-BuildRequires:  cmake(Qca-qt5)
-BuildRequires:  pkgconfig(libofx)
-BuildRequires:  cmake(Qt5Concurrent)
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5DBus)
-BuildRequires:  cmake(Qt5Designer)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5PrintSupport)
-BuildRequires:  cmake(Qt5Qml)
-BuildRequires:  cmake(Qt5QuickWidgets)
-BuildRequires:  cmake(Qt5QuickControls2)
-BuildRequires:  cmake(Qt5Script)
-BuildRequires:  cmake(Qt5Sql)
-BuildRequires:  cmake(Qt5Svg)
-BuildRequires:  cmake(Qt5WebEngineWidgets)
-BuildRequires:  cmake(Qt5Xml)
-BuildRequires:  cmake(Qt5XmlPatterns)
-# I think due to custom sqlcipher plugin -- rex
-BuildRequires:  qt5-qtbase-private-devel
 
-BuildRequires:  pkgconfig(sqlite3)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6Sql)
+BuildRequires:  cmake(Qt6Test)
+BuildRequires:  cmake(Qt6PrintSupport)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Xml)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6Qml)
+BuildRequires:  cmake(Qt6QuickWidgets)
+BuildRequires:  cmake(Qt6Core5Compat)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6WebEngineWidgets)
+BuildRequires:  cmake(Qt6Designer)
+
+BuildRequires:  cmake(KF6Archive)
+BuildRequires:  cmake(KF6Config)
+BuildRequires:  cmake(KF6CoreAddons)
+BuildRequires:  cmake(KF6I18n)
+BuildRequires:  cmake(KF6ItemViews)
+BuildRequires:  cmake(KF6WidgetsAddons)
+BuildRequires:  cmake(KF6WindowSystem)
+BuildRequires:  cmake(KF6GuiAddons)
+BuildRequires:  cmake(KF6Completion)
+BuildRequires:  cmake(KF6JobWidgets)
+BuildRequires:  cmake(KF6ConfigWidgets)
+BuildRequires:  cmake(KF6IconThemes)
+BuildRequires:  cmake(KF6KIO)
+BuildRequires:  cmake(KF6NewStuffCore)
+BuildRequires:  cmake(KF6NewStuff)
+BuildRequires:  cmake(KF6Parts)
+BuildRequires:  cmake(KF6Wallet)
+BuildRequires:  cmake(KF6XmlGui)
+BuildRequires:  cmake(KF6NotifyConfig)
+BuildRequires:  cmake(KF6Notifications)
+BuildRequires:  cmake(KF6ColorScheme)
+BuildRequires:  cmake(KF6TextTemplate)
+BuildRequires:  cmake(KF6DocTools)
+BuildRequires:  cmake(KF6StatusNotifierItem)
+BuildRequires:  cmake(KF6Runner)
+BuildRequires:  cmake(KF6DBusAddons)
+BuildRequires:  cmake(PlasmaActivities)
+BuildRequires:  qt6-qtbase-private-devel
+
+BuildRequires:  pkgconfig(libofx)
 BuildRequires:  pkgconfig(sqlcipher)
 
-
 Requires:       %{name}-libs%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       qca-qt5-ossl%{?_isa}
 
 # drop prior needless -devel pkg
 Obsoletes:      skrooge-devel < 2.0.0
 
 %description
-%{name} is a personal finances manager,
-aiming at being simple and intuitive.
-It allows you to keep track of your expenses and incomes,
-categorize them, and build reports of them.
+%{name} is a personal finances manager, aiming at being simple and intuitive.
+It allows you to keep track of your expenses and incomes, categorize them,
+and build reports of them.
+
 
 %package libs
 Summary:        Runtime libraries for %{name}
-%{?_qt5:Requires: %{_qt5}%{?_isa} = %{_qt5_version}}
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description libs
 %{summary}.
@@ -95,9 +92,8 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %build
-%{cmake_kf5} \
-  -Wno-dev \
-  -DCMAKE_BUILD_TYPE:STRING="Release" \
+%{cmake_kf6} \
+  -DQT_MAJOR_VERSION=6 \
 %{nil}
 
 %cmake_build
@@ -109,147 +105,175 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 %find_lang %{name} --with-html
 
 ## unpackaged files
-rm -fv %{buildroot}%{_kf5_libdir}/lib*.so
 
 
 %check
-appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.skrooge.appdata.xml
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.skrooge.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/org.kde.skrooge.appdata.xml
+desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.skrooge.desktop
 
 
 %files -f %{name}.lang
 %doc AUTHORS CHANGELOG README.md
 %license COPYING
-%{_kf5_bindir}/skrooge*
-%{_kf5_metainfodir}/org.kde.skrooge.appdata.xml
-%{_kf5_datadir}/applications/org.kde.skrooge.desktop
-%{_kf5_datadir}/skrooge/
-%{_kf5_datadir}/mime/packages/x-skg.xml
-%{_kf5_datadir}/icons/breeze/*/*/*
-%{_kf5_datadir}/icons/breeze-dark/*/*/*
-%{_kf5_datadir}/icons/hicolor/*/*/*
-%{_kf5_datadir}/config.kcfg/skg*.kcfg
-%{_kf5_datadir}/knotifications5/skrooge.notifyrc
-%{_kf5_datadir}/knsrcfiles/skrooge_monthly.knsrc
-%{_kf5_datadir}/knsrcfiles/skrooge_unit.knsrc
-%{_kf5_datadir}/kservices5/*.desktop
-%{_kf5_datadir}/kservices5/sources/*.desktop
-%{_kf5_datadir}/kservicetypes5/*.desktop
-%{_kf5_datadir}/kxmlgui5/skg*/
-%{_kf5_datadir}/kxmlgui5/skrooge_*/
+%{_kf6_datadir}/knsrcfiles/skrooge_unit.knsrc
+%{_kf6_bindir}/skrooge*
+%{_kf6_metainfodir}/org.kde.skrooge.appdata.xml
+%{_kf6_datadir}/applications/org.kde.skrooge.desktop
+%{_kf6_datadir}/skrooge/
+%{_kf6_datadir}/mime/packages/x-skg.xml
+%{_kf6_datadir}/icons/breeze/*/*/*
+%{_kf6_datadir}/icons/breeze-dark/*/*/*
+%{_kf6_datadir}/icons/hicolor/*/*/*
+%{_kf6_datadir}/config.kcfg/skg*.kcfg
+%{_kf6_datadir}/knotifications6/skrooge.notifyrc
+%{_kf6_datadir}/knsrcfiles/skrooge_monthly.knsrc
+%{_kf6_datadir}/kxmlgui5/skg*/
+%{_kf6_datadir}/kxmlgui5/skrooge_*/
 
 %files libs
-%{_kf5_qtplugindir}/skg_gui/sk*.so
-%{_kf5_qtplugindir}/skrooge/*/skrooge*.so
-%{_kf5_qtplugindir}/grantlee/*/grantlee_skgfilters.so
-%{_kf5_qtplugindir}/sqldrivers/libskgsqlcipher.so
-%{_kf5_qtplugindir}/designer/libskgbankgui*.so*
-%{_kf5_qtplugindir}/designer/libskgbasegui*.so*
-%{_kf5_libdir}/libskgbankgui.so.2*
-%{_kf5_libdir}/libskgbankmodeler.so.2*
-%{_kf5_libdir}/libskgbasegui.so.2*
-%{_kf5_libdir}/libskgbasemodeler.so.2*
-
-
+%{_kf6_qtplugindir}/skg_gui/
+%{_kf6_qtplugindir}/skrooge_import/
+%{_kf6_qtplugindir}/kf6/ktexttemplate/
+%{_kf6_qtplugindir}/sqldrivers/libskgsqlcipher.so
+%{_kf6_libdir}/libskgbankgui.so.2*
+%{_kf6_libdir}/libskgbankmodeler.so.2*
+%{_kf6_libdir}/libskgbasegui.so.2*
+%{_kf6_libdir}/libskgbasemodeler.so.2*
+%{_kf6_datadir}/skrooge_import_backend/
+%{_kf6_datadir}/skrooge_source/
+ 
 %changelog
-* Wed Oct 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.33.0-100
+* Fri Jan 31 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.0-100
+- BR: qt6-qtbase-private-devel
+
+* Sun Jan 19 2025 Fedora Release Engineering <releng@fedoraproject.org> - 25.1.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
+* Sun Jan 12 2025 Marie Loise Nolden <loise@kde.org> - 25.1.0-1
+- 25.1.0 using Qt6/KF6
+
+* Tue Dec 31 2024 Marie Loise Nolden <loise@kde.org> - 2.33.0-1
 - 2.33.0
 
-* Mon Sep 09 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.32.0-102
-- Rebuild (qt5)
+* Fri Jul 26 2024 Miroslav Suchý <msuchy@redhat.com> - 2.32.0-3
+- convert license to SPDX
 
-* Tue Jun 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.32.0-101
-- Rebuild (qt5)
+* Sat Jul 20 2024 Fedora Release Engineering <releng@fedoraproject.org> - 2.32.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
-* Fri May 24 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.32.0-100
+* Sun Jul 07 2024 Yaakov Selkowitz <yselkowi@redhat.com> - 2.32.0-1
 - 2.32.0
 
-* Wed Jan 24 2024 Phantom X - 1:2.31.0-101
-- Rebuild (qt5)
+* Sat Jan 27 2024 Fedora Release Engineering <releng@fedoraproject.org> - 2.28.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
-* Wed Oct 18 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.31.0-100
-- 2.31.0
+* Sat Jul 22 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2.28.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_39_Mass_Rebuild
 
-* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.30.0-100
-- 2.30.0
+* Wed Mar 22 2023 Jan Grulich <jgrulich@redhat.com> - 2.28.0-3
+- Rebuild (grantlee-qt5)
 
-* Thu Jun 15 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.29.0-101
-- Rebuild (qt5)
+* Sat Jan 21 2023 Fedora Release Engineering <releng@fedoraproject.org> - 2.28.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_38_Mass_Rebuild
 
-* Thu Apr 13 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.29.0-100
-- 2.29.0
-
-* Wed Jan 11 2023 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-103
-- Rebuild (qt5)
-
-* Sun Nov 13 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-102
-- Rebuild (qt5)
-
-* Fri Sep 23 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-101
-- Rebuild (qt5)
-
-* Thu Sep 08 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.28.0-100
+* Mon Oct 10 2022 Rex Dieter <rdieter@gmail.com> - 2.28.0-1
 - 2.28.0
 
-* Wed Jul 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.27.0-101
+* Mon Aug 29 2022 Carl George <carl@george.computer> - 2.26.1-7
+- Rebuild for sqlcipher soname bump
+
+* Sat Jul 23 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.26.1-6
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
+* Thu Jul 14 2022 Jan Grulich <jgrulich@redhat.com> - 2.26.1-5
 - Rebuild (qt5)
 
-* Tue Mar 15 2022 Phantom X <megaphantomx at hotmail dot com> - 1:2.27.0-100
-- 2.27.0
+* Tue May 17 2022 Jan Grulich <jgrulich@redhat.com> - 2.26.1-4
+- Rebuild (qt5)
 
-* Sat Jul 31 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.26.1-100
+* Tue Mar 08 2022 Jan Grulich <jgrulich@redhat.com> - 2.26.1-3
+- Rebuild (qt5)
+
+* Sat Jan 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.26.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_36_Mass_Rebuild
+
+* Sat Jul 24 2021 Rex Dieter <rdieter@fedoraproject.org> - 2.26.1-1
 - 2.26.1
+- %%build: silence some cmake-related warnings with: -Wno-dev
 
-* Sat Jun 12 2021 Phantom X <megaphantomx at hotmail dot com> - 1:2.25.0-100
+* Fri Jul 23 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.25.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_35_Mass_Rebuild
+
+* Thu May 06 2021 Rex Dieter <rdieter@fedoraproject.org> - 2.25.0-1
 - 2.25.0
 
-* Wed Dec 09 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.24.6-100
-- 2.24.6
+* Wed Jan 27 2021 Fedora Release Engineering <releng@fedoraproject.org> - 2.23.0-4
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_34_Mass_Rebuild
 
-* Wed Aug 05 2020 Phantom X <megaphantomx at hotmail dot com> - 1:2.23.0-100
-- 2.23.0
+* Mon Nov 23 07:55:19 CET 2020 Jan Grulich <jgrulich@redhat.com> - 2.23.0-3
+- rebuild (qt5)
 
-* Mon Jun 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.22.1-101
-- Rebuild (qt5)
+* Fri Sep 11 2020 Jan Grulich <jgrulich@redhat.com> - 2.23.0-2
+- rebuild (qt5)
 
-* Thu May 07 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.22.1-100
+* Tue Aug 11 2020 Marie Loise Nolden <loise@kde.org> - 2.23.0-1
+- 2.23.0, use new macros
+
+* Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.22.1-3
+- Second attempt - Rebuilt for
+  https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Wed Jul 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.22.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
+
+* Mon Apr 20 2020 Rex Dieter <rdieter@fedoraproject.org> - 2.22.1-1
 - 2.22.1
 
-* Thu Jan 09 2020 Phantom X <megaphantomx at bol dot com dot br> - 1:2.21.1-100
-- 2.21.1
+* Mon Apr 06 2020 Rex Dieter <rdieter@fedoraproject.org> - 2.20.0-6
+- rebuild (qt5)
 
-* Sun Dec 22 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.20.0-103
-- Rebuild (qt5)
+* Thu Jan 30 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.20.0-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
 
-* Thu Oct 03 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.20.0-102
-- Rebuild (qt5)
+* Mon Dec 09 2019 Jan Grulich <jgrulich@redhat.com> - 2.20.0-4
+- rebuild (qt5)
 
-* Wed Sep 18 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.20.0-101
-- Fix build with Qt 5.13
+* Wed Sep 25 2019 Jan Grulich <jgrulich@redhat.com> - 2.20.0-3
+- rebuild (qt5)
+- pull in some upstream fixes
 
-* Tue Jul 02 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.20.0-100
+* Fri Jul 26 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.20.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
+
+* Mon Jul 01 2019 Rex Dieter <rdieter@fedoraproject.org> - 2.20.0-1
 - 2.20.0
 
-* Tue Apr 23 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.19.1-100
-- 2.19.1
+* Mon Jun 17 2019 Jan Grulich <jgrulich@redhat.com> - 2.19.1-3
+- rebuild (qt5)
 
-* Tue Feb 12 2019 Phantom X <megaphantomx at bol dot com dot br> - 1:2.18.0-100
-- 2.18.0
+* Wed Jun 05 2019 Jan Grulich <jgrulich@redhat.com> - 2.19.1-2
+- rebuild (qt5)
 
-* Tue Jan 08 2019 Phantom X <megaphantomx at bol dot com dot br> - 2.17.0-101
-- Rebuild (qt5)
+* Tue Apr 23 2019 Rex Dieter <rdieter@fedoraproject.org> - 2.19.1-1
+- skrooge-2.19.1 (#1676386)
 
-* Mon Dec 24 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.17.0-100
-- 2.17.0
+* Sun Mar 03 2019 Rex Dieter <rdieter@fedoraproject.org> - 2.18.0-2
+- rebuild (qt5)
 
-* Wed Nov 07 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.16.2-100.chinfo
-- 2.16.2
+* Thu Feb 21 2019 Rex Dieter <rdieter@fedoraproject.org> - 2.18.0-1
+- skrooge-2.18.0 (#1676386)
 
-* Tue Sep 11 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-101.chinfo
-- Qt 5.11.1 rebuild
+* Sat Feb 02 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.15.0-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
-* Wed Aug 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 2.15.0-100.chinfo
-- 2.15.0
+* Tue Dec 11 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.15.0-2
+- rebuild (qt5)
+
+* Fri Oct 12 2018 Rex Dieter <rdieter@fedoraproject.org> - 2.15.0-1
+- skrooge-2.15.0
+
+* Fri Sep 21 2018 Jan Grulich <jgrulich@redhat.com> - 2.14.0-3
+- rebuild (qt5)
 
 * Sat Jul 14 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.14.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild

@@ -53,15 +53,6 @@ index 39396d1..e71a614 100644
    configuration : conf_data,
    install : true,
    install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
-@@ -354,7 +353,7 @@ configure_file(input : '../bin/mangohud.in',
- 
- if get_option('mangoapp_layer')
-   configure_file(input : 'app/layer.json.in',
--    output : 'libMangoApp.@0@.json'.format(host_machine.cpu_family()),
-+    output : 'libMangoApp.json',
-     configuration : conf_data,
-     install : true,
-     install_dir : join_paths(get_option('datadir'), 'vulkan', 'implicit_layer.d'),
 -- 
 2.44.0
 

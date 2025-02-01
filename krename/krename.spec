@@ -1,6 +1,6 @@
-%global commit cbd79811bc3e59381dcd2928c5a3c3e572d82fd4
+%global commit 83b86fa8cc6482cbf6173e262b177bbf11b71387
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20211007
+%global date 20250107
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,16 +9,17 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        105%{?gver}%{?dist}
+Release:        106%{?gver}%{?dist}
 
 Epoch:          1
 
 Summary:        Powerful batch file renamer
-License:        GPLv2
+License:        GPL-2.0-only
 
 URL:            https://userbase.kde.org/KRename
 %if 0%{?with_snapshot}
-Source0:        https://github.com/KDE/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        https://invent.kde.org/utilities/krename/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
+%dnl Source0:        https://github.com/KDE/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        https://download.kde.org/stable/%{name}/%{version}/src/%{name}-%{version}.tar.xz
 %endif
@@ -29,29 +30,29 @@ BuildRequires:  libappstream-glib
 BuildRequires:  extra-cmake-modules >= 0.0.11
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
-BuildRequires:  podofo-devel
-BuildRequires:  pkgconfig(exiv2) >= 0.13
+BuildRequires:  cmake(podofo)
+BuildRequires:  cmake(exiv2) >= 0.13
 BuildRequires:  pkgconfig(freetype2) >= 0.13
 BuildRequires:  pkgconfig(taglib) >= 1.5
 
-BuildRequires:  kf5-rpm-macros
-BuildRequires:  cmake(KF5Completion)
-BuildRequires:  cmake(KF5Config)
-BuildRequires:  cmake(KF5CoreAddons)
-BuildRequires:  cmake(KF5Crash)
-BuildRequires:  cmake(KF5I18n)
-BuildRequires:  cmake(KF5IconThemes)
-BuildRequires:  cmake(KF5ItemViews)
-BuildRequires:  cmake(KF5KIO)
-BuildRequires:  cmake(KF5JobWidgets)
-BuildRequires:  cmake(KF5JS)
-BuildRequires:  cmake(KF5Service)
-BuildRequires:  cmake(KF5WidgetsAddons)
-BuildRequires:  cmake(KF5XmlGui)
-BuildRequires:  cmake(Qt5Core)
-BuildRequires:  cmake(Qt5Gui) >= 5.11.1
-BuildRequires:  cmake(Qt5Qml)
-BuildRequires:  cmake(Qt5Widgets)
+BuildRequires:  kf6-rpm-macros
+BuildRequires:  cmake(KF6Archive)
+BuildRequires:  cmake(KF6Completion)
+BuildRequires:  cmake(KF6Config)
+BuildRequires:  cmake(KF6CoreAddons)
+BuildRequires:  cmake(KF6Crash)
+BuildRequires:  cmake(KF6I18n)
+BuildRequires:  cmake(KF6IconThemes)
+BuildRequires:  cmake(KF6ItemViews)
+BuildRequires:  cmake(KF6KIO)
+BuildRequires:  cmake(KF6Service)
+BuildRequires:  cmake(KF6WidgetsAddons)
+BuildRequires:  cmake(KF6XmlGui)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui) >= 6.5.0
+BuildRequires:  cmake(Qt6Qml)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  cmake(Qt6Core5Compat)
 
 
 %description
@@ -66,7 +67,9 @@ image.
 %autosetup %{?gver:-n %{name}-%{commit}} -p1
 
 %build
-%{cmake_kf5}
+%{cmake_kf6} \
+  -DQT_MAJOR_VERSION=6 \
+%{nil}
 
 %cmake_build
 
@@ -74,30 +77,28 @@ image.
 %install
 %cmake_install
 
-%if !0%{?with_snapshot}
-%find_lang %{name}
-%endif
-
-appstream-util validate-relax --nonet %{buildroot}%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/org.kde.%{name}.desktop
+%find_lang %{name} --all-name --with-html
 
 
-%if 0%{?with_snapshot}
-%files
-%else
+%check
+appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/org.kde.%{name}.appdata.xml
+desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.%{name}.desktop
+
+
 %files -f %{name}.lang
-%endif
 %license LICENSES/*.txt
 %doc AUTHORS README.md TODO
-%{_kf5_bindir}/%{name}
-%{_kf5_metainfodir}/org.kde.%{name}.appdata.xml
-%{_kf5_datadir}/applications/org.kde.%{name}.desktop
-%{_kf5_datadir}/icons/hicolor/*/*/*
-%{_kf5_datadir}/icons/locolor/*/*/*
-%{_kf5_datadir}/kservices5/*/*.desktop
+%{_kf6_bindir}/%{name}
+%{_kf6_metainfodir}/org.kde.%{name}.appdata.xml
+%{_kf6_datadir}/applications/org.kde.%{name}.desktop
+%{_kf6_datadir}/icons/hicolor/*/*/*
+%{_kf6_datadir}/kio/servicemenus/*.desktop
 
 
 %changelog
+* Fri Jan 31 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-106.20250107git83b86fa
+- Qt6
+
 * Tue Nov 16 2021 Phantom X <megaphantomx at hotmail dot com> - 1:5.0.60-105.20211007gitcbd7981
 - Bump
 
