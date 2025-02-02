@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 085c2d53cee3dc620703e721f513501c2feff85b
+%global commit 44944c4d80753b0ef13bf7695829ff54970d8da6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241203
+%global date 20250201
 %bcond_without snapshot
 
 # Enable system boost
@@ -46,7 +46,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 VulkanMemoryAllocator
 
-%global commit3 149b6b0ddb741a90c998033b5c633667d0e093ba
+%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
@@ -66,7 +66,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
 %global srcname7 cpp-jwt
 
-%global commit8 29ac2b5c5584056c5fdcd7b41e75870fa4a276f5
+%global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
@@ -90,7 +90,7 @@
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://git.citron-emu.org/%{pkgname}
-%global uevc_url https://github.com/uzuy-emu
+%global mvc_url https://github.com/yuzu-mirror
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -102,7 +102,7 @@
 %global appname org.%{name}_emu.%{name}
 
 Name:           citron
-Version:        0
+Version:        0.4
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -121,7 +121,7 @@ Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{sr
 %if %{without vma}
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
-Source3:        %{uevc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{mvc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{with webservice}
@@ -129,7 +129,7 @@ Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcn
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{uevc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        %{mvc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -143,8 +143,11 @@ Source12:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Bundled-fmt-support.patch
-Patch13:        0001-cmake-downgrade-required-boost.patch
-Patch14:        0001-cmake-update-required-xbyak.patch
+Patch13:        0001-cmake-update-required-xbyak.patch
+Patch14:        0001-Fix-48e86d6.patch
+Patch15:        0001-cmake-fix-when-discord-rpc-is-disabled.patch
+Patch16:        0001-Update-for-latest-dynarmic.patch
+Patch17:        0001-Disable-telemetry-initial-dialog.patch
 
 ExclusiveArch:  x86_64
 
@@ -169,7 +172,7 @@ BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.6.1
+BuildRequires:  cmake(dynarmic) >= 6.7.0
 %else
 BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
@@ -392,6 +395,7 @@ sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   %{!?with_clang:-DCITRON_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
+  -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \
 %if %{with qt6}
   -DENABLE_QT6:BOOL=ON \

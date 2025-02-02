@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 02cfee3f184e6fdcc3b483ef399fb5d2bb1e8ec7
+%global commit 914def23f631faaace3adfee346f534da1b2ed4e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241215
+%global date 20250122
 %bcond_without snapshot
 
 # Enable system boost
@@ -73,7 +73,8 @@
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://notabug.org/litucks/torzu
+%dnl %global vc_url   https://notabug.org/litucks/torzu
+%global vc_url  http://vub63vv26q6v27xzv2dtcd25xumubshogm67yrpaz2rculqxs7jlfqad.onion/torzu-emu/torzu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -88,7 +89,7 @@
 
 Name:           torzu
 Version:        2024.08.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}

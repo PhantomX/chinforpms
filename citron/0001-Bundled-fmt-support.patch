@@ -1,0 +1,38 @@
+From 7858bb4b86809768abdfeba032b47c90b87c9b67 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Sep 2024 23:02:16 -0300
+Subject: [PATCH] Bundled fmt support
+
+---
+ CMakeLists.txt | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e42840d..447f3ca 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -311,7 +311,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/bin)
+ # Enforce the search mode of non-required packages for better and shorter failure messages
+ find_package(Boost REQUIRED context)
+ find_package(enet MODULE)
+-find_package(fmt REQUIRED)
++find_package(fmt)
+ if (CITRON_USE_LLVM_DEMANGLE)
+     find_package(LLVM MODULE COMPONENTS Demangle)
+ endif()
+@@ -416,6 +416,12 @@ endif()
+ add_subdirectory(externals)
+ 
+ 
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
++add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
++endif()
++
+ if (ENABLE_QT)
+     if (NOT USE_SYSTEM_QT)
+         download_qt(6.8.1)
+-- 
+2.48.1
+

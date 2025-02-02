@@ -280,7 +280,7 @@ soundtouch_ds
 -speedtest-cli
 spirv-cross
 ss-save-parser
-steamtinkerlaunch
+-steamtinkerlaunch
 thrash-protect
 tyrian-data
 unbound-chroot

@@ -53,7 +53,7 @@ index 2f939d8..c969632 100644
  
  # Both executables are linked to the same libraries
 -link_libraries(${FREETYPE_LIBRARIES} ${UTIL} png17 ${ZLIB_LIBRARIES} ${ZSTD})
-+link_libraries(Freetype::Freetype ${UTIL} PNG::PNG ZLIB::ZLIB ZSTD::zstd)
++link_libraries(Freetype::Freetype _RPM_LIBCOMMON_ ${UTIL} PNG::PNG ZLIB::ZLIB ZSTD::zstd)
  
  add_executable(atlastool atlastool.cpp ../../../Common/Data/Encoding/Utf8.cpp ${COMMON_FILES})
  add_executable(zimtool zimtool.cpp ${COMMON_FILES})

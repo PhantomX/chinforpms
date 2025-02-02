@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 49a18086e3003c57fca016116398b1f94c961515
+%global commit d5958996771fce78197f834b610b41b9a64a468b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241229
+%global date 20250201
 %bcond_without snapshot
 
 # Enable Qt build
@@ -62,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 32917bdddf4982e62047862c6633e7671aaaf2cb
+%global commit9 3a91a58605c0fb05833a228dbb674357b0e65a09
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -89,7 +89,7 @@
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        103%{?dist}
+Release:        104%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -349,6 +349,10 @@ rm -rf wiiu
 popd
 %endif
 
+sed \
+  -e "s|_RPM_LIBCOMMON_|$(pwd)/%{_vpath_builddir}/lib/libCommon.a|g" \
+  -i ext/native/tools/CMakeLists.txt
+
 
 %build
 pushd ext/native/tools
@@ -422,11 +426,11 @@ popd
 %endif
 %{nil}
 
+%cmake_build
+
 pushd ext/native/tools
 %cmake_build
 popd
-
-%cmake_build
 
 
 %install

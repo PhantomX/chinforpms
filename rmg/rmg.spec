@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.7.0
+Version:        0.7.2
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -191,6 +191,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Feb 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.2-1
+- 0.7.2
+
 * Tue Jan 07 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.0-1
 - 0.7.0
 

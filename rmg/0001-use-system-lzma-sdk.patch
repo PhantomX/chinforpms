@@ -1,19 +1,19 @@
-From 95064ebc20623d1215cf5487d46cc9dfacce55f3 Mon Sep 17 00:00:00 2001
+From dc3f392289084285002bda0ccc0d0d051a15c5be Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 15 Apr 2023 15:18:54 -0300
 Subject: [PATCH] use system lzma-sdk
 
 ---
  CMakeLists.txt                 |  1 -
+ Source/RMG-Core/Archive.cpp    | 14 +++++++-------
  Source/RMG-Core/CMakeLists.txt | 11 +++++++++++
- Source/RMG-Core/Rom.cpp        | 14 +++++++-------
  3 files changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0c6afb5..f648864 100644
+index 4cee119..fed2339 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -128,7 +128,6 @@ else()
+@@ -129,7 +129,6 @@ else()
  endif()
  
  add_subdirectory(Source/3rdParty)
@@ -21,8 +21,33 @@ index 0c6afb5..f648864 100644
  if (VRU)
      add_subdirectory(Source/3rdParty/vosk-api)
  endif(VRU)
+diff --git a/Source/RMG-Core/Archive.cpp b/Source/RMG-Core/Archive.cpp
+index 7076bed..82da870 100644
+--- a/Source/RMG-Core/Archive.cpp
++++ b/Source/RMG-Core/Archive.cpp
+@@ -15,13 +15,13 @@
+ #include <cstring>
+ 
+ // lzma includes
+-#include "../3rdParty/lzma/7zTypes.h"
+-#include "../3rdParty/lzma/7z.h"
+-#include "../3rdParty/lzma/7zAlloc.h"
+-#include "../3rdParty/lzma/7zBuf.h"
+-#include "../3rdParty/lzma/7zCrc.h"
+-#include "../3rdParty/lzma/7zFile.h"
+-#include "../3rdParty/lzma/7zVersion.h"
++#include "7zTypes.h"
++#include "7z.h"
++#include "7zAlloc.h"
++#include "7zBuf.h"
++#include "7zCrc.h"
++#include "7zFile.h"
++#include "7zVersion.h"
+ 
+ // minizip includes
+ #include <unzip.h>
 diff --git a/Source/RMG-Core/CMakeLists.txt b/Source/RMG-Core/CMakeLists.txt
-index 8ed4f6e..d2bb1d0 100644
+index aac2049..1e29277 100644
 --- a/Source/RMG-Core/CMakeLists.txt
 +++ b/Source/RMG-Core/CMakeLists.txt
 @@ -22,6 +22,17 @@ if (NOT PORTABLE_INSTALL)
@@ -43,31 +68,6 @@ index 8ed4f6e..d2bb1d0 100644
  configure_file(Config.hpp.in Config.hpp)
  
  set(RMG_CORE_SOURCES
-diff --git a/Source/RMG-Core/Rom.cpp b/Source/RMG-Core/Rom.cpp
-index 21e545f..dea42cc 100644
---- a/Source/RMG-Core/Rom.cpp
-+++ b/Source/RMG-Core/Rom.cpp
-@@ -19,13 +19,13 @@
- #include "Utils/File.hpp"
- 
- // lzma includes
--#include "../3rdParty/lzma/7zTypes.h"
--#include "../3rdParty/lzma/7z.h"
--#include "../3rdParty/lzma/7zAlloc.h"
--#include "../3rdParty/lzma/7zBuf.h"
--#include "../3rdParty/lzma/7zCrc.h"
--#include "../3rdParty/lzma/7zFile.h"
--#include "../3rdParty/lzma/7zVersion.h"
-+#include "7zTypes.h"
-+#include "7z.h"
-+#include "7zAlloc.h"
-+#include "7zBuf.h"
-+#include "7zCrc.h"
-+#include "7zFile.h"
-+#include "7zVersion.h"
- 
- #include <string>
- #include <unzip.h>
 -- 
-2.43.0
+2.48.1
 

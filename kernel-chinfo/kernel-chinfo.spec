@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.0
+%define specrpmversion 6.13.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1154,6 +1154,8 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...85bbeed7a41f2fef552db580d2546d3937fa4a46.patch#/zen-v%{patchversion}-ntsync.patch
 Patch2002: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...19e56b2c9af8517d54e2878a379ee95801aa7aac.patch#/zen-v%{patchversion}-invlpgb.patch
+Patch2003: %{zen_url}/commit/da4bd5fb45b97dbaf4b35d38c412411d36684a72.patch#/zen-v%{patchversion}-sauce-da4bd5f.patch
+Patch2004: %{zen_url}/commit/281ab99c77ba3ab068d6e00987061a88180c67f7.patch#/zen-v%{patchversion}-sauce-281ab99.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1203,6 +1205,19 @@ Patch7220:  %{pf_url}/32bef160156719a0cfef8df94697ace27847644b.patch#/pf-cb-32be
 Patch7230:  %{pf_url}/64f0795e7509fc7e6608f704e465e650ac124ffe.patch#/pf-cb-64f0795.patch
 # cpuidle
 Patch7240:  %{pf_url}/338018473e4c5402157f872a9519441585e4945d.patch#/pf-cb-3380184.patch
+# fixes 
+Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
+Patch7401:  %{pf_url}/d27394be0f70182ec02526bfb7354a55d570ab8d.patch#/pf-cb-d27394b.patch
+Patch7402:  %{pf_url}/f11f34158e2d5bd1c21954cdda29091305e5ff52.patch#/pf-cb-f11f341.patch
+Patch7403:  %{pf_url}/831cdcb8b6d34857b77e06142bcfe1c4b3e8382d.patch#/pf-cb-831cdcb.patch
+Patch7404:  %{pf_url}/fcf8a9600c26d50dd2ea405f546ca9a2b7aa0584.patch#/pf-cb-fcf8a96.patch
+Patch7405:  %{pf_url}/e0c1dce3ba0223130cf5fc7d6c732a01cbc57d60.patch#/pf-cb-e0c1dce.patch
+Patch7406:  %{pf_url}/1e01b4b26ea383a03a1cce42c5e65ece140657a3.patch#/pf-cb-1e01b4b.patch
+Patch7407:  %{pf_url}/d9979dac03726a5b983691ac4e23eff437f8e7d2.patch#/pf-cb-d9979da.patch
+Patch7408:  %{pf_url}/1c3f089ce3c57a6329a2611fea2d06ba01d67d1e.patch#/pf-cb-1c3f089.patch
+Patch7409:  %{pf_url}/5d034748bad69fbb6d7dc7cee72f203199bb70e0.patch#/pf-cb-5d03474.patch
+Patch7410:  %{pf_url}/1541a72e51a41f291209f8e19fb1f53252d2c4c1.patch#/pf-cb-1541a72.patch
+Patch7411:  %{pf_url}/4e1a0e7eb3ff0f11496bc762aa172031a6f3238e.patch#/pf-cb-4e1a0e7.patch
 # amd-rapl
 Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
 Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
@@ -2091,6 +2106,19 @@ ApplyPatch %{PATCH7220}
 ApplyPatch %{PATCH7230}
 # cpuidle
 ApplyPatch %{PATCH7240}
+# fixes
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2114,6 +2142,8 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
+ApplyPatch %{PATCH2003}
+ApplyPatch %{PATCH2004}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -4419,6 +4449,9 @@ fi\
 #
 #
 %changelog
+* Sat Feb 01 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.1-500.chinfo
+- 6.13.1
+
 * Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.0-500.chinfo
 - 6.13.0
 

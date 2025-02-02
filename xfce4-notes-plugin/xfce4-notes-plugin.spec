@@ -8,7 +8,7 @@
 %global vc_url https://gitlab.xfce.org/panel-plugins/%{name}
 
 Name:           xfce4-notes-plugin
-Version:        1.11.0
+Version:        1.11.2
 Release:        100%{?dist}
 Summary:        Notes plugin for the Xfce panel
 
@@ -27,6 +27,7 @@ BuildRequires:  pkgconfig(libxfce4panel-2.0) >= %{xfceversion}
 BuildRequires:  pkgconfig(libxfce4ui-2) >= %{xfceversion}
 BuildRequires:  pkgconfig(libxfce4util-1.0) >= %{xfceversion}
 BuildRequires:  pkgconfig(libxfconf-0) >= %{xfceversion}
+BuildRequires:  pkgconfig(gtksourceview-4)
 BuildRequires:  gettext, intltool, desktop-file-utils
 Requires:       xfce4-panel >= %{xfceversion}
 Requires:       xfconf >= %{xfceversion}
@@ -74,6 +75,9 @@ desktop-file-validate \
 
 
 %changelog
+* Sat Feb 01 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.2-100
+- 1.11.2
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.11.0-100
 - 1.11.0
 
