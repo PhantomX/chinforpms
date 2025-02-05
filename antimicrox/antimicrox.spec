@@ -10,7 +10,7 @@
 %global appname io.github.%{name}.%{name}
 
 Name:           antimicrox
-Version:        3.4.1
+Version:        3.5.1
 Release:        100%{?dist}
 Summary:        Graphical program used to map keyboard buttons and mouse controls to a gamepad
 
@@ -32,13 +32,12 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  cmake(Qt5Concurrent)
-BuildRequires:  cmake(Qt5Core) >= 5.8
-BuildRequires:  cmake(Qt5LinguistTools)
-BuildRequires:  cmake(Qt5Gui)
-BuildRequires:  cmake(Qt5Network)
-BuildRequires:  cmake(Qt5Widgets)
-BuildRequires:  cmake(Qt5X11Extras)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6Core) >= 5.10
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  pkgconfig(sdl2) >= 2.0.6
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcb)
@@ -81,6 +80,7 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' \
 %build
 %cmake \
   -DANTIMICROX_PKG_VERSION="%{version}-%{release}" \
+  -DUSE_QT6_BY_DEFAULT=ON \
   -DWITH_X11:BOOL=ON \
   -DWITH_XTEST:BOOL=ON \
   -DWITH_UINPUT:BOOL=ON \
@@ -103,7 +103,7 @@ rm -rf %{buildroot}%{_includedir}
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
-desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %files -f %{name}.lang
@@ -121,6 +121,10 @@ desktop-file-validate %{buildroot}%{_kf5_datadir}/applications/%{appname}.deskto
 
 
 %changelog
+* Wed Feb 05 2025 Phantom X <megaphantomx at hotmail dot com> - 3.5.1-100
+- 3.5.1
+- Qt6
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 3.4.1-100
 - 3.4.1
 

@@ -1,16 +1,16 @@
 # Glslang revision from packaged version
 %global glslang_version 436237a4ab2be3225acedc66016ea2aa82946b37
 
-%global commit f68b10fd46dc0401474d039144320d6ac521818e
+%global commit fc65b19d2098cf81e55b4edc10adad2ad8268361
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 2024101
+%global date 20250202
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 %global pkgname shaderc
 
 Name:           %{pkgname}_ds
-Version:        2024.4
+Version:        2024.5
 Release:        1%{?dist}
 Epoch:          1
 Summary:        Collection of tools, libraries, and tests for Vulkan shader compilation
@@ -111,6 +111,9 @@ sed -e '/^#include/s|shaderc/|%{name}/|g' -i %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/cmake/Shaderc_ds
 
 %changelog
+* Tue Feb 04 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2024.5-1.20250202gitfc65b19
+- 2024.5
+
 * Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2024.4-1.2024101gitf68b10f
 - 2024.4
 
