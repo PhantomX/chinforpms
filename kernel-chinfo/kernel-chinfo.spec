@@ -1153,7 +1153,7 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...85bbeed7a41f2fef552db580d2546d3937fa4a46.patch#/zen-v%{patchversion}-ntsync.patch
-Patch2002: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...19e56b2c9af8517d54e2878a379ee95801aa7aac.patch#/zen-v%{patchversion}-invlpgb.patch
+Patch2002: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...59df69ba4ac0438f0d764715889777ef5f236deb.patch#/zen-v%{patchversion}-invlpgb.patch
 Patch2003: %{zen_url}/commit/da4bd5fb45b97dbaf4b35d38c412411d36684a72.patch#/zen-v%{patchversion}-sauce-da4bd5f.patch
 Patch2004: %{zen_url}/commit/281ab99c77ba3ab068d6e00987061a88180c67f7.patch#/zen-v%{patchversion}-sauce-281ab99.patch
 

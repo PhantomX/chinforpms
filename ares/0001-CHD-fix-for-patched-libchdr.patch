@@ -1,16 +1,33 @@
-From 3ae0e7d647f4c006ff6ffc2e72b144d72a76ef38 Mon Sep 17 00:00:00 2001
+From f1d34ef3dbf1e81879df8ede0701f0d3b2928d2d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 25 Dec 2023 12:00:38 -0300
 Subject: [PATCH] CHD: fix for patched libchdr
 
 ---
+ nall/cmake/sources.cmake |  2 ++
  nall/decode/chd.hpp      |  6 +++---
  nall/file-buffer-chd.hpp | 19 +++++++++----------
  nall/file-chd.hpp        | 22 +++++++++++-----------
- 3 files changed, 23 insertions(+), 24 deletions(-)
+ 4 files changed, 25 insertions(+), 24 deletions(-)
 
+diff --git a/nall/cmake/sources.cmake b/nall/cmake/sources.cmake
+index ff6f155..10075aa 100644
+--- a/nall/cmake/sources.cmake
++++ b/nall/cmake/sources.cmake
+@@ -23,9 +23,11 @@ target_sources(
+     dl.hpp
+     endian.hpp
+     file-buffer.hpp
++    file-buffer-chd.hpp
+     file-map.cpp
+     file-map.hpp
+     file.hpp
++    file-chd.hpp
+     float-env.hpp
+     function.hpp
+     galois-field.hpp
 diff --git a/nall/decode/chd.hpp b/nall/decode/chd.hpp
-index e6450f2..8a79464 100644
+index 2419573..c24e7fa 100644
 --- a/nall/decode/chd.hpp
 +++ b/nall/decode/chd.hpp
 @@ -1,6 +1,6 @@
@@ -152,5 +169,5 @@ index 91be160..704c16d 100644
    }
  
 -- 
-2.43.0
+2.48.1
 

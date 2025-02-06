@@ -1,19 +1,22 @@
-From 449f8d6a715a13255e301d730ba3f442fa0a3f4f Mon Sep 17 00:00:00 2001
+From 9bf5fab261278b4021df07284cf402ece4eae8f3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 1 Aug 2022 15:42:10 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  dep/CMakeLists.txt                | 96 +++++++++++++++++++++++++++++--
- src/core/gpu_hw_texture_cache.cpp |  4 +-
+ src/core/gpu_hw_texture_cache.cpp |  2 +
  src/util/compress_helpers.cpp     |  4 ++
- 3 files changed, 98 insertions(+), 6 deletions(-)
+ 3 files changed, 97 insertions(+), 5 deletions(-)
 
 diff --git a/dep/CMakeLists.txt b/dep/CMakeLists.txt
-index 4b79ce8..58008f8 100644
+index 633267c..6465550 100644
 --- a/dep/CMakeLists.txt
 +++ b/dep/CMakeLists.txt
-@@ -1,30 +1,98 @@
+@@ -1,33 +1,101 @@
+ set(_saved_CMAKE_MESSAGE_LOG_LEVEL ${CMAKE_MESSAGE_LOG_LEVEL})
+ set(CMAKE_MESSAGE_LOG_LEVEL NOTICE)
+ 
 +find_package(fmt 11.0)
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -114,7 +117,7 @@ index 4b79ce8..58008f8 100644
  
  if(ENABLE_OPENGL)
    add_subdirectory(glad EXCLUDE_FROM_ALL)
-@@ -32,9 +100,27 @@ if(ENABLE_OPENGL)
+@@ -35,9 +103,27 @@ if(ENABLE_OPENGL)
  endif()
  
  if(CPU_ARCH_X64)
@@ -146,10 +149,10 @@ index 4b79ce8..58008f8 100644
  
  if(CPU_ARCH_ARM32 OR CPU_ARCH_ARM64)
 diff --git a/src/core/gpu_hw_texture_cache.cpp b/src/core/gpu_hw_texture_cache.cpp
-index 29d8f6a..3a6c3eb 100644
+index 357a5ab..bfd23e9 100644
 --- a/src/core/gpu_hw_texture_cache.cpp
 +++ b/src/core/gpu_hw_texture_cache.cpp
-@@ -27,9 +27,11 @@
+@@ -31,9 +31,11 @@
  #define XXH_STATIC_LINKING_ONLY
  #endif
  #include "xxhash.h"
@@ -177,5 +180,5 @@ index e20efc2..89fa859 100644
  
  // TODO: Use streaming API to avoid mallocing the whole input buffer. But one read() call is probably still faster..
 -- 
-2.47.0
+2.48.1
 

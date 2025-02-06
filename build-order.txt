@@ -74,7 +74,6 @@ lzma-sdk
 
 # 4
 libchdr
-librashader
 mesa
 mesa-libGL-xlib
 SDL2
@@ -189,6 +188,7 @@ krename
 kse
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
+librashader
 -libreoffice
 libstrangle
 -liveprogide
@@ -271,8 +271,9 @@ sdl-jstest
 -sdlcl
 -shaderc
 shaderc_ds
-skrooge
 -simple64
+skrooge
+slang-shaders
 smtube
 -snx
 -snxvpn
