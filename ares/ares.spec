@@ -36,6 +36,7 @@ Patch500:       0001-CHD-fix-for-patched-libchdr.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
+BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 BuildRequires:  ImageMagick

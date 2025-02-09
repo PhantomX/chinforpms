@@ -32,7 +32,7 @@ index e42840d..447f3ca 100644
 +
  if (ENABLE_QT)
      if (NOT USE_SYSTEM_QT)
-         download_qt(6.8.1)
+         download_qt(6.7.3)
 -- 
 2.48.1
 

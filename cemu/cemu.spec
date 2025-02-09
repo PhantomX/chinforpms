@@ -2,7 +2,7 @@
 %undefine _cmake_shared_libs
 %undefine _debugsource_packages
 
-%bcond_with clang
+%bcond_without clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -28,7 +28,7 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global fmt_ver 10.2.1
+%global fmt_ver 11.1.3
 %global vkh_ver 1.3.240
 
 %global vc_url   https://github.com/cemu-project/Cemu
@@ -42,7 +42,7 @@
 %global verpatch   %%(echo %%{ver} | cut -s -d- -f2)
 
 Name:           cemu
-Version:        2.4
+Version:        2.6
 Release:        1%{?dist}
 Summary:        A Wii U Emulator
 
@@ -77,6 +77,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  nasm
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  pkgconfig(bluez)
 BuildRequires:  boost-devel
 BuildRequires:  cmake(cubeb)
 %if %{with fmt}
@@ -88,11 +89,14 @@ BuildRequires:  cmake(glm)
 BuildRequires:  cmake(glslang)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libzip)
+BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(pugixml)
 BuildRequires:  cmake(RapidJSON)
@@ -144,13 +148,9 @@ popd
 # unbundled fmt
 sed -e '/FMT_HEADER_ONLY/d' -i src/Common/precompiled.h
 %endif
-# gamelist column width improvement
-sed \
-  -e '/InsertColumn/s/kListIconWidth/&+8/;/SetColumnWidth/s/last_col_width/&-1/' \
-  -i src/gui/components/wxGameList.cpp
 
 sed -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/s| ON| OFF|g' -i CMakeLists.txt
-
+sed -e '/set/s|"glslang"|"glslang::SPIRV"|' -i src/Cafe/CMakeLists.txt
 
 %build
 %cmake \
@@ -158,7 +158,7 @@ sed -e '/CMAKE_INTERPROCEDURAL_OPTIMIZATION/s| ON| OFF|g' -i CMakeLists.txt
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_VCPKG:BOOL=OFF \
   -DENABLE_DISCORD_RPC:BOOL=OFF \
-  -DPORTABLE:BOOL=OFF \
+  -DALLOW_PORTABLE:BOOL=OFF \
   -DEMULATOR_VERSION_MAJOR="%{vermajor}" \
   -DEMULATOR_VERSION_MINOR="%{verminor}" \
 %{nil}
@@ -209,6 +209,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Feb 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2.6-1
+- 2.6
+
 * Fri Nov 15 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4-1
 - 2.4
 

@@ -42,7 +42,6 @@ Requires:       vulkan-loader%{?_isa}
 
 %if %{with vendor}
 # for i in * ;do echo "Provides:       bundled(crate(${i%%-*})) = ${i##*-}";done
-Provides:       bundled(crate(aa)) = aa
 Provides:       bundled(crate(ab_glyph)) = 0.2.29
 Provides:       bundled(crate(ab_glyph_rasterizer)) = 0.1.8
 Provides:       bundled(crate(adler2)) = 2.0.0

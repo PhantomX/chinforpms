@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 44944c4d80753b0ef13bf7695829ff54970d8da6
+%global commit d4eca46bba66daba04c585cf76b7e0ae04693da7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250201
+%global date 20250205
 %bcond_without snapshot
 
 # Enable system boost
@@ -103,7 +103,7 @@
 
 Name:           citron
 Version:        0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -145,9 +145,7 @@ Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch13:        0001-cmake-update-required-xbyak.patch
 Patch14:        0001-Fix-48e86d6.patch
-Patch15:        0001-cmake-fix-when-discord-rpc-is-disabled.patch
-Patch16:        0001-Update-for-latest-dynarmic.patch
-Patch17:        0001-Disable-telemetry-initial-dialog.patch
+Patch15:        0001-Update-for-latest-dynarmic.patch
 
 ExclusiveArch:  x86_64
 
