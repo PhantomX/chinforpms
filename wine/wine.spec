@@ -53,7 +53,7 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  9.4.0
-%global winevulkan 1.4.303
+%global winevulkan 1.4.307
 
 %global winecapstone 5.0.3
 %global wineFAudio 24.10
@@ -106,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.0
+%global wine_stagingver 10.1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -159,7 +159,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.0
+Version:        10.1
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -352,7 +352,7 @@ BuildRequires:  librsvg2
 BuildRequires:  librsvg2-tools
 BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libudev)
-BuildRequires:  pkgconfig(libusb)
+BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(netapi)
@@ -2055,6 +2055,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.ui.xaml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.web.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
@@ -2566,6 +2567,9 @@ fi
 
 
 %changelog
+* Sun Feb 09 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.1-100
+- 10.1
+
 * Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.0-100
 - 10.0
 
