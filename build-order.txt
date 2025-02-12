@@ -45,7 +45,7 @@ zarchive
 ff7tk
 -gstreamer1-plugins-base
 libadwaita
-cpuinfo
+-cpuinfo
 libbacktrace
 -libdeflate
 -libqtadvanceddocking
@@ -347,7 +347,7 @@ mingw-wine-gecko
 -wine-d8vk
 wine-dxvk
 wine-mono
-wine-nine
+-wine-nine
 wine-vkd3d-proton
 
 # 8

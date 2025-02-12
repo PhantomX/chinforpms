@@ -1,4 +1,4 @@
-From 3b5ee1d266e5a5ea7f5bbde0bf5a9d4f32e8d601 Mon Sep 17 00:00:00 2001
+From 4c160f650c34cad18542a73b46ec0b10df3fad54 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 11 Apr 2024 22:21:09 -0300
 Subject: [PATCH] Modify default settings
@@ -8,21 +8,21 @@ Subject: [PATCH] Modify default settings
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
-index b301256..c5b9ca4 100644
+index 7e4b794..91a5ae8 100644
 --- a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
 +++ b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
-@@ -171,8 +171,8 @@ namespace Ryujinx.UI.Common.Configuration
+@@ -175,8 +175,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
              System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;
              System.EnableDockedMode.Value = true;
 -            EnableDiscordIntegration.Value = true;
--            CheckUpdatesOnStart.Value = true;
+-            UpdateCheckerType.Value = UpdaterType.PromptAtStartup;
 +            EnableDiscordIntegration.Value = false;
-+            CheckUpdatesOnStart.Value = false;
++            UpdateCheckerType.Value = UpdaterType.Off;
              ShowConfirmExit.Value = true;
-             IgnoreApplet.Value = false;
              RememberWindowState.Value = true;
-@@ -223,7 +223,7 @@ namespace Ryujinx.UI.Common.Configuration
+             ShowTitleBar.Value = !OperatingSystem.IsWindows();
+@@ -229,7 +229,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
              UI.ShownFileTypes.NRO.Value = true;
              UI.ShownFileTypes.NSO.Value = true;
              UI.LanguageCode.Value = "en_US";
@@ -32,5 +32,5 @@ index b301256..c5b9ca4 100644
              UI.ShowNames.Value = true;
              UI.GridSize.Value = 2;
 -- 
-2.47.0
+2.48.1
 

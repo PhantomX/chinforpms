@@ -49,5 +49,5 @@ vulkan-utility-libraries
 wine
 -wine-d9vk - no mingw
 -wine-freeworld
-wine-nine
+-wine-nine
 winesync

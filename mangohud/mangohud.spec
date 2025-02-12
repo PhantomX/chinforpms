@@ -25,7 +25,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.8.0~rc1
+Version:        0.8.0
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -189,7 +189,6 @@ rm -rf %{buildroot}%{_datadir}/doc
 %files
 %license LICENSE
 %doc README.md README.Fedora.md data/%{pkgname}.conf
-%{_bindir}/mangoapp
 %{_bindir}/mangohud
 %{_bindir}/mangohudctl
 %{_libdir}/%{name}/lib%{pkgname}.so
@@ -205,6 +204,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Wed Feb 12 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-100
+- 0.8.0
+
 * Fri Jan 31 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0~rc1-100
 - 0.8.0-rc1
 

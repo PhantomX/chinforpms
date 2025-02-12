@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d4eca46bba66daba04c585cf76b7e0ae04693da7
+%global commit 8bfafb47555e2844dcf37cb157614b2d7fb9a6c7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250205
+%global date 20250211
 %bcond_without snapshot
 
 # Enable system boost
@@ -103,7 +103,7 @@
 
 Name:           citron
 Version:        0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -121,7 +121,7 @@ Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{sr
 %if %{without vma}
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
-Source3:        %{mvc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{with webservice}
@@ -129,7 +129,7 @@ Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcn
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{mvc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -143,7 +143,6 @@ Source12:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Bundled-fmt-support.patch
-Patch13:        0001-cmake-update-required-xbyak.patch
 Patch14:        0001-Fix-48e86d6.patch
 Patch15:        0001-Update-for-latest-dynarmic.patch
 

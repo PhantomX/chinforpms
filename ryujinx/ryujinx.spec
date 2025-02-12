@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 13d411e4deae65c8ab3e155643037ddb86767594
+%global commit ad89cf39b60c9c7a1988fb54161bf47110f0b55a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250122
+%global date 20250211
 
 %if %{without bin}
 %bcond_with snapshot
@@ -41,7 +41,7 @@
 %global excss_ver 4.2.3
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
-%global gommon_ver 2.7.0.2
+%global gommon_ver 2.7.1
 %global harfbuzzsharp_ver 7.3.0.2
 %global harfbuzzsharp_ver2 7.3.0
 %global humanizer_ver 2.14.1
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.285
+Version:        1.2.376
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 

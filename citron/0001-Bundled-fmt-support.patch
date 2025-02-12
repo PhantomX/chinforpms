@@ -21,8 +21,8 @@ index e42840d..447f3ca 100644
      find_package(LLVM MODULE COMPONENTS Demangle)
  endif()
 @@ -416,6 +416,12 @@ endif()
- add_subdirectory(externals)
- 
+     target_compile_options(discord-rpc PRIVATE -fpermissive)
+ endif()
  
 +if(fmt_FOUND)
 +  message(STATUS "Using the system fmt")
@@ -32,7 +32,7 @@ index e42840d..447f3ca 100644
 +
  if (ENABLE_QT)
      if (NOT USE_SYSTEM_QT)
-         download_qt(6.7.3)
+         download_qt(6.8.2)
 -- 
 2.48.1
 
