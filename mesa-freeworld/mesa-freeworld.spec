@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.3.4
+Version:        25.0.0~rc3
 Release:        100%{?dist}
 
 Epoch:          100
@@ -103,7 +103,6 @@ BuildRequires:  pkgconfig(libzstd)
 %package -n     %{pkgname}-dri-drivers-freeworld
 Summary:        Mesa-based DRI drivers - freeworld
 Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
-Requires:       %{pkgname}-libglapi%{?_isa} >= %{version}
 
 %description -n %{pkgname}-dri-drivers-freeworld
 %{summary}.
@@ -225,6 +224,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Feb 12 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.0.0~rc3-100
+- 25.0.0-rc3
+
 * Thu Jan 23 2025 Phantom X <megaphantomx at hotmail dot com> - 100:24.3.4-100
 - 24.3.4
 

@@ -31,9 +31,7 @@
 %global with_i915   1
 %global with_iris   1
 %global with_xa     1
-%if !0%{?rhel}
 %global with_intel_clc 1
-%endif
 %global intel_platform_vulkan %{?with_vulkan_hw:,intel,intel_hasvk}%{!?with_vulkan_hw:%{nil}}
 %endif
 %ifarch x86_64
@@ -43,11 +41,11 @@
 %endif
 
 %ifarch aarch64 x86_64 %{ix86}
+%global with_kmsro     1
 %if !0%{?rhel}
 %global with_lima      1
 %global with_vc4       1
 %global with_etnaviv   1
-%global with_kmsro     1
 %global with_tegra     1
 %endif
 %global with_freedreno 1
@@ -94,7 +92,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        24.3.4
+Version:        25.0.0~rc3
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -119,6 +117,7 @@ Patch499:       mesa-20.1.1-fix-opencl.patch
 # https://gitlab.freedesktop.org/mesa/mesa/-/issues/5094
 # Ported from https://gitlab.freedesktop.org/bvarner/mesa/-/tree/feature/osmesa-preserve-buffer
 Patch500:       mesa-24.0-osmesa-fix-civ3.patch
+Patch501:       mesa-23.1-x86_32-llvm-detection.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
@@ -134,7 +133,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.121
+BuildRequires:  pkgconfig(libdrm) >= 2.4.122
 %if 0%{?with_libunwind}
 BuildRequires:  pkgconfig(libunwind)
 %endif
@@ -142,7 +141,7 @@ BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.24
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.34
 BuildRequires:  pkgconfig(wayland-client) >= 1.18
 BuildRequires:  pkgconfig(wayland-server) >= 1.18
 BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
@@ -183,17 +182,20 @@ BuildRequires:  flatbuffers-devel
 BuildRequires:  flatbuffers-compiler
 BuildRequires:  xtensor-devel
 %endif
-%if 0%{?with_opencl} || 0%{?with_nvk}
+%if 0%{?with_opencl} || 0%{?with_nvk} || 0%{?with_intel_clc}
 BuildRequires:  clang%{?llvm_pkgver}-devel
-BuildRequires:  bindgen
-BuildRequires:  rust-packaging
 BuildRequires:  pkgconfig(libclc)
 BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  pkgconfig(LLVMSPIRVLib)
 BuildRequires:  spirv-llvm-translator%{?llvm_pkgver}-devel
+%endif
+%if 0%{?with_opencl} || 0%{?with_nvk}
+BuildRequires:  bindgen
+BuildRequires:  rust-packaging
 %endif
 %if 0%{?with_nvk}
 BuildRequires:  cbindgen
-BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2) 
+BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2)
 BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
 BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
@@ -215,9 +217,6 @@ BuildRequires:  glslang
 BuildRequires:  pkgconfig(vulkan)
 %endif
 
-# vulkan-overlay
-BuildRequires:  glslang
-
 
 %description
 %{summary}.
@@ -232,16 +231,15 @@ Obsoletes:      mesa-omx-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %package libGL
 Summary:        Mesa libGL runtime libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       libglvnd-glx%{?_isa} >= 1:1.3.2
-Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libGL
 %{summary}.
 
 %package libGL-devel
 Summary:        Mesa libGL development package
-Requires:       %{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       (%{name}-libGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-libGL%{?_isa})
 Requires:       libglvnd-devel%{?_isa} >= 1:1.3.2
 Provides:       libGL-devel = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libGL-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -254,15 +252,14 @@ Recommends:     gl-manpages
 Summary:        Mesa libEGL runtime libraries
 Requires:       libglvnd-egl%{?_isa} >= 1:1.3.2
 Requires:       %{name}-libgbm%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Recommends:     %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       %{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description libEGL
 %{summary}.
 
 %package libEGL-devel
 Summary:        Mesa libEGL development package
-Requires:       %{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       (%{name}-libEGL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-libEGL%{?_isa})
 Requires:       libglvnd-devel%{?_isa} >= 1:1.3.2
 Requires:       %{name}-khr-devel%{?_isa}
 Provides:       libEGL-devel = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -274,10 +271,10 @@ Provides:       libEGL-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %package dri-drivers
 Summary:        Mesa-based DRI drivers
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %if 0%{?with_va}
 Recommends:     %{name}-va-drivers%{?_isa}
 %endif
+Obsoletes:      %{name}-libglapi < 25.0.0~rc2-1
 
 %description dri-drivers
 %{summary}.
@@ -302,7 +299,6 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 
 %package libOSMesa
 Summary:        Mesa offscreen rendering libraries
-Requires:       %{name}-libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libOSMesa = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       libOSMesa%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -356,18 +352,6 @@ Provides:       libxatracker-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 %description libxatracker-devel
 %{summary}.
 %endif
-
-%package libglapi
-Summary:        Mesa shared glapi
-Provides:       libglapi = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libglapi%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-# If mesa-dri-drivers are installed, they must match in version. This is here to prevent using
-# older mesa-dri-drivers together with a newer mesa-libglapi or its dependants.
-# See https://bugzilla.redhat.com/show_bug.cgi?id=2193135 .
-Requires:       (%{name}-dri-drivers%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release} if %{name}-dri-drivers%{?_isa})
-
-%description libglapi
-%{summary}.
 
 %if 0%{?with_opencl}
 %package libOpenCL
@@ -521,9 +505,6 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %ifarch %{ix86}
   -Dglx-read-only-text=true \
 %endif
- %ifnarch x86_64
-  -Dintel-rt=disabled \
-%endif
   %{nil}
 
 %meson_build
@@ -565,7 +546,6 @@ popd
 %dir %{_includedir}/GL/internal
 %{_includedir}/GL/internal/dri_interface.h
 %{_libdir}/pkgconfig/dri.pc
-%{_libdir}/libglapi.so
 
 %files libEGL
 %{_datadir}/glvnd/egl_vendor.d/50_mesa.json
@@ -574,10 +554,6 @@ popd
 %dir %{_includedir}/EGL
 %{_includedir}/EGL/eglext_angle.h
 %{_includedir}/EGL/eglmesaext.h
-
-%files libglapi
-%{_libdir}/libglapi.so.0
-%{_libdir}/libglapi.so.0.*
 
 %files libOSMesa
 %{_libdir}/libOSMesa.so.8*
@@ -623,6 +599,7 @@ popd
 %{_libdir}/libRusticlOpenCL.so.*
 %{_sysconfdir}/OpenCL/vendors/mesa.icd
 %{_sysconfdir}/OpenCL/vendors/rusticl.icd
+
 %files libOpenCL-devel
 %{_libdir}/libMesaOpenCL.so
 %{_libdir}/libRusticlOpenCL.so
@@ -808,6 +785,9 @@ popd
 
 
 %changelog
+* Wed Feb 12 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.0~rc3-100
+- 25.0.0-rc3
+
 * Thu Jan 23 2025 Phantom X <megaphantomx at hotmail dot com> - 24.3.4-100
 - 24.3.4
 
