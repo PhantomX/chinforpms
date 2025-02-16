@@ -53,7 +53,7 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  9.4.0
-%global winevulkan 1.4.307
+%global winevulkan 1.4.303
 
 %global winecapstone 5.0.3
 %global wineFAudio 24.10
@@ -106,7 +106,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.1
+%global wine_stagingver 10.0
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -117,7 +117,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 41f7e2477bb25179439698fa86613408ba9afed0
+%global tkg_id 981eae84ecb97976dae00375bef68bb0e14b4409
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -159,11 +159,11 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.1
-Release:        100%{?dist}
+Version:        10.0
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
-Epoch:          1
+Epoch:          2
 
 License:        LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND libtiff AND MIT AND OLDAP-2.8 AND Zlib
 URL:            http://www.winehq.org/
@@ -236,6 +236,7 @@ Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.p
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
+Patch706:        %{whq_murl}/-/commit/0b5202efdbffa88a9d636e45e94be87db965a470.patch#/%{name}-whq-0b5202e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -262,7 +263,7 @@ Patch1037:       %{tkg_url}/hotfixes/legacy_ntdll_writecopy/legacy-ntdll-writeco
 Patch1038:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
 
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
-Patch1052:       %{tkg_url}/misc/fastsync/ntsync7-staging-protonify.patch#/%{name}-tkg-ntsync7-staging-protonify.patch
+Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
 Patch1053:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-alt.patch#/%{name}-tkg-ntsync-config.h.in-alt.patch
 Patch1054:       0001-tkg-ntsync7-staging-protonify-fixup-1.patch
 Patch1055:       0001-tkg-cpu-topology-fixup-1.patch
@@ -877,6 +878,7 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 703 -p1
 %patch -P 705 -p1
+%patch -P 706 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2055,7 +2057,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
-%{_libdir}/wine/%{winedlldir}/windows.ui.xaml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.web.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
@@ -2567,6 +2568,9 @@ fi
 
 
 %changelog
+* Sun Feb 16 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0-101
+- Revert to 10.0, until ntsync is good with newer
+
 * Sun Feb 09 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.1-100
 - 10.1
 

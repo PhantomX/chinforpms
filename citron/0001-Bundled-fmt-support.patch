@@ -15,8 +15,8 @@ index e42840d..447f3ca 100644
  # Enforce the search mode of non-required packages for better and shorter failure messages
  find_package(Boost REQUIRED context)
  find_package(enet MODULE)
--find_package(fmt REQUIRED)
-+find_package(fmt)
+-find_package(fmt 11 REQUIRED)
++find_package(fmt 11)
  if (CITRON_USE_LLVM_DEMANGLE)
      find_package(LLVM MODULE COMPONENTS Demangle)
  endif()

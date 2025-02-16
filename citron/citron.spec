@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8bfafb47555e2844dcf37cb157614b2d7fb9a6c7
+%global commit 7730d14b4a267c9579636a18af73d4252385e15f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250211
+%global date 20250216
 %bcond_without snapshot
 
 # Enable system boost
@@ -25,7 +25,7 @@
 # Enable system ffmpeg
 %bcond_without ffmpeg
 # Enable system fmt
-%bcond_with fmt
+%bcond_without fmt
 # Enable system mbedtls (needs cmac builtin support)
 %bcond_with mbedtls
 # Disable Qt build
@@ -50,7 +50,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
-%global commit4 f7862c3dd7ad35becc2741f268e3402e89a37666
+%global commit4 6048871ea9ee0ec24be5bd099d161a10567d7dc2
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 simpleini
 
@@ -58,7 +58,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 4f5b003e760b1fd62c5c22eff09f4c5934bfdfc5
+%global commit6 39a64fb4e7e42216f14f0ec51ccc5fa85e651432
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
 %global srcname6 cpp-httplib
 
@@ -82,7 +82,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 FFmpeg
 
-%global fmt_ver 10.2.1
+%global fmt_ver 11.0.2
 %global glad_ver 0.1.29
 %global nxtzdb_ver 221202
 %global stbdxt_ver 1.12
@@ -103,7 +103,7 @@
 
 Name:           citron
 Version:        0.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -209,7 +209,7 @@ Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
-BuildRequires:  pkgconfig(sdl2) >= 2.28.2
+BuildRequires:  pkgconfig(sdl2) >= 2.32.0
 %if %{with qt}
 BuildRequires:  cmake(Qt%{qt_ver}Core)
 BuildRequires:  cmake(Qt%{qt_ver}DBus)
