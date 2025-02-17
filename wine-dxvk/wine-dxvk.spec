@@ -18,9 +18,9 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 13554f18bd2963966d5aba61adc2517b28e5f8af
+%global commit 6d9e0baa2776a13b0a12f0a9cb3290996d0e2110
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250208
+%global date 20250214
 %bcond_without snapshot
 
 %bcond_with debug
@@ -71,7 +71,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.5.3
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 

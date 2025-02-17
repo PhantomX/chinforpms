@@ -1,0 +1,26 @@
+From 4f9c6aad584dd6a3eb0d15b0534b2d9a8893b254 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 16 Feb 2025 23:05:00 -0300
+Subject: [PATCH] Fix ltdp 0005 patch
+
+---
+ ltdp-0005-Option-to-disable-stories.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
+index 665f5d3..c5684e0 100644
+--- a/ltdp-0005-Option-to-disable-stories.patch
++++ b/ltdp-0005-Option-to-disable-stories.patch
+@@ -79,8 +79,8 @@ index 983497e..db40ead 100644
+  #include "chat_helpers/tabbed_panel.h"
+ +#include "data/data_stories.h"
+  #include "dialogs/dialogs_widget.h"
++ #include "history/history_item_components.h"
+  #include "info/profile/info_profile_actions.h"
+- #include "lang/lang_keys.h"
+ @@ -140,6 +141,7 @@ void SetupExperimental(
+  				: rpl::producer<>()));
+  	};
+-- 
+2.48.1
+

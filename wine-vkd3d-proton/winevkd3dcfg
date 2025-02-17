@@ -1,11 +1,11 @@
 #!/usr/bin/bash
-# -- winedxvkcfg --
-# Sets wine DXVK dlls.
+# -- winevkd3dcfg --
+# Sets wine VKD3D-Proton dlls.
 #
-# Script by Phantom X <megaphantomx at bol.com.b>
-# Suggested usage: $ winedxvkcfg --help
+# Script by Phantom X <megaphantomx at hotmail dot com>
+# Suggested usage: $ winevkd3dcfg --help
 #
-# Copyright 2018-2024 Phantom X, Goiania, Brazil.
+# Copyright 2018-2025 Phantom X, Goiania, Brazil.
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20240722
+ver=20250216
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -36,13 +36,19 @@ dlls="d3d12 d3d12core"
 nodlls=""
 
 unset winebits
+bits="64 32"
 enabled=0
 enabledlnk=0
 disabled=0
 disabledlnk=0
 dllmissing=0
 retval=0
+archdir="x86_64-windows"
+archdirwow64="i386-windows"
 overrideskey="HKCU\\Software\\Wine\\DllOverrides"
+overrideskeywow64="HKCU\\Software\\WoW6432Node\\Wine\\DllOverrides"
+sysdir="system32"
+sysdirwow64="syswow64"
 
 txt() {
 cat <<EOF
@@ -56,21 +62,39 @@ Uso : $0 <option>
 EOF
 }
 
+checkprefix(){
+  native_path="$(wine winepath -u "C:\windows\\${sysdirwow64}" 2>/dev/null)"
+  if ! [ -d "${native_path}" ] ;then
+    return 1
+  fi
+}
+
 checkcfg(){
-  for winebits in 64 32 ;do
-    if [ "${winebits}" -eq 64 ] ;then
+  if ! checkprefix ;then
+    bits="o32"
+  fi
+  for winebits in ${bits} ;do
+    if [ "${winebits}" == "64" ] ;then
       lib=64
+      regkey="${overrideskey}"
+      winesysdir="${sysdir}"
+    elif [ "${winebits}" == "32" ] ;then
+      lib=32
+      regkey="${overrideskeywow64}"
+      winesysdir="${sysdirwow64}"
     else
       lib=32
+      regkey="${overrideskey}"
+      winesysdir="${sysdir}"
     fi
-    native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
+    native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
     if [ -z "${native_path}" ] ;then
       echo 'Error while getting native winepath!'
       exit 5
     fi
     lib_path="${datadir}/${lib}"
     for dll in ${dlls} ;do
-      if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
+      if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
         enabled=1
       else
         disabled=1
@@ -96,71 +120,82 @@ checkcfg(){
 
 setcfg(){
   enabled=1
-  for winebits in 64 32 ;do
-    if [ "${winebits}" -eq 64 ] ;then
+  if ! checkprefix ;then
+    bits="o32"
+  fi
+  for winebits in ${bits} ;do
+    if [ "${winebits}" == "64" ] ;then
       lib=64
-      winearchdir=x86_64-windows
+      regkey="${overrideskey}"
+      winearchdir="${archdir}"
       wine_path="/usr/lib64/wine"
+      winesysdir="${sysdir}"
+    elif [ "${winebits}" == "32" ] ;then
+      lib=32
+      regkey="${overrideskeywow64}"
+      winearchdir="${archdirwow64}"
+      wine_path="/usr/lib/wine"
+      winesysdir="${sysdirwow64}"
     else
       lib=32
-      winearchdir=i386-windows
+      regkey="${overrideskey}"
+      winearchdir="${archdirwow64}"
       wine_path="/usr/lib/wine"
+      winesysdir="${sysdir}"
     fi
-    if wine${winebits} reg query /? &>/dev/null ;then
-      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      if [ -z "${native_path}" ] ;then
-        echo 'Error while getting native winepath!'
-        exit 5
+    native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
+    if [ -z "${native_path}" ] ;then
+      echo 'Error while getting native winepath!'
+      exit 5
+    fi
+    lib_path="${datadir}/${lib}"
+    arch_path="${wine_path}/${winearchdir}"
+    for dll in ${dlls} ;do
+      if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll" ];then
+        echo "Missing ${dll}${dllsuffix}.dll in ${datadir}/${lib}/."
+        dllmissing=1
       fi
-      lib_path="${datadir}/${lib}"
-      arch_path="${wine_path}/${winearchdir}"
-      for dll in ${dlls} ;do
-        if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll" ];then
-          echo "Missing ${dll}${dllsuffix}.dll in ${datadir}/${lib}/."
-          dllmissing=1
+    done
+    if [ "${dllmissing}" -eq 1 ] ;then
+      continue
+    fi
+    if [ -n "${nodlls}" ] ;then
+      for nodll in ${nodlls} ;do
+        if wine reg query "${regkey}" /v "${nodll}" &>/dev/null ;then
+          wine reg delete "${regkey}" /v "${nodll}" /f &>/dev/null
+          retval=$?
+        fi
+        if [ -f "${arch_path}/${nodll}.dll" ] && ! cmp -s "${arch_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
+          rm -f "${native_path}/${nodll}.dll" 2>/dev/null
+          cp -pf "${arch_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
         fi
       done
-      if [ "${dllmissing}" -eq 1 ] ;then
-        continue
-      fi
-      if [ -n "${nodlls}" ] ;then
-        for nodll in ${nodlls} ;do
-          if wine${winebits} reg query "${overrideskey}" /v "${nodll}" &>/dev/null ;then
-            wine${winebits} reg delete "${overrideskey}" /v "${nodll}" /f &>/dev/null
-            retval=$?
-          fi
-          if [ -f "${arch_path}/${nodll}.dll" ] && ! cmp -s "${arch_path}/${nodll}.dll" "$(readlink -f "${native_path}/${nodll}.dll")" ;then
-            rm -f "${native_path}/${nodll}.dll" 2>/dev/null
-            cp -pf "${arch_path}/${nodll}.dll" "${native_path}/${nodll}.dll" 2>/dev/null
-          fi
-        done
-      fi
-      for dll in ${dlls} ;do
-        if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -v -F "native" &>/dev/null ;then
-          wine${winebits} reg add "${overrideskey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
-          retval=$?
-          if [ "${retval}" -eq 0 ] ;then
-            enabled=1
-          else
-            disabled=1
-          fi
-        else
+    fi
+    for dll in ${dlls} ;do
+      if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -v -F "native" &>/dev/null ;then
+        wine reg add "${regkey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
           enabled=1
-        fi
-        if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
-          rm -f "${native_path}/${dll}.dll"
-          ln -sf "${lib_path}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
-          retval=$?
-          if [ "${retval}" -eq 0 ] ;then
-            enabledlnk=1
-          else
-            enabledlnk=0
-          fi
         else
-          enabledlnk=1
+          disabled=1
         fi
-      done
-    fi
+      else
+        enabled=1
+      fi
+      if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        rm -f "${native_path}/${dll}.dll"
+        ln -sf "${lib_path}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          enabledlnk=1
+        else
+          enabledlnk=0
+        fi
+      else
+        enabledlnk=1
+      fi
+    done
   done
   if [ "${dllmissing}" -eq 1 ] ;then
     echo "Reinstall ${pkgname}."
@@ -168,68 +203,79 @@ setcfg(){
   fi
   if [ "${enabled}" -eq 1 ] && [ "${disabled}" -eq 0 ] && [ "${enabledlnk}" -eq 1 ] ;then
     echo "${name} is enabled!"
+    exit 0
   else
     echo "${name} configuration fail!"
     echo "Check wine prefix or permissions."
     exit 1
   fi
-  exit $?
 }
 
 unsetcfg(){
   disabled=1
   disabledlnk=1
-  for winebits in 64 32 ;do
-    if [ "${winebits}" -eq 64 ] ;then
+  if ! checkprefix ;then
+    bits="o32"
+  fi
+  for winebits in ${bits} ;do
+    if [ "${winebits}" == "64" ] ;then
       lib=64
-      winearchdir=x86_64-windows
+      regkey="${overrideskey}"
+      winearchdir="${archdir}"
       wine_path="/usr/lib64/wine"
+      winesysdir="${sysdir}"
+    elif [ "${winebits}" == "32" ] ;then
+      lib=32
+      regkey="${overrideskeywow64}"
+      winearchdir="${archdirwow64}"
+      wine_path="/usr/lib/wine"
+      winesysdir="${sysdirwow64}"
     else
       lib=32
-      winearchdir=i386-windows
+      regkey="${overrideskey}"
+      winearchdir="${archdirwow64}"
       wine_path="/usr/lib/wine"
+      winesysdir="${sysdir}"
     fi
-    if wine${winebits} reg query /? &>/dev/null ;then
-      native_path="$(wine${winebits} winepath -u 'C:\windows\system32' 2>/dev/null)"
-      if [ -z "${native_path}" ] ;then
-        echo 'Error while getting native winepath!'
-        exit 5
+    native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
+    if [ -z "${native_path}" ] ;then
+      echo 'Error while getting native winepath!'
+      exit 5
+    fi
+    lib_path="${datadir}/${lib}"
+    arch_path="${wine_path}/${winearchdir}"
+    for dll in ${dlls} ;do
+      if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
+        wine reg delete "${regkey}" /v "${dll}" /f &>/dev/null
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          disabled=1
+        else
+          disabled=0
+        fi
       fi
-      lib_path="${datadir}/${lib}"
-      arch_path="${wine_path}/${winearchdir}"
-      for dll in ${dlls} ;do
-        if wine${winebits} reg query "${overrideskey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
-          wine${winebits} reg delete "${overrideskey}" /v "${dll}" /f &>/dev/null
-          retval=$?
-          if [ "${retval}" -eq 0 ] ;then
-            disabled=1
-          else
-            disabled=0
+      if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
+        rm -f "${native_path}/${dll}.dll"
+        retval=$?
+        if [ "${retval}" -eq 0 ] ;then
+          disabledlnk=1
+          if [ -f "${arch_path}/${dll}.dll" ] && ! cmp -s "${arch_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+            cp -pf "${arch_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
           fi
+        else
+          disabledlnk=0
         fi
-        if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
-          rm -f "${native_path}/${dll}.dll"
-          retval=$?
-          if [ "${retval}" -eq 0 ] ;then
-            disabledlnk=1
-            if [ -f "${arch_path}/${dll}.dll" ] && ! cmp -s "${arch_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
-              cp -pf "${arch_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
-            fi
-          else
-            disabledlnk=0
-          fi
-        fi
-      done
-    fi
+      fi
+    done
   done
   if [ "${disabled}" -eq 1 ] && [ "${disabledlnk}" -eq 1 ] ;then
     echo "${name} is disabled!"
+    exit 0
   else
     echo "${name} configuration fail!"
     echo "Check wine prefix or permissions."
     exit 1
   fi
-  exit $?
 }
 
 if [ -z "$1" ] ;then

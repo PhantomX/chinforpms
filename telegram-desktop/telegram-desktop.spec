@@ -8,7 +8,7 @@
 # https://github.com/telegramdesktop/tdesktop/blob/dev/snap/snapcraft.yaml
 %global apiid 611335
 %global apihash d524b414d21f4d37f08684c1df41ac9c
-%global ltdp_id b7a73c0b8a8b3527f69959ce3ceb35f8dbde8a8e
+%global ltdp_id 36e27074851c64e52706adc606d1a9bfc12a3194
 
 %global cvc_url https://chromium.googlesource.com
 %global da_url https://github.com/desktop-app
@@ -42,8 +42,8 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.10.7
-Release:        101%{?dist}
+Version:        5.11.1
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -80,11 +80,12 @@ Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
-Patch1010:       0001-Disable-sponsored-messages.patch
-Patch1011:       https://github.com/drizt/telegram-desktop-patches/raw/refs/heads/up-to-5.6.3/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
+Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
+Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
 Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltdp-0003-Disable-invite-peeking-restrictions.patch
 Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disable-accounts-limit.patch
-Patch1014:       https://github.com/drizt/telegram-desktop-patches/raw/refs/heads/up-to-5.6.3/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
+Patch1014:       %{ltdp_url}/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
+Patch1015:       0001-Fix-ltdp-0005-patch.patch
 
 
 BuildRequires:  desktop-file-utils
@@ -238,7 +239,10 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %patch -P 1011 -p1
 %patch -P 1012 -p1
 %patch -P 1013 -p1
-%patch -P 1014 -p1
+%dnl %patch -P 1014 -p1
+cp %{P:1014} .
+%patch -P 1015 -p1
+%{__scm_apply_patch -p1 -q} -i ltdp-0005-Option-to-disable-stories.patch
 %endif
 
 # Unbundling libraries...
@@ -378,6 +382,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Mon Feb 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.11.1-100
+- 5.11.1
+
 * Wed Feb 05 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.10.7-101
 - Rebuild (qt6)
 

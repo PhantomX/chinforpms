@@ -1,7 +1,7 @@
-%global commit f2eebf36266fa0c3809472701763a6e468cd5ba3
+%global commit 4de563994426e258d1f2848b663f6ed85dd1298d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250113
-%bcond_with snapshot
+%global date 20250214
+%bcond_without snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -22,16 +22,19 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-
 %global winearchdir %{nil}
 %global winesodir %{nil}
+%global winearchdir_i386 i386-windows
+%global winesodir_i386 i386-unix
+%global winearchdir_x86_64 x86_64-windows
+%global winesodir_x86_64 x86_64-unix
 %ifarch %{ix86}
-%global winearchdir i386-windows
-%global winesodir i386-unix
+%global winearchdir %{winearchdir_i386}
+%global winesodir %{winesodir_i386}
 %endif
 %ifarch x86_64
-%global winearchdir x86_64-windows
-%global winesodir x86_64-unix
+%global winearchdir %{winearchdir_x86_64}
+%global winesodir %{winesodir_x86_64}
 %endif
 %ifarch arm
 %global winearchdir arm-windows
@@ -53,7 +56,7 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  9.4.0
-%global winevulkan 1.4.303
+%global winevulkan 1.4.307
 
 %global winecapstone 5.0.3
 %global wineFAudio 24.10
@@ -106,7 +109,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.0
+%global wine_stagingver 735225dbaa71dc0cbff67c13708e63e3a44981aa
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -117,7 +120,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 981eae84ecb97976dae00375bef68bb0e14b4409
+%global tkg_id 27272fa09119ee634252863a49f2f7dd42c10c63
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -159,7 +162,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.0
+Version:        10.1
 Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -236,7 +239,6 @@ Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.p
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
-Patch706:        %{whq_murl}/-/commit/0b5202efdbffa88a9d636e45e94be87db965a470.patch#/%{name}-whq-0b5202e.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -878,7 +880,6 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 703 -p1
 %patch -P 705 -p1
-%patch -P 706 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1093,34 +1094,21 @@ export PATH="$(pwd)/bin:$PATH"
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
 
-# setup for alternatives usage
-%ifarch x86_64 aarch64
-%ifarch aarch64
-mv %{buildroot}%{_bindir}/wine %{buildroot}%{_bindir}/wine64
-mv %{buildroot}%{_bindir}/wine-preloader %{buildroot}%{_bindir}/wine64-preloader
-%endif
-mv %{buildroot}%{_bindir}/wineserver %{buildroot}%{_bindir}/wineserver64
-%endif
-%ifarch %{ix86} %{arm}
-mv %{buildroot}%{_bindir}/wine %{buildroot}%{_bindir}/wine32
-mv %{buildroot}%{_bindir}/wineserver %{buildroot}%{_bindir}/wineserver32
-%endif
-%ifnarch aarch64 x86_64
-mv %{buildroot}%{_bindir}/wine-preloader %{buildroot}%{_bindir}/wine32-preloader
-%endif
-touch %{buildroot}%{_bindir}/wine
-touch %{buildroot}%{_bindir}/wine-preloader
-touch %{buildroot}%{_bindir}/wineserver
-
 # remove rpath
 chrpath --delete %{buildroot}%{_bindir}/wmc
 chrpath --delete %{buildroot}%{_bindir}/wrc
-%ifarch x86_64 aarch64
-chrpath --delete %{buildroot}%{_bindir}/wine64
-chrpath --delete %{buildroot}%{_bindir}/wineserver64
-%else
-chrpath --delete %{buildroot}%{_bindir}/wine32
-chrpath --delete %{buildroot}%{_bindir}/wineserver32
+chrpath --delete %{buildroot}%{_bindir}/wine
+chrpath --delete %{buildroot}%{_bindir}/wineserver
+
+%ifarch %{ix86}
+for winelibdir in %{winearchdir_x86_64} %{winesodir_x86_64} ;do 
+  ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_prefix}/lib64/%{name}")"/${winelibdir} %{buildroot}/%{_libdir}/%{name}/
+done
+%endif
+%ifarch x86_64
+for winelibdir in %{winearchdir_i386} %{winesodir_i386} ;do 
+  ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_prefix}/lib/%{name}")"/${winelibdir} %{buildroot}/%{_libdir}/%{name}/
+done
 %endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
@@ -1342,13 +1330,6 @@ popd
 
 rm -f %{buildroot}%{_initrddir}/wine
 
-# wine makefiles are currently broken and don't install the wine man page
-install -p -m 0644 loader/wine.man %{buildroot}%{_mandir}/man1/wine.1
-install -p -m 0644 loader/wine.de.UTF-8.man %{buildroot}%{_mandir}/de.UTF-8/man1/wine.1
-install -p -m 0644 loader/wine.fr.UTF-8.man %{buildroot}%{_mandir}/fr.UTF-8/man1/wine.1
-mkdir -p %{buildroot}%{_mandir}/pl.UTF-8/man1
-install -p -m 0644 loader/wine.pl.UTF-8.man %{buildroot}%{_mandir}/pl.UTF-8/man1/wine.1
-
 # install and validate AppData file
 mkdir -p %{buildroot}/%{_metainfodir}/
 install -p -m 0644 %{SOURCE150} %{buildroot}/%{_metainfodir}/%{name}.appdata.xml
@@ -1362,22 +1343,7 @@ if [ $1 -eq 0 ]; then
 /bin/systemctl try-restart systemd-binfmt.service
 fi
 
-%posttrans core
-%ifarch x86_64 aarch64
-%{_sbindir}/alternatives --install %{_bindir}/wine \
-  wine %{_bindir}/wine64 10 \
-  --slave %{_bindir}/wine-preloader wine-preloader %{_bindir}/wine64-preloader
-%{_sbindir}/alternatives --install %{_bindir}/wineserver \
-  wineserver %{_bindir}/wineserver64 20
-%else
-%{_sbindir}/alternatives --install %{_bindir}/wine \
-  wine %{_bindir}/wine32 20 \
-  --slave %{_bindir}/wine-preloader wine-preloader %{_bindir}/wine32-preloader
-%{_sbindir}/alternatives --install %{_bindir}/wineserver \
-  wineserver %{_bindir}/wineserver32 10
-%endif
-
-%postun core
+%prein core
 if [ $1 -eq 0 ] ; then
 %ifarch x86_64 aarch64
   %{_sbindir}/alternatives --remove wine %{_bindir}/wine64
@@ -1387,6 +1353,7 @@ if [ $1 -eq 0 ] ; then
   %{_sbindir}/alternatives --remove wineserver %{_bindir}/wineserver32
 %endif
 fi
+
 
 %files
 # meta package
@@ -1427,30 +1394,25 @@ fi
 %{_libdir}/wine/%{winedlldir}/wordpad.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/write.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wusa.%{wineexe}
-
-%ifarch %{ix86} %{arm}
-%{_bindir}/wine32
-%{perms_pldr} %{_bindir}/wine32-preloader
-%{perms_srv} %{_bindir}/wineserver32
-%endif
-
-%ifarch x86_64 aarch64
-%{_bindir}/wine64
-%{perms_srv} %{_bindir}/wineserver64
-%endif
-%ifarch x86_64 aarch64
-%{perms_pldr} %{_bindir}/wine64-preloader
-%endif
-
-%ghost %{_bindir}/wine
-%ghost %{_bindir}/wine-preloader
-%ghost %{_bindir}/wineserver
+%{perms_pldr} %{_libdir}/wine/%{winesodir}/wine
+%{perms_pldr} %{_libdir}/wine/%{winesodir}/wine-preloader
+%{perms_srv} %{_bindir}/wineserver
+%{_bindir}/wine
 
 %dir %{_libdir}/wine
 %dir %{_libdir}/wine/%{winearchdir}
 %dir %{_libdir}/wine/%{winesodir}
 %if !0%{?wine_mingw}
 %{_libdir}/wine/%{winearchdir}/*
+%endif
+
+%ifarch %{ix86}
+%{_libdir}/wine/%{winearchdir_x86_64}
+%{_libdir}/wine/%{winesodir_x86_64}
+%endif
+%ifarch x86_64
+%{_libdir}/wine/%{winearchdir_i386}
+%{_libdir}/wine/%{winesodir_i386}
 %endif
 
 %{_libdir}/wine/%{winedlldir}/attrib.%{wineexe}
@@ -1501,6 +1463,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/start.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/tasklist.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/termsv.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/timeout.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/view.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wevtutil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wineboot.%{wineexe}
@@ -2054,9 +2017,11 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.perception.stub.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.security.credentials.ui.userconsentverifier.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.security.authentication.onlineid.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.storage.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.ui.xaml.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.web.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windowscodecsext.%{winedll}
@@ -2568,8 +2533,9 @@ fi
 
 
 %changelog
-* Sun Feb 16 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0-101
-- Revert to 10.0, until ntsync is good with newer
+* Sun Feb 16 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1-101.20250214git4de5639
+- Bump to fix crashes
+- Update to new preloader locations, no needing altenatives
 
 * Sun Feb 09 2025 Phantom X <megaphantomx at hotmail dot com> - 1:10.1-100
 - 10.1

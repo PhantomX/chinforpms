@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           pipe-viewer
-Version:        0.5.3
+Version:        0.5.4
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
@@ -113,7 +113,7 @@ desktop-file-install \
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  magickg  share/icons/gtk-%{name}.png \
+  magick share/icons/gtk-%{name}.png \
     -filter Lanczos -resize ${res}x${res} ${dir}/gtk-%{name}.png
 done
 
@@ -142,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Mon Feb 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.4-1
+- 0.5.4
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.3-1
 - 0.5.3
 
