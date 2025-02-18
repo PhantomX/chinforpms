@@ -1,39 +1,55 @@
-From f7ce33a276df6db24a41649bb06b4181c82b550e Mon Sep 17 00:00:00 2001
+From f902c8b85c1733b564a1dad32c68b8b1c1dca354 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 14 Jun 2024 21:13:02 -0300
 Subject: [PATCH] Fix OpenAL headers
 
 ---
+ rpcs3/Emu/Cell/Modules/cellMic.cpp   | 2 +-
  rpcs3/Emu/Cell/Modules/cellMic.h     | 2 +-
- rpcs3/rpcs3qt/microphone_creator.cpp | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ rpcs3/rpcs3qt/microphone_creator.cpp | 4 ++--
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/rpcs3/Emu/Cell/Modules/cellMic.cpp b/rpcs3/Emu/Cell/Modules/cellMic.cpp
+index 86e4b8b..5d9b292 100644
+--- a/rpcs3/Emu/Cell/Modules/cellMic.cpp
++++ b/rpcs3/Emu/Cell/Modules/cellMic.cpp
+@@ -9,7 +9,7 @@
+ 
+ #include <numeric>
+ 
+-#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
++#include "alext.h"
+ 
+ LOG_CHANNEL(cellMic);
+ 
 diff --git a/rpcs3/Emu/Cell/Modules/cellMic.h b/rpcs3/Emu/Cell/Modules/cellMic.h
-index 00eb7c8..3d04acf 100644
+index b008482..1a94298 100644
 --- a/rpcs3/Emu/Cell/Modules/cellMic.h
 +++ b/rpcs3/Emu/Cell/Modules/cellMic.h
-@@ -3,7 +3,7 @@
- #include "Utilities/Thread.h"
- #include "Emu/Cell/timers.hpp"
+@@ -1,7 +1,7 @@
+ #pragma once
  
--#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
-+#include "alext.h"
+ #include "Utilities/Thread.h"
+-#include "3rdparty/OpenAL/openal-soft/include/AL/alc.h"
++#include "alc.h"
+ #include "Utilities/mutex.h"
  
  // Error Codes
- enum CellMicInError : u32
 diff --git a/rpcs3/rpcs3qt/microphone_creator.cpp b/rpcs3/rpcs3qt/microphone_creator.cpp
-index 8f56bca..fa2d61b 100644
+index daf9116..58a17dc 100644
 --- a/rpcs3/rpcs3qt/microphone_creator.cpp
 +++ b/rpcs3/rpcs3qt/microphone_creator.cpp
-@@ -4,7 +4,7 @@
- #include "Utilities/StrFmt.h"
+@@ -3,8 +3,8 @@
+ 
  #include "Utilities/StrUtil.h"
  
--#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
-+#include "alext.h"
+-#include "3rdparty/OpenAL/openal-soft/include/AL/al.h"
+-#include "3rdparty/OpenAL/openal-soft/include/AL/alc.h"
++#include "al.h"
++#include "alc.h"
  
  LOG_CHANNEL(cfg_log, "CFG");
  
 -- 
-2.45.2
+2.48.1
 

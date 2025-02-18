@@ -1,15 +1,16 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-# Enable unsupported lto support
-%bcond_with     lto
-%if %{without lto}
-%global _lto_cflags -fno-lto
-%endif
-
 %bcond_with     clang
 %if %{with clang}
 %global toolchain clang
+%endif
+
+# Enable lto support
+%bcond_without     lto
+%global _lto_cflags %{nil}
+%if %{without lto}
+%global _lto_cflags -fno-lto
 %endif
 
 %global with_optim 3
@@ -31,7 +32,7 @@
 %global bundlehidapi 0.12.0
 # Enable system llvm
 %bcond_without  llvm
-%global bundlellvm 18.1.8
+%global bundlellvm 19.1.7
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 # Enable system pugixml
@@ -48,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 911f0928cf4b1cb318c59204e4394c3c646b1b18
+%global commit ec3d9a2cae5d5603d06efd9a9274a696874f905d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250201
+%global date 20250217
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -69,7 +70,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 8b43a97a9330f8b0035439ce9e255e4be202deca
+%global commit14 6bfdcf7368169efe1b745cd4468d45cda05ef8de
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
@@ -81,7 +82,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 fecf2f0af3bd23cbba553ceedc2bc6c1cd410fc1
+%global commit17 066d4a63b2c714b20b0a8073a01fda7c5c6763f6
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Fusion
 
@@ -119,7 +120,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.34.17417
+Version:        0.0.34.17498
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -223,7 +224,6 @@ BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libevdev)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libusb-1.0)
-BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
@@ -296,7 +296,7 @@ written in C++.
 pushd 3rdparty
 rm -rf \
   7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
-  MoltenVK OpenAL/libs XAudio2Redist xxHash zstd
+  MoltenVK OpenAL/libs XAudio2Redist zstd
 
 tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
 tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
@@ -421,10 +421,6 @@ sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_pad_handler.cpp
 
-%if %{with lto}
-  sed -e '/FOUND_LTO/s|-flto|-fenabled_lto|g' -i CMakeLists.txt
-%endif
-
 
 %build
 %if %{without ffmpeg}
@@ -447,6 +443,9 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
+%if %{without lto}
+  -DUSE_LTO:BOOL=OFF \
+%endif
 %if 0%{with native}
   -DUSE_NATIVE_INSTRUCTIONS:BOOL=ON \
 %else
@@ -473,7 +472,6 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
   -DUSE_SYSTEM_OPENCV:BOOL=ON \
   -DUSE_SDL:BOOL=ON \
   -DUSE_SYSTEM_SDL:BOOL=ON \
-  -DUSE_SYSTEM_XXHASH:BOOL=ON \
   -DSPIRV_WERROR:BOOL=OFF \
 %{nil}
 

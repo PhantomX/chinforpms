@@ -66,7 +66,6 @@
 %global winelcms2 2.16
 %global wineldap 2.5.18
 %global winempg123 1.32.9
-%global winentsync 6.12
 %global winepng 1.6.44
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
@@ -411,9 +410,6 @@ Requires:       mesa-dri-drivers(x86-32)
 Recommends:     wine-dxvk(x86-32)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-32)
-%if %{with ntsync}
-Recommends:     ntsync >= %{winentsync}
-%endif
 
 # x86-64 parts
 %ifarch x86_64

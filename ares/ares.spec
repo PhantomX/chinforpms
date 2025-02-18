@@ -17,7 +17,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        142
+Version:        143
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -147,6 +147,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Feb 18 2025 Phantom X <megaphantomx at hotmail dot com> - 143-1
+- 143
+
 * Wed Feb 05 2025 Phantom X <megaphantomx at hotmail dot com> - 142-1
 - 142
 - cmake

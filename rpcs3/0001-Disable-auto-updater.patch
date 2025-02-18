@@ -1,48 +1,25 @@
-From 2bab6b841cd9462638df47577c45d66a49e03dff Mon Sep 17 00:00:00 2001
+From 61a237c61e8572786d7625128396922869df455f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 15 Jan 2023 04:15:05 -0300
 Subject: [PATCH] Disable auto-updater
 
 ---
- rpcs3/rpcs3qt/main_window.cpp    | 2 ++
- rpcs3/rpcs3qt/update_manager.cpp | 4 ++++
- 2 files changed, 6 insertions(+)
+ rpcs3/rpcs3qt/main_window.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/rpcs3/rpcs3qt/main_window.cpp b/rpcs3/rpcs3qt/main_window.cpp
-index 47ab0d0..efefcb3 100644
+index 734bdf0..1b19467 100644
 --- a/rpcs3/rpcs3qt/main_window.cpp
 +++ b/rpcs3/rpcs3qt/main_window.cpp
-@@ -278,6 +278,7 @@ bool main_window::Init([[maybe_unused]] bool with_cli_boot)
- 		}
- 	});
- 
-+#if 0
- #if (!defined(ARCH_ARM64) || defined(__APPLE__)) && (defined(_WIN32) || defined(__linux__) || defined(__APPLE__))
- 	if (const auto update_value = m_gui_settings->GetValue(gui::m_check_upd_start).toString(); update_value != gui::update_off)
- 	{
-@@ -285,6 +286,7 @@ bool main_window::Init([[maybe_unused]] bool with_cli_boot)
- 		const bool auto_accept   = !in_background && update_value == gui::update_auto;
- 		m_updater.check_for_updates(true, in_background, auto_accept, this);
- 	}
-+#endif
+@@ -96,7 +96,7 @@
  #endif
  
- 	// Disable vsh if not present.
-diff --git a/rpcs3/rpcs3qt/update_manager.cpp b/rpcs3/rpcs3qt/update_manager.cpp
-index 7d15aad..318b7e1 100644
---- a/rpcs3/rpcs3qt/update_manager.cpp
-+++ b/rpcs3/rpcs3qt/update_manager.cpp
-@@ -140,6 +140,10 @@ void update_manager::check_for_updates(bool automatic, bool check_only, bool aut
+ #if defined(__linux__) || defined(__APPLE__) || (defined(_WIN32) && defined(ARCH_X64))
+-#define RPCS3_UPDATE_SUPPORTED
++#undef RPCS3_UPDATE_SUPPORTED
+ #endif
  
- bool update_manager::handle_json(bool automatic, bool check_only, bool auto_accept, const QByteArray& data)
- {
-+	update_log.error("Auto-updater has been disabled by packager");
-+	QMessageBox::warning(m_parent, tr("Auto-updater"), tr("Auto-updater has been disabled by packager."));
-+	return false;
-+
- 	update_log.notice("Download of update info finished. automatic=%d, check_only=%d, auto_accept=%d", automatic, check_only, auto_accept);
- 
- 	const QJsonObject json_data = QJsonDocument::fromJson(data).object();
+ LOG_CHANNEL(gui_log, "GUI");
 -- 
-2.46.1
+2.48.1
 
