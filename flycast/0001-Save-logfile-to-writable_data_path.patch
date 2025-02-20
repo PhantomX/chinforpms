@@ -1,39 +1,40 @@
-From 83c4b1b74e29a59d0d525fe54b09671fd3f0b8cf Mon Sep 17 00:00:00 2001
+From d037ff9e5219928779c30028d42b19d287a510bb Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 28 Jan 2021 22:27:47 -0300
 Subject: [PATCH] Save logfile to writable_data_path
 
 This reverts commit 467e7954a5dd2a794dcdbbb97544ba68e337c185 too
 ---
- core/log/LogManager.cpp | 14 ++------------
- 1 file changed, 2 insertions(+), 12 deletions(-)
+ core/log/LogManager.cpp | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
 diff --git a/core/log/LogManager.cpp b/core/log/LogManager.cpp
-index f45e17e..f411b96 100644
+index 881c972..6d103a6 100644
 --- a/core/log/LogManager.cpp
 +++ b/core/log/LogManager.cpp
-@@ -133,19 +133,9 @@ LogManager::LogManager()
- #if defined(__ANDROID__) || defined(__APPLE__) || defined(TARGET_UWP)
- 		std::string logPath = get_writable_data_path("flycast.log");
+@@ -151,21 +151,12 @@ void LogManager::UpdateConfig()
+ 			m_listeners[LogListener::FILE_LISTENER].reset();
+ 		}
+ 		else {
+-#if defined(__ANDROID__) || defined(__APPLE__) || defined(TARGET_UWP)
++#if defined(__ANDROID__) || defined(__APPLE__) || defined(TARGET_UWP) || defined(__linux__)
+ 			std::string logPath = get_writable_data_path("flycast.log");
  #else
--		std::string logPath = "flycast.log";
-+		std::string logPath = get_writable_data_path("flycast.log");
+ 			std::string logPath = "flycast.log";
  #endif
--		FileLogListener *listener = new FileLogListener(logPath);
--		if (!listener->IsValid())
--		{
--			const char *home = nowide::getenv("HOME");
--			if (home != nullptr)
+ 			FileLogListener *listener = new FileLogListener(logPath);
+-			if (!listener->IsValid())
 -			{
--				delete listener;
--				listener = new FileLogListener(home + ("/" + logPath));
+-				const char *home = nowide::getenv("HOME");
+-				if (home != nullptr)
+-				{
+-					delete listener;
+-					listener = new FileLogListener(home + ("/" + logPath));
+-				}
 -			}
--		}
--		RegisterListener(LogListener::FILE_LISTENER, listener);
-+		RegisterListener(LogListener::FILE_LISTENER, new FileLogListener(logPath));
- 		EnableListener(LogListener::FILE_LISTENER, true);
- 	}
- 	EnableListener(LogListener::CONSOLE_LISTENER, cfgLoadBool("log", "LogToConsole", true));
+ 			RegisterListener(LogListener::FILE_LISTENER, listener);
+ 		}
+ 		EnableListener(LogListener::FILE_LISTENER, logToFile);
 -- 
-2.29.2
+2.48.1
 

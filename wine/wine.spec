@@ -982,7 +982,11 @@ mv -f README.chinforpms.fsync README.chinforpms
 
 cp -p %{SOURCE502} README.tahoma
 
-sed -e '/winemenubuilder\.exe/s|-a ||g' -i loader/wine.inf.in
+sed \
+  -e '/winemenubuilder\.exe/s|-a ||g' \
+  -e 's|    LicenseInformation|    LicenseInformation,\\\n    FileOpenAssociations|g' \
+  -e '$a \\n[FileOpenAssociations]\nHKCU,Software\\Wine\\FileOpenAssociations,"Enable",,"N"' \
+  -i loader/wine.inf.in
 
 cp -p %{SOURCE50} ./dlls/winevulkan/vk-%{winevulkan}.xml
 cp -p %{SOURCE51} ./dlls/winevulkan/video-%{winevulkan}.xml
@@ -1342,11 +1346,11 @@ fi
 %prein core
 if [ $1 -eq 0 ] ; then
 %ifarch x86_64 aarch64
-  %{_sbindir}/alternatives --remove wine %{_bindir}/wine64
-  %{_sbindir}/alternatives --remove wineserver %{_bindir}/wineserver64
+  %{_sbindir}/alternatives --remove-all wine || :
+  %{_sbindir}/alternatives --remove-all wineserver || :
 %else
-  %{_sbindir}/alternatives --remove wine %{_bindir}/wine32
-  %{_sbindir}/alternatives --remove wineserver %{_bindir}/wineserver32
+  %{_sbindir}/alternatives --remove-all wine || :
+  %{_sbindir}/alternatives --remove-all wineserver || :
 %endif
 fi
 
