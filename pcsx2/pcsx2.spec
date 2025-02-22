@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.149
+Version:        2.3.168
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -170,6 +170,7 @@ Provides:       bundled(soundtouch) = %{soundtouch_ver}
 BuildRequires:  cmake(WebP)
 BuildRequires:  pkgconfig(x11-xcb)
 BuildRequires:  pkgconfig(xcb)
+BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)

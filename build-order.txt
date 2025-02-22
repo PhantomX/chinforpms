@@ -147,6 +147,7 @@ gamemode
 gcdemu
 geeqie
 -gespeaker
+gkrellm
 gkrellm-cpupower
 gkrellm-leds
 gkrellmpc

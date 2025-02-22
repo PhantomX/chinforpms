@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7730d14b4a267c9579636a18af73d4252385e15f
+%global commit 18f8a0f997e6408bc5f67db2ccd3193ba64ae3d0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250216
+%global date 20250221
 %bcond_without snapshot
 
 # Enable system boost
@@ -101,9 +101,11 @@
 %global pkgname Citron
 %global appname org.%{name}_emu.%{name}
 
+%global sbuild %%(echo %{version} | cut -d. -f4)
+
 Name:           citron
-Version:        0.4
-Release:        4%{?dist}
+Version:        0.5.27190
+Release:        1%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
@@ -366,8 +368,8 @@ sed \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
   -e 's|@BUILD_DATE@|%(date +%F)|g' \
-  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
-  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
+  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:v%{version}-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
+  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
 sed -e '/find_program/s|GIT git|GIT cp|g' -i externals/nx_tzdb/CMakeLists.txt
@@ -467,6 +469,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.27190-1.20250221git18f8a0f
+- 0.5
+
 * Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0-1.20241203git085c2d5
 - Initial spec
 

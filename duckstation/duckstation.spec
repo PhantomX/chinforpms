@@ -27,9 +27,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit ce616f1c5c336ab38c34a722340b3276a891199d
+%global commit 3ea26cc9108256270ae1d1953919b12c6809866e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250210
+%global date 20250221
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -48,7 +48,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8618
+Version:        0.1.8675
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 

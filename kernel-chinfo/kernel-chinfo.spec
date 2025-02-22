@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.3
+%define specrpmversion 6.13.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1166,64 +1166,18 @@ Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
+Patch5001:  %{kernel_url}/?id=d1347977661342cb09a304a17701eb2d4aa21dec#/kernel-git-revert-d134797.patch
+Patch5002:  0001-x86-mm-tlb-Only-trim-the-mm_cpumask-once-a-second.patch
 # archlinux
 Patch6950:  %{pf_url}/df6b7782be85e72ddab2a45f45e71313f6f376a4.patch#/pf-cb-df6b778.patch
 Patch6951:  %{pf_url}/c8c6be540b11270826d452cdfdb1882153a3caf4.patch#/pf-cb-c8c6be5.patch
 Patch6952:  %{pf_url}/fd0832d081ed15a9805f5557d42263d5091c92d5.patch#/pf-cb-fd0832d.patch
-# amd-pstate
-Patch7000:  %{pf_url}/aefe0f95668517e93d499b0379ae48cd2ebb5aff.patch#/pf-cb-aefe0f9.patch
-Patch7001:  %{pf_url}/a4b4d168e7ffc73f17878a85c55ba844f54bdada.patch#/pf-cb-a4b4d16.patch
-Patch7002:  %{pf_url}/40bd1dcbdc562b0dfdc287722f4804bfc616d8f6.patch#/pf-cb-40bd1dc.patch
-Patch7003:  %{pf_url}/fd9b980679df1bfe55c25fd082d2cfd7791be157.patch#/pf-cb-fd9b980.patch
-Patch7004:  %{pf_url}/7bcda8b0155060f04f16541ebd94604e32e642f3.patch#/pf-cb-7bcda8b.patch
-Patch7005:  %{pf_url}/24b1ba3d16e876aa7fe3fc498e79b43bdf8d9e40.patch#/pf-cb-24b1ba3.patch
-Patch7006:  %{pf_url}/086a93ccb26d66d3eb95b58a1f3890e053b14ced.patch#/pf-cb-086a93c.patch
-Patch7007:  %{pf_url}/0e707942e60f701b8047fb5645597442a54593a3.patch#/pf-cb-0e70794.patch
-Patch7008:  %{pf_url}/70fd2761631d949a2edd31ca59ef72d5d178810f.patch#/pf-cb-70fd276.patch
-Patch7009:  %{pf_url}/6b4bd2b3ef4d1b94e4387451823863491d5704e2.patch#/pf-cb-6b4bd2b.patch
-Patch7010:  %{pf_url}/6528866a7386da4a694d91b225e4ac1dd652d352.patch#/pf-cb-6528866.patch
-Patch7011:  %{pf_url}/20d4a3cf8c3907d9a176b77208a8a3c7787010e0.patch#/pf-cb-20d4a3c.patch
-Patch7012:  %{pf_url}/862f481c7a08a71c3e6a771448aaaf371f5704df.patch#/pf-cb-862f481.patch
-Patch7013:  %{pf_url}/59dd2ff0bef702e3b9850b98997e3e74fd590dda.patch#/pf-cb-59dd2ff.patch
-Patch7014:  %{pf_url}/071e2b0c40770e57fb721cc9da86b8342efc10cf.patch#/pf-cb-071e2b0.patch
-Patch7015:  %{pf_url}/f1a399e03cb9e27a6422b7f81cb985b7d1b94a5b.patch#/pf-cb-f1a399e.patch
-Patch7016:  %{pf_url}/866b9d1d5a72b6c9e5f61ddd9f64d1dac06120b8.patch#/pf-cb-866b9d1.patch
-Patch7017:  %{pf_url}/4112645174eb9d1049a637548759f8795019783d.patch#/pf-cb-4112645.patch
-Patch7018:  %{pf_url}/25ad8489c73550db366844c73879bdac07388d1e.patch#/pf-cb-25ad848.patch
-Patch7019:  %{pf_url}/f48d4b86ba49bd168b19a92080006fa5ee5b5334.patch#/pf-cb-f48d4b8.patch
-Patch7020:  %{pf_url}/c77a5d1cc3a4e33127363f29e18dee93c113b22f.patch#/pf-cb-c77a5d1.patch
-Patch7021:  %{pf_url}/daa294c4d8bffdf0ea036fd1e130949687863e9f.patch#/pf-cb-daa294c.patch
-Patch7022:  %{pf_url}/77b83ca74fd88c5acbe6ecfd2e0b29f92d3eef32.patch#/pf-cb-77b83ca.patch
-Patch7023:  %{pf_url}/db59e9e2ca39caef11a268d0726a474efb89ec3a.patch#/pf-cb-db59e9e.patch
-Patch7024:  %{pf_url}/23c008dd9e961fda9a5a6fdd5e5e8d46f08fd994.patch#/pf-cb-23c008d.patch
-Patch7025:  %{pf_url}/605d4bfa59a79c9276d3c24384bbb2714bac1529.patch#/pf-cb-605d4bf.patch
-Patch7026:  %{pf_url}/36194f9454f60e182ab45124b4a4bc71023e4f95.patch#/pf-cb-36194f9.patch
-Patch7027:  %{pf_url}/57dadfb464a976efc1f12f70270aed9590262a16.patch#/pf-cb-57dadfb.patch
-Patch7028:  %{pf_url}/c43ad44441c52c7fad3f548e197ba72707e75b18.patch#/pf-cb-c43ad44.patch
-Patch7029:  %{pf_url}/243c667bcbfa425e52f24c9fd2edc2ab50283d26.patch#/pf-cb-243c667.patch
-Patch7030:  %{pf_url}/d4d6b2ca95cfb648c4aa9d2e79e04c8f306952e5.patch#/pf-cb-d4d6b2c.patch
-Patch7031:  %{pf_url}/538b40d1aa1cb1f9b587d85c84bc076e518c766a.patch#/pf-cb-538b40d.patch
-Patch7032:  %{pf_url}/6bab8f089e3e5b88ab7483d2039490fd8194954c.patch#/pf-cb-6bab8f0.patch
-Patch7033:  %{pf_url}/104d65d9ff59d7e75600213d0cc32bb4bf650bf7.patch#/pf-cb-104d65d.patch
-Patch7034:  %{pf_url}/bec2ce5a5f6761a37e91c04e0abb2fe0b802ba4a.patch#/pf-cb-bec2ce5.patch
-Patch7035:  %{pf_url}/d9db496469b30ec4914081d2043906f442fb4a5d.patch#/pf-cb-d9db496.patch
-Patch7036:  %{pf_url}/dbfb37cb462d6b9f49fb071f9922be92a58e5b6d.patch#/pf-cb-dbfb37c.patch
-Patch7037:  %{pf_url}/443099e568eb708e473f4ffdc7dfe111134c077a.patch#/pf-cb-443099e.patch
-Patch7038:  %{pf_url}/d4746acf651ed55d3be182cee985931bf3d1963e.patch#/pf-cb-d4746ac.patch
-Patch7039:  %{pf_url}/540c61f4bc7a1ef0ccc454b0533df88354f08802.patch#/pf-cb-540c61f.patch
-Patch7040:  %{pf_url}/018fdef5099d0f2c3df5b1d57acf7ed9c38955c6.patch#/pf-cb-018fdef.patch
-Patch7041:  %{pf_url}/ec77ba8cc197e038bb18b6d4c238ac41be28389b.patch#/pf-cb-ec77ba8.patch
-Patch7042:  %{pf_url}/6a02e69f27a325a19e34d84f5d96c649f9f10410.patch#/pf-cb-6a02e69.patch
-Patch7043:  %{pf_url}/3f52388558b6db44604ba90bf458fa27411fd7b1.patch#/pf-cb-3f52388.patch
-Patch7044:  %{pf_url}/ce06497660205e387981ffc79d5f2580b65c8813.patch#/pf-cb-ce06497.patch
-Patch7045:  %{pf_url}/a9483bad1cf4d7e981c635a6a34b8fd9bd45e1f2.patch#/pf-cb-a9483ba.patch
-Patch7046:  %{pf_url}/d5a5ffb569478383313b7a7f302cb662dd02fcfe.patch#/pf-cb-d5a5ffb.patch
-Patch7047:  %{pf_url}/88cb0171d30026a45a30014917f02f7158e7280d.patch#/pf-cb-88cb017.patch
 # bbr3
 Patch7050:  %{pf_url}/aa2658ab3fba8f0f16c6d9c838776502980974ed.patch#/pf-cb-aa2658a.patch
 # zstd
 Patch7200:  %{pf_url}/fa9ae31017febb38dd967c777a114278ae78c128.patch#/pf-cb-fa9ae31.patch
 Patch7201:  %{pf_url}/ff832b211b3f925e86704aac906a6cedae1247e7.patch#/pf-cb-ff832b2.patch
+Patch7202:  %{pf_url}/6ad30493b537ce84933a4c08319aa18ce863e7c9.patch#/pf-cb-6ad3049.patch
 # pksm
 Patch7220:  %{pf_url}/32bef160156719a0cfef8df94697ace27847644b.patch#/pf-cb-32bef16.patch
 # v4l2loopback
@@ -1241,13 +1195,15 @@ Patch7306:  %{pf_url}/70a112a0a37a83444b4b02b5982e5070c55c9e7f.patch#/pf-cb-70a1
 Patch7307:  %{pf_url}/8e08b52d2c536391d2e712b0ea97ad83857e2707.patch#/pf-cb-8e08b52.patch
 Patch7308:  %{pf_url}/72d176f042cea7cead75bf743baf1461e0fcbbc5.patch#/pf-cb-72d176f.patch
 Patch7309:  %{pf_url}/4c1833f7c7c4663824384208871a4c9e2469b45b.patch#/pf-cb-4c1833f.patch
+Patch7310:  %{pf_url}/e71beabac0ed789cc01c8f82671cf226bf5c8312.patch#/pf-cb-e71beab.patch
 # fixes 
 Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
 Patch7401:  %{pf_url}/fcf8a9600c26d50dd2ea405f546ca9a2b7aa0584.patch#/pf-cb-fcf8a96.patch
 Patch7402:  %{pf_url}/e0c1dce3ba0223130cf5fc7d6c732a01cbc57d60.patch#/pf-cb-e0c1dce.patch
 Patch7403:  %{pf_url}/1e01b4b26ea383a03a1cce42c5e65ece140657a3.patch#/pf-cb-1e01b4b.patch
-Patch7404:  %{pf_url}/67b87a2628285197ac43de17b919e7e824f160e7.patch#/pf-cb-67b87a2.patch
-Patch7405:  %{pf_url}/afc514234850b42d329c1e2aede7f49da98fdbe0.patch#/pf-cb-afc5142.patch
+Patch7404:  %{pf_url}/f2af6f0d2bb7d493ae1fa717e50235cb8224ca93.patch#/pf-cb-f2af6f0.patch
+Patch7405:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
+Patch7406:  %{pf_url}/3ac6dfa18b80a0136b194babad782d542b083b4d.patch#/pf-cb-3ac6dfa.patch
 # amd-rapl
 Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
 Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
@@ -1281,6 +1237,7 @@ Patch7714:  %{pf_url}/ff9d9ec09b467868c24a22a3ac49fa39b82eb08f.patch#/pf-cb-ff9d
 Patch7715:  %{pf_url}/65406307a66318c5df6691b70c0e38b8c999f5b8.patch#/pf-cb-6540630.patch
 Patch7716:  %{pf_url}/2a0ae010f9e16919aed97fe6406462b704d60c2f.patch#/pf-cb-2a0ae01.patch
 Patch7717:  %{pf_url}/9679edf4c6c561d85570adb5a26223edd5ec05f1.patch#/pf-cb-9679edf.patch
+Patch7718:  %{pf_url}/dd61a5dc7ec2df9b2326cedc65c327de439ef727.patch#/pf-cb-dd61a5d.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2121,60 +2078,12 @@ ApplyOptionalPatch %{PATCH999999}
 ApplyPatch %{PATCH6950}
 ApplyPatch %{PATCH6951}
 ApplyPatch %{PATCH6952}
-# amd-pstate
-ApplyPatch %{PATCH7000}
-ApplyPatch %{PATCH7001}
-ApplyPatch %{PATCH7002}
-ApplyPatch %{PATCH7003}
-ApplyPatch %{PATCH7004}
-ApplyPatch %{PATCH7005}
-ApplyPatch %{PATCH7006}
-ApplyPatch %{PATCH7007}
-ApplyPatch %{PATCH7008}
-ApplyPatch %{PATCH7009}
-ApplyPatch %{PATCH7010}
-ApplyPatch %{PATCH7011}
-ApplyPatch %{PATCH7012}
-ApplyPatch %{PATCH7013}
-ApplyPatch %{PATCH7014}
-ApplyPatch %{PATCH7015}
-ApplyPatch %{PATCH7016}
-ApplyPatch %{PATCH7017}
-ApplyPatch %{PATCH7018}
-ApplyPatch %{PATCH7019}
-ApplyPatch %{PATCH7020}
-ApplyPatch %{PATCH7021}
-ApplyPatch %{PATCH7022}
-ApplyPatch %{PATCH7023}
-ApplyPatch %{PATCH7024}
-ApplyPatch %{PATCH7025}
-ApplyPatch %{PATCH7026}
-ApplyPatch %{PATCH7027}
-ApplyPatch %{PATCH7028}
-ApplyPatch %{PATCH7029}
-ApplyPatch %{PATCH7030}
-ApplyPatch %{PATCH7031}
-ApplyPatch %{PATCH7032}
-ApplyPatch %{PATCH7033}
-ApplyPatch %{PATCH7034}
-ApplyPatch %{PATCH7035}
-ApplyPatch %{PATCH7036}
-ApplyPatch %{PATCH7037}
-ApplyPatch %{PATCH7038}
-ApplyPatch %{PATCH7039}
-ApplyPatch %{PATCH7040}
-ApplyPatch %{PATCH7041}
-ApplyPatch %{PATCH7042}
-ApplyPatch %{PATCH7043}
-ApplyPatch %{PATCH7044}
-ApplyPatch %{PATCH7045}
-ApplyPatch %{PATCH7046}
-ApplyPatch %{PATCH7047}
 # bbr3
 ApplyPatch %{PATCH7050}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
+ApplyPatch %{PATCH7202}
 # pksm
 ApplyPatch %{PATCH7220}
 # v4l2loopback
@@ -2192,6 +2101,7 @@ ApplyPatch %{PATCH7306}
 ApplyPatch %{PATCH7307}
 ApplyPatch %{PATCH7308}
 ApplyPatch %{PATCH7309}
+ApplyPatch %{PATCH7310}
 # fixes
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
@@ -2199,6 +2109,7 @@ ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
 ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2214,6 +2125,7 @@ ApplyPatch %{PATCH7510}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 # invlpgb
+ApplyPatch %{PATCH5001} -R
 ApplyPatch %{PATCH7700}
 ApplyPatch %{PATCH7701}
 ApplyPatch %{PATCH7702}
@@ -2232,6 +2144,8 @@ ApplyPatch %{PATCH7714}
 ApplyPatch %{PATCH7715}
 ApplyPatch %{PATCH7716}
 ApplyPatch %{PATCH7717}
+ApplyPatch %{PATCH7718}
+ApplyPatch %{PATCH5002}
 %endif
 
 # openSUSE
@@ -4547,6 +4461,9 @@ fi\
 #
 #
 %changelog
+* Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.4-500.chinfo
+- 6.13.4
+
 * Mon Feb 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.3-500.chinfo
 - 6.13.3
 
