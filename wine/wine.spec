@@ -1,6 +1,6 @@
-%global commit 4de563994426e258d1f2848b663f6ed85dd1298d
+%global commit e1b8e7f6ec755afd251a3b7af0e632c6e4d74a64
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250214
+%global date 20250222
 %bcond_without snapshot
 
 # disable fortify as it breaks wine
@@ -59,18 +59,18 @@
 %global winevulkan 1.4.307
 
 %global winecapstone 5.0.3
-%global wineFAudio 24.10
+%global wineFAudio 25.02
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 9~f
-%global winelcms2 2.16
+%global winelcms2 2.17
 %global wineldap 2.5.18
 %global winempg123 1.32.9
 %global winepng 1.6.44
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
 %global winejxrlib 1.1
-%global winevkd3d 1.13
+%global winevkd3d 1.15
 %global winexml2 2.12.8
 %global winexslt 1.1.42
 %global winezlib 1.3.1
@@ -108,7 +108,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 735225dbaa71dc0cbff67c13708e63e3a44981aa
+%global wine_stagingver ec5fbb99b73eddc22780957305af9939e35cad82
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -119,7 +119,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 27272fa09119ee634252863a49f2f7dd42c10c63
+%global tkg_id 26310754c0be1b2e7931b4cfa2be9757bb965bbf
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -161,8 +161,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.1
-Release:        101%{?dist}
+Version:        10.2
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -1005,7 +1005,7 @@ autoreconf -f
 export CFLAGS="%{build_cflags} -ftree-vectorize"
 
 %if 0%{?wine_staging}
-export CFLAGS+=" -Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types"
+export CFLAGS+=" -Wno-error=implicit-function-declaration"
 %endif
 
 %ifarch aarch64
@@ -1343,7 +1343,7 @@ if [ $1 -eq 0 ]; then
 /bin/systemctl try-restart systemd-binfmt.service
 fi
 
-%prein core
+%pre core
 if [ $1 -eq 0 ] ; then
 %ifarch x86_64 aarch64
   %{_sbindir}/alternatives --remove-all wine || :
@@ -2533,6 +2533,9 @@ fi
 
 
 %changelog
+* Sat Feb 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.2-100.20250222gite1b8e7f
+- 10.2
+
 * Sun Feb 16 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1-101.20250214git4de5639
 - Bump to fix crashes
 - Update to new preloader locations, no needing altenatives

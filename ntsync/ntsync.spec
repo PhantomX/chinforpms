@@ -1,7 +1,7 @@
 BuildArch:      noarch
 
 Name:           ntsync
-Version:        6.12
+Version:        6.13
 Release:        1%{?dist}
 Summary:        NT synchronization primitive driver helper files
 
@@ -40,16 +40,15 @@ The %{name}-devel package contains the winesync header file.
 # systemd module autoinsert rule
 install -m644 -D %{SOURCE1} %{buildroot}%{_prefix}/lib/modules-load.d/%{name}.conf
 
-# udev rule
-install -m644 -D %{SOURCE0} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
-
 
 %files
 %{_prefix}/lib/modules-load.d/%{name}.conf
-%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Sun Feb 23 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13-1
+- Remove unneeded udev rule
+
 * Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12-1
 - 6.12
 - Only helper files, needs full patched kernel module
