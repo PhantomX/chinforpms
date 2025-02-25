@@ -24,7 +24,7 @@
 %global vc_url  https://git.claws-mail.org/?p=claws.git
 
 Name:           claws-mail
-Version:        4.3.0
+Version:        4.3.1
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
@@ -41,8 +41,6 @@ Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/ch
 Source0:        http://www.claws-mail.org/releases/%{name}-%{version}.tar.xz
 %endif
 Source1:        Makefile
-
-Patch0:         %{vc_url};a=patch;h=a890cdbde84467af7d74cc8656c11ccd749c1281#/%{name}-git-a890cdb.patch
 
 # rhbz#1179279
 Patch11:        claws-mail-system-crypto-policies.patch
@@ -638,6 +636,9 @@ touch -r NEWS %{buildroot}%{_includedir}/%{name}/config.h
 
 
 %changelog
+* Mon Feb 24 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.1-100
+- 4.3.1
+
 * Mon Jun 10 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.3.0-100
 - 4.3.0
 

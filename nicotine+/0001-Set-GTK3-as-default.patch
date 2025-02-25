@@ -28,7 +28,7 @@ index 92dd7b7..62be258 100644
 +    return "3"
  
  
- def check_gtk_version(gtk_api_version):
+ def check_gtk_version(gtk_api_version, is_fallback=False):
 -- 
 2.46.1
 

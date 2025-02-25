@@ -388,7 +388,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.2.1
+Version:        9.2.2
 Release:        100%{?dist}
 Epoch:          2
 
@@ -431,9 +431,6 @@ Source36: README.tests
 # Skip failing test in copr
 # https://gitlab.com/qemu-project/qemu/-/issues/2541
 Patch: 0001-Disable-9p-local-tests-that-fail-on-copr-aarch64.patch
-
-# Fix compat with new glibc (not upstream yet)
-Patch: schedattr.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -3166,6 +3163,9 @@ popd
 
 
 %changelog
+* Mon Feb 24 2025 Phantom X <megaphantomx at hotmail dot com> - 2:9.2.2-100
+- 9.2.2
+
 * Wed Feb 12 2025 Phantom X <megaphantomx at hotmail dot com> - 2:9.2.1-100
 - 9.2.1
 
