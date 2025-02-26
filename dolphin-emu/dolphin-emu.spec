@@ -23,20 +23,20 @@
 %global enablejit 1
 %endif
 
-%global commit 9b3b6bea9d088c52cfaa455bb8f2702d13f6002d
+%global commit f93781d91a90a937973534298b67b789f6a0db0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250103
+%global date 20250225
 %bcond_without snapshot
 
 %global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Cross
 
-%global commit3 009ecd192c1289c7529bff248a16cfe896254816
+%global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
 
-%global commit4 cc5e1daa5c7f2335a9460ae79c829011dc5cef2d
+%global commit4 18c72431f8265e2b0b5378a3a73d8a883b2175ff
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
@@ -66,6 +66,7 @@
 
 %global enet_ver 1.3.18
 %global fmt_ver 10.2.1
+%global imgui_ver 1.91.7
 
 %global distributor chinforpms
 
@@ -75,7 +76,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2412.80
+Version:        2412.338
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -119,7 +120,7 @@ Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcn
 %endif
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 
-Patch0:        %{vc_url}/pull/12923.patch#/%{name}-gh-pr12923.patch
+Patch0:        %{vc_url}/pull/13380.patch#/%{name}-gh-pr13380.patch
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch
@@ -227,7 +228,7 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 ##Bundled code ahoy
 #The following isn't in Fedora yet:
 Provides:       bundled(FreeSurround)
-Provides:       bundled(imgui) = 1.89.7
+Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(cpp-argparse)
 #Is this technically bundled code? Adding this just in case:            
 #https://github.com/AdmiralCurtiss/rangeset

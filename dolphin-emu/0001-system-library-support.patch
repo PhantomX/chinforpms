@@ -23,15 +23,6 @@ index 636d547..aab861b 100644
  endif()
  
  if(NOT WIN32 OR (NOT (CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")))
-@@ -672,7 +676,7 @@ dolphin_make_imported_target_if_missing(LibLZMA::LibLZMA LIBLZMA)
- 
- dolphin_find_optional_system_library_pkgconfig(ZSTD libzstd>=1.4.0 zstd::zstd Externals/zstd)
- 
--add_subdirectory(Externals/zlib-ng)
-+dolphin_find_optional_system_library_pkgconfig(ZLIB zlib ZLIB::ZLIB Externals/zlib-ng)
- 
- dolphin_find_optional_system_library_pkgconfig(MINIZIP
-   "minizip>=4.0.4" minizip::minizip Externals/minizip-ng
 diff --git a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt b/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
 index c4fbd84..8ae782c 100644
 --- a/Source/Core/VideoBackends/Vulkan/CMakeLists.txt
