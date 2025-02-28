@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.4
+%define specrpmversion 6.13.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1198,12 +1198,13 @@ Patch7309:  %{pf_url}/4c1833f7c7c4663824384208871a4c9e2469b45b.patch#/pf-cb-4c18
 Patch7310:  %{pf_url}/e71beabac0ed789cc01c8f82671cf226bf5c8312.patch#/pf-cb-e71beab.patch
 # fixes 
 Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
-Patch7401:  %{pf_url}/fcf8a9600c26d50dd2ea405f546ca9a2b7aa0584.patch#/pf-cb-fcf8a96.patch
-Patch7402:  %{pf_url}/e0c1dce3ba0223130cf5fc7d6c732a01cbc57d60.patch#/pf-cb-e0c1dce.patch
-Patch7403:  %{pf_url}/1e01b4b26ea383a03a1cce42c5e65ece140657a3.patch#/pf-cb-1e01b4b.patch
-Patch7404:  %{pf_url}/f2af6f0d2bb7d493ae1fa717e50235cb8224ca93.patch#/pf-cb-f2af6f0.patch
-Patch7405:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
-Patch7406:  %{pf_url}/3ac6dfa18b80a0136b194babad782d542b083b4d.patch#/pf-cb-3ac6dfa.patch
+Patch7401:  %{pf_url}/f2af6f0d2bb7d493ae1fa717e50235cb8224ca93.patch#/pf-cb-f2af6f0.patch
+Patch7402:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
+Patch7403:  %{pf_url}/7cebad8612ca550fb0faebd8ae880a22eb1278c1.patch#/pf-cb-7cebad8.patch
+Patch7404:  %{pf_url}/fdf112669d524b521e4419ea360618c8321c0752.patch#/pf-cb-fdf1126.patch
+Patch7405:  %{pf_url}/e849b8c63199ba78e012004b694276fe4c272fa8.patch#/pf-cb-e849b8c.patch
+Patch7406:  %{pf_url}/1b9586b8c8100b968e34379efada5f3fc78e13e1.patch#/pf-cb-1b9586b.patch
+Patch7407:  %{pf_url}/17ed916c3fc0937669439969a8d7e672da1a8d21.patch#/pf-cb-17ed916.patch
 # amd-rapl
 Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
 Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
@@ -1237,7 +1238,8 @@ Patch7714:  %{pf_url}/ff9d9ec09b467868c24a22a3ac49fa39b82eb08f.patch#/pf-cb-ff9d
 Patch7715:  %{pf_url}/65406307a66318c5df6691b70c0e38b8c999f5b8.patch#/pf-cb-6540630.patch
 Patch7716:  %{pf_url}/2a0ae010f9e16919aed97fe6406462b704d60c2f.patch#/pf-cb-2a0ae01.patch
 Patch7717:  %{pf_url}/9679edf4c6c561d85570adb5a26223edd5ec05f1.patch#/pf-cb-9679edf.patch
-Patch7718:  %{pf_url}/dd61a5dc7ec2df9b2326cedc65c327de439ef727.patch#/pf-cb-dd61a5d.patch
+Patch7718:  %{pf_url}/bb72dda03d3cc35d4ef4c1127663c9312939d944.patch#/pf-cb-bb72dda.patch
+Patch7719:  %{pf_url}/2d0eb6e4f96b3c27e2d187d49658c6824dddc5b8.patch#/pf-cb-2d0eb6e.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2110,6 +2112,7 @@ ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
 ApplyPatch %{PATCH7405}
 ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2145,6 +2148,7 @@ ApplyPatch %{PATCH7715}
 ApplyPatch %{PATCH7716}
 ApplyPatch %{PATCH7717}
 ApplyPatch %{PATCH7718}
+ApplyPatch %{PATCH7719}
 ApplyPatch %{PATCH5002}
 %endif
 
@@ -4461,6 +4465,9 @@ fi\
 #
 #
 %changelog
+* Thu Feb 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.5-500.chinfo
+- 6.13.5
+
 * Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.4-500.chinfo
 - 6.13.4
 

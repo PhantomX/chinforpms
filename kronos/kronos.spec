@@ -63,7 +63,8 @@ BuildRequires:  pkgconfig(xmu)
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  cmake(SDL2)
-#BuildRequires:  cmake(OpenAL)
+# Crash
+%dnl BuildRequires:  cmake(OpenAL)
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5Multimedia)
@@ -94,8 +95,8 @@ find \( -name '*.c*' -or -name '*.h*' -or -name AUTHORS \) -exec sed -i 's/\r$//
 find \( -name '*.c*' -or -name '*.h*' \) -exec chmod -x {} \;
 
 sed \
-  -e 's| -Wno-format -march=native -funroll-loops||g' \
-  -e 's| -march=native -funroll-loops||g' \
+  -e 's| -Wno-format\b||g' \
+  -e 's| -march=native\b||g' \
   -i yabause/src/CMakeLists.txt
 
 sed -e 's|share/pixmaps|share/icons/hicolor/32x32/apps|g' \
@@ -118,7 +119,7 @@ sed -e 's|${YAB_VERSION}|%{version}-%{release}|' -i yabause/src/CMakeLists.txt
 %if %{with egl}
   -DYAB_FORCE_GLES31:BOOL=ON \
 %endif
-  -DYAB_OPTIMIZATION=-O%{?with_optim}%{!?with_optim:2} \
+  -DYAB_OPTIMIZATION="-fdata-sections -ffunction-sections -Wl,--gc-sections" \
   -DYAB_NETWORK:BOOL=ON \
   -DYAB_USE_SCSPMIDI:BOOL=ON \
   -DYAB_WANT_OPENAL:BOOL=OFF \

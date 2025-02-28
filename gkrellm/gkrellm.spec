@@ -12,7 +12,7 @@ Source0:        https://gkrellm.srcbox.net/releases/%{name}-%{version}.tar.bz2
 
 Patch1:         gkrellm-2.4.0-config.patch
 Patch3:         gkrellm-2.4.0-width.patch
-Patch10:        https://git.srcbox.net/gkrellm/gkrellm/pulls/63.patch#/%{name}-git-pr63.patch
+Patch10:        https://git.srcbox.net/%{name}/%{name}/commit/f961318d048b85eb0d40ea530906b040b173a7d0.patch#/%{name}-git-f961318.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext

@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit ad89cf39b60c9c7a1988fb54161bf47110f0b55a
+%global commit 534f92506bf8c6aba29bb86917bf10954a360d8e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250211
+%global date 20250226
 
 %if %{without bin}
 %bcond_with snapshot
@@ -41,7 +41,7 @@
 %global excss_ver 4.2.3
 %global dynamicdata_ver 9.0.4
 %global fluent_avalonia_ver 2.0.5
-%global gommon_ver 2.7.1
+%global gommon_ver 2.7.1.1
 %global harfbuzzsharp_ver 7.3.0.2
 %global harfbuzzsharp_ver2 7.3.0
 %global humanizer_ver 2.14.1
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.376
+Version:        1.2.422
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -628,6 +628,7 @@ Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
 %global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532}
 %endif
 
+Patch0:         %{vc_url}/%{appname}/pull/728.patch#/%{name}-gh-pr728.patch
 Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch

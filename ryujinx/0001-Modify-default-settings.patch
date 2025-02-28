@@ -19,9 +19,9 @@ index 7e4b794..91a5ae8 100644
 -            UpdateCheckerType.Value = UpdaterType.PromptAtStartup;
 +            EnableDiscordIntegration.Value = false;
 +            UpdateCheckerType.Value = UpdaterType.Off;
+             FocusLostActionType.Value = FocusLostType.DoNothing;
              ShowConfirmExit.Value = true;
              RememberWindowState.Value = true;
-             ShowTitleBar.Value = !OperatingSystem.IsWindows();
 @@ -229,7 +229,7 @@ namespace Ryujinx.Ava.Utilities.Configuration
              UI.ShownFileTypes.NRO.Value = true;
              UI.ShownFileTypes.NSO.Value = true;

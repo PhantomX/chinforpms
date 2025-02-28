@@ -4,12 +4,12 @@
 
 %global rname   dbeaver
 
-%global jre_ver 17
+%global jre_ver 21
 
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        24.3.3
+Version:        24.3.5
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -122,13 +122,17 @@ done
 
 
 %changelog
+* Thu Feb 27 2025 Phantom X <megaphantomx at hotmail dot com> - 24.3.5-1
+- 24.3.5
+- jre_ver 21
+
 * Tue Jan 28 2025 Phantom X <megaphantomx at hotmail dot com> - 24.3.3-1
 - 24.3.3
 
 * Mon Jan 06 2025 Phantom X <megaphantomx at hotmail dot com> - 24.3.2-1
 - 24.3.2
 
-* Fri Dec 27 2024 Phantom X - 24.3.1-1
+* Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.1-1
 - 24.3.1
 
 * Wed Dec 11 2024 Phantom X <megaphantomx at hotmail dot com> - 24.3.0-1

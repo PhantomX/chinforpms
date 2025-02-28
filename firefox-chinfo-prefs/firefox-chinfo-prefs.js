@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20250108");
+pref("chinfo.cfg.version", "20250226");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -116,6 +116,14 @@ pref("browser.urlbar.maxHistoricalSearchSuggestions", 0);
 pref("browser.urlbar.suggest.searches", false);
 pref("browser.urlbar.userMadeSearchSuggestionsChoice", true);
 
+// urlbar suggestions
+pref("browser.urlbar.addons.featureGate", false);
+pref("browser.urlbar.fakespot.featureGate", false);
+pref("browser.urlbar.mdn.featureGate", false);
+pref("browser.urlbar.pocket.featureGate", false);
+pref("browser.urlbar.weather.featureGate", false);
+pref("browser.urlbar.yelp.featureGate", false);
+
 // Enable Containers 
 // pref("privacy.userContext.enabled", true);
 
@@ -157,7 +165,7 @@ pref("permissions.default.geo", 2);
 pref("permissions.default.microphone", 2);
 
 // Disable the internal PDF viewer
-pref("pdfjs.disabled", true);
+pref("pdfjs.disabled", false);
 pref("pdfjs.enableScripting", false);
 
 // No Pocket here
