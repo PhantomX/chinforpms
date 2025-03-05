@@ -29,6 +29,7 @@
 %define arches_zfs              %{arches_x86} %{power64} %{arm}
 %define arches_numactl          %{arches_x86} %{power64} aarch64 s390x
 %define arches_numad            %{arches_x86} %{power64} aarch64
+%define arches_ch               x86_64 aarch64
 
 # The hypervisor drivers that run in libvirtd
 %define with_qemu          0%{!?_without_qemu:1}
@@ -123,6 +124,9 @@
 %endif
 %ifnarch %{arches_ceph}
     %define with_storage_rbd 0
+%endif
+%ifnarch %{arches_ch}
+    %define with_ch 0
 %endif
 
 # RHEL doesn't ship many hypervisor drivers
@@ -291,7 +295,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.0.0
+Version: 11.1.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -300,9 +304,8 @@ URL: https://libvirt.org/
     %define mainturl stable_updates/
 %endif
 Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
-Source1: libvirt-sysusers.conf
 Source2: libvirt-qemu-sysusers.conf
-Source3: virtlogin-sysusers.conf
+
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -344,7 +347,6 @@ BuildRequires: git-core
 BuildRequires: perl-interpreter
 BuildRequires: python3
 BuildRequires: python3-pytest
-%{?sysusers_requires_compat}
 # For xmllint
 BuildRequires: libxml2
 # For xsltproc
@@ -358,7 +360,7 @@ BuildRequires: gcc
     %if %{with_libxl}
 BuildRequires: xen-devel
     %endif
-BuildRequires: glib2-devel >= 2.58
+BuildRequires: glib2-devel >= 2.66
 BuildRequires: libxml2-devel
 BuildRequires: readline-devel
 BuildRequires: pkgconfig(bash-completion) >= 2.0
@@ -536,8 +538,6 @@ Requires(posttrans): /usr/bin/systemctl
 Requires(preun): /usr/bin/systemctl
 # libvirtd depends on 'messagebus' service
 Requires: dbus
-# For uid creation during pre
-Requires(pre): shadow-utils
 # Needed by /usr/libexec/libvirt-guests.sh script.
     %if 0%{?fedora}
 Requires: gettext-runtime
@@ -564,6 +564,7 @@ resources
 %package daemon-plugin-lockd
 Summary: lockd client plugin for virtlockd
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Requires: libvirt-daemon-lock = %{version}-%{release}
 
 %description daemon-plugin-lockd
@@ -1117,6 +1118,7 @@ Requires: sanlock >= 2.4
 #for virt-sanlock-cleanup require augeas
 Requires: augeas
 Requires: libvirt-libs = %{version}-%{release}
+Requires: libvirt-daemon-common = %{version}-%{release}
 Obsoletes: libvirt-lock-sanlock < 9.1.0
 Provides: libvirt-lock-sanlock = %{version}-%{release}
 
@@ -1456,6 +1458,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
   -Dblkid=disabled \
   -Dcapng=disabled \
   -Ddriver_bhyve=disabled \
+  -Ddriver_ch=disabled \
   -Ddriver_hyperv=disabled \
   -Ddriver_interface=disabled \
   -Ddriver_libvirtd=disabled \
@@ -1596,14 +1599,10 @@ mv $RPM_BUILD_ROOT%{_datadir}/systemtap/tapset/libvirt_qemu_probes.stp \
     %endif
 
 ## chinforpms changes
-install -Dpm 644 %{SOURCE1} $RPM_BUILD_ROOT%{_sysusersdir}/libvirt.conf
-
 %if %{with_qemu}
 mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
 cat %{SOURCE2} > $RPM_BUILD_ROOT%{_sysusersdir}/libvirt-qemu.conf
 %endif
-
-install -Dpm 644 %{SOURCE3} $RPM_BUILD_ROOT%{_sysusersdir}/virtlogin.conf
 
 %endif
 
@@ -1802,10 +1801,6 @@ export VIR_TEST_DEBUG=1
 %pre daemon-common
 %libvirt_sysconfig_pre libvirt-guests
 %libvirt_systemd_oneshot_pre libvirt-guests
-# 'libvirt' group is just to allow password-less polkit access to libvirt
-# daemons. The uid number is irrelevant, so we use dynamic allocation.
-%sysusers_create_compat %{SOURCE1}
-exit 0
 
 %posttrans daemon-common
 %libvirt_sysconfig_posttrans libvirt-guests
@@ -1928,13 +1923,6 @@ exit 0
 %libvirt_sysconfig_pre virtqemud
 %libvirt_systemd_unix_pre virtqemud
 
-# We want soft static allocation of well-known ids, as disk images
-# are commonly shared across NFS mounts by id rather than name.
-# See https://docs.fedoraproject.org/en-US/packaging-guidelines/UsersAndGroups/
-# We can not use the sysusers_create_compat macro here as we want to keep the
-# specfile standalone and not relying on additionnal files.
-%sysusers_create_compat %{SOURCE2}
-exit 0
 
 %posttrans daemon-driver-qemu
 %libvirt_sysconfig_posttrans virtqemud
@@ -2059,11 +2047,6 @@ done
 %libvirt_systemd_config_posttrans libvirtd
 %libvirt_systemd_config_posttrans virtnwfilterd
 
-    %if %{with_lxc}
-%pre login-shell
-%sysusers_create_compat %{SOURCE3}
-exit 0
-    %endif
 %endif
 
 %if %{with_native}
@@ -2091,8 +2074,6 @@ exit 0
 %{_mandir}/man8/libvirtd.8*
 
 %files daemon-common
-## chinforpms changes
-%{_sysusersdir}/libvirt.conf
 %{_unitdir}/virt-guest-shutdown.target
 %{_unitdir}/libvirt-guests.service
 %config(noreplace) %{_sysconfdir}/sasl2/libvirt.conf
@@ -2108,9 +2089,11 @@ exit 0
 %dir %attr(0755, root, root) %{_libdir}/libvirt/connection-driver/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-backend/
 %dir %attr(0755, root, root) %{_libdir}/libvirt/storage-file/
+%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %{_datadir}/polkit-1/actions/org.libvirt.unix.policy
 %{_datadir}/polkit-1/actions/org.libvirt.api.policy
 %{_datadir}/polkit-1/rules.d/50-libvirt.rules
+%{_sysusersdir}/libvirt.conf
 %dir %attr(0700, root, root) %{_localstatedir}/log/libvirt/
 %attr(0755, root, root) %{_libexecdir}/libvirt_iohelper
 %attr(0755, root, root) %{_bindir}/virt-ssh-helper
@@ -2138,7 +2121,6 @@ exit 0
 %{_mandir}/man8/virtlockd.8*
 
 %files daemon-plugin-lockd
-%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/lockd.so
 
 %files daemon-log
@@ -2277,7 +2259,6 @@ exit 0
 %ghost %dir %{_rundir}/libvirt/storage/
 %{_libdir}/libvirt/connection-driver/libvirt_driver_storage.so
 %{_libdir}/libvirt/storage-backend/libvirt_storage_backend_fs.so
-%{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_mandir}/man8/virtstoraged.8*
 
 %files daemon-driver-storage-disk
@@ -2455,7 +2436,6 @@ exit 0
         %if %{with_libxl}
 %config(noreplace) %{_sysconfdir}/libvirt/libxl-sanlock.conf
         %endif
-%dir %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/
 %attr(0755, root, root) %{_libdir}/libvirt/lock-driver/sanlock.so
 %{_datadir}/augeas/lenses/libvirt_sanlock.aug
 %{_datadir}/augeas/lenses/tests/test_libvirt_sanlock.aug
@@ -2539,7 +2519,7 @@ exit 0
 %{_libexecdir}/virt-login-shell-helper
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
 ## chinforpms changes
-%{_sysusersdir}/virtlogin.conf
+%{_sysusersdir}/libvirt-login-shell.conf
 %{_mandir}/man1/virt-login-shell.1*
     %endif
 
@@ -2698,6 +2678,9 @@ exit 0
 
 
 %changelog
+* Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 11.1.0-100
+- 11.1.0
+
 * Wed Jan 15 2025 Phantom X <megaphantomx at hotmail dot com> - 11.0.0-100
 - 11.0.0
 

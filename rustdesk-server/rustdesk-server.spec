@@ -35,7 +35,6 @@ ExclusiveArch:  x86_64 arm64
 
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
-%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 %description
@@ -62,9 +61,6 @@ install -Dpm 644 %{S:5} %{buildroot}%{_sysusersdir}/%{name}.conf
 mkdir -p %{buildroot}%{_prefix}/lib/firewalld/services
 install -pm0644 %{S:6} %{buildroot}%{_prefix}/lib/firewalld/services/%{name}.xml
 
-
-%pre
-%sysusers_create_compat %{S:5}
 
 %preun
 %systemd_preun %{name}-hbbr.service

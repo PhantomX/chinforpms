@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 69a04925a6800dd44bd8acb3cb8e0cd416ff1532
+%global commit 3d53d7cb93ada60076925d73aa20d39c08ea4409
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250109
+%global date 20250215
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -162,7 +162,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3723
+Version:        0.2.0.3738
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -219,6 +219,8 @@ Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%
 %if %{without spdlog}
 Source35:       https://github.com/gabime/%{srcname35}/archive/%{commit35}/%{srcname35}-%{shortcommit35}.tar.gz
 %endif
+
+Patch0:         https://github.com/Vita3K/Vita3K/pull/3525.patch#/%{name}-gh-pr3525.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch

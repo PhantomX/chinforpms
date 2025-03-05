@@ -32,7 +32,6 @@ BuildRequires:  perl-devel
 BuildRequires:  perl-generators
 BuildRequires:  perl-ExtUtils-Embed
 BuildRequires:  systemd-rpm-macros
-%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 Conflicts:      %{rname}
@@ -90,10 +89,6 @@ mkdir -p %{buildroot}%{_tmpfilesdir}
 cat >> %{buildroot}%{_tmpfilesdir}/%{rname}.conf <<EOF
 d /run/%{rname} 1770 %{rname} %{rname} -
 EOF
-
-
-%pre
-%sysusers_create_compat %{SOURCE1}
 
 
 %files

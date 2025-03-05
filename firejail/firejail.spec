@@ -59,10 +59,6 @@ rm -rf %{buildroot}/usr/share/doc
 install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
-%pre
-%sysusers_create_compat %{SOURCE2}
-
-
 %files
 %license COPYING
 %doc README* RELNOTES contrib etc/templates/*

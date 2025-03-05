@@ -26,23 +26,23 @@ index 7076bed..82da870 100644
 --- a/Source/RMG-Core/Archive.cpp
 +++ b/Source/RMG-Core/Archive.cpp
 @@ -15,13 +15,13 @@
- #include <cstring>
+ #include <fstream>
  
  // lzma includes
--#include "../3rdParty/lzma/7zTypes.h"
--#include "../3rdParty/lzma/7z.h"
--#include "../3rdParty/lzma/7zAlloc.h"
--#include "../3rdParty/lzma/7zBuf.h"
--#include "../3rdParty/lzma/7zCrc.h"
--#include "../3rdParty/lzma/7zFile.h"
--#include "../3rdParty/lzma/7zVersion.h"
-+#include "7zTypes.h"
-+#include "7z.h"
-+#include "7zAlloc.h"
-+#include "7zBuf.h"
-+#include "7zCrc.h"
-+#include "7zFile.h"
-+#include "7zVersion.h"
+-#include <3rdParty/lzma/7zVersion.h>
+-#include <3rdParty/lzma/7zAlloc.h>
+-#include <3rdParty/lzma/7zTypes.h>
+-#include <3rdParty/lzma/7zFile.h>
+-#include <3rdParty/lzma/7zBuf.h>
+-#include <3rdParty/lzma/7zCrc.h>
+-#include <3rdParty/lzma/7z.h>
++#include <7zTypes.h>
++#include <7z.h>
++#include <7zAlloc.h>
++#include <7zBuf.h>
++#include <7zCrc.h>
++#include <7zFile.h>
++#include <7zVersion.h>
  
  // minizip includes
  #include <unzip.h>

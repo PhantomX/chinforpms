@@ -13,9 +13,9 @@ diff --git a/rpcs3/Emu/Cell/Modules/cellMic.cpp b/rpcs3/Emu/Cell/Modules/cellMic
 index 86e4b8b..5d9b292 100644
 --- a/rpcs3/Emu/Cell/Modules/cellMic.cpp
 +++ b/rpcs3/Emu/Cell/Modules/cellMic.cpp
-@@ -9,7 +9,7 @@
- 
+@@ -10,7 +10,7 @@
  #include <numeric>
+ #include <cmath>
  
 -#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
 +#include "alext.h"

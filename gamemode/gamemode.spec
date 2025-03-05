@@ -71,10 +71,6 @@ rm -f %{buildroot}%{_libdir}/*.a
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
-%pre
-%sysusers_create_compat %{buildroot}%{_sysusersdir}/%{name}.conf
-
-
 %files
 %license LICENSE.txt
 %doc README.md

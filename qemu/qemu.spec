@@ -611,7 +611,6 @@ BuildRequires: libcbor-devel
 %endif
 
 BuildRequires: systemd-rpm-macros
-%{?sysusers_requires_compat}
 
 %if %{user_static}
 BuildRequires: glibc-static
@@ -2192,10 +2191,6 @@ popd
 
 
 %if !%{tools_only}
-%pre common
-%sysusers_create_compat %{SOURCE16}
-
-
 
 %post user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :

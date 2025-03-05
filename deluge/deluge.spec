@@ -41,7 +41,6 @@ BuildRequires:  intltool
 BuildRequires:  %{py3_dist libtorrent}
 BuildRequires:  %{py3_dist wheel}
 BuildRequires:  systemd-rpm-macros
-%{?sysusers_requires_compat}
 
 ## add Requires to make into Meta package
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -256,9 +255,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 %{_userunitdir}/%{name}-daemon.service
 %attr(-,%{name}, %{name})/var/lib/%{name}/
 %{_mandir}/man?/%{name}d*
-
-%pre daemon
-%sysusers_create_compat %{SOURCE1}
 
 %post daemon
 %systemd_post deluge-daemon.service
