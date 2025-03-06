@@ -1,15 +1,12 @@
 Name:           qt5ct
 Version:        1.9
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD-2-Clause
 URL:            https://sourceforge.net/projects/%{name}/
 Source0:        http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.bz2
-Source1:        README.gtk3
 Source2:        60-%{name}.sh
-
-Patch0:         0001-set-gtk3-as-default-dialog-style.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
@@ -32,38 +29,18 @@ qt5ct allows users to configure Qt5 settings (theme, font, icons, etc.) under
 DE/WM without Qt integration.
 
 %prep
-%setup -q -c
+%autosetup -p1
 
-cp -a %{name}-%{version} %{name}-%{version}-gtk3
-
-pushd %{name}-%{version}-gtk3
-cp -a COPYING AUTHORS ChangeLog README ../
-
-%patch -P 0 -p1 -b.gtk3
-popd
-
-cp -p %{S:1} .
 cp -p %{S:2} .
 
 %build
-pushd %{name}-%{version}
 %{qmake_qt5}
 
 %make_build
-popd
 
-pushd %{name}-%{version}-gtk3
-%{qmake_qt5}
-
-ln -sf ../../../%{name}-%{version}/src/qt5ct-common/libqt5ct-common.so src/qt5ct-common/
-%make_build sub-src-qt5ct-all
-popd
 
 %install
-make install -C %{name}-%{version}-gtk3/src/qt5ct INSTALL_ROOT=%{buildroot}
-mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
-
-make install -C %{name}-%{version} INSTALL_ROOT=%{buildroot}
+%make_install INSTALL_ROOT=%{buildroot}
 
 rm -fv %{buildroot}%{_libdir}/lib%{name}-common.so
 
@@ -71,30 +48,23 @@ mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
 install -pm0755 60-%{name}.sh \
   %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
-sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
-  > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
-
-desktop-file-edit \
-  --set-key="Exec" \
-  --set-value="%{name}-gtk3" \
-  %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
 
 # Copy translations into right place
 install -d %{buildroot}%{_datadir}/%{name}/translations
-install -D -pm 644 %{name}-%{version}/src/%{name}/translations/*.qm \
+install -D -pm 644 src/%{name}/translations/*.qm \
   %{buildroot}%{_datadir}/%{name}/translations/
 %find_lang %{name} --with-qt
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files -f %{name}.lang
 %license COPYING
-%doc AUTHORS ChangeLog README README.gtk3
-%{_bindir}/%{name}*
+%doc AUTHORS ChangeLog README
+%{_bindir}/%{name}
 %{_libdir}/lib%{name}-common.so.*
-%{_datadir}/applications/%{name}*.desktop
+%{_datadir}/applications/%{name}.desktop
 %dir %{_datadir}/%{name}/
 %{_datadir}/%{name}/colors/
 %{_datadir}/%{name}/qss/
@@ -104,6 +74,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 1.9-101
+- Drop gtk3 binary
+
 * Mon Jan 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1.9-100
 - 1.9
 

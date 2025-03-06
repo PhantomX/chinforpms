@@ -12,21 +12,18 @@
 
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
-Version:        0.9
-Release:        108%{?dist}
+Version:        0.10
+Release:        100%{?dist}
 
 License:        BSD-2-Clause
-Url:            https://github.com/trialuser02/qt6ct
+Url:            https://www.opencode.net/trialuser/qt6ct
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        %{url}/releases/download/%{version}/%{name}-%{version}.tar.xz
+Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 %endif
-Source1:        README.gtk3
 Source2:        60-%{name}.sh
-
-Patch0:         0001-gtk3-dialogs.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -44,42 +41,20 @@ This program allows users to configure Qt6 settings (theme, font, icons, etc.)
 under DE/WM without Qt integration.
 
 %prep
-%setup -q -c
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-cp -a %{name}-%{srcver} %{name}-%{srcver}-gtk3
-
-pushd %{name}-%{srcver}-gtk3
-
-cp -a COPYING AUTHORS ChangeLog README ../
-
-%patch -P 0 -p1 -b.gtk3
-popd
-
-cp -p %{S:1} .
 cp -p %{S:2} .
 
 
 %build
-pushd %{name}-%{srcver}
 lrelease-qt6 src/qt6ct/translations/*.ts
 %{qmake_qt6}
 
 %make_build
-popd
 
-pushd %{name}-%{srcver}-gtk3
-lrelease-qt6 src/qt6ct/translations/*.ts
-%{qmake_qt6}
-
-ln -sf ../../../%{name}-%{version}/src/qt6ct-common/libqt6ct-common.so src/qt6ct-common/
-%make_build sub-src-qt6ct-all
-popd
 
 %install
-make install -C %{name}-%{srcver}-gtk3/src/qt6ct INSTALL_ROOT=%{buildroot}
-mv %{buildroot}%{_bindir}/%{name}{,-gtk3}
-
-make install -C %{name}-%{srcver} INSTALL_ROOT=%{buildroot}
+%make_install INSTALL_ROOT=%{buildroot}
 
 rm -fv %{buildroot}%{_libdir}/lib%{name}-common.so
 
@@ -87,27 +62,19 @@ mkdir -p %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d
 install -pm0755 60-%{name}.sh \
   %{buildroot}%{_sysconfdir}/X11/xinit/xinitrc.d/60-%{name}.sh
 
-sed -e '/^Name/s|$| - GTK3|g' %{buildroot}/%{_datadir}/applications/%{name}.desktop \
-  > %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
-
-desktop-file-edit \
-  --set-key="Exec" \
-  --set-value="%{name}-gtk3" \
-  %{buildroot}/%{_datadir}/applications/%{name}-gtk3.desktop
-
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %files
-%doc AUTHORS README ChangeLog README.gtk3
+%doc AUTHORS README.md ChangeLog
 %license COPYING
-%{_bindir}/%{name}*
+%{_bindir}/%{name}
 %{_libdir}/lib%{name}-common.so.*
 %{_qt6_plugindir}/platformthemes/libqt6ct.so
 %{_qt6_plugindir}/styles/libqt6ct-style.so
-%{_datadir}/applications/%{name}*.desktop
+%{_datadir}/applications/%{name}.desktop
 %dir %{_datadir}/%{name}/
 %dir %{_datadir}/%{name}/colors/
 %{_datadir}/%{name}/colors/*.conf
@@ -117,6 +84,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 0.10-100
+- 0.10
+- Update URL
+- Drop gtk3 binary
+
 * Wed Feb 05 2025 Phantom X <megaphantomx at hotmail dot com> - 0.9-108
 - Rebuild (qt6)
 

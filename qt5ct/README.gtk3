@@ -1,5 +1,0 @@
-Use GTK3 tool to set style with GTK3 dialogs.
-The gtk2 style is not listed in this tool, so use default tool if want to use it.
-
-Remember to reset "Standard dialogs" to default with GTK3 tool before setting gtk2 style.
-
