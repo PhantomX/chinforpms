@@ -17,8 +17,6 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_with nogui
-
 # Enable system fmt
 %bcond_without fmt
 %bcond_with minizip
@@ -27,9 +25,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit 3ea26cc9108256270ae1d1953919b12c6809866e
+%global commit 58dc7562a35b75c0581d428d47c3af8b0c27c909
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250221
+%global date 20250307
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -48,7 +46,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8675
+Version:        0.1.8724
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -171,6 +169,8 @@ Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libshaderc_ds%{?_isa}
 Requires:       libwayland-egl%{?_isa}
+Requires:       libxcb%{?_isa}
+Requires:       libX11-xcb%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       spirv-cross%{?_isa}
 Requires:       vulkan-loader%{?_isa}
@@ -187,11 +187,6 @@ Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 %dnl Provides:       bundled(zydis) = 0~git
 
-%if %{without nogui}
-Provides:       %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      %{name}-nogui < %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-
 
 %description
 A Sony PlayStation (PSX) emulator, focusing on playability, speed, and long-term
@@ -200,20 +195,10 @@ maintainability.
 It requires a CPU with SSE4.1 instructions.
 
 
-%if %{with nogui}
-%package nogui
-Summary:        DuckStation emulator without a graphical user interface
-Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description nogui
-DuckStation emulator without a graphical user interface.
-%endif
-
-
 %package data
 Summary:        DuckStation emulator data files
 BuildArch:      noarch
-Requires:       (%{name} = %{?epoch:%{epoch}:}%{version}-%{release} or %{name}-nogui = %{?epoch:%{epoch}:}%{version}-%{release})
+Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       duckstation_chtdb
 
 %description data
@@ -324,9 +309,7 @@ echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-%if %{without nogui}
-  -DBUILD_NOGUI_FRONTEND:BOOL=OFF \
-%endif
+  -DBUILD_MINI_FRONTEND:BOOL=OFF \
   -DUSE_WAYLAND:BOOL=ON \
 %{nil}
 
@@ -336,10 +319,6 @@ echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{__cmake_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
-
-%if 0%{?with_nogui}
-install -pm0755 %{__cmake_builddir}/bin/%{name}-nogui %{buildroot}%{_bindir}/%{name}-nogui
-%endif
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
 cp -r %{__cmake_builddir}/bin/{resources,translations} \
@@ -397,14 +376,6 @@ appstream-util validate-relax --nonet \
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/*.metainfo.xml
-
-
-%if %{with nogui}
-%files nogui
-%doc README.md
-%license LICENSE dep/LICENSE.*
-%{_bindir}/%{name}-nogui*
-%endif
 
 
 %files data

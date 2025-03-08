@@ -25,7 +25,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.8.0
+Version:        0.8.1
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -204,6 +204,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Thu Mar 06 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.1-100
+- 0.8.1
+
 * Wed Feb 12 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-100
 - 0.8.0
 

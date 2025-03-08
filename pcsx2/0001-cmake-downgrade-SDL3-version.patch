@@ -1,0 +1,25 @@
+From 82eb4f68ace3b8edf892d9be698e8cb7a132b690 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 7 Mar 2025 20:06:16 -0300
+Subject: [PATCH] cmake: downgrade SDL3 version
+
+---
+ cmake/SearchForStuff.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
+index 1206181..4806215 100644
+--- a/cmake/SearchForStuff.cmake
++++ b/cmake/SearchForStuff.cmake
+@@ -17,7 +17,7 @@ find_package(ZLIB REQUIRED) # v1.3, but Mac uses the SDK version.
+ find_package(Zstd 1.5.5 REQUIRED)
+ find_package(LZ4 REQUIRED)
+ find_package(WebP REQUIRED) # v1.3.2, spews an error on Linux because no pkg-config.
+-find_package(SDL3 3.2.6 REQUIRED)
++find_package(SDL3 3.2.4 REQUIRED)
+ find_package(Freetype 2.11.1 REQUIRED)
+ 
+ if(USE_VULKAN)
+-- 
+2.48.1
+

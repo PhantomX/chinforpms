@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.5
+%define specrpmversion 6.13.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1182,6 +1182,8 @@ Patch7202:  %{pf_url}/6ad30493b537ce84933a4c08319aa18ce863e7c9.patch#/pf-cb-6ad3
 Patch7220:  %{pf_url}/32bef160156719a0cfef8df94697ace27847644b.patch#/pf-cb-32bef16.patch
 # v4l2loopback
 Patch7230:  %{pf_url}/64f0795e7509fc7e6608f704e465e650ac124ffe.patch#/pf-cb-64f0795.patch
+Patch7231:  %{pf_url}/a69ea63d0b60d3fe23a1c47d9d80c7d96cb4294e.patch#/pf-cb-a69ea63.patch
+Patch7232:  %{pf_url}/81bc3f0eced102e5aaf9e95e7ae453424c0f489b.patch#/pf-cb-81bc3f0.patch
 # cpuidle
 Patch7240:  %{pf_url}/338018473e4c5402157f872a9519441585e4945d.patch#/pf-cb-3380184.patch
 # crypto
@@ -1198,13 +1200,8 @@ Patch7309:  %{pf_url}/4c1833f7c7c4663824384208871a4c9e2469b45b.patch#/pf-cb-4c18
 Patch7310:  %{pf_url}/e71beabac0ed789cc01c8f82671cf226bf5c8312.patch#/pf-cb-e71beab.patch
 # fixes 
 Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
-Patch7401:  %{pf_url}/f2af6f0d2bb7d493ae1fa717e50235cb8224ca93.patch#/pf-cb-f2af6f0.patch
-Patch7402:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
-Patch7403:  %{pf_url}/7cebad8612ca550fb0faebd8ae880a22eb1278c1.patch#/pf-cb-7cebad8.patch
-Patch7404:  %{pf_url}/fdf112669d524b521e4419ea360618c8321c0752.patch#/pf-cb-fdf1126.patch
-Patch7405:  %{pf_url}/e849b8c63199ba78e012004b694276fe4c272fa8.patch#/pf-cb-e849b8c.patch
-Patch7406:  %{pf_url}/1b9586b8c8100b968e34379efada5f3fc78e13e1.patch#/pf-cb-1b9586b.patch
-Patch7407:  %{pf_url}/17ed916c3fc0937669439969a8d7e672da1a8d21.patch#/pf-cb-17ed916.patch
+Patch7401:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
+Patch7402:  %{pf_url}/7cebad8612ca550fb0faebd8ae880a22eb1278c1.patch#/pf-cb-7cebad8.patch
 # amd-rapl
 Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
 Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
@@ -2090,6 +2087,8 @@ ApplyPatch %{PATCH7202}
 ApplyPatch %{PATCH7220}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
+ApplyPatch %{PATCH7231}
+ApplyPatch %{PATCH7232}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
@@ -2108,11 +2107,6 @@ ApplyPatch %{PATCH7310}
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -4465,6 +4459,9 @@ fi\
 #
 #
 %changelog
+* Fri Mar 07 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.6-500.chinfo
+- 6.13.6
+
 * Thu Feb 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.5-500.chinfo
 - 6.13.5
 
