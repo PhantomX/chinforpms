@@ -1,17 +1,17 @@
-From a40b21f34474abc4bf5cb59b41c82d3a14020f72 Mon Sep 17 00:00:00 2001
+From 0f2437de1a3ef9a2074a5294860bc9480c1a9188 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 16 Aug 2021 13:31:44 -0300
+Date: Sat, 8 Mar 2025 17:38:25 -0300
 Subject: [PATCH] fix build flags
 
 ---
- core/configure.in    | 6 +++---
- modules/configure.in | 8 ++++----
+ core/configure.ac    | 6 +++---
+ modules/configure.ac | 8 ++++----
  2 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/core/configure.in b/core/configure.in
-index a8c9319..908c813 100644
---- a/core/configure.in
-+++ b/core/configure.in
+diff --git a/core/configure.ac b/core/configure.ac
+index a8c9319..8dc2e77 100644
+--- a/core/configure.ac
++++ b/core/configure.ac
 @@ -39,9 +39,9 @@ case "$target_os" in
          COMMON_LDFLAGS="$COMMON_LDFLAGS -lc -ldl"
  
@@ -19,16 +19,16 @@ index a8c9319..908c813 100644
 -            i*86)
 -                COMMON_CFLAGS="$COMMON_CFLAGS -m32 -DUSE_OPENSSL"
 -                COMMON_LDFLAGS="$COMMON_LDFLAGS -m32 -L/lib32"
-+            i*86|x86_64*)
++            i*86*|x86_64*)
 +                COMMON_CFLAGS="$COMMON_CFLAGS -DUSE_OPENSSL"
 +                COMMON_LDFLAGS="$COMMON_LDFLAGS"
                  LIBSSL="crypto"
                  USE_OPENSSL=yes
                  ;;
-diff --git a/modules/configure.in b/modules/configure.in
+diff --git a/modules/configure.ac b/modules/configure.ac
 index 97e6bb0..edc916f 100644
---- a/modules/configure.in
-+++ b/modules/configure.in
+--- a/modules/configure.ac
++++ b/modules/configure.ac
 @@ -40,9 +40,9 @@ case "$target_os" in
          COMMON_LDFLAGS="$COMMON_LIBS -lc -ldl"
  
@@ -52,5 +52,5 @@ index 97e6bb0..edc916f 100644
  
  if test "x$enable_static" = "xyes"; then
 -- 
-2.31.1
+2.48.1
 

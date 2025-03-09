@@ -2,25 +2,24 @@
 %global build_type_safety_c 2
 %endif
 
-%global date 20211122
-%global snapshot_rev 356
+%global commit d49f71891f38db9bbf08c0f6f0002007f564a03c
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220801
 
-%global dist .%{date}svn%{snapshot_rev}%{?dist}
+%global dist .%{date}git%{shortcommit}%{?dist}
+
+%global pkgname BennuGD
+%global vc_url  https://github.com/SplinterGU/%{pkgname}
 
 Name:           bennugd
 Version:        1.0.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib
 URL:            https://www.bennugd.org
 
-# To regenerate a snapshot:
-# Use your regular webbrowser to open https://sourceforge.net/p/bennugd/code/%%{snapshot_rev}/tarball
-# This triggers the SourceForge instructure to generate a snapshot
-# After that you can pull in the archive with:
-# spectool -g bennugd.spec
-Source0:        https://sourceforge.net/code-snapshots/svn/b/be/%{name}/code/%{name}-code-r%{snapshot_rev}.zip
+Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 
 Patch0:         0001-fix-build-flags.patch
 Patch1:         0001-Versioned-libraries.patch
@@ -62,9 +61,9 @@ needed for %{name}.
 
 
 %prep
-%autosetup -n %{name}-code-r%{snapshot_rev} -N -p1
+%autosetup -n %{pkgname}-%{commit} -N
 
-find \( -name '*.c*' -or -name '*.h*' \) -exec sed -i 's/\r$//' {} \;
+find \( -name '*.c*' -or -name '*.h*' -or -name README \) -exec sed -i 's/\r$//' {} \;
 
 %autopatch -p1
 

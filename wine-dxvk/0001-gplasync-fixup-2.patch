@@ -1,0 +1,32 @@
+From fb3ecddf6a08418d38fce388a3b85f6a89df6458 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 8 Mar 2025 19:44:55 -0300
+Subject: [PATCH] gplasync fixup 2
+
+---
+ src/dxvk/dxvk_context.cpp | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/dxvk/dxvk_context.cpp b/src/dxvk/dxvk_context.cpp
+index d1ae66d..3d76a2c 100644
+--- a/src/dxvk/dxvk_context.cpp
++++ b/src/dxvk/dxvk_context.cpp
+@@ -6938,11 +6938,12 @@ namespace dxvk {
+         return false;
+     }
+ 
+-    if (m_flags.test(DxvkContextFlag::GpDirtyFramebuffer))
++    // End render pass if there are pending resolves
++    if (m_flags.any(DxvkContextFlag::GpDirtyFramebuffer,
++                    DxvkContextFlag::GpRenderPassNeedsFlush))
+       this->updateFramebuffer(true);
+ 
+-    if (!m_flags.test(DxvkContextFlag::GpRenderPassBound))
+-      this->startRenderPass();
++    if (m_flags.test(DxvkContextFlag::GpXfbActive)) {
+       // If transform feedback is active and there is a chance that we might
+       // need to rebind the pipeline, we need to end transform feedback and
+       // issue a barrier. End the render pass to do that. Ignore dirty vertex
+-- 
+2.48.1
+

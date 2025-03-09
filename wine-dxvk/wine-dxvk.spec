@@ -18,9 +18,9 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 6d9e0baa2776a13b0a12f0a9cb3290996d0e2110
+%global commit 1b529c711cb9a9e49a51e736a15fcddf3953df93
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250214
+%global date 20250308
 %bcond_without snapshot
 
 %bcond_with debug
@@ -71,7 +71,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.5.3
-Release:        102%{?dist}
+Release:        103%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -93,6 +93,8 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 %if %{with gplasync}
 Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
+Patch502:      0001-gplasync-fixup-1.patch
+Patch503:      0001-gplasync-fixup-2.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -163,7 +165,9 @@ in order to run 3D applications on Linux using Wine.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
+%patch -P 502 -p1
 %patch -P 500 -p1
+%patch -P 503 -p1
 %patch -P 501 -p1
 cp %{S:500} README.gplasync.md
 %endif

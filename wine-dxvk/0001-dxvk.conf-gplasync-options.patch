@@ -1,4 +1,4 @@
-From e420d82800c93188efca3c70c234cb790e6f42f3 Mon Sep 17 00:00:00 2001
+From ee1527ad3ff62f441bada378ce03c8ea2adf981f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 13 Jan 2024 17:00:31 -0300
 Subject: [PATCH] dxvk.conf: gplasync options
@@ -8,13 +8,13 @@ Subject: [PATCH] dxvk.conf: gplasync options
  1 file changed, 18 insertions(+)
 
 diff --git a/dxvk.conf b/dxvk.conf
-index 453024f..ee29138 100644
+index 96e686a..50d466e 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
-@@ -709,3 +709,21 @@
+@@ -851,3 +851,21 @@
  # - True/False
  
- # d3d9.countLosableResources = True
+ # d3d8.forceLegacyDiscard = False
 +
 +
 +# Sets the async pipeline compiler
@@ -34,5 +34,5 @@ index 453024f..ee29138 100644
 +
 +# dxvk.gplAsyncCache = False
 -- 
-2.45.2
+2.48.1
 

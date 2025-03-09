@@ -1,7 +1,7 @@
 %global commit e1b8e7f6ec755afd251a3b7af0e632c6e4d74a64
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250222
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -35,10 +35,6 @@
 %ifarch x86_64
 %global winearchdir %{winearchdir_x86_64}
 %global winesodir %{winesodir_x86_64}
-%endif
-%ifarch arm
-%global winearchdir arm-windows
-%global winesodir arm-unix
 %endif
 %ifarch aarch64
 %global winearchdir aarch64-windows
@@ -108,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver ec5fbb99b73eddc22780957305af9939e35cad82
+%global wine_stagingver 10.3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -119,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 26310754c0be1b2e7931b4cfa2be9757bb965bbf
+%global tkg_id b23227964ea3dcac210603a0a6ffd3ca91d3e10e
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -161,7 +157,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.2
+Version:        10.3
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -298,7 +294,7 @@ BuildRequires:  git-core
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  make
-%ifarch %{arm} aarch64
+%ifarch aarch64
 BuildRequires:  clang >= 5.0
 BuildRequires:  lld
 %else
@@ -427,18 +423,6 @@ Recommends:     wine-dxvk(x86-64)
 Recommends:     dosbox-staging
 Recommends:     isdn4k-utils(x86-64)
 
-# ARM parts
-%ifarch %{arm} aarch64
-Requires:       wine-core = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-cms = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-ldap = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-twain = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-pulseaudio = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-opencl = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       mesa-dri-drivers
-Requires:       samba-winbind-clients
-%endif
-
 # aarch64 parts
 %ifarch aarch64
 Requires:       wine-core(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -529,7 +513,7 @@ Recommends:     gstreamer1-plugins-ugly(x86-64)
 %endif
 %endif
 
-%ifarch %{arm} aarch64
+%ifarch aarch64
 # CUPS support uses dlopen - rhbz#1367537
 Requires:       cups-libs
 Requires:       freetype
@@ -829,7 +813,7 @@ Requires: sane-backends-libs(x86-32)
 %ifarch x86_64
 Requires: sane-backends-libs(x86-64)
 %endif
-%ifarch %{arm} aarch64
+%ifarch aarch64
 Requires: sane-backends-libs
 %endif
 
@@ -1067,9 +1051,6 @@ unset PKG_CONFIG_PATH
  --x-includes=%{_includedir} --x-libraries=%{_libdir} \
  --with-dbus \
  --with-x \
-%ifarch %{arm}
- --with-float-abi=hard \
-%endif
 %ifarch x86_64 aarch64
  --enable-win64 \
 %endif
@@ -1415,66 +1396,96 @@ fi
 %{_libdir}/wine/%{winesodir_i386}
 %endif
 
-%{_libdir}/wine/%{winedlldir}/attrib.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/arp.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/aspnet_regiis.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/attrib.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cacls.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/certutil.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/clock.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/conhost.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cscript.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dism.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dllhost.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/dotnetfx35.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/dplaysvr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dpnsvr.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/dpvsetup.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/eject.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/expand.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/extrac32.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/fc.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/find.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/findstr.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/find.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/fsutil.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/hh.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/hostname.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/icacls.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/icinfo.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/iexplore.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ipconfig.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/winhlp32.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/klist.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/lodctr.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/makecab.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/mshta.%{wineexe}
-%if 0%{?wine_staging}
 %{_libdir}/wine/%{winedlldir}/msidb.%{wineexe}
-%endif
 %{_libdir}/wine/%{winedlldir}/msiexec.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/net.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/msinfo32.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/netsh.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/netstat.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/net.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ngen.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ntoskrnl.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/oleview.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ping.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/pnputil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/powershell.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/reg.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/presentationfontcache.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/regasm.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/regedit.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/regini.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/regsvcs.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/regsvr32.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/reg.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/robocopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/rpcss.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/rundll32.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/schtasks.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/sc.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/sdbinst.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/secedit.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/servicemodelreg.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/services.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/setx.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/shutdown.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/sort.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/spoolsv.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/start.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/subst.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/svchost.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/systeminfo.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/taskkill.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/tasklist.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/termsv.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/timeout.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/uninstaller.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/unlodctr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/view.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wevtutil.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/where.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/whoami.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wineboot.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winebrowser.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/wineconsole.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winecfg.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/winemenubuilder.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/wineconsole.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/winedevice.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/winemenubuilder.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/winhlp32.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/wmic.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wmplayer.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wscript.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/uninstaller.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/wuauserv.%{wineexe}
+%{_libdir}/wine/%{winedlldir}/xcopy.%{wineexe}
 
 %{_libdir}/wine/%{winedlldir}/acledit.%{winedll}
 %{_libdir}/wine/%{winedlldir}/aclui.%{winedll}
@@ -1516,10 +1527,8 @@ fi
 %{_libdir}/wine/%{winedlldir}/cabinet.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cards.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cdosys.%{winedll}
-%{_libdir}/wine/%{winedlldir}/certutil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/cfgmgr32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/chcp.%{winecom}
-%{_libdir}/wine/%{winedlldir}/clock.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/clusapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cng.%{winesys}
 %{_libdir}/wine/%{winedlldir}/colorcnv.%{winedll}
@@ -1591,9 +1600,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/dmsynth.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dmusic.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dmusic32.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dotnetfx35.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dplay.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dplaysvr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dplayx.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnaddr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dpnet.%{winedll}
@@ -1609,7 +1616,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/dssenh.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dswave.%{winedll}
 %{_libdir}/wine/%{winedlldir}/dsuiext.%{winedll}
-%{_libdir}/wine/%{winedlldir}/dpvsetup.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/dwmapi.%{winedll}
 %{_libdir}/wine/%{winesodir}/dwrite.so
 %{_libdir}/wine/%{winedlldir}/dwrite.%{winedll}
@@ -1645,7 +1651,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/gpkcsp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/graphicscapture.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hal.%{winedll}
-%{_libdir}/wine/%{winedlldir}/hh.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/hhctrl.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/hid.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hidclass.%{winesys}
@@ -1657,9 +1662,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/httpapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/hvsimanagementapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ia2comproxy.%{winedll}
-%{_libdir}/wine/%{winedlldir}/icacls.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/iccvid.%{winedll}
-%{_libdir}/wine/%{winedlldir}/icinfo.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/icmp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/icmui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ieframe.%{winedll}
@@ -1688,7 +1691,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/kerberos.%{winedll}
 %{_libdir}/wine/%{winedlldir}/kernel32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/kernelbase.%{winedll}
-%{_libdir}/wine/%{winedlldir}/klist.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ksecdd.%{winesys}
 %{_libdir}/wine/%{winedlldir}/ksproxy.%{wineax}
 %{_libdir}/wine/%{winedlldir}/ksuser.%{winedll}
@@ -1700,7 +1702,6 @@ fi
 %{_libdir}/wine/%{winesodir}/localspl.so
 %{_libdir}/wine/%{winedlldir}/localspl.%{winedll}
 %{_libdir}/wine/%{winedlldir}/localui.%{winedll}
-%{_libdir}/wine/%{winedlldir}/lodctr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/lz32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/magnification.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mapi32.%{winedll}
@@ -1726,7 +1727,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/mlang.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mmcndmgr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/mmdevapi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/mofcomp.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/mouhid.%{winesys}
 %{_libdir}/wine/%{winesodir}/mountmgr.so
 %{_libdir}/wine/%{winedlldir}/mountmgr.%{winesys}
@@ -1760,7 +1760,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/msimtf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msimg32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msimsg.%{winedll}
-%{_libdir}/wine/%{winedlldir}/msinfo32.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/msisip.%{winedll}
 %{_libdir}/wine/%{winedlldir}/msisys.%{wineocx}
 %{_libdir}/wine/%{winedlldir}/msls31.%{winedll}
@@ -1824,7 +1823,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/netcfgx.%{winedll}
 %{_libdir}/wine/%{winedlldir}/netio.%{winesys}
 %{_libdir}/wine/%{winedlldir}/netprofm.%{winedll}
-%{_libdir}/wine/%{winedlldir}/netsh.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/netutils.%{winedll}
 %{_libdir}/wine/%{winedlldir}/newdev.%{winedll}
 %{_libdir}/wine/%{winedlldir}/ninput.%{winedll}
@@ -1856,11 +1854,9 @@ fi
 %{_libdir}/wine/%{winedlldir}/opcservices.%{winedll}
 %{_libdir}/wine/%{winedlldir}/packager.%{winedll}
 %{_libdir}/wine/%{winedlldir}/pdh.%{winedll}
-%{_libdir}/wine/%{winedlldir}/pnputil.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/photometadatahandler.%{winedll}
 %{_libdir}/wine/%{winedlldir}/pidgen.%{winedll}
 %{_libdir}/wine/%{winedlldir}/powrprof.%{winedll}
-%{_libdir}/wine/%{winedlldir}/presentationfontcache.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/printui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/prntvpt.%{winedll}
 %{_libdir}/wine/%{winedlldir}/profapi.%{winedll}
@@ -1886,7 +1882,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/riched20.%{winedll}
 %{_libdir}/wine/%{winedlldir}/riched32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rpcrt4.%{winedll}
-%{_libdir}/wine/%{winedlldir}/robocopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/rometadata.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rsabase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/rsaenh.%{winedll}
@@ -1896,7 +1891,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/samlib.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sas.%{winedll}
-%{_libdir}/wine/%{winedlldir}/sc.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/scarddlg.%{winedll}
 %{_libdir}/wine/%{winedlldir}/scardsvr.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sccbase.%{winedll}
@@ -1910,7 +1904,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/sensapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/serialui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/setupapi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/setx.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/sfc_os.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shdoclc.%{winedll}
@@ -1919,12 +1912,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/shell32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shfolder.%{winedll}
 %{_libdir}/wine/%{winedlldir}/shlwapi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/shutdown.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/slbcsp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/slc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/snmpapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/softpub.%{winedll}
-%{_libdir}/wine/%{winedlldir}/spoolsv.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/sppc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/srclient.%{winedll}
 %{_libdir}/wine/%{winedlldir}/srvcli.%{winedll}
@@ -1934,14 +1925,10 @@ fi
 %{_libdir}/wine/%{winedlldir}/stdole32.%{winetlb}
 %{_libdir}/wine/%{winedlldir}/sti.%{winedll}
 %{_libdir}/wine/%{winedlldir}/strmdll.%{winedll}
-%{_libdir}/wine/%{winedlldir}/subst.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/svchost.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/svrapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sxs.%{winedll}
-%{_libdir}/wine/%{winedlldir}/systeminfo.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/t2embed.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tapi32.%{winedll}
-%{_libdir}/wine/%{winedlldir}/taskkill.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/taskschd.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tbs.%{winedll}
 %{_libdir}/wine/%{winedlldir}/tdh.%{winedll}
@@ -1955,7 +1942,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/uiautomationcore.%{winedll}
 %{_libdir}/wine/%{winedlldir}/uiribbon.%{winedll}
 %{_libdir}/wine/%{winedlldir}/unicows.%{winedll}
-%{_libdir}/wine/%{winedlldir}/unlodctr.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/updspapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/url.%{winedll}
 %{_libdir}/wine/%{winedlldir}/urlmon.%{winedll}
@@ -1990,8 +1976,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/wer.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wevtapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wevtsvc.%{winedll}
-%{_libdir}/wine/%{winedlldir}/where.%{wineexe}
-%{_libdir}/wine/%{winedlldir}/whoami.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wiaservc.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wldp.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wimgapi.%{winedll}
@@ -2057,7 +2041,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/wmadmod.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmasf.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/wmic.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/wmilib.%{winesys}
 %{_libdir}/wine/%{winedlldir}/wmiutils.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wmp.%{winedll}
@@ -2090,7 +2073,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/wtsapi32.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wuapi.%{winedll}
 %{_libdir}/wine/%{winedlldir}/wuaueng.%{winedll}
-%{_libdir}/wine/%{winedlldir}/wuauserv.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/security.%{winedll}
 %{_libdir}/wine/%{winedlldir}/sfc.%{winedll}
 %{_libdir}/wine/%{winesodir}/wineps.so
@@ -2104,7 +2086,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/winexinput.%{winesys}
 %{_libdir}/wine/%{winesodir}/dnsapi.so
 %{_libdir}/wine/%{winedlldir}/dnsapi.%{winedll}
-%{_libdir}/wine/%{winedlldir}/iexplore.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/xactengine2_0.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_4.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xactengine2_7.%{winedll}
@@ -2140,7 +2121,6 @@ fi
 %{_libdir}/wine/%{winedlldir}/xaudio2_7.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xaudio2_8.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xaudio2_9.%{winedll}
-%{_libdir}/wine/%{winedlldir}/xcopy.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/xinput1_1.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xinput1_2.%{winedll}
 %{_libdir}/wine/%{winedlldir}/xinput1_3.%{winedll}
@@ -2181,7 +2161,7 @@ fi
 %endif
 
 # 16 bit and other non 64bit stuff
-%ifnarch x86_64 %{arm} aarch64
+%ifnarch x86_64 aarch64
 %{_libdir}/wine/%{winedlldir}/winevdm.%{wineexe}
 %{_libdir}/wine/%{winedlldir}/ifsmgr.%{winevxd}
 %{_libdir}/wine/%{winedlldir}/mmdevldr.%{winevxd}
@@ -2533,6 +2513,9 @@ fi
 
 
 %changelog
+* Sat Mar 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.3-100
+- 10.3
+
 * Sat Feb 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.2-100.20250222gite1b8e7f
 - 10.2
 
