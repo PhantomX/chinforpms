@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 18f8a0f997e6408bc5f67db2ccd3193ba64ae3d0
+%global commit dad885967942477d887b5dd16a97f07d2316bd3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250221
+%global date 20250311
 %bcond_without snapshot
 
 # Enable system boost
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           citron
-Version:        0.5.27190
+Version:        0.6.27236
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -469,6 +469,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Tue Mar 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.6.27236-1.20250311gitdad8859
+- 0.6
+
 * Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.27190-1.20250221git18f8a0f
 - 0.5
 
