@@ -1,4 +1,4 @@
-From 6100418152d4a71cb0f879ece3d3da5889e6736f Mon Sep 17 00:00:00 2001
+From c3159cd55a393b7f9a313a767b6628cd132835b2 Mon Sep 17 00:00:00 2001
 From: Rik van Riel <riel@fb.com>
 Date: Wed, 4 Dec 2024 21:03:16 -0500
 Subject: [PATCH] x86/mm/tlb: Only trim the mm_cpumask once a second
@@ -41,7 +41,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  4 files changed, 36 insertions(+), 3 deletions(-)
 
 diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index 63430fe..edb5942 100644
+index adb4abf..8b8055a 100644
 --- a/arch/x86/include/asm/mmu.h
 +++ b/arch/x86/include/asm/mmu.h
 @@ -37,6 +37,8 @@ typedef struct {
@@ -54,10 +54,10 @@ index 63430fe..edb5942 100644
  	struct rw_semaphore	ldt_usr_sem;
  	struct ldt_struct	*ldt;
 diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index 65f5046..d670699 100644
+index 07408fe..2398058 100644
 --- a/arch/x86/include/asm/mmu_context.h
 +++ b/arch/x86/include/asm/mmu_context.h
-@@ -153,6 +153,7 @@ static inline int init_new_context(struct task_struct *tsk,
+@@ -156,6 +156,7 @@ static inline int init_new_context(struct task_struct *tsk,
  
  	mm->context.ctx_id = atomic64_inc_return(&last_mm_ctx_id);
  	atomic64_set(&mm->context.tlb_gen, 0);
@@ -66,10 +66,10 @@ index 65f5046..d670699 100644
  #ifdef CONFIG_X86_INTEL_MEMORY_PROTECTION_KEYS
  	if (cpu_feature_enabled(X86_FEATURE_OSPKE)) {
 diff --git a/arch/x86/include/asm/tlbflush.h b/arch/x86/include/asm/tlbflush.h
-index d77802d..b6a6f5e 100644
+index 05e6d6e..0bc9148 100644
 --- a/arch/x86/include/asm/tlbflush.h
 +++ b/arch/x86/include/asm/tlbflush.h
-@@ -229,6 +229,7 @@ struct flush_tlb_info {
+@@ -226,6 +226,7 @@ struct flush_tlb_info {
  	unsigned int		initiating_cpu;
  	u8			stride_shift;
  	u8			freed_tables;
@@ -78,10 +78,10 @@ index d77802d..b6a6f5e 100644
  
  void flush_tlb_local(void);
 diff --git a/arch/x86/mm/tlb.c b/arch/x86/mm/tlb.c
-index f3b46f9..7baf7c7 100644
+index d33c115..20beca4 100644
 --- a/arch/x86/mm/tlb.c
 +++ b/arch/x86/mm/tlb.c
-@@ -1232,9 +1232,36 @@ static void flush_tlb_func(void *info)
+@@ -1203,9 +1203,36 @@ static void flush_tlb_func(void *info)
  			nr_invalidate);
  }
  
@@ -120,8 +120,8 @@ index f3b46f9..7baf7c7 100644
  }
  
  DEFINE_PER_CPU_SHARED_ALIGNED(struct tlb_state_shared, cpu_tlbstate_shared);
-@@ -1268,7 +1295,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
- 	if (info->freed_tables || in_asid_transition(info->mm))
+@@ -1239,7 +1266,7 @@ STATIC_NOPV void native_flush_tlb_multi(const struct cpumask *cpumask,
+ 	if (info->freed_tables || mm_in_asid_transition(info->mm))
  		on_each_cpu_mask(cpumask, flush_tlb_func, (void *)info, true);
  	else
 -		on_each_cpu_cond_mask(tlb_is_not_lazy, flush_tlb_func,
@@ -129,7 +129,7 @@ index f3b46f9..7baf7c7 100644
  				(void *)info, 1, cpumask);
  }
  
-@@ -1328,6 +1355,7 @@ static struct flush_tlb_info *get_flush_tlb_info(struct mm_struct *mm,
+@@ -1299,6 +1326,7 @@ static struct flush_tlb_info *get_flush_tlb_info(struct mm_struct *mm,
  	info->freed_tables	= freed_tables;
  	info->new_tlb_gen	= new_tlb_gen;
  	info->initiating_cpu	= smp_processor_id();
@@ -137,7 +137,7 @@ index f3b46f9..7baf7c7 100644
  
  	return info;
  }
-@@ -1363,6 +1391,7 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
+@@ -1334,6 +1362,7 @@ void flush_tlb_mm_range(struct mm_struct *mm, unsigned long start,
  	if (mm_global_asid(mm)) {
  		broadcast_tlb_flush(info);
  	} else if (cpumask_any_but(mm_cpumask(mm), cpu) < nr_cpu_ids) {

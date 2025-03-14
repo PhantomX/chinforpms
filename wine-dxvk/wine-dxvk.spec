@@ -21,7 +21,7 @@ BuildArch:      noarch
 %global commit 1b529c711cb9a9e49a51e736a15fcddf3953df93
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250308
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with debug
 %bcond_without gplasync
@@ -70,8 +70,8 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.5.3
-Release:        103%{?dist}
+Version:        2.6
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -304,6 +304,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Mar 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6-100
+- 2.6
+
 * Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.3-100
 - 2.5.3
 

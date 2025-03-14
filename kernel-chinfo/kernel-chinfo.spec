@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.6
+%define specrpmversion 6.13.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1201,7 +1201,6 @@ Patch7310:  %{pf_url}/e71beabac0ed789cc01c8f82671cf226bf5c8312.patch#/pf-cb-e71b
 # fixes 
 Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
 Patch7401:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
-Patch7402:  %{pf_url}/7cebad8612ca550fb0faebd8ae880a22eb1278c1.patch#/pf-cb-7cebad8.patch
 # amd-rapl
 Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
 Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
@@ -1237,6 +1236,7 @@ Patch7716:  %{pf_url}/2a0ae010f9e16919aed97fe6406462b704d60c2f.patch#/pf-cb-2a0a
 Patch7717:  %{pf_url}/9679edf4c6c561d85570adb5a26223edd5ec05f1.patch#/pf-cb-9679edf.patch
 Patch7718:  %{pf_url}/bb72dda03d3cc35d4ef4c1127663c9312939d944.patch#/pf-cb-bb72dda.patch
 Patch7719:  %{pf_url}/2d0eb6e4f96b3c27e2d187d49658c6824dddc5b8.patch#/pf-cb-2d0eb6e.patch
+Patch7720:  %{pf_url}/03ead1e0c0c05cf757387a8797a0d0719859dee4.patch#/pf-cb-03ead1e.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2106,7 +2106,6 @@ ApplyPatch %{PATCH7310}
 # fixes
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
 # amd-rapl
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -2143,6 +2142,7 @@ ApplyPatch %{PATCH7716}
 ApplyPatch %{PATCH7717}
 ApplyPatch %{PATCH7718}
 ApplyPatch %{PATCH7719}
+ApplyPatch %{PATCH7720}
 ApplyPatch %{PATCH5002}
 %endif
 
@@ -4459,6 +4459,9 @@ fi\
 #
 #
 %changelog
+* Thu Mar 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-500.chinfo
+- 6.13.7
+
 * Fri Mar 07 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.6-500.chinfo
 - 6.13.6
 

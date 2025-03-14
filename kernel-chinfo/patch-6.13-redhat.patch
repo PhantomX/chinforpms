@@ -47,7 +47,7 @@
  drivers/hwtracing/coresight/coresight-etm4x-core.c |   19 +
  drivers/input/rmi4/rmi_driver.c                    |  124 +-
  drivers/iommu/iommu.c                              |   22 +
- drivers/media/i2c/ov08x40.c                        |  167 ++-
+ drivers/media/i2c/ov08x40.c                        |  170 ++-
  drivers/nvme/host/core.c                           |   22 +-
  drivers/nvme/host/multipath.c                      |   19 +-
  drivers/nvme/host/nvme.h                           |    4 +
@@ -58,20 +58,20 @@
  include/linux/efi.h                                |   22 +-
  include/linux/hid-over-i2c.h                       |  117 ++
  include/linux/hid-over-spi.h                       |  155 ++
- include/linux/lsm_hook_defs.h                      |    2 +
- include/linux/rh_kabi.h                            |  541 +++++++
+ include/linux/lsm_hook_defs.h                      |    1 +
  include/linux/rmi.h                                |    1 +
- include/linux/security.h                           |    5 +
+ include/linux/security.h                           |    9 +
  kernel/module/signing.c                            |    9 +-
  scripts/tags.sh                                    |    2 +
  security/integrity/platform_certs/load_uefi.c      |    6 +-
  security/lockdown/Kconfig                          |   13 +
- security/lockdown/lockdown.c                       |    1 +
- security/security.c                                |   12 +
- 70 files changed, 9162 insertions(+), 276 deletions(-)
+ security/lockdown/lockdown.c                       |   11 +
+ sound/soc/codecs/rt712-sdca.c                      |   80 +-
+ sound/soc/codecs/rt712-sdca.h                      |    3 +
+ 71 files changed, 9231 insertions(+), 294 deletions(-)
 
 diff --git a/Documentation/hid/index.rst b/Documentation/hid/index.rst
-index af02cf7cfa82..baf156b44b58 100644
+index af02cf7cfa820..baf156b44b58a 100644
 --- a/Documentation/hid/index.rst
 +++ b/Documentation/hid/index.rst
 @@ -18,4 +18,5 @@ Human Interface Devices (HID)
@@ -82,7 +82,7 @@ index af02cf7cfa82..baf156b44b58 100644
     amd-sfh-hid
 diff --git a/Documentation/hid/intel-thc-hid.rst b/Documentation/hid/intel-thc-hid.rst
 new file mode 100644
-index 000000000000..6c417205ac6a
+index 0000000000000..6c417205ac6a5
 --- /dev/null
 +++ b/Documentation/hid/intel-thc-hid.rst
 @@ -0,0 +1,568 @@
@@ -655,7 +655,7 @@ index 000000000000..6c417205ac6a
 +- HIDSPI: https://download.microsoft.com/download/c/a/0/ca07aef3-3e10-4022-b1e9-c98cea99465d/HidSpiProtocolSpec.pdf
 +- HIDI2C: https://download.microsoft.com/download/7/d/d/7dd44bb7-2a7a-4505-ac1c-7227d3d96d5b/hid-over-i2c-protocol-spec-v1-0.docx
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 0fa7c5728f1e..e404279c8610 100644
+index 0fa7c5728f1e6..e404279c86107 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -11872,6 +11872,12 @@ S:	Maintained
@@ -671,9 +671,8 @@ index 0fa7c5728f1e..e404279c8610 100644
  INTEL TPMI DRIVER
  M:	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
  L:	platform-driver-x86@vger.kernel.org
-
 diff --git a/Makefile b/Makefile
-index b9464c88ac72..1d97c5162532 100644
+index 3363645fa6242..ba71e36c832be 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -713,7 +712,7 @@ index b9464c88ac72..1d97c5162532 100644
  ifdef mixed-build
  # ===========================================================================
  # We're called with mixed targets (*config and build targets).
-@@ -1910,6 +1939,23 @@ endif
+@@ -1910,6 +1933,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -738,7 +737,7 @@ index b9464c88ac72..1d97c5162532 100644
  	@:
  
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 202397be76d8..3d4ba33d4305 100644
+index 202397be76d80..3d4ba33d4305f 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -1228,9 +1228,9 @@ config HIGHMEM
@@ -754,7 +753,7 @@ index 202397be76d8..3d4ba33d4305 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index b0d00032479d..afb9544fb007 100644
+index b0d00032479d6..afb9544fb0074 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
 @@ -139,6 +139,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
@@ -766,7 +765,7 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 7d12a1305fc9..569b92def9b7 100644
+index 7d12a1305fc99..569b92def9b79 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
 @@ -2497,3 +2497,8 @@ int ipl_report_free(struct ipl_report *report)
@@ -779,7 +778,7 @@ index 7d12a1305fc9..569b92def9b7 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index a3fea683b227..a3162d93f437 100644
+index 99f165726ca9e..70b4ef0d86b86 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -801,7 +800,7 @@ index a3fea683b227..a3162d93f437 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index f1fea506e20f..d5bc9aaa1131 100644
+index f1fea506e20f4..6af50d80f54aa 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -812,7 +811,7 @@ index f1fea506e20f..d5bc9aaa1131 100644
  #include <linux/usb/xhci-dbgp.h>
  #include <linux/static_call.h>
  #include <linux/swiotlb.h>
-@@ -904,6 +979,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -904,6 +905,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -826,7 +825,7 @@ index f1fea506e20f..d5bc9aaa1131 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1070,19 +1152,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1070,19 +1078,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -848,7 +847,7 @@ index f1fea506e20f..d5bc9aaa1131 100644
  	reserve_initrd();
  
 diff --git a/arch/x86/tools/insn_decoder_test.c b/arch/x86/tools/insn_decoder_test.c
-index 472540aeabc2..366e07546344 100644
+index 472540aeabc23..366e07546344b 100644
 --- a/arch/x86/tools/insn_decoder_test.c
 +++ b/arch/x86/tools/insn_decoder_test.c
 @@ -106,7 +106,7 @@ static void parse_args(int argc, char **argv)
@@ -861,7 +860,7 @@ index 472540aeabc2..366e07546344 100644
  int main(int argc, char **argv)
  {
 diff --git a/crypto/akcipher.c b/crypto/akcipher.c
-index 72c82d9aa077..da1ac5de8252 100644
+index 72c82d9aa0778..da1ac5de8252d 100644
 --- a/crypto/akcipher.c
 +++ b/crypto/akcipher.c
 @@ -141,8 +141,7 @@ int crypto_register_akcipher(struct akcipher_alg *alg)
@@ -875,7 +874,7 @@ index 72c82d9aa077..da1ac5de8252 100644
  		alg->set_priv_key = akcipher_default_set_key;
  
 diff --git a/crypto/dh.c b/crypto/dh.c
-index afc0fd847761..e13258c3d1d1 100644
+index afc0fd8477613..e13258c3d1d1a 100644
 --- a/crypto/dh.c
 +++ b/crypto/dh.c
 @@ -227,10 +227,35 @@ static int dh_compute_value(struct kpp_request *req)
@@ -915,7 +914,7 @@ index afc0fd847761..e13258c3d1d1 100644
  	}
  
 diff --git a/crypto/seqiv.c b/crypto/seqiv.c
-index 17e11d51ddc3..9c136a3b6267 100644
+index 17e11d51ddc36..9c136a3b62679 100644
 --- a/crypto/seqiv.c
 +++ b/crypto/seqiv.c
 @@ -132,6 +132,19 @@ static int seqiv_aead_decrypt(struct aead_request *req)
@@ -948,7 +947,7 @@ index 17e11d51ddc3..9c136a3b6267 100644
  
  	inst->alg.base.cra_ctxsize = sizeof(struct aead_geniv_ctx);
 diff --git a/crypto/sig.c b/crypto/sig.c
-index 5e1f1f739da2..3fc9fffa718e 100644
+index 5e1f1f739da2e..3fc9fffa718e6 100644
 --- a/crypto/sig.c
 +++ b/crypto/sig.c
 @@ -108,8 +108,7 @@ static int sig_prepare_alg(struct sig_alg *alg)
@@ -962,7 +961,7 @@ index 5e1f1f739da2..3fc9fffa718e 100644
  		alg->verify = sig_default_verify;
  	if (!alg->set_priv_key)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 1f5f48ab18c7..00a3810bff51 100644
+index 1f5f48ab18c74..00a3810bff51e 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -4200,7 +4200,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
@@ -999,7 +998,7 @@ index 1f5f48ab18c7..00a3810bff51 100644
  			.kpp = __VECS(ecdh_p384_tv_template)
  		}
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 20d757687e3d..90a13f20f052 100644
+index 20d757687e3d9..90a13f20f052b 100644
 --- a/drivers/acpi/apei/hest.c
 +++ b/drivers/acpi/apei/hest.c
 @@ -142,6 +142,14 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
@@ -1018,7 +1017,7 @@ index 20d757687e3d..90a13f20f052 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 1687483ff319..390b67f19181 100644
+index 1687483ff319e..390b67f19181a 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -143,6 +143,7 @@ struct acpi_irq_parse_one_ctx {
@@ -1061,7 +1060,7 @@ index 1687483ff319..390b67f19181 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 74dcccdc6482..d6265ddc87ef 100644
+index 74dcccdc6482b..d6265ddc87efe 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1802,6 +1802,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -1081,7 +1080,7 @@ index 74dcccdc6482..d6265ddc87ef 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index fdfa7b266218..f5f8ba457c93 100644
+index fdfa7b2662180..f5f8ba457c93f 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -729,6 +729,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -1110,7 +1109,7 @@ index fdfa7b266218..f5f8ba457c93 100644
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
-index bbf7029e224b..cf7faa970dd6 100644
+index bbf7029e224be..cf7faa970dd65 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
 +++ b/drivers/char/ipmi/ipmi_dmi.c
 @@ -215,6 +215,21 @@ static int __init scan_for_dmi_ipmi(void)
@@ -1136,7 +1135,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
  
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index e12b531f5c2f..082707f8dff8 100644
+index e12b531f5c2f3..082707f8dff8c 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -35,6 +35,7 @@
@@ -1171,7 +1170,7 @@ index e12b531f5c2f..082707f8dff8 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index a2d0009560d0..4f3486e6a84b 100644
+index a2d0009560d0f..4f3486e6a84b2 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -25,6 +25,7 @@ subdir-$(CONFIG_EFI_STUB)		+= libstub
@@ -1183,7 +1182,7 @@ index a2d0009560d0..4f3486e6a84b 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 60c64b81d2c3..19cb19cf67d4 100644
+index 1992d1176c7ed..666e6845bd921 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -33,6 +33,7 @@
@@ -1194,7 +1193,7 @@ index 60c64b81d2c3..19cb19cf67d4 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -1008,40 +1009,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -1010,40 +1011,101 @@ int efi_mem_type(unsigned long phys_addr)
  	return -EINVAL;
  }
  
@@ -1329,7 +1328,7 @@ index 60c64b81d2c3..19cb19cf67d4 100644
  
 diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
 new file mode 100644
-index 000000000000..de0a3714a5d4
+index 0000000000000..de0a3714a5d44
 --- /dev/null
 +++ b/drivers/firmware/efi/secureboot.c
 @@ -0,0 +1,38 @@
@@ -1372,7 +1371,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hid/Kconfig b/drivers/hid/Kconfig
-index 4d2a89d65b65..c57927529f8a 100644
+index 4d2a89d65b658..c57927529f8a4 100644
 --- a/drivers/hid/Kconfig
 +++ b/drivers/hid/Kconfig
 @@ -1386,4 +1386,6 @@ source "drivers/hid/amd-sfh-hid/Kconfig"
@@ -1383,7 +1382,7 @@ index 4d2a89d65b65..c57927529f8a 100644
 +
  endif # HID_SUPPORT
 diff --git a/drivers/hid/Makefile b/drivers/hid/Makefile
-index 24de45f3677d..482b096eea28 100644
+index 24de45f3677d1..482b096eea280 100644
 --- a/drivers/hid/Makefile
 +++ b/drivers/hid/Makefile
 @@ -171,3 +171,5 @@ obj-$(INTEL_ISH_FIRMWARE_DOWNLOADER)	+= intel-ish-hid/
@@ -1393,7 +1392,7 @@ index 24de45f3677d..482b096eea28 100644
 +
 +obj-$(CONFIG_INTEL_THC_HID)     += intel-thc-hid/
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index d4af17fdba46..154f0403cbf4 100644
+index d4af17fdba467..154f0403cbf4c 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -1496,7 +1495,7 @@ index d4af17fdba46..154f0403cbf4 100644
  
 diff --git a/drivers/hid/intel-thc-hid/Kconfig b/drivers/hid/intel-thc-hid/Kconfig
 new file mode 100644
-index 000000000000..91ec84902db8
+index 0000000000000..91ec84902db8f
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/Kconfig
 @@ -0,0 +1,43 @@
@@ -1545,7 +1544,7 @@ index 000000000000..91ec84902db8
 +endmenu
 diff --git a/drivers/hid/intel-thc-hid/Makefile b/drivers/hid/intel-thc-hid/Makefile
 new file mode 100644
-index 000000000000..6f762d87af07
+index 0000000000000..6f762d87af070
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/Makefile
 @@ -0,0 +1,22 @@
@@ -1573,7 +1572,7 @@ index 000000000000..6f762d87af07
 +ccflags-y += -I $(src)/intel-thc
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/pci-quicki2c.c b/drivers/hid/intel-thc-hid/intel-quicki2c/pci-quicki2c.c
 new file mode 100644
-index 000000000000..2de93f4a25ca
+index 0000000000000..2de93f4a25ca4
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/pci-quicki2c.c
 @@ -0,0 +1,969 @@
@@ -2548,7 +2547,7 @@ index 000000000000..2de93f4a25ca
 +MODULE_IMPORT_NS("INTEL_THC");
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
 new file mode 100644
-index 000000000000..6ddb584bd611
+index 0000000000000..6ddb584bd6110
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
 @@ -0,0 +1,186 @@
@@ -2740,7 +2739,7 @@ index 000000000000..6ddb584bd611
 +#endif /* _QUICKI2C_DEV_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.c b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.c
 new file mode 100644
-index 000000000000..5c3ec95bb3fd
+index 0000000000000..5c3ec95bb3fdd
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.c
 @@ -0,0 +1,166 @@
@@ -2912,7 +2911,7 @@ index 000000000000..5c3ec95bb3fd
 +}
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.h b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.h
 new file mode 100644
-index 000000000000..e80df5f339fe
+index 0000000000000..e80df5f339fef
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-hid.h
 @@ -0,0 +1,14 @@
@@ -2932,7 +2931,7 @@ index 000000000000..e80df5f339fe
 +#endif /* _QUICKI2C_HID_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.c b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.c
 new file mode 100644
-index 000000000000..f493df0d5dc4
+index 0000000000000..f493df0d5dc4e
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.c
 @@ -0,0 +1,224 @@
@@ -3162,7 +3161,7 @@ index 000000000000..f493df0d5dc4
 +}
 diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.h b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.h
 new file mode 100644
-index 000000000000..bf4908cce59c
+index 0000000000000..bf4908cce59cc
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-protocol.h
 @@ -0,0 +1,20 @@
@@ -3188,7 +3187,7 @@ index 000000000000..bf4908cce59c
 +#endif /* _QUICKI2C_PROTOCOL_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/pci-quickspi.c b/drivers/hid/intel-thc-hid/intel-quickspi/pci-quickspi.c
 new file mode 100644
-index 000000000000..4641e818dfa4
+index 0000000000000..4641e818dfa44
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/pci-quickspi.c
 @@ -0,0 +1,987 @@
@@ -4181,7 +4180,7 @@ index 000000000000..4641e818dfa4
 +MODULE_IMPORT_NS("INTEL_THC");
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-dev.h b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-dev.h
 new file mode 100644
-index 000000000000..75179bb26767
+index 0000000000000..75179bb267677
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-dev.h
 @@ -0,0 +1,172 @@
@@ -4359,7 +4358,7 @@ index 000000000000..75179bb26767
 +#endif /* _QUICKSPI_DEV_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.c b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.c
 new file mode 100644
-index 000000000000..ad52e402c28a
+index 0000000000000..ad52e402c28ac
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.c
 @@ -0,0 +1,165 @@
@@ -4530,7 +4529,7 @@ index 000000000000..ad52e402c28a
 +}
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.h b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.h
 new file mode 100644
-index 000000000000..f640fa876a40
+index 0000000000000..f640fa876a405
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-hid.h
 @@ -0,0 +1,14 @@
@@ -4550,7 +4549,7 @@ index 000000000000..f640fa876a40
 +#endif /* _QUICKSPI_HID_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.c b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.c
 new file mode 100644
-index 000000000000..7373238ceb18
+index 0000000000000..7373238ceb18b
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.c
 @@ -0,0 +1,414 @@
@@ -4970,7 +4969,7 @@ index 000000000000..7373238ceb18
 +}
 diff --git a/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.h b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.h
 new file mode 100644
-index 000000000000..775e29c1ed13
+index 0000000000000..775e29c1ed136
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-quickspi/quickspi-protocol.h
 @@ -0,0 +1,25 @@
@@ -5001,7 +5000,7 @@ index 000000000000..775e29c1ed13
 +#endif /* _QUICKSPI_PROTOCOL_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
 new file mode 100644
-index 000000000000..4fc78b5a04b5
+index 0000000000000..4fc78b5a04b5f
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
 @@ -0,0 +1,1578 @@
@@ -6585,7 +6584,7 @@ index 000000000000..4fc78b5a04b5
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.h b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.h
 new file mode 100644
-index 000000000000..0517fee2c668
+index 0000000000000..0517fee2c668b
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.h
 @@ -0,0 +1,116 @@
@@ -6707,7 +6706,7 @@ index 000000000000..0517fee2c668
 +#endif /* _INTEL_THC_DEV_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.c b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.c
 new file mode 100644
-index 000000000000..eb23bea77686
+index 0000000000000..eb23bea776864
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.c
 @@ -0,0 +1,969 @@
@@ -7682,7 +7681,7 @@ index 000000000000..eb23bea77686
 +EXPORT_SYMBOL_NS_GPL(thc_dma_write, "INTEL_THC");
 diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.h b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.h
 new file mode 100644
-index 000000000000..ca923ff2bef9
+index 0000000000000..ca923ff2bef99
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dma.h
 @@ -0,0 +1,146 @@
@@ -7834,7 +7833,7 @@ index 000000000000..ca923ff2bef9
 +#endif /* _INTEL_THC_DMA_H_ */
 diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-hw.h b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-hw.h
 new file mode 100644
-index 000000000000..6729c4c25dab
+index 0000000000000..6729c4c25dabc
 --- /dev/null
 +++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-hw.h
 @@ -0,0 +1,881 @@
@@ -8720,7 +8719,7 @@ index 000000000000..6729c4c25dab
 +
 +#endif /* _INTEL_THC_HW_H_  */
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index dd8c74f893db..f2d1fb1b7645 100644
+index dd8c74f893dbd..f2d1fb1b76454 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -10,6 +10,7 @@
@@ -8771,7 +8770,7 @@ index dd8c74f893db..f2d1fb1b7645 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index 2168b6cd7167..5d7cda175a0c 100644
+index 2168b6cd71673..5d7cda175a0ce 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -182,34 +182,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -8963,7 +8962,7 @@ index 2168b6cd7167..5d7cda175a0c 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 599030e1e890..74dd17d516c0 100644
+index 599030e1e890b..74dd17d516c0b 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -9003,7 +9002,7 @@ index 599030e1e890..74dd17d516c0 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/media/i2c/ov08x40.c b/drivers/media/i2c/ov08x40.c
-index b9682264e2f5..c2a399e3bb41 100644
+index b9682264e2f53..54575eea3c490 100644
 --- a/drivers/media/i2c/ov08x40.c
 +++ b/drivers/media/i2c/ov08x40.c
 @@ -1322,9 +1322,6 @@ static int ov08x40_power_on(struct device *dev)
@@ -9016,6 +9015,15 @@ index b9682264e2f5..c2a399e3bb41 100644
  	ret = clk_prepare_enable(ov08x->xvclk);
  	if (ret < 0) {
  		dev_err(dev, "failed to enable xvclk\n");
+@@ -1344,7 +1341,7 @@ static int ov08x40_power_on(struct device *dev)
+ 	}
+ 
+ 	gpiod_set_value_cansleep(ov08x->reset_gpio, 0);
+-	usleep_range(1500, 1800);
++	usleep_range(5000, 5500);
+ 
+ 	return 0;
+ 
 @@ -1360,9 +1357,6 @@ static int ov08x40_power_off(struct device *dev)
  	struct v4l2_subdev *sd = dev_get_drvdata(dev);
  	struct ov08x40 *ov08x = to_ov08x40(sd);
@@ -9056,7 +9064,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  
  	return 0;
  }
-@@ -1937,6 +1932,34 @@ static int ov08x40_stop_streaming(struct ov08x40 *ov08x)
+@@ -1937,6 +1932,35 @@ static int ov08x40_stop_streaming(struct ov08x40 *ov08x)
  				 OV08X40_REG_VALUE_08BIT, OV08X40_MODE_STANDBY);
  }
  
@@ -9083,6 +9091,7 @@ index b9682264e2f5..c2a399e3bb41 100644
 +		return -ENXIO;
 +	}
 +
++	dev_dbg(&client->dev, "chip id 0x%x\n", val);
 +	ov08x->identified = true;
 +
 +	return 0;
@@ -9091,7 +9100,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
  {
  	struct ov08x40 *ov08x = to_ov08x40(sd);
-@@ -1950,6 +1973,10 @@ static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
+@@ -1950,6 +1974,10 @@ static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
  		if (ret < 0)
  			goto err_unlock;
  
@@ -9102,7 +9111,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  		/*
  		 * Apply default & customized values
  		 * and then start streaming.
-@@ -1974,32 +2001,6 @@ static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
+@@ -1974,32 +2002,6 @@ static int ov08x40_set_stream(struct v4l2_subdev *sd, int enable)
  	return ret;
  }
  
@@ -9135,7 +9144,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  static const struct v4l2_subdev_video_ops ov08x40_video_ops = {
  	.s_stream = ov08x40_set_stream,
  };
-@@ -2151,65 +2152,69 @@ static int ov08x40_check_hwcfg(struct ov08x40 *ov08x, struct device *dev)
+@@ -2151,65 +2153,69 @@ static int ov08x40_check_hwcfg(struct ov08x40 *ov08x, struct device *dev)
  	int ret;
  	u32 xvclk_rate;
  
@@ -9164,7 +9173,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  
 -		xvclk_rate = clk_get_rate(ov08x->xvclk);
 +	ov08x->reset_gpio = devm_gpiod_get_optional(dev, "reset",
-+						    GPIOD_OUT_LOW);
++						    GPIOD_OUT_HIGH);
 +	if (IS_ERR(ov08x->reset_gpio)) {
 +		ret = dev_err_probe(dev, PTR_ERR(ov08x->reset_gpio),
 +				    "getting reset GPIO\n");
@@ -9241,7 +9250,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  		ret = -EINVAL;
  		goto out_err;
  	}
-@@ -2222,7 +2227,7 @@ static int ov08x40_check_hwcfg(struct ov08x40 *ov08x, struct device *dev)
+@@ -2222,7 +2228,7 @@ static int ov08x40_check_hwcfg(struct ov08x40 *ov08x, struct device *dev)
  		}
  
  		if (j == bus_cfg.nr_of_link_frequencies) {
@@ -9250,7 +9259,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  				link_freq_menu_items[i]);
  			ret = -EINVAL;
  			goto out_err;
-@@ -2246,10 +2251,8 @@ static int ov08x40_probe(struct i2c_client *client)
+@@ -2246,10 +2252,8 @@ static int ov08x40_probe(struct i2c_client *client)
  
  	/* Check HW config */
  	ret = ov08x40_check_hwcfg(ov08x, &client->dev);
@@ -9262,7 +9271,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  
  	/* Initialize subdev */
  	v4l2_i2c_subdev_init(&ov08x->sd, client, &ov08x40_subdev_ops);
-@@ -2264,10 +2267,8 @@ static int ov08x40_probe(struct i2c_client *client)
+@@ -2264,10 +2268,8 @@ static int ov08x40_probe(struct i2c_client *client)
  
  		/* Check module identity */
  		ret = ov08x40_identify_module(ov08x);
@@ -9274,7 +9283,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  	}
  
  	/* Set default mode to max resolution */
-@@ -2324,11 +2325,14 @@ static void ov08x40_remove(struct i2c_client *client)
+@@ -2324,11 +2326,14 @@ static void ov08x40_remove(struct i2c_client *client)
  	ov08x40_free_controls(ov08x);
  
  	pm_runtime_disable(&client->dev);
@@ -9291,7 +9300,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  #ifdef CONFIG_ACPI
  static const struct acpi_device_id ov08x40_acpi_ids[] = {
  	{"OVTI08F4"},
-@@ -2349,6 +2353,7 @@ static struct i2c_driver ov08x40_i2c_driver = {
+@@ -2349,6 +2354,7 @@ static struct i2c_driver ov08x40_i2c_driver = {
  		.name = "ov08x40",
  		.acpi_match_table = ACPI_PTR(ov08x40_acpi_ids),
  		.of_match_table = ov08x40_of_match,
@@ -9300,7 +9309,7 @@ index b9682264e2f5..c2a399e3bb41 100644
  	.probe = ov08x40_probe,
  	.remove = ov08x40_remove,
 diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index a970168a3014..6b5f6ce38e6b 100644
+index 46e04b30f6425..063ffbe57ba94 100644
 --- a/drivers/nvme/host/core.c
 +++ b/drivers/nvme/host/core.c
 @@ -276,6 +276,9 @@ void nvme_delete_ctrl_sync(struct nvme_ctrl *ctrl)
@@ -9370,7 +9379,7 @@ index a970168a3014..6b5f6ce38e6b 100644
  #ifdef CONFIG_NVME_HOST_AUTH
  		queue_work(nvme_wq, &ctrl->dhchap_auth_work);
 diff --git a/drivers/nvme/host/multipath.c b/drivers/nvme/host/multipath.c
-index a85d190942bd..b974ea81b62c 100644
+index a85d190942bdf..b974ea81b62cb 100644
 --- a/drivers/nvme/host/multipath.c
 +++ b/drivers/nvme/host/multipath.c
 @@ -83,14 +83,10 @@ void nvme_mpath_start_freeze(struct nvme_subsystem *subsys)
@@ -9417,7 +9426,7 @@ index a85d190942bd..b974ea81b62c 100644
  
  	/* initialize this in the identify path to cover controller resets */
 diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index c4bb8dfe1a45..a17435a61ed3 100644
+index c4bb8dfe1a458..a17435a61ed33 100644
 --- a/drivers/nvme/host/nvme.h
 +++ b/drivers/nvme/host/nvme.h
 @@ -953,6 +953,7 @@ void nvme_mpath_wait_freeze(struct nvme_subsystem *subsys);
@@ -9439,7 +9448,7 @@ index c4bb8dfe1a45..a17435a61ed3 100644
  {
  }
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 76f4df75b08a..d7af71f1825b 100644
+index 0a1f668999cef..8aba731f9ce32 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4451,6 +4451,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -9474,10 +9483,10 @@ index 76f4df75b08a..d7af71f1825b 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 21ac9b464696..24a92295bd8d 100644
+index 145787c424e0c..85f92b85237cb 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5846,6 +5846,13 @@ static void hub_event(struct work_struct *work)
+@@ -5856,6 +5856,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -9492,7 +9501,7 @@ index 21ac9b464696..24a92295bd8d 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
-index b164da5e129e..72bfb79b491d 100644
+index b164da5e129e8..72bfb79b491da 100644
 --- a/include/linux/crypto.h
 +++ b/include/linux/crypto.h
 @@ -134,6 +134,8 @@
@@ -9505,7 +9514,7 @@ index b164da5e129e..72bfb79b491d 100644
   * Miscellaneous stuff.
   */
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index e5815867aba9..b17440aaf863 100644
+index 8bcd629ee250d..a7f3e750f2fcb 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -45,6 +45,8 @@ struct screen_info;
@@ -9517,7 +9526,7 @@ index e5815867aba9..b17440aaf863 100644
  typedef unsigned long efi_status_t;
  typedef u8 efi_bool_t;
  typedef u16 efi_char16_t;		/* UNICODE character */
-@@ -864,6 +866,14 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
+@@ -865,6 +867,14 @@ static inline int efi_range_is_wc(unsigned long start, unsigned long len)
  #define EFI_MEM_ATTR		9	/* Did firmware publish an EFI_MEMORY_ATTRIBUTES table? */
  #define EFI_MEM_NO_SOFT_RESERVE	10	/* Is the kernel configured to ignore soft reservations? */
  #define EFI_PRESERVE_BS_REGIONS	11	/* Are EFI boot-services memory segments available? */
@@ -9532,7 +9541,7 @@ index e5815867aba9..b17440aaf863 100644
  
  #ifdef CONFIG_EFI
  /*
-@@ -875,6 +885,8 @@ static inline bool efi_enabled(int feature)
+@@ -876,6 +886,8 @@ static inline bool efi_enabled(int feature)
  }
  extern void efi_reboot(enum reboot_mode reboot_mode, const char *__unused);
  
@@ -9541,7 +9550,7 @@ index e5815867aba9..b17440aaf863 100644
  bool __pure __efi_soft_reserve_enabled(void);
  
  static inline bool __pure efi_soft_reserve_enabled(void)
-@@ -896,6 +908,8 @@ static inline bool efi_enabled(int feature)
+@@ -897,6 +909,8 @@ static inline bool efi_enabled(int feature)
  static inline void
  efi_reboot(enum reboot_mode reboot_mode, const char *__unused) {}
  
@@ -9550,7 +9559,7 @@ index e5815867aba9..b17440aaf863 100644
  static inline bool efi_soft_reserve_enabled(void)
  {
  	return false;
-@@ -910,6 +924,7 @@ static inline void efi_find_mirror(void) {}
+@@ -911,6 +925,7 @@ static inline void efi_find_mirror(void) {}
  #endif
  
  extern int efi_status_to_err(efi_status_t status);
@@ -9558,7 +9567,7 @@ index e5815867aba9..b17440aaf863 100644
  
  /*
   * Variable Attributes
-@@ -1125,13 +1140,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
+@@ -1126,13 +1141,6 @@ static inline bool efi_runtime_disabled(void) { return true; }
  extern void efi_call_virt_check_flags(unsigned long flags, const void *caller);
  extern unsigned long efi_call_virt_save_flags(void);
  
@@ -9574,7 +9583,7 @@ index e5815867aba9..b17440aaf863 100644
  {
 diff --git a/include/linux/hid-over-i2c.h b/include/linux/hid-over-i2c.h
 new file mode 100644
-index 000000000000..3b1a0208a6b8
+index 0000000000000..3b1a0208a6b84
 --- /dev/null
 +++ b/include/linux/hid-over-i2c.h
 @@ -0,0 +1,117 @@
@@ -9697,7 +9706,7 @@ index 000000000000..3b1a0208a6b8
 +#endif /* _HID_OVER_I2C_H_ */
 diff --git a/include/linux/hid-over-spi.h b/include/linux/hid-over-spi.h
 new file mode 100644
-index 000000000000..da5a14b5e89b
+index 0000000000000..da5a14b5e89ba
 --- /dev/null
 +++ b/include/linux/hid-over-spi.h
 @@ -0,0 +1,155 @@
@@ -9857,20 +9866,19 @@ index 000000000000..da5a14b5e89b
 +
 +#endif /* _HID_OVER_SPI_H_ */
 diff --git a/include/linux/lsm_hook_defs.h b/include/linux/lsm_hook_defs.h
-index eb2937599cb0..7860721ef2f6 100644
+index eb2937599cb02..1368e5927ccc3 100644
 --- a/include/linux/lsm_hook_defs.h
 +++ b/include/linux/lsm_hook_defs.h
-@@ -444,6 +444,8 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
- #endif /* CONFIG_BPF_SYSCALL */
+@@ -445,6 +445,7 @@ LSM_HOOK(int, 0, bpf_token_capable, const struct bpf_token *token, int cap)
  
  LSM_HOOK(int, 0, locked_down, enum lockdown_reason what)
-+LSM_HOOK(int, 0, lock_kernel_down, const char *where, enum lockdown_reason level)
-+
  
++
  #ifdef CONFIG_PERF_EVENTS
  LSM_HOOK(int, 0, perf_event_open, struct perf_event_attr *attr, int type)
+ LSM_HOOK(int, 0, perf_event_alloc, struct perf_event *event)
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index ab7eea01ab42..fff7c5f737fc 100644
+index ab7eea01ab427..fff7c5f737fc8 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
 @@ -364,6 +364,7 @@ struct rmi_driver_data {
@@ -9882,83 +9890,25 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index cbdba435b798..c5c300c4f90b 100644
+index cbdba435b7986..75bb1ac940ec0 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
-@@ -562,6 +562,7 @@ int security_inode_notifysecctx(struct inode *inode, void *ctx, u32 ctxlen);
- int security_inode_setsecctx(struct dentry *dentry, void *ctx, u32 ctxlen);
- int security_inode_getsecctx(struct inode *inode, void **ctx, u32 *ctxlen);
- int security_locked_down(enum lockdown_reason what);
-+int security_lock_kernel_down(const char *where, enum lockdown_reason level);
- int lsm_fill_user_ctx(struct lsm_ctx __user *uctx, u32 *uctx_len,
- 		      void *val, size_t val_len, u64 id, u64 flags);
- int security_bdev_alloc(struct block_device *bdev);
-@@ -1569,6 +1570,10 @@ static inline int security_locked_down(enum lockdown_reason what)
- {
- 	return 0;
+@@ -2375,4 +2375,13 @@ static inline void security_initramfs_populated(void)
  }
+ #endif /* CONFIG_SECURITY */
+ 
++#ifdef CONFIG_SECURITY_LOCKDOWN_LSM
++extern int security_lock_kernel_down(const char *where, enum lockdown_reason level);
++#else
 +static inline int security_lock_kernel_down(const char *where, enum lockdown_reason level)
 +{
 +	return 0;
 +}
- static inline int lsm_fill_user_ctx(struct lsm_ctx __user *uctx,
- 				    u32 *uctx_len, void *val, size_t val_len,
- 				    u64 id, u64 flags)
-diff --git a/include/linux/stdarg.h b/include/linux/stdarg.h
-index c8dc7f4f390c..af7eb0ed138e 100644
---- a/include/linux/stdarg.h
-+++ b/include/linux/stdarg.h
-@@ -3,7 +3,17 @@
- #define _LINUX_STDARG_H
- 
- typedef __builtin_va_list va_list;
-+#if defined(__STDC_VERSION__) && __STDC_VERSION__ > 201710L
-+#define va_start(v, ...) __builtin_va_start(v, 0)
-+#ifdef __has_builtin
-+#if __has_builtin(__builtin_c23_va_start)
-+#undef va_start
-+#define va_start(...)	__builtin_c23_va_start(__VA_ARGS__)
-+#endif
-+#endif
-+#else
- #define va_start(v, l)	__builtin_va_start(v, l)
-+#endif
- #define va_end(v)	__builtin_va_end(v)
- #define va_arg(v, T)	__builtin_va_arg(v, T)
- #define va_copy(d, s)	__builtin_va_copy(d, s)
-diff --git a/include/linux/stddef.h b/include/linux/stddef.h
-index 929d67710cc5..16508c74fca9 100644
---- a/include/linux/stddef.h
-+++ b/include/linux/stddef.h
-@@ -7,10 +7,12 @@
- #undef NULL
- #define NULL ((void *)0)
- 
-+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
- enum {
- 	false	= 0,
- 	true	= 1
- };
-+#endif
- 
- #undef offsetof
- #define offsetof(TYPE, MEMBER)	__builtin_offsetof(TYPE, MEMBER)
-diff --git a/include/linux/types.h b/include/linux/types.h
-index 2d7b9ae8714c..f62dca96c7f1 100644
---- a/include/linux/types.h
-+++ b/include/linux/types.h
-@@ -32,7 +32,9 @@ typedef __kernel_timer_t	timer_t;
- typedef __kernel_clockid_t	clockid_t;
- typedef __kernel_mqd_t		mqd_t;
- 
-+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
- typedef _Bool			bool;
-+#endif
- 
- typedef __kernel_uid32_t	uid_t;
- typedef __kernel_gid32_t	gid_t;
++#endif /* CONFIG_SECURITY_LOCKDOWN_LSM */
++
+ #endif /* ! __LINUX_SECURITY_H */
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index a2ff4242e623..f0d2be1ee4f1 100644
+index a2ff4242e623d..f0d2be1ee4f1c 100644
 --- a/kernel/module/signing.c
 +++ b/kernel/module/signing.c
 @@ -61,10 +61,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
@@ -9981,7 +9931,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index b21236377998..f2f257bc1bfd 100755
+index b212363779980..f2f257bc1bfda 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -9994,7 +9944,7 @@ index b21236377998..f2f257bc1bfd 100755
  # ignore arbitrary directories
  if [ -n "${IGNORE_DIRS}" ]; then
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index d1fdd113450a..182e8090cfe8 100644
+index d1fdd113450a6..182e8090cfe85 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -74,7 +74,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
@@ -10018,7 +9968,7 @@ index d1fdd113450a..182e8090cfe8 100644
  	}
  
 diff --git a/security/lockdown/Kconfig b/security/lockdown/Kconfig
-index e84ddf484010..d0501353a4b9 100644
+index e84ddf4840101..d0501353a4b95 100644
 --- a/security/lockdown/Kconfig
 +++ b/security/lockdown/Kconfig
 @@ -16,6 +16,19 @@ config SECURITY_LOCKDOWN_LSM_EARLY
@@ -10042,24 +9992,12 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index f2bdbd55aa2b..ddf496f7fca5 100644
+index f2bdbd55aa2bc..b37a79c4a6af7 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
-@@ -74,6 +74,7 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
- 
- static struct security_hook_list lockdown_hooks[] __ro_after_init = {
- 	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
-+	LSM_HOOK_INIT(lock_kernel_down, lock_kernel_down),
- };
- 
- static const struct lsm_id lockdown_lsmid = {
-diff --git a/security/security.c b/security/security.c
-index 09664e09fec9..a2bbb9b3ad2e 100644
---- a/security/security.c
-+++ b/security/security.c
-@@ -5798,6 +5798,18 @@ int security_locked_down(enum lockdown_reason what)
+@@ -72,6 +72,17 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
+ 	return 0;
  }
- EXPORT_SYMBOL(security_locked_down);
  
 +/**
 + * security_lock_kernel_down() - Put the kernel into lock-down mode.
@@ -10069,10 +10007,140 @@ index 09664e09fec9..a2bbb9b3ad2e 100644
 + */
 +int security_lock_kernel_down(const char *where, enum lockdown_reason level)
 +{
-+	return call_int_hook(lock_kernel_down, where, level);
++	return lock_kernel_down(where, level);
 +}
-+EXPORT_SYMBOL(security_lock_kernel_down);
 +
- /**
-  * security_bdev_alloc() - Allocate a block device LSM blob
-  * @bdev: block device
+ static struct security_hook_list lockdown_hooks[] __ro_after_init = {
+ 	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
+ };
+diff --git a/sound/soc/codecs/rt712-sdca.c b/sound/soc/codecs/rt712-sdca.c
+index 78dbf9eed494b..19d99b9d4ab26 100644
+--- a/sound/soc/codecs/rt712-sdca.c
++++ b/sound/soc/codecs/rt712-sdca.c
+@@ -652,6 +652,61 @@ static int rt712_sdca_fu0f_capture_put(struct snd_kcontrol *kcontrol,
+ 	return 1;
+ }
+ 
++static int rt712_sdca_set_fu05_playback_ctl(struct rt712_sdca_priv *rt712)
++{
++	int err;
++	unsigned int ch_01, ch_02;
++
++	ch_01 = (rt712->fu05_dapm_mute || rt712->fu05_mixer_l_mute) ? 0x01 : 0x00;
++	ch_02 = (rt712->fu05_dapm_mute || rt712->fu05_mixer_r_mute) ? 0x01 : 0x00;
++
++	err = regmap_write(rt712->regmap,
++			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
++			RT712_SDCA_CTL_FU_MUTE, CH_01), ch_01);
++	if (err < 0)
++		return err;
++
++	err = regmap_write(rt712->regmap,
++			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
++			RT712_SDCA_CTL_FU_MUTE, CH_02), ch_02);
++	if (err < 0)
++		return err;
++
++	return 0;
++}
++
++static int rt712_sdca_fu05_playback_get(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct rt712_sdca_priv *rt712 = snd_soc_component_get_drvdata(component);
++
++	ucontrol->value.integer.value[0] = !rt712->fu05_mixer_l_mute;
++	ucontrol->value.integer.value[1] = !rt712->fu05_mixer_r_mute;
++	return 0;
++}
++
++static int rt712_sdca_fu05_playback_put(struct snd_kcontrol *kcontrol,
++	struct snd_ctl_elem_value *ucontrol)
++{
++	struct snd_soc_component *component = snd_kcontrol_chip(kcontrol);
++	struct rt712_sdca_priv *rt712 = snd_soc_component_get_drvdata(component);
++	int err;
++
++	if (rt712->fu05_mixer_l_mute == !ucontrol->value.integer.value[0] &&
++		rt712->fu05_mixer_r_mute == !ucontrol->value.integer.value[1])
++		return 0;
++
++	rt712->fu05_mixer_l_mute = !ucontrol->value.integer.value[0];
++	rt712->fu05_mixer_r_mute = !ucontrol->value.integer.value[1];
++
++	err = rt712_sdca_set_fu05_playback_ctl(rt712);
++	if (err < 0)
++		return err;
++
++	return 1;
++}
++
+ static const DECLARE_TLV_DB_SCALE(out_vol_tlv, -6525, 75, 0);
+ static const DECLARE_TLV_DB_SCALE(mic_vol_tlv, -1725, 75, 0);
+ static const DECLARE_TLV_DB_SCALE(boost_vol_tlv, 0, 1000, 0);
+@@ -674,6 +729,8 @@ static const struct snd_kcontrol_new rt712_sdca_controls[] = {
+ 		SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_PLATFORM_FU44, RT712_SDCA_CTL_FU_CH_GAIN, CH_02),
+ 		8, 3, 0,
+ 		rt712_sdca_set_gain_get, rt712_sdca_set_gain_put, boost_vol_tlv),
++	SOC_DOUBLE_EXT("FU05 Playback Switch", SND_SOC_NOPM, 0, 1, 1, 0,
++		rt712_sdca_fu05_playback_get, rt712_sdca_fu05_playback_put),
+ };
+ 
+ static const struct snd_kcontrol_new rt712_sdca_spk_controls[] = {
+@@ -766,28 +823,15 @@ static int rt712_sdca_fu05_event(struct snd_soc_dapm_widget *w,
+ 	struct snd_soc_component *component =
+ 		snd_soc_dapm_to_component(w->dapm);
+ 	struct rt712_sdca_priv *rt712 = snd_soc_component_get_drvdata(component);
+-	unsigned char unmute = 0x0, mute = 0x1;
+ 
+ 	switch (event) {
+ 	case SND_SOC_DAPM_POST_PMU:
+-		regmap_write(rt712->regmap,
+-			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
+-				RT712_SDCA_CTL_FU_MUTE, CH_01),
+-				unmute);
+-		regmap_write(rt712->regmap,
+-			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
+-				RT712_SDCA_CTL_FU_MUTE, CH_02),
+-				unmute);
++		rt712->fu05_dapm_mute = false;
++		rt712_sdca_set_fu05_playback_ctl(rt712);
+ 		break;
+ 	case SND_SOC_DAPM_PRE_PMD:
+-		regmap_write(rt712->regmap,
+-			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
+-				RT712_SDCA_CTL_FU_MUTE, CH_01),
+-				mute);
+-		regmap_write(rt712->regmap,
+-			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT712_SDCA_ENT_USER_FU05,
+-				RT712_SDCA_CTL_FU_MUTE, CH_02),
+-				mute);
++		rt712->fu05_dapm_mute = true;
++		rt712_sdca_set_fu05_playback_ctl(rt712);
+ 		break;
+ 	}
+ 	return 0;
+@@ -1640,6 +1684,8 @@ int rt712_sdca_init(struct device *dev, struct regmap *regmap,
+ 	rt712->fu1e_dapm_mute = true;
+ 	rt712->fu1e_mixer_mute[0] = rt712->fu1e_mixer_mute[1] =
+ 		rt712->fu1e_mixer_mute[2] = rt712->fu1e_mixer_mute[3] = true;
++	rt712->fu05_dapm_mute = true;
++	rt712->fu05_mixer_l_mute = rt712->fu05_mixer_r_mute = false;
+ 
+ 	/* JD source uses JD1 in default */
+ 	rt712->jd_src = RT712_JD1;
+diff --git a/sound/soc/codecs/rt712-sdca.h b/sound/soc/codecs/rt712-sdca.h
+index a08491496d901..7ab7d5feb50a2 100644
+--- a/sound/soc/codecs/rt712-sdca.h
++++ b/sound/soc/codecs/rt712-sdca.h
+@@ -42,6 +42,9 @@ struct  rt712_sdca_priv {
+ 	bool fu0f_mixer_r_mute;
+ 	bool fu1e_dapm_mute;
+ 	bool fu1e_mixer_mute[4];
++	bool fu05_dapm_mute;
++	bool fu05_mixer_l_mute;
++	bool fu05_mixer_r_mute;
+ };
+ 
+ struct rt712_dmic_kctrl_priv {
