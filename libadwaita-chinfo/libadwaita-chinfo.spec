@@ -7,7 +7,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        1.6.1
+Version:        1.6.2
 Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
@@ -86,6 +86,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sun Mar 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.6.2-1
+- 1.6.2
+
 * Sun Oct 13 2024 Phantom X <megaphantomx at hotmail dot com> - 1.6.1-1
 - 1.6.1
 

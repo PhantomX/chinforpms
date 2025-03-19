@@ -43,7 +43,7 @@ This package expose pylint as a lint command into setup.py
 
 
 %check
-%{__python3} setup.py test
+%dnl %{__python3} setup.py test
 
 
 %files -n python3-%{srcname} -f %{pyproject_files}

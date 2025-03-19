@@ -2,13 +2,13 @@
 
 %global __jar_repack %{nil}
 
-%global pkgyear 2024
+%global pkgyear 2025
 %global pkgname IRPF%{pkgyear}
 
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.6
+Version:        1.0
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -108,11 +108,5 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
-* Mon Mar 17 2025 - 1.6-1
-- 1.6
-
-* Fri Sep 20 2024 - 1.4-1
-- 1.4
-
-* Wed Mar 13 2024 - 1.0-1
+* Mon Mar 17 2025 - 1.0-1
 - Initial spec

@@ -14,6 +14,7 @@ BuildArch:          noarch
 
 BuildRequires:      python3-devel
 BuildRequires:      python3-setuptools
+BuildRequires:      python3-setuptools-lint
 BuildRequires:      %{py3_dist pytest}
 
 %global _description\

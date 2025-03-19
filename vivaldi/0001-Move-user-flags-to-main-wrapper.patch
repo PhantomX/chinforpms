@@ -39,8 +39,8 @@ index 8a8844b..952f416 100755
  exec 2> >(exec cat >&2)
  
  # Note: exec -a below is a bashism.
--exec -a "$0" "$HERE/vivaldi-bin" "${VIVALDI_JS_FLAGS:-}" "$@"
-+exec -a "$0" "$HERE/vivaldi-bin" "${VIVALDI_JS_FLAGS:-}" ${VIVALDI_USER_FLAGS:+"${VIVALDI_USER_FLAGS[@]}"} "$@"
+-exec -a "$0" "$HERE/vivaldi-bin" "$@"
++exec -a "$0" "$HERE/vivaldi-bin" ${VIVALDI_USER_FLAGS:+"${VIVALDI_USER_FLAGS[@]}"} "$@"
 -- 
 2.41.0
 

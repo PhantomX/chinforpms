@@ -1,5 +1,5 @@
 Name:           glibc-langpack-pt_BR_iso8601
-Version:        2.40
+Version:        2.41
 Release:        1%{?dist}
 Summary:        Locale data for Brazilian Portuguese, with iso8601 dates
 
@@ -55,6 +55,9 @@ LC_ALL=en_US.UTF-8 localedef --prefix=%{buildroot} \
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 2.41-1
+- 2.41
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 2.40-1
 - 2.40
 
