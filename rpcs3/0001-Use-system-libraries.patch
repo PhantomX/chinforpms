@@ -1,4 +1,4 @@
-From c255c8dc3262104f56bd5feb9f8f0d0ca11e8c5c Mon Sep 17 00:00:00 2001
+From 2bd262185e813605f10dfd83f6310a7a3306bea9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
@@ -8,7 +8,7 @@ Subject: [PATCH] Use system libraries
  1 file changed, 45 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 4625c0e..9aa30dd 100644
+index cb0909e..eadf27e 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
 @@ -20,7 +20,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
@@ -26,7 +26,7 @@ index 4625c0e..9aa30dd 100644
  
  # 7zip sdk
  add_subdirectory(7zip EXCLUDE_FROM_ALL)
-@@ -84,7 +91,14 @@ endif()
+@@ -88,7 +95,14 @@ endif()
  
  
  # hidapi
@@ -39,9 +39,9 @@ index 4625c0e..9aa30dd 100644
  add_subdirectory(hidapi)
 +endif()
  
- 
  # glslang
-@@ -94,7 +108,15 @@ target_link_libraries(3rdparty_glslang INTERFACE SPIRV)
+ add_subdirectory(glslang EXCLUDE_FROM_ALL)
+@@ -97,7 +111,15 @@ target_link_libraries(3rdparty_glslang INTERFACE SPIRV)
  
  
  # yaml-cpp
@@ -57,7 +57,7 @@ index 4625c0e..9aa30dd 100644
  
  
  # OpenGL
-@@ -124,7 +146,15 @@ add_subdirectory(stblib)
+@@ -131,7 +153,15 @@ add_subdirectory(stblib)
  add_subdirectory(discord-rpc)
  
  # Cubeb
@@ -73,7 +73,7 @@ index 4625c0e..9aa30dd 100644
  
  # SoundTouch
  add_subdirectory(SoundTouch EXCLUDE_FROM_ALL)
-@@ -224,6 +254,7 @@ if(USE_FAUDIO)
+@@ -234,6 +264,7 @@ if(USE_FAUDIO)
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
@@ -81,7 +81,7 @@ index 4625c0e..9aa30dd 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -327,10 +358,24 @@ if(USE_SDL)
+@@ -342,10 +373,24 @@ if(USE_SDL)
  endif()
  
  # MINIUPNP
@@ -107,5 +107,5 @@ index 4625c0e..9aa30dd 100644
  # OPENCV
  add_subdirectory(opencv EXCLUDE_FROM_ALL)
 -- 
-2.48.1
+2.49.0
 

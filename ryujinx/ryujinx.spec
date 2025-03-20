@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 534f92506bf8c6aba29bb86917bf10954a360d8e
+%global commit c229d458e7ebd5cdf1936ec5152631a7dbe76899
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250226
+%global date 20250318
 
 %if %{without bin}
 %bcond_with snapshot
@@ -127,7 +127,7 @@
 %global runtime_unix_system_private_uri_ver 4.3.0
 %global runtime_unix_system_runtime_extensions_ver 4.3.0
 %global ryujinx_audio_openal_dependencies_ver 1.21.0.1
-%global ryujinx_graphics_nvdec_dependencies_ver 5.0.3-build14
+%global ryujinx_graphics_nvdec_dependencies_allarch_ver 6.1.2-build3
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_sdl2_cs_ver 2.30.0-build32
@@ -150,7 +150,7 @@
 %global system_buffers_ver2 4.3.0
 %global system_buffers_ver3 4.5.1
 %global system_codedom_ver 4.4.0
-%global system_codedom_ver2 9.0.0
+%global system_codedom_ver2 9.0.2
 %global system_collections_ver 4.0.11
 %global system_collections_ver2 4.3.0
 %global system_collections_concurrent_ver 4.0.12
@@ -175,11 +175,11 @@
 %global system_io_compression_zipfile_ver 4.0.1
 %global system_io_filesystem_ver 4.0.1
 %global system_io_filesystem_primitives_ver 4.0.1
-%global system_io_hashing 9.0.0
+%global system_io_hashing 9.0.2
 %global system_io_pipelines_ver 6.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
-%global system_management_ver 9.0.0
+%global system_management_ver 9.0.2
 %global system_memory_ver 4.5.5
 %global system_memory_ver2 4.5.4
 %global system_net_http_ver 4.1.0
@@ -259,16 +259,16 @@
 %global tmds_dbus_protocol_ver 0.15.0
 
 %global appname Ryujinx
-%global vc_url  https://github.com/Ryubing
+%global vc_url  https://git.ryujinx.app/ryubing/%{name}
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.2.422
+Version:        1.3.14
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
 License:        MIT
-URL:            https://ryujinx.org/
+URL:            https://git.ryujinx.app/ryubing/%{name}
 
 %if %{with bin}
 Source0:        %{vc_url}/release-channel-master/releases/download/%{version}/%{name}-%{version}-linux_x64.tar.gz
@@ -278,9 +278,9 @@ Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.de
 Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
 %if %{with snapshot}
-Source0:        %{vc_url}/%{appname}/archive/%{commit}/%{appname}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{appname}/archive/%{?with_canary:Canary-}%{version}/%{appname}-%{version}.tar.gz
+Source0:        %{vc_url}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.gz
 %endif
 %if %{with local_dotnet}
 Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
@@ -410,7 +410,7 @@ Source321:      %{nuget_url}/runtime.unix.system.net.sockets.%{runtime_unix_syst
 Source322:      %{nuget_url}/runtime.unix.system.private.uri.%{runtime_unix_system_private_uri_ver}.nupkg
 Source323:      %{nuget_url}/runtime.unix.system.runtime.extensions.%{runtime_unix_system_runtime_extensions_ver}.nupkg
 Source324:      %{nuget_url}/ryujinx.audio.openal.dependencies.%{ryujinx_audio_openal_dependencies_ver}.nupkg
-Source325:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.%{ryujinx_graphics_nvdec_dependencies_ver}.nupkg
+Source325:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.allarch.%{ryujinx_graphics_nvdec_dependencies_allarch_ver}.nupkg
 Source326:      %{nuget_url}/ryujinx.graphics.vulkan.dependencies.moltenvk.%{ryujinx_graphics_vulkan_dependencies_moltenvk_ver}.nupkg
 Source327:      %{nuget_url}/ryujinx.sdl2-cs.%{ryujinx_sdl2_cs_ver}.nupkg
 Source328:      %{nuget_url}/securifybv.propertystore.%{securifybv_ver}.nupkg
@@ -670,7 +670,7 @@ and consistent builds.
 %if %{with bin}
 %autosetup -N -c
 %else
-%autosetup -n %{appname}%{?with_canary:-Canary}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{name}%{?with_canary:-Canary}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 %endif
 
 %if %{with bin}

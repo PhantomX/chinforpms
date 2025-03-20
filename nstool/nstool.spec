@@ -12,7 +12,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 libpietendo
 
-%global commit13 fa13eb8679ad8ff64f90485e96f7c60bd2c568bb
+%global commit13 578d170f5b294e4a9feb3cc2d504896e846f204e
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 libtoolchain
 
@@ -26,7 +26,7 @@
 %global vc_url  https://github.com/jakcron
 
 Name:           nstool
-Version:        1.9.1
+Version:        1.9.2
 Release:        1%{?dist}
 Summary:        A tool to view information about file formats for the NX console
 
@@ -109,6 +109,9 @@ install -pm0755 bin/%{name} %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.9.2-1
+- 1.9.2
+
 * Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.9.1-1
 - 1.9.1
 

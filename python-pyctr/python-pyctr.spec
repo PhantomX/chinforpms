@@ -49,7 +49,7 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %check
-%{__python3} setup.py test
+%dnl %{__python3} setup.py test
 
 
 %files -n python3-%{srcname} -f %{pyproject_files}

@@ -1,0 +1,24 @@
+From 209d892c60b102e7a85eff34f990f85fb726ddf7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 19 Mar 2025 23:32:46 -0300
+Subject: [PATCH] glslang: gcc 15 build fix
+
+---
+ external/glslang/SPIRV/SpvBuilder.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/external/glslang/SPIRV/SpvBuilder.h b/external/glslang/SPIRV/SpvBuilder.h
+index 1f38e78..e81e0f3 100644
+--- a/external/glslang/SPIRV/SpvBuilder.h
++++ b/external/glslang/SPIRV/SpvBuilder.h
+@@ -60,6 +60,7 @@ namespace spv {
+ #include <memory>
+ #include <set>
+ #include <sstream>
++#include <cstdint>
+ #include <stack>
+ #include <unordered_map>
+ #include <map>
+-- 
+2.49.0
+

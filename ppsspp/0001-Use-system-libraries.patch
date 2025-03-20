@@ -207,8 +207,8 @@ index a43e2d8..e0314fd 100644
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
  
- // For depth depal
- struct DepthPushConstants {
+ using namespace Microsoft::WRL;
+ 
 diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
 index 69a2412..b9eab79 100644
 --- a/GPU/Directx9/TextureCacheDX9.cpp

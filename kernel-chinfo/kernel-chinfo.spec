@@ -183,7 +183,7 @@ Summary: The Linux kernel
 %define specrpmversion 6.13.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1135,6 +1135,7 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
+Patch10: %{ark_url}/2c062aaa5a90464527b0bd9ba675639ec476242a.patch#/kernel-ark-2c062aa.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1174,6 +1175,9 @@ Patch6951:  %{pf_url}/c8c6be540b11270826d452cdfdb1882153a3caf4.patch#/pf-cb-c8c6
 Patch6952:  %{pf_url}/fd0832d081ed15a9805f5557d42263d5091c92d5.patch#/pf-cb-fd0832d.patch
 # bbr3
 Patch7050:  %{pf_url}/aa2658ab3fba8f0f16c6d9c838776502980974ed.patch#/pf-cb-aa2658a.patch
+Patch7051:  %{pf_url}/2819e8bc02b2ff86bb9ffe380b556ab0d1273617.patch#/pf-cb-2819e8b.patch
+Patch7052:  %{pf_url}/04074556722317c9fb52709b044651e822a311ee.patch#/pf-cb-0407455.patch
+Patch7053:  %{pf_url}/9a30abbcc6fcc9666f743299a27488069a66715d.patch#/pf-cb-9a30abb.patch
 # zstd
 Patch7200:  %{pf_url}/fa9ae31017febb38dd967c777a114278ae78c128.patch#/pf-cb-fa9ae31.patch
 Patch7201:  %{pf_url}/ff832b211b3f925e86704aac906a6cedae1247e7.patch#/pf-cb-ff832b2.patch
@@ -2070,6 +2074,7 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
+ApplyPatch %{PATCH10}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2079,6 +2084,9 @@ ApplyPatch %{PATCH6951}
 ApplyPatch %{PATCH6952}
 # bbr3
 ApplyPatch %{PATCH7050}
+ApplyPatch %{PATCH7051}
+ApplyPatch %{PATCH7052}
+ApplyPatch %{PATCH7053}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
@@ -4459,6 +4467,9 @@ fi\
 #
 #
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-501.chinfo
+- gcc 15 fixes
+
 * Thu Mar 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-500.chinfo
 - 6.13.7
 

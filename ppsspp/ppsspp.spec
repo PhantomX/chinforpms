@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d5958996771fce78197f834b610b41b9a64a468b
+%global commit c71a72cbe751763f48350a6d2629e20553c083b0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250201
+%global date 20250319
 %bcond_without snapshot
 
 # Enable Qt build
@@ -85,11 +85,11 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
-%global vma_ver 3.1.0
+%global vma_ver 3.2.1
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        104%{?dist}
+Release:        105%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -133,6 +133,7 @@ Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
+Patch501:       0001-glslang-gcc-15-build-fix.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -261,6 +262,7 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE5} -C ext/cpu_features --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
+%patch -P 501 -p1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1

@@ -10,7 +10,7 @@
 %global pkgrel 0
 
 Name:           rustdesk
-Version:        1.3.2
+Version:        1.3.8
 Release:        1%{?dist}
 Summary:        A remote desktop software
 
@@ -83,8 +83,8 @@ export LD_LIBRARY_PATH
 exec "${APP_PATH}/${APP_NAME}" "$@"
 EORF
 
-chrpath -k -d usr/lib/%{name}/%{name}
-chrpath -k -d usr/lib/%{name}/lib/*.so
+chrpath -k -d usr/share/%{name}/%{name}
+chrpath -k -d usr/share/%{name}/lib/*.so
 
 
 %build
@@ -95,13 +95,13 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/lib/
-install -pm0755 usr/lib/%{name}/%{name} \
+install -pm0755 usr/share/%{name}/%{name} \
   %{buildroot}%{_libdir}/%{name}/
 
-install -pm0755 usr/lib/%{name}/lib/*.so \
+install -pm0755 usr/share/%{name}/lib/*.so \
   %{buildroot}%{_libdir}/%{name}/lib/
 
-cp -rp usr/lib/%{name}/data %{buildroot}%{_libdir}/%{name}/
+cp -rp usr/share/%{name}/data %{buildroot}%{_libdir}/%{name}/
 
 mkdir -p %{buildroot}%{_unitdir}
 install -pm0644 usr/share/%{name}/files/%{name}.service \
@@ -153,6 +153,9 @@ done
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.8-1
+- 1.3.8
+
 * Fri Nov 15 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.2-1
 - 1.3.2
 

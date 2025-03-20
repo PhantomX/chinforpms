@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0264
-%global historyver 272
-%global infover 0272
+%global historyver 275
+%global infover 0275
 %global cheat_url https://www.mamecheat.co.uk
 %global history_url https://www.arcade-history.com
 %global info_url https://www.mameworld.info/mameinfo
@@ -11,7 +11,7 @@
 %global samplelink https://www.mameworld.info/samples/wav
 
 Name:           mame-data-extras
-Version:        0.272
+Version:        0.275
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -132,7 +132,7 @@ sed 's/\r//' cheat.txt -i mameinfo/*
 mkdir -p %{buildroot}%{_datadir}/mame
 
 # Install DAT files
-install -pm 644 history.xml mameinfo.dat \
+install -pm 644 history/history.xml mameinfo.dat \
   %{buildroot}%{_datadir}/mame/
 
 # Install cheat files
@@ -174,6 +174,9 @@ done
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.275-1
+- 0.275
+
 * Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 0.272-1
 - 0.272
 

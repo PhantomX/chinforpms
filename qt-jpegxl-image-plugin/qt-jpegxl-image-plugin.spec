@@ -8,7 +8,7 @@
 %endif
 
 Name:           qt-jpegxl-image-plugin
-Version:        0.6.3
+Version:        0.8.0
 Release:        1%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
@@ -26,8 +26,9 @@ BuildRequires:  cmake
 BuildRequires:  extra-cmake-modules
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  pkgconfig(libjxl) >= 0.8
-BuildRequires:  pkgconfig(libjxl_threads)
+BuildRequires:  pkgconfig(libjxl) >= 0.7
+BuildRequires:  pkgconfig(libjxl_cms) >= 0.9
+BuildRequires:  pkgconfig(libjxl_threads) >= 0.7
 
 
 %description
@@ -97,6 +98,9 @@ popd
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-1
+- 0.8.0
+
 * Mon Jul 08 2024 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-1
 - 0.6.3
 

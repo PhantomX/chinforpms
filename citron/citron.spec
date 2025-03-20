@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit dad885967942477d887b5dd16a97f07d2316bd3a
+%global commit 278ac75a378d544192cc6930a8e19a0ad1f3bd46
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250311
+%global date 20250317
 %bcond_without snapshot
 
 # Enable system boost
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           citron
-Version:        0.6.27236
+Version:        0.6.27245
 Release:        1%{?dist}
 Summary:        A NX Emulator
 

@@ -1,0 +1,55 @@
+From e7a619d3ca6f62fd97b76aeedec2c15b58bce9a2 Mon Sep 17 00:00:00 2001
+From: Andrea Bolognani <abologna@redhat.com>
+Date: Mon, 27 Jan 2025 19:29:22 +0100
+Subject: [PATCH 4/8] binfmt: Shuffle things around
+
+This should make no difference from the functional point of
+view and it's just preparation for upcoming changes.
+
+Signed-off-by: Andrea Bolognani <abologna@redhat.com>
+Reviewed-by: Alistair Francis <alistair.francis@wdc.com>
+Reviewed-by: Laurent Vivier <laurent@vivier.eu>
+Message-ID: <20250127182924.103510-2-abologna@redhat.com>
+Signed-off-by: Alistair Francis <alistair.francis@wdc.com>
+---
+ scripts/qemu-binfmt-conf.sh | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/scripts/qemu-binfmt-conf.sh b/scripts/qemu-binfmt-conf.sh
+index 6ef9f118d9..426f075e31 100755
+--- a/scripts/qemu-binfmt-conf.sh
++++ b/scripts/qemu-binfmt-conf.sh
+@@ -318,20 +318,23 @@ qemu_set_binfmts() {
+         mask=$(eval echo \$${cpu}_mask)
+         family=$(eval echo \$${cpu}_family)
+ 
++        target="$cpu"
++        if [ "$cpu" = "i486" ] ; then
++            target="i386"
++        fi
++
++        qemu="$QEMU_PATH/qemu-$target$QEMU_SUFFIX"
++
+         if [ "$magic" = "" ] || [ "$mask" = "" ] || [ "$family" = "" ] ; then
+             echo "INTERNAL ERROR: unknown cpu $cpu" 1>&2
+             continue
+         fi
+ 
+-        qemu="$QEMU_PATH/qemu-$cpu"
+-        if [ "$cpu" = "i486" ] ; then
+-            qemu="$QEMU_PATH/qemu-i386"
++        if [ "$host_family" = "$family" ] ; then
++            continue
+         fi
+ 
+-        qemu="$qemu$QEMU_SUFFIX"
+-        if [ "$host_family" != "$family" ] ; then
+-            $BINFMT_SET
+-        fi
++        $BINFMT_SET
+     done
+ }
+ 
+-- 
+2.48.1
+

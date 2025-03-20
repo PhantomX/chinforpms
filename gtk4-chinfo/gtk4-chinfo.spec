@@ -4,10 +4,12 @@
 
 %global with_tracker 0
 
-%global glib2_version 2.76.0
-%global pango_version 1.52.0
+%global glib2_version 2.80.0
+%global pango_version 1.56.0
 %global cairo_version 1.18.0
 %global gdk_pixbuf_version 2.30.0
+%global gstreamer_version 1.24.0
+%global harfbuzz_version 8.4
 %global wayland_protocols_version 1.31
 %global wayland_version 1.21.0
 %global epoxy_version 1.4
@@ -29,7 +31,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.16.12
+Version:        4.17.6
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -69,7 +71,8 @@ BuildRequires:  pkgconfig(epoxy)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
 BuildRequires:  pkgconfig(glib-2.0) >= %{glib2_version}
 BuildRequires:  pkgconfig(graphene-gobject-1.0)
-BuildRequires:  pkgconfig(gstreamer-player-1.0)
+BuildRequires:  pkgconfig(gstreamer-player-1.0) >= %{gstreamer_version}
+BuildRequires:  pkgconfig(harfbuzz) >= %{harfbuzz_version}
 BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
@@ -173,6 +176,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.17.6-1
+- 4.17.6
+
 * Fri Jan 03 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.16.12-1
 - 4.16.12
 

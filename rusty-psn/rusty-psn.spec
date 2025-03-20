@@ -9,10 +9,10 @@
 %endif
 
 %global vc_id   2a0afcdd36d6bf73f683d77abf352812177cd1a0
-%global vendor_hash 4a99bb94fda35a80951c0bbbfef8c47c
+%global vendor_hash f2d700a2e3595028377fc6739f1f8d17
 
 Name:           rusty-psn
-Version:        0.5.2
+Version:        0.5.7
 Release:        1%{?dist}
 Summary:        Simple tool to grab updates for PS3 games
 
@@ -28,7 +28,7 @@ Source4:        %{url}/raw/%{vc_id}/resources/OFL.txt
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# rust2rpm -t fedora -V --no-rpmautospec --ignore-missing-license-files -f cli,egui ./Cargo.toml %%{version}
+# rust2rpm -t fedora -V auto --no-rpmautospec --ignore-missing-license-files --path .
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 %endif
@@ -39,6 +39,7 @@ ExclusiveArch:  x86_64
 ExclusiveArch:  %{rust_arches}
 %endif
 
+BuildRequires:  desktop-file-utils
 %if %{without bin}
 BuildRequires:  cargo-rpm-macros >= 24
 BuildRequires:  google-noto-sans-fonts
@@ -640,6 +641,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-1
+- 0.5.7
+
 * Fri Nov 15 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.2-1
 - 0.5.2
 - Source support, with vendored tarball switch

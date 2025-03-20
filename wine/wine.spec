@@ -158,7 +158,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -210,6 +210,8 @@ Source150:      wine.appdata.xml
 # desktop dir
 Source200:      wine.menu
 Source201:      wine.directory
+
+Source250:      ntsync.modules
 
 # mime types
 Source300:      wine-mime-msi.desktop
@@ -571,12 +573,16 @@ Provides:       wine-openal = %{?epoch:%{epoch}:}%{version}-%{release}
 Wine core package includes the basic wine stuff needed by all other packages.
 
 %package systemd
-Summary:        Systemd config for the wine binfmt handler
+Summary:        Systemd config for the wine binfmt handler and module loading
 Requires:       systemd >= 23
 BuildArch:      noarch
 Requires(post):  systemd
 Requires(postun): systemd
 Obsoletes:      wine-sysvinit < %{version}-%{release}
+Obsoletes:      ntsync < 6.13
+Provides:       ntsync = %{version}
+Provides:       ntsync-kmod-common = %{version}
+Requires:       kmod(ntsync.ko)
 
 %description systemd
 Register the wine binary handler for windows executables via systemd binfmt
@@ -1097,6 +1103,12 @@ mkdir -p %{buildroot}%{_sysconfdir}/wine
 # Allow users to launch Windows programs by just clicking on the .exe file...
 mkdir -p %{buildroot}%{_binfmtdir}
 install -p -c -m 644 %{SOURCE2} %{buildroot}%{_binfmtdir}/wine.conf
+
+%if %{with ntsync}
+# systemd module autoinsert rule
+mkdir -p %{buildroot}%{_modulesloaddir}
+install -m0644 %{SOURCE250} %{buildroot}%{_modulesloaddir}/ntsync.conf
+%endif
 
 # add wine dir to desktop
 mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
@@ -2454,6 +2466,9 @@ fi
 
 %files systemd
 %config %{_binfmtdir}/wine.conf
+%if %{with ntsync}
+%{_modulesloaddir}/ntsync.conf
+%endif
 
 # ldap subpackage
 %files ldap
@@ -2513,6 +2528,9 @@ fi
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.3-101
+- Merge ntsync modules file to systemd package
+
 * Sat Mar 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.3-100
 - 10.3
 

@@ -6,9 +6,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit d043dc0c6a99f5fff87d7044e85a608508eae7e1
+%global commit 5b2c5897e8a972cba6db92abe7e60c9ca98c99e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241125
+%global date 20250312
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -18,7 +18,7 @@
 
 Name:           supermodel
 Version:        0.3~a
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Sega Model 3 arcade emulator
 
 License:        GPL-3.0
@@ -29,6 +29,7 @@ Source1:        %{name}.sh
 
 Patch0:         0001-fix-build-flags.patch
 Patch1:         0001-format-security.patch
+Patch2:         0001-gcc-15-build-fix.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -80,7 +81,7 @@ install -pm0755 bin/%{name} %{buildroot}%{_libexecdir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}/{Assets,Config}
 install -pm0644 Assets/*.bmp %{buildroot}%{_datadir}/%{name}/Assets/
-install -pm0644 Config/*.{xml,ini} %{buildroot}%{_datadir}/%{name}/Config/
+install -pm0644 Config/*.xml %{buildroot}%{_datadir}/%{name}/Config/
 
 
 %files

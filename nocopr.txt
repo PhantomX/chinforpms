@@ -22,6 +22,7 @@ dbeaver-ce
 -dropboxd
 duckstation
 duckstation_chtdb
+dynarmic
 f5cli
 f5vpn
 f5vpn-filesystem
@@ -38,11 +39,12 @@ hakuneko-desktop
 -irpf2017
 -irpf2018
 -irpf2019
-irpf2020
+-irpf2020
 irpf2021
 irpf2022
 irpf2023
 irpf2024
+irpf2025
 -kepka
 lbreakouthd
 kronos
@@ -102,7 +104,7 @@ vmware-vmrc
 vvvvvv
 vvvvvv-data
 -wine-freeworld
-wps-office
+-wps-office
 -yabause
 -yggdrasil
 -yuzu

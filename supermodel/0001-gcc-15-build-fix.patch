@@ -1,0 +1,24 @@
+From 7ee194c211c2e7983266c2509accb39e9c515b1b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 19 Mar 2025 20:42:25 -0300
+Subject: [PATCH] gcc 15 build fix
+
+---
+ Src/Game.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Src/Game.h b/Src/Game.h
+index bd11ff4..eea833c 100644
+--- a/Src/Game.h
++++ b/Src/Game.h
+@@ -3,6 +3,7 @@
+ 
+ #include <string>
+ #include <memory>
++#include <cstdint>
+ 
+ struct Game
+ {
+-- 
+2.49.0
+

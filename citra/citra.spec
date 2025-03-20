@@ -119,7 +119,7 @@
 
 Name:           citra
 Version:        0.10113
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        A 3DS Emulator
 
@@ -168,6 +168,7 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %dnl Source20:       https://api.citra-emu.org/gamedb#/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
+Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -286,7 +287,8 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
+%autopatch -p1 -M 499
 
 %if %{with cryptopp}
 sed -e 's|crypto++|cryptopp|' -i externals/cmake-modules/Findcryptopp.cmake
@@ -318,6 +320,7 @@ tar -xf %{S:11} -C externals/boost --strip-components 1
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 %endif
 tar -xf %{S:13} -C externals/glslang --strip-components 1
+%patch -P 500 -p1
 tar -xf %{S:14} -C externals/sirit --strip-components 1
 tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
 %if %{without vma}
@@ -409,6 +412,7 @@ export GITHUB_REF_NAME=%{name}/%{name}-nightly
 export GITHUB_REPOSITORY="%{vc_url}/%{citra}"
 %endif
 
+export CXXFLAGS+=" -fpermissive"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \

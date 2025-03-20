@@ -28,8 +28,8 @@ index 89ad4c3..872730e 100755
  import argparse
 -import sys
  import traceback
- import imghdr
  
+ # otherwise, on hardy the user is shown spurious "[application] closed
 -- 
 2.46.1
 

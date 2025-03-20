@@ -28,7 +28,7 @@ BuildArch:      noarch
 %bcond_with spirv
 %bcond_without vulkan
 
-%global gplasync_id 5225eb93108f50d024e47ae82e8203b8f8dc9ae0
+%global gplasync_id 447db06ecff8a64f900b12741dbd8d1c8d8eae22
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -54,7 +54,7 @@ BuildArch:      noarch
 %if %{with snapshot}
 %global gplasync_ver 2.5.3-1
 %else
-%global gplasync_ver 2.5.3-1
+%global gplasync_ver 2.6-1
 %endif
 
 %global winecommonver 7.1
@@ -71,7 +71,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.6
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -93,8 +93,6 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 %if %{with gplasync}
 Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
-Patch502:      0001-gplasync-fixup-1.patch
-Patch503:      0001-gplasync-fixup-2.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -165,9 +163,7 @@ in order to run 3D applications on Linux using Wine.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
-%patch -P 502 -p1
 %patch -P 500 -p1
-%patch -P 503 -p1
 %patch -P 501 -p1
 cp %{S:500} README.gplasync.md
 %endif
@@ -304,6 +300,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6-101
+- gplasync update
+
 * Thu Mar 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6-100
 - 2.6
 

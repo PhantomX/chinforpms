@@ -4,9 +4,9 @@
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%global commit 2c32dfd552dbfa5c2293b00fa22c4a08dd8c4eaf
+%global commit d87bcc3a21e4f3923b1f4804fbe5163f8ec10150
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250227
+%global date 20250315
 %bcond_without snapshot
 
 %bcond_with rust
@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.7.6
+Version:        0.7.7
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -191,6 +191,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.7-1.20250315gitd87bcc3
+- 0.7.7
+
 * Sun Mar 02 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.6-1.20250227git2c32dfd
 - 0.7.6
 

@@ -11,14 +11,14 @@
 %endif
 
 %global pkgver 2024
-%global pkgrel 1214
+%global pkgrel 1224
 %global repo https://shop.softmaker.com/repo
 %global pkgdir office%{pkgver}
 %global dist %{?dist}
 
 Name:           softmaker-office
 Version:        %{pkgver}.%{pkgrel}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Epoch:          1
 Summary:        SoftMaker Office %{pkgver} for Linux
 
@@ -173,6 +173,9 @@ install -pm0644 mime/%{name}-%{pkgver}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Thu Mar 20 2025 - 1:2024.1224-2
+- 2024.1224
+
 * Thu Aug 08 2024 - 1:2024.1214-1
 - 2024.1214
 

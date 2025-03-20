@@ -1,0 +1,165 @@
+From 60089f0ccd079e4828960f5766b75756610d7606 Mon Sep 17 00:00:00 2001
+From: rpm-build <rpm-build>
+Date: Mon, 20 Jan 2025 23:29:47 +0100
+Subject: [PATCH] Fix build with minizip-4.0.8
+
+---
+ src/arcade/imageprovider.h  | 2 +-
+ src/collectionrebuilder.cpp | 2 +-
+ src/filesystemmodel.h       | 2 +-
+ src/imagechecker.cpp        | 2 +-
+ src/imagechecker.h          | 2 +-
+ src/imagewidget.h           | 2 +-
+ src/machinelist.cpp         | 2 +-
+ src/options.cpp             | 2 +-
+ src/qmc2main.cpp            | 2 +-
+ src/romalyzer.cpp           | 2 +-
+ src/softwarelist.h          | 2 +-
+ 11 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/src/arcade/imageprovider.h b/src/arcade/imageprovider.h
+index bee46ee..1059357 100644
+--- a/src/arcade/imageprovider.h
++++ b/src/arcade/imageprovider.h
+@@ -8,7 +8,7 @@
+ #include <QUuid>
+ #include <QQuickImageProvider>
+ 
+-#include "../minizip/mz_compat.h"
++#include "../minizip/unzip.h"
+ #include "../sevenzipfile.h"
+ #if defined(QMC2_ARCADE_LIBARCHIVE_ENABLED)
+ #include "../archivefile.h"
+diff --git a/src/collectionrebuilder.cpp b/src/collectionrebuilder.cpp
+index 4e89294..db641a2 100644
+--- a/src/collectionrebuilder.cpp
++++ b/src/collectionrebuilder.cpp
+@@ -17,7 +17,7 @@
+ #include "collectionrebuilder.h"
+ #include "settings.h"
+ #include "options.h"
+-#include "mz_compat.h"
++#include "zip.h"
+ #include "mz.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+diff --git a/src/filesystemmodel.h b/src/filesystemmodel.h
+index 343b4f3..c1900c7 100644
+--- a/src/filesystemmodel.h
++++ b/src/filesystemmodel.h
+@@ -21,7 +21,7 @@
+ #endif
+ 
+ #include "macros.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #include "fileiconprovider.h"
+ 
+diff --git a/src/imagechecker.cpp b/src/imagechecker.cpp
+index 3f88d3f..f2eaa07 100644
+--- a/src/imagechecker.cpp
++++ b/src/imagechecker.cpp
+@@ -18,7 +18,7 @@
+ #include "qmc2main.h"
+ #include "options.h"
+ #include "toolexec.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #include "softwarelist.h"
+ #include "macros.h"
+diff --git a/src/imagechecker.h b/src/imagechecker.h
+index 75eb17e..3d85073 100644
+--- a/src/imagechecker.h
++++ b/src/imagechecker.h
+@@ -13,7 +13,7 @@
+ #include "ui_imagechecker.h"
+ #include "imagewidget.h"
+ #include "softwareimagewidget.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+diff --git a/src/imagewidget.h b/src/imagewidget.h
+index 264f52a..73c0e84 100644
+--- a/src/imagewidget.h
++++ b/src/imagewidget.h
+@@ -10,7 +10,7 @@
+ #include <QAction>
+ #include <QStringList>
+ 
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #if defined(QMC2_LIBARCHIVE_ENABLED)
+ #include "archivefile.h"
+diff --git a/src/machinelist.cpp b/src/machinelist.cpp
+index b5aa3e1..8a983c1 100644
+--- a/src/machinelist.cpp
++++ b/src/machinelist.cpp
+@@ -36,7 +36,7 @@
+ #include "miniwebbrowser.h"
+ #include "romalyzer.h"
+ #include "macros.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #include "demomode.h"
+ #include "deviceconfigurator.h"
+diff --git a/src/options.cpp b/src/options.cpp
+index e8e3388..081b793 100644
+--- a/src/options.cpp
++++ b/src/options.cpp
+@@ -33,7 +33,7 @@
+ #include "machinelist.h"
+ #include "imagechecker.h"
+ #include "macros.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "keyseqscan.h"
+ #include "romalyzer.h"
+ #include "romstatusexport.h"
+diff --git a/src/qmc2main.cpp b/src/qmc2main.cpp
+index f056b1e..733b6f1 100644
+--- a/src/qmc2main.cpp
++++ b/src/qmc2main.cpp
+@@ -56,7 +56,7 @@
+ #include "romstatusexport.h"
+ #include "componentsetup.h"
+ #include "miniwebbrowser.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #include "downloaditem.h"
+ #include "embedder.h"
+diff --git a/src/romalyzer.cpp b/src/romalyzer.cpp
+index 902db6e..3acea0d 100644
+--- a/src/romalyzer.cpp
++++ b/src/romalyzer.cpp
+@@ -27,7 +27,7 @@
+ #include "machinelist.h"
+ #include "softwarelist.h"
+ #include "macros.h"
+-#include "mz_compat.h"
++#include "zip.h"
+ #include "mz.h"
+ #include "zlib.h"
+ #include "sevenzipfile.h"
+diff --git a/src/softwarelist.h b/src/softwarelist.h
+index c0b15d9..a718514 100644
+--- a/src/softwarelist.h
++++ b/src/softwarelist.h
+@@ -15,7 +15,7 @@
+ #include <QWidgetAction>
+ 
+ #include "ui_softwarelist.h"
+-#include "mz_compat.h"
++#include "unzip.h"
+ #include "sevenzipfile.h"
+ #include "swlistexport.h"
+ #include "imagewidget.h"
+-- 
+2.48.1
+

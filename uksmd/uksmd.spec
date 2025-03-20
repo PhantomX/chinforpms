@@ -8,7 +8,7 @@
 %endif
 
 Name:           uksmd
-Version:        6.5.1
+Version:        6.11.1
 Release:        1%{?dist}
 
 Summary:        Userspace KSM helper daemon
@@ -24,7 +24,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 
 BuildRequires:  meson
 BuildRequires:  gcc
-BuildRequires:  pkgconfig(libproc2)
+BuildRequires:  pkgconfig(libproc2) >= 4.0.4
 BuildRequires:  pkgconfig(libcap-ng)
 BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  systemd
@@ -70,6 +70,9 @@ pf-kernel (https://gitlab.com/post-factum/pf-kernel/).
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.11.1-1
+- 6.11.1
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 6.5.1-1
 - 6.5.1
 

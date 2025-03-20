@@ -14,7 +14,7 @@
 
 Name:           cdrtools
 Version:        3.02~a09
-Release:        4%{?dist}
+Release:        5%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
@@ -93,6 +93,8 @@ for i in \
     iconv -f iso-8859-1 $i -t utf-8 -o $i.new && mv -f $i.new $i
 done
 
+sed -e '/INSDIR/s|sbin|bin|' -i rscsi/Makefile
+
 %build
 %make_build GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
     CPPOPTX="$CXXFLAGS" COPTX="$CFLAGS -DTRY_EXT2_FS" \
@@ -122,7 +124,7 @@ if [ %{_libdir} != %{_prefix}/lib ]; then
 fi
 
 chmod 755 %{buildroot}%{_libdir}/lib*.so* \
-    %{buildroot}%{_bindir}/* %{buildroot}%{_sbindir}/*
+    %{buildroot}%{_bindir}/*
 
 # Renaming for alternatives
 for i in cdrecord readcd cdda2wav ;do
@@ -171,7 +173,7 @@ if [ "$link" == "%{name}-cdrecord.1.gz" ]; then
   rm -f %{_mandir}/man1/%{name}-dvdrecord.1.gz
 fi
 
-%{_sbindir}/alternatives --install %{_bindir}/cdrecord cdrecord \
+%{_bindir}/alternatives --install %{_bindir}/cdrecord cdrecord \
           %{_bindir}/%{name}-cdrecord 60 \
   --slave %{_mandir}/man1/cdrecord.1.gz cdrecord-cdrecordman \
           %{_mandir}/man1/%{name}-cdrecord.1.gz \
@@ -186,7 +188,7 @@ fi
 
 %postun -n cdrecord
 if [ $1 = 0 ]; then
-  %{_sbindir}/alternatives --remove cdrecord %{_bindir}/%{name}-cdrecord
+  %{_bindir}/alternatives --remove cdrecord %{_bindir}/%{name}-cdrecord
 fi
 
 
@@ -204,7 +206,7 @@ if [ "$link" == "%{name}-mkisofs.1.gz" ]; then
   rm -f %{_mandir}/man1/%{name}-mkhybrid.1.gz
 fi
 
-%{_sbindir}/alternatives --install %{_bindir}/mkisofs mkisofs \
+%{_bindir}/alternatives --install %{_bindir}/mkisofs mkisofs \
   %{_bindir}/%{name}-mkisofs 60 \
   --slave %{_bindir}/mkhybrid mkisofs-mkhybrid \
           %{_bindir}/%{name}-mkisofs \
@@ -215,7 +217,7 @@ fi
 
 %postun -n mkisofs
 if [ $1 = 0 ]; then
-  %{_sbindir}/alternatives --remove mkisofs %{_bindir}/%{name}-mkisofs
+  %{_bindir}/alternatives --remove mkisofs %{_bindir}/%{name}-mkisofs
 fi
 
 
@@ -229,14 +231,14 @@ if [ "$link" == "%{name}-cdda2wav.1.gz" ]; then
   rm -f %{_mandir}/man1/%{name}-cdda2wav.1.gz
 fi
 
-%{_sbindir}/alternatives --install %{_bindir}/cdda2wav cdda2wav \
+%{_bindir}/alternatives --install %{_bindir}/cdda2wav cdda2wav \
 %{_bindir}/%{name}-cdda2wav 60 \
   --slave %{_mandir}/man1/cdda2wav.1.gz cdda2wav-cdda2wavman \
           %{_mandir}/man1/%{name}-cdda2wav.1.gz
 
 %postun -n cdda2wav
 if [ $1 = 0 ]; then
-  %{_sbindir}/alternatives --remove cdda2wav %{_bindir}/%{name}-cdda2wav
+  %{_bindir}/alternatives --remove cdda2wav %{_bindir}/%{name}-cdda2wav
 fi
 
 
@@ -252,7 +254,7 @@ fi
 %{_bindir}/scgcheck
 %{_bindir}/scgskeleton
 %{perms_readcd} %{_bindir}/%{name}-readcd
-%{_sbindir}/rscsi
+%{_bindir}/rscsi
 %{_mandir}/man1/%{name}-cdrecord.*
 %{_mandir}/man1/%{name}-dvdrecord.*
 %{_mandir}/man1/%{name}-readcd.*
@@ -305,6 +307,9 @@ fi
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-5
+- Move sbin to bin
+
 * Thu Mar 28 2024 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-4
 - build_type_safety_c 0
 

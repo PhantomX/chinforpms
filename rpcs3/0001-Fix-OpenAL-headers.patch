@@ -1,4 +1,4 @@
-From f902c8b85c1733b564a1dad32c68b8b1c1dca354 Mon Sep 17 00:00:00 2001
+From 9a061f79e4399e2bd49c26285a337e0468110e7c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 14 Jun 2024 21:13:02 -0300
 Subject: [PATCH] Fix OpenAL headers
@@ -10,20 +10,20 @@ Subject: [PATCH] Fix OpenAL headers
  3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/rpcs3/Emu/Cell/Modules/cellMic.cpp b/rpcs3/Emu/Cell/Modules/cellMic.cpp
-index 86e4b8b..5d9b292 100644
+index 267dc88..44d5f87 100644
 --- a/rpcs3/Emu/Cell/Modules/cellMic.cpp
 +++ b/rpcs3/Emu/Cell/Modules/cellMic.cpp
-@@ -10,7 +10,7 @@
- #include <numeric>
+@@ -11,7 +11,7 @@
  #include <cmath>
  
+ #ifndef WITHOUT_OPENAL
 -#include "3rdparty/OpenAL/openal-soft/include/AL/alext.h"
 +#include "alext.h"
+ #endif
  
  LOG_CHANNEL(cellMic);
- 
 diff --git a/rpcs3/Emu/Cell/Modules/cellMic.h b/rpcs3/Emu/Cell/Modules/cellMic.h
-index b008482..1a94298 100644
+index f17b954..edeac87 100644
 --- a/rpcs3/Emu/Cell/Modules/cellMic.h
 +++ b/rpcs3/Emu/Cell/Modules/cellMic.h
 @@ -1,7 +1,7 @@
@@ -36,7 +36,7 @@ index b008482..1a94298 100644
  
  // Error Codes
 diff --git a/rpcs3/rpcs3qt/microphone_creator.cpp b/rpcs3/rpcs3qt/microphone_creator.cpp
-index daf9116..58a17dc 100644
+index a0e63a5..c2875ad 100644
 --- a/rpcs3/rpcs3qt/microphone_creator.cpp
 +++ b/rpcs3/rpcs3qt/microphone_creator.cpp
 @@ -3,8 +3,8 @@
@@ -51,5 +51,5 @@ index daf9116..58a17dc 100644
  LOG_CHANNEL(cfg_log, "CFG");
  
 -- 
-2.48.1
+2.49.0
 

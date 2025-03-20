@@ -13,7 +13,7 @@
 
 Name:           bennugd
 Version:        1.0.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib
@@ -87,7 +87,7 @@ done
 
 
 %build
-export CFLAGS+=" -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
+export CFLAGS+=" -std=gnu17 -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE"
 for i in core modules tools/moddesc ;do
   pushd $i
   chmod +x configure
@@ -148,6 +148,9 @@ done
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-7.20220801gitd49f718
+- Add -std=gnu17 to build flags
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-5.20211122svn356
 - build_type_safety_c
 

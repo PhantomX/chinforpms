@@ -17,7 +17,6 @@ BuildRequires:  python3-devel
 BuildRequires:  systemd
 BuildRequires:  systemd-rpm-macros
 Requires:       xdg-dbus-proxy
-%{?sysusers_requires_compat}
 %{?systemd_requires}
 
 

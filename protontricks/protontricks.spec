@@ -3,7 +3,7 @@
 %bcond_with tests
 
 Name:           protontricks
-Version:        1.12.0
+Version:        1.12.1
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -16,7 +16,7 @@ Patch10:        0001-Disable-setuptools_scm-version-check.patch
 BuildArch:      noarch
 
 BuildRequires:  desktop-file-utils
-BuildRequires:  python3-devel >= 3.5
+BuildRequires:  python3-devel >= 3.7
 BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  %{py3_dist vdf} >= 3.2
 %if %{with tests}
@@ -70,6 +70,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-launch.deskto
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.12.1-1
+- 1.12.1
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.12.0-1
 - 1.12.0
 

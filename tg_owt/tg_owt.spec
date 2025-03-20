@@ -28,7 +28,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        141%{?dist}
+Release:        142%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -46,6 +46,8 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 %if %{without absl}
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
+
+Patch0:         %{url}/pull/149.patch#/%{name}-gh-pr149.patch
 
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 

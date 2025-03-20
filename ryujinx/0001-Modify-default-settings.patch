@@ -4,13 +4,13 @@ Date: Thu, 11 Apr 2024 22:21:09 -0300
 Subject: [PATCH] Modify default settings
 
 ---
- src/Ryujinx/Utilities/Configuration/ConfigurationState.cs | 6 +++---
+ src/Ryujinx/Systems/Configuration/ConfigurationState.cs | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
+diff --git a/src/Ryujinx/Systems/Configuration/ConfigurationState.cs b/src/Ryujinx/Systems/Configuration/ConfigurationState.cs
 index 7e4b794..91a5ae8 100644
---- a/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
-+++ b/src/Ryujinx/Utilities/Configuration/ConfigurationState.cs
+--- a/src/Ryujinx/Systems/Configuration/ConfigurationState.cs
++++ b/src/Ryujinx/Systems/Configuration/ConfigurationState.cs
 @@ -175,8 +175,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
              System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;

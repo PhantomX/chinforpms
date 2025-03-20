@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 914def23f631faaace3adfee346f534da1b2ed4e
+%global commit eaa9c9e3a46eb5099193b11d620ddfe96b6aec83
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250122
+%global date 20250222
 %bcond_without snapshot
 
 # Enable system boost
@@ -38,7 +38,7 @@
 # Enable webservice
 %bcond_without webservice
 
-%global commit10 2f382df218d7e8516dee3b3caccb819a62b571a2
+%global commit10 c788c52156f3ef7bc7ab769cb03c110a53ac8fcb
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 VulkanMemoryAllocator
 
@@ -89,7 +89,7 @@
 
 Name:           torzu
 Version:        2024.08.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A NX Emulator
 
 License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}

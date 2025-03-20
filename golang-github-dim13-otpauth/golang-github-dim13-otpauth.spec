@@ -2,17 +2,17 @@
 
 # https://github.com/dim13/otpauth
 
-%global commit 948f0dbb5b7191fc9825c657d6aadc4176b08531
+%global commit 8140e23553ae0d95f166707cb3369f60347e0099
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240706
-%bcond_without snapshot
+%global date 20250307
+%bcond_with snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global goipath         github.com/dim13/otpauth
-Version:                0.5.2
+Version:                0.5.4
 
 %gometa
 
@@ -29,7 +29,7 @@ Requires:  %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 }
 
 Name:           %{goname}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Google Authenticator migration decoder 
 License:        ISC
 URL:            %{gourl}
@@ -69,6 +69,9 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.4-1
+- 0.5.4
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 0.5.2-1.20240314git36a9db9
 - 0.5.2
 

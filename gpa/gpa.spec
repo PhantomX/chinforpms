@@ -1,7 +1,7 @@
 Name:           gpa
 Summary:        Graphical user interface for GnuPG
-Version:        0.10.0
-Release:        2%{?dist}
+Version:        0.11.0
+Release:        1%{?dist}
 
 License:        GPL-3.0-or-later
 URL:            https://www.gnupg.org/related_software/gpa/
@@ -18,7 +18,7 @@ BuildRequires:  gnupg2
 BuildRequires:  gpgme-devel
 BuildRequires:  libassuan-devel
 BuildRequires:  libgpg-error-devel
-BuildRequires:  pkgconfig(gtk+-2.0)
+BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(zlib)
 Requires:       gnupg2
 Requires:       gnupg2-smime
@@ -36,6 +36,7 @@ files, to verify signatures and to manage the private and public keys.
 sed -e '/en_US.ISO8859-1/d' -i *.desktop
 
 %build
+export CFLAGS+=" -fno-exceptions -Wno-implicit-function-declaration"
 %configure \
   --disable-silent-rules \
   --disable-rpath
@@ -77,6 +78,10 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-1
+- 0.11.0
+- BR: gtk+-3.0
+
 * Thu Apr 11 2019 Phantom X <megaphantomx at bol dot com dot br> - 0.10.0-2
 - http download links
 

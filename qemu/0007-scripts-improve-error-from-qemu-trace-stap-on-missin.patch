@@ -1,0 +1,82 @@
+From a3c47231f4244b189dd09fa4bff31ebbcfd5b102 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20P=2E=20Berrang=C3=A9?= <berrange@redhat.com>
+Date: Fri, 6 Dec 2024 11:45:24 +0000
+Subject: [PATCH 7/8] scripts: improve error from qemu-trace-stap on missing
+ 'stap'
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+If the 'stap' binary is missing in $PATH, a huge trace is thrown
+
+  $ qemu-trace-stap list /usr/bin/qemu-system-x86_64
+  Traceback (most recent call last):
+  File "/usr/bin/qemu-trace-stap", line 169, in <module>
+  main()
+  File "/usr/bin/qemu-trace-stap", line 165, in main
+  args.func(args)
+  File "/usr/bin/qemu-trace-stap", line 83, in cmd_run
+  subprocess.call(stapargs)
+  File "/usr/lib64/python3.12/subprocess.py", line 389, in call
+  with Popen(*popenargs, **kwargs) as p:
+  ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.12/subprocess.py", line 1026, in {}init{}
+  self._execute_child(args, executable, preexec_fn, close_fds,
+  File "/usr/lib64/python3.12/subprocess.py", line 1955, in _execute_child
+  raise child_exception_type(errno_num, err_msg, err_filename)
+  FileNotFoundError: [Errno 2] No such file or directory: 'stap'
+
+With this change the user now gets
+
+  $ qemu-trace-stap list /usr/bin/qemu-system-x86_64
+  Unable to find 'stap' in $PATH
+
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+Reviewed-by: Philippe Mathieu-Daudé <philmd@linaro.org>
+Message-id: 20241206114524.1666664-1-berrange@redhat.com
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ scripts/qemu-trace-stap | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/scripts/qemu-trace-stap b/scripts/qemu-trace-stap
+index eb6e951ff2..e983460ee7 100755
+--- a/scripts/qemu-trace-stap
++++ b/scripts/qemu-trace-stap
+@@ -56,6 +56,7 @@ def tapset_dir(binary):
+ 
+ 
+ def cmd_run(args):
++    stap = which("stap")
+     prefix = probe_prefix(args.binary)
+     tapsets = tapset_dir(args.binary)
+ 
+@@ -76,7 +77,7 @@ def cmd_run(args):
+ 
+     # We request an 8MB buffer, since the stap default 1MB buffer
+     # can be easily overflowed by frequently firing QEMU traces
+-    stapargs = ["stap", "-s", "8", "-I", tapsets ]
++    stapargs = [stap, "-s", "8", "-I", tapsets ]
+     if args.pid is not None:
+         stapargs.extend(["-x", args.pid])
+     stapargs.extend(["-e", script])
+@@ -84,6 +85,7 @@ def cmd_run(args):
+ 
+ 
+ def cmd_list(args):
++    stap = which("stap")
+     tapsets = tapset_dir(args.binary)
+ 
+     if args.verbose:
+@@ -96,7 +98,7 @@ def cmd_list(args):
+ 
+         if verbose:
+             print("Listing probes with name '%s'" % script)
+-        proc = subprocess.Popen(["stap", "-I", tapsets, "-l", script],
++        proc = subprocess.Popen([stap, "-I", tapsets, "-l", script],
+                                 stdout=subprocess.PIPE,
+                                 universal_newlines=True)
+         out, err = proc.communicate()
+-- 
+2.48.1
+

@@ -1,6 +1,6 @@
 Name:           lbreakouthd
 Version:        1.1.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A breakout-style arcade game
 
 License:        GPL-3.0-only
@@ -8,6 +8,8 @@ URL:            http://lgames.sourceforge.net/
 
 Source0:        https://downloads.sourceforge.net/lgames/%{name}-%{version}.tar.gz
 Source1:        %{name}.appdata.xml
+
+Patch0:         0001-gcc-15-build-fix.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -74,6 +76,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.1.9-2
+- Fix build with gcc 15
+
 * Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.9-1
 - 1.1.9
 

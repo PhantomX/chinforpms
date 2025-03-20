@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3d53d7cb93ada60076925d73aa20d39c08ea4409
+%global commit 8de2d49c12b45da670906b0d13f3c5f90ed280fb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250215
+%global date 20250303
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -25,6 +25,9 @@
 %bcond_with yamlcpp
 # Needs dispatch header
 %bcond_with xxhash
+
+# Set to build with versioned LLVM packages
+%global llvm_pkgver 19
 
 %global commit10 82767fe38823c32536726ea798f392b0b49e66b9
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -54,7 +57,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 b50e685db996c167e6c831dcef582aba6e14276a
+%global commit18 0c9fce2ffefecfdce794e1859584e25877b7b592
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -162,7 +165,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3738
+Version:        0.2.0.3742
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -229,6 +232,8 @@ Patch13:        0001-Vulkan-1.4-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch501:       0001-vma-set-missing-namespace.patch
 Patch502:       0001-Disable-vulkan-validation-layers.patch
+Patch503:       0001-Address-build-failures-when-using-Tip-of-Tree-clang..patch
+Patch504:       0001-glslang-gcc-15-build-fix.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  x86_64
@@ -237,8 +242,8 @@ ExclusiveArch:  x86_64
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 %if %{with clang}
-BuildRequires:  compiler-rt
-BuildRequires:  clang
+BuildRequires:  compiler-rt%{?llvm_pkgver}
+BuildRequires:  clang%{?llvm_pkgver}
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -365,6 +370,7 @@ cp -p %{S:171} ffmpeg/include/
 %endif
 %if %{without fmt}
 tar -xf %{S:18} -C %{srcname18} --strip-components 1
+%patch -P 503 -p1 -d %{srcname18}
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
 cp -p fmt/LICENSE LICENSE.fmt
 %endif
@@ -433,6 +439,8 @@ cp -p unicorn/COPYING COPYING.unicorn
 cp -p vita-toolchain/COPYING COPYING.vita-toolchain
 popd
 
+%patch -P 504 -p1
+
 sed \
   -e '/Boost_USE_STATIC_LIBS/s| ON| OFF|' \
   -i CMakeLists.txt
@@ -485,6 +493,14 @@ popd
 %endif
 
 %build
+
+%if %{with clang}
+%if 0%{?llvm_pkgver}
+export CC=clang-%{?llvm_pkgver}
+export CXX=clang++-%{?llvm_pkgver}
+%endif
+%endif
+
 %if %{without ffmpeg}
 pushd external/ffmpeg/include
 sed \

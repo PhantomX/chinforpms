@@ -9,7 +9,7 @@
 
 Name:           orage
 Version:        4.12.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Time-managing application for Xfce4
 
 License:        GPL-2.0-or-later
@@ -52,7 +52,7 @@ using the Orage Clock plugin for the panel.
 
 
 %build
-export CFLAGS+=" -I/usr/include/libical"
+export CFLAGS+=" -std=gnu17 -I/usr/include/libical"
 %configure \
   --disable-static \
   --enable-libical \
@@ -108,6 +108,9 @@ rmdir -p %{buildroot}%{_datadir}/xfce4/panel/plugins ||:
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 4.12.1-102
+- Add -std=gnu17 to build flags
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 4.12.1-101
 - build_type_safety_c 0
 

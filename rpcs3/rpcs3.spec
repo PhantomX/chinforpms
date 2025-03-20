@@ -24,6 +24,7 @@
 %global bundleffmpegver 5.2.1
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without  smallffmpeg
+%bcond_with faudio
 # Enable system flatbuffers
 %bcond_without  flatbuffers
 %global bundleflatbuffers 23.5.26
@@ -39,7 +40,7 @@
 %bcond_with pugixml
 %global bundlepugixml 1.15.0
 # Enable system rtmidi
-%if 0%{?fedora} > 42
+%if 0%{?fedora} > 43
 %bcond_without  rtmidi
 %endif
 %global bundlertmidi 6.0.0
@@ -49,9 +50,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit b266e3d4bf0e7b067efab0db6cba2ef31bd37974
+%global commit 1a51ce1e6665218cac64816cb308d8b9477d534d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250228
+%global date 20250318
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -120,7 +121,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.35.17533
+Version:        0.0.35.17665
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -172,6 +173,7 @@ Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
 Patch14:        0001-Fix-OpenAL-headers.patch
+Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -188,7 +190,9 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake(cubeb)
+%if %{with faudio}
 BuildRequires:  cmake(FAudio)
+%endif
 %if %{with llvm}
 BuildRequires:  llvm%{?llvm_pkgver}-devel >= %{bundlellvm}
 %else
@@ -239,7 +243,7 @@ BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
 BuildRequires:  pkgconfig(alsa)
 Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 %endif
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  cmake(SDL3) >= 3.2.0
 BuildRequires:  pkgconfig(tinfo)
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 %if %{with vma}
@@ -312,6 +316,8 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
+
+%patch -P 500 -p1
 
 %if %{without llvm}
 tar -xf %{S:18} -C 3rdparty/llvm/llvm --strip-components 1
@@ -455,7 +461,11 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
 %if %{without llvm}
   -DBUILD_LLVM:BOOL=ON \
 %endif
+%if %{with faudio}
   -DUSE_SYSTEM_FAUDIO:BOOL=ON \
+%else
+  -DUSE_FAUDIO:BOOL=OFF \
+%endif
   -DUSE_DISCORD_RPC:BOOL=OFF \
 %if %{with flatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \

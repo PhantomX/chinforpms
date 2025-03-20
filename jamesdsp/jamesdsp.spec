@@ -2,9 +2,9 @@
 %global build_type_safety_c 0
 %endif
 
-%global commit dd5ae3c8f7305eeb45fe8b86be0af274b72c6585
+%global commit 9826536c05207211ac187b7ef391ab8fd24123ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240325
+%global date 20250202
 %bcond_without snapshot
 
 %global commit1 b2f392480e00ca232c397610f42688b165b87640
@@ -19,7 +19,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 FlatTabWidget
 
-%global commit4 82a0c5240093e58b97ccbeb3716ee64e71a68d7c
+%global commit4 013055c360c66a08325208065211ffba1f5bc192
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 LiquidEqualizerWidget
 
@@ -33,7 +33,7 @@
 
 Name:           jamesdsp
 Version:        2.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT
@@ -55,6 +55,7 @@ Source13:       %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcomm
 Source14:       %{vc_url}/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 
 Patch0:         0001-use-shared-libraries.patch
+Patch1:         0001-pipewire-1.4-build-fix.patch
 
 
 BuildRequires:  desktop-file-utils

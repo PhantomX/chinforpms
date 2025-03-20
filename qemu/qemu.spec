@@ -389,7 +389,7 @@ Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
 Version:        9.2.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          2
 
 License: %{shrink:
@@ -431,6 +431,17 @@ Source36: README.tests
 # Skip failing test in copr
 # https://gitlab.com/qemu-project/qemu/-/issues/2541
 Patch: 0001-Disable-9p-local-tests-that-fail-on-copr-aarch64.patch
+# https://lists.nongnu.org/archive/html/qemu-block/2025-01/msg00480.html
+Patch: 0002-nfs-Add-support-for-libnfs-v2-api.patch
+Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
+# Upstream code has changed so will have different patch
+Patch: 0003-tests-functional-skip-mem-addr-test-on-32-bit-hosts.patch
+# https://gitlab.com/qemu-project/qemu/-/commit/c869f4129c8e35f3c234d757c0227c53134aca16
+Patch: 0004-binfmt-Shuffle-things-around.patch
+# https://gitlab.com/qemu-project/qemu/-/commit/2770a46b20b7ccd23019a7b6b6631de933b53c8e
+Patch: 0005-binfmt-Normalize-host-CPU-architecture.patch
+# https://gitlab.com/qemu-project/qemu/-/commit/1887cf2368189087fdf977fb8d09b5ad47cc7aea
+Patch: 0006-binfmt-Add-ignore-family-option.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -3158,6 +3169,9 @@ popd
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 2:9.2.2-101
+- Rawhide sync
+
 * Mon Feb 24 2025 Phantom X <megaphantomx at hotmail dot com> - 2:9.2.2-100
 - 9.2.2
 

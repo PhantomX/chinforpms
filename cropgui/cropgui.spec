@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           cropgui
-Version:        0.8
+Version:        0.9
 Release:        1%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
@@ -92,6 +92,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.9-1
+- 0.9
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8-1
 - 0.8
 

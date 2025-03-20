@@ -21,7 +21,7 @@
 Name:           gmpc
 Summary:        GNOME frontend for the MPD
 Version:        11.8.90
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 License:        GPL-2.0-or-later
 URL:            http://gmpclient.org/
@@ -87,6 +87,8 @@ This package includes header files necessary for developing gmpc plugins.
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
+sed -e 's/automake-1.16 /automake-1.17 \0/' -i ./autogen.sh
+
 %{?with_snapshot:sed -e 's|`git rev-parse --short master`|%{shortcommit}|g' -i src/Makefile.am}
 %{?with_snapshot:NOCONFIGURE=1 ./autogen.sh}
 
@@ -140,6 +142,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 11.8.90-102.20200215git28e1441
+- Add new automake version to autogen.sh
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 11.8.90-101.20200215git28e1441
 - build_type_safety_c 0
 

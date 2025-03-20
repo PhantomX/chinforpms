@@ -194,7 +194,7 @@ librashader
 libstrangle
 -liveprogide
 -linux-steam-integration
-lunasvc_sg
+lunasvg_ds
 lunzip
 -lutris
 -lzip
@@ -220,7 +220,7 @@ ncpamixer
 -NetworkManager-f5vpn
 nicotine+
 noise-suppression-for-voice
-ntsync
+-ntsync
 -ntsync-kmod
 -nvtop
 openbor
@@ -230,7 +230,6 @@ orage
 -pcsx2-multiconfigtool
 -pcsxr
 perl-rename
-pev
 phantomjs
 pipe-viewer
 playgsf
@@ -258,6 +257,7 @@ qt6ct
 -quiterss
 radeon-profile
 radeon-profile-daemon
+readpe
 -rclone
 reflac
 restricted-ssh-commands

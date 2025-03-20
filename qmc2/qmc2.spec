@@ -18,7 +18,7 @@
 
 Name:           qmc2
 Version:        0.244
-Release:        104%{?dist}
+Release:        105%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -35,17 +35,13 @@ Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 #Fedora-specific configuration
 Patch1:         %{name}-ini.patch
+Patch2:         0001-Fix-build-with-minizip-4.0.8.patch
 
-Patch10:        0001-system-minizip-fix.patch
 Patch11:        0001-use-system-lzma-sdk.patch
 
 BuildRequires:  make
 BuildRequires:  desktop-file-utils
-%if %{defined fedora} && 0%{?fedora} >= 40
 BuildRequires:  minizip-ng-compat-devel
-%else
-BuildRequires:  minizip-ng-devel
-%endif
 BuildRequires:  rsync
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
@@ -175,6 +171,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.244-105.20240720git1fb6d2b
+- Fix build with minzip 4.0.8, from Rawhide
+
 * Sat Jun 29 2024 Phantom X <megaphantomx at hotmail dot com> - 0.244-103.20240324gitf8b478a
 - lzma-sdk rebuild
 

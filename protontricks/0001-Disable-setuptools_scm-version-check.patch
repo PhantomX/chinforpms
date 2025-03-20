@@ -41,7 +41,7 @@ index 0f94fd8..34a38bc 100644
      Pillow
 -setup_requires =
 -    setuptools-scm
- python_requires = >=3.6
+ python_requires = >=3.7
  
  [options.packages.find]
 -- 

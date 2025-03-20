@@ -1,4 +1,4 @@
-From 4b210410f99703aea8ce5f6cff436369625ca5dd Mon Sep 17 00:00:00 2001
+From d4601152da85bd6fcedb7344585e69b04727c2e1 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 14 Mar 2023 11:59:09 -0300
 Subject: [PATCH] UI: tweak some font scale to desktop view
@@ -9,10 +9,19 @@ Subject: [PATCH] UI: tweak some font scale to desktop view
  2 files changed, 7 insertions(+), 7 deletions(-)
 
 diff --git a/UI/DebugOverlay.cpp b/UI/DebugOverlay.cpp
-index fec216f..21d6438 100644
+index 436e5c0..3506864 100644
 --- a/UI/DebugOverlay.cpp
 +++ b/UI/DebugOverlay.cpp
-@@ -277,7 +277,7 @@ void DrawCrashDump(UIContext *ctx, const Path &gamePath) {
+@@ -44,7 +44,7 @@ static void DrawDebugStats(UIContext *ctx, const Bounds &bounds) {
+ 
+ 	ctx->Flush();
+ 	ctx->BindFontTexture();
+-	ctx->Draw()->SetFontScale(.7f, .7f);
++	ctx->Draw()->SetFontScale(.4f, .4f);
+ 
+ 	__DisplayGetDebugStats(statbuf, sizeof(statbuf));
+ 	ctx->Draw()->DrawTextRect(ubuntu24, statbuf, bounds.x + 11, bounds.y + 31, left, bounds.h - 30, 0xc0000000, FLAG_DYNAMIC_ASCII);
+@@ -286,7 +286,7 @@ void DrawCrashDump(UIContext *ctx, const Path &gamePath) {
  	ctx->Flush();
  	if (ctx->Draw()->GetFontAtlas()->getFont(ubuntu24))
  		ctx->BindFontTexture();
@@ -21,7 +30,7 @@ index fec216f..21d6438 100644
  	ctx->Draw()->DrawTextShadow(ubuntu24, sy->T_cstr("Game crashed"), x, y, 0xFFFFFFFF);
  
  	char statbuf[4096];
-@@ -340,7 +340,7 @@ sysName.c_str(), sysVersion, GetCompilerABI(),
+@@ -349,7 +349,7 @@ sysName.c_str(), sysVersion, GetCompilerABI(),
  crcStr
  );
  
@@ -30,7 +39,7 @@ index fec216f..21d6438 100644
  	ctx->Draw()->DrawTextShadow(ubuntu24, statbuf, x, y, 0xFFFFFFFF);
  	y += 160;
  
-@@ -388,7 +388,7 @@ Invalid / Unknown (%d)
+@@ -397,7 +397,7 @@ Invalid / Unknown (%d)
  
  	y += 40;
  
@@ -39,20 +48,11 @@ index fec216f..21d6438 100644
  
  	ctx->Draw()->DrawTextShadow(ubuntu24, info.stackTrace.c_str(), x, y, 0xFFFFFFFF);
  
-@@ -457,7 +457,7 @@ void DrawFPS(UIContext *ctx, const Bounds &bounds) {
- 
- 	ctx->Flush();
- 	ctx->BindFontTexture();
--	ctx->Draw()->SetFontScale(0.7f, 0.7f);
-+	ctx->Draw()->SetFontScale(0.4f, 0.4f);
- 	ctx->Draw()->DrawText(ubuntu24, fpsbuf, bounds.x2() - 8, 20, 0xc0000000, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
- 	ctx->Draw()->DrawText(ubuntu24, fpsbuf, bounds.x2() - 10, 19, 0xFF3fFF3f, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
- 	ctx->Draw()->SetFontScale(1.0f, 1.0f);
 diff --git a/UI/Theme.cpp b/UI/Theme.cpp
-index b8704ce..fe103a8 100644
+index 9ab731d..fed38f2 100644
 --- a/UI/Theme.cpp
 +++ b/UI/Theme.cpp
-@@ -199,9 +199,9 @@ void UpdateTheme(UIContext *ctx) {
+@@ -232,9 +232,9 @@ void UpdateTheme(UIContext *ctx) {
  	ui_theme.uiFontSmall = UI::FontStyle(FontID("UBUNTU24"), g_Config.sFont.c_str(), 17);
  	ui_theme.uiFontBig = UI::FontStyle(FontID("UBUNTU24"), g_Config.sFont.c_str(), 28);
  #else
@@ -66,5 +66,5 @@ index b8704ce..fe103a8 100644
  
  	ui_theme.checkOn = ImageID("I_CHECKEDBOX");
 -- 
-2.46.1
+2.49.0
 

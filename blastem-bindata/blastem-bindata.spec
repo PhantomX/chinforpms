@@ -1,7 +1,7 @@
 %undefine _hardened_build
 
-%global commit 0775f5e0c468
-%global date 20240905
+%global commit 2df04125ac78
+%global date 20250315
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 
 Name:           %{pkgname}-bindata
 Version:        0.6.3
-Release:        0.7%{?dist}
+Release:        0.8%{?dist}
 Summary:        Blastem binary support files
 
 License:        GPL-3.0-only

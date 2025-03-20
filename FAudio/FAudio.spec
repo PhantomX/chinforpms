@@ -8,7 +8,7 @@
 %endif
 
 Name:           FAudio
-Version:        25.02
+Version:        25.03
 Release:        100%{?dist}
 Summary:        Accuracy-focused XAudio reimplementation
 
@@ -71,6 +71,7 @@ Development files for the FAudio library.
 %cmake \
   -DCMAKE_INSTALL_INCLUDEDIR:PATH=include/%{name} \
   -DGSTREAMER:BOOL=ON \
+  -DBUILD_SDL3:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -95,6 +96,9 @@ ln -sf %{name}.pc %{buildroot}%{_libdir}/pkgconfig/faudio.pc
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.03-100
+- 25.03
+
 * Sat Feb 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.02-100
 - 25.02
 

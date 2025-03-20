@@ -1,6 +1,6 @@
 Name:           unshield
 Version:        1.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Install InstallShield applications on a Pocket PC
 
 License:        MIT
@@ -31,6 +31,7 @@ The %{name}-devel package contains the files needed for development with
 %autosetup
 
 %build
+export CFLAGS+=" -std=gnu17"
 %cmake
 %cmake_build
 
@@ -51,6 +52,9 @@ The %{name}-devel package contains the files needed for development with
 %{_libdir}/pkgconfig/libunshield.pc
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.5.1-2
+- Add -std=gnu17 to build flags
+
 * Fri Oct 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.5.1-1
 - 1.5.1
 

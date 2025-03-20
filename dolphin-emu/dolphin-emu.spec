@@ -14,6 +14,7 @@
 %bcond_without fmt
 %bcond_with llvm
 %bcond_with mgba
+%bcond_with sfml
 %bcond_without vma
 %bcond_with vulkan
 %bcond_with unittests
@@ -23,12 +24,12 @@
 %global enablejit 1
 %endif
 
-%global commit f93781d91a90a937973534298b67b789f6a0db0a
+%global commit 18979129f35f56de9f87e2a7919788679337abfa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250225
+%global date 20250318
 %bcond_without snapshot
 
-%global commit2 50b4d5389b6a06f86fb63a2848e1a7da6d9755ca
+%global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Cross
 
@@ -60,6 +61,10 @@
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 tinygltf
 
+%global commit19 7f1162dfea4969bc17417563ac55d93b72e84c1e
+%global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
+%global srcname19 SFML
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -76,7 +81,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2412.338
+Version:        2503.111
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -119,6 +124,7 @@ Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcn
 Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source19:      https://github.com/SFML/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 
 Patch0:        %{vc_url}/pull/13380.patch#/%{name}-gh-pr13380.patch
 %if %{with vulkan}
@@ -177,8 +183,12 @@ BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.6
+%if %{with sfml}
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system)
+%else
+Provides:       bundled(sfml) = 0~git%{shortcommit2}
+%endif
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
@@ -197,7 +207,7 @@ BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
 Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit3}
 %endif
-BuildRequires:  xxhash-devel
+BuildRequires:  pkgconfig(libxxhash)
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
@@ -287,9 +297,6 @@ This package provides the data files for dolphin-emu.
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 
-# Workaround to fix cmake bug with minizip-ng pkgconfig
-sed 's/ZLIB::ZLIB/ZLIB::ZLIB z/' -i Source/Core/*/CMakeLists.txt
-
 #Font license, just making things more generic
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
@@ -319,7 +326,7 @@ pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
   libiconv-* liblzma libspng libusb lz4 LZO mbedtls miniupnpc minizip-ng OpenAL \
-  pugixml Qt SFML MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
+  pugixml Qt MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if %{with vulkan}
   rm -rf glslang
@@ -347,6 +354,11 @@ tar -xf %{S:8} -C mGBA/mgba --strip-components 1
 rm -rf mGBA
 %endif
 tar -xf %{S:18} -C tinygltf/tinygltf --strip-components 1
+%if %{without sfml}
+tar -xf %{S:19} -C SFML/SFML --strip-components 1
+%else
+rm -rf SFML
+%endif
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson
@@ -483,6 +495,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2503.111-1.20250318git1897912
+- 2503.111
+
 * Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2409.37-2.20240916git6851ed7
 - Fix build with zlib-ng
 

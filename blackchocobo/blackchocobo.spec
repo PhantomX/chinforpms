@@ -1,6 +1,6 @@
-%global commit a0511ddc88e5cc2feb6a44fd01167959fc386207
+%global commit a7909314c12d5c2987046247d841cd394cda674f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240817
+%global date 20250226
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -18,7 +18,7 @@
 
 Name:           blackchocobo
 Version:        1.16.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 Epoch:          1

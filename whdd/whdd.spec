@@ -2,7 +2,7 @@
 
 Name:           whdd
 Version:        3.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        HDD diagnostic and data recovery tool 
 
 License:        GPL-3.0-only
@@ -28,6 +28,8 @@ Requires:       smartmontools
 %prep
 %autosetup -p1
 
+sed -e 's|sbin|bin|g' -i CMakeLists.txt
+
 
 %build
 %cmake \
@@ -44,10 +46,13 @@ Requires:       smartmontools
 %files
 %license COPYING LICENSE
 %doc README
-%{_sbindir}/%{name}
+%{_bindir}/%{name}
 
 
 %changelog
+* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0.1-2
+- Move sbin to bin
+
 * Tue Nov 09 2021 Phantom X <megaphantomx at bol dot com dot br> - 3.0.1-1
 - 3.0.1
 
