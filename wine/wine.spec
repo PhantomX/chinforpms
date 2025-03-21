@@ -579,7 +579,7 @@ BuildArch:      noarch
 Requires(post):  systemd
 Requires(postun): systemd
 Obsoletes:      wine-sysvinit < %{version}-%{release}
-Obsoletes:      ntsync < 6.13
+Obsoletes:      ntsync < 6.14
 Provides:       ntsync = %{version}
 Provides:       ntsync-kmod-common = %{version}
 Requires:       kmod(ntsync.ko)

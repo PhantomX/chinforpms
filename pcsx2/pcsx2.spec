@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.212
+Version:        2.3.232
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -120,6 +120,7 @@ Provides:       bundled(fmt) = %{fmt_ver}
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(ice)
+BuildRequires:  cmake(KDDockWidgets-qt6) >= 2.2
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -142,6 +143,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.4.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
+BuildRequires:  cmake(RapidJSON)
 %if %{with rapidyml}
 BuildRequires:  cmake(ryml) >= %{rapidyml_ver}
 %else
@@ -152,6 +154,7 @@ BuildRequires:  cmake(Qt6CoreTools)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6GuiTools)
 BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Quick)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel

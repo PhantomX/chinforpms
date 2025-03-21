@@ -92,7 +92,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.0.1
+Version:        25.0.2
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -101,7 +101,7 @@ URL:            http://www.mesa3d.org
 %if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        https://mesa.freedesktop.org/archive/%{name}-%{ver}.tar.xz
+Source0:        https://archive.mesa3d.org/%{name}-%{ver}.tar.xz
 %endif
 
 # src/gallium/auxiliary/postprocess/pp_mlaa* have an ... interestingly worded license.
@@ -785,6 +785,9 @@ popd
 
 
 %changelog
+* Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.2-100
+- 25.0.2
+
 * Thu Mar 06 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.1-100
 - 25.0.1
 

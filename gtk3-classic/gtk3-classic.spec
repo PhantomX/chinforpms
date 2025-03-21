@@ -22,7 +22,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.43-2
+%global classic_ver 3.24.49
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -36,8 +36,8 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-classic
-Version:        3.24.43
-Release:        3%{?dist}
+Version:        3.24.49
+Release:        1%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          2
@@ -45,7 +45,7 @@ Epoch:          2
 License:        LGPL-2.0-or-later
 URL:            http://www.gtk.org
 
-Source0:        http://download.gnome.org/sources/gtk+/%(echo %{version} | cut -d. -f-2)/gtk+-%{version}.tar.xz
+Source0:        http://download.gnome.org/sources/gtk/%(echo %{version} | cut -d. -f-2)/gtk-%{version}.tar.xz
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
@@ -136,7 +136,7 @@ usability and cosmetic modifications.
 
 
 %prep
-%autosetup -n gtk+-%{version} -N -p1 -a 1
+%autosetup -n gtk-%{version} -N -p1 -a 1
 %autopatch -M 499 -p1
 
 patch_command(){
@@ -246,6 +246,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.49-1
+- 3.24.49
+
 * Tue Dec 17 2024 Phantom X - 2:3.24.43-3
 - Again
 

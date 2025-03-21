@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.24.11
+Version:        1.26.0
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -242,6 +242,8 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 %{_libdir}/pkgconfig/gstreamer-check-%{majorminor}.pc
 %{_libdir}/pkgconfig/gstreamer-net-%{majorminor}.pc
 
+%{_datadir}/cmake/FindGStreamer.cmake
+
 %if 0
 %files devel-docs
 %doc %{_datadir}/gtk-doc/html/gstreamer-%{majorminor}/
@@ -251,6 +253,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 1.26.0-100
+- 1.26.0
+
 * Wed Jan 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1.24.11-100
 - 1.4.11
 

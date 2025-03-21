@@ -9,7 +9,7 @@
 
 Name:           irpf%{pkgyear}
 Version:        1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
 License:        Custom
@@ -54,6 +54,20 @@ Icon=%{name}
 Categories=Office;
 EOF
 
+cat > %{name}.wrapper <<'EOF'
+#!/usr/bin/sh
+
+jre_ver=%{jre_ver}
+jre_dir="/usr/lib/jvm"
+jar_file="%{_datadir}/ProgramasRFB/%{name}/irpf.jar"
+
+if [ -x "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" ] ;then
+  exec "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" -jar "${jar_file}" "${@}"
+else
+  exec "${jre_dir}/jre-${jre_ver}/bin/java" -jar "${jar_file}" "${@}"
+fi
+EOF
+
 
 %build
 # Nothing to build
@@ -69,12 +83,7 @@ rmdir -p %{buildroot}%{_datadir}/ProgramasRFB/%{name}/* ||:
 find %{buildroot}%{_datadir}/ProgramasRFB/%{name} -type d | xargs chmod 0755 2> /dev/null
 
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/usr/bin/sh
-
-exec /usr/lib/jvm/jre-%{jre_ver}/bin/java -jar %{_datadir}/ProgramasRFB/%{name}/irpf.jar "${@}"
-EOF
-chmod 0755 %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -108,6 +117,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
+* Thu Mar 20 2025 - 1.5-2
+- Update wrapper to support temurin JVMs
+
 * Wed Mar 13 2024 - 1.5-1
 - 1.5
 

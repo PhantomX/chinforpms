@@ -1,4 +1,4 @@
-From 53c4913468381bad47057bcabdb7aba68b331fdd Mon Sep 17 00:00:00 2001
+From d563fa8f22087b944f37795707afd60c44da9d33 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -12,7 +12,7 @@ Subject: [PATCH] Use system libraries
  5 files changed, 95 insertions(+), 2 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index ff66f9c..173a61e 100644
+index 01fbe24..6990207 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -76,33 +76,97 @@ endif()
@@ -112,8 +112,8 @@ index ff66f9c..173a61e 100644
 +endif()
  
  # Find the Qt components that we need.
- find_package(Qt6 6.7.2 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
-@@ -119,14 +183,27 @@ add_subdirectory(3rdparty/ccc EXCLUDE_FROM_ALL)
+ find_package(Qt6 6.7.3 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
+@@ -128,14 +192,27 @@ target_include_directories(KDAB::kddockwidgets INTERFACE
  
  # Architecture-specific.
  if(_M_X86)
@@ -142,10 +142,10 @@ index ff66f9c..173a61e 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 0a229bd..1f867ba 100644
+index 93467e2..6c266d6 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1057,7 +1057,9 @@ set(pcsx2LTOSources
+@@ -1061,7 +1061,9 @@ set(pcsx2LTOSources
  
  if(_M_X86)
  	list(APPEND pcsx2LTOSources ${pcsx2x86Sources} ${pcsx2x86Headers})
@@ -155,7 +155,7 @@ index 0a229bd..1f867ba 100644
  elseif(_M_ARM64)
  	list(APPEND pcsx2LTOSources ${pcsx2arm64Sources} ${pcsx2arm64Headers})
  	target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
-@@ -1185,7 +1187,11 @@ endif()
+@@ -1189,7 +1191,11 @@ endif()
  
  # additonal include directories
  if(_M_X86)
@@ -168,7 +168,7 @@ index 0a229bd..1f867ba 100644
  endif()
  target_include_directories(PCSX2_FLAGS INTERFACE
 diff --git a/pcsx2/GS/GSDump.cpp b/pcsx2/GS/GSDump.cpp
-index cdaea79..0693c67 100644
+index ac4cb35..77db9f9 100644
 --- a/pcsx2/GS/GSDump.cpp
 +++ b/pcsx2/GS/GSDump.cpp
 @@ -16,6 +16,10 @@
@@ -183,7 +183,7 @@ index cdaea79..0693c67 100644
  	: m_filename(std::move(fn))
  	, m_frames(0)
 diff --git a/pcsx2/GS/GSLzma.cpp b/pcsx2/GS/GSLzma.cpp
-index 02bd925..f3567be 100644
+index 01ea3f5..6f301a8 100644
 --- a/pcsx2/GS/GSLzma.cpp
 +++ b/pcsx2/GS/GSLzma.cpp
 @@ -21,6 +21,12 @@
@@ -200,7 +200,7 @@ index 02bd925..f3567be 100644
  
  GSDumpFile::GSDumpFile() = default;
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index d23c713..bad50c1 100644
+index b1f4d13..2e46f6b 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 @@ -14,8 +14,8 @@
@@ -215,5 +215,5 @@ index d23c713..bad50c1 100644
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
  /// Should make combined SSE and AVX codegen much easier
 -- 
-2.46.2
+2.49.0
 
