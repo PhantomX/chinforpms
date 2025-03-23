@@ -180,10 +180,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.7
+%define specrpmversion 6.13.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1241,6 +1241,7 @@ Patch7717:  %{pf_url}/9679edf4c6c561d85570adb5a26223edd5ec05f1.patch#/pf-cb-9679
 Patch7718:  %{pf_url}/bb72dda03d3cc35d4ef4c1127663c9312939d944.patch#/pf-cb-bb72dda.patch
 Patch7719:  %{pf_url}/2d0eb6e4f96b3c27e2d187d49658c6824dddc5b8.patch#/pf-cb-2d0eb6e.patch
 Patch7720:  %{pf_url}/03ead1e0c0c05cf757387a8797a0d0719859dee4.patch#/pf-cb-03ead1e.patch
+Patch7721:  %{pf_url}/78ff3a74e19951bf4d6016c39ff278690c2dad84.patch#/pf-cb-78ff3a7.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2151,6 +2152,7 @@ ApplyPatch %{PATCH7717}
 ApplyPatch %{PATCH7718}
 ApplyPatch %{PATCH7719}
 ApplyPatch %{PATCH7720}
+ApplyPatch %{PATCH7721}
 ApplyPatch %{PATCH5002}
 %endif
 
@@ -4467,6 +4469,9 @@ fi\
 #
 #
 %changelog
+* Sat Mar 22 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.8-500.chinfo
+- 6.13.8
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-501.chinfo
 - gcc 15 fixes
 

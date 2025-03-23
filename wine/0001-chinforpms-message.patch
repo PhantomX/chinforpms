@@ -1,4 +1,4 @@
-From 8b063f62bddae4010cc1f9fa0c2a08b0069e8463 Mon Sep 17 00:00:00 2001
+From eb509d695a2dcf829d30023e16418b81f362fb3c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Oct 2020 20:20:50 -0300
 Subject: [PATCH] chinforpms message
@@ -8,10 +8,10 @@ Subject: [PATCH] chinforpms message
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch b/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
-index 2b793f7..903e4cf 100644
+index 769b38d..931c3a1 100644
 --- a/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
 +++ b/patches/Staging/0001-ntdll-Print-a-warning-message-specifying-the-wine-st.patch
-@@ -49,11 +49,11 @@ index 5f84ca7e23b..fabf394fbe5 100644
+@@ -49,12 +49,12 @@ index 74eb1b7f500..95639558155 100644
  +    InitializeObjectAttributes( &staging_event_attr, &staging_event_string, OBJ_OPENIF, NULL, NULL );
  +    if (NtCreateEvent( &staging_event, EVENT_ALL_ACCESS, &staging_event_attr, NotificationEvent, FALSE ) == STATUS_SUCCESS)
  +    {
@@ -21,11 +21,12 @@ index 2b793f7..903e4cf 100644
 ++        FIXME_(winediag)("Please don't report bugs about it on winehq.org or Red Hat Bugzilla.\n");
  +    }
  +    else
+ +    {
 -+        WARN_(winediag)("wine-staging %s is a testing version containing experimental patches.\n", wine_get_version());
 ++        WARN_(winediag)("wine-chinforpms %s is a testing version containing experimental patches.\n", wine_get_version());
-  
-      NtCurrentTeb()->FlsSlots = fls_alloc_data();
+ +        NtClose( staging_event );
+      }
   
 -- 
-2.46.0
+2.49.0
 

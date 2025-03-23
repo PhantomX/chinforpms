@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.3
+%global wine_stagingver 10.4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id b23227964ea3dcac210603a0a6ffd3ca91d3e10e
+%global tkg_id 2325fc749b8b47af5e8fd08adc5aa4852c60643a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -157,8 +157,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.3
-Release:        101%{?dist}
+Version:        10.4
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -258,8 +258,7 @@ Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_ti
 Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1036:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1037:       %{tkg_url}/hotfixes/legacy_ntdll_writecopy/legacy-ntdll-writecopy.mypatch#/%{name}-tkg-legacy-ntdll-writecopy.patch
-Patch1038:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
+Patch1037:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
 
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
@@ -914,8 +913,9 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %dnl %patch -P 1034 -p1
 %patch -P 1035 -p1
 %patch -P 1036 -p1
+%if %{without ntsync}
 %patch -P 1037 -p1
-%patch -P 1038 -p1
+%endif
 
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
@@ -1558,6 +1558,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/crtdll.%{winedll}
 %{_libdir}/wine/%{winesodir}/crypt32.so
 %{_libdir}/wine/%{winedlldir}/crypt32.%{winedll}
+%{_libdir}/wine/%{winedlldir}/cryptbase.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptdlg.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptdll.%{winedll}
 %{_libdir}/wine/%{winedlldir}/cryptext.%{winedll}
@@ -2015,6 +2016,7 @@ fi
 %{_libdir}/wine/%{winedlldir}/windows.security.authentication.onlineid.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.storage.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.storage.applicationdata.%{winedll}
+%{_libdir}/wine/%{winedlldir}/windows.system.profile.systemid.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.system.profile.systemmanufacturers.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.%{winedll}
 %{_libdir}/wine/%{winedlldir}/windows.ui.xaml.%{winedll}
@@ -2528,6 +2530,9 @@ fi
 
 
 %changelog
+* Sat Mar 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.4-100
+- 10.4
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.3-101
 - Merge ntsync modules file to systemd package
 

@@ -4,7 +4,7 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
 
 > Most packages can be found in this [COPR repository](https://copr.fedorainfracloud.org/coprs/phantomx/chinforpms), except for those not allowed.
 
-> Builds are tested with Fedora release **41**, currently. Rawhide have very limited support and older releases have none. 
+> Builds are tested with Fedora release **42**, currently. Rawhide have very limited support and older releases have none. 
 
 > *Epoch* is used without regard, running **dnf distro-sync** is recommended sometimes.
 
