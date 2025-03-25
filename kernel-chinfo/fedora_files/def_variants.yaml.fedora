@@ -19,6 +19,10 @@ packages:
 
 
 rules:
+  - .*kunit.*: modules-internal
+    exact_pkg: True
+  - .*test[^/]*.ko: modules-internal
+
   - arch/x86/kvm/kvm(-amd|-intel|\.).*: modules-rt-kvm
     if_variant_in: ["rt"]
 
@@ -31,7 +35,6 @@ rules:
   - drivers/acpi/.*: modules-core
   - drivers/ata/.*: modules-core
 
-  - drivers/base/.*(kunit|test).*: modules-internal
   - drivers/base/regmap/regmap-sdw.*: modules
   - drivers/base/.*: modules-core
   - drivers/block/floppy.*: modules-extra
@@ -42,7 +45,6 @@ rules:
   - drivers/cdx/.*: modules-core
   - drivers/char/mwave.*: modules
   - drivers/char/.*: modules-core
-  - drivers/clk/.*(test|kunit).*: modules-internal
   - drivers/clk/.*: modules-core
   - drivers/counter/.*: modules-core
   - drivers/cpufreq/.*: modules-core
@@ -57,7 +59,6 @@ rules:
   - drivers/dax/.*: modules-core
   - drivers/dca/.*: modules-core
   - drivers/devfreq/.*: modules-core
-  - drivers/dma/dmatest.*: modules-internal
   - drivers/dma/.*: modules-core
 
   - drivers/edac/.*: modules-core
@@ -85,7 +86,6 @@ rules:
   - drivers/gpu/drm/qxl/.*: modules-core
   - drivers/gpu/drm/scheduler/.*: modules-core
   - drivers/gpu/drm/solomon/.*: modules-core
-  - drivers/gpu/drm/tests/.*: modules-internal
   - drivers/gpu/drm/tidss/.*: modules-core
   - drivers/gpu/drm/tiny/.*: modules-core
   - drivers/gpu/drm/ttm/.*: modules-core
@@ -98,7 +98,6 @@ rules:
   - drivers/gpu/drm/xlnx/.*: modules-core
   - drivers/gpu/host1x/.*: modules-core
 
-  - drivers/hid/.*test.*: modules-internal
   - drivers/hid/hid-asus.*: modules
   - drivers/hid/hid-nintendo.*: modules
   - drivers/hid/hid-picolcd.*: modules
@@ -127,17 +126,14 @@ rules:
   - drivers/iio/light/.*: modules
   - drivers/iio/pressure/.*: modules
   - drivers/iio/proximity/.*: modules
-  - drivers/iio/test/.*: modules-internal
   - drivers/iio/.*: modules-core
   - drivers/input/gameport/.*: modules
   - drivers/input/joystick/.*: modules-extra
   - drivers/input/misc/pcspkr.*: modules-extra
   - drivers/input/tablet/.*: modules
-  - drivers/input/tests/.*: modules-internal
   - drivers/input/touchscreen/.*: modules
   - drivers/input/.*: modules-core
   - drivers/interconnect/.*: modules-core
-  - drivers/iommu/.*test.ko: modules-internal
   - drivers/iommu/.*: modules-core
   - drivers/irqchip/.*: modules-core
 
@@ -252,7 +248,6 @@ rules:
   - drivers/perf/.*: modules-core
   - drivers/phy/.*: modules-core
   - drivers/pinctrl/.*: modules-core
-  - drivers/platform/chrome/.*test.*: modules-internal
   - drivers/pmdomain/.*: modules-core
   - drivers/powercap/intel_rapl_tpmi.*: modules
   - drivers/powercap/.*: modules-core
@@ -270,7 +265,6 @@ rules:
   - drivers/remoteproc/.*: modules-core
   - drivers/reset/.*: modules-core
   - drivers/rpmsg/.*: modules-core
-  - drivers/rtc/.*test.*: modules-internal
   - drivers/rtc/.*: modules-core
 
   - drivers/s390/.*: modules-core
@@ -374,7 +368,6 @@ rules:
   - drivers/w1/slaves/w1_smem.*: modules-extra
   - drivers/w1/slaves/w1_therm.*: modules-extra
 
-  - fs/.*test.*: modules-internal
   - fs/9p/.*: modules-core
   - fs/afs/.*: modules-core
   - fs/affs/affs.*: modules-extra
@@ -413,24 +406,16 @@ rules:
   - fs/xfs/.*: modules-core
   - fs/zonefs/.*: modules-core
 
-  - kernel/.*test.*: modules-internal
   - kernel/locking/locktorture.*: modules-internal
   - kernel/rcu/rcuscale.*: modules-internal
   - kernel/rcu/rcutorture.*: modules-internal
   - kernel/rcu/refscale.*: modules-internal
-  - kernel/resource_kunit.*: modules-internal
   - kernel/scftorture.*: modules-internal
   - kernel/torture.*: modules-internal
   - kernel/.*: modules-core
 
-  - lib/.*(test|kunit).*: modules-internal
-    exact_pkg: True
   - lib/.*: modules-core
 
-  - mm/kasan/kasan_test: modules-internal
-  - mm/kfence/.*test.*: modules-internal
-
-  - net/.*test.*: modules-internal
   - net/802/.*: modules-core
   - net/8021q/.*: modules-core
   - net/9p/9pnet_rdma.ko: modules
@@ -479,17 +464,6 @@ rules:
   - net/rds/rds.*: modules-extra
   - net/rose/rose.*: modules-extra
   - net/rxrpc/.*: modules-core
-  - net/sched/sch_choke.*: modules-extra
-  - net/sched/sch_drr.*: modules-extra
-  - net/sched/sch_etf.*: modules-extra
-  - net/sched/sch_gred.*: modules-extra
-  - net/sched/sch_mqprio.ko: modules-extra
-  - net/sched/sch_multiq.*: modules-extra
-  - net/sched/sch_netem.*: modules-extra
-  - net/sched/sch_qfq.*: modules-extra
-  - net/sched/sch_red.*: modules-extra
-  - net/sched/sch_sfb.*: modules-extra
-  - net/sched/sch_teql.*: modules-extra
   - net/sched/.*: modules-core
   - net/sunrpc/xprtrdma/rpcrdma.*: modules
   - net/sunrpc/.*: modules-core
@@ -498,9 +472,6 @@ rules:
   - net/vmw_vsock/.*: modules-core
   - net/xdp/.*: modules-core
   - net/xfrm/.*: modules-core
-
-  - sound/pci/.*test.*: modules-internal
-  - sound/soc/.*test.*: modules-internal
 
   - virt/.*: modules-core
 

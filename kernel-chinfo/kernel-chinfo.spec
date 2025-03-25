@@ -131,7 +131,7 @@ Summary: The Linux kernel
 
 # Default compression algorithm
 %global compression xz
-%global compression_flags --compress
+%global compression_flags --compress --check=crc32 --lzma2=dict=1MiB
 %global compext xz
 
 #global buildid .chinfo
@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.13.8
+%define specrpmversion 6.14.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,8 +209,8 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global graysky2_id 8b4675b3a96547b73fa92f87f6a6b3a2e387ac06
-%global opensuse_id 1513344735c0a14b33dd5bcf60e87c7805fd554e
+%global graysky2_id 10947ddd06191fd9a6a3e674fa749a2eca0ec298
+%global opensuse_id c12fe2eaa36307646c0b850c5ab0c7c2ed43b72c
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20240917
 
@@ -270,6 +270,8 @@ Summary: The Linux kernel
 %define with_libperf   %{?_without_libperf:0} %{?!_without_libperf:1}
 # tools
 %define with_tools     %{?_without_tools:0} %{?!_without_tools:1}
+# ynl
+%define with_ynl      %{?_without_ynl:0} %{?!_without_ynl:1}
 # kernel-debuginfo
 %define with_debuginfo %{?_without_debuginfo:0} %{?!_without_debuginfo:1}
 # kernel-abi-stablelists
@@ -735,7 +737,7 @@ Summary: The Linux kernel
 
 
 Name: %{package_name}
-License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2 AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
+License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
 URL: https://www.kernel.org/
 Version: %{specrpmversion}
 Release: %{pkg_release}
@@ -773,7 +775,7 @@ BuildRequires: kernel-rpm-macros
 # glibc-static is required for a consistent build environment (specifically
 # CONFIG_CC_CAN_LINK_STATIC=y).
 BuildRequires: glibc-static
-%if %{with_headers}
+%if %{with_headers} || %{with_cross_headers}
 BuildRequires: rsync
 %endif
 %if %{with_doc}
@@ -812,6 +814,11 @@ BuildRequires: pciutils-devel
 BuildRequires: libnl3-devel
 %endif
 %endif
+
+%if %{with_tools} && %{with_ynl}
+BuildRequires: python3-pyyaml python3-jsonschema python3-pip python3-setuptools >= 61
+%endif
+
 %if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
 %endif
@@ -865,6 +872,13 @@ BuildRequires: pesign >= 0.10-4
 BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %define __strip %{_build_arch}-linux-gnu-strip
+
+# Work around find-debuginfo for cross builds.
+# find-debuginfo doesn't support any of CROSS options (RHEL-21797),
+# and since debugedit > 5.0-16.el10, or since commit
+#   dfe1f7ff30f4 ("find-debuginfo.sh: Exit with real exit status in parallel jobs")
+# it now aborts and build fails.
+%undefine _include_gdb_index
 %endif
 
 # These below are required to build man pages
@@ -1135,7 +1149,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch10: %{ark_url}/2c062aaa5a90464527b0bd9ba675639ec476242a.patch#/kernel-ark-2c062aa.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1153,9 +1166,8 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/compare/ffd294d346d185b70e28b1a28abe367bbfe53c04...ad17d63c1249a453792f1b44a24808217672d221.patch#/zen-v%{patchversion}-ntsync.patch
-Patch2003: %{zen_url}/commit/da4bd5fb45b97dbaf4b35d38c412411d36684a72.patch#/zen-v%{patchversion}-sauce-da4bd5f.patch
-Patch2004: %{zen_url}/commit/281ab99c77ba3ab068d6e00987061a88180c67f7.patch#/zen-v%{patchversion}-sauce-281ab99.patch
+Patch2001: %{zen_url}/commit/da4bd5fb45b97dbaf4b35d38c412411d36684a72.patch#/zen-v%{patchversion}-sauce-da4bd5f.patch
+Patch2002: %{zen_url}/commit/281ab99c77ba3ab068d6e00987061a88180c67f7.patch#/zen-v%{patchversion}-sauce-281ab99.patch
 
 # Add additional cpu gcc optimization support
 # https://github.com/graysky2/kernel_gcc_patch
@@ -1165,83 +1177,44 @@ Patch6001: 0001-kbuild-6.12-adopt-proposed-upstream-change-for-gener.patch
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 Patch6020: 0001-ZEN-Add-VHBA-driver.patch
+Patch6021: https://github.com/cdemu/cdemu/commit/ee6bba585d53891577089e9dd856eb733d8231f8.patch#/vhba-git-ee6bba5.patch
 
 %if 0%{?post_factum}
-Patch5001:  %{kernel_url}/?id=d1347977661342cb09a304a17701eb2d4aa21dec#/kernel-git-revert-d134797.patch
-Patch5002:  0001-x86-mm-tlb-Only-trim-the-mm_cpumask-once-a-second.patch
 # archlinux
-Patch6950:  %{pf_url}/df6b7782be85e72ddab2a45f45e71313f6f376a4.patch#/pf-cb-df6b778.patch
-Patch6951:  %{pf_url}/c8c6be540b11270826d452cdfdb1882153a3caf4.patch#/pf-cb-c8c6be5.patch
-Patch6952:  %{pf_url}/fd0832d081ed15a9805f5557d42263d5091c92d5.patch#/pf-cb-fd0832d.patch
+Patch6950:  %{pf_url}/67c900dc3c91d7c4da419e44b1dbce99c01d1c94.patch#/pf-cb-67c900d.patch
+Patch6951:  %{pf_url}/0beffc085245b6857aac1a9376624379be2ee494.patch#/pf-cb-0beffc0.patch
+Patch6952:  %{pf_url}/230bc9a3e70cf5ff1428d7d6b3c144aab57d6cbf.patch#/pf-cb-230bc9a.patch
 # bbr3
-Patch7050:  %{pf_url}/aa2658ab3fba8f0f16c6d9c838776502980974ed.patch#/pf-cb-aa2658a.patch
-Patch7051:  %{pf_url}/2819e8bc02b2ff86bb9ffe380b556ab0d1273617.patch#/pf-cb-2819e8b.patch
-Patch7052:  %{pf_url}/04074556722317c9fb52709b044651e822a311ee.patch#/pf-cb-0407455.patch
-Patch7053:  %{pf_url}/9a30abbcc6fcc9666f743299a27488069a66715d.patch#/pf-cb-9a30abb.patch
+Patch7050:  %{pf_url}/7a4fefac1907b59a51bc8c4329ba97cbe3448233.patch#/pf-cb-7a4fefa.patch
 # zstd
-Patch7200:  %{pf_url}/fa9ae31017febb38dd967c777a114278ae78c128.patch#/pf-cb-fa9ae31.patch
-Patch7201:  %{pf_url}/ff832b211b3f925e86704aac906a6cedae1247e7.patch#/pf-cb-ff832b2.patch
-Patch7202:  %{pf_url}/6ad30493b537ce84933a4c08319aa18ce863e7c9.patch#/pf-cb-6ad3049.patch
-# pksm
-Patch7220:  %{pf_url}/32bef160156719a0cfef8df94697ace27847644b.patch#/pf-cb-32bef16.patch
+Patch7200:  %{pf_url}/e7241ad4c05f429441f3063153f946707ddfe0cd.patch#/pf-cb-e7241ad.patch
+Patch7201:  %{pf_url}/8a8c51862375fa12b8fe34c923e270a07421c1d6.patch#/pf-cb-8a8c518.patch
 # v4l2loopback
-Patch7230:  %{pf_url}/64f0795e7509fc7e6608f704e465e650ac124ffe.patch#/pf-cb-64f0795.patch
-Patch7231:  %{pf_url}/a69ea63d0b60d3fe23a1c47d9d80c7d96cb4294e.patch#/pf-cb-a69ea63.patch
-Patch7232:  %{pf_url}/81bc3f0eced102e5aaf9e95e7ae453424c0f489b.patch#/pf-cb-81bc3f0.patch
+Patch7230:  %{pf_url}/f35820b55a166990c06b92996e625340c22a7145.patch#/pf-cb-f35820b.patch
 # cpuidle
-Patch7240:  %{pf_url}/338018473e4c5402157f872a9519441585e4945d.patch#/pf-cb-3380184.patch
+Patch7240:  %{pf_url}/11d9d800f33675dc17f05f4fe2cb2df494de8f8d.patch#/pf-cb-11d9d80.patch
 # crypto
-Patch7300:  %{pf_url}/e7e926391f002800cb118250498de2749f14ac1a.patch#/pf-cb-e7e9263.patch
-Patch7301:  %{pf_url}/6a1135f76615ef446217a341a8d6f5a9ceebff10.patch#/pf-cb-6a1135f.patch
-Patch7302:  %{pf_url}/b1a4c95f3346b089ba4dfb9b1f1df0c97ade137e.patch#/pf-cb-b1a4c95.patch
-Patch7303:  %{pf_url}/b5b747dd7d3b99c34c0c2d73fb521a7330a247dd.patch#/pf-cb-b5b747d.patch
-Patch7304:  %{pf_url}/dd3ad4b971562bc035643242924d83d3e071648a.patch#/pf-cb-dd3ad4b.patch
-Patch7305:  %{pf_url}/c1f2e1c559737bd3e9af75b1a955d54a0c404776.patch#/pf-cb-c1f2e1c.patch
-Patch7306:  %{pf_url}/70a112a0a37a83444b4b02b5982e5070c55c9e7f.patch#/pf-cb-70a112a.patch
-Patch7307:  %{pf_url}/8e08b52d2c536391d2e712b0ea97ad83857e2707.patch#/pf-cb-8e08b52.patch
-Patch7308:  %{pf_url}/72d176f042cea7cead75bf743baf1461e0fcbbc5.patch#/pf-cb-72d176f.patch
-Patch7309:  %{pf_url}/4c1833f7c7c4663824384208871a4c9e2469b45b.patch#/pf-cb-4c1833f.patch
-Patch7310:  %{pf_url}/e71beabac0ed789cc01c8f82671cf226bf5c8312.patch#/pf-cb-e71beab.patch
+Patch7300:  %{pf_url}/b87cbf041ca841ad19a58b2e0a491e54a04c3a1a.patch#/pf-cb-b87cbf0.patch
+Patch7301:  %{pf_url}/cf4d6815a2a226763825cc4a79269eb40b0a7461.patch#/pf-cb-cf4d681.patch
 # fixes 
-Patch7400:  %{pf_url}/7da4a2df1440345e8676830febfbcdc08737b094.patch#/pf-cb-7da4a2d.patch
-Patch7401:  %{pf_url}/6a8fde57fff5d397072944e5b39f2d5b472d875e.patch#/pf-cb-6a8fde5.patch
-# amd-rapl
-Patch7500:  %{pf_url}/b6ec269b1ede4960343a80096064cdcd26a4f7f7.patch#/pf-cb-b6ec269.patch
-Patch7501:  %{pf_url}/ae79680715c84c57f8635ad310c916af7128e4c9.patch#/pf-cb-ae79680.patch
-Patch7502:  %{pf_url}/ee53b9552a62e92b1d02c7eb40c3e7da1a307587.patch#/pf-cb-ee53b95.patch
-Patch7503:  %{pf_url}/6b9879519b5162ec74967b1112da72b69d72d50d.patch#/pf-cb-6b98795.patch
-Patch7504:  %{pf_url}/9e318314192a8aea75fb981054e02725422f6b60.patch#/pf-cb-9e31831.patch
-Patch7505:  %{pf_url}/a75124ce73d9efcc9dcec497db955b28a716dede.patch#/pf-cb-a75124c.patch
-Patch7506:  %{pf_url}/6c75b44d06517ed32da87ed602fafeb771c6b278.patch#/pf-cb-6c75b44.patch
-Patch7507:  %{pf_url}/19ff53de1b6b5acd8f00b7afb139d93f34565393.patch#/pf-cb-19ff53d.patch
-Patch7508:  %{pf_url}/355f98122aa6ff428bd4fc453d74916486acdd90.patch#/pf-cb-355f981.patch
-Patch7509:  %{pf_url}/bd48904b4c68ed438ec4a9f9ab7d2234d7680f75.patch#/pf-cb-bd48904.patch
-Patch7510:  %{pf_url}/24a3281385239a76fc439b33b1d1f814934143be.patch#/pf-cb-24a3281.patch
+Patch7400:  %{pf_url}/d9c590e586a79c1237cdfeabea010bf432d3e2d3.patch#/pf-cb-d9c590e.patch
 # ovpn-dco
-Patch7600:  %{pf_url}/23a6656da644ea5cc1f0fc30107d745ad0943f80.patch#/pf-cb-23a6656.patch
+Patch7600:  %{pf_url}/2c877c3f57ccd399468c02643dc978ad95abef83.patch#/pf-cb-2c877c3.patch
 # invlpgb
-Patch7700:  %{pf_url}/220129333b16ff509aecf4c3aa9e2fcd8cf36432.patch#/pf-cb-2201293.patch
-Patch7701:  %{pf_url}/078d688169477ee4d07d6650c2c268cdb4fa4cfc.patch#/pf-cb-078d688.patch
-Patch7702:  %{pf_url}/3b459140259c8855b33adaa0d23d3a9a8bc644f0.patch#/pf-cb-3b45914.patch
-Patch7703:  %{pf_url}/02b1fd12b412b817bccef0ea5cf6b1217d623e84.patch#/pf-cb-02b1fd1.patch
-Patch7704:  %{pf_url}/300ebf666e907c3c35c4603f224f879b7db78b5d.patch#/pf-cb-300ebf6.patch
-Patch7705:  %{pf_url}/252d24eec272544d8d844a7f3fd6dd38281ba2c8.patch#/pf-cb-252d24e.patch
-Patch7706:  %{pf_url}/1fb9594d2a6d27ac348ca529b83598380a01d330.patch#/pf-cb-1fb9594.patch
-Patch7707:  %{pf_url}/295dda677d26204e0292ddf9acfbd8d9bd75714e.patch#/pf-cb-295dda6.patch
-Patch7708:  %{pf_url}/c0d57ff7e4abf05722d8eebfd12267d4bfdf3703.patch#/pf-cb-c0d57ff.patch
-Patch7709:  %{pf_url}/f41cbe33f884ed06bc44b45b882c46f8ac25f34a.patch#/pf-cb-f41cbe3.patch
-Patch7710:  %{pf_url}/1ae35ec82e2e1dc90a465983581c4c5337227c22.patch#/pf-cb-1ae35ec.patch
-Patch7711:  %{pf_url}/edb9bc9d936e69e94c106e24b9e88e9a8171ce56.patch#/pf-cb-edb9bc9.patch
-Patch7712:  %{pf_url}/73867cb0ea2a6040d244a5a6f1eb93a6c2e3972f.patch#/pf-cb-73867cb.patch
-Patch7713:  %{pf_url}/11fb60f87d6251c71361a9956e09e9e98322b2db.patch#/pf-cb-11fb60f.patch
-Patch7714:  %{pf_url}/ff9d9ec09b467868c24a22a3ac49fa39b82eb08f.patch#/pf-cb-ff9d9ec.patch
-Patch7715:  %{pf_url}/65406307a66318c5df6691b70c0e38b8c999f5b8.patch#/pf-cb-6540630.patch
-Patch7716:  %{pf_url}/2a0ae010f9e16919aed97fe6406462b704d60c2f.patch#/pf-cb-2a0ae01.patch
-Patch7717:  %{pf_url}/9679edf4c6c561d85570adb5a26223edd5ec05f1.patch#/pf-cb-9679edf.patch
-Patch7718:  %{pf_url}/bb72dda03d3cc35d4ef4c1127663c9312939d944.patch#/pf-cb-bb72dda.patch
-Patch7719:  %{pf_url}/2d0eb6e4f96b3c27e2d187d49658c6824dddc5b8.patch#/pf-cb-2d0eb6e.patch
-Patch7720:  %{pf_url}/03ead1e0c0c05cf757387a8797a0d0719859dee4.patch#/pf-cb-03ead1e.patch
-Patch7721:  %{pf_url}/78ff3a74e19951bf4d6016c39ff278690c2dad84.patch#/pf-cb-78ff3a7.patch
+Patch7700:  %{pf_url}/6e42f8dc7b620269e37b665fb32475af0f97f14c.patch#/pf-cb-6e42f8d.patch
+Patch7701:  %{pf_url}/5b8c8fdee6f4d4dde3ecb8a4f5211c146eb44a2e.patch#/pf-cb-5b8c8fd.patch
+Patch7702:  %{pf_url}/de471ccae10e82ebd0ad1b6e4505216778596f77.patch#/pf-cb-de471cc.patch
+Patch7703:  %{pf_url}/15c779e54c14d7874e3e3920ee9de5902894f65d.patch#/pf-cb-15c779e.patch
+Patch7704:  %{pf_url}/7a9cfbc961682c23bc677c740a467685bcb65a45.patch#/pf-cb-7a9cfbc.patch
+Patch7705:  %{pf_url}/ecdcaa675acba1317fa6c03b69912d1c4ed96d51.patch#/pf-cb-ecdcaa6.patch
+Patch7706:  %{pf_url}/1b2eff8a9906ac8f227793031d649ed09a0d5485.patch#/pf-cb-1b2eff8.patch
+Patch7707:  %{pf_url}/429478fcfdcbc3ca11a18d5627f2b340dc855405.patch#/pf-cb-429478f.patch
+Patch7708:  %{pf_url}/16bf08eb4c4e74ce20893b9d994ccaf15e3c4eb6.patch#/pf-cb-16bf08e.patch
+Patch7709:  %{pf_url}/b59f58d5a1a648bf2cfb351dc7a9c0402383de9c.patch#/pf-cb-b59f58d.patch
+Patch7710:  %{pf_url}/d5442c0bdd694b388149daf32401863e48e0c9cc.patch#/pf-cb-d5442c0.patch
+Patch7711:  %{pf_url}/9a1f21b28aea385f338a12ba0b76b3d64ad7402d.patch#/pf-cb-9a1f21b.patch
+Patch7712:  %{pf_url}/b8e6de3fe9af31037062e50ef8eca533a7a91ba1.patch#/pf-cb-b8e6de3.patch
+Patch7713:  %{pf_url}/9695a97c345584e4f3a0aec6b05eb9f08fa67490.patch#/pf-cb-9695a97.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2075,7 +2048,6 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
-ApplyPatch %{PATCH10}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2085,52 +2057,21 @@ ApplyPatch %{PATCH6951}
 ApplyPatch %{PATCH6952}
 # bbr3
 ApplyPatch %{PATCH7050}
-ApplyPatch %{PATCH7051}
-ApplyPatch %{PATCH7052}
-ApplyPatch %{PATCH7053}
 # zstd
 ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
-ApplyPatch %{PATCH7202}
-# pksm
-ApplyPatch %{PATCH7220}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
-ApplyPatch %{PATCH7232}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
 ApplyPatch %{PATCH7300}
 ApplyPatch %{PATCH7301}
-ApplyPatch %{PATCH7302}
-ApplyPatch %{PATCH7303}
-ApplyPatch %{PATCH7304}
-ApplyPatch %{PATCH7305}
-ApplyPatch %{PATCH7306}
-ApplyPatch %{PATCH7307}
-ApplyPatch %{PATCH7308}
-ApplyPatch %{PATCH7309}
-ApplyPatch %{PATCH7310}
 # fixes
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-# amd-rapl
-ApplyPatch %{PATCH7500}
-ApplyPatch %{PATCH7501}
-ApplyPatch %{PATCH7502}
-ApplyPatch %{PATCH7503}
-ApplyPatch %{PATCH7504}
-ApplyPatch %{PATCH7505}
-ApplyPatch %{PATCH7506}
-ApplyPatch %{PATCH7507}
-ApplyPatch %{PATCH7508}
-ApplyPatch %{PATCH7509}
-ApplyPatch %{PATCH7510}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 # invlpgb
-ApplyPatch %{PATCH5001} -R
 ApplyPatch %{PATCH7700}
 ApplyPatch %{PATCH7701}
 ApplyPatch %{PATCH7702}
@@ -2145,15 +2086,6 @@ ApplyPatch %{PATCH7710}
 ApplyPatch %{PATCH7711}
 ApplyPatch %{PATCH7712}
 ApplyPatch %{PATCH7713}
-ApplyPatch %{PATCH7714}
-ApplyPatch %{PATCH7715}
-ApplyPatch %{PATCH7716}
-ApplyPatch %{PATCH7717}
-ApplyPatch %{PATCH7718}
-ApplyPatch %{PATCH7719}
-ApplyPatch %{PATCH7720}
-ApplyPatch %{PATCH7721}
-ApplyPatch %{PATCH5002}
 %endif
 
 # openSUSE
@@ -2162,8 +2094,7 @@ ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
-ApplyPatch %{PATCH2003}
-ApplyPatch %{PATCH2004}
+ApplyPatch %{PATCH2002}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -2171,6 +2102,9 @@ ApplyPatch %{PATCH6001}
 ApplyPatch %{PATCH6010}
 
 ApplyPatch %{PATCH6020}
+pushd ../vhba-module-%{vhba_ver}
+ApplyPatch %{PATCH6021} -p2
+popd
 
 # END OF PATCH APPLICATIONS
 %{log_msg "End of patch applications"}
@@ -3359,6 +3293,19 @@ chmod +x tools/perf/check-headers.sh
 
 %if %{with_tools}
 sed -e 's|-O6|-O2|g' -i tools/lib/{api,subcmd}/Makefile tools/perf/Makefile.config
+
+%if %{with_ynl}
+pushd tools/net/ynl
+export PIP_CONFIG_FILE=/tmp/pip.config
+cat <<EOF > $PIP_CONFIG_FILE
+[install]
+no-index = true
+no-build-isolation = false
+EOF
+%{tools_make} %{?_smp_mflags} DESTDIR=$RPM_BUILD_ROOT install
+popd
+%endif
+
 %ifarch %{cpupowerarchs}
 # cpupower
 # make sure version-gen.sh is executable.
@@ -4154,7 +4101,6 @@ fi\
 %{_libdir}/libperf-jvmti.so
 %dir %{_libexecdir}/perf-core
 %{_libexecdir}/perf-core/*
-%{_datadir}/perf-core/*
 %{_mandir}/man[1-8]/perf*
 %{_sysconfdir}/bash_completion.d/perf
 %doc linux-%{KVERREL}/tools/perf/Documentation/examples.txt
@@ -4243,21 +4189,33 @@ fi\
 %config(noreplace) %{_sysconfdir}/logrotate.d/kvm_stat
 %{_bindir}/page_owner_sort
 %{_bindir}/slabinfo
+%if %{with_ynl}
+%{_bindir}/ynl*
+%{_docdir}/ynl
+%{_datadir}/ynl
+%{python3_sitelib}/pyynl*
+%endif
 
 %if %{with_debuginfo}
 %files -f kernel-tools-debuginfo.list -n kernel-tools-debuginfo
 %endif
 
-%ifarch %{cpupowerarchs}
 %files -n kernel-tools-libs
+%ifarch %{cpupowerarchs}
 %{_libdir}/libcpupower.so.1
 %{_libdir}/libcpupower.so.0.0.1
+%endif
 
 %files -n kernel-tools-libs-devel
+%ifarch %{cpupowerarchs}
 %{_libdir}/libcpupower.so
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
 %{_includedir}/powercap.h
+%endif
+%if %{with_ynl}
+%{_libdir}/libynl*
+%{_includedir}/ynl
 %endif
 
 %files -n rtla
@@ -4469,6 +4427,9 @@ fi\
 #
 #
 %changelog
+* Mon Mar 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.0-500.chinfo
+- 6.14.0
+
 * Sat Mar 22 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.8-500.chinfo
 - 6.13.8
 
@@ -4663,28 +4624,6 @@ fi\
 
 * Mon Mar 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-500.chinfo
 - 6.8.0 - pf1
-
-* Wed Mar 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.9-500.chinfo
-- 6.7.9 - pf8
-
-* Fri Mar 01 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.7-500.chinfo
-- 6.7.7 - pf8
-
-* Fri Feb 23 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.6-500.chinfo
-- 6.7.6 - pf7
-- Rawhide sync (reenable tools packages)
-
-* Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.5-500.chinfo
-- 6.7.5 - pf7
-
-* Mon Feb 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.4-500.chinfo
-- 6.7.4 - pf6
-
-* Sun Jan 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.2-500.chinfo
-- 6.7.2 - pf4
-
-* Mon Jan 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-500.chinfo
-- 6.7.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

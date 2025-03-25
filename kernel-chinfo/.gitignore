@@ -17,6 +17,7 @@ kernel-[234].*/
 /pf-*.pfpatch
 /openSUSE-*.patch
 /tkg-*.patch
+/vhba-*.patch
 /zen-*.patch
 /zzz-*.patch
 /build/
