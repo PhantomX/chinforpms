@@ -5,7 +5,7 @@ Subject: [PATCH] Personal additions
 
 ---
  patches/SCUS-97436_32A1C752.pnach | 151 +++++++++++++++++++++++
- patches/SCUS-97436_73FEFB84.pnach | 199 ++++++++++++++++++++++++++++++
+ patches/SCUS-97436_646B2E29.pnach | 199 ++++++++++++++++++++++++++++++
  patches/SLPS-25450_4D7B34BA.pnach |  26 ++++
  patches/SLPS-25674_2113EA2E.pnach |   6 +-
  patches/SLPS-25698_5192FAD0.pnach |  20 +++
@@ -17,7 +17,7 @@ Subject: [PATCH] Personal additions
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
  12 files changed, 524 insertions(+), 16 deletions(-)
- create mode 100644 patches/SCUS-97436_73FEFB84.pnach
+ create mode 100644 patches/SCUS-97436_646B2E29.pnach
  create mode 100644 patches/SLPS-25450_4D7B34BA.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLPS-25842_E84AA114.pnach
@@ -185,11 +185,11 @@ index 04f2659..193619c 100644
 +// Set a lui v0,0x1 to always return true in isToyotaPod
 +// Enables squatting when stationary on handbrake press, may have more effects
 +patch=1,EE,2021F6A8,extended,3C020001
-diff --git a/patches/SCUS-97436_73FEFB84.pnach b/patches/SCUS-97436_73FEFB84.pnach
+diff --git a/patches/SCUS-97436_646B2E29.pnach b/patches/SCUS-97436_646B2E29.pnach
 new file mode 100644
 index 0000000..43d833f
 --- /dev/null
-+++ b/patches/SCUS-97436_73FEFB84.pnach
++++ b/patches/SCUS-97436_646B2E29.pnach
 @@ -0,0 +1,199 @@
 +gametitle=Gran Turismo 4 Spec II [SCUS-97436]
 +

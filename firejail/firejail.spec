@@ -1,14 +1,14 @@
 Name:           firejail
-Version:        0.9.72
+Version:        0.9.74
 Release:        100%{?dist}
 Summary:        Linux namespaces sandbox program
 
 License:        GPL-2.0-or-later
 URL:            https://firejail.wordpress.com/
-Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.xz
+
+Source0:        https://github.com/netblue30/%{name}/releases/download/%{version}/%{name}-%{version}.tar.xz
 Source1:        README.suid
 Source2:        %{name}-sysusers.conf
-
 
 BuildRequires:  gcc
 BuildRequires:  make
@@ -75,6 +75,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Tue Mar 25 2025 Phantom X <megaphantomx at hotmail dot com> - 0.9.74-100
+- 0.9.74
+
 * Tue Jan 17 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.72-1
 - 0.9.72
 
