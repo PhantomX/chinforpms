@@ -9,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        25.0.0
+Version:        25.0.1
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -39,18 +39,22 @@ Teradata, Firebird, Derby, etc.
 
 sed -e 's/\r//' licenses/*.txt
 
-sed '/^-vmargs/i-vm' -i %{rname}.ini
-sed '/^-vm$/a/usr/lib/jvm/jre-%{jre_ver}/bin/java' -i %{rname}.ini
-
 echo '-Ddbeaver.distribution.type=rpm' >> %{rname}.ini
-echo '-Duser.language=en' >> %{rname}.ini
+%dnl echo '-Duser.language=en' >> %{rname}.ini
 
 cat > %{name}.sh <<'EOF'
 #!/usr/bin/bash
-APP_NAME=%{rname}
-APP_PATH="%{_libdir}/%{name}"
+app_name=%{rname}
+app_path="%{_libdir}/%{name}"
+jre_ver=%{jre_ver}
+jre_dir="/usr/lib/jvm"
 
-exec "${APP_PATH}/${APP_NAME}" "$@"
+if [ -x "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" ] ;then
+  jre_bin="${jre_dir}/temurin-${jre_ver}-jdk/bin/java"
+else
+  jre_bin="${jre_dir}/jre-${jre_ver}/bin/java"
+fi
+exec "${app_path}/${app_name}" -vm "${jre_bin}" "$@"
 EOF
 
 mkdir _jnacleanup
@@ -122,6 +126,9 @@ done
 
 
 %changelog
+* Mon Mar 31 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.1-1
+- 25.0.1
+
 * Mon Mar 10 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.0-1
 - 25.0.0
 

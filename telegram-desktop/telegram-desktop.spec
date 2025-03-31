@@ -42,7 +42,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.12.6
+Version:        5.13.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -86,6 +86,7 @@ Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltd
 Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disable-accounts-limit.patch
 Patch1014:       %{ltdp_url}/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
 Patch1015:       0001-Fix-ltdp-0005-patch.patch
+Patch1016:       0001-Fix-ltdp-0002-patch.patch
 
 
 BuildRequires:  desktop-file-utils
@@ -236,7 +237,10 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 
 %if %{with ltdp}
 %patch -P 1010 -p1
-%patch -P 1011 -p1
+%dnl %patch -P 1011 -p1
+cp %{P:1011} .
+%patch -P 1016 -p1
+%{__scm_apply_patch -p1 -q} -i ltdp-0002-Disable-saving-restrictions.patch
 %patch -P 1012 -p1
 %patch -P 1013 -p1
 %dnl %patch -P 1014 -p1
@@ -382,6 +386,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Mar 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.13.1-100
+- 5.13.1
+
 * Sun Mar 23 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.12.6-100
 - 5.12.6
 

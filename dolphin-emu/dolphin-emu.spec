@@ -13,6 +13,7 @@
 %bcond_with enet
 %bcond_without fmt
 %bcond_with llvm
+%bcond_with mbedtls
 %bcond_with mgba
 %bcond_with sfml
 %bcond_without vma
@@ -24,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 18979129f35f56de9f87e2a7919788679337abfa
+%global commit 9819d66a478be3d57af9278e6c2cb433556a78d1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250318
+%global date 20250329
 %bcond_without snapshot
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -72,6 +73,8 @@
 %global enet_ver 1.3.18
 %global fmt_ver 10.2.1
 %global imgui_ver 1.91.7
+%global mbedtls_ver 2.28.9
+%global sfml_ver 3.0.0
 
 %global distributor chinforpms
 
@@ -81,7 +84,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2503.111
+Version:        2503.174
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -100,7 +103,7 @@ Url:            https://dolphin-emu.org/
 #dolphin-5.0/Source/Core/VideoBackends/Software/Clipper.cpp
 #dolphin-5.0/Source/Core/AudioCommon/aldlist.cpp
 ##Any code in Externals has a license break down in Externals/licenses.md
-License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND BSD-3-Clause AND MIT AND Zlib
+License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND BSD-3-Clause AND MIT AND Zlib%{!?with_mbedtls: AND Apache-2.0}
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
@@ -124,7 +127,9 @@ Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcn
 Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%if %{without sfml}
 Source19:      https://github.com/SFML/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
+%endif
 
 Patch0:        %{vc_url}/pull/13380.patch#/%{name}-gh-pr13380.patch
 %if %{with vulkan}
@@ -134,7 +139,7 @@ Patch1:         0001-Use-system-headers-for-Vulkan.patch
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
-
+Patch500:       %{vc_url}/pull/13443.patch#/%{name}-gh-pr13443.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -185,7 +190,7 @@ BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(sdl2) >= 2.30.6
 %if %{with sfml}
 BuildRequires:  pkgconfig(sfml-network)
-BuildRequires:  pkgconfig(sfml-system)
+BuildRequires:  pkgconfig(sfml-system) >= %{sfml_ver}
 %else
 Provides:       bundled(sfml) = 0~git%{shortcommit2}
 %endif
@@ -197,7 +202,11 @@ BuildRequires:  pkgconfig(zlib)
 BuildRequires:  llvm-devel
 %endif
 BuildRequires:  lzo-devel
-BuildRequires:  mbedtls-devel >= 2.28.0
+%if %{with mbedtls}
+BuildRequires:  mbedtls-devel >= %{mbedtls_ver}
+%else
+Provides:       bundled(mbedtls) = %{mbedtls_ver}
+%endif
 BuildRequires:  minizip-ng-compat-devel >= 4.0.4
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
@@ -292,7 +301,7 @@ This package provides the data files for dolphin-emu.
 
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
-%autopatch -M 500 -p1
+%autopatch -M 499 -p1
 
 #Allow building with cmake macro
 sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
@@ -325,8 +334,14 @@ sed -i "/PageFaultTest/d" Source/UnitTests/Core/CMakeLists.txt
 pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
-  libiconv-* liblzma libspng libusb lz4 LZO mbedtls miniupnpc minizip-ng OpenAL \
+  libiconv-* liblzma libspng libusb lz4 LZO miniupnpc minizip-ng OpenAL \
   pugixml Qt MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
+
+%if %{with mbedtls}
+  rm -rf mbedtls
+%else
+%patch -P 500 -p2
+%endif
 
 %if %{with vulkan}
   rm -rf glslang
@@ -412,6 +427,15 @@ sed \
 %if %{without llvm}
   -DENABLE_LLVM:BOOL=OFF \
 %endif
+%if %{without mbedtls}
+  -DUSE_SYSTEM_MBEDTLS:BOOL=OFF \
+%endif
+%if %{without mgba}
+  -DUSE_SYSTEM_LIBMGBA:BOOL=OFF \
+%endif
+%if %{without sfml}
+  -DUSE_SYSTEM_SFML:BOOL=OFF \
+%endif
 %if %{without unittests}
   -DENABLE_TESTS:BOOL=OFF \
 %endif
@@ -495,6 +519,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Mar 29 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2503.174-1.20250329git9819d66
+- Change to bundled mbedtls, as version 3 is not supported
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2503.111-1.20250318git1897912
 - 2503.111
 
