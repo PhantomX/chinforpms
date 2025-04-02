@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 416085980fd4c5eae83312a57ae9b0caa6184a79
+%global commit 130675aae30e0dc7682c4dc666a57e5de5bc7a78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250319
+%global date 20250328
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -46,6 +46,9 @@
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
+%global vercommit %(c=%{commit}; echo ${c:0:9})
+%else
+%global vercommit 000000000
 %endif
 
 %global imgui_ver 1.89.6
@@ -54,9 +57,12 @@
 %global stb_ver 2.25
 %global vk_ver 1.3.261
 
+%global sver %%(echo %{version} | cut -d. -f-2)
+%global sbuild %%(echo %{version} | cut -d. -f3)
+
 Name:           flycast
-Version:        2.3
-Release:        13%{?dist}
+Version:        2.4.245
+Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
 Epoch:          1
@@ -203,20 +209,13 @@ sed -e 's|reicast|%{name}|g' \
 popd
 
 sed \
-  -e 's|@GIT_VERSION@|%{version}-%{release}|g' \
+  -e 's|@GIT_VERSION@|v%{sver}-%{sbuild}-g%{vercommit}|g' \
+  -e 's|@GIT_HASH@|%{vercommit}|g' \
   -i core/version.h*
 
 sed \
   -e '/LINK_FLAGS_RELEASE -s/d' \
-  -e 's|${GIT_EXECUTABLE} describe --tags --always|echo "%{version}-%{release}"|g' \
   -i CMakeLists.txt
-
-%if %{with snapshot}
-  sed \
-    -e 's|${GIT_EXECUTABLE} rev-parse --short HEAD|echo "%{shortcommit}"|g' \
-    -i CMakeLists.txt
-  sed -e 's|@GIT_HASH@|%{shortcommit}|g' -i core/version.h.in
-%endif
 
 sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i core/sdl/sdl.cpp
 
@@ -289,6 +288,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Mon Mar 31 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.245-1.20250328git130675a
+- 2.4
+
 * Thu Mar 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.3-1.20240319git40cdef6
 - 2.3
 

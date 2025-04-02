@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c71a72cbe751763f48350a6d2629e20553c083b0
+%global commit 7a284a8b404162aec4d0c243de126e1a62c8a45d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250319
+%global date 20250401
 %bcond_without snapshot
 
 # Enable Qt build
@@ -89,11 +89,11 @@
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        105%{?dist}
+Release:        106%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_ffmpeg: AND GPL-3.0-or-later}
+License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_ffmpeg: AND GPL-3.0-or-later} AND WTFPL
 URL:            http://www.ppsspp.org/
 
 %if %{without snapshot}
@@ -130,6 +130,7 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
+Patch7:         0001-sol.hpp-fix-build.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -152,7 +153,6 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  make
 %if %{with ffmpeg}
-%if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
@@ -161,7 +161,6 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
-%endif
 %endif
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
@@ -195,6 +194,8 @@ BuildRequires:  vulkan-headers >= 1.3.236
 BuildRequires:  cmake(Qt5Core)
 BuildRequires:  cmake(Qt5Gui)
 BuildRequires:  cmake(Qt5OpenGL)
+%else
+Requires:       (zenity or qarma or kdialog)
 %endif
 
 Requires:       vulkan-loader%{?_isa}
@@ -293,6 +294,7 @@ cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
 cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
+cp -p portable-file-dialogs/COPYING COPYING.pfd
 popd
 
 %if %{with miniupnpc}

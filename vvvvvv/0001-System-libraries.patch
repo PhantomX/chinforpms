@@ -1,28 +1,74 @@
-From 998975f3eff54e9259710be2994e2a17e5aaee0a Mon Sep 17 00:00:00 2001
+From 7820d406671b21770cb7c6de1d9158f130f89163 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 28 Jul 2022 19:22:32 -0300
 Subject: [PATCH] System libraries
 
 ---
- desktop_version/CMakeLists.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+ desktop_version/CMakeLists.txt | 35 +++++++++++++++++++++++++---------
+ 1 file changed, 26 insertions(+), 9 deletions(-)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index 5751aa7..a739c88 100644
+index bc316c5..a488640 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
-@@ -330,6 +330,11 @@ if(BUNDLE_DEPENDENCIES)
+@@ -359,18 +359,37 @@ target_include_directories(sheenbidi-static PRIVATE
+     ../third_party/SheenBidi/Headers
+ )
  
-     target_link_libraries(VVVVVV ${STATIC_LIBRARIES})
- else()
-+    find_package(FAudio CONFIG)
-+    add_library(faudio-shared INTERFACE)
-+    target_link_libraries(faudio-shared INTERFACE FAudio::FAudio-shared)
-+    add_library(FAudio ALIAS faudio-shared)
+-if(BUNDLE_DEPENDENCIES)
+-    list(APPEND STATIC_LIBRARIES physfs-static tinyxml2-static lodepng-static c-hashmap-static faudio-static sheenbidi-static)
++list(APPEND STATIC_LIBRARIES lodepng-static c-hashmap-static sheenbidi-static)
 +
-     target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 FAudio)
++find_package(PkgConfig)
++
++pkg_search_module(tinyxml2 IMPORTED_TARGET tinyxml2)
++if(tinyxml2_FOUND)
++  message(STATUS "Using the system tinyxml2")
++  add_library(tinyxml2-static INTERFACE)
++  target_link_libraries(tinyxml2-static INTERFACE PkgConfig::tinyxml2)
+ else()
+-    list(APPEND STATIC_LIBRARIES lodepng-static c-hashmap-static sheenbidi-static)
++    add_library(tinyxml2-static STATIC ${XML2_SRC})
  endif()
  
+-if(BUNDLE_DEPENDENCIES)
+-    add_library(tinyxml2-static STATIC ${XML2_SRC})
++pkg_search_module(physfs IMPORTED_TARGET physfs)
++if(physfs_FOUND)
++  message(STATUS "Using the system physfs")
++  add_library(physfs-static INTERFACE)
++  target_link_libraries(physfs-static INTERFACE PkgConfig::physfs)
++else()
+     add_library(physfs-static STATIC ${PFS_SRC})
+     target_compile_definitions(physfs-static PRIVATE
+         -DPHYSFS_SUPPORTS_DEFAULT=0 -DPHYSFS_SUPPORTS_ZIP=1
+     )
++endif()
++
++find_package(FAudio CONFIG)
++if(FAudio_FOUND)
++  message(STATUS "Using the system FAudio")
++  add_library(faudio-static INTERFACE)
++  target_link_libraries(faudio-static INTERFACE FAudio::FAudio)
++else()
+     add_library(faudio-static STATIC ${FAUDIO_SRC})
+     target_include_directories(
+         faudio-static PRIVATE
+@@ -378,12 +397,10 @@ if(BUNDLE_DEPENDENCIES)
+     )
+     # Disable FAudio debug stuff in release mode. This needs a generator expression for CMake reasons(TM)
+     target_compile_definitions(faudio-static PRIVATE $<$<CONFIG:Release>:FAUDIO_DISABLE_DEBUGCONFIGURATION>)
+-
+-    target_link_libraries(VVVVVV ${STATIC_LIBRARIES})
+-else()
+-    target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 FAudio)
+ endif()
+ 
++target_link_libraries(VVVVVV ${STATIC_LIBRARIES} faudio-static physfs-static tinyxml2-static)
++
+ 
+ if(MSVC)
+     # Statically link Microsoft's runtime library so end users don't have to install it (/MT)
 -- 
-2.41.0
+2.49.0
 

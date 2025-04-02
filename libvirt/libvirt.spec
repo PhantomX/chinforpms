@@ -295,7 +295,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.1.0
+Version: 11.2.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -2678,6 +2678,9 @@ done
 
 
 %changelog
+* Tue Apr 01 2025 Phantom X <megaphantomx at hotmail dot com> - 11.2.0-100
+- 11.2.0
+
 * Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 11.1.0-100
 - 11.1.0
 

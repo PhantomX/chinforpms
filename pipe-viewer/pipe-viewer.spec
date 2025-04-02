@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           pipe-viewer
-Version:        0.5.4
+Version:        0.5.5
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
@@ -62,10 +62,10 @@ Requires:       perl(LWP::UserAgent::Cached)
 Requires:       perl(Parallel::ForkManager) >= 2.02
 Requires:       perl(Term::ReadLine::Gnu)
 Requires:       perl(Unicode::GCString)
+Requires:       yt-dlp
 Recommends:     ffmpeg
 Recommends:     (mpv or vlc)
 Recommends:     wget
-Recommends:     (youtube-dlp or youtube-dl)
 
 %{?perl_default_filter}
 
@@ -142,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Tue Apr 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.5-1
+- 0.5.5
+
 * Mon Feb 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.4-1
 - 0.5.4
 

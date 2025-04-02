@@ -5,6 +5,7 @@
 %global date 20250218
 %bcond_without snapshot
 
+%bcond_with faudio
 %bcond_without tinyxml
 
 %global commit2 18964554bc769255401942e0e6dfd09f2fab2093
@@ -23,7 +24,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 25.03
+%global commit5 25.04
 %global srcname5 FAudio
 
 %global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
@@ -37,12 +38,13 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.2%{?dist}
+Release:        0.3%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - Zlib -- static dependency;
 # * S4 (tinyxml2) - zlib -- static dependency, if with_tinyxml 0;
+# * S5 (FAudio) - zlib -- static dependency, if with_faudio 0;
 # * S6 (c-hashmap) - BSD-3-Clause -- static dependency;
 # * S7 (SheenBidi) - ASL-2.0 -- static dependency;
 License:        VVVVVV AND Zlib AND BSD-3-Clause AND ASL-2.0
@@ -74,11 +76,17 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  make
 BuildRequires:  ImageMagick
+%if %{with faudio}
 BuildRequires:  pkgconfig(FAudio)
+%else
+Provides:       bundled(FAudio) = %{commit5}
+%endif
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(physfs)
 %if %{with tinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
+%else
+Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
 %endif
 
 Requires:       vvvvvv-data >= 2.1
@@ -88,9 +96,6 @@ Requires:       sdl_gamecontrollerdb
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = 0~git%{shortcommit2}
 #Provides:       bundled(physfs) = 0~git%%{shortcommit3}
-%if %{without tinyxml}
-Provides:       bundled(tinyxml2) = 0~git%{shortcommit4}
-%endif
 Provides:       bundled(c-hashmap) = 0~git%{shortcommit6}
 Provides:       bundled(SheenBidi) = 0~git%{shortcommit7}
 
@@ -107,15 +112,17 @@ tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
 
 %if %{without tinyxml}
 tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
-sed \
-  -e '/\..\/third_party\/lodepng$/a..\/third_party\/tinyxml2' \
-  -e '/find_package(FAudio CONFIG)/iadd_library(tinyxml2-static STATIC ${XML2_SRC})' \
-  -e '/target_link_libraries/s| tinyxml2 | tinyxml2-static |g' \
-  -i desktop_version/CMakeLists.txt
+sed -e 's|tinyxml2_FOUND|tinyxml2_DISABLED|g' -i desktop_version/CMakeLists.txt
 cp -p third_party/tinyxml2/LICENSE.txt LICENSE.tinyxml2
 %endif
 
+%if %{with faudio}
 tar -xf %{S:5} -C third_party/FAudio \*/src/stb\*.h --strip-components 1
+%else
+tar -xf %{S:5} -C third_party/FAudio --strip-components 1
+sed -e 's|FAudio_FOUND|FAudio_DISABLED|g' -i desktop_version/CMakeLists.txt
+cp -p third_party/FAudio/LICENSE LICENSE.FAudio
+%endif
 tar -xf %{S:6} -C third_party/c-hashmap --strip-components 1
 tar -xf %{S:7} -C third_party/SheenBidi --strip-components 1
 %patch -P 1000 -p1 -d third_party/SheenBidi
@@ -161,7 +168,6 @@ EOF
 
 %cmake \
   -S desktop_version \
-  -DBUNDLE_DEPENDENCIES:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -214,25 +220,29 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
-* Fri Sep 20 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5-0.1.20240526git16d75d2
+* Tue Apr 01 2025 - 2.5-0.3.20250218gitd419c6e
+- Update system libraries patch
+- Bundle FAudio
+
+* Fri Sep 20 2024 - 2.5-0.1.20240526git16d75d2
 - 2.5 snapshot
 
-* Mon Jun 03 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.2-0.1.20240526git16d75d2
+* Mon Jun 03 2024 - 2.4.2-0.1.20240526git16d75d2
 - 2.4.2 snapshot
 
-* Thu Jan 11 2024 Phantom X <megaphantomx at hotmail dot com> - 2.4.1-0.1.20240110git7ff2e81
+* Thu Jan 11 2024 - 2.4.1-0.1.20240110git7ff2e81
 - 2.4.1 snapshot
 
-* Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-11.20230914gitd741b3a
+* Sat Sep 16 2023 - 2.4-11.20230914gitd741b3a
 - Removed utf8cpp BR
 
-* Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-9.20230315git4398861
+* Thu Mar 16 2023 - 2.4-9.20230315git4398861
 - Build with system tinyxml2
 
-* Thu Feb 02 2023 Phantom X <megaphantomx at hotmail dot com> - 2.4-8.20230202git113fbb0
+* Thu Feb 02 2023 - 2.4-8.20230202git113fbb0
 - Add fonts and lang files
 
-* Thu Jul 28 2022 Phantom X <megaphantomx at hotmail dot com> - 2.4-6.20220705git8ca53fa
+* Thu Jul 28 2022 - 2.4-6.20220705git8ca53fa
 - Update
 - BR: FAudio, instead SDL2_mixer
 
