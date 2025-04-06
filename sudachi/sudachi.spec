@@ -47,7 +47,7 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 VulkanMemoryAllocator
 
-%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
+%global commit3 795ef4d8318c7d344da99c076dd60e5580d3d5ac
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 sirit
 
@@ -67,11 +67,11 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
 %global srcname7 cpp-jwt
 
-%global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
+%global commit8 86ed7bfaa80079a97c763a651d0b2cd8d9d59100
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mbedtls
 
-%global commit9 404d39004570a26c734a9d1fa29ab4d63089c599
+%global commit9 97929690234f2b4add36b33657fe3fe09bd57dfd
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 tzdb_to_nx
 
@@ -91,7 +91,7 @@
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://github.com/emuplace/sudachi.emuplace.app
-%global mvc_url https://github.com/yuzu-mirror
+%global mvc_url  https://github.com/sudachi-emu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -102,7 +102,7 @@
 %global appname org.sudachi_emu.%{name}
 
 Name:           sudachi
-Version:        1.0.13
+Version:        1.0.15
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -145,6 +145,8 @@ Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Fix-48e86d6.patch
 Patch13:        0001-Bundled-fmt-support.patch
 Patch14:        0001-video_core-system-ffmpeg-fix.patch
+Patch15:        0001-Update-for-latest-dynarmic.patch
+Patch16:        0001-SDL3-fix-build.patch
 
 ExclusiveArch:  x86_64
 
@@ -174,6 +176,7 @@ BuildRequires:  cmake(tsl-robin-map)
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
 %endif
 BuildRequires:  pkgconfig(gamemode) >= 1.7
+BuildRequires:  glslang
 BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
@@ -207,7 +210,7 @@ Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
-BuildRequires:  pkgconfig(sdl2) >= 2.28.2
+BuildRequires:  pkgconfig(sdl3) >= 3.2.8
 %if %{with qt}
 BuildRequires:  cmake(Qt%{qt_ver}Core)
 BuildRequires:  cmake(Qt%{qt_ver}DBus)
@@ -336,7 +339,7 @@ cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
-cp -p sirit/LICENSE.txt LICENSE.sirit
+cp -p sirit/LICENSE LICENSE.sirit
 %if %{without vma}
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 %endif
@@ -369,13 +372,22 @@ sed \
   -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-HEAD-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
+sed -e '/find_program/s|GIT git|GIT cp|g' -i externals/nx_tzdb/CMakeLists.txt
+
 sed \
   -e 's|GIT_PROGRAM git|GIT_PROGRAM true|g' \
   -e 's|${TZ_COMMIT_TIME}|1680663527|g' \
-  -e 's|${TZDB_VERSION}|nxtzdb_ver|g' \
+  -e 's|${TZDB_VERSION}|%{nxtzdb_ver}|g' \
   -i externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt
 
-sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
+sed \
+  -e 's|GIT_PROGRAM git|GIT_PROGRAM cp|g' \
+  -e 's|clone --depth 1 "file://|-rp "|' \
+  -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
+
+sed \
+  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
+  -i src/CMakeLists.txt
 
 sed '/create_target_directory_groups/d' -i externals/glad/CMakeLists.txt
 
@@ -397,7 +409,7 @@ sed '/create_target_directory_groups/d' -i externals/glad/CMakeLists.txt
   -DSUDACHI_ENABLE_PORTABLE:BOOL=OFF \
   -DSUDACHI_ROOM:BOOL=ON \
   -DSUDACHI_USE_FASTER_LD:BOOL=OFF \
-  -DSUDACHI_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DSUDACHI_USE_EXTERNAL_SDL3:BOOL=OFF \
   -DSUDACHI_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DSUDACHI_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
 %if %{with ffmpeg}
@@ -459,5 +471,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Tue Oct 08 2024 Phantom X <megaphantomx at hotmail dot com> - 1.0.11-1
+* Sun Apr 06 2025 - 1.0.15-1
+- 1.0.15
+
+* Tue Oct 08 2024 - 1.0.11-1
 - Initial spec

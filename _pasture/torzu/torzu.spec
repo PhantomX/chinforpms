@@ -447,5 +447,5 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 2024.08.10-1.20241112gitbb142c9
+* Wed Dec 04 2024 - 2024.08.10-1.20241112gitbb142c9
 - Initial spec

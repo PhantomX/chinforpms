@@ -50,9 +50,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 1a51ce1e6665218cac64816cb308d8b9477d534d
+%global commit 613212f9e15f59825f7b81abc33add7624adedd7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250318
+%global date 20250404
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -111,6 +111,10 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 stb
 
+%global commit24 37064843398c69cc0ca7f8cf5b33128c03a2bd74
+%global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
+%global srcname24 VulkanMemoryAllocator
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -121,7 +125,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.35.17665
+Version:        0.0.36.17745
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -166,6 +170,9 @@ Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{src
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
 Source23:       https://github.com/nothings/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
+%if %{without vma}
+Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
+%endif
 Source99:       Makefile
 
 Patch10:        0001-Use-system-libraries.patch
@@ -249,7 +256,7 @@ BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= %{bundlevma}
 %else
-Provides:       bundled(VulkanMemoryAllocator) = %{bundlevma}
+Provides:       bundled(VulkanMemoryAllocator) = %{bundlevma}~git%{shortcommit24}
 %endif
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-cursor)
@@ -405,10 +412,11 @@ rm -rf 3rdparty/rtmidi
 
 %if %{with vma}
 sed \
-  -e '/include/s|"3rdparty/GPUOpen/include/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
-  -i rpcs3/Emu/RSX/{GL,VK}/upscalers/fsr1/fsr_pass.cpp \
-     rpcs3/Emu/RSX/VK/VKMemAlloc.cpp rpcs3/Emu/RSX/VK/vkutils/{mem_allocator,memory}.h
-rm -f 3rdparty/GPUOpen/include/vk_mem_alloc.h
+  -e '/include/s|"3rdparty/GPUOpen/VulkanMemoryAllocator/src/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
+  -i rpcs3/Emu/RSX/VK/VKMemAlloc.cpp rpcs3/Emu/RSX/VK/vkutils/memory.h
+%else
+tar -xf %{S:24} -C 3rdparty/GPUOpen/VulkanMemoryAllocator --strip-components 1
+cp -p 3rdparty/GPUOpen/VulkanMemoryAllocator/LICENSE.txt 3rdparty/LICENSE.vma
 %endif
 
 sed \
@@ -527,6 +535,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Apr 05 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.36.17745-1.20250404git613212f
+- 0.0.36
+
 * Sat Mar 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.35.17533-1.20250228gitb266e3d
 - 0.0.35
 

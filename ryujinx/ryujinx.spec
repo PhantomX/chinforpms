@@ -1,5 +1,5 @@
 %bcond_with bin
-%bcond_without canary
+%bcond_with canary
 %bcond_without local_dotnet 1
 
 %global debug_package %{nil}
@@ -7,12 +7,12 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit c229d458e7ebd5cdf1936ec5152631a7dbe76899
+%global commit adae465b080a43b15fd0ef542ad9ef2ec84e538c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250318
+%global date 20250331
 
 %if %{without bin}
-%bcond_with snapshot
+%bcond_without snapshot
 %else
 %bcond_without snapshot
 %endif
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.14
+Version:        1.3.29
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -278,7 +278,7 @@ Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.de
 Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
 Source0:        %{vc_url}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.gz
 %endif
@@ -823,26 +823,26 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
-* Sat Dec 21 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.103-1
+* Sat Dec 21 2024 - 1.2.103-1
 - 1.2.103 canary
 
-* Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.76-1
+* Wed Nov 20 2024 - 1.2.76-1
 - 1.2.76
 
-* Tue Oct 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.59-1
+* Tue Oct 29 2024 - 1.2.59-1
 - 1.2.59
 - Update source URLs.
 
-* Mon Mar 04 2024 Phantom X <megaphantomx at hotmail dot com> - 1.1.1217-1
+* Mon Mar 04 2024 - 1.1.1217-1
 - 1.1.1217
 - Avalonia
 
-* Fri Mar 24 2023 Phantom X <megaphantomx at hotmail dot com> - 1.1.680-1
+* Fri Mar 24 2023 - 1.1.680-1
 - 1.1.680 tag release
 
-* Tue Nov 01 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.335-2
+* Tue Nov 01 2022 - 1.1.335-2
 - Support build from source
 
-* Thu Oct 27 2022 Phantom X <megaphantomx at hotmail dot com> - 1.1.328-1
+* Thu Oct 27 2022 - 1.1.328-1
 - Initial spec
 

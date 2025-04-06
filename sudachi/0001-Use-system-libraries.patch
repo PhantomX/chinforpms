@@ -25,13 +25,13 @@ index b6c5e65..84654ae 100644
  include(CMakeDependentOption)
  include(CTest)
  
- # Set bundled sdl2/qt as dependent options.
- # OFF by default, but if ENABLE_SDL2 and MSVC are true then ON
- option(ENABLE_SDL2 "Enable the SDL2 frontend" ON)
--set(USE_SDL2_FROM_EXTERNALS "Uses SDL2 from the externals directory" ON)
- CMAKE_DEPENDENT_OPTION(SUDACHI_USE_BUNDLED_SDL2 "Download bundled SDL2 binaries" ON "ENABLE_SDL2;MSVC" OFF)
- # On Linux system SDL2 is likely to be lacking HIDAPI support which have drawbacks but is needed for SDL motion
- CMAKE_DEPENDENT_OPTION(SUDACHI_USE_EXTERNAL_SDL2 "Compile external SDL2" ON "ENABLE_SDL2;NOT MSVC" OFF)
+ # Set bundled sdl3/qt as dependent options.
+ # OFF by default, but if ENABLE_SDL3 and MSVC are true then ON
+ option(ENABLE_SDL3 "Enable the SDL3 frontend" ON)
+-set(USE_SDL3_FROM_EXTERNALS "Uses SDL3 from the externals directory" ON)
+ CMAKE_DEPENDENT_OPTION(SUDACHI_USE_BUNDLED_SDL3 "Download bundled SDL3 binaries" ON "ENABLE_SDL3;MSVC" OFF)
+ # On Linux system SDL3 is likely to be lacking HIDAPI support which have drawbacks but is needed for SDL motion
+ CMAKE_DEPENDENT_OPTION(SUDACHI_USE_EXTERNAL_SDL3 "Compile external SDL3" ON "ENABLE_SDL3;NOT MSVC" OFF)
 @@ -299,8 +297,6 @@ set(FFmpeg_COMPONENTS
      avutil
      swscale)

@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 278ac75a378d544192cc6930a8e19a0ad1f3bd46
+%global commit 19febba866d227cc16f8b3c814d6d5ae06c4d7a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250317
+%global date 20250404
 %bcond_without snapshot
 
 # Enable system boost
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           citron
-Version:        0.6.27245
+Version:        0.6.27257
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -123,7 +123,7 @@ Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{sr
 %if %{without vma}
 Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
-Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{mvc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
 Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %if %{with webservice}
@@ -131,7 +131,7 @@ Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcn
 Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{vc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
+Source8:        %{mvc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
 Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
@@ -385,7 +385,9 @@ sed \
   -e 's|clone --depth 1 "file://|-rp "|' \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
-sed -e 's|-Wno-attributes|\0 -Wno-error=array-bounds|' -i src/CMakeLists.txt
+sed \
+  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
+  -i src/CMakeLists.txt
 
 
 %build
@@ -469,12 +471,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Tue Mar 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.6.27236-1.20250311gitdad8859
+* Tue Mar 11 2025 - 0.6.27236-1.20250311gitdad8859
 - 0.6
 
-* Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.27190-1.20250221git18f8a0f
+* Fri Feb 21 2025 - 0.5.27190-1.20250221git18f8a0f
 - 0.5
 
-* Tue Dec 03 2024 Phantom X <megaphantomx at hotmail dot com> - 0-1.20241203git085c2d5
+* Tue Dec 03 2024 - 0-1.20241203git085c2d5
 - Initial spec
 
