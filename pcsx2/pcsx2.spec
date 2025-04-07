@@ -55,7 +55,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.232
+Version:        2.3.259
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -84,7 +84,6 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-cmake-use-system-discord-rpc.patch
-Patch11:        0001-cmake-downgrade-SDL3-version.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
@@ -108,7 +107,7 @@ BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(DiscordRPC)
-BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  pkgconfig(freetype2) >= 2.11.1
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  cmake(FastFloat)
@@ -139,7 +138,7 @@ BuildRequires:  pkgconfig(libsparsehash)
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libzip) >= 1.11.0
-BuildRequires:  pkgconfig(libzstd) >= 1.4.5
+BuildRequires:  pkgconfig(libzstd) >= 1.5.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
@@ -159,7 +158,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
-BuildRequires:  cmake(SDL3) >= 3.2.0
+BuildRequires:  cmake(SDL3) >= 3.2.6
 %if %{with shaderc}
 BuildRequires:  cmake(Shaderc_ds)
 Requires:       libshaderc_ds%{?_isa}

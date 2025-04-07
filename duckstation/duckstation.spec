@@ -25,9 +25,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit a1d69982f3dbd9c04ddbda21f2546937607a1246
+%global commit 2bd9e5fbb11744431dd7599b2788b8e343dab610
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250315
+%global date 20250406
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -46,7 +46,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8773
+Version:        0.1.8877
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -90,7 +90,7 @@ BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(DiscordRPC)
-BuildRequires:  cmake(Qt6Core) >= 6.7.2
+BuildRequires:  cmake(Qt6Core) >= 6.8.0
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Widgets)
@@ -111,7 +111,7 @@ BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  pkgconfig(libswscale)
-BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  pkgconfig(freetype2) >= 2.13.2
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libbacktrace)
 BuildRequires:  pkgconfig(libchdr)
@@ -124,7 +124,7 @@ BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip) >= 1.11.1
 BuildRequires:  libzip-tools
-BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(libzstd) >= 1.5.6
 BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
 BuildRequires:  cmake(SDL3) >= 3.2.0

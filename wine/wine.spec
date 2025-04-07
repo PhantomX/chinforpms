@@ -51,7 +51,7 @@
 %endif
 %global no64bit   0
 %global winegecko 2.47.4
-%global winemono  9.4.0
+%global winemono  10.0.0
 %global winevulkan 1.4.307
 
 %global winecapstone 5.0.3
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.4
+%global wine_stagingver 10.5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2325fc749b8b47af5e8fd08adc5aa4852c60643a
+%global tkg_id 3cedfe4d8ab4386ad667137fad83b757386086f1
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -157,7 +157,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.4
+Version:        10.5
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -236,6 +236,8 @@ Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.p
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
+# https://bugs.winehq.org/show_bug.cgi?id=58066
+Patch706:        %{whq_murl}/-/commit/7020807d11415b32341fa13f2354bd1e5477175b.patch#/%{name}-whq-7020807.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -865,6 +867,7 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 703 -p1
 %patch -P 705 -p1
+%patch -P 706 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2530,6 +2533,9 @@ fi
 
 
 %changelog
+* Sun Apr 06 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.5-100
+- 10.5
+
 * Sat Mar 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.4-100
 - 10.4
 
