@@ -1,7 +1,7 @@
 %global sover 2.2
 
 Name:           kddockwidgets
-Version:        2.2.1
+Version:        2.2.3
 Release:        100%{?dist}
 Summary:        Qt dock widget library
 
@@ -102,6 +102,9 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %{_libdir}/qt6/mkspecs/modules/qt_KDDockWidgets.pri
 
 %changelog
+* Sun Apr 06 2025 Phantom X <megaphantomx at hotmail dot com> - 2.2.3-100
+- 2.2.3
+
 * Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 2.2.1-100
 - 2.2.1
 

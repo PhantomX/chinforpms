@@ -6,12 +6,13 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20250324
+# 20250402
 # 6.14
 
 set -e
 
 default="
+LONGEST_SYM_KUNIT_TEST
 MALDERLAKE
 MAMD_CPU_V2
 MAMD_CPU_V3
