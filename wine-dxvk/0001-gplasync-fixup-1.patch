@@ -1,0 +1,70 @@
+From fe72f8b3ea225bb9a3b982c962a7383eeab2ca4d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 8 Apr 2025 19:39:55 -0300
+Subject: [PATCH] gplasync fixup 1
+
+---
+ src/dxvk/dxvk_context.cpp  | 2 +-
+ src/dxvk/dxvk_graphics.cpp | 6 ++++--
+ src/dxvk/dxvk_graphics.h   | 2 +-
+ 3 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/src/dxvk/dxvk_context.cpp b/src/dxvk/dxvk_context.cpp
+index 79965e9..4cc2f6a 100644
+--- a/src/dxvk/dxvk_context.cpp
++++ b/src/dxvk/dxvk_context.cpp
+@@ -6219,7 +6219,7 @@ namespace dxvk {
+     // Retrieve and bind actual Vulkan pipeline handle
+     auto pipelineInfo = m_state.gp.pipeline->getPipelineHandle(m_state.gp.state);
+ 
+-    if (unlikely(!pipelineInfo.handle))
++    if (unlikely(!pipelineInfo.first))
+       return false;
+ 
+     m_cmd->cmdBindPipeline(DxvkCmdBuffer::ExecBuffer,
+diff --git a/src/dxvk/dxvk_graphics.cpp b/src/dxvk/dxvk_graphics.cpp
+index f1b6635..abf9dec 100644
+--- a/src/dxvk/dxvk_graphics.cpp
++++ b/src/dxvk/dxvk_graphics.cpp
+@@ -1057,14 +1057,14 @@ namespace dxvk {
+   }
+ 
+ 
+-  DxvkGraphicsPipelineHandle DxvkGraphicsPipeline::getPipelineHandle(
++  std::pair<VkPipeline, DxvkGraphicsPipelineType> DxvkGraphicsPipeline::getPipelineHandle(
+     const DxvkGraphicsPipelineStateInfo& state) {
+     DxvkGraphicsPipelineInstance* instance = this->findInstance(state);
+ 
+     if (unlikely(!instance)) {
+       // Exit early if the state vector is invalid
+       if (!this->validatePipelineState(state, true))
+-        return DxvkGraphicsPipelineHandle();
++        return std::make_pair(VK_NULL_HANDLE, DxvkGraphicsPipelineType::FastPipeline);
+ 
+       // Prevent other threads from adding new instances and check again
+       std::unique_lock<dxvk::mutex> lock(m_mutex);
+@@ -1091,6 +1091,8 @@ namespace dxvk {
+       }
+     }
+ 
++    // Find a pipeline handle to use. If no optimized pipeline has
++    // been compiled yet, use the slower base pipeline instead.
+     return instance->getHandle();
+   }
+ 
+diff --git a/src/dxvk/dxvk_graphics.h b/src/dxvk/dxvk_graphics.h
+index d636e28..d47eeea 100644
+--- a/src/dxvk/dxvk_graphics.h
++++ b/src/dxvk/dxvk_graphics.h
+@@ -558,7 +558,7 @@ namespace dxvk {
+      * \param [in] state Pipeline state vector
+      * \returns Pipeline handle and handle type
+      */
+-    DxvkGraphicsPipelineHandle getPipelineHandle(
++    std::pair<VkPipeline, DxvkGraphicsPipelineType> getPipelineHandle(
+       const DxvkGraphicsPipelineStateInfo&    state);
+     
+     /**
+-- 
+2.49.0
+

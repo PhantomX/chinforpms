@@ -12,19 +12,19 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 8de2d49c12b45da670906b0d13f3c5f90ed280fb
+%global commit 05690eb3441cc34ef03cdde4fc633db1b3c52a97
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250303
+%global date 20250408
 
 %bcond_with capstone
 %bcond_with ffmpeg
-%bcond_with fmt
+%bcond_without fmt
 %bcond_with nfd
-%bcond_with spdlog
+%bcond_without spdlog
 %bcond_without vma
 %bcond_with yamlcpp
 # Needs dispatch header
-%bcond_with xxhash
+%bcond_without xxhash
 
 # Set to build with versioned LLVM packages
 %global llvm_pkgver 19
@@ -37,7 +37,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 SPIRV-Cross
 
-%global commit12 f2bf7d00fe8e23eb1ce11b4a7d2c4869432a85df
+%global commit12 2059f0fdd73492b03d60a90c73e5038224b99093
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator-Hpp
 
@@ -49,7 +49,7 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 dlmalloc
 
-%global commit16 d8b33e4311fbb41aac376cc8b644c47df03c1549
+%global commit16 838ac0f79288d2d0485345022b3d842bc2bf77bc
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 dynarmic
 
@@ -57,7 +57,7 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 0c9fce2ffefecfdce794e1859584e25877b7b592
+%global commit18 123913715afeb8a437e6388b4473fcc4753e1c9a
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -69,19 +69,19 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 googletest
 
-%global commit21 1dfbb100d6ca6e7d813102e979c07f66a56546bb
+%global commit21 cb16568fca5297512ff6a8f3b877f461c4323fbe
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 imgui
 
-%global commit22 63c7fed4b31c50c8a529b6c15ae7d7d9e89812a6
+%global commit22 53a2df3dd1b19dd321beb0897a0d1b9f87e5429c
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
 %global srcname22 imgui_club
 
-%global commit23 14ec3073358544c70b77702ff6394f09ce349c59
+%global commit23 d9a890b712dcdb46d3d33230997efc59f5ad8d62
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 libfat16
 
-%global commit24 c099aaee9a24a35ad93e06513b41aeb503d848d0
+%global commit24 86d5f2005fe1c00747348a12070fec493ea2407e
 %global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
 %global srcname24 nativefiledialog-extended
 
@@ -105,7 +105,7 @@
 %global shortcommit29 %(c=%{commit29}; echo ${c:0:7})
 %global srcname29 unicorn
 
-%global commit30 61a943c67da5008b100bdcabff812ecd7816425d
+%global commit30 77f17b979678e7af0acfe708dc97a45ca6fd55e2
 %global shortcommit30 %(c=%{commit30}; echo ${c:0:7})
 %global srcname30 vita-toolchain
 
@@ -113,11 +113,11 @@
 %global shortcommit31 %(c=%{commit31}; echo ${c:0:7})
 %global srcname31 yaml-cpp
 
-%global commit32 097c04d9413c59a58b00d4d1c8d5dc0ac158ffaa
+%global commit32 accf4df62f1fba6f92cae692985d27063552601c
 %global shortcommit32 %(c=%{commit32}; echo ${c:0:7})
 %global srcname32 capstone
 
-%global commit33 bbb27a5efb85b92a0486cf361a8635715a53f6ba
+%global commit33 e626a72bc2321cd320e953a0ccf1584cad60f363
 %global shortcommit33 %(c=%{commit33}; echo ${c:0:7})
 %global srcname33 xxHash
 
@@ -125,7 +125,7 @@
 %global shortcommit34 %(c=%{commit34}; echo ${c:0:7})
 %global srcname34 concurrentqueue
 
-%global commit35 27cb4c76708608465c413f6d0e6b8d99a4d84302
+%global commit35 48bcf39a661a13be22666ac64db8a7f886f2637e
 %global shortcommit35 %(c=%{commit35}; echo ${c:0:7})
 %global srcname35 spdlog
 
@@ -165,7 +165,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3742
+Version:        0.2.0.3764
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -228,10 +228,7 @@ Patch0:         https://github.com/Vita3K/Vita3K/pull/3525.patch#/%{name}-gh-pr3
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
-Patch13:        0001-Vulkan-1.4-build-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
-Patch501:       0001-vma-set-missing-namespace.patch
-Patch502:       0001-Disable-vulkan-validation-layers.patch
 Patch503:       0001-Address-build-failures-when-using-Tip-of-Tree-clang..patch
 Patch504:       0001-glslang-gcc-15-build-fix.patch
 
@@ -271,7 +268,7 @@ BuildRequires:  pkgconfig(x11)
 Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
 %endif
 %if %{with fmt}
-BuildRequires:  pkgconfig(fmt) >= 11.0.1
+BuildRequires:  pkgconfig(fmt) >= 11.1.4
 %else
 Provides:       bundled(%{srcname18}) = 0~git%{shortcommit18}
 %endif
@@ -291,15 +288,15 @@ Provides:       bundled(%{srcname24}) = 0~git%{shortcommit24}
 %endif
 BuildRequires:  cmake(pugixml)
 %if %{with spdlog}
-BuildRequires:  cmake(spdlog) >= 1.14.1
+BuildRequires:  cmake(spdlog) >= 1.15.2
 %else
 Provides:       bundled(%{srcname35}) = 0~git%{shortcommit35}
 %endif
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %if %{with vma}
-BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
-BuildRequires:  cmake(VulkanMemoryAllocator-Hpp) >= 3.1.0
+BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.2.1
+BuildRequires:  cmake(VulkanMemoryAllocator-Hpp) >= 3
 %else
 Provides:       bundled(VulkanMemoryAllocator-Hpp) = 0~git%{shortcommit3}
 %endif
@@ -348,13 +345,10 @@ Provides:       bundled(miniz) = %{miniz_ver}
 pushd external
 tar -xf %{S:10} -C %{srcname10} --strip-components 1
 tar -xf %{S:11} -C %{srcname11} --strip-components 1
-%if %{with vma}
-%patch -P 502 -p1 -d ../
-%else
+%if %{without vma}
 tar -xf %{S:12} -C %{srcname12} --strip-components 1
 tar -xf %{S:120} -C %{srcname12}/VulkanMemoryAllocator --strip-components 1
 sed -e '/find_package/s|VulkanMemoryAllocator|\0_DISABLED|g' -i CMakeLists.txt
-%patch -P 501 -p1
 cp -p VulkanMemoryAllocator-Hpp/LICENSE COPYING.vma-hpp
 %endif
 tar -xf %{S:13} -C %{srcname13} --strip-components 1

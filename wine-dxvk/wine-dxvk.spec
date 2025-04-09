@@ -70,8 +70,8 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.6
-Release:        101%{?dist}
+Version:        2.6.1
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -93,6 +93,8 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 %if %{with gplasync}
 Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
+Patch502:      0001-gplasync-fixup-1.patch
+Patch503:      0001-gplasync-fixup-2.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -163,7 +165,9 @@ in order to run 3D applications on Linux using Wine.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
+%patch -P 502 -p1
 %patch -P 500 -p1
+%patch -P 503 -p1
 %patch -P 501 -p1
 cp %{S:500} README.gplasync.md
 %endif
@@ -300,6 +304,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Apr 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
+- 2.6.1
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6-101
 - gplasync update
 

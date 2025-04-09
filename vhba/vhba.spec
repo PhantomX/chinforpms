@@ -2,7 +2,7 @@
 BuildArch:      noarch
 
 Name:           vhba
-Version:        20240917
+Version:        20250329
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
@@ -47,6 +47,9 @@ install -m644 -D %{SOURCE1} %{buildroot}/%{_udevrulesdir}/69-%{name}.rules
 
 
 %changelog
+* Wed Apr 09 2025 Phantom X <megaphantomx at hotmail dot com> - 20250329-1
+- 20250329
+
 * Sat Oct 05 2024 Phantom X <megaphantomx at hotmail dot com> - 20240917-1
 - 20240917
 

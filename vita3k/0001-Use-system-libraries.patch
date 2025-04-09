@@ -135,7 +135,7 @@ index 1f3fe0c..419b928 100644
 +	message(STATUS "Using the system vulkan-headers")
 +	target_link_libraries(vulkan INTERFACE Vulkan::Headers)
 +else()
- target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/Vulkan-Headers/include")
+ target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/Vulkan-Headers/include")
  if(APPLE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/MoltenVK-macos.tar")
 @@ -250,13 +305,40 @@ if(APPLE)

@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global graysky2_id 10947ddd06191fd9a6a3e674fa749a2eca0ec298
 %global opensuse_id 21b612da99033b1f4b82c31b17a64ffdce19e0bb
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
-%global vhba_ver 20240917
+%global vhba_ver 20250329
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
 %global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
@@ -1177,7 +1177,6 @@ Patch6001: 0001-kbuild-6.12-adopt-proposed-upstream-change-for-gener.patch
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 Patch6020: 0001-ZEN-Add-VHBA-driver.patch
-Patch6021: https://github.com/cdemu/cdemu/commit/ee6bba585d53891577089e9dd856eb733d8231f8.patch#/vhba-git-ee6bba5.patch
 
 %if 0%{?post_factum}
 # archlinux
@@ -2138,9 +2137,6 @@ ApplyPatch %{PATCH6001}
 ApplyPatch %{PATCH6010}
 
 ApplyPatch %{PATCH6020}
-pushd ../vhba-module-%{vhba_ver}
-ApplyPatch %{PATCH6021} -p2
-popd
 
 # END OF PATCH APPLICATIONS
 %{log_msg "End of patch applications"}

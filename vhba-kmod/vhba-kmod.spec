@@ -11,16 +11,14 @@
 %define repo chinforpms
 
 Name:           vhba-kmod
-Version:        20240917
-Release:        2%{?dist}
+Version:        20250329
+Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
 License:        GPL-2.0-only
 URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{orig_name}/%{orig_name}-%{version}.tar.xz
 Source1:        vhba-kmod-excludekernel-filter.txt
-
-Patch0:         https://github.com/cdemu/cdemu/commit/ee6bba585d53891577089e9dd856eb733d8231f8.patch#/vhba-git-ee6bba5.patch
 
 # get the needed BuildRequires (in parts depending on what we build for)
 BuildRequires:  %{_bindir}/kmodtool
@@ -46,8 +44,6 @@ kmodtool  --target %{_target_cpu}  --repo %{repo} --kmodname %{name} %{?buildfor
 
 %setup -q -c -T -a 0
 
-%patch -P 0 -p2 -d %{orig_name}-%{version}
-
 for kernel_version in %{?kernel_versions} ; do
   cp -a %{orig_name}-%{version} _kmod_build_${kernel_version%%___*}
 done
@@ -65,6 +61,9 @@ done
 
 
 %changelog
+* Wed Apr 09 2025 Phantom X <megaphantomx at hotmail dot com> - 20250329-1
+- 20250329
+
 * Mon Mar 24 2025 Phantom X <megaphantomx at hotmail dot com> - 20240917-2
 - Linux 6.14 fix
 

@@ -1,7 +1,7 @@
 %global commit 5e2b0bebc2f03bc255a1754d4dba135f5971eda8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250108
-%bcond_without snapshot
+%bcond_with snapshot
 
 BuildArch:      noarch
 
@@ -9,12 +9,12 @@ BuildArch:      noarch
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global vma_ver 3.2.0
+%global vma_ver 3.2.1
 
 Summary:        C++ bindings for VulkanMemoryAllocator
 Name:           VulkanMemoryAllocator-Hpp
-Version:        3.1.0
-Release:        2%{?dist}
+Version:        3.2.1
+Release:        1%{?dist}
 
 License:        Apache-2.0
 URL:            https://github.com/YaaZ/%{name}
@@ -70,6 +70,9 @@ The Vulkan Memory Allocator Hpp development package.
 
 
 %changelog
+* Tue Apr 08 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-1
+- 3.2.1
+
 * Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-2.20250108git5e2b0be.20250108git5e2b0be
 - 1.4 headers support
 
