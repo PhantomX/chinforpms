@@ -1,5 +1,5 @@
 %bcond_with bin
-%bcond_with canary
+%bcond_without canary
 %bcond_without local_dotnet 1
 
 %global debug_package %{nil}
@@ -12,7 +12,7 @@
 %global date 20250331
 
 %if %{without bin}
-%bcond_without snapshot
+%bcond_with snapshot
 %else
 %bcond_without snapshot
 %endif
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.29
+Version:        1.3.30
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -280,7 +280,7 @@ Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%
 %if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        %{vc_url}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.gz
+Source0:        %{vc_url}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.bz2
 %endif
 %if %{with local_dotnet}
 Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
@@ -628,7 +628,7 @@ Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
 %global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532}
 %endif
 
-Patch0:         %{vc_url}/%{appname}/pull/728.patch#/%{name}-gh-pr728.patch
+Patch0:         %{name}-pr728.patch
 Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch

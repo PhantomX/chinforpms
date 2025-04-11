@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.14.1
+%define specrpmversion 6.14.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1190,6 +1190,7 @@ Patch7200:  %{pf_url}/ba12de73081b7f9b43ceb61ac6e7641dee9ab6e5.patch#/pf-cb-ba12
 Patch7201:  %{pf_url}/9136ff0a565678825be43639b1483d37412d2b06.patch#/pf-cb-9136ff0.patch
 # v4l2loopback
 Patch7230:  %{pf_url}/d9e1100409c37cac22bb90a990979e5de6517854.patch#/pf-cb-d9e1100.patch
+Patch7231:  %{pf_url}/fbebc8bfed4f1f78548bca863074385f436872ff.patch#/pf-cb-fbebc8b.patch
 # cpuidle
 Patch7240:  %{pf_url}/0b8c59d2535a064d2872f854a3baf28e166bc931.patch#/pf-cb-0b8c59d.patch
 # crypto
@@ -1198,23 +1199,21 @@ Patch7301:  %{pf_url}/af7a1b33f14edf4e52739a4bd5f2098e28390885.patch#/pf-cb-af7a
 # fixes 
 Patch7400:  %{pf_url}/8af8616d4ad246fb094d579244c282693a7ae8e4.patch#/pf-cb-8af8616.patch
 Patch7401:  %{pf_url}/feda0c7ccc8b7cc1afbba6344beb959b53c4ff79.patch#/pf-cb-feda0c7.patch
-Patch7402:  %{pf_url}/df77b3340de50e83920c29f2444d9c52d7f5c5a1.patch#/pf-cb-df77b33.patch
-Patch7403:  %{pf_url}/8b6785799e428cd3419895b8e00e6c8ede08505c.patch#/pf-cb-8b67857.patch
-Patch7404:  %{pf_url}/86f8bebeba58461a3482902294a40feeb6f4e899.patch#/pf-cb-86f8beb.patch
-Patch7405:  %{pf_url}/2e6a51e75ec778f81347d7be37659bec227c79da.patch#/pf-cb-2e6a51e.patch
-Patch7406:  %{pf_url}/ee3c78f518ea672c133d9d2ee3b2971398bd4555.patch#/pf-cb-ee3c78f.patch
-Patch7407:  %{pf_url}/c4e3e5f91ed2637a91466b179820e480cea0c97d.patch#/pf-cb-c4e3e5f.patch
-Patch7408:  %{pf_url}/1f33fcde0e8a528e23430cb3f678ca7283c6fed0.patch#/pf-cb-1f33fcd.patch
-Patch7409:  %{pf_url}/0c7aba5f0dd296ae61d63d4443378f108af66081.patch#/pf-cb-0c7aba5.patch
-Patch7410:  %{pf_url}/cf119ce098c2f1e38bf88633d7634280884de4b4.patch#/pf-cb-cf119ce.patch
-Patch7411:  %{pf_url}/69e28f7892088d387aaa64fddd7026238aaa1685.patch#/pf-cb-69e28f7.patch
+Patch7402:  %{pf_url}/8b6785799e428cd3419895b8e00e6c8ede08505c.patch#/pf-cb-8b67857.patch
+Patch7403:  %{pf_url}/86f8bebeba58461a3482902294a40feeb6f4e899.patch#/pf-cb-86f8beb.patch
+Patch7404:  %{pf_url}/1f33fcde0e8a528e23430cb3f678ca7283c6fed0.patch#/pf-cb-1f33fcd.patch
+Patch7405:  %{pf_url}/0c7aba5f0dd296ae61d63d4443378f108af66081.patch#/pf-cb-0c7aba5.patch
+Patch7406:  %{pf_url}/69e28f7892088d387aaa64fddd7026238aaa1685.patch#/pf-cb-69e28f7.patch
+Patch7407:  %{pf_url}/cadd34e1da1ddfebad888e1f448b7d551cbc80fb.patch#/pf-cb-cadd34e.patch
+Patch7408:  %{pf_url}/4f71fa70c884f154e4f068df73ad142515814cb6.patch#/pf-cb-4f71fa7.patch
+Patch7409:  %{pf_url}/7e7450013bcbef7b597e400f9d20336242fe2fad.patch#/pf-cb-7e74500.patch
+Patch7410:  %{pf_url}/7d2a2659ca3dd8128380fc8e7b356096ccf30550.patch#/pf-cb-7d2a265.patch
+Patch7411:  %{pf_url}/b78df75c0f2ca9cc71e9c24c1d8ba4d0771d7546.patch#/pf-cb-b78df75.patch
 # fs
 Patch7500:  %{pf_url}/163d0109b44449b8694ccc524e710282692f0056.patch#/pf-cb-163d010.patch
 Patch7501:  %{pf_url}/aaf319eb73b7c704acfe53fc817d423340fb6fcd.patch#/pf-cb-aaf319e.patch
 Patch7502:  %{pf_url}/a34a0c17907b783f61719ed2629c29bbbed9d264.patch#/pf-cb-a34a0c1.patch
 Patch7503:  %{pf_url}/0ed34b350c9479fb98c512075258b98cab7a7a90.patch#/pf-cb-0ed34b3.patch
-Patch7504:  %{pf_url}/dee5754d85f52b25142ea7238bef1742b1311535.patch#/pf-cb-dee5754.patch
-Patch7505:  %{pf_url}/a30e49b6e38a9567906f35123ae1b28239771195.patch#/pf-cb-a30e49b.patch
 # ovpn-dco
 Patch7600:  %{pf_url}/0e10102d2a1b8237cc19d65bcffc228b1bd84e82.patch#/pf-cb-0e10102.patch
 # invlpgb
@@ -2079,6 +2078,7 @@ ApplyPatch %{PATCH7200}
 ApplyPatch %{PATCH7201}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
+ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
@@ -2102,8 +2102,6 @@ ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
 ApplyPatch %{PATCH7502}
 ApplyPatch %{PATCH7503}
-ApplyPatch %{PATCH7504}
-ApplyPatch %{PATCH7505}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 # invlpgb
@@ -4459,6 +4457,9 @@ fi\
 #
 #
 %changelog
+* Thu Apr 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.2-500.chinfo
+- 6.14.2
+
 * Mon Apr 07 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.1-500.chinfo
 - 6.14.1
 
