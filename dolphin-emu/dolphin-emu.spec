@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 9819d66a478be3d57af9278e6c2cb433556a78d1
+%global commit 5285b1168a629e44c2fcc42664bf003dcf55019e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250329
+%global date 20250411
 %bcond_without snapshot
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -84,7 +84,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2503.174
+Version:        2503.200
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -252,8 +252,6 @@ Provides:       bundled(cpp-argparse)
 #Is this technically bundled code? Adding this just in case:            
 #https://github.com/AdmiralCurtiss/rangeset
 Provides:       bundled(rangeset)
-#soundtouch cannot be unbundled easily, as it requires compile time changes:
-Provides:       bundled(soundtouch) = 2.3.2
 #dolphin uses a very old bochs, which is impatible with f35+'s bochs.
 #We could rework dolphin to use latest, but this requires a lot of work.
 #Furthermore, the dolphin gtest test cases that fail with f33/34 bochs

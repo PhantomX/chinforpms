@@ -23,7 +23,7 @@ index bd94cde..8b6cc76 100644
 +                                     tr("Stretch to Window"), tr("Fit 4:3 (RESHDP)"), tr("Custom"), tr("Custom (Stretch)")},
                                      Config::GFX_ASPECT_RATIO, m_game_layer);
    m_custom_aspect_label = new QLabel(tr("Custom Aspect Ratio:"));
-   m_custom_aspect_label->setHidden(true);
+   constexpr int MAX_CUSTOM_ASPECT_RATIO_RESOLUTION = 10000;
 diff --git a/Source/Core/DolphinQt/HotkeyScheduler.cpp b/Source/Core/DolphinQt/HotkeyScheduler.cpp
 index a35d96f..d49d308 100644
 --- a/Source/Core/DolphinQt/HotkeyScheduler.cpp

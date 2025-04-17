@@ -5,9 +5,9 @@
 %_include_frame_pointers %{nil}
 
 # Set fixed cpu jobs instead auto
-%_chinforpms_gcc_lto_cflags -%(grep '^%%_gcc_lto_cflags' /usr/lib/rpm/redhat/macros | cut -d'-' -f2-)
+%_chinforpms_gcc_lto_cflags -%(grep '^%%_gcc_lto_cflags' /usr/lib/rpm/redhat/macros | cut -d'-' -f2- | cut -d'"' -f1 )
 
-%_gcc_lto_cflags %(cglto="%{_chinforpms_gcc_lto_cflags}" ; echo "${cglto/#-flto=auto /-flto=%{_smp_build_ncpus} }")
+%_gcc_lto_cflags %[ 0%{?_gcc_lto} ? "%(cglto="%{_chinforpms_gcc_lto_cflags}" ; echo "${cglto/#-flto=auto /-flto=%{_smp_build_ncpus} }")" : "" ]
 
 # Set down debug level to speed up building
 %_glevel 1

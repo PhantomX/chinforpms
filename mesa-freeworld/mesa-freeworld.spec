@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.0.3
+Version:        25.0.4
 Release:        100%{?dist}
 
 Epoch:          100
@@ -224,6 +224,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Apr 17 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.0.4-100
+- 25.0.4
+
 * Wed Apr 02 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.0.3-100
 - 25.0.3
 

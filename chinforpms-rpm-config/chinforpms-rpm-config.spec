@@ -1,5 +1,8 @@
+%global rrc_ver 342-4
+
+
 Name:           chinforpms-rpm-config
-Version:        13
+Version:        14
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -11,8 +14,8 @@ Source1:        rpmrc
 
 BuildArch:      noarch
 
-BuildRequires:  redhat-rpm-config
-Requires:       redhat-rpm-config
+BuildRequires:  redhat-rpm-config >= %{rrc_ver}
+Requires:       redhat-rpm-config >= %{rrc_ver}
 Requires:       coreutils
 
 
@@ -41,6 +44,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Tue Apr 15 2025 Phantom X <megaphantomx at hotmail dot com> - 14-1
+- Fix _gcc_lto_cflags, redhat-rpm-config 342-4 required
+
 * Tue Apr 16 2024 Phantom X <megaphantomx at hotmail dot com> - 13-1
 - Simplify macros
 

@@ -8,8 +8,8 @@
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.0
-Release:        2%{?dist}
+Version:        1.2
+Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
 License:        Custom
@@ -117,6 +117,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
+* Wed Apr 16 2025 - 1.2-1
+- 1.2
+
 * Thu Mar 20 2025 - 1.0-2
 - Update wrapper to support temurin JVMs
 
