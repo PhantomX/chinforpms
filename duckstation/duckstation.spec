@@ -25,9 +25,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit 2bd9e5fbb11744431dd7599b2788b8e343dab610
+%global commit a86eabc1f054cb52e0ee9bd499b45366af8ad6b5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250406
+%global date 20250418
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -39,14 +39,14 @@
 
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.33
-%global imgui_ver 1.90.4
+%global imgui_ver 1.91.9~b
 %global md5_ver 1.6
 %global minizip_ver 1.1
 %global rcheevos_scommit 08999e0
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8877
+Version:        0.1.8947
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -70,7 +70,7 @@ Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch11:        0001-cmake-soundtouch_ds.patch
-Patch12:        0001-cmake-lunasvg_ds.patch
+Patch12:        0001-cmake-plutosvg_ds.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -125,7 +125,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip) >= 1.11.1
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(libzstd) >= 1.5.6
-BuildRequires:  cmake(lunasvg_ds) >= 2.4.1
+BuildRequires:  cmake(plutosvg_ds) >= 0.0.6
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
 BuildRequires:  cmake(SDL3) >= 3.2.0
 BuildRequires:  cmake(Shaderc_ds)
@@ -247,7 +247,6 @@ cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
 
 cp -p ffmpeg/COPYING.LGPLv2.1 LICENSE.ffmpeg
 cp -p imgui/LICENSE.txt LICENSE.imgui
-cp -p rainterface/LICENSE LICENSE.rainterface
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p vixl/LICENCE LICENSE.vixl
 %dnl cp -p zydis/LICENSE LICENSE.zydis

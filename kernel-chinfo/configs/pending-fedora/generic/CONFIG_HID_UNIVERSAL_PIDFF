@@ -1,0 +1,16 @@
+# Symbol: HID_UNIVERSAL_PIDFF [=n]
+# Type  : tristate
+# Defined at drivers/hid/Kconfig:1249
+#   Prompt: universal-pidff: extended USB PID driver compatibility and usage
+#   Depends on: HID_SUPPORT [=y] && HID [=y] && USB_HID [=y] && HID_PID [=y]
+#   Location:
+#     -> Device Drivers
+#       -> HID bus support (HID_SUPPORT [=y])
+#         -> HID bus core support (HID [=y])
+#           -> Special HID drivers
+#             -> universal-pidff: extended USB PID driver compatibility and usage (HID_UNIVERSAL_PIDFF [=n])
+# 
+# 
+# 
+# Commit: f06bf8d94fff (HID: Add hid-universal-pidff driver and supported device ids)
+# CONFIG_HID_UNIVERSAL_PIDFF is not set

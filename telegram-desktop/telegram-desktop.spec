@@ -43,7 +43,7 @@
 
 Name:           telegram-desktop
 Version:        5.13.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -68,6 +68,8 @@ Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
+Patch0:         %{url}/commit/c261c3367a11eeef69e6e346d339706dc4f00406.patch#/%{name}-gh-c261c33.patch
+
 Patch100:       %{name}-build-fix.patch
 
 # Do not mess input text
@@ -79,6 +81,9 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
+
+Patch1000:      https://gitlab.archlinux.org/archlinux/packaging/packages/%{name}/-/raw/b0282ee74f473b2d6e0e0dd989488202984e0350/qt-6.9.patch#/%{name}-gh-qt-6.9.patch
+
 
 Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
@@ -235,6 +240,8 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 %autopatch -p1 -M 999
 
+%patch -P 1000 -p1 -d Telegram/lib_base
+
 %if %{with ltdp}
 %patch -P 1010 -p1
 %dnl %patch -P 1011 -p1
@@ -386,6 +393,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Apr 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.13.1-101
+- Rebuild (qt6)
+
 * Thu Mar 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.13.1-100
 - 5.13.1
 

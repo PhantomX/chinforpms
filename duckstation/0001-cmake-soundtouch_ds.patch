@@ -1,20 +1,20 @@
-From aa76436bf8938c8f1fcb988f06ffcacd8c7961dc Mon Sep 17 00:00:00 2001
+From bec091f4c7f2728d80be54add793e498a1d0038b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Aug 2024 11:56:11 -0300
 Subject: [PATCH] cmake: soundtouch_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 2 +-
- src/util/CMakeLists.txt                    | 2 +-
+ src/util/CMakeLists.txt                    | 4 ++--
  src/util/audio_stream.cpp                  | 4 ++--
- 3 files changed, 4 insertions(+), 4 deletions(-)
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
-index 6a1756e..1a089d6 100644
+index d113f1a..30d6bd3 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
 @@ -19,7 +19,7 @@ find_package(Freetype 2.13.2 REQUIRED) # 2.13.3, but flatpak is still on 2.13.2.
- find_package(lunasvg 2.4.1 REQUIRED)
+ find_package(plutosvg 0.0.6 REQUIRED)
  find_package(cpuinfo REQUIRED)
  find_package(DiscordRPC 3.4.0 REQUIRED)
 -find_package(SoundTouch 2.3.3 REQUIRED)
@@ -23,20 +23,29 @@ index 6a1756e..1a089d6 100644
  
  if(NOT WIN32)
 diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
-index 7bff73b..44b5679 100644
+index 185d470..1d695ba 100644
 --- a/src/util/CMakeLists.txt
 +++ b/src/util/CMakeLists.txt
 @@ -77,7 +77,7 @@ target_precompile_headers(util PRIVATE "pch.h")
  target_include_directories(util PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_include_directories(util PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/..")
  target_link_libraries(util PUBLIC common simpleini imgui)
--target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
-+target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp lunasvg::lunasvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
+-target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp plutosvg::plutosvg ZLIB::ZLIB SoundTouch::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
++target_link_libraries(util PRIVATE libchdr lzma JPEG::JPEG PNG::PNG WebP::libwebp plutosvg::plutosvg ZLIB::ZLIB SoundTouch_ds::SoundTouchDLL xxhash Zstd::Zstd reshadefx)
  
  if(ENABLE_X11)
    target_sources(util PRIVATE
+@@ -330,7 +330,7 @@ function(add_util_resources target)
+       install_imported_dep_library(SDL3::SDL3)
+       install_imported_dep_library(Shaderc_ds::shaderc_shared)
+       install_imported_dep_library(spirv-cross-c-shared)
+-      install_imported_dep_library(SoundTouch::SoundTouchDLL)
++      install_imported_dep_library(SoundTouch_ds::SoundTouchDLL)
+       install_imported_dep_library(plutosvg::plutosvg)
+     else()
+       # Prevent CMake from overriding the RPATH in the binary. i.e. use the build locations.
 diff --git a/src/util/audio_stream.cpp b/src/util/audio_stream.cpp
-index 9841ce4..e5396f1 100644
+index bd4ebc5..f11f027 100644
 --- a/src/util/audio_stream.cpp
 +++ b/src/util/audio_stream.cpp
 @@ -12,8 +12,8 @@
@@ -51,5 +60,5 @@ index 9841ce4..e5396f1 100644
  #include <algorithm>
  #include <cmath>
 -- 
-2.46.0
+2.49.0
 

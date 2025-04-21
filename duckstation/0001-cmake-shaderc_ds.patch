@@ -1,19 +1,19 @@
-From c896f792db6a888d0650955352c02f935bdf2885 Mon Sep 17 00:00:00 2001
+From 4e17a49a9fc2d3b15600c0bde345293fb99f8134 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 18 May 2024 18:09:15 -0300
 Subject: [PATCH] cmake: shaderc_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 4 ++--
- src/util/CMakeLists.txt                    | 2 +-
+ src/util/CMakeLists.txt                    | 4 ++--
  src/util/gpu_device.cpp                    | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
-index fe3df91..8453837 100644
+index e506da0..d113f1a 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
-@@ -42,12 +42,12 @@ if(BUILD_QT_FRONTEND)
+@@ -43,12 +43,12 @@ if(BUILD_QT_FRONTEND)
    find_package(Qt6 6.8.0 COMPONENTS Core Gui Widgets LinguistTools REQUIRED)
  endif()
  
@@ -29,10 +29,10 @@ index fe3df91..8453837 100644
    list(APPEND CMAKE_BUILD_RPATH ${SHADERC_LIBRARY_DIRECTORY})
    get_target_property(SPIRV_CROSS_LIBRARY spirv-cross-c-shared IMPORTED_LOCATION)
 diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
-index 7a74378..e0953b1 100644
+index 2df3a5d..185d470 100644
 --- a/src/util/CMakeLists.txt
 +++ b/src/util/CMakeLists.txt
-@@ -169,7 +169,7 @@ if(ENABLE_VULKAN)
+@@ -179,7 +179,7 @@ if(ENABLE_VULKAN)
  endif()
  
  # shaderc/spirv-cross is loaded dynamically to reduce module loads on startup.
@@ -41,11 +41,20 @@ index 7a74378..e0953b1 100644
  get_target_property(SPIRV_CROSS_INCLUDE_DIR spirv-cross-c-shared INTERFACE_INCLUDE_DIRECTORIES)
  target_include_directories(util PUBLIC ${SHADERC_INCLUDE_DIR} ${SPIRV_CROSS_INCLUDE_DIR})
  
+@@ -328,7 +328,7 @@ function(add_util_resources target)
+ 
+       # Copy dependency libraries to installation directory.
+       install_imported_dep_library(SDL3::SDL3)
+-      install_imported_dep_library(Shaderc::shaderc_shared)
++      install_imported_dep_library(Shaderc_ds::shaderc_shared)
+       install_imported_dep_library(spirv-cross-c-shared)
+       install_imported_dep_library(SoundTouch::SoundTouchDLL)
+       install_imported_dep_library(plutosvg::plutosvg)
 diff --git a/src/util/gpu_device.cpp b/src/util/gpu_device.cpp
-index b3b90af..28169b4 100644
+index 7686a96..65fc1f2 100644
 --- a/src/util/gpu_device.cpp
 +++ b/src/util/gpu_device.cpp
-@@ -19,7 +19,7 @@
+@@ -20,7 +20,7 @@
  
  #include "fmt/format.h"
  #include "imgui.h"
@@ -54,7 +63,7 @@ index b3b90af..28169b4 100644
  #include "spirv_cross_c.h"
  #include "xxhash.h"
  
-@@ -1287,7 +1287,7 @@ bool dyn_libs::OpenShaderc(Error* error)
+@@ -1504,7 +1504,7 @@ bool dyn_libs::OpenShaderc(Error* error)
    if (s_shaderc_library.IsOpen())
      return true;
  
@@ -64,5 +73,5 @@ index b3b90af..28169b4 100644
    {
      Error::AddPrefix(error, "Failed to load shaderc: ");
 -- 
-2.47.0
+2.49.0
 

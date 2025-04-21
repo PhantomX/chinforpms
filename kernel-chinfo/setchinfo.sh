@@ -6,7 +6,7 @@
 # zen parameter for zen patchset
 # nothing for Graysky cpu patch
 
-# 20250402
+# 20250420
 # 6.14
 
 set -e
@@ -65,6 +65,7 @@ defaultd="
 "
 
 defaultm="
+OVPN
 OVPN_DCO_V2
 V4L2_LOOPBACK
 VHBA
