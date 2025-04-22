@@ -1,7 +1,7 @@
 %global commit dfa2f19d4cedff09b29ee96d6697a08c5ff0e691
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250411
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -104,7 +104,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver aa0c8391eb7c7cf7e31d850150f6f2527eaffc28
+%global wine_stagingver 10.6
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -115,7 +115,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id a72ae22d90c45b59202955e4467b3637f4c647ff
+%global tkg_id fbe68848ab162cf0b064d94337c61809fbd8858d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -157,8 +157,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.5
-Release:        101%{?dist}
+Version:        10.6
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -236,11 +236,8 @@ Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.p
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
-# https://bugs.winehq.org/show_bug.cgi?id=58066
-Patch706:        %{whq_murl}/-/commit/7020807d11415b32341fa13f2354bd1e5477175b.patch#/%{name}-whq-7020807.patch
-Patch707:        %{whq_murl}/-/commit/34f0637b7d6d1f413ad0d43f80091dbc2cec0d2b.patch#/%{name}-whq-34f0637.patch
-Patch708:        %{whq_murl}/-/commit/1e0b1713d5c59da015754cfc5477ce7c62e5cb6d.patch#/%{name}-whq-1e0b171.patch
-Patch709:        %{whq_murl}/-/commit/bf7b57c7bd76aa203179b6edd2a66735a894d759.patch#/%{name}-whq-bf7b57c.patch
+# Fix virtual desktop again
+Patch706:        0001-Fix-virtual-desktop-when-sizes-is-not-the-same-as-de.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -868,10 +865,7 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 703 -p1
 %patch -P 705 -p1
-%patch -P 709 -p1 -R
-%patch -P 708 -p1 -R
-%patch -P 707 -p1 -R
-%patch -P 706 -p1 -R
+%patch -P 706 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2542,6 +2536,9 @@ fi
 
 
 %changelog
+* Mon Apr 21 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.6-100
+- 10.6
+
 * Sun Apr 06 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.5-100
 - 10.5
 
