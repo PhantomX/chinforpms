@@ -50,16 +50,16 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 613212f9e15f59825f7b81abc33add7624adedd7
+%global commit 2afd7707feb4f0d752e68dd4e0d5c2ce21832fe9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250404
+%global date 20250427
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 pugixml
 
-%global commit11 394e1f58b23dc80599214d2e9b6a5e0dfd0bbe07
+%global commit11 3982730833b6daefe77dcfb32b5c282851640c17
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
@@ -75,7 +75,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 239b85c80438bf60d9a5b9e0ebe9ff097a760d0d
+%global commit15 b077c81eb635392e694ccedbab8b644297ec0285
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -125,7 +125,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.36.17745
+Version:        0.0.36.17839
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -501,7 +501,7 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 ./%{__cmake_builddir}/bin/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -rp ./%{__cmake_builddir}/bin/{git,GuiConfigs,Icons} \
+cp -rp ./%{__cmake_builddir}/bin/{GuiConfigs,Icons} \
   %{buildroot}%{_datadir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications

@@ -16,7 +16,7 @@
 %global         _gobject_introspection  1.31.1
 
 Name:           gstreamer1
-Version:        1.26.0
+Version:        1.26.1
 Release:        100%{?gitcommit:.git%{shortcommit}}%{?dist}
 Summary:        GStreamer streaming media framework runtime
 
@@ -36,6 +36,7 @@ Source2:        gstreamer1.attr
 
 BuildRequires:  meson >= 0.48.0
 BuildRequires:  gcc
+BuildRequires:  libatomic
 BuildRequires:  glib2-devel >= %{_glib2}
 BuildRequires:  libxml2-devel >= %{_libxml2}
 BuildRequires:  gobject-introspection-devel >= %{_gobject_introspection}
@@ -253,6 +254,9 @@ install -m0644 -D %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/gstreamer1.a
 
 
 %changelog
+* Sun Apr 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1.26.1-100
+- 1.26.1
+
 * Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 1.26.0-100
 - 1.26.0
 
