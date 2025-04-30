@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7a284a8b404162aec4d0c243de126e1a62c8a45d
+%global commit ebfa66b0dab6b39bc8a33c4b34ab868fccdf85ba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250401
+%global date 20250428
 %bcond_without snapshot
 
 # Enable Qt build
@@ -62,7 +62,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 3a91a58605c0fb05833a228dbb674357b0e65a09
+%global commit9 4697f97f3dd355ececf4066acd7a51e121a6bf1a
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -89,7 +89,7 @@
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        106%{?dist}
+Release:        107%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -130,7 +130,6 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
-Patch7:         0001-sol.hpp-fix-build.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif

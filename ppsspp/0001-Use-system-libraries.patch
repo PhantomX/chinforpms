@@ -1,4 +1,4 @@
-From e3ebe96fbcf70ff67f93f20bebc36c17f648712b Mon Sep 17 00:00:00 2001
+From 84c8562e8ca0530c3d0eec118f5df860fff281f0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -6,12 +6,18 @@ Subject: [PATCH] Use system libraries
 ---
  CMakeLists.txt                        | 19 ++++++++++++++++++-
  Common/Data/Collections/Hashmaps.h    |  2 +-
+ Common/File/VFS/ZipFileReader.cpp     |  2 +-
+ Common/File/VFS/ZipFileReader.h       |  2 +-
  Core/Debugger/DisassemblyManager.cpp  |  2 +-
+ Core/FileLoaders/ZipFileLoader.cpp    |  2 +-
+ Core/FileLoaders/ZipFileLoader.h      |  2 +-
  Core/HLE/sceJpeg.cpp                  |  2 +-
+ Core/Loaders.h                        |  2 +-
  Core/MIPS/IR/IRJit.cpp                |  2 +-
  Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
  Core/MIPS/MIPSAnalyst.cpp             |  2 +-
  Core/RetroAchievements.cpp            |  2 +-
+ Core/Util/GameManager.cpp             |  2 +-
  Core/Util/PPGeDraw.cpp                |  2 +-
  GPU/Common/TextureDecoder.cpp         |  2 +-
  GPU/Common/TextureReplacer.cpp        |  2 +-
@@ -23,13 +29,13 @@ Subject: [PATCH] Use system libraries
  UI/ImDebugger/ImMemView.cpp           |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
  ext/CMakeLists.txt                    |  8 ++++++++
- 19 files changed, 43 insertions(+), 18 deletions(-)
+ 25 files changed, 49 insertions(+), 24 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1194fec..afd88e8 100644
+index cebf58b..f246c80 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1681,11 +1681,20 @@ add_library(xbrz STATIC
+@@ -1671,11 +1671,20 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -51,7 +57,7 @@ index 1194fec..afd88e8 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2462,6 +2471,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2464,6 +2473,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -79,8 +85,34 @@ index 862c0e4..20c7c44 100644
  #include "Common/CommonFuncs.h"
  #include "Common/Log.h"
  
+diff --git a/Common/File/VFS/ZipFileReader.cpp b/Common/File/VFS/ZipFileReader.cpp
+index f3f604b..b309275 100644
+--- a/Common/File/VFS/ZipFileReader.cpp
++++ b/Common/File/VFS/ZipFileReader.cpp
+@@ -7,7 +7,7 @@
+ #ifdef SHARED_LIBZIP
+ #include <zip.h>
+ #else
+-#include "ext/libzip/zip.h"
++#include "zip.h"
+ #endif
+ 
+ #include "Common/Common.h"
+diff --git a/Common/File/VFS/ZipFileReader.h b/Common/File/VFS/ZipFileReader.h
+index 4c40877..3e77ed1 100644
+--- a/Common/File/VFS/ZipFileReader.h
++++ b/Common/File/VFS/ZipFileReader.h
+@@ -3,7 +3,7 @@
+ #ifdef SHARED_LIBZIP
+ #include <zip.h>
+ #else
+-#include "ext/libzip/zip.h"
++#include "zip.h"
+ #endif
+ 
+ #include <mutex>
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 1654827..a4c6bbd 100644
+index b14d398..6fb2750 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -92,11 +124,34 @@ index 1654827..a4c6bbd 100644
  
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
+diff --git a/Core/FileLoaders/ZipFileLoader.cpp b/Core/FileLoaders/ZipFileLoader.cpp
+index 63cce14..aa6591c 100644
+--- a/Core/FileLoaders/ZipFileLoader.cpp
++++ b/Core/FileLoaders/ZipFileLoader.cpp
+@@ -1,4 +1,4 @@
+-#include <ext/libzip/zip.h>
++#include <zip.h>
+ 
+ #include "Core/FileLoaders/LocalFileLoader.h"
+ #include "Core/FileLoaders/ZipFileLoader.h"
+diff --git a/Core/FileLoaders/ZipFileLoader.h b/Core/FileLoaders/ZipFileLoader.h
+index ea2040d..ef265fa 100644
+--- a/Core/FileLoaders/ZipFileLoader.h
++++ b/Core/FileLoaders/ZipFileLoader.h
+@@ -2,7 +2,7 @@
+ 
+ #include <mutex>
+ 
+-#include <ext/libzip/zip.h>
++#include <zip.h>
+ 
+ #include "Common/CommonTypes.h"
+ #include "Common/Log.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index e549da1..ef8fd45 100644
+index 366499d..1afee76 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
-@@ -33,7 +33,7 @@
+@@ -34,7 +34,7 @@
  // Uncomment if you want to dump JPEGs loaded through sceJpeg to a file
  // #define JPEG_DEBUG
  #ifdef JPEG_DEBUG
@@ -105,6 +160,19 @@ index e549da1..ef8fd45 100644
  #include "Common/File/FileUtil.h"
  #include "Common/StringUtils.h"
  #endif
+diff --git a/Core/Loaders.h b/Core/Loaders.h
+index 0063aba..6c1ca29 100644
+--- a/Core/Loaders.h
++++ b/Core/Loaders.h
+@@ -20,7 +20,7 @@
+ #include <string>
+ #include <memory>
+ 
+-#include "ext/libzip/zip.h"
++#include "zip.h"
+ #include "Common/CommonTypes.h"
+ #include "Common/File/Path.h"
+ 
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
 index a06d76b..8bfab9b 100644
 --- a/Core/MIPS/IR/IRJit.cpp
@@ -132,7 +200,7 @@ index b3906be..0d00231 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index a11ac03..c478a75 100644
+index a08089a..1848367 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -22,7 +22,7 @@
@@ -145,7 +213,7 @@ index a11ac03..c478a75 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 1d71a95..50ebf07 100644
+index 3f5eaf7..f778cc0 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
 @@ -27,7 +27,7 @@
@@ -157,8 +225,21 @@ index 1d71a95..50ebf07 100644
  
  #include "Common/Crypto/md5.h"
  #include "Common/Log.h"
+diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
+index e3a74ab..346395b 100644
+--- a/Core/Util/GameManager.cpp
++++ b/Core/Util/GameManager.cpp
+@@ -27,7 +27,7 @@
+ #ifdef SHARED_LIBZIP
+ #include <zip.h>
+ #else
+-#include "ext/libzip/zip.h"
++#include "zip.h"
+ #endif
+ #ifdef _WIN32
+ 
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 13522f6..668ae5a 100644
+index a442202..b2c8acb 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -184,7 +265,7 @@ index 985c5d6..51359bb 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 0fd9cfb..823439d 100644
+index 41f9a0c..9516e4c 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -197,10 +278,10 @@ index 0fd9cfb..823439d 100644
  #include "Common/Data/Format/IniFile.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index a43e2d8..e0314fd 100644
+index 902841b..ec453fc 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
-@@ -30,7 +30,7 @@
+@@ -31,7 +31,7 @@
  #include "GPU/D3D11/D3D11Util.h"
  #include "Core/Config.h"
  
@@ -262,7 +343,7 @@ index cc27eaa..e4fd39d 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index f11e949..450ddc9 100644
+index 881d811..1e09671 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -8,7 +8,7 @@
@@ -275,7 +356,7 @@ index f11e949..450ddc9 100644
  #include "Common/File/FileUtil.h"
  #include "Core/Config.h"
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index bd378cc..e01f66b 100644
+index 487d351..475b2c2 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -2,7 +2,7 @@
@@ -308,5 +389,5 @@ index a6e06e1..97f72e8 100644
  if(ANDROID)
      if (ARM64)
 -- 
-2.48.1
+2.49.0
 

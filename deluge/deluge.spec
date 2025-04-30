@@ -1,7 +1,7 @@
 %global commit 0b5addf58eac1f379ee1af83247d8dee0c1eae78
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250301
-%bcond_without snapshot
+%bcond_with snapshot
 
 BuildArch:      noarch
 
@@ -12,13 +12,13 @@ BuildArch:      noarch
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           deluge
-Version:        2.1.1
-Release:        103%{?dist}
+Version:        2.2.0
+Release:        100%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
 
-License:        GPLv3 with exceptions
+License:        LicenseRef-Callaway-GPLv3-with-exceptions
 URL:            http://deluge-torrent.org/
 
 %if %{with snapshot}
@@ -276,6 +276,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue Apr 29 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-100
+- 2.2.0
+
 * Thu Feb 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1:2.1.1-101.20240219git7f3f7f6
 - Snapshot
 

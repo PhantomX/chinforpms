@@ -4,16 +4,16 @@ Date: Mon, 25 Dec 2023 12:00:38 -0300
 Subject: [PATCH] CHD: fix for patched libchdr
 
 ---
- nall/cmake/sources.cmake |  2 ++
- nall/decode/chd.hpp      |  6 +++---
- nall/file-buffer-chd.hpp | 19 +++++++++----------
- nall/file-chd.hpp        | 22 +++++++++++-----------
+ nall/nall/cmake/sources.cmake |  2 ++
+ nall/nall/decode/chd.hpp      |  6 +++---
+ nall/nall/file-buffer-chd.hpp | 19 +++++++++----------
+ nall/nall/file-chd.hpp        | 22 +++++++++++-----------
  4 files changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/nall/cmake/sources.cmake b/nall/cmake/sources.cmake
+diff --git a/nall/nall/cmake/sources.cmake b/nall/nall/cmake/sources.cmake
 index ff6f155..10075aa 100644
---- a/nall/cmake/sources.cmake
-+++ b/nall/cmake/sources.cmake
+--- a/nall/nall/cmake/sources.cmake
++++ b/nall/nall/cmake/sources.cmake
 @@ -23,9 +23,11 @@ target_sources(
      dl.hpp
      endian.hpp
@@ -26,10 +26,10 @@ index ff6f155..10075aa 100644
      float-env.hpp
      function.hpp
      galois-field.hpp
-diff --git a/nall/decode/chd.hpp b/nall/decode/chd.hpp
+diff --git a/nall/nall/decode/chd.hpp b/nall/nall/decode/chd.hpp
 index 2419573..c24e7fa 100644
---- a/nall/decode/chd.hpp
-+++ b/nall/decode/chd.hpp
+--- a/nall/nall/decode/chd.hpp
++++ b/nall/nall/decode/chd.hpp
 @@ -1,6 +1,6 @@
  #pragma once
  
@@ -56,10 +56,10 @@ index 2419573..c24e7fa 100644
    if(!fp) {
      print("CHD: Failed to open ", location, "\n");
      return false;
-diff --git a/nall/file-buffer-chd.hpp b/nall/file-buffer-chd.hpp
+diff --git a/nall/nall/file-buffer-chd.hpp b/nall/nall/file-buffer-chd.hpp
 index eac9570..4abb621 100644
---- a/nall/file-buffer-chd.hpp
-+++ b/nall/file-buffer-chd.hpp
+--- a/nall/nall/file-buffer-chd.hpp
++++ b/nall/nall/file-buffer-chd.hpp
 @@ -16,24 +16,24 @@ namespace nall {
  //on Windows (at least for 7 and earlier), FILE* is not buffered
  //thus, reading/writing one byte at a time will be dramatically slower
@@ -102,10 +102,10 @@ index eac9570..4abb621 100644
      fileHandle = nullptr;
    }
  
-diff --git a/nall/file-chd.hpp b/nall/file-chd.hpp
+diff --git a/nall/nall/file-chd.hpp b/nall/nall/file-chd.hpp
 index 91be160..704c16d 100644
---- a/nall/file-chd.hpp
-+++ b/nall/file-chd.hpp
+--- a/nall/nall/file-chd.hpp
++++ b/nall/nall/file-chd.hpp
 @@ -1,23 +1,23 @@
  #pragma once
  

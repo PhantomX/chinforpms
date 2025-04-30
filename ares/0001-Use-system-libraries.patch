@@ -1,56 +1,57 @@
-From 0423ab484c3ca19fce9627ee36830652870f8752 Mon Sep 17 00:00:00 2001
+From b7b39f9c218b59ec3a3d485f43d1e65c92b0883a Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 5 Feb 2025 20:31:44 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- thirdparty/CMakeLists.txt | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ thirdparty/CMakeLists.txt | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/thirdparty/CMakeLists.txt b/thirdparty/CMakeLists.txt
-index 5c8f688..3962b44 100644
+index f223702..0dafa97 100644
 --- a/thirdparty/CMakeLists.txt
 +++ b/thirdparty/CMakeLists.txt
-@@ -4,6 +4,14 @@ target_include_directories(sljit PUBLIC ../thirdparty)
- target_compile_definitions(sljit PUBLIC SLJIT_HAVE_CONFIG_PRE=1 SLJIT_HAVE_CONFIG_POST=1)
- target_compile_options(sljit PRIVATE $<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,GNU>:-Wno-conditional-uninitialized>)
+@@ -7,6 +7,14 @@ target_compile_options(sljit PRIVATE $<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,
+ option(ARES_ENABLE_CHD "Enable CHD format support via libchdr" ON)
  
-+find_package(PkgConfig QUIET)
-+
-+pkg_search_module(libchdr IMPORTED_TARGET libchdr)
-+if(libchdr_FOUND)
-+  message(STATUS "Using the system libchdr")
-+  add_library(chdr-static INTERFACE)
-+  target_link_libraries(chdr-static INTERFACE PkgConfig::libchdr)
-+else()
- # lzma
- add_subdirectory(libchdr/deps/lzma-24.05 EXCLUDE_FROM_ALL)
- list(APPEND CHDR_LIBS lzma)
-@@ -53,6 +61,13 @@ target_compile_options(
-   chdr-static
-   PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
- )
-+set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
-+if(NOT WITH_SYSTEM_ZLIB)
-+  set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
-+endif()
-+set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
-+set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
-+endif()
+ if(ARES_ENABLE_CHD)
++  find_package(PkgConfig QUIET)
++  
++  pkg_search_module(libchdr IMPORTED_TARGET libchdr)
++  if(libchdr_FOUND)
++    message(STATUS "Using the system libchdr")
++    add_library(chdr-static INTERFACE)
++    target_link_libraries(chdr-static INTERFACE PkgConfig::libchdr)
++  else()
+   # lzma
+   add_subdirectory(libchdr/deps/lzma-24.05 EXCLUDE_FROM_ALL)
+   list(APPEND CHDR_LIBS lzma)
+@@ -56,6 +64,13 @@ if(ARES_ENABLE_CHD)
+     chdr-static
+     PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
+   )
++  set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
++  if(NOT WITH_SYSTEM_ZLIB)
++    set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
++  endif()
++  set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
++  set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
++  endif()
+ endif()
  
  add_library(
-   tzxfile
-@@ -100,10 +115,4 @@ target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-u
- 
+@@ -105,11 +120,3 @@ target_compile_options(ymfm PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-u
  set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
--set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
--if(NOT WITH_SYSTEM_ZLIB)
--  set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+-if(ARES_ENABLE_CHD)
+-  set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
+-  if(NOT WITH_SYSTEM_ZLIB)
+-    set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
+-  endif()
+-  set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
+-  set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
 -endif()
--set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
--set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
 -- 
-2.48.1
+2.49.0
 

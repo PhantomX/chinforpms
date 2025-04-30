@@ -13,11 +13,11 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global rashader_ver 0.2.7
+%global rashader_ver 0.6.3
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        143
+Version:        144
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -54,7 +54,7 @@ BuildRequires:  pkgconfig(libudev)
 %if %{with openal}
 BuildRequires:  pkgconfig(openal)
 %endif
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  cmake(VulkanHeaders)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(x11)
@@ -84,13 +84,13 @@ find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name '*.slan
 
 find -name '.gitignore' -delete
 
-cp -a nall/file.hpp nall/file-chd.hpp
-cp -a nall/file-buffer.hpp nall/file-buffer-chd.hpp
+cp -a nall/nall/file.hpp nall/nall/file-chd.hpp
+cp -a nall/nall/file-buffer.hpp nall/nall/file-buffer-chd.hpp
 %patch -P 500 -p1
 
 sed -e 's|/usr/lib /usr/local/lib|%{_libdir}|g' -i cmake/finders/*.cmake
 
-sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/dl.hpp
+sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/nall/dl.hpp
 
 sed -e 's|ARES_ENABLE_LIBRASHADER|ARES_BUNDLE_SHADERS|' -i desktop-ui/CMakeLists.txt
 
@@ -147,6 +147,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Apr 29 2025 Phantom X <megaphantomx at hotmail dot com> - 144-1
+- 144
+
 * Tue Feb 18 2025 Phantom X <megaphantomx at hotmail dot com> - 143-1
 - 143
 
