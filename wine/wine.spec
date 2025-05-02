@@ -1,6 +1,6 @@
-%global commit f171f6cb6636e543b48db5056e886ff4a27e9a6b
+%global commit aa8621d2fdb121619f677396733e88176ce6aedc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250424
+%global date 20250430
 %bcond_without snapshot
 
 # disable fortify as it breaks wine
@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1b8ab6cb687b2efd4707d20182f26985b767c396
+%global wine_stagingver eff3de6ad260f327453e94e37d89205e94efe33c
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,7 +88,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id fbe68848ab162cf0b064d94337c61809fbd8858d
+%global tkg_id 27723432a34090ef1f93fbe09b17d2ae1520e0e8
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -131,7 +131,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.6
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -453,11 +453,7 @@ Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXxf86vm(x86-32)
 Requires:       libpcap(x86-32)
-%if 0%{?fedora} >= 43
-Requires:       mesa-compat-libOSMesa(x86-32)
-%else
-Requires:       mesa-libOSMesa(x86-32)
-%endif
+Requires:       libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
 Requires:       unixODBC(x86-32)
 Requires:       samba-libs(x86-32)
@@ -488,11 +484,7 @@ Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXxf86vm(x86-64)
 Requires:       libpcap(x86-64)
-%if 0%{?fedora} >= 43
-Requires:       mesa-compat-libOSMesa(x86-64)
-%else
-Requires:       mesa-libOSMesa(x86-64)
-%endif
+Requires:       libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
 Requires:       unixODBC(x86-64)
 Requires:       samba-libs(x86-64)
@@ -517,11 +509,7 @@ Requires:       libXcursor
 Requires:       libXfixes
 Requires:       libXrender
 Requires:       libpcap
-%if 0%{?fedora} >= 43
-Requires:       mesa-compat-libOSMesa
-%else
-Requires:       mesa-libOSMesa
-%endif
+Requires:       libOSMesa
 Requires:       libv4l
 Requires:       unixODBC
 Requires:       SDL2
@@ -2537,6 +2525,9 @@ fi
 
 
 %changelog
+* Thu May 01 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.6-102.20250429gitf37d05e
+- Change mesa-libOSMesa to libOSMesa
+
 * Fri Apr 25 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.6-101.20250424gitf171f6c
 - Support only mingw builds
 

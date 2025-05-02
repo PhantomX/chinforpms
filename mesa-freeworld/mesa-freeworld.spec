@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.0.4
+Version:        25.1.0~rc3
 Release:        100%{?dist}
 
 Epoch:          100
@@ -138,7 +138,6 @@ echo %{version}-freeworld > VERSION
 %build
 %meson \
   -Dplatforms=x11 \
-  -Dosmesa=false \
   -Dgallium-drivers=virgl,nouveau%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
   -Dgallium-vdpau=enabled \
   -Dgallium-va=enabled \
@@ -224,6 +223,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Apr 30 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.1.0~rc3-100
+- 25.1.0-rc3
+
 * Thu Apr 17 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.0.4-100
 - 25.0.4
 

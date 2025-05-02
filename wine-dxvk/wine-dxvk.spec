@@ -28,7 +28,7 @@ BuildArch:      noarch
 %bcond_with spirv
 %bcond_without vulkan
 
-%global gplasync_id 447db06ecff8a64f900b12741dbd8d1c8d8eae22
+%global gplasync_id 8a55443c13a5c8b0a09b6859edaa54e3576518b3
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -54,7 +54,7 @@ BuildArch:      noarch
 %if %{with snapshot}
 %global gplasync_ver 2.5.3-1
 %else
-%global gplasync_ver 2.6-1
+%global gplasync_ver 2.6.1-1
 %endif
 
 %global winecommonver 7.1
@@ -93,8 +93,6 @@ Patch101:       0001-util-Another-missing-weeb-games.patch
 %if %{with gplasync}
 Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
-Patch502:      0001-gplasync-fixup-1.patch
-Patch503:      0001-gplasync-fixup-2.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -165,9 +163,7 @@ in order to run 3D applications on Linux using Wine.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
-%patch -P 502 -p1
 %patch -P 500 -p1
-%patch -P 503 -p1
 %patch -P 501 -p1
 cp %{S:500} README.gplasync.md
 %endif

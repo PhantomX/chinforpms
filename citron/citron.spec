@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 5f962dd1c6cfcb40d5ffadaca923c083a0b3004c
+%global commit fc88c06769ea718a97da9866fa5b836be1fdd923
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250422
+%global date 20250501
 %bcond_without snapshot
 
 # Enable system boost
@@ -98,13 +98,13 @@
 %global shortcommit 0
 %endif
 
-%global pkgname Citron
+%global pkgname emu
 %global appname org.%{name}_emu.%{name}
 
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           citron
-Version:        0.6.27275
+Version:        0.6.27293
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -112,9 +112,9 @@ License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND 
 URL:            https://citron-emu.org
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{pkgname}/archive/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        %{vc_url}/%{pkgname}/archive/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/-/archive/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 %if %{without dynarmic}
@@ -275,7 +275,7 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{name} -N -p1
+%autosetup -n %{pkgname}-%{commit} -N -p1
 %autopatch -M 499 -p1
 
 pushd externals

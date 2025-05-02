@@ -25,6 +25,7 @@ libstrangle
 -linux-steam-integration
 mangohud
 mesa
+mesa-compat
 mesa-libGL-xlib
 -mingw-crt
 -mingw-headers
