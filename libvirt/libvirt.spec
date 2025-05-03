@@ -8,7 +8,9 @@
 
 %define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
-    %if 0%{?rhel} > 8
+    %if 0%{?rhel} >= 10
+        %define arches_qemu_kvm     x86_64 aarch64 s390x riscv64
+    %elif 0%{?rhel} >= 9
         %define arches_qemu_kvm     x86_64 aarch64 s390x
     %else
         %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x riscv64
@@ -295,7 +297,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.2.0
+Version: 11.3.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -306,6 +308,9 @@ URL: https://libvirt.org/
 Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source2: libvirt-qemu-sysusers.conf
 
+Patch: 0001-storage-stop-hardcoding-paths-for-mkfs-mount-umount.patch
+Patch: 0001-util-stop-hardcoding-numad-path.patch
+Patch: 0001-Fix-mocking-of-virQEMUCapsProbeHVF-function.patch
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -2678,6 +2683,9 @@ done
 
 
 %changelog
+* Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 11.3.0-100
+- 11.3.0
+
 * Tue Apr 01 2025 Phantom X <megaphantomx at hotmail dot com> - 11.2.0-100
 - 11.2.0
 

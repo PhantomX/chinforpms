@@ -1,0 +1,31 @@
+From 5629ebcb4234fde10fd9468d5fc5dd4947ed8677 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20P=2E=20Berrang=C3=A9?= <berrange@redhat.com>
+Date: Tue, 29 Apr 2025 15:49:10 +0100
+Subject: [PATCH] Fix mocking of virQEMUCapsProbeHVF function
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Daniel P. Berrangé <berrange@redhat.com>
+
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+---
+ src/qemu/qemu_capabilities.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/qemu/qemu_capabilities.h b/src/qemu/qemu_capabilities.h
+index ea7c14daa9..488a1a058e 100644
+--- a/src/qemu/qemu_capabilities.h
++++ b/src/qemu/qemu_capabilities.h
+@@ -943,7 +943,7 @@ bool
+ virQEMUCapsGetKVMSupportsSecureGuest(virQEMUCaps *qemuCaps) G_NO_INLINE;
+ 
+ bool
+-virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE;
++virQEMUCapsProbeHVF(virQEMUCaps *qemuCaps) G_NO_INLINE __attribute__((noipa));
+ 
+ virArch virQEMUCapsArchFromString(const char *arch);
+ const char *virQEMUCapsArchToString(virArch arch);
+-- 
+2.49.0
+

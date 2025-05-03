@@ -1,7 +1,7 @@
 %global commit aa8621d2fdb121619f677396733e88176ce6aedc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250430
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -130,8 +130,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.6
-Release:        102%{?dist}
+Version:        10.7
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -2525,6 +2525,9 @@ fi
 
 
 %changelog
+* Sat May 03 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.7-100
+- 10.7
+
 * Thu May 01 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.6-102.20250429gitf37d05e
 - Change mesa-libOSMesa to libOSMesa
 

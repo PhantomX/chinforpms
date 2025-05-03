@@ -1,0 +1,94 @@
+From 63e4cbd109374f44e8bd4f8d1af5e2a2c67611bc Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20P=2E=20Berrang=C3=A9?= <berrange@redhat.com>
+Date: Mon, 28 Apr 2025 11:42:13 +0100
+Subject: [PATCH] storage: stop hardcoding paths for mkfs, mount, umount
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Daniel P. Berrangé <berrange@redhat.com>
+
+This was always undesirable but now causes problems on Fedora 42
+where at build time we detect a /sbin path but at runtime this
+will only exist on upgraded machines, not fresh installs.
+
+Reviewed-by: Peter Krempa <pkrempa@redhat.com>
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+---
+ meson.build                      | 13 -------------
+ src/storage/storage_backend_fs.c | 17 +++--------------
+ 2 files changed, 3 insertions(+), 27 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 37b1caa566..14c98b49a1 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1827,23 +1827,10 @@ if conf.has('WITH_LIBVIRTD')
+       endif
+     endif
+ 
+-    if fs_enable
+-      mount_prog = find_program('mount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+-      umount_prog = find_program('umount', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+-      mkfs_prog = find_program('mkfs', required: get_option('storage_fs'), dirs: libvirt_sbin_path)
+-
+-      if not mount_prog.found() or not umount_prog.found() or not mkfs_prog.found()
+-        fs_enable = false
+-      endif
+-    endif
+-
+     if fs_enable
+       use_storage = true
+ 
+       conf.set('WITH_STORAGE_FS', 1)
+-      conf.set_quoted('MOUNT', mount_prog.full_path())
+-      conf.set_quoted('UMOUNT', umount_prog.full_path())
+-      conf.set_quoted('MKFS', mkfs_prog.full_path())
+     endif
+   endif
+ 
+diff --git a/src/storage/storage_backend_fs.c b/src/storage/storage_backend_fs.c
+index fce395d60f..6ec359625a 100644
+--- a/src/storage/storage_backend_fs.c
++++ b/src/storage/storage_backend_fs.c
+@@ -304,7 +304,7 @@ virStorageBackendFileSystemMount(virStoragePoolObj *pool)
+     if (!(src = virStorageBackendFileSystemGetPoolSource(pool)))
+         return -1;
+ 
+-    cmd = virStorageBackendFileSystemMountCmd(MOUNT, def, src);
++    cmd = virStorageBackendFileSystemMountCmd("mount", def, src);
+ 
+     /* Mounting a shared FS might take a long time. Don't hold
+      * the pool locked meanwhile. */
+@@ -362,7 +362,7 @@ virStorageBackendFileSystemStop(virStoragePoolObj *pool)
+     if ((rc = virStorageBackendFileSystemIsMounted(pool)) != 1)
+         return rc;
+ 
+-    cmd = virCommandNewArgList(UMOUNT, def->target.path, NULL);
++    cmd = virCommandNewArgList("umount", def->target.path, NULL);
+     return virCommandRun(cmd, NULL);
+ }
+ #endif /* WITH_STORAGE_FS */
+@@ -402,18 +402,7 @@ virStorageBackendExecuteMKFS(const char *device,
+     g_autoptr(virCommand) cmd = NULL;
+     g_autofree char *mkfs = NULL;
+ 
+-#if WITH_STORAGE_FS
+-    mkfs = virFindFileInPath(MKFS);
+-#endif /* WITH_STORAGE_FS */
+-
+-    if (!mkfs) {
+-        virReportError(VIR_ERR_INTERNAL_ERROR,
+-                       _("mkfs is not available on this platform: Failed to make filesystem of type '%1$s' on device '%2$s'"),
+-                       format, device);
+-        return -1;
+-    }
+-
+-    cmd = virCommandNewArgList(mkfs, "-t", format, NULL);
++    cmd = virCommandNewArgList("mkfs", "-t", format, NULL);
+ 
+     /* use the force, otherwise mkfs.xfs won't overwrite existing fs.
+      * Similarly mkfs.ext2, mkfs.ext3, and mkfs.ext4 require supplying -F
+-- 
+2.49.0
+

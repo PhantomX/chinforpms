@@ -1,0 +1,58 @@
+From 7ab0f1c2a3fddf46d381f055e49111e3063b4829 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Daniel=20P=2E=20Berrang=C3=A9?= <berrange@redhat.com>
+Date: Mon, 28 Apr 2025 11:47:34 +0100
+Subject: [PATCH] util: stop hardcoding numad path
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+From: Daniel P. Berrangé <berrange@redhat.com>
+
+Change the meson rules to always enable numad if on a Linux host, unless
+the meson options say not to.
+
+Reviewed-by: Peter Krempa <pkrempa@redhat.com>
+Signed-off-by: Daniel P. Berrangé <berrange@redhat.com>
+---
+ meson.build        | 10 +++-------
+ src/util/virnuma.c |  2 +-
+ 2 files changed, 4 insertions(+), 8 deletions(-)
+
+diff --git a/meson.build b/meson.build
+index 14c98b49a1..767205f44b 100644
+--- a/meson.build
++++ b/meson.build
+@@ -2028,14 +2028,10 @@ if not get_option('nss').disabled()
+   endif
+ endif
+ 
+-if not get_option('numad').disabled() and numactl_dep.found()
+-  numad_prog = find_program('numad', required: get_option('numad'), dirs: libvirt_sbin_path)
+-  if numad_prog.found()
+-    conf.set('WITH_NUMAD', 1)
+-    conf.set_quoted('NUMAD', numad_prog.full_path())
+-  endif
++if not get_option('numad').disabled() and numactl_dep.found() and host_machine.system() == 'linux'
++  conf.set('WITH_NUMAD', 1)
+ elif get_option('numad').enabled()
+-  error('You must have numactl enabled for numad support.')
++  error('You must have a Linux host with numactl enabled for numad support.')
+ endif
+ 
+ # nwfilter should only be compiled for linux, and only if the
+diff --git a/src/util/virnuma.c b/src/util/virnuma.c
+index 9393c20875..67c51630c7 100644
+--- a/src/util/virnuma.c
++++ b/src/util/virnuma.c
+@@ -61,7 +61,7 @@ virNumaGetAutoPlacementAdvice(unsigned short vcpus,
+     g_autoptr(virCommand) cmd = NULL;
+     char *output = NULL;
+ 
+-    cmd = virCommandNewArgList(NUMAD, "-w", NULL);
++    cmd = virCommandNewArgList("numad", "-w", NULL);
+     virCommandAddArgFormat(cmd, "%d:%llu", vcpus,
+                            VIR_DIV_UP(balloon, 1024));
+ 
+-- 
+2.49.0
+

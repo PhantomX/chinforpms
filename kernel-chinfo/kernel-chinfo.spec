@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.14.4
+%define specrpmversion 6.14.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1205,6 +1205,15 @@ Patch7402:  %{pf_url}/4f71fa70c884f154e4f068df73ad142515814cb6.patch#/pf-cb-4f71
 Patch7403:  %{pf_url}/7e7450013bcbef7b597e400f9d20336242fe2fad.patch#/pf-cb-7e74500.patch
 Patch7404:  %{pf_url}/7d2a2659ca3dd8128380fc8e7b356096ccf30550.patch#/pf-cb-7d2a265.patch
 Patch7405:  %{pf_url}/4c4678a43371ce88e28195d4b3bb57818c257ed8.patch#/pf-cb-4c4678a.patch
+Patch7406:  %{pf_url}/ec27f834939fd76d5bd05d83f67149367d67c243.patch#/pf-cb-ec27f83.patch
+Patch7407:  %{pf_url}/fa0df1c541e34ca680fced62d640794f81bb09da.patch#/pf-cb-fa0df1c.patch
+Patch7408:  %{pf_url}/3fe6c3436d6683948608547d9ebc211c6e78c551.patch#/pf-cb-3fe6c34.patch
+# fs
+Patch7500:  %{pf_url}/87cf32af11a507f27ca32ee88527beea118ef4ab.patch#/pf-cb-87cf32a.patch
+Patch7501:  %{pf_url}/a46bf385d0294ffb3d368822e0a403df6749519e.patch#/pf-cb-a46bf38.patch
+Patch7502:  %{pf_url}/70b70d03914705eac80a5e4b4b40de6bffcb1fac.patch#/pf-cb-70b70d0.patch
+Patch7503:  %{pf_url}/8ebfe14f65f9618c0456565ab96194a9258402a2.patch#/pf-cb-8ebfe14.patch
+Patch7504:  %{pf_url}/71d400cb4d6b34eae348b80f97df3eb96eda84f6.patch#/pf-cb-71d400c.patch
 # ovpn-dco
 Patch7600:  %{pf_url}/0e10102d2a1b8237cc19d65bcffc228b1bd84e82.patch#/pf-cb-0e10102.patch
 Patch7601:  %{pf_url}/48867a731bffecf22555175e24c1611f550ed68c.patch#/pf-cb-48867a7.patch
@@ -2109,6 +2118,15 @@ ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
 ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+# fs
+ApplyPatch %{PATCH7500}
+ApplyPatch %{PATCH7501}
+ApplyPatch %{PATCH7502}
+ApplyPatch %{PATCH7503}
+ApplyPatch %{PATCH7504}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
@@ -4489,6 +4507,9 @@ fi\
 #
 #
 %changelog
+* Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.4-500.chinfo
+- 6.14.5
+
 * Fri Apr 25 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.4-500.chinfo
 - 6.14.4
 
