@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit fc88c06769ea718a97da9866fa5b836be1fdd923
+%global commit 7e58599d694e82751f7a2da966ca71c9e462bb0e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250501
+%global date 20250505
 %bcond_without snapshot
 
 # Enable system boost
@@ -89,7 +89,7 @@
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://git.citron-emu.org/%{pkgname}
+%global vc_url   https://git.citron-emu.org/%{name}
 %global mvc_url https://github.com/yuzu-mirror
 
 %if %{with snapshot}
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           citron
-Version:        0.6.27293
+Version:        0.6.27299
 Release:        1%{?dist}
 Summary:        A NX Emulator
 

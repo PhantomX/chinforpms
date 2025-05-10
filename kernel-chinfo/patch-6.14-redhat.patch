@@ -5,7 +5,6 @@
  arch/arm64/Kconfig                                 |   2 +-
  arch/powerpc/include/asm/prom.h                    |   2 +
  arch/powerpc/kernel/fadump.c                       |  21 +--
- arch/powerpc/kernel/module_64.c                    |   4 -
  arch/powerpc/kernel/prom_init.c                    |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -239,21 +238,6 @@ index 4b371c738213c..26e3d151e0483 100644
  	}
  
  	fw_dump.param_area = memblock_phys_alloc_range(COMMAND_LINE_SIZE,
-diff --git a/arch/powerpc/kernel/module_64.c b/arch/powerpc/kernel/module_64.c
-index 34a5aec4908fb..126bf3b06ab7e 100644
---- a/arch/powerpc/kernel/module_64.c
-+++ b/arch/powerpc/kernel/module_64.c
-@@ -258,10 +258,6 @@ static unsigned long get_stubs_size(const Elf64_Ehdr *hdr,
- 			break;
- 		}
- 	}
--	if (i == hdr->e_shnum) {
--		pr_err("%s: doesn't contain __patchable_function_entries.\n", me->name);
--		return -ENOEXEC;
--	}
- #endif
- 
- 	pr_debug("Looks like a total of %lu stubs, max\n", relocs);
 diff --git a/arch/powerpc/kernel/prom_init.c b/arch/powerpc/kernel/prom_init.c
 index 57082fac46687..fce32b162ef3a 100644
 --- a/arch/powerpc/kernel/prom_init.c
@@ -1320,6 +1304,26 @@ index b9682264e2f53..54575eea3c490 100644
  
  	return 0;
  }
+@@ -1949,8 +1944,10 @@ static int ov08x40_identify_module(struct ov08x40 *ov08x)
+ 
+ 	ret = ov08x40_read_reg(ov08x, OV08X40_REG_CHIP_ID,
+ 			       OV08X40_REG_VALUE_24BIT, &val);
+-	if (ret)
++	if (ret) {
++		dev_err(&client->dev, "error reading chip-id register: %d\n", ret);
+ 		return ret;
++	}
+ 
+ 	if (val != OV08X40_CHIP_ID) {
+ 		dev_err(&client->dev, "chip id mismatch: %x!=%x\n",
+@@ -1958,6 +1955,7 @@ static int ov08x40_identify_module(struct ov08x40 *ov08x)
+ 		return -ENXIO;
+ 	}
+ 
++	dev_dbg(&client->dev, "chip id 0x%x\n", val);
+ 	ov08x->identified = true;
+ 
+ 	return 0;
 @@ -2151,65 +2153,69 @@ static int ov08x40_check_hwcfg(struct ov08x40 *ov08x, struct device *dev)
  	int ret;
  	u32 xvclk_rate;
