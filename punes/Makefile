@@ -1,5 +1,5 @@
 NAME = puNES
-VERSION ?= 315c6d3fc4137a111ac54f9f8bab33d70f1a9f34
+VERSION ?= ed201432b7186fed32ba8091afdeb9994295272b
 SNAPSHOT ?= 1
 SNAPROOT = https://github.com/punesemu/puNES
 P7ZIPDIR = p7zip-17.04

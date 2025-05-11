@@ -5,15 +5,15 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 130675aae30e0dc7682c4dc666a57e5de5bc7a78
+%global commit 90ed30f70c6f313a245e25d13cefd74e1628fd34
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250328
+%global date 20250508
 %bcond_without snapshot
 
 # Disable LTO. Crash.
 %dnl %global _lto_cflags %{nil}
 
-%global commit1 fab7b33b896a42dcc865ba5ecdbacd9f409137f8
+%global commit1 5d21e35633a1f87ed08af115b07d3386096f792b
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 LuaBridge
 
@@ -61,7 +61,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.4.245
+Version:        2.5.1
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -76,7 +76,7 @@ URL:            https://github.com/flyinghead/%{name}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/r%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
@@ -165,8 +165,8 @@ Provides:       bundled(vixl)
 
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:r%{version}} -N -p1
-%autopatch -M 500 -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
+%autopatch -M 499 -p1
 
 pushd core/deps
 rm -rf glm libzip lzma miniupnpc oboe SDL xbyak xxHash zlib
@@ -232,6 +232,7 @@ sed -e '/glm.hpp/a#define GLM_ENABLE_EXPERIMENTAL 1' -i core/rend/transform_matr
   -DUSE_HOST_LIBCHDR:BOOL=ON \
   -DUSE_HOST_LZMA:BOOL=ON \
   -DUSE_HOST_SDL:BOOL=ON \
+  -DWITH_SYSTEM_ZLIB:BOOL=ON \
 %if %{with glslang}
   -DUSE_HOST_GLSLANG:BOOL=ON \
 %endif
@@ -288,6 +289,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/org.flycast.Fl
 
 
 %changelog
+* Sat May 10 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-1.20250508git90ed30f
+- 2.5
+
 * Mon Mar 31 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.245-1.20250328git130675a
 - 2.4
 

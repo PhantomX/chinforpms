@@ -30,7 +30,7 @@ index b4c7bcb..67643f0 100644
 +endif()
  
  set(BUILD_TESTING CACHE BOOL OFF)
- add_subdirectory("../external/glslang" "glslang" EXCLUDE_FROM_ALL)
+ set(ENABLE_OPT 0)
 -- 
 2.41.0
 

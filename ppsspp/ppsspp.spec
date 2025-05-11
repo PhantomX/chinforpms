@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit ebfa66b0dab6b39bc8a33c4b34ab868fccdf85ba
+%global commit 732d05c2c136856a3f173574233a2431a015a6f5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250428
+%global date 20250508
 %bcond_without snapshot
 
 # Enable Qt build
@@ -89,7 +89,7 @@
 
 Name:           ppsspp
 Version:        1.18.1
-Release:        107%{?dist}
+Release:        108%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 

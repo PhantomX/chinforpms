@@ -1,17 +1,17 @@
 %undefine _cmake_shared_libs
 
-%bcond_with vma
+%bcond_without vma
 
-%global commit 0525ea043ea173ec6af1c6c8dade820036376430
+%global commit 97bc6b08b1da511fa449ecb412ca74fa54f4a3fb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250224
+%global date 20250503
 %bcond_without snapshot
 
-%global commit10 bccaa94db814af33d8ef05c153e7c34d8bd4d685
+%global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 SPIRV-Cross
 
-%global commit11 9c7fd1a33e5cecbe465e1cd70170167d5e40d398
+%global commit11 fc9889c889561c5882e83819dcaffef5ed45529b
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
@@ -24,14 +24,14 @@
 
 %global glad_ver 2.0.3
 %global imgui_ver 1.89.5
-%global vma_ver 3.1.0
+%global vma_ver 3.2.1
 
 %global vc_url  https://github.com/snes9xgit/%{name}
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
 Version:        1.63
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -50,9 +50,6 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Patch0:         %{name}-1.56.1-unix_flags.patch
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Remove-application-path-from-database-search.patch
-Patch4:         0001-vma-set-missing-namespace.patch
-Patch5:         0001-vulkan-update-vk-detail-DynamicLoader.patch
-Patch501:       0001-glslang-gcc-15-build-fix.patch
 
 BuildRequires:   gcc-c++
 BuildRequires:   cmake
@@ -77,8 +74,10 @@ BuildRequires:   minizip-ng-compat-devel
 BuildRequires:   cmake(VulkanHeaders) >= 1.3.280
 %if %{with vma}
 BuildRequires:   cmake(VulkanMemoryAllocator) >= %{vma_ver}
+BuildRequires:  cmake(VulkanMemoryAllocator-Hpp) >= 3
 %else
 Provides:        bundled(VulkanMemoryAllocator) = %{vma_ver}
+Provides:        bundled(VulkanMemoryAllocator-Hpp) = %{vma_ver}
 %endif
 %if %{with portaudio}
 BuildRequires:   pkgconfig(portaudio-2.0)
@@ -149,7 +148,6 @@ This package contains a graphical user interface using Qt.
 %if %{with snapshot}
 tar -xf %{S:10} -C external/SPIRV-Cross --strip-components 1
 tar -xf %{S:11} -C external/glslang --strip-components 1
-%patch -P 501 -p1
 %endif
 
 # Remove bundled libs

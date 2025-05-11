@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 5285b1168a629e44c2fcc42664bf003dcf55019e
+%global commit f19a33340a1a27a7964b52474ff80f0eee014d9e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250411
+%global date 20250510
 %bcond_without snapshot
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -42,7 +42,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 d54cf8f1059cebc90a6f5ecdf03df69259f22054
+%global commit5 0115d9198ff7a73ff6568027dfb948ef6031818c
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -84,7 +84,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2503.200
+Version:        2503.514
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -131,7 +131,6 @@ Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcna
 Source19:      https://github.com/SFML/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
 
-Patch0:        %{vc_url}/pull/13380.patch#/%{name}-gh-pr13380.patch
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
 Patch1:         0001-Use-system-headers-for-Vulkan.patch

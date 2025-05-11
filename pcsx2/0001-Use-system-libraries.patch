@@ -1,21 +1,32 @@
-From d563fa8f22087b944f37795707afd60c44da9d33 Mon Sep 17 00:00:00 2001
+From 84cb2aba94c0651b39d8f66eb896fd96265329ca Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- cmake/SearchForStuff.cmake                 | 77 ++++++++++++++++++++++
+ cmake/SearchForStuff.cmake                 | 89 +++++++++++++++++++++-
  pcsx2/CMakeLists.txt                       |  6 ++
- pcsx2/GS/GSDump.cpp                        |  4 ++
+ pcsx2/GS/GSDump.cpp                        |  4 +
  pcsx2/GS/GSLzma.cpp                        |  6 ++
  pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h |  4 +-
- 5 files changed, 95 insertions(+), 2 deletions(-)
+ 5 files changed, 105 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 01fbe24..6990207 100644
+index 264e854..fe6d5f9 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
-@@ -76,33 +76,97 @@ endif()
+@@ -19,8 +19,8 @@ find_package(LZ4 REQUIRED)
+ find_package(WebP REQUIRED) # v1.3.2, spews an error on Linux because no pkg-config.
+ find_package(SDL3 3.2.6 REQUIRED)
+ find_package(Freetype 2.11.1 REQUIRED)
+-find_package(plutovg REQUIRED) # v0.0.13 is needed for building plutosvg, but we can support v1.0.0
+-find_package(plutosvg 0.0.6 REQUIRED)
++find_package(plutovg) # v0.0.13 is needed for building plutosvg, but we can support v1.0.0
++find_package(plutosvg 0.0.6)
+ 
+ if(USE_VULKAN)
+ 	find_package(Shaderc REQUIRED)
+@@ -78,33 +78,105 @@ endif()
  
  set(CMAKE_FIND_FRAMEWORK ${FIND_FRAMEWORK_BACKUP})
  
@@ -56,6 +67,14 @@ index 01fbe24..6990207 100644
  add_subdirectory(3rdparty/soundtouch EXCLUDE_FROM_ALL)
 +endif()
  add_subdirectory(3rdparty/simpleini EXCLUDE_FROM_ALL)
++if (NOT plutovg_FOUND)
++check_lib(plutovg plutovg)
++	alias_library(plutovg::plutovg PkgConfig::plutovg)
++endif()
++if (NOT plutosvg_FOUND)
++check_lib(plutosvg plutosvg)
++	alias_library(plutosvg::plutosvg PkgConfig::plutosvg)
++endif()
  add_subdirectory(3rdparty/imgui EXCLUDE_FROM_ALL)
 +check_lib(CPUINFO libcpuinfo)
 +if(CPUINFO_FOUND)
@@ -113,7 +132,7 @@ index 01fbe24..6990207 100644
  
  # Find the Qt components that we need.
  find_package(Qt6 6.7.3 COMPONENTS CoreTools Core GuiTools Gui WidgetsTools Widgets LinguistTools REQUIRED)
-@@ -128,14 +192,27 @@ target_include_directories(KDAB::kddockwidgets INTERFACE
+@@ -130,14 +202,27 @@ target_include_directories(KDAB::kddockwidgets INTERFACE
  
  # Architecture-specific.
  if(_M_X86)
@@ -142,10 +161,10 @@ index 01fbe24..6990207 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index 93467e2..6c266d6 100644
+index e261883..f1fdf14 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1061,7 +1061,9 @@ set(pcsx2LTOSources
+@@ -1063,7 +1063,9 @@ set(pcsx2LTOSources
  
  if(_M_X86)
  	list(APPEND pcsx2LTOSources ${pcsx2x86Sources} ${pcsx2x86Headers})
@@ -155,7 +174,7 @@ index 93467e2..6c266d6 100644
  elseif(_M_ARM64)
  	list(APPEND pcsx2LTOSources ${pcsx2arm64Sources} ${pcsx2arm64Headers})
  	target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
-@@ -1189,7 +1191,11 @@ endif()
+@@ -1193,7 +1195,11 @@ endif()
  
  # additonal include directories
  if(_M_X86)

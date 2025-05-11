@@ -1,8 +1,8 @@
 %global sover 2.2
 
 Name:           kddockwidgets
-Version:        2.2.3
-Release:        101%{?dist}
+Version:        2.2.4
+Release:        100%{?dist}
 Summary:        Qt dock widget library
 
 License:        GPL-3.0-only AND GPL-2.0-only AND BSD-3-Clause
@@ -102,6 +102,9 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %{_libdir}/qt6/mkspecs/modules/qt_KDDockWidgets.pri
 
 %changelog
+* Sat May 10 2025 Phantom X <megaphantomx at hotmail dot com> - 2.2.4-100
+- 2.2.4
+
 * Fri Apr 18 2025 Phantom X <megaphantomx at hotmail dot com> - 2.2.3-101
 - Rebuild (qt6)
 

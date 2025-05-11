@@ -8,6 +8,7 @@
 %global _lto_cflags -fno-lto
 %endif
 
+# Only clang is supported by upstream
 %bcond_with clang
 %if %{with clang}
 %global toolchain clang
@@ -25,9 +26,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit a86eabc1f054cb52e0ee9bd499b45366af8ad6b5
+%global commit aee66edd6e6c02e6f8887b97d2e98459f55d09d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250418
+%global date 20250509
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -46,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8947
+Version:        0.1.8987
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -309,7 +310,7 @@ echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DBUILD_MINI_FRONTEND:BOOL=OFF \
-  -DUSE_WAYLAND:BOOL=ON \
+  -DENABLE_WAYLAND:BOOL=ON \
 %{nil}
 
 %cmake_build

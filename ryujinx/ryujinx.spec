@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit adae465b080a43b15fd0ef542ad9ef2ec84e538c
+%global commit 6904d6a461e44335caadba2e7c8aa766704728d3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250331
+%global date 20250504
 
 %if %{without bin}
 %bcond_with snapshot
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.30
+Version:        1.3.38
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -823,6 +823,9 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
+* Sun May 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.38-1
+- 1.3.38
+
 * Sat Dec 21 2024 - 1.2.103-1
 - 1.2.103 canary
 

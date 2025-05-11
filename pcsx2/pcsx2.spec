@@ -3,6 +3,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
+# Only clang is supported by upstream
 %bcond_with clang
 %if %{with clang}
 %global toolchain clang
@@ -46,7 +47,7 @@
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
 %global fmt_ver 11.0.0
-%global imgui_ver 1.91.8
+%global imgui_ver 1.91.9~b
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
 %global rcheevos_scommit 3d01191
@@ -55,7 +56,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.281
+Version:        2.3.333
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -142,6 +143,8 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.5
 BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(harfbuzz)
+BuildRequires:  pkgconfig(plutovg) >= 1.0.0
+BuildRequires:  pkgconfig(plutosvg) >= 0.0.6
 BuildRequires:  cmake(RapidJSON)
 %if %{with rapidyml}
 BuildRequires:  cmake(ryml) >= %{rapidyml_ver}

@@ -50,9 +50,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 2afd7707feb4f0d752e68dd4e0d5c2ce21832fe9
+%global commit 3894c903bc6ee7b1fe267a45f8727b725f2eabb7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250427
+%global date 20250510
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -67,7 +67,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 36d08c0d940cf307a23928299ef52c7970d8cee6
+%global commit13 fc9889c889561c5882e83819dcaffef5ed45529b
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -125,7 +125,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.36.17839
+Version:        0.0.36.17928
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -180,7 +180,6 @@ Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
 Patch14:        0001-Fix-OpenAL-headers.patch
-Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 ExclusiveArch:  x86_64
 
@@ -323,8 +322,6 @@ cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 popd
-
-%patch -P 500 -p1
 
 %if %{without llvm}
 tar -xf %{S:18} -C 3rdparty/llvm/llvm --strip-components 1

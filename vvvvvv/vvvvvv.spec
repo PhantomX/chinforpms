@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit d419c6ed5bdc9958f6b5b52d9bca07d25261a52d
+%global commit 902acdd2acfd34f3b3b9d185eec0b7f4859233e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250218
+%global date 20250509
 %bcond_without snapshot
 
 %bcond_with faudio
@@ -24,7 +24,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 25.04
+%global commit5 25.05
 %global srcname5 FAudio
 
 %global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
@@ -38,7 +38,7 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.3%{?dist}
+Release:        0.4%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
