@@ -1,0 +1,43 @@
+From bc16ab84e98390e7c20c4a6308560f927910dc9a Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 11 May 2025 12:04:32 -0300
+Subject: [PATCH] PSO2 fix
+
+Add WINE_NO_OPEN_FILE_SEARCH environment variable
+
+https://github.com/GloriousEggroll/proton-ge-custom/blob/master/patches/game-patches/pso2_hack.patch
+---
+ dlls/ntdll/unix/file.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/dlls/ntdll/unix/file.c b/dlls/ntdll/unix/file.c
+index adc3ea8..2d40dfe 100644
+--- a/dlls/ntdll/unix/file.c
++++ b/dlls/ntdll/unix/file.c
+@@ -4425,6 +4425,7 @@ static NTSTATUS lookup_unix_name( FILE_OBJECT *fileobj, int root_fd, const WCHAR
+     struct stat st;
+     char *unix_name = *buffer;
+     const WCHAR *ptr, *end;
++    static char *skip_search = NULL;
+ 
+     /* check syntax of individual components */
+ 
+@@ -4471,6 +4472,15 @@ static NTSTATUS lookup_unix_name( FILE_OBJECT *fileobj, int root_fd, const WCHAR
+     if (is_unix && (disposition == FILE_OPEN || disposition == FILE_OVERWRITE))
+         return STATUS_OBJECT_NAME_NOT_FOUND;
+ 
++    if (skip_search == NULL)
++    {
++        const char *sgi = getenv("SteamGameId");
++        skip_search = getenv("WINE_NO_OPEN_FILE_SEARCH");
++        if ((sgi && strcmp(sgi, "1056640") == 0) || (skip_search && atoi(skip_search) == 1))
++            WARN("Disabling case insensitive search for opening files");
++    }
++    if (skip_search && strcasestr(unix_name, skip_search) && disposition == FILE_OPEN)
++        return STATUS_OBJECT_NAME_NOT_FOUND;
+     /* now do it component by component */
+ 
+     while (name_len)
+-- 
+2.49.0
+

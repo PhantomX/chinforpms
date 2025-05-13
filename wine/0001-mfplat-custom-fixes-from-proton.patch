@@ -1,19 +1,17 @@
-From db64a83bc66c4685f2dc84a89db063de372ab0c5 Mon Sep 17 00:00:00 2001
+From e15f197f0368f97274fd208277f6dbc80e3995b3 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 2 Mar 2022 02:27:43 -0300
 Subject: [PATCH] mfplat: custom fixes from proton
 
-* Rename PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER variable to
-  WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER
 * Add WINE_IMF_SOURCE_READER_NO_FLUSH and WINE_WG_VIDEO_FORMAT_BGRX variables
 ---
- dlls/mfplat/main.c             | 20 ++++++++++++++++++--
+ dlls/mfplat/main.c             | 18 +++++++++++++++++-
  dlls/mfreadwrite/reader.c      | 12 ++++++++++++
  dlls/winegstreamer/wm_reader.c | 14 ++++++++++++++
- 3 files changed, 44 insertions(+), 2 deletions(-)
+ 3 files changed, 43 insertions(+), 1 deletion(-)
 
 diff --git a/dlls/mfplat/main.c b/dlls/mfplat/main.c
-index 656e84f..42d76d4 100644
+index 960a0de..456cb3c 100644
 --- a/dlls/mfplat/main.c
 +++ b/dlls/mfplat/main.c
 @@ -17,6 +17,7 @@
@@ -24,13 +22,12 @@ index 656e84f..42d76d4 100644
  #include <string.h>
  #include <math.h>
  #include <limits.h>
-@@ -9211,11 +9212,26 @@ static const IMFDXGIDeviceManagerVtbl dxgi_device_manager_vtbl =
+@@ -9222,11 +9223,26 @@ static const IMFDXGIDeviceManagerVtbl dxgi_device_manager_vtbl =
  HRESULT WINAPI MFCreateDXGIDeviceManager(UINT *token, IMFDXGIDeviceManager **manager)
  {
      struct dxgi_device_manager *object;
--    const char *do_not_create = getenv("PROTON_DO_NOT_CREATE_DXGI_DEVICE_MANAGER");
 +    const char *sgi = getenv("SteamGameId");
-+    const char *do_not_create = getenv("WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER");
+     const char *do_not_create = getenv("WINE_DO_NOT_CREATE_DXGI_DEVICE_MANAGER");
  
      TRACE("%p, %p.\n", token, manager);
  
@@ -54,7 +51,7 @@ index 656e84f..42d76d4 100644
          FIXME("stubbing out\n");
          return E_NOTIMPL;
 diff --git a/dlls/mfreadwrite/reader.c b/dlls/mfreadwrite/reader.c
-index 057e771..8592054 100644
+index 4d223f1..45324b1 100644
 --- a/dlls/mfreadwrite/reader.c
 +++ b/dlls/mfreadwrite/reader.c
 @@ -18,6 +18,7 @@
@@ -65,7 +62,7 @@ index 057e771..8592054 100644
  
  #define COBJMACROS
  #include "windef.h"
-@@ -2102,10 +2103,21 @@ static HRESULT source_reader_flush_async(struct source_reader *reader, unsigned
+@@ -2490,10 +2491,21 @@ static HRESULT source_reader_flush_async(struct source_reader *reader, unsigned
  static HRESULT WINAPI src_reader_Flush(IMFSourceReaderEx *iface, DWORD index)
  {
      struct source_reader *reader = impl_from_IMFSourceReaderEx(iface);
@@ -88,7 +85,7 @@ index 057e771..8592054 100644
  
      if (reader->async_callback)
 diff --git a/dlls/winegstreamer/wm_reader.c b/dlls/winegstreamer/wm_reader.c
-index 6440f8d..e4ed11b 100644
+index 8507d35..31f208c 100644
 --- a/dlls/winegstreamer/wm_reader.c
 +++ b/dlls/winegstreamer/wm_reader.c
 @@ -16,6 +16,8 @@
@@ -100,7 +97,7 @@ index 6440f8d..e4ed11b 100644
  #include "gst_private.h"
  #include "initguid.h"
  #include "wmsdk.h"
-@@ -1512,6 +1514,18 @@ static HRESULT init_stream(struct wm_reader *reader, QWORD file_size)
+@@ -1537,6 +1539,18 @@ static HRESULT init_stream(struct wm_reader *reader)
               * Shadowgrounds provides wmv3 video and assumes that the initial
               * video type will be BGR. */
              stream->format.u.video.format = WG_VIDEO_FORMAT_BGR;
@@ -120,5 +117,5 @@ index 6440f8d..e4ed11b 100644
              /* API consumers expect RGB video to be bottom-up. */
              if (stream->format.u.video.height > 0)
 -- 
-2.41.0
+2.49.0
 

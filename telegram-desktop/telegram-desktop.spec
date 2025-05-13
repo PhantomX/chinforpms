@@ -42,8 +42,8 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.13.1
-Release:        101%{?dist}
+Version:        5.14.2
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -68,9 +68,8 @@ Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 %endif
 Source20:       thunar-sendto-%{name}.desktop
 
-Patch0:         %{url}/commit/c261c3367a11eeef69e6e346d339706dc4f00406.patch#/%{name}-gh-c261c33.patch
-
 Patch100:       %{name}-build-fix.patch
+Patch101:       https://github.com/rpmfusion/%{name}/raw/453a609efd0a0445a56f2a91146f41c0227db7c0/findprotobuf_fix.patch#/%{name}-gh-findprotobuf_fix.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -81,9 +80,6 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
-
-Patch1000:      https://gitlab.archlinux.org/archlinux/packaging/packages/%{name}/-/raw/b0282ee74f473b2d6e0e0dd989488202984e0350/qt-6.9.patch#/%{name}-gh-qt-6.9.patch
-
 
 Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
@@ -96,6 +92,7 @@ Patch1016:       0001-Fix-ltdp-0002-patch.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+BuildRequires:  librsvg2-tools
 %if %{without bin}
 %dnl BuildRequires:  cmake(Microsoft.GSL)
 BuildRequires:  cmake(OpenAL)
@@ -121,6 +118,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(sigc++-3.0) >= %{libsigc_ver}
 BuildRequires:  pkgconfig(rnnoise)
+BuildRequires:  cmake(tde2e)
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -240,8 +238,6 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 %autopatch -p1 -M 999
 
-%patch -P 1000 -p1 -d Telegram/lib_base
-
 %if %{with ltdp}
 %patch -P 1010 -p1
 %dnl %patch -P 1011 -p1
@@ -284,6 +280,16 @@ sed \
 sed \
   -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
   -i Telegram/CMakeLists.txt
+
+sed -e 's|Td|tde2e|g' -i cmake/external/td/CMakeLists.txt
+
+pushd Telegram/Resources/icons/settings
+for icon in mini_gift_order_{date,number,price} ;do
+  rsvg-convert "${icon}.svg" -h 24 -w 24 -o "${icon}.png"
+  rsvg-convert "${icon}.svg" -h 48 -w 48 -o "${icon}@2x.png"
+  rsvg-convert "${icon}.svg" -h 72 -w 72 -o "${icon}@3x.png"
+done
+popd
 
 %endif
 
@@ -393,6 +399,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Tue May 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.14.2-100
+- 5.14.2
+
 * Fri Apr 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.13.1-101
 - Rebuild (qt6)
 

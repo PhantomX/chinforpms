@@ -245,12 +245,13 @@ Patch1055:       0001-tkg-cpu-topology-fixup-1.patch
 Patch1056:       0001-tkg-cpu-topology-fixup-2.patch
 
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
-Patch1091:       %{valve_url}/commit/c08ed66d0b3d7d3276a8fa0c0d88e2a785ba8328.patch#/%{name}-valve-c08ed66.patch
-Patch1092:       %{valve_url}/commit/ed14fff244c5fb9fab7b7266e971f7993928c55c.patch#/%{name}-valve-ed14fff.patch
+Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
+Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
+Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.patch#/%{name}-valve-541b9e8.patch
 
 Patch1301:       0001-FAudio-Disable-reverb.patch
-Patch1303:       0011-mfplat-Stub-out-MFCreateDXGIDeviceManager-to-avoid-t.patch
-Patch1304:       0001-mfplat-custom-fixes-from-proton.patch
+Patch1302:       0001-PSO2-fix.patch
+Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -928,9 +929,10 @@ autoreconf -f
 
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
+%patch -P 1093 -p1
 %patch -P 1301 -p1
+%patch -P 1302 -p1
 %patch -P 1303 -p1
-%patch -P 1304 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \

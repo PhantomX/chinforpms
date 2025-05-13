@@ -24,6 +24,10 @@ WINE_IMF_SOURCE_READER_NO_FLUSH override (In The Medium fix)
 =================================
 Enable with WINE_IMF_SOURCE_READER_NO_FLUSH=1 environment variable
 
+WINE_NO_OPEN_FILE_SEARCH override (Phantasy Star Online 2 fix)
+=================================
+Enable with WINE_NO_OPEN_FILE_SEARCH=1 environment variable
+
 WINE_SIMULATE_WRITECOPY override
 =================================
 Enable with WINE_SIMULATE_WRITECOPY=1 environment variable

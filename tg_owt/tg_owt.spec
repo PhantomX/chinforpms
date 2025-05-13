@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 300895038e2fa9b8e41b082ad697ee0f2f610884
+%global commit0 8c233a4c12d6ec1f2aa87991564ac28cc996c57a
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20241116
+%global date 20250811
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -28,7 +28,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        142%{?dist}
+Release:        143%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -46,8 +46,6 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 %if %{without absl}
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
-
-Patch0:         %{url}/pull/149.patch#/%{name}-gh-pr149.patch
 
 Patch1000:      0001-fix-build-with-bundled-absl.patch
 

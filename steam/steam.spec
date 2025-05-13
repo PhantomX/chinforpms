@@ -11,7 +11,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.82
+Version:        1.0.0.83
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -215,6 +215,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Tue May 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.83-100
+- 1.0.0.83
+
 * Fri Nov 29 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.82-100
 - 1.0.0.82
 
