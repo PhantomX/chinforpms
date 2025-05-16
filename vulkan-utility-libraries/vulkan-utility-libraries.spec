@@ -3,7 +3,7 @@
 %global with_sdk 0
 
 Name:           vulkan-utility-libraries
-Version:        1.4.313
+Version:        1.4.315
 Release:        100%{?dist}
 Summary:        Vulkan utility libraries
 
@@ -69,6 +69,9 @@ Provides:       vulkan-validation-layers-devel%{?_isa} = %{version}-%{release}
 
 
 %changelog
+* Thu May 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1.4.315-100
+- 1.4.315
+
 * Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 1.4.313-100
 - 1.4.313
 
