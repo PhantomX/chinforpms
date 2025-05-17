@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.3.3
+Version:        5.5.3
 Release:        1%{dist}
 Summary:        A shadowplay-like screen recorder
 
@@ -69,12 +69,16 @@ performance by recording your monitor using the GPU only.
 %license LICENSE
 %doc README.md
 %{_bindir}/gpu-screen-recorder
+%{_bindir}/gsr-dbus-server
 %caps(cap_sys_admin+ep) %{_bindir}/gsr-kms-server
 %{_modprobedir}/gsr-nvidia.conf
 %{_userunitdir}/%{name}.service
 
 
 %changelog
+* Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 5.5.3-1
+- 5.5.3
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 5.3.3-1
 - 5.3.3
 

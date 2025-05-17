@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.3.0
+Version:        1.6.3
 Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
@@ -17,12 +17,15 @@ BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  fonts-srpm-macros
 BuildRequires:  systemd
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(xi)
 # mglpp
 BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcursor)
 BuildRequires:  pkgconfig(xrandr)
@@ -77,6 +80,9 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 
 %changelog
+* Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.6.3-1
+- 1.6.3
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.0-1
 - 1.3.0
 

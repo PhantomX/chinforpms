@@ -12,8 +12,8 @@ index 210e747..870a515 100644
 --- a/src/main.cpp
 +++ b/src/main.cpp
 @@ -333,7 +333,7 @@ int main(int argc, char **argv) {
-     const mgl::vec2i monitor_position_query_value = (x11_cursor_window || !wayland) ? cursor_position : create_window_get_center_position(display);
-     const mgl_monitor *focused_monitor = find_monitor_at_position(window, monitor_position_query_value);
+         }
+     }
  
 -    const std::string noto_sans_bold_filepath = resources_path + "fonts/NotoSans-Bold.ttf";
 +    const std::string noto_sans_bold_filepath = "_RPM_FONTDIR_/NotoSans-Bold.ttf";

@@ -64,7 +64,7 @@ perl-X11-GUITest
 -spirv-tools
 VulkanMemoryAllocator
 vulkan-loader
-vulkan-volk
+-vulkan-volk
 vulkan-utility-libraries
 xbyak
 xcftools

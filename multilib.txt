@@ -44,7 +44,7 @@ taglib
 vulkan-headers
 vulkan-loader
 vulkan-tools
-vulkan-volk
+-vulkan-volk
 vulkan-utility-libraries
 -webp-pixbuf-loader
 wine

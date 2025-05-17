@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-notification
-Version:        1.0.4
+Version:        1.0.7
 Release:        1%{dist}
 Summary:        A notification in the style of ShadowPlay
 
@@ -19,6 +19,7 @@ BuildRequires:  fonts-srpm-macros
 BuildRequires:  pkgconfig(xext)
 # mglpp
 BuildRequires:  pkgconfig(libglvnd)
+BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
@@ -62,6 +63,9 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/main.cpp
 
 
 %changelog
+* Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0.7-1
+- 1.0.7
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0.4-1
 - 1.0.4
 

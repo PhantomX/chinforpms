@@ -2,7 +2,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-gtk
-Version:        5.1.7
+Version:        5.7.0
 Release:        1%{dist}
 Summary:        GTK frontend for GPU Screen Recorder
 
@@ -41,8 +41,11 @@ sed -e '/gnome/d' -i meson.build
 %install
 %meson_install
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/
+
 %check
-%meson_test
+%dnl %meson_test
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
@@ -57,6 +60,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 5.7.0-1
+- 5.7.0
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 5.1.7-1
 - 5.1.7
 

@@ -14,8 +14,6 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Tools-sdk-%{version
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Tools-%{version}.tar.gz
 %endif
 
-Patch10:        0001-cmake-change-volk-namespace.patch
-
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake3
@@ -23,7 +21,6 @@ BuildRequires:  glslang
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  vulkan-loader-devel
-BuildRequires:  cmake(vulkan_volk)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-cursor)
 BuildRequires:  pkgconfig(wayland-protocols)
