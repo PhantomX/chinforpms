@@ -42,7 +42,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.14.2
+Version:        5.14.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -281,8 +281,6 @@ sed \
   -e 's|${third_party_loc}/plasma-wayland-protocols/src/protocols|${PLASMA_WAYLAND_PROTOCOLS_DIR}|g' \
   -i Telegram/CMakeLists.txt
 
-sed -e 's|Td|tde2e|g' -i cmake/external/td/CMakeLists.txt
-
 pushd Telegram/Resources/icons/settings
 for icon in mini_gift_order_{date,number,price} ;do
   rsvg-convert "${icon}.svg" -h 24 -w 24 -o "${icon}.png"
@@ -399,6 +397,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun May 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.14.3-100
+- 5.14.3
+
 * Tue May 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.14.2-100
 - 5.14.2
 

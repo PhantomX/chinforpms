@@ -48,7 +48,7 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  10.0.0
-%global winevulkan 1.4.312
+%global winevulkan 1.4.315
 %if 0%{?fedora}
 %global opencl    1
 %endif
@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver eff3de6ad260f327453e94e37d89205e94efe33c
+%global wine_stagingver 10.8
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,7 +88,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 27723432a34090ef1f93fbe09b17d2ae1520e0e8
+%global tkg_id f4e1e3ba1c93c7e1a853b9881fbf8ccd95f63363
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -130,7 +130,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.7
+Version:        10.8
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -2527,6 +2527,9 @@ fi
 
 
 %changelog
+* Sun May 18 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.8-100
+- 10.8
+
 * Sat May 03 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.7-100
 - 10.7
 

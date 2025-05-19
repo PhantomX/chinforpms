@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.14.6
+%define specrpmversion 6.14.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -210,7 +210,7 @@ Summary: The Linux kernel
 %global post_factum 1
 
 %global graysky2_id 10947ddd06191fd9a6a3e674fa749a2eca0ec298
-%global opensuse_id 21b612da99033b1f4b82c31b17a64ffdce19e0bb
+%global opensuse_id 4a6fc19457acea6a78d2f2ae3bfaddea01e96081
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1181,6 +1181,7 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 %if 0%{?post_factum}
 Patch6800:  %{kernel_url}/?id=4feda8f53f693dc8c8de528d3f12cf3226cee9fd#/kernel-stable-revert-4feda8f.patch
 Patch6801:  0001-zstd-Increase-DYNAMIC_BMI2-GCC-version-cutoff-from-4.patch
+Patch6802:  %{kernel_url}/?id=399ec9ca8fc4999e676ff89a90184ec40031cf59#/kernel-stable-revert-399ec9c.patch
 # archlinux
 Patch6950:  %{pf_url}/3d99bf5512c7d31c5ecc390f7e26083fdb83cd8e.patch#/pf-cb-3d99bf5.patch
 Patch6951:  %{pf_url}/f91497e58b1c65ead52ee6c371c71deede0499ab.patch#/pf-cb-f91497e.patch
@@ -1208,9 +1209,10 @@ Patch7405:  %{pf_url}/4c4678a43371ce88e28195d4b3bb57818c257ed8.patch#/pf-cb-4c46
 Patch7406:  %{pf_url}/ec27f834939fd76d5bd05d83f67149367d67c243.patch#/pf-cb-ec27f83.patch
 Patch7407:  %{pf_url}/fa0df1c541e34ca680fced62d640794f81bb09da.patch#/pf-cb-fa0df1c.patch
 Patch7408:  %{pf_url}/3fe6c3436d6683948608547d9ebc211c6e78c551.patch#/pf-cb-3fe6c34.patch
-Patch7409:  %{pf_url}/8f0f8e47ecee6cfc2d3dfeb3834f8cddc1191cfb.patch#/pf-cb-8f0f8e4.patch
-Patch7410:  %{pf_url}/7ab98fba7c289dddee3978a288ea2c7d10d8700c.patch#/pf-cb-7ab98fb.patch
 # fs
+Patch7500:  %{pf_url}/d8db30b8b35be6334201249fb7e826c1472d0014.patch#/pf-cb-d8db30b.patch
+Patch7501:  %{pf_url}/3158db2ba0a687bdece3d2fe6bf8b8f067689697.patch#/pf-cb-3158db2.patch
+Patch7502:  %{pf_url}/14785acbd17b32f5b286b393b4094c6055c3bd87.patch#/pf-cb-14785ac.patch
 # ovpn-dco
 Patch7600:  %{pf_url}/0e10102d2a1b8237cc19d65bcffc228b1bd84e82.patch#/pf-cb-0e10102.patch
 Patch7601:  %{pf_url}/48867a731bffecf22555175e24c1611f550ed68c.patch#/pf-cb-48867a7.patch
@@ -1253,6 +1255,7 @@ Patch7710:  %{pf_url}/077e9ceb65f514ea63afc65cce86ce8677e77012.patch#/pf-cb-077e
 Patch7711:  %{pf_url}/1994cff363a37aff5b1232ca9f757b02ae244956.patch#/pf-cb-1994cff.patch
 Patch7712:  %{pf_url}/5932a2c8122050c4a2f71588778feb0677fe32b4.patch#/pf-cb-5932a2c.patch
 Patch7713:  %{pf_url}/0e0a5ca37a8e3b06f450f4093ba1b6d6f33c2161.patch#/pf-cb-0e0a5ca.patch
+Patch7714:  %{pf_url}/6ae491224973eb4013ee67a8c05c420f057d5fee.patch#/pf-cb-6ae4912.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2118,9 +2121,10 @@ ApplyPatch %{PATCH7405}
 ApplyPatch %{PATCH7406}
 ApplyPatch %{PATCH7407}
 ApplyPatch %{PATCH7408}
-ApplyPatch %{PATCH7409}
-ApplyPatch %{PATCH7410}
 # fs
+ApplyPatch %{PATCH7500}
+ApplyPatch %{PATCH7501}
+ApplyPatch %{PATCH7502}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
@@ -2149,6 +2153,7 @@ ApplyPatch %{PATCH7623}
 ApplyPatch %{PATCH7624}
 ApplyPatch %{PATCH7625}
 # invlpgb
+ApplyPatch %{PATCH6802} -R
 ApplyPatch %{PATCH7700}
 ApplyPatch %{PATCH7701}
 ApplyPatch %{PATCH7702}
@@ -2163,6 +2168,7 @@ ApplyPatch %{PATCH7710}
 ApplyPatch %{PATCH7711}
 ApplyPatch %{PATCH7712}
 ApplyPatch %{PATCH7713}
+ApplyPatch %{PATCH7714}
 %endif
 
 # openSUSE
@@ -4501,6 +4507,9 @@ fi\
 #
 #
 %changelog
+* Sun May 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.7-500.chinfo
+- 6.14.7
+
 * Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.6-500.chinfo
 - 6.14.6
 
