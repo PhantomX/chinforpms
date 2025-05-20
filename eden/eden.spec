@@ -13,13 +13,11 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 046538bb473c99fe3d02f9b0e76f7a056e6cecc8
+%global commit 3cad73dad6cde4896ed662bbe67605f2bdc6e296
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250514
+%global date 20250519
 %bcond_without snapshot
 
-# Enable system boost
-%bcond_without boost
 # Enable system dynarmic
 %bcond_without dynarmic
 # Enable system ffmpeg
@@ -37,55 +35,70 @@
 %bcond_without vma
 # Enable webservice
 %bcond_without webservice
-%bcond_without xbyak
 
-%global commit1 07c614f91b0af5335e1f9c0653c2d75e7b5f53bd
-%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
-%global srcname1 dynarmic
-
-%global commit2 05973d8aeb1a4d12f59aadfb86d20decadba82d1
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 VulkanMemoryAllocator
-
-%global commit3 ab75463999f4f3291976b079d42d52ee91eebf3f
-%global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
-%global srcname3 sirit
-
-%global commit4 6048871ea9ee0ec24be5bd099d161a10567d7dc2
-%global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
-%global srcname4 simpleini
-
-%global commit5 36d5e2ddaa54c70d2f29081510c66f4fc98e5e53
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 SPIRV-Headers
-
-%global commit6 39a64fb4e7e42216f14f0ec51ccc5fa85e651432
-%global shortcommit6 %(c=%{commit6}; echo ${c:0:6})
-%global srcname6 cpp-httplib
-
-%global commit7 4a970bc302d671476122cbc6b43cc89fbf4a96ec
-%global shortcommit7 %(c=%{commit7}; echo ${c:0:6})
-%global srcname7 cpp-jwt
-
-%global commit8 8c88150ca139e06aa2aae8349df8292a88148ea1
-%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
-%global srcname8 mbedtls
-
-%global commit9 97929690234f2b4add36b33657fe3fe09bd57dfd
-%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
-%global srcname9 tzdb_to_nx
-
-%global commit10 16ce126a87c5f130cde8b8dce73b38952a19f085
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 tz
-
-%global commit11 4100a2da297bddfacc634f93d0634fc34869cbf1
+%global commit11 9baf5adf4a12542e8d82234615adb7a8e1237c81
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 FFmpeg
+%global srcname11 dynarmic
 
-%global commit23 4e44f4614ddbf038f2a6296f5b906d5c72691e0f
+%global commit110 7b08d83418f628b800dfac1c9a16c3f59036fbad
+%global shortcommit10 %(c=%{commit110}; echo ${c:0:7})
+%global srcname110 mcl
+
+%global commit111 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
+%global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
+%global srcname111 unordered_dense
+
+%global commit112 0b2432ced0884fd152b471d97ecf0258ff4d859f
+%global shortcommit12 %(c=%{commit112}; echo ${c:0:7})
+%global srcname112 zycore-c
+
+%global commit113 bffbb610cfea643b98e87658b9058382f7522807
+%global shortcommit113 %(c=%{commit113}; echo ${c:0:7})
+%global srcname113 zydis
+
+%global commit12 05973d8aeb1a4d12f59aadfb86d20decadba82d1
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 VulkanMemoryAllocator
+
+%global commit13 6e6d79272cd4933b6647dafb6a662e5269241464
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 sirit
+
+%global commit14 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 simpleini
+
+%global commit15 36d5e2ddaa54c70d2f29081510c66f4fc98e5e53
+%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
+%global srcname15 SPIRV-Headers
+
+%global commit16 a609330e4c6374f741d3b369269f7848255e1954
+%global shortcommit16 %(c=%{commit16}; echo ${c:0:6})
+%global srcname16 cpp-httplib
+
+%global commit17 10ef5735d842b31025f1257ae78899f50a40fb14
+%global shortcommit17 %(c=%{commit17}; echo ${c:0:6})
+%global srcname17 cpp-jwt
+
+%global commit18 acdc9374d26d4f5da1b7d17a1adc8c42df311b9f
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
+%global srcname18 mbedtls
+
+%global commit19 97929690234f2b4add36b33657fe3fe09bd57dfd
+%global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
+%global srcname19 tzdb_to_nx
+
+%global commit20 16ce126a87c5f130cde8b8dce73b38952a19f085
+%global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
+%global srcname20 tz
+
+%global commit21 4100a2da297bddfacc634f93d0634fc34869cbf1
+%global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
+%global srcname21 FFmpeg
+
+%global commit23 0456900fadde4b07c84760eadea4ccc9f948fe28
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
-%global srcname23 xbyak
+%global srcname23 boost-headers
 
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.29
@@ -94,8 +107,7 @@
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
-%global vc_url   https://git.citron-emu.org/%{name}
-%global mvc_url https://github.com/yuzu-mirror
+%global vc_url   https://git.eden-emu.dev/eden-emu
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -103,58 +115,59 @@
 %global shortcommit 0
 %endif
 
-%global pkgname emu
-%global appname org.%{name}_emu.%{name}
+%global appname org.yuzu_emu.%{name}
 
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
-Name:           citron
-Version:        0.6.27304
+Name:           eden
+Version:        0.0.2.27303
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}%{!?with_boost: AND BSL-1.0}
-URL:            https://citron-emu.org
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
+URL:            https://eden-emulator.github.io
 
 %if %{with snapshot}
-Source0:        %{vc_url}/%{pkgname}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{pkgname}/-/archive/%{pkgname}-%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 %if %{without dynarmic}
-Source1:        https://github.com/MerryMage/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source110:      %{vc_url}/%{srcname110}/archive/%{commit110}.tar.gz#/%{srcname110}-%{shortcommit110}.tar.gz
+Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname11}-%{shortcommit111}.tar.gz
+Source112:      %{vc_url}/%{srcname112}/archive/%{commit112}.tar.gz#/%{srcname112}-%{shortcommit112}.tar.gz
+Source113:      %{vc_url}/%{srcname113}/archive/%{commit113}.tar.gz#/%{srcname113}-%{shortcommit113}.tar.gz
 %endif
 %if %{without vma}
-Source2:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
+Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
-Source3:        %{mvc_url}/%{srcname3}/archive/%{commit3}.tar.gz#/%{srcname3}-%{shortcommit3}.tar.gz
-Source4:        https://github.com/brofield/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
-Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source13:       %{vc_url}/%{srcname13}/archive/%{commit13}.tar.gz#/%{srcname13}-%{shortcommit13}.tar.gz
+Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}.tar.gz#/%{srcname14}-%{shortcommit14}.tar.gz
+Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
-Source6:        https://github.com/yhirose/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
-Source7:        https://github.com/arun11299/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}.tar.gz#/%{srcname16}-%{shortcommit16}.tar.gz
+Source17:       %{vc_url}/%{srcname17}/archive/%{commit17}.tar.gz#/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 %if !%{with mbedtls}
-Source8:        %{mvc_url}/%{srcname8}/archive/%{commit8}.tar.gz#/%{srcname8}-%{shortcommit8}.tar.gz
+Source18:       %{vc_url}/%{srcname18}/archive/%{commit18}.tar.gz#/%{srcname18}-%{shortcommit18}.tar.gz
 %endif
-Source9:        https://github.com/lat9nq/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
-Source10:       https://github.com/eggert/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source19:       %{vc_url}/%{srcname19}/archive/%{commit19}.tar.gz#/%{srcname19}-%{shortcommit19}.tar.gz
+Source20:       https://github.com/eggert/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %if %{without ffmpeg}
-Source11:       https://github.com/FFmpeg/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
 %if %{without fmt}
-Source12:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
+Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
-%if %{without xbyak}
-Source23:       https://github.com/herumi/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
-%endif
+Source23:       %{vc_url}/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
+
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
-Patch15:        0001-Update-for-latest-dynarmic.patch
 
 ExclusiveArch:  x86_64
 
@@ -171,9 +184,7 @@ BuildRequires:  gcc-c++
 BuildRequires:  llvm-devel >= 19.1.3
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
-%if %{with boost}
 BuildRequires:  boost-devel >= 1.83.0
-%endif
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
@@ -181,8 +192,7 @@ BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
 BuildRequires:  cmake(dynarmic) >= 6.7.0
 %else
-BuildRequires:  cmake(tsl-robin-map)
-Provides:       bundled(dynarmic) = 0~git%{?shortcommit1}
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit11}
 %endif
 BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  glslang
@@ -205,7 +215,7 @@ BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(x11)
-Provides:       bundled(ffmpeg) = 0~git%{?shortcommit11}
+Provides:       bundled(ffmpeg) = 0~git%{?shortcommit21}
 %endif
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
@@ -215,7 +225,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
 BuildRequires:  mbedtls >= 2.6.10
 %else
-Provides:       bundled(mbedtls) = 0~git%{?shortcommit8}
+Provides:       bundled(mbedtls) = 0~git%{?shortcommit18}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
@@ -241,13 +251,9 @@ BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
-Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit2}
+Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit12}
 %endif
-%if %{with xbyak}
 BuildRequires:  cmake(xbyak) >= 7
-%else
-Provides:       bundled(xbyak) = ~git%{?shortcommit23}
-%endif
 BuildRequires:  pkgconfig(zlib)
 
 Requires:       hicolor-icon-theme
@@ -258,14 +264,14 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile) = 0~git
-Provides:       bundled(sirit) = 0~git%{?shortcommit3}
-Provides:       bundled(simpleini) = 0~git%{?shortcommit4}
+Provides:       bundled(sirit) = 0~git%{?shortcommit13}
+Provides:       bundled(simpleini) = 0~git%{?shortcommit14}
 %if %{with webservice}
-Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit6}
-Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit7}
+Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
+Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
 %endif
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
-Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit9}
+Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit19}
 
 Obsoletes:      yuzu < 9999
 
@@ -287,58 +293,69 @@ This is the Qt frontend.
 
 
 %prep
-%autosetup -n %{pkgname}-%{commit} -N -p1
+%autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
 pushd externals
 rm -rf \
   cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode inih libressl libusb \
-  opus/opus/* SDL vcpkg Vulkan-Headers
+  opus/opus/* SDL vcpkg Vulkan-Headers xbyak
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
-popd
 
 %if %{without dynarmic}
-tar -xf %{S:1} -C externals/dynarmic --strip-components 1
-rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
-sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i CMakeLists.txt
+tar -xf %{S:11} -C dynarmic --strip-components 1
+tar -xf %{S:110} -C dynarmic/externals/mcl --strip-components 1
+tar -xf %{S:111} -C dynarmic/externals/unordered_dense --strip-components 1
+tar -xf %{S:112} -C dynarmic/externals/zycore --strip-components 1
+tar -xf %{S:113} -C dynarmic/externals/zydis --strip-components 1
+sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i ../CMakeLists.txt
+sed \
+  -e '/-pedantic-errors/d' \
+  -i dynarmic/CMakeLists.txt
+sed \
+  -e '/find_/s|Zydis|zydis_DISABLED|g' \
+  -i dynarmic/CMakeLists.txt dynarmic/CMakeModules/dynarmicConfig.cmake.in
 %endif
 %if %{without vma}
-mkdir -p externals/VulkanMemoryAllocator
-tar -xf %{S:2} -C externals/VulkanMemoryAllocator --strip-components 1
+mkdir -p VulkanMemoryAllocator
+tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %endif
-tar -xf %{S:3} -C externals/sirit --strip-components 1
-mkdir -p externals/simpleini
-tar -xf %{S:4} -C externals/simpleini --strip-components 1
-tar -xf %{S:5} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
+tar -xf %{S:13} -C sirit --strip-components 1
+mkdir -p simpleini
+tar -xf %{S:14} -C simpleini --strip-components 1
+tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
-tar -xf %{S:6} -C externals/cpp-httplib --strip-components 1
-tar -xf %{S:7} -C externals/cpp-jwt --strip-components 1
+tar -xf %{S:16} -C cpp-httplib --strip-components 1
+tar -xf %{S:17} -C cpp-jwt --strip-components 1
 %endif
 %if %{without mbedtls}
-tar -xf %{S:8} -C externals/mbedtls --strip-components 1
+tar -xf %{S:18} -C mbedtls --strip-components 1
 %endif
-mkdir -p externals/nx_tzdb/tzdb_to_nx
-tar -xf %{S:9} -C externals/nx_tzdb/tzdb_to_nx --strip-components 1
-tar -xf %{S:10} -C externals/nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
+mkdir -p nx_tzdb/tzdb_to_nx
+tar -xf %{S:19} -C nx_tzdb/tzdb_to_nx --strip-components 1
+tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
-tar -xf %{S:11} -C externals/ffmpeg/ffmpeg --strip-components 1
+tar -xf %{S:21} -C ffmpeg/ffmpeg --strip-components 1
 %endif
 %if %{without fmt}
-mkdir -p externals/fmt
-tar -xf %{S:12} -C externals/fmt --strip-components 1
+mkdir -p fmt
+tar -xf %{S:22} -C fmt --strip-components 1
 sed \
   -e '/^find_package(fmt/s|REQUIRED||' \
   -e 's|^find_package(fmt|\0_DISABLED|' \
-  -i CMakeLists.txt
+  -i ../CMakeLists.txt
 %endif
-%if %{without xbyak}
-tar -xf %{S:23} -C externals/xbyak --strip-components 1
+tar -xf %{S:23} -C boost-headers --strip-components 1
+
+%if %{without mbedtls}
 sed \
-  -e 's|find_package(xbyak|\0_DISABLED|' \
+  -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
   -i CMakeLists.txt
 %endif
+
+popd
 
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
@@ -361,25 +378,10 @@ cp -p sirit/LICENSE.txt LICENSE.sirit
 %if %{without vma}
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 %endif
-%if %{without xbyak}
-cp -p xbyak/COPYRIGHT LICENSE.xbyak
-%endif
 %if %{without ffmpeg}
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
 popd
-
-%if %{without mbedtls}
-sed \
-  -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
-  -i externals/CMakeLists.txt
-%endif
-
-%if %{without dynarmic}
-sed \
-  -e '/-pedantic-errors/d' \
-  -i externals/dynarmic/CMakeLists.txt
-%endif
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
@@ -410,15 +412,20 @@ sed \
   -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
   -i src/CMakeLists.txt
 
+sed \
+  -e 's|org.yuzu_emu.yuzu|%{appname}|g' \
+  -i dist/org.yuzu_emu.yuzu*.xml CMakeLists.txt
+rename org.yuzu_emu.yuzu %{appname} dist/org.yuzu_emu.yuzu*
+
 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
 export CFLAGS+=" %{xbyak_flags}"
-export CXXFLAGS+=" %{xbyak_flags}"
+export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  %{!?with_clang:-DCITRON_ENABLE_LTO:BOOL=ON} \
+  %{!?with_clang:-DYUZU_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
   -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \
@@ -428,23 +435,23 @@ export CXXFLAGS+=" %{xbyak_flags}"
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-  -DCITRON_CHECK_SUBMODULES:BOOL=OFF \
-  -DCITRON_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
-  -DCITRON_ENABLE_PORTABLE:BOOL=OFF \
-  -DCITRON_ROOM:BOOL=ON \
-  -DCITRON_USE_FASTER_LD:BOOL=OFF \
-  -DCITRON_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DCITRON_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
-  -DCITRON_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
+  -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
+  -DYUZU_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
+  -DYUZU_ENABLE_PORTABLE:BOOL=OFF \
+  -DYUZU_ROOM:BOOL=ON \
+  -DYUZU_USE_FASTER_LD:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
 %if %{with ffmpeg}
-  -DCITRON_USE_BUNDLED_FFMPEG:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
 %else
-  -DCITRON_USE_BUNDLED_FFMPEG:BOOL=ON \
+  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=ON \
 %endif
-  -DCITRON_USE_BUNDLED_LIBUSB:BOOL=OFF \
-  -DCITRON_USE_BUNDLED_OPUS:BOOL=OFF \
-  -DCITRON_USE_QT_WEB_ENGINE:BOOL=ON \
-  %{!?with_tests:-DCITRON_TESTS:BOOL=OFF} \
+  -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
+  -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
+  %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
 %if %{without webservice}
   -DENABLE_WEB_SERVICE:BOOL=OFF \
 %endif
@@ -475,32 +482,23 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %files
-%license LICENSE externals/LICENSE.*
+%license LICENSE.txt externals/LICENSE.*
 %doc README.md
-%{_bindir}/%{name}-cmd
+%{_bindir}/%{name}-cli
 %{_bindir}/%{name}-room
-%dnl %{_mandir}/man6/%{name}.6*
 
 
 %if %{with qt}
 %files qt
-%license LICENSE
+%license LICENSE.txt
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/mime/packages/%{appname}.xml
 %{_metainfodir}/%{appname}.metainfo.xml
-%dnl %{_mandir}/man6/%{name}-qt.6*
 %endif
 
 
 %changelog
-* Tue Mar 11 2025 - 0.6.27236-1.20250311gitdad8859
-- 0.6
-
-* Fri Feb 21 2025 - 0.5.27190-1.20250221git18f8a0f
-- 0.5
-
-* Tue Dec 03 2024 - 0-1.20241203git085c2d5
+* Mon May 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.2.27303-1.20250519git3cad73d
 - Initial spec
-

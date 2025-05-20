@@ -16,7 +16,7 @@
 %global parch amd64
 %global pkgid 660647727
 %global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 69
+%global snaprev 76
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
@@ -25,7 +25,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        7.3.118356
+Version:        7.4.119605
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -84,6 +84,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Mon May 19 2025 - 7.4.119605-1
+- 7.4.119605
+
 * Thu Mar 27 2025 - 7.3.118356-1
 - Set vivaldir_ver to 7.3
 

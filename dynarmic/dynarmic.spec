@@ -8,31 +8,54 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit fa6cc2e4b2a2954f2298b6548174479c5b106c2a
+%global commit 9baf5adf4a12542e8d82234615adb7a8e1237c81
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240302
+%global date 20250517
 %bcond_without snapshot
+
+
+%global commit10 7b08d83418f628b800dfac1c9a16c3f59036fbad
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 mcl
+
+%global commit11 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 unordered_dense
+
+%global commit12 0b2432ced0884fd152b471d97ecf0258ff4d859f
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 zycore-c
+
+%global commit13 bffbb610cfea643b98e87658b9058382f7522807
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 zydis
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global mcl_ver 0.1.12
 %global zydis_ver 4.0.0
+
+%global vc_url   https://git.eden-emu.dev/eden-emu
 
 Name:           dynarmic
 Version:        6.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
-URL:            https://github.com/lioncash/%{name}
+URL:            https://git.eden-emu.dev/eden-emu/%{name}
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Source10:       %{vc_url}/%{srcname10}/archive/%{commit10}.tar.gz#/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       https://github.com/Lizzie841/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
+Source13:       %{vc_url}/%{srcname13}/archive/%{commit13}.tar.gz#/%{srcname13}-%{shortcommit13}.tar.gz
 
 ExclusiveArch:  x86_64
 
@@ -42,15 +65,15 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  boost-devel >= 1.57
 BuildRequires:  pkgconfig(fmt) >= 9
-BuildRequires:  cmake(tsl-robin-map)
 BuildRequires:  cmake(xbyak) >= 7
 %if %{with zydis}
 BuildRequires:  cmake(zydis) >= %{zydis_ver}
 %else
-Provides:       bundled(zydis) = %{zydis_ver}
+Provides:       bundled(zydis) = 0~git%{?shortcommit13}
 %endif
 
-Provides:       bundled(mcl) = %{mcl_ver}
+Provides:       bundled(mcl) = 0~git%{?shortcommit10}
+Provides:       bundled(unordered_dense) = 0~git%{?shortcommit11}
 
 
 %description
@@ -67,24 +90,34 @@ with %{name}.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
+%autosetup %{?with_snapshot:-n %{name}} -N -p1
 %autopatch -M 500 -p1
 
-rm -rf externals/{catch,fmt,oaknut,robin-map,xbyak}
+tar -xf %{S:10} -C externals/mcl --strip-components 1
+tar -xf %{S:11} -C externals/unordered_dense --strip-components 1
 
 %if %{with zydis}
-rm -rf externals/{zycore,zydis}
 sed \
   -e '/find_/s|Zydis|zydis|g' \
   -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
 %else
+tar -xf %{S:12} -C externals/zycore --strip-components 1
+tar -xf %{S:13} -C externals/zydis --strip-components 1
 sed \
   -e '/find_/s|Zydis|zydis_DISABLED|g' \
   -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
+cp -p externals/zycore/LICENSE LICENSE.zycore
+cp -p externals/zydis/LICENSE LICENSE.zydis
 %endif
+
+cp -p externals/mcl/LICENSE LICENSE.mcl
+cp -p externals/unordered_dense/LICENSE LICENSE.unordered_dense
 
 
 %build
+%global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
+export CFLAGS+=" %{xbyak_flags}"
+export CXXFLAGS+=" %{xbyak_flags}"
 %cmake \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_IGNORE_ASSERTS:BOOL=ON \
@@ -100,18 +133,21 @@ sed \
 %cmake_install
 
 %files
-%license LICENSE.txt
+%license LICENSE.*
 %doc README.md
 %{_libdir}/lib%{name}.so.*
 
 %files devel
-%license LICENSE.txt
+%license LICENSE.*
 %{_includedir}/%{name}
 %{_libdir}/cmake/%{name}
 %{_libdir}/lib%{name}.so
 
 
 %changelog
+* Mon May 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-3.20250517git9baf5ad
+- Change to eden fork
+
 * Wed Dec 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.7.0-2.20240302gitfa6cc2e
 - Remove the revert commit
 

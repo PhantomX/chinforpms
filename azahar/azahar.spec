@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 16980b0ffc5a3e8b8f4a0960488a3f1c9ac736e1
+%global commit e83b81ec98cfd21db64ff79ec87ca17be055969e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250507
+%global date 20250518
 %bcond_without snapshot
 
 # Enable system boost
@@ -120,7 +120,7 @@
 
 Name:           azahar
 Version:        2121.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        A 3DS Emulator
 
@@ -416,7 +416,9 @@ export GITHUB_REF_TYPE=tag
 export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
 %endif
 
-export CXXFLAGS+=" -fpermissive"
+%global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
+export CFLAGS+=" %{xbyak_flags}"
+export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
