@@ -26,9 +26,9 @@
 %bcond_without vulkan
 %bcond_with local
 
-%global commit aee66edd6e6c02e6f8887b97d2e98459f55d09d7
+%global commit 461c51ff6a1217dda11decbc851295e52c6c6549
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250509
+%global date 20250519
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -47,7 +47,7 @@
 %global simpleini_ver 4.22
 
 Name:           duckstation
-Version:        0.1.8987
+Version:        0.1.9040
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -70,8 +70,9 @@ Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
 Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
-Patch11:        0001-cmake-soundtouch_ds.patch
-Patch12:        0001-cmake-plutosvg_ds.patch
+Patch10:        0001-cmake-soundtouch_ds.patch
+Patch11:        0001-cmake-plutosvg_ds.patch
+Patch12:        0001-Downgrade-SDL3-requirements-a-bit.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -91,7 +92,7 @@ BuildRequires:  extra-cmake-modules
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  cmake(DiscordRPC)
-BuildRequires:  cmake(Qt6Core) >= 6.8.0
+BuildRequires:  cmake(Qt6Core) >= 6.9.0
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6LinguistTools)
 BuildRequires:  cmake(Qt6Widgets)
@@ -107,7 +108,7 @@ BuildRequires:  pkgconfig(fmt) >= %{fmt_ver}
 %else
 Provides:       bundled(fmt) = %{fmt_ver}
 %endif
-BuildRequires:  pkgconfig(libavcodec)
+BuildRequires:  pkgconfig(libavcodec) >= 7.1.1
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)

@@ -7,7 +7,7 @@
 %global commit 443ff545ab99ff2ff7194be07c5eddcab0245f96
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250331
-%bcond_without snapshot
+%bcond_with snapshot
 
 %bcond_with rust
 
@@ -21,7 +21,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.7.8
+Version:        0.7.9
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -191,6 +191,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Tue May 20 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.9-1
+- 0.7.9
+
 * Tue Apr 15 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.8-1.20250331git443ff54
 - 0.7.8
 

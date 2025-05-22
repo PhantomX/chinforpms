@@ -5,12 +5,13 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
+%bcond_with native
 # Enable system zydis
 %bcond_with zydis
 
-%global commit 9baf5adf4a12542e8d82234615adb7a8e1237c81
+%global commit c8389f4860bb41266a5b3aba197d54719c23bd64
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250517
+%global date 20250521
 %bcond_without snapshot
 
 
@@ -40,7 +41,7 @@
 
 Name:           dynarmic
 Version:        6.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
@@ -112,6 +113,12 @@ cp -p externals/zydis/LICENSE LICENSE.zydis
 
 cp -p externals/mcl/LICENSE LICENSE.mcl
 cp -p externals/unordered_dense/LICENSE LICENSE.unordered_dense
+
+%if 0%{with native}
+sed -e '/-mtune=core2/d' -i CMakeLists.txt
+%else
+sed -e '/DYNARMIC_CXX_FLAGS/s|-mtune=core2|-march=x86-64-v2|' -i CMakeLists.txt
+%endif
 
 
 %build
