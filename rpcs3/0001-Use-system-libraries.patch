@@ -82,7 +82,7 @@ index cb0909e..eadf27e 100644
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
 @@ -342,10 +373,24 @@ if(USE_SDL)
- endif()
+ add_subdirectory(curl EXCLUDE_FROM_ALL)
  
  # MINIUPNP
 +find_package(miniupnpc)

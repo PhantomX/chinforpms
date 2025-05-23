@@ -1,4 +1,4 @@
-From 9cfa20a26620914ffeb475e3d0bd29841fe216a6 Mon Sep 17 00:00:00 2001
+From ab27271b6d78fca97e2018f1e67d9f78ec85fd55 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 1 Feb 2025 12:16:42 -0300
 Subject: [PATCH] Fix 48e86d6
@@ -8,11 +8,11 @@ Subject: [PATCH] Fix 48e86d6
  1 file changed, 21 insertions(+), 21 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 71c2d0e..812127a 100644
+index 9665622..d8f524b 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -364,6 +364,27 @@ if(ENABLE_QT6 AND Qt6_LOCATION)
-     list(APPEND CMAKE_PREFIX_PATH "${Qt6_LOCATION}")
+@@ -367,6 +367,27 @@ if (UNIX AND NOT APPLE)
+     find_package(gamemode 1.7 MODULE)
  endif()
  
 +# Include source code
@@ -39,7 +39,7 @@ index 71c2d0e..812127a 100644
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
  if (ENABLE_SDL2)
      if (YUZU_USE_BUNDLED_SDL2)
-@@ -563,27 +584,6 @@ if (CLANG_FORMAT)
+@@ -572,27 +593,6 @@ if (CLANG_FORMAT)
      unset(CCOMMENT)
  endif()
  

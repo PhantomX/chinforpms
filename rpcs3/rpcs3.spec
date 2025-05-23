@@ -44,15 +44,15 @@
 %bcond_without  rtmidi
 %endif
 %global bundlertmidi 6.0.0
-%bcond_with vma
-%global bundlevma 2.3.0
+%bcond_without vma
+%global bundlevma 3.3.0
 
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit 3894c903bc6ee7b1fe267a45f8727b725f2eabb7
+%global commit b54c2124cff867d1c0b9d57954d76254e6e43224
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250510
+%global date 20250521
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -111,7 +111,7 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 stb
 
-%global commit24 37064843398c69cc0ca7f8cf5b33128c03a2bd74
+%global commit24 1d8f600fd424278486eade7ed3e877c99f0846b1
 %global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
 %global srcname24 VulkanMemoryAllocator
 
@@ -125,7 +125,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.36.17928
+Version:        0.0.36.17959
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -409,7 +409,7 @@ rm -rf 3rdparty/rtmidi
 
 %if %{with vma}
 sed \
-  -e '/include/s|"3rdparty/GPUOpen/VulkanMemoryAllocator/src/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
+  -e '/include/s|"3rdparty/GPUOpen/VulkanMemoryAllocator/include/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
   -i rpcs3/Emu/RSX/VK/VKMemAlloc.cpp rpcs3/Emu/RSX/VK/vkutils/memory.h
 %else
 tar -xf %{S:24} -C 3rdparty/GPUOpen/VulkanMemoryAllocator --strip-components 1

@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3cad73dad6cde4896ed662bbe67605f2bdc6e296
+%global commit bad22328740f826c0dd6b2d60b74a7d0030c3f84
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250519
+%global date 20250522
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -36,7 +36,7 @@
 # Enable webservice
 %bcond_without webservice
 
-%global commit11 9baf5adf4a12542e8d82234615adb7a8e1237c81
+%global commit11 c8389f4860bb41266a5b3aba197d54719c23bd64
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 dynarmic
 
@@ -115,12 +115,10 @@
 %global shortcommit 0
 %endif
 
-%global appname org.yuzu_emu.%{name}
-
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27303
+Version:        0.0.2.27314
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -412,11 +410,6 @@ sed \
   -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
   -i src/CMakeLists.txt
 
-sed \
-  -e 's|org.yuzu_emu.yuzu|%{appname}|g' \
-  -i dist/org.yuzu_emu.yuzu*.xml CMakeLists.txt
-rename org.yuzu_emu.yuzu %{appname} dist/org.yuzu_emu.yuzu*
-
 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
@@ -427,7 +420,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   %{!?with_clang:-DYUZU_ENABLE_LTO:BOOL=ON} \
 %if %{with qt}
-  -DUSE_SYSTEM_QT:BOOL=ON \
+  -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \
 %if %{with qt6}
   -DENABLE_QT6:BOOL=ON \
@@ -477,8 +470,8 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
 rm -rf %{buildroot}%{_libdir}
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 
 %files
@@ -492,10 +485,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 %files qt
 %license LICENSE.txt
 %{_bindir}/%{name}
-%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/mime/packages/%{appname}.xml
-%{_metainfodir}/%{appname}.metainfo.xml
+%{_datadir}/mime/packages/%{name}.xml
+%{_metainfodir}/%{name}.metainfo.xml
 %endif
 
 
