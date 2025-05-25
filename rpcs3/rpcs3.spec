@@ -328,8 +328,8 @@ tar -xf %{S:18} -C 3rdparty/llvm/llvm --strip-components 1
 
 mkdir ittapi
 tar -xf %{S:19} -C ittapi --strip-components 1
-mkdir -p %{__cmake_builddir}/3rdparty/llvm_build
-ln -s ../../../ittapi %{__cmake_builddir}/3rdparty/llvm_build/ittapi
+mkdir -p %{_vpath_builddir}/3rdparty/llvm_build
+ln -s ../../../ittapi %{_vpath_builddir}/3rdparty/llvm_build/ittapi
 
 sed -e 's|${GIT_EXECUTABLE}|true|g' \
   -i 3rdparty/llvm/llvm/llvm/lib/ExecutionEngine/IntelJITEvents/CMakeLists.txt
@@ -446,8 +446,8 @@ chmod +x ffmpeg-linux_*.sh
 %make_build
 make install
 popd
-mkdir -p %{__cmake_builddir}/external/ffmpeg/lib
-mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffmpeg/lib/
+mkdir -p %{_vpath_builddir}/external/ffmpeg/lib
+mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmpeg/lib/
 %endif
 
 %cmake \
@@ -495,10 +495,10 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/3rdparty/ffm
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 ./%{__cmake_builddir}/bin/%{name} %{buildroot}%{_bindir}/
+install -pm0755 ./%{_vpath_builddir}/bin/%{name} %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -rp ./%{__cmake_builddir}/bin/{GuiConfigs,Icons} \
+cp -rp ./%{_vpath_builddir}/bin/{GuiConfigs,Icons} \
   %{buildroot}%{_datadir}/%{name}/
 
 mkdir -p %{buildroot}%{_datadir}/applications

@@ -100,7 +100,7 @@ sed -e '/TYPE DOC/d' -i CMakeLists.txt
 
 %files devel
 %license LICENSE
-%doc %{__cmake_builddir}/docs/html/
+%doc %{_vpath_builddir}/docs/html/
 %{_bindir}/%{name}-test
 %{_includedir}/%{name}/
 %{_libdir}/*.so

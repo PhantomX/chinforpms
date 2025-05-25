@@ -181,6 +181,7 @@ jamesdsp
 jazz2-ressurection
 -jdupes
 joy2key
+kddockwidgets
 kdocker
 keepassxc
 -kernel-tools
@@ -195,7 +196,7 @@ librashader
 libstrangle
 -liveprogide
 -linux-steam-integration
-lunasvg_ds
+-lunasvg_ds
 lunzip
 -lutris
 -lzip
@@ -234,6 +235,7 @@ perl-rename
 phantomjs
 pipe-viewer
 playgsf
+plutosvg_ds
 plzip
 protontricks
 ps3iso-utils
@@ -284,6 +286,7 @@ soundtouch_ds
 spirv-cross
 ss-save-parser
 -steamtinkerlaunch
+tde2e
 thrash-protect
 tyrian-data
 unbound-chroot
@@ -310,7 +313,7 @@ wxmp3gain
 wxmp3val
 -ueberzug
 uksmd
-unshield
+-unshield
 -v4l-utils
 winetricks
 xarchiver

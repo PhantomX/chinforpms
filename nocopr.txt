@@ -4,6 +4,7 @@ aacgain
 ares
 audacious-plugins-freeworld
 -authy
+azahar
 bh-fonts
 binkplayer
 blastem-bindata
@@ -12,7 +13,7 @@ bsnes
 cdrtools
 cemu
 chinforpms-fake-packages
-citra
+-citra
 citron
 -cowsrevenge
 -czkawka
@@ -23,6 +24,7 @@ dbeaver-ce
 duckstation
 duckstation_chtdb
 dynarmic
+eden
 f5cli
 f5vpn
 f5vpn-filesystem
@@ -89,7 +91,7 @@ supermodel
 -teamviewer
 telegram-desktop
 tg_owt
-torzu
+-torzu
 tush
 -uasm
 vasm
@@ -107,5 +109,6 @@ vvvvvv-data
 -wps-office
 -yabause
 -yggdrasil
+ymir
 -yuzu
 zoom

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop">
-  <id type="desktop">ppsspp.desktop</id>
+  <id type="desktop">ppsspp-qt.desktop</id>
   <metadata_license>CC0-1.0</metadata_license>
   <summary>A PSP emulator</summary>
   <name>PPSSPP</name>
@@ -12,11 +12,11 @@
   </categories>
   <description>
     <p>
-       PPSSPP - a fast and portable PSP emulator.
+       PPSSPP - a fast and portable PSP emulator with Qt5 frontend wrapper.
     </p>  
   </description>
   <releases>
-    <release version="1.10.3" date="2020-07-12">
+    <release version="1.10.2" date="2020-07-07">
       <description>
         <p>This is the current stable release</p>
       </description>

@@ -346,12 +346,12 @@ sed \
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/bin/%{appbin} %{buildroot}%{_bindir}/%{appbin}
+install -pm0755 %{_vpath_builddir}/bin/%{appbin} %{buildroot}%{_bindir}/%{appbin}
 
-mv %{__cmake_builddir}/bin/resources/docs _docs
+mv %{_vpath_builddir}/bin/resources/docs _docs
 
 mkdir -p %{buildroot}%{_datadir}/%{appres}
-cp -r %{__cmake_builddir}/bin/{resources,translations} \
+cp -r %{_vpath_builddir}/bin/{resources,translations} \
   %{buildroot}%{_datadir}/%{appres}/
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt

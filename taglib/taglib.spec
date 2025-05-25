@@ -98,7 +98,7 @@ export CXXFLAGS+=" -std=c++11"
 
 %if %{with doc}
 rm -fr %{apidocdir} ; mkdir %{apidocdir}
-cp -a %{__cmake_builddir}/doc/html/ %{apidocdir}/
+cp -a %{_vpath_builddir}/doc/html/ %{apidocdir}/
 ln -s html/index.html %{apidocdir}
 find %{apidocdir} -name '*.md5' | xargs rm -fv
 %endif
@@ -109,7 +109,7 @@ export PKG_CONFIG_PATH=%{buildroot}%{_libdir}/pkgconfig
 test "$(pkg-config --modversion taglib)" = "%{version}"
 test "$(pkg-config --modversion taglib_c)" = "%{version}"
 %if %{with tests}
-#ln -s ../../tests/data %{__cmake_builddir}/tests/
+#ln -s ../../tests/data %{_vpath_builddir}/tests/
 #LD_LIBRARY_PATH=%{buildroot}%{_libdir}:$LD_LIBRARY_PATH \
 %cmake_build -- check
 %endif

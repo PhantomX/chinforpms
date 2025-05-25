@@ -319,10 +319,10 @@ echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
+install -pm0755 %{_vpath_builddir}/bin/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
 
 mkdir -p %{buildroot}%{_datadir}/%{name}
-cp -r %{__cmake_builddir}/bin/{resources,translations} \
+cp -r %{_vpath_builddir}/bin/{resources,translations} \
   %{buildroot}%{_datadir}/%{name}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt

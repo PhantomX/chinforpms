@@ -440,8 +440,8 @@ sed \
   -DDISTRIBUTOR='%{distributor}' \
 %{nil}
 
-if ! grep SCM_REV_STR %{__cmake_builddir}/Source/Core/Common/scmrev.h ;then
-  cp -f Source/Core/Common/scmrev.h.in %{__cmake_builddir}/Source/Core/Common/scmrev.h
+if ! grep SCM_REV_STR %{_vpath_builddir}/Source/Core/Common/scmrev.h ;then
+  cp -f Source/Core/Common/scmrev.h.in %{_vpath_builddir}/Source/Core/Common/scmrev.h
 fi
 
 %cmake_build

@@ -175,7 +175,7 @@ EOF
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
+install -pm0755 %{_vpath_builddir}/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}/{fonts,lang}
 

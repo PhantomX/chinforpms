@@ -245,7 +245,7 @@ install -d %{buildroot}%{_metainfodir}
 install -p -m 644 %{name}-gtk.appdata.xml %{buildroot}%{_metainfodir}/
 
 %if %{with qt}
-install -pm0755 qt/%{__cmake_builddir}/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
+install -pm0755 qt/%{_vpath_builddir}/%{name}-qt %{buildroot}%{_bindir}/%{name}-qt
 
 install -p -m 644 %{name}-qt.appdata.xml %{buildroot}%{_metainfodir}/
 

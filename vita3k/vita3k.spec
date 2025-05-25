@@ -237,6 +237,7 @@ ExclusiveArch:  x86_64
 %endif
 
 BuildRequires:  cmake
+BuildRequires:  make
 BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt%{?llvm_pkgver}
@@ -507,8 +508,8 @@ chmod +x ffmpeg-linux_*.sh
 %make_build
 make install
 popd
-mkdir -p %{__cmake_builddir}/external/ffmpeg/lib
-mv external/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/external/ffmpeg/lib/
+mkdir -p %{_vpath_builddir}/external/ffmpeg/lib
+mv external/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/external/ffmpeg/lib/
 %endif
 
 %cmake \
@@ -528,10 +529,10 @@ mv external/ffmpeg/include/linux/x86_64/lib/*.a %{__cmake_builddir}/external/ffm
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{__cmake_builddir}/bin/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
+install -pm0755 %{_vpath_builddir}/bin/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
 
 mkdir -p %{buildroot}%{_datadir}/%{pkgname}/data
-cp -rp %{__cmake_builddir}/bin/{data,lang,shaders-builtin} \
+cp -rp %{_vpath_builddir}/bin/{data,lang,shaders-builtin} \
   %{buildroot}%{_datadir}/%{pkgname}/
 
 rm -f %{buildroot}%{_datadir}/%{pkgname}/data/fonts/*

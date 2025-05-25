@@ -1,6 +1,6 @@
-%global commit 912227f7e02090cbc564a5a626fb2517c0219c47
+%global commit a072b861a213f3caab1184427aa10105d7b5086e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241010
+%global date 20250504
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -15,7 +15,7 @@ BuildArch:      noarch
 
 Name:           asbru-cm
 Version:        6.4.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPL-3.0-or-later
@@ -157,7 +157,7 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
-* Tue Dec 17 2024 Phantom X - 6.4.1-3.20241010git912227f
+* Tue Dec 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-3.20241010git912227f
 - Fix GTK_OVERLAY_SCROLLING
 
 * Thu Dec 01 2022 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-1.20221112git8dce568

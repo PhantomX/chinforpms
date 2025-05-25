@@ -12,9 +12,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 732d05c2c136856a3f173574233a2431a015a6f5
+%global commit 3a41bd846f432b3aee9302992916a9b84c3dc7a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250508
+%global date 20250522
 %bcond_without snapshot
 
 # Enable Qt build
@@ -80,16 +80,26 @@
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
+%global vercommit %(c=%{commit}; echo ${c:0:10})
 %endif
 
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
-%global vma_ver 3.2.1
+%global vma_ver 3.3.0
+
+%if %{with qt}
+%global binname PPSSPPQt
+%else
+%global binname PPSSPPSDL
+%endif
+
+%global sver %%(echo %{version} | cut -d. -f-3)
+%global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           ppsspp
-Version:        1.18.1
-Release:        108%{?dist}
+Version:        1.18.1.1976
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -122,7 +132,8 @@ Source11:       https://github.com/miniupnp/%{srcname11}/archive/%{commit11}/%{s
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source100:       %{name}.appdata.xml
-Source101:       Makefile
+Source101:       %{name}-qt.appdata.xml
+Source102:       Makefile
 
 Patch0:         0001-Disable-check-for-new-versions.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
@@ -142,6 +153,8 @@ ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
 ExcludeArch: %{power64}
 
 BuildRequires:  cmake
+BuildRequires:  make
+BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
@@ -150,7 +163,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  desktop-file-utils
-BuildRequires:  make
+BuildRequires:  libappstream-glib
 %if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
@@ -304,18 +317,19 @@ cp ext/miniupnp/LICENSE ext/LICENSE.miniupnp
 %endif
 
 sed -i \
-  -e '/set(GIT_VERSION\b /s|".*"|"%{version}-%{release}"|g' \
+%if %{with snapshot}
+  -e '/set(GIT_VERSION\b /s|".*"|"v%{sver}-%{sbuild}-g%{vercommit}"|g' \
+%else
+  -e '/set(GIT_VERSION\b /s|".*"|"v%{sver}"|g' \
+%endif
   -e '/find_package/s|Git|\0_disabled|g' \
-  -e "/COMMAND/s|\${GIT_EXECUTABLE} describe --always|echo \"%{version}-%{release}\"|g" \
-  git-version.cmake
+  -i git-version.cmake
 
 sed \
   -e 's|"unknown"|"%{shortcommit7}"|' \
   -e 's| unknown | %{shortcommit7} |' \
   -e 's|GIT_FOUND|GIT_FOUND_DISABLED|g' \
   -i ext/SPIRV-Cross/CMakeLists.txt
-
-cp Qt/PPSSPPQt.desktop %{name}.desktop
 
 sed \
   -e '/Wno-deprecated-register/d' \
@@ -360,6 +374,7 @@ sed \
 %build
 pushd ext/native/tools
 %cmake \
+  -G Ninja \
 %{nil}
 
 popd
@@ -387,6 +402,7 @@ popd
 %endif
 
 %cmake \
+  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
 %if %{with egl}
@@ -442,14 +458,6 @@ popd
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_libdir}
 
-rm -f %{buildroot}/usr/share/applications/*.desktop
-
-%if %{with qt}
-  mv %{buildroot}%{_bindir}/PPSSPPQt %{buildroot}%{_bindir}/%{name}
-%else
-  mv %{buildroot}%{_bindir}/PPSSPPSDL %{buildroot}%{_bindir}/%{name}
-%endif
-
 install -pm0755 ext/native/tools/%{_vpath_builddir}/build/{atlastool,zimtool} \
   %{buildroot}%{_bindir}/
 
@@ -465,34 +473,43 @@ ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   install -pm 644 Qt/languages/*.ts %{buildroot}%{_datadir}/%{name}/assets/lang/
 %endif
 
-mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install --mode 0644 \
-  --dir %{buildroot}%{_datadir}/applications \
+desktop-file-edit \
+%if %{with qt}
+  --set-name="PPSSPP (Qt)" \
+%else
+  --set-name="PPSSPP (SDL)" \
+%endif
   --set-key="Exec" \
-  --set-value="%{name}" \
+  --set-value="%{binname}" \
   --set-key="StartupNotify" \
   --set-value="false" \
   --set-key="StartupWMClass" \
-  --set-value="PPSSPP" \
-  --add-category="Game" \
-  --add-category="Emulator" \
-  --set-icon="%{name}" \
-  --remove-key="Encoding" \
-  --remove-key="Version" \
-  --remove-key="X-Window-Icon" \
-  %{name}.desktop
+  --set-value="%{binname}" \
+  --remove-key="MimeType" \
+  %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm 0644 %{S:100} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -pm 0644 \
+%if %{with qt}
+  %{S:101} \
+%else
+  %{S:100} \
+%endif
+  %{buildroot}%{_metainfodir}/%{binname}.appdata.xml
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_metainfodir}/%{binname}.appdata.xml
 
 
 %files
 %license LICENSE.TXT ext/{COPYING,LICENSE}.*
 %doc README.md
-%{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
-%{_datadir}/mime/packages/*.xml
-%{_metainfodir}/*.xml
+%{_bindir}/%{binname}
+%{_datadir}/applications/%{binname}.desktop
+%{_metainfodir}/%{binname}.appdata.xml
 
 
 %files data
@@ -500,6 +517,7 @@ install -pm 0644 %{S:100} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 %license LICENSE.TXT
 %{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/apps/*
+%{_datadir}/mime/packages/%{name}.xml
 
 
 %files tools
@@ -510,6 +528,9 @@ install -pm 0644 %{S:100} %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %changelog
+* Fri May 23 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1.1976-100.20250522git3a41bd8
+- Use official binary names
+
 * Wed Nov 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1-100.20241106git2891f63
 - 1.18.1
 
