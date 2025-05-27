@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.14.8
+%define specrpmversion 6.15.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -209,8 +209,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global graysky2_id 10947ddd06191fd9a6a3e674fa749a2eca0ec298
-%global opensuse_id 4a6fc19457acea6a78d2f2ae3bfaddea01e96081
+%global opensuse_id ed9faca615e4dcfd32619c055c65df738498653b
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -247,6 +246,8 @@ Summary: The Linux kernel
 %define with_arm64_64k %{?_without_arm64_64k:0} %{?!_without_arm64_64k:1}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
 %define with_realtime  %{?_with_realtime:1} %{?!_with_realtime:0}
+# kernel-rt-64k (aarch64 RT kernel with 64K page_size)
+%define with_realtime_arm64_64k %{?_without_realtime_arm64_64k:0} %{?!_without_realtime_arm64_64k:1}
 # kernel-automotive (x86_64 and aarch64 with PREEMPT_RT enabled - currently off by default)
 %define with_automotive %{?_with_automotive:1} %{?!_with_automotive:0}
 
@@ -292,6 +293,8 @@ Summary: The Linux kernel
 %define with_rtonly    %{?_with_rtonly:1} %{?!_with_rtonly:0}
 # Only build the automotive kernel (--with automotiveonly):%
 %define with_automotiveonly %{?_with_automotiveonly:1} %{?!_with_automotiveonly:0}
+# Only build the tools package
+%define with_toolsonly %{?_with_toolsonly:1} %{?!_with_toolsonly:0}
 # Control whether we perform a compat. check against published ABI.
 %define with_kabichk   %{?_without_kabichk:0} %{?!_without_kabichk:1}
 # Temporarily disable kabi checks until RC.
@@ -327,14 +330,10 @@ Summary: The Linux kernel
 # gcov support
 %define with_gcov %{?_with_gcov:1}%{?!_with_gcov:0}
 
-#
-# ipa_clone support
-%define with_ipaclones %{?_without_ipaclones:0} %{?!_without_ipaclones:1}
-
 # Want to build a vanilla kernel build without any non-upstream patches?
 %define with_vanilla %{?_with_vanilla:1} %{?!_with_vanilla:0}
 
-%ifarch x86_64 aarch64
+%ifarch x86_64 aarch64 riscv64
 %define with_efiuki %{?_without_efiuki:0} %{?!_without_efiuki:1}
 %else
 %define with_efiuki 0
@@ -352,12 +351,11 @@ Summary: The Linux kernel
 # Kernel headers are being split out into a separate package
 %define with_headers 0
 %define with_cross_headers 0
-# no ipa_clone for now
-%define with_ipaclones 0
 # no stablelist
 %define with_kernel_abi_stablelists 0
 %define with_arm64_64k 0
 %define with_realtime 0
+%define with_realtime_arm64_64k 0
 %define with_automotive 0
 %endif
 
@@ -379,8 +377,6 @@ Summary: The Linux kernel
 %global clang_make_opts %{clang_make_opts} LLVM=1
 %endif
 %global make_opts %{make_opts} %{clang_make_opts}
-# clang does not support the -fdump-ipa-clones option
-%global with_ipaclones 0
 %endif
 
 # turn off debug kernel and kabichk for gcov builds
@@ -396,16 +392,6 @@ Summary: The Linux kernel
 # turn off kABI DWARF-based check if we're generating the base dataset
 %if %{with_kabidw_base}
 %define with_kabidwchk 0
-%endif
-
-# kpatch_kcflags are extra compiler flags applied to base kernel
-# -fdump-ipa-clones is enabled only for base kernels on selected arches
-%if %{with_ipaclones}
-%ifarch x86_64 ppc64le
-%define kpatch_kcflags -fdump-ipa-clones
-%else
-%define with_ipaclones 0
-%endif
 %endif
 
 %define make_target bzImage
@@ -446,7 +432,6 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_ipaclones 0
 %endif
 
 # if requested, only build debug kernel
@@ -458,12 +443,12 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_ipaclones 0
 %endif
 
 # if requested, only build realtime kernel
 %if %{with_rtonly}
 %define with_realtime 1
+%define with_realtime_arm64_64k 1
 %define with_automotive 0
 %define with_up 0
 %define with_debug 0
@@ -474,7 +459,6 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define with_ipaclones 0
 %define with_headers 0
 %define with_efiuki 0
 %define with_zfcpdump 0
@@ -493,6 +477,33 @@ Summary: The Linux kernel
 %define with_selftests 1
 %endif
 
+# if requested, only build tools
+%if %{with_toolsonly}
+%define with_tools 1
+%define with_up 0
+%define with_base 0
+%define with_debug 0
+%define with_realtime 0
+%define with_realtime_arm64_64k 0
+%define with_arm64_16k 0
+%define with_arm64_64k 0
+%define with_automotive 0
+%define with_cross_headers 0
+%define with_doc 0
+%define with_selftests 0
+%define with_headers 0
+%define with_efiuki 0
+%define with_zfcpdump 0
+%define with_vdso_install 0
+%define with_kabichk 0
+%define with_kabidwchk 0
+%define with_kabidw_base 0
+%define with_kernel_abi_stablelists 0
+%define with_selftests 0
+%define with_vdso_install 0
+%define with_configchecks 0
+%endif
+
 # RT and Automotive kernels are only built on x86_64 and aarch64
 %ifnarch x86_64 aarch64
 %define with_realtime 0
@@ -507,6 +518,7 @@ Summary: The Linux kernel
 
 # automotive does not support the following variants
 %define with_realtime 0
+%define with_realtime_arm64_64k 0
 %define with_arm64_16k 0
 %define with_arm64_64k 0
 %define with_efiuki 0
@@ -519,7 +531,6 @@ Summary: The Linux kernel
 %define with_kabichk 0
 %define with_kernel_abi_stablelists 0
 %define with_kabidw_base 0
-%define with_ipaclones 0
 %endif
 
 
@@ -587,6 +598,7 @@ Summary: The Linux kernel
 %ifnarch aarch64
 %define with_arm64_16k 0
 %define with_arm64_64k 0
+%define with_realtime_arm64_64k 0
 %endif
 
 %if 0%{?fedora}
@@ -664,6 +676,7 @@ Summary: The Linux kernel
 %define with_arm64_16k 0
 %define with_arm64_64k 0
 %define with_realtime 0
+%define with_realtime_arm64_64k 0
 %define with_automotive 0
 
 %define with_debuginfo 0
@@ -727,6 +740,11 @@ Summary: The Linux kernel
 %else
 %define with_arm64_64k_base 0
 %endif
+%if %{with_realtime_arm64_64k} && %{with_base}
+%define with_realtime_arm64_64k_base 1
+%else
+%define with_realtime_arm64_64k_base 0
+%endif
 
 #
 # Packages that need to be installed before the kernel is, because the %%post
@@ -737,7 +755,7 @@ Summary: The Linux kernel
 
 
 Name: %{package_name}
-License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
+License: ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-2-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-only WITH Linux-syscall-note) OR CDDL-1.0) AND ((GPL-2.0-only WITH Linux-syscall-note) OR Linux-OpenIB) AND ((GPL-2.0-only WITH Linux-syscall-note) OR MIT) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR BSD-3-Clause) AND ((GPL-2.0-or-later WITH Linux-syscall-note) OR MIT) AND 0BSD AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0) AND BSD-3-Clause AND BSD-3-Clause-Clear AND CC0-1.0 AND GFDL-1.1-no-invariants-or-later AND GPL-1.0-or-later AND (GPL-1.0-or-later OR BSD-3-Clause) AND (GPL-1.0-or-later WITH Linux-syscall-note) AND GPL-2.0-only AND (GPL-2.0-only OR Apache-2.0) AND (GPL-2.0-only OR BSD-2-Clause) AND (GPL-2.0-only OR BSD-3-Clause) AND (GPL-2.0-only OR CDDL-1.0) AND (GPL-2.0-only OR GFDL-1.1-no-invariants-or-later) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-only) AND (GPL-2.0-only OR GFDL-1.2-no-invariants-or-later) AND (GPL-2.0-only WITH Linux-syscall-note) AND GPL-2.0-or-later AND (GPL-2.0-or-later OR BSD-2-Clause) AND (GPL-2.0-or-later OR BSD-3-Clause) AND (GPL-2.0-or-later OR CC-BY-4.0) AND (GPL-2.0-or-later WITH GCC-exception-2.0) AND (GPL-2.0-or-later WITH Linux-syscall-note) AND ISC AND LGPL-2.0-or-later AND (LGPL-2.0-or-later OR BSD-2-Clause) AND (LGPL-2.0-or-later WITH Linux-syscall-note) AND LGPL-2.1-only AND (LGPL-2.1-only OR BSD-2-Clause) AND (LGPL-2.1-only WITH Linux-syscall-note) AND LGPL-2.1-or-later AND (LGPL-2.1-or-later WITH Linux-syscall-note) AND (Linux-OpenIB OR GPL-2.0-only) AND (Linux-OpenIB OR GPL-2.0-only OR BSD-2-Clause) AND Linux-man-pages-copyleft AND MIT AND (MIT OR Apache-2.0) AND (MIT OR GPL-2.0-only) AND (MIT OR GPL-2.0-or-later) AND (MIT OR LGPL-2.1-only) AND (MPL-1.1 OR GPL-2.0-only) AND (X11 OR GPL-2.0-only) AND (X11 OR GPL-2.0-or-later) AND Zlib AND (copyleft-next-0.3.1 OR GPL-2.0-or-later)
 URL: https://www.kernel.org/
 Version: %{specrpmversion}
 Release: %{pkg_release}
@@ -753,6 +771,7 @@ ExclusiveOS: Linux
 Requires: kernel-core-uname-r = %{KVERREL}
 Requires: kernel-modules-uname-r = %{KVERREL}
 Requires: kernel-modules-core-uname-r = %{KVERREL}
+Requires: ((kernel-modules-extra-uname-r = %{KVERREL}) if kernel-modules-extra-matched)
 Provides: installonlypkg(kernel)
 %endif
 
@@ -762,10 +781,12 @@ Provides: installonlypkg(kernel)
 #
 BuildRequires: kmod, bash, coreutils, tar, git-core, which
 BuildRequires: bzip2, xz, findutils, m4, perl-interpreter, perl-Carp, perl-devel, perl-generators, make, diffutils, gawk, %compression
-BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
-%if 0%{?fedora}
-BuildRequires: rust, rust-src, bindgen, rustfmt
+# Kernel EFI/Compression set by CONFIG_KERNEL_ZSTD
+%ifarch x86_64 aarch64 riscv64
+BuildRequires: zstd
 %endif
+BuildRequires: gcc, binutils, redhat-rpm-config, hmaccalc, bison, flex, gcc-c++
+BuildRequires: rust, rust-src, bindgen, rustfmt, clippy
 BuildRequires: net-tools, hostname, bc, elfutils-devel
 BuildRequires: dwarves
 BuildRequires: python3
@@ -806,6 +827,9 @@ BuildRequires: libcap-devel libcap-ng-devel
 BuildRequires: python3-docutils
 BuildRequires: libtraceevent-devel
 BuildRequires: libtracefs-devel
+BuildRequires: libbpf-devel
+BuildRequires: bpftool
+BuildRequires: clang
 
 %ifnarch s390x
 BuildRequires: pciutils-devel
@@ -817,13 +841,14 @@ BuildRequires: libnl3-devel
 
 %if %{with_tools} && %{with_ynl}
 BuildRequires: python3-pyyaml python3-jsonschema python3-pip python3-setuptools >= 61
+BuildRequires: (python3-wheel if python3-setuptools < 70)
 %endif
 
 %if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
 %endif
 %if %{with_selftests}
-BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel
+BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel python3-docutils python3-jsonschema
 %ifarch x86_64 riscv64
 BuildRequires: lld
 %endif
@@ -873,12 +898,15 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 %define cross_opts CROSS_COMPILE=%{_build_arch}-linux-gnu-
 %define __strip %{_build_arch}-linux-gnu-strip
 
+%if 0%{?fedora} && 0%{?fedora} <= 41
 # Work around find-debuginfo for cross builds.
 # find-debuginfo doesn't support any of CROSS options (RHEL-21797),
 # and since debugedit > 5.0-16.el10, or since commit
 #   dfe1f7ff30f4 ("find-debuginfo.sh: Exit with real exit status in parallel jobs")
-# it now aborts and build fails.
+# it now aborts on failure and build fails.
+# debugedit-5.1-5 in F42 added support to override tools with target versions.
 %undefine _include_gdb_index
+%endif
 %endif
 
 # These below are required to build man pages
@@ -1089,25 +1117,29 @@ Source301: kernel-kabi-dw-%{kabiversion}.tar.xz
 %if 0%{include_rhel}
 Source474: %{name}-aarch64-rt-rhel.config
 Source475: %{name}-aarch64-rt-debug-rhel.config
-Source476: %{name}-x86_64-rt-rhel.config
-Source477: %{name}-x86_64-rt-debug-rhel.config
+Source476: %{name}-aarch64-rt-64k-rhel.config
+Source477: %{name}-aarch64-rt-64k-debug-rhel.config
+Source478: %{name}-x86_64-rt-rhel.config
+Source479: %{name}-x86_64-rt-debug-rhel.config
 %endif
 %if 0%{include_fedora}
-Source478: %{name}-aarch64-rt-fedora.config
-Source479: %{name}-aarch64-rt-debug-fedora.config
-Source480: %{name}-x86_64-rt-fedora.config
-Source481: %{name}-x86_64-rt-debug-fedora.config
-Source482: %{name}-riscv64-rt-fedora.config
-Source483: %{name}-riscv64-rt-debug-fedora.config
+Source480: %{name}-aarch64-rt-fedora.config
+Source481: %{name}-aarch64-rt-debug-fedora.config
+Source482: %{name}-aarch64-rt-64k-fedora.config
+Source483: %{name}-aarch64-rt-64k-debug-fedora.config
+Source484: %{name}-x86_64-rt-fedora.config
+Source485: %{name}-x86_64-rt-debug-fedora.config
+Source486: %{name}-riscv64-rt-fedora.config
+Source487: %{name}-riscv64-rt-debug-fedora.config
 %endif
 %endif
 
 %if %{include_automotive}
 # automotive config files
-Source484: %{name}-aarch64-automotive-rhel.config
-Source485: %{name}-aarch64-automotive-debug-rhel.config
-Source486: %{name}-x86_64-automotive-rhel.config
-Source487: %{name}-x86_64-automotive-debug-rhel.config
+Source488: %{name}-aarch64-automotive-rhel.config
+Source489: %{name}-aarch64-automotive-debug-rhel.config
+Source490: %{name}-x86_64-automotive-rhel.config
+Source491: %{name}-x86_64-automotive-debug-rhel.config
 %endif
 
 # Sources for kernel-tools
@@ -1122,8 +1154,7 @@ Source3001: kernel-local
 Source3002: Patchlist.changelog
 %endif
 
-# This file is intentionally left empty in the stock kernel. Its a nicety
-# added for those wanting to do custom rebuilds with altered config opts.
+# Extra CPU optimization settings
 Source3011: kernel-local-cpu-tune
 Source3012: kernel-local-cpu-native
 Source3013: kernel-local-cpu-generic
@@ -1169,109 +1200,73 @@ Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
 Patch2001: %{zen_url}/commit/c565850b129d2b7ddda91f5a5658fc4e765083b9.patch#/zen-v%{patchversion}-sauce-c565850.patch
 Patch2002: %{zen_url}/commit/2b801ae725ae05be994d374efdce8fc2e828687f.patch#/zen-v%{patchversion}-sauce-2b801ae.patch
 
-# Add additional cpu gcc optimization support
-# https://github.com/graysky2/kernel_gcc_patch
-Patch6000: https://github.com/graysky2/kernel_compiler_patch/raw/%{graysky2_id}/more-ISA-levels-and-uarches-for-kernel-6.1.79+.patch
-Patch6001: 0001-kbuild-6.12-adopt-proposed-upstream-change-for-gener.patch
+# Add native cpu gcc optimization support
+Patch6000: %{pf_url}/79d1109371ca4937be5123218f12409a29d0debc.patch#/pf-cb-79d1109.patch
+Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 
 Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
-Patch6800:  %{kernel_url}/?id=4feda8f53f693dc8c8de528d3f12cf3226cee9fd#/kernel-stable-revert-4feda8f.patch
-Patch6801:  0001-zstd-Increase-DYNAMIC_BMI2-GCC-version-cutoff-from-4.patch
-Patch6802:  %{kernel_url}/?id=399ec9ca8fc4999e676ff89a90184ec40031cf59#/kernel-stable-revert-399ec9c.patch
 # archlinux
-Patch6950:  %{pf_url}/e7f451718bb835fec6963b2b8cf1765354af21a0.patch#/pf-cb-e7f4517.patch
-Patch6951:  %{pf_url}/99795627891df0d4995ad425a146316a391974a7.patch#/pf-cb-9979562.patch
-Patch6952:  %{pf_url}/3dd2365096831da06f787449d851c9eb621a4f4c.patch#/pf-cb-3dd2365.patch
+Patch6950:  %{pf_url}/e3ebed7db7738b6d7198adb681cf786c12635723.patch#/pf-cb-e3ebed7.patch
+Patch6951:  %{pf_url}/9c8e2d8403dd500b95018b582fccb9ae452ec934.patch#/pf-cb-9c8e2d8.patch
+Patch6952:  %{pf_url}/00c04ed66dc57f790b396e94c0a23b1beffff7f9.patch#/pf-cb-00c04ed.patch
+# kbuild
+Patch7000:  %{pf_url}/44bd804ed09bc22758cee2ba85ea7643b8ac4bc8.patch#/pf-cb-44bd804.patch
+Patch7001:  %{pf_url}/0adf8d408f04c252f753348039cb459e5e155911.patch#/pf-cb-0adf8d4.patch
 # bbr3
-Patch7050:  %{pf_url}/1032c2581705e5c7fe8d6cdc814fead13f56161a.patch#/pf-cb-1032c25.patch
+Patch7050:  %{pf_url}/c38881e847beba8ffcaf4acd270ad748c107d2e1.patch#/pf-cb-c38881e.patch
 # zstd
-Patch7200:  %{pf_url}/ba12de73081b7f9b43ceb61ac6e7641dee9ab6e5.patch#/pf-cb-ba12de7.patch
-Patch7201:  %{pf_url}/9136ff0a565678825be43639b1483d37412d2b06.patch#/pf-cb-9136ff0.patch
 # v4l2loopback
-Patch7230:  %{pf_url}/d9e1100409c37cac22bb90a990979e5de6517854.patch#/pf-cb-d9e1100.patch
-Patch7231:  %{pf_url}/fbebc8bfed4f1f78548bca863074385f436872ff.patch#/pf-cb-fbebc8b.patch
+Patch7230:  %{pf_url}/fc337cc7c794913a5a1fded14b1421cf2613a5b7.patch#/pf-cb-fc337cc.patch
 # cpuidle
-Patch7240:  %{pf_url}/0b8c59d2535a064d2872f854a3baf28e166bc931.patch#/pf-cb-0b8c59d.patch
+Patch7240:  %{pf_url}/3a440104dbb8f2dcb56fa252a52b1bb75d80686b.patch#/pf-cb-3a44010.patch
 # crypto
-Patch7300:  %{pf_url}/65f5c4283d459b2f0d3dc3e240e3f8477dd7f9b3.patch#/pf-cb-65f5c42.patch
-Patch7301:  %{pf_url}/af7a1b33f14edf4e52739a4bd5f2098e28390885.patch#/pf-cb-af7a1b3.patch
-# fixes 
-Patch7400:  %{pf_url}/feda0c7ccc8b7cc1afbba6344beb959b53c4ff79.patch#/pf-cb-feda0c7.patch
-Patch7401:  %{pf_url}/8b6785799e428cd3419895b8e00e6c8ede08505c.patch#/pf-cb-8b67857.patch
-Patch7402:  %{pf_url}/7e7450013bcbef7b597e400f9d20336242fe2fad.patch#/pf-cb-7e74500.patch
-Patch7403:  %{pf_url}/4c4678a43371ce88e28195d4b3bb57818c257ed8.patch#/pf-cb-4c4678a.patch
-Patch7404:  %{pf_url}/ec27f834939fd76d5bd05d83f67149367d67c243.patch#/pf-cb-ec27f83.patch
-Patch7405:  %{pf_url}/fa0df1c541e34ca680fced62d640794f81bb09da.patch#/pf-cb-fa0df1c.patch
-Patch7406:  %{pf_url}/3fe6c3436d6683948608547d9ebc211c6e78c551.patch#/pf-cb-3fe6c34.patch
-Patch7407:  %{pf_url}/c3781ee15fb846bc6ad09a09baa2ced404e74e47.patch#/pf-cb-c3781ee.patch
-Patch7408:  %{pf_url}/718f8607dabc031407cfb3ddd73de116f942c6e5.patch#/pf-cb-718f860.patch
+# fixes
+Patch7400:  %{pf_url}/f5a39f35189347791fc189d7a8e6f6ca512bce1e.patch#/pf-cb-f5a39f3.patch
 # fs
 # ovpn-dco
-Patch7600:  %{pf_url}/0e10102d2a1b8237cc19d65bcffc228b1bd84e82.patch#/pf-cb-0e10102.patch
-Patch7601:  %{pf_url}/48867a731bffecf22555175e24c1611f550ed68c.patch#/pf-cb-48867a7.patch
-Patch7602:  %{pf_url}/da206a69fbd85e53856807e3ebe976fdcb4cf5f8.patch#/pf-cb-da206a6.patch
-Patch7603:  %{pf_url}/a06f17842048f1f8aeb4133cf5db941d7c66af3c.patch#/pf-cb-a06f178.patch
-Patch7604:  %{pf_url}/cb7c70ffe6c2a5e00dbf8a9172aa659f65537f4f.patch#/pf-cb-cb7c70f.patch
-Patch7605:  %{pf_url}/e714f76f91136d806faa76576f685f014486745d.patch#/pf-cb-e714f76.patch
-Patch7606:  %{pf_url}/457901a75573ab12f1223818f6bf97f8b8ccfc01.patch#/pf-cb-457901a.patch
-Patch7607:  %{pf_url}/7f4ea05f8a73fa009f976baf0b64c6a1a09932ba.patch#/pf-cb-7f4ea05.patch
-Patch7608:  %{pf_url}/f563d756d62641a054ea43f0f1d8ddb6ed9024b4.patch#/pf-cb-f563d75.patch
-Patch7609:  %{pf_url}/34bb38f86ae2a138531f8904f7c9a5b2c0101ca8.patch#/pf-cb-34bb38f.patch
-Patch7610:  %{pf_url}/ad6403b63415173dde015bb1139da66cdf0c9717.patch#/pf-cb-ad6403b.patch
-Patch7611:  %{pf_url}/c1e0f492ce6d04e56b7341e23cb4a538b33cb0ae.patch#/pf-cb-c1e0f49.patch
-Patch7612:  %{pf_url}/40503153147f9632e28782a8a3a685cd41e3d1b6.patch#/pf-cb-4050315.patch
-Patch7613:  %{pf_url}/c1fe20aafae54b89eaa3b70dcb6830cd0b0a41e8.patch#/pf-cb-c1fe20a.patch
-Patch7614:  %{pf_url}/3853ec2fae9342137392967c78097345ab34dc23.patch#/pf-cb-3853ec2.patch
-Patch7615:  %{pf_url}/73f1677de879b6f5745e9960ec9aff6a76027956.patch#/pf-cb-73f1677.patch
-Patch7616:  %{pf_url}/6258240e71688093ac189b959206eb58d9a30a33.patch#/pf-cb-6258240.patch
-Patch7617:  %{pf_url}/876dda5975a93b72bb9a742e5741807094de8ce4.patch#/pf-cb-876dda5.patch
-Patch7618:  %{pf_url}/18a744b82f5b2a0668dc7fcdf8f525482a21032e.patch#/pf-cb-18a744b.patch
-Patch7619:  %{pf_url}/c4a41b91999b45f97ead311ecce9c292609ccff3.patch#/pf-cb-c4a41b9.patch
-Patch7620:  %{pf_url}/1ad2a504673b0b001b4e2a0ac7779bbc270f2e82.patch#/pf-cb-1ad2a50.patch
-Patch7621:  %{pf_url}/edf9ab76733772ffe9f8d89ec4d390448f66f90e.patch#/pf-cb-edf9ab7.patch
-Patch7622:  %{pf_url}/87e1c2a0a2bea37af80523c770790038839639e5.patch#/pf-cb-87e1c2a.patch
-Patch7623:  %{pf_url}/910753cfd8148f82ac7e7a66955b7c867ab760fc.patch#/pf-cb-910753c.patch
-Patch7624:  %{pf_url}/b82bed34d53c144eb932b7596e7ba23c2ef33aa2.patch#/pf-cb-b82bed3.patch
-Patch7625:  %{pf_url}/00c279959c0f3630d4dd90cdc04fc9270c3630f8.patch#/pf-cb-00c2799.patch
-Patch7626:  %{pf_url}/7869d75e379ac07ab6f6d4acb07f34151c15ed99.patch#/pf-cb-7869d75.patch
-Patch7627:  %{pf_url}/99ceb66ecd70fa8dcd9f86d8f639a12e2d05f716.patch#/pf-cb-99ceb66.patch
-Patch7628:  %{pf_url}/1a7158c0add97d258b18f51d3d58d04832ec51de.patch#/pf-cb-1a7158c.patch
-Patch7629:  %{pf_url}/ebfe3347e0da7cd4d8bdb43286dd8420e25d140c.patch#/pf-cb-ebfe334.patch
-Patch7630:  %{pf_url}/fd00eaa651b0b95a0bc30d138ccaedc45e20c3f3.patch#/pf-cb-fd00eaa.patch
-Patch7631:  %{pf_url}/f60d0fae48b46244b0335261fe4a60a26c8f3a09.patch#/pf-cb-f60d0fa.patch
-Patch7632:  %{pf_url}/f017147ec984746a84d991fd12c128d6219f47c5.patch#/pf-cb-f017147.patch
-Patch7633:  %{pf_url}/9782f322e9058059e8c673af80080127f940dea2.patch#/pf-cb-9782f32.patch
-Patch7634:  %{pf_url}/c132474ba6b343726810fc912316dafb19436c74.patch#/pf-cb-c132474.patch
-Patch7635:  %{pf_url}/ba4c180001047df3dd5d0a00169e057026d2b8aa.patch#/pf-cb-ba4c180.patch
-Patch7636:  %{pf_url}/e74e42d7d48fffb40656260e5726c9addd996821.patch#/pf-cb-e74e42d.patch
-Patch7637:  %{pf_url}/449f23a32f0ac1856f197c0d4ee4312ae7f0dc93.patch#/pf-cb-449f23a.patch
-Patch7638:  %{pf_url}/aacbabdfb022876c44d37df678b714d620147c4a.patch#/pf-cb-aacbabd.patch
-Patch7639:  %{pf_url}/6f8deb91b573a8adf2920a508cbea4f3ddd31a1d.patch#/pf-cb-6f8deb9.patch
-Patch7640:  %{pf_url}/6fcf5d6df48c44a69da5bc83f76832b229130f4e.patch#/pf-cb-6fcf5d6.patch
-Patch7641:  %{pf_url}/9a6fceb0ad719f2d93246c59dc644dcdca0acf73.patch#/pf-cb-9a6fceb.patch
-Patch7642:  %{pf_url}/8c670dd33c2da6adfef5bf3c7a62795348b95c58.patch#/pf-cb-8c670dd.patch
-Patch7643:  %{pf_url}/86694268e4e6991ccc4b25969db868c8f8237586.patch#/pf-cb-8669426.patch
-Patch7644:  %{pf_url}/ccdd6171f1bb17fc458893e8ff07e9e3a9d36a73.patch#/pf-cb-ccdd617.patch
-# invlpgb
-Patch7700:  %{pf_url}/2ffeb0d8d193c35403cea13d3b7273b523631007.patch#/pf-cb-2ffeb0d.patch
-Patch7701:  %{pf_url}/aadea0887cca5739137f109eab0e1b38604c8af8.patch#/pf-cb-aadea08.patch
-Patch7702:  %{pf_url}/170f37d1499a28f7a1902e007111867c7cf0147f.patch#/pf-cb-170f37d.patch
-Patch7703:  %{pf_url}/acb5a284db4fa3dbbb246ab8fa58da0143cd68ce.patch#/pf-cb-acb5a28.patch
-Patch7704:  %{pf_url}/27bab4a6ed6ee7b7b0e2d216b8802800ef26b2ad.patch#/pf-cb-27bab4a.patch
-Patch7705:  %{pf_url}/358d71638f420efe8f7e05ce74aefe13e9320283.patch#/pf-cb-358d716.patch
-Patch7706:  %{pf_url}/7cf099de79e12d6c4949f733c8cbb241bb08f07a.patch#/pf-cb-7cf099d.patch
-Patch7707:  %{pf_url}/f9ecaaca7ac26789d7d3e0d8022b7c99599dc8a3.patch#/pf-cb-f9ecaac.patch
-Patch7708:  %{pf_url}/b56070b9f121507cabe352e03f0c534db2d5adc7.patch#/pf-cb-b56070b.patch
-Patch7709:  %{pf_url}/6d3b8545e2c3c638363fb449a99b5a6cbab87a49.patch#/pf-cb-6d3b854.patch
-Patch7710:  %{pf_url}/077e9ceb65f514ea63afc65cce86ce8677e77012.patch#/pf-cb-077e9ce.patch
-Patch7711:  %{pf_url}/1994cff363a37aff5b1232ca9f757b02ae244956.patch#/pf-cb-1994cff.patch
-Patch7712:  %{pf_url}/5932a2c8122050c4a2f71588778feb0677fe32b4.patch#/pf-cb-5932a2c.patch
-Patch7713:  %{pf_url}/0e0a5ca37a8e3b06f450f4093ba1b6d6f33c2161.patch#/pf-cb-0e0a5ca.patch
-Patch7714:  %{pf_url}/6ae491224973eb4013ee67a8c05c420f057d5fee.patch#/pf-cb-6ae4912.patch
+Patch7600:  %{pf_url}/31abde5202ca781656a8368e28939988b3353509.patch#/pf-cb-31abde5.patch
+Patch7601:  %{pf_url}/12a1be7ec89f43c58cda50a3d21607a41f8fa7b4.patch#/pf-cb-12a1be7.patch
+Patch7602:  %{pf_url}/ca1a235b92d92f774a5ec12199ed762a7ccc615f.patch#/pf-cb-ca1a235.patch
+Patch7603:  %{pf_url}/97598409cbe7ce7a74dd73da8f14868166d58df6.patch#/pf-cb-9759840.patch
+Patch7604:  %{pf_url}/b413e76ad0a59388bfc0bb6e76bc8fca9d4ed805.patch#/pf-cb-b413e76.patch
+Patch7605:  %{pf_url}/eccc42f764e5aa985c01502eb3a481da1c548d2a.patch#/pf-cb-eccc42f.patch
+Patch7606:  %{pf_url}/0764edeeb66d38a24faa02071ba67dac51147188.patch#/pf-cb-0764ede.patch
+Patch7607:  %{pf_url}/04e4162e6384b06f4c602f728afc398663fc5139.patch#/pf-cb-04e4162.patch
+Patch7608:  %{pf_url}/09ca0fc5f997a4b83c83475009f7962534873e76.patch#/pf-cb-09ca0fc.patch
+Patch7609:  %{pf_url}/58feef9b045b9d40daceea08f48893ad234d2923.patch#/pf-cb-58feef9.patch
+Patch7610:  %{pf_url}/e5fc059e4dcd6dc0a5a8c466006f755cfc11b78d.patch#/pf-cb-e5fc059.patch
+Patch7611:  %{pf_url}/6601c1f295051f6b109f93df2baa0112675cef9b.patch#/pf-cb-6601c1f.patch
+Patch7612:  %{pf_url}/15861bfef8cab2d3d76aac83a1935aaae684d757.patch#/pf-cb-15861bf.patch
+Patch7613:  %{pf_url}/9587439f99c571906f23d3d0476222aa42af24b6.patch#/pf-cb-9587439.patch
+Patch7614:  %{pf_url}/c3213ff648ac4ce7be79333bc2994f2e4c6fdba7.patch#/pf-cb-c3213ff.patch
+Patch7615:  %{pf_url}/329ff6876f91963f1d6dc553da47cf7cb2ab6e8d.patch#/pf-cb-329ff68.patch
+Patch7616:  %{pf_url}/8676f480c9344a86d1cf3272f259b5fc120e7885.patch#/pf-cb-8676f48.patch
+Patch7617:  %{pf_url}/c77122d686c4a595831683e9cceb19dc43bc48ad.patch#/pf-cb-c77122d.patch
+Patch7618:  %{pf_url}/6f194f80828b86e7246ee8067df6c651eb8d1e5e.patch#/pf-cb-6f194f8.patch
+Patch7619:  %{pf_url}/256b87a0dfe1b42004df3433f39eaa88cb9f32fd.patch#/pf-cb-256b87a.patch
+Patch7620:  %{pf_url}/20478f38fe75dc023ce0732f7dec1003a7604627.patch#/pf-cb-20478f3.patch
+Patch7621:  %{pf_url}/ac847e7ab33c43c935504242d27cddfc3d10bc9f.patch#/pf-cb-ac847e7.patch
+Patch7622:  %{pf_url}/a2de533c5ca6f1c6f8a00a70eeab19303984ce61.patch#/pf-cb-a2de533.patch
+Patch7623:  %{pf_url}/35af4c76bb8d3bbc069ec23d3b739a05d13fdb5d.patch#/pf-cb-35af4c7.patch
+Patch7624:  %{pf_url}/da2ff5d86d50dbe383d9bd49878236fb6a8d8e42.patch#/pf-cb-da2ff5d.patch
+Patch7625:  %{pf_url}/cda2ea658a330bb64bc57af47ff92d5e81546654.patch#/pf-cb-cda2ea6.patch
+Patch7626:  %{pf_url}/b067712eac2e4c32dcd4b96f98f2dd1506d39f59.patch#/pf-cb-b067712.patch
+Patch7627:  %{pf_url}/e77e7d301096545de3f1e6b53760161f4c887152.patch#/pf-cb-e77e7d3.patch
+Patch7628:  %{pf_url}/92e9af9cf91c3f0e725d8ca44e1d838750a6f9de.patch#/pf-cb-92e9af9.patch
+Patch7629:  %{pf_url}/055da7e08c687b27b8ae9a53e49012d9feec60c1.patch#/pf-cb-055da7e.patch
+Patch7630:  %{pf_url}/adf141d1090da66ec21e94445b75ade4256f6fcb.patch#/pf-cb-adf141d.patch
+Patch7631:  %{pf_url}/09f64f2fc948caf4f762733ff7d18f61552b7fb8.patch#/pf-cb-09f64f2.patch
+Patch7632:  %{pf_url}/005c9e70a88ecb892ad7d1a865d5d884ffa35fd5.patch#/pf-cb-005c9e7.patch
+Patch7633:  %{pf_url}/59b66060eff4dd26b4e5e193e5d09464eb4b6029.patch#/pf-cb-59b6606.patch
+Patch7634:  %{pf_url}/739ab1d67ab55ef495b583615d8264d1057be4ea.patch#/pf-cb-739ab1d.patch
+Patch7635:  %{pf_url}/d20657139778a38484ebb51bb543cde4bca12e64.patch#/pf-cb-d206571.patch
+Patch7636:  %{pf_url}/82e0272f36396be717f3bf50f6144ca8f4159a32.patch#/pf-cb-82e0272.patch
+Patch7637:  %{pf_url}/f3af05dd9625e32c5806f8b416d08aaeece4fdc7.patch#/pf-cb-f3af05d.patch
+Patch7638:  %{pf_url}/0c021a884379e5bf9408815fd471f9fd60ba7cb9.patch#/pf-cb-0c021a8.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1500,6 +1495,7 @@ Epoch: %{gemini}
 Summary: Real-Time Linux Analysis tools
 Requires: libtraceevent
 Requires: libtracefs
+Requires: libbpf
 %ifarch %{cpupowerarchs}
 Requires: kernel-tools-libs = %{version}-%{release}
 %endif
@@ -1633,16 +1629,11 @@ Requires: %{name}%{?1:-%{1}}-core = %{specrpmversion}-%{release}\
 This meta package is used to install matching core and devel packages for a given %{?2:%{2} }kernel.\
 %{nil}
 
-#
-# kernel-<variant>-ipaclones-internal package
-#
-%define kernel_ipaclones_package() \
-%package %{?1:%{1}-}ipaclones-internal\
-Summary: *.ipa-clones files generated by -fdump-ipa-clones for kernel%{?1:-%{1}}\
-Group: System Environment/Kernel\
-AutoReqProv: no\
-%description %{?1:%{1}-}ipaclones-internal\
-This package provides *.ipa-clones files.\
+%define kernel_modules_extra_matched_package(m) \
+%package modules-extra-matched\
+Summary: Meta package which requires modules-extra to be installed for all kernels.\
+%description modules-extra-matched\
+This meta package provides a single reference that other packages can Require to have modules-extra installed for all kernels.\
 %{nil}
 
 #
@@ -1746,32 +1737,14 @@ summary: kernel meta-package for the %{1} kernel\
 Requires: kernel-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 Requires: kernel-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
-%if "%{1}" == "rt" || "%{1}" == "rt-debug"\
+Requires: ((kernel-%{1}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{1}}) if kernel-modules-extra-matched)\
+%if "%{1}" == "rt" || "%{1}" == "rt-debug" || "%{1}" == "rt-64k" || "%{1}" == "rt-64k-debug"\
 Requires: realtime-setup\
 %endif\
 Provides: installonlypkg(kernel)\
 %description %{1}\
 The meta-package for the %{1} kernel\
 %{nil}
-
-%if %{with_realtime}
-#
-# this macro creates a kernel-rt-<subpackage>-kvm package
-# %%kernel_kvm_package <subpackage>
-#
-%define kernel_kvm_package() \
-%package %{?1:%{1}-}kvm\
-Summary: KVM modules for package kernel%{?1:-%{1}}\
-Group: System Environment/Kernel\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-kvm-%{_target_cpu} = %{version}-%{release}\
-AutoReq: no\
-%description -n kernel%{?1:-%{1}}-kvm\
-This package provides KVM modules for package kernel%{?1:-%{1}}.\
-%{nil}
-%endif
 
 #
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
@@ -1803,23 +1776,20 @@ Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{
 %endif\
 %{expand:%%kernel_debuginfo_package %{?1:%{1}}}\
 %endif\
-%if "%{1}" == "rt" || "%{1}" == "rt-debug"\
-%{expand:%%kernel_kvm_package %{?1:%{1}}} %{!?{-n}:%{1}}%{?{-n}:%{-n*}}}\
-%else \
-%if %{with_efiuki}\
+%if %{with_efiuki} && ("%{1}" != "rt" && "%{1}" != "rt-debug" && "%{1}" != "rt-64k" && "%{1}" != "rt-64k-debug")\
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
-Provides: kernel-%{?1:%{1}-}uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): systemd >= 254-1\
+Recommends: uki-direct\
 %package %{?1:%{1}-}uki-virt-addons\
 Summary: %{variant_summary} unified kernel image addons for virtual machines\
 Provides: installonlypkg(kernel)\
 Requires: kernel%{?1:-%{1}}-uki-virt = %{specrpmversion}-%{release}\
 Requires(pre): systemd >= 254-1\
-%endif\
 %endif\
 %if %{with_gcov}\
 %{expand:%%kernel_gcov_package %{?1:%{1}}}\
@@ -1927,6 +1897,29 @@ This package includes a version of the Linux kernel compiled with the
 PREEMPT_RT real-time preemption support
 %endif
 
+%if %{with_realtime_arm64_64k_base}
+%define variant_summary The Linux PREEMPT_RT kernel compiled for 64k pagesize usage
+%kernel_variant_package rt-64k
+%description rt-64k-core
+The kernel package contains a variant of the ARM64 Linux PREEMPT_RT kernel using
+a 64K page size.
+%endif
+
+%if %{with_realtime_arm64_64k} && %{with_debug}
+%define variant_summary The Linux PREEMPT_RT kernel compiled with extra debugging enabled
+%if !%{debugbuildsenabled}
+%kernel_variant_package -m rt-64k-debug
+%else
+%kernel_variant_package rt-64k-debug
+%endif
+%description rt-64k-debug-core
+The debug kernel package contains a variant of the ARM64 Linux PREEMPT_RT kernel using
+a 64K page size.
+This variant of the kernel has numerous debugging options enabled.
+It should only be installed when trying to gather additional information
+on kernel bugs, as some of these options impact performance noticably.
+%endif
+
 %if %{with_debug} && %{with_automotive}
 %define variant_summary The Linux Automotive kernel compiled with extra debugging enabled
 %kernel_variant_package automotive-debug
@@ -2026,9 +2019,7 @@ Prebuilt 64k unified kernel image for virtual machines.
 Prebuilt 64k unified kernel image addons for virtual machines.
 %endif
 
-%if %{with_ipaclones}
-%kernel_ipaclones_package
-%endif
+%kernel_modules_extra_matched_package
 
 %define log_msg() \
   { set +x; } 2>/dev/null \
@@ -2109,34 +2100,23 @@ ApplyOptionalPatch %{PATCH1}
 ApplyOptionalPatch %{PATCH999999}
 
 %if 0%{?post_factum}
+# archlinux
 ApplyPatch %{PATCH6950}
 ApplyPatch %{PATCH6951}
 ApplyPatch %{PATCH6952}
+# kbuild
+ApplyPatch %{PATCH7000}
+ApplyPatch %{PATCH7001}
 # bbr3
 ApplyPatch %{PATCH7050}
 # zstd
-ApplyPatch %{PATCH6800} -R
-ApplyPatch %{PATCH7200}
-ApplyPatch %{PATCH7201}
-ApplyPatch %{PATCH6801}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
-ApplyPatch %{PATCH7300}
-ApplyPatch %{PATCH7301}
 # fixes
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
 # fs
 # ovpn-dco
 ApplyPatch %{PATCH7600}
@@ -2178,29 +2158,6 @@ ApplyPatch %{PATCH7635}
 ApplyPatch %{PATCH7636}
 ApplyPatch %{PATCH7637}
 ApplyPatch %{PATCH7638}
-ApplyPatch %{PATCH7639}
-ApplyPatch %{PATCH7640}
-ApplyPatch %{PATCH7641}
-ApplyPatch %{PATCH7642}
-ApplyPatch %{PATCH7643}
-ApplyPatch %{PATCH7644}
-# invlpgb
-ApplyPatch %{PATCH6802} -R
-ApplyPatch %{PATCH7700}
-ApplyPatch %{PATCH7701}
-ApplyPatch %{PATCH7702}
-ApplyPatch %{PATCH7703}
-ApplyPatch %{PATCH7704}
-ApplyPatch %{PATCH7705}
-ApplyPatch %{PATCH7706}
-ApplyPatch %{PATCH7707}
-ApplyPatch %{PATCH7708}
-ApplyPatch %{PATCH7709}
-ApplyPatch %{PATCH7710}
-ApplyPatch %{PATCH7711}
-ApplyPatch %{PATCH7712}
-ApplyPatch %{PATCH7713}
-ApplyPatch %{PATCH7714}
 %endif
 
 # openSUSE
@@ -2503,12 +2460,13 @@ InitBuildVars() {
     %{log_msg "InitBuildVars: USING ARCH=$Arch"}
 
     KCFLAGS="%{?kcflags}"
+}
 
-    # add kpatch flags for base kernel
-    %{log_msg "InitBuildVars: Configure KCFLAGS"}
-    if [ "$Variant" == "" ]; then
-        KCFLAGS="$KCFLAGS%{?kpatch_kcflags: %{kpatch_kcflags}}"
-    fi
+#Build bootstrap bpftool
+BuildBpftool(){
+    export BPFBOOTSTRAP_CFLAGS=$(echo "${CFLAGS}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+    export BPFBOOTSTRAP_LDFLAGS=$(echo "${LDFLAGS}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
+    CFLAGS="" LDFLAGS="" make EXTRA_CFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_CXXFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_LDFLAGS="${BPFBOOTSTRAP_LDFLAGS}" %{?make_opts} %{?clang_make_opts} V=1 -C tools/bpf/bpftool bootstrap
 }
 
 BuildKernel() {
@@ -2601,10 +2559,10 @@ BuildKernel() {
     install -m 644 System.map $RPM_BUILD_ROOT/boot/System.map-$KernelVer
     install -m 644 System.map $RPM_BUILD_ROOT/lib/modules/$KernelVer/System.map
 
-    %{log_msg "Create initrfamfs"}
+    %{log_msg "Reserving 40MB in boot for initramfs"}
     # We estimate the size of the initramfs because rpm needs to take this size
     # into consideration when performing disk space calculations. (See bz #530778)
-    dd if=/dev/zero of=$RPM_BUILD_ROOT/boot/initramfs-$KernelVer.img bs=1M count=20
+    dd if=/dev/zero of=$RPM_BUILD_ROOT/boot/initramfs-$KernelVer.img bs=1M count=40
 
     if [ -f arch/$Arch/boot/zImage.stub ]; then
       %{log_msg "Copy zImage.stub to RPM_BUILD_ROOT"}
@@ -3168,6 +3126,9 @@ EOF
         if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
             variants_param="-r rt"
         fi
+        if [[ "$Variant" == "rt-64k" || "$Variant" == "rt-64k-debug" ]]; then
+            variants_param="-r rt-64k"
+        fi
         if [[ "$Variant" == "automotive" || "$Variant" == "automotive-debug" ]]; then
             variants_param="-r automotive"
         fi
@@ -3190,9 +3151,6 @@ EOF
         create_module_file_list "kernel" ../modules.list ../kernel${Variant:+-${Variant}}-modules.list 0 0
         create_module_file_list "internal" ../modules-internal.list ../kernel${Variant:+-${Variant}}-modules-internal.list 0 1
         create_module_file_list "kernel" ../modules-extra.list ../kernel${Variant:+-${Variant}}-modules-extra.list 0 1
-        if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
-            create_module_file_list "kvm" ../modules-rt-kvm.list ../kernel${Variant:+-${Variant}}-modules-rt-kvm.list 0 1
-        fi
 %if 0%{!?fedora:1}
         create_module_file_list "partner" ../modules-partner.list ../kernel${Variant:+-${Variant}}-modules-partner.list 1 1
 %endif
@@ -3238,10 +3196,7 @@ EOF
     if [ "$Variant" != "zfcpdump" ]; then
 	%{log_msg "Build the bootstrap bpftool to generate vmlinux.h"}
         # Build the bootstrap bpftool to generate vmlinux.h
-        export BPFBOOTSTRAP_CFLAGS=$(echo "%{__global_compiler_flags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
-        export BPFBOOTSTRAP_LDFLAGS=$(echo "%{__global_ldflags}" | sed -r "s/\-specs=[^\ ]+\/redhat-annobin-cc1//")
-        CFLAGS="" LDFLAGS="" make EXTRA_CFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_CXXFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_LDFLAGS="${BPFBOOTSTRAP_LDFLAGS}" %{?make_opts} %{?clang_make_opts} V=1 -C tools/bpf/bpftool bootstrap
-
+        BuildBpftool
         tools/bpf/bpftool/bootstrap/bpftool btf dump file vmlinux format c > $RPM_BUILD_ROOT/$DevelDir/vmlinux.h
     fi
 %endif
@@ -3284,18 +3239,6 @@ EOF
     fi
 %endif
 
-%if %{with_ipaclones}
-    %{log_msg "install IPA clones"}
-    MAXPROCS=$(echo %{?_smp_mflags} | sed -n 's/-j\s*\([0-9]\+\)/\1/p')
-    if [ -z "$MAXPROCS" ]; then
-        MAXPROCS=1
-    fi
-    if [ "$Variant" == "" ]; then
-        mkdir -p $RPM_BUILD_ROOT/$DevelDir-ipaclones
-        find . -name '*.ipa-clones' | xargs -i{} -r -n 1 -P $MAXPROCS install -m 644 -D "{}" "$RPM_BUILD_ROOT/$DevelDir-ipaclones/{}"
-    fi
-%endif
-
 %if %{with_gcov}
     popd
 %endif
@@ -3316,6 +3259,10 @@ cd linux-%{KVERREL}
 %if %{with_debug}
 %if %{with_realtime}
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
+%endif
+
+%if %{with_realtime_arm64_64k}
+BuildKernel %make_target %kernel_image %{_use_vdso} rt-64k-debug
 %endif
 
 %if %{with_automotive}
@@ -3351,6 +3298,10 @@ BuildKernel %make_target %kernel_image %{_use_vdso} 64k
 BuildKernel %make_target %kernel_image %{_use_vdso} rt
 %endif
 
+%if %{with_realtime_arm64_64k_base}
+BuildKernel %make_target %kernel_image %{_use_vdso} rt-64k
+%endif
+
 %if %{with_automotive_base}
 BuildKernel %make_target %kernel_image %{_use_vdso} automotive
 %endif
@@ -3360,7 +3311,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686 %{nobuildarches}
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime} && !%{with_automotive}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime} && !%{with_realtime_arm64_64k} && !%{with_automotive}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 %{log_msg "Initialize userspace tools build environment"}
@@ -3480,7 +3431,10 @@ pushd tools/tracing/rtla
 popd
 %endif
 
-if [ -f $DevelDir/vmlinux.h ]; then
+#set RPM_VMLINUX_H
+if [ -f $RPM_BUILD_ROOT/$DevelDir/vmlinux.h ]; then
+  RPM_VMLINUX_H=$RPM_BUILD_ROOT/$DevelDir/vmlinux.h
+elif [ -f $DevelDir/vmlinux.h ]; then
   RPM_VMLINUX_H=$DevelDir/vmlinux.h
 fi
 echo "${RPM_VMLINUX_H}" > ../vmlinux_h_path
@@ -3501,8 +3455,13 @@ if [ ! -f include/generated/autoconf.h ]; then
    %{make} %{?_smp_mflags} modules_prepare
 fi
 
+# Build BPFtool for samples/bpf
+if [ ! -f tools/bpf/bpftool/bootstrap/bpftool ]; then
+  BuildBpftool
+fi
+
 %{log_msg "build samples/bpf"}
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
+%{make} %{?_smp_mflags} ARCH=$Arch BPFTOOL=$(pwd)/tools/bpf/bpftool/bootstrap/bpftool V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
@@ -3514,7 +3473,7 @@ pushd tools/testing/selftests
 %endif
 
 %{log_msg "main selftests compile"}
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp net/netfilter tc-testing memfd drivers/net/bonding iommu cachestat" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net/bonding iommu cachestat pid_namespace rlimits" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 %ifarch %{klptestarches}
   # kernel livepatching selftest test_modules will build against
@@ -3608,12 +3567,24 @@ find Documentation -type d | xargs chmod u+w
   rm -rf $RPM_BUILD_ROOT/usr/lib/debug/usr/src; \
 %{nil}
 
+# Make debugedit and gdb-add-index use target versions of tools
+# when cross-compiling. This is supported since debugedit-5.1-5.fc42
+# https://inbox.sourceware.org/debugedit/20250220153858.963312-1-mark@klomp.org/
+%if %{with_cross}
+%define __override_target_tools_for_debugedit \
+	export OBJCOPY=%{_build_arch}-linux-gnu-objcopy \
+	export NM=%{_build_arch}-linux-gnu-nm \
+	export READELF=%{_build_arch}-linux-gnu-readelf \
+%{nil}
+%endif
+
 #
 # Disgusting hack alert! We need to ensure we sign modules *after* all
 # invocations of strip occur, which is in __debug_install_post if
 # find-debuginfo.sh runs, and __os_install_post if not.
 #
 %define __spec_install_post \
+  %{?__override_target_tools_for_debugedit:%{__override_target_tools_for_debugedit}}\
   %{?__debug_package:%{__debug_install_post}}\
   %{__arch_install_post}\
   %{__os_install_post}\
@@ -3871,6 +3842,12 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/netfilte
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/netfilter/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/netfilter/{} \;
 popd
+# install net/packetdrill selftests
+pushd tools/testing/selftests/net/packetdrill
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
+popd
 
 # install memfd selftests
 pushd tools/testing/selftests/memfd
@@ -3883,6 +3860,18 @@ pushd tools/testing/selftests/iommu
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/iommu/{} \;
+popd
+# install rlimits selftests
+pushd tools/testing/selftests/rlimits
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/rlimits/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/rlimits/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/rlimits/{} \;
+popd
+# install pid_namespace selftests
+pushd tools/testing/selftests/pid_namespace
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
 popd
 %endif
 
@@ -3970,21 +3959,6 @@ fi\
 %{expand:%%postun %{?1:%{1}-}modules-partner}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
 %{nil}
-
-%if %{with_realtime}
-#
-# This macro defines a %%post script for a kernel*-kvm package.
-# It also defines a %%postun script that does the same thing.
-#	%%kernel_kvm_post [<subpackage>]
-#
-%define kernel_kvm_post() \
-%{expand:%%post %{?1:%{1}-}kvm}\
-/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%{nil}\
-%{expand:%%postun %{?1:%{1}-}kvm}\
-/sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-%{nil}
-%endif
 
 #
 # This macro defines a %%post script for a kernel*-modules package.
@@ -4151,7 +4125,6 @@ fi\
 %if %{with_realtime_base}
 %kernel_variant_preun -v rt
 %kernel_variant_post -v rt -r kernel
-%kernel_kvm_post rt
 %endif
 
 %if %{with_automotive_base}
@@ -4162,7 +4135,18 @@ fi\
 %if %{with_realtime} && %{with_debug}
 %kernel_variant_preun -v rt-debug
 %kernel_variant_post -v rt-debug
-%kernel_kvm_post rt-debug
+%endif
+
+%if %{with_realtime_arm64_64k_base}
+%kernel_variant_preun -v rt-64k
+%kernel_variant_post -v rt-64k
+%kernel_kvm_post rt-64k
+%endif
+
+%if %{with_debug} && %{with_realtime_arm64_64k}
+%kernel_variant_preun -v rt-64k-debug
+%kernel_variant_post -v rt-64k-debug
+%kernel_kvm_post rt-64k-debug
 %endif
 
 %if %{with_automotive} && %{with_debug}
@@ -4178,6 +4162,7 @@ fi\
 %files headers
 /usr/include/*
 %exclude %{_includedir}/cpufreq.h
+%exclude %{_includedir}/ynl
 %endif
 
 %if %{with_cross_headers}
@@ -4315,7 +4300,7 @@ fi\
 %files -n kernel-tools-libs
 %ifarch %{cpupowerarchs}
 %{_libdir}/libcpupower.so.1
-%{_libdir}/libcpupower.so.0.0.1
+%{_libdir}/libcpupower.so.1.0.1
 %endif
 
 %files -n kernel-tools-libs-devel
@@ -4350,6 +4335,7 @@ fi\
 %{_mandir}/man1/rv-mon-wip.1.gz
 %{_mandir}/man1/rv-mon-wwnr.1.gz
 %{_mandir}/man1/rv-mon.1.gz
+%{_mandir}/man1/rv-mon-sched.1.gz
 %{_mandir}/man1/rv.1.gz
 
 # with_tools
@@ -4444,10 +4430,7 @@ fi\
 %{expand:%%files -f debuginfo%{?3}.list %{?3:%{3}-}debuginfo}\
 %endif\
 %endif\
-%if "%{3}" == "rt" || "%{3}" == "rt-debug"\
-%{expand:%%files -f kernel-%{?3:%{3}-}modules-rt-kvm.list %{?3:%{3}-}kvm}\
-%else\
-%if %{with_efiuki}\
+%if %{with_efiuki} && "%{3}" != "rt" && "%{3}" != "rt-debug" && "%{3}" != "rt-64k" && "%{3}" != "rt-64k-debug"\
 %{expand:%%files %{?3:%{3}-}uki-virt}\
 %dir /lib/modules\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
@@ -4461,7 +4444,6 @@ fi\
 %{expand:%%files %{?3:%{3}-}uki-virt-addons}\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/ \
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/*.addon.efi\
-%endif\
 %endif\
 %if %{?3:1} %{!?3:0}\
 %{expand:%%files %{3}}\
@@ -4520,25 +4502,20 @@ fi\
 %kernel_variant_files %{_use_vdso} %{with_zfcpdump} zfcpdump
 %kernel_variant_files %{_use_vdso} %{with_arm64_16k_base} 16k
 %kernel_variant_files %{_use_vdso} %{with_arm64_64k_base} 64k
-
-%define kernel_variant_ipaclones(k:) \
-%if %{1}\
-%if %{with_ipaclones}\
-%{expand:%%files %{?2:%{2}-}ipaclones-internal}\
-%defattr(-,root,root)\
-%defverify(not mtime)\
-/usr/src/kernels/%{KVERREL}%{?2:+%{2}}-ipaclones\
-%endif\
-%endif\
-%{nil}
-
-%kernel_variant_ipaclones %{with_up_base}
+%kernel_variant_files %{_use_vdso} %{with_realtime_arm64_64k_base} rt-64k
+%if %{with_realtime_arm64_64k}
+%kernel_variant_files %{_use_vdso} %{with_debug} rt-64k-debug
+%endif
 
 # plz don't put in a version string unless you're going to tag
 # and build.
 #
 #
 %changelog
+* Mon May 26 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.0-500.chinfo
+- 6.15.0
+- Remove graysky patch
+
 * Thu May 22 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.8-500.chinfo
 - 6.14.8
 
@@ -4733,33 +4710,6 @@ fi\
 
 * Tue May 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.0-500.chinfo
 - 6.9.0
-
-* Thu May 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.9-500.chinfo
-- 6.8.9
-
-* Sat Apr 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.8-500.chinfo
-- 6.8.8
-
-* Wed Apr 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.7-500.chinfo
-- 6.8.7
-
-* Sat Apr 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.6-500.chinfo
-- 6.8.6
-
-* Wed Apr 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.5-500.chinfo
-- 6.8.5
-
-* Thu Apr 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.4-500.chinfo
-- 6.8.4 - pf4
-
-* Wed Apr 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.3-500.chinfo
-- 6.8.3 - pf4
-
-* Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.2-500.chinfo
-- 6.8.2 - pf3
-
-* Mon Mar 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.8.0-500.chinfo
-- 6.8.0 - pf1
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

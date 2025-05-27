@@ -1,0 +1,13 @@
+# Symbol: TUNE_Z17 [=n]
+# Type  : bool
+# Defined at arch/s390/Kconfig:482
+#   Prompt: IBM z17
+#   Location:
+#     -> Processor type and features
+#       -> Tune code generation (<choice> [=n])
+#         -> IBM z17 (TUNE_Z17 [=n])
+# 
+# 
+# 
+# Commit: c51ea9888e88 (s390: Allow to compile with z17 optimizations)
+# CONFIG_TUNE_Z17 is not set

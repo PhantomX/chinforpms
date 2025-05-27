@@ -31,8 +31,8 @@ mesa-libGL-xlib
 -mingw-headers
 -mingw-w64-tools
 -mingw-winpthreads
-SDL1
-SDL2
+-SDL1
+-SDL2
 -sdl12-compat
 -sdlcl
 -shaderc
@@ -51,4 +51,4 @@ wine
 -wine-d9vk - no mingw
 -wine-freeworld
 -wine-nine
-winesync
+-winesync

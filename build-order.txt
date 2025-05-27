@@ -77,7 +77,7 @@ libchdr
 mesa
 mesa-compat
 mesa-libGL-xlib
-SDL2
+-SDL2
 VulkanMemoryAllocator-Hpp
 vulkan-tools
 
@@ -267,7 +267,7 @@ restricted-ssh-commands
 -retext
 rmg
 rust-u4pak
-SDL1
+-SDL1
 -sdl12-compat
 sdl2-controllermap
 sdl_gamecontrollerdb

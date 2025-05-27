@@ -165,7 +165,7 @@ YMIR_DIR="${XDG_CONFIG_HOME}/%{name}"
 
 mkdir -p "${YMIR_DIR}"
 cd "${YMIR_DIR}"
-%{_libexecdir}/%{name} "$@"
+exec %{_libexecdir}/%{name} "$@"
 EOF
 
 cat >> %{name}.desktop <<'EOF'

@@ -1,8 +1,6 @@
 
-CONFIG_MZEN3=y
+CONFIG_X86_64_ISA_LEVEL=3
 # CONFIG_GENERIC_CPU is not set
-# CONFIG_M686 is not set
-# CONFIG_X86_P6_NOP is not set
 # CONFIG_MNATIVE_AMD is not set
 # CONFIG_MNATIVE_INTEL is not set
 

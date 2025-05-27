@@ -7,36 +7,16 @@ experimental patches, mostly from https://gitlab.com/post-factum/pf-kernel.
 
 If a bug happens, revert to Fedora official and try to reproduce it again.
 
-- NUMA is disabled (can be reverted by removing itens from kernel-local)
 - Patched to set BFQ as default blk-mq scheduler
+- VHBA module added
 
 - Use kernel-local* to edit some settings
 
 - To set native cpu flags, pass "--with native" to rpmbuild
 
-- kernel-local-cpu possible cpu values (one per time)
-CONFIG_MK8SSE3=y
-CONFIG_MK10=y
-CONFIG_MBARCELONA=y
-CONFIG_MBOBCAT=y
-CONFIG_MJAGUAR=y
-CONFIG_MBULLDOZER=y
-CONFIG_MPILEDRIVER=y
-CONFIG_MSTEAMROLLER=y
-CONFIG_MEXCAVATOR=y
-CONFIG_MZEN=y
-CONFIG_MZEN2=y
-CONFIG_MNEHALEM=y
-CONFIG_MWESTMERE=y
-CONFIG_MSILVERMONT=y
-CONFIG_MSANDYBRIDGE=y
-CONFIG_MIVYBRIDGE=y
-CONFIG_MHASWELL=y
-CONFIG_MBROADWELL=y
-CONFIG_MSKYLAKE=y
-CONFIG_MSKYLAKEX=y
-CONFIG_MCANNONLAKE=y
-CONFIG_MICELAKE=y
-CONFIG_MNATIVE=y
+- kernel-local-cpu-tune possible cpu values (one per time)
+CONFIG_X86_64_ISA_LEVEL=1-4
+CONFIG_MNATIVE_AMD=y
+CONFIG_MNATIVE_INTEL=y
 
 - Set CONFIG_NR_CPUS to cpu core/HT number, or remove it
