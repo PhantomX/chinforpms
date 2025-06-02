@@ -26,6 +26,8 @@ BuildRequires:  ImageMagick
 Requires:       jre-%{jre_ver}
 Requires:       hicolor-icon-theme
 
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
+
 
 %description
 Free multi-platform database tool for developers, SQL programmers, database

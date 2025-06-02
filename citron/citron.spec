@@ -164,6 +164,7 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -410,6 +411,11 @@ sed \
   -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
   -i src/CMakeLists.txt
 
+%if %{with clang}
+echo 'set_target_properties(citron PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' \
+  >> src/citron/CMakeLists.txt <<EOF
+%endif
+
 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
@@ -418,7 +424,7 @@ export CXXFLAGS+=" %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  %{!?with_clang:-DCITRON_ENABLE_LTO:BOOL=ON} \
+  -DCITRON_ENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \

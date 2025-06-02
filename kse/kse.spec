@@ -1,9 +1,13 @@
+%global _build_id_links none
+%undefine _debugsource_packages
 %global __jar_repack %{nil}
 
 %global pkgrel 1
 
+%global jre_ver 11
+
 Name:           kse
-Version:        5.5.3
+Version:        5.6.0
 Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
@@ -13,14 +17,16 @@ URL:            https://keystore-explorer.org
 
 Source0:        https://github.com/kaikramer/keystore-explorer/releases/download/v%{version}/%{name}-%{version}-%{pkgrel}.noarch.rpm
 
-BuildArch:      noarch
+ExclusiveArch:  x86_64
 
 
 BuildRequires:  desktop-file-utils
-Requires:       jre >= 1.8.0
+Requires:       jre >= %{jre_ver}
 Requires:       hicolor-icon-theme
 
 Provides:       keystore-explorer = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
 
 
 %description
@@ -42,14 +48,16 @@ rpm2cpio %{S:0} | cpio -imdv
 mkdir -p %{buildroot}%{_bindir}
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
 #!/usr/bin/sh
-exec java -jar %{_datadir}/%{name}/%{name}.jar "${@}"
+exec java -jar %{_libdir}/%{name}/%{name}.jar "${@}"
 EOF
 chmod 755 %{buildroot}%{_bindir}/%{name}
 
-mkdir -p %{buildroot}%{_datadir}/%{name}/lib
-install -pm0644 opt/%{name}/%{name}.jar %{buildroot}%{_datadir}/%{name}/
+mkdir -p %{buildroot}%{_libdir}/%{name}/lib
+install -pm0644 opt/%{name}/%{name}.jar %{buildroot}%{_libdir}/%{name}/
+install -pm0644 opt/%{name}/*.png %{buildroot}%{_libdir}/%{name}/
 
-install -pm0644 opt/%{name}/lib/*.jar %{buildroot}%{_datadir}/%{name}/lib/
+install -pm0644 opt/%{name}/lib/*.jar %{buildroot}%{_libdir}/%{name}/lib/
+install -pm0755 opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/lib/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -70,12 +78,16 @@ done
 %files
 %license opt/kse/licenses/*
 %{_bindir}/%{name}
-%{_datadir}/%{name}
+%{_libdir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 
 
 %changelog
+* Wed May 28 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.0-1
+- 5.6.0
+- Move to %%{_libdir}, because a new shared library is provided
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 5.5.3-1
 - 5.5.3
 

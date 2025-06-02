@@ -19,9 +19,9 @@ index e88e089..6dcb4d9 100644
          ImGui::Checkbox(lang.emulator["check_for_updates"].c_str(), &emuenv.cfg.check_for_updates);
          SetTooltipEx(lang.emulator["check_for_updates_description"].c_str());
 +#endif
-         ImGui::Separator();
-         TextColoredCentered(GUI_COLOR_TEXT_TITLE, lang.emulator["performance_overlay"].c_str());
          ImGui::Spacing();
+         ImGui::SliderInt("File Loading Delay", &config.file_loading_delay, 0, 30, "%d ms", ImGuiSliderFlags_AlwaysClamp);
+         SetTooltipEx("File loading delay in milliseconds.\nThis is required for some games to load files too quickly compared to real hardware (e.g., Silent Hill).\nDefault is 0 ms.");
 -- 
 2.46.0
 

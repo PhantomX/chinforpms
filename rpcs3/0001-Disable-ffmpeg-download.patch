@@ -1,0 +1,49 @@
+From 86af015f79b5be7887f126f962ac87ad5d92b9e5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 1 Jun 2025 15:13:45 -0300
+Subject: [PATCH] Disable ffmpeg download
+
+---
+ 3rdparty/ffmpeg/CMakeLists.txt | 26 --------------------------
+ 1 file changed, 26 deletions(-)
+
+diff --git a/3rdparty/ffmpeg/CMakeLists.txt b/3rdparty/ffmpeg/CMakeLists.txt
+index fca654a..60b007d 100644
+--- a/3rdparty/ffmpeg/CMakeLists.txt
++++ b/3rdparty/ffmpeg/CMakeLists.txt
+@@ -30,32 +30,6 @@ else ()
+ 	message(FATAL_ERROR "Unsupported architecture.")
+ endif()
+ 
+-# Compute current short git commit SHA
+-execute_process(
+-	COMMAND git rev-parse --short HEAD
+-	WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+-	OUTPUT_VARIABLE FFMPEG_GIT_SHA
+-	OUTPUT_STRIP_TRAILING_WHITESPACE)
+-
+-# Download prebuilt ffmpeg
+-if(NOT EXISTS "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg.zip")
+-	message(STATUS "Downloading FFMPEG prebuilts...")
+-	file(DOWNLOAD https://github.com/RPCS3/ffmpeg-core/releases/download/${FFMPEG_GIT_SHA}/${FFMPEG_PREBUILTS_NAME}
+-		"${CMAKE_BINARY_DIR}/3rdparty/ffmpeg.zip" SHOW_PROGRESS
+-		STATUS FILE_STATUS)
+-	list(GET FILE_STATUS 0 STATUS_CODE)
+-	if (NOT STATUS_CODE EQUAL 0)
+-		file(REMOVE "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg.zip") # CMake create 0 byte file even if URL is invalid. So need to delete it.
+-		message(FATAL_ERROR "No FFMPEG prebuilt found with corresponding commit SHA (${FFMPEG_GIT_SHA})")
+-	endif()
+-endif()
+-
+-if(NOT EXISTS "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg/lib")
+-	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg/lib")
+-	execute_process(COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg.zip"
+-		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/3rdparty/ffmpeg/lib")
+-endif()
+-
+ set(LIB_PREFIX "lib")
+ set(LIB_EXT "a")
+ if (WIN32 AND NOT MINGW)
+-- 
+2.49.0
+

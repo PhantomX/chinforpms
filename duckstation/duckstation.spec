@@ -82,6 +82,8 @@ ExclusiveArch:  x86_64 aarch64
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  llvm
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -287,6 +289,8 @@ sed \
 %else
   -e 's| date="@GIT_DATE@"||g' \
 %endif
+  -e '/custom>/d' \
+  -e '/flathub/d' \
   scripts/packaging/%{appname}.metainfo.xml.in > %{appname}.metainfo.xml
 
 sed \
@@ -366,7 +370,7 @@ install -pm 0644 %{appname}.metainfo.xml %{buildroot}%{_metainfodir}/%{appname}.
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet \
-  %{buildroot}%{_metainfodir}/*.metainfo.xml
+  %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files -f %{name}-qt.lang
@@ -376,7 +380,7 @@ appstream-util validate-relax --nonet \
 %dir %{_datadir}/%{name}/translations/
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
-%{_metainfodir}/*.metainfo.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files data

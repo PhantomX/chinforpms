@@ -306,9 +306,6 @@ sed -e "/#include <openssl\/engine.h>/d" -i Telegram/SourceFiles/core/utils.cpp
 %cmake \
     -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
-    -DCMAKE_AR=%{_bindir}/gcc-ar \
-    -DCMAKE_RANLIB=%{_bindir}/gcc-ranlib \
-    -DCMAKE_NM=%{_bindir}/gcc-nm \
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \

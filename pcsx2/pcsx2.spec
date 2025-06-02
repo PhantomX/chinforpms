@@ -4,7 +4,7 @@
 %undefine _cmake_shared_libs
 
 # Only clang is supported by upstream
-%bcond_with clang
+%bcond_without clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -36,6 +36,7 @@
 %bcond_without vulkan
 
 %global appbin %{name}-qt
+%global appname net.pcsx2.PCSX2
 %global appres PCSX2
 
 %global perms_pcsx2 %caps(cap_net_admin,cap_net_raw+eip)
@@ -56,7 +57,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.333
+Version:        2.3.372
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -96,11 +97,14 @@ ExclusiveArch:  x86_64
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  llvm
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  ImageMagick
@@ -316,14 +320,32 @@ sed \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
   -i pcsx2/Pcsx2Config.cpp pcsx2-qt/Translations.cpp
 
+cp -p .github/workflows/scripts/linux/%{appbin}.desktop %{appname}.desktop
+
+sed \
+  -e 's|@GIT_VERSION@|%{version}-%{release}|g' \
+%if %{with snapshot}
+  -e 's|@GIT_DATE@|%{date}|g' \
+%else
+  -e 's| date="@GIT_DATE@"||g' \
+%endif
+  -e '/custom>/d' \
+  -e '/flathub/d' \
+  .github/workflows/scripts/linux/%{appbin}.metainfo.xml.in \
+  > %{appname}.metainfo.xml
+
+%if %{with clang}
+echo 'set_target_properties(pcsx2-qt PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' \
+  >> pcsx2-qt/CMakeLists.txt <<EOF
+%endif
+
 
 %build
 
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  %{!?with_clang:-DLTO_PCSX2_CORE:BOOL=ON} \
-  -DDISABLE_BUILD_DATE:BOOL=ON \
+  -DLTO_PCSX2_CORE:BOOL=ON \
   -DBUILD_REPLAY_LOADERS:BOOL=OFF \
   -DQT_BUILD:BOOL=ON \
   -DX11_API:BOOL=ON \
@@ -335,7 +357,6 @@ sed \
   -DDISABLE_ADVANCE_SIMD:BOOL=ON \
 %endif
   -DUSE_VTUNE:BOOL=OFF \
-  -DCUBEB_API:BOOL=ON \
   -DENABLE_SETCAP:BOOL=OFF \
   -DENABLE_TESTS:BOOL=OFF \
   -DOpenGL_GL_PREFERENCE=GLVND \
@@ -382,17 +403,29 @@ desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   --set-key="Exec" \
   --set-value="%{appbin}" \
-  .github/workflows/scripts/linux/%{appbin}.desktop
+  %{appname}.desktop
+
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 %{appname}.metainfo.xml \
+  %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
+
 
 %find_lang %{appbin} --with-qt
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files -f %{appbin}.lang
 %license COPYING* 3rdparty/LICENSE.* _docs/*.html %{!?with_soundtouch:3rdparty/COPYING*}
 %doc README.md _docs/*.pdf
 %{perms_pcsx2} %{_bindir}/%{appbin}
-%{_datadir}/applications/%{appbin}.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appres}.png
+%{_metainfodir}/%{appname}.metainfo.xml
 %dir %{_datadir}/%{appres}
 %dir %{_datadir}/%{appres}/resources/
 %dir %{_datadir}/%{appres}/translations/

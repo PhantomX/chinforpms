@@ -9,9 +9,9 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit c8389f4860bb41266a5b3aba197d54719c23bd64
+%global commit 3203300abcd2b81f6cf688f662ffbfb9a502378a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250521
+%global date 20250531
 %bcond_without snapshot
 
 
@@ -41,7 +41,7 @@
 
 Name:           dynarmic
 Version:        6.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
@@ -53,12 +53,12 @@ Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Source10:       %{vc_url}/%{srcname10}/archive/%{commit10}.tar.gz#/%{srcname10}-%{shortcommit10}.tar.gz
+Source10:       https://github.com/azahar-emu/%{srcname10}/archive/%{commit10}.tar.gz#/%{srcname10}-%{shortcommit10}.tar.gz
 Source11:       https://github.com/Lizzie841/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
-Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
-Source13:       %{vc_url}/%{srcname13}/archive/%{commit13}.tar.gz#/%{srcname13}-%{shortcommit13}.tar.gz
+Source12:       https://github.com/zyantific/%{srcname12}/archive/%{commit12}.tar.gz#/%{srcname12}-%{shortcommit12}.tar.gz
+Source13:       https://github.com/zyantific/%{srcname13}/archive/%{commit13}.tar.gz#/%{srcname13}-%{shortcommit13}.tar.gz
 
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  cmake
 BuildRequires:  make

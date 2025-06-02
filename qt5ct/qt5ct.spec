@@ -1,6 +1,6 @@
 Name:           qt5ct
 Version:        1.9
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Qt5 Configuration Tool
 
 License:        BSD-2-Clause
@@ -74,6 +74,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed May 28 2025 Phantom X <megaphantomx at hotmail dot com> - 1.9-102
+- Rebuild (qt5)
+
 * Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 1.9-101
 - Drop gtk3 binary
 

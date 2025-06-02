@@ -13,15 +13,11 @@ GENERAL="\
 
 MODULES="\
     --disable-avdevice \
-    --disable-filters \
-    --disable-programs \
-    --disable-network \
-    --disable-postproc \
-    --disable-encoders \
     --disable-doc \
-    --disable-ffplay \
-    --disable-ffprobe \
-    --disable-ffmpeg"
+    --disable-everything \
+    --disable-network \
+    --disable-programs \
+    --disable-postproc"
 
 VIDEO_DECODERS="\
     --enable-decoder=h264 \
@@ -88,12 +84,18 @@ PROTOCOLS="\
     --enable-protocol=file"
 
 EXTRA="\
+    --enable-bsf=mjpeg2jpeg \
     --enable-indev=dshow"
 
 ./configure \
     --prefix=./linux/${ARCH} \
     ${GENERAL} \
     --cc="${CC:-gcc}" \
+    --cxx="${CXX:-g++}" \
+    --ar="${AR:-gcc-ar}" \
+    --as="${AS:-gcc-as}" \
+    --ranlib="${RANLIB:-gcc-ranlib}" \
+    --nm="${NM:-gcc-nm}" \
     --extra-cflags="-D__STDC_CONSTANT_MACROS -O3" \
     --enable-zlib \
     --enable-pic \

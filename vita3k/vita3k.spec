@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 05690eb3441cc34ef03cdde4fc633db1b3c52a97
+%global commit e70f38e0129c4b48b12a7aefee4121652d7315b2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250408
+%global date 20250527
 
 %bcond_with capstone
 %bcond_with ffmpeg
@@ -61,7 +61,7 @@
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
-%global commit19 76b52ebf77833908dc4c0dd6c70a9c357ac720bd
+%global commit19 fc9889c889561c5882e83819dcaffef5ed45529b
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 glslang
 
@@ -165,7 +165,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3764
+Version:        0.2.0.3796
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -223,14 +223,11 @@ Source34:       https://github.com/cameron314/%{srcname34}/archive/%{commit34}/%
 Source35:       https://github.com/gabime/%{srcname35}/archive/%{commit35}/%{srcname35}-%{shortcommit35}.tar.gz
 %endif
 
-Patch0:         https://github.com/Vita3K/Vita3K/pull/3525.patch#/%{name}-gh-pr3525.patch
-
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch503:       0001-Address-build-failures-when-using-Tip-of-Tree-clang..patch
-Patch504:       0001-glslang-gcc-15-build-fix.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  x86_64
@@ -242,6 +239,8 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt%{?llvm_pkgver}
 BuildRequires:  clang%{?llvm_pkgver}
+BuildRequires:  llvm%{?llvm_pkgver}
+BuildRequires:  lld%{?llvm_pkgver}
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -434,8 +433,6 @@ cp -p unicorn/COPYING COPYING.unicorn
 cp -p vita-toolchain/COPYING COPYING.vita-toolchain
 popd
 
-%patch -P 504 -p1
-
 sed \
   -e '/Boost_USE_STATIC_LIBS/s| ON| OFF|' \
   -i CMakeLists.txt
@@ -490,10 +487,12 @@ popd
 %build
 
 %if %{with clang}
-%if 0%{?llvm_pkgver}
-export CC=clang-%{?llvm_pkgver}
-export CXX=clang++-%{?llvm_pkgver}
-%endif
+export CC=clang%{?llvm_pkgver:-%{llvm_pkgver}}
+export CXX=clang++%{?llvm_pkgver:-%{llvm_pkgver}}
+export AR=llvm-ar%{?llvm_pkgver:-%{llvm_pkgver}}
+export AS=llvm-as%{?llvm_pkgver:-%{llvm_pkgver}}
+export NM=llvm-nm%{?llvm_pkgver:-%{llvm_pkgver}}
+export RANLIB=llvm-ranlib%{?llvm_pkgver:-%{llvm_pkgver}}
 %endif
 
 %if %{without ffmpeg}
@@ -503,7 +502,7 @@ sed \
   -i ffmpeg-linux_*.sh
 chmod +x ffmpeg-linux_*.sh
 %ifarch x86_64
-%{?with_clang:CFLAGS=} ./ffmpeg-linux_x86-64.sh
+./ffmpeg-linux_x86-64.sh
 %endif
 %make_build
 make install

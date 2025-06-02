@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit bad22328740f826c0dd6b2d60b74a7d0030c3f84
+%global commit fb3988a78a54b4a75090594a6d374ba819e0afcb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250522
+%global date 20250531
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -35,10 +35,6 @@
 %bcond_without vma
 # Enable webservice
 %bcond_without webservice
-
-%global commit11 c8389f4860bb41266a5b3aba197d54719c23bd64
-%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 dynarmic
 
 %global commit110 7b08d83418f628b800dfac1c9a16c3f59036fbad
 %global shortcommit10 %(c=%{commit110}; echo ${c:0:7})
@@ -60,15 +56,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
 
-%global commit13 6e6d79272cd4933b6647dafb6a662e5269241464
-%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
-%global srcname13 sirit
-
-%global commit14 382ddbb4b92c0b26aa1b32cefba2002119a5b1f2
-%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
-%global srcname14 simpleini
-
-%global commit15 36d5e2ddaa54c70d2f29081510c66f4fc98e5e53
+%global commit15 3f17b2af6784bfa2c5aa5dbb8e0e74a607dd8b3b
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 SPIRV-Headers
 
@@ -80,19 +68,11 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:6})
 %global srcname17 cpp-jwt
 
-%global commit18 acdc9374d26d4f5da1b7d17a1adc8c42df311b9f
-%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
-%global srcname18 mbedtls
-
-%global commit19 97929690234f2b4add36b33657fe3fe09bd57dfd
-%global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
-%global srcname19 tzdb_to_nx
-
 %global commit20 16ce126a87c5f130cde8b8dce73b38952a19f085
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 tz
 
-%global commit21 4100a2da297bddfacc634f93d0634fc34869cbf1
+%global commit21 9c1294eaddb88cb0e044c675ccae059a85fc9c6c
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 FFmpeg
 
@@ -118,7 +98,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27314
+Version:        0.0.2.27334
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -132,26 +112,19 @@ Source0:        %{vc_url}/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.
 %endif
 
 %if %{without dynarmic}
-Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
-Source110:      %{vc_url}/%{srcname110}/archive/%{commit110}.tar.gz#/%{srcname110}-%{shortcommit110}.tar.gz
+Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}.tar.gz#/%{srcname110}-%{shortcommit110}.tar.gz
 Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname11}-%{shortcommit111}.tar.gz
-Source112:      %{vc_url}/%{srcname112}/archive/%{commit112}.tar.gz#/%{srcname112}-%{shortcommit112}.tar.gz
-Source113:      %{vc_url}/%{srcname113}/archive/%{commit113}.tar.gz#/%{srcname113}-%{shortcommit113}.tar.gz
+Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}.tar.gz#/%{srcname112}-%{shortcommit112}.tar.gz
+Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}.tar.gz#/%{srcname113}-%{shortcommit113}.tar.gz
 %endif
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
-Source13:       %{vc_url}/%{srcname13}/archive/%{commit13}.tar.gz#/%{srcname13}-%{shortcommit13}.tar.gz
-Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}.tar.gz#/%{srcname14}-%{shortcommit14}.tar.gz
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
-Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}.tar.gz#/%{srcname16}-%{shortcommit16}.tar.gz
-Source17:       %{vc_url}/%{srcname17}/archive/%{commit17}.tar.gz#/%{srcname17}-%{shortcommit17}.tar.gz
+Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}.tar.gz#/%{srcname16}-%{shortcommit16}.tar.gz
+Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}.tar.gz#/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
-%if !%{with mbedtls}
-Source18:       %{vc_url}/%{srcname18}/archive/%{commit18}.tar.gz#/%{srcname18}-%{shortcommit18}.tar.gz
-%endif
-Source19:       %{vc_url}/%{srcname19}/archive/%{commit19}.tar.gz#/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://github.com/eggert/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %if %{without ffmpeg}
 Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
@@ -159,15 +132,14 @@ Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{src
 %if %{without fmt}
 Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
-Source23:       %{vc_url}/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
+Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-boost-build-fix.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
 
-ExclusiveArch:  x86_64
+ExclusiveArch:  x86_64 aarch64
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -175,6 +147,7 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -223,7 +196,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
 BuildRequires:  mbedtls >= 2.6.10
 %else
-Provides:       bundled(mbedtls) = 0~git%{?shortcommit18}
+Provides:       bundled(mbedtls) = 0~gitacdc937
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
@@ -262,14 +235,17 @@ Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(microprofile) = 0~git
-Provides:       bundled(sirit) = 0~git%{?shortcommit13}
-Provides:       bundled(simpleini) = 0~git%{?shortcommit14}
+%ifarch aarch64
+Provides:       bundled(oaknut) = 0~git9d09110
+%endif
+Provides:       bundled(sirit) = 0~git6e6d792
+Provides:       bundled(simpleini) = 0~git382ddbb
 %if %{with webservice}
 Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
 %endif
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
-Provides:       bundled(tzdb_to_nx) = ~git%{?shortcommit19}
+Provides:       bundled(tzdb_to_nx) = ~git9792969
 
 Obsoletes:      yuzu < 9999
 
@@ -296,14 +272,18 @@ This is the Qt frontend.
 
 pushd externals
 rm -rf \
-  cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode inih libressl libusb \
-  opus/opus/* SDL vcpkg Vulkan-Headers xbyak
+  breakpad cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode getopt inih \
+  libadrenotools libressl libusb oboe opus/opus/* SDL vcpkg Vulkan-Headers xbyak
+%ifarch x86_64
+rm -rf oaknut sse2neon
+%endif
 %if %{with mbedtls}
 rm -rf mbedtls
 %endif
 
-%if %{without dynarmic}
-tar -xf %{S:11} -C dynarmic --strip-components 1
+%if %{with dynarmic}
+rm -rf dynarmic
+%else
 tar -xf %{S:110} -C dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:111} -C dynarmic/externals/unordered_dense --strip-components 1
 tar -xf %{S:112} -C dynarmic/externals/zycore --strip-components 1
@@ -320,19 +300,11 @@ sed \
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %endif
-tar -xf %{S:13} -C sirit --strip-components 1
-mkdir -p simpleini
-tar -xf %{S:14} -C simpleini --strip-components 1
 tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
 %endif
-%if %{without mbedtls}
-tar -xf %{S:18} -C mbedtls --strip-components 1
-%endif
-mkdir -p nx_tzdb/tzdb_to_nx
-tar -xf %{S:19} -C nx_tzdb/tzdb_to_nx --strip-components 1
 tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
 tar -xf %{S:21} -C ffmpeg/ffmpeg --strip-components 1
@@ -410,6 +382,11 @@ sed \
   -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
   -i src/CMakeLists.txt
 
+%if %{with clang}
+echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' \
+  >> src/yuzu/CMakeLists.txt <<EOF
+%endif
+
 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
@@ -418,10 +395,11 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  %{!?with_clang:-DYUZU_ENABLE_LTO:BOOL=ON} \
+  -DYUZU_ENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \
+  -DENABLE_QT_UPDATE_CHECKER:BOOL=OFF \
 %if %{with qt6}
   -DENABLE_QT6:BOOL=ON \
 %endif
@@ -453,7 +431,6 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
-  -DDYNARMIC_NO_BUNDLED_ROBIN_MAP:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
   -DDYNARMIC_TESTS=OFF \

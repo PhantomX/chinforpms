@@ -21,9 +21,7 @@
 %bcond_with     native
 # Enable system ffmpeg
 %bcond_without  ffmpeg
-%global bundleffmpegver 5.2.1
-# Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%bcond_without  smallffmpeg
+%global bundleffmpegver 7.1.1
 %bcond_with faudio
 # Enable system flatbuffers
 %bcond_without  flatbuffers
@@ -50,9 +48,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond_with yamlcpp
 
-%global commit b54c2124cff867d1c0b9d57954d76254e6e43224
+%global commit 70faef3fdb75923fe15220828dcf41bc54b8a5b9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250521
+%global date 20250601
 %bcond_without snapshot
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -95,7 +93,7 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 ittapi
 
-%global commit20 10d0ebc0b8c7c4f0b242c9998c8bdc4e55bb5067
+%global commit20 ec6367d3ba9d0d57b9d22d4b87da8144acaf428f
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
@@ -125,7 +123,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.36.17959
+Version:        0.0.37.17989
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -156,13 +154,10 @@ Source18:       https://github.com/llvm/llvm-project/archive/%{commit18}/%{srcna
 %endif
 Source19:       https://github.com/intel/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %if %{without ffmpeg}
-%if %{with smallffmpeg}
-Source20:       %{srcname20}-nobin-%{shortcommit20}.tar.xz
-%else
 Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+Source200:      https://ffmpeg.org/releases/ffmpeg-%{bundleffmpegver}.tar.xz
+Source201:      ffmpeg-linux_x86-64.sh
 %endif
-%endif
-Source200:      ffmpeg-linux_x86-64.sh
 %if %{without flatbuffers}
 Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %endif
@@ -180,6 +175,7 @@ Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
 Patch14:        0001-Fix-OpenAL-headers.patch
+Patch500:       0001-Disable-ffmpeg-download.patch
 
 ExclusiveArch:  x86_64
 
@@ -191,6 +187,7 @@ BuildRequires:  ninja-build
 BuildRequires:  compiler-rt
 BuildRequires:  clang%{?llvm_pkgver}
 BuildRequires:  llvm%{?llvm_pkgver}
+BuildRequires:  lld%{?llvm_pkgver}
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -222,7 +219,7 @@ BuildRequires:  make
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(libva-x11)
-Provides:       bundled(ffmpeg) = %{bundleffmpegver}~git%{shortcommit20}
+Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
 BuildRequires:  pkgconfig(libudev)
 %if %{with hidapi}
@@ -345,26 +342,19 @@ sed \
 
 %if %{without ffmpeg}
 tar -xf %{S:20} -C 3rdparty/ffmpeg --strip-components 1
-
+%patch -P 500 -p1
+rm -rf 3rdparty/ffmpeg/include/*
+rm -rf 3rdparty/ffmpeg/lib/*
 cp -p 3rdparty/ffmpeg/copyright 3rdparty/copyright.ffmpeg
+tar -xf %{S:200} -C 3rdparty/ffmpeg/include --strip-components 1
+cp -p %{S:201} 3rdparty/ffmpeg/include/
 
-cp -p %{S:200} 3rdparty/ffmpeg/include/
-
-pushd 3rdparty/ffmpeg
-rm -rf linux/*/*
-rm -rf macos/*/*
-rm -rf windows/*/*
-
-sed \
-  -e '/target_link_libraries/s|INTERFACE|\0 va va-drm va-x11 X11|g' \
-  -e 's|${CMAKE_CURRENT_SOURCE_DIR}|${CMAKE_BINARY_DIR}|g' \
-  -i CMakeLists.txt
+sed -e '/target_link_libraries/s|INTERFACE|\0 va va-drm va-x11 X11|g' -i 3rdparty/ffmpeg/CMakeLists.txt
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
   -e '/make install/d' \
-  -i include/ffmpeg-linux_*.sh
+  -i 3rdparty/ffmpeg/include/ffmpeg-linux_*.sh
 
-popd
 %else
 rm -rf 3rdparty/ffmpeg
 %endif
@@ -434,6 +424,15 @@ sed -e 's|_RPM_GCDBDIR_|%{_datadir}/SDL_GameControllerDB|g' -i rpcs3/Input/sdl_p
 
 
 %build
+%if %{with clang}
+export CC=clang%{?llvm_pkgver:-%{llvm_pkgver}}
+export CXX=clang++%{?llvm_pkgver:-%{llvm_pkgver}}
+export AR=llvm-ar%{?llvm_pkgver:-%{llvm_pkgver}}
+export AS=llvm-as%{?llvm_pkgver:-%{llvm_pkgver}}
+export NM=llvm-nm%{?llvm_pkgver:-%{llvm_pkgver}}
+export RANLIB=llvm-ranlib%{?llvm_pkgver:-%{llvm_pkgver}}
+%endif
+
 %if %{without ffmpeg}
 pushd 3rdparty/ffmpeg/include
 sed \
@@ -441,7 +440,7 @@ sed \
   -i ffmpeg-linux_*.sh
 chmod +x ffmpeg-linux_*.sh
 %ifarch x86_64
-%{?with_clang:CFLAGS=} ./ffmpeg-linux_x86-64.sh
+./ffmpeg-linux_x86-64.sh
 %endif
 %make_build
 make install
@@ -475,6 +474,7 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmp
 %if %{with flatbuffers}
   -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
 %endif
+  -DUSE_SYSTEM_CUBEB:BOOL=ON \
   -DUSE_SYSTEM_CURL:BOOL=ON \
 %if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
@@ -532,6 +532,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Jun 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.37.17989-1.20250601git70faef3
+- 0.0.37
+
 * Sat Apr 05 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.36.17745-1.20250404git613212f
 - 0.0.36
 

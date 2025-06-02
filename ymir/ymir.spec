@@ -12,28 +12,28 @@
 %bcond_with cereal
 %bcond_without fmt
 
-%global commit afb7a0edff05d49888224745a4d43541e675d6ad
+%global commit 27bd2f19db7e7c3efc0cffcd8bc0d4101ba2b618
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250524
+%global date 20250528
 %bcond_without snapshot
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 cereal
 
-%global commit11 24b78782bd6ca5a5853ef46917708806112dc142
+%global commit11 a989e7e55335ffb231be81bf8575b89fb392c6e3
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 concurrentqueue
 
-%global commit12 dbf4c6a66816f6c3872b46cc6af119ad227e04e1
+%global commit12 52e8f524a90a3fdc6f4dbd4dfd3a0d82f78e2d51
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cxxopts
 
-%global commit13 b5266fd3b91accec15d56a8f144b31dceed40d31
+%global commit13 1ff0b7f5e1d1ff36ade3fe714b47a861db41ef9f
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 fmt
 
-%global commit14 e33069ce56d07751ca875eb239f41febef0ebcd3
+%global commit14 346f5c68197d20528d1b2bbe0e8e293219cc8544
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 imgui
 
@@ -45,7 +45,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 stb
 
-%global commit17 5abab000e33923f6808f068a081418c0bc7274da
+%global commit17 2f35c28a52fd0ada7600273de9aacb66550bcdcb
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 tomlplusplus
 
@@ -59,7 +59,7 @@
 
 Name:           ymir
 Version:        0.1.4
-Release:        0.1%{?dist}
+Release:        0.2%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
@@ -92,6 +92,8 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  llvm
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -188,6 +190,9 @@ magick apps/%{name}-sdl3/res/%{name}.ico %{name}.png
 %cmake \
   -GNinja \
   -DYmir_AVX2:BOOL=OFF \
+%if %{without snapshot}
+  -DYmir_DEV_BUILD:BOOL=OFF \
+%endif
   -DYmir_ENABLE_DEVLOG:BOOL=OFF \
   -DYmir_ENABLE_IMGUI_DEMO:BOOL=OFF \
   -DYmir_ENABLE_IPO:BOOL=OFF \

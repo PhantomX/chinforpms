@@ -1,14 +1,14 @@
-From 2bd262185e813605f10dfd83f6310a7a3306bea9 Mon Sep 17 00:00:00 2001
+From fe8fc28c4d263abc6d9c0e13035e4e26a8bc2dc7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt | 45 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
+ 3rdparty/CMakeLists.txt | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index cb0909e..eadf27e 100644
+index 6c49a88..f36f014 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
 @@ -20,7 +20,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
@@ -57,23 +57,7 @@ index cb0909e..eadf27e 100644
  
  
  # OpenGL
-@@ -131,7 +153,15 @@ add_subdirectory(stblib)
- add_subdirectory(discord-rpc)
- 
- # Cubeb
-+find_package(cubeb)
-+if(cubeb_FOUND)
-+	message(STATUS "Using the system cubeb")
-+	add_library(cubeb INTERFACE)
-+	target_link_libraries(cubeb INTERFACE cubeb::cubeb)
-+	add_library(3rdparty::cubeb ALIAS cubeb)
-+else()
- add_subdirectory(cubeb EXCLUDE_FROM_ALL)
-+endif()
- 
- # SoundTouch
- add_subdirectory(SoundTouch EXCLUDE_FROM_ALL)
-@@ -234,6 +264,7 @@ if(USE_FAUDIO)
+@@ -256,6 +278,7 @@ if(USE_FAUDIO)
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
@@ -81,7 +65,7 @@ index cb0909e..eadf27e 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -342,10 +373,24 @@ if(USE_SDL)
+@@ -346,10 +369,24 @@ add_subdirectory(wolfssl EXCLUDE_FROM_ALL)
  add_subdirectory(curl EXCLUDE_FROM_ALL)
  
  # MINIUPNP

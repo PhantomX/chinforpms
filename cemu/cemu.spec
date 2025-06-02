@@ -70,6 +70,7 @@ BuildRequires:  ImageMagick
 BuildRequires:  compiler-rt
 BuildRequires:  clang
 BuildRequires:  llvm
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

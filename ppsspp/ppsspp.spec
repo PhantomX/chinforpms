@@ -1,5 +1,4 @@
-# https://github.com/hrydgard/ppsspp/issues/13312
-%global _lto_cflags %{nil}
+%dnl %global _lto_cflags %{nil}
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
@@ -12,9 +11,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3a41bd846f432b3aee9302992916a9b84c3dc7a7
+%global commit b53e44fcccbacc5e6e8e43a44f57cf7f9e6a38e6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250522
+%global date 20250530
 %bcond_without snapshot
 
 # Enable Qt build
@@ -50,7 +49,7 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 cpu_features
 
-%global commit6 77551c429f86c0e077f26552b7c1c0f12a9f235e
+%global commit6 50e0708ec3a5c16020c4f845c654b80b8edb80bd
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 glslang
 
@@ -98,7 +97,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           ppsspp
-Version:        1.18.1.1976
+Version:        1.18.1.2081
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -144,7 +143,6 @@ Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
-Patch501:       0001-glslang-gcc-15-build-fix.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -158,6 +156,8 @@ BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
 BuildRequires:  clang
+BuildRequires:  llvm
+BuildRequires:  lld
 %else
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -275,7 +275,6 @@ tar -xf %{SOURCE3} -C ffmpeg/gas-preprocessor --strip-components 1
 tar -xf %{SOURCE4} -C ext/armips --strip-components 1
 tar -xf %{SOURCE5} -C ext/cpu_features --strip-components 1
 tar -xf %{SOURCE6} -C ext/glslang --strip-components 1
-%patch -P 501 -p1
 tar -xf %{SOURCE7} -C ext/SPIRV-Cross --strip-components 1
 tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
@@ -353,6 +352,12 @@ pushd ffmpeg
 sed \
   -e '/^ARCH=/s|=.*|=%{_target_cpu}|g' \
   -e '/--extra-cflags/i\    --cc="${CC:-gcc}" \\' \
+  -e '/--extra-cflags/i\    --cxx="${CXX:-g++}" \\' \
+  -e '/--extra-cflags/i\    --ar="${AR:-gcc-ar}" \\' \
+  -e '/--extra-cflags/i\    --as="${AS:-gcc-as}" \\' \
+  -e '/--extra-cflags/i\    --ranlib="${RANLIB:-gcc-ranlib}" \\' \
+  -e '/--extra-cflags/i\    --nm="${NM:-gcc-nm}" \\' \
+  -e '/disable-everything/i\    --disable-inline-asm \\' \
   -e 's|disable-everything|\0 --disable-debug --disable-stripping|g' \
   -e '/make install/d' \
   -i linux_*.sh
@@ -372,6 +377,16 @@ sed \
 
 
 %build
+
+%if %{with clang}
+export CC=clang
+export CXX=clang++
+export AR=llvm-ar
+export AS=llvm-as
+export NM=llvm-nm
+export RANLIB=llvm-ranlib
+%endif
+
 pushd ext/native/tools
 %cmake \
   -G Ninja \
@@ -528,6 +543,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat May 31 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1.2081-100.20250530gitb53e44f
+- Enable lto
+
 * Fri May 23 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1.1976-100.20250522git3a41bd8
 - Use official binary names
 
