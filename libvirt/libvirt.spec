@@ -3,17 +3,15 @@
 # This spec file assumes you are building on a Fedora or RHEL version
 # that's still supported by the vendor. It may work on other distros
 # or versions, but no effort will be made to ensure that going forward.
-%define min_rhel 8
-%define min_fedora 37
+%define min_rhel 9
+%define min_fedora 41
 
 %define arches_qemu_kvm         %{ix86} x86_64 %{power64} %{arm} aarch64 s390x
 %if 0%{?rhel}
     %if 0%{?rhel} >= 10
         %define arches_qemu_kvm     x86_64 aarch64 s390x riscv64
-    %elif 0%{?rhel} >= 9
-        %define arches_qemu_kvm     x86_64 aarch64 s390x
     %else
-        %define arches_qemu_kvm     x86_64 %{power64} aarch64 s390x riscv64
+        %define arches_qemu_kvm     x86_64 aarch64 s390x
     %endif
 %endif
 
@@ -68,27 +66,15 @@
 
 %define with_storage_gluster 0%{!?_without_storage_gluster:1}
 %if 0%{?rhel}
-    # Glusterfs has been dropped in RHEL-9, and before that
-    # was only enabled on arches where KVM exists
-    %if 0%{?rhel} > 8
-        %define with_storage_gluster 0
-    %else
-        %ifnarch %{arches_qemu_kvm}
-            %define with_storage_gluster 0
-        %endif
-    %endif
+    # Glusterfs has been dropped in RHEL-9.
+    %define with_storage_gluster 0
 %endif
 
-# Fedora has zfs-fuse
-%if 0%{?fedora}
-    %define with_storage_zfs      0%{!?_without_storage_zfs:1}
-%else
-    %define with_storage_zfs      0
-%endif
+%define with_storage_zfs      0
 
 %define with_storage_iscsi_direct 0%{!?_without_storage_iscsi_direct:1}
 # libiscsi has been dropped in RHEL-9
-%if 0%{?rhel} > 8
+%if 0%{?rhel}
     %define with_storage_iscsi_direct 0
 %endif
 
@@ -144,10 +130,6 @@
 
 %define with_firewalld_zone 0%{!?_without_firewalld_zone:1}
 
-%if 0%{?rhel} && 0%{?rhel} < 9
-    %define with_netcf 0%{!?_without_netcf:1}
-%endif
-
 
 # fuse is used to provide virtualized /proc for LXC
 %if %{with_lxc}
@@ -191,7 +173,7 @@
 # Fedora 40 is released.
 %if %{with_qemu}
     # rhel-8 lacks pidfd_open
-    %if 0%{?fedora} || 0%{?rhel} >= 9
+    %if 0%{?fedora} || 0%{?rhel}
         %define with_nbdkit 0%{!?_without_nbdkit:1}
 
         # setting 'with_nbdkit_config_default' must be done only when compiling
@@ -199,7 +181,7 @@
         #
         # TODO: add RHEL 9 once a minor release that contains the necessary SELinux
         #       bits exists (we only support the most recent minor release)
-        %if 0%{?fedora} >= 40
+        %if 0%{?fedora}
             %define with_nbdkit_config_default 0%{!?_without_nbdkit_config_default:1}
         %endif
     %endif
@@ -210,13 +192,13 @@
 %endif
 
 %define with_modular_daemons 0
-%if 0%{?fedora} || 0%{?rhel} >= 9
+%if 0%{?fedora} || 0%{?rhel}
     %define with_modular_daemons 1
 %endif
 
 # Prefer nftables for future OS releases but keep using iptables
 # for existing ones
-%if 0%{?rhel} >= 10 || 0%{?fedora} >= 41
+%if 0%{?rhel} >= 10 || 0%{?fedora}
     %define prefer_nftables 1
     %define firewall_backend_priority nftables,iptables
 %else
@@ -270,7 +252,7 @@
 
 # Fedora and RHEL-9 are new enough to support /dev/userfaultfd, which
 # does not require enabling vm.unprivileged_userfaultfd sysctl.
-%if 0%{?fedora} || 0%{?rhel} >= 9
+%if 0%{?fedora} || 0%{?rhel}
     %define with_userfaultfd_sysctl 0
 %endif
 
@@ -297,7 +279,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.3.0
+Version: 11.4.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -307,10 +289,6 @@ URL: https://libvirt.org/
 %endif
 Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source2: libvirt-qemu-sysusers.conf
-
-Patch: 0001-storage-stop-hardcoding-paths-for-mkfs-mount-umount.patch
-Patch: 0001-util-stop-hardcoding-numad-path.patch
-Patch: 0001-Fix-mocking-of-virQEMUCapsProbeHVF-function.patch
 
 Requires: libvirt-daemon = %{version}-%{release}
 Requires: libvirt-daemon-config-network = %{version}-%{release}
@@ -696,6 +674,9 @@ Requires: /usr/bin/qemu-img
 Obsoletes: libvirt-daemon-driver-storage-rbd < 5.2.0
     %endif
 Obsoletes: libvirt-daemon-driver-storage-sheepdog < 8.8.0
+    %if !%{with_storage_zfs}
+Obsoletes: libvirt-daemon-driver-storage-zfs < 11.4.0
+    %endif
 
 %description daemon-driver-storage-core
 The storage driver plugin for the libvirtd daemon, providing
@@ -849,7 +830,7 @@ Requires: swtpm-tools
         %if %{with_numad}
 Requires: numad
         %endif
-        %if 0%{?fedora} || 0%{?rhel} >= 9
+        %if 0%{?fedora} || 0%{?rhel}
 Recommends: passt
 Recommends: passt-selinux
         %endif
@@ -2683,6 +2664,9 @@ done
 
 
 %changelog
+* Mon Jun 02 2025 Phantom X <megaphantomx at hotmail dot com> - 11.4.0-100
+- 11.4.0
+
 * Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 11.3.0-100
 - 11.3.0
 

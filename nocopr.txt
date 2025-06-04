@@ -54,6 +54,7 @@ kronos
 mame-data-extras
 mame-data-icons
 mame-data-roms
+master-pdf-editor
 melonds
 mesa-freeworld
 -ms-teams

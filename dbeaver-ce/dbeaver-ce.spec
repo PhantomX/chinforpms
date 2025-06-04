@@ -9,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        25.0.5
+Version:        25.1.0
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -41,8 +41,11 @@ Teradata, Firebird, Derby, etc.
 
 sed -e 's/\r//' licenses/*.txt
 
-echo '-Ddbeaver.distribution.type=rpm' >> %{rname}.ini
-%dnl echo '-Duser.language=en' >> %{rname}.ini
+sed \
+  -e 's|org.eclipse.equinox.launcher_.*.jar$|org.eclipse.equinox.launcher.jar|' \
+  -e 's|org.eclipse.equinox.launcher.gtk.linux.%{_arch}_.*$|org.eclipse.equinox.launcher.gtk.linux.%{_arch}|' \
+  -e '/Dfile.encoding/i-Ddbeaver.distribution.type=rpm' \
+  -i %{rname}.ini
 
 cat > %{name}.sh <<'EOF'
 #!/usr/bin/bash
@@ -68,6 +71,11 @@ mkdir _jnacleanup
 %endif
 rm -rf plugins/com.sun.jna_*/com/sun/jna/*/
 mv _jnacleanup/* plugins/com.sun.jna_*/com/sun/jna/
+
+pushd plugins
+ln -s org.eclipse.equinox.launcher_*.jar org.eclipse.equinox.launcher.jar
+ln -s org.eclipse.equinox.launcher.gtk.linux.%{_arch}_*/ org.eclipse.equinox.launcher.gtk.linux.%{_arch}
+popd
 
 
 %build
@@ -128,6 +136,9 @@ done
 
 
 %changelog
+* Tue Jun 03 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.0-1
+- 25.1.0
+
 * Wed May 21 2025 Phantom X <megaphantomx at hotmail dot com> - 25.0.5-1
 - 25.0.5
 
