@@ -1,9 +1,9 @@
 # Static only package
 %global debug_package %{nil}
 
-%global commit 51743dfd01dff6179e2d8f7095729caa4e2222e9
+%global commit e894536b2f46caad93f997448d2daff9431b19dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250510
+%global date 20250527
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -14,7 +14,7 @@
 
 Name:           tde2e
 Version:        1.8.49
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cross-platform library for building Telegram clients
 
 License:        BSL-1.0

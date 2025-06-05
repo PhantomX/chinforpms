@@ -1,4 +1,4 @@
-%bcond_without bin
+%bcond_with bin
 
 %if %{with bin}
 %global _build_id_links none
@@ -9,10 +9,10 @@
 %endif
 
 %global vc_id   2a0afcdd36d6bf73f683d77abf352812177cd1a0
-%global vendor_hash f2d700a2e3595028377fc6739f1f8d17
+%global vendor_hash 7b8a185b4fe8d7507bc3ed1f4a5ed61f
 
 Name:           rusty-psn
-Version:        0.5.7
+Version:        0.5.8
 Release:        1%{?dist}
 Summary:        Simple tool to grab updates for PS3 games
 
@@ -28,7 +28,7 @@ Source4:        %{url}/raw/%{vc_id}/resources/OFL.txt
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# rust2rpm -t fedora -V auto --no-rpmautospec --ignore-missing-license-files --path .
+# rust2rpm -t fedora -V auto --no-rpmautospec --ignore-missing-license-files --path %%{name}-%%{version}
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 %endif
@@ -41,7 +41,7 @@ ExclusiveArch:  %{rust_arches}
 
 BuildRequires:  desktop-file-utils
 %if %{without bin}
-BuildRequires:  cargo-rpm-macros >= 24
+BuildRequires:  cargo-rpm-macros >= 26
 BuildRequires:  google-noto-sans-fonts
 BuildRequires:  google-noto-sans-jp-fonts
 BuildRequires:  rust-packaging
@@ -183,7 +183,7 @@ Provides:       bundled(crate(fastrand)) = 1.9.0
 Provides:       bundled(crate(fastrand)) = 2.1.0
 Provides:       bundled(crate(fdeflate)) = 0.3.4
 Provides:       bundled(crate(flate2)) = 1.0.30
-Provides:       bundled(crate(flexi_logger)) = 0.29.4
+Provides:       bundled(crate(flexi_logger)) = 0.29.8
 Provides:       bundled(crate(fnv)) = 1.0.7
 Provides:       bundled(crate(foreign-types)) = 0.5.0
 Provides:       bundled(crate(foreign-types-macros)) = 0.2.3
@@ -256,7 +256,7 @@ Provides:       bundled(crate(linux-raw-sys)) = 0.3.8
 Provides:       bundled(crate(linux-raw-sys)) = 0.4.14
 Provides:       bundled(crate(litrs)) = 0.4.1
 Provides:       bundled(crate(lock_api)) = 0.4.12
-Provides:       bundled(crate(log)) = 0.4.22
+Provides:       bundled(crate(log)) = 0.4.27
 Provides:       bundled(crate(mac-notification-sys)) = 0.6.1
 Provides:       bundled(crate(malloc_buf)) = 0.0.6
 Provides:       bundled(crate(memchr)) = 2.7.2
@@ -325,8 +325,7 @@ Provides:       bundled(crate(proc-macro2)) = 1.0.84
 Provides:       bundled(crate(proc-macro-crate)) = 1.3.1
 Provides:       bundled(crate(proc-macro-crate)) = 3.1.0
 Provides:       bundled(crate(profiling)) = 1.0.15
-Provides:       bundled(crate(quick-xml)) = 0.31.0
-Provides:       bundled(crate(quick-xml)) = 0.36.1
+Provides:       bundled(crate(quick-xml)) = 0.37.2
 Provides:       bundled(crate(quinn)) = 0.11.2
 Provides:       bundled(crate(quinn-proto)) = 0.11.8
 Provides:       bundled(crate(quinn-udp)) = 0.5.4
@@ -344,8 +343,8 @@ Provides:       bundled(crate(regex)) = 1.10.4
 Provides:       bundled(crate(regex-automata)) = 0.4.6
 Provides:       bundled(crate(regex-syntax)) = 0.8.3
 Provides:       bundled(crate(renderdoc-sys)) = 1.1.0
-Provides:       bundled(crate(reqwest)) = 0.12.5
-Provides:       bundled(crate(ring)) = 0.17.8
+Provides:       bundled(crate(reqwest)) = 0.12.15
+Provides:       bundled(crate(ring)) = 0.17.14
 Provides:       bundled(crate(ron)) = 0.8.1
 Provides:       bundled(crate(rustc-demangle)) = 0.1.24
 Provides:       bundled(crate(rustc-hash)) = 1.1.0
@@ -401,7 +400,7 @@ Provides:       bundled(crate(tiny-skia)) = 0.11.4
 Provides:       bundled(crate(tiny-skia-path)) = 0.11.4
 Provides:       bundled(crate(tinyvec)) = 1.6.0
 Provides:       bundled(crate(tinyvec_macros)) = 0.1.1
-Provides:       bundled(crate(tokio)) = 1.41.0
+Provides:       bundled(crate(tokio)) = 1.44.2
 Provides:       bundled(crate(tokio-macros)) = 2.4.0
 Provides:       bundled(crate(tokio-rustls)) = 0.26.0
 Provides:       bundled(crate(toml_datetime)) = 0.6.6
@@ -534,7 +533,7 @@ Provides:       bundled(crate(egui-notify)) = 0.15.0
 Provides:       bundled(crate(egui-wgpu)) = 0.28.1
 Provides:       bundled(crate(egui-winit)) = 0.28.1
 Provides:       bundled(crate(epaint)) = 0.28.1
-Provides:       bundled(crate(notify-rust)) = 4.11.3
+Provides:       bundled(crate(notify-rust)) = 4.11.7
 Provides:       bundled(crate(rfd)) = 0.14.1
 Provides:       bundled(crate(wayland-backend)) = 0.3.3
 Provides:       bundled(crate(wayland-client)) = 0.31.2
@@ -569,9 +568,9 @@ cp -p %{S:2} %{S:3} %{S:4} .
 %else
 %autosetup -p1 %{?with_vendor:-a1}
 
-%if %{with vendor}
-%cargo_prep -v vendor
-%endif
+find -name '*.rs' -exec chmod -x {} ';'
+
+sed -e '/^edition =/ilicense = "MIT"' -i Cargo.toml
 
 mv resources/OFL.txt .
 rm -rf resources
@@ -579,13 +578,6 @@ sed \
   -e '/NotoSansJP-Regular.otf/s|../../resources/|%{_datadir}/fonts/google-noto-sans-jp-fonts/|g' \
   -e '/NotoSans-Regular.ttf/s|../../resources/|%{_datadir}/fonts/google-noto/|g' \
   -i  src/egui/mod.rs
-
-%generate_buildrequires
-%if %{with vendor}
-%cargo_vendor_manifest
-%else
-%cargo_generate_buildrequires
-%endif
 %endif
 
 cat > %{name}.desktop <<'EOF'
@@ -599,6 +591,13 @@ Type=Application
 Categories=Network;
 EOF
 
+%if %{with vendor}
+%cargo_prep -v vendor
+%else
+%generate_buildrequires
+%cargo_generate_buildrequires
+%endif
+
 
 %build
 %if %{without bin}
@@ -610,6 +609,9 @@ rm -rf target/release/*
 mv target/release/%{name} egui/
 %{cargo_license_summary}
 %{cargo_license} > LICENSE.dependencies
+%if %{with vendor}
+%{cargo_vendor_manifest}
+%endif
 %endif
 
 
@@ -641,6 +643,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Jun 04 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.8-1
+- 0.5.8
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-1
 - 0.5.7
 

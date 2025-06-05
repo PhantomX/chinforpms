@@ -196,6 +196,7 @@ librashader
 libstrangle
 -liveprogide
 -linux-steam-integration
+ludusavi
 -lunasvg_ds
 lunzip
 -lutris

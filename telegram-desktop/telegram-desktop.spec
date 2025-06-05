@@ -2,6 +2,7 @@
 
 # Telegram Desktop's constants...
 %global appname org.telegram.desktop
+%global binname Telegram
 %global srcname tdesktop
 
 # Telegram API tokens...
@@ -42,7 +43,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.14.3
+Version:        5.15.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -66,7 +67,7 @@ Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.
 %if %{with bin}
 Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 %endif
-Source20:       thunar-sendto-%{name}.desktop
+Source20:       thunar-sendto-%{binname}.desktop
 
 Patch100:       %{name}-build-fix.patch
 Patch101:       https://github.com/rpmfusion/%{name}/raw/453a609efd0a0445a56f2a91146f41c0227db7c0/findprotobuf_fix.patch#/%{name}-gh-findprotobuf_fix.patch
@@ -291,7 +292,7 @@ popd
 
 %endif
 
-cp -p %{S:20} thunar-sendto-%{name}.desktop
+cp -p %{S:20} thunar-sendto-%{binname}.desktop
 
 sed '/^SingleMainWindow/s|^|X-|g' -i lib/xdg/%{appname}.desktop
 
@@ -309,6 +310,7 @@ sed -e "/#include <openssl\/engine.h>/d" -i Telegram/SourceFiles/core/utils.cpp
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \
     -DDESKTOP_APP_USE_PACKAGED:BOOL=ON \
+    -DDESKTOP_APP_DISABLE_QT_PLUGINS:BOOL=ON \
 %if %{with bundled_fonts}
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=OFF \
 %else
@@ -342,7 +344,7 @@ cp -p changelog.txt %{_vpath_builddir}/
 %cmake_install
 %else
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 bin/Telegram %{buildroot}%{_bindir}/%{name}
+install -pm0755 bin/%{binname} %{buildroot}%{_bindir}/%{binname}
 
 mkdir -p %{buildroot}%{_datadir}/applications
 install -pm0644 lib/xdg/%{appname}.desktop %{buildroot}%{_datadir}/applications/
@@ -354,7 +356,7 @@ install -pm0644 lib/xdg/%{appname}.service %{buildroot}%{_datadir}/dbus-1/servic
 for size in 16 32 48 64 128 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${size}x${size}/apps
   mkdir -p ${dir}
-  install -pm0644 Telegram/Resources/art/icon${size}.png ${dir}/telegram.png
+  install -pm0644 Telegram/Resources/art/icon${size}.png ${dir}/%{appname}.png
 done
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdesktop
@@ -362,8 +364,6 @@ echo "%{_bindir}/%{name}" > %{buildroot}%{_sysconfdir}/tdesktop/externalupdater
 %endif
 
 desktop-file-edit \
-  --set-key=Exec \
-  --set-value="%{_bindir}/%{name} -- %u" \
   --remove-key=Version \
   %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
@@ -371,7 +371,7 @@ desktop-file-edit \
 mkdir -p "%{buildroot}%{_datadir}/Thunar/sendto"
 desktop-file-install \
   --dir="%{buildroot}%{_datadir}/Thunar/sendto" \
-  thunar-sendto-%{name}.desktop
+  thunar-sendto-%{binname}.desktop
 
 
 %check
@@ -382,11 +382,11 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 %files
 %doc README.md changelog.txt
 %license LICENSE LEGAL
-%{_bindir}/%{name}
+%{_bindir}/%{binname}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/dbus-1/services/%{appname}.service
 %{_datadir}/icons/hicolor/*/apps/*.*
-%{_datadir}/Thunar/sendto/thunar-sendto-%{name}.desktop
+%{_datadir}/Thunar/sendto/thunar-sendto-%{binname}.desktop
 %{_metainfodir}/%{appname}.metainfo.xml
 %if %{with bin}
 %{_sysconfdir}/tdesktop/externalupdater
@@ -394,6 +394,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jun 04 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.15.0-100
+- 5.15.0
+
 * Sun May 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.14.3-100
 - 5.14.3
 

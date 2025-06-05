@@ -2,8 +2,8 @@
 Version=1.0
 Name=Telegram Desktop recipient
 Name[pt_BR]=Destinatário do Telegram Desktop
-Exec=/usr/bin/telegram-desktop -sendpath %F
-TryExec=telegram-desktop
-Icon=telegram
+Exec=Telegram -sendpath %F
+TryExec=Telegram
+Icon=org.telegram.desktop
 Terminal=false
 Type=Application

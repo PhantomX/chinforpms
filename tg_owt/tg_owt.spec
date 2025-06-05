@@ -9,7 +9,7 @@
 
 %global commit0 8c233a4c12d6ec1f2aa87991564ac28cc996c57a
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20250811
+%global date 20250511
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
