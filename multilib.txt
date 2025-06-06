@@ -17,7 +17,7 @@ gstreamer1
 gtk3-classic
 -gtk3-nocsd
 kernel-chinfo-headers
-libeatmydata
+-libeatmydata
 -libogg
 -libvorbis
 libvorbis-aotuv

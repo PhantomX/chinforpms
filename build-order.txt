@@ -11,7 +11,7 @@ glibc-langpack-pt_BR_iso8601
 glyr
 gob2
 gstreamer1
-libeatmydata
+-libeatmydata
 libmirage
 -libogg
 libmpd

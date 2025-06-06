@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.0
+%define specrpmversion 6.15.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1212,7 +1212,6 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 # archlinux
 Patch6950:  %{pf_url}/e3ebed7db7738b6d7198adb681cf786c12635723.patch#/pf-cb-e3ebed7.patch
 Patch6951:  %{pf_url}/9c8e2d8403dd500b95018b582fccb9ae452ec934.patch#/pf-cb-9c8e2d8.patch
-Patch6952:  %{pf_url}/00c04ed66dc57f790b396e94c0a23b1beffff7f9.patch#/pf-cb-00c04ed.patch
 # kbuild
 Patch7000:  %{pf_url}/44bd804ed09bc22758cee2ba85ea7643b8ac4bc8.patch#/pf-cb-44bd804.patch
 Patch7001:  %{pf_url}/0adf8d408f04c252f753348039cb459e5e155911.patch#/pf-cb-0adf8d4.patch
@@ -1220,13 +1219,34 @@ Patch7001:  %{pf_url}/0adf8d408f04c252f753348039cb459e5e155911.patch#/pf-cb-0adf
 Patch7050:  %{pf_url}/c38881e847beba8ffcaf4acd270ad748c107d2e1.patch#/pf-cb-c38881e.patch
 # zstd
 # v4l2loopback
-Patch7230:  %{pf_url}/fc337cc7c794913a5a1fded14b1421cf2613a5b7.patch#/pf-cb-fc337cc.patch
+Patch7230:  %{pf_url}/bcc5227778a480910f8f37784ba1d0151e225b4f.patch#/pf-cb-bcc5227.patch
 # cpuidle
 Patch7240:  %{pf_url}/3a440104dbb8f2dcb56fa252a52b1bb75d80686b.patch#/pf-cb-3a44010.patch
 # crypto
 # fixes
-Patch7400:  %{pf_url}/f5a39f35189347791fc189d7a8e6f6ca512bce1e.patch#/pf-cb-f5a39f3.patch
+Patch7400:  %{pf_url}/3b2e2a3ccc9da8a43e642d4ffac45f6c9ef56de4.patch#/pf-cb-3b2e2a3.patch
+Patch7401:  %{pf_url}/6b7a3c86522f264b9789cc56660fe19bddc630b8.patch#/pf-cb-6b7a3c8.patch
+Patch7402:  %{pf_url}/0bae1c21f1198a4b0d4e5900473c0aea720ee496.patch#/pf-cb-0bae1c2.patch
+Patch7403:  %{pf_url}/5aa56dc2b95a16e20483b9241197c538833fefa6.patch#/pf-cb-5aa56dc.patch
+Patch7404:  %{pf_url}/5b5fb1e26629a43edd7a445ac6a1d28e76cbf177.patch#/pf-cb-5b5fb1e.patch
+Patch7405:  %{pf_url}/d4428fc05c17a1795b1b1f4aa673754f9de27729.patch#/pf-cb-d4428fc.patch
+Patch7406:  %{pf_url}/cfd16173ba735227724c8a0dfa0c8410560037a6.patch#/pf-cb-cfd1617.patch
+Patch7407:  %{pf_url}/28ba0a10cb449cfb8b24a21468bd9f4866b9a5c5.patch#/pf-cb-28ba0a1.patch
+Patch7408:  %{pf_url}/a8a2643a6860ce856c0ad4e2d9758fa9ec64a27b.patch#/pf-cb-a8a2643.patch
+Patch7409:  %{pf_url}/4325f023e0eef8dfb90b1104a16cd7985193f303.patch#/pf-cb-4325f02.patch
+Patch7410:  %{pf_url}/40d3b2b63bee6afb682d355bb98c8b5a89482221.patch#/pf-cb-40d3b2b.patch
+Patch7411:  %{pf_url}/6fe1ba488761222472e6aee60432bdcd599ff9cd.patch#/pf-cb-6fe1ba4.patch
+Patch7412:  %{pf_url}/0d24809eace0aceacf42e8d09ed09bdc38a3bce3.patch#/pf-cb-0d24809.patch
+Patch7413:  %{pf_url}/31f81f6aa82faaefc6bb44110ad9f733dea1b278.patch#/pf-cb-31f81f6.patch
+Patch7414:  %{pf_url}/45de1bcd5b94494932e3c2f661e5982b68b54b60.patch#/pf-cb-45de1bc.patch
+Patch7415:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386fc4.patch
+Patch7416:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
+Patch7417:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
+Patch7418:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
 # fs
+Patch7500:  %{pf_url}/c91c60ac4c399042d079fc7363c76c849b3481d5.patch#/pf-cb-c91c60a.patch
+Patch7501:  %{pf_url}/4f429e4dd2377f988601e07f1a41a1db78d47223.patch#/pf-cb-4f429e4.patch
+Patch7502:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
 # ovpn-dco
 Patch7600:  %{pf_url}/31abde5202ca781656a8368e28939988b3353509.patch#/pf-cb-31abde5.patch
 Patch7601:  %{pf_url}/12a1be7ec89f43c58cda50a3d21607a41f8fa7b4.patch#/pf-cb-12a1be7.patch
@@ -1261,12 +1281,12 @@ Patch7629:  %{pf_url}/055da7e08c687b27b8ae9a53e49012d9feec60c1.patch#/pf-cb-055d
 Patch7630:  %{pf_url}/adf141d1090da66ec21e94445b75ade4256f6fcb.patch#/pf-cb-adf141d.patch
 Patch7631:  %{pf_url}/09f64f2fc948caf4f762733ff7d18f61552b7fb8.patch#/pf-cb-09f64f2.patch
 Patch7632:  %{pf_url}/005c9e70a88ecb892ad7d1a865d5d884ffa35fd5.patch#/pf-cb-005c9e7.patch
-Patch7633:  %{pf_url}/59b66060eff4dd26b4e5e193e5d09464eb4b6029.patch#/pf-cb-59b6606.patch
-Patch7634:  %{pf_url}/739ab1d67ab55ef495b583615d8264d1057be4ea.patch#/pf-cb-739ab1d.patch
-Patch7635:  %{pf_url}/d20657139778a38484ebb51bb543cde4bca12e64.patch#/pf-cb-d206571.patch
-Patch7636:  %{pf_url}/82e0272f36396be717f3bf50f6144ca8f4159a32.patch#/pf-cb-82e0272.patch
-Patch7637:  %{pf_url}/f3af05dd9625e32c5806f8b416d08aaeece4fdc7.patch#/pf-cb-f3af05d.patch
-Patch7638:  %{pf_url}/0c021a884379e5bf9408815fd471f9fd60ba7cb9.patch#/pf-cb-0c021a8.patch
+Patch7633:  %{pf_url}/b8e2979b8130eb58836062c3593967ec9d2551ad.patch#/pf-cb-b8e2979.patch
+Patch7634:  %{pf_url}/e2d41c2ae7d2558b3c8771b8ffb08c0bb6016c73.patch#/pf-cb-e2d41c2.patch
+Patch7635:  %{pf_url}/99d743e6d81cdfc0d1daa5a1b0261535fa863661.patch#/pf-cb-99d743e.patch
+Patch7636:  %{pf_url}/9755a2fee409e966c746785b8c4b13d69df9a3da.patch#/pf-cb-9755a2f.patch
+Patch7637:  %{pf_url}/58d83c663a27917e7fdb840ad8623e463ee61908.patch#/pf-cb-58d83c6.patch
+Patch7638:  %{pf_url}/50bb1e420ae85a50e8fc184ccbcb6324ea78767f.patch#/pf-cb-50bb1e4.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2103,7 +2123,6 @@ ApplyOptionalPatch %{PATCH999999}
 # archlinux
 ApplyPatch %{PATCH6950}
 ApplyPatch %{PATCH6951}
-ApplyPatch %{PATCH6952}
 # kbuild
 ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
@@ -2117,7 +2136,28 @@ ApplyPatch %{PATCH7240}
 # crypto
 # fixes
 ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
+ApplyPatch %{PATCH7412}
+ApplyPatch %{PATCH7413}
+ApplyPatch %{PATCH7414}
+ApplyPatch %{PATCH7415}
+ApplyPatch %{PATCH7416}
+ApplyPatch %{PATCH7417}
+ApplyPatch %{PATCH7418}
 # fs
+ApplyPatch %{PATCH7500}
+ApplyPatch %{PATCH7501}
+ApplyPatch %{PATCH7502}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
@@ -4512,6 +4552,9 @@ fi\
 #
 #
 %changelog
+* Thu Jun 05 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.1-500.chinfo
+- 6.15.1
+
 * Mon May 26 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.0-500.chinfo
 - 6.15.0
 - Remove graysky patch
