@@ -11,9 +11,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b53e44fcccbacc5e6e8e43a44f57cf7f9e6a38e6
+%global commit 96761197ca510a54a88720808f05aef4e9cdd696
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250530
+%global date 20250606
 %bcond_without snapshot
 
 # Enable Qt build
@@ -26,7 +26,7 @@
 %global bundleffmpegver 3.0.2
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond_without smallffmpeg
-%bcond_with miniupnpc
+%bcond_without miniupnpc
 %bcond_with local
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
@@ -61,7 +61,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 4697f97f3dd355ececf4066acd7a51e121a6bf1a
+%global commit9 ef0e22bc076235315b94499bbd9f799a3c781708
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -95,9 +95,11 @@
 
 %global sver %%(echo %{version} | cut -d. -f-3)
 %global sbuild %%(echo %{version} | cut -d. -f4)
+%global stver %%(echo %%{sver} | cut -d. -f-2)
+%global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.18.1.2081
+Version:        1.19.0.12
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -315,11 +317,16 @@ tar -xf %{SOURCE11} -C ext/miniupnp --strip-components 1
 cp ext/miniupnp/LICENSE ext/LICENSE.miniupnp
 %endif
 
+%if "%{verminor}" == "0"
+%global stverx 1
+%endif
+%global fver %{?stverx:%{stver}}%{!?stverx:%{sver}}
+
 sed -i \
 %if %{with snapshot}
-  -e '/set(GIT_VERSION\b /s|".*"|"v%{sver}-%{sbuild}-g%{vercommit}"|g' \
+  -e '/set(GIT_VERSION\b /s|".*"|"v%{fver}-%{sbuild}-g%{vercommit}"|g' \
 %else
-  -e '/set(GIT_VERSION\b /s|".*"|"v%{sver}"|g' \
+  -e '/set(GIT_VERSION\b /s|".*"|"v%{fver}"|g' \
 %endif
   -e '/find_package/s|Git|\0_disabled|g' \
   -i git-version.cmake
@@ -543,6 +550,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jun 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.0.12-100.20250606git9676119
+- 1.19
+
 * Sat May 31 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.18.1.2081-100.20250530gitb53e44f
 - Enable lto
 

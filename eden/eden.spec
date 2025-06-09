@@ -400,9 +400,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=OFF \
   -DENABLE_QT_UPDATE_CHECKER:BOOL=OFF \
-%if %{with qt6}
-  -DENABLE_QT6:BOOL=ON \
-%endif
+  %{?with_qt6:-DENABLE_QT6:BOOL=ON} \
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
@@ -423,9 +421,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
   %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
-%if %{without webservice}
-  -DENABLE_WEB_SERVICE:BOOL=OFF \
-%endif
+  %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %if %{without dynarmic}

@@ -13,11 +13,12 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e83b81ec98cfd21db64ff79ec87ca17be055969e
+%global commit 868e946dee974f0ce6506ea6c992ec0ac361e5c5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250518
+%global date 20250606
 %bcond_without snapshot
 
+%bcond_without sse42
 # Enable system boost
 %bcond_without boost
 # Enable system cryptopp
@@ -119,8 +120,8 @@
 %global vc_url  https://github.com/%{name}-emu
 
 Name:           azahar
-Version:        2121.1
-Release:        2%{?dist}
+Version:        2121.2
+Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
 
@@ -425,6 +426,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCITRA_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DENABLE_LTO:BOOL=ON \
+  %{!?with_sse42:-DENABLE_SSE42:BOOL=OFF} \
 %if %{with qt}
   -DUSE_SYSTEM_QT:BOOL=ON \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
@@ -432,20 +434,12 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
-%if %{with dynarmic}
-  -DUSE_SYSTEM_DYNARMIC:BOOL=ON \
-%endif
-%if %{with fmt}
-  -DUSE_SYSTEM_FMT:BOOL=ON \
-%endif
+  %{?with_dynarmic:-DUSE_SYSTEM_DYNARMIC:BOOL=ON} \
+  %{?with_fmt:-DUSE_SYSTEM_FMT:BOOL=ON} \
   -DUSE_SYSTEM_CPP_JWT:BOOL=OFF \
-%if %{without webservice}
-  -DENABLE_WEB_SERVICE:BOOL=OFF \
-%endif
+  %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
-%if %{with cryptopp}
-  -DUSE_SYSTEM_CRYPTOPP:BOOL=ON \
-%endif
+  %{?with_cryptopp:-DUSE_SYSTEM_CRYPTOPP:BOOL=ON} \
   -DUSE_SYSTEM_CUBEB:BOOL=ON \
   -DUSE_SYSTEM_ENET:BOOL=ON \
   -DUSE_SYSTEM_INIH:BOOL=ON \
@@ -454,20 +448,12 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
-%if %{with vma}
-  -DUSE_SYSTEM_VMA:BOOL=ON \
-%endif
-%if %{with vulkan}
-  -DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON \
-%endif
+  %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \
+  %{?with_vulkan:-DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON} \
   -DUSE_SYSTEM_XBYAK:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
-%if %{with boost}
-  -DUSE_SYSTEM_BOOST:BOOL=ON \
-%endif
-%if %{with soundtouch}
-  -DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON \
-%endif
+  %{?with_boost:-DUSE_SYSTEM_BOOST:BOOL=ON} \
+  %{?with_soundtouch:-DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON} \
   -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
   -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
@@ -521,6 +507,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Jun 06 2025 Phantom X <megaphantomx at hotmail dot com> - 2121.2-1.20250606git868e946
+- 2121.2
+
 * Thu May 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2121.1-1.20250507git16980b0
 - Initial spec
 

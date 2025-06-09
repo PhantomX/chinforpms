@@ -1,0 +1,29 @@
+From 0c81a6f6b93980c0b0b71a59bbb5b63822ac16ec Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 8 Jun 2025 10:26:13 -0300
+Subject: [PATCH] Fix multiprocessing spawn start
+
+---
+ mcomix/__main__.py | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/mcomix/__main__.py b/mcomix/__main__.py
+index bc307bd..62b8c34 100644
+--- a/mcomix/__main__.py
++++ b/mcomix/__main__.py
+@@ -21,8 +21,10 @@ from .run import run
+ 
+ 
+ def main() -> None:
+-    mp.freeze_support()
+-    mp.set_start_method('spawn')
++    try:
++        mp.set_start_method('spawn')
++    except RuntimeError:
++        pass
+     run()
+ 
+ 
+-- 
+2.49.0
+
