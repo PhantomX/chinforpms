@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.05.22
+Version:        2025.06.09
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -14,9 +14,6 @@ URL:            https://github.com/yt-dlp/yt-dlp
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.conf
-
-# Revert this patch for compatibility with older Fedora versions
-Patch500:       0001-Revert-rh-websockets-Upgrade-websockets-to-13.0.patch
 
 BuildArch:      noarch
 
@@ -87,9 +84,6 @@ Fish command line completion support for %{name}.
 
 %prep
 %autosetup -N -p1
-%if %{defined fedora} && %{fedora} <= 41
-%patch -P 500 -p1
-%endif
 
 # remove pre-built file
 rm -f %{name}
@@ -160,6 +154,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Jun 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.06.09-100
+- 2025.06.09
+
 * Thu May 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.05.22-100
 - 2025.05.22
 

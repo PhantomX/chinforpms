@@ -70,7 +70,7 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.6.1
+Version:        2.6.2
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -125,7 +125,7 @@ BuildRequires:  gcc-c++
 %if %{with spirv}
 BuildRequires:  spirv-headers-devel >= 1.5.5
 %endif
-%if %{?with_vulkan}
+%if %{with vulkan}
 BuildRequires:  vulkan-headers >= 1.3.279
 %endif
 
@@ -300,6 +300,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.2-100
+- 2.6.2
+
 * Tue Apr 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
 - 2.6.1
 

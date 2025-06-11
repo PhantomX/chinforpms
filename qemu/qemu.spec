@@ -1,9 +1,3 @@
-# qemu 9.0.0 errors with:
-# RPM build errors:
-#     Missing build-id in /tmp/rpmbuild/BUILDROOT/qemu-9.0.0-1.rc2.fc41.x86_64/usr/share/qemu/hppa-firmware.img
-#     Missing build-id in /tmp/rpmbuild/BUILDROOT/qemu-9.0.0-1.rc2.fc41.x86_64/usr/share/qemu/hppa-firmware64.img
-#     Generating build-id links failed
-%global  _missing_build_ids_terminate_build    0
 
 # Provide a way to skip tests via rpmbuild `--without`
 # This makes it easier to skip tests in copr repos, where
@@ -19,20 +13,20 @@
 %global usbredir_version 0.7.1
 %global ipxe_version 20200823-5.git4bd064de
 
-%define have_vmsr_helper 0
+%global have_vmsr_helper 0
 %global have_memlock_limits 0
 %global need_qemu_kvm 0
 %ifarch %{ix86}
 %global kvm_package   system-x86
 # need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
-%define have_vmsr_helper 1
+%global have_vmsr_helper 1
 %endif
 %ifarch x86_64
 %global kvm_package   system-x86
 # need_qemu_kvm should only ever be used by x86
 %global need_qemu_kvm 1
-%define have_vmsr_helper 1
+%global have_vmsr_helper 1
 %endif
 %ifarch %{power64}
 %global have_memlock_limits 1
@@ -40,9 +34,6 @@
 %endif
 %ifarch s390x
 %global kvm_package   system-s390x
-%endif
-%ifarch armv7hl
-%global kvm_package   system-arm
 %endif
 %ifarch aarch64
 %global kvm_package   system-aarch64
@@ -64,6 +55,14 @@
 
 %global tools_only 0
 
+# qemu 10.0.0 i686 builds no longer output 64bit emulation
+%global have_64bit 1
+%ifarch %{ix86}
+%global have_64bit 0
+%endif
+
+
+%global user_dynamic 1
 %global user_static 1
 %if 0%{?rhel}
 # EPEL/RHEL do not have required -static builddeps
@@ -73,6 +72,9 @@
 %global have_kvm 0
 %if 0%{?kvm_package:1}
 %global have_kvm 1
+%define obsoletes_package_kvm %{nil}
+%else
+%define obsoletes_package_kvm Obsoletes: %{name}-kvm < %{evr}
 %endif
 
 # Matches numactl ExcludeArch
@@ -130,60 +132,64 @@
 %endif
 
 %global have_libblkio 0
-%if 0%{?fedora}
+%if 0%{?fedora} >= 37
 %global have_libblkio 1
 %endif
 
 %global have_gvnc_devel %{defined fedora}
 %global have_sdl_image %{defined fedora}
+%global have_brlapi 1
+%global have_daxctl 1
 %global have_fdt 1
+%global have_multipath 1
 %global have_opengl 1
 %global have_usbredir 1
+%global have_xdp 1
 %global enable_werror 0
 
 
-# Matches edk2.spec ExclusiveArch
-%global have_edk2 0
-%ifarch %{ix86} x86_64 aarch64 riscv64
-%global have_edk2 1
+# All modules should be listed here.
+%global have_block_rbd 1
+%ifarch %{ix86} %{arm}
+%global have_block_rbd 0
 %endif
 
-# All modules should be listed here.
-%define have_block_rbd 1
-%ifarch %{ix86} %{arm}
-%define have_block_rbd 0
+%global have_block_iscsi 1
+%if 0%{?rhel} >= 10
+%global have_block_iscsi 0
 %endif
+
 
 %global have_block_gluster 1
 %if 0%{?rhel} >= 9
 %global have_block_gluster 0
 %endif
 
-%define have_block_nfs 0
+%global have_block_nfs 0
 %if 0%{?fedora}
-%define have_block_nfs 1
+%global have_block_nfs 1
 %endif
 
-%define have_librdma 1
+%global have_librdma 1
 %ifarch %{arm}
-%define have_librdma 0
+%global have_librdma 0
 %endif
 
-%define have_libcacard 1
+%global have_libcacard 1
 %if 0%{?rhel} >= 9
-%define have_libcacard 0
+%global have_libcacard 0
 %endif
 
-%define have_rutabaga_gfx 0
+%global have_rutabaga_gfx 0
 %if 0%{?fedora} >= 40
 %ifarch x86_64 aarch64
-%define have_rutabaga_gfx 1
+%global have_rutabaga_gfx 1
 %endif
 %endif
 
-%define have_qatzip 0
+%global have_qatzip 0
 %ifarch x86_64
-%define have_qatzip 1
+%global have_qatzip 1
 %endif
 
 %global have_libcbor 1
@@ -192,6 +198,29 @@
 %global have_libcbor 0
 %endif
 
+%if %{defined flatpak}
+%global user_dynamic 0
+%global user_static 0
+%global have_numactl 0
+%global have_xen 0
+%global have_liburing 0
+%global have_pmem 0
+%global have_libblkio 0
+%global have_brlapi 0
+%global have_daxctl 0
+%global have_multipath 0
+%global have_xdp 0
+%global have_block_gluster 0
+%global have_block_iscsi 0
+%global have_block_rbd 0
+%global have_block_nfs 0
+%global have_librdma 0
+%global have_libcacard 0
+%global have_qatzip 0
+%global have_libcbor 0
+%endif
+
+
 # LTO still has issues with qemu on armv7hl and aarch64
 # https://bugzilla.redhat.com/show_bug.cgi?id=1952483
 %global _lto_cflags %{nil}
@@ -199,7 +228,6 @@
 %global firmwaredirs "%{_datadir}/qemu-firmware:%{_datadir}/ipxe/qemu:%{_datadir}/seavgabios:%{_datadir}/seabios"
 
 %global qemudocdir %{_docdir}/%{name}
-
 %define evr %{epoch}:%{version}-%{release}
 
 %if %{have_libblkio}
@@ -216,7 +244,6 @@
 %define requires_block_gluster %{nil}
 %define obsoletes_block_gluster Obsoletes: %{name}-block-gluster < %{evr}
 %endif
-%define requires_block_iscsi Requires: %{name}-block-iscsi = %{evr}
 %if %{have_block_nfs}
 %define requires_block_nfs Requires: %{name}-block-nfs = %{evr}
 %define obsoletes_block_nfs %{nil}
@@ -231,13 +258,27 @@
 %define requires_block_rbd %{nil}
 %define obsoletes_block_rbd Obsoletes: %{name}-block-rbd < %{evr}
 %endif
+%if %{have_block_iscsi}
+%define requires_block_iscsi Requires: %{name}-block-iscsi = %{evr}
+%define obsoletes_block_iscsi %{nil}
+%else
+%define requires_block_iscsi %{nil}
+%define obsoletes_block_iscsi Obsoletes: %{name}-block-iscsi < %{evr}
+%endif
 %define requires_block_ssh Requires: %{name}-block-ssh = %{evr}
 %define requires_audio_alsa Requires: %{name}-audio-alsa = %{evr}
 %define requires_audio_oss Requires: %{name}-audio-oss = %{evr}
 %define requires_audio_pa Requires: %{name}-audio-pa = %{evr}
 %define requires_audio_pipewire Requires: %{name}-audio-pipewire = %{evr}
 %define requires_audio_sdl Requires: %{name}-audio-sdl = %{evr}
+%if %{have_brlapi}
 %define requires_char_baum Requires: %{name}-char-baum = %{evr}
+%define obsoletes_char_baum %{nil}
+%else
+%define requires_char_baum %{nil}
+%define obsoletes_char_baum Obsoletes: %{name}-char-baum < %{evr}
+%endif
+%define requires_device_uefi_vars Requires: %{name}-device-uefi-vars = %{evr}
 %define requires_device_usb_host Requires: %{name}-device-usb-host = %{evr}
 %define requires_device_usb_redirect Requires: %{name}-device-usb-redirect = %{evr}
 %define requires_ui_curses Requires: %{name}-ui-curses = %{evr}
@@ -357,6 +398,7 @@
 %{requires_device_display_virtio_vga} \
 %{requires_device_display_virtio_vga_gl} \
 %{requires_device_display_virtio_vga_rutabaga} \
+%{requires_device_uefi_vars} \
 %{requires_device_usb_host} \
 %{requires_device_usb_redirect} \
 %{requires_device_usb_smartcard} \
@@ -367,17 +409,20 @@
 %global obsoletes_some_modules \
 %{obsoletes_block_gluster} \
 %{obsoletes_block_rbd} \
+%{obsoletes_block_iscsi} \
+%{obsoletes_char_baum} \
 %{obsoletes_package_virtiofsd} \
-Obsoletes: %{name}-system-cris <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-cris-core <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-lm32 <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-lm32-core <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-moxie <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-moxie-core <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-nios2 <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-nios2-core <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-unicore32 <= %{epoch}:%{version}-%{release} \
-Obsoletes: %{name}-system-unicore32-core <= %{epoch}:%{version}-%{release} \
+%{obsoletes_package_kvm} \
+Obsoletes: %{name}-system-cris <= %{evr} \
+Obsoletes: %{name}-system-cris-core <= %{evr} \
+Obsoletes: %{name}-system-lm32 <= %{evr} \
+Obsoletes: %{name}-system-lm32-core <= %{evr} \
+Obsoletes: %{name}-system-moxie <= %{evr} \
+Obsoletes: %{name}-system-moxie-core <= %{evr} \
+Obsoletes: %{name}-system-nios2 <= %{evr} \
+Obsoletes: %{name}-system-nios2-core <= %{evr} \
+Obsoletes: %{name}-system-unicore32 <= %{evr} \
+Obsoletes: %{name}-system-unicore32-core <= %{evr} \
 Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 
 %global dlurl  https://download.qemu.org
@@ -388,7 +433,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        9.2.3
+Version:        10.0.2
 Release:        100%{?dist}
 Epoch:          2
 
@@ -419,7 +464,6 @@ Source2:        gpgkey-CEACC9E15534EBABB82D3FA03353C9CEF108B584.gpg
 Source10: qemu-guest-agent.service
 Source11: 99-qemu-guest-agent.rules
 Source12: bridge.conf
-Source16: %{name}-sysusers.conf
 Source17: qemu-ga.sysconfig
 Source21: 95-kvm-memlock.conf
 Source26: vhost.conf
@@ -427,6 +471,7 @@ Source27: kvm.conf
 Source30: kvm-s390x.conf
 Source31: kvm-x86.conf
 Source36: README.tests
+Source37: qemu.sysusers
 
 # Skip failing test in copr
 # https://gitlab.com/qemu-project/qemu/-/issues/2541
@@ -434,14 +479,9 @@ Patch: 0001-Disable-9p-local-tests-that-fail-on-copr-aarch64.patch
 # https://lists.nongnu.org/archive/html/qemu-block/2025-01/msg00480.html
 Patch: 0002-nfs-Add-support-for-libnfs-v2-api.patch
 Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
-# Upstream code has changed so will have different patch
-Patch: 0003-tests-functional-skip-mem-addr-test-on-32-bit-hosts.patch
-# https://gitlab.com/qemu-project/qemu/-/commit/c869f4129c8e35f3c234d757c0227c53134aca16
-Patch: 0004-binfmt-Shuffle-things-around.patch
-# https://gitlab.com/qemu-project/qemu/-/commit/2770a46b20b7ccd23019a7b6b6631de933b53c8e
-Patch: 0005-binfmt-Normalize-host-CPU-architecture.patch
-# https://gitlab.com/qemu-project/qemu/-/commit/1887cf2368189087fdf977fb8d09b5ad47cc7aea
-Patch: 0006-binfmt-Add-ignore-family-option.patch
+# Remove hppa-firmware* execute bit to make rpmbuild happy.
+# Submitted upstream 2025-05-18
+Patch: 0001-roms-remove-execute-bit-from-hppa-firmware.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -454,7 +494,9 @@ BuildRequires: libselinux-devel
 BuildRequires: cyrus-sasl-devel
 BuildRequires: libaio-devel
 BuildRequires: python3-devel
+%if %{have_block_iscsi}
 BuildRequires: libiscsi-devel
+%endif
 BuildRequires: libattr-devel
 BuildRequires: libusbx-devel >= %{libusbx_version}
 %if %{have_usbredir}
@@ -492,9 +534,11 @@ BuildRequires: lzo-devel snappy-devel
 %if %{have_numactl}
 BuildRequires: numactl-devel
 %endif
+%if %{have_multipath}
 # qemu-pr-helper multipath support (requires libudev too)
 BuildRequires: device-mapper-multipath-devel
 BuildRequires: systemd-devel
+%endif
 %if %{have_pmem}
 BuildRequires: libpmem-devel
 %endif
@@ -541,8 +585,10 @@ BuildRequires: spice-server-devel
 %endif
 # VNC JPEG support
 BuildRequires: libjpeg-devel
+%if %{have_brlapi}
 # Braille device support
 BuildRequires: brlapi-devel
+%endif
 %if %{have_block_gluster}
 # gluster block driver
 BuildRequires: glusterfs-api-devel
@@ -582,8 +628,10 @@ BuildRequires: liburing-devel
 BuildRequires: libzstd-devel
 # `hostname` used by test suite
 BuildRequires: hostname
+%if %{have_daxctl}
 # nvdimm dax
 BuildRequires: daxctl-devel
+%endif
 # fuse block device
 BuildRequires: fuse-devel
 %if %{have_jack}
@@ -602,8 +650,10 @@ BuildRequires: pkgconfig(gvnc-1.0)
 BuildRequires: pipewire-devel
 # Used by cryptodev-backend-lkcf
 BuildRequires: keyutils-libs-devel
+%if %{have_xdp}
 # Used by net AF_XDP
 BuildRequires: libxdp-devel
+%endif
 # used by virtio-gpu-rutabaga
 %if %{have_rutabaga_gfx}
 BuildRequires: rutabaga-gfx-ffi-devel
@@ -632,27 +682,31 @@ BuildRequires: libatomic-static
 %endif
 
 # Requires for the Fedora 'qemu' metapackage
-Requires: %{name}-user = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-aarch64 = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-alpha = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-arm = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-avr = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-loongarch64 = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-m68k = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-microblaze = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-mips = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-or1k = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-ppc = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-riscv = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-rx = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-s390x = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-sh4 = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-sparc = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-tricore = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-x86 = %{epoch}:%{version}-%{release}
-Requires: %{name}-system-xtensa = %{epoch}:%{version}-%{release}
-Requires: %{name}-img = %{epoch}:%{version}-%{release}
-Requires: %{name}-tools = %{epoch}:%{version}-%{release}
+%if %{user_dynamic}
+Requires: %{name}-user = %{evr}
+%endif
+Requires: %{name}-system-arm = %{evr}
+Requires: %{name}-system-avr = %{evr}
+Requires: %{name}-system-m68k = %{evr}
+Requires: %{name}-system-mips = %{evr}
+Requires: %{name}-system-or1k = %{evr}
+Requires: %{name}-system-ppc = %{evr}
+Requires: %{name}-system-riscv = %{evr}
+Requires: %{name}-system-rx = %{evr}
+Requires: %{name}-system-sh4 = %{evr}
+Requires: %{name}-system-sparc = %{evr}
+Requires: %{name}-system-tricore = %{evr}
+Requires: %{name}-system-x86 = %{evr}
+Requires: %{name}-system-xtensa = %{evr}
+Requires: %{name}-img = %{evr}
+Requires: %{name}-tools = %{evr}
+%if %{have_64bit}
+Requires: %{name}-system-aarch64 = %{evr}
+Requires: %{name}-system-alpha = %{evr}
+Requires: %{name}-system-loongarch64 = %{evr}
+Requires: %{name}-system-microblaze = %{evr}
+Requires: %{name}-system-s390x = %{evr}
+%endif
 
 
 %description
@@ -667,10 +721,23 @@ Summary: QEMU common files needed by all QEMU targets
 Requires(post): /usr/bin/getent
 Requires(post): /usr/sbin/groupadd
 Requires(post): /usr/sbin/useradd
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
 %{obsoletes_some_modules}
+
+%if !%{have_64bit}
+Obsoletes: %{name}-system-aarch64 <= %{evr}
+Obsoletes: %{name}-system-aarch64-core <= %{evr}
+Obsoletes: %{name}-system-alpha <= %{evr}
+Obsoletes: %{name}-system-alpha-core <= %{evr}
+Obsoletes: %{name}-system-hppa <= %{evr}
+Obsoletes: %{name}-system-hppa-core <= %{evr}
+Obsoletes: %{name}-system-loongarch64 <= %{evr}
+Obsoletes: %{name}-system-loongarch64-core <= %{evr}
+Obsoletes: %{name}-system-microblaze <= %{evr}
+Obsoletes: %{name}-system-microblaze-core <= %{evr}
+Obsoletes: %{name}-system-s390x <= %{evr}
+Obsoletes: %{name}-system-s390x-core <= %{evr}
+%endif
+
 Requires: ipxe-roms-qemu >= %{ipxe_version}
 %description common
 %{name} is an open source virtualizer that provides hardware emulation for
@@ -694,9 +761,6 @@ This package provides a command line tool for manipulating disk images.
 
 %package -n qemu-guest-agent
 Summary: QEMU guest agent
-Requires(post): systemd-units
-Requires(preun): systemd-units
-Requires(postun): systemd-units
 %description -n qemu-guest-agent
 %{name} is an open source virtualizer that provides hardware emulation for
 the KVM hypervisor.
@@ -709,6 +773,8 @@ This package does not need to be installed on the host OS.
 
 %package tools
 Summary: %{name} support tools
+Recommends: systemtap-client
+Recommends: systemtap-devel
 %description tools
 %{name}-tools provides various tools related to %{name} usage.
 
@@ -722,7 +788,7 @@ SCSI features.
 
 %package tests
 Summary: tests for the %{name} package
-Requires: %{name} = %{epoch}:%{version}-%{release}
+Requires: %{name} = %{evr}
 
 %define testsdir %{_libdir}/%{name}/tests-src
 
@@ -737,7 +803,7 @@ tests, or qemu-iotests.
 %if %{have_libblkio}
 %package  block-blkio
 Summary: QEMU blkio block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-blkio
 This package provides the additional blkio block driver for QEMU.
 
@@ -748,7 +814,7 @@ and other transports using the libblkio library.
 
 %package  block-curl
 Summary: QEMU CURL block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-curl
 This package provides the additional CURL block driver for QEMU.
 
@@ -756,19 +822,21 @@ Install this package if you want to access remote disks over
 http, https, ftp and other transports provided by the CURL library.
 
 
+%if %{have_block_iscsi}
 %package  block-iscsi
 Summary: QEMU iSCSI block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-iscsi
 This package provides the additional iSCSI block driver for QEMU.
 
 Install this package if you want to access iSCSI volumes.
+%endif
 
 
 %if %{have_block_rbd}
 %package  block-rbd
 Summary: QEMU Ceph/RBD block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-rbd
 This package provides the additional Ceph/RBD block driver for QEMU.
 
@@ -779,7 +847,7 @@ using the rbd protocol.
 
 %package  block-ssh
 Summary: QEMU SSH block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-ssh
 This package provides the additional SSH block driver for QEMU.
 
@@ -790,10 +858,9 @@ the Secure Shell (SSH) protocol.
 %if %{have_opengl}
 %package  ui-opengl
 Summary: QEMU opengl support
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: mesa-libGL
-Requires: mesa-libEGL
-Requires: mesa-dri-drivers
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: libGL
+Requires: libEGL
 %description ui-opengl
 This package provides opengl support.
 %endif
@@ -802,7 +869,7 @@ This package provides opengl support.
 # Fedora specific
 %package  block-dmg
 Summary: QEMU block driver for DMG disk images
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-dmg
 This package provides the additional DMG block driver for QEMU.
 
@@ -812,7 +879,7 @@ Install this package if you want to open '.dmg' files.
 %if %{have_block_gluster}
 %package  block-gluster
 Summary: QEMU Gluster block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description block-gluster
 This package provides the additional Gluster block driver for QEMU.
 
@@ -823,7 +890,7 @@ Install this package if you want to access remote Gluster storage.
 %if %{have_block_nfs}
 %package  block-nfs
 Summary: QEMU NFS block driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 
 %description block-nfs
 This package provides the additional NFS block driver for QEMU.
@@ -834,46 +901,46 @@ Install this package if you want to access remote NFS storage.
 
 %package  audio-alsa
 Summary: QEMU ALSA audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-alsa
 This package provides the additional ALSA audio driver for QEMU.
 
 %if %{have_dbus_display}
 %package  audio-dbus
 Summary: QEMU D-Bus audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-dbus
 This package provides the additional D-Bus audio driver for QEMU.
 %endif
 
 %package  audio-oss
 Summary: QEMU OSS audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-oss
 This package provides the additional OSS audio driver for QEMU.
 
 %package  audio-pa
 Summary: QEMU PulseAudio audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-pa
 This package provides the additional PulseAudio audio driver for QEMU.
 
 %package  audio-pipewire
 Summary: QEMU Pipewire audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-pipewire
 This package provides the additional Pipewire audio driver for QEMU.
 
 %package  audio-sdl
 Summary: QEMU SDL audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-sdl
 This package provides the additional SDL audio driver for QEMU.
 
 %if %{have_jack}
 %package  audio-jack
 Summary: QEMU Jack audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description audio-jack
 This package provides the additional Jack audio driver for QEMU.
 %endif
@@ -881,58 +948,60 @@ This package provides the additional Jack audio driver for QEMU.
 
 %package  ui-curses
 Summary: QEMU curses UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description ui-curses
 This package provides the additional curses UI for QEMU.
 
 %if %{have_dbus_display}
 %package  ui-dbus
 Summary: QEMU D-Bus UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description ui-dbus
 This package provides the additional D-Bus UI for QEMU.
 %endif
 
 %package  ui-gtk
 Summary: QEMU GTK UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-opengl%{?_isa} = %{evr}
 %description ui-gtk
 This package provides the additional GTK UI for QEMU.
 
 %package  ui-sdl
 Summary: QEMU SDL UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-opengl%{?_isa} = %{evr}
 %description ui-sdl
 This package provides the additional SDL UI for QEMU.
 
 %package  ui-egl-headless
 Summary: QEMU EGL headless driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-opengl%{?_isa} = %{evr}
 %description ui-egl-headless
 This package provides the additional egl-headless UI for QEMU.
 
 
+%if %{have_brlapi}
 %package  char-baum
 Summary: QEMU Baum chardev driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description char-baum
 This package provides the Baum chardev driver for QEMU.
+%endif
 
 
 %package device-display-virtio-gpu
 Summary: QEMU virtio-gpu display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description device-display-virtio-gpu
 This package provides the virtio-gpu display device for QEMU.
 
 %if %{have_virgl}
 %package device-display-virtio-gpu-gl
 Summary: QEMU virtio-gpu-gl display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{evr}
 %description device-display-virtio-gpu-gl
 This package provides the virtio-gpu-gl display device for QEMU.
 %endif
@@ -940,25 +1009,25 @@ This package provides the virtio-gpu-gl display device for QEMU.
 %if %{have_rutabaga_gfx}
 %package device-display-virtio-gpu-rutabaga
 Summary: QEMU virtio-gpu-rutabaga display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{evr}
 %description device-display-virtio-gpu-rutabaga
 This package provides the virtio-gpu-rutabaga display device for QEMU.
 %endif
 
 %package device-display-virtio-gpu-pci
 Summary: QEMU virtio-gpu-pci display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{evr}
 %description device-display-virtio-gpu-pci
 This package provides the virtio-gpu-pci display device for QEMU.
 
 %if %{have_virgl}
 %package device-display-virtio-gpu-pci-gl
 Summary: QEMU virtio-gpu-pci-gl display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu-pci%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu-gl%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu-pci%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu-gl%{?_isa} = %{evr}
 %description device-display-virtio-gpu-pci-gl
 This package provides the virtio-gpu-pci-gl display device for QEMU.
 %endif
@@ -966,31 +1035,31 @@ This package provides the virtio-gpu-pci-gl display device for QEMU.
 %if %{have_rutabaga_gfx}
 %package device-display-virtio-gpu-pci-rutabaga
 Summary: QEMU virtio-gpu-pci-rutabaga display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu-pci%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu-pci%{?_isa} = %{evr}
 %description device-display-virtio-gpu-pci-rutabaga
 This package provides the virtio-gpu-pci-rutabaga display device for QEMU.
 %endif
 
 %package device-display-virtio-gpu-ccw
 Summary: QEMU virtio-gpu-ccw display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{evr}
 %description device-display-virtio-gpu-ccw
 This package provides the virtio-gpu-ccw display device for QEMU.
 
 %package device-display-virtio-vga
 Summary: QEMU virtio-vga display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-gpu%{?_isa} = %{evr}
 %description device-display-virtio-vga
 This package provides the virtio-vga display device for QEMU.
 
 %if %{have_virgl}
 %package device-display-virtio-vga-gl
 Summary: QEMU virtio-vga-gl display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-vga%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-vga%{?_isa} = %{evr}
 %description device-display-virtio-vga-gl
 This package provides the virtio-vga-gl display device for QEMU.
 %endif
@@ -998,28 +1067,34 @@ This package provides the virtio-vga-gl display device for QEMU.
 %if %{have_rutabaga_gfx}
 %package device-display-virtio-vga-rutabaga
 Summary: QEMU virtio-vga-rutabaga display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-device-display-virtio-vga%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-device-display-virtio-vga%{?_isa} = %{evr}
 %description device-display-virtio-vga-rutabaga
 This package provides the virtio-vga-rutabaga display device for QEMU.
 %endif
 
+%package device-uefi-vars
+Summary: QEMU UEFI variable service
+Requires: %{name}-common%{?_isa} = %{evr}
+%description device-uefi-vars
+This package provides the UEFI variable service for QEMU.
+
 %package device-usb-host
 Summary: QEMU usb host device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description device-usb-host
 This package provides the USB pass through driver for QEMU.
 
 %package device-usb-redirect
 Summary: QEMU usbredir device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description device-usb-redirect
 This package provides the usbredir device for QEMU.
 
 %if %{have_libcacard}
 %package device-usb-smartcard
 Summary: QEMU USB smartcard device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description device-usb-smartcard
 This package provides the USB smartcard device for QEMU.
 %endif
@@ -1027,7 +1102,7 @@ This package provides the USB smartcard device for QEMU.
 %if %{have_virgl}
 %package device-display-vhost-user-gpu
 Summary: QEMU QXL display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
 %description device-display-vhost-user-gpu
 This package provides the vhost-user-gpu display device for QEMU.
 %endif
@@ -1035,37 +1110,37 @@ This package provides the vhost-user-gpu display device for QEMU.
 %if %{have_spice}
 %package  ui-spice-core
 Summary: QEMU spice-core UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-opengl%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-opengl%{?_isa} = %{evr}
 %description ui-spice-core
 This package provides the additional spice-core UI for QEMU.
 
 %package  ui-spice-app
 Summary: QEMU spice-app UI driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-char-spice%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-spice-core%{?_isa} = %{evr}
+Requires: %{name}-char-spice%{?_isa} = %{evr}
 %description ui-spice-app
 This package provides the additional spice-app UI for QEMU.
 
 %package device-display-qxl
 Summary: QEMU QXL display device
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-spice-core%{?_isa} = %{evr}
 %description device-display-qxl
 This package provides the QXL display device for QEMU.
 
 %package  char-spice
 Summary: QEMU spice chardev driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-spice-core%{?_isa} = %{evr}
 %description char-spice
 This package provides the spice chardev driver for QEMU.
 
 %package  audio-spice
 Summary: QEMU spice audio driver
-Requires: %{name}-common%{?_isa} = %{epoch}:%{version}-%{release}
-Requires: %{name}-ui-spice-core%{?_isa} = %{epoch}:%{version}-%{release}
+Requires: %{name}-common%{?_isa} = %{evr}
+Requires: %{name}-ui-spice-core%{?_isa} = %{evr}
 %description audio-spice
 This package provides the spice audio driver for QEMU.
 %endif
@@ -1074,7 +1149,7 @@ This package provides the spice audio driver for QEMU.
 %if %{have_kvm}
 %package kvm
 Summary: QEMU metapackage for KVM support
-Requires: qemu-%{kvm_package} = %{epoch}:%{version}-%{release}
+Requires: qemu-%{kvm_package} = %{evr}
 %description kvm
 This is a meta-package that provides a qemu-system-<arch> package for native
 architectures where kvm can be enabled. For example, in an x86 system, this
@@ -1083,7 +1158,7 @@ will install qemu-system-x86
 
 %package kvm-core
 Summary: QEMU metapackage for KVM support
-Requires: qemu-%{kvm_package}-core = %{epoch}:%{version}-%{release}
+Requires: qemu-%{kvm_package}-core = %{evr}
 %description kvm-core
 This is a meta-package that provides a qemu-system-<arch>-core package
 for native architectures where kvm can be enabled. For example, in an
@@ -1091,16 +1166,17 @@ x86 system, this will install qemu-system-x86-core
 %endif
 
 
+%if %{user_dynamic}
 %package user
 Summary: QEMU user mode emulation of qemu targets
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description user
 This package provides the user mode emulation of qemu targets
 
 
 %package user-binfmt
 Summary: QEMU user mode emulation of qemu targets
-Requires: %{name}-user = %{epoch}:%{version}-%{release}
+Requires: %{name}-user = %{evr}
 Requires(post): systemd-units
 Requires(postun): systemd-units
 # qemu-user-binfmt + qemu-user-static both provide binfmt rules
@@ -1110,6 +1186,7 @@ Requires(postun): systemd-units
 #Conflicts: qemu-user-static
 %description user-binfmt
 This package provides the user mode emulation of qemu targets
+%endif
 
 %if %{user_static}
 %package user-static
@@ -1122,25 +1199,34 @@ Requires(postun): systemd-units
 # https://pagure.io/fedora-ci/general/issue/184
 #Conflicts: qemu-user-binfmt
 #Provides: qemu-user-binfmt
-Requires: qemu-user-static-aarch64
-Requires: qemu-user-static-alpha
 Requires: qemu-user-static-arm
 Requires: qemu-user-static-hexagon
-Requires: qemu-user-static-hppa
-Requires: qemu-user-static-loongarch64
 Requires: qemu-user-static-m68k
 Requires: qemu-user-static-microblaze
 Requires: qemu-user-static-mips
 Requires: qemu-user-static-or1k
 Requires: qemu-user-static-ppc
 Requires: qemu-user-static-riscv
-Requires: qemu-user-static-s390x
 Requires: qemu-user-static-sh4
 Requires: qemu-user-static-sparc
 Requires: qemu-user-static-x86
 Requires: qemu-user-static-xtensa
-Obsoletes: qemu-user-static-nios2 <= %{epoch}:%{version}-%{release}
-Obsoletes: qemu-user-static-cris <= %{epoch}:%{version}-%{release}
+Obsoletes: qemu-user-static-nios2 <= %{evr}
+Obsoletes: qemu-user-static-cris <= %{evr}
+%if %{have_64bit}
+Requires: qemu-user-static-aarch64
+Requires: qemu-user-static-alpha
+Requires: qemu-user-static-hppa
+Requires: qemu-user-static-loongarch64
+Requires: qemu-user-static-s390x
+%else
+Obsoletes: %{name}-user-static-aarch64 <= %{evr}
+Obsoletes: %{name}-user-static-alpha <= %{evr}
+Obsoletes: %{name}-user-static-hppa <= %{evr}
+Obsoletes: %{name}-user-static-loongarch64 <= %{evr}
+Obsoletes: %{name}-user-static-s390x <= %{evr}
+%endif
+
 
 %description user-static
 This package provides the user mode emulation of qemu targets built as
@@ -1229,7 +1315,6 @@ Summary: QEMU user mode emulation of sh4 qemu targets static build
 %description user-static-sh4
 This package provides the sh4 user mode emulation of qemu targets built as
 static binaries
-%endif
 
 %package user-static-sparc
 Summary: QEMU user mode emulation of sparc qemu targets static build
@@ -1248,49 +1333,48 @@ Summary: QEMU user mode emulation of xtensa qemu targets static build
 %description user-static-xtensa
 This package provides the xtensa user mode emulation of qemu targets built as
 static binaries
+%endif
 
 
 %package system-aarch64
 Summary: QEMU system emulator for AArch64
-Requires: %{name}-system-aarch64-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-aarch64-core = %{evr}
 %{requires_all_modules}
 %description system-aarch64
 This package provides the QEMU system emulator for AArch64.
 
 %package system-aarch64-core
 Summary: QEMU system emulator for AArch64
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%if %{have_edk2}
+Requires: %{name}-common = %{evr}
 Requires: edk2-aarch64
-%endif
 %description system-aarch64-core
 This package provides the QEMU system emulator for AArch64.
 
 
 %package system-alpha
 Summary: QEMU system emulator for Alpha
-Requires: %{name}-system-alpha-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-alpha-core = %{evr}
 %{requires_all_modules}
 %description system-alpha
 This package provides the QEMU system emulator for Alpha systems.
 
 %package system-alpha-core
 Summary: QEMU system emulator for Alpha
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-alpha-core
 This package provides the QEMU system emulator for Alpha systems.
 
 
 %package system-arm
 Summary: QEMU system emulator for ARM
-Requires: %{name}-system-arm-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-arm-core = %{evr}
 %{requires_all_modules}
 %description system-arm
 This package provides the QEMU system emulator for ARM systems.
 
 %package system-arm-core
 Summary: QEMU system emulator for ARM
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 # Drop the next line in Fedora >= 44.
 Obsoletes: edk2-arm <= 20241117-2.fc42
 %description system-arm-core
@@ -1299,112 +1383,112 @@ This package provides the QEMU system emulator for ARM boards.
 
 %package system-avr
 Summary: QEMU system emulator for AVR
-Requires: %{name}-system-avr-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-avr-core = %{evr}
 %{requires_all_modules}
 %description system-avr
 This package provides the QEMU system emulator for AVR systems.
 
 %package system-avr-core
 Summary: QEMU system emulator for AVR
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-avr-core
 This package provides the QEMU system emulator for AVR systems.
 
 
 %package system-hppa
 Summary: QEMU system emulator for HPPA
-Requires: %{name}-system-hppa-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-hppa-core = %{evr}
 %{requires_all_modules}
 %description system-hppa
 This package provides the QEMU system emulator for HPPA.
 
 %package system-hppa-core
 Summary: QEMU system emulator for hppa
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-hppa-core
 This package provides the QEMU system emulator for HPPA.
 
 
 %package system-loongarch64
 Summary: QEMU system emulator for LoongArch (LA64)
-Requires: %{name}-system-loongarch64-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-loongarch64-core = %{evr}
 %{requires_all_modules}
 %description system-loongarch64
 This package provides the QEMU system emulator for Loongson boards.
 
 %package system-loongarch64-core
 Summary: QEMU system emulator for LoongArch (LA64)
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-loongarch64-core
 This package provides the QEMU system emulator for Loongson boards.
 
 
 %package system-m68k
 Summary: QEMU system emulator for ColdFire (m68k)
-Requires: %{name}-system-m68k-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-m68k-core = %{evr}
 %{requires_all_modules}
 %description system-m68k
 This package provides the QEMU system emulator for ColdFire boards.
 
 %package system-m68k-core
 Summary: QEMU system emulator for ColdFire (m68k)
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-m68k-core
 This package provides the QEMU system emulator for ColdFire boards.
 
 
 %package system-microblaze
 Summary: QEMU system emulator for Microblaze
-Requires: %{name}-system-microblaze-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-microblaze-core = %{evr}
 %{requires_all_modules}
 %description system-microblaze
 This package provides the QEMU system emulator for Microblaze boards.
 
 %package system-microblaze-core
 Summary: QEMU system emulator for Microblaze
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-microblaze-core
 This package provides the QEMU system emulator for Microblaze boards.
 
 
 %package system-mips
 Summary: QEMU system emulator for MIPS
-Requires: %{name}-system-mips-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-mips-core = %{evr}
 %{requires_all_modules}
 %description system-mips
 This package provides the QEMU system emulator for MIPS systems.
 
 %package system-mips-core
 Summary: QEMU system emulator for MIPS
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-mips-core
 This package provides the QEMU system emulator for MIPS systems.
 
 
 %package system-or1k
 Summary: QEMU system emulator for OpenRisc32
-Requires: %{name}-system-or1k-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-or1k-core = %{evr}
 %{requires_all_modules}
 %description system-or1k
 This package provides the QEMU system emulator for OpenRisc32 boards.
 
 %package system-or1k-core
 Summary: QEMU system emulator for OpenRisc32
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-or1k-core
 This package provides the QEMU system emulator for OpenRisc32 boards.
 
 
 %package system-ppc
 Summary: QEMU system emulator for PPC
-Requires: %{name}-system-ppc-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-ppc-core = %{evr}
 %{requires_all_modules}
 %description system-ppc
 This package provides the QEMU system emulator for PPC and PPC64 systems.
 
 %package system-ppc-core
 Summary: QEMU system emulator for PPC
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 Requires: openbios
 Requires: SLOF
 Requires: seavgabios-bin
@@ -1414,73 +1498,71 @@ This package provides the QEMU system emulator for PPC and PPC64 systems.
 
 %package system-riscv
 Summary: QEMU system emulator for RISC-V
-Requires: %{name}-system-riscv-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-riscv-core = %{evr}
 %{requires_all_modules}
 %description system-riscv
 This package provides the QEMU system emulator for RISC-V systems.
 
 %package system-riscv-core
 Summary: QEMU system emulator for RISC-V
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
-%if %{have_edk2}
+Requires: %{name}-common = %{evr}
 Requires: edk2-riscv64
-%endif
 %description system-riscv-core
 This package provides the QEMU system emulator for RISC-V systems.
 
 
 %package system-rx
 Summary: QEMU system emulator for RX
-Requires: %{name}-system-rx-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-rx-core = %{evr}
 %{requires_all_modules}
 %description system-rx
 This package provides the QEMU system emulator for RX systems.
 
 %package system-rx-core
 Summary: QEMU system emulator for RX
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-rx-core
 This package provides the QEMU system emulator for RX systems.
 
 
 %package system-s390x
 Summary: QEMU system emulator for S390
-Requires: %{name}-system-s390x-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-s390x-core = %{evr}
 %{requires_all_modules}
 %description system-s390x
 This package provides the QEMU system emulator for S390 systems.
 
 %package system-s390x-core
 Summary: QEMU system emulator for S390
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-s390x-core
 This package provides the QEMU system emulator for S390 systems.
 
 
 %package system-sh4
 Summary: QEMU system emulator for SH4
-Requires: %{name}-system-sh4-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-sh4-core = %{evr}
 %{requires_all_modules}
 %description system-sh4
 This package provides the QEMU system emulator for SH4 boards.
 
 %package system-sh4-core
 Summary: QEMU system emulator for SH4
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-sh4-core
 This package provides the QEMU system emulator for SH4 boards.
 
 
 %package system-sparc
 Summary: QEMU system emulator for SPARC
-Requires: %{name}-system-sparc-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-sparc-core = %{evr}
 %{requires_all_modules}
 %description system-sparc
 This package provides the QEMU system emulator for SPARC and SPARC64 systems.
 
 %package system-sparc-core
 Summary: QEMU system emulator for SPARC
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 Requires: openbios
 %description system-sparc-core
 This package provides the QEMU system emulator for SPARC and SPARC64 systems.
@@ -1488,21 +1570,21 @@ This package provides the QEMU system emulator for SPARC and SPARC64 systems.
 
 %package system-tricore
 Summary: QEMU system emulator for tricore
-Requires: %{name}-system-tricore-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-tricore-core = %{evr}
 %{requires_all_modules}
 %description system-tricore
 This package provides the QEMU system emulator for Tricore.
 
 %package system-tricore-core
 Summary: QEMU system emulator for tricore
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-tricore-core
 This package provides the QEMU system emulator for Tricore.
 
 
 %package system-x86
 Summary: QEMU system emulator for x86
-Requires: %{name}-system-x86-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-x86-core = %{evr}
 %{requires_all_modules}
 %description system-x86
 This package provides the QEMU system emulator for x86. When being run in a x86
@@ -1511,12 +1593,10 @@ platform.
 
 %package system-x86-core
 Summary: QEMU system emulator for x86
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 Requires: seabios-bin
 Requires: seavgabios-bin
-%if %{have_edk2}
 Requires: edk2-ovmf
-%endif
 %description system-x86-core
 This package provides the QEMU system emulator for x86. When being run in a x86
 machine that supports it, this package also provides the KVM virtualization
@@ -1525,14 +1605,14 @@ platform.
 
 %package system-xtensa
 Summary: QEMU system emulator for Xtensa
-Requires: %{name}-system-xtensa-core = %{epoch}:%{version}-%{release}
+Requires: %{name}-system-xtensa-core = %{evr}
 %{requires_all_modules}
 %description system-xtensa
 This package provides the QEMU system emulator for Xtensa boards.
 
 %package system-xtensa-core
 Summary: QEMU system emulator for Xtensa
-Requires: %{name}-common = %{epoch}:%{version}-%{release}
+Requires: %{name}-common = %{evr}
 %description system-xtensa-core
 This package provides the QEMU system emulator for Xtensa boards.
 
@@ -1640,6 +1720,7 @@ mkdir -p %{static_builddir}
   --disable-pipewire               \\\
   --disable-pixman                 \\\
   --disable-plugins                \\\
+  --disable-pvg                    \\\
   --disable-qcow1                  \\\
   --disable-qed                    \\\
   --disable-qom-cast-debug         \\\
@@ -1703,6 +1784,7 @@ mkdir -p %{static_builddir}
   --disable-zstd                   \\\
   --without-default-devices
 
+
 run_configure() {
     ../configure  \
         --cc=%{__cc} \
@@ -1749,7 +1831,9 @@ run_configure \
 %if %{defined block_drivers_ro_list}
   --block-drv-ro-whitelist=%{block_drivers_ro_list} \
 %endif
+%if %{have_xdp}
   --enable-af-xdp \
+%endif
   --enable-alsa \
   --enable-attr \
 %ifarch %{ix86} x86_64
@@ -1784,7 +1868,9 @@ run_configure \
 %if %{have_libcbor}
   --enable-libcbor \
 %endif
+%if %{have_block_iscsi}
   --enable-libiscsi \
+%endif
 %if %{have_pmem}
   --enable-libpmem \
 %endif
@@ -1798,7 +1884,9 @@ run_configure \
   --enable-lzo \
   --enable-malloc-trim \
   --enable-modules \
+%if %{have_multipath}
   --enable-mpath \
+%endif
 %if %{have_numactl}
   --enable-numa \
 %endif
@@ -1848,7 +1936,9 @@ run_configure \
   --with-default-devices \
   --enable-auth-pam \
   --enable-bochs \
+%if %{have_brlapi}
   --enable-brlapi \
+%endif
   --enable-bzip2 \
   --enable-cloop \
   --enable-curses \
@@ -1860,7 +1950,9 @@ run_configure \
 %endif
   --enable-gtk \
   --enable-hv-balloon \
+%if %{have_daxctl}
   --enable-libdaxctl \
+%endif
   --enable-libdw \
   --enable-libkeyutils \
 %if %{have_block_nfs}
@@ -1869,7 +1961,9 @@ run_configure \
 %if %{have_liburing}
   --enable-linux-io-uring \
 %endif
+%if %{user_dynamic}
   --enable-linux-user \
+%endif
   --enable-multiprocess \
   --enable-parallels \
 %if %{have_qatzip}
@@ -2107,11 +2201,21 @@ ln -sf qemu-system-x86_64 %{buildroot}%{_bindir}/qemu-kvm
 
 
 # Install binfmt
+%if %{user_dynamic}
 %global binfmt_dir %{buildroot}%{_exec_prefix}/lib/binfmt.d
 mkdir -p %{binfmt_dir}
 
-./scripts/qemu-binfmt-conf.sh --systemd ALL --exportdir %{binfmt_dir} --qemu-path %{_bindir}
+# Most riscv64 CPUs can't natively run riscv32 binaries; moreover, we
+# don't enable the kernel feature needed for that to work or build the
+# necessary 32-bit libraries in Fedora. This option tells the script
+# to generate the qemu-riscv32-static configuration even on riscv64
+%ifarch riscv64
+%define ignore_family --ignore-family yes
+%endif
+
+./scripts/qemu-binfmt-conf.sh %{?ignore_family} --systemd ALL --exportdir %{binfmt_dir} --qemu-path %{_bindir}
 for i in %{binfmt_dir}/*; do mv $i $(echo $i | sed 's/.conf/-dynamic.conf/'); done
+%endif
 
 
 # Install qemu-user-static tree
@@ -2151,9 +2255,35 @@ rm -rf %{static_buildroot}
 # endif !tools_only
 %endif
 
+install -m0644 -D %{SOURCE37} %{buildroot}%{_sysusersdir}/qemu.conf
+
 ## chinforpms changes
 mkdir -p %{buildroot}%{_localstatedir}/lib/qemu/
-install -Dpm 644 %{SOURCE16} %{buildroot}%{_sysusersdir}/%{name}.conf
+
+%if !%{have_64bit}
+rm -f \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-aarch64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-aarch64_be-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-alpha-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-hppa-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-loongarch64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-mips64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-mips64el-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-mipsn32-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-mipsn32el-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-ppc64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-ppc64le-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-riscv64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-s390x-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-sparc32plus-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-sparc64-static.conf \
+%{buildroot}%{_exec_prefix}/lib/binfmt.d/qemu-x86_64-static.conf \
+%{buildroot}%{_datadir}/%{name}/palcode-clipper \
+%{buildroot}%{_datadir}/%{name}/hppa-firmware.img \
+%{buildroot}%{_datadir}/%{name}/hppa-firmware64.img \
+%{buildroot}%{_datadir}/%{name}/petalogix*.dtb \
+%{buildroot}%{_datadir}/%{name}/s390-ccw.img \
+%endif
 
 
 %check
@@ -2173,17 +2303,55 @@ export MTESTARGS="--no-suite block"
 %if !%{tools_only}
 
 pushd %{qemu_kvm_build}
+
+# Quick sanity check, as it'll give easier to debug failures
+# than we see with 'make check'
+./qemu-system-i386 -help
+./qemu-img -help
+
+# Now run the test suites, ordered from simplest (and thus
+# hopefully least likely to fail) to complicated (and thus
+# probably more likely to fail). This also lets us selectively
+# disable just a subset of testing when we have issues with
+# certain build platform architectures
 echo "Testing %{name}-build"
-# ppc64le random qtest segfaults with no discernable pattern
-#   Last check: 2023-10
-#   Added: 2022-06
+
+echo "######## unit tests ########"
+%make_build check-unit
+
+echo "######## QAPI schema tests ########"
+%make_build check-qapi-schema
+
+echo "######## DecodeTree tests ########"
+%make_build check-decodetree
+
+echo "######## Soft Float tests ########"
+%make_build check-softfloat
+
+echo "######## QTest tests ########"
+# 2025/02/03: ppc64le hosts often abort in one or more of
+# these tests for unknown reasons. eg
 #
-# i686 test failing as of qemu-9.2.0-rcX. Discussed here:
-# https://src.fedoraproject.org/rpms/qemu/pull-request/71
-# Decided to disable i686 tests entirely, en route to fully
-# removing i686 support in the future
-%ifnarch %{power64} %{ix86}
-%make_build check TIMEOUT_MULTIPLIER=%{timeout_multiplier}
+#    3/606 qemu:qtest+qtest-riscv64 / qtest-riscv64/bios-tables-test ERROR   3.52s   killed by signal 6 SIGABRT
+#  102/606 qemu:qtest+qtest-x86_64 / qtest-x86_64/migration-test     ERROR 108.91s   killed by signal 6 SIGABRT
+#  155/606 qemu:qtest+qtest-aarch64 / qtest-aarch64/qos-test         ERROR  50.14s   killed by signal 6 SIGABRT
+#  593/606 qemu:qtest+qtest-x86_64 / qtest-x86_64/modules-test       ERROR   0.74s   killed by signal 6 SIGABRT
+%ifnarch ppc64le
+%make_build check-qtest TIMEOUT_MULTIPLIER=%{timeout_multiplier}
+%endif
+
+echo "######## Block I/O tests ########"
+%make_build check-block TIMEOUT_MULTIPLIER=%{timeout_multiplier}
+
+echo "######## Functional tests ########"
+# 2025/02/03: ppc64le hosts often fail one or more functional tests
+# for unknown reasons. eg
+#
+#  3/95 qemu:func-quick+func-riscv32 / func-riscv32-riscv_opensbi  ERROR 1.63s   exit status 1
+# 57/95 qemu:func-quick+func-riscv64 / func-riscv64-riscv_opensbi  ERROR 1.75s   exit status 1
+%ifnarch ppc64le
+# 'check-func-quick' instead of 'check-functional' to avoid asset download
+%make_build check-func-quick TIMEOUT_MULTIPLIER=%{timeout_multiplier}
 %endif
 
 popd
@@ -2203,10 +2371,13 @@ popd
 
 %if !%{tools_only}
 
+
+%if %{user_dynamic}
 %post user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 %postun user-binfmt
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
+%endif
 
 %if %{user_static}
 %post user-static-aarch64
@@ -2278,7 +2449,6 @@ popd
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 %postun user-static-sh4
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
-%endif
 
 %post user-static-sparc
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
@@ -2294,6 +2464,7 @@ popd
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
 %postun user-static-xtensa
 /bin/systemctl --system try-restart systemd-binfmt.service &>/dev/null || :
+%endif
 
 # endif !tools_only
 %endif
@@ -2400,10 +2571,10 @@ popd
 # Fedora specific
 %{_datadir}/applications/qemu.desktop
 %exclude %{_datadir}/%{name}/qemu-nsis.bmp
+%{_sysusersdir}/qemu.conf
 
 ## chinforpms changes
 %dir %attr(0751, qemu, qemu) %{_localstatedir}/lib/qemu/
-%{_sysusersdir}/%{name}.conf
 
 
 %files tests
@@ -2416,8 +2587,10 @@ popd
 %endif
 %files block-curl
 %{_libdir}/%{name}/block-curl.so
+%if %{have_block_iscsi}
 %files block-iscsi
 %{_libdir}/%{name}/block-iscsi.so
+%endif
 %if %{have_block_rbd}
 %files block-rbd
 %{_libdir}/%{name}/block-rbd.so
@@ -2475,8 +2648,10 @@ popd
 %files ui-egl-headless
 %{_libdir}/%{name}/ui-egl-headless.so
 
+%if %{have_brlapi}
 %files char-baum
 %{_libdir}/%{name}/chardev-baum.so
+%endif
 
 
 %files device-display-virtio-gpu
@@ -2511,6 +2686,8 @@ popd
 %files device-display-virtio-vga-rutabaga
 %{_libdir}/%{name}/hw-display-virtio-vga-rutabaga.so
 %endif
+%files device-uefi-vars
+%{_libdir}/%{name}/hw-uefi-vars.so
 %files device-usb-host
 %{_libdir}/%{name}/hw-usb-host.so
 %files device-usb-redirect
@@ -2550,50 +2727,45 @@ popd
 %endif
 
 
+%if %{user_dynamic}
 %files user
 %{_bindir}/qemu-i386
-%{_bindir}/qemu-x86_64
-%{_bindir}/qemu-aarch64
-%{_bindir}/qemu-aarch64_be
-%{_bindir}/qemu-alpha
 %{_bindir}/qemu-arm
 %{_bindir}/qemu-armeb
-%{_bindir}/qemu-hppa
 %{_bindir}/qemu-hexagon
-%{_bindir}/qemu-loongarch64
 %{_bindir}/qemu-m68k
 %{_bindir}/qemu-microblaze
 %{_bindir}/qemu-microblazeel
 %{_bindir}/qemu-mips
 %{_bindir}/qemu-mipsel
+%{_bindir}/qemu-or1k
+%{_bindir}/qemu-ppc
+%{_bindir}/qemu-riscv32
+%{_bindir}/qemu-sh4
+%{_bindir}/qemu-sh4eb
+%{_bindir}/qemu-sparc
+%{_bindir}/qemu-xtensa
+%{_bindir}/qemu-xtensaeb
+
+%if %{have_64bit}
+%{_bindir}/qemu-x86_64
+%{_bindir}/qemu-aarch64
+%{_bindir}/qemu-aarch64_be
+%{_bindir}/qemu-alpha
+%{_bindir}/qemu-hppa
+%{_bindir}/qemu-loongarch64
 %{_bindir}/qemu-mips64
 %{_bindir}/qemu-mips64el
 %{_bindir}/qemu-mipsn32
 %{_bindir}/qemu-mipsn32el
-%{_bindir}/qemu-or1k
-%{_bindir}/qemu-ppc
 %{_bindir}/qemu-ppc64
 %{_bindir}/qemu-ppc64le
-%{_bindir}/qemu-riscv32
 %{_bindir}/qemu-riscv64
 %{_bindir}/qemu-s390x
-%{_bindir}/qemu-sh4
-%{_bindir}/qemu-sh4eb
-%{_bindir}/qemu-sparc
 %{_bindir}/qemu-sparc32plus
 %{_bindir}/qemu-sparc64
-%{_bindir}/qemu-xtensa
-%{_bindir}/qemu-xtensaeb
+%endif
 
-%{_datadir}/systemtap/tapset/qemu-aarch64.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-log.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-log.stp
-%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-alpha.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-log.stp
-%{_datadir}/systemtap/tapset/qemu-alpha-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-armeb.stp
 %{_datadir}/systemtap/tapset/qemu-armeb-log.stp
 %{_datadir}/systemtap/tapset/qemu-armeb-simpletrace.stp
@@ -2603,15 +2775,9 @@ popd
 %{_datadir}/systemtap/tapset/qemu-hexagon.stp
 %{_datadir}/systemtap/tapset/qemu-hexagon-log.stp
 %{_datadir}/systemtap/tapset/qemu-hexagon-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-hppa.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-log.stp
-%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-i386.stp
 %{_datadir}/systemtap/tapset/qemu-i386-log.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-loongarch64.stp
-%{_datadir}/systemtap/tapset/qemu-loongarch64-log.stp
-%{_datadir}/systemtap/tapset/qemu-loongarch64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-m68k.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-log.stp
 %{_datadir}/systemtap/tapset/qemu-m68k-simpletrace.stp
@@ -2624,42 +2790,18 @@ popd
 %{_datadir}/systemtap/tapset/qemu-mips.stp
 %{_datadir}/systemtap/tapset/qemu-mips-log.stp
 %{_datadir}/systemtap/tapset/qemu-mips-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-log.stp
-%{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mips64.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-log.stp
-%{_datadir}/systemtap/tapset/qemu-mips64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-mipsel.stp
 %{_datadir}/systemtap/tapset/qemu-mipsel-log.stp
 %{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-log.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-log.stp
-%{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-or1k.stp
 %{_datadir}/systemtap/tapset/qemu-or1k-log.stp
 %{_datadir}/systemtap/tapset/qemu-or1k-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-ppc.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-log.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-log.stp
-%{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32-log.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-log.stp
-%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-s390x.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-log.stp
-%{_datadir}/systemtap/tapset/qemu-s390x-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sh4.stp
 %{_datadir}/systemtap/tapset/qemu-sh4-log.stp
 %{_datadir}/systemtap/tapset/qemu-sh4-simpletrace.stp
@@ -2669,6 +2811,53 @@ popd
 %{_datadir}/systemtap/tapset/qemu-sparc.stp
 %{_datadir}/systemtap/tapset/qemu-sparc-log.stp
 %{_datadir}/systemtap/tapset/qemu-sparc-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa-log.stp
+%{_datadir}/systemtap/tapset/qemu-xtensa-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb-log.stp
+%{_datadir}/systemtap/tapset/qemu-xtensaeb-simpletrace.stp
+
+%if %{have_64bit}
+%{_datadir}/systemtap/tapset/qemu-aarch64.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64-log.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-log.stp
+%{_datadir}/systemtap/tapset/qemu-aarch64_be-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-alpha.stp
+%{_datadir}/systemtap/tapset/qemu-alpha-log.stp
+%{_datadir}/systemtap/tapset/qemu-alpha-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-hppa.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-log.stp
+%{_datadir}/systemtap/tapset/qemu-hppa-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-loongarch64.stp
+%{_datadir}/systemtap/tapset/qemu-loongarch64-log.stp
+%{_datadir}/systemtap/tapset/qemu-loongarch64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-mips64el.stp
+%{_datadir}/systemtap/tapset/qemu-mips64el-log.stp
+%{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-mips64.stp
+%{_datadir}/systemtap/tapset/qemu-mips64-log.stp
+%{_datadir}/systemtap/tapset/qemu-mips64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32-log.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32el.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32el-log.stp
+%{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64-log.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64le.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64le-log.stp
+%{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-log.stp
+%{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace.stp
+%{_datadir}/systemtap/tapset/qemu-s390x.stp
+%{_datadir}/systemtap/tapset/qemu-s390x-log.stp
+%{_datadir}/systemtap/tapset/qemu-s390x-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-log.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace.stp
@@ -2678,21 +2867,18 @@ popd
 %{_datadir}/systemtap/tapset/qemu-x86_64.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64-log.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa-log.stp
-%{_datadir}/systemtap/tapset/qemu-xtensa-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb-log.stp
-%{_datadir}/systemtap/tapset/qemu-xtensaeb-simpletrace.stp
+%endif
 
 
 %files user-binfmt
 %{_exec_prefix}/lib/binfmt.d/qemu-*-dynamic.conf
+%endif
 
 %if %{user_static}
 %files user-static
 %license COPYING COPYING.LIB LICENSE
 
+%if %{have_64bit}
 %files user-static-aarch64
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-aarch64-static
@@ -2707,7 +2893,9 @@ popd
 %{_exec_prefix}/lib/binfmt.d/qemu-aarch64-static.conf
 %endif
 %{_exec_prefix}/lib/binfmt.d/qemu-aarch64_be-static.conf
+%endif
 
+%if %{have_64bit}
 %files user-static-alpha
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-alpha-static
@@ -2715,6 +2903,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-alpha-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-alpha-static.stp
 %{_exec_prefix}/lib/binfmt.d/qemu-alpha-static.conf
+%endif
 
 %files user-static-arm
 %license COPYING COPYING.LIB LICENSE
@@ -2739,6 +2928,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-hexagon-static.stp
 %{_exec_prefix}/lib/binfmt.d/qemu-hexagon-static.conf
 
+%if %{have_64bit}
 %files user-static-hppa
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-hppa-static
@@ -2746,7 +2936,9 @@ popd
 %{_datadir}/systemtap/tapset/qemu-hppa-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-hppa-static.stp
 %{_exec_prefix}/lib/binfmt.d/qemu-hppa-static.conf
+%endif
 
+%if %{have_64bit}
 %files user-static-loongarch64
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-loongarch64-static
@@ -2754,6 +2946,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-loongarch64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-loongarch64-static.stp
 %{_exec_prefix}/lib/binfmt.d/qemu-loongarch64-static.conf
+%endif
 
 %files user-static-m68k
 %license COPYING COPYING.LIB LICENSE
@@ -2779,35 +2972,37 @@ popd
 %files user-static-mips
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-mips-static
-%{_bindir}/qemu-mips64-static
-%{_bindir}/qemu-mips64el-static
 %{_bindir}/qemu-mipsel-static
-%{_bindir}/qemu-mipsn32-static
-%{_bindir}/qemu-mipsn32el-static
 %{_datadir}/systemtap/tapset/qemu-mips-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips-static.stp
+%{_datadir}/systemtap/tapset/qemu-mipsel-log-static.stp
+%{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace-static.stp
+%{_datadir}/systemtap/tapset/qemu-mipsel-static.stp
+%{_exec_prefix}/lib/binfmt.d/qemu-mips-static.conf
+%{_exec_prefix}/lib/binfmt.d/qemu-mipsel-static.conf
+%if %{have_64bit}
+%{_bindir}/qemu-mips64-static
+%{_bindir}/qemu-mips64el-static
+%{_bindir}/qemu-mipsn32-static
+%{_bindir}/qemu-mipsn32el-static
 %{_datadir}/systemtap/tapset/qemu-mips64-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips64-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips64el-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips64el-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mips64el-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-log-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-simpletrace-static.stp
-%{_datadir}/systemtap/tapset/qemu-mipsel-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-mipsn32el-static.stp
-%{_exec_prefix}/lib/binfmt.d/qemu-mips-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-mips64-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-mips64el-static.conf
-%{_exec_prefix}/lib/binfmt.d/qemu-mipsel-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-mipsn32-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-mipsn32el-static.conf
+%endif
 
 %files user-static-or1k
 %license COPYING COPYING.LIB LICENSE
@@ -2820,38 +3015,43 @@ popd
 %files user-static-ppc
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-ppc-static
-%{_bindir}/qemu-ppc64-static
-%{_bindir}/qemu-ppc64le-static
 %{_datadir}/systemtap/tapset/qemu-ppc-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc-static.stp
+%{_exec_prefix}/lib/binfmt.d/qemu-ppc-static.conf
+%if %{have_64bit}
+%{_bindir}/qemu-ppc64-static
+%{_bindir}/qemu-ppc64le-static
 %{_datadir}/systemtap/tapset/qemu-ppc64-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-ppc64le-static.stp
-%{_exec_prefix}/lib/binfmt.d/qemu-ppc-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-ppc64-static.conf
 %ifnarch ppc64le
 %{_exec_prefix}/lib/binfmt.d/qemu-ppc64le-static.conf
+%endif
 %endif
 
 %files user-static-riscv
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-riscv32-static
-%{_bindir}/qemu-riscv64-static
 %{_datadir}/systemtap/tapset/qemu-riscv32-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-riscv32-static.stp
+%{_exec_prefix}/lib/binfmt.d/qemu-riscv32-static.conf
+%if %{have_64bit}
+%{_bindir}/qemu-riscv64-static
 %{_datadir}/systemtap/tapset/qemu-riscv64-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-riscv64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-riscv64-static.stp
-%{_exec_prefix}/lib/binfmt.d/qemu-riscv32-static.conf
 %ifnarch riscv64
 %{_exec_prefix}/lib/binfmt.d/qemu-riscv64-static.conf
 %endif
+%endif
 
+%if %{have_64bit}
 %files user-static-s390x
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-s390x-static
@@ -2860,6 +3060,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-s390x-static.stp
 %ifnarch s390x
 %{_exec_prefix}/lib/binfmt.d/qemu-s390x-static.conf
+%endif
 %endif
 
 %files user-static-sh4
@@ -2878,35 +3079,41 @@ popd
 %files user-static-sparc
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-sparc-static
-%{_bindir}/qemu-sparc32plus-static
-%{_bindir}/qemu-sparc64-static
 %{_datadir}/systemtap/tapset/qemu-sparc-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc-static.stp
+%{_exec_prefix}/lib/binfmt.d/qemu-sparc-static.conf
+%if %{have_64bit}
+%{_bindir}/qemu-sparc32plus-static
+%{_bindir}/qemu-sparc64-static
 %{_datadir}/systemtap/tapset/qemu-sparc64-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc64-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-sparc32plus-static.stp
-%{_exec_prefix}/lib/binfmt.d/qemu-sparc-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-sparc32plus-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-sparc64-static.conf
+%endif
 
 %files user-static-x86
 %license COPYING COPYING.LIB LICENSE
 %{_bindir}/qemu-i386-static
-%{_bindir}/qemu-x86_64-static
 %{_datadir}/systemtap/tapset/qemu-i386-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-i386-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-i386-static.stp
+%if %{have_64bit}
+%{_bindir}/qemu-x86_64-static
 %{_datadir}/systemtap/tapset/qemu-x86_64-log-static.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64-simpletrace-static.stp
 %{_datadir}/systemtap/tapset/qemu-x86_64-static.stp
+%ifnarch x86_64
+%{_exec_prefix}/lib/binfmt.d/qemu-x86_64-static.conf
+%endif
+%endif
 %ifnarch %{ix86} x86_64
 %{_exec_prefix}/lib/binfmt.d/qemu-i386-static.conf
 %{_exec_prefix}/lib/binfmt.d/qemu-i486-static.conf
-%{_exec_prefix}/lib/binfmt.d/qemu-x86_64-static.conf
 %endif
 
 %files user-static-xtensa
@@ -2925,6 +3132,7 @@ popd
 %endif
 
 
+%if %{have_64bit}
 %files system-aarch64
 %files system-aarch64-core
 %{_bindir}/qemu-system-aarch64
@@ -2932,8 +3140,10 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-aarch64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-aarch64-simpletrace.stp
 %{_mandir}/man1/qemu-system-aarch64.1*
+%endif
 
 
+%if %{have_64bit}
 %files system-alpha
 %files system-alpha-core
 %{_bindir}/qemu-system-alpha
@@ -2942,12 +3152,14 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-alpha-simpletrace.stp
 %{_mandir}/man1/qemu-system-alpha.1*
 %{_datadir}/%{name}/palcode-clipper
+%endif
 
 
 %files system-arm
 %files system-arm-core
 %{_bindir}/qemu-system-arm
 %{_datadir}/%{name}/npcm7xx_bootrom.bin
+%{_datadir}/%{name}/npcm8xx_bootrom.bin
 %{_datadir}/systemtap/tapset/qemu-system-arm.stp
 %{_datadir}/systemtap/tapset/qemu-system-arm-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-arm-simpletrace.stp
@@ -2963,6 +3175,7 @@ popd
 %{_mandir}/man1/qemu-system-avr.1*
 
 
+%if %{have_64bit}
 %files system-hppa
 %files system-hppa-core
 %{_bindir}/qemu-system-hppa
@@ -2972,8 +3185,10 @@ popd
 %{_mandir}/man1/qemu-system-hppa.1*
 %{_datadir}/%{name}/hppa-firmware.img
 %{_datadir}/%{name}/hppa-firmware64.img
+%endif
 
 
+%if %{have_64bit}
 %files system-loongarch64
 %files system-loongarch64-core
 %{_bindir}/qemu-system-loongarch64
@@ -2981,6 +3196,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-loongarch64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-loongarch64-simpletrace.stp
 %{_mandir}/man1/qemu-system-loongarch64.1*
+%endif
 
 
 %files system-m68k
@@ -2992,6 +3208,7 @@ popd
 %{_mandir}/man1/qemu-system-m68k.1*
 
 
+%if %{have_64bit}
 %files system-microblaze
 %files system-microblaze-core
 %{_bindir}/qemu-system-microblaze
@@ -3005,30 +3222,34 @@ popd
 %{_mandir}/man1/qemu-system-microblaze.1*
 %{_mandir}/man1/qemu-system-microblazeel.1*
 %{_datadir}/%{name}/petalogix*.dtb
+%endif
 
 
 %files system-mips
 %files system-mips-core
 %{_bindir}/qemu-system-mips
 %{_bindir}/qemu-system-mipsel
-%{_bindir}/qemu-system-mips64
-%{_bindir}/qemu-system-mips64el
 %{_datadir}/systemtap/tapset/qemu-system-mips.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-system-mipsel.stp
 %{_datadir}/systemtap/tapset/qemu-system-mipsel-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-mipsel-simpletrace.stp
+%{_mandir}/man1/qemu-system-mips.1*
+%{_mandir}/man1/qemu-system-mipsel.1*
+
+%if %{have_64bit}
+%{_bindir}/qemu-system-mips64
+%{_bindir}/qemu-system-mips64el
 %{_datadir}/systemtap/tapset/qemu-system-mips64.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips64-simpletrace.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips64el.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips64el-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-mips64el-simpletrace.stp
-%{_mandir}/man1/qemu-system-mips.1*
-%{_mandir}/man1/qemu-system-mipsel.1*
 %{_mandir}/man1/qemu-system-mips64el.1*
 %{_mandir}/man1/qemu-system-mips64.1*
+%endif
 
 
 %files system-or1k
@@ -3043,18 +3264,22 @@ popd
 %files system-ppc
 %files system-ppc-core
 %{_bindir}/qemu-system-ppc
-%{_bindir}/qemu-system-ppc64
 %{_datadir}/systemtap/tapset/qemu-system-ppc.stp
 %{_datadir}/systemtap/tapset/qemu-system-ppc-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-ppc-simpletrace.stp
+%{_mandir}/man1/qemu-system-ppc.1*
+
+%if %{have_64bit}
+%{_bindir}/qemu-system-ppc64
 %{_datadir}/systemtap/tapset/qemu-system-ppc64.stp
 %{_datadir}/systemtap/tapset/qemu-system-ppc64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-ppc64-simpletrace.stp
-%{_mandir}/man1/qemu-system-ppc.1*
 %{_mandir}/man1/qemu-system-ppc64.1*
+%endif
 %{_datadir}/%{name}/bamboo.dtb
 %{_datadir}/%{name}/canyonlands.dtb
 %{_datadir}/%{name}/qemu_vga.ndrv
+%{_datadir}/%{name}/pnv-pnor.bin
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/u-boot.e500
 %{_datadir}/%{name}/u-boot-sam460-20100605.bin
@@ -3067,15 +3292,17 @@ popd
 %files system-riscv
 %files system-riscv-core
 %{_bindir}/qemu-system-riscv32
-%{_bindir}/qemu-system-riscv64
 %{_datadir}/%{name}/opensbi-riscv*.bin
 %{_datadir}/systemtap/tapset/qemu-system-riscv32.stp
 %{_datadir}/systemtap/tapset/qemu-system-riscv32-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-riscv32-simpletrace.stp
+%{_mandir}/man1/qemu-system-riscv*.1*
+%if %{have_64bit}
 %{_datadir}/systemtap/tapset/qemu-system-riscv64.stp
 %{_datadir}/systemtap/tapset/qemu-system-riscv64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-riscv64-simpletrace.stp
-%{_mandir}/man1/qemu-system-riscv*.1*
+%{_bindir}/qemu-system-riscv64
+%endif
 
 
 %files system-rx
@@ -3087,6 +3314,7 @@ popd
 %{_mandir}/man1/qemu-system-rx.1*
 
 
+%if %{have_64bit}
 %files system-s390x
 %files system-s390x-core
 %{_bindir}/qemu-system-s390x
@@ -3095,6 +3323,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-s390x-simpletrace.stp
 %{_mandir}/man1/qemu-system-s390x.1*
 %{_datadir}/%{name}/s390-ccw.img
+%endif
 
 
 %files system-sh4
@@ -3114,17 +3343,20 @@ popd
 %files system-sparc
 %files system-sparc-core
 %{_bindir}/qemu-system-sparc
-%{_bindir}/qemu-system-sparc64
 %{_datadir}/systemtap/tapset/qemu-system-sparc.stp
 %{_datadir}/systemtap/tapset/qemu-system-sparc-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-sparc-simpletrace.stp
+%{_mandir}/man1/qemu-system-sparc.1*
+%{_datadir}/%{name}/QEMU,tcx.bin
+%{_datadir}/%{name}/QEMU,cgthree.bin
+
+%if %{have_64bit}
+%{_bindir}/qemu-system-sparc64
 %{_datadir}/systemtap/tapset/qemu-system-sparc64.stp
 %{_datadir}/systemtap/tapset/qemu-system-sparc64-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-sparc64-simpletrace.stp
-%{_mandir}/man1/qemu-system-sparc.1*
 %{_mandir}/man1/qemu-system-sparc64.1*
-%{_datadir}/%{name}/QEMU,tcx.bin
-%{_datadir}/%{name}/QEMU,cgthree.bin
+%endif
 
 
 %files system-tricore
@@ -3139,25 +3371,23 @@ popd
 %files system-x86
 %files system-x86-core
 %{_bindir}/qemu-system-i386
-%{_bindir}/qemu-system-x86_64
-%{_libdir}/%{name}/accel-tcg-i386.so
-%{_libdir}/%{name}/accel-tcg-x86_64.so
-%if %{with systemtap}
 %{_datadir}/systemtap/tapset/qemu-system-i386.stp
 %{_datadir}/systemtap/tapset/qemu-system-i386-log.stp
 %{_datadir}/systemtap/tapset/qemu-system-i386-simpletrace.stp
-%{_datadir}/systemtap/tapset/qemu-system-x86_64.stp
-%{_datadir}/systemtap/tapset/qemu-system-x86_64-log.stp
-%{_datadir}/systemtap/tapset/qemu-system-x86_64-simpletrace.stp
-%endif
 %{_mandir}/man1/qemu-system-i386.1*
-%{_mandir}/man1/qemu-system-x86_64.1*
 %{_datadir}/%{name}/kvmvapic.bin
 %{_datadir}/%{name}/linuxboot.bin
 %{_datadir}/%{name}/multiboot.bin
 %{_datadir}/%{name}/multiboot_dma.bin
 %{_datadir}/%{name}/pvh.bin
 %{_datadir}/%{name}/qboot.rom
+%if %{have_64bit}
+%{_bindir}/qemu-system-x86_64
+%{_datadir}/systemtap/tapset/qemu-system-x86_64.stp
+%{_datadir}/systemtap/tapset/qemu-system-x86_64-log.stp
+%{_datadir}/systemtap/tapset/qemu-system-x86_64-simpletrace.stp
+%{_mandir}/man1/qemu-system-x86_64.1*
+%endif
 %if %{need_qemu_kvm}
 %{_bindir}/qemu-kvm
 %{_mandir}/man1/qemu-kvm.1*
@@ -3186,6 +3416,10 @@ popd
 
 
 %changelog
+* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0.2-100
+- 10.0.2
+- Rawhide sync
+
 * Thu Mar 27 2025 Phantom X <megaphantomx at hotmail dot com> - 2:9.2.3-100
 - 9.2.3
 

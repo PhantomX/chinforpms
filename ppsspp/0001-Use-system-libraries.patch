@@ -251,19 +251,6 @@ index c62ed66..d694e22 100644
  
  using namespace Microsoft::WRL;
  
-diff --git a/GPU/Directx9/TextureCacheDX9.cpp b/GPU/Directx9/TextureCacheDX9.cpp
-index d263a7e..fe50987 100644
---- a/GPU/Directx9/TextureCacheDX9.cpp
-+++ b/GPU/Directx9/TextureCacheDX9.cpp
-@@ -33,7 +33,7 @@
- #include "GPU/Common/TextureDecoder.h"
- #include "Core/Config.h"
- 
--#include "ext/xxhash.h"
-+#include "xxhash.h"
- #include "Common/Math/math_util.h"
- 
- // NOTE: In the D3D backends, we flip R and B in the shaders, so while these look wrong, they're OK.
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
 index cc38b91..396abdd 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp

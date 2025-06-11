@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit fb3988a78a54b4a75090594a6d374ba819e0afcb
+%global commit 9bbf2c3df2d947b1574f51feeb63b71ededa69f5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250531
+%global date 20250608
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -98,7 +98,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27334
+Version:        0.0.2.27355
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -138,6 +138,8 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
+Patch500:       0001-Fix-License-headers-CI-168.patch
+Patch501:       %{vc_url}/%{name}/commit/6397bb0809b654f977c552a789b666596f15cee4.patch#/%{name}-git-6397bb0.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -269,6 +271,10 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
+%if %{without ffmpeg}
+%patch -P 500 -p1 -R
+%patch -P 501 -p1 -R
+%endif
 
 pushd externals
 rm -rf \

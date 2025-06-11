@@ -13,7 +13,7 @@
 Summary:        Qt6 - Configuration Tool
 Name:           qt6ct
 Version:        0.10
-Release:        101%{?dist}
+Release:        102%{?dist}
 
 License:        BSD-2-Clause
 Url:            https://www.opencode.net/trialuser/qt6ct
@@ -84,6 +84,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 0.10-102
+- Rebuild (qt6)
+
 * Fri Apr 18 2025 Phantom X <megaphantomx at hotmail dot com> - 0.10-101
 - Rebuild (qt6)
 

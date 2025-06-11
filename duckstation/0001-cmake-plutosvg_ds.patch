@@ -14,7 +14,7 @@ index 30d6bd3..b4d6f16 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
 @@ -16,7 +16,7 @@ find_package(ZLIB REQUIRED) # 1.3, but Mac currently doesn't use it.
- find_package(PNG 1.6.40 REQUIRED)
+ find_package(PNG 1.6.40 REQUIRED) # 1.6.48, but Fedora is out of date.
  find_package(JPEG REQUIRED)
  find_package(Freetype 2.13.2 REQUIRED) # 2.13.3, but flatpak is still on 2.13.2.
 -find_package(plutosvg 0.0.6 REQUIRED)

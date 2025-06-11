@@ -2,8 +2,8 @@
 
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        25.1.0
-Release:        103%{?dist}
+Version:        25.4.0
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -12,11 +12,6 @@ URL:            http://skrooge.org
 Source0:        https://download.kde.org/stable/%{name}/%{name}-%{version}.tar.xz
 
 ## upstream patches
-Patch0:         %{vc_url}/-/commit/83d0e5522a9fc6d46eaf3b433e80fb51c2835e99.patch#/%{name}-cgit-83d0e55.patch
-Patch1:         %{vc_url}/-/commit/1573aec7eaa884beac0b32aaf65bd4122fab04bf.patch#/%{name}-cgit-1573aec.patch
-Patch2:         %{vc_url}/-/commit/33a51633fdc4af061d8251453eb439ac9d988bdb.patch#/%{name}-cgit-33a5163.patch
-Patch3:         %{vc_url}/-/commit/06d6edb7bc74412a31469a6bd916ac03f34dc1f1.patch#/%{name}-cgit-06d6edb.patch
-Patch4:         %{vc_url}/-/commit/1d59a1d7318251c65506931b542e551d8a9ff97e.patch#/%{name}-cgit-1d59a1d.patch
 
 ExclusiveArch:  %{qt6_qtwebengine_arches}
 
@@ -149,6 +144,9 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.skrooge.d
 %{_kf6_datadir}/skrooge_source/
  
 %changelog
+* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.4.0-100
+- 25.4.0
+
 * Fri Apr 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.1.0-103
 - Rebuild (qt6)
 

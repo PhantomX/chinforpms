@@ -1,0 +1,24 @@
+From 38185800a5ed7f7bdce1b31885991f34386a581a Mon Sep 17 00:00:00 2001
+Message-ID: <38185800a5ed7f7bdce1b31885991f34386a581a.1747589891.git.crobinso@redhat.com>
+From: Cole Robinson <crobinso@redhat.com>
+Date: Sun, 18 May 2025 13:36:55 -0400
+Subject: [PATCH] roms: remove execute bit from hppa-firmware.*
+Content-type: text/plain
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ pc-bios/hppa-firmware.img   | Bin
+ pc-bios/hppa-firmware64.img | Bin
+ 2 files changed, 0 insertions(+), 0 deletions(-)
+ mode change 100755 => 100644 pc-bios/hppa-firmware.img
+ mode change 100755 => 100644 pc-bios/hppa-firmware64.img
+
+diff --git a/pc-bios/hppa-firmware.img b/pc-bios/hppa-firmware.img
+old mode 100755
+new mode 100644
+diff --git a/pc-bios/hppa-firmware64.img b/pc-bios/hppa-firmware64.img
+old mode 100755
+new mode 100644
+-- 
+2.49.0
+

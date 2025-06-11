@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.1
+%define specrpmversion 6.15.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1224,8 +1224,6 @@ Patch7230:  %{pf_url}/bcc5227778a480910f8f37784ba1d0151e225b4f.patch#/pf-cb-bcc5
 Patch7240:  %{pf_url}/3a440104dbb8f2dcb56fa252a52b1bb75d80686b.patch#/pf-cb-3a44010.patch
 # crypto
 # fixes
-Patch7400:  %{pf_url}/3b2e2a3ccc9da8a43e642d4ffac45f6c9ef56de4.patch#/pf-cb-3b2e2a3.patch
-Patch7401:  %{pf_url}/6b7a3c86522f264b9789cc56660fe19bddc630b8.patch#/pf-cb-6b7a3c8.patch
 Patch7402:  %{pf_url}/0bae1c21f1198a4b0d4e5900473c0aea720ee496.patch#/pf-cb-0bae1c2.patch
 Patch7403:  %{pf_url}/5aa56dc2b95a16e20483b9241197c538833fefa6.patch#/pf-cb-5aa56dc.patch
 Patch7404:  %{pf_url}/5b5fb1e26629a43edd7a445ac6a1d28e76cbf177.patch#/pf-cb-5b5fb1e.patch
@@ -1243,6 +1241,12 @@ Patch7415:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386
 Patch7416:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
 Patch7417:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
 Patch7418:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
+Patch7419:  %{pf_url}/36a2dbe868462cda00ed3cf078acfbc3336847b1.patch#/pf-cb-36a2dbe.patch
+Patch7420:  %{pf_url}/3a17fd05ed788fac14f2665fa0124f9cb7b79f71.patch#/pf-cb-3a17fd0.patch
+Patch7421:  %{pf_url}/4016ac5556bf588fa59e2cba819c88044011207a.patch#/pf-cb-4016ac5.patch
+Patch7422:  %{pf_url}/57793e1000f6d6e2e3e706ab72f03ab7c29e99f4.patch#/pf-cb-57793e1.patch
+Patch7423:  %{pf_url}/8a303adfd435805b6d33553bc117d002865c2a57.patch#/pf-cb-8a303ad.patch
+Patch7424:  %{pf_url}/22e634d7697833d457561c13401009a963d89799.patch#/pf-cb-22e634d.patch
 # fs
 Patch7500:  %{pf_url}/c91c60ac4c399042d079fc7363c76c849b3481d5.patch#/pf-cb-c91c60a.patch
 Patch7501:  %{pf_url}/4f429e4dd2377f988601e07f1a41a1db78d47223.patch#/pf-cb-4f429e4.patch
@@ -2135,8 +2139,6 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7240}
 # crypto
 # fixes
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
@@ -2154,6 +2156,12 @@ ApplyPatch %{PATCH7415}
 ApplyPatch %{PATCH7416}
 ApplyPatch %{PATCH7417}
 ApplyPatch %{PATCH7418}
+ApplyPatch %{PATCH7419}
+ApplyPatch %{PATCH7420}
+ApplyPatch %{PATCH7421}
+ApplyPatch %{PATCH7422}
+ApplyPatch %{PATCH7423}
+ApplyPatch %{PATCH7424}
 # fs
 ApplyPatch %{PATCH7500}
 ApplyPatch %{PATCH7501}
@@ -4552,6 +4560,9 @@ fi\
 #
 #
 %changelog
+* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.2-500.chinfo
+- 6.15.2
+
 * Thu Jun 05 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.1-500.chinfo
 - 6.15.1
 

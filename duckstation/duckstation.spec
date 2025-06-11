@@ -9,7 +9,7 @@
 %endif
 
 # Only clang is supported by upstream
-%bcond_with clang
+%bcond_without clang
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -24,11 +24,12 @@
 # Enable system rapidyml
 %bcond_with ryml
 %bcond_without vulkan
+%bcond_with xbyak
 %bcond_with local
 
-%global commit 461c51ff6a1217dda11decbc851295e52c6c6549
+%global commit 7752b2bd2d550577c41bc920db19b858ee4a074f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250519
+%global date 20250609
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -45,9 +46,10 @@
 %global minizip_ver 1.1
 %global rcheevos_scommit 08999e0
 %global simpleini_ver 4.22
+%global xbyak_ver 6.73
 
 Name:           duckstation
-Version:        0.1.9040
+Version:        0.1.9110
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -72,7 +74,6 @@ Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch10:        0001-cmake-soundtouch_ds.patch
 Patch11:        0001-cmake-plutosvg_ds.patch
-Patch12:        0001-Downgrade-SDL3-requirements-a-bit.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -131,7 +132,7 @@ BuildRequires:  libzip-tools
 BuildRequires:  pkgconfig(libzstd) >= 1.5.6
 BuildRequires:  cmake(plutosvg_ds) >= 0.0.6
 BuildRequires:  pkgconfig(lzmasdk-c) >= 24.08
-BuildRequires:  cmake(SDL3) >= 3.2.0
+BuildRequires:  cmake(SDL3) >= 3.2.16
 BuildRequires:  cmake(Shaderc_ds)
 BuildRequires:  cmake(SoundTouch_ds) >= 2.3.3
 BuildRequires:  cmake(spirv_cross_c_shared)
@@ -142,7 +143,11 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  cmake(WebP)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(x11-xcb)
+%if %{with xbyak}
 BuildRequires:  cmake(xbyak)
+%else
+Provides:       bundled(xbyak) = %{xbyak_ver}
+%endif
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(xcb-randr)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -218,7 +223,7 @@ This package provides the data files for duckstation.
 pushd dep
 rm -rf \
   cpuinfo cubeb gsl libchdr libFLAC libjpeg libpng lzma msvc \
-  xbyak xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
+  xxhash zlib zstd d3d12ma fast_float biscuit riscv-disas zydis
 
 %if %{with fmt}
   rm -rf fmt
@@ -247,6 +252,13 @@ cp rapidyaml/LICENSE.txt LICENSE.rapidyaml
   rm -rf vulkan
 %else
   sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i CMakeLists.txt
+%endif
+
+%if %{with xbyak}
+  rm -rf xbyak
+%else
+  sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i CMakeLists.txt
+  cp xbyak/COPYRIGHT LICENSE.xbyak
 %endif
 
 cp -p ffmpeg/COPYING.LGPLv2.1 LICENSE.ffmpeg
@@ -311,6 +323,9 @@ echo 'set_source_files_properties(fastjmp.cpp PROPERTIES COMPILE_FLAGS -fno-lto)
 
 
 %build
+%global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
+export CFLAGS+=" %{xbyak_flags}"
+export CXXFLAGS+=" %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
