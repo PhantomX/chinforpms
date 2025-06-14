@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 868e946dee974f0ce6506ea6c992ec0ac361e5c5
+%global commit 63f52580ca4541db56d5f020ae89a394d970c24d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250606
+%global date 20250609
 %bcond_without snapshot
 
 %bcond_without sse42
@@ -119,8 +119,11 @@
 %global appname org.azahar_emu.Azahar
 %global vc_url  https://github.com/%{name}-emu
 
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
+%global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
+
 Name:           azahar
-Version:        2121.2
+Version:        2122~rc1.2
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -131,7 +134,7 @@ URL:            https://azahar-emu.org
 %if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
 %if %{without cryptopp}
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
@@ -401,7 +404,7 @@ sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindO
     -e 's|@GIT_DESC@|%{shortcommit}|g' \
     -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
     -e 's|@BUILD_DATE@|%(date +%F)|g' \
-    -e 's|@BUILD_VERSION@|%{version}-g%{shortcommit}|g' \
+    -e 's|@BUILD_VERSION@|%{verb}-g%{shortcommit}|g' \
     -i src/common/scm_rev.cpp.in
 %endif
 
@@ -507,6 +510,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Jun 13 2025 Phantom X <megaphantomx at hotmail dot com> - 2122~rc1.2-1.20250609git63f5258
+- 2122-rc1
+
 * Fri Jun 06 2025 Phantom X <megaphantomx at hotmail dot com> - 2121.2-1.20250606git868e946
 - 2121.2
 

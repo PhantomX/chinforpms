@@ -12,8 +12,8 @@ index 7e4b794..91a5ae8 100644
 --- a/src/Ryujinx/Systems/Configuration/ConfigurationState.cs
 +++ b/src/Ryujinx/Systems/Configuration/ConfigurationState.cs
 @@ -175,8 +175,8 @@ namespace Ryujinx.Ava.Utilities.Configuration
-             System.TimeZone.Value = "UTC";
              System.SystemTimeOffset.Value = 0;
+             System.UseInputGlobalConfig.Value = false;
              System.EnableDockedMode.Value = true;
 -            EnableDiscordIntegration.Value = true;
 -            UpdateCheckerType.Value = UpdaterType.PromptAtStartup;

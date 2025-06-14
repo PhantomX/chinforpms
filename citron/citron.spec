@@ -476,6 +476,8 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
 rm -rf %{buildroot}%{_libdir}
 
+
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 

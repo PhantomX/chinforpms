@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit f19a33340a1a27a7964b52474ff80f0eee014d9e
+%global commit 95f6c76713e6c2a6b50f1a149a7886e72fea6ec7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250510
+%global date 20250613
 %bcond_without snapshot
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -66,6 +66,10 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 SFML
 
+%global commit20 b03bdcfc11549df595b77239cefe2643943a3e2f
+%global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
+%global srcname20 watcher
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -84,7 +88,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2503.514
+Version:        2506.111
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -130,6 +134,7 @@ Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcna
 %if %{without sfml}
 Source19:      https://github.com/SFML/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
+Source20:      https://github.com/e-dant/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 
 %if %{with vulkan}
 #Can't be upstreamed as-is, needs rework:
@@ -206,7 +211,7 @@ BuildRequires:  mbedtls-devel >= %{mbedtls_ver}
 %else
 Provides:       bundled(mbedtls) = %{mbedtls_ver}
 %endif
-BuildRequires:  minizip-ng-compat-devel >= 4.0.4
+BuildRequires:  pkgconfig(minizip-ng) >= 4.0.4
 BuildRequires:  picojson-devel
 BuildRequires:  pugixml-devel
 BuildRequires:  cmake(VulkanHeaders)
@@ -260,6 +265,7 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
+Provides:       bundled(watcher) = 0~git%{shortcommit20}
 
 
 %description
@@ -371,6 +377,7 @@ tar -xf %{S:19} -C SFML/SFML --strip-components 1
 %else
 rm -rf SFML
 %endif
+tar -xf %{S:20} -C watcher/watcher --strip-components 1
 
 #Replace bundled picojson with a modified system copy (remove use of throw)
 pushd picojson

@@ -1,6 +1,6 @@
-%global commit f8633c0c9217ed5499fdda391946d416c52e6809
+%global commit 24c170b2346bb675456449f51406dac6442a84a7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250310
+%global date 20250602
 %bcond_without snapshot
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        52%{?dist}
+Release:        53%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -30,8 +30,6 @@ Source0:        %{url}/archive/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-
-Patch0:         0001-dep-cubeb-Add-cubeb_get_backend_names.patch
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -105,6 +103,7 @@ sed -e '/TYPE DOC/d' -i CMakeLists.txt
 %{_includedir}/%{name}/
 %{_libdir}/*.so
 %{_libdir}/cmake/%{name}/
+%{_libdir}/pkgconfig/lib%{name}.pc
 
 
 %changelog

@@ -46,7 +46,6 @@
 %global harfbuzzsharp_ver2 7.3.0
 %global humanizer_ver 2.14.1
 %global jetbrains_annotations_ver 2023.2.0
-%global libhac_ver 0.19.0
 %global microcom_runtime_ver 0.11.0
 # Must match dotnet
 %global microsoft_aspnetcore_app_runtime_linux_x64_ver 9.0.0
@@ -130,6 +129,7 @@
 %global ryujinx_graphics_nvdec_dependencies_allarch_ver 6.1.2-build3
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
+%global ryujinx_libhac_ver 0.20.0
 %global ryujinx_sdl2_cs_ver 2.30.0-build32
 %global securifybv_ver 0.1.0
 %global sep_ver 0.6.0
@@ -263,7 +263,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.38
+Version:        1.3.87
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -323,7 +323,7 @@ Source234:      %{nuget_url}/harfbuzzsharp.nativeassets.webassembly.%{harfbuzzsh
 Source235:      %{nuget_url}/harfbuzzsharp.nativeassets.webassembly.%{harfbuzzsharp_ver}.nupkg
 Source236:      %{nuget_url}/harfbuzzsharp.nativeassets.win32.%{harfbuzzsharp_ver2}.nupkg
 Source237:      %{nuget_url}/harfbuzzsharp.nativeassets.win32.%{harfbuzzsharp_ver}.nupkg
-Source238:      %{nuget_url}/libhac.%{libhac_ver}.nupkg
+Source238:      %{nuget_url}/ryujinx.libhac.%{ryujinx_libhac_ver}.nupkg
 Source239:      %{nuget_url}/microcom.codegenerator.msbuild.%{microcom_runtime_ver}.nupkg
 Source240:      %{nuget_url}/microcom.runtime.%{microcom_runtime_ver}.nupkg
 Source241:      %{nuget_url}/microsoft.aspnetcore.app.runtime.linux-x64.%{microsoft_aspnetcore_app_runtime_linux_x64_ver}.nupkg
@@ -628,7 +628,6 @@ Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
 %global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532}
 %endif
 
-Patch0:         %{name}-pr728.patch
 Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch
@@ -745,7 +744,6 @@ dotnet publish \
   -p:ExtraDefineConstants=DISABLE_UPDATER \
   -p:DebugType=embedded \
   -p:UseSharedCompilation=False \
-  --self-contained true \
   -o publish \
   src/%{appname} \
 %{nil}
