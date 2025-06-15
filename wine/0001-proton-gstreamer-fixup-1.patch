@@ -1,0 +1,36 @@
+From 6177ca24e23b9a6b226c441174b013523f26299e Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 14 Jun 2025 09:51:32 -0300
+Subject: [PATCH] proton gstreamer fixup 1
+
+---
+ dlls/mfreadwrite/reader.c | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/dlls/mfreadwrite/reader.c b/dlls/mfreadwrite/reader.c
+index 6a1013c..ddc5d54 100644
+--- a/dlls/mfreadwrite/reader.c
++++ b/dlls/mfreadwrite/reader.c
+@@ -2388,19 +2388,8 @@ static HRESULT WINAPI src_reader_Flush(IMFSourceReaderEx *iface, DWORD index)
+     struct source_reader *reader = impl_from_IMFSourceReaderEx(iface);
+     HRESULT hr;
+ 
+-    const char *sgi;
+-
+     TRACE("%p, %#lx.\n", iface, index);
+ 
+-    sgi = getenv("SteamGameId");
+-    if (sgi && strcmp(sgi, "1293160") == 0)
+-    {
+-        /* In The Medium flushes sometimes lead to the callback
+-           calling objects that have already been destroyed. */
+-        WARN("ignoring flush\n");
+-        return S_OK;
+-    }
+-
+     EnterCriticalSection(&reader->cs);
+ 
+     if (reader->async_callback)
+-- 
+2.49.0
+

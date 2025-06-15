@@ -20,12 +20,12 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.4.2
+Version:        4.5~beta1
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.4
+%global aud_ver 4.5
 
 Summary: Plugins for the Audacious audio player
 URL:            http://audacious-media-player.org/
@@ -257,6 +257,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/General/lyrics-qt.so
 %{_libdir}/audacious/General/mpris2.so
 %{_libdir}/audacious/General/notify.so
+%{_libdir}/audacious/General/playback-history-qt.so
 %{_libdir}/audacious/General/playlist-manager-qt.so
 %{_libdir}/audacious/General/qthotkey.so
 %{_libdir}/audacious/General/qtui.so
@@ -309,6 +310,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Visualization/blur_scope.so
 %{_libdir}/audacious/Visualization/cairo-spectrum.so
 %{_libdir}/audacious/Visualization/gl-spectrum.so
+%{_libdir}/audacious/Visualization/vumeter.so
 %endif
 # name is misleading as it's based on libmpg123 not libmad
 %{_libdir}/audacious/Input/madplug.so
@@ -337,6 +339,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5~beta1-100
+- 4.5-beta1
+
 * Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.2-100
 - 4.4.2
 

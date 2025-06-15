@@ -47,27 +47,27 @@
 %global with_debug 0
 %global no64bit   0
 %global winegecko 2.47.4
-%global winemono  10.0.0
-%global winevulkan 1.4.315
+%global winemono  10.1.0
+%global winevulkan 1.4.318
 %if 0%{?fedora}
 %global opencl    1
 %endif
 
 %global winecapstone 5.0.3
-%global wineFAudio 25.02
+%global wineFAudio 25.06
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 9~f
 %global winelcms2 2.17
 %global wineldap 2.5.18
-%global winempg123 1.32.9
-%global winepng 1.6.44
+%global winempg123 1.33.0
+%global winepng 1.6.48
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
 %global winejxrlib 1.1
 %global winevkd3d 1.16
 %global winexml2 2.12.8
-%global winexslt 1.1.42
+%global winexslt 1.1.43
 %global winezlib 1.3.1
 %global winezydis 4.1.0
 
@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.9
+%global wine_stagingver 10.10
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,7 +88,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 52b34a1220194b8bf5286284c14371e36cc5829e
+%global tkg_id 320c3c0388ca30301ea92a9a4a5f2eb4987f3acf
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -104,6 +104,9 @@
 %bcond_without ntsync
 # proton FS hack (wine virtual desktop with DXVK is not working well)
 %bcond_with fshack
+%bcond_without ge_wayland
+%bcond_without proton_mf
+%bcond_without proton_winevulkan
 
 # Enable when needed
 %bcond_with patchutils
@@ -130,7 +133,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.9
+Version:        10.10
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -232,6 +235,10 @@ Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1036:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 Patch1037:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
+Patch1038:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{name}-tkg-gstreamer-patch1.patch
+Patch1039:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
+Patch1040:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
+Patch1041:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
 
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
@@ -247,6 +254,7 @@ Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.pa
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
+Patch1304:       0001-proton-gstreamer-fixup-1.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -327,7 +335,6 @@ BuildRequires:  pkgconfig(ocl-icd)
 BuildRequires:  opencl-headers
 %endif
 BuildRequires:  pkgconfig(odbc)
-BuildRequires:  pkgconfig(osmesa)
 BuildRequires:  pkgconfig(sane-backends)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(systemd)
@@ -448,7 +455,6 @@ Requires:       libXrandr(x86-32)
 Requires:       libXrender(x86-32)
 Requires:       libXxf86vm(x86-32)
 Requires:       libpcap(x86-32)
-Requires:       libOSMesa(x86-32)
 Requires:       libv4l(x86-32)
 Requires:       unixODBC(x86-32)
 Requires:       samba-libs(x86-32)
@@ -479,7 +485,6 @@ Requires:       libXrandr(x86-64)
 Requires:       libXrender(x86-64)
 Requires:       libXxf86vm(x86-64)
 Requires:       libpcap(x86-64)
-Requires:       libOSMesa(x86-64)
 Requires:       libv4l(x86-64)
 Requires:       unixODBC(x86-64)
 Requires:       samba-libs(x86-64)
@@ -504,7 +509,6 @@ Requires:       libXcursor
 Requires:       libXfixes
 Requires:       libXrender
 Requires:       libpcap
-Requires:       libOSMesa
 Requires:       libv4l
 Requires:       unixODBC
 Requires:       SDL2
@@ -890,7 +894,17 @@ autoreconf -f
 %patch -P 702 -p1 -R
 %patch -P 1023 -p1
 %endif
+%if %{with proton_mf}
+%patch -P 1038 -p1
+%patch -P 1039 -p1
+%endif
 %patch -P 1026 -p1
+%if %{with proton_winevulkan}
+%patch -P 1040 -p1
+%endif
+%if %{with ge_wayland}
+%patch -P 1041 -p1
+%endif
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %if %{with ntsync}
@@ -919,9 +933,14 @@ autoreconf -f
 
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
+%if %{without proton_mf}
 %patch -P 1093 -p1
+%endif
 %patch -P 1301 -p1
 %patch -P 1302 -p1
+%if %{with proton_mf}
+%patch -P 1304 -p1
+%endif
 %patch -P 1303 -p1
 
 sed \
@@ -1492,6 +1511,9 @@ fi
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winepedir}/audioses.dll
 %endif
+%if (0%{?wine_staging} && %{with ge_wayland})
+%{_libdir}/wine/%{winepedir}/amdxc64.dll
+%endif
 %{_libdir}/wine/%{winepedir}/amsi.dll
 %{_libdir}/wine/%{winepedir}/amstream.dll
 %{_libdir}/wine/%{winepedir}/apisetschema.dll
@@ -1903,6 +1925,9 @@ fi
 %{_libdir}/wine/%{winepedir}/shdoclc.dll
 %{_libdir}/wine/%{winepedir}/shdocvw.dll
 %{_libdir}/wine/%{winepedir}/schedsvc.dll
+%if (0%{?wine_staging} && %{with proton_winevulkan})
+%{_libdir}/wine/%{winepedir}/sharedgpures.sys
+%endif
 %{_libdir}/wine/%{winepedir}/shell32.dll
 %{_libdir}/wine/%{winepedir}/shfolder.dll
 %{_libdir}/wine/%{winepedir}/shlwapi.dll
@@ -2517,6 +2542,11 @@ fi
 
 
 %changelog
+* Sat Jun 14 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.10-100
+- 10.10
+- BR: libOSMesa removed
+- tkg mf and winevulkan patches
+
 * Sun Jun 01 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.9-100
 - 10.9
 

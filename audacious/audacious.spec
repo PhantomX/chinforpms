@@ -12,12 +12,12 @@
 
 Name:           audacious
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.4.2
+Version:        4.5~beta1
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.4
+%global aud_ver 4.5
 
 # Audacious Generic Plugin API is defined in audacious-libs subpackage.
 
@@ -161,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5~beta1-100
+- 4.5-beta1
+
 * Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 1:4.4.2-100
 - 4.4.2
 

@@ -19,7 +19,7 @@
 %global vc_url  https://github.com/madewokherd/wine-mono
 
 Name:           wine-mono
-Version:        10.0.0
+Version:        10.1.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -178,6 +178,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Sat Jun 14 2025 Phantom X <megaphantomx at hotmail dot com> - 10.1.0-100
+- 10.1.0
+
 * Sun Apr 06 2025 Phantom X <megaphantomx at hotmail dot com> - 10.0.0-100
 - 10.0.0
 
