@@ -1,12 +1,4 @@
 %bcond_with check
-# RPM debug shenaningans is breaking library
-%global with_debug 0
-
-%if !0%{?with_debug}
-%global debug_package %{nil}
-%global _build_id_links none
-%global __strip /bin/true
-%endif
 
 # Use vendor tarball
 %bcond_without vendor
@@ -18,7 +10,7 @@
 
 Name:           librashader
 Version:        0.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        RetroArch shaders for all
 
 License:        MPL-2.0 OR GPL-3.0-only%{?with_vendor: AND ((0BSD OR MIT OR Apache-2.0) AND (Apache-2.0) AND (Apache-2.0 OR BSL-1.0) AND (Apache-2.0 OR MIT) AND ((Apache-2.0 OR MIT) AND BSD-3-Clause) AND (Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT) AND BSD-2-Clause AND (BSD-2-Clause OR Apache-2.0 OR MIT) AND BSD-3-Clause AND CC0-1.0 AND (CC0-1.0 OR Apache-2.0) AND (CC0-1.0 OR MIT-0 OR Apache-2.0) AND ISC AND MIT AND (MIT OR Apache-2.0) AND ((MIT OR Apache-2.0) AND Unicode-DFS-2016) AND (MIT OR Apache-2.0 OR Zlib) AND (MIT OR Zlib OR Apache-2.0) AND MPL-2.0 AND (Unlicense OR MIT) AND Zlib AND (Zlib OR Apache-2.0 OR MIT))}
@@ -40,7 +32,6 @@ BuildRequires:  rust-packaging
 BuildRequires:  gcc
 BuildRequires:  g++
 BuildRequires:  make
-BuildRequires:  patchelf
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcursor)
 BuildRequires:  pkgconfig(xi)
@@ -488,7 +479,15 @@ developing applications that use %{name}.
 %prep
 %autosetup -n %{name}-%{name}-v%{version} -p1 %{?with_vendor:-a1}
 
-sed -e 's|_RPM_SO_VER_|%{soname_ver}|' -i include/librashader_ld.h
+sed -e 's|_RPM_SO_VER_|%{soname_ver}|' -i include/%{name}_ld.h
+
+sed \
+  -e '/^\[lib\]/aname = "rashader"' \
+  -e 's|, "staticlib"||' \
+  -i %{name}-capi/Cargo.toml
+sed \
+  -e '/main()/a\     println!("cargo:rustc-cdylib-link-arg=-Wl,-soname,%{name}.so.%{soname_ver}");' \
+  -i %{name}-capi/build.rs
 
 cat > %{name}.pc <<'EOF'
 prefix=%{_prefix}
@@ -512,26 +511,20 @@ EOF
 
 
 %build
-%cargo_build
+%cargo_build -- --package %{name}-capi
 %{cargo_license_summary}
 %{cargo_license} > LICENSE.dependencies
 %if %{with vendor}
 %{cargo_vendor_manifest}
 %endif
 
-patchelf --set-soname librashader.so.%{soname_ver} target/release/liblibrashader_capi.so
-
 
 %install
 mkdir -p %{buildroot}/%{_libdir}/pkgconfig
-install -m 0755 target/release/liblibrashader_capi.so \
-  %{buildroot}%{_libdir}/librashader.so.%{soname_ver}.%{api_ver}
-ln -s librashader.so.%{soname_ver}.%{api_ver} %{buildroot}%{_libdir}/librashader.so.%{soname_ver}
-ln -s librashader.so.%{soname_ver} %{buildroot}%{_libdir}/librashader.so
-
-%if !0%{?with_debug}
-strip --strip-debug %{buildroot}%{_libdir}/librashader.so.%{soname_ver}.%{api_ver}
-%endif
+install -m 0755 target/release/%{name}.so \
+  %{buildroot}%{_libdir}/%{name}.so.%{soname_ver}.%{api_ver}
+ln -s %{name}.so.%{soname_ver}.%{api_ver} %{buildroot}%{_libdir}/%{name}.so.%{soname_ver}
+ln -s %{name}.so.%{soname_ver} %{buildroot}%{_libdir}/%{name}.so
 
 install -pm0644 %{name}.pc %{buildroot}/%{_libdir}/pkgconfig/
 
@@ -555,11 +548,14 @@ install -pm0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 
 %files devel
 %{_includedir}/%{name}
-%{_libdir}/librashader.so
+%{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/%{name}.pc
 
 
 %changelog
+* Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.1-2
+- Build a proper versioned library
+
 * Wed Jun 04 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.1-1
 - 0.8.1
 

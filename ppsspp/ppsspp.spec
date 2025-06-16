@@ -11,9 +11,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a7fe673e5caea014a931e06cb2adb5b56ee8f5b1
+%global commit 5f92f80a15169db456cdd8ae48be2350dae5bedf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250610
+%global date 20250615
 %bcond_without snapshot
 
 # Enable Qt build
@@ -99,7 +99,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.1.27
+Version:        1.19.2.89
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -550,6 +550,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.2.89-100.20250615git5f92f80
+- 1.19.2
+
 * Wed Jun 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.1.27-100.20250610gita7fe673
 - 1.19.1
 

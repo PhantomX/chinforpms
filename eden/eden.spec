@@ -13,15 +13,17 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9bbf2c3df2d947b1574f51feeb63b71ededa69f5
+%global commit cf00554d23a014f318a11d3767cd3eafe65092bd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250608
+%global date 20250615
 %bcond_without snapshot
 
 # Enable system dynarmic
 %bcond_without dynarmic
 # Enable system ffmpeg
-%bcond_without ffmpeg
+%bcond_with ffmpeg
+# Use stable ffmpeg
+%bcond_without ffmpeg_st
 # Enable system fmt
 %bcond_without fmt
 # Enable system mbedtls (needs cmac builtin support)
@@ -80,6 +82,7 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 boost-headers
 
+%global ffmpeg_ver 7.1.1
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.29
 %global nxtzdb_ver 221202
@@ -95,10 +98,12 @@
 %global shortcommit 0
 %endif
 
+%global appname org.%{name}_emu.%{name}
+
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27355
+Version:        0.0.2.27370
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -127,7 +132,11 @@ Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}.ta
 %endif
 Source20:       https://github.com/eggert/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %if %{without ffmpeg}
+%if %{without ffmpeg_st}
 Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
+%else
+Source21:      https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
+%endif
 %endif
 %if %{without fmt}
 Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
@@ -135,11 +144,10 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 
 
+Patch0:         %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
-Patch500:       0001-Fix-License-headers-CI-168.patch
-Patch501:       %{vc_url}/%{name}/commit/6397bb0809b654f977c552a789b666596f15cee4.patch#/%{name}-git-6397bb0.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -185,10 +193,18 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
 %else
+BuildRequires:  autoconf
+BuildRequires:  nasm
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libva-drm)
+BuildRequires:  pkgconfig(libva-x11)
+BuildRequires:  pkgconfig(vdpau)
 BuildRequires:  pkgconfig(x11)
+%if %{without ffmpeg_st}
 Provides:       bundled(ffmpeg) = 0~git%{?shortcommit21}
+%else
+Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
+%endif
 %endif
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
@@ -271,10 +287,6 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
-%if %{without ffmpeg}
-%patch -P 500 -p1 -R
-%patch -P 501 -p1 -R
-%endif
 
 pushd externals
 rm -rf \
@@ -314,6 +326,7 @@ tar -xf %{S:17} -C cpp-jwt --strip-components 1
 tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
 tar -xf %{S:21} -C ffmpeg/ffmpeg --strip-components 1
+sed -e '/h264_sei.o/s|$| aom_film_grain.o|' -i ffmpeg/ffmpeg/libavcodec/Makefile
 %endif
 %if %{without fmt}
 mkdir -p fmt
@@ -418,11 +431,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
-%if %{with ffmpeg}
-  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF \
-%else
-  -DYUZU_USE_BUNDLED_FFMPEG:BOOL=ON \
-%endif
+  %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
@@ -435,7 +444,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
-  -DDYNARMIC_TESTS=OFF \
+  -DDYNARMIC_TESTS:BOOL=OFF \
 %endif
 %{nil}
 
@@ -449,8 +458,10 @@ rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_datadir}/cmake
 rm -rf %{buildroot}%{_libdir}
 
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files
@@ -464,13 +475,16 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 %files qt
 %license LICENSE.txt
 %{_bindir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*
-%{_datadir}/mime/packages/%{name}.xml
-%{_metainfodir}/%{name}.metainfo.xml
+%{_datadir}/mime/packages/%{appname}.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 %endif
 
 
 %changelog
+* Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.2.27370-1.20250615gitcf00554
+- Bundle ffmpeg until internal codecs is not needed
+
 * Mon May 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.2.27303-1.20250519git3cad73d
 - Initial spec
