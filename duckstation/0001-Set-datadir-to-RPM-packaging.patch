@@ -51,13 +51,6 @@ index 575a897..41af2e5 100644
        has_base_ts = QFile::exists(base_path);
      }
    }
-@@ -307,4 +307,4 @@ const QtHost::GlyphInfo* QtHost::GetGlyphInfo(const std::string_view& language)
-   }
- 
-   return nullptr;
--}
-\ No newline at end of file
-+}
 -- 
 2.41.0
 

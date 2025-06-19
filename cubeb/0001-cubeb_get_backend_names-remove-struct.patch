@@ -1,0 +1,73 @@
+From 6b9d2d55a5fffd930b9bd4796dd4c5cb7789e0ed Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 17 Jun 2025 22:46:30 -0300
+Subject: [PATCH] cubeb_get_backend_names: remove struct
+
+Remove this until some applications catch up
+---
+ include/cubeb/cubeb.h |  9 +--------
+ src/cubeb.c           | 10 ++++------
+ 2 files changed, 5 insertions(+), 14 deletions(-)
+
+diff --git a/include/cubeb/cubeb.h b/include/cubeb/cubeb.h
+index f0fb612..8b596a7 100644
+--- a/include/cubeb/cubeb.h
++++ b/include/cubeb/cubeb.h
+@@ -418,13 +418,6 @@ typedef struct {
+   size_t count;               /**< Device count in collection. */
+ } cubeb_device_collection;
+ 
+-/** Array of compiled backends returned by `cubeb_get_backend_names`. */
+-typedef struct {
+-  const char * const *
+-      names;    /**< Array of strings representing backend names. */
+-  size_t count; /**< Length of the array. */
+-} cubeb_backend_names;
+-
+ /** User supplied data callback.
+     - Calling other cubeb functions from this callback is unsafe.
+     - The code in the callback should be non-blocking.
+@@ -505,7 +498,7 @@ cubeb_get_backend_id(cubeb * context);
+ /** Get a read-only array of strings identifying available backends.
+     These can be passed as `backend_name` parameter to `cubeb_init`.
+     @retval Struct containing the array with backend names. */
+-CUBEB_EXPORT cubeb_backend_names
++CUBEB_EXPORT const char**
+ cubeb_get_backend_names();
+ 
+ /** Get the maximum possible number of channels.
+diff --git a/src/cubeb.c b/src/cubeb.c
+index 0511ad9..2d1d9d9 100644
+--- a/src/cubeb.c
++++ b/src/cubeb.c
+@@ -298,10 +298,10 @@ cubeb_get_backend_id(cubeb * context)
+   return context->ops->get_backend_id(context);
+ }
+ 
+-cubeb_backend_names
++const char**
+ cubeb_get_backend_names()
+ {
+-  static const char * const backend_names[] = {
++  static const char* backend_names[] = {
+ #if defined(USE_PULSE)
+     "pulse",
+ #endif
+@@ -347,12 +347,10 @@ cubeb_get_backend_names()
+ #if defined(USE_KAI)
+     "kai",
+ #endif
++    NULL,
+   };
+ 
+-  return (cubeb_backend_names){
+-      .names = backend_names,
+-      .count = NELEMS(backend_names),
+-  };
++  return backend_names;
+ }
+ 
+ int
+-- 
+2.49.0
+

@@ -1,0 +1,25 @@
+From 4cf0dc924940f251eb20da05da2b684c4ca7a83d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 16 Jun 2025 22:01:14 -0300
+Subject: [PATCH] Set SDL application name
+
+---
+ apps/ymir-sdl3/src/app/app.cpp | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
+index 85567fc..e12f826 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp
+@@ -348,6 +348,8 @@ void App::RunEmulator() {
+     // ---------------------------------
+     // Initialize SDL subsystems
+ 
++    SDL_SetHint(SDL_HINT_APP_NAME, Ymir_APP_NAME);
++
+     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS)) {
+         devlog::error<grp::base>("Unable to initialize SDL: {}", SDL_GetError());
+         return;
+-- 
+2.49.0
+

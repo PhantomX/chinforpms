@@ -7,14 +7,15 @@
 
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 %bcond_with cereal
 %bcond_without fmt
 
-%global commit ccb6da8b9a2c5bb67be5593112ff7e8a3e1f1269
+%global commit bfe7bbdc45abe271b801cc2700a0d3b34f9b44f0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250602
+%global date 20250618
 %bcond_without snapshot
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
@@ -25,7 +26,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 concurrentqueue
 
-%global commit12 52e8f524a90a3fdc6f4dbd4dfd3a0d82f78e2d51
+%global commit12 44380e5a44706ab7347f400698c703eb2a196202
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cxxopts
 
@@ -33,7 +34,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 fmt
 
-%global commit14 346f5c68197d20528d1b2bbe0e8e293219cc8544
+%global commit14 eaac68ca2ce404137d7a1e7d8f74fafbfe30f508
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 imgui
 
@@ -55,11 +56,12 @@
 
 %global fmt_ver 11.1.0
 
+%global appname io.github.strikerx3.%{name}
 %global pkgname Ymir
 
 Name:           ymir
 Version:        0.1.5
-Release:        0.1%{?dist}
+Release:        0.3%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
@@ -84,8 +86,10 @@ Source16:       https://github.com/nothings/%{srcname16}/archive/%{commit16}/%{s
 Source17:       https://github.com/marzer/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 
 Patch0:         0001-Use-system-libraries.patch
+Patch1:         0001-Set-SDL-application-name.patch
 
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 BuildRequires:  ImageMagick
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -170,20 +174,9 @@ cd "${YMIR_DIR}"
 exec %{_libexecdir}/%{name} "$@"
 EOF
 
-cat >> %{name}.desktop <<'EOF'
-[Desktop Entry]
-Name=%{pkgname}
-Comment=Sega Saturn Emulator
-Exec=%{name} %f
-Icon=%{name}
-Terminal=false
-Type=Application
-StartupNotify=false
-Categories=Game;Emulator;
-PrefersNonDefaultGPU=true
-EOF
-
-magick apps/%{name}-sdl3/res/%{name}.ico %{name}.png
+sed -e \
+  '1i <?xml version="1.0" encoding="UTF-8"?>' \
+  -i apps/%{name}-sdl3/res/%{appname}.xml
 
 
 %build
@@ -215,22 +208,31 @@ install -pm0755 %{_vpath_builddir}/apps/%{name}-sdl3/%{name}-sdl3 \
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
-  %{name}.desktop
+  --set-key="Exec" \
+  --set-value="%{name} %f" \
+  --set-icon="%{appname}" \
+  apps/%{name}-sdl3/res/%{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
-install -pm0644 %{name}.png \
-  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{name}.png
+install -pm0644 apps/%{name}-sdl3/res/%{name}.png \
+  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{appname}.png
   
 for res in 16 22 24 32 36 48 64 72 96 128 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  magick %{name}.png -filter Lanczos -resize ${res}x${res} \
+  magick apps/%{name}-sdl3/res/%{name}.png -filter Lanczos -resize ${res}x${res} \
     ${dir}/%{appname}.png
 done
 
+mkdir -p %{buildroot}%{_metainfodir}
+install -pm 0644 apps/%{name}-sdl3/res/%{appname}.xml \
+  %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
+
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %files
@@ -239,8 +241,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_bindir}/%{name}
 %{_bindir}/ymdasm
 %{_libexecdir}/%{name}
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog

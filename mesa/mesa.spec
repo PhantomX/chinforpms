@@ -96,7 +96,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.1.3
+Version:        25.1.4
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -113,8 +113,6 @@ Source0:        https://archive.mesa3d.org/%{name}-%{ver}.tar.xz
 # Fedora opts to ignore the optional part of clause 2 and treat that code as 2 clause BSD.
 Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
-
-Patch0:         %{vc_url}/-/merge_requests/35388.patch#/%{name}-gl-mr35388.patch
 
 Patch10:        gnome-shell-glthread-disable.patch
 
@@ -768,6 +766,9 @@ popd
 
 
 %changelog
+* Thu Jun 19 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.4-100
+- 25.1.4
+
 * Sat Jun 07 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.3-100
 - 25.1.3
 

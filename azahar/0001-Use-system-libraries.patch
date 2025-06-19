@@ -1,19 +1,19 @@
-From deae7a7ca4428312655b851d04da3d9a93aac318 Mon Sep 17 00:00:00 2001
+From ec9f2bba7d178282a8d0d6bb96b807f942e2fe3d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt            |  3 +--
- externals/CMakeLists.txt  | 30 ++++++++++++++++++++++++++----
+ externals/CMakeLists.txt  | 22 ++++++++++++++++++----
  src/common/CMakeLists.txt | 10 ++++++++--
- 3 files changed, 35 insertions(+), 8 deletions(-)
+ 3 files changed, 27 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d2bf7ae..f00dbba 100644
+index c23b03e..6c30f02 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -12,7 +12,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
+@@ -15,7 +15,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
  
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/CMakeModules")
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
@@ -21,7 +21,7 @@ index d2bf7ae..f00dbba 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -148,7 +147,7 @@ function(check_submodules_present)
+@@ -212,7 +211,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index d2bf7ae..f00dbba 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 29e0a73..f816d4d 100644
+index 496b4c1..5ab2059 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -58,22 +58,7 @@ index 29e0a73..f816d4d 100644
  
  # Crypto++
  if(USE_SYSTEM_CRYPTOPP)
-@@ -188,6 +189,14 @@ if (NOT FOUND_FFMPEG_HEADERS)
-     target_include_directories(library-headers SYSTEM INTERFACE ./library-headers/ffmpeg/include)
- endif()
- 
-+find_package(tsl-robin-map)
-+if(tsl-robin-map_FOUND)
-+    message(STATUS "Using the system tls_robin_map")
-+    add_library(tsl-robin-map-shared INTERFACE)
-+    target_link_libraries(tsl-robin-map-shared INTERFACE tsl::robin_map)
-+    add_library(tsl::robin_map ALIAS tsl-robin-map-shared)
-+endif()
-+
- # SoundTouch
- if(NOT USE_SYSTEM_SOUNDTOUCH)
-     set(INTEGER_SAMPLES ON CACHE BOOL "")
-@@ -217,12 +226,19 @@ endif()
+@@ -203,12 +204,19 @@ endif()
  
  # Zstandard
  if(USE_SYSTEM_ZSTD)
@@ -84,7 +69,7 @@ index 29e0a73..f816d4d 100644
 +    endif()
      add_library(zstd INTERFACE)
 -    if(TARGET zstd::libzstd_shared)
-+    if(TARGET zstd::libzstd_shared OR TARGET PkgConfig::libzstd_shared ) 
++    if(TARGET zstd::libzstd_shared OR TARGET PkgConfig::libzstd_shared)
          message(STATUS "Found system Zstandard")
      endif()
 +    if(TARGET zstd::libzstd_shared)
@@ -95,7 +80,7 @@ index 29e0a73..f816d4d 100644
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -320,7 +336,13 @@ if(ANDROID)
+@@ -322,7 +330,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
  target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
@@ -109,7 +94,7 @@ index 29e0a73..f816d4d 100644
  endif()
  
  # cpp-jwt
-@@ -387,7 +409,7 @@ endif()
+@@ -421,7 +435,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)
@@ -119,10 +104,10 @@ index 29e0a73..f816d4d 100644
              message(STATUS "Found Vulkan headers")
              target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index f8c953a..fbc90b3 100644
+index 8f90c9b..14824a2 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -146,12 +146,18 @@ add_library(citra_common STATIC
+@@ -149,12 +149,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h
@@ -144,5 +129,5 @@ index f8c953a..fbc90b3 100644
    target_sources(citra_common PRIVATE
      linux/gamemode.cpp
 -- 
-2.43.0
+2.49.0
 

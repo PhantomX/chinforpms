@@ -27,13 +27,14 @@
 %bcond_with xbyak
 %bcond_with local
 
-%global commit 7752b2bd2d550577c41bc920db19b858ee4a074f
+%global commit d83ecb05828b41d2d8ba86bc808bdedc0d309126
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250609
+%global date 20250617
 %bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
+%global vercommit %(c=%{commit}; echo ${c:0:9})
 %endif
 
 %global appname org.%{name}.DuckStation
@@ -41,20 +42,23 @@
 
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.33
-%global imgui_ver 1.91.9~b
+%global imgui_ver 1.92.0
 %global md5_ver 1.6
 %global minizip_ver 1.1
 %global rcheevos_scommit 08999e0
 %global simpleini_ver 4.22
 %global xbyak_ver 6.73
 
+%global sver %%(echo %{version} | cut -d. -f-2)
+%global sbuild %%(echo %{version} | cut -d. -f3)
+
 Name:           duckstation
-Version:        0.1.9110
+Version:        0.1.9167
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
 Url:            https://www.duckstation.org
-License:        CC-BY-NC-4.0 AND MIT AND BSD-3-Clause AND AND LGPL-2.1-only AND OFL-1.1
+License:        CC-BY-NC-4.0 AND MIT AND BSD-3-Clause AND AND LGPL-2.1-only AND OFL-1.1 AND (Apache-2.0 AND CC0-1.0)
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
@@ -69,7 +73,6 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
-Patch7:         0001-Disable-font-downloading.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch10:        0001-cmake-soundtouch_ds.patch
@@ -169,11 +172,7 @@ BuildRequires:  libappstream-glib
 
 Requires:       coreutils
 Requires:       discord-rpc%{?_isa}
-Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
-Requires:       google-noto-sans-jp-fonts
-Requires:       google-noto-sans-kr-fonts
-Requires:       google-noto-sans-sc-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libshaderc_ds%{?_isa}
@@ -185,6 +184,10 @@ Requires:       spirv-cross%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 Suggests:       qt6-qttranslations
+
+Requires:       duckstation_chtdb
+Provides:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{name}-data < %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(freesurround) = 0~git
 Provides:       bundled(glad) = %{glad_ver}
@@ -203,17 +206,6 @@ maintainability.
 
 It requires a CPU with SSE4.1 instructions.
 
-
-%package data
-Summary:        DuckStation emulator data files
-BuildArch:      noarch
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       duckstation_chtdb
-
-%description data
-This package provides the data files for duckstation.
-
-####################################################
 
 %prep
 %autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -N -p1
@@ -269,14 +261,7 @@ cp -p vixl/LICENCE LICENSE.vixl
 
 popd
 
-rm -f CMakeModules/FindSDL2.cmake
-rm -f data/resources/fonts/*.txt
-
-sed \
-  -e '/NotoSansJP/s|\.ttf|.otf|' \
-  -e '/NotoSansKR/s|\.ttf|.otf|' \
-  -e '/NotoSansSC/s|\.ttf|.otf|' \
-  -i src/duckstation-qt/qttranslations.cpp
+mv data/resources/fonts/LICENSE.txt LICENSE.fonts
 
 pushd src/%{name}-qt/translations
 rename -a - _ *.ts
@@ -289,13 +274,13 @@ popd
 sed \
   -e 's|${HASH}|%{commit}|g' \
   -e 's|${BRANCH}|master|g' \
-  -e 's|${TAG}|%{version}-%{release}|g' \
+  -e 's|${TAG}|%{sver}-%{sbuild}-g%{vercommit}|g' \
   -e 's|${DATE}|%{date}|g' \
   -i src/scmversion/gen_scmversion.sh
 %endif
 
 sed \
-  -e 's|@GIT_VERSION@|%{version}-%{release}|g' \
+  -e 's|@GIT_VERSION@|%{sver}-%{sbuild}-g%{vercommit}|g' \
 %if %{with snapshot}
   -e 's|@GIT_DATE@|%{date}|g' \
 %else
@@ -348,27 +333,24 @@ rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{name}/resources/gamecontrollerdb.txt
 
-rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto*
-ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \
-  %{buildroot}%{_datadir}/%{name}/resources/fonts/Roboto-Regular.ttf
-
-ln -sf ../../../fonts/google-roboto-mono-fonts/RobotoMono-Medium.ttf \
-  %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-Medium.ttf
-
-ln -sf ../../../fonts/google-noto-sans-jp-fonts/NotoSansJP-Regular.otf \
-  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansJP-Regular.otf
-
-ln -sf ../../../fonts/google-noto-sans-sc-fonts/NotoSansSC-Regular.otf \
-  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansSC-Regular.otf
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-VariableFont_wght.ttf
+ln -sf ../../../fonts/google-roboto-mono-fonts/'RobotoMono[wght].ttf' \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-VariableFont_wght.ttf
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   scripts/packaging/%{appname}.desktop
 
+rm -f %{buildroot}%{_datadir}/%{name}/resources/%{appname}.desktop
+ln -sf $(realpath -m --relative-to="%{_datadir}/%{name}/resources" %{_datadir}/applications)/%{appname}.desktop \
+  %{buildroot}%{_datadir}/%{name}/resources/%{appname}.desktop
+
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/512x512/apps
-install -pm0644 scripts/packaging/%{appname}.png \
+mv %{buildroot}%{_datadir}/%{name}/resources/%{appname}.png \
   %{buildroot}%{_datadir}/icons/hicolor/512x512/apps/
+ln -sf $(realpath -m --relative-to="%{_datadir}/%{name}/resources" %{_datadir}/icons/hicolor/512x512/apps)/%{appname}.png \
+  %{buildroot}%{_datadir}/%{name}/resources/%{appname}.png
 
 for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
@@ -390,23 +372,21 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}-qt.lang
 %doc README.md
-%license LICENSE dep/LICENSE.*
+%license LICENSE* dep/LICENSE.*
 %{_bindir}/%{name}-qt*
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/resources/
 %dir %{_datadir}/%{name}/translations/
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.*
 %{_metainfodir}/%{appname}.metainfo.xml
 
 
-%files data
-%doc README.md
-%license LICENSE
-%dir %{_datadir}/%{name}
-%{_datadir}/%{name}/resources/
-%exclude %{_datadir}/%{name}/translations
-
-
 %changelog
+* Wed Jun 18 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.9167-1.20250617gitd83ecb0
+- Merge data package, as nogui package was removed
+- Bundle fonts for the time, no variable variants on Fedora yet
+
 * Mon Sep 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.1.7566-1.20240907gitf4e8470
 - Update licensing
 
