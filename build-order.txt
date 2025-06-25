@@ -75,7 +75,7 @@ lzma-sdk
 # 4
 libchdr
 mesa
-mesa-compat
+-mesa-compat
 mesa-libGL-xlib
 -SDL2
 VulkanMemoryAllocator-Hpp

@@ -1,14 +1,14 @@
-From c5dc5125c6f43e2bab94910cb1656fe3cd573821 Mon Sep 17 00:00:00 2001
+From 74fb48f553c5bb34dbde07a17507ca215d66b99e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- vendor/CMakeLists.txt | 42 ++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 42 insertions(+)
+ vendor/CMakeLists.txt | 49 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 89b41d6..d2f6b2e 100644
+index 5893b1e..1448030 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
 @@ -22,9 +22,18 @@ endfunction()
@@ -67,7 +67,7 @@ index 89b41d6..d2f6b2e 100644
  message(STATUS "==> lz4")
 +pkg_search_module(liblz4 IMPORTED_TARGET liblz4)
 +if(liblz4_FOUND)
-+  message(STATUS "Using the system libchdr")
++  message(STATUS "Using the system liblz4")
 +  add_library(liblz4 INTERFACE)
 +  target_link_libraries(liblz4 INTERFACE PkgConfig::liblz4)
 +  add_library(lz4::lz4 ALIAS liblz4)
@@ -89,7 +89,7 @@ index 89b41d6..d2f6b2e 100644
  
  # stb - https://github.com/nothings/stb
  message(STATUS "==> stb")
-@@ -87,7 +122,14 @@ add_subdirectory(stb)
+@@ -87,14 +122,28 @@ add_subdirectory(stb)
  
  # libchdr - https://github.com/rtissera/libchdr
  message(STATUS "==> libchdr")
@@ -99,8 +99,22 @@ index 89b41d6..d2f6b2e 100644
 +  add_library(chdr-static INTERFACE)
 +  target_link_libraries(chdr-static INTERFACE PkgConfig::libchdr)
 +else()
+ set(BUILD_FUZZER OFF)
  add_subdirectory(libchdr)
 +endif ()
+ 
+ # rtmidi - https://github.com/thestk/rtmidi
+ message(STATUS "==> rtmidi")
++pkg_check_modules(rtmidi IMPORTED_TARGET rtmidi)
++if(rtmidi_FOUND)
++  message(STATUS "Using the system rtmidi")
++  add_library(rtmidi INTERFACE)
++  target_link_libraries(rtmidi INTERFACE PkgConfig::rtmidi)
++else()
+ set(RTMIDI_BUILD_STATIC_LIBS ON)
+ set(RTMIDI_BUILD_TESTING OFF)
+ add_subdirectory(rtmidi)
++endif()
  
  # --------------------------------------------------------------------------------------------------
  # Test dependencies

@@ -7,9 +7,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7117178c2dd56df32b6534ba6a54ad1f8547e693
+%global commit 8e163296d3bc071e90783617e8a7f6e1d44cd949
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250526
+%global date 20250622
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -26,7 +26,7 @@
 
 Name:           melonds
 Version:        1.0~rc
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A NDS emulator
 
 # fatfs - BSD

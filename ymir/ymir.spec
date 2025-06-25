@@ -12,10 +12,13 @@
 
 %bcond_with cereal
 %bcond_without fmt
+%if 0%{?fedora} > 43
+%bcond_without rtmidi
+%endif
 
-%global commit bfe7bbdc45abe271b801cc2700a0d3b34f9b44f0
+%global commit 6ed27e2e45bf01067681e8b915a82e6a3c777d03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250618
+%global date 20250624
 %bcond_without snapshot
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
@@ -50,18 +53,23 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 tomlplusplus
 
+%global commit18 ab1aca5153379e52e97b85b998b66b61619b7958
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
+%global srcname18 rtmidi
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 %global fmt_ver 11.1.0
+%global rtmidi_ver 6.0.0
 
 %global appname io.github.strikerx3.%{name}
 %global pkgname Ymir
 
 Name:           ymir
 Version:        0.1.5
-Release:        0.3%{?dist}
+Release:        0.4%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
@@ -84,6 +92,9 @@ Source14:       https://github.com/ocornut/%{srcname14}/archive/%{commit14}/%{sr
 Source15:       https://github.com/StrikerX3/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       https://github.com/nothings/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 Source17:       https://github.com/marzer/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+%if %{without rtmidi}
+Source18:       https://github.com/thestk/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%endif
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-SDL-application-name.patch
@@ -110,11 +121,17 @@ Provides:       bundled(cereal) = 0~git%{shortcommit10}
 %if %{with fmt}
 BuildRequires:  cmake(fmt) >= %{fmt_ver}
 %else
-Provides:       bundled(fmt) = 0~git%{shortcommit13}
+Provides:       bundled(fmt) = %{fmt_ver}~git%{shortcommit13}
 %endif
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libxxhash)
+%if %{with rtmidi}
+BuildRequires:  pkgconfig(rtmidi) >= %{rtmidi_ver}
+%else
+BuildRequires:  pkgconfig(alsa)
+Provides:       bundled(rtmidi) = %{rtmidi_ver}~git%{shortcommit18}
+%endif
 BuildRequires:  cmake(SDL3)
 
 Requires:       hicolor-icon-theme
@@ -151,6 +168,13 @@ tar -xf %{S:14} -C imgui/imgui --strip-components 1
 tar -xf %{S:15} -C mio/ --strip-components 1
 tar -xf %{S:16} -C stb/stb --strip-components 1
 tar -xf %{S:17} -C tomlplusplus/ --strip-components 1
+%if %{without rtmidi}
+tar -xf %{S:18} -C rtmidi/ --strip-components 1
+sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i CMakeLists.txt
+cp -p rtmidi/LICENSE LICENSE.rtmidi
+%else
+rm -rf 3rdparty/rtmidi
+%endif
 
 cp -p concurrentqueue/LICENSE.md LICENSE.concurrentqueue.md
 cp -p cxxopts/LICENSE LICENSE.cxxopts

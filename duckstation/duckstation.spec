@@ -27,9 +27,9 @@
 %bcond_with xbyak
 %bcond_with local
 
-%global commit d83ecb05828b41d2d8ba86bc808bdedc0d309126
+%global commit 1026902389803f7f6c17e51c50205ac8382bcf25
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250617
+%global date 20250619
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -53,7 +53,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           duckstation
-Version:        0.1.9167
+Version:        0.1.9178
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -172,6 +172,7 @@ BuildRequires:  libappstream-glib
 
 Requires:       coreutils
 Requires:       discord-rpc%{?_isa}
+Requires:       google-noto-sans-cjk-vf-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
@@ -332,6 +333,16 @@ cp -r %{_vpath_builddir}/bin/{resources,translations} \
 rm -f %{buildroot}%{_datadir}/%{name}/database/gamecontrollerdb.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{name}/resources/gamecontrollerdb.txt
+
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansJP-VariableFont_wght.ttf
+ln -sf ../../../fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansJP-VariableFont_wght.ttf
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansKR-VariableFont_wght.ttf
+ln -sf ../../../fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansKR-VariableFont_wght.ttf
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansSC-VariableFont_wght.ttf
+ln -sf ../../../fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/NotoSansSC-VariableFont_wght.ttf
 
 rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-VariableFont_wght.ttf
 ln -sf ../../../fonts/google-roboto-mono-fonts/'RobotoMono[wght].ttf' \

@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 902acdd2acfd34f3b3b9d185eec0b7f4859233e6
+%global commit 6ae4de1f94e294612e5f7a3a677e8461d7d07f1f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250509
+%global date 20250619
 %bcond_without snapshot
 
 %bcond_with faudio
@@ -27,7 +27,7 @@
 %global commit5 25.05
 %global srcname5 FAudio
 
-%global commit7 e667eb3a63ee704194f8d94834d8e12b18db5b21
+%global commit7 83f77108a2873600283f6da4b326a2dca7a3a7a6
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 SheenBidi
 
@@ -38,7 +38,7 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.4%{?dist}
+Release:        0.5%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -67,8 +67,6 @@ Source7:        https://github.com/Tehreer/%{srcname7}/archive/%{commit7}/%{srcn
 
 Patch10:        0001-System-libraries.patch
 Patch11:        0001-System-data-file.patch
-
-Patch1000:      https://github.com/Tehreer/SheenBidi/pull/21.patch#/%{name}-gh-SheenBidi-pr21.patch
 
 BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
@@ -125,7 +123,6 @@ cp -p third_party/FAudio/LICENSE LICENSE.FAudio
 %endif
 tar -xf %{S:6} -C third_party/c-hashmap --strip-components 1
 tar -xf %{S:7} -C third_party/SheenBidi --strip-components 1
-%patch -P 1000 -p1 -d third_party/SheenBidi
 
 cp -p third_party/lodepng/LICENSE LICENSE.lodepng
 cp -p third_party/c-hashmap/LICENSE LICENSE.c-hashmap
