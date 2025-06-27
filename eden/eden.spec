@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 846ec85f24928c98bf14b21ff432f02eeda287b3
+%global commit 3f03ff46b419411d4ad87b68c0c3f2cff6ffad77
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250623
+%global date 20250626
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -103,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27383
+Version:        0.0.2.27389
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -145,9 +145,15 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 
 Patch0:         %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
+Patch1:         %{vc_url}/%{name}/pulls/215.patch#/%{name}-git-pr215.patch
+Patch2:         %{vc_url}/%{name}/pulls/218.patch#/%{name}-git-pr218.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
+# Revert this, Fedora do not ship wireless-tools anymore
+Patch500:       %{vc_url}/%{name}/commit/3f03ff46b419411d4ad87b68c0c3f2cff6ffad77.patch#/%{name}-git-revert-3f03ff4.patch
+Patch501:       %{vc_url}/%{name}/commit/37f890ec1662dd8980dbbe79d7c45444a1a4f4fa.patch#/%{name}-git-revert-37f890e.patch
+Patch502:       %{vc_url}/%{name}/commit/2e6a289a0b4e53098d4ee4a9f6baf038d21981f8.patch#/%{name}-git-revert-2e6a289.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -287,6 +293,9 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
+%patch -P 500 -p1 -R
+%patch -P 501 -p1 -R
+%patch -P 502 -p1 -R
 
 pushd externals
 rm -rf \
@@ -327,6 +336,9 @@ tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
 tar -xf %{S:21} -C ffmpeg/ffmpeg --strip-components 1
 sed -e '/h264_sei.o/s|$| aom_film_grain.o|' -i ffmpeg/ffmpeg/libavcodec/Makefile
+sed \
+  -e 's|--disable-avdevice|\0 --arch=%{_target_cpu}|' \
+  -i ffmpeg/CMakeLists.txt
 %endif
 %if %{without fmt}
 mkdir -p fmt

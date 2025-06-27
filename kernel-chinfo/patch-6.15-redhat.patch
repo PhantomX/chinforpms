@@ -35,7 +35,6 @@
  drivers/media/i2c/Makefile                         |    2 +
  drivers/media/i2c/ov02c10.c                        | 1013 ++++++++++++++++++++
  drivers/media/i2c/ov02e10.c                        |  969 +++++++++++++++++++
- drivers/media/i2c/ov08x40.c                        |    2 +-
  drivers/net/wireless/ath/ath12k/core.c             |   23 +-
  drivers/net/wireless/ath/ath12k/core.h             |    4 +
  drivers/net/wireless/ath/ath12k/fw.c               |    9 +-
@@ -3357,19 +3356,6 @@ index 000000000000..d74dc62e189d
 +MODULE_AUTHOR("Bryan O'Donoghue <bryan.odonoghue@linaro.org>");
 +MODULE_DESCRIPTION("OmniVision OV02E10 sensor driver");
 +MODULE_LICENSE("GPL");
-diff --git a/drivers/media/i2c/ov08x40.c b/drivers/media/i2c/ov08x40.c
-index cf0e41fc3071..54575eea3c49 100644
---- a/drivers/media/i2c/ov08x40.c
-+++ b/drivers/media/i2c/ov08x40.c
-@@ -1341,7 +1341,7 @@ static int ov08x40_power_on(struct device *dev)
- 	}
- 
- 	gpiod_set_value_cansleep(ov08x->reset_gpio, 0);
--	usleep_range(1500, 1800);
-+	usleep_range(5000, 5500);
- 
- 	return 0;
- 
 diff --git a/drivers/net/wireless/ath/ath12k/core.c b/drivers/net/wireless/ath/ath12k/core.c
 index 261f52b327e8..b768799221c4 100644
 --- a/drivers/net/wireless/ath/ath12k/core.c
