@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 90ed30f70c6f313a245e25d13cefd74e1628fd34
+%global commit 3f79b6baed2eebbf133b950197c418de06f28916
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250508
+%global date 20250627
 %bcond_without snapshot
 
 # Disable LTO. Crash.
@@ -61,7 +61,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.5.1
+Version:        2.5.22
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -97,7 +97,6 @@ Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
 Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
-Patch8:         0001-vulkan_context.cpp-add-missing-header.patch
 Patch9:         0001-vulkan-update-vk-detail-DynamicLoader.patch
 
 BuildRequires:  autoconf

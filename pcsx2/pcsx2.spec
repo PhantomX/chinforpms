@@ -57,7 +57,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.3.422
+Version:        2.5.24
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -86,6 +86,7 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-cmake-use-system-discord-rpc.patch
+Patch11:        %{url}/pull/12930.patch#/%{name}-gh-pr12930.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
@@ -441,6 +442,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jun 30 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.24-1
+- 2.5.24
+
 * Thu Nov 14 2024 Phantom X <megaphantomx at hotmail dot com> - 2.3.16-1
 - 2.3.16
 

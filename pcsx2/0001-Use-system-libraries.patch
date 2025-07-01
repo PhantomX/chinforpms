@@ -1,4 +1,4 @@
-From 84cb2aba94c0651b39d8f66eb896fd96265329ca Mon Sep 17 00:00:00 2001
+From 31124dcf19f1858bc2f28c03deadde2af97df0f2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -12,17 +12,17 @@ Subject: [PATCH] Use system libraries
  5 files changed, 105 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index 264e854..fe6d5f9 100644
+index 78f62d3..51e3f1b 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -19,8 +19,8 @@ find_package(LZ4 REQUIRED)
  find_package(WebP REQUIRED) # v1.3.2, spews an error on Linux because no pkg-config.
  find_package(SDL3 3.2.6 REQUIRED)
  find_package(Freetype 2.11.1 REQUIRED)
--find_package(plutovg REQUIRED) # v0.0.13 is needed for building plutosvg, but we can support v1.0.0
--find_package(plutosvg 0.0.6 REQUIRED)
-+find_package(plutovg) # v0.0.13 is needed for building plutosvg, but we can support v1.0.0
-+find_package(plutosvg 0.0.6)
+-find_package(plutovg 1.1.0 REQUIRED)
+-find_package(plutosvg 0.0.7 REQUIRED)
++find_package(plutovg 1.1.0)
++find_package(plutosvg 0.0.7)
  
  if(USE_VULKAN)
  	find_package(Shaderc REQUIRED)
@@ -161,7 +161,7 @@ index 264e854..fe6d5f9 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index e261883..f1fdf14 100644
+index 111c20e..39a8091 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
 @@ -1063,7 +1063,9 @@ set(pcsx2LTOSources
@@ -234,5 +234,5 @@ index b1f4d13..2e46f6b 100644
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
  /// Should make combined SSE and AVX codegen much easier
 -- 
-2.49.0
+2.50.0
 

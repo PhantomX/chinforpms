@@ -12,9 +12,9 @@ index 96e686a..50d466e 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
 @@ -851,3 +851,21 @@
- # - True/False
+ # - Any positive value to limit the VRAM budget, in Megabytes
  
- # d3d8.forceLegacyDiscard = False
+ # dxvk.maxMemoryBudget = 0
 +
 +
 +# Sets the async pipeline compiler

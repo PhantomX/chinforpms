@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.10
+%global wine_stagingver 10.11
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -88,7 +88,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 320c3c0388ca30301ea92a9a4a5f2eb4987f3acf
+%global tkg_id e9342a019ca8f45371e5d3b2436ccdc5eed5121f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -133,7 +133,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.10
+Version:        10.11
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -243,6 +243,7 @@ Patch1041:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wa
 Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
 Patch1053:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-alt.patch#/%{name}-tkg-ntsync-config.h.in-alt.patch
+Patch1054:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-org.patch#/%{name}-tkg-ntsync-config.h.in-org.patch
 Patch1055:       0001-tkg-cpu-topology-fixup-1.patch
 Patch1056:       0001-tkg-cpu-topology-fixup-2.patch
 
@@ -914,7 +915,13 @@ autoreconf -f
 %endif
 %patch -P 1028 -p1
 %if %{with ntsync}
+if grep -F "Define to 1 if you have the 'ppoll' function." include/config.h.in ;then
+  if grep -F "Define to 1 if you have the \`prctl' function." include/config.h.in ;then
+%patch -P 1054 -p1
+  else
 %patch -P 1053 -p1
+  fi
+fi
 %patch -P 1052 -p1
 %else
 %patch -P 1055 -p1
@@ -2542,6 +2549,9 @@ fi
 
 
 %changelog
+* Mon Jun 30 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.11-100
+- 10.11
+
 * Sat Jun 14 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.10-100
 - 10.10
 - BR: libOSMesa removed

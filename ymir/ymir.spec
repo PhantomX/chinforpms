@@ -16,9 +16,9 @@
 %bcond_without rtmidi
 %endif
 
-%global commit 6ed27e2e45bf01067681e8b915a82e6a3c777d03
+%global commit c9879e4aae9e6598924e17fa32a3b1166809f8eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250624
+%global date 20250630
 %bcond_without snapshot
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
@@ -33,11 +33,11 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cxxopts
 
-%global commit13 1ff0b7f5e1d1ff36ade3fe714b47a861db41ef9f
+%global commit13 353bd895a2bf9d0b1bc5977dc002fb6e0cdb0960
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 fmt
 
-%global commit14 eaac68ca2ce404137d7a1e7d8f74fafbfe30f508
+%global commit14 e4bba0b53ce12dca8ee251a52df47760796b8e5d
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 imgui
 
@@ -45,11 +45,11 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 mio
 
-%global commit16 802cd454f25469d3123e678af41364153c132c2a
+%global commit16 f58f558c120e9b32c217290b80bad1a0729fbb2c
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 stb
 
-%global commit17 2f35c28a52fd0ada7600273de9aacb66550bcdcb
+%global commit17 708fff700f36ab3c2ab107b984ec9f3b8be5f055
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 tomlplusplus
 
@@ -68,8 +68,8 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.1.5
-Release:        0.4%{?dist}
+Version:        0.1.6
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
@@ -271,5 +271,8 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Jun 30 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-0.1.20250630gitc9879e4
+- 0.1.6 snapshot
+
 * Sun May 25 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.4-0.1.20250524gitafb7a0e
 - Initial spec
