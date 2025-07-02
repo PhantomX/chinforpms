@@ -1,7 +1,7 @@
-%global commit aa8621d2fdb121619f677396733e88176ce6aedc
+%global commit d2bed9c7a3f4c42e02f75fb8ce1d0118874acd9c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250430
-%bcond_with snapshot
+%global date 20250701
+%bcond_without snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -88,7 +88,7 @@
 %global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id e9342a019ca8f45371e5d3b2436ccdc5eed5121f
+%global tkg_id 50a826a3dc6dad4c993bbfec411aae6863fc4c33
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -134,7 +134,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.11
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
