@@ -238,6 +238,7 @@ pipe-viewer
 playgsf
 plutosvg_ds
 plzip
+proton-shim
 protontricks
 ps3iso-utils
 -pspshrink

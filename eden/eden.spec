@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3f03ff46b419411d4ad87b68c0c3f2cff6ffad77
+%global commit c4a26be18025feb57139e5499c664c1d74367830
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250626
+%global date 20250701
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -103,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27389
+Version:        0.0.2.27415
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -145,8 +145,6 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 
 Patch0:         %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
-Patch1:         %{vc_url}/%{name}/pulls/215.patch#/%{name}-git-pr215.patch
-Patch2:         %{vc_url}/%{name}/pulls/218.patch#/%{name}-git-pr218.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
@@ -154,6 +152,7 @@ Patch14:        0001-Fix-48e86d6.patch
 Patch500:       %{vc_url}/%{name}/commit/3f03ff46b419411d4ad87b68c0c3f2cff6ffad77.patch#/%{name}-git-revert-3f03ff4.patch
 Patch501:       %{vc_url}/%{name}/commit/37f890ec1662dd8980dbbe79d7c45444a1a4f4fa.patch#/%{name}-git-revert-37f890e.patch
 Patch502:       %{vc_url}/%{name}/commit/2e6a289a0b4e53098d4ee4a9f6baf038d21981f8.patch#/%{name}-git-revert-2e6a289.patch
+Patch503:       %{vc_url}/%{name}/commit/726e1e756d4e11a0064bca4117d31d9fe287453f.patch#/%{name}-git-revert-726e1e7.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -293,6 +292,7 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
+%patch -P 503 -p1 -R
 %patch -P 500 -p1 -R
 %patch -P 501 -p1 -R
 %patch -P 502 -p1 -R

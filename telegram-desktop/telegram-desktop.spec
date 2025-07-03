@@ -43,7 +43,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.15.4
+Version:        5.16.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -111,7 +111,6 @@ BuildRequires:  pkgconfig(glibmm-2.68) >= %{glibmm_ver}
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
-BuildRequires:  pkgconfig(jemalloc)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
@@ -207,7 +206,6 @@ Provides: telegram%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 # Virtual provides for bundled libraries...
 Provides:       bundled(cld3) = 3.0.13~gitb48dc46
 Provides:       bundled(rlottie) = 0~git
-Provides:       bundled(libtgvoip) = 2.4.4
 Provides:       bundled(cppgir) = 0~git%{cppgir_ver}
 %if %{with bin}
 Provides:       bundled(qt6-qtcore) = 6.5.2
@@ -254,7 +252,7 @@ cp %{P:1014} .
 %endif
 
 # Unbundling libraries...
-rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,jemalloc,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
+rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 %if %{with minizip}
 rm -rf Telegram/minizip Telegram/ThirdParty/minizip
@@ -263,9 +261,6 @@ rm -rf Telegram/minizip Telegram/ThirdParty/minizip
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
   -i cmake/external/rlottie/CMakeLists.txt \
   cmake/external/gsl/CMakeLists.txt
-
-sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  -i Telegram/{cmake,ThirdParty/libtgvoip}/lib_tgvoip.cmake
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 
@@ -394,6 +389,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed Jul 02 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.16.1-100
+- 5.16.1
+- Remove now unneeded tgvoip and jemalloc bits
+
 * Fri Jun 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.15.4-100
 - 5.14.4
 
