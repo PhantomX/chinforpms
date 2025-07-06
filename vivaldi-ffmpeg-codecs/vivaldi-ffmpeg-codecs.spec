@@ -11,12 +11,14 @@
 %ifarch aarch64
 %global parch arm64
 %global pkgid 660838579
-%global snaprev 67
+%global snaprev 83
+%global ffmpeg_hash b02307b39bceac203b75c2669898c300257f0849acf2cdf6a1ee1325606b2f30
 %else
 %global parch amd64
 %global pkgid 660647727
 %global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 76
+%global snaprev 82
+%global ffmpeg_hash 173067e361ed2ce36c2900b955e0e628f147a46750f77c10fc7591318b827c45
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
@@ -25,7 +27,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        7.4.119605
+Version:        7.5.120726
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -39,8 +41,11 @@ ExclusiveArch:  x86_64
 BuildRequires:  squashfs-tools
 %else
 Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{ffmpeg_ver}-%{pkgdistro}_%{parch}.deb
-ExclusiveArch:  x86_64 aarch64
 %endif
+BuildRequires:  awk
+BuildRequires:  coreutils
+
+ExclusiveArch:  x86_64 aarch64
 
 %global __provides_exclude_from ^%{vivaldi_dir}/.*
 %global __requires_exclude ^libffmpeg.so.*
@@ -71,6 +76,13 @@ if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
   exit 1
 fi
 
+RHASH="$(sha256sum libffmpeg.so | awk '{print $1}')"
+if [ "${RHASH}" != "%{ffmpeg_hash}" ] ;then
+  echo "Hash mismatch. You have ${RHASH} in %{S:0} instead %{ffmpeg_hash} "
+  echo "Edit ffmpeg_hash and try again"
+  exit 1
+fi
+
 %build
 
 
@@ -84,6 +96,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Thu Jul 03 2025 - 7.5.120726-1
+- 7.5.120726
+
 * Mon May 19 2025 - 7.4.119605-1
 - 7.4.119605
 

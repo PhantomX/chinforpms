@@ -10,11 +10,13 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.2.1
+Version:        3.4.1
 Release:        100%{?gver}%{?dist}
 Summary:        Interactive process viewer
 
-License:        GPLv2+
+Epoch:          1
+
+License:        GPL-2.0-or-later
 URL:            https://htop.dev/
 
 %if 0%{?with_snapshot}
@@ -23,16 +25,20 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
+Patch10:        0001-Use-availableMem.patch
+
 BuildRequires:  desktop-file-utils
 BuildRequires:  lm_sensors-devel
+BuildRequires:  pkgconfig(hwloc)
+BuildRequires:  libcap-devel
 BuildRequires:  pkgconfig(libnl-3.0)
 BuildRequires:  pkgconfig(ncursesw)
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
 BuildRequires:  make
-Requires:       lsof
-Requires:       strace
+Suggests:       lsof
+Suggests:       strace
 
 %description
 htop is an interactive text-mode process viewer for Linux, similar to
@@ -45,7 +51,9 @@ top(1).
 
 %build
 %configure \
+  --enable-capabilities \
   --enable-delayacct \
+  --enable-hwloc \
   --enable-openvz \
   --enable-unicode \
   --enable-vserver \
@@ -58,6 +66,8 @@ top(1).
 %install
 %make_install
 
+
+%check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
@@ -72,6 +82,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Jul 03 2025 Phantom X <megaphantomx at hotmail dot com> - 3.4.1-100
+- Add availableMem patch
+
 * Tue Sep 13 2022 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-100
 - 3.2.1
 

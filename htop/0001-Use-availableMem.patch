@@ -1,0 +1,31 @@
+From 88f641ebcbb8fde3650e2cb2e75f713b03c5f49f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 3 Jul 2025 18:44:57 -0300
+Subject: [PATCH] Use availableMem
+
+Borrowed from https://medium.com/@fulalas/the-case-of-ram-usage-on-linux-f98ff95046d6
+---
+ MemoryMeter.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/MemoryMeter.c b/MemoryMeter.c
+index 6769e3b..ede3a2a 100644
+--- a/MemoryMeter.c
++++ b/MemoryMeter.c
+@@ -49,12 +49,7 @@ static void MemoryMeter_updateValues(Meter* this) {
+       "MEMORY_METER_AVAILABLE is not the last item in MemoryMeterValues");
+    this->curItems = MEMORY_METER_AVAILABLE;
+ 
+-   /* we actually want to show "used + shared + compressed" */
+-   double used = this->values[MEMORY_METER_USED];
+-   if (isPositive(this->values[MEMORY_METER_SHARED]))
+-      used += this->values[MEMORY_METER_SHARED];
+-   if (isPositive(this->values[MEMORY_METER_COMPRESSED]))
+-      used += this->values[MEMORY_METER_COMPRESSED];
++   double used = this->host->totalMem - this->host->availableMem;
+ 
+    written = Meter_humanUnit(buffer, used, size);
+    METER_BUFFER_CHECK(buffer, size, written);
+-- 
+2.50.0
+
