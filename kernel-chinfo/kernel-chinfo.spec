@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.4
+%define specrpmversion 6.15.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1230,17 +1230,9 @@ Patch7401:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386
 Patch7402:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
 Patch7403:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
 Patch7404:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
-Patch7405:  %{pf_url}/1888022a4bc984850c97310b49fa8ab480ba81a6.patch#/pf-cb-1888022.patch
-Patch7406:  %{pf_url}/f963bb6451afc4cef9d02613b4d6cf063262bcc9.patch#/pf-cb-f963bb6.patch
-Patch7407:  %{pf_url}/3780ad830292ec0748da85f18c7d816573dc7688.patch#/pf-cb-3780ad8.patch
-Patch7408:  %{pf_url}/29e7a9212d6360109d8dc0323fdfbe5cd026ef5a.patch#/pf-cb-29e7a92.patch
+Patch7405:  %{pf_url}/1e0bf201a90df1058f012f12adcc454d4d7c9a69.patch#/pf-cb-1e0bf20.patch
 # fs
-Patch7500:  %{pf_url}/c91c60ac4c399042d079fc7363c76c849b3481d5.patch#/pf-cb-c91c60a.patch
-Patch7501:  %{pf_url}/4f429e4dd2377f988601e07f1a41a1db78d47223.patch#/pf-cb-4f429e4.patch
-Patch7502:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
-Patch7503:  %{pf_url}//36fea4ccc219b9139aa46a5d37afcef14aa526ce.patch#/pf-cb-36fea4c.patch
-Patch7504:  %{pf_url}//5feec653722db8f8a432beb6ee60ade19e15bfdb.patch#/pf-cb-5feec65.patch
-Patch7505:  %{pf_url}//b89e518bad75a39a33bc1fed5085dc59a73ed2e2.patch#/pf-cb-b89e518.patch
+Patch7500:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
 # ovpn-dco
 Patch7600:  %{pf_url}/31abde5202ca781656a8368e28939988b3353509.patch#/pf-cb-31abde5.patch
 Patch7601:  %{pf_url}/12a1be7ec89f43c58cda50a3d21607a41f8fa7b4.patch#/pf-cb-12a1be7.patch
@@ -2136,16 +2128,8 @@ ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
 ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
 # fs
 ApplyPatch %{PATCH7500}
-ApplyPatch %{PATCH7501}
-ApplyPatch %{PATCH7502}
-ApplyPatch %{PATCH7503}
-ApplyPatch %{PATCH7504}
-ApplyPatch %{PATCH7505}
 # ovpn-dco
 ApplyPatch %{PATCH7600}
 ApplyPatch %{PATCH7601}
@@ -4540,7 +4524,10 @@ fi\
 #
 #
 %changelog
-* Fri Jun 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.3-500.chinfo
+* Fri Jun 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.5-500.chinfo
+- 6.15.5
+
+* Fri Jun 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.4-500.chinfo
 - 6.15.4
 
 * Thu Jun 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.3-500.chinfo

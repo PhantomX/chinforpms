@@ -27,9 +27,9 @@
 %bcond_with xbyak
 %bcond_with local
 
-%global commit 9e045755a6725a3c4d62f29438152bdc5d9f7ce1
+%global commit fb7772871c0d13b18f48cf0b72ea8412c3155769
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250629
+%global date 20250705
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -53,7 +53,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           duckstation
-Version:        0.1.9235
+Version:        0.1.9256
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
