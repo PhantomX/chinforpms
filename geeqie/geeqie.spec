@@ -1,11 +1,10 @@
-%global _lto_cflags %{nil}
-
 %global commit d0def46f34d5eee88f48074fa3f798ee30580aa8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240919
 %bcond_with snapshot
 
 %bcond_with map
+%bcond_without thumbnailer
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -16,8 +15,10 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.5
+Version:        2.6.1
 Release:        100%{?dist}
+
+Epoch:          1
 
 URL:            https://www.geeqie.org
 License:        GPL-2.0-or-later
@@ -38,12 +39,9 @@ BuildRequires:  yelp-tools
 # for /usr/bin/appstream-util
 BuildRequires:  libappstream-glib
 BuildRequires:  pandoc
-%if 0%{?fedora} >= 41 || 0%{?rhel} >= 11 
 BuildRequires:  bash-completion-devel
-%else
-BuildRequires:  bash-completion
-%endif
 
+BuildRequires:  pkgconfig(cfitsio)
 BuildRequires:  pkgconfig(ddjvuapi)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0)
 BuildRequires:  pkgconfig(glib-2.0)
@@ -57,8 +55,8 @@ BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libraw)
 BuildRequires:  pkgconfig(libtiff-4)
-BuildRequires:  webp-pixbuf-loader
 BuildRequires:  pkgconfig(lua) >= 5.3
+BuildRequires:  pkgconfig(OpenEXR)
 BuildRequires:  pkgconfig(poppler-glib)
 BuildRequires:  desktop-file-utils
 # For xxd
@@ -67,8 +65,9 @@ BuildRequires:  vim-common
 BuildRequires:  pkgconfig(clutter-gtk-1.0)
 BuildRequires:  pkgconfig(champlain-0.12)
 %endif
-
-#BuildRequires:  pkgconfig(libffmpegthumbnailer)
+%if %{with thumbnailer}
+BuildRequires:  pkgconfig(libffmpegthumbnailer)
+%endif
 
 # for the included plug-in scripts
 Requires:       exiv2
@@ -76,8 +75,7 @@ Requires:       fbida
 Requires:       ImageMagick
 Requires:       perl-Image-ExifTool
 Requires:       zenity
-Suggests:       jxl-pixbuf-loader
-Suggests:       webp-pixbuf-loader
+Requires:       gdk-pixbuf2-modules-extra%{?_isa}
 Suggests:       xcf-pixbuf-loader
 
 
@@ -114,9 +112,9 @@ cflags=(
 CFLAGS="$CFLAGS ${cflags[*]}"
 
 %meson \
-  -Dgps-map=%{?with_map:enabled}%{!?with_map:disabled} \
+  %{!?with_map:-Dgps-map=disabled} \
   -Dspell=disabled \
-  -Dvideothumbnailer=disabled \
+  %{!?with_thumbnailer:-Dvideothumbnailer=disabled} \
 %{nil}
 
 %meson_build
@@ -133,7 +131,7 @@ if [ ! -f %{buildroot}%{_pkgdocdir}/html/index.html ] ;then
 fi
 
 # We want these _docdir files in GQ_HELPDIR.
-install -p -m 0644 NEWS README* TODO \
+install -p -m 0644 NEWS README* \
     %{buildroot}%{_pkgdocdir}
 
 desktop-file-install \
@@ -161,11 +159,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_datadir}/icons/hicolor/*/*/*%{name}*
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/%{appname}.desktop
+%{_datadir}/applications/org.geeqie.cache-maintenance.desktop
 %{_metainfodir}/%{appname}.appdata.xml
 %{bash_completions_dir}/%{name}
 
 
 %changelog
+* Wed Jul 09 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
+- 2.6.1
+
 * Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 2.5-100
 - 2.5
 
