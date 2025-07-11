@@ -10,14 +10,12 @@
  arch/arm64/boot/dts/rockchip/rk3568.dtsi           |    8 +-
  arch/arm64/boot/dts/rockchip/rk3588-base.dtsi      |    6 -
  arch/arm64/boot/dts/rockchip/rk3588-rock-5b.dts    |    1 +
- arch/powerpc/include/uapi/asm/ioctls.h             |    8 +-
  arch/s390/include/asm/ipl.h                        |    1 +
  arch/s390/kernel/ipl.c                             |    5 +
  arch/s390/kernel/setup.c                           |    4 +
  arch/x86/kernel/setup.c                            |   22 +-
  crypto/sig.c                                       |    3 +-
  crypto/testmgr.c                                   |    2 +-
- drivers/acpi/acpica/dsmethod.c                     |    7 +
  drivers/acpi/apei/hest.c                           |    8 +
  drivers/acpi/irq.c                                 |   17 +-
  drivers/acpi/scan.c                                |    9 +
@@ -57,7 +55,7 @@
  security/integrity/platform_certs/load_uefi.c      |    6 +-
  security/lockdown/Kconfig                          |   13 +
  security/lockdown/lockdown.c                       |   11 +
- 62 files changed, 2757 insertions(+), 349 deletions(-)
+ 59 files changed, 2745 insertions(+), 344 deletions(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
 index dd844ac8d910..dab2b4892122 100644
@@ -88,7 +86,7 @@ index dd844ac8d910..dab2b4892122 100644
  M:	Jimmy Su <jimmy.su@intel.com>
  L:	linux-media@vger.kernel.org
 diff --git a/Makefile b/Makefile
-index 01ddb4eb3659..063569b53bbd 100644
+index 959b55a05d1b..60d048560446 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -22,6 +22,18 @@ $(if $(filter __%, $(MAKECMDGOALS)), \
@@ -402,25 +400,6 @@ index d22068475c5d..17f4fd054cd3 100644
  	};
  };
  
-diff --git a/arch/powerpc/include/uapi/asm/ioctls.h b/arch/powerpc/include/uapi/asm/ioctls.h
-index 2c145da3b774..b5211e413829 100644
---- a/arch/powerpc/include/uapi/asm/ioctls.h
-+++ b/arch/powerpc/include/uapi/asm/ioctls.h
-@@ -23,10 +23,10 @@
- #define TCSETSW		_IOW('t', 21, struct termios)
- #define TCSETSF		_IOW('t', 22, struct termios)
- 
--#define TCGETA		_IOR('t', 23, struct termio)
--#define TCSETA		_IOW('t', 24, struct termio)
--#define TCSETAW		_IOW('t', 25, struct termio)
--#define TCSETAF		_IOW('t', 28, struct termio)
-+#define TCGETA		0x40147417 /* _IOR('t', 23, struct termio) */
-+#define TCSETA		0x80147418 /* _IOW('t', 24, struct termio) */
-+#define TCSETAW		0x80147419 /* _IOW('t', 25, struct termio) */
-+#define TCSETAF		0x8014741c /* _IOW('t', 28, struct termio) */
- 
- #define TCSBRK		_IO('t', 29)
- #define TCXONC		_IO('t', 30)
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -542,24 +521,6 @@ index 82977ea25db3..aeb84a4b5937 100644
  		return 0;
  
  	sig_size = crypto_sig_maxsize(tfm);
-diff --git a/drivers/acpi/acpica/dsmethod.c b/drivers/acpi/acpica/dsmethod.c
-index e809c2aed78a..a232746d150a 100644
---- a/drivers/acpi/acpica/dsmethod.c
-+++ b/drivers/acpi/acpica/dsmethod.c
-@@ -483,6 +483,13 @@ acpi_ds_call_control_method(struct acpi_thread_state *thread,
- 		return_ACPI_STATUS(AE_NULL_OBJECT);
- 	}
- 
-+	if (this_walk_state->num_operands < obj_desc->method.param_count) {
-+		ACPI_ERROR((AE_INFO, "Missing argument for method [%4.4s]",
-+			    acpi_ut_get_node_name(method_node)));
-+
-+		return_ACPI_STATUS(AE_AML_UNINITIALIZED_ARG);
-+	}
-+
- 	/* Init for new method, possibly wait on method mutex */
- 
- 	status =
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 20d757687e3d..90a13f20f052 100644
 --- a/drivers/acpi/apei/hest.c
@@ -1279,7 +1240,7 @@ index 2168b6cd7167..5d7cda175a0c 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e4628d962161..9b5994d1a535 100644
+index df871a500b28..692113b3c14f 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1290,7 +1251,7 @@ index e4628d962161..9b5994d1a535 100644
  #include <linux/kernel.h>
  #include <linux/bits.h>
  #include <linux/bug.h>
-@@ -2954,6 +2955,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+@@ -2968,6 +2969,27 @@ int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
  }
  EXPORT_SYMBOL_GPL(iommu_dev_disable_feature);
  
@@ -3479,7 +3440,7 @@ index 273c003eff3b..7afaefed5086 100644
  
  #endif /* ATH12K_FW_H */
 diff --git a/drivers/net/wireless/ath/ath12k/pci.c b/drivers/net/wireless/ath/ath12k/pci.c
-index 2e7d302ace67..eaa4ca79c6d8 100644
+index 928991088721..a07e03f764ee 100644
 --- a/drivers/net/wireless/ath/ath12k/pci.c
 +++ b/drivers/net/wireless/ath/ath12k/pci.c
 @@ -718,7 +718,7 @@ static void ath12k_pci_init_qmi_ce_config(struct ath12k_base *ab)
@@ -3525,7 +3486,7 @@ index 348dbc81bad8..c5e31b954796 100644
  		   resp.board_id_valid, resp.board_id);
  
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 94daca15a096..8de27d109820 100644
+index d0f7b749b9a6..ba74f2d67495 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4452,6 +4452,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -4081,10 +4042,10 @@ index 000000000000..bf88863803b2
 +	{ }
 +};
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 9f19fc7494e0..595b7b294f0f 100644
+index f71b807d71a7..ee8abbe5a43a 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5854,6 +5854,13 @@ static void hub_event(struct work_struct *work)
+@@ -5857,6 +5857,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  

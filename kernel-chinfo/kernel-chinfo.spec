@@ -180,7 +180,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.5
+%define specrpmversion 6.15.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1230,7 +1230,6 @@ Patch7401:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386
 Patch7402:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
 Patch7403:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
 Patch7404:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
-Patch7405:  %{pf_url}/1e0bf201a90df1058f012f12adcc454d4d7c9a69.patch#/pf-cb-1e0bf20.patch
 # fs
 Patch7500:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
 # ovpn-dco
@@ -2127,7 +2126,6 @@ ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
 # fs
 ApplyPatch %{PATCH7500}
 # ovpn-dco
@@ -4524,6 +4522,9 @@ fi\
 #
 #
 %changelog
+* Thu Jul 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.6-500.chinfo
+- 6.15.6
+
 * Fri Jun 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.5-500.chinfo
 - 6.15.5
 

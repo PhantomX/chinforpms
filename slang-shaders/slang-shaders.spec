@@ -1,6 +1,6 @@
-%global commit 23046258f7fd02242cc6dd4c08c997a8ddb84935
+%global commit 48ac13f49d7a0a61250e0da86ff27c567cd2d69b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250204
+%global date 20250709
 
 BuildArch:      noarch
 
@@ -8,7 +8,7 @@ BuildArch:      noarch
 
 
 Name:           slang-shaders
-Version:        1640
+Version:        1674
 Release:        1%{?dist}
 Summary:        Collection of slang shaders from libretro
 
