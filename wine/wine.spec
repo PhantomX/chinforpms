@@ -1,7 +1,7 @@
 %global commit 730f65e737a624e10a783441a4a9133e306009da
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250706
-%bcond_without snapshot
+%bcond_with snapshot
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -77,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.11
+%global wine_stagingver 10.12
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -85,10 +85,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 93139bc89acfb55755d0382ded255d90671ef5bf
+%global ge_id c7b867734b5d1cb13b40c823f185ed50370a9a62
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id df968656885ff7593679b22a74d6201a1e4a1259
+%global tkg_id 8d388f61f80deb7227b9bd04e189208716f083c3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -133,8 +133,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.11
-Release:        102%{?dist}
+Version:        10.12
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          2
@@ -251,6 +251,8 @@ Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
 Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
 Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.patch#/%{name}-valve-541b9e8.patch
+
+Patch1200:       %{ge_url}/wine-hotfixes/pending/registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch#/%{name}-ge-registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch
 
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
@@ -943,6 +945,7 @@ fi
 %if %{without proton_mf}
 %patch -P 1093 -p1
 %endif
+%patch -P 1200 -p1
 %patch -P 1301 -p1
 %patch -P 1302 -p1
 %if %{with proton_mf}
@@ -2549,6 +2552,9 @@ fi
 
 
 %changelog
+* Sat Jul 12 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.12-100
+- 10.12
+
 * Mon Jun 30 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.11-100
 - 10.11
 
