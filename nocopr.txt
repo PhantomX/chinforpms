@@ -14,7 +14,7 @@ cdrtools
 cemu
 chinforpms-fake-packages
 -citra
-citron
+-citron
 -cowsrevenge
 -czkawka
 dbeaver-ce

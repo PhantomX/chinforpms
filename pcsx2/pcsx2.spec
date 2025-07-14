@@ -48,7 +48,7 @@
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
 %global fmt_ver 11.0.0
-%global imgui_ver 1.91.9~b
+%global imgui_ver 1.92.1
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
 %global rcheevos_scommit 3d01191
@@ -57,7 +57,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.5.24
+Version:        2.5.62
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -86,7 +86,6 @@ Patch7:         0001-Qt-do-not-set-a-default-theme.patch
 Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch9:         0001-Fix-translation-names.patch
 Patch10:        0001-cmake-use-system-discord-rpc.patch
-Patch11:        %{url}/pull/12930.patch#/%{name}-gh-pr12930.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch

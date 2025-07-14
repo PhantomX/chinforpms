@@ -1,25 +1,29 @@
-From e1428985c27bcb1fe852d0bd8ff52f9f77884d0f Mon Sep 17 00:00:00 2001
+From f24c6007af329ebab20407f00d7671c676f9f057 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 10 Feb 2024 21:50:07 -0300
 Subject: [PATCH] Use system libzstd
 
 ---
- CMakeLists.txt | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ CMakeLists.txt | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 39a9a79..d28bddb 100644
+index 178cb41..4de9847 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -59,8 +59,15 @@ endif()
+@@ -63,12 +63,20 @@ endif()
  
  # zstd
  if (WITH_SYSTEM_ZSTD)
 -  find_package(zstd REQUIRED)
--  list(APPEND PLATFORM_LIBS zstd::libzstd_shared)
 +  find_package(zstd)
 +  if(zstd_FOUND)
 +    list(APPEND PLATFORM_LIBS zstd::libzstd_shared)
+   if(TARGET zstd::libzstd_shared)
+     list(APPEND PLATFORM_LIBS zstd::libzstd_shared)
+   else()
+     list(APPEND PLATFORM_LIBS zstd::libzstd_static)
+   endif()
 +  else()
 +    include(FindPkgConfig)
 +    pkg_check_modules(ZSTD REQUIRED libzstd)
@@ -27,8 +31,8 @@ index 39a9a79..d28bddb 100644
 +    list(APPEND CHDR_LIBS ${ZSTD_LIBRARIES})
 +  endif()
  else()
-   option(ZSTD_BUILD_SHARED "BUILD SHARED LIBRARIES" OFF)
-   option(ZSTD_BUILD_PROGRAMS "BUILD PROGRAMS" OFF)
+   if(NOT TARGET libzstd_static)
+     option(ZSTD_BUILD_SHARED "BUILD SHARED LIBRARIES" OFF)
 -- 
-2.47.0
+2.50.1
 

@@ -27,9 +27,9 @@
 %bcond_with xbyak
 %bcond_with local
 
-%global commit cc3bc120a4237411953dc55e82df76a50aa6fcb8
+%global commit a5e3f163a5b352482ced2fe1cf659835105df80e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250709
+%global date 20250713
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -53,7 +53,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           duckstation
-Version:        0.1.9273
+Version:        0.1.9304
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -73,6 +73,7 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Hotkeys-audio-volume-step-by-5.patch
 Patch5:         0001-Revert-Qt-Make-dark-fusion-the-default-theme.patch
 Patch6:         0001-gamedb-missings-hashes-and-personal-additions.patch
+Patch7:         0001-vulkan_device.cpp-replace-VK_DRIVER_ID_MESA_AGXV.patch
 Patch8:         0001-cmake-versioned-discord-rpc.patch
 Patch9:         0001-cmake-shaderc_ds.patch
 Patch10:        0001-cmake-soundtouch_ds.patch

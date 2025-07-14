@@ -9,9 +9,9 @@
 # Enable system zydis
 %bcond_with zydis
 
-%global commit 3203300abcd2b81f6cf688f662ffbfb9a502378a
+%global commit a002730d68e0d700c80d11d7083d14dbc5df0977
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250531
+%global date 20250702
 %bcond_without snapshot
 
 
@@ -23,11 +23,11 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 unordered_dense
 
-%global commit12 0b2432ced0884fd152b471d97ecf0258ff4d859f
+%global commit12 7ad36e52110b39cfb62b47bfdb6def94ac531309
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 zycore-c
 
-%global commit13 bffbb610cfea643b98e87658b9058382f7522807
+%global commit13 6372690e30389a94db65ece2d8a1f0a2310475ed
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 zydis
 
@@ -35,22 +35,24 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global zydis_ver 4.0.0
+%global zydis_ver 4.1.1
 
 %global vc_url   https://git.eden-emu.dev/eden-emu
 
+%global pkgname eden
+
 Name:           dynarmic
 Version:        6.7.0
-Release:        5%{?dist}
+Release:        7%{?dist}
 Summary:        An ARM dynamic recompiler
 
 License:        0BSD AND MIT
 URL:            https://git.eden-emu.dev/eden-emu/%{name}
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/archive/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{pkgname}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 
 Source10:       https://github.com/azahar-emu/%{srcname10}/archive/%{commit10}.tar.gz#/%{srcname10}-%{shortcommit10}.tar.gz
@@ -91,7 +93,8 @@ with %{name}.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}} -N -p1
+%autosetup %{?with_snapshot:-n %{pkgname}} -N -p1
+pushd externals/dynarmic
 %autopatch -M 500 -p1
 
 tar -xf %{S:10} -C externals/mcl --strip-components 1
@@ -102,12 +105,12 @@ sed \
   -e '/find_/s|Zydis|zydis|g' \
   -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
 %else
-tar -xf %{S:12} -C externals/zycore --strip-components 1
+tar -xf %{S:12} -C externals/zycore-c --strip-components 1
 tar -xf %{S:13} -C externals/zydis --strip-components 1
 sed \
   -e '/find_/s|Zydis|zydis_DISABLED|g' \
   -i CMakeLists.txt CMakeModules/dynarmicConfig.cmake.in
-cp -p externals/zycore/LICENSE LICENSE.zycore
+cp -p externals/zycore-c/LICENSE LICENSE.zycore-c
 cp -p externals/zydis/LICENSE LICENSE.zydis
 %endif
 
@@ -119,12 +122,13 @@ sed -e '/-mtune=core2/d' -i CMakeLists.txt
 %else
 sed -e '/DYNARMIC_CXX_FLAGS/s|-mtune=core2|-march=x86-64-v2|' -i CMakeLists.txt
 %endif
-
+popd
 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
 export CFLAGS+=" %{xbyak_flags}"
 export CXXFLAGS+=" %{xbyak_flags}"
+pushd externals/dynarmic
 %cmake \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_IGNORE_ASSERTS:BOOL=ON \
@@ -134,18 +138,22 @@ export CXXFLAGS+=" %{xbyak_flags}"
 %{nil}
 
 %cmake_build
+popd
 
 
 %install
+pushd externals/dynarmic
 %cmake_install
+popd
+
 
 %files
-%license LICENSE.*
-%doc README.md
+%license externals/dynarmic/LICENSE.*
+%doc externals/dynarmic/README.md
 %{_libdir}/lib%{name}.so.*
 
 %files devel
-%license LICENSE.*
+%license externals/dynarmic/LICENSE.*
 %{_includedir}/%{name}
 %{_libdir}/cmake/%{name}
 %{_libdir}/lib%{name}.so

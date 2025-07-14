@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c4a26be18025feb57139e5499c664c1d74367830
+%global commit a0a208db578b8d77579573d437ad251029db1635
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250701
+%global date 20250713
 %bcond_without snapshot
 
 # Enable system dynarmic
@@ -103,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27415
+Version:        0.0.2.27454
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -153,6 +153,7 @@ Patch500:       %{vc_url}/%{name}/commit/3f03ff46b419411d4ad87b68c0c3f2cff6ffad7
 Patch501:       %{vc_url}/%{name}/commit/37f890ec1662dd8980dbbe79d7c45444a1a4f4fa.patch#/%{name}-git-revert-37f890e.patch
 Patch502:       %{vc_url}/%{name}/commit/2e6a289a0b4e53098d4ee4a9f6baf038d21981f8.patch#/%{name}-git-revert-2e6a289.patch
 Patch503:       %{vc_url}/%{name}/commit/726e1e756d4e11a0064bca4117d31d9fe287453f.patch#/%{name}-git-revert-726e1e7.patch
+Patch504:       0001-revert-726e1e7-fixup.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -240,6 +241,7 @@ BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 %endif
+BuildRequires:  pkgconfig(SPIRV-Tools)
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
 %if %{with vma}
@@ -295,6 +297,7 @@ This is the Qt frontend.
 %patch -P 503 -p1 -R
 %patch -P 500 -p1 -R
 %patch -P 501 -p1 -R
+%patch -P 504 -p1
 %patch -P 502 -p1 -R
 
 pushd externals
@@ -442,6 +445,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
+  -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \

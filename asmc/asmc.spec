@@ -1,6 +1,6 @@
-%global commit 512bfcdd9202f2706282c87355ef08fe419359a7
+%global commit 3042bffaceea9f2750ee5d5d6159aaecd6e838a3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250201
+%global date 20250710
 %bcond_without snapshot
 
 %if %{with snapshot}
@@ -20,7 +20,7 @@
 %endif
 
 Name:           asmc
-Version:        2.36.24
+Version:        2.37.15
 Release:        1%{?dist}
 Summary:        Asmc Macro Assembler
 
@@ -102,6 +102,9 @@ install -pm0755 source/%{name}/%{name}%{platform} %{buildroot}%{_bindir}/%{name}
 
 
 %changelog
+* Sun Jul 13 2025 Phantom X <megaphantomx at hotmail dot com> - 2.37.15-1.20250710git3042bff
+- 2.37.15
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 2.36.24-1.20250201git512bfcd
 - 2.36.24
 

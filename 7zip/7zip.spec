@@ -24,8 +24,8 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        24.09
-Release:        3%{?dist}
+Version:        25.00
+Release:        1%{?dist}
 Summary:        Very high compression ratio file archiver
 
 License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
@@ -194,6 +194,9 @@ end
 
 
 %changelog
+* Sun Jul 13 2025 Phantom X <megaphantomx at hotmail dot com> - 25.00-1
+- 25.00
+
 * Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 24.09-3
 - Add common package
 
