@@ -1,0 +1,26 @@
+From cdbd53b68921a7ca336567bd959abbbd4e59019d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 15 Jul 2025 21:53:08 -0300
+Subject: [PATCH] renderer_vulkan.cpp: Disable IsLowRefreshRate
+
+https://github.com/azahar-emu/azahar/issues/1220
+---
+ src/video_core/renderer_vulkan/renderer_vulkan.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/video_core/renderer_vulkan/renderer_vulkan.cpp b/src/video_core/renderer_vulkan/renderer_vulkan.cpp
+index eb3d056..f1b7629 100644
+--- a/src/video_core/renderer_vulkan/renderer_vulkan.cpp
++++ b/src/video_core/renderer_vulkan/renderer_vulkan.cpp
+@@ -60,7 +60,7 @@ constexpr static std::array<vk::DescriptorSetLayoutBinding, 1> PRESENT_BINDINGS
+ 
+ namespace {
+ static bool IsLowRefreshRate() {
+-#ifdef ENABLE_SDL2
++#if 0
+     const auto sdl_init_status = SDL_Init(SDL_INIT_VIDEO);
+     if (sdl_init_status < 0) {
+         LOG_ERROR(Render_Vulkan, "SDL failed to initialize, unable to check refresh rate");
+-- 
+2.50.1
+

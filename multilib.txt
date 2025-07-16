@@ -33,6 +33,7 @@ mesa-libGL-xlib
 -mingw-winpthreads
 -SDL1
 -SDL2
+SDL3
 -sdl12-compat
 -sdlcl
 -shaderc

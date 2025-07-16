@@ -16,9 +16,9 @@
 %bcond_without rtmidi
 %endif
 
-%global commit 60949b6954c9883bccccfe9056d179dc43011b62
+%global commit 190b8e7c600d06bafd2303c1620067df12dced39
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250708
+%global date 20250714
 %bcond_without snapshot
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
@@ -69,7 +69,7 @@
 
 Name:           ymir
 Version:        0.1.6
-Release:        0.2%{?dist}
+Release:        0.3%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}

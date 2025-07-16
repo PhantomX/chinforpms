@@ -1,4 +1,4 @@
-From 3d3d94245a66c9c762de5ba72f49d8c60f71853b Mon Sep 17 00:00:00 2001
+From c5b8c6e23b74cdbf6b90ea87fa69dfccc7d8951e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -10,11 +10,12 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  CMakeLists.txt                           |  1 -
  externals/CMakeLists.txt                 |  9 +++++++++
  externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++++++
- 3 files changed, 32 insertions(+), 1 deletion(-)
+ src/yuzu/CMakeLists.txt                  |  9 +++++++++
+ 4 files changed, 41 insertions(+), 1 deletion(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e5cac8f..4a48429 100755
+index 54fe123..939accb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -26,10 +27,10 @@ index e5cac8f..4a48429 100755
  include(CTest)
  
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 515e3f2..fddf07f 100755
+index 7dacba2..12164d6 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -35,6 +35,14 @@ endif()
+@@ -40,6 +40,14 @@ endif()
  add_subdirectory(glad)
  
  # mbedtls
@@ -44,7 +45,7 @@ index 515e3f2..fddf07f 100755
  add_subdirectory(mbedtls)
  target_include_directories(mbedtls PUBLIC ./mbedtls/include)
  if (NOT MSVC)
-@@ -42,6 +50,7 @@ if (NOT MSVC)
+@@ -47,6 +55,7 @@ if (NOT MSVC)
          -Wno-unused-but-set-variable
          -Wno-string-concatenation)
  endif()
@@ -81,6 +82,27 @@ index 0000000..97c4515
 +	MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY MBEDTLS_VERSION_OK)
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
+diff --git a/src/yuzu/CMakeLists.txt b/src/yuzu/CMakeLists.txt
+index bab6a6c..970b4cb 100644
+--- a/src/yuzu/CMakeLists.txt
++++ b/src/yuzu/CMakeLists.txt
+@@ -495,7 +495,16 @@ if (YUZU_ROOM)
+ endif()
+ 
+ # Extra deps
++find_package(PkgConfig REQUIRED)
++pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
++if (TARGET PkgConfig::quazip)
++  message(STATUS "Using the system Quazip")
++  add_library(quazip INTERFACE)
++  target_link_libraries(quazip INTERFACE PkgConfig::quazip)
++  add_library(QuaZip::QuaZip ALIAS quazip)
++else()
+ add_subdirectory(externals)
++endif()
+ target_link_libraries(yuzu PRIVATE QuaZip::QuaZip)
+ 
+ create_target_directory_groups(yuzu)
 -- 
-2.42.0
+2.50.1
 

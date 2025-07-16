@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e24f8da1131deefd0dbcc0c47c3e842d646014d6
+%global commit f326e39dba1e52798b3a90f47152f2bf765acdcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250623
+%global date 20250713
 %bcond_without snapshot
 
 %bcond_without sse42
@@ -24,9 +24,10 @@
 # Enable system cryptopp
 %bcond_without cryptopp
 # Enable system dynarmic
-%bcond_without dynarmic
+%bcond_with dynarmic
 # Enable system fmt
 %bcond_without fmt
+%bcond_without glslang
 # Disable Qt build
 %bcond_without qt
 %bcond_without soundtouch
@@ -45,6 +46,18 @@
 %global commit3 278405bd71999ed3f3c77c5f78344a06fef798b9
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
+
+%global commit300 7b08d83418f628b800dfac1c9a16c3f59036fbad
+%global shortcommit300 %(c=%{commit300}; echo ${c:0:7})
+%global srcname300 mcl
+
+%global commit301 0b2432ced0884fd152b471d97ecf0258ff4d859f
+%global shortcommit301 %(c=%{commit301}; echo ${c:0:7})
+%global srcname301 zycore-c
+
+%global commit302 bffbb610cfea643b98e87658b9058382f7522807
+%global shortcommit302 %(c=%{commit302}; echo ${c:0:7})
+%global srcname302 zydis
 
 %global commit4 123913715afeb8a437e6388b4473fcc4753e1c9a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
@@ -90,7 +103,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 sirit
 
-%global commit15 c214f6f2d1a7253bb0e9f195c2dc5b0659dc99ef
+%global commit15 aa6cef192b8e693916eb713e7a9ccadf06062ceb
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 SPIRV-Headers
 
@@ -105,6 +118,10 @@
 %global commit18 216f00e8ddba6f2c64caf481a04f1ddd78b93e78
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 faad2
+
+%global commit19 a62abcb402009b9ca5975e6167c09f237f630e0e
+%global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
+%global srcname19 SPIRV-Tools
 
 %global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
 
@@ -123,12 +140,12 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2122~rc1.15
+Version:        2122~rc1.19
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
 
-License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_glslang: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}
 URL:            https://azahar-emu.org
 
 %if %{with snapshot}
@@ -141,7 +158,10 @@ Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{src
 Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 %if %{without dynarmic}
-Source3:        https://github.com/MerryMage/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+Source300:      %{vc_url}/%{srcname300}/archive/%{commit300}/%{srcname300}-%{shortcommit300}.tar.gz
+Source301:      https://github.com/zyantific/%{srcname301}/archive/%{commit301}/%{srcname301}-%{shortcommit301}.tar.gz
+Source302:      https://github.com/zyantific/%{srcname302}/archive/%{commit302}/%{srcname302}-%{shortcommit302}.tar.gz
 %endif
 %if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
@@ -159,9 +179,13 @@ Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 %if %{with webservice}
 Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
+%if %{without glslang}
 Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+%endif
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+%if %{without glslang}
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+%endif
 %if %{without vma}
 Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
@@ -169,12 +193,15 @@ Source16:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname16}/archive
 Source17:       https://github.com/KhronosGroup/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%if %{without glslang}
+Source19:       https://github.com/KhronosGroup/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
+%endif
 
 Source20:       compatibility_list.qrc
 
-
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
+Patch12:        0001-renderer_vulkan.cpp-Disable-IsLowRefreshRate.patch
 Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 BuildRequires:  cmake
@@ -246,6 +273,11 @@ BuildRequires:  cmake(SoundTouch)
 Provides:       bundled(soundtouch) = 0~git%{shortcommit7}
 %endif
 BuildRequires:  cmake(tsl-robin-map)
+%if %{with glslang}
+BuildRequires:  cmake(glslang)
+BuildRequires:  cmake(SPIRV-Tools)
+BuildRequires:  spirv-headers-devel
+%endif
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
@@ -306,6 +338,9 @@ tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+tar -xf %{S:300} -C externals/dynarmic/externals/mcl --strip-components 1
+tar -xf %{S:301} -C externals/dynarmic/externals/zycore --strip-components 1
+tar -xf %{S:302} -C externals/dynarmic/externals/zydis --strip-components 1
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
 %if %{without fmt}
@@ -325,10 +360,19 @@ tar -xf %{S:11} -C externals/boost --strip-components 1
 %if %{with webservice}
 tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 %endif
+%if %{without glslang}
 tar -xf %{S:13} -C externals/glslang --strip-components 1
 %patch -P 500 -p1
-tar -xf %{S:14} -C externals/sirit --strip-components 1
-tar -xf %{S:15} -C externals/sirit/externals/SPIRV-Headers --strip-components 1
+%endif
+tar -xf %{S:14} -C externals/sirit/sirit --strip-components 1
+%if %{without glslang}
+tar -xf %{S:15} -C externals/spirv-headers --strip-components 1
+rm -rf externals/sirit/sirit/externals/SPIRV-Headers
+ln -sf ../../../spirv-headers externals/sirit/sirit/externals/SPIRV-Headers
+tar -xf %{S:19} -C externals/spirv-tools --strip-components 1
+%else
+echo 'find_package(SPIRV-Headers REQUIRED GLOBAL)' >> externals/sirit/CMakeLists.txt
+%endif
 %if %{without vma}
 tar -xf %{S:16} -C externals/vma --strip-components 1
 %endif
@@ -359,10 +403,13 @@ cp -p faad2/faad2/COPYING COPYING.faad2
 %if %{without fmt}
 cp -p fmt/LICENSE LICENSE.fmt
 %endif
+%if %{without glslang}
 cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p spirv-tools/LICENSE LICENSE.spirv-tools
+%endif
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
-cp -p sirit/LICENSE.txt LICENSE.sirit
+cp -p sirit/sirit/LICENSE.txt LICENSE.sirit
 %if %{without soundtouch}
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
 %endif
@@ -451,6 +498,10 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DUSE_SYSTEM_OPENAL:BOOL=ON \
   -DUSE_SYSTEM_SDL2:BOOL=ON \
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
+%if %{with glslang}
+  -DUSE_SYSTEM_GLSLANG:BOOL=ON \
+  -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
+%endif
   %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \
   %{?with_vulkan:-DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON} \
   -DUSE_SYSTEM_XBYAK:BOOL=ON \

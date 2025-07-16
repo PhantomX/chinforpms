@@ -13,13 +13,13 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a0a208db578b8d77579573d437ad251029db1635
+%global commit a538126eb7a0ce1e3457922a49ecc2406b8d30b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250713
+%global date 20250715
 %bcond_without snapshot
 
 # Enable system dynarmic
-%bcond_without dynarmic
+%bcond_with dynarmic
 # Enable system ffmpeg
 %bcond_with ffmpeg
 # Use stable ffmpeg
@@ -38,19 +38,15 @@
 # Enable webservice
 %bcond_without webservice
 
-%global commit110 7b08d83418f628b800dfac1c9a16c3f59036fbad
-%global shortcommit10 %(c=%{commit110}; echo ${c:0:7})
-%global srcname110 mcl
-
 %global commit111 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
 %global srcname111 unordered_dense
 
-%global commit112 0b2432ced0884fd152b471d97ecf0258ff4d859f
-%global shortcommit12 %(c=%{commit112}; echo ${c:0:7})
+%global commit112 7ad36e52110b39cfb62b47bfdb6def94ac531309
+%global shortcommit112 %(c=%{commit112}; echo ${c:0:7})
 %global srcname112 zycore-c
 
-%global commit113 bffbb610cfea643b98e87658b9058382f7522807
+%global commit113 6372690e30389a94db65ece2d8a1f0a2310475ed
 %global shortcommit113 %(c=%{commit113}; echo ${c:0:7})
 %global srcname113 zydis
 
@@ -103,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27454
+Version:        0.0.2.27465
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -117,15 +113,14 @@ Source0:        %{vc_url}/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.
 %endif
 
 %if %{without dynarmic}
-Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}.tar.gz#/%{srcname110}-%{shortcommit110}.tar.gz
-Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname11}-%{shortcommit111}.tar.gz
-Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}.tar.gz#/%{srcname112}-%{shortcommit112}.tar.gz
-Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}.tar.gz#/%{srcname113}-%{shortcommit113}.tar.gz
+Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
+Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}/%{srcname112}-%{shortcommit112}.tar.gz
+Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}/%{srcname113}-%{shortcommit113}.tar.gz
 %endif
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
-Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
+%dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
 Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}.tar.gz#/%{srcname16}-%{shortcommit16}.tar.gz
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}.tar.gz#/%{srcname17}-%{shortcommit17}.tar.gz
@@ -182,7 +177,6 @@ BuildRequires:  cmake(dynarmic) >= 6.7.0
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit11}
 %endif
 BuildRequires:  pkgconfig(gamemode) >= 1.7
-BuildRequires:  glslang
 BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
 BuildRequires:  pkgconfig(libcrypto)
@@ -224,6 +218,7 @@ Provides:       bundled(mbedtls) = 0~gitacdc937
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
+BuildRequires:  pkgconfig(quazip1-qt6)
 BuildRequires:  pkgconfig(sdl2) >= 2.32.0
 %if %{with qt}
 BuildRequires:  cmake(Qt%{qt_ver}Core)
@@ -241,7 +236,9 @@ BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 %endif
-BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  cmake(glslang)
+BuildRequires:  cmake(SPIRV-Tools)
+BuildRequires:  spirv-headers-devel
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
 %if %{with vma}
@@ -272,8 +269,6 @@ Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
 Provides:       bundled(tzdb_to_nx) = ~git9792969
 
-Obsoletes:      yuzu < 9999
-
 
 %description
 %{name} is an open-source NX emulator written in C++.
@@ -283,7 +278,6 @@ Obsoletes:      yuzu < 9999
 Summary:        A NX Emulator (Qt frontend)
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       hicolor-icon-theme
-Obsoletes:      yuzu-qt < 9999
 
 %description qt
 %{name} is an open-source NX emulator written in C++.
@@ -300,6 +294,8 @@ This is the Qt frontend.
 %patch -P 504 -p1
 %patch -P 502 -p1 -R
 
+rm -rf src/yuzu/externals
+
 pushd externals
 rm -rf \
   breakpad cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode getopt inih \
@@ -314,9 +310,8 @@ rm -rf mbedtls
 %if %{with dynarmic}
 rm -rf dynarmic
 %else
-tar -xf %{S:110} -C dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:111} -C dynarmic/externals/unordered_dense --strip-components 1
-tar -xf %{S:112} -C dynarmic/externals/zycore --strip-components 1
+tar -xf %{S:112} -C dynarmic/externals/zycore-c --strip-components 1
 tar -xf %{S:113} -C dynarmic/externals/zydis --strip-components 1
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i ../CMakeLists.txt
 sed \
@@ -330,7 +325,7 @@ sed \
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %endif
-tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
+%dnl tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
@@ -370,7 +365,7 @@ cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
 %if %{without dynarmic}
-%cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 %if %{without mbedtls}
@@ -446,6 +441,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
+  -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
