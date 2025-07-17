@@ -2,9 +2,9 @@
 
 %bcond_without vma
 
-%global commit 97bc6b08b1da511fa449ecb412ca74fa54f4a3fb
+%global commit 68acd5bfa3146d7124233e3e372f6ffb5d8d0dcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250503
+%global date 20250703
 %bcond_without snapshot
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
@@ -31,7 +31,7 @@
 
 Name:           snes9x
 Version:        1.63
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT

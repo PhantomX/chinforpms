@@ -1,0 +1,35 @@
+From 463339133facf06d964ff85566c6ba816832cf91 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 16 Jul 2025 21:49:31 -0300
+Subject: [PATCH] Fix ltdp 0001 patch
+
+---
+ ltdp-0001-Disable-sponsored-messages.patch | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/ltdp-0001-Disable-sponsored-messages.patch b/ltdp-0001-Disable-sponsored-messages.patch
+index 485d342..f54e110 100644
+--- a/ltdp-0001-Disable-sponsored-messages.patch
++++ b/ltdp-0001-Disable-sponsored-messages.patch
+@@ -2,7 +2,7 @@ diff --git a/Telegram/SourceFiles/data/components/sponsored_messages.cpp b/Teleg
+ index 5ae9d8b..73f4244 100644
+ --- a/Telegram/SourceFiles/data/components/sponsored_messages.cpp
+ +++ b/Telegram/SourceFiles/data/components/sponsored_messages.cpp
+-@@ -210,20 +210,10 @@ void SponsoredMessages::inject(
++@@ -231,11 +231,6 @@ void SponsoredMessages::inject(
+  }
+  
+  bool SponsoredMessages::canHaveFor(not_null<History*> history) const {
+@@ -14,6 +14,9 @@ index 5ae9d8b..73f4244 100644
+  	return false;
+  }
+  
++@@ -245,11 +240,6 @@ bool SponsoredMessages::canHaveFor(not_null<HistoryItem*> item) const {
++ }
++ 
+  bool SponsoredMessages::isTopBarFor(not_null<History*> history) const {
+ -	if (peerIsUser(history->peer->id)) {
+ -		if (const auto user = history->peer->asUser()) {
+-- 
+2.50.1
+

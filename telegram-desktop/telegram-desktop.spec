@@ -43,7 +43,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        5.16.3
+Version:        5.16.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -89,6 +89,7 @@ Patch1013:       %{ltdp_url}/0004-Disable-accounts-limit.patch#/ltdp-0004-Disabl
 Patch1014:       %{ltdp_url}/0005-Option-to-disable-stories.patch#/ltdp-0005-Option-to-disable-stories.patch
 Patch1015:       0001-Fix-ltdp-0005-patch.patch
 Patch1016:       0001-Fix-ltdp-0002-patch.patch
+Patch1017:       0001-Fix-ltdp-0001-patch.patch
 
 
 BuildRequires:  desktop-file-utils
@@ -238,7 +239,10 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %autopatch -p1 -M 999
 
 %if %{with ltdp}
-%patch -P 1010 -p1
+%dnl %patch -P 1010 -p1
+cp %{P:1010} .
+%patch -P 1017 -p1
+%{__scm_apply_patch -p1 -q} -i ltdp-0001-Disable-sponsored-messages.patch
 %dnl %patch -P 1011 -p1
 cp %{P:1011} .
 %patch -P 1016 -p1
@@ -389,6 +393,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Jul 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.16.4-100
+- 5.16.4
+
 * Fri Jul 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:5.16.3-100
 - 5.16.3
 

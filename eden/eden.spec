@@ -316,6 +316,7 @@ tar -xf %{S:113} -C dynarmic/externals/zydis --strip-components 1
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i ../CMakeLists.txt
 sed \
   -e '/-pedantic-errors/d' \
+  -e '/-mtune=core2/d' \
   -i dynarmic/CMakeLists.txt
 sed \
   -e '/find_/s|Zydis|zydis_DISABLED|g' \
