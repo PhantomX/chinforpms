@@ -128,7 +128,7 @@ sed -i \
   -e 's|${GIT_COMMIT_SHORT}|%{shortcommit}|g' \
   -e 's|${GIT_BRANCH}|master|g' \
   -e 's|${GIT_REV}|%{sbuild}|g' \
-  -e 's|${VERSION_STRING}|%{snapver}-%{sbuild}-%{shortcommit}|g' \
+  -e 's|${VERSION_STRING}|%{snapver}-r%{sbuild}-%{shortcommit}|g' \
   src/core/version.c.in
 %endif
 

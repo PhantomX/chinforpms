@@ -122,6 +122,9 @@ Summary: The Linux kernel
 # Sign modules on all arches
 %global signmodules 1
 
+# Add additional rhel certificates to system trusted keys.
+%global rhelkeys 1
+
 # Compress modules only for architectures that build modules
 %ifarch noarch
 %global zipmodules 0
@@ -180,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.6
+%define specrpmversion 6.15.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -291,8 +294,10 @@ Summary: The Linux kernel
 %define with_dbgonly   0
 # Only build the realtime kernel (--with rtonly):
 %define with_rtonly    %{?_with_rtonly:1} %{?!_with_rtonly:0}
-# Only build the automotive kernel (--with automotiveonly):%
+# Only build the automotive variant of the kernel (--with automotiveonly):
 %define with_automotiveonly %{?_with_automotiveonly:1} %{?!_with_automotiveonly:0}
+# Build the automotive kernel (--with automotive_build), this builds base variant with automotive config/options:
+%define with_automotive_build %{?_with_automotive_build:1} %{?!_with_automotive_build:0}
 # Only build the tools package
 %define with_toolsonly %{?_with_toolsonly:1} %{?!_with_toolsonly:0}
 # Control whether we perform a compat. check against published ABI.
@@ -432,6 +437,9 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
+%define signkernel 0
+%define signmodules 1
+%define rhelkeys 0
 %endif
 
 # if requested, only build debug kernel
@@ -466,7 +474,7 @@ Summary: The Linux kernel
 %define with_arm64_64k 0
 %endif
 
-# if requested, only build automotive kernel
+# if requested, only build the automotive variant of the kernel
 %if %{with_automotiveonly}
 %define with_automotive 1
 %define with_realtime 0
@@ -474,6 +482,12 @@ Summary: The Linux kernel
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
+%define with_selftests 1
+%endif
+
+# if requested, build kernel-automotive
+%if %{with_automotive_build}
+%define with_automotive 1
 %define with_selftests 1
 %endif
 
@@ -694,9 +708,6 @@ Summary: The Linux kernel
 %define cpupowerarchs i686 x86_64 ppc64le aarch64 riscv64
 %endif
 
-# Architectures we build kernel livepatching selftests on
-%define klptestarches x86_64 ppc64le s390x
-
 %if 0%{?use_vdso}
 %define _use_vdso 1
 %else
@@ -725,7 +736,7 @@ Summary: The Linux kernel
 %else
 %define with_realtime_base 0
 %endif
-%if %{with_automotive} && %{with_base}
+%if %{with_automotive} && %{with_base} && !%{with_automotive_build}
 %define with_automotive_base 1
 %else
 %define with_automotive_base 0
@@ -764,14 +775,14 @@ Release: %{pkg_release}
 %if 0%{?fedora}
 ExclusiveArch: noarch x86_64 s390x aarch64 ppc64le riscv64
 %else
-ExclusiveArch: noarch i386 i686 x86_64 s390x aarch64 ppc64le
+ExclusiveArch: noarch i386 i686 x86_64 s390x aarch64 ppc64le riscv64
 %endif
 ExclusiveOS: Linux
 %ifnarch %{nobuildarches}
-Requires: kernel-core-uname-r = %{KVERREL}
-Requires: kernel-modules-uname-r = %{KVERREL}
-Requires: kernel-modules-core-uname-r = %{KVERREL}
-Requires: ((kernel-modules-extra-uname-r = %{KVERREL}) if kernel-modules-extra-matched)
+Requires: %{name}-core-uname-r = %{KVERREL}
+Requires: %{name}-modules-uname-r = %{KVERREL}
+Requires: %{name}-modules-core-uname-r = %{KVERREL}
+Requires: ((%{name}-modules-extra-uname-r = %{KVERREL}) if %{name}-modules-extra-matched)
 Provides: installonlypkg(kernel)
 %endif
 
@@ -844,9 +855,8 @@ BuildRequires: python3-pyyaml python3-jsonschema python3-pip python3-setuptools 
 BuildRequires: (python3-wheel if python3-setuptools < 70)
 %endif
 
-%if %{with_tools} || %{signmodules} || %{signkernel}
 BuildRequires: openssl-devel
-%endif
+
 %if %{with_selftests}
 BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel python3-docutils python3-jsonschema
 %ifarch x86_64 riscv64
@@ -906,6 +916,16 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 # it now aborts on failure and build fails.
 # debugedit-5.1-5 in F42 added support to override tools with target versions.
 %undefine _include_gdb_index
+%endif
+
+%if 0%{?rhel}%{?centos}
+%ifarch riscv64
+# Temporary workaround to avoid using find-debuginfo and gdb.minimal.
+# The current c10s version of gdb-minimal (14.2-4.el10) crashes when given some
+# riscv64 kernel modules (see RHEL-91586). Not building the gdb index avoids
+# breaking CI for now.
+%undefine _include_gdb_index
+%endif
 %endif
 %endif
 
@@ -1008,8 +1028,6 @@ Source22: filtermods.py
 %define modsign_cmd %{SOURCE21}
 
 %if 0%{?include_rhel}
-Source23: x509.genkey.rhel
-
 Source24: %{name}-aarch64-rhel.config
 Source25: %{name}-aarch64-debug-rhel.config
 
@@ -1020,13 +1038,18 @@ Source30: %{name}-s390x-debug-rhel.config
 Source31: %{name}-s390x-zfcpdump-rhel.config
 Source32: %{name}-x86_64-rhel.config
 Source33: %{name}-x86_64-debug-rhel.config
-
-Source34: def_variants.yaml.rhel
-
-Source41: x509.genkey.centos
 # ARM64 64K page-size kernel config
 Source42: %{name}-aarch64-64k-rhel.config
 Source43: %{name}-aarch64-64k-debug-rhel.config
+
+Source44: %{name}-riscv64-rhel.config
+Source45: %{name}-riscv64-debug-rhel.config
+%endif
+
+%if %{include_rhel} || %{include_automotive}
+Source23: x509.genkey.rhel
+Source34: def_variants.yaml.rhel
+Source41: x509.genkey.centos
 %endif
 
 %if 0%{?include_fedora}
@@ -1135,11 +1158,17 @@ Source487: %{name}-riscv64-rt-debug-fedora.config
 %endif
 
 %if %{include_automotive}
-# automotive config files
+%if %{with_automotive_build}
+Source488: %{name}-aarch64-rhel.config
+Source489: %{name}-aarch64-debug-rhel.config
+Source490: %{name}-x86_64-rhel.config
+Source491: %{name}-x86_64-debug-rhel.config
+%else
 Source488: %{name}-aarch64-automotive-rhel.config
 Source489: %{name}-aarch64-automotive-debug-rhel.config
 Source490: %{name}-x86_64-automotive-rhel.config
 Source491: %{name}-x86_64-automotive-debug-rhel.config
+%endif
 %endif
 
 # Sources for kernel-tools
@@ -1230,6 +1259,8 @@ Patch7401:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386
 Patch7402:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
 Patch7403:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
 Patch7404:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
+Patch7405:  %{pf_url}/f599b7b47d5e28a2d4ce05afb6431d0d7c4fbdf4.patch#/pf-cb-f599b7b.patch
+Patch7406:  %{pf_url}/49c34e1117f7066e0fcd559463b2c99d106add6c.patch#/pf-cb-49c34e1.patch
 # fs
 Patch7500:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
 # ovpn-dco
@@ -1272,6 +1303,9 @@ Patch7635:  %{pf_url}/99d743e6d81cdfc0d1daa5a1b0261535fa863661.patch#/pf-cb-99d7
 Patch7636:  %{pf_url}/9755a2fee409e966c746785b8c4b13d69df9a3da.patch#/pf-cb-9755a2f.patch
 Patch7637:  %{pf_url}/58d83c663a27917e7fdb840ad8623e463ee61908.patch#/pf-cb-58d83c6.patch
 Patch7638:  %{pf_url}/50bb1e420ae85a50e8fc184ccbcb6324ea78767f.patch#/pf-cb-50bb1e4.patch
+Patch7639:  %{pf_url}/5f67c14bb50c5bcb2ccb8aef6eca2afc323b08b5.patch#/pf-cb-5f67c14.patch
+Patch7640:  %{pf_url}/eb1e9b6ace5ef13f7acffb91dfdd574a70f807c8.patch#/pf-cb-eb1e9b6.patch
+Patch7641:  %{pf_url}/576d02a107df3eb41136559d559d568652fb33a4.patch#/pf-cb-576d02a.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1280,21 +1314,25 @@ Patch7638:  %{pf_url}/50bb1e420ae85a50e8fc184ccbcb6324ea78767f.patch#/pf-cb-50bb
 
 
 %description
-The kernel meta package
+The %{package_name} meta package
 
 #
 # This macro does requires, provides, conflicts, obsoletes for a kernel package.
 #    %%kernel_reqprovconf [-o] <subpackage>
 # It uses any kernel_<subpackage>_conflicts and kernel_<subpackage>_obsoletes
 # macros defined above.
+# -o: Skips main "Provides" that would satisfy general kernel requirements that
+#     special-purpose kernels shouldn't include.
+#     For example, used for zfcpdump-core to *not* provide kernel-core. (BZ 2027654)
 #
 %define kernel_reqprovconf(o) \
 %if %{-o:0}%{!-o:1}\
+Provides: kernel = %{specversion}-%{pkg_release}\
 Provides: %{name} = %{specversion}-%{pkg_release}\
 %endif\
 Provides: %{name}-%{_target_cpu} = %{specrpmversion}-%{pkg_release}%{uname_suffix %{?1:+%{1}}}\
-Provides: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): ((linux-firmware >= 20150904-56.git6ebf5d57) if linux-firmware)\
@@ -1324,14 +1362,14 @@ device drivers shipped with it are documented in these files.
 You'll want to install this package if you need a reference to the
 options that can be passed to Linux kernel modules at load time.
 
-
+%if %{with_headers}
 %package headers
 Summary: Header files for the Linux kernel for use by glibc
 Obsoletes: glibc-kernheaders < 3.0-46
 Provides: glibc-kernheaders = 3.0-46
 %if 0%{?gemini}
-Obsoletes: kernel-headers < %{specversion}-%{release}
 Provides: %{name}-headers = %{specversion}-%{release}
+Obsoletes: kernel-headers < %{specversion}-%{release}
 %endif
 %description headers
 Kernel-headers includes the C header files that specify the interface
@@ -1339,7 +1377,9 @@ between the Linux kernel and userspace libraries and programs.  The
 header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 glibc package.
+%endif
 
+%if %{with_cross_headers}
 %package cross-headers
 Summary: Header files for the Linux kernel for use by cross-glibc
 %if 0%{?gemini}
@@ -1352,7 +1392,7 @@ between the Linux kernel and userspace libraries and programs.  The
 header files define structures and constants that are needed for
 building most standard programs and are also needed for rebuilding the
 cross-glibc package.
-
+%endif
 
 %package debuginfo-common-%{_target_cpu}
 Summary: Kernel source files used by %{name}-debuginfo packages
@@ -1422,7 +1462,7 @@ This package contains the kernel source perf library.
 
 %package -n libperf-devel
 Summary: Development files for the perf library from kernel source
-Requires: libperf = %{specrpmversion}-%{release}
+Requires: libperf = %{version}-%{release}
 %description -n libperf-devel
 This package includes libraries and header files needed for development
 of applications which use perf library from kernel source.
@@ -1549,6 +1589,7 @@ Summary: gcov graph and source files for coverage data collection.\
 %{?1:%{1}-}gcov includes the gcov graph and source files for gcov coverage collection.\
 %{nil}
 
+%if %{with_kernel_abi_stablelists}
 %package -n %{name}-abi-stablelists
 Summary: The Red Hat Enterprise Linux kernel ABI symbol stablelists
 AutoReqProv: no
@@ -1556,6 +1597,7 @@ AutoReqProv: no
 The kABI package contains information pertaining to the Red Hat Enterprise
 Linux kernel ABI, including lists of kernel symbols that are needed by
 external Linux kernel modules, and a yum plugin to aid enforcement.
+%endif
 
 %if %{with_kabidw_base}
 %package kernel-kabidw-base-internal
@@ -1599,6 +1641,7 @@ Summary: Development package for building kernel modules to match the %{?2:%{2} 
 Provides: %{name}%{?1:-%{1}}-devel-%{_target_cpu} = %{specrpmversion}-%{release}\
 Provides: %{name}-devel-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: kernel-devel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-devel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
 Requires(pre): findutils\
@@ -1611,7 +1654,7 @@ Requires: flex\
 Requires: make\
 Requires: gcc\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-devel-uname-r = %{KVERREL}%{uname_variant %{?1:%{1}}}\
+Requires: %{name}-devel-uname-r = %{KVERREL}%{uname_variant %{?1:%{1}}}\
 %endif\
 Suggests: duperemove\
 Suggests: hardlink\
@@ -1653,10 +1696,10 @@ Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}
 Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: %{name}%{?1:-%{1}}-modules-internal = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-internal\
@@ -1674,12 +1717,12 @@ Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{
 Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: %{name}%{?1:-%{1}}-modules-extra = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-extra-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-extra-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1698,11 +1741,11 @@ Provides: %{name}%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{releas
 Provides: %{name}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: %{name}-modules = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1721,10 +1764,10 @@ Provides: %{name}%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{r
 Provides: %{name}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: %{name}-modules-core = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1739,10 +1782,10 @@ This package provides essential kernel modules for the %{?2:%{2}-}core kernel pa
 %define kernel_meta_package() \
 %package %{1}\
 summary: kernel meta-package for the %{1} kernel\
-Requires: kernel-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
-Requires: kernel-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
-Requires: ((kernel-%{1}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{1}}) if kernel-modules-extra-matched)\
+Requires: %{name}-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: %{name}-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: %{name}-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
+Requires: ((%{name}-%{1}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{1}}) if %{name}-modules-extra-matched)\
 %if "%{1}" == "rt" || "%{1}" == "rt-debug" || "%{1}" == "rt-64k" || "%{1}" == "rt-64k-debug"\
 Requires: realtime-setup\
 %endif\
@@ -1753,17 +1796,21 @@ The meta-package for the %{1} kernel\
 
 #
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
-#    %%define variant_summary The Linux kernel compiled for <configuration>
-#    %%kernel_variant_package [-n <pretty-name>] [-m] [-o] <subpackage>
+#	%%define variant_summary The Linux kernel compiled for <configuration>
+#	%%kernel_variant_package [-n <pretty-name>] [-m] [-o] <subpackage>
+# -m: Used with debugbuildsenabled==0 to create a "meta" debug variant that
+#     depends on base variant and skips debug/internal/partner packages.
+# -o: Skips main "Provides" that would satisfy general kernel requirements that
+#     special-purpose kernels shouldn't include.
 #
 %define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
-Provides: kernel-%{?1:%{1}-}core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-%{?1:%{1}-}core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel)\
 %if %{-m:1}%{!-m:0}\
-Requires: kernel-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
-Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
 %endif\
 %{expand:%%kernel_reqprovconf %{?1:%{1}} %{-o:%{-o}}}\
 %if %{?1:1} %{!?1:0} \
@@ -1785,15 +1832,15 @@ Requires: kernel-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
-Provides: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): systemd >= 254-1\
 Recommends: uki-direct\
 %package %{?1:%{1}-}uki-virt-addons\
 Summary: %{variant_summary} unified kernel image addons for virtual machines\
 Provides: installonlypkg(kernel)\
-Requires: kernel%{?1:-%{1}}-uki-virt = %{specrpmversion}-%{release}\
+Requires: %{name}%{?1:-%{1}}-uki-virt = %{specrpmversion}-%{release}\
 Requires(pre): systemd >= 254-1\
 %endif\
 %if %{with_gcov}\
@@ -1813,10 +1860,10 @@ Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-
 Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: %{name}%{?1:-%{1}}-modules-partner = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
 Provides: installonlypkg(kernel-module)\
-Provides: kernel%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: kernel%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-partner\
@@ -1925,7 +1972,7 @@ It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
 %endif
 
-%if %{with_debug} && %{with_automotive}
+%if %{with_debug} && %{with_automotive} && !%{with_automotive_build}
 %define variant_summary The Linux Automotive kernel compiled with extra debugging enabled
 %kernel_variant_package automotive-debug
 %description automotive-debug-core
@@ -2024,7 +2071,9 @@ Prebuilt 64k unified kernel image for virtual machines.
 Prebuilt 64k unified kernel image addons for virtual machines.
 %endif
 
+%ifnarch noarch %{nobuildarches}
 %kernel_modules_extra_matched_package
+%endif
 
 %define log_msg() \
   { set +x; } 2>/dev/null \
@@ -2041,6 +2090,13 @@ Prebuilt 64k unified kernel image addons for virtual machines.
 %if %{with_baseonly}
 %if !%{with_up}
 %{log_msg "Cannot build --with baseonly, up build is disabled"}
+exit 1
+%endif
+%endif
+
+%if %{with_automotive}
+%if 0%{?fedora}
+%{log_msg "Cannot build automotive with a fedora baseline, must be rhel/centos/eln"}
 exit 1
 %endif
 %endif
@@ -2126,6 +2182,8 @@ ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
 # fs
 ApplyPatch %{PATCH7500}
 # ovpn-dco
@@ -2168,6 +2226,9 @@ ApplyPatch %{PATCH7635}
 ApplyPatch %{PATCH7636}
 ApplyPatch %{PATCH7637}
 ApplyPatch %{PATCH7638}
+ApplyPatch %{PATCH7639}
+ApplyPatch %{PATCH7640}
+ApplyPatch %{PATCH7641}
 %endif
 
 # openSUSE
@@ -2310,12 +2371,16 @@ done
 %if %{signkernel}%{signmodules}
 
 # Add DUP and kpatch certificates to system trusted keys for RHEL
+truncate -s0 ../certs/rhel.pem
 %if 0%{?rhel}
+%if %{rhelkeys}
 %{log_msg "Add DUP and kpatch certificates to system trusted keys for RHEL"}
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
-cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem > ../certs/rhel.pem
+cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem >> ../certs/rhel.pem
+# rhelkeys
+%endif
 %if %{signkernel}
 %ifarch s390x ppc64le
 openssl x509 -inform der -in %{secureboot_ca_0} -out secureboot.pem
@@ -2344,9 +2409,9 @@ done
 
 %{log_msg "Set process_configs.sh $OPTS"}
 cp %{SOURCE81} .
-OPTS=""
-%if %{with_configchecks}
-    OPTS="$OPTS -w -n -c"
+OPTS="-w -n -c"
+%if !%{with_configchecks}
+  OPTS="$OPTS -i"
 %endif
 %if %{with clang_lto}
 for opt in %{clang_make_opts}; do
@@ -3021,7 +3086,7 @@ EOF
 
   KernelAddonsDirOut="$KernelUnifiedImage.extra.d"
   mkdir -p $KernelAddonsDirOut
-  python3 %{SOURCE151} %{SOURCE152} $KernelAddonsDirOut virt %{primary_target} %{_target_cpu}
+  python3 %{SOURCE151} %{SOURCE152} $KernelAddonsDirOut virt %{primary_target} %{_target_cpu} "$ADDONS_SBAT"
 
 %if %{signkernel}
     %{log_msg "Sign the EFI UKI kernel"}
@@ -3275,7 +3340,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso} rt-debug
 BuildKernel %make_target %kernel_image %{_use_vdso} rt-64k-debug
 %endif
 
-%if %{with_automotive}
+%if %{with_automotive} && !%{with_automotive_build}
 BuildKernel %make_target %kernel_image %{_use_vdso} automotive-debug
 %endif
 
@@ -3483,14 +3548,7 @@ pushd tools/testing/selftests
 %endif
 
 %{log_msg "main selftests compile"}
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net/bonding iommu cachestat pid_namespace rlimits" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
-
-%ifarch %{klptestarches}
-  # kernel livepatching selftest test_modules will build against
-  # /lib/modules/$(shell uname -r)/build tree unless KDIR is set
-  export KDIR=$(realpath $(pwd)/../../..)
-  %{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="livepatch" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install || true
-%endif
+%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -3804,11 +3862,23 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/cgroup/{} \;
 popd
+# install drivers/net selftests
+pushd tools/testing/selftests/drivers/net
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/{} \;
+popd
 # install drivers/net/mlxsw selftests
 pushd tools/testing/selftests/drivers/net/mlxsw
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/mlxsw/{} \;
+popd
+# install drivers/net/hw selftests
+pushd tools/testing/selftests/drivers/net/hw
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/hw/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/hw/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/hw/{} \;
 popd
 # install drivers/net/netdevsim selftests
 pushd tools/testing/selftests/drivers/net/netdevsim
@@ -3839,12 +3909,6 @@ pushd tools/testing/selftests/tc-testing
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/tc-testing/{} \;
-popd
-# install livepatch selftests
-pushd tools/testing/selftests/livepatch
-find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
-find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
-find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/livepatch/{} \;
 popd
 # install net/netfilter selftests
 pushd tools/testing/selftests/net/netfilter
@@ -3882,6 +3946,18 @@ pushd tools/testing/selftests/pid_namespace
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/pid_namespace/{} \;
+popd
+# install timens selftests
+pushd tools/testing/selftests/timens
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/timens/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/timens/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/timens/{} \;
+popd
+# install pidfd selftests
+pushd tools/testing/selftests/pidfd
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
 popd
 %endif
 
@@ -4159,7 +4235,7 @@ fi\
 %kernel_kvm_post rt-64k-debug
 %endif
 
-%if %{with_automotive} && %{with_debug}
+%if %{with_automotive} && %{with_debug} && !%{with_automotive_build}
 %kernel_variant_preun -v automotive-debug
 %kernel_variant_post -v automotive-debug
 %endif
@@ -4172,7 +4248,9 @@ fi\
 %files headers
 /usr/include/*
 %exclude %{_includedir}/cpufreq.h
+%if %{with_ynl}
 %exclude %{_includedir}/ynl
+%endif
 %endif
 
 %if %{with_cross_headers}
@@ -4517,11 +4595,18 @@ fi\
 %kernel_variant_files %{_use_vdso} %{with_debug} rt-64k-debug
 %endif
 
+%ifnarch noarch %{nobuildarches}
+%files modules-extra-matched
+%endif
+
 # plz don't put in a version string unless you're going to tag
 # and build.
 #
 #
 %changelog
+* Thu Jul 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.7-500.chinfo
+- 6.15.7
+
 * Thu Jul 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.6-500.chinfo
 - 6.15.6
 

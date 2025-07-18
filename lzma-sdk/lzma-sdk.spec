@@ -30,7 +30,7 @@ ExclusiveArch:  x86_64
 BuildRequires:  asmc
 %endif
 
-BuildRequires:  7zip
+BuildRequires:  %{_bindir}/7za
 BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

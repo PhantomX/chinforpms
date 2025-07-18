@@ -25,8 +25,10 @@
 
 Name:           7zip
 Version:        25.00
-Release:        1%{?dist}
-Summary:        Very high compression ratio file archiver
+Release:        100%{?dist}
+Summary:        A file archiver
+
+Epoch:          1
 
 License:        LGPL-2.1-or-later AND BSD-3-Clause AND LicenseRef-Fedora-Public-Domain
 URL:            https://www.7-zip.org
@@ -39,6 +41,9 @@ Source0:        %{name}-free-%{version}.tar.xz
 %endif
 Source1:        Makefile
 
+# patch where 7z.so is loaded from so we don't need to do shenanigans like having the 7z binary
+# there and invoking via a wrapper
+Patch0:         7zip-find-so-in-libexec.diff
 Patch1:         0001-set-plugins-path.patch
 
 %if %{with asm}
@@ -56,27 +61,44 @@ BuildRequires:  make
 BuildRequires:  %{asmopt}
 %endif
 Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-Obsoletes:      p7zip < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       p7zip = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       p7zip%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-
-%description
-7-Zip is a file archiver with a very high compression ratio.
-
-This build do not have RAR support.
-
-
-%package plugins
-Summary:        Additional plugins for 7zip
-Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      7zip-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       7zip-plugins = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       7zip-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      p7zip-plugins < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       p7zip-plugins = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       p7zip-plugins%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-%description plugins
-Additional plugins that can be used with 7zip to extend its abilities.
+%global _description %{expand:
+7-Zip is a file archiver with a very high compression ratio.}
+
+%description %{_description}
+
+
+%package        reduced
+Summary:        Standalone version of 7-Zip console that supports only 7z (reduced version)
+Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    reduced %{_description}
+
+
+%package        standalone
+Summary:        Standalone version of 7-Zip console that supports only some formats
+Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+# p7zip ships 7za
+Obsoletes:      p7zip < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       p7zip%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    standalone %{_description}
+
+This version supports only 7z/xz/cab/zip/gzip/bzip2/tar.
+
+
+%package        standalone-all
+Summary:        Standalone version of 7-Zip console that supports all formats
+Requires:       %{name}-common%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description    standalone-all %{_description}
 
 
 %package common
@@ -120,20 +142,14 @@ sed \
 
 sed \
   -e 's|_RPMLIBEXECDIR_|%{_libexecdir}/%{name}|g' \
-  -i CPP/7zip/UI/Console/Main.cpp CPP/7zip/UI/Client7z/Client7z.cpp
-
-for i in 7za 7zz 7z ;do
-cat > ${i}.wrapper <<EOF
-#!/usr/bin/sh
-exec "%{_libexecdir}/%{name}/${i}" "\$@"
-EOF
-done
+  -i CPP/7zip/UI/Console/Main.cpp CPP/7zip/UI/Common/ArchiveCommandLine.cpp \
+     CPP/7zip/UI/Client7z/Client7z.cpp
 
 
 %build
 export DISABLE_RAR=1
 
-for build in Bundles/{Alone,Alone2,Format7zF,SFXCon} UI/Console; do
+for build in Bundles/{Alone,Alone2,Alone7z,Format7zF,SFXCon} UI/Console; do
   %make_build -C CPP/7zip/${build} -f ../../cmpl_gcc.mak LFLAGS_STRIP= \
     PLATFORM=%{platform} IS_X86=%{?isx86} IS_X64=%{?isx64} IS_ARM64=%{?isarm64} \
     %{?with_asm:USE_ASM=1 MY_ASM=%{asmopt}}
@@ -142,58 +158,42 @@ done
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-for i in 7za 7zz 7z ;do
-  install -pm0755 ${i}.wrapper %{buildroot}%{_bindir}/${i}
-done
+install -pm0755 CPP/7zip/Bundles/Alone/b/g/7za %{buildroot}%{_bindir}/7za
+install -pm0755 CPP/7zip/Bundles/Alone2/b/g/7zz %{buildroot}%{_bindir}/7zz
+install -pm0755 CPP/7zip/Bundles/Alone7z/b/g/7zr %{buildroot}%{_bindir}/7zr
+install -pm0755 CPP/7zip/UI/Console/b/g/7z %{buildroot}%{_bindir}/7z
 
 mkdir -p %{buildroot}%{_libexecdir}/%{name}
-install -pm0755 CPP/7zip/Bundles/Alone/b/g/7za %{buildroot}%{_libexecdir}/%{name}/
-install -pm0755 CPP/7zip/Bundles/Alone2/b/g/7zz %{buildroot}%{_libexecdir}/%{name}/
 install -pm0755 CPP/7zip/Bundles/Format7zF/b/g/7z.so %{buildroot}%{_libexecdir}/%{name}/
-install -pm0755 CPP/7zip/UI/Console/b/g/7z %{buildroot}%{_libexecdir}/%{name}/
 install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{name}/7zCon.sfx
-
-ln -s %{name} %{buildroot}%{_libexecdir}/p7zip
-
-
-%pretrans common -p <lua>
--- Define the path to directory being replaced below.
--- DO NOT add a trailing slash at the end.
-path = "%{_libexecdir}/p7zip"
-st = posix.stat(path)
-if st and st.type == "directory" then
-  status = os.rename(path, path .. ".rpmmoved")
-  if not status then
-    suffix = 0
-    while not status do
-      suffix = suffix + 1
-      status = os.rename(path .. ".rpmmoved", path .. ".rpmmoved." .. suffix)
-    end
-    os.rename(path, path .. ".rpmmoved")
-  end
-end
 
 
 %files
-%{_bindir}/7za
-%{_bindir}/7zz
-%{_libexecdir}/%{name}/7za
-%{_libexecdir}/%{name}/7zz
-
-%files plugins
 %{_bindir}/7z
-%{_libexecdir}/%{name}/7z
 %{_libexecdir}/%{name}/7z.so
+
+%files reduced
+%{_bindir}/7zr
+
+%files standalone
+%{_bindir}/7za
+
+%files standalone-all
+%{_bindir}/7zz
 
 %files common
 %license copying.txt License.txt
 %doc DOC/*.txt
 %dir %{_libexecdir}/%{name}
 %{_libexecdir}/%{name}/7zCon.sfx
-%{_libexecdir}/p7zip
 
 
 %changelog
+* Fri Jul 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.00-100
+- Rawhide partial sync
+- Add 7zr and split packages
+- Removed wrappers
+
 * Sun Jul 13 2025 Phantom X <megaphantomx at hotmail dot com> - 25.00-1
 - 25.00
 
