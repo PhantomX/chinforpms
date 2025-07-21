@@ -1,14 +1,14 @@
-%global commit c3cf3fe53df2b93b8780146c4693ead68373b052
+%global commit d2780b67263a45143feaf08c05caa78b112c5d07
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20200922
-%bcond_with snapshot
+%global date 20250319
+%bcond_without snapshot
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           xboxdrv
-Version:        0.8.13
+Version:        0.8.14
 Release:        1%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
@@ -61,7 +61,6 @@ both first and third party.
 
 sed \
   -e "/find_program/s|'python'|'%{__python3}'|" \
-  -e '/dbus-1/s|sysconfdir|datadir|' \
   -i meson.build
 
 
@@ -120,6 +119,9 @@ install -pm0644 %{S:7} %{buildroot}%{_udevrulesdir}/99-xbox-controller.rules
 
 
 %changelog
+* Sun Jul 20 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.14-1.20250319gitd2780b6
+- 0.8.14
+
 * Thu Oct 10 2024 Phantom X <megaphantomx at hotmail dot com> - 0.8.13-1
 - 0.8.13
 - udev rules from Gentoo

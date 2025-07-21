@@ -1,0 +1,66 @@
+From f21497cf92a80c5cffaa9b2fddae839f6a59761c Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 21 Jul 2025 00:29:35 -0300
+Subject: [PATCH] Build without git
+
+---
+ core/CMakeLists.txt       | 18 ++----------------
+ core/common/bgd_version.c |  3 +--
+ 2 files changed, 3 insertions(+), 18 deletions(-)
+
+diff --git a/core/CMakeLists.txt b/core/CMakeLists.txt
+index 2a86892..980ac0d 100644
+--- a/core/CMakeLists.txt
++++ b/core/CMakeLists.txt
+@@ -24,21 +24,8 @@ set(BGDRTM_SRC
+     "bgdrtm/src/varspace_file.c"
+ )
+ 
+-FetchContent_Declare(
+-    rpmalloc
+-    GIT_REPOSITORY "https://github.com/mjansson/rpmalloc.git"
+-    GIT_TAG "e4393ff85585d91400bcbad2e7266c011075b673" # 1.4.5
+-)
+-
+-FetchContent_Declare(cmake_git_version_tracking                   
+-  GIT_REPOSITORY https://github.com/andrew-hardin/cmake-git-version-tracking.git
+-  GIT_TAG 6c0cb87edd029ddfb403a8e24577c144a03605a6
+-)
+-
+-FetchContent_MakeAvailable(rpmalloc cmake_git_version_tracking)
+-
+ add_library(core OBJECT ${COMMON_SRC} ${BGDRTM_SRC})
+-target_include_directories(core PRIVATE "${rpmalloc_SOURCE_DIR}/rpmalloc/")
++target_include_directories(core PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/rpmalloc/rpmalloc/")
+ 
+ if(CMAKE_C_COMPILER_ID MATCHES "MSVC")
+     set_source_files_properties("common/allocator.c" PROPERTIES COMPILE_OPTIONS "/experimental:c11atomics")
+@@ -71,6 +58,5 @@ target_include_directories(core PRIVATE )
+ target_link_libraries(core
+     ${OPENSSL_CRYPTO_LIBRARY}
+     ZLIB::ZLIB
+-    SDL::SDL
+-    cmake_git_version_tracking)
++    SDL::SDL)
+ 
+diff --git a/core/common/bgd_version.c b/core/common/bgd_version.c
+index 24bdd6e..5bb3579 100644
+--- a/core/common/bgd_version.c
++++ b/core/common/bgd_version.c
+@@ -1,4 +1,3 @@
+-#include "git.h"
+ #include <stdio.h>
+ 
+ static char buffer[1024] = {0};
+@@ -7,7 +6,7 @@ const char* bgd_getversion()
+ {
+     if (*buffer==0)
+     {
+-        snprintf(buffer, sizeof(buffer), "1.0.0-BennuGD_libretro-%s-%s", git_Branch(), git_CommitSHA1() );
++        snprintf(buffer, sizeof(buffer), "1.0.0-BennuGD_libretro-_RPM_BRANCH_-_RPM_COMMIT_");
+     }
+ 
+     return buffer;
+-- 
+2.50.1
+

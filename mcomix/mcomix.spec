@@ -1,6 +1,6 @@
-%global commit 7be084d174115311ab817ebed3718d6bfb81c614
+%global commit a4092eb4f2927ce5d600444d0b10c308148ca34d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250129
+%global date 20250625
 %bcond_without snapshot
 
 BuildArch:      noarch
@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           mcomix
 Version:        3.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 License:        GPL-2.0-or-later
@@ -30,14 +30,16 @@ Source0:        https://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar
 
 Patch0:         0001-Search-gettext-files-in-system-wide-directory.patch
 Patch1:         0001-Set-small-toolbar.patch
-Patch2:         0001-Fix-multiprocessing-spawn-start.patch
+Patch2:         0001-7zip-use-7za.patch
 
 BuildRequires:  python3-devel >= 3.8
 BuildRequires:  gettext
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
+Requires:       %{_bindir}/7za
 Requires:       gtk3
 Requires:       hicolor-icon-theme
+Recommends:     mupdf
 
 Obsoletes:      mcomix3 < 1
 Obsoletes:      comix < 4.0.5
@@ -122,6 +124,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Jul 20 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-3.20250625gita4092eb
+- Requires 7za
+
 * Sun Jun 08 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-2.20250129git7be084d
 - Snapshot
 - Fix start

@@ -1,0 +1,25 @@
+From bec60d688c9ea65a735c38e2f0ad4bcc0b206056 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 20 Jul 2025 18:12:03 -0300
+Subject: [PATCH] 7zip: use 7za
+
+---
+ mcomix/archive/sevenzip_external.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mcomix/archive/sevenzip_external.py b/mcomix/archive/sevenzip_external.py
+index b08f277..2b59194 100644
+--- a/mcomix/archive/sevenzip_external.py
++++ b/mcomix/archive/sevenzip_external.py
+@@ -192,7 +192,7 @@ class SevenZipArchive(archive_base.ExternalExecutableArchive):
+         it was started successfully or None otherwise. """
+         global _7z_executable
+         if _7z_executable == -1:
+-            _7z_executable = process.find_executable(('7z',))
++            _7z_executable = process.find_executable(('7za',))
+         return _7z_executable
+ 
+     @staticmethod
+-- 
+2.50.1
+
