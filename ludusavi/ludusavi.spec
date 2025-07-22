@@ -2,7 +2,7 @@
 %global cargo_install_lib 0
 
 # Use vendor tarball
-%bcond_without vendor
+%bcond vendor 1
 
 %global vendor_hash ba5dbe61204970d8da85234f34c32e84
 

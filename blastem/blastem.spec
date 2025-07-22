@@ -4,7 +4,7 @@
 
 %global commit 1cfd000dc750
 %global date 20250629
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}hg%{commit}

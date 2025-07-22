@@ -16,15 +16,15 @@ BuildArch:      noarch
 %global with_optim 3
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 
-%bcond_with debug
-%bcond_with spirv
-%bcond_without vulkan
+%bcond debug 0
+%bcond spirv 0
+%bcond vulkan 1
 
 # Need be set for release builds too
 %global commit 2b9f7cae1f7d4eae3d2d33a1a27d42d7a1a0b86e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250526
-%bcond_without snapshot
+%bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 

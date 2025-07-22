@@ -1,6 +1,6 @@
 %define _python_dist_allow_version_zero 1
 
-%bcond_with tests
+%bcond tests 0
 
 Name:           protontricks
 Version:        1.12.1

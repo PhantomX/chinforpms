@@ -5,7 +5,7 @@
 %{?aud_plugin_dep}
 
 # build with qt5 instead 6
-%bcond_with qt5
+%bcond qt5 0
 
 %{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
 

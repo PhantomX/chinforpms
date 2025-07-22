@@ -3,7 +3,7 @@
 %undefine _cmake_shared_libs
 %undefine _hardened_build
 
-%bcond_with clang
+%bcond clang 0
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -16,28 +16,28 @@
 %global commit f326e39dba1e52798b3a90f47152f2bf765acdcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250713
-%bcond_without snapshot
+%bcond snapshot 1
 
-%bcond_without sse42
+%bcond sse42 1
 # Enable system boost
-%bcond_without boost
+%bcond boost 1
 # Enable system cryptopp
-%bcond_without cryptopp
+%bcond cryptopp 1
 # Enable system dynarmic
-%bcond_with dynarmic
+%bcond dynarmic 0
 # Enable system fmt
-%bcond_without fmt
-%bcond_without glslang
+%bcond fmt 1
+%bcond glslang 1
 # Disable Qt build
-%bcond_without qt
-%bcond_without soundtouch
+%bcond qt 1
+%bcond soundtouch 1
 # Enable webservice
-%bcond_without webservice
-%bcond_without vma
+%bcond webservice 1
+%bcond vma 1
 # Enable system vulkan
-%bcond_without vulkan
+%bcond vulkan 1
 # Build tests
-%bcond_with tests
+%bcond tests 0
 
 %global commit2 60f81a77e0c9a0e7ffc1ca1bc438ddfa2e43b78e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})

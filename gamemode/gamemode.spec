@@ -1,7 +1,7 @@
 %global commit 5163c01d24684a1ab535f2b4c9f8df02718a15ab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200901
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

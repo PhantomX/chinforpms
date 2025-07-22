@@ -1,6 +1,6 @@
 %global snapshot_rev 822
 %global date 20220325
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global sver .%{date}svn%{snapshot_rev}

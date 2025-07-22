@@ -1,14 +1,14 @@
 %global commit 57b98ceb9ef157e43ed5e9854b1aae5da3875cce
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250318
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Update simdjson
-%bcond_without simdjson
+%bcond simdjson 1
 
 %global simdjson_ver 3.11.6
 

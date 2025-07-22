@@ -4,7 +4,7 @@
 
 %?mingw_package_header
 
-%bcond_without bin
+%bcond bin 1
 #Set to 1 to download sources from github
 %global with_gh 0
 

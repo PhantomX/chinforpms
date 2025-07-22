@@ -2,7 +2,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -16,15 +16,15 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250527
 
-%bcond_with capstone
-%bcond_with ffmpeg
-%bcond_without fmt
-%bcond_with nfd
-%bcond_without spdlog
-%bcond_without vma
-%bcond_with yamlcpp
+%bcond capstone 0
+%bcond ffmpeg 0
+%bcond fmt 1
+%bcond nfd 0
+%bcond spdlog 1
+%bcond vma 1
+%bcond yamlcpp 0
 # Needs dispatch header
-%bcond_without xxhash
+%bcond xxhash 1
 
 # Set to build with versioned LLVM packages
 %global llvm_pkgver 19

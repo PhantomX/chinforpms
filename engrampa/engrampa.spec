@@ -12,7 +12,7 @@
 %{!?rel_build:%global git_rel .git%{commit_date}.%{shortcommit}}
 %{!?rel_build:%global git_tar %{name}-%{version}-%{git_ver}.tar.xz}
 
-%bcond_with packagekit
+%bcond packagekit 0
 
 %global vc_url https://git.mate-desktop.org/%{name}
 

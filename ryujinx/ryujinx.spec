@@ -1,6 +1,6 @@
-%bcond_with bin
-%bcond_without canary
-%bcond_without local_dotnet 1
+%bcond bin 0
+%bcond canary 1
+%bcond local_dotnet 1 1
 
 %global debug_package %{nil}
 %global _build_id_links none
@@ -12,9 +12,9 @@
 %global date 20250504
 
 %if %{without bin}
-%bcond_with snapshot
+%bcond snapshot 0
 %else
-%bcond_without snapshot
+%bcond snapshot 1
 %endif
 
 %if %{with snapshot}

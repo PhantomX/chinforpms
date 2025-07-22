@@ -21,12 +21,12 @@ BuildArch:      noarch
 %global commit daed0c1ce8d39e6dcc1580b753554deb7fcbd2ae
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250705
-%bcond_without snapshot
+%bcond snapshot 1
 
-%bcond_with debug
-%bcond_without gplasync
-%bcond_with spirv
-%bcond_without vulkan
+%bcond debug 0
+%bcond gplasync 1
+%bcond spirv 0
+%bcond vulkan 1
 
 %global gplasync_id 94eb0399ee647efdf630454ee1efe53130ed3fab
 

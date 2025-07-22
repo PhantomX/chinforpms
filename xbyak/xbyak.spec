@@ -1,4 +1,4 @@
-%bcond_with check
+%bcond check 0
 
 Name:           xbyak
 Version:        7.27

@@ -3,7 +3,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_with clang
+%bcond clang 0
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -16,27 +16,27 @@
 %global commit a538126eb7a0ce1e3457922a49ecc2406b8d30b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250715
-%bcond_without snapshot
+%bcond snapshot 0 1
 
 # Enable system dynarmic
-%bcond_with dynarmic
+%bcond dynarmic 0
 # Enable system ffmpeg
-%bcond_with ffmpeg
+%bcond ffmpeg 0
 # Use stable ffmpeg
-%bcond_without ffmpeg_st
+%bcond ffmpeg_st 1
 # Enable system fmt
-%bcond_without fmt
+%bcond fmt 1
 # Enable system mbedtls (needs cmac builtin support)
-%bcond_with mbedtls
+%bcond mbedtls 0
 # Disable Qt build
-%bcond_without qt
+%bcond qt 1
 # build with qt6 instead 5
-%bcond_without qt6
+%bcond qt6 1
 # Build tests
-%bcond_with tests
-%bcond_without vma
+%bcond tests 0
+%bcond vma 1
 # Enable webservice
-%bcond_without webservice
+%bcond webservice 1
 
 %global commit111 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})

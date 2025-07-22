@@ -1,7 +1,7 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
 # Enable system mbedtls (needs old release, with cmac builtin support)
-%bcond_with mbedtls
+%bcond mbedtls 0
 
 Name:           hactool
 Version:        1.4.0

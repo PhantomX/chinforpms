@@ -1,15 +1,15 @@
 %global commit 5f51f3f1ed357c2887bb7e2c05aea6a091f01840
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200802
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%bcond_with sysvulkan
+%bcond sysvulkan 0
 %ifnarch s390x
-%bcond_with tests
+%bcond tests 0
 %endif
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS

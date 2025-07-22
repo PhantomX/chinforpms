@@ -1,11 +1,11 @@
-%bcond_with bin
+%bcond bin 0
 
 %if %{with bin}
 %global _build_id_links none
 %undefine _debugsource_packages
 %else
 # Use vendor tarball
-%bcond_without vendor
+%bcond vendor 1
 %endif
 
 %global vc_id   2a0afcdd36d6bf73f683d77abf352812177cd1a0

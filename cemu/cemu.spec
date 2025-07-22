@@ -2,7 +2,7 @@
 %undefine _cmake_shared_libs
 %undefine _debugsource_packages
 
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -15,10 +15,10 @@
 %global commit 8508c625407e80a5a7fcb9cf02c5355d018ff64b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240920
-%bcond_with snapshot
+%bcond snapshot 0
 
 # Enable system fmt
-%bcond_with fmt
+%bcond fmt 0
 
 %global commit1 f65bcf481ab34cd07d3909aab1479f409fa79f2f
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})

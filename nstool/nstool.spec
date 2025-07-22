@@ -16,7 +16,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 libtoolchain
 
-%bcond_without fmt
+%bcond fmt 1
 
 %global fmt_ver 10
 %global mbedtls_ver 2.16.12

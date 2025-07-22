@@ -1,9 +1,9 @@
 # build with GTK+3
-%bcond_without gtk
+%bcond gtk 1
 # build with GTK+2 instead 3
-%bcond_with gtk2
+%bcond gtk2 0
 # build with qt5 instead 6
-%bcond_with qt5
+%bcond qt5 0
 
 %{?with_gtk2:%global gtk_ver 2}%{!?with_gtk2: %global gtk_ver 3}
 %{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}

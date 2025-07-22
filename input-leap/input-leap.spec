@@ -1,11 +1,11 @@
 %global commit 8efd4dd66301d6748801848b7bc39a9b4ed34627
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250226
-%bcond_without snapshot
+%bcond snapshot 1
 
-%bcond_without qt
+%bcond qt 1
 # build with qt6 instead 5
-%bcond_without qt6
+%bcond qt6 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

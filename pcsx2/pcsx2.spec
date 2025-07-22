@@ -4,7 +4,7 @@
 %undefine _cmake_shared_libs
 
 # Only clang is supported by upstream
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -17,7 +17,7 @@
 %global commit 2d08d3dc9495135f5488f74cd7a1849b99d12d0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220308
-%bcond_with snapshot
+%bcond snapshot 0
 
 %global version10 2024.0
 %global srcname10 shaderc
@@ -26,14 +26,14 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 Vulkan-Headers
 
-%bcond_with     native
+%bcond native 0
 # Enable system fmt
-%bcond_without fmt
-%bcond_with rapidyml
-%bcond_without shaderc
+%bcond fmt 1
+%bcond rapidyml 0
+%bcond shaderc 1
 # Enable system soundtouch_ds
-%bcond_with soundtouch
-%bcond_without vulkan
+%bcond soundtouch 0
+%bcond vulkan 1
 
 %global appbin %{name}-qt
 %global appname net.pcsx2.PCSX2

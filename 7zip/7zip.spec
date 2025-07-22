@@ -1,6 +1,6 @@
 %global sanitize 0
 
-%bcond_without asm
+%bcond asm 1
 # Select the assembler (asmc or uasm)
 # asmc can be used with Fedora
 %global asmopt asmc

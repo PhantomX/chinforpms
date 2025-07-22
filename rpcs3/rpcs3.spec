@@ -1,13 +1,13 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_with     clang
+%bcond clang 0
 %if %{with clang}
 %global toolchain clang
 %endif
 
 # Enable lto support
-%bcond_without     lto
+%bcond lto 1
 %global _lto_cflags %{nil}
 %if %{without lto}
 %global _lto_cflags -fno-lto
@@ -18,40 +18,40 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_with     native
+%bcond native 0
 # Enable system ffmpeg
-%bcond_without  ffmpeg
+%bcond ffmpeg 1
 %global bundleffmpegver 7.1.1
-%bcond_with faudio
+%bcond faudio 0
 # Enable system flatbuffers
-%bcond_without  flatbuffers
+%bcond flatbuffers 1
 %global bundleflatbuffers 23.5.26
 # Enable system hidapi
-%bcond_without  hidapi
+%bcond hidapi 1
 %global bundlehidapi 0.12.0
 # Enable system llvm
-%bcond_without  llvm
+%bcond llvm 1
 %global bundlellvm 19.1.7
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
 # Enable system pugixml
-%bcond_with pugixml
+%bcond pugixml 0
 %global bundlepugixml 1.15.0
 # Enable system rtmidi
 %if 0%{?fedora} > 43
-%bcond_without  rtmidi
+%bcond rtmidi 1
 %endif
 %global bundlertmidi 6.0.0
-%bcond_without vma
+%bcond vma 1
 %global bundlevma 3.3.0
 
 # Enable system yaml-cpp (need -fexceptions support)
-%bcond_with yamlcpp
+%bcond yamlcpp 0
 
 %global commit 20c9dcd2d6dbac8d2c1a4b1aab88d995ed6dc72e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250630
-%bcond_without snapshot
+%bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})

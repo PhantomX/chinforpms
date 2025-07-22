@@ -5,14 +5,14 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_with native
+%bcond native 0
 # Enable system zydis
-%bcond_with zydis
+%bcond zydis 0
 
 %global commit a002730d68e0d700c80d11d7083d14dbc5df0977
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250702
-%bcond_without snapshot
+%bcond snapshot 1
 
 
 %global commit10 7b08d83418f628b800dfac1c9a16c3f59036fbad

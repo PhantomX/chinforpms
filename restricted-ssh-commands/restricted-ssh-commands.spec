@@ -1,4 +1,4 @@
-%bcond_without check
+%bcond check 1
 
 Name:           restricted-ssh-commands
 Version:        0.4

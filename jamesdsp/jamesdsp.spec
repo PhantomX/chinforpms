@@ -5,7 +5,7 @@
 %global commit 9826536c05207211ac187b7ef391ab8fd24123ca
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250202
-%bcond_without snapshot
+%bcond snapshot 1
 
 %global commit1 b2f392480e00ca232c397610f42688b165b87640
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})

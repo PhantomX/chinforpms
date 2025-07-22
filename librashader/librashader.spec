@@ -1,7 +1,7 @@
-%bcond_with check
+%bcond check 0
 
 # Use vendor tarball
-%bcond_without vendor
+%bcond vendor 1
 
 %global soname_ver 2
 %global api_ver 2

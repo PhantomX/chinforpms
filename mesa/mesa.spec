@@ -65,13 +65,13 @@
 %endif
 
 %ifarch %{valgrind_arches}
-%bcond_without valgrind
+%bcond valgrind 1
 %else
-%bcond_with valgrind
+%bcond valgrind 0
 %endif
 
 # Enable patent encumbered video codecs acceleration
-%bcond_with videocodecs
+%bcond videocodecs 0
 
 # Set to build with versioned LLVM packages
 %dnl %global llvm_pkgver 16
@@ -82,7 +82,7 @@
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231012
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

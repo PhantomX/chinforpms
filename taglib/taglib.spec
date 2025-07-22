@@ -1,13 +1,13 @@
 
 ## 1.11 currently disables tests with BUILD_SHARED_LIBS=ON
-#bcond_without tests
-#bcond_without doc
+%bcond tests 0
+%bcond doc 0
 %global apidocdir __api-doc_fedora
 
 %global commit a31356e330674640a07bef7d71d08242cae8e9bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20221221
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

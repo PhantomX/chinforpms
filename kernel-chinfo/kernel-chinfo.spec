@@ -13,7 +13,7 @@
 %global __brp_check_rpaths %{nil}
 
 # Disable some extractors from kernel-rpm-macros, speed up packaging, but no ksyms provides
-%bcond_with rpm_macros
+%bcond rpm_macros 0
 
 %if %{without rpm_macros}
 %global __required_ksyms_requires %{nil}
@@ -21,14 +21,14 @@
 %endif
 
 # Option to enable compiling with clang instead of gcc.
-%bcond_with toolchain_clang
+%bcond toolchain_clang 0
 
 %if %{with toolchain_clang}
 %global toolchain clang
 %endif
 
 # Compile the kernel with LTO (only supported when building with clang).
-%bcond_with clang_lto
+%bcond clang_lto 0
 
 %if %{with clang_lto} && %{without toolchain_clang}
 %{error:clang_lto requires --with toolchain_clang}

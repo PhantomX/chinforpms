@@ -2,9 +2,9 @@
 %global     __python %{__python3}
 
 %if 0%{?fedora}
-%bcond_without unwind
+%bcond unwind 1
 %else
-%bcond_with unwind
+%bcond unwind 0
 %endif 
 
 #global gitrel     140

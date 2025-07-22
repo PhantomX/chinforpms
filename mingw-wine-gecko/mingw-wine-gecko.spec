@@ -1,6 +1,6 @@
 %?mingw_package_header
 
-%bcond_without bin
+%bcond bin 1
 
 %if %{with bin}
 %global debug_package %{nil}

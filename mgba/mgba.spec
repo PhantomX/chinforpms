@@ -4,10 +4,10 @@
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250712
 %global sbuild 8827
-%bcond_without snapshot
+%bcond snapshot 1
 
 # Enable ffmpeg support
-%bcond_without ffmpeg
+%bcond ffmpeg 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

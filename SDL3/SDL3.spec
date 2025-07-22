@@ -10,9 +10,9 @@
 
 %if 0%{?rhel}
 # Disable static library on RHEL
-%bcond_with static
+%bcond static 0
 %else
-%bcond_without static
+%bcond static 1
 %endif
 
 

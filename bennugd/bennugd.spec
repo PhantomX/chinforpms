@@ -18,7 +18,7 @@ Version:        1.0.0
 Release:        8%{?dist}
 Summary:        A programming language to create games
 
-License:        Zlib
+License:        Zlib AND MIT
 URL:            https://www.bennugd.org
 
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz

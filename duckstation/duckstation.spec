@@ -3,13 +3,13 @@
 %undefine _cmake_shared_libs
 %global build_type_safety_c 0
 
-%bcond_without     lto
+%bcond lto 1
 %if %{without lto}
 %global _lto_cflags -fno-lto
 %endif
 
 # Only clang is supported by upstream
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -19,18 +19,18 @@
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
 # Enable system fmt
-%bcond_without fmt
-%bcond_with minizip
+%bcond fmt 1
+%bcond minizip 0
 # Enable system rapidyml
-%bcond_with ryml
-%bcond_without vulkan
-%bcond_with xbyak
-%bcond_with local
+%bcond ryml 0
+%bcond vulkan 1
+%bcond xbyak 0
+%bcond local 0
 
 %global commit a5e3f163a5b352482ced2fe1cf659835105df80e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250713
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

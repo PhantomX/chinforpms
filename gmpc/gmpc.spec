@@ -5,14 +5,14 @@
 %global commit 28e1441f356afb9eb2538c82ebbd392c2a8686ff
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20200215
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Build appindicator support
-%bcond_with appindicator
+%bcond appindicator 0
 
 %global vermm %%(echo %{version} | cut -d. -f-2)
 

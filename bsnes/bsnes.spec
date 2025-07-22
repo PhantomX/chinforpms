@@ -7,11 +7,11 @@
 %global commit 79770f6207a5d244652644c5e2d9f4328bd974ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240301
-%bcond_without snapshot
+%bcond snapshot 1
 
-%bcond_with gtk2
-%bcond_with libao
-%bcond_with openal
+%bcond gtk2 0
+%bcond libao 0
+%bcond openal 0
 
 %if %{with gtk2}
 %global toolkit gtk2

@@ -1,6 +1,6 @@
 %undefine _cmake_shared_libs
 
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -10,16 +10,16 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_with cereal
-%bcond_without fmt
+%bcond cereal 0
+%bcond fmt 1
 %if 0%{?fedora} > 43
-%bcond_without rtmidi
+%bcond rtmidi 1
 %endif
 
 %global commit 190b8e7c600d06bafd2303c1620067df12dced39
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250714
-%bcond_with snapshot
+%bcond snapshot 0
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})

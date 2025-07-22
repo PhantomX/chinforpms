@@ -1,7 +1,7 @@
 %global commit e7e6d98b71b44c060cd0ec5f62fb8db5dd67b83a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240422
-%bcond_with snapshot
+%bcond snapshot 0
 
 %global with_python  1
 

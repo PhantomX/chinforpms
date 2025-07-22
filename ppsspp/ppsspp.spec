@@ -2,7 +2,7 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%bcond_without clang
+%bcond clang 1
 %if %{with clang}
 %global toolchain clang
 %endif
@@ -14,20 +14,20 @@
 %global commit 6cb0309b6cfdff427509cec6eefca72a9352bdf7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250715
-%bcond_without snapshot
+%bcond snapshot 1
 
 # Enable Qt build
-%bcond_with qt
+%bcond qt 0
 # Enable EGL/GLESV2
-%bcond_with egl
+%bcond egl 0
 
 # Enable system ffmpeg
-%bcond_with ffmpeg
+%bcond ffmpeg 0
 %global bundleffmpegver 3.0.2
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
-%bcond_without smallffmpeg
-%bcond_without miniupnpc
-%bcond_with local
+%bcond smallffmpeg 1
+%bcond miniupnpc 1
+%bcond local 0
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})

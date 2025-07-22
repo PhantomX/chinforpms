@@ -1,10 +1,10 @@
 %global commit 5916a8f8dd93eb6a5de544caedd7a9d8e9a3b1ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20220406
-%bcond_with snapshot
+%bcond snapshot 0
 
-%bcond_with check
-%bcond_with yubikey
+%bcond check 0
+%bcond yubikey 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

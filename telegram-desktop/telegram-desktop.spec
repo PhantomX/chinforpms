@@ -15,15 +15,15 @@
 %global da_url https://github.com/desktop-app
 %global ltdp_url https://github.com/Layerex/telegram-desktop-patches/raw/%{ltdp_id}
 
-%bcond_with bin
+%bcond bin 0
 
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
-%bcond_without bundled_fonts
-%bcond_with minizip
-%bcond_without wayland
-%bcond_without x11
-%bcond_with ltdp
+%bcond bundled_fonts 1
+%bcond minizip 0
+%bcond wayland 1
+%bcond x11 1
+%bcond ltdp 0
 
 %if %{with bin}
 %global debug_package %{nil}

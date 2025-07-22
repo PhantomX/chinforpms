@@ -4,7 +4,7 @@
 BuildArch:      noarch
 
 # Rebuild files
-%bcond_without rebuild
+%bcond rebuild 1
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 

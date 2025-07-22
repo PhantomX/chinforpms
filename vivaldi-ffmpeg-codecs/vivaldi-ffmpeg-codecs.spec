@@ -4,7 +4,7 @@
 %global _build_id_links none
 %global __strip /bin/true
 
-%bcond_without snap
+%bcond snap 1
 
 %global vivaldi_dir %{_libdir}/vivaldi
 

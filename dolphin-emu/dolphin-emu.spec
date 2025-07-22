@@ -8,17 +8,17 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_without ffmpeg
-%bcond_without egl
-%bcond_with enet
-%bcond_without fmt
-%bcond_with llvm
-%bcond_with mbedtls
-%bcond_with mgba
-%bcond_with sfml
-%bcond_without vma
-%bcond_with vulkan
-%bcond_with unittests
+%bcond ffmpeg 1
+%bcond egl 1
+%bcond enet 0
+%bcond fmt 1
+%bcond llvm 0
+%bcond mbedtls 0
+%bcond mgba 0
+%bcond sfml 0
+%bcond vma 1
+%bcond vulkan 0
+%bcond unittests 0
 
 #JIT is only supported on x86_64 and aarch64:
 %ifarch x86_64 aarch64
@@ -28,7 +28,7 @@
 %global commit 95f6c76713e6c2a6b50f1a149a7886e72fea6ec7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250613
-%bcond_without snapshot
+%bcond snapshot 1
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})

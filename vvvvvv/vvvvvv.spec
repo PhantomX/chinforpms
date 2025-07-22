@@ -3,10 +3,10 @@
 %global commit 6ae4de1f94e294612e5f7a3a677e8461d7d07f1f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250619
-%bcond_without snapshot
+%bcond snapshot 1
 
-%bcond_with faudio
-%bcond_without tinyxml
+%bcond faudio 0
+%bcond tinyxml 1
 
 %global commit2 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})

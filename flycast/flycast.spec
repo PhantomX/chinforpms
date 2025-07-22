@@ -8,7 +8,7 @@
 %global commit 48c58dbd18501fae92e641b6ee6ca5ca9de0d5c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250711
-%bcond_without snapshot
+%bcond snapshot 1
 
 # Disable LTO. Crash.
 %dnl %global _lto_cflags %{nil}
@@ -38,11 +38,11 @@
 %global srcname6 rcheevos
 
 # Enable system glslang
-%bcond_without glslang
-%bcond_without vma
-%bcond_without vulkan
+%bcond glslang 1
+%bcond vma 1
+%bcond vulkan 1
 # Build with x11 instead SDL
-%bcond_with x11
+%bcond x11 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

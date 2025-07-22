@@ -1,11 +1,11 @@
 %undefine _cmake_shared_libs
 
-%bcond_without vma
+%bcond vma 1
 
 %global commit 68acd5bfa3146d7124233e3e372f6ffb5d8d0dcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250703
-%bcond_without snapshot
+%bcond snapshot 1
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -15,8 +15,8 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 glslang
 
-%bcond_with portaudio
-%bcond_with qt
+%bcond portaudio 0
+%bcond qt 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

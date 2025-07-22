@@ -16,7 +16,7 @@
 %global commit dfb9f06e5c46f251e4208adf1d4861e85b1d5eea
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240418
-%bcond_with snapshot
+%bcond snapshot 0
 
 # Enable system boost
 %bcond_without boost

@@ -1,7 +1,7 @@
 # shared/static conditional, good luck with unsupported shared one
-%bcond_with static
+%bcond static 0
 # Use bundled abseil-cpp
-%bcond_without absl
+%bcond absl 1
 
 %if %{with static}
 %global debug_package %{nil}

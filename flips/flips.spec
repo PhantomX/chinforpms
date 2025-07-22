@@ -1,7 +1,7 @@
 %global commit 359d414cff73b3e0400871d3c288a59b36564834
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250221
-%bcond_without snapshot
+%bcond snapshot 1
 
 %ifnarch %{ix86} ppc64 s390x
 %global build_with_pgo    1

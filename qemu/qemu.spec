@@ -2,9 +2,9 @@
 # Provide a way to skip tests via rpmbuild `--without`
 # This makes it easier to skip tests in copr repos, where
 # the qemu test suite is historically flakey
-%bcond_with check
+%bcond check 0
 
-%bcond_without systemtap
+%bcond systemtap 1
 
 %global libfdt_version 1.6.0
 %global libseccomp_version 2.4.0

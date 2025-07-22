@@ -4,10 +4,10 @@
 %global commit 432c4e3b2a9f233cd742d1de764cced7ff337e48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231221
-%bcond_with snapshot
+%bcond snapshot 0
 
-%bcond_with libao
-%bcond_with openal
+%bcond libao 0
+%bcond openal 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

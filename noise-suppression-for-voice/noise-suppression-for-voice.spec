@@ -1,7 +1,7 @@
 %undefine _cmake_shared_libs
 
-%bcond_without lv2
-%bcond_with tests
+%bcond lv2 1
+%bcond tests 0
 
 Name:           noise-suppression-for-voice
 Version:        1.10

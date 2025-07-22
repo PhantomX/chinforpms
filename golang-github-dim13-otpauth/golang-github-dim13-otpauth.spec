@@ -1,11 +1,11 @@
-%bcond_without check
+%bcond check 1
 
 # https://github.com/dim13/otpauth
 
 %global commit 8140e23553ae0d95f166707cb3369f60347e0099
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250307
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

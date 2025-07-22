@@ -1,7 +1,7 @@
 %global commit 0d9515e2d2d55bfe4ed0e7ab19a47ca693a85f67
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240818
-%bcond_with snapshot
+%bcond snapshot 0
 
 BuildArch:      noarch
 

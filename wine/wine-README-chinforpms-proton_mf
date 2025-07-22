@@ -1,0 +1,7 @@
+
+PROTON_MF overrides (disable)
+=================================
+PROTON_AUDIO_CONVERT=0
+PROTON_AUDIO_CONVERT_BIN=0
+PROTON_VIDEO_CONVERT=0
+PROTON_DEMUX=0

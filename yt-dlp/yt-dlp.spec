@@ -1,5 +1,5 @@
-%bcond_without man
-%bcond_with tests
+%bcond man 1
+%bcond tests 0
 
 %global forkname youtube-dlc
 

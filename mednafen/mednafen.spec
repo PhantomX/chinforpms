@@ -13,7 +13,7 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%bcond_without v3
+%bcond v3 1
 %ifarch x86_64
 %if %{with v3}
 %global optflags %(echo %{optflags} | sed -e 's/-march=x86-64 /-march=x86-64-v3 /')

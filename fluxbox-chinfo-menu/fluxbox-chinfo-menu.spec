@@ -1,6 +1,6 @@
 %global commit 0d9bd8671fa98d68912528638fdd6398d96b6aba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%bcond_with snapshot
+%bcond snapshot 0
 
 BuildArch:      noarch
 

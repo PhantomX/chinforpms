@@ -2,7 +2,7 @@
 
 %global commit 2df04125ac78
 %global date 20250315
-%bcond_without snapshot
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}hg%{commit}

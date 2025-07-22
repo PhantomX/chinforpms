@@ -1,7 +1,7 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
 # Build only m68k for blastem
-%bcond_with m68k
+%bcond m68k 0
 
 %if %{with m68k}
 %global cpu_list m68k

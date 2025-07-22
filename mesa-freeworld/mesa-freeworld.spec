@@ -9,15 +9,15 @@
 %endif
 
 %ifarch %{valgrind_arches}
-%bcond_without valgrind
+%bcond valgrind 1
 %else
-%bcond_with valgrind
+%bcond valgrind 0
 %endif
 
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20231012
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}

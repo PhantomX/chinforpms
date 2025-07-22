@@ -1,4 +1,4 @@
-%bcond_without asm
+%bcond asm 1
 
 %global ver     %%(echo %{version} | tr -d '.')
 %global vermajor %%(echo %{version} | cut -d. -f2)

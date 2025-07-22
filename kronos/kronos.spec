@@ -16,14 +16,14 @@
 %global commit 837973fd6dd295a5694432c1f091b2221e93da36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20241201
-%bcond_with snapshot
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 # Enable EGL/GLESV2
-%bcond_with egl
+%bcond egl 0
 
 %global pkgname Kronos
 %global over %{version}_official_release
