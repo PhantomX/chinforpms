@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 6904d6a461e44335caadba2e7c8aa766704728d3
+%global commit 45b2e613cf00f96bed29a27d55d14cec4898c573
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250504
+%global date 20250720
 
 %if %{without bin}
 %bcond snapshot 0
@@ -129,8 +129,12 @@
 %global ryujinx_graphics_nvdec_dependencies_allarch_ver 6.1.2-build3
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
-%global ryujinx_libhac_ver 0.20.0
+%global ryujinx_libhac_ver 0.21.0-alpha.116
+%global ryujinx_libhac_dl_id 592
 %global ryujinx_sdl2_cs_ver 2.30.0-build32
+%global ryujinx_updateclient_ver 1.0.29
+%global ryujinx_updateclient_dl_id 507
+%global ryujinx_systemsupdate_dl_id 508
 %global securifybv_ver 0.1.0
 %global sep_ver 0.6.0
 %global shaderc_net_ver 0.1.0
@@ -259,11 +263,11 @@
 %global tmds_dbus_protocol_ver 0.15.0
 
 %global appname Ryujinx
-%global vc_url  https://git.ryujinx.app/ryubing/%{name}
+%global vc_url  https://git.ryujinx.app/ryubing
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.87
+Version:        1.3.97
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -278,9 +282,9 @@ Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.de
 Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
 %if %{with snapshot}
-Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{vc_url}/%{name}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        %{vc_url}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.bz2
+Source0:        %{vc_url}/%{name}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.bz2
 %endif
 %if %{with local_dotnet}
 Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
@@ -323,7 +327,7 @@ Source234:      %{nuget_url}/harfbuzzsharp.nativeassets.webassembly.%{harfbuzzsh
 Source235:      %{nuget_url}/harfbuzzsharp.nativeassets.webassembly.%{harfbuzzsharp_ver}.nupkg
 Source236:      %{nuget_url}/harfbuzzsharp.nativeassets.win32.%{harfbuzzsharp_ver2}.nupkg
 Source237:      %{nuget_url}/harfbuzzsharp.nativeassets.win32.%{harfbuzzsharp_ver}.nupkg
-Source238:      %{nuget_url}/ryujinx.libhac.%{ryujinx_libhac_ver}.nupkg
+Source238:      %{vc_url}/libhac/-/package_files/%{ryujinx_libhac_dl_ver}/download#/ryujinx.libhac.%{ryujinx_libhac_ver}.nupkg
 Source239:      %{nuget_url}/microcom.codegenerator.msbuild.%{microcom_runtime_ver}.nupkg
 Source240:      %{nuget_url}/microcom.runtime.%{microcom_runtime_ver}.nupkg
 Source241:      %{nuget_url}/microsoft.aspnetcore.app.runtime.linux-x64.%{microsoft_aspnetcore_app_runtime_linux_x64_ver}.nupkg
@@ -618,6 +622,8 @@ Source529:      %{nuget_url}/commandlineparser.%{commandlineparser_ver}.nupkg
 Source530:      %{nuget_url}/communitytoolkit.mvvm.%{communitytoolkit_mvvm_ver}.nupkg
 Source531:      %{nuget_url}/sep.%{sep_ver}.nupkg
 Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
+Source533:      %{vc_url}/update-server/-/package_files/%{ryujinx_updateclient_dl_id}/download#/ryujinx.updateclient.%{ryujinx_updateclient_ver}.nupkg
+Source534:      %{vc_url}/update-server/-/package_files/%{ryujinx_systemsupdate_dl_id}/download#/ryujinx.systems.update.common.%{ryujinx_updateclient_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
@@ -625,7 +631,7 @@ Source532:      %{nuget_url}/csfastfloat.%{csfastfloat_ver}.nupkg
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
 %global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470} %{SOURCE471} %{SOURCE472} %{SOURCE473} %{SOURCE474} %{SOURCE475} %{SOURCE476} %{SOURCE477} %{SOURCE478} %{SOURCE479} %{SOURCE480} %{SOURCE481} %{SOURCE482} %{SOURCE483} %{SOURCE484} %{SOURCE485} %{SOURCE486} %{SOURCE487} %{SOURCE488} %{SOURCE489} %{SOURCE490} %{SOURCE491} %{SOURCE492} %{SOURCE493} %{SOURCE494} %{SOURCE495} %{SOURCE496} %{SOURCE497} %{SOURCE498} %{SOURCE499}
-%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532}
+%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532} %{SOURCE533} %{SOURCE534}
 %endif
 
 Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch
@@ -677,6 +683,8 @@ and consistent builds.
 cp -p %{S:1} %{S:2} %{S:3} %{S:4} .
 
 %else
+
+sed -e '/<packageSourceMapping>/,/<\/packageSourceMapping>/d' -i nuget.config
 
 cp distribution/linux/*.desktop distribution/legal/THIRDPARTY.md .
 mv distribution/misc/Logo.svg %{name}-Logo.svg

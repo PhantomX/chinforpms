@@ -13,15 +13,15 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a538126eb7a0ce1e3457922a49ecc2406b8d30b1
+%global commit 7962c81738e91ed1ff839ef124363563d508234b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250715
-%bcond snapshot 0 1
+%global date 20250722
+%bcond snapshot 1
 
 # Enable system dynarmic
 %bcond dynarmic 0
 # Enable system ffmpeg
-%bcond ffmpeg 0
+%bcond ffmpeg 1
 # Use stable ffmpeg
 %bcond ffmpeg_st 1
 # Enable system fmt
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27465
+Version:        0.0.2.27482
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -139,8 +139,8 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 
 
-Patch0:         %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
 Patch10:        0001-Use-system-libraries.patch
+Patch11:        %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
 # Revert this, Fedora do not ship wireless-tools anymore

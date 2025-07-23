@@ -1,4 +1,4 @@
-From c5b8c6e23b74cdbf6b90ea87fa69dfccc7d8951e Mon Sep 17 00:00:00 2001
+From 4e0626b86629f5e7d251715bb43a4a34266ce360 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -7,15 +7,15 @@ FindMBETLS.cmake from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                           |  1 -
+ CMakeLists.txt                           |  3 ---
  externals/CMakeLists.txt                 |  9 +++++++++
  externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++++++
  src/yuzu/CMakeLists.txt                  |  9 +++++++++
- 4 files changed, 41 insertions(+), 1 deletion(-)
+ 4 files changed, 41 insertions(+), 3 deletions(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 54fe123..939accb 100644
+index 124a5ac..f41fa17 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -26,6 +26,15 @@ index 54fe123..939accb 100644
  include(CMakeDependentOption)
  include(CTest)
  
+@@ -79,8 +78,6 @@ option(YUZU_USE_QT_MULTIMEDIA "Use QtMultimedia for Camera" OFF)
+ 
+ option(YUZU_USE_QT_WEB_ENGINE "Use QtWebEngine for web applet implementation" OFF)
+ 
+-set(YUZU_QT_MIRROR "" CACHE STRING "What mirror to use for downloading the bundled Qt libraries")
+-
+ option(ENABLE_CUBEB "Enables the cubeb audio backend" ON)
+ 
+ option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence" OFF)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
 index 7dacba2..12164d6 100644
 --- a/externals/CMakeLists.txt
@@ -83,7 +92,7 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/src/yuzu/CMakeLists.txt b/src/yuzu/CMakeLists.txt
-index bab6a6c..970b4cb 100644
+index 34f2ba4..2a6648d 100644
 --- a/src/yuzu/CMakeLists.txt
 +++ b/src/yuzu/CMakeLists.txt
 @@ -495,7 +495,16 @@ if (YUZU_ROOM)
