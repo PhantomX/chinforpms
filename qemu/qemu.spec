@@ -433,7 +433,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.0.2
+Version:        10.0.3
 Release:        100%{?dist}
 Epoch:          2
 
@@ -479,9 +479,20 @@ Patch: 0001-Disable-9p-local-tests-that-fail-on-copr-aarch64.patch
 # https://lists.nongnu.org/archive/html/qemu-block/2025-01/msg00480.html
 Patch: 0002-nfs-Add-support-for-libnfs-v2-api.patch
 Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
-# Remove hppa-firmware* execute bit to make rpmbuild happy.
-# Submitted upstream 2025-05-18
-Patch: 0001-roms-remove-execute-bit-from-hppa-firmware.patch
+# Fix for Python 3.14 event loop changes
+# https://bugzilla.redhat.com/show_bug.cgi?id=2375004
+# Sent upstream 2025-07-15
+Patch: 0001-python-Replace-asyncio.get_event_loop-for-Python-3.1.patch
+# qemu:func-quick+func-hppa test is unstable
+# Upstream 4b1f5b73e0
+Patch: 0001-tests-functional-Use-no-shutdown-in-the-hppa_seabios.patch
+# Increase test-replication timeout
+# NOT upstream, but see https://gitlab.com/qemu-project/qemu/-/issues/3035
+Patch: 0002-TEMPORARY-increase-test-timeout.patch
+# Fix build on x86_64 with Xen 4.20
+# sent upstream 2025-07-17, e.g.
+# https://lists.xen.org/archives/html/xen-devel/2025-07/msg01268.html
+Patch: 0001-xen-passthrough-add-missing-error-report-include.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -3416,6 +3427,9 @@ popd
 
 
 %changelog
+* Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0.3-100
+- 10.0.3
+
 * Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0.2-100
 - 10.0.2
 - Rawhide sync

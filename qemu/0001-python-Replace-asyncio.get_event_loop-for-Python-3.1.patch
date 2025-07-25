@@ -1,0 +1,68 @@
+From 4a0bc2a13a5cc409cfd51ab7422f0ddce2029fba Mon Sep 17 00:00:00 2001
+From: "Richard W.M. Jones" <rjones@redhat.com>
+Date: Tue, 15 Jul 2025 11:42:31 +0100
+Subject: [PATCH 1/2] python: Replace asyncio.get_event_loop for Python 3.14
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+In Python 3.14, no asyncio event loop gets generated automatically.
+Instead create one when we need it.  This should work with Python 3.13
+as well.  This change was suggested here:
+
+https://bugzilla.redhat.com/show_bug.cgi?id=2375004#c4
+
+See-also: https://docs.python.org/3.14/whatsnew/3.14.html#id7
+Thanks: Miro Hrončok, Daniel P. Berrangé
+Signed-off-by: Richard W.M. Jones <rjones@redhat.com>
+---
+ python/qemu/qmp/legacy.py  | 5 ++++-
+ python/qemu/qmp/qmp_tui.py | 2 +-
+ python/tests/protocol.py   | 2 +-
+ 3 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/python/qemu/qmp/legacy.py b/python/qemu/qmp/legacy.py
+index 22a2b5616e..e11d05afbd 100644
+--- a/python/qemu/qmp/legacy.py
++++ b/python/qemu/qmp/legacy.py
+@@ -86,7 +86,10 @@ def __init__(self,
+                 "server argument should be False when passing a socket")
+ 
+         self._qmp = QMPClient(nickname)
+-        self._aloop = asyncio.get_event_loop()
++        try:
++            self._aloop = asyncio.get_event_loop()
++        except RuntimeError:
++            self._aloop = asyncio.new_event_loop()
+         self._address = address
+         self._timeout: Optional[float] = None
+ 
+diff --git a/python/qemu/qmp/qmp_tui.py b/python/qemu/qmp/qmp_tui.py
+index 2d9ebbd20b..7dfb03c9ad 100644
+--- a/python/qemu/qmp/qmp_tui.py
++++ b/python/qemu/qmp/qmp_tui.py
+@@ -377,7 +377,7 @@ def run(self, debug: bool = False) -> None:
+         screen = urwid.raw_display.Screen()
+         screen.set_terminal_properties(256)
+ 
+-        self.aloop = asyncio.get_event_loop()
++        self.aloop = asyncio.new_event_loop()
+         self.aloop.set_debug(debug)
+ 
+         # Gracefully handle SIGTERM and SIGINT signals
+diff --git a/python/tests/protocol.py b/python/tests/protocol.py
+index 56c4d441f9..db5d54d83f 100644
+--- a/python/tests/protocol.py
++++ b/python/tests/protocol.py
+@@ -228,7 +228,7 @@ def async_test(async_test_method):
+         Decorator; adds SetUp and TearDown to async tests.
+         """
+         async def _wrapper(self, *args, **kwargs):
+-            loop = asyncio.get_event_loop()
++            loop = asyncio.new_event_loop()
+             loop.set_debug(True)
+ 
+             await self._asyncSetUp()
+-- 
+2.50.1
+

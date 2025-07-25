@@ -12,9 +12,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e70f38e0129c4b48b12a7aefee4121652d7315b2
+%global commit cf3d627327e6acdf0ead9ecff9d35d6589e77d45
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250527
+%global date 20250714
 
 %bcond capstone 0
 %bcond ffmpeg 0
@@ -165,7 +165,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3796
+Version:        0.2.0.3806
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -292,7 +292,7 @@ BuildRequires:  cmake(spdlog) >= 1.15.2
 %else
 Provides:       bundled(%{srcname35}) = 0~git%{shortcommit35}
 %endif
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  cmake(VulkanHeaders) >= %{vk_ver}
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.2.1
@@ -569,6 +569,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 0.2.0.3806-1.20250714gitcf3d627
+- SDL3
+
 * Thu Feb 01 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2.0.3561-1.202401295gitac73ee8
 - 0.2.0.3561
 

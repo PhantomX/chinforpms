@@ -1,14 +1,15 @@
-From fe8fc28c4d263abc6d9c0e13035e4e26a8bc2dc7 Mon Sep 17 00:00:00 2001
+From e598509937d796e74b8608133acef93a2ec1b0f5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt | 37 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ 3rdparty/CMakeLists.txt                  | 37 ++++++++++++++++++++++++
+ 3rdparty/feralinteractive/CMakeLists.txt |  7 +++++
+ 2 files changed, 44 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 6c49a88..f36f014 100644
+index 94c6069..e6b21c0 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
 @@ -20,7 +20,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
@@ -90,6 +91,25 @@ index 6c49a88..f36f014 100644
  
  # OPENCV
  add_subdirectory(opencv EXCLUDE_FROM_ALL)
+diff --git a/3rdparty/feralinteractive/CMakeLists.txt b/3rdparty/feralinteractive/CMakeLists.txt
+index c7b136e..2674b02 100644
+--- a/3rdparty/feralinteractive/CMakeLists.txt
++++ b/3rdparty/feralinteractive/CMakeLists.txt
+@@ -3,7 +3,14 @@
+ add_library(3rdparty_feralinteractive INTERFACE)
+ 
+ if (CMAKE_SYSTEM MATCHES "Linux")
++pkg_check_modules(gamemode IMPORTED_TARGET gamemode)
++if(gamemode_FOUND)
++	message(STATUS "Using the system gamemode")
++	add_library(feralinteractive INTERFACE)
++	target_link_libraries(feralinteractive INTERFACE PkgConfig::gamemode)
++else()
+ 	target_include_directories(3rdparty_feralinteractive INTERFACE feralinteractive/lib)
++endif()
+ 	target_compile_definitions(3rdparty_feralinteractive INTERFACE -DGAMEMODE_AVAILABLE)
+ 	target_link_libraries(3rdparty_feralinteractive INTERFACE feralinteractive)
+ endif()
 -- 
-2.49.0
+2.50.1
 

@@ -1,0 +1,42 @@
+From 4b1f5b73e060971c434e70694d571adfee553027 Mon Sep 17 00:00:00 2001
+From: Thomas Huth <thuth@redhat.com>
+Date: Thu, 8 May 2025 20:09:18 +0200
+Subject: [PATCH] tests/functional: Use -no-shutdown in the hppa_seabios test
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+qemu-system-hppa shuts down automatically when the BIOS is
+unable to boot from any device. So this test currently fails
+occasionally when QEMU already quit, but the test still
+expected it to be around (e.g. to shut it down cleanly).
+Adding a "-no-shutdown" seems to make it reliable.
+While we're at it, also remove the stray "self.machine" in
+there that does not have any purpose.
+
+Signed-off-by: Thomas Huth <thuth@redhat.com>
+Reviewed-by: Daniel P. Berrangé <berrange@redhat.com>
+Message-id: 20250508180918.228757-1-thuth@redhat.com
+Signed-off-by: Stefan Hajnoczi <stefanha@redhat.com>
+---
+ tests/functional/test_hppa_seabios.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/functional/test_hppa_seabios.py b/tests/functional/test_hppa_seabios.py
+index a44d1a3eeb..661b2464e1 100755
+--- a/tests/functional/test_hppa_seabios.py
++++ b/tests/functional/test_hppa_seabios.py
+@@ -17,9 +17,9 @@ class HppaSeabios(QemuSystemTest):
+     def boot_seabios(self):
+         mach = self.machine
+         bits = self.MACH_BITS[mach]
++        self.vm.add_args('-no-shutdown')
+         self.vm.set_console()
+         self.vm.launch()
+-        self.machine
+         wait_for_console_pattern(self, f'SeaBIOS PA-RISC {bits}-bit Firmware')
+         wait_for_console_pattern(self, f'Emulated machine:     HP {mach} ({bits}-bit')
+ 
+-- 
+2.50.1
+

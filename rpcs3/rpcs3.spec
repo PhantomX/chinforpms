@@ -48,9 +48,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 20c9dcd2d6dbac8d2c1a4b1aab88d995ed6dc72e
+%global commit b90bacba4870534dfc501a51119b5913337a5e95
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250630
+%global date 20250724
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -123,7 +123,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.37.18061
+Version:        0.0.37.18087
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -206,6 +206,7 @@ BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
 BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(egl)
+BuildRequires:  pkgconfig(gamemode)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
 %if %{with ffmpeg}
@@ -417,6 +418,8 @@ sed \
   -e '/Examples\//d' \
   -e '/Python-C/d' \
   -i 3rdparty/fusion/fusion/CMakeLists.txt
+
+sed -e 's|3rdparty/feralinteractive/feralinteractive/lib/||' -i rpcs3/gamemode_control.cpp
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 

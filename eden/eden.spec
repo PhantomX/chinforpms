@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 7962c81738e91ed1ff839ef124363563d508234b
+%global commit b2b993b665ed3ea956ba7558d9d874ae3895d4a0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250722
+%global date 20250723
 %bcond snapshot 1
 
 # Enable system dynarmic
@@ -42,11 +42,11 @@
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
 %global srcname111 unordered_dense
 
-%global commit112 7ad36e52110b39cfb62b47bfdb6def94ac531309
+%global commit112 75a36c45ae1ad382b0f4e0ede0af84c11ee69928
 %global shortcommit112 %(c=%{commit112}; echo ${c:0:7})
 %global srcname112 zycore-c
 
-%global commit113 6372690e30389a94db65ece2d8a1f0a2310475ed
+%global commit113 c2d2bab0255e53a7c3e9b615f4eb69449eb942df
 %global shortcommit113 %(c=%{commit113}; echo ${c:0:7})
 %global srcname113 zydis
 
@@ -58,15 +58,15 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 SPIRV-Headers
 
-%global commit16 a609330e4c6374f741d3b369269f7848255e1954
+%global commit16 ca5fe354fb83194bc72a676c4cc4136fca5316d0
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:6})
 %global srcname16 cpp-httplib
 
-%global commit17 10ef5735d842b31025f1257ae78899f50a40fb14
+%global commit17 a54fa08a3bc929ce16cd84264bb0653e548955f9
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:6})
 %global srcname17 cpp-jwt
 
-%global commit20 16ce126a87c5f130cde8b8dce73b38952a19f085
+%global commit20 344c99fc75006e6529df42b2a205c8f40bac4e46
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 tz
 
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27482
+Version:        0.0.2.27490
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -143,12 +143,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
-# Revert this, Fedora do not ship wireless-tools anymore
-Patch500:       %{vc_url}/%{name}/commit/3f03ff46b419411d4ad87b68c0c3f2cff6ffad77.patch#/%{name}-git-revert-3f03ff4.patch
-Patch501:       %{vc_url}/%{name}/commit/37f890ec1662dd8980dbbe79d7c45444a1a4f4fa.patch#/%{name}-git-revert-37f890e.patch
-Patch502:       %{vc_url}/%{name}/commit/2e6a289a0b4e53098d4ee4a9f6baf038d21981f8.patch#/%{name}-git-revert-2e6a289.patch
-Patch503:       %{vc_url}/%{name}/commit/726e1e756d4e11a0064bca4117d31d9fe287453f.patch#/%{name}-git-revert-726e1e7.patch
-Patch504:       0001-revert-726e1e7-fixup.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -288,11 +282,6 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
-%patch -P 503 -p1 -R
-%patch -P 500 -p1 -R
-%patch -P 501 -p1 -R
-%patch -P 504 -p1
-%patch -P 502 -p1 -R
 
 rm -rf src/yuzu/externals
 
@@ -319,7 +308,7 @@ sed \
   -e '/-mtune=core2/d' \
   -i dynarmic/CMakeLists.txt
 sed \
-  -e '/find_/s|Zydis|zydis_DISABLED|g' \
+  -e '/find_/s|Zydis|Zydis_DISABLED|g' \
   -i dynarmic/CMakeLists.txt dynarmic/CMakeModules/dynarmicConfig.cmake.in
 %endif
 %if %{without vma}
@@ -330,6 +319,7 @@ tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %if %{with webservice}
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
+sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
 %endif
 tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
@@ -405,11 +395,11 @@ sed \
 
 sed \
   -e 's|GIT_PROGRAM git|GIT_PROGRAM cp|g' \
-  -e 's|clone --depth 1 "file://|-rp "|' \
+  -e 's|clone --depth=1 "file://|-rp "|' \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
 sed \
-  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable|' \
+  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable -Wno-error=missing-declarations|' \
   -i src/CMakeLists.txt
 
 %if %{with clang}
@@ -421,7 +411,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
 %build
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
 export CFLAGS+=" %{xbyak_flags}"
-export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
+export CXXFLAGS+=" %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -450,6 +440,8 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
   %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
   %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
+  -DENABLE_WIFI_SCAN:BOOL=OFF \
+  -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %if %{without dynarmic}

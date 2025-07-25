@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.7
+%define specrpmversion 6.15.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1250,6 +1250,7 @@ Patch7050:  %{pf_url}/c38881e847beba8ffcaf4acd270ad748c107d2e1.patch#/pf-cb-c388
 # v4l2loopback
 Patch7230:  %{pf_url}/bcc5227778a480910f8f37784ba1d0151e225b4f.patch#/pf-cb-bcc5227.patch
 Patch7231:  %{pf_url}/0e5b0bb0055b6fdab0611214c03e76653a638e64.patch#/pf-cb-0e5b0bb.patch
+Patch7232:  %{pf_url}/503d5db90ea429305a0b00564a97cfc9d63bbf77.patch#/pf-cb-503d5db.patch
 # cpuidle
 Patch7240:  %{pf_url}/3a440104dbb8f2dcb56fa252a52b1bb75d80686b.patch#/pf-cb-3a44010.patch
 # crypto
@@ -1259,8 +1260,6 @@ Patch7401:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386
 Patch7402:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
 Patch7403:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
 Patch7404:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
-Patch7405:  %{pf_url}/f599b7b47d5e28a2d4ce05afb6431d0d7c4fbdf4.patch#/pf-cb-f599b7b.patch
-Patch7406:  %{pf_url}/49c34e1117f7066e0fcd559463b2c99d106add6c.patch#/pf-cb-49c34e1.patch
 # fs
 Patch7500:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
 # ovpn-dco
@@ -2173,6 +2172,7 @@ ApplyPatch %{PATCH7050}
 # v4l2loopback
 ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7231}
+ApplyPatch %{PATCH7232}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
@@ -2182,8 +2182,6 @@ ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
 ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
 # fs
 ApplyPatch %{PATCH7500}
 # ovpn-dco
@@ -4604,6 +4602,9 @@ fi\
 #
 #
 %changelog
+* Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.8-500.chinfo
+- 6.15.8
+
 * Thu Jul 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.7-500.chinfo
 - 6.15.7
 

@@ -148,7 +148,7 @@ Version:        10.12
 Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
-Epoch:          2
+Epoch:          3
 
 License:        LGPL-2.1-or-later AND BSD-2-Clause AND BSD-3-Clause AND libtiff AND MIT AND OLDAP-2.8 AND Zlib
 URL:            http://www.winehq.org/
