@@ -290,6 +290,7 @@ ss-save-parser
 -steamtinkerlaunch
 tde2e
 thrash-protect
+twitter-color-emoji-fonts
 tyrian-data
 unbound-chroot
 unbound-update-roothints

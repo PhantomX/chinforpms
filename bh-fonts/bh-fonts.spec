@@ -13,6 +13,7 @@ BuildArch:      noarch
 %global priority 42
 
 %global foundry           bh
+%global fontlicense       BH-Luxi
 %global fontlicenses      COPYING
 %global fontdocs          ChangeLog README
 %global fontdocsex        %{fontlicenses}

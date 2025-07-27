@@ -1,16 +1,29 @@
-From 4f9c6aad584dd6a3eb0d15b0534b2d9a8893b254 Mon Sep 17 00:00:00 2001
+From abd26efe010387f16d90bcd9f4932716034054ec Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sun, 16 Feb 2025 23:05:00 -0300
+Date: Fri, 25 Jul 2025 16:31:50 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ ltdp-0005-Option-to-disable-stories.patch | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..c5684e0 100644
+index 665f5d3..987dfea 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
+@@ -35,9 +35,9 @@ index 0d9671f..f77cf4e 100644
+  	return {
+  		.id = peer->id,
+ @@ -364,6 +375,10 @@ void Stories::clearArchive(not_null<PeerData*> peer) {
+- }
+-
+- void Stories::parseAndApply(const MTPPeerStories &stories) {
++ void Stories::parseAndApply(
++ 		const MTPPeerStories &stories,
++ 		ParseSource source) {
+ +	if (DisableStories.value()) {
+ +		return;
+ +	}
 @@ -79,8 +79,8 @@ index 983497e..db40ead 100644
   #include "chat_helpers/tabbed_panel.h"
  +#include "data/data_stories.h"
@@ -22,5 +35,5 @@ index 665f5d3..c5684e0 100644
   				: rpl::producer<>()));
   	};
 -- 
-2.48.1
+2.50.1
 

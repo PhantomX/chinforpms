@@ -27,9 +27,9 @@
 %bcond xbyak 0
 %bcond local 0
 
-%global commit a5e3f163a5b352482ced2fe1cf659835105df80e
+%global commit 0de3ffab0c562f6fb16a47ba95b043d4d242a4a6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250713
+%global date 20250726
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -53,7 +53,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           duckstation
-Version:        0.1.9304
+Version:        0.1.9402
 Release:        1%{?dist}
 Summary:        A Sony PlayStation (PSX) emulator
 
@@ -175,6 +175,7 @@ Requires:       coreutils
 Requires:       discord-rpc%{?_isa}
 Requires:       google-noto-sans-cjk-vf-fonts
 Requires:       google-roboto-mono-fonts
+Requires:       twitter-color-emoji-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libshaderc_ds%{?_isa}
@@ -295,7 +296,7 @@ sed \
 sed \
   -e 's|_RPM_DATADIR_|%{_datadir}/%{name}|g' \
   -e 's|_RPM_QTTDIR_|%{_qt6_translationdir}|g' \
-  -i src/duckstation-qt/qt{host,translations}.cpp
+  -i src/duckstation-qt/qthost.cpp
 
 sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeModules/DuckStationDependencies.cmake
 sed -e '/INSTALL_RPATH_USE_LINK_PATH/d' -i src/util/CMakeLists.txt
@@ -348,6 +349,10 @@ ln -sf ../../../fonts/google-noto-sans-cjk-vf-fonts/NotoSansCJK-VF.ttc \
 rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-VariableFont_wght.ttf
 ln -sf ../../../fonts/google-roboto-mono-fonts/'RobotoMono[wght].ttf' \
   %{buildroot}%{_datadir}/%{name}/resources/fonts/RobotoMono-VariableFont_wght.ttf
+
+rm -f %{buildroot}%{_datadir}/%{name}/resources/fonts/TwitterColorEmoji-SVGinOT.ttf
+ln -sf ../../../fonts/twitter-color-emoji-fonts/TwitterColorEmoji-SVGinOT.ttf \
+  %{buildroot}%{_datadir}/%{name}/resources/fonts/TwitterColorEmoji-SVGinOT.ttf
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \

@@ -1,18 +1,17 @@
-From 24cc8c05a4fc43edfab9a53b4569b8d018c661a4 Mon Sep 17 00:00:00 2001
+From 14fabbb8d45222eda0d95fb25f3e6e48355de208 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 22 Aug 2022 22:53:43 -0300
 Subject: [PATCH] Set datadir to RPM packaging
 
 ---
- src/duckstation-qt/qthost.cpp         | 2 +-
- src/duckstation-qt/qttranslations.cpp | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ src/duckstation-qt/qthost.cpp | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/duckstation-qt/qthost.cpp b/src/duckstation-qt/qthost.cpp
-index 8438c41..4058ce2 100644
+index 8f64c0e..79f807a 100644
 --- a/src/duckstation-qt/qthost.cpp
 +++ b/src/duckstation-qt/qthost.cpp
-@@ -259,7 +259,7 @@ void QtHost::SetResourcesDirectory()
+@@ -550,7 +550,7 @@ void QtHost::SetResourcesDirectory()
  {
  #ifndef __APPLE__
    // On Windows/Linux, these are in the binary directory.
@@ -21,11 +20,7 @@ index 8438c41..4058ce2 100644
  #else
    // On macOS, this is in the bundle resources directory.
    EmuFolders::Resources = Path::Canonicalize(Path::Combine(EmuFolders::AppRoot, "../Resources"));
-diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
-index 575a897..41af2e5 100644
---- a/src/duckstation-qt/qttranslations.cpp
-+++ b/src/duckstation-qt/qttranslations.cpp
-@@ -74,14 +74,14 @@ void QtHost::InstallTranslator()
+@@ -2272,14 +2272,14 @@ void QtHost::UpdateApplicationLanguage(QWidget* dialog_parent)
  
    // install the base qt translation first
  #ifndef __APPLE__
@@ -36,21 +31,21 @@ index 575a897..41af2e5 100644
  #endif
  
    // Qt base uses underscores instead of hyphens.
-   const QString qt_language = QString(language).replace(QChar('-'), QChar('_'));
--  QString base_path(QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(qt_language));
-+  QString base_path(QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(qt_language));
+   const QString qtbase_language = QString(qlanguage).replace(QChar('-'), QChar('_'));
+-  QString base_path(QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(qtbase_language));
++  QString base_path(QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(qtbase_language));
    bool has_base_ts = QFile::exists(base_path);
    if (!has_base_ts)
    {
-@@ -89,7 +89,7 @@ void QtHost::InstallTranslator()
-     const int index = language.lastIndexOf('-');
+@@ -2287,7 +2287,7 @@ void QtHost::UpdateApplicationLanguage(QWidget* dialog_parent)
+     const int index = qlanguage.lastIndexOf('-');
      if (index > 0)
      {
--      base_path = QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(language.left(index));
-+      base_path = QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(language.left(index));
+-      base_path = QStringLiteral("%1/qt_%2.qm").arg(base_dir).arg(qlanguage.left(index));
++      base_path = QStringLiteral("_RPM_QTTDIR_/qt_%1.qm").arg(qlanguage.left(index));
        has_base_ts = QFile::exists(base_path);
      }
    }
 -- 
-2.41.0
+2.50.1
 

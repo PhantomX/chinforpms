@@ -1,16 +1,16 @@
-From bec091f4c7f2728d80be54add793e498a1d0038b Mon Sep 17 00:00:00 2001
+From c64aa80d0067ba2455790270a4763833d0d085bc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 3 Aug 2024 11:56:11 -0300
 Subject: [PATCH] cmake: soundtouch_ds
 
 ---
  CMakeModules/DuckStationDependencies.cmake | 2 +-
- src/util/CMakeLists.txt                    | 4 ++--
+ src/util/CMakeLists.txt                    | 2 +-
  src/util/audio_stream.cpp                  | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ 3 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeModules/DuckStationDependencies.cmake b/CMakeModules/DuckStationDependencies.cmake
-index d113f1a..30d6bd3 100644
+index 56aa699..a1fd250 100644
 --- a/CMakeModules/DuckStationDependencies.cmake
 +++ b/CMakeModules/DuckStationDependencies.cmake
 @@ -19,7 +19,7 @@ find_package(Freetype 2.13.2 REQUIRED) # 2.13.3, but flatpak is still on 2.13.2.
@@ -23,7 +23,7 @@ index d113f1a..30d6bd3 100644
  
  if(NOT WIN32)
 diff --git a/src/util/CMakeLists.txt b/src/util/CMakeLists.txt
-index 185d470..1d695ba 100644
+index edbe3a6..d68ca03 100644
 --- a/src/util/CMakeLists.txt
 +++ b/src/util/CMakeLists.txt
 @@ -77,7 +77,7 @@ target_precompile_headers(util PRIVATE "pch.h")
@@ -35,15 +35,6 @@ index 185d470..1d695ba 100644
  
  if(ENABLE_X11)
    target_sources(util PRIVATE
-@@ -330,7 +330,7 @@ function(add_util_resources target)
-       install_imported_dep_library(SDL3::SDL3)
-       install_imported_dep_library(Shaderc_ds::shaderc_shared)
-       install_imported_dep_library(spirv-cross-c-shared)
--      install_imported_dep_library(SoundTouch::SoundTouchDLL)
-+      install_imported_dep_library(SoundTouch_ds::SoundTouchDLL)
-       install_imported_dep_library(plutosvg::plutosvg)
-     else()
-       # Prevent CMake from overriding the RPATH in the binary. i.e. use the build locations.
 diff --git a/src/util/audio_stream.cpp b/src/util/audio_stream.cpp
 index bd4ebc5..f11f027 100644
 --- a/src/util/audio_stream.cpp
@@ -60,5 +51,5 @@ index bd4ebc5..f11f027 100644
  #include <algorithm>
  #include <cmath>
 -- 
-2.49.0
+2.50.1
 

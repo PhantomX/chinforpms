@@ -1,0 +1,23 @@
+From ca6938d95f68293df06c9aa1e073093cd3ed7305 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 26 Jul 2025 17:08:11 -0300
+Subject: [PATCH] fontconfig: fix DTD
+
+---
+ fontconfig/46-twemoji-color.conf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/fontconfig/46-twemoji-color.conf b/fontconfig/46-twemoji-color.conf
+index 54ad5a4..af59143 100644
+--- a/fontconfig/46-twemoji-color.conf
++++ b/fontconfig/46-twemoji-color.conf
+@@ -1,5 +1,5 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+-<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+ <!--
+ Twitter Color Emoji SVGinOT Font
+ Fontconfig fonts.conf for a Bitstream Vera default
+-- 
+2.50.1
+

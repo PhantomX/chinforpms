@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="font">
+  <id>twemoji-color</id>
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>CC-BY-4.0 and MIT</project_license>
+  <name>Twitter Color Emoji</name>
+  <summary>Twitter Unicode emoji color OpenType-SVG font</summary>
+  <description>
+    <p>
+      A color and B&amp;amp;W emoji SVG-in-OpenType font by Twitter with support for ZWJ, skin
+      tone modifiers and country flags.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/13rac1/twemoji-color-font</url>
+  <url type="bugtracker">https://github.com/13rac1/twemoji-color-font/issues</url>
+
+  <provides>
+    <font>Twemoji Color Emoji</font>
+  </provides>
+</component>

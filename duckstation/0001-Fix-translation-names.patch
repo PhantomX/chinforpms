@@ -1,18 +1,18 @@
-From 68dd3c993a72f88de9b002f7f98ddb298aeb956c Mon Sep 17 00:00:00 2001
+From cc33184d913d44c494c06e6d42a38cc835cabd89 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 22 Aug 2022 22:58:03 -0300
 Subject: [PATCH] Fix translation names
 
 ---
- src/duckstation-qt/CMakeLists.txt     |  8 ++++----
- src/duckstation-qt/qttranslations.cpp | 10 +++++-----
- 2 files changed, 9 insertions(+), 9 deletions(-)
+ src/duckstation-qt/CMakeLists.txt     | 8 ++++----
+ src/duckstation-qt/qttranslations.inl | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/src/duckstation-qt/CMakeLists.txt b/src/duckstation-qt/CMakeLists.txt
-index 2f3594b..21123e0 100644
+index a789b0c..07da068 100644
 --- a/src/duckstation-qt/CMakeLists.txt
 +++ b/src/duckstation-qt/CMakeLists.txt
-@@ -152,7 +152,7 @@ set(TS_FILES
+@@ -154,7 +154,7 @@ set(TS_FILES
    translations/duckstation-qt_de.ts
    translations/duckstation-qt_en.ts
    translations/duckstation-qt_es.ts
@@ -21,7 +21,7 @@ index 2f3594b..21123e0 100644
    translations/duckstation-qt_fr.ts
    translations/duckstation-qt_he.ts
    translations/duckstation-qt_id.ts
-@@ -161,12 +161,12 @@ set(TS_FILES
+@@ -163,12 +163,12 @@ set(TS_FILES
    translations/duckstation-qt_ko.ts
    translations/duckstation-qt_nl.ts
    translations/duckstation-qt_pl.ts
@@ -37,43 +37,31 @@ index 2f3594b..21123e0 100644
  )
  
  add_executable(duckstation-qt ${SRCS} ${QM_FILES})
-diff --git a/src/duckstation-qt/qttranslations.cpp b/src/duckstation-qt/qttranslations.cpp
-index 641b43f..88aaeab 100644
---- a/src/duckstation-qt/qttranslations.cpp
-+++ b/src/duckstation-qt/qttranslations.cpp
-@@ -196,19 +196,19 @@ std::span<const std::pair<const char*, const char*>> Host::GetAvailableLanguageL
- {
-   static constexpr const std::pair<const char*, const char*> languages[] = {{"English", "en"},
-                                                                             {"Español de Latinoamérica", "es"},
--                                                                            {"Español de España", "es-ES"},
-+                                                                            {"Español de España", "es_ES"},
-                                                                             {"Français", "fr"},
-                                                                             {"Bahasa Indonesia", "id"},
-                                                                             {"日本語", "ja"},
-                                                                             {"한국어", "ko"},
-                                                                             {"Italiano", "it"},
-                                                                             {"Polski", "pl"},
--                                                                            {"Português (Pt)", "pt-PT"},
--                                                                            {"Português (Br)", "pt-BR"},
-+                                                                            {"Português (Pt)", "pt_PT"},
-+                                                                            {"Português (Br)", "pt_BR"},
-                                                                             {"Русский", "ru"},
-                                                                             {"Svenska", "sv"},
-                                                                             {"Türkçe", "tr"},
--                                                                            {"简体中文", "zh-CN"}};
-+                                                                            {"简体中文", "zh_CN"}};
+diff --git a/src/duckstation-qt/qttranslations.inl b/src/duckstation-qt/qttranslations.inl
+index 6262bda..dd05b2f 100644
+--- a/src/duckstation-qt/qttranslations.inl
++++ b/src/duckstation-qt/qttranslations.inl
+@@ -5,16 +5,16 @@
  
-   return languages;
- }
-@@ -259,7 +259,7 @@ void QtHost::UpdateFontOrder(std::string_view language)
- static constexpr const QtHost::FontOrderInfo s_font_order[] = {
-   {"ja", {TF(Default), TF(Japanese), TF(Chinese), TF(Korean)}},
-   {"ko", {TF(Default), TF(Korean), TF(Japanese), TF(Chinese)}},
--  {"zh-CN", {TF(Default), TF(Chinese), TF(Japanese), TF(Korean)}},
-+  {"zh_CN", {TF(Default), TF(Chinese), TF(Japanese), TF(Korean)}},
- };
- 
- #undef TF
+ TRANSLATION_LIST_ENTRY("English", "en", "en-US", QLocale::English, QLocale::UnitedStates)
+ TRANSLATION_LIST_ENTRY("Español de Latinoamérica", "es", "es-ES", QLocale::Spanish, QLocale::LatinAmerica)
+-TRANSLATION_LIST_ENTRY("Español de España", "es-ES", "es-ES", QLocale::Spanish, QLocale::Spain)
++TRANSLATION_LIST_ENTRY("Español de España", "es-ES", "es_ES", QLocale::Spanish, QLocale::Spain)
+ TRANSLATION_LIST_ENTRY("Français", "fr", "fr-FR", QLocale::French, QLocale::France)
+ TRANSLATION_LIST_ENTRY("Bahasa Indonesia", "id", "id-ID", QLocale::Indonesian, QLocale::Indonesia)
+ TRANSLATION_LIST_ENTRY("日本語", "ja", "ja-JA", QLocale::Japanese, QLocale::Japan)
+ TRANSLATION_LIST_ENTRY("한국어", "ko", "ko-KO", QLocale::Korean, QLocale::SouthKorea)
+ TRANSLATION_LIST_ENTRY("Italiano", "it", "it-IT", QLocale::Italian, QLocale::Italy)
+ TRANSLATION_LIST_ENTRY("Polski", "pl", "pl-PL", QLocale::Polish, QLocale::Poland)
+-TRANSLATION_LIST_ENTRY("Português (Pt)", "pt-PT", "pt-PT", QLocale::Portuguese, QLocale::Portugal)
+-TRANSLATION_LIST_ENTRY("Português (Br)", "pt-BR", "pt-BR", QLocale::Portuguese, QLocale::Brazil)
++TRANSLATION_LIST_ENTRY("Português (Pt)", "pt-PT", "pt_PT", QLocale::Portuguese, QLocale::Portugal)
++TRANSLATION_LIST_ENTRY("Português (Br)", "pt-BR", "pt_BR", QLocale::Portuguese, QLocale::Brazil)
+ TRANSLATION_LIST_ENTRY("Русский", "ru", "ru-RU", QLocale::Russian, QLocale::Russia)
+ TRANSLATION_LIST_ENTRY("Svenska", "sv", "sv-SV", QLocale::Swedish, QLocale::Sweden)
+ TRANSLATION_LIST_ENTRY("Türkçe", "tr", "tr-TR", QLocale::Turkish, QLocale::Turkey)
+-TRANSLATION_LIST_ENTRY("简体中文", "zh-CN", "zh-CN", QLocale::Chinese, QLocale::China)
++TRANSLATION_LIST_ENTRY("简体中文", "zh-CN", "zh_CN", QLocale::Chinese, QLocale::China)
 -- 
-2.49.0
+2.50.1
 
