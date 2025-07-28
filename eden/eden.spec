@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit b2b993b665ed3ea956ba7558d9d874ae3895d4a0
+%global commit eeb68768d6c74007f18052f3082c136ebde95c30
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250723
+%global date 20250727
 %bcond snapshot 1
 
 # Enable system dynarmic
@@ -35,6 +35,7 @@
 # Build tests
 %bcond tests 0
 %bcond vma 1
+%bcond xbyak 0
 # Enable webservice
 %bcond webservice 1
 
@@ -53,6 +54,10 @@
 %global commit12 05973d8aeb1a4d12f59aadfb86d20decadba82d1
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
+
+%global commit13 4e44f4614ddbf038f2a6296f5b906d5c72691e0f
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 xbyak
 
 %global commit15 3f17b2af6784bfa2c5aa5dbb8e0e74a607dd8b3b
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
@@ -99,11 +104,11 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.2.27490
+Version:        0.0.3~rc1.27522
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
 URL:            https://eden-emulator.github.io
 
 %if %{with snapshot}
@@ -120,10 +125,13 @@ Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}/
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
+%if %{without xbyak}
+Source13:       https://github.com/Lizzie841/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+%endif
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
-Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}.tar.gz#/%{srcname16}-%{shortcommit16}.tar.gz
-Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}.tar.gz#/%{srcname17}-%{shortcommit17}.tar.gz
+Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 Source20:       https://github.com/eggert/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 %if %{without ffmpeg}
@@ -140,7 +148,6 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        %{vc_url}/%{name}/pulls/165.patch#/%{name}-git-pr165.patch
 Patch12:        0001-Bundled-fmt-support.patch
 Patch14:        0001-Fix-48e86d6.patch
 
@@ -168,7 +175,7 @@ BuildRequires:  cmake(cubeb)
 %if %{with dynarmic}
 BuildRequires:  cmake(dynarmic) >= 6.7.0
 %else
-Provides:       bundled(dynarmic) = 0~git%{?shortcommit11}
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
 %endif
 BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  pkgconfig(libbrotlidec)
@@ -240,7 +247,11 @@ BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 %else
 Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit12}
 %endif
+%if %{with xbyak}
 BuildRequires:  cmake(xbyak) >= 7
+%else
+Provides:       bundled(xbyak) = 0~git%{?shortcommit13}
+%endif
 BuildRequires:  pkgconfig(zlib)
 
 Requires:       hicolor-icon-theme
@@ -288,7 +299,7 @@ rm -rf src/yuzu/externals
 pushd externals
 rm -rf \
   breakpad cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode getopt inih \
-  libadrenotools libressl libusb oboe opus/opus/* SDL vcpkg Vulkan-Headers xbyak
+  libadrenotools libressl libusb oboe opus/opus/* SDL vcpkg Vulkan-Headers
 %ifarch x86_64
 rm -rf oaknut sse2neon
 %endif
@@ -314,6 +325,10 @@ sed \
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
+%endif
+%if %{without xbyak}
+tar -xf %{S:13} -C xbyak --strip-components 1
+sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %dnl tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
@@ -368,6 +383,9 @@ cp -p sirit/LICENSE.txt LICENSE.sirit
 %if %{without vma}
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 %endif
+%if %{without xbyak}
+cp xbyak/COPYRIGHT LICENSE.xbyak
+%endif
 %if %{without ffmpeg}
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
@@ -415,6 +433,8 @@ export CXXFLAGS+=" %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
+  -DYUZU_BUILD_PRESET:STRING="none" \
+  -DYUZU_SYSTEM_PROFILE:STRING="none" \
   -DYUZU_ENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
@@ -488,6 +508,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Jul 27 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3~rc1.27522-1.20250727giteeb6876
+- 0.0.3-rc1
+
 * Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.2.27370-1.20250615gitcf00554
 - Bundle ffmpeg until internal codecs is not needed
 

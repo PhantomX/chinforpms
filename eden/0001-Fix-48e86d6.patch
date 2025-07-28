@@ -37,8 +37,8 @@ index 9665622..d8f524b 100644
 +endfunction()
 +
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
+ # TODO(crueter): combine this all with CPM.
  if (ENABLE_SDL2)
-     if (YUZU_USE_BUNDLED_SDL2)
 @@ -572,27 +593,6 @@ if (CLANG_FORMAT)
      unset(CCOMMENT)
  endif()

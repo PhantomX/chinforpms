@@ -20,7 +20,7 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.5~beta1
+Version:        4.5
 Release:        100%{?dist}
 Epoch:          1
 
@@ -81,7 +81,7 @@ BuildRequires:  pkgconfig(ogg)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(opusfile)
 BuildRequires:  pkgconfig(samplerate)
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  pkgconfig(sndfile)
 BuildRequires:  pkgconfig(soxr)
 BuildRequires:  pkgconfig(wavpack)
@@ -339,6 +339,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5-100
+- 4.5
+
 * Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5~beta1-100
 - 4.5-beta1
 

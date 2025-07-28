@@ -12,7 +12,7 @@
 
 Name:           audacious
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.5~beta1
+Version:        4.5
 Release:        100%{?dist}
 Epoch:          1
 
@@ -161,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5-100
+- 4.5
+
 * Sun Jun 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5~beta1-100
 - 4.5-beta1
 

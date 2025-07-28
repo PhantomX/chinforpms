@@ -17,7 +17,7 @@ URL:            https://github.com/13rac1/twemoji-color-font
 # Power Symbol: MIT
 %global fontlicense       CC-BY-4.0 AND MIT
 %global fontlicenses      LICENSE*
-%global fontdocs          README.md
+%global fontdocs          README.md %{!?with_fontconf:fontconfig/%{priority}-%{fontconfname}.conf}
 
 %global archivename %{pkgname}-Linux-%{version}
 
