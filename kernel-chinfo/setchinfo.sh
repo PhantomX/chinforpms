@@ -2,12 +2,9 @@
 
 # This scripts sets extra files with configs for external patchsets
 # del parameter deletes all the files
-# pf parameter for post_factum patchset
-# zen parameter for zen patchset
-# nothing for Graysky cpu patch
 
-# 20250526
-# 6.15
+# 20250728
+# 6.16
 
 set -e
 
@@ -21,8 +18,6 @@ defaultd="
 "
 
 defaultm="
-OVPN
-OVPN_DCO_V2
 V4L2_LOOPBACK
 VHBA
 "

@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.15.8
+%define specrpmversion 6.16.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id ed9faca615e4dcfd32619c055c65df738498653b
+%global opensuse_id 3fabdf778e148355e8d50ffd39281082e06f442a
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -437,9 +437,6 @@ Summary: The Linux kernel
 %define with_tools 0
 %define with_kernel_abi_stablelists 0
 %define with_selftests 0
-%define signkernel 0
-%define signmodules 1
-%define rhelkeys 0
 %endif
 
 # if requested, only build debug kernel
@@ -545,6 +542,9 @@ Summary: The Linux kernel
 %define with_kabichk 0
 %define with_kernel_abi_stablelists 0
 %define with_kabidw_base 0
+%define signkernel 0
+%define signmodules 1
+%define rhelkeys 0
 %endif
 
 
@@ -862,7 +862,7 @@ BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel python3-doc
 %ifarch x86_64 riscv64
 BuildRequires: lld
 %endif
-BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel
+BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel libxml2-devel
 BuildRequires: numactl-devel
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
@@ -1226,11 +1226,11 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/c565850b129d2b7ddda91f5a5658fc4e765083b9.patch#/zen-v%{patchversion}-sauce-c565850.patch
-Patch2002: %{zen_url}/commit/2b801ae725ae05be994d374efdce8fc2e828687f.patch#/zen-v%{patchversion}-sauce-2b801ae.patch
+Patch2001: %{zen_url}/commit/37dd590f0c157c376d8b05d4ddb0a65b64044e0d.patch#/zen-v%{patchversion}-sauce-37dd590.patch
+Patch2002: %{zen_url}/commit/71ce760cd36faae55cc0fefebed49998b5eae864.patch#/zen-v%{patchversion}-sauce-71ce760.patch
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/79d1109371ca4937be5123218f12409a29d0debc.patch#/pf-cb-79d1109.patch
+Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1239,72 +1239,21 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/e3ebed7db7738b6d7198adb681cf786c12635723.patch#/pf-cb-e3ebed7.patch
-Patch6951:  %{pf_url}/9c8e2d8403dd500b95018b582fccb9ae452ec934.patch#/pf-cb-9c8e2d8.patch
+Patch6950:  %{pf_url}/7a43fcd1f4682ef2c3c5d033c5698194e13883dc.patch#/pf-cb-7a43fcd.patch
+Patch6951:  %{pf_url}/2d1170dde93552cc5f09480700241be326b33e8c.patch#/pf-cb-2d1170d.patch
 # kbuild
-Patch7000:  %{pf_url}/44bd804ed09bc22758cee2ba85ea7643b8ac4bc8.patch#/pf-cb-44bd804.patch
-Patch7001:  %{pf_url}/0adf8d408f04c252f753348039cb459e5e155911.patch#/pf-cb-0adf8d4.patch
+Patch7000:  %{pf_url}/576775d56d2db5efb53ebe63caaf0b262ebf10a1.patch#/pf-cb-576775d.patch
+Patch7001:  %{pf_url}/92fb1e195758f65d9f1b8cefe915e50d2fc2ac7b.patch#/pf-cb-92fb1e1.patch
 # bbr3
-Patch7050:  %{pf_url}/c38881e847beba8ffcaf4acd270ad748c107d2e1.patch#/pf-cb-c38881e.patch
+Patch7050:  %{pf_url}/44ea9f23b99cc37f9f03c3c0b2f5858041613ca1.patch#/pf-cb-44ea9f2.patch
 # zstd
 # v4l2loopback
-Patch7230:  %{pf_url}/bcc5227778a480910f8f37784ba1d0151e225b4f.patch#/pf-cb-bcc5227.patch
-Patch7231:  %{pf_url}/0e5b0bb0055b6fdab0611214c03e76653a638e64.patch#/pf-cb-0e5b0bb.patch
-Patch7232:  %{pf_url}/503d5db90ea429305a0b00564a97cfc9d63bbf77.patch#/pf-cb-503d5db.patch
+Patch7230:  %{pf_url}/d9b2b93c47dde314f34f56c8b85c1acee5dcf4d6.patch#/pf-cb-d9b2b93.patch
 # cpuidle
-Patch7240:  %{pf_url}/3a440104dbb8f2dcb56fa252a52b1bb75d80686b.patch#/pf-cb-3a44010.patch
+Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
 # crypto
 # fixes
-Patch7400:  %{pf_url}/45de1bcd5b94494932e3c2f661e5982b68b54b60.patch#/pf-cb-45de1bc.patch
-Patch7401:  %{pf_url}/6386fc414151ac5b58681808e1252784ef79a53b.patch#/pf-cb-6386fc4.patch
-Patch7402:  %{pf_url}/c565cd3fd0115b7a0f50bc350a2f437f64ebb269.patch#/pf-cb-c565cd3.patch
-Patch7403:  %{pf_url}/9265ca9b780eee80b050fd396e1bd14db6a97405.patch#/pf-cb-9265ca9.patch
-Patch7404:  %{pf_url}/d4caaeb5790d5d7fdcdf309c39812a601941473a.patch#/pf-cb-d4caaeb.patch
 # fs
-Patch7500:  %{pf_url}/a6912c5f78b13ecef0ea97a5893b889217e646eb.patch#/pf-cb-a6912c5.patch
-# ovpn-dco
-Patch7600:  %{pf_url}/31abde5202ca781656a8368e28939988b3353509.patch#/pf-cb-31abde5.patch
-Patch7601:  %{pf_url}/12a1be7ec89f43c58cda50a3d21607a41f8fa7b4.patch#/pf-cb-12a1be7.patch
-Patch7602:  %{pf_url}/ca1a235b92d92f774a5ec12199ed762a7ccc615f.patch#/pf-cb-ca1a235.patch
-Patch7603:  %{pf_url}/97598409cbe7ce7a74dd73da8f14868166d58df6.patch#/pf-cb-9759840.patch
-Patch7604:  %{pf_url}/b413e76ad0a59388bfc0bb6e76bc8fca9d4ed805.patch#/pf-cb-b413e76.patch
-Patch7605:  %{pf_url}/eccc42f764e5aa985c01502eb3a481da1c548d2a.patch#/pf-cb-eccc42f.patch
-Patch7606:  %{pf_url}/0764edeeb66d38a24faa02071ba67dac51147188.patch#/pf-cb-0764ede.patch
-Patch7607:  %{pf_url}/04e4162e6384b06f4c602f728afc398663fc5139.patch#/pf-cb-04e4162.patch
-Patch7608:  %{pf_url}/09ca0fc5f997a4b83c83475009f7962534873e76.patch#/pf-cb-09ca0fc.patch
-Patch7609:  %{pf_url}/58feef9b045b9d40daceea08f48893ad234d2923.patch#/pf-cb-58feef9.patch
-Patch7610:  %{pf_url}/e5fc059e4dcd6dc0a5a8c466006f755cfc11b78d.patch#/pf-cb-e5fc059.patch
-Patch7611:  %{pf_url}/6601c1f295051f6b109f93df2baa0112675cef9b.patch#/pf-cb-6601c1f.patch
-Patch7612:  %{pf_url}/15861bfef8cab2d3d76aac83a1935aaae684d757.patch#/pf-cb-15861bf.patch
-Patch7613:  %{pf_url}/9587439f99c571906f23d3d0476222aa42af24b6.patch#/pf-cb-9587439.patch
-Patch7614:  %{pf_url}/c3213ff648ac4ce7be79333bc2994f2e4c6fdba7.patch#/pf-cb-c3213ff.patch
-Patch7615:  %{pf_url}/329ff6876f91963f1d6dc553da47cf7cb2ab6e8d.patch#/pf-cb-329ff68.patch
-Patch7616:  %{pf_url}/8676f480c9344a86d1cf3272f259b5fc120e7885.patch#/pf-cb-8676f48.patch
-Patch7617:  %{pf_url}/c77122d686c4a595831683e9cceb19dc43bc48ad.patch#/pf-cb-c77122d.patch
-Patch7618:  %{pf_url}/6f194f80828b86e7246ee8067df6c651eb8d1e5e.patch#/pf-cb-6f194f8.patch
-Patch7619:  %{pf_url}/256b87a0dfe1b42004df3433f39eaa88cb9f32fd.patch#/pf-cb-256b87a.patch
-Patch7620:  %{pf_url}/20478f38fe75dc023ce0732f7dec1003a7604627.patch#/pf-cb-20478f3.patch
-Patch7621:  %{pf_url}/ac847e7ab33c43c935504242d27cddfc3d10bc9f.patch#/pf-cb-ac847e7.patch
-Patch7622:  %{pf_url}/a2de533c5ca6f1c6f8a00a70eeab19303984ce61.patch#/pf-cb-a2de533.patch
-Patch7623:  %{pf_url}/35af4c76bb8d3bbc069ec23d3b739a05d13fdb5d.patch#/pf-cb-35af4c7.patch
-Patch7624:  %{pf_url}/da2ff5d86d50dbe383d9bd49878236fb6a8d8e42.patch#/pf-cb-da2ff5d.patch
-Patch7625:  %{pf_url}/cda2ea658a330bb64bc57af47ff92d5e81546654.patch#/pf-cb-cda2ea6.patch
-Patch7626:  %{pf_url}/b067712eac2e4c32dcd4b96f98f2dd1506d39f59.patch#/pf-cb-b067712.patch
-Patch7627:  %{pf_url}/e77e7d301096545de3f1e6b53760161f4c887152.patch#/pf-cb-e77e7d3.patch
-Patch7628:  %{pf_url}/92e9af9cf91c3f0e725d8ca44e1d838750a6f9de.patch#/pf-cb-92e9af9.patch
-Patch7629:  %{pf_url}/055da7e08c687b27b8ae9a53e49012d9feec60c1.patch#/pf-cb-055da7e.patch
-Patch7630:  %{pf_url}/adf141d1090da66ec21e94445b75ade4256f6fcb.patch#/pf-cb-adf141d.patch
-Patch7631:  %{pf_url}/09f64f2fc948caf4f762733ff7d18f61552b7fb8.patch#/pf-cb-09f64f2.patch
-Patch7632:  %{pf_url}/005c9e70a88ecb892ad7d1a865d5d884ffa35fd5.patch#/pf-cb-005c9e7.patch
-Patch7633:  %{pf_url}/b8e2979b8130eb58836062c3593967ec9d2551ad.patch#/pf-cb-b8e2979.patch
-Patch7634:  %{pf_url}/e2d41c2ae7d2558b3c8771b8ffb08c0bb6016c73.patch#/pf-cb-e2d41c2.patch
-Patch7635:  %{pf_url}/99d743e6d81cdfc0d1daa5a1b0261535fa863661.patch#/pf-cb-99d743e.patch
-Patch7636:  %{pf_url}/9755a2fee409e966c746785b8c4b13d69df9a3da.patch#/pf-cb-9755a2f.patch
-Patch7637:  %{pf_url}/58d83c663a27917e7fdb840ad8623e463ee61908.patch#/pf-cb-58d83c6.patch
-Patch7638:  %{pf_url}/50bb1e420ae85a50e8fc184ccbcb6324ea78767f.patch#/pf-cb-50bb1e4.patch
-Patch7639:  %{pf_url}/5f67c14bb50c5bcb2ccb8aef6eca2afc323b08b5.patch#/pf-cb-5f67c14.patch
-Patch7640:  %{pf_url}/eb1e9b6ace5ef13f7acffb91dfdd574a70f807c8.patch#/pf-cb-eb1e9b6.patch
-Patch7641:  %{pf_url}/576d02a107df3eb41136559d559d568652fb33a4.patch#/pf-cb-576d02a.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1329,9 +1278,9 @@ The %{package_name} meta package
 Provides: kernel = %{specversion}-%{pkg_release}\
 Provides: %{name} = %{specversion}-%{pkg_release}\
 %endif\
-Provides: %{name}-%{_target_cpu} = %{specrpmversion}-%{pkg_release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-%{_target_cpu} = %{specrpmversion}-%{pkg_release}%{uname_suffix %{?1}}\
+Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): %{initrd_prereq}\
 Requires(pre): ((linux-firmware >= 20150904-56.git6ebf5d57) if linux-firmware)\
@@ -1638,9 +1587,9 @@ This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 %package %{?1:%{1}-}devel\
 Summary: Development package for building kernel modules to match the %{?2:%{2} }kernel\
 Provides: %{name}%{?1:-%{1}}-devel-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}-devel-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: kernel-devel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}-devel-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-devel-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: kernel-devel-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Provides: %{name}-devel-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel)\
 AutoReqProv: no\
 Requires(pre): findutils\
@@ -1653,7 +1602,7 @@ Requires: flex\
 Requires: make\
 Requires: gcc\
 %if %{-m:1}%{!-m:0}\
-Requires: %{name}-devel-uname-r = %{KVERREL}%{uname_variant %{?1:%{1}}}\
+Requires: %{name}-devel-uname-r = %{KVERREL}%{uname_variant %{?1}}\
 %endif\
 Suggests: duperemove\
 Suggests: hardlink\
@@ -1692,13 +1641,13 @@ This meta package provides a single reference that other packages can Require to
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
 Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}%{?1:-%{1}}-modules-internal = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: %{name}%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-internal\
@@ -1713,15 +1662,15 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}%{?1:-%{1}}-modules-extra = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: %{name}%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: %{name}-modules-extra-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-extra-uname-r = %{KVERREL}%{uname_variant %{?1}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1737,14 +1686,14 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 %package %{?1:%{1}-}modules\
 Summary: kernel modules to match the %{?2:%{2}-}core kernel\
 Provides: %{name}%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}-modules = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}-modules = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: %{name}-modules-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-uname-r = %{KVERREL}%{uname_variant %{?1}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1760,13 +1709,13 @@ This package provides commonly used kernel modules for the %{?2:%{2}-}core kerne
 %package %{?1:%{1}-}modules-core\
 Summary: Core kernel modules to match the %{?2:%{2}-}core kernel\
 Provides: %{name}%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}-modules-core = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}-modules-core = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 %if %{-m:1}%{!-m:0}\
-Requires: %{name}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1}}\
 %endif\
 AutoReq: no\
 AutoProv: yes\
@@ -1805,11 +1754,11 @@ The meta-package for the %{1} kernel\
 %define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
 Summary: %{variant_summary}\
-Provides: %{name}-%{?1:%{1}-}core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-%{?1:%{1}-}core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel)\
 %if %{-m:1}%{!-m:0}\
-Requires: %{name}-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
-Requires: %{name}-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1:+%{1}}}\
+Requires: %{name}-core-uname-r = %{KVERREL}%{uname_variant %{?1}}\
+Requires: %{name}-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %{?1}}\
 %endif\
 %{expand:%%kernel_reqprovconf %{?1:%{1}} %{-o:%{-o}}}\
 %if %{?1:1} %{!?1:0} \
@@ -1831,8 +1780,8 @@ Requires: %{name}-%{?1:%{1}-}-modules-core-uname-r = %{KVERREL}%{uname_variant %
 %package %{?1:%{1}-}uki-virt\
 Summary: %{variant_summary} unified kernel image for virtual machines\
 Provides: installonlypkg(kernel)\
-Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires(pre): %{kernel_prereq}\
 Requires(pre): systemd >= 254-1\
 Recommends: uki-direct\
@@ -1856,13 +1805,13 @@ Requires(pre): systemd >= 254-1\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
 Group: System Environment/Kernel\
 Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
-Provides: %{name}%{?1:-%{1}}-modules-partner = %{specrpmversion}-%{release}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
-Provides: %{name}%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
-Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1:+%{1}}}\
+Provides: %{name}%{?1:-%{1}}-modules-partner-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-partner\
@@ -2171,62 +2120,11 @@ ApplyPatch %{PATCH7050}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
-ApplyPatch %{PATCH7232}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
 # fixes
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
 # fs
-ApplyPatch %{PATCH7500}
-# ovpn-dco
-ApplyPatch %{PATCH7600}
-ApplyPatch %{PATCH7601}
-ApplyPatch %{PATCH7602}
-ApplyPatch %{PATCH7603}
-ApplyPatch %{PATCH7604}
-ApplyPatch %{PATCH7605}
-ApplyPatch %{PATCH7606}
-ApplyPatch %{PATCH7607}
-ApplyPatch %{PATCH7608}
-ApplyPatch %{PATCH7609}
-ApplyPatch %{PATCH7610}
-ApplyPatch %{PATCH7611}
-ApplyPatch %{PATCH7612}
-ApplyPatch %{PATCH7613}
-ApplyPatch %{PATCH7614}
-ApplyPatch %{PATCH7615}
-ApplyPatch %{PATCH7616}
-ApplyPatch %{PATCH7617}
-ApplyPatch %{PATCH7618}
-ApplyPatch %{PATCH7619}
-ApplyPatch %{PATCH7620}
-ApplyPatch %{PATCH7621}
-ApplyPatch %{PATCH7622}
-ApplyPatch %{PATCH7623}
-ApplyPatch %{PATCH7624}
-ApplyPatch %{PATCH7625}
-ApplyPatch %{PATCH7626}
-ApplyPatch %{PATCH7627}
-ApplyPatch %{PATCH7628}
-ApplyPatch %{PATCH7629}
-ApplyPatch %{PATCH7630}
-ApplyPatch %{PATCH7631}
-ApplyPatch %{PATCH7632}
-ApplyPatch %{PATCH7633}
-ApplyPatch %{PATCH7634}
-ApplyPatch %{PATCH7635}
-ApplyPatch %{PATCH7636}
-ApplyPatch %{PATCH7637}
-ApplyPatch %{PATCH7638}
-ApplyPatch %{PATCH7639}
-ApplyPatch %{PATCH7640}
-ApplyPatch %{PATCH7641}
 %endif
 
 # openSUSE
@@ -2601,6 +2499,7 @@ BuildKernel() {
 
 %ifarch aarch64 riscv64
     %{log_msg "Build dtb kernel"}
+    mkdir -p $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     %{make} ARCH=$Arch dtbs INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     %{make} ARCH=$Arch dtbs_install INSTALL_DTBS_PATH=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer
     cp -r $RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer $RPM_BUILD_ROOT/lib/modules/$KernelVer/dtb
@@ -3044,7 +2943,7 @@ BuildKernel() {
     # Copy the System.map file for depmod to use
     cp System.map $RPM_BUILD_ROOT/.
 
-    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" ]]; then
+    if [[ "$Variant" == "rt" || "$Variant" == "rt-debug" || "$Variant" == "rt-64k" || "$Variant" == "rt-64k-debug" || "$Variant" == "automotive" || "$Variant" == "automotive-debug" ]]; then
         %{log_msg "Skipping efiuki build"}
     else
 %if %{with_efiuki}
@@ -3054,7 +2953,11 @@ BuildKernel() {
 %if 0%{?centos}
         SBATsuffix="centos"
 %else
+%if 0%{?fedora}
+        SBATsuffix="fedora"
+%else
         SBATsuffix="rhel"
+%endif
 %endif
         SBAT=$(cat <<- EOF
 	linux,1,Red Hat,linux,$KernelVer,mailto:secalert@redhat.com
@@ -3062,6 +2965,12 @@ BuildKernel() {
 	kernel-uki-virt.$SBATsuffix,1,Red Hat,kernel-uki-virt,$KernelVer,mailto:secalert@redhat.com
 EOF
 )
+
+        ADDONS_SBAT=$(cat <<- EOF
+	sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
+	kernel-uki-virt-addons.$SBATsuffix,1,Red Hat,kernel-uki-virt-addons,$KernelVer,mailto:secalert@redhat.com
+	EOF
+	)
 
     KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
     KernelUnifiedImage="$KernelUnifiedImageDir/$InstallName-virt.efi"
@@ -3546,7 +3455,20 @@ pushd tools/testing/selftests
 %endif
 
 %{log_msg "main selftests compile"}
+
+# Some selftests (especially bpf) do not build with source fortification.
+# Since selftests are not shipped, disable source fortification for them.
+%global _fortify_level_bak %{_fortify_level}
+%undefine _fortify_level
+export CFLAGS="%{build_cflags}"
+export CXXFLAGS="%{build_cxxflags}"
+
 %{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+
+# Restore the original level of source fortification
+%define _fortify_level %{_fortify_level_bak}
+export CFLAGS="%{build_cflags}"
+export CXXFLAGS="%{build_cxxflags}"
 
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
@@ -3565,6 +3487,19 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
+
+# The urandom_read binary doesn't pass the check-rpaths check and upstream
+# refuses to fix it. So, we save it to buildroot_unstripped and delete it so it
+# will be hidden from check-rpaths and will automatically get restored later.
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/urandom_read"
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/no_alu32/urandom_read"
+rm -f %{buildroot}/usr/libexec/kselftests/bpf/urandom_read
+rm -f %{buildroot}/usr/libexec/kselftests/bpf/no_alu32/urandom_read
+
+# Copy bpftool to kselftests so selftests is packaged with
+# the full bpftool instead of bootstrap bpftool
+cp ./bpf/tools/sbin/bpftool %{buildroot}%{_libexecdir}/kselftests/bpf/bpftool
+
 popd
 %{log_msg "end build selftests"}
 %endif
@@ -3761,7 +3696,7 @@ rm -rf %{buildroot}%{_libdir}/libperf.a
 
 %if %{with_tools}
 %ifarch %{cpupowerarchs}
-%{make} -C tools/power/cpupower DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir} mandir=%{_mandir} CPUFREQ_BENCH=false install
+%{make} -C tools/power/cpupower DESTDIR=$RPM_BUILD_ROOT libdir=%{_libdir} libexecdir=%{_libexecdir} mandir=%{_mandir} unitdir=%{_unitdir} CPUFREQ_BENCH=false install
 %find_lang cpupower
 mv cpupower.lang ../
 %ifarch x86_64
@@ -4341,6 +4276,9 @@ fi\
 %else
 %files -n kernel-tools -f cpupower.lang
 %{_bindir}/cpupower
+%{_libexecdir}/cpupower
+%{_unitdir}/cpupower.service
+%config(noreplace) %{_sysconfdir}/cpupower-service.conf
 %{_datadir}/bash-completion/completions/cpupower
 %ifarch x86_64
 %{_bindir}/centrino-decode
@@ -4557,7 +4495,7 @@ fi\
 %kernel_variant_files %{_use_vdso} %{with_debug} rt-debug
 %endif
 %kernel_variant_files %{_use_vdso} %{with_automotive_base} automotive
-%if %{with_automotive}
+%if %{with_automotive} && !%{with_automotive_build}
 %kernel_variant_files %{_use_vdso} %{with_debug} automotive-debug
 %endif
 %if %{with_debug_meta}
@@ -4602,6 +4540,9 @@ fi\
 #
 #
 %changelog
+* Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.0-500.chinfo
+- 6.16.0
+
 * Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.8-500.chinfo
 - 6.15.8
 
@@ -4797,33 +4738,6 @@ fi\
 
 * Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.0-500.chinfo
 - 6.10.0
-
-* Thu Jul 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.9-500.chinfo
-- 6.9.9
-
-* Fri Jul 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.8-500.chinfo
-- 6.9.8
-
-* Thu Jun 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.7-500.chinfo
-- 6.9.7
-
-* Fri Jun 21 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.6-500.chinfo
-- 6.9.6
-
-* Sun Jun 16 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.5-500.chinfo
-- 6.9.5
-
-* Wed Jun 12 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.4-500.chinfo
-- 6.9.4
-
-* Thu May 30 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.3-500.chinfo
-- 6.9.3
-
-* Sat May 25 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.2-500.chinfo
-- 6.9.2
-
-* Tue May 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.9.0-500.chinfo
-- 6.9.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

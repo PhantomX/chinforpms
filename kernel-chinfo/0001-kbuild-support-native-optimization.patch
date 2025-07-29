@@ -1,19 +1,19 @@
-From 149f8cc3ee28b0f37345e2d0a58d5c9b6198b571 Mon Sep 17 00:00:00 2001
+From e72feabcd1b174f9fd1a88776cbf262a289e6f0c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 26 May 2025 09:28:09 -0300
 Subject: [PATCH] kbuild: support native optimization
 
 ---
  arch/x86/Kconfig.cpu            | 32 ++++++++++++++++++++++++++------
- arch/x86/Makefile               |  8 +++++++-
+ arch/x86/Makefile               |  8 ++++++++
  arch/x86/include/asm/vermagic.h |  4 ++++
- 3 files changed, 37 insertions(+), 7 deletions(-)
+ 3 files changed, 38 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 9328b57..e838a4d 100644
+index 7f2bc6a..cc5b148 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
-@@ -265,6 +265,26 @@ config X86_64_ISA_LEVEL
+@@ -290,6 +290,26 @@ config X86_64_ISA_LEVEL
  	help
  	  Specify an x86_64 ISA level.
  
@@ -40,7 +40,7 @@ index 9328b57..e838a4d 100644
  #
  # Define implied options from the CPU selection here
  config X86_INTERNODE_CACHE_SHIFT
-@@ -275,7 +295,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -300,7 +320,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4
@@ -49,7 +49,7 @@ index 9328b57..e838a4d 100644
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -293,19 +313,19 @@ config X86_ALIGNMENT_16
+@@ -318,19 +338,19 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -73,7 +73,7 @@ index 9328b57..e838a4d 100644
  
  config X86_CX8
  	def_bool y
-@@ -315,7 +335,7 @@ config X86_CX8
+@@ -340,7 +360,7 @@ config X86_CX8
  # generates cmov.
  config X86_CMOV
  	def_bool y
@@ -83,24 +83,26 @@ index 9328b57..e838a4d 100644
  config X86_MINIMUM_CPU_FAMILY
  	int
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 81087fe..42c10ce 100644
+index ebe1212..fb0259b 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -173,7 +173,13 @@ else
- 	# Use -mskip-rax-setup if supported.
+@@ -174,8 +174,16 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
--    ifeq ($(CONFIG_X86_64_ISA_LEVEL),1)
+ ifdef CONFIG_X86_NATIVE_CPU
 +    ifdef CONFIG_MNATIVE_INTEL
 +        KBUILD_CFLAGS += -march=native -mtune=native
 +        KBUILD_RUSTFLAGS += -Ctarget-cpu=native -Ztune-cpu=native
 +    else ifdef CONFIG_MNATIVE_AMD
-+        KBUILD_CFLAGS += -march=native -mtune=native -mno-tbm
++        KBUILD_CFLAGS += -march=native -mtune=native
 +        KBUILD_RUSTFLAGS += -Ctarget-cpu=native -Ztune-cpu=native
-+    else ifeq ($(CONFIG_X86_64_ISA_LEVEL),1)
++    else
+         KBUILD_CFLAGS += -march=native
+         KBUILD_RUSTFLAGS += -Ctarget-cpu=native
++    endif
+ else
+     ifeq ($(CONFIG_X86_64_ISA_LEVEL),1)
          KBUILD_CFLAGS += -march=x86-64 -mtune=generic
-         KBUILD_RUSTFLAGS += -Ctarget-cpu=x86-64 -Ztune-cpu=generic
-     else
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
 index 5d47125..0693172 100644
 --- a/arch/x86/include/asm/vermagic.h
@@ -117,5 +119,5 @@ index 5d47125..0693172 100644
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
 -- 
-2.49.0
+2.50.1
 
