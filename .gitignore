@@ -1,4 +1,4 @@
-# Garbage
+c# Garbage
 
 /.directory
 /*.xpm
@@ -139,6 +139,8 @@ testing/
 
 /audacious-skins/
 /dir2lame/
+/duckstation/
+/duckstation_chtdb/
 /kde4/
 /kernel-testing/
 /tmp/
