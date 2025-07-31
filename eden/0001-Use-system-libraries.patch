@@ -1,4 +1,4 @@
-From 4e0626b86629f5e7d251715bb43a4a34266ce360 Mon Sep 17 00:00:00 2001
+From b21e7fb2abb34c3df8e959de5535cca29b7d8266 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 4 Apr 2022 20:25:52 -0300
 Subject: [PATCH] Use system libraries
@@ -9,13 +9,14 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
  CMakeLists.txt                           |  3 ---
  externals/CMakeLists.txt                 |  9 +++++++++
+ externals/ffmpeg/CMakeLists.txt          |  5 +++++
  externals/find-modules/FindMBEDTLS.cmake | 23 +++++++++++++++++++++++
  src/yuzu/CMakeLists.txt                  |  9 +++++++++
- 4 files changed, 41 insertions(+), 3 deletions(-)
+ 5 files changed, 46 insertions(+), 3 deletions(-)
  create mode 100644 externals/find-modules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 124a5ac..f41fa17 100644
+index 0c2a880..e007ac2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,7 +8,6 @@ project(yuzu)
@@ -26,7 +27,7 @@ index 124a5ac..f41fa17 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -79,8 +78,6 @@ option(YUZU_USE_QT_MULTIMEDIA "Use QtMultimedia for Camera" OFF)
+@@ -80,8 +79,6 @@ option(YUZU_USE_QT_MULTIMEDIA "Use QtMultimedia for Camera" OFF)
  
  option(YUZU_USE_QT_WEB_ENGINE "Use QtWebEngine for web applet implementation" OFF)
  
@@ -36,7 +37,7 @@ index 124a5ac..f41fa17 100644
  
  option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence" OFF)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 7dacba2..12164d6 100644
+index cd7b80a..f936650 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -40,6 +40,14 @@ endif()
@@ -62,6 +63,29 @@ index 7dacba2..12164d6 100644
  
  # MicroProfile
  add_library(microprofile INTERFACE)
+diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
+index 3222efb..2468587 100644
+--- a/externals/ffmpeg/CMakeLists.txt
++++ b/externals/ffmpeg/CMakeLists.txt
+@@ -19,6 +19,7 @@ if (NOT WIN32 AND NOT ANDROID)
+         message(FATAL_ERROR "Required program `autoconf` not found.")
+     endif()
+ 
++    if (NOT CPM_ENABLED)
+     include(CPM)
+     set(CPM_USE_LOCAL_PACKAGES OFF)
+ 
+@@ -30,6 +31,10 @@ if (NOT WIN32 AND NOT ANDROID)
+ 
+     set(FFmpeg_PREFIX ${ffmpeg_SOURCE_DIR})
+     set(FFmpeg_BUILD_DIR ${ffmpeg_BINARY_DIR})
++    else()
++      set(FFmpeg_PREFIX ${PROJECT_SOURCE_DIR}/externals/ffmpeg/ffmpeg)
++      set(FFmpeg_BUILD_DIR ${PROJECT_BINARY_DIR}/externals/ffmpeg-build)
++    endif()
+     set(FFmpeg_MAKEFILE ${FFmpeg_BUILD_DIR}/Makefile)
+     make_directory(${FFmpeg_BUILD_DIR})
+ 
 diff --git a/externals/find-modules/FindMBEDTLS.cmake b/externals/find-modules/FindMBEDTLS.cmake
 new file mode 100644
 index 0000000..97c4515

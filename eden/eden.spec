@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit eeb68768d6c74007f18052f3082c136ebde95c30
+%global commit c609389ec1e1744a5d024c5c6811cc7cea1ba113
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250727
+%global date 20250730
 %bcond snapshot 1
 
 # Enable system dynarmic
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc1.27522
+Version:        0.0.3~rc2.27538
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -462,7 +462,6 @@ export CXXFLAGS+=" %{xbyak_flags}"
   %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
   -DENABLE_WIFI_SCAN:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
-  -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
 %if %{without dynarmic}
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
@@ -508,6 +507,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Thu Jul 31 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3~rc2.27538-1.20250730gitc609389
+- 0.0.3-rc2
+
 * Sun Jul 27 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3~rc1.27522-1.20250727giteeb6876
 - 0.0.3-rc1
 
