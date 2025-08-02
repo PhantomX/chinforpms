@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit f326e39dba1e52798b3a90f47152f2bf765acdcf
+%global commit 2ce31e5507a39ea4b4b3a452a374fce7c51db902
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250713
+%global date 20250801
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -36,6 +36,8 @@
 %bcond vma 1
 # Enable system vulkan
 %bcond vulkan 1
+# Disabled for seekable_format
+%bcond zstd 0
 # Build tests
 %bcond tests 0
 
@@ -123,6 +125,10 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 SPIRV-Tools
 
+%global commit20 f8745da6ff1ad1e7bab384bd1f9d742439278e99
+%global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
+%global srcname20 zstd
+
 %global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
 
 %global cpphttplibver b251668
@@ -135,12 +141,14 @@
 
 %global appname org.azahar_emu.Azahar
 %global vc_url  https://github.com/%{name}-emu
+%global cl_id   60bdec16580e370ecd019b0d4a92d07378f6b136
+%global cl_url  %{vc_url}/compatibility-list/raw/%{cl_id}
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2122~rc1.19
+Version:        2123~beta1
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -196,12 +204,15 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %if %{without glslang}
 Source19:       https://github.com/KhronosGroup/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
+%if %{without zstd}
+Source20:       https://github.com/facebook/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+%endif
 
-Source20:       compatibility_list.qrc
+Source1000:     %{cl_url}/compatibility_list.qrc
+Source1001:     %{cl_url}/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
-Patch12:        0001-renderer_vulkan.cpp-Disable-IsLowRefreshRate.patch
 Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 BuildRequires:  cmake
@@ -253,7 +264,11 @@ BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libusb-1.0)
-BuildRequires:  pkgconfig(libzstd) >= 1.5.5
+%if %{with zstd}
+BuildRequires:  pkgconfig(libzstd) >= 1.5.7
+%else
+Provides:       bundled(libzstd) = 0~git%{shortcommit20}
+%endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.9.0
 BuildRequires:  cmake(OpenAL) >= 1.23.1
 BuildRequires:  pkgconfig(sdl2)
@@ -380,6 +395,9 @@ tar -xf %{S:16} -C externals/vma --strip-components 1
 tar -xf %{S:17} -C externals/vulkan-headers/ --strip-components 1
 %endif
 tar -xf %{S:18} -C externals/faad2/faad2 --strip-components 1
+%if %{without zstd}
+tar -xf %{S:20} -C externals/zstd --strip-components 1
+%endif
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -417,6 +435,10 @@ cp -p teakra/LICENSE LICENSE.teakra
 %if %{without vma}
 cp -p vma/LICENSE.txt LICENSE.vma
 %endif
+%if %{without zstd}
+cp -p zstd/COPYING COPYING.zstd
+cp -p zstd/LICENSE LICENSE.zstd
+%endif
 popd
 
 
@@ -440,6 +462,8 @@ sed \
 sed -e '/^#include <exception>/a#include <system_error>' \
   -i externals/teakra/src/interpreter.h
 
+sed -e 's|zstd/contrib/seekable_format/||' -i src/common/zstd_compression.cpp
+
 sed -e '/find_package/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
 sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindOpenAL.cmake
@@ -455,8 +479,8 @@ sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindO
     -i src/common/scm_rev.cpp.in
 %endif
 
-cp -p %{S:20} dist/compatibility_list/
-touch dist/compatibility_list/compatibility_list.json
+cp -p %{S:1000} dist/compatibility_list/
+cp -p %{S:1001} dist/compatibility_list/
 
 
 %build
@@ -505,7 +529,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \
   %{?with_vulkan:-DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON} \
   -DUSE_SYSTEM_XBYAK:BOOL=ON \
-  -DUSE_SYSTEM_ZSTD:BOOL=ON \
+  %{?with_zstd:-DUSE_SYSTEM_ZSTD:BOOL=ON} \
   %{?with_boost:-DUSE_SYSTEM_BOOST:BOOL=ON} \
   %{?with_soundtouch:-DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON} \
   -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \

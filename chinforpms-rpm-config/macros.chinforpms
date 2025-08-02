@@ -12,6 +12,7 @@
 # Set down debug level to speed up building
 %_glevel 1
 %__chinforpms_global_compiler_flags %(gcf="%{__global_compiler_flags}" ; echo "${gcf/ -g / -g%{?_glevel} }")
+%rustflags_debuginfo %{?_glevel}
 
 # build with native
 # Use "%define _native_flags 1" to enable

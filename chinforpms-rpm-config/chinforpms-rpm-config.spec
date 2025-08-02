@@ -2,7 +2,7 @@
 
 
 Name:           chinforpms-rpm-config
-Version:        14
+Version:        15
 Release:        1%{?dist}
 Summary:        chinforpms specific rpm configuration files
 
@@ -44,6 +44,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri Aug 01 2025 Phantom X <megaphantomx at hotmail dot com> - 15-1
+- Add %%rustflags_debuginfo
+
 * Tue Apr 15 2025 Phantom X <megaphantomx at hotmail dot com> - 14-1
 - Fix _gcc_lto_cflags, redhat-rpm-config 342-4 required
 

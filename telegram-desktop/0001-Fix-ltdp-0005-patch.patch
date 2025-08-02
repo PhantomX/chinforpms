@@ -1,14 +1,14 @@
-From abd26efe010387f16d90bcd9f4932716034054ec Mon Sep 17 00:00:00 2001
+From cb8bf87ba063ff3614388b2dbab77688a26ca066 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 25 Jul 2025 16:31:50 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ ltdp-0005-Option-to-disable-stories.patch | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..987dfea 100644
+index 665f5d3..f80f854 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
 @@ -35,9 +35,9 @@ index 0d9671f..f77cf4e 100644
@@ -24,6 +24,22 @@ index 665f5d3..987dfea 100644
  +	if (DisableStories.value()) {
  +		return;
  +	}
+@@ -61,13 +61,13 @@ index 4e6b0ce..b71076f 100644
+ --- a/Telegram/SourceFiles/data/data_stories.h
+ +++ b/Telegram/SourceFiles/data/data_stories.h
+ @@ -30,6 +30,8 @@ struct StoryIdDates;
+- class Story;
++ struct StoryAlbum;
+  class StoryPreload;
+ 
+ +extern const char kOptionDisableStories[];
+ +
+  struct StoriesIds {
+- 	base::flat_set<StoryId, std::greater<>> list;
++ 	std::vector<StoryId> list; // flat_set<int, greater> for saved/archive.
+  	std::vector<StoryId> pinnedToTop;
+ diff --git a/Telegram/SourceFiles/settings/settings_experimental.cpp b/Telegram/SourceFiles/settings/settings_experimental.cpp
+ index 983497e..db40ead 100644
 @@ -79,8 +79,8 @@ index 983497e..db40ead 100644
   #include "chat_helpers/tabbed_panel.h"
  +#include "data/data_stories.h"

@@ -25,6 +25,7 @@ duckstation
 duckstation_chtdb
 dynarmic
 eden
+ente-auth
 f5cli
 f5vpn
 f5vpn-filesystem
@@ -75,6 +76,7 @@ python-haccrypto
 python-pyctr
 -reicast
 -odrive
+-proton-authenticator
 -rocketchat-desktop
 rpcs3
 rustdesk

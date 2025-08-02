@@ -1,4 +1,4 @@
-From ec9f2bba7d178282a8d0d6bb96b807f942e2fe3d Mon Sep 17 00:00:00 2001
+From 07ce39349099693c3389e70494aa0d7f389949f2 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
@@ -10,7 +10,7 @@ Subject: [PATCH] Use system libraries
  3 files changed, 27 insertions(+), 8 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c23b03e..6c30f02 100644
+index 8a736ea..85c0ab9 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -19,9 +19,9 @@ index c23b03e..6c30f02 100644
  list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modules")
 -include(DownloadExternals)
  include(CMakeDependentOption)
+ include(FindPkgConfig)
  
- project(citra LANGUAGES C CXX ASM)
-@@ -212,7 +211,7 @@ function(check_submodules_present)
+@@ -219,7 +218,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index c23b03e..6c30f02 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 496b4c1..5ab2059 100644
+index 21a32d6..a870b16 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -80,7 +80,7 @@ index 496b4c1..5ab2059 100644
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -322,7 +330,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
+@@ -343,7 +351,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
  target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
@@ -94,7 +94,7 @@ index 496b4c1..5ab2059 100644
  endif()
  
  # cpp-jwt
-@@ -421,7 +435,7 @@ if (ENABLE_VULKAN)
+@@ -445,7 +459,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)
@@ -104,10 +104,10 @@ index 496b4c1..5ab2059 100644
              message(STATUS "Found Vulkan headers")
              target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 8f90c9b..14824a2 100644
+index 44f0a67..d867453 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
-@@ -149,12 +149,18 @@ add_library(citra_common STATIC
+@@ -151,12 +151,18 @@ add_library(citra_common STATIC
      web_result.h
      x64/cpu_detect.cpp
      x64/cpu_detect.h
@@ -129,5 +129,5 @@ index 8f90c9b..14824a2 100644
    target_sources(citra_common PRIVATE
      linux/gamemode.cpp
 -- 
-2.49.0
+2.50.1
 
