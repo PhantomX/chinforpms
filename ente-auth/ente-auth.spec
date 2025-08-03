@@ -24,6 +24,7 @@ ExclusiveArch:  x86_64
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
+Recommends:     gnome-keyring
 Requires:       hicolor-icon-theme
 
 %global __provides_exclude_from ^%{_libdir}/%{appname}/lib/.*

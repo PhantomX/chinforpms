@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 2ce31e5507a39ea4b4b3a452a374fce7c51db902
+%global commit 106e994dbf31bfae503551326a1a4b0c48647fab
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250801
+%global date 20250802
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -36,10 +36,13 @@
 %bcond vma 1
 # Enable system vulkan
 %bcond vulkan 1
-# Disabled for seekable_format
-%bcond zstd 0
+%bcond zstd 1
 # Build tests
 %bcond tests 0
+
+%global commit1 60bdec16580e370ecd019b0d4a92d07378f6b136
+%global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
+%global srcname1 compatibility-list
 
 %global commit2 60f81a77e0c9a0e7ffc1ca1bc438ddfa2e43b78e
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
@@ -141,14 +144,12 @@
 
 %global appname org.azahar_emu.Azahar
 %global vc_url  https://github.com/%{name}-emu
-%global cl_id   60bdec16580e370ecd019b0d4a92d07378f6b136
-%global cl_url  %{vc_url}/compatibility-list/raw/%{cl_id}
 
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~beta1
+Version:        2123~beta2
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -161,6 +162,7 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.g
 %else
 Source0:        %{vc_url}/%{name}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
+Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{without cryptopp}
 Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
@@ -204,12 +206,7 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 %if %{without glslang}
 Source19:       https://github.com/KhronosGroup/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
-%if %{without zstd}
 Source20:       https://github.com/facebook/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
-%endif
-
-Source1000:     %{cl_url}/compatibility_list.qrc
-Source1001:     %{cl_url}/compatibility_list.json
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
@@ -343,6 +340,7 @@ This is the Qt frontend.
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -N -p1
 %autopatch -p1 -M 499
 
+tar -xf %{S:1} -C dist/compatibility_list --strip-components 1
 %if %{with cryptopp}
 sed -e 's|crypto++|cryptopp|' -i externals/cmake-modules/Findcryptopp.cmake
 %else
@@ -395,7 +393,12 @@ tar -xf %{S:16} -C externals/vma --strip-components 1
 tar -xf %{S:17} -C externals/vulkan-headers/ --strip-components 1
 %endif
 tar -xf %{S:18} -C externals/faad2/faad2 --strip-components 1
-%if %{without zstd}
+%if %{with zstd}
+zstdcommom='zstd-*/lib/common'
+tar -xf %{S:20} -C externals/zstd --strip-components 1 \
+  'zstd-*/lib/common'/{compiler,debug,mem,portability_macros,zstd_deps}.h \
+  'zstd-*/lib/common/xxhash.*' 'zstd-*/contrib/seekable_format'
+%else
 tar -xf %{S:20} -C externals/zstd --strip-components 1
 %endif
 
@@ -478,9 +481,6 @@ sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindO
     -e 's|@BUILD_VERSION@|%{verb}-g%{shortcommit}|g' \
     -i src/common/scm_rev.cpp.in
 %endif
-
-cp -p %{S:1000} dist/compatibility_list/
-cp -p %{S:1001} dist/compatibility_list/
 
 
 %build

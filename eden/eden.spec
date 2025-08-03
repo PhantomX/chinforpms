@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit c609389ec1e1744a5d024c5c6811cc7cea1ba113
+%global commit 1f34d836b4fb37997e58958630fee5ffb3a678ec
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250730
+%global date 20250802
 %bcond snapshot 1
 
 # Enable system dynarmic
@@ -104,7 +104,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc2.27538
+Version:        0.0.3~rc2.27550
 Release:        1%{?dist}
 Summary:        A NX Emulator
 

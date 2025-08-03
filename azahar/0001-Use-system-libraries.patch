@@ -1,13 +1,13 @@
-From 07ce39349099693c3389e70494aa0d7f389949f2 Mon Sep 17 00:00:00 2001
+From 92174f184e5a61807655b1925004e63b42d8750f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt            |  3 +--
- externals/CMakeLists.txt  | 22 ++++++++++++++++++----
+ externals/CMakeLists.txt  | 34 +++++++++++++++++++++++++++++-----
  src/common/CMakeLists.txt | 10 ++++++++--
- 3 files changed, 27 insertions(+), 8 deletions(-)
+ 3 files changed, 38 insertions(+), 9 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 8a736ea..85c0ab9 100644
@@ -31,7 +31,7 @@ index 8a736ea..85c0ab9 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 21a32d6..a870b16 100644
+index 21a32d6..dd5a50d 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -8,7 +8,6 @@ else()
@@ -58,7 +58,7 @@ index 21a32d6..a870b16 100644
  
  # Crypto++
  if(USE_SYSTEM_CRYPTOPP)
-@@ -203,12 +204,19 @@ endif()
+@@ -203,12 +204,29 @@ endif()
  
  # Zstandard
  if(USE_SYSTEM_ZSTD)
@@ -72,15 +72,26 @@ index 21a32d6..a870b16 100644
 +    if(TARGET zstd::libzstd_shared OR TARGET PkgConfig::libzstd_shared)
          message(STATUS "Found system Zstandard")
      endif()
+-    target_link_libraries(zstd INTERFACE zstd::libzstd_shared)
++    add_library(zstd_seekable STATIC
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/zstd/contrib/seekable_format/zstdseek_compress.c>
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/zstd/contrib/seekable_format/zstdseek_decompress.c>
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/zstd/lib/common/xxhash.c>
++    )
++    target_include_directories(zstd_seekable PUBLIC
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/zstd/contrib/seekable_format>
++        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/zstd/lib/common>
++    )
++    target_compile_definitions(zstd_seekable PUBLIC XXH_NAMESPACE=ZSTD_)
 +    if(TARGET zstd::libzstd_shared)
-     target_link_libraries(zstd INTERFACE zstd::libzstd_shared)
++    target_link_libraries(zstd INTERFACE zstd::libzstd_shared zstd_seekable)
 +    else()
-+      target_link_libraries(zstd INTERFACE PkgConfig::libzstd_shared)
++      target_link_libraries(zstd INTERFACE PkgConfig::libzstd_shared zstd_seekable)
 +    endif()
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -343,7 +351,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
+@@ -343,7 +361,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
  target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
@@ -94,7 +105,7 @@ index 21a32d6..a870b16 100644
  endif()
  
  # cpp-jwt
-@@ -445,7 +459,7 @@ if (ENABLE_VULKAN)
+@@ -445,7 +469,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)
