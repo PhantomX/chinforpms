@@ -1,11 +1,11 @@
-diff -up mesa-23.1.0-rc1/meson.build.3~ mesa-23.1.0-rc1/meson.build
---- mesa-23.1.0-rc1/meson.build.3~	2023-04-19 00:57:11.860575346 +0200
-+++ mesa-23.1.0-rc1/meson.build	2023-04-19 01:08:44.229580440 +0200
-@@ -1656,6 +1675,7 @@ if _llvm.allowed()
-       or _llvm.enabled()
-     ),
-     static : not _shared_llvm,
-+    method : 'config-tool',
-     fallback : ['llvm', 'dep_llvm'],
-     include_type : 'system',
-   )
+diff -up mesa-25.2.0-rc1/meson.build.1~ mesa-25.2.0-rc1/meson.build
+--- mesa-25.2.0-rc1/meson.build.1~	2025-07-16 16:42:48.000000000 +0200
++++ mesa-25.2.0-rc1/meson.build	2025-07-16 22:51:23.284411698 +0200
+@@ -1750,6 +1750,7 @@ dep_llvm = dependency(
+   optional_modules : llvm_optional_modules,
+   required : with_llvm,
+   static : not _shared_llvm,
++  method: 'config-tool',
+   fallback : ['llvm', 'dep_llvm'],
+   include_type : 'system',
+ )

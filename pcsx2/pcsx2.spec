@@ -57,7 +57,7 @@
 %global xxhash_ver 0.8.1
 
 Name:           pcsx2
-Version:        2.5.81
+Version:        2.5.102
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -197,6 +197,7 @@ BuildRequires:  perl-interpreter
 
 Requires:       pcsx2_patches
 Requires:       joystick
+Requires:       google-noto-color-emoji-fonts
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       hicolor-icon-theme
@@ -378,6 +379,10 @@ cp -r %{_vpath_builddir}/bin/{resources,translations} \
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
+
+rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Noto*
+ln -sf ../../../fonts/google-noto-color-emoji-fonts/NotoColorEmoji.ttf \
+  %{buildroot}%{_datadir}/%{appres}/resources/fonts/NotoColorEmoji-Regular.ttf
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \

@@ -36,6 +36,9 @@ some seasonal packages too, these can return when needed
  * **geeqie** - Seasonal package, updated
  * **gnome-colors-icon-theme** - Do not have interest anymore
  * **godot2** - cowsrevenge
+ * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
+                    correct multilib plugins registry, as
+                    _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
  * **gstreamer1-libav** - For i686 mock build
  * **gstreamer1-plugins-bad-freeworld** - For i686 mock build
  * **hakuneko** - Unmantained by upstream

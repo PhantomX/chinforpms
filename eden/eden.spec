@@ -13,19 +13,18 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 1f34d836b4fb37997e58958630fee5ffb3a678ec
+%global commit 6b8408ef50346d9a7e3f05c953fc072dc22dc45d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250802
+%global date 20250808
 %bcond snapshot 1
 
-# Enable system dynarmic
-%bcond dynarmic 0
 # Enable system ffmpeg
 %bcond ffmpeg 1
 # Use stable ffmpeg
 %bcond ffmpeg_st 1
 # Enable system fmt
 %bcond fmt 1
+%bcond httplib 0
 # Enable system mbedtls (needs cmac builtin support)
 %bcond mbedtls 0
 # Disable Qt build
@@ -38,6 +37,10 @@
 %bcond xbyak 0
 # Enable webservice
 %bcond webservice 1
+
+%global commit110 7b08d83418f628b800dfac1c9a16c3f59036fbad
+%global shortcommit110 %(c=%{commit110}; echo ${c:0:7})
+%global srcname110 mcl
 
 %global commit111 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
@@ -59,11 +62,15 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
+%global commit14 51fcf9720f53395dd4c1f0751737d72362402210
+%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
+%global srcname14 sirit
+
 %global commit15 3f17b2af6784bfa2c5aa5dbb8e0e74a607dd8b3b
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 SPIRV-Headers
 
-%global commit16 ca5fe354fb83194bc72a676c4cc4136fca5316d0
+%global commit16 a609330e4c6374f741d3b369269f7848255e1954
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:6})
 %global srcname16 cpp-httplib
 
@@ -71,9 +78,17 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:6})
 %global srcname17 cpp-jwt
 
-%global commit20 344c99fc75006e6529df42b2a205c8f40bac4e46
+%global commit18 8c88150ca139e06aa2aae8349df8292a88148ea1
+%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
+%global srcname18 mbedtls
+
+%global commit20 97929690234f2b4add36b33657fe3fe09bd57dfd
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
-%global srcname20 tz
+%global srcname20 tzdb_to_nx
+
+%global commit200 344c99fc75006e6529df42b2a205c8f40bac4e46
+%global shortcommit200 %(c=%{commit200}; echo ${c:0:7})
+%global srcname200 tz
 
 %global commit21 9c1294eaddb88cb0e044c675ccae059a85fc9c6c
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
@@ -86,7 +101,7 @@
 %global ffmpeg_ver 7.1.1
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.29
-%global nxtzdb_ver 221202
+%global nxtzdb_ver 250725
 %global stbdxt_ver 1.12
 %global vkh_ver 1.3.246
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
@@ -104,11 +119,11 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc2.27550
+Version:        0.0.3~rc2.27578
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0 AND ( 0BSD AND MIT )%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
 URL:            https://eden-emulator.github.io
 
 %if %{with snapshot}
@@ -117,23 +132,27 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommi
 Source0:        %{vc_url}/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
-%if %{without dynarmic}
+Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
 Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
 Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}/%{srcname112}-%{shortcommit112}.tar.gz
 Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}/%{srcname113}-%{shortcommit113}.tar.gz
-%endif
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
 %if %{without xbyak}
 Source13:       https://github.com/Lizzie841/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
+Source14:       https://github.com/raphaelthegreat/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
+%if %{without httplib}
 Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
+%endif
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
-Source20:       https://github.com/eggert/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source20:       https://github.com/crueter/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
 %if %{without ffmpeg}
 %if %{without ffmpeg_st}
 Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
@@ -149,7 +168,6 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 Patch10:        0001-Use-system-libraries.patch
 Patch12:        0001-Bundled-fmt-support.patch
-Patch14:        0001-Fix-48e86d6.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -172,11 +190,15 @@ BuildRequires:  boost-devel >= 1.83.0
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
-%if %{with dynarmic}
-BuildRequires:  cmake(dynarmic) >= 6.7.0
+%if %{with webservice}
+%if %{with httplib}
+BuildRequires:  cmake(httplib) >= 0.12
 %else
-Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
+Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
 %endif
+Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
+%endif
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
 BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
@@ -215,7 +237,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
 BuildRequires:  mbedtls >= 2.6.10
 %else
-Provides:       bundled(mbedtls) = 0~gitacdc937
+Provides:       bundled(mbedtls) = 0~git%{?shortcommit18}
 %endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
@@ -261,18 +283,13 @@ Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
 Provides:       bundled(glad) = %{glad_ver}
-Provides:       bundled(microprofile) = 0~git
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
 %endif
-Provides:       bundled(sirit) = 0~git6e6d792
+Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 Provides:       bundled(simpleini) = 0~git382ddbb
-%if %{with webservice}
-Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
-Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
-%endif
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
-Provides:       bundled(tzdb_to_nx) = ~git9792969
+Provides:       bundled(tzdb_to_nx) = 0~git%{?shortcommit20}
 
 
 %description
@@ -296,47 +313,60 @@ This is the Qt frontend.
 
 rm -rf src/yuzu/externals
 
-pushd externals
-rm -rf \
-  breakpad cubeb/* discord-rpc enet ffmpeg/ffmpeg/* gamemode getopt inih \
-  libadrenotools libressl libusb oboe opus/opus/* SDL vcpkg Vulkan-Headers
-%ifarch x86_64
-rm -rf oaknut sse2neon
-%endif
-%if %{with mbedtls}
-rm -rf mbedtls
-%endif
-
-%if %{with dynarmic}
-rm -rf dynarmic
-%else
-tar -xf %{S:111} -C dynarmic/externals/unordered_dense --strip-components 1
-tar -xf %{S:112} -C dynarmic/externals/zycore-c --strip-components 1
-tar -xf %{S:113} -C dynarmic/externals/zydis --strip-components 1
-sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i ../CMakeLists.txt
+mkdir -p src/dynarmic/externals/{mcl,unordered_dense,zycore-c,zydis}
+tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
+tar -xf %{S:111} -C src/dynarmic/externals/unordered_dense --strip-components 1
+tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
+tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
 sed \
+  -e '/find_/s|xbyak|xbyak_DISABLED|g' \
   -e '/-pedantic-errors/d' \
   -e '/-mtune=core2/d' \
-  -i dynarmic/CMakeLists.txt
+  -i src/dynarmic/CMakeLists.txt
 sed \
   -e '/find_/s|Zydis|Zydis_DISABLED|g' \
-  -i dynarmic/CMakeLists.txt dynarmic/CMakeModules/dynarmicConfig.cmake.in
+  -i src/dynarmic/externals/CMakeLists.txt src/dynarmic/CMakeModules/dynarmicConfig.cmake.in
+
+pushd externals
+rm -rf \
+  enet ffmpeg/ffmpeg/* gamemode getopt \
+  libusb Vulkan-Headers
+%ifarch x86_64
+rm -rf sse2neon
 %endif
+
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %endif
 %if %{without xbyak}
+mkdir -p xbyak
 tar -xf %{S:13} -C xbyak --strip-components 1
-sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../CMakeLists.txt
+sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i CMakeLists.txt
 %endif
+mkdir sirit
+tar -xf %{S:14} -C sirit --strip-components 1
 %dnl tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
+%if %{without httplib}
+mkdir -p cpp-httplib
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
-tar -xf %{S:17} -C cpp-jwt --strip-components 1
 sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
 %endif
-tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
+mkdir -p cpp-jwt
+tar -xf %{S:17} -C cpp-jwt --strip-components 1
+%endif
+%if %{without mbedtls}
+mkdir -p mbedtls
+tar -xf %{S:18} -C mbedtls --strip-components 1
+%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0001-cmake-version.patch
+sed \
+  -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
+  -i CMakeLists.txt
+%endif
+mkdir -p nx_tzdb/tzdb_to_nx
+tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx --strip-components 1
+tar -xf %{S:200} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
 %if %{without ffmpeg}
 tar -xf %{S:21} -C ffmpeg/ffmpeg --strip-components 1
 sed -e '/h264_sei.o/s|$| aom_film_grain.o|' -i ffmpeg/ffmpeg/libavcodec/Makefile
@@ -352,13 +382,8 @@ sed \
   -e 's|^find_package(fmt|\0_DISABLED|' \
   -i ../CMakeLists.txt
 %endif
+mkdir -p boost-headers
 tar -xf %{S:23} -C boost-headers --strip-components 1
-
-%if %{without mbedtls}
-sed \
-  -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
-  -i CMakeLists.txt
-%endif
 
 popd
 
@@ -367,11 +392,10 @@ find . -type f -name '*.sh' -exec chmod +x {} ';'
 
 pushd externals
 %if %{with webservice}
+%if %{without httplib}
 cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
-cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
-%if %{without dynarmic}
-cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
+cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 %if %{without mbedtls}
@@ -413,7 +437,7 @@ sed \
 
 sed \
   -e 's|GIT_PROGRAM git|GIT_PROGRAM cp|g' \
-  -e 's|clone --depth=1 "file://|-rp "|' \
+  -e 's|clone --depth 1 "file://|-rp "|' \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
 sed \
@@ -427,9 +451,11 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
 
 
 %build
+%if %{with xbyak}
 %global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
 export CFLAGS+=" %{xbyak_flags}"
 export CXXFLAGS+=" %{xbyak_flags}"
+%endif
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -453,6 +479,7 @@ export CXXFLAGS+=" %{xbyak_flags}"
   -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
   -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
+  %{!?with_httplib:-DYUZU_USE_SYSTEM_HTTPLIB:BOOL=OFF} \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \

@@ -28,9 +28,6 @@ Personal Fedora RPM specs. Has specs to build RPMs nonexistent in Fedora or RPMF
  * **firejail** - suid bit enabled and "firejail" group to use it
  * **gamemode** - System inih and launch script
  * **gnome-themes-extra** - Remove some paddings from Adwaita
- * **gstreamer1** - Added suffix -32/-64 to gst-plugin-scanner, so it can build
-                    correct multilib plugins registry, as
-                    _~/.cache/gstreamer-1.0/registry.i686.bin_ on x86_64
  * **keepassxc** - Post script and cosmetic fixes
  * **kernel** - _blk-mq_ and BFQ enabled by default, some [_openSUSE_ kernel](http://kernel.opensuse.org/cgit/kernel-source)
                 and [_pf-kernel_](https://gitlab.com/post-factum/pf-kernel/wikis/README) patches

@@ -34,7 +34,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.1.7
+Version:        25.2.0
 Release:        100%{?dist}
 
 Epoch:          100
@@ -50,7 +50,7 @@ Source0:        https://archive.mesa3d.org/%{pkgname}-%{ver}.tar.xz
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
 
-BuildRequires:  meson >= 1.0.0
+BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -60,7 +60,7 @@ BuildRequires:  kernel-headers
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.121
+BuildRequires:  pkgconfig(libdrm) >= 2.4.122
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
@@ -88,7 +88,7 @@ BuildRequires:  pkgconfig(vdpau) >= 1.1
 BuildRequires:  pkgconfig(libva) >= 1.8.0
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm%{?llvm_pkgver}-devel >= 15.0.0
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= 18.0.0
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
@@ -141,14 +141,10 @@ echo %{version}-freeworld > VERSION
   -Dgallium-drivers=virgl,nouveau%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
   -Dgallium-vdpau=enabled \
   -Dgallium-va=enabled \
-  -Dgallium-xa=disabled \
-  -Dgallium-nine=false \
   -Dteflon=false \
-  -Dgallium-opencl=disabled \
   -Dgallium-rusticl=false \
   -Dvulkan-drivers="" \
   -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
-  -Dshared-glapi=enabled \
   -Dgles1=disabled \
   -Dgles2=disabled \
   -Dopengl=true \
@@ -157,6 +153,7 @@ echo %{version}-freeworld > VERSION
   -Degl=enabled \
   -Dglvnd=enabled \
   -Dintel-rt=disabled \
+  -Dgallium-mediafoundation=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -223,6 +220,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sun Aug 10 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.2.0-100
+- 25.2.0
+
 * Wed Jul 30 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.1.7-100
 - 25.1.7
 

@@ -16,10 +16,10 @@
 %bcond rtmidi 1
 %endif
 
-%global commit 76912a7201fe3c1b576682f87d8429aa782a7a2a
+%global commit fb4f802b89dd9a6527ffcf36152e0d5ebd1f8e7c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250729
-%bcond snapshot 1
+%global date 20250808
+%bcond snapshot 0
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -69,7 +69,7 @@
 
 Name:           ymir
 Version:        0.1.7
-Release:        0.2%{?dist}
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
@@ -186,18 +186,6 @@ popd
 
 cp -p apps/ymir-sdl3/res/licenses/Spline_Sans/OFL.txt LICENSE.fonts
 
-cat >> %{name}.wrapper <<'EOF'
-#!/usr/bin/bash
-set -e
-
-XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
-YMIR_DIR="${XDG_CONFIG_HOME}/%{name}"
-
-mkdir -p "${YMIR_DIR}"
-cd "${YMIR_DIR}"
-exec %{_libexecdir}/%{name} "$@"
-EOF
-
 sed -e \
   '1i <?xml version="1.0" encoding="UTF-8"?>' \
   -i apps/%{name}-sdl3/res/%{appname}.xml
@@ -222,12 +210,9 @@ sed -e \
 
 %install
 mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
-install -pm0755 %{_vpath_builddir}/apps/ymdasm/ymdasm %{buildroot}%{_bindir}/
-
-mkdir -p %{buildroot}%{_libexecdir}
 install -pm0755 %{_vpath_builddir}/apps/%{name}-sdl3/%{name}-sdl3 \
-  %{buildroot}%{_libexecdir}/%{name}
+  %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{_vpath_builddir}/apps/ymdasm/ymdasm %{buildroot}%{_bindir}/
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -264,13 +249,15 @@ appstream-util validate-relax --nonet \
 %doc README.md
 %{_bindir}/%{name}
 %{_bindir}/ymdasm
-%{_libexecdir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
+* Mon Aug 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.7-1
+- 0.1.7
+
 * Mon Jul 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.6-1
 - 0.1.6
 

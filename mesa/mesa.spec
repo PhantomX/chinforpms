@@ -11,7 +11,6 @@
 %if !0%{?rhel}
 %global with_r300 1
 %global with_r600 1
-%global with_nine 1
 %if 0%{?with_vulkan_hw}
 %global with_nvk %{with_vulkan_hw}
 %endif
@@ -30,7 +29,6 @@
 %global with_crocus 1
 %global with_i915   1
 %global with_iris   1
-%global with_xa     1
 %global with_intel_clc 1
 %global intel_platform_vulkan %{?with_vulkan_hw:,intel,intel_hasvk}%{!?with_vulkan_hw:%{nil}}
 %endif
@@ -52,7 +50,6 @@
 %global with_freedreno 1
 %global with_panfrost  1
 %global with_v3d       1
-%global with_xa        1
 %if 0%{?with_asahi}
 %global asahi_platform_vulkan %{?with_vulkan_hw:,asahi}%{!?with_vulkan_hw:%{nil}}
 %endif
@@ -96,7 +93,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.1.7
+Version:        25.2.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -116,13 +113,11 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 
 Patch10:        gnome-shell-glthread-disable.patch
 
-Patch499:       mesa-20.1.1-fix-opencl.patch
-
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
 
-BuildRequires:  meson >= 1.3.0
+BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
@@ -177,7 +172,7 @@ BuildRequires:  pkgconfig(libva) >= 1.8.0
 %endif
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
-BuildRequires:  llvm%{?llvm_pkgver}-devel >= 15.0.0
+BuildRequires:  llvm%{?llvm_pkgver}-devel >= 18.0.0
 %if 0%{?with_teflon}
 BuildRequires:  flatbuffers-devel
 BuildRequires:  flatbuffers-compiler
@@ -200,6 +195,7 @@ BuildRequires:  (crate(paste) >= 1.0.14 with crate(paste) < 2)
 BuildRequires:  (crate(proc-macro2) >= 1.0.56 with crate(proc-macro2) < 2)
 BuildRequires:  (crate(quote) >= 1.0.25 with crate(quote) < 2)
 BuildRequires:  (crate(syn/clone-impls) >= 2.0.15 with crate(syn/clone-impls) < 3)
+BuildRequires:  (crate(rustc-hash) >= 2.1.1 with crate(rustc-hash) < 3)
 BuildRequires:  (crate(unicode-ident) >= 1.0.6 with crate(unicode-ident) < 2)
 %endif
 %if %{with valgrind}
@@ -226,6 +222,10 @@ BuildRequires:  pkgconfig(vulkan)
 Summary:        Mesa driver filesystem
 Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-omx-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-libd3d < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-libd3d-devel < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-libxatracker < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      mesa-libxatracker-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
 %{summary}.
@@ -322,25 +322,6 @@ Provides:       libgbm-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 %description libgbm-devel
 %{summary}.
 
-%if 0%{?with_xa}
-%package libxatracker
-Summary:        Mesa XA state tracker
-Provides:       libxatracker = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libxatracker%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description libxatracker
-%{summary}.
-
-%package libxatracker-devel
-Summary:        Mesa XA state tracker development package
-Requires:       %{name}-libxatracker%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libxatracker-devel = %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       libxatracker-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description libxatracker-devel
-%{summary}.
-%endif
-
 %if 0%{?with_opencl}
 %package libOpenCL
 Summary:        Mesa OpenCL runtime library
@@ -365,21 +346,6 @@ Requires:       %{name}-libOpenCL%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rele
 Summary:        Mesa TensorFlow Lite delegate
 
 %description libTeflon
-%{summary}.
-%endif
-
-%if 0%{?with_nine}
-%package libd3d
-Summary:        Mesa Direct3D9 state tracker
-
-%description libd3d
-%{summary}.
-
-%package libd3d-devel
-Summary:        Mesa Direct3D9 state tracker development package
-Requires:       %{name}-libd3d%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description libd3d-devel
 %{summary}.
 %endif
 
@@ -452,19 +418,15 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %endif
   -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
-  -Dgallium-xa=%{?with_xa:enabled}%{!?with_xa:disabled} \
-  -Dgallium-nine=%{?with_nine:true}%{!?with_nine:false} \
   -Dteflon=%{?with_teflon:true}%{!?with_teflon:false} \
 %if 0%{?with_opencl}
   -Dgallium-rusticl=true \
-  -Dgallium-opencl=disabled \
 %endif 
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
 %if 0%{?with_videocodecs}
   -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
 %endif
-  -Dshared-glapi=enabled \
   -Dgles1=enabled \
   -Dgles2=enabled \
   -Dopengl=true \
@@ -476,6 +438,7 @@ export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
   -Dintel-clc=enabled \
 %endif
   -Dintel-rt=%{?with_intel_vk_rt:enabled}%{!?with_intel_vk_rt:disabled} \
+  -Dgallium-mediafoundation=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
   -Dshared-llvm=enabled \
@@ -551,23 +514,6 @@ popd
 %{_includedir}/gbm_backend_abi.h
 %{_libdir}/pkgconfig/gbm.pc
 
-%if 0%{?with_xa}
-%files libxatracker
-%if 0%{?with_hardware}
-%{_libdir}/libxatracker.so.2
-%{_libdir}/libxatracker.so.2.*
-%endif
-
-%files libxatracker-devel
-%if 0%{?with_hardware}
-%{_libdir}/libxatracker.so
-%{_includedir}/xa_tracker.h
-%{_includedir}/xa_composite.h
-%{_includedir}/xa_context.h
-%{_libdir}/pkgconfig/xatracker.pc
-%endif
-%endif
-
 %if 0%{?with_teflon}
 %files libTeflon
 %{_libdir}/libteflon.so
@@ -580,17 +526,6 @@ popd
 
 %files libOpenCL-devel
 %{_libdir}/libRusticlOpenCL.so
-%endif
-
-%if 0%{?with_nine}
-%files libd3d
-%dir %{_libdir}/d3d/
-%{_libdir}/d3d/*.so.*
-
-%files libd3d-devel
-%{_libdir}/pkgconfig/d3d.pc
-%{_includedir}/d3dadapter/
-%{_libdir}/d3d/*.so
 %endif
 
 %files dri-drivers
@@ -766,6 +701,9 @@ popd
 
 
 %changelog
+* Sun Aug 10 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.0-100
+- 25.2.0
+
 * Wed Jul 30 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.7-100
 - 25.1.7
 
