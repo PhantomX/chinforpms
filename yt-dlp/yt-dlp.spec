@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.07.21
+Version:        2025.08.11
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -17,7 +17,7 @@ Source1:        %{name}.conf
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel >= 3.9
+BuildRequires:  python3-devel >= 3.10
 BuildRequires:  %{py3_dist hatchling}
 BuildRequires:  %{py3_dist pycrypto}
 BuildRequires:  %{py3_dist mutagen}
@@ -154,6 +154,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Mon Aug 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.08.11-100
+- 2025.08.11
+
 * Tue Jul 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.07.21-100
 - 2025.07.21
 

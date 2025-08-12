@@ -24,7 +24,7 @@
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        25.00
+Version:        25.01
 Release:        100%{?dist}
 Summary:        A file archiver
 
@@ -189,6 +189,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 
 
 %changelog
+* Mon Aug 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.01-100
+- 25.01
+
 * Fri Jul 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.00-100
 - Rawhide partial sync
 - Add 7zr and split packages
