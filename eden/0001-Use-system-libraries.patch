@@ -1,24 +1,23 @@
-From 80dcb0716ad5aba84664b3bf62b7a54b7ed9d00d Mon Sep 17 00:00:00 2001
+From 52447baa356c8c4a6f949cd51d2a8216842a381b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Mon, 4 Apr 2022 20:25:52 -0300
+Date: Thu, 14 Aug 2025 20:44:13 -0300
 Subject: [PATCH] Use system libraries
 
 FindMBETLS.cmake from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                           |   3 -
- externals/CMakeLists.txt                 | 215 +++++++----------------
- externals/ffmpeg/CMakeLists.txt          |   5 +
- externals/find-modules/FindMBEDTLS.cmake |  23 +++
- externals/nx_tzdb/CMakeLists.txt         |   4 +-
- src/dynarmic/externals/CMakeLists.txt    |  59 +++----
- src/yuzu/CMakeLists.txt                  |   9 +
- 7 files changed, 120 insertions(+), 198 deletions(-)
- create mode 100644 externals/find-modules/FindMBEDTLS.cmake
+ CMakeLists.txt                        |  9 +++--
+ CMakeModules/FindMBEDTLS.cmake        | 23 ++++++++++++
+ externals/CMakeLists.txt              | 51 +++++++++++++++++++++++++++
+ externals/ffmpeg/CMakeLists.txt       |  5 +++
+ src/dynarmic/externals/CMakeLists.txt | 30 ++++++++++++++++
+ src/yuzu/externals/CMakeLists.txt     | 11 ++++++
+ 6 files changed, 127 insertions(+), 2 deletions(-)
+ create mode 100644 CMakeModules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 718ee29..cc2480a 100644
+index 8fb69b9..51bea1a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,7 +10,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modul
@@ -29,329 +28,33 @@ index 718ee29..cc2480a 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -86,8 +85,6 @@ option(YUZU_USE_QT_MULTIMEDIA "Use QtMultimedia for Camera" OFF)
- 
- option(YUZU_USE_QT_WEB_ENGINE "Use QtWebEngine for web applet implementation" OFF)
- 
--set(YUZU_QT_MIRROR "" CACHE STRING "What mirror to use for downloading the bundled Qt libraries")
--
- option(ENABLE_CUBEB "Enables the cubeb audio backend" ON)
- 
- option(USE_DISCORD_PRESENCE "Enables Discord Rich Presence" OFF)
-diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 99fd28d..941f20f 100644
---- a/externals/CMakeLists.txt
-+++ b/externals/CMakeLists.txt
-@@ -29,23 +29,10 @@ endif()
- 
- # Xbyak (also used by Dynarmic, so needs to be added first)
- if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
--    set(CPM_USE_LOCAL_PACKAGES OFF)
--
--    if ("${CMAKE_SYSTEM_NAME}" STREQUAL "SunOS")
--        # Fix regset.h collisions
--        set(XBYAK_HASH 51f507b0b3)
--        set(XBYAK_SHA512SUM 4a29a3c2f97f7d5adf667a21a008be03c951fb6696b0d7ba27e7e4afa037bc76eb5e059bb84860e01baf741d4d3ac851b840cd54c99d038812fbe0f1fa6d38a4)
--    else()
--        set(XBYAK_HASH 4e44f4614d)
--        set(XBYAK_SHA512SUM 5824e92159e07fa36a774aedd3b3ef3541d0241371d522cffa4ab3e1f215fa5097b1b77865b47b2481376c704fa079875557ea463ca63d0a7fd6a8a20a589e70)
-+    find_package(xbyak 7 CONFIG)
-+    if (NOT TARGET xbyak::xbyak)
-+      add_subdirectory(xbyak)
+@@ -521,7 +520,7 @@ if (YUZU_USE_CPM)
      endif()
--
--    CPMAddPackage(
--        NAME xbyak
--        URL "https://github.com/Lizzie841/xbyak/archive/${XBYAK_HASH}.zip"
--        URL_HASH SHA512=${XBYAK_SHA512SUM}
--        CUSTOM_CACHE_KEY ${XBYAK_HASH}
--    )
- endif()
+ else()
+     # Enforce the search mode of non-required packages for better and shorter failure messages
+-    find_package(fmt 8 REQUIRED)
++    find_package(fmt 8)
+     find_package(LLVM MODULE COMPONENTS Demangle)
+     find_package(nlohmann_json 3.8 REQUIRED)
+     find_package(lz4 REQUIRED)
+@@ -531,6 +530,12 @@ else()
+     find_package(ZLIB 1.2 REQUIRED)
+     find_package(zstd 1.5 REQUIRED)
  
- # Oaknut (also used by Dynarmic, so needs to be added first)
-@@ -68,19 +55,18 @@ endif()
- add_subdirectory(glad)
- 
- # mbedtls
--# TODO(crueter): test local mbedtls
--set(CPM_USE_LOCAL_PACKAGES ON)
--
--CPMAddPackage(
--    NAME mbedtls
--    URL "https://github.com/Mbed-TLS/mbedtls/archive/8c88150ca1.zip"
--    URL_HASH SHA512=769ad1e94c570671071e1f2a5c0f1027e0bf6bcdd1a80ea8ac970f2c86bc45ce4e31aa88d6d8110fc1bed1de81c48bc624df1b38a26f8b340a44e109d784a966
--    PATCHES
--        ${CMAKE_SOURCE_DIR}/.patch/mbedtls/0001-cmake-version.patch
--    CUSTOM_CACHE_KEY "8c88"
--)
--
--if (mbedtls_ADDED)
-+# mbedtls
-+find_package(MBEDTLS)
-+if(MBEDTLS_FOUND)
-+    message(STATUS "Using the system mbed TLS")
-+    add_library(mbedtls-shared INTERFACE)
-+    target_link_libraries(mbedtls-shared INTERFACE "${MBEDTLS_LIBRARIES}")
-+    target_include_directories(mbedtls-shared INTERFACE "${MBEDTLS_INCLUDE_DIRS}")
-+    add_library(mbedtls ALIAS mbedtls-shared)
-+else()
-+    set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
-+    add_subdirectory(mbedtls)
-+
-     target_include_directories(mbedtls PUBLIC ${mbedtls_SOURCE_DIR}/include)
- 
-     if (NOT MSVC)
-@@ -159,21 +145,12 @@ if (NOT TARGET enet::enet)
-     add_library(enet::enet ALIAS enet)
- endif()
- 
--# TODO(crueter): Create a common CPMUtil.cmake that does this for me
--set(CPM_USE_LOCAL_PACKAGES ON)
--
--CPMAddPackage(
--    NAME cubeb
--    URL "https://github.com/mozilla/cubeb/archive/fa02160712.zip"
--    FIND_PACKAGE_ARGUMENTS "CONFIG" # not sure this works outside of gentoo
--    OPTIONS
--        "USE_SANITIZERS OFF"
--        "BUILD_TESTS OFF"
--        "BUILD_TOOLS OFF"
--    CUSTOM_CACHE_KEY "fa02"
--)
--
--if (cubeb_ADDED)
-+find_package(cubeb CONFIG)
-+if (ENABLE_CUBEB AND NOT TARGET cubeb::cubeb)
-+    set(BUILD_TESTS OFF)
-+    set(BUILD_TOOLS OFF)
-+    add_subdirectory(cubeb)
-+    add_library(cubeb::cubeb ALIAS cubeb)
-     if (NOT MSVC)
-         if (TARGET speex)
-             target_compile_options(speex PRIVATE -Wno-sign-compare)
-@@ -217,78 +194,44 @@ if (USE_DISCORD_PRESENCE)
- endif()
- 
- # Sirit
--# TODO(crueter): spirv-tools doesn't work w/ system
--set(CPM_USE_LOCAL_PACKAGES OFF)
--
--CPMAddPackage(
--    NAME SPIRV-Headers
--    URL "https://github.com/KhronosGroup/SPIRV-Headers/archive/4e209d3d7e.zip"
--    URL_HASH SHA512=f48bbe18341ed55ea0fe280dbbbc0a44bf222278de6e716e143ca1e95ca320b06d4d23d6583fbf8d03e1428f3dac8fa00e5b82ddcd6b425e6236d85af09550a4
--    CUSTOM_CACHE_KEY "4e20"
--)
--
--set(CPM_USE_LOCAL_PACKAGES ON)
--
--CPMAddPackage(
--    NAME sirit
--    URL "https://github.com/raphaelthegreat/sirit/archive/51fcf9720f.zip"
--    URL_HASH SHA512=a8f98ea0c51763b89924d836ad482ebdfe9130251cf4e14733ccaacc885ae8cc4c8b03d1dc43e8861609e5f7929c16f935879c1f6bf61866fd75077954774394
--    OPTIONS
--        "SIRIT_USE_SYSTEM_SPIRV_HEADERS ON"
--    CUSTOM_CACHE_KEY "51fc"
--)
-+find_package(SPIRV-Headers)
-+
-+set(SIRIT_USE_SYSTEM_SPIRV_HEADERS ON)
-+add_subdirectory(sirit)
- 
- # httplib
- if ((ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER))
--    set(CPM_USE_LOCAL_PACKAGES ${YUZU_USE_SYSTEM_HTTPLIB})
--
--    # TODO(crueter): fix local package (gentoo?)
--    CPMAddPackage(
--        NAME httplib
--        VERSION 0.12
--        URL "https://github.com/yhirose/cpp-httplib/archive/a609330e4c.zip"
--        URL_HASH SHA512=dd3fd0572f8367d8549e1319fd98368b3e75801a293b0c3ac9b4adb806473a4506a484b3d389dc5bee5acc460cb90af7a20e5df705a1696b56496b30b9ce7ed2
--        FIND_PACKAGE_ARGUMENTS "MODULE"
--        OPTIONS
--            "HTTPLIB_REQUIRE_OPENSSL ON"
--        CUSTOM_CACHE_KEY "a609"
--    )
-+    if (YUZU_USE_SYSTEM_HTTPLIB)
-+        find_package(httplib 0.12 MODULE COMPONENTS OpenSSL)
-+        message(STATUS "Using the system httplib")
++    if(fmt_FOUND)
++        message(STATUS "Using the system fmt")
 +    else()
-+        set(HTTPLIB_REQUIRE_OPENSSL ON)
-+        add_subdirectory(cpp-httplib)
++        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
 +    endif()
- endif()
- 
- # cpp-jwt
- if (ENABLE_WEB_SERVICE)
--    set(CPM_USE_LOCAL_PACKAGES OFF)
--
--    CPMAddPackage(
--        NAME cpp-jwt
--        VERSION 1.4
--        URL "https://github.com/arun11299/cpp-jwt/archive/10ef5735d8.zip"
--        URL_HASH SHA512=ebba3d26b33a3b0aa909f475e099594560edbce10ecd03e76d7fea68549a28713ea606d363808f88a5495b62c54c3cdb7e47aee2d946eceabd36e310479dadb7
--        FIND_PACKAGE_ARGUMENTS "CONFIG"
--        OPTIONS
--            "CPP_JWT_BUILD_EXAMPLES OFF"
--            "CPP_JWT_BUILD_TESTS OFF"
--            "CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF"
--        CUSTOM_CACHE_KEY "10ef"
--    )
-+    find_package(cpp-jwt 1.4 CONFIG)
-+    if (NOT TARGET cpp-jwt::cpp-jwt)
-+      set(CPP_JWT_BUILD_EXAMPLES OFF)
-+      set(CPP_JWT_BUILD_TESTS OFF)
-+      set(CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF)
-+      add_subdirectory(cpp-jwt)
-+    endif()
- endif()
- 
- # Opus
--set(CPM_USE_LOCAL_PACKAGES ${YUZU_USE_SYSTEM_OPUS})
--
--CPMAddPackage(
--    NAME Opus
--    VERSION 1.3
--    URL "https://github.com/xiph/opus/archive/5ded705cf4.zip"
--    URL_HASH SHA512=0dc89e58ddda1f3bc6a7037963994770c5806c10e66f5cc55c59286fc76d0544fe4eca7626772b888fd719f434bc8a92f792bdb350c807968b2ac14cfc04b203
--    FIND_PACKAGE_ARGUMENTS "MODULE"
--    OPTIONS
--        "OPUS_BUILD_TESTING OFF"
--        "OPUS_BUILD_PROGRAMS OFF"
--        "OPUS_INSTALL_PKG_CONFIG_MODULE OFF"
--        "OPUS_INSTALL_CMAKE_CONFIG_MODULE OFF"
--    CUSTOM_CACHE_KEY "5ded"
--)
-+if (YUZU_USE_SYSTEM_OPUS)
-+    find_package(Opus 1.3 MODULE)
-+    if (NOT TARGET Opus::opus)
-+        set(OPUS_BUILD_TESTING OFF)
-+        set(OPUS_BUILD_PROGRAMS OFF)
-+        set(OPUS_INSTALL_PKG_CONFIG_MODULE OFF)
-+        set(OPUS_INSTALL_CMAKE_CONFIG_MODULE OFF)
-+        add_subdirectory(opus)
-+    endif()
-+endif()
- 
- # FFMpeg
- if (YUZU_USE_BUNDLED_FFMPEG)
-@@ -301,76 +244,38 @@ endif()
- 
- # Vulkan-Headers
- if (YUZU_USE_EXTERNAL_VULKAN_HEADERS)
--    set(CPM_USE_LOCAL_PACKAGES OFF)
-+    add_subdirectory(Vulkan-Headers)
- else()
--    set(CPM_USE_LOCAL_PACKAGES ON)
-+    find_package(VulkanHeaders 1.3.274 REQUIRED)
- endif()
- 
--# TODO(crueter): System vk-headers are too new for externals vk-util
--
--CPMAddPackage(
--    NAME VulkanHeaders
--    VERSION 1.3.274
--    URL "https://github.com/KhronosGroup/Vulkan-Headers/archive/89268a6d17.zip"
--    URL_HASH SHA512=3ab349f74298ba72cafb8561015690c0674d428a09fb91ccd3cd3daca83650d190d46d33fd97b0a8fd4223fe6df2bcabae89136fbbf7c0bfeb8776f9448304c8
--    CUSTOM_CACHE_KEY "8926"
--)
--
- # Vulkan-Utility-Libraries
- if (YUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES)
--    set(CPM_USE_LOCAL_PACKAGES OFF)
-+    add_subdirectory(Vulkan-Utility-Libraries)
- else()
--    set(CPM_USE_LOCAL_PACKAGES ON)
-+    find_package(VulkanUtilityLibraries REQUIRED)
- endif()
- 
--CPMAddPackage(
--    NAME VulkanUtilityLibraries
--    URL "https://github.com/KhronosGroup/Vulkan-Utility-Libraries/archive/df2e358152.zip"
--    URL_HASH SHA512=3e468c3d9ff93f6d418d71e5527abe0a12c8c7ab5b0b52278bbbee4d02bb87e99073906729b727e0147242b7e3fd5dedf68b803f1878cb4c0e4f730bc2238d79
--    CUSTOM_CACHE_KEY "df2e"
--)
--
- set(VulkanUtilityLibraries_SOURCE_DIR "${VulkanUtilityLibraries_SOURCE_DIR}" PARENT_SCOPE)
- set(VulkanUtilityLibraries_ADDED "${VulkanUtilityLibraries_ADDED}" PARENT_SCOPE)
- 
- # SPIRV-Tools
- if (YUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS)
--    CPMAddPackage(
--        NAME SPIRV-Tools
--        URL "https://github.com/KhronosGroup/SPIRV-Tools/archive/40eb301f32.zip"
--        URL_HASH SHA512=58d0fb1047d69373cf24c73e6f78c73a72a6cca3b4df1d9f083b9dcc0962745ef154abf3dbe9b3623b835be20c6ec769431cf11733349f45e7568b3525f707aa
--        OPTIONS
--            "SPIRV_SKIP_EXECUTABLES ON"
--        CUSTOM_CACHE_KEY "40eb"
--    )
-+    set(SPIRV_SKIP_EXECUTABLES ON)
-+    add_subdirectory(SPIRV-Tools)
- endif()
- 
- # Boost headers
--set(CPM_USE_LOCAL_PACKAGES OFF)
--
--CPMAddPackage(
--    NAME boost_headers
--    URL "https://github.com/boostorg/headers/archive/0456900fad.zip"
--    URL_HASH SHA512=50cd75dcdfc5f082225cdace058f47b4fb114a47585f7aee1d22236a910a80b667186254c214fa2fcebac67ae6d37ba4b6e695e1faea8affd6fd42a03cf996e3
--    CUSTOM_CACHE_KEY "0456"
--)
-+add_subdirectory(boost-headers)
- 
- # TZDB (Time Zone Database)
- add_subdirectory(nx_tzdb)
- 
- # VMA
--set(CPM_USE_LOCAL_PACKAGES ON)
--
--CPMAddPackage(
--    NAME VulkanMemoryAllocator
--    URL "https://github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator/archive/1076b348ab.zip"
--    URL_HASH SHA512=a46b44e4286d08cffda058e856c47f44c7fed3da55fe9555976eb3907fdcc20ead0b1860b0c38319cda01dbf9b1aa5d4b4038c7f1f8fbd97283d837fa9af9772
--    FIND_PACKAGE_ARGUMENTS "CONFIG"
--    CUSTOM_CACHE_KEY "1076"
--)
--
--set(VulkanMemoryAllocator_SOURCE_DIR "${VulkanMemoryAllocator_SOURCE_DIR}" PARENT_SCOPE)
--set(VulkanMemoryAllocator_ADDED "${VulkanMemoryAllocator_ADDED}" PARENT_SCOPE)
-+find_package(VulkanMemoryAllocator CONFIG)
-+if (NOT TARGET GPUOpen::VulkanMemoryAllocator)
-+    add_subdirectory(VulkanMemoryAllocator)
-+endif()
- 
- if (NOT TARGET LLVM::Demangle)
-     add_library(demangle demangle/ItaniumDemangle.cpp)
-diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 1d05b3d..17a75a9 100644
---- a/externals/ffmpeg/CMakeLists.txt
-+++ b/externals/ffmpeg/CMakeLists.txt
-@@ -19,6 +19,7 @@ if (NOT WIN32 AND NOT ANDROID)
-         message(FATAL_ERROR "Required program `autoconf` not found.")
++
+     if (YUZU_TESTS)
+         find_package(Catch2 3.0.1 REQUIRED)
      endif()
- 
-+    if (NOT CPM_ENABLED)
-     include(CPM)
-     set(CPM_USE_LOCAL_PACKAGES OFF)
- 
-@@ -31,6 +32,10 @@ if (NOT WIN32 AND NOT ANDROID)
- 
-     set(FFmpeg_PREFIX ${ffmpeg_SOURCE_DIR})
-     set(FFmpeg_BUILD_DIR ${ffmpeg_BINARY_DIR})
-+    else()
-+      set(FFmpeg_PREFIX ${PROJECT_SOURCE_DIR}/externals/ffmpeg/ffmpeg)
-+      set(FFmpeg_BUILD_DIR ${PROJECT_BINARY_DIR}/externals/ffmpeg-build)
-+    endif()
-     set(FFmpeg_MAKEFILE ${FFmpeg_BUILD_DIR}/Makefile)
-     make_directory(${FFmpeg_BUILD_DIR})
- 
-diff --git a/externals/find-modules/FindMBEDTLS.cmake b/externals/find-modules/FindMBEDTLS.cmake
+diff --git a/CMakeModules/FindMBEDTLS.cmake b/CMakeModules/FindMBEDTLS.cmake
 new file mode 100644
 index 0000000..97c4515
 --- /dev/null
-+++ b/externals/find-modules/FindMBEDTLS.cmake
++++ b/CMakeModules/FindMBEDTLS.cmake
 @@ -0,0 +1,23 @@
 +find_path(MBEDTLS_INCLUDE_DIR mbedtls/ssl.h)
 +
@@ -376,92 +79,235 @@ index 0000000..97c4515
 +	MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY MBEDTLS_VERSION_OK)
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
-diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
-index a86a97b..4cbec2e 100644
---- a/externals/nx_tzdb/CMakeLists.txt
-+++ b/externals/nx_tzdb/CMakeLists.txt
-@@ -28,9 +28,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows" OR ANDROID)
+diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
+index 91659ee..1f0bccb 100644
+--- a/externals/CMakeLists.txt
++++ b/externals/CMakeLists.txt
+@@ -41,12 +41,19 @@ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+         set(XBYAK_SHA512SUM 5824e92159e07fa36a774aedd3b3ef3541d0241371d522cffa4ab3e1f215fa5097b1b77865b47b2481376c704fa079875557ea463ca63d0a7fd6a8a20a589e70)
+     endif()
+ 
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME xbyak
+         REPO "Lizzie841/xbyak"
+         SHA ${XBYAK_HASH}
+         HASH ${XBYAK_SHA512SUM}
+     )
++  else()
++    find_package(xbyak 7 CONFIG GLOBAL)
++    if (NOT TARGET xbyak::xbyak)
++      add_subdirectory(xbyak)
++    endif()
++  endif()
  endif()
  
- set(NX_TZDB_VERSION "250725")
--set(NX_TZDB_ARCHIVE "${CPM_SOURCE_CACHE}/nx_tzdb/${NX_TZDB_VERSION}.zip")
-+set(NX_TZDB_ARCHIVE "${CMAKE_CURRENT_BINARY_DIR}/${NX_TZDB_VERSION}.zip")
+ # Oaknut (also used by Dynarmic, so needs to be added first)
+@@ -70,6 +77,7 @@ add_subdirectory(glad)
  
--set(NX_TZDB_ROMFS_DIR "${CPM_SOURCE_CACHE}/nx_tzdb/tz")
-+set(NX_TZDB_ROMFS_DIR "${CMAKE_CURRENT_BINARY_DIR}/nx_tzdb")
+ # mbedtls
+ # TODO(crueter): test local mbedtls
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME mbedtls
+     REPO "Mbed-TLS/mbedtls"
+@@ -78,6 +86,19 @@ AddPackage(
+     PATCHES
+         ${CMAKE_SOURCE_DIR}/.patch/mbedtls/0001-cmake-version.patch
+ )
++else()
++  find_package(MBEDTLS GLOBAL)
++  if(MBEDTLS_FOUND)
++      message(STATUS "Using the system mbed TLS")
++      add_library(mbedtls-shared INTERFACE)
++      target_link_libraries(mbedtls-shared INTERFACE "${MBEDTLS_LIBRARIES}")
++      target_include_directories(mbedtls-shared INTERFACE "${MBEDTLS_INCLUDE_DIRS}")
++      add_library(mbedtls ALIAS mbedtls-shared)
++  else()
++      set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
++      add_subdirectory(mbedtls)
++      set(mbedtls_ADDED ON)
++  endif()
  
- if ((NOT CAN_BUILD_NX_TZDB OR YUZU_DOWNLOAD_TIME_ZONE_DATA) AND NOT EXISTS ${NX_TZDB_ROMFS_DIR})
-     set(NX_TZDB_DOWNLOAD_URL "https://github.com/crueter/tzdb_to_nx/releases/download/${NX_TZDB_VERSION}/${NX_TZDB_VERSION}.zip")
+ if (mbedtls_ADDED)
+     target_include_directories(mbedtls PUBLIC ${mbedtls_SOURCE_DIR}/include)
+@@ -88,6 +109,7 @@ if (mbedtls_ADDED)
+             -Wno-string-concatenation)
+     endif()
+ endif()
++endif()
+ 
+ # libusb
+ if (ENABLE_LIBUSB AND NOT TARGET libusb::usb)
+@@ -207,13 +229,18 @@ endif()
+ 
+ # Sirit
+ # TODO(crueter): spirv-tools doesn't work w/ system
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME SPIRV-Headers
+     REPO "KhronosGroup/SPIRV-Headers"
+     SHA 4e209d3d7e
+     HASH f48bbe18341ed55ea0fe280dbbbc0a44bf222278de6e716e143ca1e95ca320b06d4d23d6583fbf8d03e1428f3dac8fa00e5b82ddcd6b425e6236d85af09550a4
+ )
++else()
++  find_package(SPIRV-Headers GLOBAL)
++endif()
+ 
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME sirit
+     REPO "eden-emulator/sirit"
+@@ -222,9 +249,14 @@ AddPackage(
+     OPTIONS
+         "SIRIT_USE_SYSTEM_SPIRV_HEADERS ON"
+ )
++else()
++  set(SIRIT_USE_SYSTEM_SPIRV_HEADERS ON)
++  add_subdirectory(sirit)
++endif()
+ 
+ # httplib
+ if ((ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER))
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME httplib
+         REPO "yhirose/cpp-httplib"
+@@ -233,10 +265,17 @@ if ((ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER))
+         OPTIONS
+             "HTTPLIB_REQUIRE_OPENSSL ${ENABLE_OPENSSL}"
+     )
++  else()
++    if (NOT TARGET httplib::httplib)
++      set(HTTPLIB_REQUIRE_OPENSSL ${ENABLE_OPENSSL})
++      add_subdirectory(cpp-httplib)
++    endif()
++  endif()
+ endif()
+ 
+ # cpp-jwt
+ if (ENABLE_WEB_SERVICE)
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME cpp-jwt
+         VERSION 1.4
+@@ -252,6 +291,14 @@ if (ENABLE_WEB_SERVICE)
+             ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0001-no-install.patch
+             ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0002-missing-decl.patch
+     )
++  else()
++    if (NOT TARGET cpp-jwt::cpp-jwt)
++      set(CPP_JWT_BUILD_EXAMPLES OFF)
++      set(CPP_JWT_BUILD_TESTS OFF)
++      set(CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF)
++      add_subdirectory(cpp-jwt)
++    endif()
++  endif()
+ endif()
+ 
+ # Opus
+@@ -319,6 +366,7 @@ endif()
+ 
+ # Boost headers
+ if (NOT Boost_ADDED AND NOT TARGET Boost::headers)
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME boost_headers
+         REPO "boostorg/headers"
+@@ -326,6 +374,9 @@ if (NOT Boost_ADDED AND NOT TARGET Boost::headers)
+         HASH 50cd75dcdfc5f082225cdace058f47b4fb114a47585f7aee1d22236a910a80b667186254c214fa2fcebac67ae6d37ba4b6e695e1faea8affd6fd42a03cf996e3
+         BUNDLED_PACKAGE ON
+     )
++  else()
++    add_subdirectory(boost-headers)
++  endif()
+ endif()
+ 
+ # TZDB (Time Zone Database)
+diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
+index 048ab36..284534a 100644
+--- a/externals/ffmpeg/CMakeLists.txt
++++ b/externals/ffmpeg/CMakeLists.txt
+@@ -19,6 +19,7 @@ if (NOT WIN32 AND NOT ANDROID)
+         message(FATAL_ERROR "Required program `autoconf` not found.")
+     endif()
+ 
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME ffmpeg
+         REPO "FFmpeg/FFmpeg"
+@@ -29,6 +30,10 @@ if (NOT WIN32 AND NOT ANDROID)
+ 
+     set(FFmpeg_PREFIX ${ffmpeg_SOURCE_DIR})
+     set(FFmpeg_BUILD_DIR ${ffmpeg_BINARY_DIR})
++    else()
++      set(FFmpeg_PREFIX ${PROJECT_SOURCE_DIR}/externals/ffmpeg/ffmpeg)
++      set(FFmpeg_BUILD_DIR ${PROJECT_BINARY_DIR}/externals/ffmpeg-build)
++    endif()
+     set(FFmpeg_MAKEFILE ${FFmpeg_BUILD_DIR}/Makefile)
+     make_directory(${FFmpeg_BUILD_DIR})
+ 
 diff --git a/src/dynarmic/externals/CMakeLists.txt b/src/dynarmic/externals/CMakeLists.txt
-index 7925744..3e45439 100644
+index 072558a..15119a2 100644
 --- a/src/dynarmic/externals/CMakeLists.txt
 +++ b/src/dynarmic/externals/CMakeLists.txt
-@@ -49,15 +49,11 @@ if (NOT TARGET fmt::fmt)
+@@ -50,6 +50,7 @@ if (NOT TARGET fmt::fmt)
  endif()
  
  # mcl
--CPMAddPackage(
--    NAME mcl
--    VERSION 0.1.12
--    URL "https://github.com/azahar-emu/mcl/archive/7b08d83418.zip"
--    URL_HASH SHA512=f943bac39c1879986decad7a442ff4288eaeca4a2907684c7914e115a55ecc43c2782ded85c0835763fe04e40d5c82220ce864423e489e648e408a84f54dc4f3
--    OPTIONS
--        "MCL_INSTALL OFF"
--    CUSTOM_CACHE_KEY "7b08"
--)
-+find_package(mcl 0.1.12 EXACT CONFIG)
-+if (NOT TARGET merry::mcl)
-+    set(MCL_INSTALL ON)
-+    add_subdirectory(mcl)
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME mcl
+     VERSION 0.1.12
+@@ -59,6 +60,13 @@ AddPackage(
+     OPTIONS
+         "MCL_INSTALL OFF"
+ )
++else()
++  find_package(mcl 0.1.12 EXACT CONFIG)
++  if (NOT TARGET merry::mcl)
++      set(MCL_INSTALL ON)
++      add_subdirectory(mcl)
++  endif()
 +endif()
  
  # oaknut
  
-@@ -71,15 +67,11 @@ CPMAddPackage(
+@@ -72,6 +80,7 @@ AddPackage(
  
  # unordered_dense
  
--CPMAddPackage(
--    NAME unordered_dense
--    URL "https://github.com/Lizzie841/unordered_dense/archive/e59d30b7b1.zip"
--    URL_HASH SHA512=71eff7bd9ba4b9226967bacd56a8ff000946f8813167cb5664bb01e96fb79e4e220684d824fe9c59c4d1cc98c606f13aff05b7940a1ed8ab3c95d6974ee34fa0
--    FIND_PACKAGE_ARGUMENTS "CONFIG"
--    OPTIONS
--        "UNORDERED_DENSE_INSTALL OFF"
--    CUSTOM_CACHE_KEY "e59d"
--)
-+find_package(unordered_dense CONFIG)
-+if (NOT TARGET ankerl::unordered_dense)
-+    set(UNORDERED_DENSE_INSTALL ON)
-+    add_subdirectory(unordered_dense)
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME unordered_dense
+     REPO "Lizzie841/unordered_dense"
+@@ -81,6 +90,13 @@ AddPackage(
+     OPTIONS
+         "UNORDERED_DENSE_INSTALL OFF"
+ )
++else()
++  find_package(unordered_dense CONFIG)
++  if (NOT TARGET ankerl::unordered_dense)
++      set(UNORDERED_DENSE_INSTALL ON)
++      add_subdirectory(unordered_dense)
++  endif()
 +endif()
  
  # xbyak
  # uncomment if in an independent repo
-@@ -93,24 +85,15 @@ CPMAddPackage(
- # zydis
- 
+@@ -96,6 +112,7 @@ AddPackage(
+ # TODO(crueter): maybe it's just Gentoo but zydis system package really sucks
  if ("x86_64" IN_LIST ARCHITECTURE)
--    CPMAddPackage(
--        NAME Zycore
--        URL "https://github.com/zyantific/zycore-c/archive/75a36c45ae.zip"
--        URL_HASH SHA512=15aa399f39713e042c4345bc3175c82f14dca849fde2a21d4f591f62c43e227b70d868d8bb86beb5f4eb68b1d6bd3792cdd638acf89009e787e3d10ee7401924
--        CUSTOM_CACHE_KEY "75a3"
--    )
--
--    CPMAddPackage(
--        NAME Zydis
--        VERSION 4
--        URL "https://github.com/zyantific/zydis/archive/c2d2bab025.zip"
--        URL_HASH SHA512=7b48f213ff7aab2926f8c9c65195959143bebbfb2b9a25051ffd8b8b0f1baf1670d9739781de674577d955925f91ac89376e16b476a03828c84e2fd765d45020
--        OPTIONS
--            "ZYDIS_BUILD_TOOLS OFF"
--            "ZYDIS_BUILD_EXAMPLES OFF"
--            "ZYDIS_BUILD_DOXYGEN OFF"
--            "ZYAN_ZYCORE_PATH ${Zycore_SOURCE_DIR}"
--            "CMAKE_DISABLE_FIND_PACKAGE_Doxygen ON"
--        CUSTOM_CACHE_KEY "c2d2"
--    )
+     # TODO(crueter): system zycore doesn't work with zydis
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME Zycore
+         REPO "zyantific/zycore-c"
+@@ -122,4 +139,17 @@ if ("x86_64" IN_LIST ARCHITECTURE)
+             "CMAKE_DISABLE_FIND_PACKAGE_Doxygen ON"
+         EXCLUDE_FROM_ALL ON
+     )
++  else()
 +    find_package(Zydis 4 CONFIG)
 +    if (NOT TARGET Zydis::Zydis)
 +        set(ZYDIS_BUILD_TOOLS OFF)
@@ -473,28 +319,34 @@ index 7925744..3e45439 100644
 +            add_subdirectory(zydis)
 +        endif()
 +    endif()
++  endif()
  endif()
-diff --git a/src/yuzu/CMakeLists.txt b/src/yuzu/CMakeLists.txt
-index 34f2ba4..2a6648d 100644
---- a/src/yuzu/CMakeLists.txt
-+++ b/src/yuzu/CMakeLists.txt
-@@ -495,7 +495,16 @@ if (YUZU_ROOM)
- endif()
+diff --git a/src/yuzu/externals/CMakeLists.txt b/src/yuzu/externals/CMakeLists.txt
+index d7f3f14..ef4736c 100644
+--- a/src/yuzu/externals/CMakeLists.txt
++++ b/src/yuzu/externals/CMakeLists.txt
+@@ -14,6 +14,7 @@ set(BUILD_SHARED_LIBS OFF)
+ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
- # Extra deps
-+find_package(PkgConfig REQUIRED)
-+pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
-+if (TARGET PkgConfig::quazip)
-+  message(STATUS "Using the system Quazip")
-+  add_library(quazip INTERFACE)
-+  target_link_libraries(quazip INTERFACE PkgConfig::quazip)
-+  add_library(QuaZip::QuaZip ALIAS quazip)
+ # QuaZip
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME QuaZip-Qt6
+     VERSION 1.3
+@@ -23,3 +24,13 @@ AddPackage(
+     OPTIONS
+         "QUAZIP_INSTALL OFF"
+ )
 +else()
- add_subdirectory(externals)
++  find_package(PkgConfig REQUIRED)
++  pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
++  if (TARGET PkgConfig::quazip)
++    message(STATUS "Using the system Quazip")
++    add_library(quazip INTERFACE)
++    target_link_libraries(quazip INTERFACE PkgConfig::quazip)
++    add_library(QuaZip::QuaZip ALIAS quazip)
++  endif()
 +endif()
- target_link_libraries(yuzu PRIVATE QuaZip::QuaZip)
- 
- create_target_directory_groups(yuzu)
 -- 
 2.50.1
 

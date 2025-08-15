@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6b8408ef50346d9a7e3f05c953fc072dc22dc45d
+%global commit 9ea4e8960702e9b199d5b03758d7aad4d4302633
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250808
+%global date 20250814
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -62,7 +62,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
-%global commit14 51fcf9720f53395dd4c1f0751737d72362402210
+%global commit14 db1f1e8ab5e5c0ffd720f6d18f253978c37fb225
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 sirit
 
@@ -71,11 +71,11 @@
 %global srcname15 SPIRV-Headers
 
 %global commit16 a609330e4c6374f741d3b369269f7848255e1954
-%global shortcommit16 %(c=%{commit16}; echo ${c:0:6})
+%global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
 %global commit17 a54fa08a3bc929ce16cd84264bb0653e548955f9
-%global shortcommit17 %(c=%{commit17}; echo ${c:0:6})
+%global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 cpp-jwt
 
 %global commit18 8c88150ca139e06aa2aae8349df8292a88148ea1
@@ -107,6 +107,7 @@
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://git.eden-emu.dev/eden-emu
+%global gh_url   https://github.com/eden-emulator
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -119,7 +120,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc2.27578
+Version:        0.0.3~rc2.275930
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -142,7 +143,7 @@ Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive
 %if %{without xbyak}
 Source13:       https://github.com/Lizzie841/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
-Source14:       https://github.com/raphaelthegreat/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
 %if %{without httplib}
@@ -157,7 +158,7 @@ Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{s
 %if %{without ffmpeg_st}
 Source21:       https://github.com/FFmpeg/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %else
-Source21:      https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
+Source21:       https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
 %endif
 %endif
 %if %{without fmt}
@@ -166,8 +167,8 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 
 
+Patch0:         %{name}-pr252.patch
 Patch10:        0001-Use-system-libraries.patch
-Patch12:        0001-Bundled-fmt-support.patch
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -311,8 +312,6 @@ This is the Qt frontend.
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
-rm -rf src/yuzu/externals
-
 mkdir -p src/dynarmic/externals/{mcl,unordered_dense,zycore-c,zydis}
 tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:111} -C src/dynarmic/externals/unordered_dense --strip-components 1
@@ -329,7 +328,7 @@ sed \
 
 pushd externals
 rm -rf \
-  enet ffmpeg/ffmpeg/* gamemode getopt \
+  ffmpeg/ffmpeg/* gamemode getopt \
   libusb Vulkan-Headers
 %ifarch x86_64
 rm -rf sse2neon
@@ -352,9 +351,11 @@ tar -xf %{S:14} -C sirit --strip-components 1
 mkdir -p cpp-httplib
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
+sed -e '/find_package/s|httplib|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
+sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %if %{without mbedtls}
 mkdir -p mbedtls
@@ -471,6 +472,8 @@ export CXXFLAGS+=" %{xbyak_flags}"
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
+  -DYUZU_USE_CPM:BOOL=OFF \
+  -DCPM_DOWNLOAD_ALL:BOOL=OFF \
   -DYUZU_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
   -DYUZU_ENABLE_PORTABLE:BOOL=OFF \
   -DYUZU_ROOM:BOOL=ON \
@@ -490,13 +493,12 @@ export CXXFLAGS+=" %{xbyak_flags}"
   -DENABLE_WIFI_SCAN:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-%if %{without dynarmic}
+  -DDYNARMIC_ENABLE_LTO:BOOL=ON \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
   -DDYNARMIC_TESTS:BOOL=OFF \
-%endif
 %{nil}
 
 %cmake_build

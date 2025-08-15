@@ -1,0 +1,41 @@
+From 95c1b0f97a991899975db11e0bd8a4a34d8ed80a Mon Sep 17 00:00:00 2001
+From: lizzie <lizzie@eden-emu.dev>
+Date: Wed, 13 Aug 2025 08:14:56 +0100
+Subject: [PATCH] [dynarmic, cmake] allow LTO build for dynarmic
+
+Signed-off-by: lizzie <lizzie@eden-emu.dev>
+---
+ src/dynarmic/CMakeLists.txt              | 1 +
+ src/dynarmic/src/dynarmic/CMakeLists.txt | 4 ++++
+ 2 files changed, 4 insertions(+)
+
+diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
+index 77ae7849f4..e5018584cd 100644
+--- a/src/dynarmic/CMakeLists.txt
++++ b/src/dynarmic/CMakeLists.txt
+@@ -23,6 +23,7 @@ option(DYNARMIC_USE_PRECOMPILED_HEADERS "Use precompiled headers" ON)
+ option(DYNARMIC_INSTALL "Install dynarmic headers and CMake files" OFF)
+ option(DYNARMIC_USE_BUNDLED_EXTERNALS "Use all bundled externals (useful when e.g. cross-compiling)" OFF)
+ option(DYNARMIC_WARNINGS_AS_ERRORS "Warnings as errors" ${MASTER_PROJECT})
++option(DYNARMIC_ENABLE_LTO "Enable LTO" OFF)
+ if (NOT DEFINED DYNARMIC_FRONTENDS)
+     set(DYNARMIC_FRONTENDS "A32;A64" CACHE STRING "Selects which frontends to enable")
+ endif()
+diff --git a/src/dynarmic/src/dynarmic/CMakeLists.txt b/src/dynarmic/src/dynarmic/CMakeLists.txt
+index 3c123ac388..88067812e1 100644
+--- a/src/dynarmic/src/dynarmic/CMakeLists.txt
++++ b/src/dynarmic/src/dynarmic/CMakeLists.txt
+@@ -434,6 +434,10 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
+ endif()
+ target_compile_definitions(dynarmic PRIVATE FMT_USE_USER_DEFINED_LITERALS=1)
+ 
++if (DYNARMIC_ENABLE_LTO)
++    set_property(TARGET dynarmic PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
++endif()
++
+ if (DYNARMIC_USE_PRECOMPILED_HEADERS)
+     set(PRECOMPILED_HEADERS "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ir/ir_emitter.h>")
+     if ("x86_64" IN_LIST ARCHITECTURE)
+-- 
+2.39.5
+
