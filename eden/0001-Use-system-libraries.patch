@@ -1,4 +1,4 @@
-From 52447baa356c8c4a6f949cd51d2a8216842a381b Mon Sep 17 00:00:00 2001
+From fe119ac23640536dfd163f1430c37ead5db7d6f8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 14 Aug 2025 20:44:13 -0300
 Subject: [PATCH] Use system libraries
@@ -7,20 +7,20 @@ FindMBETLS.cmake from Dolphin-emu project:
 https://github.com/dolphin-emu/dolphin
 https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                        |  9 +++--
- CMakeModules/FindMBEDTLS.cmake        | 23 ++++++++++++
- externals/CMakeLists.txt              | 51 +++++++++++++++++++++++++++
+ CMakeLists.txt                        | 17 ++++++++--
+ CMakeModules/FindMBEDTLS.cmake        | 23 +++++++++++++
+ externals/CMakeLists.txt              | 47 +++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt       |  5 +++
- src/dynarmic/externals/CMakeLists.txt | 30 ++++++++++++++++
- src/yuzu/externals/CMakeLists.txt     | 11 ++++++
- 6 files changed, 127 insertions(+), 2 deletions(-)
+ src/dynarmic/externals/CMakeLists.txt | 30 +++++++++++++++++
+ src/yuzu/externals/CMakeLists.txt     | 11 +++++++
+ 6 files changed, 131 insertions(+), 2 deletions(-)
  create mode 100644 CMakeModules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8fb69b9..51bea1a 100644
+index abaa905..332441d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,7 +10,6 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/externals/cmake-modul
+@@ -15,7 +15,6 @@ endif()
  
  set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
  
@@ -28,7 +28,7 @@ index 8fb69b9..51bea1a 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -521,7 +520,7 @@ if (YUZU_USE_CPM)
+@@ -589,7 +588,7 @@ if (YUZU_USE_CPM)
      endif()
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -37,7 +37,7 @@ index 8fb69b9..51bea1a 100644
      find_package(LLVM MODULE COMPONENTS Demangle)
      find_package(nlohmann_json 3.8 REQUIRED)
      find_package(lz4 REQUIRED)
-@@ -531,6 +530,12 @@ else()
+@@ -600,6 +599,12 @@ else()
      find_package(ZLIB 1.2 REQUIRED)
      find_package(zstd 1.5 REQUIRED)
  
@@ -47,9 +47,45 @@ index 8fb69b9..51bea1a 100644
 +        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
 +    endif()
 +
-     if (YUZU_TESTS)
-         find_package(Catch2 3.0.1 REQUIRED)
+     if (ENABLE_CUBEB)
+         find_package(cubeb CONFIG)
      endif()
+@@ -618,6 +623,7 @@ else()
+ endif()
+ 
+ if(NOT TARGET Boost::headers)
++  if (YUZU_USE_CPM)
+     AddPackage(
+         NAME boost_headers
+         REPO "boostorg/headers"
+@@ -625,6 +631,9 @@ if(NOT TARGET Boost::headers)
+         HASH 50cd75dcdfc5f082225cdace058f47b4fb114a47585f7aee1d22236a910a80b667186254c214fa2fcebac67ae6d37ba4b6e695e1faea8affd6fd42a03cf996e3
+         BUNDLED_PACKAGE ON
+     )
++  else()
++      add_subdirectory(externals/boost-headers)
++  endif()
+ endif()
+ 
+ if (ENABLE_LIBUSB)
+@@ -655,6 +664,7 @@ if (USE_DISCORD_PRESENCE)
+ endif()
+ 
+ # SimpleIni
++if (YUZU_USE_CPM)
+ AddPackage(
+     NAME SimpleIni
+     REPO brofield/simpleini
+@@ -663,6 +673,9 @@ AddPackage(
+     EXCLUDE_FROM_ALL ON
+     FIND_PACKAGE_ARGUMENTS "MODULE"
+ )
++else()
++    add_subdirectory(externals/simpleini)
++endif()
+ 
+ # TODO(crueter): Work around this
+ if (NOT YUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS)
 diff --git a/CMakeModules/FindMBEDTLS.cmake b/CMakeModules/FindMBEDTLS.cmake
 new file mode 100644
 index 0000000..97c4515
@@ -80,10 +116,10 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 91659ee..1f0bccb 100644
+index 41b973c..4991a5c 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -41,12 +41,19 @@ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+@@ -41,6 +41,7 @@ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
          set(XBYAK_SHA512SUM 5824e92159e07fa36a774aedd3b3ef3541d0241371d522cffa4ab3e1f215fa5097b1b77865b47b2481376c704fa079875557ea463ca63d0a7fd6a8a20a589e70)
      endif()
  
@@ -91,8 +127,9 @@ index 91659ee..1f0bccb 100644
      AddPackage(
          NAME xbyak
          REPO "Lizzie841/xbyak"
-         SHA ${XBYAK_HASH}
+@@ -48,6 +49,12 @@ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
          HASH ${XBYAK_SHA512SUM}
+         BUNDLED_PACKAGE ON
      )
 +  else()
 +    find_package(xbyak 7 CONFIG GLOBAL)
@@ -103,10 +140,10 @@ index 91659ee..1f0bccb 100644
  endif()
  
  # Oaknut (also used by Dynarmic, so needs to be added first)
-@@ -70,6 +77,7 @@ add_subdirectory(glad)
+@@ -70,6 +77,7 @@ endif()
+ add_subdirectory(glad)
  
  # mbedtls
- # TODO(crueter): test local mbedtls
 +if (YUZU_USE_CPM)
  AddPackage(
      NAME mbedtls
@@ -139,7 +176,7 @@ index 91659ee..1f0bccb 100644
  
  # libusb
  if (ENABLE_LIBUSB AND NOT TARGET libusb::usb)
-@@ -207,13 +229,18 @@ endif()
+@@ -139,13 +161,18 @@ endif()
  
  # Sirit
  # TODO(crueter): spirv-tools doesn't work w/ system
@@ -158,7 +195,7 @@ index 91659ee..1f0bccb 100644
  AddPackage(
      NAME sirit
      REPO "eden-emulator/sirit"
-@@ -222,9 +249,14 @@ AddPackage(
+@@ -154,9 +181,14 @@ AddPackage(
      OPTIONS
          "SIRIT_USE_SYSTEM_SPIRV_HEADERS ON"
  )
@@ -168,12 +205,12 @@ index 91659ee..1f0bccb 100644
 +endif()
  
  # httplib
- if ((ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER))
+ if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
 +  if (YUZU_USE_CPM)
      AddPackage(
          NAME httplib
          REPO "yhirose/cpp-httplib"
-@@ -233,10 +265,17 @@ if ((ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER))
+@@ -165,10 +197,17 @@ if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
          OPTIONS
              "HTTPLIB_REQUIRE_OPENSSL ${ENABLE_OPENSSL}"
      )
@@ -191,7 +228,7 @@ index 91659ee..1f0bccb 100644
      AddPackage(
          NAME cpp-jwt
          VERSION 1.4
-@@ -252,6 +291,14 @@ if (ENABLE_WEB_SERVICE)
+@@ -184,6 +223,14 @@ if (ENABLE_WEB_SERVICE)
              ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0001-no-install.patch
              ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0002-missing-decl.patch
      )
@@ -205,25 +242,7 @@ index 91659ee..1f0bccb 100644
 +  endif()
  endif()
  
- # Opus
-@@ -319,6 +366,7 @@ endif()
- 
- # Boost headers
- if (NOT Boost_ADDED AND NOT TARGET Boost::headers)
-+  if (YUZU_USE_CPM)
-     AddPackage(
-         NAME boost_headers
-         REPO "boostorg/headers"
-@@ -326,6 +374,9 @@ if (NOT Boost_ADDED AND NOT TARGET Boost::headers)
-         HASH 50cd75dcdfc5f082225cdace058f47b4fb114a47585f7aee1d22236a910a80b667186254c214fa2fcebac67ae6d37ba4b6e695e1faea8affd6fd42a03cf996e3
-         BUNDLED_PACKAGE ON
-     )
-+  else()
-+    add_subdirectory(boost-headers)
-+  endif()
- endif()
- 
- # TZDB (Time Zone Database)
+ # FFMpeg
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
 index 048ab36..284534a 100644
 --- a/externals/ffmpeg/CMakeLists.txt

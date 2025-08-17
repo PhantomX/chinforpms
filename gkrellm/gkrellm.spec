@@ -78,7 +78,7 @@ EOF
 
 
 %build
-make %{?_smp_mflags} PREFIX=%{_prefix} \
+%make_build PREFIX=%{_prefix} \
     PKGCONFIGDIR=%{_libdir}/pkgconfig \
     INCLUDEDIR=%{_includedir} \
     SINSTALLDIR=%{_sbindir} \

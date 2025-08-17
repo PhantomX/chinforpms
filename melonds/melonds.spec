@@ -7,9 +7,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 13a9825c9a84fdbf42d0d4b922f9c2e0920ed19e
+%global commit 367d05b302b2261cff89e98c2f6b39a2144dfc69
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250713
+%global date 20250816
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -26,7 +26,7 @@
 
 Name:           melonds
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A NDS emulator
 
 # fatfs - BSD
@@ -63,6 +63,7 @@ BuildRequires:  cmake(Qt6Svg)
 BuildRequires:  extra-cmake-modules
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
+BuildRequires:  pkgconfig(faad2)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(libarchive)
 BuildRequires:  pkgconfig(libenet)

@@ -1,39 +1,43 @@
- Makefile                                           |  38 +-
+ Makefile                                           |  30 +++++
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            | 101 +++-
- crypto/sig.c                                       |   3 +-
- crypto/testmgr.c                                   |   6 +-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
+ arch/x86/kernel/setup.c                            |  22 ++--
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
- drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ .../intel-thc-hid/intel-quicki2c/quicki2c-dev.h    |   2 +
+ .../hid/intel-thc-hid/intel-thc/intel-thc-dev.c    |   4 +-
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/usb/core/hub.c                             |   7 ++
+ fs/btrfs/tree-log.c                                |  45 +++++---
+ include/linux/efi.h                                |  22 ++--
  include/linux/rmi.h                                |   1 +
+ include/linux/security.h                           |   9 ++
  kernel/module/signing.c                            |   9 +-
  scripts/Makefile.lib                               |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
- security/lockdown/lockdown.c                       |  11 +
+ security/lockdown/Kconfig                          |  13 +++
+ security/lockdown/lockdown.c                       |  11 ++
  tools/testing/selftests/bpf/Makefile               |   2 +-
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 --
- 79 files changed, 2721 insertions(+), 239 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 ------
+ 38 files changed, 521 insertions(+), 226 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 478f2004602d..f8f9a2c89957 100644
+index d18dae20b7af..ed77d2e40bfd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -355,6 +355,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -63,7 +67,7 @@ index 478f2004602d..f8f9a2c89957 100644
  # KERNELRELEASE can change from a few different places, meaning version.h
  # needs to be updated, so this check is forced on all builds
  
-@@ -1924,6 +1943,23 @@ endif
+@@ -1924,6 +1937,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -142,7 +146,7 @@ index ff15f91affde..baded34170cb 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index f244c5560e7f..464f915011b8 100644
+index 5c9789804120..daacbe5b8159 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -153,7 +157,7 @@ index f244c5560e7f..464f915011b8 100644
  #include <linux/hugetlb.h>
  #include <linux/kmemleak.h>
  
-@@ -914,6 +915,9 @@ void __init setup_arch(char **cmdline_p)
+@@ -919,6 +920,9 @@ void __init setup_arch(char **cmdline_p)
  
  	log_component_list();
  
@@ -164,18 +168,18 @@ index f244c5560e7f..464f915011b8 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index fb27be697128..81283dd125b4 100644
+index fb27be697128..b983647349c4 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
-@@ -26,6 +26,7 @@
- #include <linux/tboot.h>
- #include <linux/usb/xhci-dbgp.h>
- #include <linux/vmalloc.h>
+@@ -21,6 +21,7 @@
+ #include <linux/pci.h>
+ #include <linux/random.h>
+ #include <linux/root_dev.h>
 +#include <linux/security.h>
- 
- #include <uapi/linux/mount.h>
- 
-@@ -986,6 +1064,13 @@ void __init setup_arch(char **cmdline_p)
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
+ #include <linux/tboot.h>
+@@ -986,6 +987,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -189,7 +193,7 @@ index fb27be697128..81283dd125b4 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1149,19 +1234,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1149,19 +1157,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -210,57 +214,6 @@ index fb27be697128..81283dd125b4 100644
  
  	reserve_initrd();
  
-diff --git a/crypto/sig.c b/crypto/sig.c
-index beba745b6405..fd41f6d3abf9 100644
---- a/crypto/sig.c
-+++ b/crypto/sig.c
-@@ -112,8 +112,7 @@ static int sig_prepare_alg(struct sig_alg *alg)
- {
- 	struct crypto_alg *base = &alg->base;
- 
--	if (!alg->sign)
--		alg->sign = sig_default_sign;
-+	alg->sign = sig_default_sign;
- 	if (!alg->verify)
- 		alg->verify = sig_default_verify;
- 	if (!alg->set_priv_key)
-diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 32f753d6c430..7fa1ec63795c 100644
---- a/crypto/testmgr.c
-+++ b/crypto/testmgr.c
-@@ -3987,7 +3987,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
- 	 * Don't invoke decrypt test which requires a private key
- 	 * for vectors with only a public key.
- 	 */
--	if (vecs->public_key_vec) {
-+	if (1 || vecs->public_key_vec) {
- 		err = 0;
- 		goto free_all;
- 	}
-@@ -4123,7 +4123,7 @@ static int test_sig_one(struct crypto_sig *tfm, const struct sig_testvec *vecs)
- 	 * Don't invoke sign test (which requires a private key)
- 	 * for vectors with only a public key.
- 	 */
--	if (vecs->public_key_vec)
-+	if (1 || vecs->public_key_vec)
- 		return 0;
- 
- 	sig_size = crypto_sig_maxsize(tfm);
-@@ -4963,14 +4963,12 @@ static const struct alg_test_desc alg_test_descs[] = {
- 	}, {
- 		.alg = "ecdh-nist-p256",
- 		.test = alg_test_kpp,
--		.fips_allowed = 1,
- 		.suite = {
- 			.kpp = __VECS(ecdh_p256_tv_template)
- 		}
- 	}, {
- 		.alg = "ecdh-nist-p384",
- 		.test = alg_test_kpp,
--		.fips_allowed = 1,
- 		.suite = {
- 			.kpp = __VECS(ecdh_p384_tv_template)
- 		}
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 20d757687e3d..90a13f20f052 100644
 --- a/drivers/acpi/apei/hest.c
@@ -372,6 +325,67 @@ index 4e9c82f36df1..8c4647cdf4dd 100644
  	/* wait for engine to stop. This could be as long as 500 msec */
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
+diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
+index bbf7029e224b..cf7faa970dd6 100644
+--- a/drivers/char/ipmi/ipmi_dmi.c
++++ b/drivers/char/ipmi/ipmi_dmi.c
+@@ -215,6 +215,21 @@ static int __init scan_for_dmi_ipmi(void)
+ {
+ 	const struct dmi_device *dev = NULL;
+ 
++#ifdef CONFIG_ARM64
++	/* RHEL-only
++	 * If this is ARM-based HPE m400, return now, because that platform
++	 * reports the host-side ipmi address as intel port-io space, which
++	 * does not exist in the ARM architecture.
++	 */
++	const char *dmistr = dmi_get_system_info(DMI_PRODUCT_NAME);
++
++	if (dmistr && (strcmp("ProLiant m400 Server", dmistr) == 0)) {
++		pr_debug("%s does not support host ipmi\n", dmistr);
++		return 0;
++	}
++	/* END RHEL-only */
++#endif
++
+ 	while ((dev = dmi_find_device(DMI_DEV_TYPE_IPMI, NULL, dev)))
+ 		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
+ 
+diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
+index 064944ae9fdc..cab1ef505cd2 100644
+--- a/drivers/char/ipmi/ipmi_msghandler.c
++++ b/drivers/char/ipmi/ipmi_msghandler.c
+@@ -34,6 +34,7 @@
+ #include <linux/uuid.h>
+ #include <linux/nospec.h>
+ #include <linux/vmalloc.h>
++#include <linux/dmi.h>
+ #include <linux/delay.h>
+ 
+ #define IPMI_DRIVER_VERSION "39.2"
+@@ -5548,8 +5549,21 @@ static int __init ipmi_init_msghandler_mod(void)
+ {
+ 	int rv;
+ 
+-	pr_info("version " IPMI_DRIVER_VERSION "\n");
++#ifdef CONFIG_ARM64
++	/* RHEL-only
++	 * If this is ARM-based HPE m400, return now, because that platform
++	 * reports the host-side ipmi address as intel port-io space, which
++	 * does not exist in the ARM architecture.
++	 */
++	const char *dmistr = dmi_get_system_info(DMI_PRODUCT_NAME);
+ 
++	if (dmistr && (strcmp("ProLiant m400 Server", dmistr) == 0)) {
++		pr_debug("%s does not support host ipmi\n", dmistr);
++		return -ENOSYS;
++	}
++	/* END RHEL-only */
++#endif
++	pr_info("version " IPMI_DRIVER_VERSION "\n");
+ 	mutex_lock(&ipmi_interfaces_mutex);
+ 	rv = ipmi_register_driver();
+ 	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index a2d0009560d0..4f3486e6a84b 100644
 --- a/drivers/firmware/efi/Makefile
@@ -675,6 +689,48 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.proto_name = "hid";
  	data->xport.ops = &hid_rmi_ops;
  
+diff --git a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
+index 6ddb584bd611..97085a6a7452 100644
+--- a/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
++++ b/drivers/hid/intel-thc-hid/intel-quicki2c/quicki2c-dev.h
+@@ -71,6 +71,7 @@ struct quicki2c_subip_acpi_parameter {
+ 	u16 device_address;
+ 	u64 connection_speed;
+ 	u8 addressing_mode;
++	u8 reserved;
+ } __packed;
+ 
+ /**
+@@ -120,6 +121,7 @@ struct quicki2c_subip_acpi_config {
+ 	u64 HMTD;
+ 	u64 HMRD;
+ 	u64 HMSL;
++	u8 reserved;
+ };
+ 
+ struct device;
+diff --git a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
+index c105df7f6c87..4698722e0d0a 100644
+--- a/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
++++ b/drivers/hid/intel-thc-hid/intel-thc/intel-thc-dev.c
+@@ -1539,7 +1539,7 @@ int thc_i2c_subip_regs_save(struct thc_device *dev)
+ 
+ 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
+ 		ret = thc_i2c_subip_pio_read(dev, i2c_subip_regs[i],
+-					     &read_size, (u32 *)&dev->i2c_subip_regs + i);
++					     &read_size, &dev->i2c_subip_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
+@@ -1562,7 +1562,7 @@ int thc_i2c_subip_regs_restore(struct thc_device *dev)
+ 
+ 	for (int i = 0; i < ARRAY_SIZE(i2c_subip_regs); i++) {
+ 		ret = thc_i2c_subip_pio_write(dev, i2c_subip_regs[i],
+-					      write_size, (u32 *)&dev->i2c_subip_regs + i);
++					      write_size, &dev->i2c_subip_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 index 42e5d37403ad..87b0c6c936b1 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
@@ -959,10 +1015,10 @@ index a4b606c591da..772946ea4bb2 100644
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index d7f4ee634263..733eae7c997a 100644
+index db6e142b082d..76dcc1cc4149 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
-@@ -4448,6 +4448,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
+@@ -4450,6 +4450,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
  DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9084,
  				quirk_bridge_cavm_thrx2_pcie_root);
  
@@ -1011,6 +1067,79 @@ index 256fe8c86828..2e4a09948df8 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/btrfs/tree-log.c b/fs/btrfs/tree-log.c
+index cea8a7e9d6d3..4b626cdeb9a3 100644
+--- a/fs/btrfs/tree-log.c
++++ b/fs/btrfs/tree-log.c
+@@ -321,8 +321,7 @@ struct walk_control {
+ 
+ 	/*
+ 	 * Ignore any items from the inode currently being processed. Needs
+-	 * to be set every time we find a BTRFS_INODE_ITEM_KEY and we are in
+-	 * the LOG_WALK_REPLAY_INODES stage.
++	 * to be set every time we find a BTRFS_INODE_ITEM_KEY.
+ 	 */
+ 	bool ignore_cur_inode;
+ 
+@@ -2413,23 +2412,30 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
+ 
+ 	nritems = btrfs_header_nritems(eb);
+ 	for (i = 0; i < nritems; i++) {
+-		btrfs_item_key_to_cpu(eb, &key, i);
++		struct btrfs_inode_item *inode_item;
+ 
+-		/* inode keys are done during the first stage */
+-		if (key.type == BTRFS_INODE_ITEM_KEY &&
+-		    wc->stage == LOG_WALK_REPLAY_INODES) {
+-			struct btrfs_inode_item *inode_item;
+-			u32 mode;
++		btrfs_item_key_to_cpu(eb, &key, i);
+ 
+-			inode_item = btrfs_item_ptr(eb, i,
+-					    struct btrfs_inode_item);
++		if (key.type == BTRFS_INODE_ITEM_KEY) {
++			inode_item = btrfs_item_ptr(eb, i, struct btrfs_inode_item);
+ 			/*
+-			 * If we have a tmpfile (O_TMPFILE) that got fsync'ed
+-			 * and never got linked before the fsync, skip it, as
+-			 * replaying it is pointless since it would be deleted
+-			 * later. We skip logging tmpfiles, but it's always
+-			 * possible we are replaying a log created with a kernel
+-			 * that used to log tmpfiles.
++			 * An inode with no links is either:
++			 *
++			 * 1) A tmpfile (O_TMPFILE) that got fsync'ed and never
++			 *    got linked before the fsync, skip it, as replaying
++			 *    it is pointless since it would be deleted later.
++			 *    We skip logging tmpfiles, but it's always possible
++			 *    we are replaying a log created with a kernel that
++			 *    used to log tmpfiles;
++			 *
++			 * 2) A non-tmpfile which got its last link deleted
++			 *    while holding an open fd on it and later got
++			 *    fsynced through that fd. We always log the
++			 *    parent inodes when inode->last_unlink_trans is
++			 *    set to the current transaction, so ignore all the
++			 *    inode items for this inode. We will delete the
++			 *    inode when processing the parent directory with
++			 *    replay_dir_deletes().
+ 			 */
+ 			if (btrfs_inode_nlink(eb, inode_item) == 0) {
+ 				wc->ignore_cur_inode = true;
+@@ -2437,6 +2443,13 @@ static int replay_one_buffer(struct btrfs_root *log, struct extent_buffer *eb,
+ 			} else {
+ 				wc->ignore_cur_inode = false;
+ 			}
++		}
++
++		/* Inode keys are done during the first stage. */
++		if (key.type == BTRFS_INODE_ITEM_KEY &&
++		    wc->stage == LOG_WALK_REPLAY_INODES) {
++			 u32 mode;
++
+ 			ret = replay_xattr_deletes(wc->trans, root, log,
+ 						   path, key.objectid);
+ 			if (ret)
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index 7d63d1d75f22..c7481fdedbdd 100644
 --- a/include/linux/efi.h

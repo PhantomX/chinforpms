@@ -11,9 +11,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 6cb0309b6cfdff427509cec6eefca72a9352bdf7
+%global commit 794efe368196a996f90b71f43ff3b23971e992c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250715
+%global date 20250816
 %bcond snapshot 1
 
 # Enable Qt build
@@ -33,7 +33,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 82049cca2e4c1516ed00a77b502a21f91b7843f4
+%global commit2 654c7da2ccffc7fd147abbe809aad7ba9e50b0a4
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -99,8 +99,8 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.277
-Release:        100%{?dist}
+Version:        1.19.3.427
+Release:        101%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -251,6 +251,7 @@ Summary:        Data files of %{name}
 BuildArch:      noarch
 Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       google-roboto-condensed-fonts
+Requires:       levien-inconsolata-fonts
 Requires:       sdl_gamecontrollerdb
 
 %description data
@@ -487,6 +488,10 @@ rm -f %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
 
+rm -f %{buildroot}%{_datadir}/%{name}/assets/Inconsolata-Medium.ttf
+ln -sf ../../fonts/levien-inconsolata/Inconsolata-Medium.ttf \
+  %{buildroot}%{_datadir}/%{name}/assets/Inconsolata-Medium.ttf
+  
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
 ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf

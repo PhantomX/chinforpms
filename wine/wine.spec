@@ -1,7 +1,7 @@
 %global commit 7c7b3e43047a26789f1cbd5b3a04a37a3d08e2bd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250721
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -88,7 +88,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 89d2f58ebda536e1d9c3803fd5302a1470f4d51f
+%global wine_stagingver 10.13
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -99,7 +99,7 @@
 %global ge_id 44e978cbe13b03d47f3942145c78e5a3437ba0f8
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 825734f7a58966d79d01ac5d270763dcebf98059
+%global tkg_id 0fc26fee0c890ed46b6ee6dfd7b5833d4718f397
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -144,8 +144,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.12
-Release:        101%{?dist}
+Version:        10.13
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -217,15 +217,13 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 
 # wine bugs/upstream/reverts
 #Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
-Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-bd89ab3.patch
-Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-240556e.patch
-Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.patch#/%{name}-whq-2bfe81e.patch
+Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-revert-bd89ab3.patch
+Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
+Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.patch#/%{name}-whq-revert-2bfe81e.patch
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-# https://gitlab.winehq.org/wine/wine/-/merge_requests/5145#note_98443
-Patch707:        https://gitlab.winehq.org/DodoGTA/wine/-/commit/7782fa45578486596436fdeda928cc2bd7e7fd6e.patch#/%{name}-whq-mr5145.patch
 # https://bugs.winehq.org/show_bug.cgi?id=58204
 Patch708:        https://bugs.winehq.org/attachment.cgi?id=78544#/%{name}-whq-bug58204.patch
 
@@ -872,9 +870,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1
 %patch -P 705 -p1
 %patch -P 706 -p1
-%if %{with new_wow64}
-%patch -P 707 -p1
-%endif
 %patch -P 708 -p1
 
 # setup and apply wine-staging patches
@@ -2026,6 +2021,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/uxtheme.dll
 %{_libdir}/wine/%{winepedirs}/userenv.dll
 %{_libdir}/wine/%{winepedirs}/vbscript.dll
+%{_libdir}/wine/%{winepedirs}/vccorlib140.dll
 %{_libdir}/wine/%{winepedirs}/vcomp.dll
 %{_libdir}/wine/%{winepedirs}/vcomp90.dll
 %{_libdir}/wine/%{winepedirs}/vcomp100.dll
@@ -2652,6 +2648,9 @@ fi
 
 
 %changelog
+* Sun Aug 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.13-100
+- 10.13
+
 * Mon Jul 21 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.12-101.20250721git7c7b3e4
 - Rawhide sync
 - Support new Wow64 mode

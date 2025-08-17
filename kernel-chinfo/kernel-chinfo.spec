@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.0
+%define specrpmversion 6.16.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1226,8 +1226,8 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/37dd590f0c157c376d8b05d4ddb0a65b64044e0d.patch#/zen-v%{patchversion}-sauce-37dd590.patch
-Patch2002: %{zen_url}/commit/71ce760cd36faae55cc0fefebed49998b5eae864.patch#/zen-v%{patchversion}-sauce-71ce760.patch
+Patch2001: %{zen_url}/commit/99d27906c618fb2092ccb42824996bd22724ff80.patch#/zen-v%{patchversion}-sauce-99d2790.patch
+Patch2002: %{zen_url}/commit/f6ed65cd7bda9cb6009c6a12efd7c4311df31936.patch#/zen-v%{patchversion}-sauce-f6ed65c.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
@@ -4540,6 +4540,9 @@ fi\
 #
 #
 %changelog
+* Fri Aug 15 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.1-500.chinfo
+- 6.16.1
+
 * Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.0-500.chinfo
 - 6.16.0
 

@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 9ea4e8960702e9b199d5b03758d7aad4d4302633
+%global commit 4cc4d315f00df1c1447b7a5ba3404d3c2000f98c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250814
+%global date 20250816
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -82,6 +82,10 @@
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 mbedtls
 
+%global commit19 09c21bda1dc1b578fa55f4a005d79b0afd481296
+%global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
+%global srcname19 simpleini
+
 %global commit20 97929690234f2b4add36b33657fe3fe09bd57dfd
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 tzdb_to_nx
@@ -120,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc2.275930
+Version:        0.0.3~rc2.275604
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -152,6 +156,7 @@ Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{sr
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://github.com/crueter/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
 %if %{without ffmpeg}
@@ -288,7 +293,7 @@ Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(oaknut) = 0~git9d09110
 %endif
 Provides:       bundled(sirit) = 0~git%{?shortcommit14}
-Provides:       bundled(simpleini) = 0~git382ddbb
+Provides:       bundled(simpleini) = 0~git%{?shortcommit19}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
 Provides:       bundled(tzdb_to_nx) = 0~git%{?shortcommit20}
 
@@ -328,8 +333,7 @@ sed \
 
 pushd externals
 rm -rf \
-  ffmpeg/ffmpeg/* gamemode getopt \
-  libusb Vulkan-Headers
+  ffmpeg/ffmpeg/* gamemode getopt libusb
 %ifarch x86_64
 rm -rf sse2neon
 %endif
@@ -365,6 +369,8 @@ sed \
   -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
   -i CMakeLists.txt
 %endif
+mkdir -p simpleini
+tar -xf %{S:19} -C simpleini --strip-components 1
 mkdir -p nx_tzdb/tzdb_to_nx
 tar -xf %{S:20} -C nx_tzdb/tzdb_to_nx --strip-components 1
 tar -xf %{S:200} -C nx_tzdb/tzdb_to_nx/externals/tz/tz --strip-components 1
