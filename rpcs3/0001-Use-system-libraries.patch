@@ -1,49 +1,19 @@
-From e598509937d796e74b8608133acef93a2ec1b0f5 Mon Sep 17 00:00:00 2001
+From f136c4c777b8d562d16eb77bb052c0540c67030f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 9 Feb 2022 16:11:12 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- 3rdparty/CMakeLists.txt                  | 37 ++++++++++++++++++++++++
- 3rdparty/feralinteractive/CMakeLists.txt |  7 +++++
- 2 files changed, 44 insertions(+)
+ 3rdparty/CMakeLists.txt                  | 9 +++++++++
+ 3rdparty/feralinteractive/CMakeLists.txt | 7 +++++++
+ 2 files changed, 16 insertions(+)
 
 diff --git a/3rdparty/CMakeLists.txt b/3rdparty/CMakeLists.txt
-index 94c6069..e6b21c0 100644
+index 4630774..c56561f 100644
 --- a/3rdparty/CMakeLists.txt
 +++ b/3rdparty/CMakeLists.txt
-@@ -20,7 +20,14 @@ add_library(3rdparty_dummy_lib INTERFACE)
- add_subdirectory(zlib EXCLUDE_FROM_ALL)
- 
- # ZSTD
-+pkg_check_modules(ZSTD IMPORTED_TARGET libzstd)
-+if(ZSTD_FOUND)
-+	message(STATUS "RPCS3: Using system ZSTD")
-+	add_library(3rdparty_zstd INTERFACE)
-+	target_link_libraries(3rdparty_zstd INTERFACE PkgConfig::ZSTD)
-+else()
- add_subdirectory(zstd EXCLUDE_FROM_ALL)
-+endif()
- 
- # 7zip sdk
- add_subdirectory(7zip EXCLUDE_FROM_ALL)
-@@ -88,7 +95,14 @@ endif()
- 
- 
- # hidapi
-+pkg_check_modules(hidapi IMPORTED_TARGET hidapi-hidraw)
-+if(hidapi_FOUND)
-+	message(STATUS "Using the system hidapi")
-+	add_library(3rdparty_hidapi INTERFACE)
-+	target_link_libraries(3rdparty_hidapi INTERFACE PkgConfig::hidapi udev)
-+else()
- add_subdirectory(hidapi)
-+endif()
- 
- # glslang
+@@ -102,7 +102,15 @@ add_subdirectory(hidapi)
  add_subdirectory(glslang EXCLUDE_FROM_ALL)
-@@ -97,7 +111,15 @@ target_link_libraries(3rdparty_glslang INTERFACE SPIRV)
- 
  
  # yaml-cpp
 +find_package(yaml-cpp)
@@ -58,7 +28,7 @@ index 94c6069..e6b21c0 100644
  
  
  # OpenGL
-@@ -256,6 +278,7 @@ if(USE_FAUDIO)
+@@ -261,6 +269,7 @@ if(USE_FAUDIO)
  			message(STATUS "RPCS3: Using system FAudio")
  			find_package(FAudio REQUIRED CONFIGS FAudioConfig.cmake FAudio-config.cmake)
  			add_library(3rdparty_FAudio INTERFACE)
@@ -66,33 +36,8 @@ index 94c6069..e6b21c0 100644
  			target_link_libraries(3rdparty_FAudio INTERFACE FAudio)
  			target_compile_definitions(3rdparty_FAudio INTERFACE -DHAVE_FAUDIO)
  			set(FAUDIO_TARGET 3rdparty_FAudio)
-@@ -346,10 +369,24 @@ add_subdirectory(wolfssl EXCLUDE_FROM_ALL)
- add_subdirectory(curl EXCLUDE_FROM_ALL)
- 
- # MINIUPNP
-+find_package(miniupnpc)
-+if(miniupnpc_FOUND)
-+	message(STATUS "Using the system miniupnpc")
-+	add_library(libminiupnpc-static INTERFACE)
-+	target_link_libraries(libminiupnpc-static INTERFACE miniupnpc::miniupnpc)
-+else()
- add_subdirectory(miniupnp EXCLUDE_FROM_ALL)
-+endif()
- 
- # RTMIDI
-+pkg_check_modules(rtmidi IMPORTED_TARGET rtmidi)
-+if(rtmidi_FOUND)
-+	message(STATUS "Using the system rtmidi")
-+	add_library(rtmidi INTERFACE)
-+	target_link_libraries(rtmidi INTERFACE PkgConfig::rtmidi)
-+else()
- add_subdirectory(rtmidi EXCLUDE_FROM_ALL)
-+endif()
- 
- # OPENCV
- add_subdirectory(opencv EXCLUDE_FROM_ALL)
 diff --git a/3rdparty/feralinteractive/CMakeLists.txt b/3rdparty/feralinteractive/CMakeLists.txt
-index c7b136e..2674b02 100644
+index c7b136e..4adc376 100644
 --- a/3rdparty/feralinteractive/CMakeLists.txt
 +++ b/3rdparty/feralinteractive/CMakeLists.txt
 @@ -3,7 +3,14 @@

@@ -9,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        25.1.4
+Version:        25.1.5
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -136,6 +136,9 @@ done
 
 
 %changelog
+* Mon Aug 18 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.5-1
+- 25.1.5
+
 * Tue Aug 12 2025 Phantom X <megaphantomx at hotmail dot com> - 25.1.4-1
 - 25.1.4
 

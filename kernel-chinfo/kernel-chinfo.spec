@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.1
+%define specrpmversion 6.16.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +212,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 3fabdf778e148355e8d50ffd39281082e06f442a
+%global opensuse_id 19551175483e28fca9174956a15e45040542b305
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1221,6 +1221,7 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1012: %{opensuse_url}/proc-fix-missing-pde_set_flags-for-net-proc-files.patch#/openSUSE-proc-fix-missing-pde_set_flags-for-net-proc-files.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1253,6 +1254,8 @@ Patch7230:  %{pf_url}/d9b2b93c47dde314f34f56c8b85c1acee5dcf4d6.patch#/pf-cb-d9b2
 Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
 # crypto
 # fixes
+Patch7400:  %{pf_url}/d22a1695f7b89c228e60a9310d597597a6710666.patch#/pf-cb-d22a169.patch
+Patch7401:  %{pf_url}/ca0b04683be7bba50703eaec260167ec494d80b8.patch#/pf-cb-ca0b046.patch
 # fs
 %endif
 
@@ -2124,12 +2127,15 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7240}
 # crypto
 # fixes
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
 # fs
 %endif
 
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
+ApplyPatch %{PATCH1012}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
@@ -4540,6 +4546,12 @@ fi\
 #
 #
 %changelog
+* Wed Aug 20 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.2-500.chinfo
+- 6.16.2
+
+* Tue Aug 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.1-501.chinfo
+- Assorted fixes
+
 * Fri Aug 15 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.1-500.chinfo
 - 6.16.1
 

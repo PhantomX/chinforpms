@@ -16,10 +16,10 @@
 %bcond rtmidi 1
 %endif
 
-%global commit fb4f802b89dd9a6527ffcf36152e0d5ebd1f8e7c
+%global commit 26b7db8954c59e0a13f5a947e99126d01a0937d6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250808
-%bcond snapshot 0
+%global date 20250819
+%bcond snapshot 1
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -37,7 +37,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 fmt
 
-%global commit14 44aa9a4b3a6f27d09a4eb5770d095cbd376dfc4b
+%global commit14 1f7f1f54af38b0350d8c0008b096a9af6de299c7
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 imgui
 
@@ -68,8 +68,8 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.1.7
-Release:        1%{?dist}
+Version:        0.1.8
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}

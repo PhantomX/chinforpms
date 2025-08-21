@@ -25,6 +25,7 @@
 %bcond faudio 0
 # Enable system flatbuffers
 %bcond flatbuffers 1
+%bcond glslang 1
 %global bundleflatbuffers 23.5.26
 # Enable system hidapi
 %bcond hidapi 1
@@ -48,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit b90bacba4870534dfc501a51119b5913337a5e95
+%global commit 246519c5e15ecc7e60d72cee909a1b5e12fb3cb7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250724
+%global date 20250817
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -69,11 +70,11 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 6bfdcf7368169efe1b745cd4468d45cda05ef8de
+%global commit14 f42423643ec9011c98cccc0bb790722bbbd3f30b
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 b077c81eb635392e694ccedbab8b644297ec0285
+%global commit15 decea12e223869c8f8f3ab5a53dc90b69f436eb2
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -123,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.37.18087
+Version:        0.0.37.18107
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -140,7 +141,9 @@ Source10:       https://github.com/zeux/%{srcname10}/archive/%{commit10}/%{srcna
 %endif
 Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%if %{without glslang}
 Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+%endif
 %if %{without hidapi}
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
@@ -174,7 +177,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
-Patch14:        0001-Fix-OpenAL-headers.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 
 ExclusiveArch:  x86_64
@@ -207,6 +209,11 @@ BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gamemode)
+%if %{with glslang}
+BuildRequires:  cmake(glslang) >= 15.3.0
+%else
+Provides:       bundled(glslang) = git~0%{shortcommit13}
+%endif
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew) >= 1.13.0
 %if %{with ffmpeg}
@@ -288,7 +295,6 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(Fusion) = 0~git%{shortcommit17}
-Provides:       bundled(glslang) = 0~git%{shortcommit13}
 Provides:       bundled(stb) = 0~git%{shortcommit23}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
 
@@ -303,22 +309,36 @@ written in C++.
 
 pushd 3rdparty
 rm -rf \
-  7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb miniupnp \
-  MoltenVK OpenAL/libs XAudio2Redist zstd
+  7zip/7zip cubeb discord-rpc/*/ FAudio libsdl-org libusb \
+  MoltenVK OpenAL/libs XAudio2Redist
 
 tar -xf %{S:11} -C SoundTouch/soundtouch --strip-components 1
-tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
-tar -xf %{S:13} -C glslang/glslang --strip-components 1
-tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
-tar -xf %{S:17} -C fusion/fusion --strip-components 1
-tar -xf %{S:23} -C stblib/stb --strip-components 1
-
-cp -p stblib/stb/LICENSE LICENSE.stb
-cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
-cp -p fusion/fusion/LICENSE.md LICENSE.fusion.md
-cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
 cp -p SoundTouch/soundtouch/COPYING.TXT LICENSE.soundtouch
+tar -xf %{S:12} -C asmjit/asmjit --strip-components 1
+cp -p asmjit/asmjit/LICENSE.md LICENSE.asmjit.md
+%if %{without glslang}
+tar -xf %{S:13} -C glslang/glslang --strip-components 1
+cp -p glslang/glslang/LICENSE.txt LICENSE.glslang
+%endif
+%if %{without hidapi}
+tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
+cp -p hidapi/hidapi/LICENSE.txt LICENSE.hidapi
+%endif
+tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
+tar -xf %{S:17} -C fusion/fusion --strip-components 1
+cp -p fusion/fusion/LICENSE.md LICENSE.fusion.md
+%if %{without rtmidi}
+tar -xf %{S:22} -C rtmidi/rtmidi --strip-components 1
+cp -p rtmidi/rtmidi/LICENSE LICENSE.rtmidi
+%endif
+tar -xf %{S:23} -C stblib/stb --strip-components 1
+cp -p stblib/stb/LICENSE LICENSE.stb
+%if %{without vma}
+tar -xf %{S:24} -C 3rdparty/GPUOpen/VulkanMemoryAllocator --strip-components 1
+cp -p GPUOpen/VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
+%endif
+
 popd
 
 %if %{without llvm}
@@ -367,14 +387,6 @@ tar -xf %{S:10} -C 3rdparty/pugixml --strip-components 1
 cp -p 3rdparty/pugixml/LICENSE.md 3rdparty/LICENSE.pugixml.md
 %endif
 
-%if %{without hidapi}
-tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
-cp -p 3rdparty/hidapi/hidapi/LICENSE.txt 3rdparty/LICENSE.hidapi
-sed -e 's|hidapi_FOUND|hidapi_DISABLED|g' -i 3rdparty/CMakeLists.txt
-%else
-rm -rf 3rdparty/hidapi
-%endif
-
 %if %{without flatbuffers}
 tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
 cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
@@ -390,23 +402,6 @@ sed -e 's|yaml-cpp_FOUND|yaml-cpp_DISABLED|g' -i 3rdparty/CMakeLists.txt
 rm -rf 3rdparty/yaml-cpp
 %endif
 
-%if %{without rtmidi}
-tar -xf %{S:22} -C 3rdparty/rtmidi/rtmidi --strip-components 1
-cp -p 3rdparty/rtmidi/rtmidi/LICENSE 3rdparty/LICENSE.rtmidi
-sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i 3rdparty/CMakeLists.txt
-%else
-rm -rf 3rdparty/rtmidi
-%endif
-
-%if %{with vma}
-sed \
-  -e '/include/s|"3rdparty/GPUOpen/VulkanMemoryAllocator/include/vk_mem_alloc.h"|<vk_mem_alloc.h>|g' \
-  -i rpcs3/Emu/RSX/VK/VKMemAlloc.cpp rpcs3/Emu/RSX/VK/vkutils/memory.h
-%else
-tar -xf %{S:24} -C 3rdparty/GPUOpen/VulkanMemoryAllocator --strip-components 1
-cp -p 3rdparty/GPUOpen/VulkanMemoryAllocator/LICENSE.txt 3rdparty/LICENSE.vma
-%endif
-
 sed \
   -e '/find_packages/s|Git|\0_DISABLED|g' \
   -e '/RPCS3_GIT_VERSION/s|local_build|%{sbuild}%{?with_snapshot:-%{shortcommit}}|g' \
@@ -420,6 +415,8 @@ sed \
   -i 3rdparty/fusion/fusion/CMakeLists.txt
 
 sed -e 's|3rdparty/feralinteractive/feralinteractive/lib/||' -i rpcs3/gamemode_control.cpp
+
+sed -e '/pkg_check_modules/s|2.3.3|2.3.0|' -i 3rdparty/miniupnp/CMakeLists.txt
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
@@ -482,14 +479,29 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmp
 %if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif
+%if %{with glslang}
+  -DUSE_SYSTEM_GLSLANG:BOOL=ON \
+%endif
+%if %{with hidapi}
+  -DUSE_SYSTEM_HIDAPI:BOOL=ON \
+%endif
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBUSB:BOOL=ON \
+  -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
 %if %{with pugixml}
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
 %endif
   -DUSE_SYSTEM_OPENCV:BOOL=ON \
+%if %{with rtmidi}
+  -DUSE_SYSTEM_RTMIDI:BOOL=ON \
+%endif
   -DUSE_SDL:BOOL=ON \
   -DUSE_SYSTEM_SDL:BOOL=ON \
+%if %{with vma}
+  -DUSE_SYSTEM_VULKAN_MEMORY_ALLOCATOR:BOOL=ON \
+%endif
+  -DUSE_SYSTEM_WOLFSSL:BOOL=OFF \
+  -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DSPIRV_WERROR:BOOL=OFF \
 %{nil}
 
