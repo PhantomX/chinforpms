@@ -1,4 +1,4 @@
-From fe119ac23640536dfd163f1430c37ead5db7d6f8 Mon Sep 17 00:00:00 2001
+From 6283a0924287616baf93a969893cdb1cfa7485bf Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 14 Aug 2025 20:44:13 -0300
 Subject: [PATCH] Use system libraries
@@ -17,10 +17,10 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  create mode 100644 CMakeModules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index abaa905..332441d 100644
+index ecb8a82..c668083 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -15,7 +15,6 @@ endif()
+@@ -31,7 +31,6 @@ endif()
  
  set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
  
@@ -28,7 +28,7 @@ index abaa905..332441d 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -589,7 +588,7 @@ if (YUZU_USE_CPM)
+@@ -751,7 +750,7 @@ if (YUZU_USE_CPM)
      endif()
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -37,7 +37,7 @@ index abaa905..332441d 100644
      find_package(LLVM MODULE COMPONENTS Demangle)
      find_package(nlohmann_json 3.8 REQUIRED)
      find_package(lz4 REQUIRED)
-@@ -600,6 +599,12 @@ else()
+@@ -762,6 +761,12 @@ else()
      find_package(ZLIB 1.2 REQUIRED)
      find_package(zstd 1.5 REQUIRED)
  
@@ -50,7 +50,7 @@ index abaa905..332441d 100644
      if (ENABLE_CUBEB)
          find_package(cubeb CONFIG)
      endif()
-@@ -618,6 +623,7 @@ else()
+@@ -780,6 +785,7 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -58,7 +58,7 @@ index abaa905..332441d 100644
      AddPackage(
          NAME boost_headers
          REPO "boostorg/headers"
-@@ -625,6 +631,9 @@ if(NOT TARGET Boost::headers)
+@@ -787,6 +793,9 @@ if(NOT TARGET Boost::headers)
          HASH 50cd75dcdfc5f082225cdace058f47b4fb114a47585f7aee1d22236a910a80b667186254c214fa2fcebac67ae6d37ba4b6e695e1faea8affd6fd42a03cf996e3
          BUNDLED_PACKAGE ON
      )
@@ -68,7 +68,7 @@ index abaa905..332441d 100644
  endif()
  
  if (ENABLE_LIBUSB)
-@@ -655,6 +664,7 @@ if (USE_DISCORD_PRESENCE)
+@@ -818,6 +827,7 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -76,7 +76,7 @@ index abaa905..332441d 100644
  AddPackage(
      NAME SimpleIni
      REPO brofield/simpleini
-@@ -663,6 +673,9 @@ AddPackage(
+@@ -826,6 +836,9 @@ AddPackage(
      EXCLUDE_FROM_ALL ON
      FIND_PACKAGE_ARGUMENTS "MODULE"
  )
@@ -116,7 +116,7 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 41b973c..4991a5c 100644
+index 71dd296..12e4438 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -41,6 +41,7 @@ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
@@ -176,14 +176,15 @@ index 41b973c..4991a5c 100644
  
  # libusb
  if (ENABLE_LIBUSB AND NOT TARGET libusb::usb)
-@@ -139,13 +161,18 @@ endif()
+@@ -139,6 +161,7 @@ endif()
  
  # Sirit
  # TODO(crueter): spirv-tools doesn't work w/ system
 +if (YUZU_USE_CPM)
+ set(SPIRV_WERROR OFF)
  AddPackage(
      NAME SPIRV-Headers
-     REPO "KhronosGroup/SPIRV-Headers"
+@@ -146,7 +169,11 @@ AddPackage(
      SHA 4e209d3d7e
      HASH f48bbe18341ed55ea0fe280dbbbc0a44bf222278de6e716e143ca1e95ca320b06d4d23d6583fbf8d03e1428f3dac8fa00e5b82ddcd6b425e6236d85af09550a4
  )
@@ -195,7 +196,7 @@ index 41b973c..4991a5c 100644
  AddPackage(
      NAME sirit
      REPO "eden-emulator/sirit"
-@@ -154,9 +181,14 @@ AddPackage(
+@@ -155,6 +182,10 @@ AddPackage(
      OPTIONS
          "SIRIT_USE_SYSTEM_SPIRV_HEADERS ON"
  )
@@ -204,13 +205,17 @@ index 41b973c..4991a5c 100644
 +  add_subdirectory(sirit)
 +endif()
  
+ if(MSVC AND USE_CCACHE AND TARGET sirit)
+     get_target_property(_opts sirit COMPILE_OPTIONS)
+@@ -165,6 +196,7 @@ endif()
+ 
  # httplib
  if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
 +  if (YUZU_USE_CPM)
      AddPackage(
          NAME httplib
          REPO "yhirose/cpp-httplib"
-@@ -165,10 +197,17 @@ if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
+@@ -173,10 +205,17 @@ if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
          OPTIONS
              "HTTPLIB_REQUIRE_OPENSSL ${ENABLE_OPENSSL}"
      )
@@ -228,7 +233,7 @@ index 41b973c..4991a5c 100644
      AddPackage(
          NAME cpp-jwt
          VERSION 1.4
-@@ -184,6 +223,14 @@ if (ENABLE_WEB_SERVICE)
+@@ -192,6 +231,14 @@ if (ENABLE_WEB_SERVICE)
              ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0001-no-install.patch
              ${CMAKE_SOURCE_DIR}/.patch/cpp-jwt/0002-missing-decl.patch
      )
@@ -367,5 +372,5 @@ index d7f3f14..ef4736c 100644
 +  endif()
 +endif()
 -- 
-2.50.1
+2.51.0
 
