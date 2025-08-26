@@ -5,3 +5,12 @@ PROTON_AUDIO_CONVERT=0
 PROTON_AUDIO_CONVERT_BIN=0
 PROTON_VIDEO_CONVERT=0
 PROTON_DEMUX=0
+
+PROTON_MEDIA_USE_GST override
+=================================
+Enable with PROTON_MEDIA_USE_GST=1 environment variable
+
+PROTON_GST_VIDEO_ORIENTATION setting
+=================================
+Set with any of "vertical-flip", "horizontal-flip", "rotate-180" or "automatic"
+PROTON_GST_VIDEO_ORIENTATION=automatic

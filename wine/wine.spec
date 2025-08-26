@@ -1,7 +1,7 @@
-%global commit 7c7b3e43047a26789f1cbd5b3a04a37a3d08e2bd
+%global commit 627a1dc459cb9bc7a247d520ea871454d0c63fba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250721
-%bcond snapshot 0
+%global date 20250825
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -58,8 +58,8 @@
 %global with_debug 0
 %global no64bit   0
 %global winegecko 2.47.4
-%global winemono  10.1.0
-%global winevulkan 1.4.318
+%global winemono  10.2.0
+%global winevulkan 1.4.325
 %if 0%{?fedora}
 %global opencl    1
 %endif
@@ -76,7 +76,7 @@
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
 %global winejxrlib 1.1
-%global winevkd3d 1.16
+%global winevkd3d 1.17
 %global winexml2 2.12.8
 %global winexslt 1.1.43
 %global winezlib 1.3.1
@@ -88,7 +88,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.13
+%global wine_stagingver ce66dea1972157470ae5aed57a2a5595381c8d43
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -96,10 +96,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 44e978cbe13b03d47f3942145c78e5a3437ba0f8
+%global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 0fc26fee0c890ed46b6ee6dfd7b5833d4718f397
+%global tkg_id 4a53c0a8caaf7b66e126eeb1c82b623cbf129991
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.13
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -269,6 +269,7 @@ Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.pa
 
 Patch1200:       %{ge_url}/wine-hotfixes/pending/registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch#/%{name}-ge-registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch
 Patch1201:       %{ge_url}/proton/add-envvar-to-gate-media-converter.patch#/%{name}-ge-add-envvar-to-gate-media-converter.patch
+Patch1202:       %{ge_url}/proton/proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch#/%{name}-ge-proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch
 
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
@@ -905,6 +906,7 @@ autoreconf -f
 %patch -P 1038 -p1
 %patch -P 1039 -p1
 %patch -P 1201 -p1
+%patch -P 1202 -p1
 %endif
 %if %{with new_wow64}
 %patch -P 1025 -p1
@@ -1619,6 +1621,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/cryptowinrt.dll
 %{_libdir}/wine/%{winepedirs}/cryptsp.dll
 %{_libdir}/wine/%{winepedirs}/cryptui.dll
+%{_libdir}/wine/%{winepedirs}/cryptxml.dll
 %{_libdir}/wine/%{winesodir}/ctapi32.so
 %{_libdir}/wine/%{winepedirs}/ctapi32.dll
 %{_libdir}/wine/%{winepedirs}/ctl3d32.dll
@@ -1706,6 +1709,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/fontsub.dll
 %{_libdir}/wine/%{winepedirs}/fusion.dll
 %{_libdir}/wine/%{winepedirs}/fwpuclnt.dll
+%{_libdir}/wine/%{winepedirs}/gameinput.dll
 %{_libdir}/wine/%{winepedirs}/gameux.dll
 %{_libdir}/wine/%{winepedirs}/gamingtcui.dll
 %{_libdir}/wine/%{winepedirs}/gdi32.dll
@@ -2051,6 +2055,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wimgapi.dll
 %{_libdir}/wine/%{winesodir}/win32u.so
 %{_libdir}/wine/%{winepedirs}/win32u.dll
+%{_libdir}/wine/%{winepedirs}/winbio.dll
 %{_libdir}/wine/%{winepedirs}/windows.applicationmodel.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.bluetooth.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.enumeration.dll

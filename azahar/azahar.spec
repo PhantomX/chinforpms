@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 106e994dbf31bfae503551326a1a4b0c48647fab
+%global commit 48db1c1de532ea3b5b5f80262b3e6db30a011ac4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250802
+%global date 20250820
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -149,7 +149,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~beta2
+Version:        2123~rc2.3
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -384,7 +384,7 @@ rm -rf externals/sirit/sirit/externals/SPIRV-Headers
 ln -sf ../../../spirv-headers externals/sirit/sirit/externals/SPIRV-Headers
 tar -xf %{S:19} -C externals/spirv-tools --strip-components 1
 %else
-echo 'find_package(SPIRV-Headers REQUIRED GLOBAL)' >> externals/sirit/CMakeLists.txt
+sed -e '/add_subdirectory(spirv-tools/d' -i externals/CMakeLists.txt
 %endif
 %if %{without vma}
 tar -xf %{S:16} -C externals/vma --strip-components 1
@@ -524,6 +524,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
   -DUSE_SYSTEM_OPENSSL:BOOL=ON \
 %if %{with glslang}
   -DUSE_SYSTEM_GLSLANG:BOOL=ON \
+  -DUSE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
   -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
 %endif
   %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \

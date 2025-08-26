@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.2
+%define specrpmversion 6.16.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1256,6 +1256,21 @@ Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7
 # fixes
 Patch7400:  %{pf_url}/d22a1695f7b89c228e60a9310d597597a6710666.patch#/pf-cb-d22a169.patch
 Patch7401:  %{pf_url}/ca0b04683be7bba50703eaec260167ec494d80b8.patch#/pf-cb-ca0b046.patch
+Patch7402:  %{pf_url}/76511b0ae1da7f401fe06c8b4dd18a40c3a2b52b.patch#/pf-cb-76511b0.patch
+Patch7403:  %{pf_url}/1b24003064570fdf29c55bac14d4728977195133.patch#/pf-cb-1b24003.patch
+Patch7404:  %{pf_url}/2435722a492f57a060202726a820b0da64f42105.patch#/pf-cb-2435722.patch
+Patch7405:  %{pf_url}/77f4f1ca7b68d33c3841e740ae6b03378a77d281.patch#/pf-cb-77f4f1c.patch
+Patch7406:  %{pf_url}/a9cbad46c051cf4467ba13638eddc86f96354c66.patch#/pf-cb-a9cbad4.patch
+Patch7407:  %{pf_url}/576b70e92168f38ab3167768acb6b65cd5bf8aa7.patch#/pf-cb-576b70e.patch
+Patch7408:  %{pf_url}/c09f6cef1d27da9baec950c8949926c9fc42a3e7.patch#/pf-cb-c09f6ce.patch
+Patch7409:  %{pf_url}/3ba50a386db1ab9c1bdabbdcea6e7063bd7f875d.patch#/pf-cb-3ba50a3.patch
+Patch7410:  %{pf_url}/0623d1f6690209880885deae614e8368488598c2.patch#/pf-cb-0623d1f.patch
+Patch7411:  %{pf_url}/786e39b5e75b7d766b7930519d504a90eaf887da.patch#/pf-cb-786e39b.patch
+Patch7412:  %{pf_url}/148516b367dd591d31a2b98ad913417bc1b9c865.patch#/pf-cb-148516b.patch
+Patch7413:  %{pf_url}/f7a227320aab53c99656f21d40481af89dfb8923.patch#/pf-cb-f7a2273.patch
+Patch7414:  %{pf_url}/04b512d5cc10cec9e13eb434ea8d16d899244e6e.patch#/pf-cb-04b512d.patch
+Patch7415:  %{pf_url}/5395cbf385079c035dc76fdc7f3d4e8c58bb994a.patch#/pf-cb-5395cbf.patch
+Patch7416:  %{pf_url}/62b8eb7367de30fd149137b08ffbff5aadf02541.patch#/pf-cb-62b8eb7.patch
 # fs
 %endif
 
@@ -2129,6 +2144,20 @@ ApplyPatch %{PATCH7240}
 # fixes
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
+ApplyPatch %{PATCH7412}
+ApplyPatch %{PATCH7413}
+ApplyPatch %{PATCH7414}
+ApplyPatch %{PATCH7415}
 # fs
 %endif
 
@@ -4546,6 +4575,9 @@ fi\
 #
 #
 %changelog
+* Sat Aug 23 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.3-500.chinfo
+- 6.16.3
+
 * Wed Aug 20 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.2-500.chinfo
 - 6.16.2
 

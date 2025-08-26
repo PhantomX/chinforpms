@@ -18,7 +18,7 @@ index 85567fc..e12f826 100644
 +    SDL_SetHint(SDL_HINT_APP_NAME, Ymir_APP_NAME);
 +
      if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS)) {
-         devlog::error<grp::base>("Unable to initialize SDL: {}", SDL_GetError());
+         ShowStartupFailure("Failed to initialize SDL: {}", SDL_GetError());
          return;
 -- 
 2.49.0
