@@ -198,6 +198,14 @@
 %global have_libcbor 0
 %endif
 
+%global have_igvm 0
+%if 0%{?fedora}
+%ifarch x86_64
+# igvm is not in centos stream, and only relevant for x86_64 host(?)
+%global have_igvm 1
+%endif
+%endif
+
 %if %{defined flatpak}
 %global user_dynamic 0
 %global user_static 0
@@ -218,6 +226,7 @@
 %global have_libcacard 0
 %global have_qatzip 0
 %global have_libcbor 0
+%global have_igvm 0
 %endif
 
 
@@ -291,6 +300,7 @@
 %define requires_device_display_virtio_gpu_ccw Requires: %{name}-device-display-virtio-gpu-ccw = %{evr}
 %define requires_device_display_virtio_vga Requires: %{name}-device-display-virtio-vga = %{evr}
 %define requires_package_qemu_pr_helper Requires: qemu-pr-helper
+%define requires_package_passt Requires: passt
 %ifnarch %{ix86}
 %if 0%{?fedora} || 0%{?rhel} > 9
 %define requires_package_virtiofsd Requires: vhostuser-backend(fs)
@@ -402,6 +412,7 @@
 %{requires_device_usb_host} \
 %{requires_device_usb_redirect} \
 %{requires_device_usb_smartcard} \
+%{requires_package_passt} \
 %{requires_package_qemu_pr_helper} \
 %{requires_package_virtiofsd} \
 
@@ -433,7 +444,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.0.3
+Version:        10.1.0
 Release:        100%{?dist}
 Epoch:          2
 
@@ -483,16 +494,10 @@ Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
 # https://bugzilla.redhat.com/show_bug.cgi?id=2375004
 # Sent upstream 2025-07-15
 Patch: 0001-python-Replace-asyncio.get_event_loop-for-Python-3.1.patch
-# qemu:func-quick+func-hppa test is unstable
-# Upstream 4b1f5b73e0
-Patch: 0001-tests-functional-Use-no-shutdown-in-the-hppa_seabios.patch
 # Increase test-replication timeout
 # NOT upstream, but see https://gitlab.com/qemu-project/qemu/-/issues/3035
 Patch: 0002-TEMPORARY-increase-test-timeout.patch
-# Fix build on x86_64 with Xen 4.20
-# sent upstream 2025-07-17, e.g.
-# https://lists.xen.org/archives/html/xen-devel/2025-07/msg01268.html
-Patch: 0001-xen-passthrough-add-missing-error-report-include.patch
+
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -566,7 +571,10 @@ BuildRequires: libbpf-devel >= 1.0.0
 %if %{have_libblkio}
 BuildRequires: libblkio-devel
 %endif
-
+# For coroutine debugging
+%ifarch %{valgrind_arches}
+BuildRequires: valgrind-devel
+%endif
 
 # Fedora specific
 %if "%{toolchain}" == "clang"
@@ -681,8 +689,9 @@ BuildRequires: qatzip-devel
 # --enable-libcbor
 BuildRequires: libcbor-devel
 %endif
-
-BuildRequires: systemd-rpm-macros
+%if %{have_igvm}
+BuildRequires: igvm-devel
+%endif
 
 %if %{user_static}
 BuildRequires: glibc-static
@@ -699,6 +708,7 @@ Requires: %{name}-user = %{evr}
 Requires: %{name}-system-arm = %{evr}
 Requires: %{name}-system-avr = %{evr}
 Requires: %{name}-system-m68k = %{evr}
+Requires: %{name}-system-microblaze = %{evr}
 Requires: %{name}-system-mips = %{evr}
 Requires: %{name}-system-or1k = %{evr}
 Requires: %{name}-system-ppc = %{evr}
@@ -715,7 +725,6 @@ Requires: %{name}-tools = %{evr}
 Requires: %{name}-system-aarch64 = %{evr}
 Requires: %{name}-system-alpha = %{evr}
 Requires: %{name}-system-loongarch64 = %{evr}
-Requires: %{name}-system-microblaze = %{evr}
 Requires: %{name}-system-s390x = %{evr}
 %endif
 
@@ -743,8 +752,6 @@ Obsoletes: %{name}-system-hppa <= %{evr}
 Obsoletes: %{name}-system-hppa-core <= %{evr}
 Obsoletes: %{name}-system-loongarch64 <= %{evr}
 Obsoletes: %{name}-system-loongarch64-core <= %{evr}
-Obsoletes: %{name}-system-microblaze <= %{evr}
-Obsoletes: %{name}-system-microblaze-core <= %{evr}
 Obsoletes: %{name}-system-s390x <= %{evr}
 Obsoletes: %{name}-system-s390x-core <= %{evr}
 %endif
@@ -807,8 +814,7 @@ Requires: %{name} = %{evr}
 The %{name}-tests rpm contains tests that can be used to verify
 the functionality of the installed %{name} package
 
-Install this package if you want access to the avocado_qemu
-tests, or qemu-iotests.
+Install this package if you want access to the qemu-iotests.
 
 
 %if %{have_libblkio}
@@ -1648,8 +1654,6 @@ mkdir -p %{static_builddir}
   --disable-asan                   \\\
   --disable-attr                   \\\
   --disable-auth-pam               \\\
-  --disable-avx2                   \\\
-  --disable-avx512bw               \\\
   --disable-blkio                  \\\
   --disable-block-drv-whitelist-in-tools \\\
   --disable-bochs                  \\\
@@ -1694,6 +1698,7 @@ mkdir -p %{static_builddir}
   --disable-hv-balloon             \\\
   --disable-hvf                    \\\
   --disable-iconv                  \\\
+  --disable-igvm                   \\\
   --disable-jack                   \\\
   --disable-kvm                    \\\
   --disable-l2tpv3                 \\\
@@ -1727,6 +1732,7 @@ mkdir -p %{static_builddir}
   --disable-oss                    \\\
   --disable-pa                     \\\
   --disable-parallels              \\\
+  --disable-passt                  \\\
   --disable-pie                    \\\
   --disable-pipewire               \\\
   --disable-pixman                 \\\
@@ -1768,6 +1774,7 @@ mkdir -p %{static_builddir}
   --disable-ubsan                  \\\
   --disable-usb-redir              \\\
   --disable-user                   \\\
+  --disable-valgrind               \\\
   --disable-vpc                    \\\
   --disable-vde                    \\\
   --disable-vdi                    \\\
@@ -1847,10 +1854,6 @@ run_configure \
 %endif
   --enable-alsa \
   --enable-attr \
-%ifarch %{ix86} x86_64
-  --enable-avx2 \
-  --enable-avx512bw \
-%endif
 %if %{have_libblkio}
   --enable-blkio \
 %endif
@@ -1864,6 +1867,7 @@ run_configure \
 %endif
   --enable-debug-info \
   --enable-docs \
+  --enable-passt \
 %if %{have_fdt}
   --enable-fdt=system \
 %endif
@@ -1871,6 +1875,9 @@ run_configure \
   --enable-gnutls \
   --enable-guest-agent \
   --enable-iconv \
+%if %{have_igvm}
+  --enable-igvm \
+%endif
 %if %{have_jack}
   --enable-jack \
 %endif
@@ -1997,6 +2004,9 @@ run_configure \
 %if %{have_spice}
   --enable-spice \
   --enable-spice-protocol \
+%endif
+%ifarch %{valgrind_arches}
+  --enable-valgrind \
 %endif
   --enable-vdi \
   --enable-vhost-crypto \
@@ -2142,14 +2152,9 @@ mkdir -p %{buildroot}%{_datadir}/%{name}/vhost-user
 # Create new directories and put them all under tests-src
 mkdir -p %{buildroot}%{testsdir}/python
 mkdir -p %{buildroot}%{testsdir}/tests
-mkdir -p %{buildroot}%{testsdir}/tests/avocado
 mkdir -p %{buildroot}%{testsdir}/tests/qemu-iotests
 mkdir -p %{buildroot}%{testsdir}/scripts/qmp
 
-# Install avocado_qemu tests
-cp -R %{qemu_kvm_build}/tests/avocado/* %{buildroot}%{testsdir}/tests/avocado/
-
-# Install qemu.py and qmp/ scripts required to run avocado_qemu tests
 cp -R %{qemu_kvm_build}/python/qemu %{buildroot}%{testsdir}/python
 cp -R %{qemu_kvm_build}/scripts/qmp/* %{buildroot}%{testsdir}/scripts/qmp
 install -p -m 0755 tests/Makefile.include %{buildroot}%{testsdir}/tests/
@@ -2292,7 +2297,6 @@ rm -f \
 %{buildroot}%{_datadir}/%{name}/palcode-clipper \
 %{buildroot}%{_datadir}/%{name}/hppa-firmware.img \
 %{buildroot}%{_datadir}/%{name}/hppa-firmware64.img \
-%{buildroot}%{_datadir}/%{name}/petalogix*.dtb \
 %{buildroot}%{_datadir}/%{name}/s390-ccw.img \
 %endif
 
@@ -2559,6 +2563,7 @@ popd
 %files common -f %{name}.lang
 %license COPYING COPYING.LIB LICENSE
 %dir %{_datadir}/%{name}/
+%dir %{_datadir}/%{name}/dtb/
 %dir %{_datadir}/%{name}/vhost-user/
 %{_datadir}/icons/*
 %{_datadir}/%{name}/keymaps/
@@ -3169,6 +3174,7 @@ popd
 %files system-arm
 %files system-arm-core
 %{_bindir}/qemu-system-arm
+%{_datadir}/%{name}/ast27x0_bootrom.bin
 %{_datadir}/%{name}/npcm7xx_bootrom.bin
 %{_datadir}/%{name}/npcm8xx_bootrom.bin
 %{_datadir}/systemtap/tapset/qemu-system-arm.stp
@@ -3219,7 +3225,6 @@ popd
 %{_mandir}/man1/qemu-system-m68k.1*
 
 
-%if %{have_64bit}
 %files system-microblaze
 %files system-microblaze-core
 %{_bindir}/qemu-system-microblaze
@@ -3232,8 +3237,7 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-microblazeel-simpletrace.stp
 %{_mandir}/man1/qemu-system-microblaze.1*
 %{_mandir}/man1/qemu-system-microblazeel.1*
-%{_datadir}/%{name}/petalogix*.dtb
-%endif
+%{_datadir}/%{name}/dtb/petalogix*.dtb
 
 
 %files system-mips
@@ -3287,8 +3291,8 @@ popd
 %{_datadir}/systemtap/tapset/qemu-system-ppc64-simpletrace.stp
 %{_mandir}/man1/qemu-system-ppc64.1*
 %endif
-%{_datadir}/%{name}/bamboo.dtb
-%{_datadir}/%{name}/canyonlands.dtb
+%{_datadir}/%{name}/dtb/bamboo.dtb
+%{_datadir}/%{name}/dtb/canyonlands.dtb
 %{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/pnv-pnor.bin
 %{_datadir}/%{name}/skiboot.lid
@@ -3427,6 +3431,10 @@ popd
 
 
 %changelog
+* Wed Aug 27 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.0-100
+- 10.1.0
+- Rawhide sync
+
 * Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.0.3-100
 - 10.0.3
 

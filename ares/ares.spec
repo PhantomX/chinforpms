@@ -17,7 +17,7 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        145
+Version:        146
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -100,6 +100,9 @@ sed -e 's|ARES_ENABLE_LIBRASHADER|ARES_BUNDLE_SHADERS|' -i desktop-ui/CMakeLists
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
+%if %{without snapshot}
+  -DARES_BUILD_OFFICIAL:BOOL=ON \
+%endif
   -DARES_BUILD_LOCAL:BOOL=OFF \
   -DARES_ENABLE_MINIMUM_CPU:BOOL=OFF \
   -DENABLE_IPO:BOOL=OFF \
@@ -147,6 +150,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Aug 27 2025 Phantom X <megaphantomx at hotmail dot com> - 146-1
+- 146
+
 * Thu Jul 10 2025 Phantom X <megaphantomx at hotmail dot com> - 145-1
 - 145
 
