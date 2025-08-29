@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit a51953e4f9f8ec4868c473857a4f297eb7a5e2b8
+%global commit 702a2beb7c3b30f84b90e88fc06ece2cd64d36f4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250822
+%global date 20250828
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc3.275617
+Version:        0.0.3~rc3.27649
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -317,9 +317,8 @@ This is the Qt frontend.
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
-mkdir -p src/dynarmic/externals/{mcl,unordered_dense,zycore-c,zydis}
+mkdir -p src/dynarmic/externals/{mcl,zycore-c,zydis}
 tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
-tar -xf %{S:111} -C src/dynarmic/externals/unordered_dense --strip-components 1
 tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
 tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
 sed \
@@ -338,6 +337,8 @@ rm -rf \
 rm -rf sse2neon
 %endif
 
+mkdir -p externals/unordered_dense
+tar -xf %{S:111} -C externals/unordered_dense --strip-components 1
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
@@ -434,10 +435,14 @@ sed \
   -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
-sed -e '/find_program/s|GIT git|GIT cp|g' -i externals/nx_tzdb/CMakeLists.txt
+sed \
+  -e '/find_program/s|GIT git|GIT cp|g' \
+  -e 's|FATAL_ERROR|STATUS|g' \
+  -i externals/nx_tzdb/CMakeLists.txt
 
 sed \
   -e 's|GIT_PROGRAM git|GIT_PROGRAM true|g' \
+  -e 's|${NX_TZDB_DIR}/zoneinfo|${NX_TZDB_DIR}/%{nxtzdb_ver}|g' \
   -e 's|${TZ_COMMIT_TIME}|1680663527|g' \
   -e 's|${TZDB_VERSION}|%{nxtzdb_ver}|g' \
   -i externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt
