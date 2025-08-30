@@ -1,7 +1,7 @@
 %global commit 627a1dc459cb9bc7a247d520ea871454d0c63fba
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250825
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -88,7 +88,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver ce66dea1972157470ae5aed57a2a5595381c8d43
+%global wine_stagingver 10.14
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -99,7 +99,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 4a53c0a8caaf7b66e126eeb1c82b623cbf129991
+%global tkg_id 7ee45b572da2ba2f34576e48b01b5d7d54ba0635
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -144,8 +144,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.13
-Release:        101%{?dist}
+Version:        10.14
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -2653,6 +2653,9 @@ fi
 
 
 %changelog
+* Sat Aug 30 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.14-100
+- 10.14
+
 * Sun Aug 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.13-100
 - 10.13
 
