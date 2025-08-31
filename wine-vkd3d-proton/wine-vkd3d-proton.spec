@@ -21,30 +21,34 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 2b9f7cae1f7d4eae3d2d33a1a27d42d7a1a0b86e
+%global commit 6faa47d495c8202a4c98211ffe7c8f8463382e14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250526
+%global date 20250827
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 83bf67c7aecd3e7e914bfad6f58c51f2ebf1fed1
+%global commit1 74f97ad8f33d30839ede7aaf69cbf711193517cd
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
+
+%global commit100 05f1d21d19dcb0c62275931b54ada9bf87915438
+%global shortcommit100 %(c=%{commit100}; echo ${c:0:7})
+%global srcname100 dxbc-spirv
 
 %global commit2 e9a8ceeddbf7e3aaadac2ab6f8a6ab6437872e88
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
-%global commit3 bc491f6cf028894a848e56a681c6e2d944bac3c8
+%global commit3 4b7bcb7e5cf71015b3299088d22004bfe4e13a5e
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 68300dc07ac3dc592dbbdb87e02d5180f984ad12
+%global commit4 b39ab380a44b6c8df462c34e976ea9ce2d2c336b
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 3b9447dc98371e96b59a6225bd062a9867e1d203
+%global commit5 c8ad050fcb29e42a2f57d9f59e97488f465c436d
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -71,7 +75,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.14.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -84,6 +88,7 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
+Source100:      https://github.com/doitsujin/%{srcname100}/archive/%{commit100}/%{srcname100}-%{shortcommit100}.tar.gz
 Source2:        %{kg_url}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 Source3:        %{kg_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %if %{without vulkan}
@@ -151,13 +156,12 @@ API on top of Vulkan. The project serves as the development effort for Direct3D
 tar -xf %{S:1} -C subprojects/dxil-spirv --strip-components 1
 tar -xf %{S:2} -C subprojects/dxil-spirv/third_party/SPIRV-Tools --strip-components 1
 tar -xf %{S:3} -C subprojects/dxil-spirv/third_party/SPIRV-Cross --strip-components 1
+tar -xf %{S:100} -C subprojects/dxil-spirv/subprojects/dxbc-spirv --strip-components 1
 %if %{without vulkan}
 tar -xf %{S:4} -C khronos/Vulkan-Headers --strip-components 1
 %endif
 %if %{without spirv}
 tar -xf %{S:5} -C khronos/SPIRV-Headers --strip-components 1
-rm -rf subprojects/dxil-spirv/third_party/spirv-headers
-ln -sf ../../../khronos/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
 %endif
 
 find -type f -name '*.h' -exec chmod -x {} ';'
@@ -174,11 +178,12 @@ ln -sf %{_includedir}/vk_video \
 mkdir -p khronos/SPIRV-Headers/include
 ln -sf %{_includedir}/spirv \
   khronos/SPIRV-Headers/include/spirv
-
-mkdir -p subprojects/dxil-spirv/third_party/spirv-headers/include/
-ln -sf %{_includedir}/spirv \
-  subprojects/dxil-spirv/third_party/spirv-headers/include/spirv
 %endif
+
+rm -rf subprojects/dxil-spirv/third_party/spirv-headers
+ln -sf ../../../khronos/SPIRV-Headers subprojects/dxil-spirv/third_party/spirv-headers
+rm -rf subprojects/dxil-spirv/subprojects/dxbc-spirv/submodules/spirv_headers
+ln -sf ../../../../../khronos/SPIRV-Headers subprojects/dxil-spirv/subprojects/dxbc-spirv/submodules/spirv_headers
 
 sed \
   -e 's|"unknown"|"%{shortcommit3}"|' \
@@ -199,6 +204,7 @@ cp %{S:10} README.%{pkgname}
 cp %{S:11} .
 
 cp -p subprojects/dxil-spirv/LICENSE.MIT LICENSE.MIT.dxil-spirv
+cp -p subprojects/dxil-spirv/subprojects/dxbc-spirv/LICENSE LICENSE.MIT.dxbc-spirv
 
 
 %build

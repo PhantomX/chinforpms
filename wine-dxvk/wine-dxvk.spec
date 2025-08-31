@@ -21,14 +21,14 @@ BuildArch:      noarch
 %global commit ac59b1d3ee49d9e40512fa2504b29fbae55ba877
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250829
-%bcond snapshot 1
+%bcond snapshot 0
 
 %bcond debug 0
 %bcond gplasync 1
 %bcond spirv 0
 %bcond vulkan 1
 
-%global gplasync_id 94eb0399ee647efdf630454ee1efe53130ed3fab
+%global gplasync_id bdbd9f6d98057477b3a44921dcd3e2e08b84d935
 
 %global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
@@ -54,7 +54,7 @@ BuildArch:      noarch
 %if %{with snapshot}
 %global gplasync_ver master
 %else
-%global gplasync_ver 2.6.2-1
+%global gplasync_ver 2.7-1
 %endif
 
 %global winecommonver 7.1
@@ -70,8 +70,8 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        2.7.0
-Release:        101%{?dist}
+Version:        2.7.1
+Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -300,6 +300,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sat Aug 30 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-100
+- 2.7.1
+
 * Sat Jul 05 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.0-100.20250705gitdaed0c1
 - 2.7.0
 

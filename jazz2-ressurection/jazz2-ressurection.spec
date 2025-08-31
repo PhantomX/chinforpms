@@ -1,23 +1,18 @@
-%global commit 57b98ceb9ef157e43ed5e9854b1aae5da3875cce
+%global commit 4540b7790bf7b3bf6814d4d480a83179248b9ff6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250318
+%global date 20250823
 %bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-# Update simdjson
-%bcond simdjson 1
-
-%global simdjson_ver 3.11.6
-
 %global binname jazz2
 %global pkgname jazz2-native
 %global vc_url https://github.com/deathkiller/jazz2-native
 
 Name:           jazz2-ressurection
-Version:        3.2.0
+Version:        3.4.0
 Release:        1%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
@@ -28,10 +23,6 @@ URL:            https://deat.tk/jazz2/
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
-%endif
-%if %{with simdjson}
-Source10:       https://github.com/simdjson/simdjson/releases/download/v%{simdjson_ver}/simdjson.cpp#/simdjson-%{simdjson_ver}.cpp
-Source11:       https://github.com/simdjson/simdjson/releases/download/v%{simdjson_ver}/simdjson.h#/simdjson-%{simdjson_ver}.h
 %endif
 
 Patch10:        0001-JoyMappingDb-add-some-controllers.patch
@@ -46,7 +37,6 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  cmake(glfw3)
 BuildRequires:  cmake(OpenAL)
-BuildRequires:  cmake(simdjson)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libdw)
 BuildRequires:  pkgconfig(libopenmpt)
@@ -57,8 +47,6 @@ BuildRequires:  pkgconfig(zlib)
 Requires:       hicolor-icon-theme
 Requires:       sdl_gamecontrollerdb
 
-Provides:       bundle(simdjson) = %{simdjson_ver}
-
 
 %description
 Jazz² Resurrection is reimplementation of the game Jazz Jackrabbit 2 released in
@@ -67,11 +55,6 @@ Jazz² Resurrection is reimplementation of the game Jazz Jackrabbit 2 released i
 
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
-
-%if %{with simdjson}
-cp -f %{S:10} Sources/simdjson/simdjson.cpp
-cp -f %{S:11} Sources/simdjson/simdjson.h
-%endif
 
 sed \
   -e 's|${NCINE_VERSION}|%{version}-%{release}|' \
@@ -122,6 +105,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Sun Aug 31 2025 Phantom X <megaphantomx at hotmail dot com> - 3.4.0-1.20250823git4540b77
+- 3.4.0
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-1.20250318git57b98ce
 - 3.2.0
 
