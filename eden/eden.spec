@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 702a2beb7c3b30f84b90e88fc06ece2cd64d36f4
+%global commit e28b0d2590f9f0bd81d22c3410e254620e8fbd87
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250828
+%global date 20250901
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -119,12 +119,12 @@
 %global shortcommit 0
 %endif
 
-%global appname org.%{name}_emu.%{name}
+%global appname dev.%{name}_emu.%{name}
 
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc3.27649
+Version:        0.0.3~rc3.27668
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -253,7 +253,7 @@ BuildRequires:  pkgconfig(sdl2) >= 2.32.0
 BuildRequires:  cmake(Qt%{qt_ver}Core)
 BuildRequires:  cmake(Qt%{qt_ver}DBus)
 BuildRequires:  cmake(Qt%{qt_ver}Gui)
-%dnl BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
+BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
 BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}WebEngineCore)
@@ -322,7 +322,9 @@ tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
 tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
 sed \
+%if %{without xbyak}
   -e '/find_/s|xbyak|xbyak_DISABLED|g' \
+%endif
   -e '/-pedantic-errors/d' \
   -e '/-mtune=core2/d' \
   -i src/dynarmic/CMakeLists.txt
@@ -442,7 +444,6 @@ sed \
 
 sed \
   -e 's|GIT_PROGRAM git|GIT_PROGRAM true|g' \
-  -e 's|${NX_TZDB_DIR}/zoneinfo|${NX_TZDB_DIR}/%{nxtzdb_ver}|g' \
   -e 's|${TZ_COMMIT_TIME}|1680663527|g' \
   -e 's|${TZDB_VERSION}|%{nxtzdb_ver}|g' \
   -i externals/nx_tzdb/tzdb_to_nx/src/tzdb/CMakeLists.txt
@@ -463,11 +464,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
 
 
 %build
-%if %{with xbyak}
-%global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
-export CFLAGS+=" %{xbyak_flags}"
-export CXXFLAGS+=" %{xbyak_flags}"
-%endif
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -476,7 +472,7 @@ export CXXFLAGS+=" %{xbyak_flags}"
   -DYUZU_ENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
-  -DENABLE_QT_TRANSLATION:BOOL=OFF \
+  -DENABLE_QT_TRANSLATION:BOOL=ON \
   -DENABLE_QT_UPDATE_CHECKER:BOOL=OFF \
   %{?with_qt6:-DENABLE_QT6:BOOL=ON} \
 %else

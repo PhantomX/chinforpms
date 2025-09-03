@@ -5,9 +5,9 @@
 %{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 48c58dbd18501fae92e641b6ee6ca5ca9de0d5c3
+%global commit 0243f81c264ea8d1bbaa107f26fb6644f767c1e8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250711
+%global date 20250829
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -29,7 +29,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
-%global commit5 76b52ebf77833908dc4c0dd6c70a9c357ac720bd
+%global commit5 fc9889c889561c5882e83819dcaffef5ed45529b
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
@@ -43,6 +43,7 @@
 %bcond vulkan 1
 # Build with x11 instead SDL
 %bcond x11 0
+%bcond xbyak 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -56,12 +57,13 @@
 %global nowide_ver 11.3.0
 %global stb_ver 2.25
 %global vk_ver 1.3.261
+%global xbyak_ver 5.891
 
 %global sver %%(echo %{version} | cut -d. -f-2)
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.5.23
+Version:        2.5.33
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -110,7 +112,11 @@ BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(asio)
-BuildRequires:  cmake(xbyak)
+%if %{with xbyak}
+BuildRequires:  cmake(xbyak) >= 7
+%else
+Provides:       bundled(xbyak) = %{xbyak_ver}
+%endif
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  cmake(glm)
@@ -168,7 +174,7 @@ Provides:       bundled(vixl)
 %autopatch -M 499 -p1
 
 pushd core/deps
-rm -rf glm libzip lzma miniupnpc oboe SDL xbyak xxHash zlib
+rm -rf glm libzip lzma miniupnpc oboe SDL xxHash zlib
 
 tar -xf %{S:1} -C luabridge/ --strip-components 1
 tar -xf %{S:2} -C breakpad/ --strip-components 1
@@ -186,6 +192,12 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
 tar -xf %{S:6} -C rcheevos/ --strip-components 1
 cp -p rcheevos/LICENSE LICENSE.rcheevos
+%if %{with xbyak}
+rm -rf xbyak
+%else
+sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../../CMakeLists.txt
+cp xbyak/COPYRIGHT LICENSE.xbyak
+%endif
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/LICENSE LICENSE.nowide

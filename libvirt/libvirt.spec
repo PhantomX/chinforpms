@@ -279,7 +279,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.6.0
+Version: 11.7.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -2430,6 +2430,9 @@ done
 %{_unitdir}/virtchd.service
 %{_unitdir}/virtchd.socket
 %{_libdir}/libvirt/connection-driver/libvirt_driver_ch.so
+%config(noreplace) %{_sysconfdir}/libvirt/ch.conf
+%{_datadir}/augeas/lenses/libvirtd_ch.aug
+%{_datadir}/augeas/lenses/tests/test_libvirtd_ch.aug
     %endif
 
 %files client
@@ -2652,6 +2655,9 @@ done
 
 
 %changelog
+* Tue Sep 02 2025 Phantom X <megaphantomx at hotmail dot com> - 11.7.0-100
+- 11.7.0
+
 * Fri Aug 01 2025 Phantom X <megaphantomx at hotmail dot com> - 11.6.0-100
 - 11.6.0
 

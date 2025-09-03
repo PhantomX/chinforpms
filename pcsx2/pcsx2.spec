@@ -34,6 +34,7 @@
 # Enable system soundtouch_ds
 %bcond soundtouch 0
 %bcond vulkan 1
+%bcond xbyak 0
 
 %global appbin %{name}-qt
 %global appname net.pcsx2.PCSX2
@@ -55,13 +56,14 @@
 %global simpleini_ver 4.22
 %global soundtouch_ver 2.3.3
 %global xxhash_ver 0.8.1
+%global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.123
+Version:        2.5.149
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_shaderc: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_shaderc: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}%{!?with_xbyak: AND BSD-3-Clause}
 URL:            https://github.com/PCSX2/pcsx2
 
 %if %{with snapshot}
@@ -184,7 +186,11 @@ BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(wayland-client)
-BuildRequires:  cmake(xbyak)
+%if %{with xbyak}
+BuildRequires:  cmake(xbyak) >= %{xbyak_ver}
+%else
+Provides:       bundled(xbyak) = %{xbyak_ver}
+%endif
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.296
@@ -252,7 +258,7 @@ pushd 3rdparty
 rm -rf \
   cpuinfo cubeb d3d12memalloc discord-rpc ffmpeg GL gtest libchdr libwebp \
   libpng libzip lzma qt rainterface rapidjson sdl2 wil \
-  winpixeventruntime xbyak xz zlib zstd zydis
+  winpixeventruntime xz zlib zstd zydis
 
 %if %{with fmt}
 rm -rf fmt
@@ -281,6 +287,14 @@ rm -rf vulkan
 %else
 tar -xf %{S:12} -C vulkan-headers --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+%endif
+
+%if %{with xbyak}
+rm -rf xbyak
+%else
+sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
+mv xbyak/xbyak/* xbyak/
+cp xbyak/COPYRIGHT LICENSE.xbyak
 %endif
 
 #cp -p rainterface/LICENSE LICENSE.rainterface

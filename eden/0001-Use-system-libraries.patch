@@ -1,4 +1,4 @@
-From 53acb4e96c2f6539a7996b6edc445dd01d4d35de Mon Sep 17 00:00:00 2001
+From 641422c27f7067007a39090a795accc279122dd8 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 14 Aug 2025 20:44:13 -0300
 Subject: [PATCH] Use system libraries
@@ -11,13 +11,14 @@ https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
  CMakeModules/FindMBEDTLS.cmake        | 23 +++++++++++
  externals/CMakeLists.txt              | 58 +++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt       |  5 +++
+ externals/nx_tzdb/CMakeLists.txt      |  2 +-
  src/dynarmic/externals/CMakeLists.txt | 30 ++++++++++++--
  src/yuzu/externals/CMakeLists.txt     | 11 +++++
- 6 files changed, 142 insertions(+), 6 deletions(-)
+ 7 files changed, 143 insertions(+), 7 deletions(-)
  create mode 100644 CMakeModules/FindMBEDTLS.cmake
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d11b58b..5999d61 100644
+index 9abca56..0c1d30e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -31,7 +31,6 @@ endif()
@@ -28,7 +29,7 @@ index d11b58b..5999d61 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -459,7 +458,7 @@ if (YUZU_USE_CPM)
+@@ -461,7 +460,7 @@ if (YUZU_USE_CPM)
      AddJsonPackage(opus)
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -37,7 +38,7 @@ index d11b58b..5999d61 100644
      find_package(LLVM MODULE COMPONENTS Demangle)
      find_package(nlohmann_json 3.8 REQUIRED)
      find_package(lz4 REQUIRED)
-@@ -470,6 +469,12 @@ else()
+@@ -472,6 +471,12 @@ else()
      find_package(ZLIB 1.2 REQUIRED)
      find_package(zstd 1.5 REQUIRED MODULE)
  
@@ -50,7 +51,7 @@ index d11b58b..5999d61 100644
      if (YUZU_TESTS)
          find_package(Catch2 3.0.1 REQUIRED)
      endif()
-@@ -484,7 +489,11 @@ else()
+@@ -486,7 +491,11 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -62,7 +63,7 @@ index d11b58b..5999d61 100644
  endif()
  
  if (ENABLE_LIBUSB)
-@@ -504,10 +513,15 @@ if (USE_DISCORD_PRESENCE)
+@@ -506,10 +515,15 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -78,7 +79,7 @@ index d11b58b..5999d61 100644
      AddJsonPackage(cubeb)
  
      if (cubeb_ADDED)
-@@ -531,6 +545,9 @@ if(ENABLE_CUBEB)
+@@ -533,6 +547,9 @@ if(ENABLE_CUBEB)
              )
          endif()
      endif()
@@ -118,7 +119,7 @@ index 0000000..97c4515
 +
 +mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index b209b48..9ab8045 100644
+index f66423a..c4881d1 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -33,11 +33,18 @@ endif()
@@ -240,10 +241,10 @@ index b209b48..9ab8045 100644
  AddJsonPackage(vulkan-memory-allocator)
 +endif()
  
- if (NOT TARGET LLVM::Demangle)
-     add_library(demangle demangle/ItaniumDemangle.cpp)
+ if (VulkanMemoryAllocator_ADDED AND MSVC)
+     target_compile_options(VulkanMemoryAllocator INTERFACE /wd4189)
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index b514ede..13c6f15 100644
+index ff35c8d..fe4089b 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
 @@ -23,10 +23,15 @@ if (NOT WIN32 AND NOT ANDROID)
@@ -261,6 +262,19 @@ index b514ede..13c6f15 100644
 +    endif()
      set(FFmpeg_MAKEFILE ${FFmpeg_BUILD_DIR}/Makefile)
      make_directory(${FFmpeg_BUILD_DIR})
+ 
+diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
+index 35d3e6d..b11bed9 100644
+--- a/externals/nx_tzdb/CMakeLists.txt
++++ b/externals/nx_tzdb/CMakeLists.txt
+@@ -60,7 +60,7 @@ if (MSVC)
+             ${NX_TZDB_ARCHIVE}
+         DESTINATION
+             ${NX_TZDB_BASE_DIR})
+-else()
++elseif (CAN_BUILD_NX_TZDB AND YUZU_DOWNLOAD_TIME_ZONE_DATA)
+     message(STATUS "Downloading time zone data...")
+     AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/externals/CMakeLists.txt b/src/dynarmic/externals/CMakeLists.txt
 index 23cfd42..17e1428 100644

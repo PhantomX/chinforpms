@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 48db1c1de532ea3b5b5f80262b3e6db30a011ac4
+%global commit 6483b33ee141c0bbd0e81891fbe5d2768bd312d8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250820
+%global date 20250831
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -36,11 +36,12 @@
 %bcond vma 1
 # Enable system vulkan
 %bcond vulkan 1
+%bcond xbyak 0
 %bcond zstd 1
 # Build tests
 %bcond tests 0
 
-%global commit1 60bdec16580e370ecd019b0d4a92d07378f6b136
+%global commit1 4f39041699412873d0afcec89a9313148a192647
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 compatibility-list
 
@@ -100,7 +101,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 cpp-jwt
 
-%global commit13 b3a6aa7b03c51ba976e4f4e96b1e31f77f43f312
+%global commit13 fc9889c889561c5882e83819dcaffef5ed45529b
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -132,11 +133,16 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 zstd
 
+%global commit21 0d67fd1530016b7c56f3cd74b3fca920f4c3e2b4
+%global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
+%global srcname21 xbyak
+
 %global ffmpeg_includedir %(pkg-config --variable=includedir libavcodec)
 
 %global cpphttplibver b251668
 %global glad_ver 0.1.36
 %global vkh_ver 1.4.304
+%global xbyak_ver 7.23.1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -149,7 +155,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.3
+Version:        2123~rc2.6
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -207,6 +213,9 @@ Source18:       https://github.com/knik0/%{srcname18}/archive/%{commit18}/%{srcn
 Source19:       https://github.com/KhronosGroup/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
 Source20:       https://github.com/facebook/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+%if %{without xbyak}
+Source21:       https://github.com/herumi/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
+%endif
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
@@ -298,7 +307,11 @@ Provides:       bundled(vma) = ~git%{?shortcommit16}
 %if %{with vulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 %endif
-BuildRequires:  cmake(xbyak)
+%if %{with xbyak}
+BuildRequires:  cmake(xbyak) >= %{xbyak_ver}
+%else
+Provides:       bundled(xbyak) = %{xbyak_ver}
+%endif
 BuildRequires:  pkgconfig(xkbcommon)
 
 Requires:       hicolor-icon-theme
@@ -401,6 +414,9 @@ tar -xf %{S:20} -C externals/zstd --strip-components 1 \
 %else
 tar -xf %{S:20} -C externals/zstd --strip-components 1
 %endif
+%if %{without xbyak}
+tar -xf %{S:21} -C externals/xbyak --strip-components 1
+%endif
 
 find . -type f \( -name '*.c*' -o -name '*.h*' \) -exec chmod -x {} ';'
 
@@ -438,17 +454,21 @@ cp -p teakra/LICENSE LICENSE.teakra
 %if %{without vma}
 cp -p vma/LICENSE.txt LICENSE.vma
 %endif
+%if %{without xbyak}
+cp -p xbyak/COPYRIGHT LICENSE.xbyak
+%endif
 %if %{without zstd}
 cp -p zstd/COPYING COPYING.zstd
 cp -p zstd/LICENSE LICENSE.zstd
 %endif
 popd
 
-
 rm -rf externals/gamemode
 rm -f externals/json/json.hpp
 
 rm -rf externals/teakra/externals/catch/
+
+sed -e '/target_link_libraries/s|SYSTEM INTERFACE|INTERFACE|g' -i externals/CMakeLists.txt
 
 %if %{without fmt}
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt
@@ -492,9 +512,6 @@ export GITHUB_REF_TYPE=tag
 export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
 %endif
 
-%global xbyak_flags -DXBYAK_STRICT_CHECK_MEM_REG_SIZE=0
-export CFLAGS+=" %{xbyak_flags}"
-export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %cmake \
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
@@ -529,7 +546,7 @@ export CXXFLAGS+=" -fpermissive %{xbyak_flags}"
 %endif
   %{?with_vma:-DUSE_SYSTEM_VMA:BOOL=ON} \
   %{?with_vulkan:-DUSE_SYSTEM_VULKAN_HEADERS:BOOL=ON} \
-  -DUSE_SYSTEM_XBYAK:BOOL=ON \
+  %{?with_xbyak:-DUSE_SYSTEM_XBYAK:BOOL=ON} \
   %{?with_zstd:-DUSE_SYSTEM_ZSTD:BOOL=ON} \
   %{?with_boost:-DUSE_SYSTEM_BOOST:BOOL=ON} \
   %{?with_soundtouch:-DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON} \
