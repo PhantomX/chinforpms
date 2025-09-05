@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.4
+%define specrpmversion 6.16.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1253,10 +1253,6 @@ Patch7230:  %{pf_url}/d9b2b93c47dde314f34f56c8b85c1acee5dcf4d6.patch#/pf-cb-d9b2
 Patch7231:  %{pf_url}/c850b9a160c42b44ac701efeab7d20fad963b2f2.patch#/pf-cb-c850b9a.patch
 # cpuidle
 Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
-# crypto
-# fixes
-Patch7400:  %{pf_url}/7a6182b5469b0c09373c8c02517c75305a899291.patch#/pf-cb-7a6182b.patch
-# fs
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2126,10 +2122,6 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
-# crypto
-# fixes
-ApplyPatch %{PATCH7400}
-# fs
 %endif
 
 # openSUSE
@@ -4546,6 +4538,9 @@ fi\
 #
 #
 %changelog
+* Thu Sep 04 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.5-500.chinfo
+- 6.16.5
+
 * Thu Aug 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.4-500.chinfo
 - 6.16.4
 
