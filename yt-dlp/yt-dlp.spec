@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.08.27
+Version:        2025.09.05
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -14,6 +14,8 @@ URL:            https://github.com/yt-dlp/yt-dlp
 
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.conf
+
+Patch0:         yt-dlp-pr14180.patch
 
 BuildArch:      noarch
 
@@ -83,7 +85,7 @@ Fish command line completion support for %{name}.
 
 
 %prep
-%autosetup -N -p1
+%autosetup -p1
 
 # remove pre-built file
 rm -f %{name}
@@ -154,6 +156,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Sat Sep 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.09.05-100
+- 2025.09.05
+
 * Fri Aug 29 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.08.27-100
 - 2025.08.27
 

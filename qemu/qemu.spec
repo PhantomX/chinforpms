@@ -445,7 +445,7 @@ Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.1.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          2
 
 License: %{shrink:
@@ -498,6 +498,9 @@ Patch: 0001-python-Replace-asyncio.get_event_loop-for-Python-3.1.patch
 # NOT upstream, but see https://gitlab.com/qemu-project/qemu/-/issues/3035
 Patch: 0002-TEMPORARY-increase-test-timeout.patch
 
+# Fix crash with spice GL (bz 2391334)
+# not upstream, elmarco will submit
+Patch: 0001-ui-spice-fix-crash-when-disabling-GL-scanout-on.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -3431,6 +3434,9 @@ popd
 
 
 %changelog
+* Sun Sep 07 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.0-101
+- Rawhide sync
+
 * Wed Aug 27 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.0-100
 - 10.1.0
 - Rawhide sync

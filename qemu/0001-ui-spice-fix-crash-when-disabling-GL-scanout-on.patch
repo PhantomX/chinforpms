@@ -1,0 +1,41 @@
+From 0b4cec922f39626b0b4d27b66f3bceee5708fa91 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Marc-Andr=C3=A9=20Lureau?= <marcandre.lureau@redhat.com>
+Date: Thu, 28 Aug 2025 17:38:47 +0400
+Subject: [PATCH] ui/spice: fix crash when disabling GL scanout on
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When spice_qxl_gl_scanout2() isn't available, the fallback code
+incorrectly handles NULL arguments to disable the scanout, leading to:
+
+Program terminated with signal SIGSEGV, Segmentation fault.
+#0  spice_server_gl_scanout (qxl=0x55a25ce57ae8, fd=0x0, width=0, height=0, offset=0x0, stride=0x0, num_planes=0, format=0, modifier=72057594037927935, y_0_top=0)
+    at ../ui/spice-display.c:983
+983         if (num_planes <= 1) {
+
+Fixes: https://bugzilla.redhat.com/show_bug.cgi?id=2391334
+Fixes: 98a050ca93afd8 ("ui/spice: support multi plane dmabuf scanout")
+Signed-off-by: Marc-André Lureau <marcandre.lureau@redhat.com>
+---
+ ui/spice-display.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/ui/spice-display.c b/ui/spice-display.c
+index 669832c561..db71e866f8 100644
+--- a/ui/spice-display.c
++++ b/ui/spice-display.c
+@@ -980,7 +980,9 @@ static void spice_server_gl_scanout(QXLInstance *qxl,
+     spice_qxl_gl_scanout2(qxl, fd, width, height, offset, stride,
+                           num_planes, format, modifier, y_0_top);
+ #else
+-    if (num_planes <= 1) {
++    if (fd == NULL) {
++        spice_qxl_gl_scanout(qxl, -1, 0, 0, 0, 0, false);
++    } else if (num_planes <= 1) {
+         spice_qxl_gl_scanout(qxl, fd[0], width, height, stride[0], format, y_0_top);
+     } else {
+         error_report("SPICE server does not support multi plane GL scanout");
+-- 
+2.50.1
+

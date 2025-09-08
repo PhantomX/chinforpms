@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit e28b0d2590f9f0bd81d22c3410e254620e8fbd87
+%global commit 718891d11f53a8496ce1462ce37a3c0d4083ba33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250901
+%global date 20250905
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -42,7 +42,7 @@
 %global shortcommit110 %(c=%{commit110}; echo ${c:0:7})
 %global srcname110 mcl
 
-%global commit111 e59d30b7b12e1d04cc2fc9c6219e35bda447c17e
+%global commit111 73f3cbb237e84d483afafc743f1f14ec53e12314
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
 %global srcname111 unordered_dense
 
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3~rc3.27668
+Version:        0.0.3.27675
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -134,18 +134,18 @@ URL:            https://eden-emulator.github.io
 %if %{with snapshot}
 Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{vc_url}/%{name}/archive/%{version}.tar.gz#/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
-Source111:      https://github.com/Lizzie841/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
+Source111:      https://github.com/martinus/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
 Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}/%{srcname112}-%{shortcommit112}.tar.gz
 Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}/%{srcname113}-%{shortcommit113}.tar.gz
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
 %if %{without xbyak}
-Source13:       https://github.com/Lizzie841/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
 Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
@@ -339,8 +339,9 @@ rm -rf \
 rm -rf sse2neon
 %endif
 
-mkdir -p externals/unordered_dense
-tar -xf %{S:111} -C externals/unordered_dense --strip-components 1
+mkdir -p unordered-dense
+tar -xf %{S:111} -C unordered-dense --strip-components 1
+%{__scm_apply_patch -p1 -q} -d unordered-dense -i ../../.patch/unordered-dense/0001-cmake.patch
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
@@ -362,6 +363,8 @@ sed -e '/find_package/s|httplib|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
+%{__scm_apply_patch -p1 -q} -d cpp-jwt  -i ../../.patch/cpp-jwt/0001-no-install.patch
+%{__scm_apply_patch -p1 -q} -d cpp-jwt  -i ../../.patch/cpp-jwt/0002-missing-decl.patch
 sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %if %{without mbedtls}
@@ -543,6 +546,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Sep 06 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3.27675-1.20250905git718891d
+- 0.0.3
+
 * Sat Aug 23 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3~rc3.275617-1.20250822gita51953e
 - 0.0.3-rc3
 
