@@ -13,9 +13,9 @@
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 718891d11f53a8496ce1462ce37a3c0d4083ba33
+%global commit 9d2681ecc9565681db623fb71799e76381998512
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250905
+%global date 20250909
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -74,11 +74,11 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
-%global commit17 a54fa08a3bc929ce16cd84264bb0653e548955f9
+%global commit17 9eaea6328fae768d1cc524a27f0db6250e0a165a
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 cpp-jwt
 
-%global commit18 8c88150ca139e06aa2aae8349df8292a88148ea1
+%global commit18 ce4f81f4a926a0e0dcadd0128e016baba416e8ea
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 mbedtls
 
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27675
+Version:        0.0.3.27682
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -153,9 +153,9 @@ Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortc
 %if %{without httplib}
 Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
-Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+Source17:       https://github.com/crueter/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
-Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source18:       %{gh_url}/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://github.com/crueter/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
@@ -172,7 +172,6 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 
 
-Patch0:         %{name}-pr252.patch
 Patch10:        0001-Use-system-libraries.patch
 
 ExclusiveArch:  x86_64 aarch64
@@ -322,15 +321,18 @@ tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
 tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
 sed \
+  -e '/find_package/s|mcl|\0_DISABLED|g' \
+  -e '/find_/s|zycore|zycore_DISABLED|g' \
+  -e '/find_/s|zydis|zydis_DISABLED|g' \
+  -i src/dynarmic/CMakeLists.txt
+
+sed \
 %if %{without xbyak}
   -e '/find_/s|xbyak|xbyak_DISABLED|g' \
 %endif
   -e '/-pedantic-errors/d' \
   -e '/-mtune=core2/d' \
   -i src/dynarmic/CMakeLists.txt
-sed \
-  -e '/find_/s|Zydis|Zydis_DISABLED|g' \
-  -i src/dynarmic/externals/CMakeLists.txt src/dynarmic/CMakeModules/dynarmicConfig.cmake.in
 
 pushd externals
 rm -rf \
@@ -341,7 +343,6 @@ rm -rf sse2neon
 
 mkdir -p unordered-dense
 tar -xf %{S:111} -C unordered-dense --strip-components 1
-%{__scm_apply_patch -p1 -q} -d unordered-dense -i ../../.patch/unordered-dense/0001-cmake.patch
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
@@ -363,16 +364,13 @@ sed -e '/find_package/s|httplib|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
-%{__scm_apply_patch -p1 -q} -d cpp-jwt  -i ../../.patch/cpp-jwt/0001-no-install.patch
-%{__scm_apply_patch -p1 -q} -d cpp-jwt  -i ../../.patch/cpp-jwt/0002-missing-decl.patch
 sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %if %{without mbedtls}
 mkdir -p mbedtls
 tar -xf %{S:18} -C mbedtls --strip-components 1
-%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0001-cmake-version.patch
 sed \
-  -e '/find_package/s|MBEDTLS|\0_DISABLED|g' \
+  -e '/find_package/s|mbedtls|\0_DISABLED|g' \
   -i CMakeLists.txt
 %endif
 mkdir -p simpleini
@@ -489,7 +487,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_ROOM:BOOL=ON \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DYUZU_USE_EXTERNAL_VULKAN_HEADERS:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
   -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
   %{!?with_httplib:-DYUZU_USE_SYSTEM_HTTPLIB:BOOL=OFF} \

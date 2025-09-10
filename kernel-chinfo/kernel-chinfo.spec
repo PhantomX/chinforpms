@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.5
+%define specrpmversion 6.16.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1221,7 +1221,6 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1012: %{opensuse_url}/proc-fix-missing-pde_set_flags-for-net-proc-files.patch#/openSUSE-proc-fix-missing-pde_set_flags-for-net-proc-files.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1240,8 +1239,7 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/7a43fcd1f4682ef2c3c5d033c5698194e13883dc.patch#/pf-cb-7a43fcd.patch
-Patch6951:  %{pf_url}/2d1170dde93552cc5f09480700241be326b33e8c.patch#/pf-cb-2d1170d.patch
+Patch6950:  %{pf_url}/2d1170dde93552cc5f09480700241be326b33e8c.patch#/pf-cb-2d1170d.patch
 # kbuild
 Patch7000:  %{pf_url}/576775d56d2db5efb53ebe63caaf0b262ebf10a1.patch#/pf-cb-576775d.patch
 Patch7001:  %{pf_url}/92fb1e195758f65d9f1b8cefe915e50d2fc2ac7b.patch#/pf-cb-92fb1e1.patch
@@ -1253,6 +1251,10 @@ Patch7230:  %{pf_url}/d9b2b93c47dde314f34f56c8b85c1acee5dcf4d6.patch#/pf-cb-d9b2
 Patch7231:  %{pf_url}/c850b9a160c42b44ac701efeab7d20fad963b2f2.patch#/pf-cb-c850b9a.patch
 # cpuidle
 Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
+# fixes
+Patch7400:  %{pf_url}/862ed307cdb6281d669ac6a3124b109bac9d401c.patch#/pf-cb-862ed30.patch
+Patch7401:  %{pf_url}/a8da10d61b16a9c719708b07bce976afce86f372.patch#/pf-cb-a8da10d.patch
+Patch7402:  %{pf_url}/2f371362d8ae6573b5b7bbc1b4fd8a100b11c5dc.patch#/pf-cb-2f37136.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2110,7 +2112,6 @@ ApplyOptionalPatch %{PATCH999999}
 %if 0%{?post_factum}
 # archlinux
 ApplyPatch %{PATCH6950}
-ApplyPatch %{PATCH6951}
 # kbuild
 ApplyPatch %{PATCH7000}
 ApplyPatch %{PATCH7001}
@@ -2122,12 +2123,15 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
+# fixes
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
 %endif
 
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
-ApplyPatch %{PATCH1012}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
@@ -4538,6 +4542,9 @@ fi\
 #
 #
 %changelog
+* Tue Sep 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.6-500.chinfo
+- 6.16.6
+
 * Thu Sep 04 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.5-500.chinfo
 - 6.16.5
 

@@ -17,7 +17,7 @@
 
 
 Name:           SDL3
-Version:        3.2.20
+Version:        3.2.22
 Release:        100%{?dist}
 Summary:        Cross-platform multimedia library
 License:        Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)
@@ -200,6 +200,9 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_includedir}/SDL3/SDL_revision.h
 
 
 %changelog
+* Tue Sep 09 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.22-100
+- 3.2.22
+
 * Tue Aug 05 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.20-100
 - 3.2.20
 

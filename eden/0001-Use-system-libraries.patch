@@ -1,27 +1,23 @@
-From 04d986834fac3fc19756f4adc21d2e5fbd95b31d Mon Sep 17 00:00:00 2001
+From 4f7d6a81912efa3cfa271c7d847bdb8356f6b5c0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Thu, 14 Aug 2025 20:44:13 -0300
+Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
-FindMBETLS.cmake from Dolphin-emu project:
-https://github.com/dolphin-emu/dolphin
-https://github.com/dolphin-emu/dolphin/raw/master/CMake/FindMBEDTLS.cmake
 ---
- CMakeLists.txt                        | 21 ++++++++-
- CMakeModules/FindMBEDTLS.cmake        | 23 ++++++++++
- externals/CMakeLists.txt              | 64 +++++++++++++++++++++++++++
+ CMakeLists.txt                        | 21 +++++++++-
+ externals/CMakeLists.txt              | 60 +++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt       |  5 +++
  externals/nx_tzdb/CMakeLists.txt      |  2 +-
- src/dynarmic/externals/CMakeLists.txt | 22 +++++++++
+ src/dynarmic/CMakeLists.txt           |  6 +--
+ src/dynarmic/externals/CMakeLists.txt | 20 +++++++++
  src/yuzu/externals/CMakeLists.txt     | 11 +++++
- 7 files changed, 145 insertions(+), 3 deletions(-)
- create mode 100644 CMakeModules/FindMBEDTLS.cmake
+ 7 files changed, 119 insertions(+), 6 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9abca56..0c1d30e 100644
+index 144e776..232c0d7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -31,7 +31,6 @@ endif()
+@@ -117,7 +117,6 @@ endif()
  
  set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
  
@@ -29,8 +25,8 @@ index 9abca56..0c1d30e 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -461,7 +460,7 @@ if (YUZU_USE_CPM)
-     AddJsonPackage(opus)
+@@ -455,7 +454,7 @@ if (YUZU_USE_CPM)
+     endif()
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
 -    find_package(fmt 8 REQUIRED)
@@ -38,7 +34,7 @@ index 9abca56..0c1d30e 100644
      find_package(LLVM MODULE COMPONENTS Demangle)
      find_package(nlohmann_json 3.8 REQUIRED)
      find_package(lz4 REQUIRED)
-@@ -472,6 +471,12 @@ else()
+@@ -466,6 +465,12 @@ else()
      find_package(ZLIB 1.2 REQUIRED)
      find_package(zstd 1.5 REQUIRED MODULE)
  
@@ -51,7 +47,7 @@ index 9abca56..0c1d30e 100644
      if (YUZU_TESTS)
          find_package(Catch2 3.0.1 REQUIRED)
      endif()
-@@ -486,7 +491,11 @@ else()
+@@ -480,7 +485,11 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -62,8 +58,8 @@ index 9abca56..0c1d30e 100644
 +  endif()
  endif()
  
- if (ENABLE_LIBUSB)
-@@ -506,10 +515,15 @@ if (USE_DISCORD_PRESENCE)
+ # DiscordRPC
+@@ -496,10 +505,15 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -79,7 +75,7 @@ index 9abca56..0c1d30e 100644
      AddJsonPackage(cubeb)
  
      if (cubeb_ADDED)
-@@ -533,6 +547,9 @@ if(ENABLE_CUBEB)
+@@ -523,6 +537,9 @@ if(ENABLE_CUBEB)
              )
          endif()
      endif()
@@ -89,45 +85,16 @@ index 9abca56..0c1d30e 100644
  endif()
  
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
-diff --git a/CMakeModules/FindMBEDTLS.cmake b/CMakeModules/FindMBEDTLS.cmake
-new file mode 100644
-index 0000000..97c4515
---- /dev/null
-+++ b/CMakeModules/FindMBEDTLS.cmake
-@@ -0,0 +1,23 @@
-+find_path(MBEDTLS_INCLUDE_DIR mbedtls/ssl.h)
-+
-+find_library(MBEDTLS_LIBRARY mbedtls)
-+find_library(MBEDX509_LIBRARY mbedx509)
-+find_library(MBEDCRYPTO_LIBRARY mbedcrypto)
-+
-+set(MBEDTLS_INCLUDE_DIRS ${MBEDTLS_INCLUDE_DIR})
-+set(MBEDTLS_LIBRARIES ${MBEDTLS_LIBRARY} ${MBEDX509_LIBRARY} ${MBEDCRYPTO_LIBRARY})
-+
-+set(CMAKE_REQUIRED_INCLUDES ${MBEDTLS_INCLUDE_DIRS})
-+check_cxx_source_compiles("
-+	#include <mbedtls/version.h>
-+	#if MBEDTLS_VERSION_NUMBER < 0x02040000
-+	#error \"Your mbed TLS version is too old.\"
-+	#endif
-+	int main() {}"
-+	MBEDTLS_VERSION_OK)
-+
-+include(FindPackageHandleStandardArgs)
-+find_package_handle_standard_args(MBEDTLS DEFAULT_MSG
-+	MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY MBEDTLS_VERSION_OK)
-+
-+mark_as_advanced(MBEDTLS_INCLUDE_DIR MBEDTLS_LIBRARY MBEDX509_LIBRARY MBEDCRYPTO_LIBRARY)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index e917e4e..c3c522f 100644
+index 9f89cfc..1ebf50b 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -33,11 +33,18 @@ endif()
+@@ -34,11 +34,18 @@ endif()
  
  # Xbyak (also used by Dynarmic, so needs to be added first)
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
 +  if (YUZU_USE_CPM)
-     if (PLATFORM_SUN)
+     if (PLATFORM_SUN OR PLATFORM_OPENBSD)
          AddJsonPackage(xbyak_sun)
      else()
          AddJsonPackage(xbyak)
@@ -141,7 +108,7 @@ index e917e4e..c3c522f 100644
  endif()
  
  # Oaknut (also used by Dynarmic, so needs to be added first)
-@@ -54,8 +61,24 @@ endif()
+@@ -55,8 +62,20 @@ endif()
  add_subdirectory(glad)
  
  # mbedtls
@@ -149,13 +116,9 @@ index e917e4e..c3c522f 100644
  AddJsonPackage(mbedtls)
  
 +else()
-+  find_package(MBEDTLS GLOBAL)
-+  if(MBEDTLS_FOUND)
++  find_package(mbedtls GLOBAL)
++  if(mbedtls_FOUND)
 +      message(STATUS "Using the system mbed TLS")
-+      add_library(mbedtls-shared INTERFACE)
-+      target_link_libraries(mbedtls-shared INTERFACE "${MBEDTLS_LIBRARIES}")
-+      target_include_directories(mbedtls-shared INTERFACE "${MBEDTLS_INCLUDE_DIRS}")
-+      add_library(mbedtls ALIAS mbedtls-shared)
 +  else()
 +      set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
 +      add_subdirectory(mbedtls)
@@ -166,7 +129,15 @@ index e917e4e..c3c522f 100644
  if (mbedtls_ADDED)
      target_include_directories(mbedtls PUBLIC ${mbedtls_SOURCE_DIR}/include)
  
-@@ -73,10 +96,19 @@ endif()
+@@ -75,16 +94,27 @@ if (mbedtls_ADDED)
+ endif()
+ 
+ # libusb
++if (YUZU_USE_CPM)
+ if (ENABLE_LIBUSB)
+     add_subdirectory(libusb)
+ endif()
++endif()
  
  # Sirit
  # TODO(crueter): spirv-tools doesn't work w/ system
@@ -186,7 +157,7 @@ index e917e4e..c3c522f 100644
  
  if(MSVC AND USE_CCACHE AND sirit_ADDED)
      get_target_property(_opts sirit COMPILE_OPTIONS)
-@@ -87,16 +119,40 @@ endif()
+@@ -97,16 +127,40 @@ endif()
  
  # httplib
  if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
@@ -227,31 +198,28 @@ index e917e4e..c3c522f 100644
  
  # FFMpeg
  if (YUZU_USE_BUNDLED_FFMPEG)
-@@ -111,18 +167,23 @@ endif()
+@@ -118,10 +172,12 @@ if (YUZU_USE_BUNDLED_FFMPEG)
+ endif()
  
- # TODO(crueter): Vk1.4 impl
- 
+ # VulkanUtilityHeaders - pulls in headers and utility libs
 +if (YUZU_USE_CPM)
  AddJsonPackage(
-     NAME vulkan-headers
-     BUNDLED_PACKAGE ${YUZU_USE_EXTERNAL_VULKAN_HEADERS}
- )
-+endif()
- 
- # Vulkan-Utility-Libraries
-+if (YUZU_USE_CPM)
- AddJsonPackage(
-     NAME vulkan-utility-libraries
+     NAME vulkan-utility-headers
      BUNDLED_PACKAGE ${YUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES}
  )
 +endif()
+ 
+ # small hack
+ if (NOT VulkanUtilityLibraries_ADDED)
+@@ -129,6 +185,7 @@ if (NOT VulkanUtilityLibraries_ADDED)
+ endif()
  
  # SPIRV Tools
 +if (YUZU_USE_CPM)
  AddJsonPackage(
      NAME spirv-tools
      BUNDLED_PACKAGE ${YUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS}
-@@ -132,12 +193,15 @@ if (SPIRV-Tools_ADDED)
+@@ -138,12 +195,15 @@ if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
      target_link_libraries(SPIRV-Tools-static PRIVATE SPIRV-Tools-opt SPIRV-Tools-link)
  endif()
@@ -265,13 +233,13 @@ index e917e4e..c3c522f 100644
  AddJsonPackage(vulkan-memory-allocator)
 +endif()
  
- if (VulkanMemoryAllocator_ADDED AND MSVC)
-     target_compile_options(VulkanMemoryAllocator INTERFACE /wd4189)
+ if (VulkanMemoryAllocator_ADDED)
+     if (CXX_CLANG)
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index ff35c8d..fe4089b 100644
+index 8908aa2..7064abc 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
-@@ -23,10 +23,15 @@ if (NOT WIN32 AND NOT ANDROID)
+@@ -21,10 +21,15 @@ if (NOT WIN32 AND NOT ANDROID)
          message(FATAL_ERROR "Required program `autoconf` not found.")
      endif()
  
@@ -288,10 +256,10 @@ index ff35c8d..fe4089b 100644
      make_directory(${FFmpeg_BUILD_DIR})
  
 diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
-index 35d3e6d..b11bed9 100644
+index 242e1e1..57da455 100644
 --- a/externals/nx_tzdb/CMakeLists.txt
 +++ b/externals/nx_tzdb/CMakeLists.txt
-@@ -60,7 +60,7 @@ if (MSVC)
+@@ -58,7 +58,7 @@ if (MSVC)
              ${NX_TZDB_ARCHIVE}
          DESTINATION
              ${NX_TZDB_BASE_DIR})
@@ -300,12 +268,36 @@ index 35d3e6d..b11bed9 100644
      message(STATUS "Downloading time zone data...")
      AddJsonPackage(tzdb)
  
+diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
+index 38457de..21a0d82 100644
+--- a/src/dynarmic/CMakeLists.txt
++++ b/src/dynarmic/CMakeLists.txt
+@@ -156,7 +156,7 @@ find_package(fmt 9 CONFIG)
+ # Pull in externals CMakeLists for libs where available
+ add_subdirectory(externals)
+ 
+-find_package(mcl 0.1.12 REQUIRED)
++find_package(mcl 0.1.12)
+ 
+ if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
+     find_package(oaknut 2.0.1 CONFIG)
+@@ -168,8 +168,8 @@ endif()
+ 
+ if ("x86_64" IN_LIST ARCHITECTURE)
+     find_package(xbyak 7 CONFIG)
+-    find_package(zycore REQUIRED)
+-    find_package(zydis 4 REQUIRED)
++    find_package(zycore)
++    find_package(zydis 4)
+ endif()
+ 
+ if (DYNARMIC_USE_LLVM)
 diff --git a/src/dynarmic/externals/CMakeLists.txt b/src/dynarmic/externals/CMakeLists.txt
-index ba70797..17e1428 100644
+index ea666dd..e727d08 100644
 --- a/src/dynarmic/externals/CMakeLists.txt
 +++ b/src/dynarmic/externals/CMakeLists.txt
-@@ -45,10 +45,18 @@ endif()
- # endif()
+@@ -28,14 +28,22 @@ if ("riscv" IN_LIST ARCHITECTURE)
+ endif()
  
  # mcl
 +if (YUZU_USE_CPM)
@@ -314,28 +306,24 @@ index ba70797..17e1428 100644
      BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
  )
 +else()
-+  find_package(mcl 0.1.12 EXACT CONFIG)
 +  if (NOT TARGET merry::mcl)
 +      set(MCL_INSTALL OFF)
 +      add_subdirectory(mcl)
 +  endif()
 +endif()
  
- # oaknut
- 
-@@ -82,10 +90,24 @@ AddJsonPackage(
+ # TODO(crueter): maybe it's just Gentoo but zydis system package really sucks
  if ("x86_64" IN_LIST ARCHITECTURE)
      set(CMAKE_DISABLE_FIND_PACKAGE_Doxygen ON)
-     # TODO(crueter): system zycore doesn't work with zydis
 +  if (YUZU_USE_CPM)
-     AddJsonPackage(zycore)
- 
      AddJsonPackage(
+         NAME zycore
+         BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
+@@ -45,4 +53,16 @@ if ("x86_64" IN_LIST ARCHITECTURE)
          NAME zydis
          BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
      )
 +  else()
-+    find_package(Zydis 4 CONFIG)
 +    if (NOT TARGET Zydis::Zydis)
 +        set(ZYDIS_BUILD_TOOLS OFF)
 +        set(ZYDIS_BUILD_EXAMPLES OFF)
@@ -349,10 +337,10 @@ index ba70797..17e1428 100644
 +  endif()
  endif()
 diff --git a/src/yuzu/externals/CMakeLists.txt b/src/yuzu/externals/CMakeLists.txt
-index 7de41f6..727f57c 100644
+index 50594a7..015c9ac 100644
 --- a/src/yuzu/externals/CMakeLists.txt
 +++ b/src/yuzu/externals/CMakeLists.txt
-@@ -15,4 +15,15 @@ set(BUILD_SHARED_LIBS OFF)
+@@ -13,4 +13,15 @@ set(BUILD_SHARED_LIBS OFF)
  set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
  # QuaZip
