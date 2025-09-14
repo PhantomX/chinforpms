@@ -65,14 +65,14 @@
 %endif
 
 %global winecapstone 5.0.3
-%global wineFAudio 25.07
+%global wineFAudio 25.09
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 9~f
 %global winelcms2 2.17
 %global wineldap 2.5.18
 %global winempg123 1.33.0
-%global winepng 1.6.48
+%global winepng 1.6.50
 %global wineopenldap 2.5.17
 %global winetiff 4.7.0
 %global winejxrlib 1.1
@@ -88,7 +88,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.14
+%global wine_stagingver 10.15
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -99,7 +99,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 7ee45b572da2ba2f34576e48b01b5d7d54ba0635
+%global tkg_id bb60d88ef7d99feb86aff4fb2ab54df2d33fc77c
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -144,7 +144,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.14
+Version:        10.15
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -224,8 +224,6 @@ Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.pat
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-# https://bugs.winehq.org/show_bug.cgi?id=58204
-Patch708:        https://bugs.winehq.org/attachment.cgi?id=78544#/%{name}-whq-bug58204.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -259,8 +257,7 @@ Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-st
 Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
 Patch1053:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-alt.patch#/%{name}-tkg-ntsync-config.h.in-alt.patch
 Patch1054:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-org.patch#/%{name}-tkg-ntsync-config.h.in-org.patch
-Patch1055:       0001-tkg-cpu-topology-fixup-1.patch
-Patch1056:       0001-tkg-cpu-topology-fixup-2.patch
+Patch1055:       %{tkg_url}/proton/proton-winevulkan/ntoskrnl-server-Support-referencing-section-objects-ntsync.patch#/%{name}-tkg-ntoskrnl-server-Support-referencing-section-objects-ntsync.patch
 
 Patch1090:       0001-fshack-revert-grab-fullscreen.patch
 Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
@@ -871,7 +868,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1
 %patch -P 705 -p1
 %patch -P 706 -p1
-%patch -P 708 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -887,8 +883,6 @@ tar -xf %{SOURCE900} --strip-components=1
 
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
-
-sed -e 's|-Wb,--subsystem|-Wl,--subsystem|' -i dlls/{dxgkrnl,dxgmms1,win32k}.sys/Makefile.in
 
 %if %{with ntsync}
 autoreconf -f
@@ -936,10 +930,9 @@ if grep -F "Define to 1 if you have the 'ppoll' function." include/config.h.in ;
   fi
 fi
 %patch -P 1052 -p1
-%else
 %patch -P 1055 -p1
+%else
 %patch -P 1029 -p1
-%patch -P 1056 -p1
 %endif
 %patch -P 1030 -p1
 %patch -P 1031 -p1
@@ -2066,6 +2059,8 @@ fi
 %{_libdir}/wine/%{winepedirs}/windows.media.dll
 %{_libdir}/wine/%{winepedirs}/windows.media.devices.dll
 %{_libdir}/wine/%{winepedirs}/windows.media.mediacontrol.dll
+%{_libdir}/wine/%{winepedirs}/windows.media.playback.backgroundmediaplayer.dll
+%{_libdir}/wine/%{winepedirs}/windows.media.playback.mediaplayer.dll
 %{_libdir}/wine/%{winepedirs}/windows.media.speech.dll
 %{_libdir}/wine/%{winepedirs}/windows.networking.dll
 %{_libdir}/wine/%{winepedirs}/windows.networking.hostname.dll
@@ -2653,6 +2648,9 @@ fi
 
 
 %changelog
+* Sat Sep 13 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.15-100
+- 10.15
+
 * Sat Aug 30 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.14-100
 - 10.14
 

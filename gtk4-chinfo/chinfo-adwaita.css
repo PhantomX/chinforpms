@@ -1,4 +1,4 @@
-/* Chinforpms 20220418 */
+/* Chinforpms 20250913 */
 /* GTK4-classic */
 
 .default-decoration.titlebar:not(headerbar), headerbar.default-decoration {
@@ -84,10 +84,10 @@ placessidebar row button.sidebar-button {
 }
 
 filechooser > box.search-bar, filechooser > box:last-child {
-  border-bottom: 1px solid alpha(#000, 0.15);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
 }
 filechooser > actionbar > revealer > box {
-  border-top: 1px solid alpha(#000, 0.15);
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 * {

@@ -7,7 +7,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        1.6.2
+Version:        1.7.6
 Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
@@ -19,7 +19,7 @@ Source1:        chinfo-adwaita.css
 BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  meson >= 0.59.0
-#BuildRequires:  sassc
+BuildRequires:  sassc
 
 BuildRequires:  pkgconfig(appstream)
 BuildRequires:  pkgconfig(fribidi)
@@ -45,7 +45,7 @@ fixes from chinforpms.
 %prep
 %autosetup -p1 -n %{pkgname}-%{tarball_version}
 
-cat %{S:1} | tee -a src/stylesheet/base{,-hc}.css > /dev/null
+cat %{S:1} | tee -a src/stylesheet/base{,-hc}.{,s}css > /dev/null
 
 
 %build
@@ -61,6 +61,7 @@ cat %{S:1} | tee -a src/stylesheet/base{,-hc}.css > /dev/null
 
 
 %install
+
 %meson_install
 
 rm -rf %{buildroot}%{_bindir}
@@ -86,6 +87,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sun Sep 14 2025 Phantom X <megaphantomx at hotmail dot com> - 1.7.6-1
+- 1.7.6
+
 * Sun Mar 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.6.2-1
 - 1.6.2
 
