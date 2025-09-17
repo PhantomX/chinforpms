@@ -1,6 +1,6 @@
-%global commit a7909314c12d5c2987046247d841cd394cda674f
+%global commit c77b5252eee799825dcf2a96057ae2894b0b1ad9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250226
+%global date 20250813
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -12,13 +12,13 @@
 
 %global appname io.github.sithlord48.%{name}
 
-%global ff7tk_ver 1.2.0.0
+%global ff7tk_ver 1.2.0.5
 
 %global vc_url  https://github.com/sithlord48/%{name}
 
 Name:           blackchocobo
 Version:        1.16.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Final Fantasy 7 Save Editor
 
 Epoch:          1

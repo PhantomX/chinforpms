@@ -1,12 +1,12 @@
-%global pkgname rename
+%global pkgname App-rename
 
-Name:           perl-%{pkgname}
-Version:        1.14
+Name:           perl-rename
+Version:        1.16.3
 Release:        1%{?dist}
 Summary:        Renames multiple files using Perl regular expressions
 
 License:        GPL-1.0-or-later OR Artistic-1.0-Perl
-URL:            https://metacpan.org/dist/rename
+URL:            https://metacpan.org/dist/App-rename
 
 Source0:        https://cpan.metacpan.org/authors/id/P/PE/PEDERST/%{pkgname}-%{version}.tar.gz
 
@@ -39,21 +39,25 @@ find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null ';'
 %{_fixperms} %{buildroot}/*
 
 
-mv %{buildroot}%{_bindir}/%{pkgname} %{buildroot}%{_bindir}/p%{pkgname}
-ln -s p%{pkgname} %{buildroot}%{_bindir}/%{name}
+mv %{buildroot}%{_bindir}/rename %{buildroot}%{_bindir}/prename
+ln -s prename %{buildroot}%{_bindir}/%{name}
 
-mv %{buildroot}%{_mandir}/man1/rename.1 %{buildroot}%{_mandir}/man1/p%{pkgname}.1
-ln -s p%{pkgname}.1 %{buildroot}%{_mandir}/man1/%{name}.1
+mv %{buildroot}%{_mandir}/man1/rename.1 %{buildroot}%{_mandir}/man1/prename.1
+ln -s prename.1 %{buildroot}%{_mandir}/man1/%{name}.1
 
 
 %files
 %doc README.md
-%{_bindir}/p%{pkgname}
+%{_bindir}/prename
 %{_bindir}/%{name}
+%{perl_vendorlib}/App
 %{_mandir}/man1/*.1*
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.16.3-1
+- 1.16.3
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 1.14-1
 - 1.14
 

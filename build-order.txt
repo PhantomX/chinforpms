@@ -10,7 +10,7 @@ cubeb
 glibc-langpack-pt_BR_iso8601
 glyr
 gob2
-gstreamer1
+-gstreamer1
 -libeatmydata
 libmirage
 -libogg
@@ -30,7 +30,7 @@ python-setuptools-lint
 -python-vdf
 smooth
 -spirv-headers
-taglib
+-taglib
 vulkan-headers
 -webp-pixbuf-loader
 xwit
@@ -44,7 +44,7 @@ zarchive
 -dxil-spirv
 ff7tk
 -gstreamer1-plugins-base
-libadwaita
+libadwaita-chinfo
 -cpuinfo
 libbacktrace
 -libdeflate
@@ -66,7 +66,7 @@ VulkanMemoryAllocator
 vulkan-loader
 -vulkan-volk
 vulkan-utility-libraries
-xbyak
+-xbyak
 xcftools
 
 # 3
@@ -130,7 +130,7 @@ disk-indicator
 -easytag
 eiciel-gtk3
 -emojione-picker
-FAudio
+-FAudio
 -FAudio-noreverb
 fcrackzip
 firefox-chinfo-prefs
@@ -229,7 +229,7 @@ noise-suppression-for-voice
 openbor
 openjazz
 opentyrian
-orage
+-orage
 -pcsx2-multiconfigtool
 -pcsxr
 perl-rename
@@ -316,7 +316,7 @@ wiimms-iso-tools
 wxmp3gain
 wxmp3val
 -ueberzug
-uksmd
+-uksmd
 -unshield
 -v4l-utils
 winetricks

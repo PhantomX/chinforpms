@@ -13,26 +13,27 @@ BuildArch:      noarch
 # Disable LTO
 %global _lto_cflags %{nil}
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global with_extra_flags -O3
+%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
+%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
 
 %bcond debug 0
 %bcond spirv 0
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 6faa47d495c8202a4c98211ffe7c8f8463382e14
+%global commit 694d3c1fa56620e4cf1bc3f763b76cbb553c2ce6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250827
+%global date 20250916
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 74f97ad8f33d30839ede7aaf69cbf711193517cd
+%global commit1 6a783bbd646f75900bf5348ea6de7470188bf1e3
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
-%global commit100 05f1d21d19dcb0c62275931b54ada9bf87915438
+%global commit100 d31e5c0df15f6f005e25125855f95db476926f6a
 %global shortcommit100 %(c=%{commit100}; echo ${c:0:7})
 %global srcname100 dxbc-spirv
 
@@ -75,7 +76,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.14.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT

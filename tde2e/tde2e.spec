@@ -1,9 +1,9 @@
 # Static only package
 %global debug_package %{nil}
 
-%global commit bb474a201baa798784d696d2d9d762a9d2807f96
+%global commit 6dca40bdaac8b5e66c7a793727bf3f81e9711f70
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250701
+%global date 20250910
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -13,7 +13,7 @@
 %global pkgname tdlib
 
 Name:           tde2e
-Version:        1.8.51
+Version:        1.8.54
 Release:        1%{?dist}
 Summary:        Cross-platform library for building Telegram clients
 
@@ -104,6 +104,9 @@ mv %{buildroot}%{_libdir}/pkgconfig/{,%{name}-}tdutils.pc
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.8.54-1.20250910git6dca40b
+- 1.8.54
+
 * Wed Jul 02 2025 Phantom X <megaphantomx at hotmail dot com> - 1.8.51-1.20250701gitbb474a2
 - 1.8.51
 

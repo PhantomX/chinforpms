@@ -1,12 +1,13 @@
 %undefine _cmake_shared_libs
 
 %define _fortify_level 2
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global with_extra_flags -O3
+%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
+%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
 
-%global commit 1c6210f9646229c81f6cfbf99e59516a20e4b623
+%global commit 543dde0de2e4de309801fbed92bc043ef6b47e31
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250704
+%global date 20250916
 %bcond snapshot 1
 
 %bcond rust 0
@@ -21,8 +22,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.7.9
-Release:        2%{?dist}
+Version:        0.8.0
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -191,6 +192,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-1.20250916git543dde0
+- 0.8.0
+
 * Tue May 20 2025 Phantom X <megaphantomx at hotmail dot com> - 0.7.9-1
 - 0.7.9
 

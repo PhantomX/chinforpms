@@ -1,6 +1,6 @@
-%global commit 4540b7790bf7b3bf6814d4d480a83179248b9ff6
+%global commit 51808c1c98ab2aa954ea75709c66137303c2d994
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250823
+%global date 20250912
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -13,7 +13,7 @@
 
 Name:           jazz2-ressurection
 Version:        3.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Native C++ reimplementation of Jazz Jackrabbit 2 
 
 License:        GPL-3.0 AND Apache-2.0

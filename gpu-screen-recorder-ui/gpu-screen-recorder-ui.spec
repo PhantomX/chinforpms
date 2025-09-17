@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.6.3
+Version:        1.7.5
 Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
@@ -54,7 +54,7 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 
 %build
-%meson%meson \
+%meson \
   -Dcapabilities=false \
 %{nil}
 
@@ -80,6 +80,9 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.7.5-1
+- 1.7.5
+
 * Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.6.3-1
 - 1.6.3
 

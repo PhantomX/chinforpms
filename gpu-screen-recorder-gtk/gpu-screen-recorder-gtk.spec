@@ -2,7 +2,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-gtk
-Version:        5.7.0
+Version:        5.7.7
 Release:        1%{dist}
 Summary:        GTK frontend for GPU Screen Recorder
 
@@ -18,7 +18,6 @@ BuildRequires:  pkgconfig(ayatana-appindicator3-0.1)
 BuildRequires:  pkgconfig(gtk+-3.0)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  desktop-file-utils
-BuildRequires:  libappstream-glib
 
 Requires:       gpu-screen-recorder%{?_isa}
 
@@ -42,12 +41,10 @@ sed -e '/gnome/d' -i meson.build
 %meson_install
 
 mkdir -p %{buildroot}%{_metainfodir}
-install -pm0644 %{appname}.appdata.xml %{buildroot}%{_metainfodir}/
 
 %check
 %dnl %meson_test
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
 
 
 %files
@@ -56,10 +53,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_bindir}/%{name}
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/*/*%{appname}*
-%{_metainfodir}/%{appname}.appdata.xml
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 5.7.7-1
+- 5.7.7
+
 * Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 5.7.0-1
 - 5.7.0
 

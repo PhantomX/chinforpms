@@ -19,12 +19,12 @@ Release:        9%{?dist}
 Summary:        A patcher for IPS and BPS files
 
 License:        GPL-3.0-or-later
-URL:            https://github.com/Alcaro/Flips
+URL:            https://git.disroot.org/Sir_Walrus/Flips
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}.tar.gz#/%{pkgname}-%{version}.tar.gz
 %endif
 
 BuildRequires:  make
@@ -57,7 +57,7 @@ This packages provides the GTK+ frontend.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{?with_snapshot:%{name}}%{!?with_snapshot:%{name}-%{version}} -p1
 
 sed \
   -e 's|<binary>flips</binary>|<binary>%{name}-gtk</binary>|' \

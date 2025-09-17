@@ -20,7 +20,7 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.5
+Version:        4.5.1
 Release:        100%{?dist}
 Epoch:          1
 
@@ -339,6 +339,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.1-100
+- 4.5.1
+
 * Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5-100
 - 4.5
 

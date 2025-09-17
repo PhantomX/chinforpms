@@ -39,7 +39,7 @@ SDL3
 -shaderc
 -spirv-headers
 -spirv-tools
-taglib
+-taglib
 -v4l-utils
 -vkd3d
 vulkan-headers

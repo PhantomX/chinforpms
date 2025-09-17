@@ -1,17 +1,17 @@
-From 4c38735cb32c0eb4d1fc76a051572723fbc2e9e4 Mon Sep 17 00:00:00 2001
+From 0eb98367ec0db9a1a252f75206b8497c9860cc1b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 1 Jan 2025 17:17:23 -0300
 Subject: [PATCH] Use system fonts
 
 ---
- src/Theme.cpp | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ src/Theme.cpp | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/src/Theme.cpp b/src/Theme.cpp
-index a6d1050..45ec9aa 100644
+index b3464f3..17f5e00 100644
 --- a/src/Theme.cpp
 +++ b/src/Theme.cpp
-@@ -54,10 +54,10 @@ namespace gsr {
+@@ -57,10 +57,10 @@ namespace gsr {
  
          theme = new Theme();
  
@@ -23,14 +23,7 @@ index a6d1050..45ec9aa 100644
 +        if(!theme->title_font_file.load("_RPM_FONTDIR_/NotoSans-Bold.ttf", mgl::MemoryMappedFile::LoadOptions{true, false}))
              goto error;
  
-         if(!theme->combobox_arrow_texture.load_from_file((resources_path + "images/combobox_arrow.png").c_str()))
-@@ -152,4 +152,4 @@ namespace gsr {
-         assert(color_theme);
-         return *color_theme;
-     }
--}
-\ No newline at end of file
-+}
+         if(!theme->combobox_arrow_texture.load_from_file((resources_path + "images/combobox_arrow.png").c_str(), mgl::Texture::LoadOptions{false, false, MGL_TEXTURE_SCALE_LINEAR_MIPMAP}))
 -- 
-2.47.1
+2.51.0
 

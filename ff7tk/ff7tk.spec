@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit ba0bc1275727802b0df9a6f78bfe93b9c24d0557
+%global commit 4f6c721271a75e5a7e4a35ff38232b4fa3ce017f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250315
+%global date 20250814
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -10,14 +10,18 @@
 %endif
 
 Name:           ff7tk
-Version:        1.2.0.0
-Release:        2%{?dist}
+Version:        1.3.1.0
+Release:        1%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
 License:        LGPL-3.0-or-later
 URL:            https://github.com/sithlord48/%{name}
 
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+%endif
 
 Patch10:        0001-cmake-do-not-install-dbg-files.patch
 
@@ -62,8 +66,6 @@ sed \
   -e '/\/licenses\//d' \
   -i CMakeLists.txt
 
-sed -e 's|Qt6LinguistTools|Qt6 COMPONENTS LinguistTools|' -i translations/CMakeLists.txt
-
 
 %build
 %cmake \
@@ -99,6 +101,9 @@ rmdir -p %{buildroot}%{_datadir}/%{name} || :
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.1.0-1.20250814git4f6c721
+- 1.3.1.0
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1.2.0.0-1.20240908git562bc35
 - 1.2.0.0
 

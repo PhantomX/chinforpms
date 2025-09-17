@@ -1,14 +1,14 @@
 %global commit 0184edd5aea3f0bcbaca418d133023d005d16875
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20240519
-%bcond snapshot 1
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           readpe
-Version:        0.84
+Version:        0.85.1
 Release:        1%{?dist}
 Summary:        PE file analysis toolkit
 
@@ -112,6 +112,9 @@ install -pm 0644 include/*.h %{buildroot}%{_includedir}/%{name}/
 %{_libdir}/libpe.so
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.85.1-1
+- 0.85.1
+
 * Sun Sep 22 2024 Phantom X <megaphantomx at hotmail dot com> - 0.84-1.20240519git0184edd
 - 0.84
 - Renamed from pev

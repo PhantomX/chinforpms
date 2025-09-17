@@ -10,7 +10,7 @@ BuildArch: noarch
 %endif
 
 Name:           zram-init
-Version:        11.1
+Version:        13.0
 Release:        1%{?dist}
 Summary:        A wrapper script for the zram kernel module
 
@@ -97,6 +97,9 @@ install -pm0644 %{S:2} %{buildroot}%{_sysconfdir}/sysconfig/%{name}
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 13.0-1
+- 13.0
+
 * Fri Feb 25 2022 Phantom X <megaphantomx at hotmail dot com> - 11.1-1
 - 11.1
 

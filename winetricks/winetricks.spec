@@ -1,6 +1,6 @@
-%global commit e73c4d8f71801fe842c0276b603d9c8024d6d957
+%global commit 13bf50cbf84e00a7d5a0f13e1beefad306d58622
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250212
+%global date 20250914
 %bcond snapshot 1
 
 BuildArch:      noarch
@@ -12,8 +12,8 @@ BuildArch:      noarch
 %global appname io.github.winetricks.Winetricks
 
 Name:           winetricks
-Version:        20250105
-Release:        100%{?dist}
+Version:        20250102
+Release:        101%{?dist}
 
 Summary:        Work around common problems in Wine
 
@@ -80,8 +80,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
-* Thu Feb 20 2025 Phantom X <megaphantomx at hotmail dot com> - 20250105-100.20250212gite73c4d8
-- 20250105
+* Thu Feb 20 2025 Phantom X <megaphantomx at hotmail dot com> - 20250102-100.20250212gite73c4d8
+- 20250102
 
 * Thu Feb 15 2024 Phantom X <megaphantomx at hotmail dot com> - 20240105-100.20240210git6f40a93
 - 20240105

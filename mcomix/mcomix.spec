@@ -1,7 +1,7 @@
 %global commit a4092eb4f2927ce5d600444d0b10c308148ca34d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250625
-%bcond snapshot 1
+%bcond snapshot 0
 
 BuildArch:      noarch
 
@@ -10,8 +10,8 @@ BuildArch:      noarch
 %endif
 
 Name:           mcomix
-Version:        3.1.0
-Release:        3%{?dist}
+Version:        3.1.1
+Release:        1%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
 License:        GPL-2.0-or-later
@@ -124,6 +124,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.1-1
+- 3.1.1
+
 * Sun Jul 20 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.0-3.20250625gita4092eb
 - Requires 7za
 

@@ -1,6 +1,6 @@
-%global commit 83b86fa8cc6482cbf6173e262b177bbf11b71387
+%global commit 71c95ae1b01f4af02e9491b8651bc06a97302e08
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250107
+%global date 20250915
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        106%{?gver}%{?dist}
+Release:        107%{?gver}%{?dist}
 
 Epoch:          1
 

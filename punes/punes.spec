@@ -1,7 +1,7 @@
-%global commit 12cc62a04f6b79461bfa7bf26235b423229e40a7
+%global commit c6d3ffb27550f8832295bb2572b576a014baed75
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250806
-%global sbuild 2386
+%global date 20250902
+%global sbuild 2389
 %bcond snapshot 1
 
 # Enable ffmpeg support
@@ -20,7 +20,7 @@
 
 Name:           punes
 Version:        0.111
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        NES emulator
 
 License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT

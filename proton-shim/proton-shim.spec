@@ -3,7 +3,7 @@ BuildArch:      noarch
 %global pkgname ProtonShim
 
 Name:           proton-shim
-Version:        2.5.1
+Version:        2.7.3
 Release:        1%{?dist}
 Summary:        Easily run programs and scripts inside Steam game prefixes
 
@@ -51,5 +51,8 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 2.7.3-1
+- 2.7.3
+
 * Wed Jul 02 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.1-1
 - Initial spec

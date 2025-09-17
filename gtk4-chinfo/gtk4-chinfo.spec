@@ -31,13 +31,14 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.18.6
+Version:        4.20.1
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
 Epoch:          1
 
-License:        LGPL-2.0-or-later
+License:        LGPL-2.0-or-later AND LGPL-2.1-or-later AND Apache-2.0 AND CC0-1.0 AND MIT AND MIT-open-group AND HPND-sell-variant AND GPL-2.0-or-later AND GPL-3.0-or-later AND OFL-1.1
+
 URL:            https://www.gtk.org
 
 Source0:        https://download.gnome.org/sources/gtk/%{branch}/gtk-%{version}.tar.xz
@@ -76,6 +77,7 @@ BuildRequires:  pkgconfig(harfbuzz) >= %{harfbuzz_version}
 BuildRequires:  pkgconfig(json-glib-1.0)
 BuildRequires:  pkgconfig(libjpeg)
 BuildRequires:  pkgconfig(libpng)
+BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  pkgconfig(libtiff-4)
 BuildRequires:  pkgconfig(pango) >= %{pango_version}
 BuildRequires:  pkgconfig(sysprof-capture-4)
@@ -176,6 +178,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.1-1
+- 4.20.1
+
 * Sun Sep 14 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.18.6-1
 - 4.18.6
 

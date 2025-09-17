@@ -1,32 +1,18 @@
-From 42a44ee6f629b8ffdb3eee45ade6829ecd842875 Mon Sep 17 00:00:00 2001
+From f104ffdf9df6646aaa4cdf1dd41f3dce1fb5b78b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 18 Apr 2022 09:34:50 -0300
 Subject: [PATCH] Disable overlay-scrolling
 
 gtk-overlay-scrolling property is ignored, only way to enable is GTK_OVERLAY_SCROLLING=1
 ---
- gdk/wayland/gdkdisplay-wayland.c | 2 +-
- gtk/gtkscrolledwindow.c          | 7 +++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ gtk/gtkscrolledwindow.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/gdk/wayland/gdkdisplay-wayland.c b/gdk/wayland/gdkdisplay-wayland.c
-index 860abf2..b251f32 100644
---- a/gdk/wayland/gdkdisplay-wayland.c
-+++ b/gdk/wayland/gdkdisplay-wayland.c
-@@ -1749,7 +1749,7 @@ static TranslationEntry translations[] = {
-   { FALSE, "org.gnome.desktop.interface", "gtk-im-module", "gtk-im-module", G_TYPE_STRING, { .s = "simple" } },
-   { FALSE, "org.gnome.desktop.interface", "enable-animations", "gtk-enable-animations", G_TYPE_BOOLEAN, { .b = TRUE } },
-   { FALSE, "org.gnome.desktop.interface", "gtk-enable-primary-paste", "gtk-enable-primary-paste", G_TYPE_BOOLEAN, { .b = TRUE } },
--  { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = TRUE } },
-+  { FALSE, "org.gnome.desktop.interface", "overlay-scrolling", "gtk-overlay-scrolling", G_TYPE_BOOLEAN, { .b = FALSE } },
-   { FALSE, "org.gnome.desktop.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
-   { FALSE, "org.gnome.desktop.peripherals.mouse", "drag-threshold", "gtk-dnd-drag-threshold", G_TYPE_INT, {.i = 8 } },
-   { FALSE, "org.gnome.settings-daemon.peripherals.mouse", "double-click", "gtk-double-click-time", G_TYPE_INT, { .i = 400 } },
 diff --git a/gtk/gtkscrolledwindow.c b/gtk/gtkscrolledwindow.c
-index 2e03973..a410a04 100644
+index 1678394..72f658e 100644
 --- a/gtk/gtkscrolledwindow.c
 +++ b/gtk/gtkscrolledwindow.c
-@@ -702,7 +702,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
+@@ -730,7 +730,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
     */
    properties[PROP_OVERLAY_SCROLLING] =
        g_param_spec_boolean ("overlay-scrolling", NULL, NULL,
@@ -35,7 +21,7 @@ index 2e03973..a410a04 100644
                              GTK_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
  
    /**
-@@ -3840,7 +3840,10 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
+@@ -3924,7 +3924,10 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
  
    g_object_get (settings, "gtk-overlay-scrolling", &overlay_scrolling, NULL);
  
@@ -48,5 +34,5 @@ index 2e03973..a410a04 100644
    if (priv->use_indicators != use_indicators)
      {
 -- 
-2.47.1
+2.51.0
 

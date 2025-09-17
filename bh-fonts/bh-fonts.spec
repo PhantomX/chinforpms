@@ -2,10 +2,10 @@
 
 Name:           bh-fonts
 Version:        1.0.3
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        X.Org BH TTF fonts
 
-License:        BH-Luxi
+License:        LicenseRef-Fedora-BH-Luxi
 URL:            http://www.x.org
 
 BuildArch:      noarch
@@ -13,8 +13,8 @@ BuildArch:      noarch
 %global priority 42
 
 %global foundry           bh
-%global fontlicense       BH-Luxi
-%global fontlicenses      COPYING
+%global fontlicense       LicenseRef-Fedora-BH-Luxi
+%global fontlicenses      COPYING COPYRIGHT.BH
 %global fontdocs          ChangeLog README
 %global fontdocsex        %{fontlicenses}
 
@@ -108,10 +108,13 @@ This package provides optional documentation files shipped with
 
 %files doc
 %defattr(644, root, root, 0755)
-%license %{fontlicense}
+%license %{fontlicenses}
 %doc %{fontdocs}
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0.3-8
+- Update license file
+
 * Sat Sep 16 2023 - 1.0.3-7
 - Set system-ui configuration
 

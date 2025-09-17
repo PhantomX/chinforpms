@@ -10,7 +10,7 @@
 %endif
 
 Name:           ncpamixer
-Version:        1.3.9
+Version:        1.3.10
 Release:        1%{?dist}
 Summary:        ncurses PulseAudio Mixer
 
@@ -81,6 +81,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.10-1
+- 1.3.10
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.9-1
 - 1.3.9
 

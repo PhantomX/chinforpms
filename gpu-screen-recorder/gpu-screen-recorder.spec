@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.5.3
+Version:        5.6.8
 Release:        1%{dist}
 Summary:        A shadowplay-like screen recorder
 
@@ -46,6 +46,13 @@ Suggests:       intel-media-driver
 GPU Screen Recorder is a screen recorder that has minimal impact on system
 performance by recording your monitor using the GPU only.
 
+%package        devel
+Summary:        Development files for %{name} plugins
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description devel
+Development files for %{name} plugins.
+
 
 %prep
 %autosetup -c -p1
@@ -69,13 +76,19 @@ performance by recording your monitor using the GPU only.
 %license LICENSE
 %doc README.md
 %{_bindir}/gpu-screen-recorder
-%{_bindir}/gsr-dbus-server
 %caps(cap_sys_admin+ep) %{_bindir}/gsr-kms-server
 %{_modprobedir}/gsr-nvidia.conf
 %{_userunitdir}/%{name}.service
 
+%files devel
+%{_includedir}/gsr/plugin.h
+
 
 %changelog
+* Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.8-1
+- 5.6.8
+- devel package
+
 * Sat May 17 2025 Phantom X <megaphantomx at hotmail dot com> - 5.5.3-1
 - 5.5.3
 

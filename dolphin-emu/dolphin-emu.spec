@@ -3,10 +3,10 @@
 # Disable LTO. Segfaults.
 %global _lto_cflags -fno-lto
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
+%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %bcond ffmpeg 1
 %bcond egl 1
@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 95f6c76713e6c2a6b50f1a149a7886e72fea6ec7
+%global commit 1109dfb0011265318f9af7dc7331a836d8b0bcfa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250613
+%global date 20250916
 %bcond snapshot 1
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -38,11 +38,11 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 VulkanMemoryAllocator
 
-%global commit4 18c72431f8265e2b0b5378a3a73d8a883b2175ff
+%global commit4 3da8bd34299965d3b0ab124df743fe3e076fa222
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 0115d9198ff7a73ff6568027dfb948ef6031818c
+%global commit5 b443902b1cdfee5a66b09fec20a94d2d2afaf2ec
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -62,7 +62,7 @@
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 tinygltf
 
-%global commit19 7f1162dfea4969bc17417563ac55d93b72e84c1e
+%global commit19 016bea9491ccafc3529019fe1d403885a8b3a6ae
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 SFML
 
@@ -76,7 +76,7 @@
 
 %global enet_ver 1.3.18
 %global fmt_ver 10.2.1
-%global imgui_ver 1.91.7
+%global imgui_ver 1.92.2~b
 %global mbedtls_ver 2.28.9
 %global sfml_ver 3.0.0
 
@@ -88,7 +88,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2506.111
+Version:        2506.475
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -191,7 +191,7 @@ BuildRequires:  pkgconfig(Qt6Core)
 BuildRequires:  pkgconfig(Qt6Gui)
 BuildRequires:  pkgconfig(Qt6Svg)
 BuildRequires:  pkgconfig(Qt6Widgets)
-BuildRequires:  pkgconfig(sdl2) >= 2.30.6
+BuildRequires:  cmake(SDL3) >= 3.2.0
 %if %{with sfml}
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system) >= %{sfml_ver}
@@ -523,6 +523,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Sep 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2506.433-1.20250913git695e06c
+- SDL3
+
 * Sat Mar 29 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2503.174-1.20250329git9819d66
 - Change to bundled mbedtls, as version 3 is not supported
 
