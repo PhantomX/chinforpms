@@ -21,7 +21,7 @@ Version:        7.5.3735.74
 Release:        1%{?dist}
 Summary:        Web browser
 
-License:        Proprietary and others, see https://www.vivaldi.com/
+License:        LicenseRef-Fedora-Proprietary
 URL:            https://vivaldi.com/
 Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.%{_arch}.rpm
 Source1:        eula.txt

@@ -34,7 +34,9 @@
 %endif
 
 # Reducing debuginfo verbosity...
-%global optflags %(echo %{optflags} | sed 's/-g /-g1 /')
+%global with_extra_flags -g1
+%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
+%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
 
 %global cppgir_ver 2.77.0
 %global glibmm_ver 2.77.0

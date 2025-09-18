@@ -8,14 +8,14 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 6483b33ee141c0bbd0e81891fbe5d2768bd312d8
+%global commit eb1197a65c9bbd795aa904a53a49b977688e3dde
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250831
+%global date 20250916
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -41,7 +41,7 @@
 # Build tests
 %bcond tests 0
 
-%global commit1 4f39041699412873d0afcec89a9313148a192647
+%global commit1 a36decbe43d0e5a570ac3d3ba9a0b226dc832a17
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 compatibility-list
 
@@ -155,7 +155,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.6
+Version:        2123~rc2.32
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -467,8 +467,6 @@ rm -rf externals/gamemode
 rm -f externals/json/json.hpp
 
 rm -rf externals/teakra/externals/catch/
-
-sed -e '/target_link_libraries/s|SYSTEM INTERFACE|INTERFACE|g' -i externals/CMakeLists.txt
 
 %if %{without fmt}
 sed -e 's|-pedantic-errors||g' -i externals/fmt/CMakeLists.txt

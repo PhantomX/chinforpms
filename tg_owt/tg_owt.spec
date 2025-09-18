@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 62321fd7128ab2650b459d4195781af8185e46b5
+%global commit0 5c5c71258777d0196dbb3a09cc37d2f56ead28ab
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20250603
+%global date 20250914
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -28,7 +28,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        144%{?dist}
+Release:        145%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -82,7 +82,6 @@ BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
-BuildRequires:  yasm
 
 BuildRequires:  ffmpeg-devel
 BuildRequires:  pkgconfig(libavcodec)

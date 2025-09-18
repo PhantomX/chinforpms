@@ -2,8 +2,8 @@
 %global __strip /bin/true
 
 %global cheatver 0264
-%global historyver 278
-%global infover 0278
+%global historyver 280
+%global infover 0280
 %global cheat_url https://www.mamecheat.co.uk
 %global history_url https://www.arcade-history.com
 %global info_url https://www.mameworld.info/mameinfo
@@ -11,8 +11,8 @@
 %global samplelink https://www.mameworld.info/samples/wav
 
 Name:           mame-data-extras
-Version:        0.278
-Release:        1%{?dist}
+Version:        0.280
+Release:        0%{?dist}
 Summary:        Extra data files for MAME
 
 License:        LicenseRef-Fedora-UltraPermissive

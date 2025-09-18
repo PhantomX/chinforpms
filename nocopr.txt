@@ -23,7 +23,7 @@ dbeaver-ce
 -dropboxd
 duckstation
 duckstation_chtdb
-dynarmic
+-dynarmic
 eden
 ente-auth
 f5cli

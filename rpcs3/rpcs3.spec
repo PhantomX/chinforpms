@@ -13,10 +13,10 @@
 %global _lto_cflags -fno-lto
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %bcond native 0
 # Enable system ffmpeg
@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 246519c5e15ecc7e60d72cee909a1b5e12fb3cb7
+%global commit 335ed8d91be36902fd47cf45c59ef0cc4caebf15
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250817
+%global date 20250916
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.37.18107
+Version:        0.0.37.18143
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -173,6 +173,7 @@ Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{
 %endif
 Source99:       Makefile
 
+Patch0:         %{vc_url}/%{name}/pull/17401.patch#/%{name}-gh-pr17401.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch

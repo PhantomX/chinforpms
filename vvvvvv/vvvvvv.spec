@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 6ae4de1f94e294612e5f7a3a677e8461d7d07f1f
+%global commit d3197d10f7ee6e84331826c89e2415720c9e6888
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250619
+%global date 20250902
 %bcond snapshot 1
 
 %bcond faudio 0
@@ -38,7 +38,7 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.5%{?dist}
+Release:        0.6%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -132,6 +132,8 @@ cp -p desktop_version/README.md README_desktop.md
 
 sed \
   -e 's|find_package(Git)|find_package(Git_disabled)|g' \
+  -e '/BIN_RPATH/d' \
+  -e '/disable-new-dtags/d' \
   -e '/CMAKE_BUILD_WITH_INSTALL_RPATH/d' \
   -e '/CMAKE_INSTALL_RPATH/d' \
   -i desktop_version/CMakeLists.txt

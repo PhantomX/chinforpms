@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 45b2e613cf00f96bed29a27d55d14cec4898c573
+%global commit 00ff3e6b1b73cdb13a0741169d77dd97cbebbf1d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250720
+%global date 20250914
 
 %if %{without bin}
 %bcond snapshot 0
@@ -37,11 +37,11 @@
 %global concentus_ver 2.2.2
 %global crc32_net_ver 1.2.0
 %global csfastfloat_ver 4.1.5
-%global discordrichpresence_ver 1.2.1.24
+%global discordrichpresence_ver 1.6.1.70
 %global excss_ver 4.2.3
-%global dynamicdata_ver 9.0.4
+%global dynamicdata_ver 9.4.1
 %global fluent_avalonia_ver 2.0.5
-%global gommon_ver 2.7.1.1
+%global gommon_ver 2.7.2.1
 %global harfbuzzsharp_ver 7.3.0.2
 %global harfbuzzsharp_ver2 7.3.0
 %global humanizer_ver 2.14.1
@@ -132,11 +132,11 @@
 %global ryujinx_libhac_ver 0.21.0-alpha.116
 %global ryujinx_libhac_dl_id 592
 %global ryujinx_sdl2_cs_ver 2.30.0-build32
-%global ryujinx_updateclient_ver 1.0.29
-%global ryujinx_updateclient_dl_id 507
-%global ryujinx_systemsupdate_dl_id 508
+%global ryujinx_updateclient_ver 1.0.44
+%global ryujinx_updateclient_dl_id 633
+%global ryujinx_systemsupdate_dl_id 634
 %global securifybv_ver 0.1.0
-%global sep_ver 0.6.0
+%global sep_ver 0.11.1
 %global shaderc_net_ver 0.1.0
 %global sharpmetal_ver 1.0.0-preview21
 %global sharpziplib_ver 1.4.2
@@ -267,7 +267,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.97
+Version:        1.3.142
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -829,7 +829,7 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
-* Sun May 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.38-1
+* Sun May 11 2025 - 1.3.38-1
 - 1.3.38
 
 * Sat Dec 21 2024 - 1.2.103-1

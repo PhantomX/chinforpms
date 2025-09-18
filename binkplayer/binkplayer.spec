@@ -10,7 +10,7 @@
 %endif
 
 Name:           binkplayer
-Version:        2025.01
+Version:        2025.05
 Release:        1%{?dist}
 Summary:        Bink Video Player
 
@@ -116,6 +116,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Sep 17 2025 - 2025.05-1
+- 2025.05
+
 * Wed Mar 19 2025 - 2025.01-1
 - 2025.01
 

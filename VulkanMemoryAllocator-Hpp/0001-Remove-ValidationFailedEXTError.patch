@@ -1,0 +1,25 @@
+From 761a9efc26f378d7498157541def9c6a5ab338ca Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Sep 2025 22:50:49 -0300
+Subject: [PATCH] Remove ValidationFailedEXTError
+
+---
+ include/vk_mem_alloc.hpp | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/include/vk_mem_alloc.hpp b/include/vk_mem_alloc.hpp
+index b1c19db..1fc2d80 100644
+--- a/include/vk_mem_alloc.hpp
++++ b/include/vk_mem_alloc.hpp
+@@ -153,8 +153,6 @@ throwResultException(VULKAN_HPP_NAMESPACE::Result result, char const *message) {
+     throw VULKAN_HPP_NAMESPACE::OutOfDateKHRError(message);
+   case Result::eErrorIncompatibleDisplayKHR:
+     throw VULKAN_HPP_NAMESPACE::IncompatibleDisplayKHRError(message);
+-  case Result::eErrorValidationFailedEXT:
+-    throw VULKAN_HPP_NAMESPACE::ValidationFailedEXTError(message);
+   case Result::eErrorInvalidShaderNV:
+     throw VULKAN_HPP_NAMESPACE::InvalidShaderNVError(message);
+   case Result::eErrorImageUsageNotSupportedKHR:
+-- 
+2.51.0
+

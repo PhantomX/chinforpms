@@ -1,23 +1,17 @@
 # Disable this. Local lto flags in use.
 %global _lto_cflags %{nil}
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global with_extra_flags -O3
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 79770f6207a5d244652644c5e2d9f4328bd974ac
+%global commit 385b34933d48eadfcbe7b11efda4b24b439d94a2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240301
+%global date 20250903
 %bcond snapshot 1
 
-%bcond gtk2 0
 %bcond libao 0
 %bcond openal 0
-
-%if %{with gtk2}
-%global toolkit gtk2
-%else
-%global toolkit gtk3
-%endif
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -25,7 +19,7 @@
 
 Name:           bsnes
 Version:        115
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        SNES emulator
 
 License:        GPL-3.0-only AND BSD-2-Clause
@@ -47,11 +41,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
 %endif
 BuildRequires:  pkgconfig(gl)
-%if %{with gtk2}
-BuildRequires:  pkgconfig(gtk+-2.0)
-%else
 BuildRequires:  pkgconfig(gtk+-3.0)
-%endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libpulse-simple)
 %if %{with openal}
@@ -92,7 +82,7 @@ export flags="$CXXFLAGS"
 export options="$LDFLAGS"
 
 %make_build -C %{name} target=%{name} verbose \
-  build=performance local=false hiro=%{toolkit} \
+  build=performance local=false hiro=gtk3 \
   lto=true \
 %{nil}
 

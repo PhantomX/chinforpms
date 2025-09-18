@@ -9,10 +9,10 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %global commit 2d08d3dc9495135f5488f74cd7a1849b99d12d0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -59,7 +59,7 @@
 %global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.156
+Version:        2.5.163
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 

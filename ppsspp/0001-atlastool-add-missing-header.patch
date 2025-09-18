@@ -1,0 +1,24 @@
+From 0ae5d2e94bd8c75eba85efd809015c31cea5aad5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 17 Sep 2025 21:54:38 -0300
+Subject: [PATCH] atlastool: add missing header
+
+---
+ ext/native/tools/atlastool.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ext/native/tools/atlastool.cpp b/ext/native/tools/atlastool.cpp
+index 9bd8769..6569e9a 100644
+--- a/ext/native/tools/atlastool.cpp
++++ b/ext/native/tools/atlastool.cpp
+@@ -25,6 +25,7 @@
+ #include <vector>
+ #include <map>
+ #include <string>
++#include <cmath>
+ #include "ft2build.h"
+ #include "freetype/ftbitmap.h"
+ #include "zstd.h"
+-- 
+2.51.0
+

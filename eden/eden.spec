@@ -8,14 +8,14 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
+%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 9d2681ecc9565681db623fb71799e76381998512
+%global commit 249e006667966b7709b74709a801c46714aecec1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250909
+%global date 20250917
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -26,7 +26,7 @@
 %bcond fmt 1
 %bcond httplib 0
 # Enable system mbedtls (needs cmac builtin support)
-%bcond mbedtls 0
+%bcond mbedtls 1
 # Disable Qt build
 %bcond qt 1
 # build with qt6 instead 5
@@ -78,9 +78,13 @@
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 cpp-jwt
 
-%global commit18 ce4f81f4a926a0e0dcadd0128e016baba416e8ea
+%global commit18 c765c831e5c2a0971410692f92f7a81d6ec65ec2
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 mbedtls
+
+%global commit180 2a3e2c5ea053c14b745dbdf41f609b1edc6a72fa
+%global shortcommit180 %(c=%{commit180}; echo ${c:0:7})
+%global srcname180 mbedtls-framework
 
 %global commit19 09c21bda1dc1b578fa55f4a005d79b0afd481296
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
@@ -101,6 +105,10 @@
 %global commit23 0456900fadde4b07c84760eadea4ccc9f948fe28
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 boost-headers
+
+%global commit24 61dce5ae18ca59931e27675c468e64118aba8744
+%global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
+%global srcname24 frozen
 
 %global ffmpeg_ver 7.1.1
 %global fmt_ver 11.0.2
@@ -124,11 +132,11 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27682
+Version:        0.0.3.27699
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0 AND ( 0BSD AND MIT )%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
+License:        GPL-2.0-or-later AND MIT AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0 AND ( 0BSD AND MIT )%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
 URL:            https://eden-emulator.github.io
 
 %if %{with snapshot}
@@ -155,7 +163,10 @@ Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{sr
 %endif
 Source17:       https://github.com/crueter/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
-Source18:       %{gh_url}/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+%if %{without mbedtls}
+Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source180:      https://github.com/Mbed-TLS/%{srcname180}/archive/%{commit180}/%{srcname180}-%{shortcommit180}.tar.gz
+%endif
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://github.com/crueter/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
@@ -170,7 +181,7 @@ Source21:       https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
 Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
-
+Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
 
@@ -240,7 +251,7 @@ BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 %if %{with mbedtls}
-BuildRequires:  mbedtls >= 2.6.10
+BuildRequires:  cmake(MbedTLS) >= 3.6.4
 %else
 Provides:       bundled(mbedtls) = 0~git%{?shortcommit18}
 %endif
@@ -287,6 +298,7 @@ Requires:       shared-mime-info
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(frozen) = 0~git%{?shortcommit24}
 Provides:       bundled(glad) = %{glad_ver}
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
@@ -369,6 +381,7 @@ sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 %if %{without mbedtls}
 mkdir -p mbedtls
 tar -xf %{S:18} -C mbedtls --strip-components 1
+tar -xf %{S:180} -C mbedtls/framework --strip-components 1
 sed \
   -e '/find_package/s|mbedtls|\0_DISABLED|g' \
   -i CMakeLists.txt
@@ -398,6 +411,9 @@ tar -xf %{S:23} -C boost-headers --strip-components 1
 
 popd
 
+mkdir -p src/qt_common/externals/frozen
+tar -xf %{S:24} -C src/qt_common/externals/frozen --strip-components 1
+
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
 
@@ -425,6 +441,7 @@ cp xbyak/COPYRIGHT LICENSE.xbyak
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
 popd
+cp -p src/qt_common/externals/frozen/LICENSE externals/LICENSE.frozen
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 

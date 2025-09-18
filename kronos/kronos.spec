@@ -8,10 +8,10 @@
 # Disable LTO. Build fails
 %global _lto_cflags %{nil}
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %global commit 837973fd6dd295a5694432c1f091b2221e93da36
 %global shortcommit %(c=%{commit}; echo ${c:0:7})

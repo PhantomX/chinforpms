@@ -1,10 +1,10 @@
-From 07a5487c1a97124034f3c9ebec21215a27981d63 Mon Sep 17 00:00:00 2001
+From 02dcec1f7a78bb20872dc8bd217e8922af2d4375 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                        | 19 ++++++++++++++++++-
+ CMakeLists.txt                        | 18 +++++++++++++++++-
  Common/Data/Collections/Hashmaps.h    |  2 +-
  Common/File/VFS/ZipFileReader.cpp     |  2 +-
  Common/File/VFS/ZipFileReader.h       |  2 +-
@@ -19,20 +19,19 @@ Subject: [PATCH] Use system libraries
  GPU/Common/TextureDecoder.cpp         |  2 +-
  GPU/Common/TextureReplacer.cpp        |  2 +-
  GPU/D3D11/TextureCacheD3D11.cpp       |  2 +-
- GPU/Directx9/TextureCacheDX9.cpp      |  2 +-
  GPU/GLES/TextureCacheGLES.cpp         |  2 +-
  GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
  UI/CwCheatScreen.cpp                  |  2 +-
  UI/ImDebugger/ImMemView.cpp           |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
- ext/CMakeLists.txt                    |  8 ++++++++
- 22 files changed, 46 insertions(+), 21 deletions(-)
+ ext/CMakeLists.txt                    | 14 ++++++++++++++
+ 21 files changed, 50 insertions(+), 20 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ed76846..83556ab 100644
+index 770a448..d698d02 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1694,11 +1694,20 @@ add_library(xbrz STATIC
+@@ -1695,11 +1695,19 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -40,9 +39,8 @@ index ed76846..83556ab 100644
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
 +	message(STATUS "Using the system libxxhash")
-+	add_library(xxhash-shared INTERFACE)
-+	target_link_libraries(xxhash-shared INTERFACE PkgConfig::xxhash)
-+	add_library(xxhash ALIAS xxhash-shared)
++	add_library(xxhash INTERFACE)
++	target_link_libraries(xxhash INTERFACE PkgConfig::xxhash)
 +else()
  add_library(xxhash STATIC
  	ext/xxhash.c
@@ -54,7 +52,7 @@ index ed76846..83556ab 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2487,6 +2496,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2496,6 +2504,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -83,7 +81,7 @@ index 862c0e4..20c7c44 100644
  #include "Common/Log.h"
  
 diff --git a/Common/File/VFS/ZipFileReader.cpp b/Common/File/VFS/ZipFileReader.cpp
-index f3f604b..1a0b0e9 100644
+index 7ff871e..671d6fb 100644
 --- a/Common/File/VFS/ZipFileReader.cpp
 +++ b/Common/File/VFS/ZipFileReader.cpp
 @@ -7,7 +7,7 @@
@@ -109,7 +107,7 @@ index 4c40877..fecef49 100644
  
  #include <mutex>
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 5e2a8f7..c000d94 100644
+index a4d5bbb..dd8987d 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -135,7 +133,7 @@ index 366499d..1afee76 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 65d6a87..7167144 100644
+index 633b328..02a0b8d 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -19,7 +19,7 @@
@@ -148,7 +146,7 @@ index 65d6a87..7167144 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index b3906be..0d00231 100644
+index e3861c8..33356c4 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -161,7 +159,7 @@ index b3906be..0d00231 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 19876bb..8653462 100644
+index 516a3bb..b144507 100644
 --- a/Core/MIPS/MIPSAnalyst.cpp
 +++ b/Core/MIPS/MIPSAnalyst.cpp
 @@ -22,7 +22,7 @@
@@ -174,12 +172,12 @@ index 19876bb..8653462 100644
  #include "Common/File/FileUtil.h"
  #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 42ab83a..8583d7f 100644
+index cc64ffb..a23a4ba 100644
 --- a/Core/RetroAchievements.cpp
 +++ b/Core/RetroAchievements.cpp
-@@ -27,7 +27,7 @@
- #include "ext/rcheevos/include/rc_api_user.h"
- #include "ext/rcheevos/include/rc_url.h"
+@@ -25,7 +25,7 @@
+ #include "ext/rcheevos/include/rc_api_request.h"
+ #include "ext/rcheevos/include/rc_api_runtime.h"
  
 -#include "ext/rapidjson/include/rapidjson/document.h"
 +#include "rapidjson/document.h"
@@ -187,7 +185,7 @@ index 42ab83a..8583d7f 100644
  #include "Common/Crypto/md5.h"
  #include "Common/Log.h"
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index e3a74ab..26da19e 100644
+index 4c6313f..63187b5 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
 @@ -27,7 +27,7 @@
@@ -200,7 +198,7 @@ index e3a74ab..26da19e 100644
  #ifdef _WIN32
  
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index d83e90b..848fa8d 100644
+index 0b3141e..9421f43 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -213,7 +211,7 @@ index d83e90b..848fa8d 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 985c5d6..51359bb 100644
+index 274ef6d..0868971 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -226,7 +224,7 @@ index 985c5d6..51359bb 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 9636d10..4b56019 100644
+index ddead37..e862941 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -237,9 +235,9 @@ index 9636d10..4b56019 100644
 +#include "xxhash.h"
  
  #include "Common/Data/Format/IniFile.h"
- #include "Common/Data/Text/I18n.h"
+ #include "Common/Data/Format/PNGLoad.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index c62ed66..d694e22 100644
+index a78d225..3b1d365 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -31,7 +31,7 @@
@@ -265,7 +263,7 @@ index cc38b91..396abdd 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index d9e23a7..7f37833 100644
+index 7069223..7065ef8 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -18,7 +18,7 @@
@@ -278,7 +276,7 @@ index d9e23a7..7f37833 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index cc27eaa..e4fd39d 100644
+index ef6a6ec..6c83697 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -291,7 +289,7 @@ index cc27eaa..e4fd39d 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index 873c920..73638e2 100644
+index e2af463..2c2f118 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -8,7 +8,7 @@
@@ -317,19 +315,34 @@ index c059dc1..cbfe269 100644
  #include "Core/Config.h"
  #include "Core/System.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index 248cb03..7891c1f 100644
+index dd7464c..33e33bd 100644
 --- a/ext/CMakeLists.txt
 +++ b/ext/CMakeLists.txt
-@@ -44,7 +44,15 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+@@ -44,8 +44,15 @@ set(FT_REQUIRE_PNG OFF CACHE BOOL "" FORCE)
+ set(FT_REQUIRE_HARFBUZZ OFF CACHE BOOL "" FORCE)
+ set(FT_REQUIRE_BROTLI OFF CACHE BOOL "" FORCE)
+ if(NOT LIBRETRO)
++  find_package(Freetype)
++  if(Freetype_FOUND)
++	message(STATUS "Using the system freetype")
++	add_library(freetype INTERFACE)
++	target_link_libraries(freetype INTERFACE Freetype::Freetype)
++else()
+   add_subdirectory(freetype)
+ endif()
++endif()
+ 
+ if(NOT LIBRETRO)
+     add_subdirectory(imgui)
+@@ -57,7 +64,14 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
  	add_subdirectory(discord-rpc-build)
  endif()
  
 +pkg_search_module(chdr IMPORTED_TARGET libchdr)
 +if(chdr_FOUND)
 +	message(STATUS "Using the system libchdr")
-+	add_library(chdr-shared INTERFACE)
-+	target_link_libraries(chdr-shared INTERFACE PkgConfig::chdr)
-+	add_library(chdr ALIAS chdr-shared)
++	add_library(chdr INTERFACE)
++	target_link_libraries(chdr INTERFACE PkgConfig::chdr)
 +else()
  add_subdirectory(libchdr-build)
 +endif()
@@ -337,5 +350,5 @@ index 248cb03..7891c1f 100644
  if(ANDROID)
      if (ARM64)
 -- 
-2.49.0
+2.51.0
 

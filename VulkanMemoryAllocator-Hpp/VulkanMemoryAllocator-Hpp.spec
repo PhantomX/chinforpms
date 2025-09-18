@@ -14,7 +14,7 @@ BuildArch:      noarch
 Summary:        C++ bindings for VulkanMemoryAllocator
 Name:           VulkanMemoryAllocator-Hpp
 Version:        3.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        Apache-2.0
 URL:            https://github.com/YaaZ/%{name}
@@ -24,6 +24,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         0001-Remove-ValidationFailedEXTError.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -70,6 +72,9 @@ The Vulkan Memory Allocator Hpp development package.
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-2
+- Remove ValidationFailedEXTError
+
 * Tue Apr 08 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-1
 - 3.2.1
 

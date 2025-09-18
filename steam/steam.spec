@@ -11,13 +11,13 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.83
+Version:        1.0.0.84
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 
 # Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
-License:        Steam License Agreement AND MIT
+License:        LicenseRef-Fedora-SteamLicenseAgreement AND MIT
 URL:            http://www.steampowered.com/
 ExclusiveArch:  i686
 
@@ -215,6 +215,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.84-100
+- 1.0.0.84
+
 * Tue May 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.83-100
 - 1.0.0.83
 

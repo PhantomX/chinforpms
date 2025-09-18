@@ -2,14 +2,14 @@
 %global _lto_cflags %{nil}
 %undefine _hardened_build
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 367d05b302b2261cff89e98c2f6b39a2144dfc69
+%global commit 92490683b171bd189b2405a3e49a0ae708dac209
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250816
+%global date 20250914
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -26,7 +26,7 @@
 
 Name:           melonds
 Version:        1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A NDS emulator
 
 # fatfs - BSD

@@ -1,18 +1,18 @@
-From 36f5286ef67fc83b888cdf4cf1b69e2993581046 Mon Sep 17 00:00:00 2001
+From 6dca7da0177520e8e95b11b16c39c74e500fa61c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 7 Jan 2024 17:50:57 -0300
 Subject: [PATCH] fix build flags
 
 ---
  Makefiles/Makefile.UNIX | 17 ++++++++++++-----
- Makefiles/Rules.inc     | 14 ++++++--------
- 2 files changed, 18 insertions(+), 13 deletions(-)
+ Makefiles/Rules.inc     | 13 ++++++-------
+ 2 files changed, 18 insertions(+), 12 deletions(-)
 
 diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
-index 2c4c341..dee5489 100644
+index af22be1..7b506d3 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
-@@ -61,19 +61,26 @@ LD = gcc
+@@ -62,19 +62,26 @@ LD = gcc
  # SDL
  #
  
@@ -45,36 +45,41 @@ index 2c4c341..dee5489 100644
  ###############################################################################
  # Core Makefile
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index 0f233b9..8ae00b8 100644
+index bb7f501..547fc5c 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
-@@ -69,20 +69,18 @@ endif
+@@ -69,14 +69,13 @@ endif
  # Compiler options
  #
  ARCH =
 -OPT = -O3
 +CFLAGS ?= -O3
+ ifeq ($(strip $(DEBUG)),1)
+ 	OPT = -g	# no optimization; debug mode
+ endif
  WARN = -Wall
  CSTD = -std=iso9899:2011
  CXXSTD = -std=c++17
 -LDOPT = -s
--
- 
+ ifeq ($(strip $(DEBUG)),1)
+ 	LDOPT =
+ endif
+@@ -84,10 +83,10 @@ endif
  #
  # Construct the compiler (C and C++) and linker flags
  #
 -COMMON_CFLAGS = -c $(ARCH) $(OPT) $(WARN) $(addprefix -I,$(sort $(INCLUDE_DIRS))) -DGLEW_STATIC $(SUPERMODEL_BUILD_FLAGS)
 -CFLAGS = $(COMMON_CFLAGS) $(CSTD)
 -CXXFLAGS = $(PLATFORM_CXXFLAGS) $(COMMON_CFLAGS) $(CXXSTD)
--LDFLAGS = -o $(BIN_DIR)/$(OUTFILE) $(PLATFORM_LDFLAGS) $(LDOPT)
+-LDFLAGS = -o $(BIN_DIR)/$(SUPERMODEL_BINARY) $(PLATFORM_LDFLAGS) $(LDOPT)
 +COMMON_CFLAGS = -c $(ARCH) $(WARN) $(addprefix -I,$(sort $(INCLUDE_DIRS))) -DGLEW_STATIC $(SUPERMODEL_BUILD_FLAGS)
 +CFLAGS += $(COMMON_CFLAGS) $(CSTD)
 +CXXFLAGS += $(PLATFORM_CXXFLAGS) $(COMMON_CFLAGS) $(CXXSTD)
-+LDFLAGS += -o $(BIN_DIR)/$(OUTFILE) $(PLATFORM_LDFLAGS) $(LDOPT)
++LDFLAGS += -o $(BIN_DIR)/$(SUPERMODEL_BINARY) $(PLATFORM_LDFLAGS) $(LDOPT)
  
  
  ###############################################################################
-@@ -362,7 +360,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
+@@ -377,7 +376,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
  
  MUSASHI_OUTFILE = $(OBJ_DIR)/m68kmake.exe # do not remove the .exe suffix!
  MUSASHI_CFLAGS = -ISrc/CPU/68K/Musashi -I$(OBJ_DIR) -DINLINE="static inline" -Wno-unused-variable
@@ -84,5 +89,5 @@ index 0f233b9..8ae00b8 100644
  $(MUSASHI_OUTFILE): Src/CPU/68K/Musashi/m68kmake.c Src/CPU/68K/Musashi/m68k_in.c | $(OBJ_DIR)
  	$(info --------------------------------------------------------------------------------)
 -- 
-2.46.1
+2.51.0
 

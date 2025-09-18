@@ -11,18 +11,18 @@
 %endif
 
 %global pkgver 2024
-%global pkgrel 1224
+%global pkgrel 1228
 %global repo https://shop.softmaker.com/repo
 %global pkgdir office%{pkgver}
 %global dist %{?dist}
 
 Name:           softmaker-office
 Version:        %{pkgver}.%{pkgrel}
-Release:        2%{?dist}
+Release:        1%{?dist}
 Epoch:          1
 Summary:        SoftMaker Office %{pkgver} for Linux
 
-License:        Proprietary
+License:        LicenseRef-Fedora-Proprietary
 URL:            https://www.softmaker.de
 Source0:        %{repo}/rpm/%{parch}/RPMS/%{name}-%{pkgver}-%{pkgrel}.%{parch}.rpm
 Source1:        %{repo}/linux-repo-public.key
@@ -173,6 +173,9 @@ install -pm0644 mime/%{name}-%{pkgver}.xml \
 %{_datadir}/mime/packages/*.xml
 
 %changelog
+* Wed Sep 17 2025 - 1:2024.1228-1
+- 2024.1224
+
 * Thu Mar 20 2025 - 1:2024.1224-2
 - 2024.1224
 

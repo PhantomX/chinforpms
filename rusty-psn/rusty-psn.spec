@@ -9,10 +9,10 @@
 %endif
 
 %global vc_id   2a0afcdd36d6bf73f683d77abf352812177cd1a0
-%global vendor_hash 7b8a185b4fe8d7507bc3ed1f4a5ed61f
+%global vendor_hash cc857ace2b857407f29e203d054456d1
 
 Name:           rusty-psn
-Version:        0.5.8
+Version:        0.5.9
 Release:        1%{?dist}
 Summary:        Simple tool to grab updates for PS3 games
 
@@ -643,6 +643,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.9-1
+- 0.5.9
+
 * Wed Jun 04 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.8-1
 - 0.5.8
 

@@ -16,7 +16,7 @@
 
 Name:           openbor
 Version:        3.0.6391
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        2D side scrolling engine
 
 License:        BSD-3-Clause
@@ -32,7 +32,7 @@ Source10:       README.Fedora
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  make
-BuildRequires:  yasm
+BuildRequires:  nasm
 BuildRequires:  ImageMagick
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(sdl2)
@@ -88,6 +88,7 @@ sed \
   -e 's|-Wl,-rpath,$(LIBRARIES)||g' \
   -e 's|@$(CC)|$(CC)|g' \
   -e '/-o $(TARGET)/s|$(CFLAGS)|\0 $(LDFLAGS)|g' \
+  -e 's|yasm|nasm|g' \
   -i engine/Makefile
 
 sed \
@@ -149,5 +150,8 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0.6391-2
+- Change yasm to nasm
+
 * Wed May 31 2023 Phantom X <megaphantomx at hotmail dot com> - 3.0.6391-1
 - Initial spec

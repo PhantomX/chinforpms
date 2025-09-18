@@ -1,13 +1,14 @@
 %undefine _hardened_build
 %undefine _cmake_shared_libs
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 0243f81c264ea8d1bbaa107f26fb6644f767c1e8
+%global commit ac32a8035243951803d8a8e9f45ad2317a2da91f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250829
+%global date 20250912
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -63,7 +64,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.5.33
+Version:        2.5.38
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -97,6 +98,7 @@ Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
+Patch5:         0001-miniupnp-add-missing-header.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
 Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
 Patch9:         0001-vulkan-update-vk-detail-DynamicLoader.patch

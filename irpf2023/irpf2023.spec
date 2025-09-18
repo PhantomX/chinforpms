@@ -8,11 +8,11 @@
 %global jre_ver 11
 
 Name:           irpf%{pkgyear}
-Version:        1.5
-Release:        2%{?dist}
+Version:        1.8
+Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
-License:        Custom
+License:        LicenseRef-Fedora-Custom
 URL:            https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda
 Source0:        https://downloadirpf.receita.fazenda.gov.br/irpf/%{pkgyear}/irpf/arquivos/%{pkgname}-%{version}.zip
 
@@ -117,6 +117,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
+* Wed Sep 17 2025 - 1.8-1
+- 1.8
+
 * Thu Mar 20 2025 - 1.5-2
 - Update wrapper to support temurin JVMs
 

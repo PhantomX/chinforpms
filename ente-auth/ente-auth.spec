@@ -9,7 +9,7 @@
 %global appname enteauth
 
 Name:           ente-auth
-Version:        4.4.3
+Version:        4.4.4
 Release:        1%{?dist}
 Summary:        2FA app with free end-to-end encrypted backup and sync
 
@@ -118,5 +118,8 @@ done
 
 
 %changelog
+* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 4.4.4-1
+- 4.4.4
+
 * Fri Aug 01 2025 Phantom X <megaphantomx at hotmail dot com> - 4.4.3-1
 - Initial spec

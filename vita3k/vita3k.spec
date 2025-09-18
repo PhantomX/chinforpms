@@ -7,14 +7,14 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit cf3d627327e6acdf0ead9ecff9d35d6589e77d45
+%global commit 359e027b0a30e60a65c27e9607c5c7c7b0f48da8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250714
+%global date 20250912
 
 %bcond capstone 0
 %bcond ffmpeg 0
@@ -165,7 +165,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3806
+Version:        0.2.0.3813
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 

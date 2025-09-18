@@ -99,8 +99,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.2.2
-Release:        101%{?dist}
+Version:        25.2.3
+Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -819,6 +819,9 @@ popd
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.3-100
+- 25.2.3
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.2-101
 - Rawhide sync
 

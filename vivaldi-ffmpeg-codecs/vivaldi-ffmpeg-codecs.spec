@@ -42,7 +42,7 @@ BuildRequires:  squashfs-tools
 %else
 Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{ffmpeg_ver}-%{pkgdistro}_%{parch}.deb
 %endif
-BuildRequires:  awk
+BuildRequires:  gawk
 BuildRequires:  coreutils
 
 ExclusiveArch:  x86_64 aarch64

@@ -8,12 +8,12 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        6.5.9.3723
+Version:        6.6.0.4410
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
 # See LICENSE
-License:        Proprietary
+License:        LicenseRef-Fedora-Proprietary
 URL:            https://www.zoom.us
 
 Source0:        https://zoom.us/client/latest/zoom_x86_64.rpm#/%{name}-%{version}.x86_64.rpm
@@ -159,6 +159,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Wed Sep 17 2025 - 6.6.0.4410-1
+- 6.6.0.4410
+
 * Mon Aug 11 2025 - 6.5.9.3723-1
 - 6.5.9.3723
 

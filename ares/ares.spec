@@ -1,5 +1,6 @@
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
+%global with_extra_flags -O3
+%{?with_extra_flags:%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}}
 
 %global commit 432c4e3b2a9f233cd742d1de764cced7ff337e48
 %global shortcommit %(c=%{commit}; echo ${c:0:7})

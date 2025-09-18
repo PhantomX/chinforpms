@@ -5,10 +5,10 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %bcond cereal 0
 %bcond fmt 1
@@ -16,9 +16,9 @@
 %bcond rtmidi 1
 %endif
 
-%global commit f79ef76db5113d36af2d6aede47a7e8c056d76ff
+%global commit d34191f0b716882a2855e293918db9ad25bb0c50
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250824
+%global date 20250917
 %bcond snapshot 1
 
 %global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
@@ -68,8 +68,8 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.1.8
-Release:        0.2%{?dist}
+Version:        0.2.0
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}

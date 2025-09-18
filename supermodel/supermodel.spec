@@ -1,14 +1,14 @@
 %global _lto_cflags %{nil}
 %undefine _hardened_build
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 5b2c5897e8a972cba6db92abe7e60c9ca98c99e8
+%global commit fa11ad5a507b24f2b7dc5a2262ef33dfd3e79e7f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250312
+%global date 20250917
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -18,7 +18,7 @@
 
 Name:           supermodel
 Version:        0.3~a
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A Sega Model 3 arcade emulator
 
 License:        GPL-3.0
@@ -29,7 +29,6 @@ Source1:        %{name}.sh
 
 Patch0:         0001-fix-build-flags.patch
 Patch1:         0001-format-security.patch
-Patch2:         0001-gcc-15-build-fix.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

@@ -4,8 +4,8 @@
 %global _lto_cflags -fno-lto
 
 %global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
-%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
-%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
 %bcond ffmpeg 1

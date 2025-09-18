@@ -7,13 +7,14 @@
 %global toolchain clang
 %endif
 
-%global with_optim 3
-%{?with_optim:%global optflags %(echo %{optflags} | sed -e 's/-O2 /-O%{?with_optim} /')}
-%{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
+%global with_extra_flags -O3
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
+%{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 794efe368196a996f90b71f43ff3b23971e992c8
+%global commit b10f5f842a53515cfb0e32df073035693afead3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250816
+%global date 20250917
 %bcond snapshot 1
 
 # Enable Qt build
@@ -99,8 +100,8 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.427
-Release:        101%{?dist}
+Version:        1.19.3.686
+Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
@@ -142,6 +143,7 @@ Patch3:         0001-Use-system-libraries.patch
 Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
+Patch7:         0001-atlastool-add-missing-header.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
@@ -428,6 +430,7 @@ popd
   -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
+  -DATLAS_TOOL:BOOL=ON \
 %if %{with egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -481,7 +484,9 @@ popd
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_libdir}
 
-install -pm0755 ext/native/tools/%{_vpath_builddir}/build/{atlastool,zimtool} \
+install -pm0755 %{_vpath_builddir}/AtlasTool %{buildroot}%{_bindir}/
+
+install -pm0755 ext/native/tools/%{_vpath_builddir}/build/zimtool \
   %{buildroot}%{_bindir}/
 
 rm -f %{buildroot}%{_datadir}/%{name}/assets/gamecontrollerdb.txt
@@ -550,7 +555,7 @@ appstream-util validate-relax --nonet \
 %files tools
 %doc ext/native/tools/README.txt
 %license LICENSE.TXT
-%{_bindir}/atlastool
+%{_bindir}/AtlasTool
 %{_bindir}/zimtool
 
 

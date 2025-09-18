@@ -1,4 +1,6 @@
-%global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
+%global with_extra_flags -Wp,-U_GLIBCXX_ASSERTIONS
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
 %global commit10 b03b081e026ceb1226b45de926babe629d6c0688
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})

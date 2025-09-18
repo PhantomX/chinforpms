@@ -2,8 +2,8 @@
 
 %define _fortify_level 2
 %global with_extra_flags -O3
-%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
-%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
 %global commit 543dde0de2e4de309801fbed92bc043ef6b47e31
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
