@@ -1,0 +1,24 @@
+From b3f34db266a209d1d6c4c108c7c50575fa7fc38b Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 19 Sep 2025 08:21:57 -0300
+Subject: [PATCH] Add missing header
+
+---
+ ipager.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ipager.cpp b/ipager.cpp
+index 7e6599b..55f64f3 100644
+--- a/ipager.cpp
++++ b/ipager.cpp
+@@ -31,6 +31,7 @@
+ 
+ #include <iostream>
+ #include <string>
++#include <getopt.h>
+ using namespace std;
+ 
+ #include "pager.h"
+-- 
+2.51.0
+

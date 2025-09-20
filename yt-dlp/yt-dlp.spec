@@ -5,7 +5,7 @@
 
 Name:           yt-dlp
 Version:        2025.09.05
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
 
@@ -15,7 +15,8 @@ URL:            https://github.com/yt-dlp/yt-dlp
 Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Source1:        %{name}.conf
 
-Patch0:         yt-dlp-pr14180.patch
+Patch0:         %{url}/commit/a1c98226a4e869a34cc764a9dcf7a4558516308e.patch#/%{name}-gh-a1c9822.patch
+Patch1:         %{url}/commit/677997d84eaec0037397f7d935386daa3025b004.patch#/%{name}-gh-677997d.patch
 
 BuildArch:      noarch
 
@@ -156,6 +157,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.09.05-101
+- Add some upstream fixes
+
 * Sat Sep 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.09.05-100
 - 2025.09.05
 

@@ -39,14 +39,13 @@
 %global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
 
 %global cppgir_ver 2.77.0
-%global glibmm_ver 2.77.0
 %global libsigc_ver 3.0.0
 %global kf5ver b797315
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
 Version:        6.1.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -84,6 +83,9 @@ Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
 
+# Very dirty patch to fix Fedora 43 build
+Patch1000:      0001-base_url_scheme_linux.cpp-disable-Gio-DesktopAppInfo.patch
+
 Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
 Patch1012:       %{ltdp_url}/0003-Disable-invite-peeking-restrictions.patch#/ltdp-0003-Disable-invite-peeking-restrictions.patch
@@ -108,9 +110,7 @@ BuildRequires:  pkgconfig(alsa)
 BuildRequires:  boost-devel
 BuildRequires:  cmake(fmt)
 BuildRequires:  pkgconfig(gio-2.0)
-BuildRequires:  pkgconfig(giomm-2.68)
 BuildRequires:  pkgconfig(glib-2.0)
-BuildRequires:  pkgconfig(glibmm-2.68) >= %{glibmm_ver}
 BuildRequires:  pkgconfig(gobject-2.0)
 BuildRequires:  pkgconfig(gobject-introspection-1.0)
 BuildRequires:  pkgconfig(hunspell)
@@ -119,7 +119,6 @@ BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(opus)
-BuildRequires:  pkgconfig(sigc++-3.0) >= %{libsigc_ver}
 BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  cmake(tde2e)
 
@@ -239,6 +238,10 @@ tar xvf %{S:1} -C bin --strip-components 1
 sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.service
 %else
 %autopatch -p1 -M 999
+
+%if 0%{?fedora} >= 43
+%patch -P 1000 -p1
+%endif
 
 %if %{with ltdp}
 %dnl %patch -P 1010 -p1
@@ -395,6 +398,10 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.1.3-101
+- Fix Fedora 43 build
+- Remove BR: glibmm
+
 * Wed Sep 10 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.1.3-100
 - 6.1.3
 

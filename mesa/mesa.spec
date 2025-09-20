@@ -100,7 +100,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        25.2.3
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -535,7 +535,7 @@ rewrite_wrap_file rustc-hash
 
 %if 0%{?with_nvk}
 %cargo_license_summary
-%{cargo_license} > LICENSE.dependencies
+%dnl %{cargo_license} > LICENSE.dependencies
 %if 0%{?vendor_nvk_crates}
 %cargo_vendor_manifest
 %endif
@@ -761,7 +761,7 @@ popd
 
 %files vulkan-drivers
 %if 0%{?with_nvk}
-%license LICENSE.dependencies
+%dnl %license LICENSE.dependencies
 %if 0%{?vendor_nvk_crates}
 %license cargo-vendor.txt
 %endif
@@ -819,6 +819,9 @@ popd
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.3-101
+- Remove rust LICENSE.dependencies, no time to fix multilib issues
+
 * Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.3-100
 - 25.2.3
 

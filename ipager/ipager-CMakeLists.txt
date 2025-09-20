@@ -1,0 +1,55 @@
+cmake_minimum_required(VERSION 3.21)
+project(ipager CXX)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+option(DEBUG_EVENTS "debug xserve events" OFF)
+
+include(CheckIncludeFileCXX)
+
+check_include_file_cxx(sys/stat.h HAS_SYS_STAT_H)
+check_include_file_cxx(sys/time.h HAS_SYS_TIME_H)
+check_include_file_cxx(sys/types.h HAS_SYS_TYPE_H)
+
+find_package(X11 REQUIRED)
+find_package(Threads REQUIRED)
+
+find_package(PkgConfig QUIET)
+pkg_search_module(imlib2 REQUIRED IMPORTED_TARGET imlib2)
+add_library(imlib2 INTERFACE)
+target_link_libraries(imlib2 INTERFACE PkgConfig::imlib2)
+
+set(IPAGER_SRC  atoms.cpp
+                icolor.cpp
+                icon.cpp
+                iconfig.cpp
+                ipager.cpp
+                notifier.cpp
+                pager.cpp
+                wm.cpp
+                workspace.cpp )
+
+add_executable(${PROJECT_NAME} ${IPAGER_SRC})
+
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+
+if(DEBUG_EVENTS)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE EVENTS_DEBUG)
+endif()
+
+if (HAS_SYS_TIME_H)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAS_SYS_TIME_H)
+endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    X11::X11
+    X11::Xext
+    X11::Xinerama
+    X11::Xmu
+    imlib2
+    m
+    Threads::Threads
+)
+
+install(TARGETS ${PROJECT_NAME} DESTINATION "${CMAKE_INSTALL_BINDIR}")

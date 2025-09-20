@@ -27,7 +27,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        7.5.120726
+Version:        7.6.120726
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -96,6 +96,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_v
 
 
 %changelog
+* Thu Sep 18 2025 - 7.6.120726-1
+- Set vivaldir_ver to 7.6
+
 * Thu Jul 03 2025 - 7.5.120726-1
 - 7.5.120726
 

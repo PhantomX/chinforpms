@@ -28,7 +28,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        145%{?dist}
+Release:        146%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -47,7 +47,8 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch1000:      0001-fix-build-with-bundled-absl.patch
+Patch0:         https://github.com/desktop-app/tg_owt/pull/164.patch#/%{name}-gh-pr164.patch
+Patch1000:      https://github.com/desktop-app/tg_owt/pull/164/
 
 %if %{with absl}
 BuildRequires:  cmake(absl) >= 20220623
@@ -294,6 +295,9 @@ mv _tmpheaders/abseil-cpp_absl/* %{buildroot}%{_includedir}/%{name}/third_party/
 
 
 %changelog
+* Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 0-146.20250914git5c5c712
+- Fix for abseil-cpp 20250814
+
 * Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 0-141.20241116git3008950
 - External libsrtp
 
