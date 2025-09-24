@@ -59,7 +59,7 @@
 %global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.163
+Version:        2.5.167
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -395,7 +395,7 @@ ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Noto*
-ln -sf ../../../fonts/google-noto-color-emoji-fonts/NotoColorEmoji.ttf \
+ln -sf ../../../fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/NotoColorEmoji-Regular.ttf
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto*

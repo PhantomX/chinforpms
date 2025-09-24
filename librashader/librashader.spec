@@ -17,7 +17,7 @@ License:        MPL-2.0 OR GPL-3.0-only%{?with_vendor: AND ((0BSD OR MIT OR Apac
 URL:            https://github.com/SnowflakePowered/%{name}
 Source0:        %{url}/archive/%{name}-v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# rust2rpm -t fedora -V auto --no-rpmautospec --ignore-missing-license-files --path <path>
+# cargo vendor --versioned-dirs && tar cvJf ../%%{name}-capi-%%{version}-vendor.tar.xz vendor/
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-capi-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-capi-%{version}-vendor.tar.xz
 %endif
 

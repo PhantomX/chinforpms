@@ -26,7 +26,7 @@ Source2:        %{url}/raw/%{vc_id}/README.md
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# rust2rpm -t fedora -V --no-rpmautospec --ignore-missing-license-files ./Cargo.toml %%{version}
+# cargo vendor --versioned-dirs && tar cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 
