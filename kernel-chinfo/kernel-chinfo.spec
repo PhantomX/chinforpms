@@ -183,7 +183,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.8
+%define specrpmversion 6.16.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1252,9 +1252,6 @@ Patch7231:  %{pf_url}/c850b9a160c42b44ac701efeab7d20fad963b2f2.patch#/pf-cb-c850
 # cpuidle
 Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
 # fixes
-Patch7400:  %{pf_url}/619c452f8f166f49e4602b25a8e78ca9b2a97605.patch#/pf-cb-619c452.patch
-Patch7401:  %{pf_url}/aedcde6d9e20d2358b4c59014963796f4a08d831.patch#/pf-cb-aedcde6.patch
-Patch7402:  %{pf_url}/8cd10bed667d37191036e35ea7cdff879774d578.patch#/pf-cb-8cd10be.patch
 
 %endif
 
@@ -2125,9 +2122,6 @@ ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # fixes
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
 %endif
 
 # openSUSE
@@ -4543,6 +4537,9 @@ fi\
 #
 #
 %changelog
+* Thu Sep 25 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.9-500.chinfo
+- 6.16.9
+
 * Fri Sep 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.8-500.chinfo
 - 6.16.8
 

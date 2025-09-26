@@ -1,0 +1,24 @@
+From 8d2baa63b9c05c03de45c81b4e1b72f8593077ef Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 25 Sep 2025 23:11:22 -0300
+Subject: [PATCH] Add 960x720 size to supported virtual modes
+
+---
+ dlls/win32u/sysparams.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/dlls/win32u/sysparams.c b/dlls/win32u/sysparams.c
+index 3a0fbe4..e41c331 100644
+--- a/dlls/win32u/sysparams.c
++++ b/dlls/win32u/sysparams.c
+@@ -1650,6 +1650,7 @@ static SIZE *get_screen_sizes( const DEVMODEW *maximum, const DEVMODEW *modes, U
+         /* 4:3 */
+         { 640,  480},
+         { 800,  600},
++        { 960,  720},
+         {1024,  768},
+         {1600, 1200},
+         /* 16:9 */
+-- 
+2.51.0
+

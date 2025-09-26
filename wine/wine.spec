@@ -272,6 +272,7 @@ Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
 Patch1304:       0001-proton-gstreamer-fixup-1.patch
+Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -956,6 +957,7 @@ fi
 %patch -P 1304 -p1
 %endif
 %patch -P 1303 -p1
+%patch -P 1305 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \

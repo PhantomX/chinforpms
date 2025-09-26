@@ -11,6 +11,7 @@
 
 # Disabled to match gdk-pixbuf2 without glycin
 # https://gitlab.freedesktop.org/drm/amd/-/issues/4568
+# https://github.com/BestImageViewer/geeqie/issues/1921
 %bcond glycin 0
 
 %global cairo_version 1.18.0

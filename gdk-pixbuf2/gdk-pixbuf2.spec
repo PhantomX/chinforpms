@@ -1,5 +1,6 @@
 # Disable glycin
 # https://gitlab.freedesktop.org/drm/amd/-/issues/4568
+# https://github.com/BestImageViewer/geeqie/issues/1921
 %bcond glycin 0
 
 %global glib2_version 2.56.0
