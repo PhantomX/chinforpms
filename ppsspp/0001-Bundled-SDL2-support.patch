@@ -1,0 +1,30 @@
+From 622a7c68bbbf0960638a33df3cf4b3c18b186a26 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 27 Sep 2025 09:01:14 -0300
+Subject: [PATCH] Bundled SDL2 support
+
+---
+ CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ec241ef..298ba80 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -302,8 +302,13 @@ if(USING_EGL)
+ endif()
+ 
+ if(NOT LIBRETRO AND NOT IOS AND NOT MACOSX)
++	if(USE_SYSTEM_LIBSDL2)
+ 	find_package(SDL2)
+ 	find_package(SDL2_ttf)
++	else()
++	add_subdirectory(ext/sdl2)
++	add_subdirectory(ext/sdl2_ttf)
++	endif()
+ 	find_package(Fontconfig)
+ 
+ 	# TODO: this can be removed once CI supports newer SDL2_ttf
+-- 
+2.51.0
+

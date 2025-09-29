@@ -4,11 +4,12 @@
 
 %global pkgrel 1
 
-%global jre_ver 11
+# 11 is minimal kse supported
+%global jre_ver latest
 
 Name:           kse
 Version:        5.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
 License:        GPL-3.0-or-later
@@ -21,7 +22,7 @@ ExclusiveArch:  x86_64
 
 
 BuildRequires:  desktop-file-utils
-Requires:       jre >= %{jre_ver}
+Requires:       java-%{jre_ver}-openjdk
 Requires:       hicolor-icon-theme
 
 Provides:       keystore-explorer = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -40,17 +41,33 @@ requests, certificate revocation lists and more.
 rpm2cpio %{S:0} | cpio -imdv
 
 
+cat > %{name}.sh <<'EOF'
+#!/usr/bin/sh
+
+jar_file="%{_libdir}/%{name}/%{name}.jar"
+%if "%{jre_ver}" != "latest"
+jre_ver=%{jre_ver}
+jre_dir="/usr/lib/jvm"
+
+if [ -x "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" ] ;then
+  exec "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" -jar "${jar_file}" "${@}"
+else
+  exec "${jre_dir}/jre-${jre_ver}/bin/java" -jar "${jar_file}" "${@}"
+fi
+%else
+
+exec java -jar "${jar_file}" "${@}"
+%endif
+EOF
+
+
 %build
 
 
 %install
 
 mkdir -p %{buildroot}%{_bindir}
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/usr/bin/sh
-exec java -jar %{_libdir}/%{name}/%{name}.jar "${@}"
-EOF
-chmod 755 %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{name}.sh %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/lib
 install -pm0644 opt/%{name}/%{name}.jar %{buildroot}%{_libdir}/%{name}/
@@ -84,6 +101,9 @@ done
 
 
 %changelog
+* Fri Sep 26 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.0-2
+- Hardcode JRE version requirement, so full JDK is proper obtained on distro updates
+
 * Wed May 28 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.0-1
 - 5.6.0
 - Move to %%{_libdir}, because a new shared library is provided

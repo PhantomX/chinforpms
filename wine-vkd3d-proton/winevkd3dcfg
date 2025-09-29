@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20250216
+ver=20250928
 
 name="VKD3D-Proton"
 pkgname="wine-vkd3d-proton"
@@ -49,6 +49,8 @@ overrideskey="HKCU\\Software\\Wine\\DllOverrides"
 overrideskeywow64="HKCU\\Software\\WoW6432Node\\Wine\\DllOverrides"
 sysdir="system32"
 sysdirwow64="syswow64"
+wine_path="/usr/lib64/wine"
+wine32_path="${wine_path}"
 
 txt() {
 cat <<EOF
@@ -61,6 +63,10 @@ Uso : $0 <option>
 -h|--help         Show this message.
 EOF
 }
+
+if [ -d "/usr/lib64/wine" ] && [ -d "/usr/lib/wine" ] ;then
+  wine32_path="/usr/lib/wine"
+fi
 
 checkprefix(){
   native_path="$(wine winepath -u "C:\windows\\${sysdirwow64}" 2>/dev/null)"
@@ -128,19 +134,18 @@ setcfg(){
       lib=64
       regkey="${overrideskey}"
       winearchdir="${archdir}"
-      wine_path="/usr/lib64/wine"
       winesysdir="${sysdir}"
     elif [ "${winebits}" == "32" ] ;then
       lib=32
       regkey="${overrideskeywow64}"
       winearchdir="${archdirwow64}"
-      wine_path="/usr/lib/wine"
+      wine_path="${wine32_path}"
       winesysdir="${sysdirwow64}"
     else
       lib=32
       regkey="${overrideskey}"
       winearchdir="${archdirwow64}"
-      wine_path="/usr/lib/wine"
+      wine_path="${wine32_path}"
       winesysdir="${sysdir}"
     fi
     native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
@@ -184,8 +189,7 @@ setcfg(){
         enabled=1
       fi
       if [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" != "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
-        rm -f "${native_path}/${dll}.dll"
-        ln -sf "${lib_path}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
+        rm -f "${native_path}/${dll}.dll" && ln -sf "${lib_path}/${dll}${dllsuffix}.dll" "${native_path}/${dll}.dll"
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           enabledlnk=1
@@ -222,19 +226,18 @@ unsetcfg(){
       lib=64
       regkey="${overrideskey}"
       winearchdir="${archdir}"
-      wine_path="/usr/lib64/wine"
       winesysdir="${sysdir}"
     elif [ "${winebits}" == "32" ] ;then
       lib=32
       regkey="${overrideskeywow64}"
       winearchdir="${archdirwow64}"
-      wine_path="/usr/lib/wine"
+      wine_path="${wine32_path}"
       winesysdir="${sysdirwow64}"
     else
       lib=32
       regkey="${overrideskey}"
       winearchdir="${archdirwow64}"
-      wine_path="/usr/lib/wine"
+      wine_path="${wine32_path}"
       winesysdir="${sysdir}"
     fi
     native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
@@ -256,15 +259,17 @@ unsetcfg(){
       fi
       if [ -f "${native_path}/${dll}.dll" ] && [ "$(readlink -f "${lib_path}/${dll}${dllsuffix}.dll")" == "$(readlink -f "${native_path}/${dll}.dll")" ] ;then
         rm -f "${native_path}/${dll}.dll"
+      fi
+      if ! cmp -s "${arch_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
+        cp -pf "${arch_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
         retval=$?
         if [ "${retval}" -eq 0 ] ;then
           disabledlnk=1
-          if [ -f "${arch_path}/${dll}.dll" ] && ! cmp -s "${arch_path}/${dll}.dll" "$(readlink -f "${native_path}/${dll}.dll")" ;then
-            cp -pf "${arch_path}/${dll}.dll" "${native_path}/${dll}.dll" 2>/dev/null
-          fi
         else
           disabledlnk=0
         fi
+      else
+        disabledlnk=1
       fi
     done
   done

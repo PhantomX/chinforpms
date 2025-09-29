@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit b10f5f842a53515cfb0e32df073035693afead3a
+%global commit d43f24dab3b440d82b1ec7ee1c5cc25e0f24510e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250917
+%global date 20250924
 %bcond snapshot 1
 
 # Enable Qt build
@@ -28,6 +28,10 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond smallffmpeg 1
 %bcond miniupnpc 1
+# https://github.com/hrydgard/ppsspp/issues/20508
+%bcond sdl2 0
+%global libsymbolsuffix ()(%{__isa_bits}bit)
+%global libdecor_majver 0
 %bcond local 0
 
 %global commit1 9776332f720c854ef26f325a0cf9e32c02115a9c
@@ -78,6 +82,10 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 ppsspp-lua
 
+%global commit130 478dbb8f7ed11c3d9b20b3986a8ee2283f483ef7
+%global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
+%global srcname130 nanosvg
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global vercommit %(c=%{commit}; echo ${c:0:10})
@@ -86,6 +94,8 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
+%global sdl2_ver 2.32.0
+%global sdl2_ttf_ver 2.24.0
 %global vma_ver 3.3.0
 
 %if %{with qt}
@@ -100,12 +110,21 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.686
+Version:        1.19.3.731
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
 
-License:        BSD-3-Clause-Modification AND GPL-2.0-or-later AND Apache-2.0 AND MIT%{!?with_ffmpeg: AND GPL-3.0-or-later} AND WTFPL
+License: %{shrink:
+    BSD-3-Clause-Modification AND
+    GPL-2.0-or-later AND
+    Apache-2.0 AND
+    MIT AND
+    WTF AND
+    Zlib
+    %{!?with_ffmpeg:AND GPL-3.0-or-later}
+    %{!?with_sdl2:AND Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)}
+}
 URL:            http://www.ppsspp.org/
 
 %if %{without snapshot}
@@ -133,9 +152,15 @@ Source11:       https://github.com/miniupnp/%{srcname11}/archive/%{commit11}/%{s
 %endif
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
-Source100:       %{name}.appdata.xml
-Source101:       %{name}-qt.appdata.xml
-Source102:       Makefile
+Source130:      %{vc_url}/%{srcname130}/archive/%{commit130}/%{srcname130}-%{shortcommit130}.tar.gz
+%if %{without sdl2}
+Source900:      https://www.libsdl.org/release/SDL2-%{sdl2_ver}.tar.gz
+Source901:      https://github.com/libsdl-org/SDL_ttf/releases/download/release-%{sdl2_ttf_ver}/SDL2_ttf-%{sdl2_ttf_ver}.tar.gz
+%endif
+
+Source1000:     %{name}.appdata.xml
+Source1001:     %{name}-qt.appdata.xml
+Source1002:     Makefile
 
 Patch0:         0001-Disable-check-for-new-versions.patch
 Patch2:         0001-Set-pulseaudio-application-name.patch
@@ -144,9 +169,12 @@ Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 Patch7:         0001-atlastool-add-missing-header.patch
+Patch8:         0001-Bundled-SDL2-support.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
+Patch900:       SDL2-2.0.22-prefer-wayland.patch
+Patch901:       SDL2-2.0.3-cmake-joystick.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -198,7 +226,36 @@ BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 Provides:       bundled(miniupnpc) = 0~git%{shortcommit11}
 %endif
 BuildRequires:  pkgconfig(RapidJSON)
+%if %{with sdl2}
 BuildRequires:  pkgconfig(sdl2)
+%else
+BuildRequires:  pkgconfig(alsa)
+BuildRequires:  pkgconfig(gbm)
+BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xext)
+BuildRequires:  pkgconfig(xi)
+BuildRequires:  pkgconfig(xrandr)
+BuildRequires:  pkgconfig(xrender)
+BuildRequires:  pkgconfig(xscrnsaver)
+BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(systemd)
+BuildRequires:  pkgconfig(libusb-1.0)
+BuildRequires:  pkgconfig(libpulse-simple)
+BuildRequires:  pkgconfig(jack)
+BuildRequires:  pkgconfig(libpipewire-0.3)
+BuildRequires:  pkgconfig(dbus-1)
+BuildRequires:  pkgconfig(ibus-1.0)
+BuildRequires:  pkgconfig(libdecor-%{libdecor_majver})
+BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(vulkan)
+Provides:       bundled(SDL2) = %{sdl2_ver}
+# Ensure libdecor is pulled in when libwayland-client is (rhbz#1992804)
+Requires:       (libdecor-%{libdecor_majver}.so.%{libdecor_majver}%{libsymbolsuffix} if libwayland-client)
+BuildRequires:  pkgconfig(harfbuzz)
+Provides:       bundled(SDL2_ttf) = %{sdl2_ttf_ver}
+%endif
 BuildRequires:  pkgconfig(snappy)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-server)
@@ -285,6 +342,20 @@ tar -xf %{SOURCE8} -C ext/armips/ext/filesystem --strip-components 1
 tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
 tar -xf %{SOURCE12} -C ext/lua --strip-components 1
+tar -xf %{SOURCE130} -C ext/nanosvg --strip-components 1
+%if %{without sdl2}
+mkdir ext/sdl2
+tar -xf %{SOURCE900} -C ext/sdl2 --strip-components 1
+%patch -P 900 -p1 -d ext/sdl2
+%patch -P 901 -p1 -d ext/sdl2
+mkdir ext/sdl2_ttf
+tar -xf %{SOURCE901} -C ext/sdl2_ttf --strip-components 1
+sed \
+  -e '/CMAKE_POSITION_INDEPENDENT_CODE/d' \
+  -e '/option(BUILD_SHARED_LIBS/d' \
+  -i ext/sdl2_ttf/CMakeLists.txt
+sed -i 's/\r//' ext/sdl2*/LICENSE.txt
+%endif
 %endif
 
 rm -rf ext/glew/GL
@@ -306,11 +377,16 @@ cp -p cityhash/COPYING COPYING.cityhash
 cp -p cpu_features/LICENSE LICENSE.cpu_features
 cp -p gason/LICENSE LICENSE.gason
 cp -p glslang/LICENSE.txt LICENSE.glslang
+cp -p nanosvg/LICENSE.txt LICENSE.nanosvg
 cp -p rcheevos/LICENSE LICENSE.rcheevos
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
 cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
 cp -p portable-file-dialogs/COPYING COPYING.pfd
+%if %{without sdl2}
+cp -p sdl2/LICENSE.txt LICENSE.sdl2
+cp -p sdl2_ttf/LICENSE.txt LICENSE.sdl2_ttf
+%endif
 popd
 
 %if %{with miniupnpc}
@@ -444,12 +520,12 @@ popd
 %if %{with miniupnpc}
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
 %endif
-  -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \
   -DUSE_WAYLAND_WSI:BOOL=ON \
   -DUSING_X11_VULKAN:BOOL=ON \
+  -DUSE_VULKAN_DISPLAY_KHR:BOOL=ON \
   -DENABLE_HLSL:BOOL=OFF \
   -DENABLE_GLSLANG_BINARIES:BOOL=OFF \
 %ifarch %{ix86}
@@ -468,6 +544,29 @@ popd
   -DHEADLESS:BOOL=OFF \
 %if %{with qt}
   -DUSING_QT_UI:BOOL=ON \
+%endif
+%if %{with sdl2}
+  -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
+%else
+  -DUSE_SYSTEM_LIBSDL2:BOOL=OFF \
+  -DSDL_STATIC_ENABLED_BY_DEFAULT:BOOL=ON \
+  -DSDL_SHARED_ENABLED_BY_DEFAULT:BOOL=OFF \
+  -DSDL2_DISABLE_INSTALL:BOOL=ON \
+  -DSDL_DLOPEN:BOOL=ON \
+  -DSDL_VIDEO_KMSDRM:BOOL=ON \
+  -DSDL_ALSA:BOOL=ON \
+  -DSDL_ARTS:BOOL=OFF \
+  -DSDL_ESD:BOOL=OFF \
+  -DSDL_JACK_SHARED:BOOL=ON \
+  -DSDL_NAS:BOOL=OFF \
+  -DSDL_PULSEAUDIO_SHARED:BOOL=ON \
+  -DSDL_PIPEWIRE_SHARED:BOOL=ON \
+  -DSDL_VIDEO_WAYLAND:BOOL=ON \
+  -DSDL_LIBDECOR_SHARED:BOOL=ON \
+  -DSDL_VIDEO_VULKAN:BOOL=ON \
+  -DSDL2TTF_BUILD_SHARED_LIBS:BOOL=OFF \
+  -DSDL2TTF_HARFBUZZ:BOOL=ON \
+  -DSDL2TTF_SAMPLES:BOOL=OFF \
 %endif
 %{nil}
 
@@ -523,9 +622,9 @@ desktop-file-edit \
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm 0644 \
 %if %{with qt}
-  %{S:101} \
+  %{S:1001} \
 %else
-  %{S:100} \
+  %{S:1000} \
 %endif
   %{buildroot}%{_metainfodir}/%{binname}.appdata.xml
 
@@ -560,6 +659,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Sep 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.3.731-100.20250924gitd43f24d
+- Build with bundled SDL2 until SDL3 is supported by upstream
+
 * Wed Jul 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.3.277-100.20250715git6cb0309
 - 1.19.3.277
 

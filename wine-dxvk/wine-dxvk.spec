@@ -16,8 +16,8 @@ BuildArch:      noarch
 %global _lto_cflags %{nil}
 
 %global with_extra_flags -O3
-%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
-%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
 %global commit ac59b1d3ee49d9e40512fa2504b29fbae55ba877
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -72,7 +72,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.7.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -301,6 +301,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Sep 28 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-101
+- Update script
+
 * Sat Aug 30 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.1-100
 - 2.7.1
 

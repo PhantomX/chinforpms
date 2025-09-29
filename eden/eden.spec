@@ -9,13 +9,13 @@
 %endif
 
 %global with_extra_flags -O3 -Wp,-U_GLIBCXX_ASSERTIONS
-%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
-%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 249e006667966b7709b74709a801c46714aecec1
+%global commit 020ad29a8c929d18d551ea7cb62d3db7d8460f8f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250917
+%global date 20250926
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -132,11 +132,19 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27699
+Version:        0.0.3.27743
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
-License:        GPL-2.0-or-later AND MIT AND Apache-2.0 AND Apache-2.0 WITH LLVM-exception AND MPL-2.0 AND BSL-1.0 AND ( 0BSD AND MIT )%{!?with_xbyak: AND BSD-3-Clause}%{!?with_mbedtls: AND (Apache-2.0 OR GPL-2.0-or-later)}
+License: %{shrink:
+    GPL-2.0-or-later AND
+    MIT AND Apache-2.0 AND
+    Apache-2.0 WITH LLVM-exception AND
+    MPL-2.0 AND
+    BSL-1.0 AND ( 0BSD AND MIT )
+    %{!?with_xbyak:AND BSD-3-Clause}
+    %{!?with_mbedtls:AND (Apache-2.0 OR GPL-2.0-or-later)}
+}
 URL:            https://eden-emulator.github.io
 
 %if %{with snapshot}

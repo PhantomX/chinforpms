@@ -1,7 +1,7 @@
-%global commit d0def46f34d5eee88f48074fa3f798ee30580aa8
+%global commit ff755388726f7fdfecf452bc3896427191e318ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240919
-%bcond snapshot 0
+%global date 20250928
+%bcond snapshot 1
 
 %bcond map 0
 %bcond thumbnailer 1
@@ -16,7 +16,7 @@
 Summary:        Image browser and viewer
 Name:           geeqie
 Version:        2.6.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          1
 
@@ -29,6 +29,8 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %dnl Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %endif
+
+Patch0:         %{vc_url}/pull/1928.patch#/%{name}-gh-pr1928.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -159,7 +161,6 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_datadir}/icons/hicolor/*/*/*%{name}*
 %{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/%{appname}.desktop
-%{_datadir}/applications/org.geeqie.cache-maintenance.desktop
 %{_metainfodir}/%{appname}.appdata.xml
 %{bash_completions_dir}/%{name}
 
