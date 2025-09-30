@@ -44,7 +44,7 @@ trap 'rm -rf "$headers_dir"' SIGHUP SIGINT SIGTERM EXIT
 archs=${ARCH_LIST:-$(ls arch)}
 echo "$archs"
 
-# Upstream rmeoved the headers_install_all target so do it manually
+# Upstream removed the headers_install_all target so do it manually
 for arch in $archs; do
 	mkdir "$headers_dir/arch-$arch"
 	make ARCH="$arch" INSTALL_HDR_PATH="$headers_dir/arch-$arch" KBUILD_HEADERS=install headers_install

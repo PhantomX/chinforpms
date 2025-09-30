@@ -81,9 +81,7 @@ Filenames are derived from package names defined in yaml config.
 
 ==== variants (-r option)
 This option conditionally enables parts of config which are specific
-to provided variants. A good example is -rt variant, which is 99% identical
-to base kernel, with the exception of kvm subpackage. It's an alternative
-to creating entirely new yaml config that would be 99% identical with base one.
+to provided variants.
 Sample usage can be seen in `filtermods-testdata/test1.yaml`.
 
 ==== graphviz (-g option)
@@ -241,7 +239,7 @@ $ ./redhat/scripts/filtermods.py cmp2rpm -c redhat/rhel_files/def_variants.yaml.
 === selftest
 $ filtermods.py selftest [-h] [-g]
 
-Run selftests using data from filtermods-testdata directory. 
+Run selftests using data from filtermods-testdata directory.
 
 == How does it work?
 It is inspired by "label propagation algorithm". Each kmod keeps a

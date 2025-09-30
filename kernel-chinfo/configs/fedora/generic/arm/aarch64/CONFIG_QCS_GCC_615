@@ -1,1 +1,1 @@
-# CONFIG_QCS_GCC_615 is not set
+CONFIG_QCS_GCC_615=y

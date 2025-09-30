@@ -119,6 +119,17 @@ Summary: The Linux kernel
 %global signkernel 0
 %endif
 
+# RHEL/CentOS specific .SBAT entries
+%if 0%{?centos}
+%global sbat_suffix centos
+%else
+%if 0%{?fedora}
+%global sbat_suffix fedora
+%else
+%global sbat_suffix rhel
+%endif
+%endif
+
 # Sign modules on all arches
 %global signmodules 1
 
@@ -183,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.16.9
+%define specrpmversion 6.17.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -212,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 19551175483e28fca9174956a15e45040542b305
+%global opensuse_id 35e9a22dd3a2f788def4839f3615d957f802e678
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -247,10 +258,18 @@ Summary: The Linux kernel
 %define with_arm64_16k %{?_with_arm64_16k: 0} %{?!_with_arm64_16k: 1}
 # kernel-64k (aarch64 kernel with 64K page_size)
 %define with_arm64_64k %{?_without_arm64_64k:0} %{?!_without_arm64_64k:1}
+# we default reatime builds to off for fedora and on for rhel/centos/eln
+%if 0%{?fedora}
 # kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
 %define with_realtime  %{?_with_realtime:1} %{?!_with_realtime:0}
 # kernel-rt-64k (aarch64 RT kernel with 64K page_size)
-%define with_realtime_arm64_64k %{?_without_realtime_arm64_64k:0} %{?!_without_realtime_arm64_64k:1}
+%define with_realtime_arm64_64k %{?_with_realtime_arm64_64k:1} %{?!_with_realtime_arm64_64k:0}
+%else
+# kernel-rt (x86_64 and aarch64 only PREEMPT_RT enabled kernel)
+%define with_realtime  %{?_without_realtime:0} %{?!_without_realtime:1}
+# kernel-rt-64k (aarch64 RT kernel with 64K page_size)
+%define with_realtime_arm64_64k %{?_without_realtime_arm64_64k: 0} %{?!_without_realtime_arm64_64k:1}
+%endif
 # kernel-automotive (x86_64 and aarch64 with PREEMPT_RT enabled - currently off by default)
 %define with_automotive %{?_with_automotive:1} %{?!_with_automotive:0}
 
@@ -359,8 +378,6 @@ Summary: The Linux kernel
 # no stablelist
 %define with_kernel_abi_stablelists 0
 %define with_arm64_64k 0
-%define with_realtime 0
-%define with_realtime_arm64_64k 0
 %define with_automotive 0
 %endif
 
@@ -376,11 +393,7 @@ Summary: The Linux kernel
 %else
 %global llvm_ias 1
 %endif
-%global clang_make_opts HOSTCC=clang CC=clang LLVM_IAS=%{llvm_ias}
-%if %{with clang_lto}
-# LLVM=1 enables use of all LLVM tools.
-%global clang_make_opts %{clang_make_opts} LLVM=1
-%endif
+%global clang_make_opts HOSTCC=clang CC=clang LLVM_IAS=%{llvm_ias} LLVM=1
 %global make_opts %{make_opts} %{clang_make_opts}
 %endif
 
@@ -820,7 +833,6 @@ BuildRequires: sparse
 BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel python3-setuptools
 BuildRequires: java-devel
-BuildRequires: libbpf-devel >= 0.6.0-1
 BuildRequires: libbabeltrace-devel
 BuildRequires: libtraceevent-devel
 %ifnarch s390x
@@ -841,6 +853,11 @@ BuildRequires: libtracefs-devel
 BuildRequires: libbpf-devel
 BuildRequires: bpftool
 BuildRequires: clang
+
+%ifarch %{cpupowerarchs}
+# For libcpupower bindings
+BuildRequires: swig
+%endif
 
 %ifnarch s390x
 BuildRequires: pciutils-devel
@@ -1082,6 +1099,10 @@ Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
+Source83: uki.sbat.template
+Source84: uki-addons.sbat.template
+Source85: kernel.sbat.template
+
 Source86: dracut-virt.conf
 
 Source87: flavors
@@ -1239,19 +1260,16 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/2d1170dde93552cc5f09480700241be326b33e8c.patch#/pf-cb-2d1170d.patch
-# kbuild
-Patch7000:  %{pf_url}/576775d56d2db5efb53ebe63caaf0b262ebf10a1.patch#/pf-cb-576775d.patch
-Patch7001:  %{pf_url}/92fb1e195758f65d9f1b8cefe915e50d2fc2ac7b.patch#/pf-cb-92fb1e1.patch
+Patch6950:  %{pf_url}/18915da65f0520434ba2fa7e8ddbc17090320a9f.patch#/pf-cb-18915da.patch
+# kbuild (7000)
 # bbr3
-Patch7050:  %{pf_url}/44ea9f23b99cc37f9f03c3c0b2f5858041613ca1.patch#/pf-cb-44ea9f2.patch
+Patch7050:  %{pf_url}/1c91634fce827f78ab54c06e233311a8068b46fd.patch#/pf-cb-1c91634.patch
 # zstd
 # v4l2loopback
-Patch7230:  %{pf_url}/d9b2b93c47dde314f34f56c8b85c1acee5dcf4d6.patch#/pf-cb-d9b2b93.patch
-Patch7231:  %{pf_url}/c850b9a160c42b44ac701efeab7d20fad963b2f2.patch#/pf-cb-c850b9a.patch
+Patch7230:  %{pf_url}/9abe2205879f04b447248d930bfb6bb84ee25328.patch#/pf-cb-9abe220.patch
 # cpuidle
-Patch7240:  %{pf_url}/fee7dba7007db599d4eee6adfa0bff4fd228a108.patch#/pf-cb-fee7dba.patch
-# fixes
+Patch7240:  %{pf_url}/93f653636155138ce3f470b33f92dc4616ae8c05.patch#/pf-cb-93f6536.patch
+# fixes (7400)
 
 %endif
 
@@ -2111,14 +2129,11 @@ ApplyOptionalPatch %{PATCH999999}
 # archlinux
 ApplyPatch %{PATCH6950}
 # kbuild
-ApplyPatch %{PATCH7000}
-ApplyPatch %{PATCH7001}
 # bbr3
 ApplyPatch %{PATCH7050}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # fixes
@@ -2174,6 +2189,11 @@ rm -f localversion-next localversion-rt
     tools \
     Documentation \
     scripts/clang-tools 2> /dev/null
+
+# SBAT data
+sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE83} > uki.sbat
+sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE84} > uki-addons.sbat
+sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE85} > kernel.sbat
 
 # only deal with configs if we are going to build for the arch
 %ifnarch %nobuildarches
@@ -2289,6 +2309,7 @@ cat imaca.pem >> ../certs/rhel.pem
 
 for i in *.config; do
   sed -i 's@CONFIG_SYSTEM_TRUSTED_KEYS=""@CONFIG_SYSTEM_TRUSTED_KEYS="certs/rhel.pem"@' $i
+  sed -i 's@CONFIG_EFI_SBAT_FILE=""@CONFIG_EFI_SBAT_FILE="kernel.sbat"@' $i
 done
 %endif
 
@@ -2868,7 +2889,7 @@ BuildKernel() {
     mkdir -p $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     mv vmlinux $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer
     ln -s $RPM_BUILD_ROOT%{debuginfodir}/lib/modules/$KernelVer/vmlinux vmlinux
-    if [ -n "%{vmlinux_decompressor}" ]; then
+    if [ -n "%{?vmlinux_decompressor}" ]; then
       eu-readelf -n  %{vmlinux_decompressor} | grep "Build ID" | awk '{print $NF}' > vmlinux.decompressor.id
       # Without build-id the build will fail. But for s390 the build-id
       # wasn't added before 5.11. In case it is missing prefer not
@@ -2945,52 +2966,30 @@ BuildKernel() {
     else
 %if %{with_efiuki}
         %{log_msg "Setup the EFI UKI kernel"}
-
-        # RHEL/CentOS specific .SBAT entries
-%if 0%{?centos}
-        SBATsuffix="centos"
-%else
-%if 0%{?fedora}
-        SBATsuffix="fedora"
-%else
-        SBATsuffix="rhel"
-%endif
-%endif
-        SBAT=$(cat <<- EOF
-	linux,1,Red Hat,linux,$KernelVer,mailto:secalert@redhat.com
-	linux.$SBATsuffix,1,Red Hat,linux,$KernelVer,mailto:secalert@redhat.com
-	kernel-uki-virt.$SBATsuffix,1,Red Hat,kernel-uki-virt,$KernelVer,mailto:secalert@redhat.com
-EOF
-)
-
-        ADDONS_SBAT=$(cat <<- EOF
-	sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
-	kernel-uki-virt-addons.$SBATsuffix,1,Red Hat,kernel-uki-virt-addons,$KernelVer,mailto:secalert@redhat.com
-	EOF
-	)
-
-    KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
-    KernelUnifiedImage="$KernelUnifiedImageDir/$InstallName-virt.efi"
+	KernelUnifiedImageDir="$RPM_BUILD_ROOT/lib/modules/$KernelVer"
+    	KernelUnifiedImage="$KernelUnifiedImageDir/$InstallName-virt.efi"
+	KernelUnifiedInitrd="$KernelUnifiedImageDir/$InstallName-virt.img"
 
     mkdir -p $KernelUnifiedImageDir
 
     dracut --conf=%{SOURCE86} \
            --confdir=$(mktemp -d) \
+           --no-hostonly \
            --verbose \
            --kver "$KernelVer" \
            --kmoddir "$RPM_BUILD_ROOT/lib/modules/$KernelVer/" \
            --logfile=$(mktemp) \
-           --uefi \
-%if 0%{?rhel} && !0%{?eln}
-           --sbat "$SBAT" \
-%endif
-           --kernel-image $(realpath $KernelImage) \
-           --kernel-cmdline 'console=tty0 console=ttyS0' \
-    $KernelUnifiedImage
+    $KernelUnifiedInitrd
+
+  ukify build --linux $(realpath $KernelImage) --initrd $KernelUnifiedInitrd \
+     --sbat @uki.sbat --os-release @/etc/os-release --uname $KernelVer \
+    --cmdline 'console=tty0 console=ttyS0' --output $KernelUnifiedImage
+
+  rm -f $KernelUnifiedInitrd
 
   KernelAddonsDirOut="$KernelUnifiedImage.extra.d"
   mkdir -p $KernelAddonsDirOut
-  python3 %{SOURCE151} %{SOURCE152} $KernelAddonsDirOut virt %{primary_target} %{_target_cpu} "$ADDONS_SBAT"
+  python3 %{SOURCE151} %{SOURCE152} $KernelAddonsDirOut virt %{primary_target} %{_target_cpu} @uki-addons.sbat
 
 %if %{signkernel}
     %{log_msg "Sign the EFI UKI kernel"}
@@ -3307,7 +3306,7 @@ fi
 %global perf_build_extra_opts CORESIGHT=1
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBBPF_DYNAMIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 %{log_msg "Build perf"}
 # perf
@@ -3329,6 +3328,8 @@ chmod +x tools/perf/check-headers.sh
 %ifarch %{cpupowerarchs}
     # link against in-tree libcpupower for idle state support
     %global rtla_make %{tools_make} LDFLAGS="${LDFLAGS} -L../../power/cpupower" INCLUDES="-I../../power/cpupower/lib"
+    # Build libcpupower Python bindings
+    %global libcpupower_python_bindings_make %{tools_make} LDFLAGS="-L%{buildroot}%{_libdir} -lcpupower"
 %else
     %global rtla_make %{tools_make}
 %endif
@@ -3440,7 +3441,7 @@ if [ ! -f tools/bpf/bpftool/bootstrap/bpftool ]; then
 fi
 
 %{log_msg "build samples/bpf"}
-%{make} %{?_smp_mflags} ARCH=$Arch BPFTOOL=$(pwd)/tools/bpf/bpftool/bootstrap/bpftool V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
+%{make} %{?_smp_mflags} EXTRA_CXXFLAGS="${CXXFLAGS}" ARCH=$Arch BPFTOOL=$(pwd)/tools/bpf/bpftool/bootstrap/bpftool V=1 M=samples/bpf/ VMLINUX_H="${RPM_VMLINUX_H}" || true
 
 pushd tools/testing/selftests
 # We need to install here because we need to call make with ARCH set which
@@ -3460,7 +3461,7 @@ pushd tools/testing/selftests
 export CFLAGS="%{build_cflags}"
 export CXXFLAGS="%{build_cxxflags}"
 
-%{make} %{?_smp_mflags} ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # Restore the original level of source fortification
 %define _fortify_level %{_fortify_level_bak}
@@ -3703,6 +3704,12 @@ mv cpupower.lang ../
     popd
 %endif
 chmod 0755 %{buildroot}%{_libdir}/libcpupower.so*
+%{log_msg "Build libcpupower Python bindings"}
+pushd tools/power/cpupower/bindings/python
+%{libcpupower_python_bindings_make}
+%{log_msg "Install libcpupower Python bindings"}
+%{make} INSTALL_DIR=$RPM_BUILD_ROOT%{python3_sitearch} install
+popd
 %endif
 %ifarch x86_64
    mkdir -p %{buildroot}%{_mandir}/man8
@@ -4060,11 +4067,18 @@ touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%
 
 #
 # This macro defines a %%preun script for a kernel package.
-#    %%kernel_variant_preun [-v <subpackage>] -u [uki-suffix]
+#	%%kernel_variant_preun [-v <subpackage>] -u [uki-suffix] -e
+# Add kernel-install's --entry-type=type1|type2|all option (if supported) to limit removal
+# to a specific boot entry type.
 #
-%define kernel_variant_preun(v:u:) \
+%define kernel_variant_preun(v:u:e) \
 %{expand:%%preun %{?-v:%{-v*}-}%{!?-u*:core}%{?-u*:uki-%{-u*}}}\
-/bin/kernel-install remove %{KVERREL}%{?-v:+%{-v*}} || exit $?\
+entry_type=""\
+%{-e: \
+/bin/kernel-install --help|grep -q -- '--entry-type=' &&\
+    entry_type="--entry-type %{!?-u:type1}%{?-u:type2}" \
+}\
+/bin/kernel-install remove %{KVERREL}%{?-v:+%{-v*}} $entry_type || exit $?\
 %if !%{with_automotive}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
@@ -4075,11 +4089,11 @@ fi\
 
 %if %{with_up_base} && %{with_efiuki}
 %kernel_variant_posttrans -u virt
-%kernel_variant_preun -u virt
+%kernel_variant_preun -u virt -e
 %endif
 
 %if %{with_up_base}
-%kernel_variant_preun
+%kernel_variant_preun -e
 %kernel_variant_post
 %endif
 
@@ -4090,52 +4104,52 @@ fi\
 
 %if %{with_up} && %{with_debug} && %{with_efiuki}
 %kernel_variant_posttrans -v debug -u virt
-%kernel_variant_preun -v debug -u virt
+%kernel_variant_preun -v debug -u virt -e
 %endif
 
 %if %{with_up} && %{with_debug}
-%kernel_variant_preun -v debug
+%kernel_variant_preun -v debug -e
 %kernel_variant_post -v debug
 %endif
 
 %if %{with_arm64_16k_base}
-%kernel_variant_preun -v 16k
+%kernel_variant_preun -v 16k -e
 %kernel_variant_post -v 16k
 %endif
 
 %if %{with_debug} && %{with_arm64_16k}
-%kernel_variant_preun -v 16k-debug
+%kernel_variant_preun -v 16k-debug -e
 %kernel_variant_post -v 16k-debug
 %endif
 
 %if %{with_arm64_16k} && %{with_debug} && %{with_efiuki}
 %kernel_variant_posttrans -v 16k-debug -u virt
-%kernel_variant_preun -v 16k-debug -u virt
+%kernel_variant_preun -v 16k-debug -u virt -e
 %endif
 
 %if %{with_arm64_16k_base} && %{with_efiuki}
 %kernel_variant_posttrans -v 16k -u virt
-%kernel_variant_preun -v 16k -u virt
+%kernel_variant_preun -v 16k -u virt -e
 %endif
 
 %if %{with_arm64_64k_base}
-%kernel_variant_preun -v 64k
+%kernel_variant_preun -v 64k -e
 %kernel_variant_post -v 64k
 %endif
 
 %if %{with_debug} && %{with_arm64_64k}
-%kernel_variant_preun -v 64k-debug
+%kernel_variant_preun -v 64k-debug -e
 %kernel_variant_post -v 64k-debug
 %endif
 
 %if %{with_arm64_64k} && %{with_debug} && %{with_efiuki}
 %kernel_variant_posttrans -v 64k-debug -u virt
-%kernel_variant_preun -v 64k-debug -u virt
+%kernel_variant_preun -v 64k-debug -u virt -e
 %endif
 
 %if %{with_arm64_64k_base} && %{with_efiuki}
 %kernel_variant_posttrans -v 64k -u virt
-%kernel_variant_preun -v 64k -u virt
+%kernel_variant_preun -v 64k -u virt -e
 %endif
 
 %if %{with_realtime_base}
@@ -4330,6 +4344,9 @@ fi\
 %{_includedir}/cpufreq.h
 %{_includedir}/cpuidle.h
 %{_includedir}/powercap.h
+# libcpupower Python bindings
+%{python3_sitearch}/_raw_pylibcpupower.so
+%{python3_sitearch}/raw_pylibcpupower.py
 %endif
 %if %{with_ynl}
 %{_libdir}/libynl*
@@ -4537,6 +4554,9 @@ fi\
 #
 #
 %changelog
+* Mon Sep 29 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.0-500.chinfo
+- 6.17.0
+
 * Thu Sep 25 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.9-500.chinfo
 - 6.16.9
 
@@ -4729,42 +4749,6 @@ fi\
 
 * Sun Sep 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.0-500.chinfo
 - 6.11.0
-
-* Fri Sep 13 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.10-500.chinfo
-- 6.10.10
-
-* Sun Sep 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.9-500.chinfo
-- 6.10.9
-
-* Fri Sep 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-501.chinfo
-- Remove iosched patches
-
-* Wed Sep 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.8-500.chinfo
-- 6.10.8
-
-* Thu Aug 29 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.7-500.chinfo
-- 6.10.7
-
-* Mon Aug 19 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.6-500.chinfo
-- 6.10.6
-
-* Sun Aug 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.5-500.chinfo
-- 6.10.5
-
-* Sun Aug 11 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.4-500.chinfo
-- 6.10.4
-
-* Sat Aug 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.3-500.chinfo
-- 6.10.3
-
-* Sun Jul 28 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.2-500.chinfo
-- 6.10.2
-
-* Wed Jul 24 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.1-500.chinfo
-- 6.10.1
-
-* Mon Jul 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.10.0-500.chinfo
-- 6.10.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

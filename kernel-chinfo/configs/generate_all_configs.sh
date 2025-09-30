@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Adjusts the configuration options to build the variants correctly
 

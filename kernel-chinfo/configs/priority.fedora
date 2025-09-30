@@ -40,6 +40,8 @@ aarch64-16k=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k
 aarch64-16k-debug=generic:generic-arm:generic-arm-aarch64:generic-arm-aarch64-16k:debug:debug-arm-aarch64:debug-arm-aarch64-16k
 aarch64-rt=generic:generic-arm:generic-arm-aarch64:rt-generic:rt-generic-arm:rt-generic-arm-aarch64
 aarch64-rt-debug=generic:generic-arm:generic-arm-aarch64:debug:debug-arm:debug-arm-aarch64:rt-generic:rt-generic-arm:rt-generic-arm-aarch64:rt-debug:rt-debug-arm:rt-debug-arm-aarch64
+aarch64-rt-64k=generic:generic-arm:generic-arm-aarch64:rt-generic:rt-arm-aarch64:rt-arm-aarch64-64k
+aarch64-rt-64k-debug=generic:generic-arm:generic-arm-aarch64:rt-generic:rt-arm-aarch64:rt-arm-aarch64-64k:debug:debug-arm-aarch64:rt-debug
 
 # riscv64
 riscv64=generic:generic-riscv:generic-riscv-riscv64
