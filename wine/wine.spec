@@ -1,7 +1,7 @@
-%global commit 627a1dc459cb9bc7a247d520ea871454d0c63fba
+%global commit bcd3e1a4de9d6efb177b932a937412bfb962d149
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250825
-%bcond snapshot 0
+%global date 20250930
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -74,7 +74,7 @@
 %global winempg123 1.33.0
 %global winepng 1.6.50
 %global wineopenldap 2.5.17
-%global winetiff 4.7.0
+%global winetiff 4.7.1
 %global winejxrlib 1.1
 %global winevkd3d 1.17
 %global winexml2 2.12.8
@@ -88,7 +88,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.15
+%global wine_stagingver 1f7871a75ce9fba133dcb08a559e206813f04951
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -99,7 +99,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id bb60d88ef7d99feb86aff4fb2ab54df2d33fc77c
+%global tkg_id 2ea49094760b6bcd5e163f7df0898de72d628397
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -145,7 +145,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.15
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -224,6 +224,8 @@ Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.pat
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
+Patch707:        %{whq_murl}/-/commit/2c2f3f15b31ddc2f2a9108e2c850b89d42f01626.patch#/%{name}-whq-revert-2c2f3f1.patch
+
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -869,6 +871,7 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1
 %patch -P 705 -p1
 %patch -P 706 -p1
+%patch -P 707 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -923,13 +926,13 @@ autoreconf -f
 %endif
 %patch -P 1028 -p1
 %if %{with ntsync}
-if grep -F "Define to 1 if you have the 'ppoll' function." include/config.h.in ;then
-  if grep -F "Define to 1 if you have the \`prctl' function." include/config.h.in ;then
-%patch -P 1054 -p1
-  else
-%patch -P 1053 -p1
-  fi
-fi
+%dnl if grep -F "Define to 1 if you have the 'ppoll' function." include/config.h.in ;then
+%dnl   if grep -F "Define to 1 if you have the \`prctl' function." include/config.h.in ;then
+%dnl %patch -P 1054 -p1
+%dnl   else
+%dnl %patch -P 1053 -p1
+%dnl   fi
+%dnl fi
 %patch -P 1052 -p1
 %patch -P 1055 -p1
 %else
@@ -1507,6 +1510,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/regsvr32.exe
 %{_libdir}/wine/%{winepedirs}/reg.exe
 %{_libdir}/wine/%{winepedirs}/robocopy.exe
+%{_libdir}/wine/%{winepedirs}/runas.exe
 %{_libdir}/wine/%{winepedirs}/rpcss.exe
 %{_libdir}/wine/%{winepedirs}/rundll32.exe
 %{_libdir}/wine/%{winepedirs}/schtasks.exe

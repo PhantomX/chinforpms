@@ -22,7 +22,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.49
+%global classic_ver 3.24.51
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -36,7 +36,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-classic
-Version:        3.24.49
+Version:        3.24.51
 Release:        1%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
@@ -68,9 +68,6 @@ Patch109:       0001-CSD-Prefer-SSD-by-default.patch
 # Debian
 Patch200:       016_no_offscreen_widgets_grabbing.patch
 Patch201:       017_no_offscreen_device_grabbing.patch
-
-# Ubuntu
-Patch300:       restore_filechooser_typeaheadfind.patch
 
 Patch500:       0001-Rename-Settings.FileChooser.gschema-to-gtk-classic.patch
 
@@ -152,6 +149,9 @@ patch_command appearance__smaller-statusbar.patch
 patch_command csd__clean-headerbar.patch
 patch_command csd__disabled-by-default.patch
 patch_command csd__server-side-shadow.patch
+patch_command file-chooser__eject-button.patch
+patch_command file-chooser__file_units.patch
+patch_command file-chooser__typeahead.patch
 patch_command fixes__labels-wrapping.patch
 patch_command fixes__primary_selection.patch
 patch_command fixes__wayland_dialogs_header_setting.patch
@@ -246,6 +246,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Oct 01 2025 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.51-1
+- 3.24.51
+
 * Thu Mar 20 2025 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.49-1
 - 3.24.49
 

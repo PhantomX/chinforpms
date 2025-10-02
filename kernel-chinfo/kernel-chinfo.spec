@@ -1255,6 +1255,7 @@ Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
+Patch6011: 0001-drivers-input-joystick-xpad-remove-dev_warn-nagging.patch
 
 Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
@@ -2151,6 +2152,7 @@ ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
 
 ApplyPatch %{PATCH6010}
+ApplyPatch %{PATCH6011}
 
 ApplyPatch %{PATCH6020}
 
