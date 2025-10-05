@@ -8,7 +8,7 @@
 %global commit 543dde0de2e4de309801fbed92bc043ef6b47e31
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250916
-%bcond snapshot 1
+%bcond snapshot 0
 
 %bcond rust 0
 
@@ -22,7 +22,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.8.0
+Version:        0.8.3
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -62,8 +62,7 @@ BuildRequires:  pkgconfig(Qt6WebSockets)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
-BuildRequires:  pkgconfig(sdl2)
-BuildRequires:  pkgconfig(SDL2_net)
+BuildRequires:  pkgconfig(sdl3)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
@@ -77,6 +76,7 @@ Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(mupen64plus) = 0~git
 Provides:       bundled(imgui) = 0~git
+Provides:       bundled(SDL3_net) = 0~git
 
 %global __provides_exclude_from ^%{_libdir}/%{pkgname}/.*
 
@@ -192,6 +192,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Oct 03 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.3-1
+- 0.8.3
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-1.20250916git543dde0
 - 0.8.0
 

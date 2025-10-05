@@ -1,7 +1,7 @@
 %global commit bcd3e1a4de9d6efb177b932a937412bfb962d149
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250930
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -23,27 +23,11 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
-# The new wow64 mode is disabled by default
-# https://gitlab.winehq.org/wine/wine/-/releases/wine-9.0#wow64
-%bcond new_wow64 1
-
-%global winepedir_i386 i386-windows
-%global winesodir_i386 i386-unix
-%global winepedir_x86_64 x86_64-windows
-%global winesodir_x86_64 x86_64-unix
-%ifarch %{ix86}
-%global winepedir %{winepedir_i386}
-%global winesodir %{winesodir_i386}
-%global winepedirs %{winepedir}
-%endif
 %ifarch x86_64
-%global winepedir %{winepedir_x86_64}
-%global winesodir %{winesodir_x86_64}
-%if %{with new_wow64}
+%global winepedir x86_64-windows
+%global winesodir x86_64-unix
+%global winepedir_i386 i386-windows
 %global winepedirs %["{%{winepedir_i386},%{winepedir}}"]
-%else
-%global winepedirs %{winepedir}
-%endif
 %endif
 %ifarch aarch64
 %global winepedir aarch64-windows
@@ -88,7 +72,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 1f7871a75ce9fba133dcb08a559e206813f04951
+%global wine_stagingver 10.16
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -99,7 +83,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2ea49094760b6bcd5e163f7df0898de72d628397
+%global tkg_id 22dc4c45deb162cb05298381e0f115f4d4253306
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -111,20 +95,14 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# ntsync (disables fsync, needs full patched modules and kernel-headers)
-%bcond ntsync 1
-# proton FS hack (wine virtual desktop with DXVK is not working well)
-%bcond fshack 0
+# Use legacy ntsync (inproc is not good yet)
+%bcond legacy_ntsync 1
 %bcond ge_wayland 1
 %bcond proton_mf 1
 %bcond proton_winevulkan 1
 
 # Enable when needed
 %bcond patchutils 0
-
-%if %{with fshack}
-%global wine_staging_opts %{?wine_staging_opts} -W winex11-WM_WINDOWPOSCHANGING -W winex11-_NET_ACTIVE_WINDOW
-%endif
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://gitlab.winehq.org/wine/wine
@@ -144,8 +122,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.15
-Release:        101%{?dist}
+Version:        10.16
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -167,9 +145,7 @@ Source1:        wine.init
 Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
-Source7:        wine-README-chinforpms-fshack
-Source8:        wine-README-chinforpms-fsync
-Source9:        wine-README-chinforpms-proton_mf
+Source7:        wine-README-chinforpms-proton_mf
 
 Source50:       %{vk_url}/vk.xml#/vk-%{winevulkan}.xml
 Source51:       %{vk_url}/video.xml#/video-%{winevulkan}.xml
@@ -219,13 +195,26 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
 Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-revert-bd89ab3.patch
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
-Patch702:        %{whq_murl}/-/commit/2bfe81e41f93ce75139e3a6a2d0b68eb2dcb8fa6.patch#/%{name}-whq-revert-2bfe81e.patch
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-Patch707:        %{whq_murl}/-/commit/2c2f3f15b31ddc2f2a9108e2c850b89d42f01626.patch#/%{name}-whq-revert-2c2f3f1.patch
-
+# 707-721 - inproc ntsync reverts
+Patch707:        %{whq_murl}/-/commit/9038ef6d5be71955c6e0739f0e7395e30ce57597.patch#/%{name}-whq-revert-9038ef6.patch
+Patch708:        %{whq_murl}/-/commit/fa829b8d2113bab744910764517b8b2874f551d2.patch#/%{name}-whq-revert-fa829b8.patch
+Patch709:        %{whq_murl}/-/commit/b7c734fef59736aee8c2d0389de910b4cd1ca48f.patch#/%{name}-whq-revert-b7c734f.patch
+Patch710:        %{whq_murl}/-/commit/43bf409b344ecf095d8ec6b6f2de2d6a2ca937ed.patch#/%{name}-whq-revert-43bf409.patch
+Patch711:        %{whq_murl}/-/commit/631aa2e63532d94b0c83b7d3c8f443809a5b9ab8.patch#/%{name}-whq-revert-631aa2e.patch
+Patch712:        %{whq_murl}/-/commit/c8a244747b9a7f707c5f32b368557fe74f58becc.patch#/%{name}-whq-revert-c8a2447.patch
+Patch713:        %{whq_murl}/-/commit/7b0bfaf0a035a0bb4fe1d6307ece1672b6d68ee8.patch#/%{name}-whq-revert-7b0bfaf.patch
+Patch714:        %{whq_murl}/-/commit/beaa4f3b74b79746b6d9b01fdf8cba53d9b8cc98.patch#/%{name}-whq-revert-beaa4f3.patch
+Patch715:        %{whq_murl}/-/commit/541d29c87a446bca9a6318de9bae745aed8c0188.patch#/%{name}-whq-revert-541d29c.patch
+Patch716:        %{whq_murl}/-/commit/f1c6fb8f11f6f9f670b736540d7c4704af880f2b.patch#/%{name}-whq-revert-f1c6fb8.patch
+Patch717:        %{whq_murl}/-/commit/d23054210126489e89210871cdcee930c2711fd3.patch#/%{name}-whq-revert-d230542.patch
+Patch718:        %{whq_murl}/-/commit/193608945a125f7763e73d471a4804e731225326.patch#/%{name}-whq-revert-1936089.patch
+Patch719:        %{whq_murl}/-/commit/5932c5566c5e53d5db5cda1b2b0db4046285c52d.patch#/%{name}-whq-revert-5932c55.patch
+Patch720:        %{whq_murl}/-/commit/7bb835b3482de5e66515b5a0bd8dce8dc9844c93.patch#/%{name}-whq-revert-7bb835b.patch
+Patch721:        %{whq_murl}/-/commit/41aa048af140cdb82a439ff4b79b912cc61afdea.patch#/%{name}-whq-revert-41aa048.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -234,34 +223,23 @@ Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-stag
 Patch1000:       FS_bypass_compositor.patch
 Patch1001:       %{tkg_url}/misc/CSMT-toggle/CSMT-toggle.patch#/%{name}-tkg-CSMT-toggle.patch
 
-# fsync
-Patch1020:       %{tkg_url}/proton/fsync/fsync-unix-staging.patch#/%{name}-tkg-fsync-unix-staging.patch
-Patch1021:       %{tkg_url}/proton/fsync/fsync_futex_waitv.patch#/%{name}-tkg-fsync_futex_waitv.patch
-# FS Hack
-Patch1023:       %{tkg_url}/proton/valve_proton_fullscreen_hack/valve_proton_fullscreen_hack-staging.patch#/%{name}-tkg-valve_proton_fullscreen_hack-staging.patch
-Patch1025:       %{tkg_url}/proton/LAA/LAA-unix-staging-wow64.patch#/%{name}-tkg-LAA-unix-staging-wow64.patch
-Patch1026:       %{tkg_url}/proton/LAA/LAA-unix-staging.patch#/%{name}-tkg-LAA-unix-staging.patch
-Patch1027:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging.patch#/%{name}-tkg-proton-tkg-staging.patch
-Patch1028:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
-Patch1029:       %{tkg_url}/proton-tkg-specific/proton-cpu-topology-overrides/proton-cpu-topology-overrides.patch#/%{name}-tkg-proton-cpu-topology-overrides.patch
-Patch1030:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
-Patch1031:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
-Patch1034:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
-Patch1035:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
-Patch1036:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1037:       %{tkg_url}/hotfixes/shm_esync_fsync/HACK-user32-Always-call-get_message-request-after-waiting.mypatch#/%{name}-tkg-HACK-user32-Always-call-get_message-request-after-waiting.patch
-Patch1038:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{name}-tkg-gstreamer-patch1.patch
-Patch1039:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
-Patch1040:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
-Patch1041:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
+Patch1020:       %{tkg_url}/proton/LAA/LAA-unix-staging-wow64.patch#/%{name}-tkg-LAA-unix-staging-wow64.patch
+Patch1021:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
+Patch1022:       %{tkg_url}/proton-tkg-specific/proton-tkg/proton-tkg-additions.patch#/%{name}-tkg-proton-tkg-additions.patch
+Patch1023:       %{tkg_url}/proton/proton-win10-default/proton-win10-default.patch#/%{name}-tkg-proton-win10-default.patch
+Patch1024:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_time_out2.mypatch#/%{name}-tkg-remove_hooks_that_time_out2.patch
+Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
+Patch1026:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
+Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
-Patch1051:       %{tkg_url}/proton-tkg-specific/proton-tkg/staging/proton-tkg-staging-nofsync.patch#/%{name}-tkg-proton-tkg-staging-nofsync.patch
-Patch1052:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
-Patch1053:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-alt.patch#/%{name}-tkg-ntsync-config.h.in-alt.patch
-Patch1054:       %{tkg_url}/misc/fastsync/ntsync-config.h.in-org.patch#/%{name}-tkg-ntsync-config.h.in-org.patch
-Patch1055:       %{tkg_url}/proton/proton-winevulkan/ntoskrnl-server-Support-referencing-section-objects-ntsync.patch#/%{name}-tkg-ntoskrnl-server-Support-referencing-section-objects-ntsync.patch
+Patch1028:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{name}-tkg-gstreamer-patch1.patch
+Patch1029:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
+Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
+Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
 
-Patch1090:       0001-fshack-revert-grab-fullscreen.patch
+Patch1050:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
+Patch1051:       %{tkg_url}/proton/proton-winevulkan/ntoskrnl-server-Support-referencing-section-objects-ntsync.patch#/%{name}-tkg-ntoskrnl-server-Support-referencing-section-objects-ntsync.patch
+
 Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
 Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
 Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.patch#/%{name}-valve-541b9e8.patch
@@ -301,6 +279,7 @@ BuildRequires:  lld
 %else
 BuildRequires:  gcc
 %endif
+BuildRequires:  kernel-headers >= 6.14
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
 BuildRequires:  mingw32-binutils >= 2.34-100
 BuildRequires:  mingw64-binutils >= 2.34-100
@@ -378,35 +357,11 @@ BuildRequires:  libappstream-glib
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
 BuildRequires:  pkgconfig(libva)
-%if %{with ntsync}
-BuildRequires:  kernel-headers >= 6.14
-%endif
 %endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-fonts = %{?epoch:%{epoch}:}%{version}-%{release}
-
-# x86-32 parts
-%ifarch %{ix86} x86_64
-%if %[ !( "x86_64" == "%{_target_cpu}" && %{with new_wow64} ) ]
-Requires:       wine-core(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-cms(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-ldap(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-twain(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-pulseaudio(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?opencl}
-Requires:       wine-opencl(x86-32) = %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
-Requires:       mesa-dri-drivers(x86-32)
-Recommends:     gstreamer1-plugins-good(x86-32)
-%endif
-Requires:       mingw32-wine-gecko = %{winegecko}
-Requires:       wine-mono = %{winemono}
-Requires:       /usr/bin/ntlm_auth
-Recommends:     dosbox-staging
-Recommends:     wine-dxvk
-%endif
 
 # x86-64 parts
 %ifarch x86_64
@@ -454,37 +409,6 @@ Requires(preun):       %{_sbindir}/alternatives
 
 # require -filesystem
 Requires:       wine-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%ifarch %{ix86}
-# CUPS support uses dlopen - rhbz#1367537
-Requires:       cups-libs(x86-32)
-Requires:       freetype(x86-32)
-Requires:       nss-mdns(x86-32)
-Requires:       gmp(x86-32)
-Requires:       gnutls(x86-32)
-Requires:       gstreamer1-plugins-good(x86-32)
-Requires:       libgcrypt(x86-32)
-Requires:       libXcomposite(x86-32)
-Requires:       libXcursor(x86-32)
-Requires:       libXfixes(x86-32)
-Requires:       libXi(x86-32)
-Requires:       libXinerama(x86-32)
-Requires:       libXrandr(x86-32)
-Requires:       libXrender(x86-32)
-Requires:       libXxf86vm(x86-32)
-Requires:       libpcap(x86-32)
-Requires:       libv4l(x86-32)
-Requires:       unixODBC(x86-32)
-Requires:       samba-libs(x86-32)
-Requires:       SDL2(x86-32)
-Requires:       vulkan-loader(x86-32)
-%if 0%{?wine_staging}
-Requires:       libva(x86-32)
-Recommends:     gstreamer1-plugins-ugly(x86-32)
-%endif
-Provides:       wine-wow32 = %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      wine-wow32 < %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
 
 %ifarch x86_64
 # CUPS support uses dlopen - rhbz#1367537
@@ -871,16 +795,13 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1
 %patch -P 705 -p1
 %patch -P 706 -p1
-%patch -P 707 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
 
 tar -xf %{SOURCE900} --strip-components=1
 
-%if %{without fshack}
 %patch -P 1000 -p1
-%endif
 %patch -P 1001 -p1
 
 %patch -P 5000 -p1
@@ -888,65 +809,51 @@ tar -xf %{SOURCE900} --strip-components=1
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
 
-%if %{with ntsync}
-autoreconf -f
-%endif
-
-%if %{without ntsync}
-%patch -P 1020 -p1
-%patch -P 1021 -p1
-%endif
-%if %{with fshack}
-%patch -P 702 -p1 -R
-%patch -P 1023 -p1
-%endif
 %if %{with proton_mf}
-%patch -P 1038 -p1
-%patch -P 1039 -p1
+%patch -P 1028 -p1
+%patch -P 1029 -p1
 %patch -P 1201 -p1
 %patch -P 1202 -p1
 %endif
-%if %{with new_wow64}
-%patch -P 1025 -p1
-%else
-%patch -P 1026 -p1
-%endif
-%if %{with proton_winevulkan}
-%patch -P 1040 -p1
-%endif
+%patch -P 1020 -p1
 %if %{with ge_wayland}
-%patch -P 1041 -p1
+%patch -P 1031 -p1
 %endif
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%if %{with ntsync}
-%patch -P 1051 -p1
-%else
-%patch -P 1027 -p1
-%endif
-%patch -P 1028 -p1
-%if %{with ntsync}
-%dnl if grep -F "Define to 1 if you have the 'ppoll' function." include/config.h.in ;then
-%dnl   if grep -F "Define to 1 if you have the \`prctl' function." include/config.h.in ;then
-%dnl %patch -P 1054 -p1
-%dnl   else
-%dnl %patch -P 1053 -p1
-%dnl   fi
-%dnl fi
-%patch -P 1052 -p1
-%patch -P 1055 -p1
-%else
-%patch -P 1029 -p1
-%endif
+%patch -P 1021 -p1
+%patch -P 1022 -p1
+
+%if %{with proton_winevulkan}
 %patch -P 1030 -p1
-%patch -P 1031 -p1
-# https://bugs.winehq.org/show_bug.cgi?id=51687#c7
-%dnl %patch -P 1034 -p1
-%patch -P 1035 -p1
-%patch -P 1036 -p1
-%if %{without ntsync}
-%patch -P 1037 -p1
 %endif
+%if %{with legacy_ntsync}
+%patch -P 721 -p1 -R
+%patch -P 720 -p1 -R
+sed -e '/SERVER_PROTOCOL_VERSION/s| 918$| 917|' -i include/wine/server_protocol.h
+%patch -P 719 -p1 -R
+%patch -P 718 -p1 -R
+%patch -P 717 -p1 -R
+%patch -P 716 -p1 -R
+%patch -P 715 -p1 -R
+%patch -P 714 -p1 -R
+%patch -P 713 -p1 -R
+%patch -P 712 -p1 -R
+%patch -P 711 -p1 -R
+%patch -P 710 -p1 -R
+%patch -P 709 -p1 -R
+%patch -P 708 -p1 -R
+%patch -P 707 -p1 -R
+sed -e '/SERVER_PROTOCOL_VERSION/s| 914$| 915|' -i include/wine/server_protocol.h
+%patch -P 1050 -p1
+%patch -P 1051 -p1
+%endif
+%patch -P 1023 -p1
+%patch -P 1024 -p1
+%patch -P 1025 -p1
+# https://bugs.winehq.org/show_bug.cgi?id=51687#c7
+%dnl %patch -P 1026 -p1
+%patch -P 1027 -p1
 
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
@@ -994,18 +901,8 @@ fi
 
 cp -p %{SOURCE3} README.FEDORA
 cp -p %{SOURCE6} README.chinforpms
-%if %{with fshack}
-cat README.chinforpms %{SOURCE7} >> README.chinforpms.fshack
-touch -r README.chinforpms README.chinforpms.fshack
-mv -f README.chinforpms.fshack README.chinforpms
-%endif
-%if %{without ntsync}
-cat README.chinforpms %{SOURCE8} >> README.chinforpms.fsync
-touch -r README.chinforpms README.chinforpms.fsync
-mv -f README.chinforpms.fsync README.chinforpms
-%endif
 %if %{without proton_mf}
-cat README.chinforpms %{SOURCE9} >> README.chinforpms.proton_mf
+cat README.chinforpms %{SOURCE7} >> README.chinforpms.proton_mf
 touch -r README.chinforpms README.chinforpms.proton_mf
 mv -f README.chinforpms.proton_mf README.chinforpms
 %endif
@@ -1078,6 +975,8 @@ export i386_CFLAGS="`echo $i386_CFLAGS | sed \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-hardened-cc1,,' \
   -e 's,-specs=/usr/lib/rpm/redhat/redhat-annobin-cc1,,' \
   -e 's/-fasynchronous-unwind-tables//' \
+  -e 's/-mstackrealign//' \
+  -e 's/-fstack-clash-protection//' \
   `"
 
 export i386_LDFLAGS="${X_LDFLAGS}"
@@ -1106,12 +1005,10 @@ unset PKG_CONFIG_PATH
  --with-dbus \
  --with-x \
 %ifarch x86_64 aarch64
-%if %{with new_wow64}
 %ifarch x86_64
  --enable-archs=x86_64,i386 \
 %else
  --enable-win64 \
-%endif
 %endif
 %endif
  --with-mingw \
@@ -1134,19 +1031,6 @@ chrpath --delete %{buildroot}%{_bindir}/wmc
 chrpath --delete %{buildroot}%{_bindir}/wrc
 chrpath --delete %{buildroot}%{_bindir}/wine
 chrpath --delete %{buildroot}%{_bindir}/wineserver
-
-%if %{without new_wow64}
-%ifarch %{ix86}
-for winelibdir in %{winepedir_x86_64} %{winesodir_x86_64} ;do 
-  ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_prefix}/lib64/%{name}")"/${winelibdir} %{buildroot}/%{_libdir}/%{name}/
-done
-%endif
-%ifarch x86_64
-for winelibdir in %{winepedir_i386} %{winesodir_i386} ;do 
-  ln -sf "$(realpath -m --relative-to="%{_libdir}/%{name}" "%{_prefix}/lib/%{name}")"/${winelibdir} %{buildroot}/%{_libdir}/%{name}/
-done
-%endif
-%endif
 
 mkdir -p %{buildroot}%{_sysconfdir}/wine
 
@@ -1413,9 +1297,6 @@ fi
 %doc VERSION
 # do not include huge changelogs .OLD .ALPHA .BETA (#204302)
 %doc documentation/README.*
-%if (0%{?wine_staging} && %{without ntsync})
-%doc README.esync
-%endif
 %{_bindir}/msidb
 %{_bindir}/winedump
 %{_libdir}/wine/%{winepedirs}/explorer.exe
@@ -1444,18 +1325,9 @@ fi
 %{_bindir}/wine
 
 %dir %{_libdir}/wine
-%if %[ "x86_64" == "%{_target_cpu}" && %{with new_wow64} ]
+%if %[ "x86_64" == "%{_target_cpu}" ]
 %dir %{_libdir}/wine/%{winepedirs}
 %dir %{_libdir}/wine/%{winesodir}
-%else
-%ifarch %{ix86}
-%{_libdir}/wine/%{winepedir_x86_64}
-%{_libdir}/wine/%{winesodir_x86_64}
-%endif
-%ifarch x86_64
-%{_libdir}/wine/%{winepedir_i386}
-%{_libdir}/wine/%{winesodir_i386}
-%endif
 %endif
 
 %{_libdir}/wine/%{winepedirs}/arp.exe
@@ -2299,7 +2171,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wintab.dll16
 %{_libdir}/wine/%{winepedirs}/wow32.dll
 %endif
-%if %[ "x86_64" == "%{_target_cpu}" && %{with new_wow64} ]
+%if %[ "x86_64" == "%{_target_cpu}" ]
 %{_libdir}/wine/%{winepedir_i386}/winevdm.exe
 %{_libdir}/wine/%{winepedir_i386}/ifsmgr.vxd
 %{_libdir}/wine/%{winepedir_i386}/mmdevldr.vxd
@@ -2372,6 +2244,16 @@ fi
 %dir %{_datadir}/wine/mono
 %dir %{_datadir}/wine/fonts
 %{_datadir}/wine/wine.inf
+%{_datadir}/wine/winmd/windows.applicationmodel.winmd
+%{_datadir}/wine/winmd/windows.globalization.winmd
+%{_datadir}/wine/winmd/windows.graphics.winmd
+%{_datadir}/wine/winmd/windows.media.winmd
+%{_datadir}/wine/winmd/windows.networking.winmd
+%{_datadir}/wine/winmd/windows.perception.winmd
+%{_datadir}/wine/winmd/windows.storage.winmd
+%{_datadir}/wine/winmd/windows.system.winmd
+%{_datadir}/wine/winmd/windows.ui.winmd
+%{_datadir}/wine/winmd/windows.ui.xaml.winmd
 %{_datadir}/wine/nls/c_037.nls
 %{_datadir}/wine/nls/c_10000.nls
 %{_datadir}/wine/nls/c_10001.nls
@@ -2654,6 +2536,12 @@ fi
 
 
 %changelog
+* Sat Oct 04 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.16-100
+- 10.16
+- Only support WoW64 mode
+- Patchset cleanup, as NTSYNC is full upstreamed now
+- legacy_ntsync switch
+
 * Sat Sep 13 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.15-100
 - 10.15
 
