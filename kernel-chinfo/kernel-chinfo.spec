@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.0
+%define specrpmversion 6.17.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1247,8 +1247,8 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/99d27906c618fb2092ccb42824996bd22724ff80.patch#/zen-v%{patchversion}-sauce-99d2790.patch
-Patch2002: %{zen_url}/commit/f6ed65cd7bda9cb6009c6a12efd7c4311df31936.patch#/zen-v%{patchversion}-sauce-f6ed65c.patch
+Patch2001: %{zen_url}/commit/be12070350a151ffb964c562e58983b16962df6d.patch#/zen-v%{patchversion}-sauce-be12070.patch
+Patch2002: %{zen_url}/commit/69f73106b713eb0f9afe85b73d37dc439b69ca17.patch#/zen-v%{patchversion}-sauce-69f7310.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
@@ -1271,6 +1271,18 @@ Patch7230:  %{pf_url}/9abe2205879f04b447248d930bfb6bb84ee25328.patch#/pf-cb-9abe
 # cpuidle
 Patch7240:  %{pf_url}/93f653636155138ce3f470b33f92dc4616ae8c05.patch#/pf-cb-93f6536.patch
 # fixes (7400)
+Patch7400:  %{pf_url}/7cc275cc2a38a4725dd93f9fb73d7854b17b46ff.patch#/pf-cb-7cc275c.patch
+Patch7401:  %{pf_url}/709cd7c62c197090898da295d216a858ad785f50.patch#/pf-cb-709cd7c.patch
+Patch7402:  %{pf_url}/46364c9c832db0bf1c9404230aa560752c387871.patch#/pf-cb-46364c9.patch
+Patch7403:  %{pf_url}/000abae353808c5e5978a151117d7f32cc16d071.patch#/pf-cb-000abae.patch
+Patch7404:  %{pf_url}/3c83fd094c4ae5f98f95637bd7e041fe485df236.patch#/pf-cb-3c83fd0.patch
+Patch7405:  %{pf_url}/951200b32a0c00508717b46b69cacd65826c6520.patch#/pf-cb-951200b.patch
+Patch7406:  %{pf_url}/4e7d8c3edbb2eb90f2ebba3d210578be0b007526.patch#/pf-cb-4e7d8c3.patch
+Patch7407:  %{pf_url}/446769bb8b85476d250448d5b33930ce36cd66f5.patch#/pf-cb-446769b.patch
+Patch7408:  %{pf_url}/06fbbbb72a5dd3442c780d8e601db7c402e5a699.patch#/pf-cb-06fbbbb.patch
+Patch7409:  %{pf_url}/da4cb55e9e241559953aa77356a4c137358555bf.patch#/pf-cb-da4cb55.patch
+Patch7410:  %{pf_url}/65fa14558b16a7333e0ff4298502c7d24ad1bd22.patch#/pf-cb-65fa145.patch
+Patch7411:  %{pf_url}/d62502647bf40bd53322ddef125add2e19f66807.patch#/pf-cb-d625026.patch
 
 %endif
 
@@ -2138,6 +2150,18 @@ ApplyPatch %{PATCH7230}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # fixes
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
 %endif
 
 # openSUSE
@@ -4556,6 +4580,9 @@ fi\
 #
 #
 %changelog
+* Mon Oct 06 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.1-500.chinfo
+- 6.17.1
+
 * Mon Sep 29 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.0-500.chinfo
 - 6.17.0
 

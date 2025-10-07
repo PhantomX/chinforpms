@@ -44,8 +44,8 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        6.1.3
-Release:        101%{?dist}
+Version:        6.1.4
+Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -82,9 +82,6 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
-
-# Very dirty patch to fix Fedora 43 build
-Patch1000:      0001-base_url_scheme_linux.cpp-disable-Gio-DesktopAppInfo.patch
 
 Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
@@ -398,6 +395,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Mon Oct 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.1.4-100
+- 6.1.4
+
 * Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.1.3-101
 - Fix Fedora 43 build
 - Remove BR: glibmm

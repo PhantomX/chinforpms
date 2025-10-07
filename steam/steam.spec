@@ -11,7 +11,7 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.84
+Version:        1.0.0.85
 Epoch:          1
 Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
@@ -32,7 +32,7 @@ Source5:        README.Fedora
 # https://github.com/denilsonsa/udev-joystick-blacklist
 
 # Input devices seen as joysticks:
-Source6:        https://github.com/denilsonsa/udev-joystick-blacklist/raw/4c23cd2044ce4ac562ede5aac500bbc9f7a0e9ca/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
+Source6:        https://github.com/denilsonsa/udev-joystick-blacklist/raw/a1ace571823be5979c135e9cb8e9ae103c7641ac/after_kernel_4_9/51-these-are-not-joysticks-rm.rules
 
 # Configure limits in systemd
 Source7:        01-steam.conf
@@ -215,6 +215,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Mon Oct 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.85-100
+- 1.0.0.85
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.84-100
 - 1.0.0.84
 
