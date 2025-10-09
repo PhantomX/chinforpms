@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        55%{?dist}
+Release:        56%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -30,8 +30,6 @@ Source0:        %{url}/archive/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-
-Patch10:        0001-cubeb_get_backend_names-remove-struct.patch
 
 BuildRequires:  cmake
 BuildRequires:  make

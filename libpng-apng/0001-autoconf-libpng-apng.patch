@@ -1,0 +1,309 @@
+From 064a6cd877c9a42a781bf7d01ce71685f8ed29a5 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 7 Oct 2025 23:35:41 -0300
+Subject: [PATCH] autoconf: libpng-apng
+
+---
+ Makefile.am      | 96 ++++++++++++++++++++++++------------------------
+ libpng-config.in | 18 ++++-----
+ libpng.pc.in     |  8 ++--
+ 3 files changed, 61 insertions(+), 61 deletions(-)
+
+diff --git a/Makefile.am b/Makefile.am
+index 455b6cf..5aed9f7 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -7,7 +7,7 @@
+ # For conditions of distribution and use, see the disclaimer
+ # and license in png.h
+ 
+-PNGLIB_BASENAME= libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
++PNGLIB_BASENAME= libpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@
+ 
+ ACLOCAL_AMFLAGS = -I scripts/autoconf
+ 
+@@ -40,30 +40,30 @@ BUILT_SOURCES = pnglibconf.h
+ 
+ if ENABLE_TESTS
+ pngtest_SOURCES = pngtest.c
+-pngtest_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngtest_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pngvalid_SOURCES = contrib/libtests/pngvalid.c
+-pngvalid_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngvalid_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pngstest_SOURCES = contrib/libtests/pngstest.c
+-pngstest_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngstest_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pngunknown_SOURCES = contrib/libtests/pngunknown.c
+-pngunknown_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngunknown_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pngimage_SOURCES = contrib/libtests/pngimage.c
+-pngimage_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngimage_LDADD = $(PNGLIB_BASENAME).la
+ 
+ timepng_SOURCES = contrib/libtests/timepng.c
+-timepng_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++timepng_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pngcp_SOURCES = contrib/tools/pngcp.c
+-pngcp_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngcp_LDADD = $(PNGLIB_BASENAME).la
+ endif
+ 
+ if ENABLE_TOOLS
+ pngfix_SOURCES = contrib/tools/pngfix.c
+-pngfix_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pngfix_LDADD = $(PNGLIB_BASENAME).la
+ 
+ png_fix_itxt_SOURCES = contrib/tools/png-fix-itxt.c
+ endif
+@@ -94,88 +94,88 @@ endif
+ dist_man_MANS= libpng.3 libpngpf.3 png.5
+ 
+ # generate the -config scripts if required
+-binconfigs= libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config
+-EXTRA_SCRIPTS= libpng-config libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config
++binconfigs= $(PNGLIB_BASENAME)-config
++EXTRA_SCRIPTS= libpng-config $(PNGLIB_BASENAME)-config
+ bin_SCRIPTS= @binconfigs@
+ 
+ # rules to build libpng, only build the old library on request
+-lib_LTLIBRARIES=libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++lib_LTLIBRARIES=libpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
+ # EXTRA_LTLIBRARIES= libpng.la
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES = png.c pngerror.c\
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES = png.c pngerror.c\
+ 	pngget.c pngmem.c pngpread.c pngread.c pngrio.c pngrtran.c pngrutil.c\
+ 	pngset.c pngtrans.c pngwio.c pngwrite.c pngwtran.c pngwutil.c\
+ 	png.h pngconf.h pngdebug.h pnginfo.h pngpriv.h pngstruct.h pngusr.dfa
+ 
+ if PNG_ARM_NEON
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += arm/arm_init.c\
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += arm/arm_init.c\
+ 	arm/filter_neon_intrinsics.c \
+ 	arm/palette_neon_intrinsics.c
+ endif
+ 
+ if PNG_MIPS_MSA
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/mips_init.c\
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/mips_init.c\
+ 	mips/filter_msa_intrinsics.c
+ endif
+ 
+ if PNG_MIPS_MMI
+ if !PNG_MIPS_MSA
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/mips_init.c
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/mips_init.c
+ endif
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/filter_mmi_inline_assembly.c
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += mips/filter_mmi_inline_assembly.c
+ endif
+ 
+ if PNG_INTEL_SSE
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += intel/intel_init.c\
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += intel/intel_init.c\
+ 	intel/filter_sse2_intrinsics.c
+ endif
+ 
+ if PNG_POWERPC_VSX
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += powerpc/powerpc_init.c\
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES += powerpc/powerpc_init.c\
+         powerpc/filter_vsx_intrinsics.c
+ endif
+ 
+ if PNG_RISCV_RVV
+-noinst_LTLIBRARIES= libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv_la_SOURCES = riscv/riscv_init.c\
++noinst_LTLIBRARIES= libpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv_la_SOURCES = riscv/riscv_init.c\
+         riscv/filter_rvv_intrinsics.c
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv_la_CFLAGS = -march=rv64gv
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LIBADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv_la_CFLAGS = -march=rv64gv
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LIBADD = libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
+ endif
+ 
+ if PNG_LOONGARCH_LSX
+-noinst_LTLIBRARIES= libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx_la_SOURCES = loongarch/loongarch_lsx_init.c\
++noinst_LTLIBRARIES= libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx_la_SOURCES = loongarch/loongarch_lsx_init.c\
+ 	loongarch/filter_lsx_intrinsics.c
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx_la_CFLAGS = -mlsx
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LIBADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx_la_CFLAGS = -mlsx
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LIBADD = libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
+ endif
+ 
+-nodist_libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES = pnglibconf.h
++nodist_libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_SOURCES = pnglibconf.h
+ 
+-libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS = -no-undefined -export-dynamic \
++libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS = -no-undefined -export-dynamic \
+ 	-version-number @PNGLIB_MAJOR@@PNGLIB_MINOR@:@PNGLIB_RELEASE@:0
+ 
+ if HAVE_LD_VERSION_SCRIPT
+ #   Versioned symbols and restricted exports
+ if HAVE_SOLARIS_LD
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -Wl,-M -Wl,libpng.vers
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -Wl,-M -Wl,libpng.vers
+ else
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -Wl,--version-script=libpng.vers
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -Wl,--version-script=libpng.vers
+ endif
+ 
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES = libpng.vers
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES = libpng.vers
+ else
+ #   Only restricted exports when possible
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -export-symbols libpng.sym
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES = libpng.sym
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -export-symbols libpng.sym
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES = libpng.sym
+ endif
+ 
+ if PNG_RISCV_RVV
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES += libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES += libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@rvv.la
+ endif
+ 
+ if PNG_LOONGARCH_LSX
+-  libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES += libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
++  libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES += libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@lsx.la
+ endif
+ 
+ #distribute headers in /usr/include/libpng/*
+@@ -186,7 +186,7 @@ nodist_pkginclude_HEADERS= pnglibconf.h
+ # pkg-config stuff, note that libpng.pc is always required in order
+ # to get the correct library
+ pkgconfigdir = @pkgconfigdir@
+-pkgconfig_DATA = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.pc
++pkgconfig_DATA = $(PNGLIB_BASENAME).pc
+ 
+ # Extra source distribution files, '${srcdir}' is used below to stop build files
+ # from those directories being included.  This only works if the configure is
+@@ -200,8 +200,8 @@ EXTRA_DIST= \
+ 
+ SCRIPT_CLEANFILES=scripts/*.out scripts/*.chk
+ 
+-CLEANFILES= *.tf? pngout.png libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.pc \
+-	libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config libpng.vers libpng.sym \
++CLEANFILES= *.tf? pngout.png libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@.pc \
++	libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@-config libpng.vers libpng.sym \
+ 	check.new pnglibconf.h pngprefix.h symbols.new pngtest-log.txt \
+ 	pnglibconf.out pnglibconf.c pnglibconf.pre pnglibconf.dfn \
+ 	$(SCRIPT_CLEANFILES)
+@@ -350,7 +350,7 @@ scripts/pnglibconf.c: scripts/pnglibconf.dfa scripts/options.awk pngconf.h
+ 	rm pnglibconf.tf6
+ 	mv pnglibconf.tf7 $@
+ 
+-$(libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_OBJECTS): png.h pngconf.h \
++$(libpng_apng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_OBJECTS): png.h pngconf.h \
+ 	pnglibconf.h pngpriv.h pngdebug.h pnginfo.h pngstruct.h pngprefix.h
+ 
+ test: check-am
+@@ -374,8 +374,8 @@ uninstall-header-links:
+ 	cd '$(DESTDIR)$(includedir)'; rm -f $(HEADERS)
+ 
+ install-libpng-pc:
+-	@set -ex; cd '$(DESTDIR)$(pkgconfigdir)'; rm -f libpng.pc; \
+-	   $(LN_S) '$(PNGLIB_BASENAME).pc' libpng.pc
++	@set -ex; cd '$(DESTDIR)$(pkgconfigdir)'; rm -f libpng-apng.pc; \
++	   $(LN_S) '$(PNGLIB_BASENAME).pc' libpng-apng.pc
+ 
+ uninstall-libpng-pc:
+ 	rm -f '$(DESTDIR)$(pkgconfigdir)/libpng.pc'
+@@ -390,22 +390,22 @@ EXT_LIST = a dll.a so so.@PNGLIB_MAJOR@@PNGLIB_MINOR@.@PNGLIB_RELEASE@ la sl dyl
+ install-library-links:
+ 	@set -x; cd '$(DESTDIR)$(libdir)';\
+ 	for ext in $(EXT_LIST); do\
+-	   rm -f "libpng.$$ext";\
++	   rm -f "libpng-apng.$$ext";\
+            if test -f "$(PNGLIB_BASENAME).$$ext"; then\
+-              $(LN_S) "$(PNGLIB_BASENAME).$$ext" "libpng.$$ext" || exit 1;\
++              $(LN_S) "$(PNGLIB_BASENAME).$$ext" "libpng-apng.$$ext" || exit 1;\
+            fi;\
+ 	done
+ 
+ uninstall-library-links:
+ 	@set -x; cd '$(DESTDIR)$(libdir)'; for ext in $(EXT_LIST); do\
+-	   rm -f "libpng.$$ext"; done
++	   rm -f "libpng-apng.$$ext"; done
+ 
+ install-libpng-config:
+-	@set -ex; cd '$(DESTDIR)$(bindir)'; rm -f libpng-config; \
+-	   $(LN_S) '$(PNGLIB_BASENAME)-config' libpng-config
++	@set -ex; cd '$(DESTDIR)$(bindir)'; rm -f libpng-apng-config; \
++	   $(LN_S) '$(PNGLIB_BASENAME)-config' libpng-apng-config
+ 
+ uninstall-libpng-config:
+-	rm -f '$(DESTDIR)$(bindir)/libpng-config'
++	rm -f '$(DESTDIR)$(bindir)/libpng-apng-config'
+ 
+ if DO_INSTALL_LINKS
+ # If --enable-unversioned-links is specified the header and lib file links
+diff --git a/libpng-config.in b/libpng-config.in
+index 3739eb9..1be3cb4 100644
+--- a/libpng-config.in
++++ b/libpng-config.in
+@@ -1,9 +1,9 @@
+ #! /bin/sh
+ 
+-# libpng-config
++# libpng-apng-config
+ # provides configuration info for libpng.
+ 
+-# Copyright (C) 2002, 2004, 2006, 2007 Glenn Randers-Pehrson
++# Copyright (C) 2002, 2004, 2006, 2007 Glenn Randers-rPehrson
+ 
+ # This code is released under the libpng license.
+ # For conditions of distribution and use, see the disclaimer
+@@ -11,13 +11,13 @@
+ 
+ # Modeled after libxml-config.
+ 
+-version=`pkg-config --modversion libpng`
+-prefix=`pkg-config --variable prefix libpng`
+-exec_prefix=`pkg-config --variable exec_prefix libpng`
+-libdir=`pkg-config --variable libdir libpng`
+-includedir=`pkg-config --variable includedir libpng`
+-libs="-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@"
+-all_libs="-lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@ @LIBS@"
++version=`pkg-config --modversion libpng-apng`
++prefix=`pkg-config --variable prefix libpng-apng`
++exec_prefix=`pkg-config --variable exec_prefix libpng-apng`
++libdir=`pkg-config --variable libdir libpng-apng`
++includedir=`pkg-config --variable includedir libpng-apng`
++libs="-lpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@"
++all_libs="-lpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@ @LIBS@"
+ I_opts="-I${includedir}"
+ L_opts="-L${libdir}"
+ R_opts=""
+diff --git a/libpng.pc.in b/libpng.pc.in
+index de127d4..0063df9 100644
+--- a/libpng.pc.in
++++ b/libpng.pc.in
+@@ -1,12 +1,12 @@
+ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+ libdir=@libdir@
+-includedir=@includedir@/libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
++includedir=@includedir@/libpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@
+ 
+-Name: libpng
+-Description: Loads and saves PNG files
++Name: libpng-apng
++Description: Loads and saves APNG files
+ Version: @PNGLIB_VERSION@
+ Requires.private: zlib
+-Libs: -L${libdir} -lpng@PNGLIB_MAJOR@@PNGLIB_MINOR@
++Libs: -L${libdir} -lpng-apng@PNGLIB_MAJOR@@PNGLIB_MINOR@
+ Libs.private: @LIBS@
+ Cflags: -I${includedir}
+-- 
+2.51.0
+

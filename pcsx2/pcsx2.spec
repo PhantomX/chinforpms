@@ -49,7 +49,7 @@
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
 %global fmt_ver 11.0.0
-%global imgui_ver 1.92.1
+%global imgui_ver 1.92.3
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
 %global rcheevos_scommit 3d01191
@@ -59,7 +59,7 @@
 %global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.167
+Version:        2.5.209
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -126,7 +126,7 @@ Provides:       bundled(fmt) = %{fmt_ver}
 BuildRequires:  pkgconfig(glesv2)
 BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(ice)
-BuildRequires:  cmake(KDDockWidgets-qt6) >= 2.2
+BuildRequires:  cmake(KDDockWidgets-qt6) >= 2.3
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)

@@ -1,0 +1,45 @@
+From 9ce702be5d108c929c90499e0f8ce5a3e0ec00be Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 8 Oct 2025 19:57:38 -0300
+Subject: [PATCH] cmake: add soversion
+
+---
+ CMakeLists.txt     | 4 ++--
+ src/CMakeLists.txt | 1 +
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9c872c6..09444a0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,7 +12,7 @@ if (NOT DEFINED PROJECT_NAME)
+   set(SUBPROJECT OFF)
+ endif()
+ 
+-project(sirit CXX)
++project(sirit LANGUAGES CXX VERSION _RPM_VERSION_)
+ 
+ # Sirit project options
+ option(SIRIT_TESTS "Build tests" ${MASTER_PROJECT})
+@@ -139,4 +139,4 @@ if (SIRIT_INSTALL)
+         FILES "${CMAKE_BINARY_DIR}/siritConfig.cmake"
+         DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/sirit
+     )
+-endif()
+\ No newline at end of file
++endif()
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index 263b6e6..76610d0 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -50,6 +50,7 @@ endmacro()
+ 
+ if (SIRIT_BUILD_SHARED)
+     add_sirit_library(sirit SHARED)
++    set_target_properties(sirit PROPERTIES VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}" SOVERSION ${PROJECT_VERSION_MAJOR})
+ endif()
+ 
+ if (SIRIT_BUILD_STATIC)
+-- 
+2.51.0
+

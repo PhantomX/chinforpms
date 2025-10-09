@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 020ad29a8c929d18d551ea7cb62d3db7d8460f8f
+%global commit 954c17c18a5e6a39c4f7edd80bbb4a1e0507d4e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250926
+%global date 20251007
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -61,14 +61,6 @@
 %global commit13 4e44f4614ddbf038f2a6296f5b906d5c72691e0f
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
-
-%global commit14 db1f1e8ab5e5c0ffd720f6d18f253978c37fb225
-%global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
-%global srcname14 sirit
-
-%global commit15 3f17b2af6784bfa2c5aa5dbb8e0e74a607dd8b3b
-%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
-%global srcname15 SPIRV-Headers
 
 %global commit16 a609330e4c6374f741d3b369269f7848255e1954
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
@@ -132,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27743
+Version:        0.0.3.27799
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -163,7 +155,7 @@ Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive
 %if %{without xbyak}
 Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
-Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+%dnl Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
 %if %{without httplib}
@@ -189,7 +181,7 @@ Source21:       https://ffmpeg.org/releases/ffmpeg-%{ffmpeg_ver}.tar.xz
 Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.tar.gz
 %endif
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
-Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
+%dnl Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
 
@@ -283,6 +275,7 @@ BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
 BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
 %endif
 %endif
+BuildRequires:  cmake(sirit)
 BuildRequires:  cmake(glslang)
 BuildRequires:  cmake(SPIRV-Tools)
 BuildRequires:  spirv-headers-devel
@@ -306,12 +299,11 @@ Requires:       shared-mime-info
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
-Provides:       bundled(frozen) = 0~git%{?shortcommit24}
+%dnl Provides:       bundled(frozen) = 0~git%{?shortcommit24}
 Provides:       bundled(glad) = %{glad_ver}
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
 %endif
-Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 Provides:       bundled(simpleini) = 0~git%{?shortcommit19}
 Provides:       bundled(stb_dxt) = %{stbdxt_ver}
 Provides:       bundled(tzdb_to_nx) = 0~git%{?shortcommit20}
@@ -372,9 +364,6 @@ mkdir -p xbyak
 tar -xf %{S:13} -C xbyak --strip-components 1
 sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i CMakeLists.txt
 %endif
-mkdir sirit
-tar -xf %{S:14} -C sirit --strip-components 1
-%dnl tar -xf %{S:15} -C sirit/externals/SPIRV-Headers --strip-components 1
 %if %{with webservice}
 %if %{without httplib}
 mkdir -p cpp-httplib
@@ -419,8 +408,8 @@ tar -xf %{S:23} -C boost-headers --strip-components 1
 
 popd
 
-mkdir -p src/qt_common/externals/frozen
-tar -xf %{S:24} -C src/qt_common/externals/frozen --strip-components 1
+%dnl mkdir -p src/qt_common/externals/frozen
+%dnl tar -xf %{S:24} -C src/qt_common/externals/frozen --strip-components 1
 
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
@@ -438,7 +427,6 @@ cp -p mbedtls/LICENSE LICENSE.mbedtls
 %endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
-cp -p sirit/LICENSE.txt LICENSE.sirit
 %if %{without vma}
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma
 %endif
@@ -449,7 +437,7 @@ cp xbyak/COPYRIGHT LICENSE.xbyak
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
 popd
-cp -p src/qt_common/externals/frozen/LICENSE externals/LICENSE.frozen
+%dnl cp -p src/qt_common/externals/frozen/LICENSE externals/LICENSE.frozen
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
@@ -513,7 +501,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
   -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
-  -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
   %{!?with_httplib:-DYUZU_USE_SYSTEM_HTTPLIB:BOOL=OFF} \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \

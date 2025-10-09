@@ -1,8 +1,6 @@
-%global sover 2.2
-
 Name:           kddockwidgets
-Version:        2.2.5
-Release:        101%{?dist}
+Version:        2.3.0
+Release:        100%{?dist}
 Summary:        Qt dock widget library
 
 License:        GPL-3.0-only AND GPL-2.0-only AND BSD-3-Clause
@@ -55,19 +53,26 @@ developing applications that use %{name}-qt6.
 %prep
 %autosetup -n KDDockWidgets-%{version}
 
+sed \
+  -e '/CMAKE_INSTALL_RPATH_USE_LINK_PATH/d' \
+  -e '/INSTALL_RPATH/d' \
+  -i cmake/KDAB/modules/KDInstallLocation.cmake \
+     cmake/KDAB/modules/KDPySide2ModuleBuild.cmake \
+     cmake/KDAB/modules/KDPySide6ModuleBuild.cmake
+
 
 %build
 %global _vpath_builddir %{_target_platform}-qt5
 %cmake \
     -G Ninja \
-    -DCMAKE_BUILD_TYPE=Release
+    -DCMAKE_BUILD_TYPE=Release \
+    -DKDDockWidgets_QT6=OFF
 %cmake_build
 
 %global _vpath_builddir %{_target_platform}-qt6
 %cmake \
     -G Ninja \
     -DCMAKE_BUILD_TYPE=Release \
-    -DKDDockWidgets_QT6=ON
 %cmake_build
 
 %install
@@ -82,7 +87,7 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %files
 %license LICENSES/* LICENSE.txt
 %doc CONTRIBUTORS.txt Changelog README.md
-%{_libdir}/libkddockwidgets.so.%{sover}*
+%{_libdir}/libkddockwidgets.so.*
 
 %files devel
 %{_includedir}/kddockwidgets
@@ -93,7 +98,7 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %files qt6
 %license LICENSES/* LICENSE.txt
 %doc CONTRIBUTORS.txt Changelog README.md
-%{_libdir}/libkddockwidgets-qt6.so.%{sover}*
+%{_libdir}/libkddockwidgets-qt6.so.*
 
 %files qt6-devel
 %{_includedir}/kddockwidgets-qt6
@@ -102,6 +107,9 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %{_libdir}/qt6/mkspecs/modules/qt_KDDockWidgets.pri
 
 %changelog
+* Wed Oct 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2.3.0-100
+- 2.3.0
+
 * Thu Sep 11 2025 Phantom X <megaphantomx at hotmail dot com> - 2.2.5-101
 - Rebuild (qt6)
 

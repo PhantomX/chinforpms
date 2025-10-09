@@ -191,6 +191,7 @@ krename
 kse
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
+libpng-apng
 librashader
 -libreoffice
 libstrangle
@@ -278,6 +279,7 @@ sdl-jstest
 -shaderc
 shaderc_ds
 -simple64
+sirit
 skrooge
 slang-shaders
 smtube
