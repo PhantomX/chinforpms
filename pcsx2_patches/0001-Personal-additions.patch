@@ -390,11 +390,11 @@ index 0000000..43d833f
 +
 +// Move the conditional jump we overwrote at 0x287740 just in case, and make unconditional
 +patch=1,EE,20287744,extended,0C0A1DD8
-diff --git a/patches/SLPS-25450_4D7B34BA.pnach b/patches/SLPS-25450_4D7B34BA.pnach
+diff --git a/patches/SLPS-25450_DB7FFC4B.pnach b/patches/SLPS-25450_DB7FFC4B.pnach
 new file mode 100644
 index 0000000..de5ebd9
 --- /dev/null
-+++ b/patches/SLPS-25450_4D7B34BA.pnach
++++ b/patches/SLPS-25450_DB7FFC4B.pnach
 @@ -0,0 +1,26 @@
 +gametitle=Tales of Rebirth Translation (NTSC-J)
 +

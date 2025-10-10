@@ -1,7 +1,7 @@
-%global commit bcd3e1a4de9d6efb177b932a937412bfb962d149
+%global commit c1bafaa02329442df1aba576e2884c0ab699f76e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250930
-%bcond snapshot 0
+%global date 20251008
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -72,7 +72,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.16
+%global wine_stagingver 6f356eb1f57115404fbf5191810101288853c9b4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -83,7 +83,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 22dc4c45deb162cb05298381e0f115f4d4253306
+%global tkg_id 9e0a3fd138f4a9866edbcb840624c6584bc7adf1
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -123,7 +123,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.16
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -199,7 +199,7 @@ Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.pat
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-# 707-721 - inproc ntsync reverts
+# 707-722 - inproc ntsync reverts
 Patch707:        %{whq_murl}/-/commit/9038ef6d5be71955c6e0739f0e7395e30ce57597.patch#/%{name}-whq-revert-9038ef6.patch
 Patch708:        %{whq_murl}/-/commit/fa829b8d2113bab744910764517b8b2874f551d2.patch#/%{name}-whq-revert-fa829b8.patch
 Patch709:        %{whq_murl}/-/commit/b7c734fef59736aee8c2d0389de910b4cd1ca48f.patch#/%{name}-whq-revert-b7c734f.patch
@@ -215,6 +215,21 @@ Patch718:        %{whq_murl}/-/commit/193608945a125f7763e73d471a4804e731225326.p
 Patch719:        %{whq_murl}/-/commit/5932c5566c5e53d5db5cda1b2b0db4046285c52d.patch#/%{name}-whq-revert-5932c55.patch
 Patch720:        %{whq_murl}/-/commit/7bb835b3482de5e66515b5a0bd8dce8dc9844c93.patch#/%{name}-whq-revert-7bb835b.patch
 Patch721:        %{whq_murl}/-/commit/41aa048af140cdb82a439ff4b79b912cc61afdea.patch#/%{name}-whq-revert-41aa048.patch
+Patch722:        %{whq_murl}/-/commit/1e931066b441f6a0ad8bc69c575d70d691c9f5cf.patch#/%{name}-whq-revert-1e93106.patch
+
+Patch723:        %{whq_murl}/-/commit/925b30bfcdb765c3f311dccb9469128cef20f1f5.patch#/%{name}-whq-revert-925b30b.patch
+Patch724:        %{whq_murl}/-/commit/95c1f397135475754e9851f13d696be3765acee1.patch#/%{name}-whq-revert-95c1f39.patch
+Patch725:        %{whq_murl}/-/commit/f2050704f6cb99ca2a423476716f7747cdeeb3b5.patch#/%{name}-whq-revert-f205070.patch
+Patch726:        %{whq_murl}/-/commit/c8bc145fcd347e9ba52bf8b3b821f5721eb49aaf.patch#/%{name}-whq-revert-c8bc145.patch
+Patch727:        %{whq_murl}/-/commit/ed4e3bb1b2046032f0d5f3d00591235e03f276ff.patch#/%{name}-whq-revert-ed4e3bb.patch
+Patch728:        %{whq_murl}/-/commit/b25756d88ea1300d10a7ba4dc271d6b914d4dcb2.patch#/%{name}-whq-revert-b25756d.patch
+Patch729:        %{whq_murl}/-/commit/1ac6f2921ecf1be9e7e6e36af3799601aa95cdba.patch#/%{name}-whq-revert-1ac6f29.patch
+Patch730:        %{whq_murl}/-/commit/54719aad7d1b82a4e1d13a0e2c4bfa565b88beed.patch#/%{name}-whq-revert-54719aa.patch
+Patch731:        %{whq_murl}/-/commit/292051e7ab6722242670e63799f1acd24ade5ce1.patch#/%{name}-whq-revert-292051e.patch
+Patch732:        %{whq_murl}/-/commit/3807dc4640c896a262b8b2c2435789fa87f00328.patch#/%{name}-whq-revert-3807dc4.patch
+Patch733:        %{whq_murl}/-/commit/69a125dd794a97d1f8ac8667368b72ec7031057b.patch#/%{name}-whq-revert-69a125d.patch
+Patch734:        %{whq_murl}/-/commit/723ed862249fab58eb257086c91de4df84448170.patch#/%{name}-whq-revert-723ed86.patch
+Patch735:        %{whq_murl}/-/commit/e04c0d92fdc18c120e2ecdc0d27c5e2da229c6d1.patch#/%{name}-whq-revert-e04c0d9.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -374,6 +389,11 @@ Requires:       wine-pulseaudio(x86-64) = %{?epoch:%{epoch}:}%{version}-%{releas
 Requires:       wine-opencl(x86-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Requires:       mingw64-wine-gecko = %{winegecko}
+Requires:       mingw32-wine-gecko = %{winegecko}
+Requires:       wine-mono = %{winemono}
+Requires:       /usr/bin/ntlm_auth
+Recommends:     wine-dxvk
+Recommends:     dosbox-staging
 Requires:       mesa-dri-drivers(x86-64)
 Recommends:     gstreamer1-plugins-good(x86-64)
 %endif
@@ -388,7 +408,7 @@ Requires:       wine-pulseaudio(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{rele
 %if 0%{?opencl}
 Requires:       wine-opencl(aarch-64) = %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
-Requires:       mingw64-wine-gecko = %winegecko
+Requires:       mingw64-wine-gecko = %{winegecko}
 Requires:       mesa-dri-drivers(aarch-64)
 %endif
 
@@ -439,6 +459,8 @@ Recommends:     gstreamer1-plugins-ugly(x86-64)
 %endif
 Provides:       wine-wow64 = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      wine-wow64 < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       wine-wow32 = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-wow32 < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
 %ifarch aarch64
@@ -825,9 +847,24 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1022 -p1
 
 %if %{with proton_winevulkan}
+%patch -P 735 -p1 -R
+%patch -P 734 -p1 -R
+%patch -P 733 -p1 -R
+%patch -P 732 -p1 -R
+%patch -P 731 -p1 -R
+%patch -P 730 -p1 -R
+%patch -P 729 -p1 -R
+%patch -P 728 -p1 -R
+%patch -P 727 -p1 -R
+sed -e '/SERVER_PROTOCOL_VERSION/s| 920$| 919|' -i include/wine/server_protocol.h
+%patch -P 726 -p1 -R
+%patch -P 725 -p1 -R
+%patch -P 724 -p1 -R
+%patch -P 723 -p1 -R
 %patch -P 1030 -p1
 %endif
 %if %{with legacy_ntsync}
+%patch -P 722 -p1 -R
 %patch -P 721 -p1 -R
 %patch -P 720 -p1 -R
 sed -e '/SERVER_PROTOCOL_VERSION/s| 918$| 917|' -i include/wine/server_protocol.h
@@ -1038,11 +1075,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/wine
 mkdir -p %{buildroot}%{_binfmtdir}
 install -p -c -m 644 %{SOURCE2} %{buildroot}%{_binfmtdir}/wine.conf
 
-%if %{with ntsync}
 # systemd module autoinsert rule
 mkdir -p %{buildroot}%{_modulesloaddir}
 install -m0644 %{SOURCE250} %{buildroot}%{_modulesloaddir}/ntsync.conf
-%endif
 
 # add wine dir to desktop
 mkdir -p %{buildroot}%{_sysconfdir}/xdg/menus/applications-merged
@@ -2474,9 +2509,7 @@ fi
 
 %files systemd
 %config %{_binfmtdir}/wine.conf
-%if %{with ntsync}
 %{_modulesloaddir}/ntsync.conf
-%endif
 
 # ldap subpackage
 %files ldap

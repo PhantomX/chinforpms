@@ -444,8 +444,8 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.1.0
-Release:        101%{?dist}
+Version:        10.1.1
+Release:        100%{?dist}
 Epoch:          2
 
 License: %{shrink:
@@ -490,17 +490,9 @@ Patch: 0001-Disable-9p-local-tests-that-fail-on-copr-aarch64.patch
 # https://lists.nongnu.org/archive/html/qemu-block/2025-01/msg00480.html
 Patch: 0002-nfs-Add-support-for-libnfs-v2-api.patch
 Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
-# Fix for Python 3.14 event loop changes
-# https://bugzilla.redhat.com/show_bug.cgi?id=2375004
-# Sent upstream 2025-07-15
-Patch: 0001-python-Replace-asyncio.get_event_loop-for-Python-3.1.patch
 # Increase test-replication timeout
 # NOT upstream, but see https://gitlab.com/qemu-project/qemu/-/issues/3035
 Patch: 0002-TEMPORARY-increase-test-timeout.patch
-
-# Fix crash with spice GL (bz 2391334)
-# not upstream, elmarco will submit
-Patch: 0001-ui-spice-fix-crash-when-disabling-GL-scanout-on.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -3434,6 +3426,9 @@ popd
 
 
 %changelog
+* Thu Oct 09 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.1-100
+- 10.1.1
+
 * Sun Sep 07 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.0-101
 - Rawhide sync
 
