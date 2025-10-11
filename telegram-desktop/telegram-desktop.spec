@@ -35,8 +35,8 @@
 
 # Reducing debuginfo verbosity...
 %global with_extra_flags -g1
-%global _pkg_extra_cflags %{?_pkg_extra_cflags} %{?with_extra_flags}
-%global _pkg_extra_cxxflags %{?_pkg_extra_cxxflags} %{?with_extra_flags}
+%{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
+%{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
 %global cppgir_ver 2.77.0
 %global libsigc_ver 3.0.0
@@ -44,7 +44,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        6.1.4
+Version:        6.2.2
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -236,10 +236,6 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 %autopatch -p1 -M 999
 
-%if 0%{?fedora} >= 43
-%patch -P 1000 -p1
-%endif
-
 %if %{with ltdp}
 %dnl %patch -P 1010 -p1
 cp %{P:1010} .
@@ -395,6 +391,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Oct 10 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.2.2-100
+- 6.2.2
+
 * Mon Oct 06 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.1.4-100
 - 6.1.4
 
