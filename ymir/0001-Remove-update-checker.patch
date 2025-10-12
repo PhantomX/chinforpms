@@ -1,0 +1,88 @@
+From 92ad6a68f101ea456b3cd49ee844c0205785c8c7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 11 Oct 2025 17:38:43 -0300
+Subject: [PATCH] Remove update checker
+
+---
+ apps/ymir-sdl3/CMakeLists.txt                      |  2 --
+ apps/ymir-sdl3/src/app/shared_context.hpp          |  2 --
+ apps/ymir-sdl3/src/app/ui/windows/about_window.cpp | 13 -------------
+ 3 files changed, 17 deletions(-)
+
+diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
+index 9ff595b..c2df4d8 100644
+--- a/apps/ymir-sdl3/CMakeLists.txt
++++ b/apps/ymir-sdl3/CMakeLists.txt
+@@ -21,8 +21,6 @@ add_executable(ymir-sdl3
+     src/app/shared_context.hpp
+     src/app/stb_implementations.cpp
+     src/app/toml_implementation.cpp
+-    src/app/update_checker.cpp
+-    src/app/update_checker.hpp
+ 
+     src/app/debug/cdblock_tracer.cpp
+     src/app/debug/cdblock_tracer.hpp
+diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
+index d1b9e89..b02c68e 100644
+--- a/apps/ymir-sdl3/src/app/shared_context.hpp
++++ b/apps/ymir-sdl3/src/app/shared_context.hpp
+@@ -6,7 +6,6 @@
+ #include <app/rewind_buffer.hpp>
+ #include <app/rom_manager.hpp>
+ #include <app/settings.hpp>
+-#include <app/update_checker.hpp>
+ 
+ #include <app/input/input_context.hpp>
+ #include <app/input/input_utils.hpp>
+@@ -457,7 +456,6 @@ struct SharedContext {
+ 
+     Profile profile;
+     Settings settings{*this};
+-    UpdateChecker updateChecker;
+ 
+     ROMManager romManager;
+     std::filesystem::path iplRomPath;
+diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
+index ffe0b8b..ed03045 100644
+--- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
++++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
+@@ -15,13 +15,8 @@
+ #include <cxxopts.hpp>
+ #include <fmt/format.h>
+ #include <lz4.h>
+-#include <nghttp2/nghttp2ver.h>
+-#include <nghttp3/version.h>
+-#include <ngtcp2/version.h>
+-#include <nlohmann/json.hpp>
+ #include <openssl/opensslv.h>
+ #include <RtMidi.h>
+-#include <semver.hpp>
+ #include <toml++/toml.hpp>
+ #include <xxhash.h>
+ 
+@@ -35,10 +30,7 @@
+ #define IMGUI_VERSION_FULL IMGUI_VERSION " (" _STR(IMGUI_VERSION_NUM) ")"
+ #define LZMA_VERSION "24.05" // Private dependency of libchdr
+ #define MIO_VERSION "1.1.0"  // Not exported
+-#define NLOHMANN_JSON_VERSION \
+-    _STR(NLOHMANN_JSON_VERSION_MAJOR) "." _STR(NLOHMANN_JSON_VERSION_MINOR) "." _STR(NLOHMANN_JSON_VERSION_PATCH)
+ #define SDL_VERSION_STR _STR(SDL_MAJOR_VERSION) "." _STR(SDL_MINOR_VERSION) "." _STR(SDL_MICRO_VERSION)
+-#define SEMVER_VERSION _STR(SEMVER_VERSION_MAJOR) "." _STR(SEMVER_VERSION_MINOR) "." _STR(SEMVER_VERSION_PATCH)
+ #define STB_IMAGE_VERSION "2.30"       // Not exported
+ #define STB_IMAGE_WRITE_VERSION "1.16" // Not exported
+ #define MC_CONCQUEUE_VERSION "1.0.4"   // Not exported
+@@ -108,11 +100,6 @@ static const struct {
+     {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
+     {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
+     {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},
+-    {.name = "Neargye/semver",                .version = SEMVER_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/Neargye/semver",              .licenseURL = "https://github.com/Neargye/semver/blob/master/LICENSE"},
+-    {.name = "nghttp2",                       .version = NGHTTP2_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/nghttp2/nghttp2",             .licenseURL = "https://github.com/nghttp2/nghttp2/blob/master/COPYING",                 .homeURL = "https://nghttp2.org/"},
+-    {.name = "nghttp3",                       .version = NGHTTP3_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/ngtcp2/nghttp3",              .licenseURL = "https://github.com/ngtcp2/nghttp3/blob/main/COPYING",                    .homeURL = "https://nghttp2.org/nghttp3/"},
+-    {.name = "ngtcp2",                        .version = NGTCP2_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/ngtcp2/ngtcp2",               .licenseURL = "https://github.com/ngtcp2/ngtcp2/blob/main/COPYING",                     .homeURL = "https://nghttp2.org/ngtcp2/"},
+-    {.name = "nlohmann/json",                 .version = NLOHMANN_JSON_VERSION,      .license = licenseMIT,           .repoURL = "https://github.com/nlohmann/json",               .licenseURL = "https://github.com/nlohmann/json/blob/develop/LICENSE.MIT",              .homeURL = "https://json.nlohmann.me/"},
+     {.name = "OpenSSL",                       .version = OPENSSL_FULL_VERSION_STR,   .license = licenseApache2_0,     .repoURL = "https://github.com/openssl/openssl",             .licenseURL = "https://github.com/openssl/openssl/blob/master/LICENSE.txt",             .homeURL = "https://www.openssl.org/"},
+     {.name = "RtMidi",                        .version = RTMIDI_VERSION,             .license = licenseMITRtMidi,     .repoURL = "https://github.com/thestk/rtmidi",               .licenseURL = "https://github.com/thestk/rtmidi/blob/master/LICENSE"},
+     {.name = "SDL3",                          .version = SDL_VERSION_STR,            .license = licenseZlib,          .repoURL = "https://github.com/libsdl-org/SDL",              .licenseURL = "https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt"},
+-- 
+2.51.0
+

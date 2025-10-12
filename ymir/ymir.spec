@@ -10,52 +10,34 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%bcond cereal 0
-%bcond fmt 1
 %if 0%{?fedora} > 43
 %bcond rtmidi 1
 %endif
 
-%global commit d34191f0b716882a2855e293918db9ad25bb0c50
+%global commit c9adad8b837427d97d762688bb77503cffd750cb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250917
+%global date 20251011
 %bcond snapshot 1
 
-%global commit10 a56bad8bbb770ee266e930c95d37fff2a5be7fea
+%global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 cereal
+%global srcname10 concurrentqueue
 
-%global commit11 c68072129c8a5b4025122ca5a0c82ab14b30cb03
+%global commit11 e4e3c2cc232218019230b470655c69c16ed348ef
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
-%global srcname11 concurrentqueue
+%global srcname11 imgui
 
-%global commit12 5e6d1e29f7546d9d94fe3d193b788b280bf1f37d
+%global commit12 4e4cdc711d73d9dc96c0cb9475e6951f476218e6
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
-%global srcname12 cxxopts
+%global srcname12 mio
 
-%global commit13 353bd895a2bf9d0b1bc5977dc002fb6e0cdb0960
+%global commit13 f58f558c120e9b32c217290b80bad1a0729fbb2c
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
-%global srcname13 fmt
+%global srcname13 stb
 
-%global commit14 1f7f1f54af38b0350d8c0008b096a9af6de299c7
+%global commit14 ab1aca5153379e52e97b85b998b66b61619b7958
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
-%global srcname14 imgui
-
-%global commit15 c9dbe3a6f74b2c2c4a6c9621005c3df213a33eaa
-%global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
-%global srcname15 mio
-
-%global commit16 f58f558c120e9b32c217290b80bad1a0729fbb2c
-%global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
-%global srcname16 stb
-
-%global commit17 bf869b0e075c65aa0f81d148b42a90dcce2f95c5
-%global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
-%global srcname17 tomlplusplus
-
-%global commit18 ab1aca5153379e52e97b85b998b66b61619b7958
-%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
-%global srcname18 rtmidi
+%global srcname14 rtmidi
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -69,10 +51,10 @@
 
 Name:           ymir
 Version:        0.2.0
-Release:        0.1%{?dist}
+Release:        0.2%{?dist}
 Summary:        A Sega Saturn emulator
 
-License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1%{!?with_cereal: AND BSD-3-Clause}
+License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1
 URL:            https://github.com/StrikerX3/%{pkgname}
 
 %if %{with snapshot}
@@ -80,24 +62,17 @@ Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 %endif
-%if %{without cereal}
-Source10:       https://github.com/USCiLab/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-%endif
-Source11:       https://github.com/cameron314/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
-Source12:       https://github.com/jarro2783/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
-%if %{without fmt}
-Source13:       https://github.com/fmtlib/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
-%endif
-Source14:       https://github.com/ocornut/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
-Source15:       https://github.com/StrikerX3/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
-Source16:       https://github.com/nothings/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
-Source17:       https://github.com/marzer/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+Source10:       https://github.com/cameron314/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       https://github.com/ocornut/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source12:       https://github.com/StrikerX3/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+Source13:       https://github.com/nothings/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %if %{without rtmidi}
-Source18:       https://github.com/thestk/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
+Source14:       https://github.com/thestk/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-SDL-application-name.patch
+Patch3:         0001-Remove-update-checker.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -113,35 +88,29 @@ BuildRequires:  lld
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
-%if %{with cereal}
 BuildRequires:  cmake(cereal)
-%else
-Provides:       bundled(cereal) = 0~git%{shortcommit10}
-%endif
-%if %{with fmt}
+BuildRequires:  cmake(cxxopts)
 BuildRequires:  cmake(fmt) >= %{fmt_ver}
-%else
-Provides:       bundled(fmt) = %{fmt_ver}~git%{shortcommit13}
-%endif
 BuildRequires:  pkgconfig(libchdr)
+BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(openssl)
 %if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{rtmidi_ver}
 %else
 BuildRequires:  pkgconfig(alsa)
-Provides:       bundled(rtmidi) = %{rtmidi_ver}~git%{shortcommit18}
+Provides:       bundled(rtmidi) = %{rtmidi_ver}~git%{shortcommit14}
 %endif
 BuildRequires:  cmake(SDL3)
+BuildRequires:  cmake(tomlplusplus)
 
 Requires:       hicolor-icon-theme
 
-Provides:       bundled(concurrentqueue) = 0~git%{shortcommit11}
-Provides:       bundled(cxxopts) = 0~git%{shortcommit12}
-Provides:       bundled(imgui) = 0~git%{shortcommit14}
-Provides:       bundled(mio) = 0~git%{shortcommit15}
-Provides:       bundled(stb) = 0~git%{shortcommit16}
-Provides:       bundled(tomlplusplus) = 0~git%{shortcommit17}
+Provides:       bundled(concurrentqueue) = 0~git%{shortcommit10}
+Provides:       bundled(imgui) = 0~git%{shortcommit11}
+Provides:       bundled(mio) = 0~git%{shortcommit12}
+Provides:       bundled(stb) = 0~git%{shortcommit13}
 
 
 %description
@@ -152,36 +121,26 @@ Provides:       bundled(tomlplusplus) = 0~git%{shortcommit17}
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
 pushd vendor
-%if %{without cereal}
-tar -xf %{S:10} -C cereal/ --strip-components 1
-sed -e '/find_package/s|cereal|\0_DISABLED|g' -i CMakeLists.txt
-cp -p cereal/LICENSE LICENSE.cereal
-%endif
-tar -xf %{S:11} -C concurrentqueue/ --strip-components 1
-tar -xf %{S:12} -C cxxopts/ --strip-components 1
-%if %{without fmt}
-tar -xf %{S:13} -C fmt/ --strip-components 1
-sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
-cp -p fmt/LICENSE LICENSE.fmt
-%endif
-tar -xf %{S:14} -C imgui/imgui --strip-components 1
-tar -xf %{S:15} -C mio/ --strip-components 1
-tar -xf %{S:16} -C stb/stb --strip-components 1
-tar -xf %{S:17} -C tomlplusplus/ --strip-components 1
-%if %{without rtmidi}
-tar -xf %{S:18} -C rtmidi/ --strip-components 1
-sed -e 's|rtmidi_FOUND|rtmidi_DISABLED|g' -i CMakeLists.txt
-cp -p rtmidi/LICENSE LICENSE.rtmidi
-%else
-rm -rf 3rdparty/rtmidi
-%endif
+tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
+tar -xf %{S:11} -C imgui/imgui --strip-components 1
+tar -xf %{S:12} -C mio/ --strip-components 1
 
 cp -p concurrentqueue/LICENSE.md LICENSE.concurrentqueue.md
-cp -p cxxopts/LICENSE LICENSE.cxxopts
 cp -p imgui/imgui/LICENSE.txt LICENSE.imgui
 cp -p mio/LICENSE LICENSE.mio
-cp -p stb/stb/LICENSE LICENSE.stb
-cp -p tomlplusplus/LICENSE LICENSE.tomlplusplus
+popd
+
+pushd apps/ymir-sdl3
+mkdir -p stb/stb
+tar -xf %{S:13} -C stb/stb --strip-components 1
+sed -e '/find_package/s|Stb|Stb_DISABLED|g' -i CMakeLists.txt
+cp -p stb/stb/LICENSE ../../vendor/LICENSE.stb
+%if %{without rtmidi}
+mkdir -p rtmidi
+tar -xf %{S:14} -C rtmidi/ --strip-components 1
+sed -e '/find_package/s|rtmidi|rtmidi_DISABLED|g' -i CMakeLists.txt
+cp -p rtmidi/LICENSE ../../vendor/LICENSE.rtmidi
+%endif
 popd
 
 cp -p apps/ymir-sdl3/res/licenses/Spline_Sans/OFL.txt LICENSE.fonts

@@ -1,16 +1,16 @@
-From 81fa8108a1729a6810418a9973890bed2ccf83ab Mon Sep 17 00:00:00 2001
+From ebafaf312ce201fb60c0dc924181be889136ca09 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  CMakeLists.txt            |  3 +--
- externals/CMakeLists.txt  | 34 +++++++++++++++++++++++++++++-----
- src/common/CMakeLists.txt | 10 ++++++++--
- 3 files changed, 38 insertions(+), 9 deletions(-)
+ externals/CMakeLists.txt  | 50 ++++++++++++++++++++++++++++++++-------
+ src/common/CMakeLists.txt | 10 ++++++--
+ 3 files changed, 51 insertions(+), 12 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8a736ea..85c0ab9 100644
+index 324ddf1..b5bf3cc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -21,7 +21,7 @@ index 8a736ea..85c0ab9 100644
  include(CMakeDependentOption)
  include(FindPkgConfig)
  
-@@ -219,7 +218,7 @@ function(check_submodules_present)
+@@ -228,7 +227,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index 8a736ea..85c0ab9 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index e9c1d56..1f54a4a 100644
+index aa6e6c8..73816af 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -16,7 +16,6 @@ function(target_disable_warnings target)
@@ -105,7 +105,49 @@ index e9c1d56..1f54a4a 100644
  endif()
  
  # cpp-jwt
-@@ -479,7 +503,7 @@ if (ENABLE_VULKAN)
+@@ -436,16 +460,15 @@ if (ENABLE_VULKAN)
+ 
+     # spirv-tools
+     # TODO: Implement USE_SYSTEM_SPIRV_TOOLS -OS
+-    set(SPIRV_SKIP_EXECUTABLES ON)
+-    add_subdirectory(spirv-tools EXCLUDE_FROM_ALL)
+ 
+     # glslang
+     if(USE_SYSTEM_GLSLANG)
+         find_package(glslang REQUIRED)
++        find_package(SPIRV-Tools REQUIRED)
+         add_library(glslang INTERFACE)
+         add_library(SPIRV INTERFACE)
+         target_link_libraries(glslang INTERFACE glslang::glslang)
+-        target_link_libraries(SPIRV INTERFACE glslang::SPIRV)
++        target_link_libraries(SPIRV INTERFACE glslang::SPIRV SPIRV-Tools-opt SPIRV-Tools-link)
+         # System include path is different from submodule include path
+         get_target_property(GLSLANG_PREFIX glslang::SPIRV INTERFACE_INCLUDE_DIRECTORIES)
+         target_include_directories(SPIRV SYSTEM INTERFACE "${GLSLANG_PREFIX}/glslang")
+@@ -456,11 +479,22 @@ if (ENABLE_VULKAN)
+         set(ENABLE_CTEST OFF CACHE BOOL "")
+         set(ENABLE_HLSL OFF CACHE BOOL "")
+         set(BUILD_EXTERNAL OFF CACHE BOOL "")
++        set(SPIRV_SKIP_EXECUTABLES ON)
++        add_subdirectory(spirv-tools EXCLUDE_FROM_ALL)
+         add_subdirectory(glslang)
+     endif()
+ 
+     # sirit
++    find_package(sirit)
++    if(sirit_FOUND)
++        add_library(sirit INTERFACE)
++        if(TARGET sirit::sirit)
++            message(STATUS "Found sirit")
++            target_link_libraries(sirit INTERFACE sirit::sirit)
++        endif()
++    else()
+     add_subdirectory(sirit EXCLUDE_FROM_ALL)
++    endif()
+ 
+     # VMA
+     if(USE_SYSTEM_VMA)
+@@ -479,7 +513,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)

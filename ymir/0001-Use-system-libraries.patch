@@ -1,57 +1,150 @@
-From 74fb48f553c5bb34dbde07a17507ca215d66b99e Mon Sep 17 00:00:00 2001
+From 84716311115f09bff8761a0a91cb3a1185d4684e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- vendor/CMakeLists.txt | 49 +++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ apps/ymir-sdl3/CMakeLists.txt                 | 16 +++++++++---
+ apps/ymir-sdl3/src/app/app.cpp                |  2 +-
+ apps/ymir-sdl3/src/app/shared_context.hpp     |  2 +-
+ .../ui/views/settings/audio_settings_view.cpp |  2 +-
+ .../src/app/ui/windows/about_window.cpp       |  2 +-
+ apps/ymir-sdl3/stb/CMakeLists.txt             | 22 ++++++++++++++++
+ vendor/CMakeLists.txt                         | 25 +++++++++++++++++++
+ 7 files changed, 64 insertions(+), 7 deletions(-)
+ create mode 100644 apps/ymir-sdl3/stb/CMakeLists.txt
 
+diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
+index 5de971c..9ff595b 100644
+--- a/apps/ymir-sdl3/CMakeLists.txt
++++ b/apps/ymir-sdl3/CMakeLists.txt
+@@ -350,9 +350,19 @@ find_package(cxxopts CONFIG REQUIRED)
+ find_package(OpenSSL CONFIG REQUIRED)
+ find_package(CURL REQUIRED)
+ find_package(fmt CONFIG REQUIRED)
+-find_package(rtmidi CONFIG REQUIRED)
++find_package(rtmidi CONFIG)
++if(NOT rtmidi_FOUND)
++    set(RTMIDI_BUILD_STATIC_LIBS ON)
++    set(RTMIDI_BUILD_TESTING OFF)
++    add_subdirectory(rtmidi)
++    add_library(RtMidi::rtmidi ALIAS rtmidi)
++endif()
+ find_package(SDL3 CONFIG REQUIRED)
+-find_package(Stb REQUIRED)
++find_package(Stb)
++if(NOT Stb_FOUND)
++    add_subdirectory(stb)
++    target_link_libraries(ymir-sdl3 PRIVATE stb::stb)
++endif()
+ find_package(tomlplusplus CONFIG REQUIRED)
+ 
+ target_include_directories(ymir-sdl3
+@@ -373,7 +383,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
+     cereal::cereal
+     lz4::lz4
+     RtMidi::rtmidi
+-    CURL::libcurl_static
++    CURL::libcurl
+ )
+ if (WIN32)
+     target_link_libraries(ymir-sdl3 PRIVATE
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
+index 91f1f56..73b129f 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp
+@@ -132,7 +132,7 @@
+ #include <fmt/chrono.h>
+ #include <fmt/std.h>
+ 
+-#include <rtmidi/RtMidi.h>
++#include <RtMidi.h>
+ 
+ #include <clocale>
+ #include <mutex>
+diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
+index 60f5099..d1b9e89 100644
+--- a/apps/ymir-sdl3/src/app/shared_context.hpp
++++ b/apps/ymir-sdl3/src/app/shared_context.hpp
+@@ -32,7 +32,7 @@
+ 
+ #include <blockingconcurrentqueue.h>
+ 
+-#include <rtmidi/RtMidi.h>
++#include <RtMidi.h>
+ 
+ #include <array>
+ #include <chrono>
+diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
+index 8baad4f..8bedc38 100644
+--- a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
++++ b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
+@@ -5,7 +5,7 @@
+ #include <app/ui/widgets/common_widgets.hpp>
+ #include <app/ui/widgets/settings_widgets.hpp>
+ 
+-#include <rtmidi/RtMidi.h>
++#include <RtMidi.h>
+ 
+ using namespace ymir;
+ 
+diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
+index 17d3dea..ffe0b8b 100644
+--- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
++++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
+@@ -20,7 +20,7 @@
+ #include <ngtcp2/version.h>
+ #include <nlohmann/json.hpp>
+ #include <openssl/opensslv.h>
+-#include <rtmidi/RtMidi.h>
++#include <RtMidi.h>
+ #include <semver.hpp>
+ #include <toml++/toml.hpp>
+ #include <xxhash.h>
+diff --git a/apps/ymir-sdl3/stb/CMakeLists.txt b/apps/ymir-sdl3/stb/CMakeLists.txt
+new file mode 100644
+index 0000000..49a628c
+--- /dev/null
++++ b/apps/ymir-sdl3/stb/CMakeLists.txt
+@@ -0,0 +1,22 @@
++add_library(stb INTERFACE
++    stb/stb_image.h
++    stb/stb_image_write.h
++)
++
++add_library(stb::stb ALIAS stb)
++target_include_directories(stb
++    INTERFACE
++        "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/stb>"
++)
++target_compile_features(stb INTERFACE cxx_std_20)
++
++## Apply performance options
++if (Ymir_AVX2)
++    if (MSVC)
++        target_compile_options(stb INTERFACE "/arch:AVX2")
++    else ()
++        target_compile_options(stb INTERFACE "-mavx2")
++        target_compile_options(stb INTERFACE "-mfma")
++        target_compile_options(stb INTERFACE "-mbmi")
++    endif ()
++endif ()
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 5893b1e..1448030 100644
+index 947c636..a5887e7 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
-@@ -22,9 +22,18 @@ endfunction()
+@@ -25,6 +25,8 @@ endfunction()
  
  message(STATUS "Adding vendored libraries")
  
 +find_package(PkgConfig REQUIRED)
 +
- # {fmt} - https://github.com/fmtlib/fmt
- message(STATUS "==> {fmt}")
-+find_package(fmt 11.0)
-+if(fmt_FOUND)
-+  message(STATUS "Using the system fmt")
-+  add_library(fmt INTERFACE)
-+  target_link_libraries(fmt INTERFACE fmt::fmt)
-+else()
- add_subdirectory(fmt EXCLUDE_FROM_ALL)
-+endif()
- 
  # mio - https://github.com/vimpunk/mio
  # Notes:
-@@ -36,6 +45,10 @@ add_subdirectory(mio EXCLUDE_FROM_ALL)
- 
- # SDL - https://github.com/libsdl-org/SDL
- message(STATUS "==> SDL")
-+find_package(SDL3 GLOBAL)
-+if(SDL3_FOUND)
-+  message(STATUS "Using the system SDL3")
-+else()
- set(SDL_DISABLE_UNINSTALL ON)
- set(SDL_TEST_LIBRARY OFF)
- set(SDL_TESTS OFF)
-@@ -48,6 +61,7 @@ else ()
-     set(SDL_STATIC ON)
- endif ()
- add_subdirectory_quiet(SDL EXCLUDE_FROM_ALL)
-+endif()
- 
- # cxxopts - https://github.com/jarro2783/cxxopts
- message(STATUS "==> cxxopts")
-@@ -68,18 +82,39 @@ add_subdirectory(tomlplusplus EXCLUDE_FROM_ALL)
- 
+ # - Using StrikerX3's fork instead
+@@ -46,18 +48,41 @@ add_subdirectory(imgui EXCLUDE_FROM_ALL)
  # xxHash - https://github.com/Cyan4973/xxHash
+ # - Unable to configure AVX2 support
  message(STATUS "==> xxHash")
 +pkg_search_module(libxxhash IMPORTED_TARGET libxxhash)
 +if(libxxhash_FOUND)
@@ -64,6 +157,7 @@ index 5893b1e..1448030 100644
 +endif()
  
  # lz4 - https://github.com/lz4/lz4
+ # - Unable to configure AVX2 support
  message(STATUS "==> lz4")
 +pkg_search_module(liblz4 IMPORTED_TARGET liblz4)
 +if(liblz4_FOUND)
@@ -75,23 +169,8 @@ index 5893b1e..1448030 100644
  add_subdirectory(lz4 EXCLUDE_FROM_ALL)
 +endif()
  
- # cereal - https://github.com/USCiLab/cereal
- message(STATUS "==> cereal")
-+find_package(cereal GLOBAL)
-+if(cereal_FOUND)
-+  message(STATUS "Using the system cereal")
-+else()
- set(BUILD_DOC OFF)
- set(BUILD_SANDBOX OFF)
- set(JUST_INSTALL_CEREAL ON)
- add_subdirectory(cereal EXCLUDE_FROM_ALL)
-+endif()
- 
- # stb - https://github.com/nothings/stb
- message(STATUS "==> stb")
-@@ -87,14 +122,28 @@ add_subdirectory(stb)
- 
  # libchdr - https://github.com/rtissera/libchdr
+ # - Not available as a vcpkg port
  message(STATUS "==> libchdr")
 +pkg_search_module(libchdr IMPORTED_TARGET libchdr)
 +if(libchdr_FOUND)
@@ -101,23 +180,10 @@ index 5893b1e..1448030 100644
 +else()
  set(BUILD_FUZZER OFF)
  add_subdirectory(libchdr)
-+endif ()
- 
- # rtmidi - https://github.com/thestk/rtmidi
- message(STATUS "==> rtmidi")
-+pkg_check_modules(rtmidi IMPORTED_TARGET rtmidi)
-+if(rtmidi_FOUND)
-+  message(STATUS "Using the system rtmidi")
-+  add_library(rtmidi INTERFACE)
-+  target_link_libraries(rtmidi INTERFACE PkgConfig::rtmidi)
-+else()
- set(RTMIDI_BUILD_STATIC_LIBS ON)
- set(RTMIDI_BUILD_TESTING OFF)
- add_subdirectory(rtmidi)
 +endif()
  
- # --------------------------------------------------------------------------------------------------
- # Test dependencies
+ # Place vendored library projects under a Vendored folder in Visual Studio solutions
+ if (MSVC)
 -- 
-2.49.0
+2.51.0
 

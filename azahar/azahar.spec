@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit eb1197a65c9bbd795aa904a53a49b977688e3dde
+%global commit 068fec0d5f70431830019e4d927e28103d60efd7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
+%global date 20251003
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -30,6 +30,7 @@
 %bcond glslang 1
 # Disable Qt build
 %bcond qt 1
+%bcond sirit 1
 %bcond soundtouch 1
 # Enable webservice
 %bcond webservice 1
@@ -155,7 +156,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.32
+Version:        2123~rc2.38
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -198,7 +199,9 @@ Source12:       https://github.com/arun11299/%{srcname12}/archive/%{commit12}/%{
 %if %{without glslang}
 Source13:       https://github.com/KhronosGroup/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
+%if %{without sirit}
 Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+%endif
 %if %{without glslang}
 Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %endif
@@ -297,7 +300,14 @@ BuildRequires:  cmake(tsl-robin-map)
 %if %{with glslang}
 BuildRequires:  cmake(glslang)
 BuildRequires:  cmake(SPIRV-Tools)
+%else
+Provides:       bundled(glslang) = 0~git%{shortcommit13}
+%endif
 BuildRequires:  spirv-headers-devel
+%if %{with sirit}
+BuildRequires:  cmake(sirit)
+%else
+Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 %endif
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
@@ -329,8 +339,6 @@ Provides:       bundled(lodepng) = 0~git%{shortcommit10}
 %if %{with webservice}
 Provides:       bundled(cpp-jwt) = 0~git%{shortcommit12}
 %endif
-Provides:       bundled(glslang) = 0~git%{shortcommit13}
-Provides:       bundled(sirit) = 0~git%{?shortcommit14}
 Provides:       bundled(faad2) = ~git%{?shortcommit18}
 
 
@@ -390,14 +398,17 @@ tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 tar -xf %{S:13} -C externals/glslang --strip-components 1
 %patch -P 500 -p1
 %endif
+%if %{without sirit}
 tar -xf %{S:14} -C externals/sirit/sirit --strip-components 1
+sed -e '/find_package/s|sirit|\0_DISABLED|g' -i externals/CMakeLists.txt
+%endif
 %if %{without glslang}
 tar -xf %{S:15} -C externals/spirv-headers --strip-components 1
+%if %{without sirit}
 rm -rf externals/sirit/sirit/externals/SPIRV-Headers
 ln -sf ../../../spirv-headers externals/sirit/sirit/externals/SPIRV-Headers
+%endif
 tar -xf %{S:19} -C externals/spirv-tools --strip-components 1
-%else
-sed -e '/add_subdirectory(spirv-tools/d' -i externals/CMakeLists.txt
 %endif
 %if %{without vma}
 tar -xf %{S:16} -C externals/vma --strip-components 1
@@ -446,7 +457,9 @@ cp -p spirv-tools/LICENSE LICENSE.spirv-tools
 %endif
 cp -p lodepng/lodepng/LICENSE LICENSE.lodepng
 cp -p nihstro/license.txt LICENSE.nihstro
+%if %{without sirit}
 cp -p sirit/sirit/LICENSE.txt LICENSE.sirit
+%endif
 %if %{without soundtouch}
 cp -p soundtouch/COPYING.txt COPYING.soundtouch
 %endif

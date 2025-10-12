@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 335ed8d91be36902fd47cf45c59ef0cc4caebf15
+%global commit 9e49b9100fab7293c5f616f6aebc91799461c26c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
+%global date 20251010
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -74,7 +74,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 decea12e223869c8f8f3ab5a53dc90b69f436eb2
+%global commit15 b077c81eb635392e694ccedbab8b644297ec0285
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.37.18143
+Version:        0.0.38.18185
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -548,6 +548,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Oct 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.38.18185-1.20251010git9e49b91
+- 0.0.38
+
 * Sun Jun 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.37.17989-1.20250601git70faef3
 - 0.0.37
 

@@ -22,7 +22,7 @@
 %global __provides_exclude_from ^%{_libdir}/gtk-3.0
 
 %global classic_url https://github.com/lah7/gtk3-classic
-%global classic_ver 3.24.51
+%global classic_ver 3.24.51-2
 %if 0%(echo %{classic_ver} | grep -q \\. ; echo $?) == 0
 %global mspkgver %{classic_ver}
 %else
@@ -37,7 +37,7 @@
 
 Name:           %{pkgname}-classic
 Version:        3.24.51
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          2
@@ -162,6 +162,7 @@ patch_command other__remove_dead_keys_underline.patch
 patch_command popovers__color-chooser.patch
 patch_command popovers__file-chooser-list.patch
 patch_command popovers__places-sidebar.patch
+patch_command file-chooser__show-recent.patch
 patch_command notebook_wheel_scroll.patch
 patch_command treeview__alternating_row_colours.patch
 patch_command window__rgba-visual.patch
@@ -248,6 +249,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sat Oct 11 2025 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.51-3
+- classic update
+
 * Wed Oct 08 2025 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.51-2
 - Add upstream fix
 
