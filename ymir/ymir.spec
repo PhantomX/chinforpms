@@ -14,16 +14,16 @@
 %bcond rtmidi 1
 %endif
 
-%global commit c9adad8b837427d97d762688bb77503cffd750cb
+%global commit b3ab7f541c057804c9d66532f3ab861b7dd5a2d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251011
+%global date 20251012
 %bcond snapshot 1
 
 %global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 concurrentqueue
 
-%global commit11 e4e3c2cc232218019230b470655c69c16ed348ef
+%global commit11 8de97d14d8f43e23d30a06aca15bbf3dad121374
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
@@ -50,11 +50,11 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.2.0
-Release:        0.2%{?dist}
+Version:        0.2.1
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
-License:        GPL-3.0-or-later AND BSD-2-Clause AND MIT AND OFL-1.1
+License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
 URL:            https://github.com/StrikerX3/%{pkgname}
 
 %if %{with snapshot}
@@ -90,12 +90,11 @@ BuildRequires:  gcc-c++
 %endif
 BuildRequires:  cmake(cereal)
 BuildRequires:  cmake(cxxopts)
+BuildRequires:  cmake(date)
 BuildRequires:  cmake(fmt) >= %{fmt_ver}
 BuildRequires:  pkgconfig(libchdr)
-BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libxxhash)
-BuildRequires:  pkgconfig(openssl)
 %if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{rtmidi_ver}
 %else
@@ -119,6 +118,8 @@ Provides:       bundled(stb) = 0~git%{shortcommit13}
 
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+
+rm -f apps/ymir-sdl3/src/app/update_checker.*
 
 pushd vendor
 tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
@@ -162,6 +163,7 @@ sed -e \
   -DYmir_ENABLE_IPO:BOOL=OFF \
   -DYmir_ENABLE_SANDBOX:BOOL=OFF \
   -DYmir_ENABLE_TESTS:BOOL=OFF \
+  -DYmir_EXTRA_INLINING:BOOL=ON \
 %{nil}
 
 %cmake_build

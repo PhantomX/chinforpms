@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.1
+%define specrpmversion 6.17.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1283,6 +1283,26 @@ Patch7408:  %{pf_url}/06fbbbb72a5dd3442c780d8e601db7c402e5a699.patch#/pf-cb-06fb
 Patch7409:  %{pf_url}/da4cb55e9e241559953aa77356a4c137358555bf.patch#/pf-cb-da4cb55.patch
 Patch7410:  %{pf_url}/65fa14558b16a7333e0ff4298502c7d24ad1bd22.patch#/pf-cb-65fa145.patch
 Patch7411:  %{pf_url}/d62502647bf40bd53322ddef125add2e19f66807.patch#/pf-cb-d625026.patch
+Patch7412:  %{pf_url}/bba68687796b236461ae50d3c4692093f1af995f.patch#/pf-cb-bba6868.patch
+Patch7413:  %{pf_url}/23be44d561660c7ef6de0d40fd68585ebc64fbb2.patch#/pf-cb-23be44d.patch
+Patch7414:  %{pf_url}/afe901eee25f5a3dea3ed545242c8c2b17529e68.patch#/pf-cb-afe901e.patch
+Patch7415:  %{pf_url}/77877cbec72d8cc822eda5e86ac802eb688270ea.patch#/pf-cb-77877cb.patch
+Patch7416:  %{pf_url}/e4191a13976744ae698aa61f74f6269b3fb33bfb.patch#/pf-cb-e4191a1.patch
+Patch7417:  %{pf_url}/8d5fb83e8ead7fac078a11cf2df1152723915bac.patch#/pf-cb-8d5fb83.patch
+Patch7418:  %{pf_url}/1193b11e68dde16872264e45e7916248ba0c87f0.patch#/pf-cb-1193b11.patch
+Patch7419:  %{pf_url}/6ae26b16820c1dbaf3959122af2434c005b200db.patch#/pf-cb-6ae26b1.patch
+Patch7420:  %{pf_url}/9a9b8c28a7451c86b4641b1a3d0bc58bbedcea51.patch#/pf-cb-9a9b8c2.patch
+Patch7421:  %{pf_url}/56e83788c9dae75a9a34243a195c615a6be8cfd1.patch#/pf-cb-56e8378.patch
+Patch7422:  %{pf_url}/1db1af3290ddc1be5f3015e8ed5de0f4d7a1fa31.patch#/pf-cb-1db1af3.patch
+Patch7423:  %{pf_url}/51a91acb9ce9c73e84aba89d8de92299d40767e6.patch#/pf-cb-51a91ac.patch
+Patch7424:  %{pf_url}/ece56c81fe7414f646f98ed2304ca2f19ba29747.patch#/pf-cb-ece56c8.patch
+Patch7425:  %{pf_url}/75193fa37fe3d340f4873c292b4933421c85f3b1.patch#/pf-cb-75193fa.patch
+Patch7426:  %{pf_url}/abd3d59138178f198c50417db44fb5e7bafc9009.patch#/pf-cb-abd3d59.patch
+Patch7427:  %{pf_url}/47e0ca9725f97be3f7cedbfe6cc22d68840f9321.patch#/pf-cb-47e0ca9.patch
+Patch7428:  %{pf_url}/4720611f15c2a2516fc9f9248bed318647579635.patch#/pf-cb-4720611.patch
+Patch7429:  %{pf_url}/f975cd1f86861bd343245aa855c6e6e720c5c27a.patch#/pf-cb-f975cd1.patch
+Patch7430:  %{pf_url}/3c78f92356c71dc1bb47de6c07c60d8c27411ec0.patch#/pf-cb-3c78f92.patch
+Patch7431:  %{pf_url}/a240b3fe3a6a13a73f262cdab489cc4aa1daf3ba.patch#/pf-cb-a240b3f.patch
 
 %endif
 
@@ -2162,6 +2182,26 @@ ApplyPatch %{PATCH7408}
 ApplyPatch %{PATCH7409}
 ApplyPatch %{PATCH7410}
 ApplyPatch %{PATCH7411}
+ApplyPatch %{PATCH7412}
+ApplyPatch %{PATCH7413}
+ApplyPatch %{PATCH7414}
+ApplyPatch %{PATCH7415}
+ApplyPatch %{PATCH7416}
+ApplyPatch %{PATCH7417}
+ApplyPatch %{PATCH7418}
+ApplyPatch %{PATCH7419}
+ApplyPatch %{PATCH7420}
+ApplyPatch %{PATCH7421}
+ApplyPatch %{PATCH7422}
+ApplyPatch %{PATCH7423}
+ApplyPatch %{PATCH7424}
+ApplyPatch %{PATCH7425}
+ApplyPatch %{PATCH7426}
+ApplyPatch %{PATCH7427}
+ApplyPatch %{PATCH7428}
+ApplyPatch %{PATCH7429}
+ApplyPatch %{PATCH7430}
+ApplyPatch %{PATCH7431}
 %endif
 
 # openSUSE
@@ -4580,6 +4620,9 @@ fi\
 #
 #
 %changelog
+* Sun Oct 12 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.1-500.chinfo
+- 6.17.2
+
 * Mon Oct 06 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.1-500.chinfo
 - 6.17.1
 
