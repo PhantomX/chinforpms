@@ -1,6 +1,6 @@
-%global commit c1bafaa02329442df1aba576e2884c0ab699f76e
+%global commit 6124fea1ddefe9dd289b8af91f0128dee6dcad72
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251008
+%global date 20251010
 %bcond snapshot 1
 
 # disable fortify as it breaks wine
@@ -43,7 +43,7 @@
 %global no64bit   0
 %global winegecko 2.47.4
 %global winemono  10.2.0
-%global winevulkan 1.4.325
+%global winevulkan 1.4.329
 %if 0%{?fedora}
 %global opencl    1
 %endif
@@ -72,7 +72,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 6f356eb1f57115404fbf5191810101288853c9b4
+%global wine_stagingver ec458fc7aeeeec3498b7c2038f80e0c1853681cf
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -83,7 +83,7 @@
 %global ge_id ff02944a6dfb31db92d0a6988dec7c6e98cf3df0
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 9e0a3fd138f4a9866edbcb840624c6584bc7adf1
+%global tkg_id 5212a0519a34cb03e7e1075c878ff58374648476
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -95,8 +95,6 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-# Use legacy ntsync (inproc is not good yet)
-%bcond legacy_ntsync 1
 %bcond ge_wayland 1
 %bcond proton_mf 1
 %bcond proton_winevulkan 1
@@ -123,7 +121,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.16
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -199,37 +197,6 @@ Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.pat
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-# 707-722 - inproc ntsync reverts
-Patch707:        %{whq_murl}/-/commit/9038ef6d5be71955c6e0739f0e7395e30ce57597.patch#/%{name}-whq-revert-9038ef6.patch
-Patch708:        %{whq_murl}/-/commit/fa829b8d2113bab744910764517b8b2874f551d2.patch#/%{name}-whq-revert-fa829b8.patch
-Patch709:        %{whq_murl}/-/commit/b7c734fef59736aee8c2d0389de910b4cd1ca48f.patch#/%{name}-whq-revert-b7c734f.patch
-Patch710:        %{whq_murl}/-/commit/43bf409b344ecf095d8ec6b6f2de2d6a2ca937ed.patch#/%{name}-whq-revert-43bf409.patch
-Patch711:        %{whq_murl}/-/commit/631aa2e63532d94b0c83b7d3c8f443809a5b9ab8.patch#/%{name}-whq-revert-631aa2e.patch
-Patch712:        %{whq_murl}/-/commit/c8a244747b9a7f707c5f32b368557fe74f58becc.patch#/%{name}-whq-revert-c8a2447.patch
-Patch713:        %{whq_murl}/-/commit/7b0bfaf0a035a0bb4fe1d6307ece1672b6d68ee8.patch#/%{name}-whq-revert-7b0bfaf.patch
-Patch714:        %{whq_murl}/-/commit/beaa4f3b74b79746b6d9b01fdf8cba53d9b8cc98.patch#/%{name}-whq-revert-beaa4f3.patch
-Patch715:        %{whq_murl}/-/commit/541d29c87a446bca9a6318de9bae745aed8c0188.patch#/%{name}-whq-revert-541d29c.patch
-Patch716:        %{whq_murl}/-/commit/f1c6fb8f11f6f9f670b736540d7c4704af880f2b.patch#/%{name}-whq-revert-f1c6fb8.patch
-Patch717:        %{whq_murl}/-/commit/d23054210126489e89210871cdcee930c2711fd3.patch#/%{name}-whq-revert-d230542.patch
-Patch718:        %{whq_murl}/-/commit/193608945a125f7763e73d471a4804e731225326.patch#/%{name}-whq-revert-1936089.patch
-Patch719:        %{whq_murl}/-/commit/5932c5566c5e53d5db5cda1b2b0db4046285c52d.patch#/%{name}-whq-revert-5932c55.patch
-Patch720:        %{whq_murl}/-/commit/7bb835b3482de5e66515b5a0bd8dce8dc9844c93.patch#/%{name}-whq-revert-7bb835b.patch
-Patch721:        %{whq_murl}/-/commit/41aa048af140cdb82a439ff4b79b912cc61afdea.patch#/%{name}-whq-revert-41aa048.patch
-Patch722:        %{whq_murl}/-/commit/1e931066b441f6a0ad8bc69c575d70d691c9f5cf.patch#/%{name}-whq-revert-1e93106.patch
-
-Patch723:        %{whq_murl}/-/commit/925b30bfcdb765c3f311dccb9469128cef20f1f5.patch#/%{name}-whq-revert-925b30b.patch
-Patch724:        %{whq_murl}/-/commit/95c1f397135475754e9851f13d696be3765acee1.patch#/%{name}-whq-revert-95c1f39.patch
-Patch725:        %{whq_murl}/-/commit/f2050704f6cb99ca2a423476716f7747cdeeb3b5.patch#/%{name}-whq-revert-f205070.patch
-Patch726:        %{whq_murl}/-/commit/c8bc145fcd347e9ba52bf8b3b821f5721eb49aaf.patch#/%{name}-whq-revert-c8bc145.patch
-Patch727:        %{whq_murl}/-/commit/ed4e3bb1b2046032f0d5f3d00591235e03f276ff.patch#/%{name}-whq-revert-ed4e3bb.patch
-Patch728:        %{whq_murl}/-/commit/b25756d88ea1300d10a7ba4dc271d6b914d4dcb2.patch#/%{name}-whq-revert-b25756d.patch
-Patch729:        %{whq_murl}/-/commit/1ac6f2921ecf1be9e7e6e36af3799601aa95cdba.patch#/%{name}-whq-revert-1ac6f29.patch
-Patch730:        %{whq_murl}/-/commit/54719aad7d1b82a4e1d13a0e2c4bfa565b88beed.patch#/%{name}-whq-revert-54719aa.patch
-Patch731:        %{whq_murl}/-/commit/292051e7ab6722242670e63799f1acd24ade5ce1.patch#/%{name}-whq-revert-292051e.patch
-Patch732:        %{whq_murl}/-/commit/3807dc4640c896a262b8b2c2435789fa87f00328.patch#/%{name}-whq-revert-3807dc4.patch
-Patch733:        %{whq_murl}/-/commit/69a125dd794a97d1f8ac8667368b72ec7031057b.patch#/%{name}-whq-revert-69a125d.patch
-Patch734:        %{whq_murl}/-/commit/723ed862249fab58eb257086c91de4df84448170.patch#/%{name}-whq-revert-723ed86.patch
-Patch735:        %{whq_murl}/-/commit/e04c0d92fdc18c120e2ecdc0d27c5e2da229c6d1.patch#/%{name}-whq-revert-e04c0d9.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -251,9 +218,6 @@ Patch1028:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{nam
 Patch1029:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
 Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
 Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
-
-Patch1050:       %{tkg_url}/misc/fastsync/ntsync5-staging-protonify.patch#/%{name}-tkg-ntsync5-staging-protonify.patch
-Patch1051:       %{tkg_url}/proton/proton-winevulkan/ntoskrnl-server-Support-referencing-section-objects-ntsync.patch#/%{name}-tkg-ntoskrnl-server-Support-referencing-section-objects-ntsync.patch
 
 Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
 Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
@@ -847,43 +811,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1022 -p1
 
 %if %{with proton_winevulkan}
-%patch -P 735 -p1 -R
-%patch -P 734 -p1 -R
-%patch -P 733 -p1 -R
-%patch -P 732 -p1 -R
-%patch -P 731 -p1 -R
-%patch -P 730 -p1 -R
-%patch -P 729 -p1 -R
-%patch -P 728 -p1 -R
-%patch -P 727 -p1 -R
-sed -e '/SERVER_PROTOCOL_VERSION/s| 920$| 919|' -i include/wine/server_protocol.h
-%patch -P 726 -p1 -R
-%patch -P 725 -p1 -R
-%patch -P 724 -p1 -R
-%patch -P 723 -p1 -R
 %patch -P 1030 -p1
-%endif
-%if %{with legacy_ntsync}
-%patch -P 722 -p1 -R
-%patch -P 721 -p1 -R
-%patch -P 720 -p1 -R
-sed -e '/SERVER_PROTOCOL_VERSION/s| 918$| 917|' -i include/wine/server_protocol.h
-%patch -P 719 -p1 -R
-%patch -P 718 -p1 -R
-%patch -P 717 -p1 -R
-%patch -P 716 -p1 -R
-%patch -P 715 -p1 -R
-%patch -P 714 -p1 -R
-%patch -P 713 -p1 -R
-%patch -P 712 -p1 -R
-%patch -P 711 -p1 -R
-%patch -P 710 -p1 -R
-%patch -P 709 -p1 -R
-%patch -P 708 -p1 -R
-%patch -P 707 -p1 -R
-sed -e '/SERVER_PROTOCOL_VERSION/s| 914$| 915|' -i include/wine/server_protocol.h
-%patch -P 1050 -p1
-%patch -P 1051 -p1
 %endif
 %patch -P 1023 -p1
 %patch -P 1024 -p1
@@ -1508,6 +1436,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/combase.dll
 %{_libdir}/wine/%{winepedirs}/comcat.dll
 %{_libdir}/wine/%{winepedirs}/comctl32.dll
+%{_libdir}/wine/%{winepedirs}/comctl32_v6.dll
 %{_libdir}/wine/%{winepedirs}/comdlg32.dll
 %{_libdir}/wine/%{winepedirs}/coml2.dll
 %{_libdir}/wine/%{winepedirs}/compstui.dll
@@ -2118,28 +2047,6 @@ fi
 %{_libdir}/wine/%{winepedirs}/xpsprint.dll
 %{_libdir}/wine/%{winepedirs}/xpssvcs.dll
 
-%if 0
-%if 0%{?wine_staging}
-%{_libdir}/wine/%{winesodir}/nvcuda.dll.so
-%{_libdir}/wine/%{winesodir}/nvcuvid.dll.so
-%{_libdir}/wine/%{winepedirs}/nvcuda.dll
-%{_libdir}/wine/%{winepedirs}/nvcuvid.dll
-%ifarch x86_64 aarch64
-%{_libdir}/wine/%{winepedirs}/nvapi64.dll
-%{_libdir}/wine/%{winesodir}/nvencodeapi64.dll.so
-%exclude %{_libdir}/wine/%{winesodir}/nvencodeapi.dll.so
-%{_libdir}/wine/%{winepedirs}/nvencodeapi64.dll
-%exclude %{_libdir}/wine/%{winepedirs}/nvencodeapi.dll
-%else
-%{_libdir}/wine/%{winepedirs}/nvapi.dll
-%{_libdir}/wine/%{winesodir}/nvencodeapi.dll.so
-%exclude %{_libdir}/wine/%{winesodir}/nvencodeapi64.dll.so
-%{_libdir}/wine/%{winepedirs}/nvencodeapi.dll
-%exclude %{_libdir}/wine/%{winepedirs}/nvencodeapi64.dll
-%endif
-%endif
-%endif
-
 # 16 bit and other non 64bit stuff
 %ifnarch x86_64 aarch64
 %{_libdir}/wine/%{winepedirs}/winevdm.exe
@@ -2569,6 +2476,9 @@ fi
 
 
 %changelog
+* Tue Oct 14 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.16-102.20251010git6124fea
+- Remove ntsync_legacy switch
+
 * Sat Oct 04 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.16-100
 - 10.16
 - Only support WoW64 mode
