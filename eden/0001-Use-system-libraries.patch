@@ -1,23 +1,23 @@
-From fa8e314904a367eeaf544f743699503886773af5 Mon Sep 17 00:00:00 2001
+From b859ea9290d8ab2672911d61b2a3e76983757561 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                         | 29 ++++++++-----
+ CMakeLists.txt                         | 30 +++++++++-----
  externals/CMakeLists.txt               | 57 ++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt        |  5 +++
  externals/nx_tzdb/CMakeLists.txt       |  2 +-
  src/dynarmic/CMakeLists.txt            |  6 +--
  src/dynarmic/externals/CMakeLists.txt  | 20 +++++++++
- src/qt_common/externals/CMakeLists.txt | 15 +++++++
- 7 files changed, 120 insertions(+), 14 deletions(-)
+ src/qt_common/externals/CMakeLists.txt | 13 ++++++
+ 7 files changed, 118 insertions(+), 15 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 1b69782..133b4f8 100644
+index b61bb49..ca4a3ac 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -134,7 +134,6 @@ endif()
+@@ -148,7 +148,6 @@ endif()
  
  set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
  
@@ -25,7 +25,7 @@ index 1b69782..133b4f8 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -497,7 +496,7 @@ if (YUZU_USE_CPM)
+@@ -516,7 +515,7 @@ if (YUZU_USE_CPM)
      endif()
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -34,7 +34,7 @@ index 1b69782..133b4f8 100644
  
      if (NOT YUZU_DISABLE_LLVM)
          find_package(LLVM MODULE COMPONENTS Demangle)
-@@ -529,7 +528,11 @@ else()
+@@ -548,7 +547,11 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -46,7 +46,7 @@ index 1b69782..133b4f8 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -565,20 +568,26 @@ find_package(VulkanMemoryAllocator)
+@@ -584,21 +587,26 @@ find_package(VulkanMemoryAllocator)
  find_package(enet)
  find_package(MbedTLS)
  find_package(VulkanUtilityLibraries)
@@ -63,8 +63,9 @@ index 1b69782..133b4f8 100644
 +    add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
  endif()
  
--if (ENABLE_WEB_SERVICE)
--    find_package(httplib)
+-if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
+-    # Workaround: httplib will kill itself if you attempt to do a find_package propagation
+-    # find_package(httplib CONFIG)
 +if (NOT YUZU_USE_CPM)
 +if(MbedTLS_FOUND)
 +    message(STATUS "Using the system mbed TLS")
@@ -76,13 +77,13 @@ index 1b69782..133b4f8 100644
 +    set(mbedtls_ADDED ON)
  endif()
 -
--if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
+-if (ENABLE_WEB_SERVICE)
 -    find_package(cpp-jwt)
  endif()
  
  if (ARCHITECTURE_arm64 OR DYNARMIC_TESTS)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 2da461f..8266713 100644
+index 2da461f..56fe896 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -27,11 +27,18 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
@@ -273,10 +274,10 @@ index 59397f6..89ff9c0 100644
      make_directory(${FFmpeg_BUILD_DIR})
  
 diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
-index a51939f..2a42531 100644
+index efb3e2b..ffa1109 100644
 --- a/externals/nx_tzdb/CMakeLists.txt
 +++ b/externals/nx_tzdb/CMakeLists.txt
-@@ -61,7 +61,7 @@ elseif (MSVC)
+@@ -58,7 +58,7 @@ elseif (MSVC AND NOT CXX_CLANG AND YUZU_ENABLE_LTO)
              ${NX_TZDB_ARCHIVE}
          DESTINATION
              ${NX_TZDB_BASE_DIR})
@@ -354,10 +355,10 @@ index ea666dd..e727d08 100644
 +  endif()
  endif()
 diff --git a/src/qt_common/externals/CMakeLists.txt b/src/qt_common/externals/CMakeLists.txt
-index e7b2e7b..b068ea2 100644
+index b998090..b98b14f 100644
 --- a/src/qt_common/externals/CMakeLists.txt
 +++ b/src/qt_common/externals/CMakeLists.txt
-@@ -13,8 +13,23 @@ set(BUILD_SHARED_LIBS OFF)
+@@ -13,7 +13,20 @@ set(BUILD_SHARED_LIBS OFF)
  set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
  # QuaZip
@@ -375,12 +376,9 @@ index e7b2e7b..b068ea2 100644
 +endif()
  
  # frozen
- # TODO(crueter): Qt String Lookup
-+#if (YUZU_USE_CPM)
- # AddJsonPackage(frozen)
-+#else()
-+#  add_subdirectory(frozen)
-+#endif()
++if (YUZU_USE_CPM)
+ AddJsonPackage(frozen)
++endif()
 -- 
 2.51.0
 

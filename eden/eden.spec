@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 8a017951aa81069ea3ea9140c5b13ca7834e9363
+%global commit 6bdf479488dd87a35bf5ccf9ec334f49bf43ffc7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251010
+%global date 20251017
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -98,10 +98,6 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 boost-headers
 
-%global commit24 61dce5ae18ca59931e27675c468e64118aba8744
-%global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
-%global srcname24 frozen
-
 %global ffmpeg_ver 7.1.1
 %global fmt_ver 11.0.2
 %global glad_ver 0.1.29
@@ -124,7 +120,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27805
+Version:        0.0.3.27842
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -215,6 +211,7 @@ Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
 Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
 %endif
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
+BuildRequires:  cmake(frozen)
 BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  pkgconfig(libbrotlidec)
 BuildRequires:  pkgconfig(libbrotlienc)
@@ -299,7 +296,6 @@ Requires:       shared-mime-info
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
-%dnl Provides:       bundled(frozen) = 0~git%{?shortcommit24}
 Provides:       bundled(glad) = %{glad_ver}
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
@@ -332,6 +328,7 @@ mkdir -p src/dynarmic/externals/{mcl,zycore-c,zydis}
 tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
 tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
 tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
+%{__scm_apply_patch -p1 -q} -d src/dynarmic/externals/mcl -i ../../../../.patch/mcl/0001-assert-macro.patch
 sed \
   -e '/find_package/s|mcl|\0_DISABLED|g' \
   -e '/find_/s|zycore|zycore_DISABLED|g' \
@@ -379,6 +376,8 @@ sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 mkdir -p mbedtls
 tar -xf %{S:18} -C mbedtls --strip-components 1
 tar -xf %{S:180} -C mbedtls/framework --strip-components 1
+%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0002-aesni-fix.patch
+%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0003-aesni-fix.patch
 sed \
   -e '/find_package/s|mbedtls|\0_DISABLED|g' \
   -i CMakeLists.txt
@@ -408,9 +407,6 @@ tar -xf %{S:23} -C boost-headers --strip-components 1
 
 popd
 
-%dnl mkdir -p src/qt_common/externals/frozen
-%dnl tar -xf %{S:24} -C src/qt_common/externals/frozen --strip-components 1
-
 find . -type f -exec chmod -x {} ';'
 find . -type f -name '*.sh' -exec chmod +x {} ';'
 
@@ -437,7 +433,6 @@ cp xbyak/COPYRIGHT LICENSE.xbyak
 cp -p ffmpeg/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
 %endif
 popd
-%dnl cp -p src/qt_common/externals/frozen/LICENSE externals/LICENSE.frozen
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 

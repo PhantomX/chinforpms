@@ -1,7 +1,7 @@
 %global commit 6124fea1ddefe9dd289b8af91f0128dee6dcad72
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20251010
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -41,7 +41,7 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  10.2.0
+%global winemono  10.3.0
 %global winevulkan 1.4.329
 %global opencl    1
 
@@ -69,7 +69,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver ec458fc7aeeeec3498b7c2038f80e0c1853681cf
+%global wine_stagingver 10.17
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -80,7 +80,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 94fb13d8e55164f2a9664db9feecb6bb77d06b35
+%global tkg_id 5a9d454b85a03c91a1f5a442dda07a977a27d045
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -93,8 +93,10 @@
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
 %bcond ge_wayland 1
-%bcond proton_mf 1
 %bcond proton_winevulkan 1
+%if %{with proton_winevulkan}
+%bcond proton_mf 1
+%endif
 
 # Enable when needed
 %bcond patchutils 0
@@ -117,8 +119,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.16
-Release:        103%{?dist}
+Version:        10.17
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -194,8 +196,8 @@ Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.pat
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-Patch707:        %{whq_murl}/-/merge_requests/9165.patch#/%{name}-whq-mr9165.patch
-Patch708:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
+Patch707:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
+Patch708:        %{whq_murl}/-/merge_requests/9196.patch#/%{name}-whq-mr9196.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -235,7 +237,8 @@ Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch
+Patch5001:      0001-staging-fixup-1.patch
+Patch5002:      0001-staging-fixup-2.patch
 
 # END of staging patches
 
@@ -801,10 +804,10 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 5000 -p1
 
-cp -f %{P:5001} patches/winex11-Window_Style/
-
+%patch -P 5001 -p1
 sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 ./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
+%patch -P 5002 -p1
 
 %if %{with proton_mf}
 %patch -P 1028 -p1
@@ -1917,6 +1920,7 @@ end
 %{_libdir}/wine/%{winesodir}/win32u.so
 %{_libdir}/wine/%{winepedirs}/win32u.dll
 %{_libdir}/wine/%{winepedirs}/winbio.dll
+%{_libdir}/wine/%{winepedirs}/winbrand.dll
 %{_libdir}/wine/%{winepedirs}/windows.applicationmodel.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.bluetooth.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.enumeration.dll
@@ -2499,6 +2503,9 @@ end
 
 
 %changelog
+* Sun Oct 19 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.17-100
+- 10.17
+
 * Wed Oct 15 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.16-103.20251010git6124fea
 - Partial Rawhide sync
 - wine-ntsync package

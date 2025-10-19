@@ -1,0 +1,30 @@
+From 56ca62ece4cf3b394c65c5e7b63a3863839755da Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 19 Oct 2025 09:07:28 -0300
+Subject: [PATCH] staging: fixup 1
+
+---
+ server/queue.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/server/queue.c b/server/queue.c
+index ebfd398..f3e1e16 100644
+--- a/server/queue.c
++++ b/server/queue.c
+@@ -3383,9 +3383,13 @@ DECL_HANDLER(get_message)
+         reply->wparam = timer->id;
+         reply->lparam = timer->lparam;
+         get_message_defaults( queue, &reply->x, &reply->y, &reply->time );
++        if (!(req->flags & PM_NOYIELD) && current->process->idle_event)
++            set_event( current->process->idle_event );
+         return;
+     }
+ 
++    if (get_win == -1 && current->process->idle_event) set_event( current->process->idle_event );
++
+     SHARED_WRITE_BEGIN( queue_shm, queue_shm_t )
+     {
+         shared->wake_mask = req->wake_mask;
+-- 
+2.51.0
+
