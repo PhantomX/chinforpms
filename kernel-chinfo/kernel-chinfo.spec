@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 35e9a22dd3a2f788def4839f3615d957f802e678
+%global opensuse_id b07233be47a165373ff091a3fd1400b01b969ce8
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1242,8 +1242,6 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1012: 0001-openSUSE-fixup-1.patch
-Patch1013: 0001-openSUSE-fixup-2.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2190,9 +2188,7 @@ ApplyPatch %{PATCH7410}
 %endif
 
 # openSUSE
-ApplyPatch %{PATCH1012}
 ApplyPatch %{PATCH1010}
-ApplyPatch %{PATCH1013}
 ApplyPatch %{PATCH1011}
 
 ApplyPatch %{PATCH2000}

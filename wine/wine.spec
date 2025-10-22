@@ -1,7 +1,7 @@
-%global commit 6124fea1ddefe9dd289b8af91f0128dee6dcad72
+%global commit ff5b9971b3a1794043ecc75e639e91a8776e169b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251010
-%bcond snapshot 0
+%global date 20251021
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -120,7 +120,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.17
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -197,7 +197,7 @@ Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
 Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
 Patch707:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
-Patch708:        %{whq_murl}/-/merge_requests/9196.patch#/%{name}-whq-mr9196.patch
+Patch708:        %{whq_murl}/-/merge_requests/9238.patch#/%{name}-whq-mr9238.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2

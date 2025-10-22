@@ -25,7 +25,7 @@
 
 Name:           7zip
 Version:        25.01
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A file archiver
 
 Epoch:          1
@@ -189,6 +189,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 
 
 %changelog
+* Mon Oct 20 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.01-101
+- Rawhide sync (RHBZ#2373874)
+
 * Mon Aug 11 2025 Phantom X <megaphantomx at hotmail dot com> - 1:25.01-100
 - 25.01
 
