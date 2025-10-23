@@ -1,4 +1,4 @@
-From a01656c76d85db9eb902242e471d8b8f2233b338 Mon Sep 17 00:00:00 2001
+From 0a397161ac81033125bd2875dd62718499dfe0f7 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -6,21 +6,20 @@ Subject: [PATCH] Personal additions
 ---
  patches/SCUS-97436_32A1C752.pnach | 151 +++++++++++++++++++++++
  patches/SCUS-97436_646B2E29.pnach | 199 ++++++++++++++++++++++++++++++
- patches/SLPS-25450_4D7B34BA.pnach |  26 ++++
+ patches/SLPS-25450_DB7FFC4B.pnach |  26 ++++
  patches/SLPS-25674_2113EA2E.pnach |   6 +-
  patches/SLPS-25698_5192FAD0.pnach |  20 +++
  patches/SLPS-25842_8409FD51.pnach |  27 ++--
- patches/SLPS-25842_E84AA114.pnach |  24 ++++
+ patches/SLPS-25842_E84AA114.pnach |  16 ++-
  patches/SLUS-20212_AA4E5A95.pnach |  12 ++
  patches/SLUS-20393_5A1410AB.pnach |  19 +++
  patches/SLUS-20782_8999FCF4.pnach |   7 ++
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 12 files changed, 524 insertions(+), 16 deletions(-)
+ 12 files changed, 515 insertions(+), 17 deletions(-)
  create mode 100644 patches/SCUS-97436_646B2E29.pnach
- create mode 100644 patches/SLPS-25450_4D7B34BA.pnach
+ create mode 100644 patches/SLPS-25450_DB7FFC4B.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
- create mode 100644 patches/SLPS-25842_E84AA114.pnach
  create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
  create mode 100644 patches/SLUS-20393_5A1410AB.pnach
  create mode 100644 patches/SLUS-20782_8999FCF4.pnach
@@ -500,14 +499,14 @@ index 6fb4c5c..17792b8 100644
  //No interlacing by asasega
  //patch=1,EE,201A7054,word,00000000
 diff --git a/patches/SLPS-25842_E84AA114.pnach b/patches/SLPS-25842_E84AA114.pnach
-new file mode 100644
-index 0000000..52733b3
---- /dev/null
+index 0aba13a..0e006fc 100644
+--- a/patches/SLPS-25842_E84AA114.pnach
 +++ b/patches/SLPS-25842_E84AA114.pnach
-@@ -0,0 +1,24 @@
-+gametitle=Tales of Destiny: Director's Cut Translation (SLPS-25842)
-+
+@@ -1,9 +1,23 @@
+ gametitle=MN - Tales of Destiny - Director's Cut (J)(SLUS-20347)
+ 
 +[Widescreen 16:9]
++description=Very buggy widescreen hack.
 +gsaspectratio=16:9
 +author=nemesis2000
 +
@@ -520,14 +519,14 @@ index 0000000..52733b3
 +patch=1,EE,0015E1A8,word,E7AD0040
 +patch=1,EE,0015E20C,word,3C0143D6
 +
-+//No interlacing by asasega
-+//patch=1,EE,201A7054,word,00000000
-+//patch=1,EE,201A70DC,word,00000000
-+
-+
-+[No-Interlacing]
-+description=Attempts to disable interlaced offset rendering.
-+gsinterlacemode=1
+ [No-Interlacing]
+ description=Attempts to disable interlaced offset rendering.
+ gsinterlacemode=1
+ author=Unknown
+ 
+ //Remove Interlacing
+-patch=1,EE,20109FA8,extended,A620066C
+\ No newline at end of file
 +patch=1,EE,20109FA8,extended,A620066C
 diff --git a/patches/SLUS-20212_AA4E5A95.pnach b/patches/SLUS-20212_AA4E5A95.pnach
 new file mode 100644
@@ -650,5 +649,5 @@ index 0000000..e573932
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.48.1
+2.51.0
 

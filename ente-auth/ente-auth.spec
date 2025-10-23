@@ -15,6 +15,7 @@ Summary:        2FA app with free end-to-end encrypted backup and sync
 
 License:        GPL-3.0-only
 URL:            https://ente.io/auth
+
 Source0:        %{vc_url}/releases/download/auth-v%{version}/%{name}-v%{version}-%{_arch}.rpm
 Source1:        %{vc_url}/raw/%{vc_id}/LICENSE
 Source2:        %{vc_url}/raw/%{vc_id}/README.md
