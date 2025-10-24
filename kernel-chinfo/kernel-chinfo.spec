@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.4
+%define specrpmversion 6.17.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id b07233be47a165373ff091a3fd1400b01b969ce8
+%global opensuse_id 29377305a7560351fbc8b0d7a50782eccb57a365
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1242,6 +1242,9 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1012: %{opensuse_url}/perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch#/openSUSE-perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch
+Patch1020: 0001-openSUSE-fixup-1.patch
+Patch1021: 0001-openSUSE-fixup-2.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1285,16 +1288,6 @@ Patch7309:  %{pf_url}/e043812a34d7068988f6e115975d673f59b055d9.patch#/pf-cb-e043
 Patch7310:  %{pf_url}/1374136545364398715efac7b73762752bf41968.patch#/pf-cb-1374136.patch
 # fixes (7400)
 Patch7400:  %{pf_url}/9a9b8c28a7451c86b4641b1a3d0bc58bbedcea51.patch#/pf-cb-9a9b8c2.patch
-Patch7401:  %{pf_url}/0420e0b5124dad9a1f5fed5344997a9f7cdb1008.patch#/pf-cb-0420e0b.patch
-Patch7402:  %{pf_url}/e525de7907b500ac153b915f7a2254a311e13582.patch#/pf-cb-e525de7.patch
-Patch7403:  %{pf_url}/d0aa3ec55ffb78bfe1bca6d70c384af5d769c059.patch#/pf-cb-d0aa3ec.patch
-Patch7404:  %{pf_url}/c3b388df20eb927199fcb7e0c658f1fa2f802d33.patch#/pf-cb-c3b388d.patch
-Patch7405:  %{pf_url}/23bd597d32a252846d32a392f8d8f0356d937be5.patch#/pf-cb-23bd597.patch
-Patch7406:  %{pf_url}/e6898405525b7fdb557f9c83c3f4ceb39cca1af5.patch#/pf-cb-e689840.patch
-Patch7407:  %{pf_url}/ad3f05725fcc92e7497aaea82021a5672496fe55.patch#/pf-cb-ad3f057.patch
-Patch7408:  %{pf_url}/c94e847620232419c6f57946b28bb1282400abd8.patch#/pf-cb-c94e847.patch
-Patch7409:  %{pf_url}/69be27761ee06970c252a3705b1da1eb2778b1bf.patch#/pf-cb-69be277.patch
-Patch7410:  %{pf_url}/3c79be0c6b655f9aae6178c0164b5d0da5d3a86d.patch#/pf-cb-3c79be0.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2175,21 +2168,14 @@ ApplyPatch %{PATCH7309}
 ApplyPatch %{PATCH7310}
 # fixes
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
-ApplyPatch %{PATCH7409}
-ApplyPatch %{PATCH7410}
 %endif
 
 # openSUSE
+ApplyPatch %{PATCH1020}
 ApplyPatch %{PATCH1010}
+ApplyPatch %{PATCH1021}
 ApplyPatch %{PATCH1011}
+ApplyPatch %{PATCH1012}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
@@ -4603,6 +4589,9 @@ fi\
 #
 #
 %changelog
+* Thu Oct 23 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.5-500.chinfo
+- 6.17.5
+
 * Sun Oct 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.4-500.chinfo
 - 6.17.4
 
