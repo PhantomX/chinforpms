@@ -1,6 +1,6 @@
-%global commit ff5b9971b3a1794043ecc75e639e91a8776e169b
+%global commit 606d2f48bf8149bf45153f11ef3501eece20762c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251021
+%global date 20251024
 %bcond snapshot 1
 
 # disable fortify as it breaks wine
@@ -69,7 +69,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.17
+%global wine_stagingver fa2f3233442929ae79f76537d6805bc929026583
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -80,7 +80,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 5a9d454b85a03c91a1f5a442dda07a977a27d045
+%global tkg_id 2b032b4df78329f34ce68e6dac59b76858fb6f55
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -120,7 +120,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.17
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -195,9 +195,12 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
 Patch704:        0001-mr6072-fixup-1.patch
 Patch705:        0001-mr6072-fixup-2.patch
-Patch706:        %{whq_murl}/-/merge_requests/8120.patch#/%{name}-whq-mr8120.patch
-Patch707:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
-Patch708:        %{whq_murl}/-/merge_requests/9238.patch#/%{name}-whq-mr9238.patch
+Patch706:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
+Patch707:        %{whq_murl}/-/merge_requests/9247.patch#/%{name}-whq-mr9247.patch
+Patch708:        %{whq_murl}/-/merge_requests/9249.patch#/%{name}-whq-mr9249.patch
+Patch709:        %{whq_murl}/-/merge_requests/9256.patch#/%{name}-whq-mr9256.patch
+Patch710:        %{whq_murl}/-/merge_requests/9278.patch#/%{name}-whq-mr9278.patch
+Patch711:        %{whq_murl}/-/merge_requests/9280.patch#/%{name}-whq-mr9280.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -219,6 +222,7 @@ Patch1028:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{nam
 Patch1029:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
 Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
 Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
+Patch1032:       %{tkg_url}/misc/winewayland/use-surfaceless-for-GST.patch#/%{name}-tkg-use-surfaceless-for-GST.patch
 
 Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
 Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
@@ -237,8 +241,6 @@ Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-staging-fixup-1.patch
-Patch5002:      0001-staging-fixup-2.patch
 
 # END of staging patches
 
@@ -793,6 +795,9 @@ This package adds the opencl driver for wine.
 %patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
+%patch -P 709 -p1
+%patch -P 710 -p1
+%patch -P 711 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -804,10 +809,7 @@ tar -xf %{SOURCE900} --strip-components=1
 
 %patch -P 5000 -p1
 
-%patch -P 5001 -p1
-sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
-./staging/patchinstall.py --destdir="$(pwd)" --all %{?wine_staging_opts}
-%patch -P 5002 -p1
+./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %if %{with proton_mf}
 %patch -P 1028 -p1
@@ -819,6 +821,7 @@ sed -e "s|'autoreconf'|'true'|g" -i ./staging/patchinstall.py
 %patch -P 1020 -p1
 %if %{with ge_wayland}
 %patch -P 1031 -p1
+%patch -P 1032 -p1
 %endif
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
@@ -1948,6 +1951,7 @@ end
 %{_libdir}/wine/%{winepedirs}/windows.system.profile.systemid.dll
 %{_libdir}/wine/%{winepedirs}/windows.system.profile.systemmanufacturers.dll
 %{_libdir}/wine/%{winepedirs}/windows.ui.dll
+%{_libdir}/wine/%{winepedirs}/windows.ui.core.textinput.dll
 %{_libdir}/wine/%{winepedirs}/windows.ui.xaml.dll
 %{_libdir}/wine/%{winepedirs}/windows.web.dll
 %{_libdir}/wine/%{winepedirs}/windowscodecs.dll

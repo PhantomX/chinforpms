@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ac32a8035243951803d8a8e9f45ad2317a2da91f
+%global commit bf2bd7efed41e9f3367a764c2d90fcaa9c38a1f9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250912
+%global date 20251021
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -34,9 +34,21 @@
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 glslang
 
-%global commit6 563230b1c249774b4852c944dc7cdcb952c9e8e8
+%global commit6 3106e6d3d274b63c59976cb07dda94a292ab45ca
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 rcheevos
+
+%global commit7 77daa8befd828046169adbb012d8de928bfdcdd4
+%global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
+%global srcname7 libjuice
+
+%global commit8 1b11fd301531e6df35a6107c1e8665b1e77a2d8e
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global srcname8 websocketpp
+
+%global commit9 0d67fd1530016b7c56f3cd74b3fca920f4c3e2b4
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 xbyak
 
 # Enable system glslang
 %bcond glslang 1
@@ -53,18 +65,17 @@
 %global vercommit 000000000
 %endif
 
-%global imgui_ver 1.89.6
+%global imgui_ver 1.92.1
 %global libelf_ver 1.0
 %global nowide_ver 11.3.0
 %global stb_ver 2.25
 %global vk_ver 1.3.261
-%global xbyak_ver 5.891
 
 %global sver %%(echo %{version} | cut -d. -f-2)
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.5.38
+Version:        2.5.157
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -73,7 +84,15 @@ Epoch:          1
 # ggpo - MIT
 # libelf - BSD-2-Clause
 # nowire - Boost
-License:        GPL-2.0-only AND BSD-3-Clause AND BSD-2-Clause AND MIT AND BSL-1.0%{!?with_glslang: AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+License: %{shrink:
+    GPL-2.0-only AND
+    BSD-3-Clause AND
+    BSD-2-Clause AND
+    MIT AND
+    BSL-1.0 AND
+    MPL-2.0 AND
+    %{!?with_glslang:AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0}
+}
 URL:            https://github.com/flyinghead/%{name}
 
 %if %{with snapshot}
@@ -93,12 +112,16 @@ Source4:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname4}/archive/
 Source5:        https://github.com/KhronosGroup/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 Source6:        https://github.com/RetroAchievements/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
+Source7:        https://github.com/paullouisageneau/%{srcname7}/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source8:        https://github.com/zaphoyd/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
+%if %{without xbyak}
+Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+%endif
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
-Patch5:         0001-miniupnp-add-missing-header.patch
 Patch6:         0001-CHD-fix-for-patched-libchdr.patch
 Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
 Patch9:         0001-vulkan-update-vk-detail-DynamicLoader.patch
@@ -117,7 +140,7 @@ BuildRequires:  pkgconfig(asio)
 %if %{with xbyak}
 BuildRequires:  cmake(xbyak) >= 7
 %else
-Provides:       bundled(xbyak) = %{xbyak_ver}
+Provides:       bundled(xbyak) = 0~git%{shortcommit9}
 %endif
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(gl)
@@ -159,12 +182,14 @@ Provides:       bundled(breakpad) = 0~git%{shortcommit2}
 Provides:       bundled(chdpsr)
 Provides:       bundled(ggpo)
 Provides:       bundled(libelf) = %{libelf_ver}
+Provides:       bundled(libjuice) = 0~git%{shortcommit7}
 Provides:       bundled(LuaBridge) = 0~git%{shortcommit1}
 Provides:       bundled(nowide_ver) = %{nowide_ver}
 Provides:       bundled(picotcp)
 Provides:       bundled(rcheevos) = 0~git%{shortcommit6}
 Provides:       bundled(stb) = %{stb_ver}
 Provides:       bundled(vixl)
+Provides:       bundled(websocketpp) = 0~git%{shortcommit8}
 
 
 %description
@@ -194,11 +219,14 @@ cp -p glslang/LICENSE.txt LICENSE.glslang
 %endif
 tar -xf %{S:6} -C rcheevos/ --strip-components 1
 cp -p rcheevos/LICENSE LICENSE.rcheevos
-%if %{with xbyak}
-rm -rf xbyak
-%else
+tar -xf %{S:7} -C libjuice/ --strip-components 1
+cp -p libjuice/LICENSE LICENSE.libjuice
+tar -xf %{S:8} -C websocketpp/ --strip-components 1
+cp -p websocketpp/COPYING COPYING.websocketpp
+%if %{without xbyak}
+tar -xf %{S:9} -C xbyak/ --strip-components 1
 sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../../CMakeLists.txt
-cp xbyak/COPYRIGHT LICENSE.xbyak
+cp -p xbyak/COPYRIGHT LICENSE.xbyak
 %endif
 
 cp -p breakpad/LICENSE LICENSE.breakpad

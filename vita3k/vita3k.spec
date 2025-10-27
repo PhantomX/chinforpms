@@ -12,28 +12,30 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 359e027b0a30e60a65c27e9607c5c7c7b0f48da8
+%global commit 3ef503f0d66d631ca984ad532de6de98ceb6de0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250912
+%global date 20251024
 
 %bcond capstone 0
 %bcond ffmpeg 0
-%bcond fmt 1
+%bcond fmt 0
 %bcond nfd 0
+%if %{with fmt}
 %bcond spdlog 1
+%endif
 %bcond vma 1
 %bcond yamlcpp 0
 # Needs dispatch header
 %bcond xxhash 1
 
 # Set to build with versioned LLVM packages
-%global llvm_pkgver 19
+%dnl %global llvm_pkgver 19
 
 %global commit10 82767fe38823c32536726ea798f392b0b49e66b9
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 LibAtrac9
 
-%global commit11 bccaa94db814af33d8ef05c153e7c34d8bd4d685
+%global commit11 d8e3e2b141b8c8a167b2e3984736a6baacff316c
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 SPIRV-Cross
 
@@ -49,15 +51,15 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 dlmalloc
 
-%global commit16 838ac0f79288d2d0485345022b3d842bc2bf77bc
+%global commit16 86458a0bd369d63ba4c2ef812cacbb6c9080c065
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 dynarmic
 
-%global commit17 e30b7d7fe228bfb3f6e41ce1040b44a15eb7d5e0
+%global commit17 2f01e8c070359ae6d46f421b1ff3d8a1b7323f9b
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 123913715afeb8a437e6388b4473fcc4753e1c9a
+%global commit18 e424e3f2e607da02742f73db84873b8084fc714c
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -101,19 +103,15 @@
 %global shortcommit28 %(c=%{commit28}; echo ${c:0:7})
 %global srcname28 tracy
 
-%global commit29 80a767105520abdf070abbb0f0b42bf79bdcb7d4
-%global shortcommit29 %(c=%{commit29}; echo ${c:0:7})
-%global srcname29 unicorn
-
 %global commit30 77f17b979678e7af0acfe708dc97a45ca6fd55e2
 %global shortcommit30 %(c=%{commit30}; echo ${c:0:7})
 %global srcname30 vita-toolchain
 
-%global commit31 f7320141120f720aecc4c32be25586e7da9eb978
+%global commit31 2f86d13775d119edbb69af52e5f566fd65c6953b
 %global shortcommit31 %(c=%{commit31}; echo ${c:0:7})
 %global srcname31 yaml-cpp
 
-%global commit32 accf4df62f1fba6f92cae692985d27063552601c
+%global commit32 cd6dd7b75d126a855be1f9f76570ee5a850c6061
 %global shortcommit32 %(c=%{commit32}; echo ${c:0:7})
 %global srcname32 capstone
 
@@ -151,7 +149,7 @@
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
-%global ffmpeg_ver 5.1.4
+%global ffmpeg_ver 7.1.2
 %global glad_ver 2.0.4
 %global miniz_ver 3.0.0
 %global vk_ver 1.4.303
@@ -165,7 +163,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3813
+Version:        0.2.0.3819
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -206,7 +204,6 @@ Source262:      %{kw_url}/%{srcname262}/archive/%{commit262}/%{srcname262}-%{sho
 Source263:      %{vc_url}/%{srcname263}/archive/%{commit263}/%{srcname263}-%{shortcommit263}.tar.gz
 Source27:       https://github.com/nothings/%{srcname27}/archive/%{commit27}/%{srcname27}-%{shortcommit27}.tar.gz
 Source28:       https://github.com/wolfpld/%{srcname28}/archive/%{commit28}/%{srcname28}-%{shortcommit28}.tar.gz
-Source29:       %{vc_url}/%{srcname29}/archive/%{commit29}/%{srcname29}-%{shortcommit29}.tar.gz
 Source30:       https://github.com/vitasdk/%{srcname30}/archive/%{commit30}/%{srcname30}-%{shortcommit30}.tar.gz
 Source300:      https://github.com/Princess-of-Sleeping/%{srcname300}/archive/%{commit300}/%{srcname300}-%{shortcommit300}.tar.gz
 %if %{without yamlcpp}
@@ -227,7 +224,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Fix-shared_path.patch
 Patch12:        0001-Fix-update-settings.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
-Patch503:       0001-Address-build-failures-when-using-Tip-of-Tree-clang..patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  x86_64
@@ -329,7 +325,6 @@ Provides:       bundled(%{srcname25}) = 0~git%{shortcommit25}
 Provides:       bundled(%{srcname26}) = 0~git%{shortcommit26}
 Provides:       bundled(%{srcname27}) = 0~git%{shortcommit27}
 Provides:       bundled(%{srcname28}) = 0~git%{shortcommit28}
-Provides:       bundled(%{srcname29}) = 0~git%{shortcommit29}
 Provides:       bundled(%{srcname30}) = 0~git%{shortcommit30}
 Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(miniz) = %{miniz_ver}
@@ -364,7 +359,6 @@ cp -p %{S:171} ffmpeg/include/
 %endif
 %if %{without fmt}
 tar -xf %{S:18} -C %{srcname18} --strip-components 1
-%patch -P 503 -p1 -d %{srcname18}
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i CMakeLists.txt
 cp -p fmt/LICENSE LICENSE.fmt
 %endif
@@ -385,7 +379,6 @@ tar -xf %{S:262} -C %{srcname26}/%{srcname262} --strip-components 1
 tar -xf %{S:263} -C %{srcname26}/%{srcname263} --strip-components 1
 tar -xf %{S:27} -C %{srcname27} --strip-components 1
 tar -xf %{S:28} -C %{srcname28} --strip-components 1
-tar -xf %{S:29} -C %{srcname29} --strip-components 1
 tar -xf %{S:30} -C %{srcname30} --strip-components 1
 tar -xf %{S:300} -C %{srcname30}/%{srcname300} --strip-components 1
 %if %{without yamlcpp}
@@ -429,7 +422,6 @@ cp -p printf/LICENSE LICENSE.printf
 cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p stb/LICENSE LICENSE.stb
 cp -p tracy/LICENSE LICENSE.tracy
-cp -p unicorn/COPYING COPYING.unicorn
 cp -p vita-toolchain/COPYING COPYING.vita-toolchain
 popd
 

@@ -22,7 +22,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.8.5
+Version:        0.8.6
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -49,6 +49,7 @@ BuildRequires:  cargo
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  pkgconfig(freetype2)
+BuildRequires:  libatomic
 BuildRequires:  minizip-ng-compat-devel
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
@@ -193,6 +194,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Oct 26 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.6-1
+- 0.8.6
+
 * Sat Oct 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.5-1
 - 0.8.5
 

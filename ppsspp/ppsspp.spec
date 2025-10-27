@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit d43f24dab3b440d82b1ec7ee1c5cc25e0f24510e
+%global commit 1109b8e56517d5609305f05a42a6d2ae9fbd21bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250924
+%global date 20251021
 %bcond snapshot 1
 
 # Enable Qt build
@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 ef0e22bc076235315b94499bbd9f799a3c781708
+%global commit9 b443902b1cdfee5a66b09fec20a94d2d2afaf2ec
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -94,7 +94,7 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
-%global sdl2_ver 2.32.0
+%global sdl2_ver 2.32.10
 %global sdl2_ttf_ver 2.24.0
 %global vma_ver 3.3.0
 
@@ -110,7 +110,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.731
+Version:        1.19.3.872
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1

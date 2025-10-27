@@ -1,35 +1,38 @@
-From 75c64685092a37a98215aba5484e938dc0465c12 Mon Sep 17 00:00:00 2001
+From 0a3c04a57fc4856be39ea209f0a4fa1d388fcdcd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 9 Feb 2023 22:56:03 -0300
 Subject: [PATCH] Use system SDL_GameControllerDB
 
 ---
- CMakeLists.txt                 | 2 ++
+ CMakeLists.txt                 | 6 +++++-
  Source/3rdParty/CMakeLists.txt | 4 ++++
  Source/RMG-Input/main.cpp      | 3 +--
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ 3 files changed, 10 insertions(+), 3 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 715255e..60c72dc 100644
+index bac2301..7a197d6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -179,9 +179,11 @@ if (VRU)
+@@ -156,9 +156,13 @@ if (VRU)
          DESTINATION ${DATA_INSTALL_PATH}
      )
  endif(VRU)
+-install(FILES ${SDL_GAMECONTROLLERDB} ${CMAKE_SOURCE_DIR}/Data/InputProfileDB.json
 +if (BUNDLE_SDL_GAMECONTROLLERDB)
- install(FILES ${SDL_GAMECONTROLLERDB}
++install(FILES ${SDL_GAMECONTROLLERDB}
      DESTINATION ${DATA_INSTALL_PATH}
  )
 +endif()
++install(FILES ${CMAKE_SOURCE_DIR}/Data/InputProfileDB.json
++    DESTINATION ${DATA_INSTALL_PATH} )
  file(GLOB GENERATED_CHEAT_FILES ${CMAKE_SOURCE_DIR}/Data/Cheats/Generated/*.cht)
  file(GLOB CUSTOM_CHEAT_FILES ${CMAKE_SOURCE_DIR}/Data/Cheats/Custom/*.cht)
  install(FILES ${GENERATED_CHEAT_FILES} ${CUSTOM_CHEAT_FILES}
 diff --git a/Source/3rdParty/CMakeLists.txt b/Source/3rdParty/CMakeLists.txt
-index cb00a47..804c33f 100644
+index c85d6b7..af639d6 100644
 --- a/Source/3rdParty/CMakeLists.txt
 +++ b/Source/3rdParty/CMakeLists.txt
-@@ -255,6 +255,7 @@ set(IMGUI_SOURCES
+@@ -235,6 +235,7 @@ set(IMGUI_SOURCES
  add_library(imgui STATIC ${IMGUI_SOURCES})
  target_include_directories(imgui PRIVATE ${IMGUI_DIR})
  
@@ -37,7 +40,7 @@ index cb00a47..804c33f 100644
  set(SDL_GAMECONTROLLERDB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SDL_GameControllerDB)
  set(SDL_GAMECONTROLLERDB_BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR}/SDL_GameControllerDB)
  set(SDL_GAMECONTROLLERDB_SOURCES_IN
-@@ -272,6 +273,7 @@ ExternalProject_Add(SDL_GameControllerDB
+@@ -252,6 +253,7 @@ ExternalProject_Add(SDL_GameControllerDB
  
      BUILD_BYPRODUCTS ${SDL_GAMECONTROLLERDB_SOURCES_OUT}
  )
@@ -45,7 +48,7 @@ index cb00a47..804c33f 100644
  
  ExternalProject_Get_property(mupen64plus-core BUILD_BYPRODUCTS)
  set(MUPEN64PLUSCORE_LIB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
-@@ -313,5 +315,7 @@ endif(DISCORD_RPC)
+@@ -283,5 +285,7 @@ set(MUPEN64PLUS_PLUGIN_GFX_PARALLEL ${BUILD_BYPRODUCTS} PARENT_SCOPE)
  
  set(IMGUI_DIR ${CMAKE_CURRENT_SOURCE_DIR}/imgui PARENT_SCOPE)
  
@@ -54,10 +57,10 @@ index cb00a47..804c33f 100644
  set(SDL_GAMECONTROLLERDB ${BUILD_BYPRODUCTS} PARENT_SCOPE)
 +endif()
 diff --git a/Source/RMG-Input/main.cpp b/Source/RMG-Input/main.cpp
-index 8468f6a..ec27536 100644
+index d36bd1a..a99d685 100644
 --- a/Source/RMG-Input/main.cpp
 +++ b/Source/RMG-Input/main.cpp
-@@ -944,8 +944,7 @@ static void sdl_init()
+@@ -1060,8 +1060,7 @@ static void sdl_init()
          }
      }
  
@@ -68,5 +71,5 @@ index 8468f6a..ec27536 100644
      // try to load SDL_GameControllerDB when the file exists
      if (std::filesystem::is_regular_file(gameControllerDbPath))
 -- 
-2.49.0
+2.51.1
 
