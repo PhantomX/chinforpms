@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.5
+%define specrpmversion 6.17.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 29377305a7560351fbc8b0d7a50782eccb57a365
+%global opensuse_id 362ef3c5af9175818e3c21108fd95204efb41379
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1243,8 +1243,6 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch#/openSUSE-perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch
-Patch1020: 0001-openSUSE-fixup-1.patch
-Patch1021: 0001-openSUSE-fixup-2.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -2171,9 +2169,7 @@ ApplyPatch %{PATCH7400}
 %endif
 
 # openSUSE
-ApplyPatch %{PATCH1020}
 ApplyPatch %{PATCH1010}
-ApplyPatch %{PATCH1021}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 
@@ -4589,6 +4585,9 @@ fi\
 #
 #
 %changelog
+* Wed Oct 29 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.6-500.chinfo
+- 6.17.6
+
 * Thu Oct 23 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.5-500.chinfo
 - 6.17.5
 

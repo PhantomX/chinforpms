@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 6bdf479488dd87a35bf5ccf9ec334f49bf43ffc7
+%global commit dd9cae4ebcf4256b3da4c92e34f61fcffd85035b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251017
+%global date 20251027
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -94,12 +94,12 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 FFmpeg
 
-%global commit23 0456900fadde4b07c84760eadea4ccc9f948fe28
+%global commit23 95930ca8f5d144fe345a2ad7a2a7728b8c3e5cd5
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 boost-headers
 
 %global ffmpeg_ver 7.1.1
-%global fmt_ver 11.0.2
+%global fmt_ver 12.0.0
 %global glad_ver 0.1.29
 %global nxtzdb_ver 250725
 %global stbdxt_ver 1.12
@@ -120,8 +120,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.3.27842
-Release:        1%{?dist}
+Version:        0.0.4.27896
+Release:        0.1%{?dist}
 Summary:        A NX Emulator
 
 License: %{shrink:
@@ -482,7 +482,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
 %if %{with qt}
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
-  -DENABLE_QT_UPDATE_CHECKER:BOOL=OFF \
+  -DENABLE_UPDATE_CHECKER:BOOL=OFF \
   %{?with_qt6:-DENABLE_QT6:BOOL=ON} \
 %else
   -DENABLE_QT:BOOL=OFF \
@@ -500,6 +500,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
   -DYUZU_USE_BUNDLED_LIBUSB:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_OPENSSL:BOOL=OFF \
   -DYUZU_USE_BUNDLED_OPUS:BOOL=OFF \
   -DYUZU_USE_QT_WEB_ENGINE:BOOL=ON \
   %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
@@ -510,8 +511,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DDYNARMIC_ENABLE_LTO:BOOL=ON \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
   -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
-  -DDYNARMIC_WARNINGS_AS_ERRORS:BOOL=OFF \
-  -DDYNARMIC_FATAL_ERRORS:BOOL=OFF \
   -DDYNARMIC_TESTS:BOOL=OFF \
 %{nil}
 
@@ -550,6 +549,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Oct 27 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.27896-0.1.20251027gitdd9cae4
+- 0.0.4 test
+
 * Sat Sep 06 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.3.27675-1.20250905git718891d
 - 0.0.3
 

@@ -1,17 +1,17 @@
-From 891ea358ff2e23cdd0236df710d6a3914adcb5bd Mon Sep 17 00:00:00 2001
+From d7e80e79f0ebd2cf0b18f08e8a37a8839c2029fd Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 8 Jan 2022 22:51:28 -0300
 Subject: [PATCH] Use system libraries
 
 ---
  src/ARMJIT.cpp        | 3 +--
- src/CMakeLists.txt    | 9 +++++++--
+ src/CMakeLists.txt    | 7 ++++++-
  src/GPU3D_Texcache.h  | 5 ++---
  src/OpenGLSupport.cpp | 5 ++---
- 4 files changed, 12 insertions(+), 10 deletions(-)
+ 4 files changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/src/ARMJIT.cpp b/src/ARMJIT.cpp
-index 1ebcce8..196b054 100644
+index a9489ca..ab16fa3 100644
 --- a/src/ARMJIT.cpp
 +++ b/src/ARMJIT.cpp
 @@ -22,8 +22,7 @@
@@ -25,27 +25,28 @@ index 1ebcce8..196b054 100644
  #include "Platform.h"
  
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index 3e17783..28fd506 100644
+index 596fb95..2d68cb5 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
-@@ -63,8 +63,13 @@ add_library(core STATIC
-     fatfs/ffconf.h
+@@ -72,10 +72,15 @@ add_library(core STATIC
  
      sha1/sha1.c
--    tiny-AES-c/aes.c
--    xxhash/xxhash.c)
-+    tiny-AES-c/aes.c)
-+
+     tiny-AES-c/aes.c
+-    xxhash/xxhash.c
+ 
+     blip-buf/blip_buf.c)
+ 
 +find_package(PkgConfig REQUIRED)
 +pkg_check_modules(XXHASH REQUIRED IMPORTED_TARGET libxxhash)
 +
 +fix_interface_includes(PkgConfig::XXHASH)
 +target_link_libraries(core PUBLIC PkgConfig::XXHASH)
- 
++
  if (ENABLE_GDBSTUB)
      message(NOTICE "Enabling GDB stub")
+     target_sources(core PRIVATE
 diff --git a/src/GPU3D_Texcache.h b/src/GPU3D_Texcache.h
-index 214c625..91d6cce 100644
+index f2cd641..621a634 100644
 --- a/src/GPU3D_Texcache.h
 +++ b/src/GPU3D_Texcache.h
 @@ -8,8 +8,7 @@
@@ -58,7 +59,7 @@ index 214c625..91d6cce 100644
  
  namespace melonDS
  {
-@@ -307,4 +306,4 @@ private:
+@@ -327,4 +326,4 @@ private:
  
  }
  
@@ -66,7 +67,7 @@ index 214c625..91d6cce 100644
 \ No newline at end of file
 +#endif
 diff --git a/src/OpenGLSupport.cpp b/src/OpenGLSupport.cpp
-index f728386..679d143 100644
+index 4cdff2c..d45bd1c 100644
 --- a/src/OpenGLSupport.cpp
 +++ b/src/OpenGLSupport.cpp
 @@ -23,8 +23,7 @@
@@ -87,5 +88,5 @@ index f728386..679d143 100644
 \ No newline at end of file
 +}
 -- 
-2.45.2
+2.51.1
 
