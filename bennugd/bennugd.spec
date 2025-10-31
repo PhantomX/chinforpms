@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 84c186a700d7cd7ad5a6aa921d7dc489b12c2f9f
+%global commit 447b289701e6427d828d41ebcfc74e5008b8729e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250307
+%global date 20251019
 
 %global commit10 e4393ff85585d91400bcbad2e7266c011075b673
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
@@ -15,7 +15,7 @@
 
 Name:           bennugd
 Version:        1.0.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib AND MIT
