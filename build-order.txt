@@ -258,8 +258,9 @@ qmpdclient
 qt-heic-image-plugin
 qt-jpegxl-image-plugin
 -qt-virustotal-uploader
-qt5ct
-qt6ct
+qtct-common
+-qt5ct
+-qt6ct
 -quiterss
 radeon-profile
 radeon-profile-daemon
@@ -280,7 +281,7 @@ sdl-jstest
 shaderc_ds
 -simple64
 sirit
-skrooge
+-skrooge
 slang-shaders
 smtube
 -snx

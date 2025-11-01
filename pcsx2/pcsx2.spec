@@ -52,14 +52,14 @@
 %global imgui_ver 1.92.3
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.6.0
-%global rcheevos_scommit 3d01191
+%global rcheevos_ver 12.1.0
 %global simpleini_ver 4.22
 %global soundtouch_ver 2.3.3
 %global xxhash_ver 0.8.1
 %global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.242
+Version:        2.5.259
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -80,14 +80,10 @@ Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}
 
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-datadir-to-RPM-packaging.patch
-Patch2:         0001-common-build-as-static.patch
-Patch3:         0001-glad-build-as-static.patch
-Patch5:         0001-imgui-build-as-static.patch
-Patch6:         0001-simpleini-build-as-static.patch
-Patch7:         0001-Qt-do-not-set-a-default-theme.patch
-Patch8:         0001-cubeb-always-set-same-audiostream-name.patch
-Patch9:         0001-Fix-translation-names.patch
-Patch10:        0001-cmake-use-system-discord-rpc.patch
+Patch2:         0001-Qt-do-not-set-a-default-theme.patch
+Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
+Patch4:         0001-Fix-translation-names.patch
+Patch5:         0001-cmake-use-system-discord-rpc.patch
 
 Patch500:       0001-cmake-shaderc_ds.patch
 Patch501:       0001-cmake-bundled-shaderc.patch
@@ -217,7 +213,7 @@ Provides:       bundled(glad) = %{glad_ver}
 Provides:       bundled(gsl) = %{gsl_ver}
 Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(jpeg-compressor) = %{jpgc_ver}
-Provides:       bundled(rcheevos) = 0~git%{rcheevos_scommit}
+Provides:       bundled(rcheevos) = %{rcheevos_ver}
 Provides:       bundled(simpleini) = %{simpleini_ver}
 Provides:       bundled(xxhash) = %{xxhash_ver}
 %dnl Provides:       bundled(zydis) = 0~git
