@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.6
+%define specrpmversion 6.17.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1254,6 +1254,7 @@ Patch2002: %{zen_url}/commit/69f73106b713eb0f9afe85b73d37dc439b69ca17.patch#/zen
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
+Patch6002: %{pf_url}/845ee6d3376733c93c34482b49551e45379ddb30.patch#/pf-cb-845ee6d.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 Patch6011: 0001-drivers-input-joystick-xpad-remove-dev_warn-nagging.patch
@@ -2179,6 +2180,7 @@ ApplyPatch %{PATCH2002}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
+ApplyPatch %{PATCH6002}
 
 ApplyPatch %{PATCH6010}
 ApplyPatch %{PATCH6011}
@@ -4585,6 +4587,9 @@ fi\
 #
 #
 %changelog
+* Sun Nov 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.7-500.chinfo
+- 6.17.7
+
 * Wed Oct 29 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.6-500.chinfo
 - 6.17.6
 
