@@ -76,12 +76,18 @@ Requires:       perl(warnings)
 Requires:       dbus-x11
 Requires:       libwnck3
 Requires:       vte291 >= 0.62
-Requires:       ftp
-Requires:       telnet
 Requires:       bash
+Recommends:     keepassxc
+Suggests:       cu
+Suggests:       (freerdp or rdesktop)
+Suggests:       ftp
+Suggests:       mosh
+Suggests:       telnet
 Suggests:       libappindicator-gtk3
 Suggests:       perl(X11::GUITest)
 Suggests:       tigervnc-server-minimal
+Suggests:       x3270-x11
+Suggests:       tn5250
 
 
 %description
