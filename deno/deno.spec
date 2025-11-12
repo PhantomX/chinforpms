@@ -7,11 +7,11 @@
 %global vc_id  02f6e49276bb4c03634af4aec4487a5a0a9dbebf
 
 Name:           deno
-Version:        2.5.4
+Version:        2.5.6
 Release:        1%{?dist}
 Summary:        A secure JavaScript and TypeScript runtime
 
-License:        GPL-3.0-only
+License:        MIT
 URL:            https://github.com/denoland/%{name}
 
 Source0:        %{url}/releases/download/v%{version}/%{name}-x86_64-unknown-linux-gnu.zip#/%{name}-v%{version}.zip
@@ -71,13 +71,13 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name} %{buildroot}%{_bindir}
 
 mkdir -p %{buildroot}%{bash_completions_dir}
-install -pm0755 %{name}.bash %{buildroot}%{bash_completions_dir}/%{name}
+install -pm0644 %{name}.bash %{buildroot}%{bash_completions_dir}/%{name}
 
 mkdir -p %{buildroot}%{fish_completions_dir}
-install -pm0755 %{name}.fish %{buildroot}%{fish_completions_dir}/%{name}.fish
+install -pm0644 %{name}.fish %{buildroot}%{fish_completions_dir}/%{name}.fish
 
 mkdir -p %{buildroot}%{zsh_completions_dir}
-install -pm0755 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
+install -pm0644 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
 
 
 %files
@@ -96,6 +96,9 @@ install -pm0755 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
 
 
 %changelog
+* Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.6-1
+- 2.5.6
+
 * Wed Oct 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.4-1
 - Initial spec
 

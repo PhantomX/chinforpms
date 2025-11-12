@@ -17,7 +17,7 @@
 %bcond mgba 0
 %bcond sfml 0
 %bcond vma 1
-%bcond vulkan 0
+%bcond vulkan 1
 %bcond unittests 0
 
 #JIT is only supported on x86_64 and aarch64:
@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 1109dfb0011265318f9af7dc7331a836d8b0bcfa
+%global commit fdf822f4305ae7cc5aef655fe484c903b8fb05b1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
+%global date 20251109
 %bcond snapshot 1
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -58,6 +58,22 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mgba
 
+%global commit9 45acd5e0e82f4c954432533ae9985ff0e1aad6d5
+%global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
+%global srcname9 imgui
+
+%global commit10 a57276bf558f5cf94d3a9854ebdf5a2236849a5a
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 glslang
+
+%global commit11 a0c7725a1441d18bc768d748a93e512a0fa7ab52
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 cpp-ipc
+
+%global commit12 2265d647232249a53a03b411099863ceca35f0d3
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 cpp-optparse
+
 %global commit18 c5641f2c22d117da7971504591a8f6a41ece488b
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 tinygltf
@@ -76,7 +92,6 @@
 
 %global enet_ver 1.3.18
 %global fmt_ver 10.2.1
-%global imgui_ver 1.92.2~b
 %global mbedtls_ver 2.28.9
 %global sfml_ver 3.0.0
 
@@ -88,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2506.475
+Version:        2509.361
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -130,16 +145,18 @@ Source7:       https://github.com/lsalzman/%{srcname7}/archive/%{commit7}/%{srcn
 %if %{without mgba}
 Source8:       https://github.com/mgba-emu/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 %endif
+Source9:       https://github.com/ocornut/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
+%if %{without vulkan}
+Source10:      https://github.com/KhronosGroup/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+%endif
+Source11:      https://github.com/mutouyun/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source12:      https://github.com/weisslj/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source18:      https://github.com/syoyo/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
 %if %{without sfml}
 Source19:      https://github.com/SFML/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 %endif
 Source20:      https://github.com/e-dant/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
 
-%if %{with vulkan}
-#Can't be upstreamed as-is, needs rework:
-Patch1:         0001-Use-system-headers-for-Vulkan.patch
-%endif
 Patch11:        0001-system-library-support.patch
 
 Patch100:       0001-New-Aspect-ratio-mode-for-RESHDP-Force-fitting-4-3.patch
@@ -228,7 +245,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %endif
 %if %{with vulkan}
-BuildRequires:  pkgconfig(glslang) >= 11.0.0
+BuildRequires:  pkgconfig(glslang) >= 15.0.0
 BuildRequires:  spirv-headers-devel
 BuildRequires:  spirv-tools
 BuildRequires:  pkgconfig(SPIRV-Tools)
@@ -251,7 +268,6 @@ Requires:       %{name}-data = %{?epoch:%{epoch}:}%{version}-%{release}
 ##Bundled code ahoy
 #The following isn't in Fedora yet:
 Provides:       bundled(FreeSurround)
-Provides:       bundled(imgui) = %{imgui_ver}
 Provides:       bundled(cpp-argparse)
 #Is this technically bundled code? Adding this just in case:            
 #https://github.com/AdmiralCurtiss/rangeset
@@ -262,6 +278,10 @@ Provides:       bundled(rangeset)
 #My best guess is that this is 2.6.6, as dolphin does not specify
 Provides:       bundled(bochs) = 2.6.6
 Provides:       bundled(FatFS) = 86631
+Provides:       bundled(cpp-ipc) = 0~git%{shortcommit11}
+Provides:       bundled(cpp-optpart) = 0~git%{shortcommit12}
+Provides:       bundled(imgui) = 0~git%{shortcommit9}
+Provides:       bundled(imgui) = 0~git%{shortcommit9}
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
 Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
@@ -313,20 +333,6 @@ sed -i '/CMAKE_C.*_FLAGS/d' CMakeLists.txt
 sed 's| this directory | %{name}/Sys/GC |g' \
     Data/Sys/GC/font-licenses.txt > font-licenses.txt
 
-# Fix for newer vulkan/glslang
-sed "s/VK_PRESENT_MODE_RANGE_SIZE_KHR/(VkPresentModeKHR)("`
-  `"VK_PRESENT_MODE_FIFO_RELAXED_KHR - VK_PRESENT_MODE_IMMEDIATE_KHR + 1)/" \
-  -i.orig Source/Core/VideoBackends/Vulkan/VKSwapChain.h
-
-%if %{with vulkan}
-  sed "/maxMeshViewCountNV/ a /* .maxDualSourceDrawBuffersEXT = */ 1," \
-    -i.orig Source/Core/VideoBackends/Vulkan/ShaderCompiler.cpp
-  sed \
-    -e "/OSDependent/ a MachineIndependent" \
-    -e "/OSDependent/ a GenericCodeGen" -e "/HLSL/d" \
-    -i.orig Source/Core/VideoBackends/Vulkan/CMakeLists.txt
-%endif
-
 #This test fails without JIT enabled:
 #https://bugs.dolphin-emu.org/issues/12421
 %if ! 0%{?enablejit}
@@ -347,7 +353,9 @@ rm -rf \
 %endif
 
 %if %{with vulkan}
-  rm -rf glslang
+rm -rf glslang
+%else
+tar -xf %{S:10} -C glslang/glslang --strip-components 1
 %endif
 
 tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
@@ -371,6 +379,9 @@ tar -xf %{S:8} -C mGBA/mgba --strip-components 1
 %else
 rm -rf mGBA
 %endif
+tar -xf %{S:9} -C imgui/imgui --strip-components 1
+tar -xf %{S:11} -C cpp-ipc/cpp-ipc --strip-components 1
+tar -xf %{S:12} -C cpp-optparse/cpp-optparse --strip-components 1
 tar -xf %{S:18} -C tinygltf/tinygltf --strip-components 1
 %if %{without sfml}
 tar -xf %{S:19} -C SFML/SFML --strip-components 1
@@ -440,6 +451,9 @@ sed \
 %if %{without sfml}
   -DUSE_SYSTEM_SFML:BOOL=OFF \
 %endif
+%if %{without vulkan}
+  -DUSE_SYSTEM_gslang:BOOL=OFF \
+%endif
 %if %{without unittests}
   -DENABLE_TESTS:BOOL=OFF \
 %endif
@@ -456,6 +470,11 @@ fi
 
 %install
 %cmake_install
+
+rm -rf %{buildroot}%{_libdir}
+rm -rf %{buildroot}%{_prefix}/lib
+rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_datadir}/cpp-ipc
 
 mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}-x11
 cat > %{buildroot}%{_bindir}/%{name} <<'EOF'

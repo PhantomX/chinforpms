@@ -120,6 +120,7 @@ cmdpack
 cropgui
 -curlew
 deluge
+deno
 -devedeng
 devilspie2
 discimagecreator

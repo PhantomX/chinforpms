@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 068fec0d5f70431830019e4d927e28103d60efd7
+%global commit 67f6735f02055c3ef7c524b3df364b821b061d8a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251003
+%global date 20251021
 %bcond snapshot 1
 
 %bcond sse42 1
@@ -156,7 +156,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.38
+Version:        2123~rc2.40
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator

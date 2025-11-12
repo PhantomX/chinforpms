@@ -1,9 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit c6aa8f5523b21fd84336c9855b7f4df54a606a32
+%global commit 0b40863f64d0940f333fa1c638e75f86f8a26a33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
-%global sbuild 8862
+%global date 20251104
+%global sbuild 8875
 %bcond snapshot 1
 
 # Enable ffmpeg support
@@ -21,7 +21,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.34%{?dist}
+Release:        0.35%{?dist}
 Summary:        A Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
@@ -73,6 +73,7 @@ BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswscale)
 %endif
 BuildRequires:  desktop-file-utils
+BuildRequires:  libappstream-glib
 BuildRequires:  discount
 
 Requires:       hicolor-icon-theme
@@ -160,7 +161,7 @@ mv %{buildroot}%{_datadir}/doc/mGBA %{name}-docs
 
 %check
 desktop-file-validate %{buildroot}/%{_datadir}/applications/%{appname}.desktop
-
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 %files sdl
 %license LICENSE
@@ -174,6 +175,7 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{appname}.desktop
 %{_bindir}/%{name}-qt
 %{_datadir}/applications/%{appname}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{appname}.png
+%{_metainfodir}/%{appname}.metainfo.xml
 %{_datadir}/%{name}/
 %{_mandir}/man6/%{name}-qt.6*
 

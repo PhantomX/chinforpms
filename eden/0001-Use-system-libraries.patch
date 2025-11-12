@@ -1,23 +1,23 @@
-From 4f488684c76fd4f1e8b908b2669621b91e57cb0e Mon Sep 17 00:00:00 2001
+From 858298cbf727655404e5d4d669a1ec2e618dcd61 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                         | 30 +++++++++-----
+ CMakeLists.txt                         | 32 ++++++++++-----
  externals/CMakeLists.txt               | 57 ++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt        |  5 +++
  externals/nx_tzdb/CMakeLists.txt       |  2 +-
- src/dynarmic/CMakeLists.txt            |  6 +--
- src/dynarmic/externals/CMakeLists.txt  | 20 +++++++++
+ src/dynarmic/CMakeLists.txt            |  2 +-
+ src/dynarmic/externals/CMakeLists.txt  |  7 ++++
  src/qt_common/externals/CMakeLists.txt | 13 ++++++
- 7 files changed, 118 insertions(+), 15 deletions(-)
+ 7 files changed, 106 insertions(+), 12 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 138425b..dffa743 100644
+index 9ced1ff..78c0d83 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -150,7 +150,6 @@ endif()
+@@ -202,7 +202,6 @@ endif()
  
  set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
  
@@ -25,7 +25,7 @@ index 138425b..dffa743 100644
  include(CMakeDependentOption)
  include(CTest)
  
-@@ -515,7 +514,7 @@ if (YUZU_USE_CPM)
+@@ -570,7 +569,7 @@ if (YUZU_USE_CPM)
      endif()
  else()
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -34,7 +34,7 @@ index 138425b..dffa743 100644
  
      if (NOT YUZU_DISABLE_LLVM)
          find_package(LLVM MODULE COMPONENTS Demangle)
-@@ -543,7 +542,11 @@ else()
+@@ -598,7 +597,11 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -46,7 +46,7 @@ index 138425b..dffa743 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -608,24 +611,29 @@ find_package(VulkanMemoryAllocator)
+@@ -663,21 +666,30 @@ find_package(VulkanMemoryAllocator)
  find_package(enet)
  find_package(MbedTLS)
  find_package(VulkanUtilityLibraries)
@@ -54,39 +54,39 @@ index 138425b..dffa743 100644
  find_package(SPIRV-Tools)
  find_package(sirit)
 +find_package(VulkanHeaders 1.3.274 REQUIRED)
- if (ARCHITECTURE_arm64)
-     find_package(sse2neon)
- endif()
  
--if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
--    find_package(xbyak)
-+if(fmt_FOUND)
-+    message(STATUS "Using the system fmt")
-+else()
-+    add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
+ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+     find_package(xbyak)
  endif()
  
 -if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
 -    # Workaround: httplib will kill itself if you attempt to do a find_package propagation
 -    # find_package(httplib CONFIG)
-+if (NOT YUZU_USE_CPM)
-+if(MbedTLS_FOUND)
-+    message(STATUS "Using the system mbed TLS")
-+else()
-+    set(ENABLE_PROGRAMS OFF)
-+    set(DISABLE_PACKAGE_CONFIG_AND_INSTALL ON)
-+    set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
-+    add_subdirectory(externals/mbedtls)
-+    set(mbedtls_ADDED ON)
- endif()
+-endif()
 -
 -if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
 -    find_package(cpp-jwt)
++if(fmt_FOUND)
++    message(STATUS "Using the system fmt")
++else()
++    add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
++endif()
++
++if (NOT YUZU_USE_CPM)
++  if(MbedTLS_FOUND)
++      message(STATUS "Using the system mbed TLS")
++  else()
++      set(ENABLE_PROGRAMS OFF)
++      set(DISABLE_PACKAGE_CONFIG_AND_INSTALL ON)
++      set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
++      add_subdirectory(externals/mbedtls)
++      set(mbedtls_ADDED ON)
++  endif()
  endif()
  
  if (ARCHITECTURE_arm64 OR DYNARMIC_TESTS)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 4a358f2..84f1d23 100644
+index 0967609..dd81c7a 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -27,11 +27,18 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
@@ -230,7 +230,7 @@ index 4a358f2..84f1d23 100644
  endif()
  
  # cpp-jwt
- if (ENABLE_WEB_SERVICE)
+ if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
 +  if (YUZU_USE_CPM)
      AddJsonPackage(cpp-jwt)
 +  else()
@@ -257,10 +257,10 @@ index 4a358f2..84f1d23 100644
  # FFMpeg
  if (YUZU_USE_EXTERNAL_FFMPEG OR YUZU_USE_BUNDLED_FFMPEG)
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 59397f6..89ff9c0 100644
+index 995b25a..316d0a6 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
-@@ -155,10 +155,15 @@ else()
+@@ -156,10 +156,15 @@ else()
          message(FATAL_ERROR "Required program `autoconf` not found.")
      endif()
  
@@ -290,10 +290,10 @@ index efb3e2b..ffa1109 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index 66f9b1f..8832f40 100644
+index 03532c3..3e60496 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -125,7 +125,7 @@ find_package(fmt 9 CONFIG)
+@@ -124,7 +124,7 @@ find_package(fmt 9 CONFIG)
  # Pull in externals CMakeLists for libs where available
  add_subdirectory(externals)
  
@@ -302,22 +302,11 @@ index 66f9b1f..8832f40 100644
  
  if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
      find_package(oaknut 2.0.1 CONFIG)
-@@ -137,8 +137,8 @@ endif()
- 
- if ("x86_64" IN_LIST ARCHITECTURE)
-     find_package(xbyak 7 CONFIG)
--    find_package(zycore REQUIRED)
--    find_package(zydis 4 REQUIRED)
-+    find_package(zycore)
-+    find_package(zydis 4)
- endif()
- 
- if (DYNARMIC_USE_LLVM)
 diff --git a/src/dynarmic/externals/CMakeLists.txt b/src/dynarmic/externals/CMakeLists.txt
-index ea666dd..e727d08 100644
+index 1956499..5527320 100644
 --- a/src/dynarmic/externals/CMakeLists.txt
 +++ b/src/dynarmic/externals/CMakeLists.txt
-@@ -28,14 +28,22 @@ if ("riscv" IN_LIST ARCHITECTURE)
+@@ -28,7 +28,14 @@ if ("riscv" IN_LIST ARCHITECTURE)
  endif()
  
  # mcl
@@ -332,31 +321,6 @@ index ea666dd..e727d08 100644
 +      add_subdirectory(mcl)
 +  endif()
 +endif()
- 
- # TODO(crueter): maybe it's just Gentoo but zydis system package really sucks
- if ("x86_64" IN_LIST ARCHITECTURE)
-     set(CMAKE_DISABLE_FIND_PACKAGE_Doxygen ON)
-+  if (YUZU_USE_CPM)
-     AddJsonPackage(
-         NAME zycore
-         BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
-@@ -45,4 +53,16 @@ if ("x86_64" IN_LIST ARCHITECTURE)
-         NAME zydis
-         BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
-     )
-+  else()
-+    if (NOT TARGET Zydis::Zydis)
-+        set(ZYDIS_BUILD_TOOLS OFF)
-+        set(ZYDIS_BUILD_EXAMPLES OFF)
-+        set(ZYDIS_BUILD_DOXYGEN OFF)
-+        set(ZYAN_ZYCORE_PATH "${CMAKE_CURRENT_LIST_DIR}/zycore-c" CACHE PATH "")
-+        set(CMAKE_DISABLE_FIND_PACKAGE_Doxygen ON)
-+        if (NOT TARGET Zydis)
-+            add_subdirectory(zydis)
-+        endif()
-+    endif()
-+  endif()
- endif()
 diff --git a/src/qt_common/externals/CMakeLists.txt b/src/qt_common/externals/CMakeLists.txt
 index b998090..b98b14f 100644
 --- a/src/qt_common/externals/CMakeLists.txt

@@ -1,5 +1,5 @@
 NAME = claws-mail
-VERSION ?= e7e6d98b71b44c060cd0ec5f62fb8db5dd67b83a
+VERSION ?= 4247c72f7b7d0b3fab669c1216b1fe4e20f83e92
 SNAPSHOT ?= 1
 SNAPROOT = git://git.claws-mail.org/claws.git
 

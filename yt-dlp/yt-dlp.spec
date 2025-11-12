@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.10.22
+Version:        2025.11.12
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -34,6 +34,7 @@ BuildRequires:  %{py3_dist pytest}
 %endif
 
 Recommends:     AtomicParsley
+Recommends:     deno >= 2.0.0
 Suggests:       aria2c
 
 # ffmpeg-free is now available in Fedora.
@@ -154,6 +155,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.11.12-100
+- 2025.11.12
+
 * Wed Oct 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.10.22-100
 - 2025.10.22
 

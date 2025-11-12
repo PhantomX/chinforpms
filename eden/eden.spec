@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit dd9cae4ebcf4256b3da4c92e34f61fcffd85035b
+%global commit 42863027e2c4be40da79b7bfabdecc47d0494486
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251027
+%global date 20251109
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -29,8 +29,6 @@
 %bcond mbedtls 1
 # Disable Qt build
 %bcond qt 1
-# build with qt6 instead 5
-%bcond qt6 1
 # Build tests
 %bcond tests 0
 %bcond vma 1
@@ -45,14 +43,6 @@
 %global commit111 73f3cbb237e84d483afafc743f1f14ec53e12314
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
 %global srcname111 unordered_dense
-
-%global commit112 75a36c45ae1ad382b0f4e0ede0af84c11ee69928
-%global shortcommit112 %(c=%{commit112}; echo ${c:0:7})
-%global srcname112 zycore-c
-
-%global commit113 c2d2bab0255e53a7c3e9b615f4eb69449eb942df
-%global shortcommit113 %(c=%{commit113}; echo ${c:0:7})
-%global srcname113 zydis
 
 %global commit12 05973d8aeb1a4d12f59aadfb86d20decadba82d1
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
@@ -120,7 +110,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.4.27896
+Version:        0.0.4.27984
 Release:        0.1%{?dist}
 Summary:        A NX Emulator
 
@@ -143,8 +133,6 @@ Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}
 
 Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
 Source111:      https://github.com/martinus/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
-Source112:      https://github.com/zyantific/%{srcname112}/archive/%{commit112}/%{srcname112}-%{shortcommit112}.tar.gz
-Source113:      https://github.com/zyantific/%{srcname113}/archive/%{commit113}/%{srcname113}-%{shortcommit113}.tar.gz
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
@@ -257,20 +245,18 @@ BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(quazip1-qt6)
 BuildRequires:  pkgconfig(sdl2) >= 2.32.0
 %if %{with qt}
-BuildRequires:  cmake(Qt%{qt_ver}Core)
-BuildRequires:  cmake(Qt%{qt_ver}DBus)
-BuildRequires:  cmake(Qt%{qt_ver}Gui)
-BuildRequires:  cmake(Qt%{qt_ver}LinguistTools)
-BuildRequires:  cmake(Qt%{qt_ver}Multimedia)
-BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
-BuildRequires:  cmake(Qt%{qt_ver}WebEngineCore)
-BuildRequires:  cmake(Qt%{qt_ver}WebEngineWidgets)
-BuildRequires:  cmake(Qt%{qt_ver}Widgets)
-BuildRequires:  qt%{qt_ver}-qtbase-private-devel
-%if %{with qt6}
-BuildRequires:  cmake(Qt%{qt_ver}OpenGL)
-BuildRequires:  cmake(Qt%{qt_ver}OpenGLWidgets)
-%endif
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6OpenGL)
+BuildRequires:  cmake(Qt6WebEngineCore)
+BuildRequires:  cmake(Qt6WebEngineWidgets)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+BuildRequires:  cmake(Qt6OpenGL)
+BuildRequires:  cmake(Qt6OpenGLWidgets)
 %endif
 BuildRequires:  cmake(sirit)
 BuildRequires:  cmake(glslang)
@@ -324,15 +310,11 @@ This is the Qt frontend.
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
-mkdir -p src/dynarmic/externals/{mcl,zycore-c,zydis}
+mkdir -p src/dynarmic/externals/mcl
 tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
-tar -xf %{S:112} -C src/dynarmic/externals/zycore-c --strip-components 1
-tar -xf %{S:113} -C src/dynarmic/externals/zydis --strip-components 1
 %{__scm_apply_patch -p1 -q} -d src/dynarmic/externals/mcl -i ../../../../.patch/mcl/0001-assert-macro.patch
 sed \
   -e '/find_package/s|mcl|\0_DISABLED|g' \
-  -e '/find_/s|zycore|zycore_DISABLED|g' \
-  -e '/find_/s|zydis|zydis_DISABLED|g' \
   -i src/dynarmic/CMakeLists.txt
 
 sed \
@@ -483,7 +465,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
   -DENABLE_UPDATE_CHECKER:BOOL=OFF \
-  %{?with_qt6:-DENABLE_QT6:BOOL=ON} \
+  -DENABLE_QT6:BOOL=ON \
 %else
   -DENABLE_QT:BOOL=OFF \
 %endif
@@ -549,6 +531,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Nov 10 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.27984-0.1.20251109git4286302
+- 0.0.4 rc2
+
+* Sat Nov 08 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.27977-0.1.20251108git312c1cc
+- rc2.test2
+
 * Mon Oct 27 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.27896-0.1.20251027gitdd9cae4
 - 0.0.4 test
 

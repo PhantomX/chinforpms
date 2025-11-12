@@ -1,4 +1,4 @@
-From 02dcec1f7a78bb20872dc8bd217e8922af2d4375 Mon Sep 17 00:00:00 2001
+From 3228a40824200fdb8d7349c7fb16c80a40866f3e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -12,7 +12,6 @@ Subject: [PATCH] Use system libraries
  Core/HLE/sceJpeg.cpp                  |  2 +-
  Core/MIPS/IR/IRJit.cpp                |  2 +-
  Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
- Core/MIPS/MIPSAnalyst.cpp             |  2 +-
  Core/RetroAchievements.cpp            |  2 +-
  Core/Util/GameManager.cpp             |  2 +-
  Core/Util/PPGeDraw.cpp                |  2 +-
@@ -25,13 +24,13 @@ Subject: [PATCH] Use system libraries
  UI/ImDebugger/ImMemView.cpp           |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
  ext/CMakeLists.txt                    | 14 ++++++++++++++
- 21 files changed, 50 insertions(+), 20 deletions(-)
+ 20 files changed, 49 insertions(+), 19 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 770a448..d698d02 100644
+index c220ed0..5cc307f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1695,11 +1695,19 @@ add_library(xbrz STATIC
+@@ -1715,11 +1715,19 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -52,7 +51,7 @@ index 770a448..d698d02 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2496,6 +2504,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2512,6 +2520,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -133,7 +132,7 @@ index 366499d..1afee76 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index 633b328..02a0b8d 100644
+index 94f85dc..cc79c94 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -19,7 +19,7 @@
@@ -158,19 +157,6 @@ index e3861c8..33356c4 100644
  #include "Common/CommonTypes.h"
  #include "Common/Profiler/Profiler.h"
  
-diff --git a/Core/MIPS/MIPSAnalyst.cpp b/Core/MIPS/MIPSAnalyst.cpp
-index 516a3bb..b144507 100644
---- a/Core/MIPS/MIPSAnalyst.cpp
-+++ b/Core/MIPS/MIPSAnalyst.cpp
-@@ -22,7 +22,7 @@
- #include <mutex>
- 
- #include "ext/cityhash/city.h"
--#include "ext/xxhash.h"
-+#include "xxhash.h"
- 
- #include "Common/File/FileUtil.h"
- #include "Common/Log.h"
 diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
 index cc64ffb..a23a4ba 100644
 --- a/Core/RetroAchievements.cpp
@@ -198,7 +184,7 @@ index 4c6313f..63187b5 100644
  #ifdef _WIN32
  
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index 0b3141e..9421f43 100644
+index 5524f65..f5022df 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -224,7 +210,7 @@ index 274ef6d..0868971 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index ddead37..e862941 100644
+index 85ea0f7..9cfa2f0 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -276,7 +262,7 @@ index 7069223..7065ef8 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index ef6a6ec..6c83697 100644
+index 060c6d3..e94ea40 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -315,10 +301,10 @@ index c059dc1..cbfe269 100644
  #include "Core/Config.h"
  #include "Core/System.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index dd7464c..33e33bd 100644
+index 32e5c4c..e3ddd8a 100644
 --- a/ext/CMakeLists.txt
 +++ b/ext/CMakeLists.txt
-@@ -44,8 +44,15 @@ set(FT_REQUIRE_PNG OFF CACHE BOOL "" FORCE)
+@@ -43,8 +43,15 @@ set(FT_REQUIRE_PNG OFF CACHE BOOL "" FORCE)
  set(FT_REQUIRE_HARFBUZZ OFF CACHE BOOL "" FORCE)
  set(FT_REQUIRE_BROTLI OFF CACHE BOOL "" FORCE)
  if(NOT LIBRETRO)
@@ -334,7 +320,7 @@ index dd7464c..33e33bd 100644
  
  if(NOT LIBRETRO)
      add_subdirectory(imgui)
-@@ -57,7 +64,14 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
+@@ -56,7 +63,14 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
  	add_subdirectory(discord-rpc-build)
  endif()
  
@@ -350,5 +336,5 @@ index dd7464c..33e33bd 100644
  if(ANDROID)
      if (ARM64)
 -- 
-2.51.0
+2.51.1
 
