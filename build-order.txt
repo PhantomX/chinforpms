@@ -334,6 +334,7 @@ xinput-gui
 -xorg-x11-server
 -yad
 yt-dlp
+yt-dlp-ejs
 -ytfzf
 zenity
 zenstates

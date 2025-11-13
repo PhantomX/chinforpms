@@ -33,6 +33,8 @@ BuildRequires:  pandoc
 BuildRequires:  %{py3_dist pytest}
 %endif
 
+Requires:       %{py3_dist yt_dlp_ejs}
+
 Recommends:     AtomicParsley
 Recommends:     deno >= 2.0.0
 Suggests:       aria2c

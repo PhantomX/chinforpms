@@ -57,6 +57,7 @@ geany_run_script.sh
 *.vbox-extpack
 *.plasmoid
 *.jar
+*.whl
 
 *.run
 *.bin

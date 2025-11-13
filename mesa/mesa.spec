@@ -3,6 +3,7 @@
 
 %ifnarch s390x
 %global with_hardware 1
+%global with_nvk 1
 %global with_radeonsi 1
 %global with_vmware 1
 %global with_vulkan_hw 1
@@ -12,9 +13,6 @@
 %global with_r300 1
 %global with_r600 1
 %global with_opencl 1
-%endif
-%if !0%{?rhel} || 0%{?rhel} >= 10
-%global with_nvk %{with_vulkan_hw}
 %endif
 %global base_vulkan %{?with_vulkan_hw:,amd}%{!?with_vulkan_hw:%{nil}}
 %endif
@@ -99,7 +97,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.2.6
+Version:        25.2.7
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -132,7 +130,9 @@ Source13:       https://crates.io/api/v1/crates/syn/%{rust_syn_ver}/download#/sy
 Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ident_ver}/download#/unicode-ident-%{rust_unicode_ident_ver}.tar.gz
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
-Patch10:        gnome-shell-glthread-disable.patch
+# fix zink/device-select bug
+Patch10:        0001-device-select-add-a-layer-setting-to-disable-device-.patch
+Patch11:        0002-zink-use-device-select-layer-settings-to-disable-dev.patch
 
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
@@ -819,6 +819,9 @@ popd
 
 
 %changelog
+* Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.7-100
+- 25.2.7
+
 * Wed Oct 29 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.6-100
 - 25.2.6
 
