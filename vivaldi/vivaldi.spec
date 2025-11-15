@@ -17,7 +17,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        7.6.3797.63
+Version:        7.7.3851.48
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -124,7 +124,7 @@ desktop-file-install \
   --set-value="%{name} %%U" \
   usr/share/applications/%{name}.desktop
 
-for res in 16 22 24 32 48 64 128 256 ;do
+for res in 16 24 32 48 64 128 256 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
   install -pm0644 opt/%{name}/product_logo_${res}.png \
@@ -158,6 +158,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Fri Nov 14 2025 - 7.7.3851.48-1
+- 7.7.3851.48
+
 * Wed Oct 08 2025 - 7.6.3797.63-1
 - 7.6.3797.63
 

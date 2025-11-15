@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.7
+%define specrpmversion 6.17.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 362ef3c5af9175818e3c21108fd95204efb41379
+%global opensuse_id 051eaf7dc4e40c744076f7f542b701ebad75cfa3
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1255,6 +1255,7 @@ Patch2002: %{zen_url}/commit/69f73106b713eb0f9afe85b73d37dc439b69ca17.patch#/zen
 Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 Patch6002: %{pf_url}/845ee6d3376733c93c34482b49551e45379ddb30.patch#/pf-cb-845ee6d.patch
+Patch6003: %{kernel_url}/?id=8c1a0f8f6121dabddbc89f937285c00b0e44ae05#/kernel-git-revert-8c1a0f8.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 Patch6011: 0001-drivers-input-joystick-xpad-remove-dev_warn-nagging.patch
@@ -2178,6 +2179,7 @@ ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
 
+ApplyPatch %{PATCH6003} -R
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
 ApplyPatch %{PATCH6002}
@@ -4587,6 +4589,9 @@ fi\
 #
 #
 %changelog
+* Fri Nov 14 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.8-500.chinfo
+- 6.17.8
+
 * Sun Nov 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.7-500.chinfo
 - 6.17.7
 
