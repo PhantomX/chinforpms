@@ -7,7 +7,6 @@
 %global with_radeonsi 1
 %global with_vmware 1
 %global with_vulkan_hw 1
-%global with_vdpau 1
 %global with_va 1
 %if !0%{?rhel}
 %global with_r300 1
@@ -53,7 +52,7 @@
 %if 0%{?with_asahi}
 %global asahi_platform_vulkan %{?with_vulkan_hw:,asahi}%{!?with_vulkan_hw:%{nil}}
 %endif
-%global extra_platform_vulkan %{?with_vulkan_hw:,broadcom,freedreno,panfrost,imagination-experimental}%{!?with_vulkan_hw:%{nil}}
+%global extra_platform_vulkan %{?with_vulkan_hw:,broadcom,freedreno,panfrost,imagination}%{!?with_vulkan_hw:%{nil}}
 %endif
 
 %if !0%{?rhel}
@@ -75,7 +74,7 @@
 %dnl %global llvm_pkgver 16
 
 %global vulkan_drivers swrast%{?base_vulkan}%{?intel_platform_vulkan}%{?asahi_platform_vulkan}%{?extra_platform_vulkan}%{?with_nvk:,nouveau}%{?with_virtio:,virtio}%{?with_d3d12:,microsoft-experimental}
-%global vulkan_layers device-select,overlay
+%global vulkan_layers anti-lag,device-select,overlay
 
 %if 0%{?with_nvk} && 0%{?rhel}
 %global vendor_nvk_crates 1
@@ -97,7 +96,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.2.7
+Version:        25.3.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -120,7 +119,7 @@ Source1:        Mesa-MLAA-License-Clarification-Email.txt
 %global rust_paste_ver 1.0.15
 %global rust_proc_macro2_ver 1.0.101
 %global rust_quote_ver 1.0.40
-%global rust_syn_ver 2.0.106
+%global rust_syn_ver 2.0.108
 %global rust_unicode_ident_ver 1.0.18
 %global rustc_hash_ver 2.1.1
 Source10:       https://crates.io/api/v1/crates/paste/%{rust_paste_ver}/download#/paste-%{rust_paste_ver}.tar.gz
@@ -131,8 +130,7 @@ Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ide
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
 # fix zink/device-select bug
-Patch10:        0001-device-select-add-a-layer-setting-to-disable-device-.patch
-Patch11:        0002-zink-use-device-select-layer-settings-to-disable-dev.patch
+Patch10:         %{vc_url}/-/merge_requests/38252.patch#/%{name}-gl-mr38252.patch
 
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
@@ -157,6 +155,7 @@ BuildRequires:  pkgconfig(libunwind)
 %endif
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
+BuildRequires:  pkgconfig(libdisplay-info)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(wayland-protocols) >= 1.34
@@ -185,9 +184,6 @@ BuildRequires:  bison
 BuildRequires:  flex
 %if 0%{?with_lmsensors}
 BuildRequires:  lm_sensors-devel
-%endif
-%if 0%{?with_vdpau}
-BuildRequires:  pkgconfig(vdpau) >= 1.1
 %endif
 %if 0%{?with_va}
 BuildRequires:  pkgconfig(libva) >= 1.8.0
@@ -231,7 +227,7 @@ BuildRequires:  glslang
 BuildRequires:  pkgconfig(vulkan)
 %endif
 %if 0%{?with_d3d12}
-BuildRequires:  pkgconfig(DirectX-Headers) >= 1.614.1
+BuildRequires:  pkgconfig(DirectX-Headers) >= 1.618.1
 %endif
 
 %description
@@ -247,6 +243,7 @@ Obsoletes:      mesa-libd3d-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-libxatracker < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-libxatracker-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
+Obsoletes:      mesa-vdpau-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
 %{summary}.
@@ -311,15 +308,6 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 Obsoletes:      %{name}-vaapi-drivers < 22.2.0-5
 
 %description va-drivers
-%{summary}.
-%endif
-
-%if 0%{?with_vdpau}
-%package        vdpau-drivers
-Summary:        Mesa-based VDPAU drivers
-Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description vdpau-drivers
 %{summary}.
 %endif
 
@@ -450,9 +438,9 @@ path = "src/nouveau/nil/lib.rs"
 
 # only direct dependencies need to be listed here
 [dependencies]
-paste = "$(grep ^directory subprojects/paste.wrap | sed 's|.*-||')"
-syn = { version = "$(grep ^directory subprojects/syn.wrap | sed 's|.*-||')", features = ["clone-impls"] }
-rustc-hash = "$(grep ^directory subprojects/rustc-hash.wrap | sed 's|.*-||')"
+paste = "$(grep ^directory subprojects/paste-1-rs.wrap | sed 's|.*-||')"
+syn = { version = "$(grep ^directory subprojects/syn-2-rs.wrap | sed 's|.*-||')", features = ["clone-impls"] }
+rustc-hash = "$(grep ^directory subprojects/rustc-hash-2-rs.wrap | sed 's|.*-||')"
 _EOF
 %if 0%{?vendor_nvk_crates}
 %cargo_prep -v subprojects/packagecache
@@ -475,15 +463,15 @@ export RUSTFLAGS="%build_rustflags"
 export MESON_PACKAGE_CACHE_DIR="%{cargo_registry}/"
 %endif
 rewrite_wrap_file() {
-   sed -e "/source.*/d" -e "s/${1}-.*/$(basename ${MESON_PACKAGE_CACHE_DIR:-subprojects/packagecache}/${1}-*)/" -i subprojects/${1}.wrap
+   sed -e "/source.*/d" -e "/^directory/s/${1}-.*/$(basename ${MESON_PACKAGE_CACHE_DIR:-subprojects/packagecache}/${1}-*)/" -i subprojects/${1}-${2}-rs.wrap
 }
 
-rewrite_wrap_file proc-macro2
-rewrite_wrap_file quote
-rewrite_wrap_file syn
-rewrite_wrap_file unicode-ident
-rewrite_wrap_file paste
-rewrite_wrap_file rustc-hash
+rewrite_wrap_file proc-macro2 1
+rewrite_wrap_file quote 1
+rewrite_wrap_file syn 2
+rewrite_wrap_file unicode-ident 1
+rewrite_wrap_file paste 1
+rewrite_wrap_file rustc-hash 2
 %endif
 
 %meson \
@@ -493,7 +481,6 @@ rewrite_wrap_file rustc-hash
 %else
   -Dgallium-drivers=llvmpipe,virgl \
 %endif
-  -Dgallium-vdpau=%{?with_vdpau:enabled}%{!?with_vdpau:disabled} \
   -Dgallium-va=%{?with_va:enabled}%{!?with_va:disabled} \
   -Dgallium-mediafoundation=disabled \
   -Dteflon=%{?with_teflon:true}%{!?with_teflon:false} \
@@ -503,7 +490,7 @@ rewrite_wrap_file rustc-hash
   -Dvulkan-drivers=%{?vulkan_drivers} \
   -Dvulkan-layers=%{?vulkan_layers} \
 %if 0%{?with_videocodecs}
-  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
 %endif
   -Dgles1=enabled \
   -Dgles2=enabled \
@@ -545,8 +532,6 @@ rewrite_wrap_file rustc-hash
 %install
 %meson_install
 
-# libvdpau opens the versioned name, don't bother including the unversioned
-rm -vf %{buildroot}%{_libdir}/vdpau/*.so
 # likewise glvnd
 rm -vf %{buildroot}%{_libdir}/libGLX_mesa.so
 rm -vf %{buildroot}%{_libdir}/libEGL_mesa.so
@@ -736,22 +721,6 @@ popd
 %{_libdir}/dri/virtio_gpu_drv_video.so
 %endif
 
-%if 0%{?with_vdpau}
-%files vdpau-drivers
-%dir %{_libdir}/vdpau
-%{_libdir}/vdpau/libvdpau_nouveau.so.1*
-%if 0%{?with_r600}
-%{_libdir}/vdpau/libvdpau_r600.so.1*
-%endif
-%if 0%{?with_radeonsi}
-%{_libdir}/vdpau/libvdpau_radeonsi.so.1*
-%endif
-%if 0%{?with_d3d12}
-%{_libdir}/vdpau/libvdpau_d3d12.so.1*
-%endif
-%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
-%endif
-
 %if 0%{?with_d3d12}
 %files dxil-devel
 %{_bindir}/spirv2dxil
@@ -766,7 +735,9 @@ popd
 %license cargo-vendor.txt
 %endif
 %endif
+%{_libdir}/libVkLayer_MESA_anti_lag.so
 %{_libdir}/libVkLayer_MESA_device_select.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_anti_lag.json
 %{_datadir}/vulkan/implicit_layer.d/VkLayer_MESA_device_select.json
 %if 0%{?with_virtio}
 %{_libdir}/libvulkan_virtio.so
@@ -801,7 +772,6 @@ popd
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
 %{_libdir}/libvulkan_panfrost.so
 %{_datadir}/vulkan/icd.d/panfrost_icd.*.json
-%{_libdir}/libpowervr_rogue.so
 %{_libdir}/libvulkan_powervr_mesa.so
 %{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
 %endif
@@ -819,6 +789,9 @@ popd
 
 
 %changelog
+* Sat Nov 15 2025 Phantom X <megaphantomx at hotmail dot com> - 25.3.0-100
+- 25.3.0
+
 * Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.7-100
 - 25.2.7
 

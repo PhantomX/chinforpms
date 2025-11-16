@@ -44,7 +44,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        6.2.6
+Version:        6.3.0
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -391,6 +391,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Nov 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.3.0-100
+- 6.3.0
+
 * Sat Nov 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.2.6-100
 - 6.2.6
 

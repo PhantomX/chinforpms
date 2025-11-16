@@ -23,7 +23,7 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.2.7
+Version:        25.3.0
 Release:        1%{?dist}
 
 License:        MIT
@@ -48,6 +48,7 @@ BuildRequires:  pkgconfig(libdrm) >= 2.4.122
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
+BuildRequires:  pkgconfig(libdisplay-info)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xfixes) >= 2.0
@@ -63,6 +64,15 @@ BuildRequires:  pkgconfig(xrandr) >= 1.3
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  pkgconfig(libelf)
+BuildRequires:  pkgconfig(libclc)
+BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  pkgconfig(LLVMSPIRVLib)
+BuildRequires:  bindgen
+%if 0%{?rhel}
+BuildRequires:  rust-toolset
+%else
+BuildRequires:  cargo-rpm-macros
+%endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
@@ -107,7 +117,6 @@ EOF
 %meson \
   -Dplatforms=x11 \
   -Dgallium-drivers=softpipe \
-  -Dgallium-vdpau=disabled \
   -Dgallium-va=disabled \
   -Dteflon=false \
   -Dgallium-rusticl=false \
@@ -169,6 +178,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Sat Nov 15 2025 Phantom X <megaphantomx at hotmail dot com> - 25.3.0-1
+- 25.3.0
+
 * Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 25.2.7-1
 - 25.2.7
 

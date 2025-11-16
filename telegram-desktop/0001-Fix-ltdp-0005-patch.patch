@@ -1,16 +1,27 @@
-From cb8bf87ba063ff3614388b2dbab77688a26ca066 Mon Sep 17 00:00:00 2001
+From 2b6f7847efb5f1c4ac019e46dccb969f5e2efc23 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 25 Jul 2025 16:31:50 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ ltdp-0005-Option-to-disable-stories.patch | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..f80f854 100644
+index 665f5d3..bcbfadc 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
+@@ -23,8 +23,8 @@ index 0d9671f..f77cf4e 100644
+ +});
+ +
+  [[nodiscard]] std::optional<StoryMedia> ParseMedia(
+- 		not_null<Session*> owner,
+- 		const MTPMessageMedia &media) {
++ 		not_null<PeerData*> peer,
++ 		const MTPMessageMedia &media,
+ @@ -92,6 +101,8 @@ std::vector<StoryId> RespectingPinned(const StoriesIds &ids) {
+  	return result;
+  }
 @@ -35,9 +35,9 @@ index 0d9671f..f77cf4e 100644
   	return {
   		.id = peer->id,
@@ -51,5 +62,5 @@ index 665f5d3..f80f854 100644
   				: rpl::producer<>()));
   	};
 -- 
-2.50.1
+2.51.1
 

@@ -1,11 +1,13 @@
 # Disable this, like mesa full package.
 %global _lto_cflags %{nil}
 
-%ifnarch s390x
 %if !0%{?rhel}
 %global with_r600 1
 %endif
-%global with_radeonsi 1
+%global base_vulkan amd
+
+%ifarch %{ix86} x86_64
+%global intel_platform_vulkan ,intel
 %endif
 
 %ifarch %{valgrind_arches}
@@ -13,6 +15,8 @@
 %else
 %bcond valgrind 0
 %endif
+
+%global vulkan_drivers %{?base_vulkan}%{?intel_platform_vulkan}
 
 %global commit 94ed71dad161edb01ee7acaae02e555af3e5dcac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
@@ -34,7 +38,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.2.7
+Version:        25.3.0
 Release:        100%{?dist}
 
 Epoch:          100
@@ -48,7 +52,11 @@ Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pk
 Source0:        https://archive.mesa3d.org/%{pkgname}-%{ver}.tar.xz
 %endif
 Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
-Source3:        org.mesa3d.vdpau.freeworld.metainfo.xml
+Source3:        org.mesa3d.vulkan.freeworld.metainfo.xml
+
+Patch0:         0001-Rename-libraries-for-freeworld.patch
+
+ExcludeArch:    s390x
 
 BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
@@ -64,6 +72,13 @@ BuildRequires:  pkgconfig(libdrm) >= 2.4.122
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
+BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(libdisplay-info)
+BuildRequires:  pkgconfig(wayland-scanner)
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.34
+BuildRequires:  pkgconfig(wayland-client) >= 1.18
+BuildRequires:  pkgconfig(wayland-server) >= 1.18
+BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xext)
 BuildRequires:  pkgconfig(xdamage) >= 1.1
@@ -89,44 +104,51 @@ BuildRequires:  pkgconfig(libva) >= 1.8.0
 BuildRequires:  pkgconfig(libelf)
 BuildRequires:  pkgconfig(libglvnd) >= 1.3.2
 BuildRequires:  llvm%{?llvm_pkgver}-devel >= 18.0.0
+BuildRequires:  clang%{?llvm_pkgver}-devel
+BuildRequires:  pkgconfig(libclc)
+BuildRequires:  pkgconfig(SPIRV-Tools)
+BuildRequires:  pkgconfig(LLVMSPIRVLib)
+BuildRequires:  spirv-llvm-translator%{?llvm_pkgver}-devel
+BuildRequires:  bindgen
+%if 0%{?rhel}
+BuildRequires:  rust-toolset
+%else
+BuildRequires:  cargo-rpm-macros
+%endif
 %if %{with valgrind}
 BuildRequires:  pkgconfig(valgrind)
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-mako
 BuildRequires:  python3-pyyaml
-BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  vulkan-headers
+BuildRequires:  glslang
+BuildRequires:  pkgconfig(vulkan)
+BuildRequires:  pkgconfig(DirectX-Headers) >= 1.618.1
 
 %description
 %{summary}.
 
-%package -n     %{pkgname}-dri-drivers-freeworld
-Summary:        Mesa-based DRI drivers - freeworld
-Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
-
-%description -n %{pkgname}-dri-drivers-freeworld
-%{summary}.
-
-
 %package -n     %{pkgname}-va-drivers-freeworld
 Summary:        Mesa-based VAAPI drivers - freeworld
-Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
-Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Conflicts:      %{pkgname}-va-drivers%{?_isa}
-Enhances:       %{pkgname}%{?_isa}
+Requires:       %{pkgname}-filesystem%{?_isa} = %{version}
+Requires:       %{pkgname}-va-drivers%{?_isa} = %{version}
+Requires:       libva%{?_isa}
+Obsoletes:      %{pkgname}-dri-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{pkgname}-vdpau-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
+Enhances:       %{pkgname}-va-drivers%{?_isa}
 
 %description -n %{pkgname}-va-drivers-freeworld
 %{summary}.
 
 
-%package -n     %{pkgname}-vdpau-drivers-freeworld
-Summary:        Mesa-based VDPAU drivers- freeworld
-Requires:       %{pkgname}-filesystem%{?_isa} >= %{version}
-Requires:       %{pkgname}-dri-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
-Conflicts:      %{pkgname}-vdpau-drivers%{?_isa}
-Enhances:       %{pkgname}%{?_isa}
+%package -n     %{pkgname}-vulkan-drivers-freeworld
+Summary:        Mesa Vulkan drivers - freeworld
+Requires:       %{pkgname}-filesystem%{?_isa} = %{version}
+Requires:       %{pkgname}-vulkan-drivers = %{version}
+Enhances:       %{pkgname}-vulkan-drivers%{?_isa}
 
-%description -n %{pkgname}-vdpau-drivers-freeworld
+%description -n %{pkgname}-vulkan-drivers-freeworld
 %{summary}.
 
 
@@ -137,14 +159,14 @@ echo %{version}-freeworld > VERSION
 
 %build
 %meson \
-  -Dplatforms=x11 \
-  -Dgallium-drivers=virgl,nouveau%{?with_radeonsi:,radeonsi}%{?with_r600:,r600} \
-  -Dgallium-vdpau=enabled \
+  -Dva-libs-path=%{_libdir}/dri-freeworld \
+  -Dplatforms=x11,wayland \
+  -Dgallium-drivers=virgl,nouveau,radeonsi%{?with_r600:,r600},d3d12 \
   -Dgallium-va=enabled \
   -Dteflon=false \
   -Dgallium-rusticl=false \
-  -Dvulkan-drivers="" \
-  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec \
+  -Dvulkan-drivers=%{?vulkan_drivers} \
+  -Dvideo-codecs=h264dec,h264enc,h265dec,h265enc,vc1dec,av1dec,av1enc,vp9dec \
   -Dgles1=disabled \
   -Dgles2=disabled \
   -Dopengl=true \
@@ -173,53 +195,51 @@ echo %{version}-freeworld > VERSION
 %install
 %meson_install
 
-# libvdpau opens the versioned name, don't bother including the unversioned
-rm -vf %{buildroot}%{_libdir}/vdpau/*.so
-
 mv %{buildroot}%{_libdir}/libgallium-*-freeworld.so .
+mv %{buildroot}%{_libdir}/libvulkan*_freeworld.so .
+
 rm -rf %{buildroot}%{_libdir}/*.so*
-mv libgallium-*-freeworld.so %{buildroot}%{_libdir}/
-rm -rf %{buildroot}%{_libdir}/dri/*_dri.so*
+mv lib{gallium,vulkan}*freeworld.so %{buildroot}%{_libdir}/
 rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}
-rm -rf %{buildroot}%{_datadir}
+rm -rf %{buildroot}%{_datadir}/{drirc.d,glvnd}
 
 # install Appdata files
 mkdir -p %{buildroot}%{_metainfodir}
 install -pm0644 %{S:2} %{buildroot}%{_metainfodir}
 install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
-%files -n %{pkgname}-dri-drivers-freeworld
-%license docs/license.rst
-%{_libdir}/libgallium-*-freeworld.so
 
 %files -n %{pkgname}-va-drivers-freeworld
 %license docs/license.rst
-%{_libdir}/dri/nouveau_drv_video.so
-%{_libdir}/dri/virtio_gpu_drv_video.so
+%{_libdir}/libgallium-*-freeworld.so
+%{_libdir}/dri-freeworld/nouveau_drv_video.so
+%{_libdir}/dri-freeworld/virtio_gpu_drv_video.so
 %if 0%{?with_r600}
-%{_libdir}/dri/r600_drv_video.so
+%{_libdir}/dri-freeworld/r600_drv_video.so
 %endif
-%if 0%{?with_radeonsi}
-%{_libdir}/dri/radeonsi_drv_video.so
-%endif
+%{_libdir}/dri-freeworld/d3d12_drv_video.so
+%{_libdir}/dri-freeworld/radeonsi_drv_video.so
 %{_metainfodir}/org.mesa3d.vaapi.freeworld.metainfo.xml
 
-%files -n %{pkgname}-vdpau-drivers-freeworld
+%files -n %{pkgname}-vulkan-drivers-freeworld
 %license docs/license.rst
-%dir %{_libdir}/vdpau
-%{_libdir}/vdpau/libvdpau_nouveau.so.1*
-%{_libdir}/vdpau/libvdpau_virtio_gpu.so.1*
-%if 0%{?with_r600}
-%{_libdir}/vdpau/libvdpau_r600.so.1*
+%{_datadir}/vulkan/icd.d/radeon_icd_freeworld.*.json
+%{_libdir}/libvulkan_radeon_freeworld.so
+%ifarch %{ix86} x86_64
+%{_libdir}/libvulkan_intel_freeworld.so
+%{_datadir}/vulkan/icd.d/intel_icd_freeworld.*.json
 %endif
-%if 0%{?with_radeonsi}
-%{_libdir}/vdpau/libvdpau_radeonsi.so.1*
-%endif
-%{_metainfodir}/org.mesa3d.vdpau.freeworld.metainfo.xml
+%{_metainfodir}/org.mesa3d.vulkan.freeworld.metainfo.xml
 
 
 %changelog
+* Sat Nov 15 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.0-100
+- 25.3.0
+- Obsoletes vdpau
+- Add vulkan-drivers-freeworld package
+- Packages do not replace mesa ones anymore
+
 * Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.2.7-100
 - 25.2.7
 

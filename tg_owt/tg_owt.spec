@@ -7,19 +7,18 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 5c5c71258777d0196dbb3a09cc37d2f56ead28ab
+%global commit0 ec53225952d5a2a398227644a2017358d2665fa8
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20250914
+%global date 20251114
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 libyuv
 
-%global commit3 8c0b94e793a66495e0b1f34a5eb26bd7dc672db0
+%global commit3 d7aaad83b488fd62bd51c81ecf16cd938532cc0a
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 abseil-cpp
 
-%global absl_ver 39f46fa
 %global pffft_ver 483453d
 
 %global cvc_url https://chromium.googlesource.com
@@ -28,7 +27,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        146%{?dist}
+Release:        147%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -101,7 +100,7 @@ Requires:       pipewire-libs%{?_isa}
 
 Provides:       bundled(base64) = 0~git
 %if %{without absl}
-Provides:       bundled(abseil-cpp) = 0~git%{absl_ver}
+Provides:       bundled(abseil-cpp) = 0~git%{shortcommit3}
 %endif
 Provides:       bundled(dcsctp) = 0~git
 Provides:       bundled(fft) = 0~git
