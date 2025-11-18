@@ -7,9 +7,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 1588f0b69b024523b48ad0276d4792b8eafbcc40
+%global commit f82a7e476e9285613ad68bb55d39e4f8b8395865
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251027
+%global date 20251117
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -25,8 +25,8 @@
 %global fatfs_ver 86631
 
 Name:           melonds
-Version:        1.0
-Release:        4%{?dist}
+Version:        1.1
+Release:        1%{?dist}
 Summary:        A NDS emulator
 
 # fatfs - BSD
@@ -154,6 +154,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Tue Nov 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1.1-1.20251117gitf82a7e4
+- 1.1
+
 * Tue Jul 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0-1.20250713git13a9825
 - 1.0
 
