@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 9e49b9100fab7293c5f616f6aebc91799461c26c
+%global commit a3f7c0d67f7b2aee900201952793fabd15d17903
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251010
+%global date 20251122
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.38.18185
+Version:        0.0.38.18382
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -173,7 +173,7 @@ Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/17401.patch#/%{name}-gh-pr17401.patch
+Patch0:         %{vc_url}/%{name}/pull/17733.patch#/%{name}-gh-pr17733.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch

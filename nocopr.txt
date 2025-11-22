@@ -69,6 +69,7 @@ pcsx2_patches
 pkgrip
 pkgtool
 ppsspp
+promptfont-fonts
 ps3dec
 psximager
 -pysdl2

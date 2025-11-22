@@ -59,7 +59,7 @@
 %global xbyak_ver 7.27
 
 Name:           pcsx2
-Version:        2.5.279
+Version:        2.5.317
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -199,9 +199,11 @@ BuildRequires:  perl-interpreter
 
 Requires:       pcsx2_patches
 Requires:       joystick
+Requires:       fontawesome-6-free-fonts
 Requires:       google-noto-color-emoji-fonts
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
+Requires:       promptfont-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libwayland-egl%{?_isa}
@@ -347,8 +349,11 @@ sed \
 
 %if %{with clang}
 echo 'set_target_properties(pcsx2-qt PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' \
-  >> pcsx2-qt/CMakeLists.txt <<EOF
+  >> pcsx2-qt/CMakeLists.txt
 %endif
+
+sed -e 's|fa-solid-900.ttf|fa-solid-900.otf|g' \
+  -i pcsx2/ImGui/ImGuiManager.cpp 3rdparty/include/IconsFontAwesome6.h
 
 
 %build
@@ -390,9 +395,17 @@ rm -f %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
 ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
   %{buildroot}%{_datadir}/%{appres}/resources/game_controller_db.txt
 
+rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/fa-solid-900.ttf
+ln -sf ../../../fonts/fontawesome-6-free-fonts/'Font Awesome 6 Free-Solid-900.otf' \
+  %{buildroot}%{_datadir}/%{appres}/resources/fonts/fa-solid-900.otf
+
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Noto*
 ln -sf ../../../fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/NotoColorEmoji-Regular.ttf
+
+rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/promptfont.otf
+ln -sf ../../../fonts/promptfont-fonts/promptfont.otf \
+  %{buildroot}%{_datadir}/%{appres}/resources/fonts/promptfont.otf
 
 rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Roboto*
 ln -sf ../../../fonts/google-roboto/Roboto-Regular.ttf \

@@ -39,12 +39,10 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
 %global cppgir_ver 2.77.0
-%global libsigc_ver 3.0.0
-%global kf5ver b797315
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        6.3.1
+Version:        6.3.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -391,6 +389,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Nov 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.3.3-100
+- 6.3.3
+
+* Thu Nov 20 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.3.2-100
+- 6.3.2
+
 * Tue Nov 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1:6.3.1-100
 - 6.3.1
 

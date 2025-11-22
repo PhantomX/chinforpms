@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- SPDX-License-Identifier: MIT -->
+<component type="font">
+  <id>promptfont-fonts</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>OFL-1.1</project_license>
+  <name>PromptFont</name>
+  <summary><![CDATA[A font for button prompts]]></summary>
+  <description>
+    <p><![CDATA[This is a font designed for button prompts in games. It includes the base alphabet, as well as icons for modifier and control keys, and gamepad buttons. All the icons included in the font are custom made and available under the same SIL Open Font Licence. Included trademarks however of course still belong to their respective owners.]]></p>
+  </description>
+  <updatecontact>fonts@lists.fedoraproject.org</updatecontact>
+  <url type="homepage">https://shinmera.com/promptfont</url>
+  <provides>
+    <font>PromptFont</font>
+  </provides>
+</component>

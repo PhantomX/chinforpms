@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit b9f54f49790d1c115a85b40806ceef7b5b5a21bc
+%global commit 73713737c61320c79a6921a0066a0b3f2756d721
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251115
+%global date 20251121
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -72,7 +72,7 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 simpleini
 
-%global commit20 97929690234f2b4add36b33657fe3fe09bd57dfd
+%global commit20 f140d1e8c56df65993bb267603d09a5b4abd56eb
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 tzdb_to_nx
 
@@ -110,7 +110,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.4.28007
+Version:        0.0.4.28031
 Release:        0.1%{?dist}
 Summary:        A NX Emulator
 
@@ -152,7 +152,7 @@ Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{s
 Source180:      https://github.com/Mbed-TLS/%{srcname180}/archive/%{commit180}/%{srcname180}-%{shortcommit180}.tar.gz
 %endif
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
-Source20:       https://github.com/crueter/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
+Source20:       https://git.crueter.xyz/misc/%{srcname20}/archive/%{commit20}.tar.gz#/%{srcname20}-%{shortcommit20}.tar.gz
 Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
 %if %{without ffmpeg}
 %if %{without ffmpeg_st}
@@ -531,6 +531,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Nov 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.28031-0.1.20251121git7371373
+- 0.0.4-rc3.test3
+
 * Mon Nov 10 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.27984-0.1.20251109git4286302
 - 0.0.4 rc2
 

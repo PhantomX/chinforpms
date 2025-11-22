@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit fdf822f4305ae7cc5aef655fe484c903b8fb05b1
+%global commit f4f7424a9f059a25ec09b22a280d03fcf0e751eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251109
+%global date 20251122
 %bcond snapshot 1
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -103,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2509.361
+Version:        2509.503
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -416,6 +416,13 @@ sed \
   -e 's|${DOLPHIN_DEFAULT_UPDATE_TRACK}||g' \
   -i Source/Core/Common/scmrev.h.in
 
+cat > %{name}-xcb <<'EOF'
+#!/usr/bin/bash
+export QT_QPA_PLATFORM=xcb
+exec %{name}-x11 "$@"
+EOF
+
+
 %build
 #Script to find xxhash is not implemented, just tell cmake it was found
 %cmake \
@@ -471,18 +478,8 @@ fi
 %install
 %cmake_install
 
-rm -rf %{buildroot}%{_libdir}
-rm -rf %{buildroot}%{_prefix}/lib
-rm -rf %{buildroot}%{_includedir}
-rm -rf %{buildroot}%{_datadir}/cpp-ipc
-
 mv %{buildroot}%{_bindir}/%{name} %{buildroot}%{_bindir}/%{name}-x11
-cat > %{buildroot}%{_bindir}/%{name} <<'EOF'
-#!/usr/bin/bash
-export QT_QPA_PLATFORM=xcb
-exec %{_bindir}/%{name}-x11 "$@"
-EOF
-chmod 755 %{buildroot}%{_bindir}/%{name}
+install -pm0755 %{name}-xcb %{buildroot}%{_bindir}/%{name}
 
 sed -e '/^Exec=/s|=.*$|=%{name}|' \
   -i %{buildroot}/%{_datadir}/applications/%{name}.desktop

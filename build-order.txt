@@ -181,6 +181,7 @@ ipsbehead
 jamesdsp
 jazz2-ressurection
 -jdupes
+jetbrains-mono-vf-fonts
 joy2key
 kddockwidgets
 kdocker
