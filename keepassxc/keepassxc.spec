@@ -15,7 +15,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.10
+Version:        2.7.11
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -32,9 +32,7 @@ Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 %dnl Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-# Patch0: fixes GNOME quirks on Wayland sessions
-# Patch improved by pewpeww https://src.fedoraproject.org/rpms/keepassxc/pull-request/1
-Patch0:         xcb.patch
+Patch0:         org.keepassxc.KeePassXC.appdata.xml.patch
 %dnl Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
@@ -45,6 +43,11 @@ BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  asciidoctor
 BuildRequires:  pkgconfig(botan-2) >= 2.11.0
+%if (%{defined fedora} && 0%{?fedora} >= 44) || (%{defined rhel} && 0%{?rhel} >= 10)
+BuildRequires:  pkgconfig(botan-3)
+%else
+BuildRequires:  pkgconfig(botan-2) >= 2.11.0
+%endif
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libqrencode)
@@ -158,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Mon Nov 24 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.11-100
+- 2.7.11
+
 * Wed Mar 05 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.10-100
 - 2.7.10
 

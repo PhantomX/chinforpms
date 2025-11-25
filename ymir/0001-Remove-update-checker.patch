@@ -1,23 +1,23 @@
-From 76884a15e019777700bf6cdaaef9fcd464114132 Mon Sep 17 00:00:00 2001
+From 6dc80bcc7a22af9ea3e61428c8df83d4ac5c8cee Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 11 Oct 2025 17:38:43 -0300
 Subject: [PATCH] Remove update checker
 
 ---
- apps/ymir-sdl3/CMakeLists.txt                 |  9 ---------
- apps/ymir-sdl3/src/app/app.cpp                | 20 +++++--------------
+ apps/ymir-sdl3/CMakeLists.txt                 |  9 --------
+ apps/ymir-sdl3/src/app/app.cpp                | 22 +++++--------------
  apps/ymir-sdl3/src/app/app.hpp                | 11 ----------
  apps/ymir-sdl3/src/app/events/gui_event.hpp   |  2 --
  .../src/app/events/gui_event_factory.hpp      |  4 ----
- apps/ymir-sdl3/src/app/settings.cpp           |  7 -------
+ apps/ymir-sdl3/src/app/settings.cpp           |  7 ------
  apps/ymir-sdl3/src/app/settings.hpp           |  2 --
  apps/ymir-sdl3/src/app/shared_context.hpp     |  5 ++---
  .../views/settings/general_settings_view.cpp  |  4 ++--
- .../src/app/ui/windows/about_window.cpp       | 19 ------------------
- 10 files changed, 9 insertions(+), 74 deletions(-)
+ .../src/app/ui/windows/about_window.cpp       | 19 ----------------
+ 10 files changed, 9 insertions(+), 76 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 988daee..f9845e7 100644
+index 38c4d4e..6df5b36 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
 @@ -21,8 +21,6 @@ add_executable(ymir-sdl3
@@ -58,7 +58,7 @@ index 988daee..f9845e7 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 25cf20c..b269c64 100644
+index b066cf6..ee9b117 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
 @@ -168,9 +168,7 @@ App::App()
@@ -78,9 +78,9 @@ index 25cf20c..b269c64 100644
  
 +#if 0
      {
-         const auto updaterPath = m_context.profile.GetPath(ProfilePath::PersistentState) / "updates";
-         const auto onboardedPath = updaterPath / ".onboarded";
-@@ -490,6 +489,7 @@ void App::RunEmulator() {
+         const auto updatesPath = m_context.profile.GetPath(ProfilePath::PersistentState) / "updates";
+ 
+@@ -492,6 +491,7 @@ void App::RunEmulator() {
              m_updateCheckerThread.join();
          }
      }};
@@ -88,7 +88,7 @@ index 25cf20c..b269c64 100644
  
      // Get embedded file system
      auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
-@@ -2155,8 +2155,6 @@ void App::RunEmulator() {
+@@ -2157,8 +2157,6 @@ void App::RunEmulator() {
                  break;
              }
  
@@ -97,7 +97,7 @@ index 25cf20c..b269c64 100644
              case EvtType::StateLoaded:
                  m_context.DisplayMessage(fmt::format("State {} loaded", std::get<uint32>(evt.value) + 1));
                  break;
-@@ -2802,9 +2800,6 @@ void App::RunEmulator() {
+@@ -2808,9 +2806,6 @@ void App::RunEmulator() {
                      if (ImGui::MenuItem("Open welcome window", nullptr)) {
                          OpenWelcomeModal(false);
                      }
@@ -107,7 +107,7 @@ index 25cf20c..b269c64 100644
  
                      ImGui::Separator();
  #if Ymir_ENABLE_IMGUI_DEMO
-@@ -3598,6 +3593,7 @@ void App::ScreenshotThread() {
+@@ -3604,6 +3599,7 @@ void App::ScreenshotThread() {
      }
  }
  
@@ -115,7 +115,7 @@ index 25cf20c..b269c64 100644
  void App::UpdateCheckerThread() {
      util::SetCurrentThreadName("Update checker thread");
  
-@@ -3712,6 +3708,7 @@ void App::UpdateCheckerThread() {
+@@ -3733,6 +3729,7 @@ void App::UpdateCheckerThread() {
          }
      }
  }
@@ -123,7 +123,7 @@ index 25cf20c..b269c64 100644
  
  void App::OpenWelcomeModal(bool scanIPLROMs) {
      bool activeScanning = scanIPLROMs;
-@@ -3869,11 +3866,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
+@@ -3890,11 +3887,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
      });
  }
  
@@ -135,11 +135,13 @@ index 25cf20c..b269c64 100644
  void App::RebindInputs() {
      m_context.settings.RebindInputs();
  }
-@@ -4881,8 +4873,6 @@ void App::DrawWindows() {
+@@ -4911,10 +4903,6 @@ void App::DrawWindows() {
      m_settingsWindow.Display();
      m_periphConfigWindow.Display();
      m_aboutWindow.Display();
+-#if Ymir_ENABLE_UPDATE_CHECKS
 -    m_updateOnboardingWindow.Display();
+-#endif
 -    m_updateWindow.Display();
  }
  
@@ -215,7 +217,7 @@ index faa54fa..aa82790 100644
      return {.type = GUIEvent::Type::TakeScreenshot};
  }
 diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
-index e7ebb14..7904233 100644
+index 123feee..ac21e55 100644
 --- a/apps/ymir-sdl3/src/app/settings.cpp
 +++ b/apps/ymir-sdl3/src/app/settings.cpp
 @@ -670,9 +670,6 @@ void Settings::ResetToDefaults() {
@@ -237,7 +239,7 @@ index e7ebb14..7904233 100644
  
          general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
  
-@@ -1214,8 +1209,6 @@ SettingsSaveResult Settings::Save() {
+@@ -1216,8 +1211,6 @@ SettingsSaveResult Settings::Save() {
              {"AltSpeedFactor", general.altSpeedFactor.Get()},
              {"UseAltSpeed", general.useAltSpeed.Get()},
              {"PauseWhenUnfocused", general.pauseWhenUnfocused},
@@ -260,7 +262,7 @@ index 4f2c1f9..168d116 100644
  
      struct GUI {
 diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
-index ef26505..4b1c155 100644
+index 04c209f..c719858 100644
 --- a/apps/ymir-sdl3/src/app/shared_context.hpp
 +++ b/apps/ymir-sdl3/src/app/shared_context.hpp
 @@ -6,7 +6,6 @@
@@ -298,7 +300,7 @@ index ef26505..4b1c155 100644
  
      struct State {
 diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
-index fc341a3..505c96f 100644
+index 6431ec6..e44882c 100644
 --- a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
 @@ -127,7 +127,7 @@ void GeneralSettingsView::Display() {
@@ -310,7 +312,7 @@ index fc341a3..505c96f 100644
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
      ImGui::SeparatorText("Updates");
      ImGui::PopFont();
-@@ -187,7 +187,7 @@ void GeneralSettingsView::Display() {
+@@ -189,7 +189,7 @@ void GeneralSettingsView::Display() {
      } else {
          ImGui::TextUnformatted("You are already using the latest version.");
      }
@@ -320,7 +322,7 @@ index fc341a3..505c96f 100644
  
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index b344da6..fe714e3 100644
+index 0f92bea..069311c 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -11,17 +11,10 @@
@@ -388,5 +390,5 @@ index b344da6..fe714e3 100644
      {.name = "SDL3",                          .version = SDL_VERSION_STR,            .license = licenseZlib,          .repoURL = "https://github.com/libsdl-org/SDL",              .licenseURL = "https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt"},
      {.name = "SDL_GameControllerDB",                                                 .license = licenseZlib,          .repoURL = "https://github.com/mdqinc/SDL_GameControllerDB", .licenseURL = "https://github.com/mdqinc/SDL_GameControllerDB/blob/master/LICENSE"},
 -- 
-2.51.0
+2.52.0
 

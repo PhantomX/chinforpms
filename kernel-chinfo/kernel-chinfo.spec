@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.8
+%define specrpmversion 6.17.9
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1288,6 +1288,18 @@ Patch7309:  %{pf_url}/e043812a34d7068988f6e115975d673f59b055d9.patch#/pf-cb-e043
 Patch7310:  %{pf_url}/1374136545364398715efac7b73762752bf41968.patch#/pf-cb-1374136.patch
 # fixes (7400)
 Patch7400:  %{pf_url}/9a9b8c28a7451c86b4641b1a3d0bc58bbedcea51.patch#/pf-cb-9a9b8c2.patch
+Patch7401:  %{pf_url}/85d52050a6cb3ee7d448d01daddc0788576ec326.patch#/pf-cb-85d5205.patch
+Patch7402:  %{pf_url}/b310e41e98215cffa9c3de98ab4d2dc4d68b7588.patch#/pf-cb-b310e41.patch
+Patch7403:  %{pf_url}/882efeee7b999debe9493df2e175ce54991faa27.patch#/pf-cb-882efee.patch
+Patch7404:  %{pf_url}/9bbcde7a9819afddc58e76f546f88c64eb26db44.patch#/pf-cb-9bbcde7.patch
+Patch7405:  %{pf_url}/a86f93e58e027f9cc5ca66eecc5881941c1d8f33.patch#/pf-cb-a86f93e.patch
+Patch7406:  %{pf_url}/21b2ae8097f7ce3c9bb1be84e1e2a2ed360cc858.patch#/pf-cb-21b2ae8.patch
+Patch7407:  %{pf_url}/47f4b9f9620a97a623944c1a47da20f2b72bea84.patch#/pf-cb-47f4b9f.patch
+Patch7408:  %{pf_url}/c46b5de277c2ae428cf5d27abdd3531e7263a13f.patch#/pf-cb-c46b5de.patch
+Patch7409:  %{pf_url}/809afaa7f41c01ae6d236f6593b557ea43b1256f.patch#/pf-cb-809afaa.patch
+Patch7410:  %{pf_url}/7dd59ff1b43f727938840cf5a70c209f3694839f.patch#/pf-cb-7dd59ff.patch
+Patch7411:  %{pf_url}/d4e4ca730b2931f0b15e6b5b3ff8af9bbbbef262.patch#/pf-cb-d4e4ca7.patch
+Patch7412:  %{pf_url}/78ac77a4230452ecf3d8e03069073efde1f80341.patch#/pf-cb-78ac77a.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2168,6 +2180,18 @@ ApplyPatch %{PATCH7309}
 ApplyPatch %{PATCH7310}
 # fixes
 ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
+ApplyPatch %{PATCH7412}
 %endif
 
 # openSUSE
@@ -4589,6 +4613,9 @@ fi\
 #
 #
 %changelog
+* Mon Nov 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.9-500.chinfo
+- 6.17.9
+
 * Fri Nov 14 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.8-500.chinfo
 - 6.17.8
 
