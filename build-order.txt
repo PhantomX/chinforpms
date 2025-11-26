@@ -191,6 +191,7 @@ keepassxc
 krename
 -kristall
 kse
+lact
 -ladspa-bs2b-plugins
 ladspa-tap-plugins
 libpng-apng

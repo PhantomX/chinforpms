@@ -4,12 +4,12 @@
 # Use vendor tarball
 %bcond vendor 1
 
-%global vendor_hash ba5dbe61204970d8da85234f34c32e84
+%global vendor_hash 4f3ffa081e57782e8d659078514e962e
 
 %global appname com.mtkennerly.%{name}
 
 Name:           ludusavi
-Version:        0.29.1
+Version:        0.30.0
 Release:        1%{?dist}
 Summary:        Game save backup tool
 
@@ -18,7 +18,7 @@ URL:            https://github.com/mtkennerly/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# cargo vendor --versioned-dirs && tar cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
+# cargo vendor --versioned-dirs && tar --numeric-owner -cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 
@@ -77,7 +77,7 @@ desktop-file-install \
   assets/linux/%{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
-ln -sf assets/icon.svg \
+install -pm0644 assets/icon.svg \
   %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{appname}.svg
 
 for res in 16 22 24 32 36 48 64 72 96 128 192 256 512 ;do
@@ -108,5 +108,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Tue Nov 25 2025 Phantom X <megaphantomx at hotmail dot com> - 0.30.0-1
+- 0.30.0
+
 * Wed Jun 04 2025 Phantom X <megaphantomx at hotmail dot com> - 0.29.1-1
 - Initial spec

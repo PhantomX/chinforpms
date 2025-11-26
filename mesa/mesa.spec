@@ -3,8 +3,10 @@
 
 %ifnarch s390x
 %global with_hardware 1
+%global with_kmsro 1
 %global with_nvk 1
 %global with_radeonsi 1
+%global with_spirv_tools 1
 %global with_vmware 1
 %global with_vulkan_hw 1
 %global with_va 1
@@ -16,7 +18,7 @@
 %global base_vulkan %{?with_vulkan_hw:,amd}%{!?with_vulkan_hw:%{nil}}
 %endif
 
-%ifnarch %{ix86}
+%ifarch aarch64 x86_64
 %if !0%{?rhel}
 %global with_teflon 1
 %endif
@@ -47,7 +49,6 @@
 %global with_v3d       1
 %endif
 %global with_freedreno 1
-%global with_kmsro     1
 %global with_panfrost  1
 %if 0%{?with_asahi}
 %global asahi_platform_vulkan %{?with_vulkan_hw:,asahi}%{!?with_vulkan_hw:%{nil}}
@@ -131,6 +132,7 @@ Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/dow
 
 # fix zink/device-select bug
 Patch10:         %{vc_url}/-/merge_requests/38252.patch#/%{name}-gl-mr38252.patch
+Patch12:        %{vc_url}/-/merge_requests/38532.patch#/%{name}-gl-mr38532.patch
 
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
@@ -477,7 +479,7 @@ rewrite_wrap_file rustc-hash 2
 %meson \
   -Dplatforms=x11,wayland \
 %if 0%{?with_hardware}
-  -Dgallium-drivers=llvmpipe,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_asahi:,asahi}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink}%{?with_d3d12:,d3d12} \
+  -Dgallium-drivers=llvmpipe,virgl,nouveau%{?with_r300:,r300}%{?with_crocus:,crocus}%{?with_i915:,i915}%{?with_iris:,iris}%{?with_vmware:,svga}%{?with_radeonsi:,radeonsi}%{?with_r600:,r600}%{?with_asahi:,asahi}%{?with_freedreno:,freedreno}%{?with_etnaviv:,etnaviv}%{?with_tegra:,tegra}%{?with_vc4:,vc4}%{?with_v3d:,v3d}%{?with_lima:,lima}%{?with_panfrost:,panfrost}%{?with_vulkan_hw:,zink}%{?with_d3d12:,d3d12}%{?with_teflon:,ethosu,rocket} \
 %else
   -Dgallium-drivers=llvmpipe,virgl \
 %endif
@@ -516,6 +518,7 @@ rewrite_wrap_file rustc-hash 2
 %ifarch %{ix86}
   -Dglx-read-only-text=true \
 %endif
+  -Dspirv-tools=%{?with_spirv_tools:enabled}%{!?with_spirv_tools:disabled} \
   %{nil}
 
 %meson_build
@@ -627,7 +630,7 @@ popd
 %{_libdir}/dri/i915_dri.so
 %endif
 %endif
-%ifarch aarch64 x86_64 %{ix86}
+%ifnarch s390x
 %if 0%{?with_asahi}
 %{_libdir}/dri/apple_dri.so
 %{_libdir}/dri/asahi_dri.so

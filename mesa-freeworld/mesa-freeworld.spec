@@ -185,8 +185,9 @@ echo %{version}-freeworld > VERSION
   -Dlmsensors=disabled \
   -Dandroid-libbacktrace=disabled \
 %ifarch %{ix86}
-  -Dglx-read-only-text=true
+  -Dglx-read-only-text=true \
 %endif
+  -Dspirv-tools=enabled \
   %{nil}
 
 %meson_build
