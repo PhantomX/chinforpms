@@ -31,7 +31,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.20.1
+Version:        4.20.2
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -52,7 +52,7 @@ Patch103:       0001-CSD-Prefer-SSD-by-default.patch
 
 Patch120:       0001-appearance-disable-backdrop.patch
 Patch121:       0001-appearance-fix-black-border.patch
-%dnl Patch122:       0001-CSD-disabled-by-default.patch
+Patch122:       0001-CSD-disabled-by-default.patch
 
 BuildRequires:  cups-devel
 BuildRequires:  desktop-file-utils
@@ -166,8 +166,8 @@ echo "%{_libdir}/%{name}" \
   > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post -p /usr/sbin/ldconfig
+%postun -p /usr/sbin/ldconfig
 
 
 %files
@@ -178,6 +178,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Wed Nov 26 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.2-1
+- 4.20.2
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.1-1
 - 4.20.1
 

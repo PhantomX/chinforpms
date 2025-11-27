@@ -83,8 +83,8 @@ echo "%{_libdir}/%{name}" \
 %check
 make check
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post -p /usr/sbin/ldconfig
+%postun -p /usr/sbin/ldconfig
 
 
 %files

@@ -234,8 +234,8 @@ echo "%{_libdir}/%{name}" \
   > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post -p /usr/sbin/ldconfig
+%postun -p /usr/sbin/ldconfig
 
 
 %files
