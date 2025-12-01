@@ -25,7 +25,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.8.1
+Version:        0.8.2
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -63,7 +63,6 @@ BuildRequires:  pkgconfig(glfw3)
 BuildRequires:  libcmocka-devel
 %endif
 BuildRequires:  pkgconfig(libdrm)
-BuildRequires:  pkgconfig(nlohmann_json)
 BuildRequires:  pkgconfig(spdlog)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-client)
@@ -204,6 +203,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Sat Nov 29 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.2-100
+- 0.8.2
+
 * Thu Mar 06 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.1-100
 - 0.8.1
 

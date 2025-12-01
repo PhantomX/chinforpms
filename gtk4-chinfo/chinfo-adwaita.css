@@ -1,5 +1,5 @@
-/* Chinforpms 20250913 */
-/* GTK4-classic */
+/* Chinforpms 20251127 */
+/* GTK4-chinfo */
 
 .default-decoration.titlebar:not(headerbar), headerbar.default-decoration {
   min-height: 0px;
@@ -11,6 +11,21 @@
   min-width: 0px;
   margin: 0;
   padding: 1px;
+}
+
+.titlebar, .titlebar .background, decoration, window, window.background {
+  border-radius: 0;
+}
+
+headerbar, headerbar arrow, headerbar box, headerbar button, headerbar contents, headerbar entry, headerbar image, headerbar menubutton, headerbar slider, headerbar splitbutton, headerbar trough {
+  border: 0;
+  margin: 0;
+  min-height: 0;
+}
+
+window headerbar {
+  margin-left: -1px;
+  margin-right: -1px;
 }
 
 button,
@@ -58,10 +73,6 @@ treeview button {
 
 scale {
   padding: 10px 0;
-}
-
-headerbar {
-  min-height: 0;
 }
 
 popover:not(.emoji-picker) > *:not(grid) {

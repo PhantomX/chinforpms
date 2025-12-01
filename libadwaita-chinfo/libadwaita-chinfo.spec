@@ -8,7 +8,7 @@
 
 Name:           %{pkgname}-chinfo
 Version:        1.8.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
 License:        LGPL-2.1-or-later AND MIT
@@ -45,7 +45,7 @@ fixes from chinforpms.
 %prep
 %autosetup -p1 -n %{pkgname}-%{tarball_version}
 
-cat %{S:1} | tee -a src/stylesheet/base{,-hc}.{,s}css > /dev/null
+cat %{S:1} | tee -a src/stylesheet/{default,high-contrast}.scss > /dev/null
 
 
 %build
@@ -87,6 +87,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Thu Nov 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1.8.2-2
+- chinfo-adwaita.css update
+
 * Fri Nov 21 2025 Phantom X <megaphantomx at hotmail dot com> - 1.8.2-1
 - 1.8.2
 

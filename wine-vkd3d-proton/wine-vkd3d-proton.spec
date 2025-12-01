@@ -22,10 +22,10 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 4f8d7917efeafc8df1f68b23b5f5e09c8ef2901a
+%global commit 2d9f1e4238c0a612f6173b97bc28f66403f96a92
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251105
-%bcond snapshot 0
+%global date 20251127
+%bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
@@ -74,8 +74,10 @@ BuildArch:      noarch
 
 %global kg_url https://github.com/KhronosGroup
 
+%global ver     %%(echo %{version} | tr -d '~|^')
+
 Name:           wine-%{pkgname}
-Version:        3.0
+Version:        3.0^a
 Release:        1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -86,7 +88,7 @@ URL:            https://github.com/HansKristian-Work/%{pkgname}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{ver}/%{pkgname}-%{ver}.tar.gz
 %endif
 Source1:        https://github.com/HansKristian-Work/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source100:      https://github.com/doitsujin/%{srcname100}/archive/%{commit100}/%{srcname100}-%{shortcommit100}.tar.gz
@@ -316,6 +318,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Nov 30 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0^a-1.20251127git2d9f1e4
+- 3.0a
+
 * Mon Nov 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0-1
 - 3.0
 
