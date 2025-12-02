@@ -1,1 +1,1 @@
-# CONFIG_X86_FRED is not set
+CONFIG_X86_FRED=y

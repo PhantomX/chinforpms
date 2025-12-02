@@ -1,1 +1,1 @@
-# CONFIG_NXP_ENETC4 is not set
+CONFIG_NXP_ENETC4=m

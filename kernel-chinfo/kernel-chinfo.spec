@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.17.9
+%define specrpmversion 6.18.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 051eaf7dc4e40c744076f7f542b701ebad75cfa3
+%global opensuse_id d7c93ef8354904ef83c89b0a4072995b0186c13f
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -832,8 +832,11 @@ BuildRequires: sparse
 %if %{with_perf}
 BuildRequires: zlib-devel binutils-devel newt-devel perl(ExtUtils::Embed) bison flex xz-devel
 BuildRequires: audit-libs-devel python3-setuptools
+BuildRequires: capstone-devel
+BuildRequires: elfutils-debuginfod-client-devel
 BuildRequires: java-devel
 BuildRequires: libbabeltrace-devel
+BuildRequires: libpfm-devel
 BuildRequires: libtraceevent-devel
 %ifnarch s390x
 BuildRequires: numactl-devel
@@ -879,8 +882,12 @@ BuildRequires: clang llvm-devel fuse-devel zlib-devel binutils-devel python3-doc
 %ifarch x86_64 riscv64
 BuildRequires: lld
 %endif
+BuildRequires: libasan-static
 BuildRequires: libcap-devel libcap-ng-devel rsync libmnl-devel libxml2-devel
+BuildRequires: liburing-devel
+BuildRequires: libubsan
 BuildRequires: numactl-devel
+BuildRequires: xxd
 %endif
 BuildConflicts: rhbuildsys(DiskFree) < 500Mb
 %if %{with_debuginfo}
@@ -972,6 +979,8 @@ BuildRequires: lvm2
 BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
+# For systemd-repart
+BuildRequires: xfsprogs e2fsprogs dosfstools
 # For UKI kernel cmdline addons
 BuildRequires: systemd-ukify
 # For TPM operations in UKI initramfs
@@ -1252,10 +1261,8 @@ Patch2001: %{zen_url}/commit/be12070350a151ffb964c562e58983b16962df6d.patch#/zen
 Patch2002: %{zen_url}/commit/69f73106b713eb0f9afe85b73d37dc439b69ca17.patch#/zen-v%{patchversion}-sauce-69f7310.patch
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/9da6f120250f0b29564aa803cbeb5e9a0eca30dd.patch#/pf-cb-9da6f12.patch
+Patch6000: %{pf_url}/5e09fcd39d014b89a67ecfb19730deb53115cf24.patch#/pf-cb-5e09fcd.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
-Patch6002: %{pf_url}/845ee6d3376733c93c34482b49551e45379ddb30.patch#/pf-cb-845ee6d.patch
-Patch6003: %{kernel_url}/?id=8c1a0f8f6121dabddbc89f937285c00b0e44ae05#/kernel-git-revert-8c1a0f8.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
 Patch6011: 0001-drivers-input-joystick-xpad-remove-dev_warn-nagging.patch
@@ -1264,42 +1271,25 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/18915da65f0520434ba2fa7e8ddbc17090320a9f.patch#/pf-cb-18915da.patch
+Patch6950:  %{pf_url}/1cac491b0bc86faa30e08db85cce64ecf9a1ee78.patch#/pf-cb-1cac491.patch
 # kbuild (7000)
 # bbr3
-Patch7050:  %{pf_url}/1c91634fce827f78ab54c06e233311a8068b46fd.patch#/pf-cb-1c91634.patch
+Patch7050:  %{pf_url}/a05ea4b4cef3e2d59b462639db637573a2f9660c.patch#/pf-cb-a05ea4b.patch
 # zstd
 # v4l2loopback
-Patch7230:  %{pf_url}/9abe2205879f04b447248d930bfb6bb84ee25328.patch#/pf-cb-9abe220.patch
-Patch7231:  %{pf_url}/fa224ac46446ce8be8ccf9b39e0888d64dff2d1d.patch#/pf-cb-fa224ac.patch
+Patch7230:  %{pf_url}/6e1c80583393935dacb55bd26ce41851de3da85a.patch#/pf-cb-6e1c805.patch
 # cpuidle
-Patch7240:  %{pf_url}/93f653636155138ce3f470b33f92dc4616ae8c05.patch#/pf-cb-93f6536.patch
+Patch7240:  %{pf_url}/7c86fefe62927a6ecc5eea56a097e1d50c71adb8.patch#/pf-cb-7c86fef.patch
 # crypto
-Patch7300:  %{pf_url}/0ff7990f4036141b7646e1213bcebea4b0cb3b72.patch#/pf-cb-0ff7990.patch
-Patch7301:  %{pf_url}/9502f76c24b4d6ec0efc3e7f04b978b3ea43ea06.patch#/pf-cb-9502f76.patch
-Patch7302:  %{pf_url}/5f096d83bc2d844691b00168c9d5edfb469f7cbe.patch#/pf-cb-5f096d8.patch
-Patch7303:  %{pf_url}/e531ccfc66197b54711308b688da2ce500b6105c.patch#/pf-cb-e531ccf.patch
-Patch7304:  %{pf_url}/7c83806ab6029a50aca6ccb60ea4f0600b87ed69.patch#/pf-cb-7c83806.patch
-Patch7305:  %{pf_url}/0479a79b9dfeceb348025fa7fc348f9d9f9399c4.patch#/pf-cb-0479a79.patch
-Patch7306:  %{pf_url}/8a33e85a012f8b79cd7e523a16e3e73aad628faa.patch#/pf-cb-8a33e85.patch
-Patch7307:  %{pf_url}/864f101ae278036293d1f38e29947e72b3d9a682.patch#/pf-cb-864f101.patch
-Patch7308:  %{pf_url}/893a8f3732ca8e65da6a90a47041d57739429de8.patch#/pf-cb-893a8f3.patch
-Patch7309:  %{pf_url}/e043812a34d7068988f6e115975d673f59b055d9.patch#/pf-cb-e043812.patch
-Patch7310:  %{pf_url}/1374136545364398715efac7b73762752bf41968.patch#/pf-cb-1374136.patch
+Patch7300:  %{pf_url}/37b66d510a5d105e4be5e71eb27950fd40f12bfa.patch#/pf-cb-37b66d5.patch
+Patch7301:  %{pf_url}/92496a68f5d4452516fc3b1ec7bf7e643a859922.patch#/pf-cb-92496a6.patch
+Patch7302:  %{pf_url}/93f8ea7734c9f748bbcde925156a9975f5576d31.patch#/pf-cb-93f8ea7.patch
+Patch7303:  %{pf_url}/dcd199da1f43301231939d9f618ff6f98d3747aa.patch#/pf-cb-dcd199d.patch
+Patch7304:  %{pf_url}/b20bb6e49c2fb7abbb251687eb626f4048dec6b8.patch#/pf-cb-b20bb6e.patch
+Patch7305:  %{pf_url}/95d57126e3a70dbbcf3a7add2254485e84c0ef37.patch#/pf-cb-95d5712.patch
+Patch7306:  %{pf_url}/b256bf338771b7558278676f3d16189f5cb710f7.patch#/pf-cb-b256bf3.patch
+Patch7307:  %{pf_url}/6c8374882e99165c26f01bcd9c1688bf5ef15d12.patch#/pf-cb-6c83748.patch
 # fixes (7400)
-Patch7400:  %{pf_url}/9a9b8c28a7451c86b4641b1a3d0bc58bbedcea51.patch#/pf-cb-9a9b8c2.patch
-Patch7401:  %{pf_url}/85d52050a6cb3ee7d448d01daddc0788576ec326.patch#/pf-cb-85d5205.patch
-Patch7402:  %{pf_url}/b310e41e98215cffa9c3de98ab4d2dc4d68b7588.patch#/pf-cb-b310e41.patch
-Patch7403:  %{pf_url}/882efeee7b999debe9493df2e175ce54991faa27.patch#/pf-cb-882efee.patch
-Patch7404:  %{pf_url}/9bbcde7a9819afddc58e76f546f88c64eb26db44.patch#/pf-cb-9bbcde7.patch
-Patch7405:  %{pf_url}/a86f93e58e027f9cc5ca66eecc5881941c1d8f33.patch#/pf-cb-a86f93e.patch
-Patch7406:  %{pf_url}/21b2ae8097f7ce3c9bb1be84e1e2a2ed360cc858.patch#/pf-cb-21b2ae8.patch
-Patch7407:  %{pf_url}/47f4b9f9620a97a623944c1a47da20f2b72bea84.patch#/pf-cb-47f4b9f.patch
-Patch7408:  %{pf_url}/c46b5de277c2ae428cf5d27abdd3531e7263a13f.patch#/pf-cb-c46b5de.patch
-Patch7409:  %{pf_url}/809afaa7f41c01ae6d236f6593b557ea43b1256f.patch#/pf-cb-809afaa.patch
-Patch7410:  %{pf_url}/7dd59ff1b43f727938840cf5a70c209f3694839f.patch#/pf-cb-7dd59ff.patch
-Patch7411:  %{pf_url}/d4e4ca730b2931f0b15e6b5b3ff8af9bbbbef262.patch#/pf-cb-d4e4ca7.patch
-Patch7412:  %{pf_url}/78ac77a4230452ecf3d8e03069073efde1f80341.patch#/pf-cb-78ac77a.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2129,12 +2119,17 @@ ApplyOptionalPatch()
   if [ ! -f "$patch" ]; then
     exit 1
   fi
+  %{log_msg "ApplyOptionalPatch: $1"}
+  if [ ! -f "$patch" ]; then
+    exit 1
+  fi
   local C=$(wc -l "$patch" | awk '{print $1}')
   if [ "$C" -gt 9 ]; then
     ApplyPatch "$patch" ${1+"$@"}
   fi
 }
 
+%{log_msg "Untar kernel tarball"}
 %setup -q -n kernel-%{tarfile_release} -c -a6020
 mv linux-%{tarfile_release} linux-%{KVERREL}
 
@@ -2163,7 +2158,6 @@ ApplyPatch %{PATCH7050}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # cpuidle
 ApplyPatch %{PATCH7240}
 # crypto
@@ -2175,23 +2169,7 @@ ApplyPatch %{PATCH7304}
 ApplyPatch %{PATCH7305}
 ApplyPatch %{PATCH7306}
 ApplyPatch %{PATCH7307}
-ApplyPatch %{PATCH7308}
-ApplyPatch %{PATCH7309}
-ApplyPatch %{PATCH7310}
 # fixes
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
-ApplyPatch %{PATCH7409}
-ApplyPatch %{PATCH7410}
-ApplyPatch %{PATCH7411}
-ApplyPatch %{PATCH7412}
 %endif
 
 # openSUSE
@@ -2203,10 +2181,8 @@ ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
 
-ApplyPatch %{PATCH6003} -R
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
-ApplyPatch %{PATCH6002}
 
 ApplyPatch %{PATCH6010}
 ApplyPatch %{PATCH6011}
@@ -2594,12 +2570,14 @@ BuildKernel() {
     # to the end user so that the packaged config file can be easily reused with
     # upstream make targets
     %if %{signkernel}%{signmodules}
-      sed -i -e '/^CONFIG_SYSTEM_TRUSTED_KEYS/{
-        i\# The kernel was built with
-        s/^/# /
-        a\# We are resetting this value to facilitate local builds
-        a\CONFIG_SYSTEM_TRUSTED_KEYS=""
-        }' .config
+      for configopt in SYSTEM_TRUSTED_KEYS EFI_SBAT_FILE; do
+        sed -i -e '/^CONFIG_'"${configopt}"'/{
+          i\# The kernel was built with
+          s/^/# /
+          a\# We are resetting this value to facilitate local builds
+          a\CONFIG_'"${configopt}"'=""
+          }' .config
+      done
     %endif
 
     # Start installing the results
@@ -3520,7 +3498,7 @@ pushd tools/testing/selftests
 export CFLAGS="%{build_cflags}"
 export CXXFLAGS="%{build_cxxflags}"
 
-%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/forwarding net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CFLAGS="${CXXFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/can net/forwarding net/hsr net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd capabilities clone3 exec filesystems firmware landlock mount mount_setattr move_mount_set_group nsfs openat2 proc safesetid seccomp tmpfs uevent vDSO SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # Restore the original level of source fortification
 %define _fortify_level %{_fortify_level_bak}
@@ -3888,11 +3866,23 @@ find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/drivers/net/
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/bonding/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/drivers/net/bonding/{} \;
 popd
+# install net/can selftests
+pushd tools/testing/selftests/net/can
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/can/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/can/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/can/{} \;
+popd
 # install net/forwarding selftests
 pushd tools/testing/selftests/net/forwarding
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/forwarding/{} \;
+popd
+# install net/hsr selftests
+pushd tools/testing/selftests/net/hsr
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/hsr/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/hsr/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/hsr/{} \;
 popd
 # install net/mptcp selftests
 pushd tools/testing/selftests/net/mptcp
@@ -3954,6 +3944,108 @@ pushd tools/testing/selftests/pidfd
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/pidfd/{} \;
+popd
+# install capabilities selftests
+pushd tools/testing/selftests/capabilities
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/capabilities/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/capabilities/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/capabilities/{} \;
+popd
+# install clone3 selftests
+pushd tools/testing/selftests/clone3
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/clone3/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/clone3/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/clone3/{} \;
+popd
+# install exec selftests
+pushd tools/testing/selftests/exec
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/exec/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/exec/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/exec/{} \;
+popd
+# install filesystems selftests
+pushd tools/testing/selftests/filesystems
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/filesystems/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/filesystems/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/filesystems/{} \;
+popd
+# install firmware selftests
+pushd tools/testing/selftests/firmware
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/firmware/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/firmware/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/firmware/{} \;
+popd
+# install landlock selftests
+pushd tools/testing/selftests/landlock
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/landlock/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/landlock/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/landlock/{} \;
+popd
+# install mount selftests
+pushd tools/testing/selftests/mount
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/mount/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/mount/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/mount/{} \;
+popd
+# install mount_setattr selftests
+pushd tools/testing/selftests/mount_setattr
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/mount_setattr/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/mount_setattr/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/mount_setattr/{} \;
+popd
+# install move_mount_set_group selftests
+pushd tools/testing/selftests/move_mount_set_group
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/move_mount_set_group/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/move_mount_set_group/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/move_mount_set_group/{} \;
+popd
+# install nsfs selftests
+pushd tools/testing/selftests/nsfs
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/nsfs/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/nsfs/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/nsfs/{} \;
+popd
+# install openat2 selftests
+pushd tools/testing/selftests/openat2
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/openat2/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/openat2/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/openat2/{} \;
+popd
+# install proc selftests
+pushd tools/testing/selftests/proc
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/proc/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/proc/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/proc/{} \;
+popd
+# install safesetid selftests
+pushd tools/testing/selftests/safesetid
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/safesetid/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/safesetid/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/safesetid/{} \;
+popd
+# install seccomp selftests
+pushd tools/testing/selftests/seccomp
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/seccomp/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/seccomp/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/seccomp/{} \;
+popd
+# install tmpfs selftests
+pushd tools/testing/selftests/tmpfs
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/tmpfs/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/tmpfs/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/tmpfs/{} \;
+popd
+# install uevent selftests
+pushd tools/testing/selftests/uevent
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/uevent/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/uevent/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/uevent/{} \;
+popd
+# install vDSO selftests
+pushd tools/testing/selftests/vDSO
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/vDSO/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/vDSO/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/vDSO/{} \;
 popd
 %endif
 
@@ -4406,6 +4498,7 @@ fi\
 # libcpupower Python bindings
 %{python3_sitearch}/_raw_pylibcpupower.so
 %{python3_sitearch}/raw_pylibcpupower.py
+%{python3_sitearch}/__pycache__/raw_pylibcpupower*
 %endif
 %if %{with_ynl}
 %{_libdir}/libynl*
@@ -4613,6 +4706,9 @@ fi\
 #
 #
 %changelog
+* Mon Dec 01 2025 Phantom X <megaphantomx at hotmail dot com> - 6.18.0-500.chinfo
+- 6.18.0
+
 * Mon Nov 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.9-500.chinfo
 - 6.17.9
 
@@ -4799,42 +4895,6 @@ fi\
 
 * Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-500.chinfo
 - 6.12.0
-
-* Sun Nov 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.9-500.chinfo
-- 6.11.9
-
-* Thu Nov 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.8-500.chinfo
-- 6.11.8
-
-* Fri Nov 08 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.7-500.chinfo
-- 6.11.7
-
-* Sun Nov 03 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-502.chinfo
-- btrfs fixes
-
-* Sat Nov 02 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-501.chinfo
-- pf patch fix
-
-* Thu Oct 31 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.6-500.chinfo
-- 6.11.6
-
-* Tue Oct 22 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.5-500.chinfo
-- 6.11.5
-
-* Thu Oct 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.4-500.chinfo
-- 6.11.4
-
-* Thu Oct 10 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.3-500.chinfo
-- 6.11.3
-
-* Fri Oct 04 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.2-500.chinfo
-- 6.11.2
-
-* Mon Sep 30 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.1-500.chinfo
-- 6.11.1
-
-* Sun Sep 15 2024 Phantom X <megaphantomx at hotmail dot com> - 6.11.0-500.chinfo
-- 6.11.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

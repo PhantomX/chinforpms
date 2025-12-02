@@ -1,1 +1,1 @@
-CONFIG_USB_USBIO=m
+# CONFIG_USB_USBIO is not set

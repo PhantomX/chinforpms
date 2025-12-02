@@ -1,6 +1,6 @@
-%global commit 606d2f48bf8149bf45153f11ef3501eece20762c
+%global commit d671927488486b8541cc235a73c94989a21e9caa
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251024
+%global date 20251201
 %bcond snapshot 1
 
 # disable fortify as it breaks wine
@@ -41,8 +41,8 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  10.3.0
-%global winevulkan 1.4.329
+%global winemono  10.4.0
+%global winevulkan 1.4.333
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -53,11 +53,11 @@
 %global winelcms2 2.17
 %global wineldap 2.5.18
 %global winempg123 1.33.0
-%global winepng 1.6.50
+%global winepng 1.6.51
 %global wineopenldap 2.5.17
 %global winetiff 4.7.1
 %global winejxrlib 1.1
-%global winevkd3d 1.17
+%global winevkd3d 1.18
 %global winexml2 2.12.8
 %global winexslt 1.1.43
 %global winezlib 1.3.1
@@ -69,7 +69,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver fa2f3233442929ae79f76537d6805bc929026583
+%global wine_stagingver 10.20
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -80,7 +80,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2b032b4df78329f34ce68e6dac59b76858fb6f55
+%global tkg_id 84fd22aab1ff673d82924b90ffd140c34a0d0504
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -92,8 +92,8 @@
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
 
-%bcond ge_wayland 1
-%bcond proton_winevulkan 1
+%bcond ge_wayland 0
+%bcond proton_winevulkan 0
 %if %{with proton_winevulkan}
 %bcond proton_mf 1
 %endif
@@ -119,8 +119,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.17
-Release:        102%{?dist}
+Version:        10.20
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -192,15 +192,10 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
 Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-revert-bd89ab3.patch
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
-Patch703:        %{whq_murl}/-/merge_requests/6072.patch#/%{name}-whq-mr6072.patch
-Patch704:        0001-mr6072-fixup-1.patch
-Patch705:        0001-mr6072-fixup-2.patch
-Patch706:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
-Patch707:        %{whq_murl}/-/merge_requests/9247.patch#/%{name}-whq-mr9247.patch
-Patch708:        %{whq_murl}/-/merge_requests/9249.patch#/%{name}-whq-mr9249.patch
-Patch709:        %{whq_murl}/-/merge_requests/9256.patch#/%{name}-whq-mr9256.patch
-Patch710:        %{whq_murl}/-/merge_requests/9278.patch#/%{name}-whq-mr9278.patch
-Patch711:        %{whq_murl}/-/merge_requests/9280.patch#/%{name}-whq-mr9280.patch
+Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
+Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
+Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
+Patch705:        %{whq_murl}/-/merge_requests/9637.patch#/%{name}-whq-mr9637.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -341,7 +336,7 @@ BuildRequires:  pkgconfig(libva)
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-desktop = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       wine-winefonts = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       wine-ntsync = %{?epoch:%{epoch}:}%{version}-%{release}
+Requires:       ntsync-autoload = %{?epoch:%{epoch}:}%{version}-%{release}
 
 # x86-64 parts
 %ifarch x86_64
@@ -512,15 +507,14 @@ BuildArch:      noarch
 Desktop integration features for wine, including mime-types and a binary format
 handler service.
 
-%package ntsync
+%package -n ntsync-autoload
 Summary:        Kernel module load file for ntsync
 BuildArch:      noarch
-Obsoletes:      ntsync < 6.14
-Provides:       ntsync = %{version}
-Provides:       ntsync-kmod-common = %{version}
+Provides:       wine-ntsync = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      wine-ntsync < %{?epoch:%{epoch}:}%{version}-%{release} 
 Requires:       kmod(ntsync.ko)
 
-%description ntsync
+%description -n ntsync-autoload
 Kernel module load file for ntsync.
 
 %package winefonts
@@ -789,15 +783,10 @@ This package adds the opencl driver for wine.
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
 
+%patch -P 702 -p1
+%patch -P 703 -p1 -R
 %patch -P 704 -p1
-%patch -P 703 -p1
 %patch -P 705 -p1
-%patch -P 706 -p1
-%patch -P 707 -p1
-%patch -P 708 -p1
-%patch -P 709 -p1
-%patch -P 710 -p1
-%patch -P 711 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -821,6 +810,8 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1020 -p1
 %if %{with ge_wayland}
 %patch -P 1031 -p1
+%endif
+%if %{with proton_mf}
 %patch -P 1032 -p1
 %endif
 %patch -P 701 -p1 -R
@@ -884,7 +875,7 @@ fi
 
 cp -p %{SOURCE3} README.FEDORA
 cp -p %{SOURCE6} README.chinforpms
-%if %{without proton_mf}
+%if %{with proton_mf}
 cat README.chinforpms %{SOURCE7} >> README.chinforpms.proton_mf
 touch -r README.chinforpms README.chinforpms.proton_mf
 mv -f README.chinforpms.proton_mf README.chinforpms
@@ -1264,8 +1255,8 @@ fi
 
 %pretrans -p <lua> core
 %ifarch x86_64
-pathA = "%{winesodir}"
-pathB = "%{winepedir}"
+pathA = "%{_libdir}/wine/i386-unix"
+pathB = "%{_libdir}/wine/i386-windows"
 stA = posix.stat(pathA)
 stB = posix.stat(pathB)
 if stA and stA.type == "link" then
@@ -1602,6 +1593,9 @@ end
 %{_libdir}/wine/%{winepedirs}/iccvid.dll
 %{_libdir}/wine/%{winepedirs}/icmp.dll
 %{_libdir}/wine/%{winepedirs}/icmui.dll
+%{_libdir}/wine/%{winepedirs}/icu.dll
+%{_libdir}/wine/%{winepedirs}/icuin.dll
+%{_libdir}/wine/%{winepedirs}/icuuc.dll
 %{_libdir}/wine/%{winepedirs}/ieframe.dll
 %{_libdir}/wine/%{winepedirs}/ieproxy.dll
 %{_libdir}/wine/%{winepedirs}/iertutil.dll
@@ -1742,6 +1736,7 @@ end
 %{_libdir}/wine/%{winepedirs}/msvcrt20.dll
 %{_libdir}/wine/%{winepedirs}/msvcrt40.dll
 %{_libdir}/wine/%{winepedirs}/msvcrtd.dll
+%{_libdir}/wine/%{winepedirs}/msvdsp.dll
 %{_libdir}/wine/%{winepedirs}/msvfw32.dll
 %{_libdir}/wine/%{winepedirs}/msvidc32.dll
 %{_libdir}/wine/%{winepedirs}/msvproc.dll
@@ -1905,6 +1900,7 @@ end
 %endif
 %{_libdir}/wine/%{winepedirs}/vdmdbg.dll
 %{_libdir}/wine/%{winepedirs}/vga.dll
+%{_libdir}/wine/%{winepedirs}/vidreszr.dll
 %{_libdir}/wine/%{winepedirs}/version.dll
 %{_libdir}/wine/%{winepedirs}/virtdisk.dll
 %{_libdir}/wine/%{winepedirs}/vssapi.dll
@@ -2437,7 +2433,7 @@ end
 %{_datadir}/icons/hicolor/*/apps/*png
 %{_datadir}/icons/hicolor/scalable/apps/*svg
 
-%files ntsync
+%files -n ntsync-autoload
 %{_modulesloaddir}/ntsync.conf
 
 %files systemd
@@ -2507,6 +2503,11 @@ end
 
 
 %changelog
+* Mon Dec 01 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.20-100.20251201gitd671927
+- 10.20
+- Partial Rawhide sync, wine-ntsync -> ntsync-autoload
+- ge_wayland and proton_winevulkan disabled for the time
+
 * Sun Oct 19 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.17-100
 - 10.17
 

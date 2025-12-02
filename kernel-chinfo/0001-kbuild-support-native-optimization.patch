@@ -1,4 +1,4 @@
-From e72feabcd1b174f9fd1a88776cbf262a289e6f0c Mon Sep 17 00:00:00 2001
+From a636a19fcc4057bf4aa773979b71095df1dc2781 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 26 May 2025 09:28:09 -0300
 Subject: [PATCH] kbuild: support native optimization
@@ -10,7 +10,7 @@ Subject: [PATCH] kbuild: support native optimization
  3 files changed, 38 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 7f2bc6a..cc5b148 100644
+index 96750ac..5b7281a 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -290,6 +290,26 @@ config X86_64_ISA_LEVEL
@@ -83,11 +83,11 @@ index 7f2bc6a..cc5b148 100644
  config X86_MINIMUM_CPU_FAMILY
  	int
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index ebe1212..fb0259b 100644
+index 673a364..59b688c 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -174,8 +174,16 @@ else
- 	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
+@@ -163,8 +163,16 @@ else
+ 	KBUILD_CFLAGS += -mskip-rax-setup
  
  ifdef CONFIG_X86_NATIVE_CPU
 +    ifdef CONFIG_MNATIVE_INTEL
@@ -119,5 +119,5 @@ index 5d47125..0693172 100644
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
 -- 
-2.50.1
+2.52.0
 
