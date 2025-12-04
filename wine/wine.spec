@@ -1,6 +1,6 @@
-%global commit d671927488486b8541cc235a73c94989a21e9caa
+%global commit c823c3d99679be11f6814888a0f86c247f87cdf1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251201
+%global date 20251203
 %bcond snapshot 1
 
 # disable fortify as it breaks wine
@@ -42,7 +42,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  10.4.0
-%global winevulkan 1.4.333
+%global winevulkan 1.4.335
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -120,7 +120,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.20
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -196,6 +196,7 @@ Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.pat
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/9637.patch#/%{name}-whq-mr9637.patch
+Patch706:        %{whq_murl}/-/merge_requests/9669.patch#/%{name}-whq-mr9669.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -787,6 +788,7 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
+%patch -P 706 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1593,9 +1595,6 @@ end
 %{_libdir}/wine/%{winepedirs}/iccvid.dll
 %{_libdir}/wine/%{winepedirs}/icmp.dll
 %{_libdir}/wine/%{winepedirs}/icmui.dll
-%{_libdir}/wine/%{winepedirs}/icu.dll
-%{_libdir}/wine/%{winepedirs}/icuin.dll
-%{_libdir}/wine/%{winepedirs}/icuuc.dll
 %{_libdir}/wine/%{winepedirs}/ieframe.dll
 %{_libdir}/wine/%{winepedirs}/ieproxy.dll
 %{_libdir}/wine/%{winepedirs}/iertutil.dll
