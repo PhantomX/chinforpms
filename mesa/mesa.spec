@@ -97,8 +97,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.0
-Release:        101%{?dist}
+Version:        25.3.1
+Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -137,10 +137,6 @@ Patch12:        %{vc_url}/-/merge_requests/38532.patch#/%{name}-gl-mr38532.patch
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
-Patch1001:      %{vc_url}/-/commit/2c63a7ff5bc39f70bb96c03bea5ddb792c05ad50.patch#/%{name}-gl-2c63a7f.patch
-Patch1002:      %{vc_url}/-/commit/4b2460ae89eb931a7c3bd4a5c04189743f056338.patch#/%{name}-gl-4b2460a.patch
-Patch1003:      %{vc_url}/-/commit/92f56777b3ebbf780ef55f64e23f84a34ce71f21.patch#/%{name}-gl-92f5677.patch
-Patch1004:      %{vc_url}/-/commit/c99e294353cf8cd98b7f29453816dc167fe34584.patch#/%{name}-gl-c99e294.patch
 
 BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
@@ -411,9 +407,9 @@ filterdiff_command(){
   filterdiff -p1 -x '.pick_status.json' "$1" | %{__scm_apply_patch -p1 -q}
 }
 
-for patch in %{P:1001} %{P:1002} %{P:1003} %{P:1004} ;do
-  filterdiff_command "$patch"
-done
+%dnl for patch in %{P:1001} ;do
+%dnl   filterdiff_command "$patch"
+%dnl done
 
 %if 0%{?llvm_pkgver}
 %patch -P 1000 -p1
@@ -805,6 +801,9 @@ popd
 
 
 %changelog
+* Thu Dec 04 2025 Phantom X <megaphantomx at hotmail dot com> - 25.3.1-100
+- 25.3.1
+
 * Sat Nov 29 2025 Phantom X <megaphantomx at hotmail dot com> - 25.3.0-101
 - Upstream fixes
 

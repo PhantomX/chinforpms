@@ -1,0 +1,23 @@
+From b74ee690181be414313a9de1a26f4b36788c2e6f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Thu, 4 Dec 2025 07:19:59 -0300
+Subject: [PATCH] Remove git requirement
+
+---
+ crates/libamdgpu_top/Cargo.toml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/crates/libamdgpu_top/Cargo.toml b/crates/libamdgpu_top/Cargo.toml
+index d938aa9..6827aa5 100644
+--- a/crates/libamdgpu_top/Cargo.toml
++++ b/crates/libamdgpu_top/Cargo.toml
+@@ -15,5 +15,5 @@ libdrm_dynamic_loading = ["libdrm_amdgpu_sys/dynamic_loading"]
+ # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+ 
+ [dependencies]
+-libdrm_amdgpu_sys = { version = "0.8.8", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs", default-features = false, rev = "8d0029b4cf8f3b995728614f96c03f6e3dcf4f9e" }
++libdrm_amdgpu_sys = { version = "0.8.8", default-features = false }
+ nix = { version = "0", default-features = false, features = [ "ioctl" ] }
+-- 
+2.52.0
+

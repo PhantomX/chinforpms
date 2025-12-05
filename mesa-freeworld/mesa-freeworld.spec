@@ -38,8 +38,8 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.0
-Release:        101%{?dist}
+Version:        25.3.1
+Release:        100%{?dist}
 
 Epoch:          100
 
@@ -55,10 +55,6 @@ Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vulkan.freeworld.metainfo.xml
 
 Patch0:         0001-Rename-libraries-for-freeworld.patch
-Patch1001:      %{vc_url}/-/commit/2c63a7ff5bc39f70bb96c03bea5ddb792c05ad50.patch#/%{pkgname}-gl-2c63a7f.patch
-Patch1002:      %{vc_url}/-/commit/4b2460ae89eb931a7c3bd4a5c04189743f056338.patch#/%{pkgname}-gl-4b2460a.patch
-Patch1003:      %{vc_url}/-/commit/92f56777b3ebbf780ef55f64e23f84a34ce71f21.patch#/%{pkgname}-gl-92f5677.patch
-Patch1004:      %{vc_url}/-/commit/c99e294353cf8cd98b7f29453816dc167fe34584.patch#/%{pkgname}-gl-c99e294.patch
 
 ExcludeArch:    s390x
 
@@ -165,9 +161,9 @@ filterdiff_command(){
   filterdiff -p1 -x '.pick_status.json' "$1" | %{__scm_apply_patch -p1 -q}
 }
 
-for patch in %{P:1001} %{P:1002} %{P:1003} %{P:1004} ;do
-  filterdiff_command "$patch"
-done
+%dnl for patch in %{P:1001} ;do
+%dnl   filterdiff_command "$patch"
+%dnl done
 
 echo %{version}-freeworld > VERSION
 
@@ -249,6 +245,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu Dec 04 2025 Phantom X <megaphantomx at hotmail dot com> - 25.3.1-100
+- 25.3.1
+
 * Sat Nov 29 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.0-101
 - Upstream fixes
 

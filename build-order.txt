@@ -86,6 +86,7 @@ adriconf
 adwaita-qt
 -aisleriot
 -amdvlk-vulkan-driver
+amdgpu_top
 antimicrox
 applyppf
 ario
