@@ -1,7 +1,7 @@
 %global commit c823c3d99679be11f6814888a0f86c247f87cdf1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20251203
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -46,7 +46,7 @@
 %global opencl    1
 
 %global winecapstone 5.0.3
-%global wineFAudio 25.09
+%global wineFAudio 25.12
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 9~f
@@ -69,7 +69,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 10.20
+%global wine_stagingver 11.0-rc1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -119,8 +119,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.20
-Release:        101%{?dist}
+Version:        11.0~rc1
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -195,8 +195,7 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/9637.patch#/%{name}-whq-mr9637.patch
-Patch706:        %{whq_murl}/-/merge_requests/9669.patch#/%{name}-whq-mr9669.patch
+Patch705:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9690.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -787,8 +786,6 @@ This package adds the opencl driver for wine.
 %patch -P 702 -p1
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
-%patch -P 705 -p1
-%patch -P 706 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1869,6 +1866,7 @@ end
 %{_libdir}/wine/%{winepedirs}/tdi.sys
 %{_libdir}/wine/%{winepedirs}/traffic.dll
 %{_libdir}/wine/%{winepedirs}/threadpoolwinrt.dll
+%{_libdir}/wine/%{winepedirs}/twaindsm.dll
 %{_libdir}/wine/%{winepedirs}/twinapi.appcore.dll
 %{_libdir}/wine/%{winepedirs}/tzres.dll
 %{_libdir}/wine/%{winepedirs}/ucrtbase.dll
@@ -2502,6 +2500,9 @@ end
 
 
 %changelog
+* Sat Dec 06 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc1-100
+- 11.0-rc1
+
 * Mon Dec 01 2025 Phantom X <megaphantomx at hotmail dot com> - 3:10.20-100.20251201gitd671927
 - 10.20
 - Partial Rawhide sync, wine-ntsync -> ntsync-autoload
