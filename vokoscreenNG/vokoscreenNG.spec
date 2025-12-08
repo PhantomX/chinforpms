@@ -1,7 +1,7 @@
 %global forgeurl https://github.com/vkohaupt/%{name}
 
 Name:           vokoscreenNG
-Version:        4.7.1
+Version:        4.7.3
 %forgemeta
 Release:        100%{?dist}
 Summary:        Powerful screencast creator to record the screen
@@ -90,6 +90,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 
 %changelog
+* Sat Dec 06 2025 Phantom X <megaphantomx at hotmail dot com> - 4.7.3-100
+- 4.7.3
+
 * Sat Dec 06 2025 Phantom X <megaphantomx at hotmail dot com> - 4.7.1-100
 - 4.7.1
 
