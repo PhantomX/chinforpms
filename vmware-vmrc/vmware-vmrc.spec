@@ -12,14 +12,10 @@
 %global mark64 %{nil}
 %endif
 
-%if 0%{?fedora} > 39
 %bcond bundled_ssl 0
-%else
-%bcond bundled_ssl 1
-%endif
 
-%global ver    12.0.5
-%global rel    22744838
+%global ver    13.0.1.0
+%global rel    24954779
 
 
 Name:           vmware-vmrc
@@ -30,7 +26,7 @@ Summary:        VMware Remote Console
 License:        VMware
 
 URL:            https://support.broadcom.com/
-Source0:        https://softwareupdate.vmware.com/cds/vmw-desktop/vmrc/%{ver}/%{rel}/linux/VMware-VMRC.tar
+Source0:        VMware-Remote-Console-%{ver}.%{rel}.x86_64.bundle.zip
 Source1:        https://docs.broadcom.com/doc/end-user-agreement-english#/end-user-agreement-english.pdf
 Source10:       vmware-usbarbitrator.service
 Source11:       vmware-usbarbitrator.preset
@@ -61,6 +57,7 @@ Provides:       bundled(libtiff) = 4.5
 %global __requires_exclude %__requires_exclude|^libgtkmm-.*\\.so.*$
 %global __requires_exclude %__requires_exclude|^libpangomm-.*\\.so.*$
 %global __requires_exclude %__requires_exclude|^libsigc-.*\\.so.*$
+%global __requires_exclude %__requires_exclude|^libxml2.*\\.so.*$
 %if %{with bundled_ssl}
 %global __requires_exclude %__requires_exclude|^libcrypto\\.so.*$
 %global __requires_exclude %__requires_exclude|^libcurl\\.so.*$
@@ -95,8 +92,8 @@ USB Redirection support plugin for VMware Horizon Client.
 %prep
 %autosetup -c
 
-chmod +x VMware-Remote-Console-%{ver}-%{rel}.%{_arch}.bundle
-./VMware-Remote-Console-%{ver}-%{rel}.%{_arch}.bundle -x bundle
+chmod +x VMware-Remote-Console-%{ver}.%{rel}.%{_arch}.bundle
+./VMware-Remote-Console-%{ver}.%{rel}.%{_arch}.bundle -x bundle
 
 cp %{S:1} .
 cp %{S:10} .
@@ -191,7 +188,6 @@ rm -frv \
   lib/lib/libXft.so.2 \
   lib/lib/libXinerama.so.1 \
   lib/lib/libXi.so.6 \
-  lib/lib/libxml2.so.2 \
   lib/lib/libXrandr.so.2 \
   lib/lib/libXrender.so.1 \
   lib/lib/libXss.so.1 \
@@ -291,6 +287,9 @@ fi
 
 
 %changelog
+* Mon Dec 08 2025 - 13.0.1.0.24954779-1
+- 13.0.1
+
 * Tue Oct 01 2024 - 12.0.5.22744838-1
 - Initial spec
 

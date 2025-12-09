@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.11.12
+Version:        2025.12.08
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -49,40 +49,19 @@ Obsoletes:      youtube-dlp < %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       youtube-dlp = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{forkname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
+Provides:       yt-dlp-bash-completion = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      yt-dlp-bash-completion < 2025.09.26-2
+Provides:       yt-dlp-fish-completion = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      yt-dlp-fish-completion < 2025.09.26-2
+Provides:       yt-dlp-zsh-completion = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      yt-dlp-zsh-completion < 2025.09.26-2
+
 
 %description
 %{name} is a command-line program to download videos from youtube.com and many
 other video platforms.
 
 This is a fork of youtube-dlc which is inturn a fork of youtube-dl.
-
-
-%package bash-completion
-Summary:        Bash completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       bash-completion
-Supplements:    (%{name} and bash-completion)
-
-%description bash-completion
-Bash command line completion support for %{name}.
-
-%package zsh-completion
-Summary:        Zsh completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       zsh
-Supplements:    (%{name} and zsh)
-
-%description zsh-completion
-Zsh command line completion support for %{name}.
-
-%package fish-completion
-Summary:        Fish completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       fish
-Supplements:    (%{name} and fish)
-
-%description fish-completion
-Fish command line completion support for %{name}.
 
 
 %prep
@@ -145,18 +124,15 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 %if %{with man}
 %{_mandir}/man1/%{name}.1*
 %endif
-
-%files bash-completion
 %{bash_completions_dir}/%{name}
-
-%files zsh-completion
-%{zsh_completions_dir}/_%{name}
-
-%files fish-completion
 %{fish_completions_dir}/%{name}.fish
+%{zsh_completions_dir}/_%{name}
 
 
 %changelog
+* Mon Dec 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.12.08-100
+- 2025.12.08
+
 * Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.11.12-100
 - 2025.11.12
 

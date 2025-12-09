@@ -26,33 +26,6 @@ BuildRequires:  unzip
 Deno is a JavaScript, TypeScript, and WebAssembly runtime with secure defaults
 and a great developer experience. It's built on V8, Rust, and Tokio.
 
-%package bash-completion
-Summary:        Bash completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       bash-completion
-Supplements:    (%{name} and bash-completion)
-
-%description bash-completion
-Bash command line completion support for %{name}.
-
-%package fish-completion
-Summary:        Fish completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       fish
-Supplements:    (%{name} and fish)
-
-%description fish-completion
-Fish command line completion support for %{name}.
-
-%package zsh-completion
-Summary:        Zsh completion for %{name}
-Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
-Requires:       zsh
-Supplements:    (%{name} and zsh)
-
-%description zsh-completion
-Zsh command line completion support for %{name}.
-
 
 %prep
 %autosetup -c -T -a0
@@ -84,14 +57,8 @@ install -pm0644 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
 %license LICENSE.md
 %doc README.md
 %{_bindir}/%{name}
-
-%files bash-completion
 %{bash_completions_dir}/%{name}
-
-%files fish-completion
 %{fish_completions_dir}/%{name}.fish
-
-%files zsh-completion
 %{zsh_completions_dir}/_%{name}
 
 

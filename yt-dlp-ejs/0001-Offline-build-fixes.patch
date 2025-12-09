@@ -1,49 +1,36 @@
-From b239c50c6cca56b141a2351c8284c5f5078f8bed Mon Sep 17 00:00:00 2001
+From 8f576d72552d239e799dd9426c7c45f972c7103c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 12 Nov 2025 07:33:33 -0300
 Subject: [PATCH] Offline build fixes
 
 ---
- hatch_build.py | 23 -----------------------
+ pnpm.py        | 10 ----------
  pyproject.toml |  1 +
- 2 files changed, 1 insertion(+), 23 deletions(-)
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/hatch_build.py b/hatch_build.py
-index 70e0b3b..bb62a75 100644
---- a/hatch_build.py
-+++ b/hatch_build.py
-@@ -7,29 +7,6 @@ from hatchling.builders.hooks.plugin.interface import BuildHookInterface
+diff --git a/pnpm.py b/pnpm.py
+index 0223d50..c41c6a0 100755
+--- a/pnpm.py
++++ b/pnpm.py
+@@ -13,16 +13,6 @@ except ImportError:
  
  class CustomBuildHook(BuildHookInterface):
      def initialize(self, version, build_data):
--        if shutil.which("deno"):
--            print("Building with deno...", flush=True)
--            os.environ["DENO_NO_UPDATE_CHECK"] = "1"
--            subprocess.run(["deno", "install", "--frozen"], check=True)
--            subprocess.run(["deno", "task", "bundle"], check=True)
--
--        elif shutil.which("bun"):
--            print("Building with bun...", flush=True)
--            subprocess.run(["bun", "install"], check=True)
--            subprocess.run(["bun", "--bun", "run", "bundle"], check=True)
--
--        elif shutil.which("npm"):
--            print("Building with npm...", flush=True)
--            # npm is a batch file (`npm.cmd`) on windows, which requires `shell=True`
--            requires_shell = os.name == "nt"
--            subprocess.run(["npm", "install"], check=True, shell=requires_shell)
--            subprocess.run(["npm", "run", "bundle"], check=True, shell=requires_shell)
--
--        else:
+-        name, pnpm = build_pnpm()
+-        if pnpm is None:
 -            raise RuntimeError(
 -                "One of 'deno', 'bun', or 'npm' could not be found. "
 -                "Please install one of them to proceed with the build."
 -            )
+-        print(f"Building with {name}...")
+-
+-        pnpm(["install", "--frozen-lockfile"])
+-        pnpm(["run", "bundle"])
  
          build_data["force_include"].update(
              {
 diff --git a/pyproject.toml b/pyproject.toml
-index a2968e1..073b3dd 100644
+index f331968..ced744d 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -42,6 +42,7 @@ Source = "https://github.com/yt-dlp/ejs"
@@ -55,5 +42,5 @@ index a2968e1..073b3dd 100644
  [tool.hatch.build.targets.sdist]
  exclude = [
 -- 
-2.51.1
+2.52.0
 

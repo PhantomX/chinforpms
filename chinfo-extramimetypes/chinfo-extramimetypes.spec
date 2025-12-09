@@ -1,5 +1,5 @@
 Name:           chinfo-extramimetypes
-Version:        12.0
+Version:        13.0
 Release:        1%{?dist}
 Summary:        Extra mimetypes for DEs
 
@@ -43,6 +43,9 @@ rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 
 
 %changelog
+* Mon Dec 08 2025 Phantom X <megaphantomx at hotmail dot com> - 13.0-1
+- 13.0
+
 * Wed Jul 19 2023 Phantom X <megaphantomx at hotmail dot com> - 12.0-1
 - 12.0
 
