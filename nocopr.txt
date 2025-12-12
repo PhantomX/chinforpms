@@ -1,6 +1,7 @@
 aacgain
 -alac_decoder
 -amdgpu-pro-vulkan-driver
+-amf-amdgpu-pro
 ares
 audacious-plugins-freeworld
 -authy
