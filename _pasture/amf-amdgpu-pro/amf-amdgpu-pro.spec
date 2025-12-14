@@ -14,7 +14,7 @@ Version:        25.20
 Release:        1%{?dist}
 Summary:        AMDGPU Pro Advanced Multimedia Framework
 
-License:        LicenseRef-Fedora-AMD-GPU-PRO
+License:        LicenseRef-AMD-GPU-PRO-End-User-License-Agreement
 URL:            https://github.com/GPUOpen-LibrariesAndSDKs/AMF
 
 Source0:        https://repo.radeon.com/amf/%{version}/%{pkgdistro}/packages/main/%{_arch}/amf-amdgpu-pro-%{version}-%{pkgrelease}.x86_64.rpm

@@ -12,7 +12,7 @@ Version:        1.6
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
-License:        LicenseRef-Fedora-Custom
+License:        LicenseRef-IRPF-Custom
 URL:            https://www.gov.br/receitafederal/pt-br/assuntos/meu-imposto-de-renda
 Source0:        https://downloadirpf.receita.fazenda.gov.br/irpf/%{pkgyear}/irpf/arquivos/%{pkgname}-%{version}.zip
 

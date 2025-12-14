@@ -31,8 +31,8 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.20.2
-Release:        2%{?dist}
+Version:        4.20.3
+Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
 Epoch:          1
@@ -178,6 +178,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Sat Dec 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.3-1
+- 4.20.3
+
 * Thu Nov 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.2-2
 - chinfo-adwaita.css update
 

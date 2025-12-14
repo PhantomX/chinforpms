@@ -21,7 +21,7 @@ Version:        7.7.3851.61
 Release:        1%{?dist}
 Summary:        Web browser
 
-License:        LicenseRef-Fedora-Proprietary
+License:        LicenseRef-Vivaldi-End-User-License-Agreement
 URL:            https://vivaldi.com/
 Source0:        https://downloads.vivaldi.com/%{channel}/vivaldi-%{channel}-%{version}-%{pkgrel}.%{_arch}.rpm
 Source1:        eula.txt

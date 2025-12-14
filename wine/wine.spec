@@ -23,6 +23,10 @@
 # Disable LTO
 %global _lto_cflags %{nil}
 
+# _libdir was restructured and must use a new prefix until at least Fedora 45
+%global _x_libdir %{_libdir}
+%global _libdir %{_libdir}/wine-wow64
+
 %ifarch x86_64
 %global winepedir x86_64-windows
 %global winesodir x86_64-unix
@@ -69,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.0-rc1
+%global wine_stagingver 11.0-rc2
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -87,6 +91,7 @@
 
 %if 0%{?wine_staging}
 %global cap_st cap_sys_nice,
+%global wine_staging_opts -W server-Stored_ACLs
 %endif
 
 %global perms_pldr %caps(cap_net_raw+eip)
@@ -119,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.0~rc1
+Version:        11.0~rc2
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -195,7 +200,12 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9690.patch
+Patch705:        %{whq_murl}/-/merge_requests/9670.patch#/%{name}-whq-mr9670.patch
+Patch706:        %{whq_murl}/-/merge_requests/9704.patch#/%{name}-whq-mr9704.patch
+Patch707:        %{whq_murl}/-/merge_requests/9710.patch#/%{name}-whq-mr9710.patch
+Patch708:        %{whq_murl}/-/merge_requests/9722.patch#/%{name}-whq-mr9722.patch
+Patch709:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
+Patch710:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -786,6 +796,12 @@ This package adds the opencl driver for wine.
 %patch -P 702 -p1
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
+%patch -P 705 -p1
+cat %{P:706} | %__scm_apply_git_am -q
+%patch -P 707 -p1
+%patch -P 708 -p1
+%patch -P 709 -p1
+%patch -P 710 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -954,27 +970,16 @@ export i386_CFLAGS="`echo $i386_CFLAGS | sed \
 
 export i386_LDFLAGS="${X_LDFLAGS}"
 
-mkdir bin
-%if !0%{?with_debug}
-# -Wl -S to build working stripped PEs
-cat > bin/x86_64-w64-mingw32-gcc <<'EOF'
-#!/usr/bin/sh
-exec %{_bindir}/x86_64-w64-mingw32-gcc -Wl,-S "$@"
-EOF
-cat > bin/i686-w64-mingw32-gcc <<'EOF'
-#!/usr/bin/sh
-exec %{_bindir}/i686-w64-mingw32-gcc -Wl,-S "$@"
-EOF
-%endif
-chmod 0755 bin/*gcc
-export PATH="$(pwd)/bin:$PATH"
-
 # required so that both Linux and Windows development files can be found
-unset PKG_CONFIG_PATH 
+unset PKG_CONFIG_PATH
+
+%if !0%{?with_debug}
+export CROSSDEBUG=split
+%endif
 
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
- --x-includes=%{_includedir} --x-libraries=%{_libdir} \
+ --x-includes=%{_includedir} --x-libraries=%{x_libdir} \
  --with-dbus \
  --with-x \
 %ifarch x86_64 aarch64
@@ -993,8 +998,6 @@ unset PKG_CONFIG_PATH
 %make_build TARGETFLAGS=""
 
 %install
-export PATH="$(pwd)/bin:$PATH"
-
 %make_install \
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
@@ -1251,21 +1254,6 @@ if [ $1 -eq 0 ] ; then
   %{_sbindir}/alternatives --remove-all wineserver || :
 %endif
 fi
-
-%pretrans -p <lua> core
-%ifarch x86_64
-pathA = "%{_libdir}/wine/i386-unix"
-pathB = "%{_libdir}/wine/i386-windows"
-stA = posix.stat(pathA)
-stB = posix.stat(pathB)
-if stA and stA.type == "link" then
-  os.remove(pathA)
-end
-if stB and stB.type == "link" then
-  os.remove(pathB)
-end
-%endif
-
 
 %files
 # meta package
@@ -2500,6 +2488,9 @@ end
 
 
 %changelog
+* Sat Dec 13 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc2-100
+- 11.0-rc2
+
 * Sat Dec 06 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc1-100
 - 11.0-rc1
 

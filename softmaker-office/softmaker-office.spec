@@ -22,7 +22,7 @@ Release:        1%{?dist}
 Epoch:          1
 Summary:        SoftMaker Office %{pkgver} for Linux
 
-License:        LicenseRef-Fedora-Proprietary
+License:        LicenseRef-SoftMaker-Office-End-User-License-Agreement
 URL:            https://www.softmaker.de
 Source0:        %{repo}/rpm/%{parch}/RPMS/%{name}-%{pkgver}-%{pkgrel}.%{parch}.rpm
 Source1:        %{repo}/linux-repo-public.key

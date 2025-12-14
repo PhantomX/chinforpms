@@ -30,7 +30,7 @@ Release:        12%{?dist}
 Summary:        Online backup, storage, access, sharing tool
 Epoch:          3
 
-License:        LicenseRef-Fedora-Proprietary
+License:        LicenseRef-SpiderOakONE-End-User-License-Agreement
 URL:            https://spideroak.com/
 Source0:        https://spideroak.com/release/spideroak/rpm_%{larch}#/%{pkgname1}.%{version}.%{pkgrel}.%{parch}.rpm
 

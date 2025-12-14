@@ -17,7 +17,7 @@ Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 
 # Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
-License:        LicenseRef-Fedora-SteamLicenseAgreement AND MIT
+License:        LicenseRef-Steam-License-Agreement AND MIT
 URL:            http://www.steampowered.com/
 ExclusiveArch:  i686
 
@@ -123,6 +123,16 @@ Recommends:     (gnome-shell-extension-appindicator if gnome-shell)
 Requires:       xdg-desktop-portal
 Recommends:     (xdg-desktop-portal-gtk if gnome-shell)
 Recommends:     (xdg-desktop-portal-kde if kwin)
+
+# Prevent log spam when these are not pulled in as dependencies of full desktops
+Recommends:     dbus-x11
+Recommends:     xdg-user-dirs
+
+# Allow using Steam Runtime Launch Options
+Recommends:     gobject-introspection
+
+# Automatic loading of the ntsync module
+Recommends:     ntsync-autoload
 
 Requires:       steam-devices = %{?epoch:%{epoch}:}%{version}-%{release}
 

@@ -13,7 +13,7 @@ Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
 # See LICENSE
-License:        LicenseRef-Fedora-Proprietary
+License:        LicenseRef-Zoom-End-User-License-Agreement
 URL:            https://www.zoom.us
 
 Source0:        https://zoom.us/client/latest/zoom_x86_64.rpm#/%{name}-%{version}.x86_64.rpm
