@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 60425c58c301872c512fa8f21d18ab1a0692930a
+%global commit d1171e41c001050904fc4cb6995de571c49d13d2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251109
+%global date 20251212
 %bcond snapshot 1
 
 # Enable Qt build
@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 b443902b1cdfee5a66b09fec20a94d2d2afaf2ec
+%global commit9 6755915f2bdf6c11c83b3e0e68c4623a39c0dabe
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -110,7 +110,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.1026
+Version:        1.19.3.1182
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1

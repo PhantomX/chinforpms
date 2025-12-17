@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit d9f913016cbbdc32ce43ac02f4e0ef6a8ffd1ae4
+%global commit c3db85c68e6c1724b239d6b538dd436c404613f6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251126
+%global date 20251213
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -70,7 +70,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
-%global commit14 f42423643ec9011c98cccc0bb790722bbbd3f30b
+%global commit14 d6b2a974608dec3b76fb1e36c189f22b9cf3650c
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
@@ -82,7 +82,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 066d4a63b2c714b20b0a8073a01fda7c5c6763f6
+%global commit17 008e03eac0ac1d5f85e16f5fcaefdda3fee75cb8
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Fusion
 
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.38.18404
+Version:        0.0.38.18510
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -145,7 +145,7 @@ Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortc
 Source13:       %{kg_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 %endif
 %if %{without hidapi}
-Source14:       %{vc_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
+Source14:       https://github.com/libusb/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %endif
 Source15:       https://github.com/wolfSSL/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{without yamlcpp}
@@ -173,7 +173,7 @@ Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/17733.patch#/%{name}-gh-pr17733.patch
+Patch0:         %{vc_url}/%{name}/pull/17866.patch#/%{name}-gh-pr17866.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch

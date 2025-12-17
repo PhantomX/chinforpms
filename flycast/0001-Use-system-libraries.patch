@@ -1,21 +1,21 @@
-From b1ac90fb3ae5bc0cb10eb79b49b2b8ec72d1dc08 Mon Sep 17 00:00:00 2001
+From f5e4ad15c285c8c50b2950b00aa4a6a74941fda5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 24 Dec 2021 00:54:39 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt              | 51 +++++++++++++++++++++++++++++++++++--
+ CMakeLists.txt              | 53 ++++++++++++++++++++++++++++++++++---
  core/archive/7zArchive.cpp  |  7 +++++
  core/archive/7zArchive.h    |  5 ++++
  core/archive/CMakeLists.txt |  6 ++++-
  core/archive/archive.cpp    |  4 +++
- 5 files changed, 70 insertions(+), 3 deletions(-)
+ 5 files changed, 71 insertions(+), 4 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 679350d..29bb89e 100644
+index fd5ab4c..fef7522 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -84,6 +84,8 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
+@@ -89,6 +89,8 @@ option(ENABLE_DC_PROFILER "Build with support for target machine (SH4) profiler"
  option(ENABLE_FC_PROFILER "Build with support for host app (Flycast) profiler" OFF)
  option(USE_DISCORD "Use Discord Presence API" OFF)
  option(USE_LIBCDIO "Use libcdio for CDROM access" OFF)
@@ -24,7 +24,7 @@ index 679350d..29bb89e 100644
  
  if(IOS AND NOT LIBRETRO)
  	set(USE_VULKAN OFF CACHE BOOL "Force vulkan off" FORCE)
-@@ -421,13 +423,26 @@ if(USE_OPENMP)
+@@ -412,13 +414,26 @@ if(USE_OPENMP)
  	endif()
  endif()
  
@@ -51,7 +51,16 @@ index 679350d..29bb89e 100644
  target_link_libraries(${PROJECT_NAME} PRIVATE glm::glm)
  
  if(USE_VULKAN)
-@@ -514,8 +529,6 @@ if(NOT LIBRETRO)
+@@ -463,7 +478,7 @@ if(NOT LIBRETRO)
+ 			if (WINDOWS_STORE)
+ 				# Use winrt implementation of the DreamPicoPort-API
+ 				option(DREAMPICOPORT_WITH_LIBUSB "Use libusb to access DreamPicoPort-API" OFF)
+-			elseif (CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
++			elseif ((CMAKE_SYSTEM_NAME STREQUAL "FreeBSD") OR (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
+ 				# A version of libusb is installed in FreeBSD
+ 				find_package(PkgConfig REQUIRED)
+    	 			pkg_check_modules(LIBUSB REQUIRED libusb-1.0)
+@@ -531,8 +546,6 @@ if(NOT LIBRETRO)
  	endif()
  endif()
  
@@ -60,7 +69,7 @@ index 679350d..29bb89e 100644
  if(NOT WITH_SYSTEM_ZLIB)
      option(ZLIB_BUILD_EXAMPLES "Enable Zlib Examples" OFF)
      add_subdirectory("core/deps/libchdr/deps/zlib-1.3.1" EXCLUDE_FROM_ALL)
-@@ -529,6 +542,7 @@ endif()
+@@ -546,6 +559,7 @@ endif()
  if(PKG_CONFIG_FOUND AND USE_HOST_LIBCHDR)
  	pkg_check_modules(LIBCHDR IMPORTED_TARGET libchdr)
  	target_link_libraries(${PROJECT_NAME} PRIVATE PkgConfig::LIBCHDR)
@@ -68,7 +77,7 @@ index 679350d..29bb89e 100644
  else()
  	option(ZSTD_BUILD_SHARED "BUILD SHARED LIBRARIES" OFF)
  	option(ZSTD_BUILD_PROGRAMS "BUILD PROGRAMS" OFF)
-@@ -815,8 +829,26 @@ target_sources(${PROJECT_NAME} PRIVATE
+@@ -832,8 +846,26 @@ target_sources(${PROJECT_NAME} PRIVATE
  		core/deps/picotcp/stack/pico_stack.c
  		core/deps/picotcp/stack/pico_tree.c)
  
@@ -95,7 +104,7 @@ index 679350d..29bb89e 100644
  add_subdirectory(core/deps/libelf)
  target_link_libraries(${PROJECT_NAME} PRIVATE elf)
  if(NOT LIBRETRO)
-@@ -1056,11 +1088,21 @@ if(USE_VULKAN)
+@@ -1069,11 +1101,21 @@ if(USE_VULKAN)
  		target_compile_definitions(${PROJECT_NAME} PUBLIC VK_USE_PLATFORM_METAL_EXT)
  	endif()
  
@@ -117,7 +126,7 @@ index 679350d..29bb89e 100644
  	target_link_libraries(${PROJECT_NAME} PRIVATE GPUOpen::VulkanMemoryAllocator)
  
  	if(ANDROID AND NOT LIBRETRO AND "arm64" IN_LIST ARCHITECTURE)
-@@ -1264,7 +1306,12 @@ if("arm64" IN_LIST ARCHITECTURE)
+@@ -1277,7 +1319,12 @@ if("arm64" IN_LIST ARCHITECTURE)
  	target_sources(${PROJECT_NAME} PRIVATE core/rec-ARM64/rec_arm64.cpp core/rec-ARM64/arm64_regalloc.h)
  endif()
  if("x86" IN_LIST ARCHITECTURE OR "x86_64" IN_LIST ARCHITECTURE)
@@ -215,5 +224,5 @@ index 53db47f..c475681 100644
  	{
  		Archive *sz_archive = new SzArchive();
 -- 
-2.51.1
+2.52.0
 

@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit bf2bd7efed41e9f3367a764c2d90fcaa9c38a1f9
+%global commit 37a9077304908196193b20d5f314dd86fe0578e1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251021
+%global date 20251212
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -50,6 +50,10 @@
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 xbyak
 
+%global commit10 0f6a902bc867cd3ba572ffdcdd778ab558fc2b79
+%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
+%global srcname10 DreamPicoPort-API
+
 # Enable system glslang
 %bcond glslang 1
 %bcond vma 1
@@ -75,7 +79,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.5.157
+Version:        2.5.220
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -117,6 +121,7 @@ Source8:        https://github.com/zaphoyd/%{srcname8}/archive/%{commit8}/%{srcn
 %if %{without xbyak}
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 %endif
+Source10:       https://github.com/OrangeFox86/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -154,6 +159,7 @@ BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcurl)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libudev)
+BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(lua)
@@ -180,6 +186,7 @@ Requires:       vulkan-loader%{?_isa} >= %{vk_ver}
 
 Provides:       bundled(breakpad) = 0~git%{shortcommit2}
 Provides:       bundled(chdpsr)
+Provides:       bundled(DreamPicoPort-API) = 0~git%{shortcommit10}
 Provides:       bundled(ggpo)
 Provides:       bundled(libelf) = %{libelf_ver}
 Provides:       bundled(libjuice) = 0~git%{shortcommit7}
@@ -228,6 +235,8 @@ tar -xf %{S:9} -C xbyak/ --strip-components 1
 sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../../CMakeLists.txt
 cp -p xbyak/COPYRIGHT LICENSE.xbyak
 %endif
+tar -xf %{S:10} -C DreamPicoPort-API/ --strip-components 1
+cp -p DreamPicoPort-API/LICENSE LICENSE.DreamPicoPort-API
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/LICENSE LICENSE.nowide

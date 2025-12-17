@@ -4,7 +4,7 @@
 
 // Some borrowed from https://github.com/arkenfox/user.js
 
-pref("chinfo.cfg.version", "20250812");
+pref("chinfo.cfg.version", "20251216");
 
 // etc
 pref("accessibility.force_disabled", 1);
@@ -97,7 +97,7 @@ pref("widget.use-xdg-desktop-portal.file-picker", 2);
 
 // Startup
 pref("browser.startup.page", 0);
-pref("browser.startup.homepage", "about:blank");
+pref("browser.startup.homepage", "chrome://browser/content/blanktab.html");
 pref("browser.newtabpage.enabled", false);
 pref("browser.newtab.preload", false);
 
@@ -105,6 +105,12 @@ pref("browser.newtab.preload", false);
 pref("browser.sessionhistory.max_entries", 10);
 pref("browser.urlbar.filter.javascript", true);
 pref("layout.css.visited_links_enabled", false);
+
+// ML engine
+pref("browser.ml.enable", false);
+pref("browser.ml.chat.enabled", false);
+pref("browser.ml.linkPreview.enabled", false);
+pref("browser.ml.linkPreview.optin", false);
 
 // Search
 pref("browser.search.openintab", true);
@@ -118,10 +124,12 @@ pref("browser.urlbar.userMadeSearchSuggestionsChoice", true);
 
 // urlbar suggestions
 pref("browser.urlbar.addons.featureGate", false);
+pref("browser.urlbar.amp.featureGate", false);
 pref("browser.urlbar.fakespot.featureGate", false);
 pref("browser.urlbar.mdn.featureGate", false);
 pref("browser.urlbar.pocket.featureGate", false);
 pref("browser.urlbar.weather.featureGate", false);
+pref("browser.urlbar.wikipedia.featureGate", false);
 pref("browser.urlbar.yelp.featureGate", false);
 
 // Enable Containers 
