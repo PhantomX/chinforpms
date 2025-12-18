@@ -17,7 +17,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        7.7.3851.61
+Version:        7.7.3851.66
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -131,11 +131,36 @@ for res in 16 24 32 48 64 128 256 ;do
     ${dir}/%{name}.png
 done
 
+rm -f %{name}.lang.temp
+for langpack in $(ls %{buildroot}%{_libdir}/%{name}/locales/*.pak); do
+  language_file=$(basename $langpack)
+  language=$(basename $language_file .pak | cut -d '_' -f 1 | sed -e 's/-/_/g')
+  case $language in
+    ca*|de*|es*|ja*|sr*)
+      language=$(echo $language | cut -d '_' -f 1)
+      ;;
+  esac
+  echo "%%lang($language) %{_libdir}/%{name}/locales/$language_file" >> %{name}.lang.temp
+done
+
+for lang_dir in $(ls %{buildroot}%{_libdir}/%{name}/resources/vivaldi/_locales/); do
+  language=$lang_dir
+  case $language in
+    ca*|de*|es*|ja*|sr*)
+      language=$(echo $language | cut -d '_' -f 1)
+      ;;
+  esac
+  echo "%%lang($language) %dir %{_libdir}/%{name}/resources/%{name}/_locales/$lang_dir" >> %{name}.lang.temp
+  echo "%%lang($language) %{_libdir}/%{name}/resources/%{name}/_locales/$lang_dir/messages.json" >> %{name}.lang.temp
+done
+grep -v -E 'en_US|lang\(en\)' %{name}.lang.temp > %{name}.lang
+
+
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
-%files
+%files -f %{name}.lang
 %license eula.txt
 %{_bindir}/%{name}
 %{_libdir}/%{name}/%{name}
@@ -148,9 +173,25 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/*.so
 %attr(4711,root,root) %{_libdir}/%{name}/%{name}-sandbox
 %dir %{_libdir}/%{name}/extensions
-%{_libdir}/%{name}/locales
+%dir %{_libdir}/%{name}/locales
+%{_libdir}/%{name}/locales/en-US*.pak
 %{_libdir}/%{name}/MEIPreload
-%{_libdir}/%{name}/resources
+%{_libdir}/%{name}/resources/%{name}/adblocker_resources
+%{_libdir}/%{name}/resources/%{name}/components
+%{_libdir}/%{name}/resources/%{name}/default-bookmarks
+%{_libdir}/%{name}/resources/%{name}/menus
+%{_libdir}/%{name}/resources/%{name}/resources
+%{_libdir}/%{name}/resources/%{name}/rss
+%{_libdir}/%{name}/resources/%{name}/style
+%{_libdir}/%{name}/resources/%{name}/user_files
+%{_libdir}/%{name}/resources/%{name}/*.js
+%{_libdir}/%{name}/resources/%{name}/*.json
+%{_libdir}/%{name}/resources/%{name}/*.html
+%dir %{_libdir}/%{name}/resources/%{name}/_locales
+%dir %{_libdir}/%{name}/resources/%{name}/_locales/en
+%{_libdir}/%{name}/resources/%{name}/_locales/en/messages.json
+%dir %{_libdir}/%{name}/resources/%{name}/_locales/en_US
+%{_libdir}/%{name}/resources/%{name}/_locales/en_US/messages.json
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 %{_datadir}/xfce4/helpers/%{name}.desktop
@@ -158,6 +199,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Wed Dec 17 2025 - 7.7.3851.66-1
+- 7.7.3851.66
+- Package language fixes
+
 * Wed Dec 10 2025 - 7.7.3851.61-1
 - 7.7.3851.61
 

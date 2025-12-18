@@ -102,15 +102,36 @@ for res in 16 24 32 48 64 96 128 256 ;do
     ${dir}/
 done
 
+rm -f %{name}.lang.temp
+for langpack in $(ls %{buildroot}%{_libdir}/%{name}/locales/*.pak); do
+  language_file=$(basename $langpack)
+  language=$(basename $language_file .pak | cut -d '_' -f 1 | sed -e 's/-/_/g')
+  case $language in
+    ca*|de*|es*|ja*|sr*)
+      language=$(echo $language | cut -d '_' -f 1)
+      ;;
+  esac
+  echo "%%lang($language) %{_libdir}/%{name}/locales/$language_file" >> %{name}.lang.temp
+done
+grep -v 'en_US' %{name}.lang.temp > %{name}.lang
+
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
-%files
+%files -f %{name}.lang
 %license UNLICENSE
 %{_bindir}/%{name}
-%{_libdir}/%{name}/
+%{_libdir}/%{name}/%{real_name}
+%{_libdir}/%{name}/kindlegen
+%{_libdir}/%{name}/*.bin
+%{_libdir}/%{name}/*.dat
+%{_libdir}/%{name}/*.pak
+%{_libdir}/%{name}/*.so
+%dir %{_libdir}/%{name}/locales
+%{_libdir}/%{name}/locales/en-US*.pak
+%{_libdir}/%{name}/resources
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/*.png
 
