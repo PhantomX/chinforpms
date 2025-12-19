@@ -1,47 +1,46 @@
- Makefile                                           |  38 +-
+ Makefile                                           |  38 ++++++-
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
- arch/arm64/kernel/setup.c                          |  27 +
- .../tools/gcc-check-fpatchable-function-entry.sh   |   1 -
- arch/powerpc/tools/gcc-check-mprofile-kernel.sh    |   1 -
+ arch/arm64/kernel/setup.c                          |  27 +++++
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
+ arch/x86/kernel/setup.c                            |  22 ++--
  crypto/sig.c                                       |   3 +-
- crypto/testmgr.c                                   |   6 +-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ crypto/testmgr.c                                   |   2 +-
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++------
  drivers/firmware/efi/libstub/fdt.c                 |   5 +
- drivers/firmware/efi/libstub/secureboot.c          |  14 +-
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
- drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ drivers/firmware/efi/libstub/secureboot.c          |  14 ++-
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/hid/hid-rmi.c                              |  66 -----------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/usb/core/hub.c                             |   7 ++
+ include/linux/efi.h                                |  22 ++--
  include/linux/rmi.h                                |   1 +
- include/linux/security.h                           |   9 +
+ include/linux/security.h                           |   9 ++
  kernel/module/signing.c                            |   9 +-
  scripts/Makefile.lib                               |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
- security/lockdown/lockdown.c                       |  11 +
+ security/lockdown/Kconfig                          |  13 +++
+ security/lockdown/lockdown.c                       |  11 ++
  tools/lib/bpf/Makefile                             |   1 +
  tools/testing/selftests/bpf/Makefile               |   2 +-
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 --
- 83 files changed, 2814 insertions(+), 245 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 ------
+ 43 files changed, 550 insertions(+), 216 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index d208066bcbb6..9cd0cbf1225a 100644
+index c2b5cfd2fce0..2775fe00ddfc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -355,6 +355,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -71,6 +70,21 @@ index d208066bcbb6..9cd0cbf1225a 100644
  # KERNELRELEASE can change from a few different places, meaning version.h
  # needs to be updated, so this check is forced on all builds
  
+@@ -1328,7 +1341,13 @@ define filechk_version.h
+ 	((c) > 255 ? 255 : (c)))';                                       \
+ 	echo \#define LINUX_VERSION_MAJOR $(VERSION);                    \
+ 	echo \#define LINUX_VERSION_PATCHLEVEL $(PATCHLEVEL);            \
+-	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL)
++	echo \#define LINUX_VERSION_SUBLEVEL $(SUBLEVEL);                \
++	echo '#define RHEL_MAJOR $(RHEL_MAJOR)'; \
++	echo '#define RHEL_MINOR $(RHEL_MINOR)'; \
++	echo '#define RHEL_RELEASE_VERSION(a,b) (((a) << 8) + (b))'; \
++	echo '#define RHEL_RELEASE_CODE \
++		$(shell expr $(RHEL_MAJOR) \* 256 + $(RHEL_MINOR))'; \
++	echo '#define RHEL_RELEASE "$(RHEL_RELEASE)"'
+ endef
+ 
+ $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
 @@ -1931,6 +1950,23 @@ endif
  
  ifdef CONFIG_MODULES
@@ -176,30 +190,6 @@ index 23c05dc7a8f2..d7b7b2f39e16 100644
  	}
  
  	arm64_memblock_init();
-diff --git a/arch/powerpc/tools/gcc-check-fpatchable-function-entry.sh b/arch/powerpc/tools/gcc-check-fpatchable-function-entry.sh
-index 06706903503b..baed467a016b 100755
---- a/arch/powerpc/tools/gcc-check-fpatchable-function-entry.sh
-+++ b/arch/powerpc/tools/gcc-check-fpatchable-function-entry.sh
-@@ -2,7 +2,6 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- set -e
--set -o pipefail
- 
- # To debug, uncomment the following line
- # set -x
-diff --git a/arch/powerpc/tools/gcc-check-mprofile-kernel.sh b/arch/powerpc/tools/gcc-check-mprofile-kernel.sh
-index 73e331e7660e..6193b0ed0c77 100755
---- a/arch/powerpc/tools/gcc-check-mprofile-kernel.sh
-+++ b/arch/powerpc/tools/gcc-check-mprofile-kernel.sh
-@@ -2,7 +2,6 @@
- # SPDX-License-Identifier: GPL-2.0
- 
- set -e
--set -o pipefail
- 
- # To debug, uncomment the following line
- # set -x
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
 index b0d00032479d..afb9544fb007 100644
 --- a/arch/s390/include/asm/ipl.h
@@ -247,6 +237,53 @@ index 892fce2b7549..eefbda45ac47 100644
  	/* Have one command line that is parsed and saved in /proc/cmdline */
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 1b2edd07a3e1..1c434c6900eb 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -21,6 +21,7 @@
+ #include <linux/pci.h>
+ #include <linux/random.h>
+ #include <linux/root_dev.h>
++#include <linux/security.h>
+ #include <linux/static_call.h>
+ #include <linux/swiotlb.h>
+ #include <linux/tboot.h>
+@@ -991,6 +992,13 @@ void __init setup_arch(char **cmdline_p)
+ 	if (efi_enabled(EFI_BOOT))
+ 		efi_init();
+ 
++	efi_set_secure_boot(boot_params.secure_boot);
++
++#ifdef CONFIG_LOCK_DOWN_IN_EFI_SECURE_BOOT
++	if (efi_enabled(EFI_SECURE_BOOT))
++		security_lock_kernel_down("EFI Secure Boot mode", LOCKDOWN_INTEGRITY_MAX);
++#endif
++
+ 	reserve_ibft_region();
+ 	x86_init.resources.dmi_setup();
+ 
+@@ -1154,19 +1162,7 @@ void __init setup_arch(char **cmdline_p)
+ 	/* Allocate bigger log buffer */
+ 	setup_log_buf(1);
+ 
+-	if (efi_enabled(EFI_BOOT)) {
+-		switch (boot_params.secure_boot) {
+-		case efi_secureboot_mode_disabled:
+-			pr_info("Secure boot disabled\n");
+-			break;
+-		case efi_secureboot_mode_enabled:
+-			pr_info("Secure boot enabled\n");
+-			break;
+-		default:
+-			pr_info("Secure boot could not be determined\n");
+-			break;
+-		}
+-	}
++	efi_set_secure_boot(boot_params.secure_boot);
+ 
+ 	reserve_initrd();
+ 
 diff --git a/crypto/sig.c b/crypto/sig.c
 index beba745b6405..fd41f6d3abf9 100644
 --- a/crypto/sig.c
@@ -262,18 +299,9 @@ index beba745b6405..fd41f6d3abf9 100644
  		alg->verify = sig_default_verify;
  	if (!alg->set_priv_key)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 6a490aaa71b9..5c050f0975e5 100644
+index 6a490aaa71b9..a654d7096bfa 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -3934,7 +3934,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
- 	 * Don't invoke decrypt test which requires a private key
- 	 * for vectors with only a public key.
- 	 */
--	if (vecs->public_key_vec) {
-+	if (1 || vecs->public_key_vec) {
- 		err = 0;
- 		goto free_all;
- 	}
 @@ -4070,7 +4070,7 @@ static int test_sig_one(struct crypto_sig *tfm, const struct sig_testvec *vecs)
  	 * Don't invoke sign test (which requires a private key)
  	 * for vectors with only a public key.
@@ -283,21 +311,6 @@ index 6a490aaa71b9..5c050f0975e5 100644
  		return 0;
  
  	sig_size = crypto_sig_maxsize(tfm);
-@@ -4928,14 +4928,12 @@ static const struct alg_test_desc alg_test_descs[] = {
- 	}, {
- 		.alg = "ecdh-nist-p256",
- 		.test = alg_test_kpp,
--		.fips_allowed = 1,
- 		.suite = {
- 			.kpp = __VECS(ecdh_p256_tv_template)
- 		}
- 	}, {
- 		.alg = "ecdh-nist-p384",
- 		.test = alg_test_kpp,
--		.fips_allowed = 1,
- 		.suite = {
- 			.kpp = __VECS(ecdh_p384_tv_template)
- 		}
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
 index 20d757687e3d..90a13f20f052 100644
 --- a/drivers/acpi/apei/hest.c
@@ -826,7 +839,7 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.ops = &hid_rmi_ops;
  
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 020f070bf17d..c4bfe2c080cf 100644
+index fdda924a2c71..6483f1078866 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -12,6 +12,7 @@
@@ -837,7 +850,7 @@ index 020f070bf17d..c4bfe2c080cf 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2448,6 +2449,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2483,6 +2484,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
  
@@ -854,7 +867,7 @@ index 020f070bf17d..c4bfe2c080cf 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
  
  static struct amba_driver etm4x_amba_driver = {
-@@ -2522,6 +2533,11 @@ static int __init etm4x_init(void)
+@@ -2557,6 +2568,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
  
@@ -866,7 +879,7 @@ index 020f070bf17d..c4bfe2c080cf 100644
  	ret = etm4_pm_setup();
  
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2548,6 +2564,9 @@ static int __init etm4x_init(void)
+@@ -2583,6 +2599,9 @@ static int __init etm4x_init(void)
  
  static void __exit etm4x_exit(void)
  {
@@ -1393,7 +1406,7 @@ index 168140f8e646..5e24714c22e7 100644
  # flags specific for shared library
  SHLIB_FLAGS := -DSHARED -fPIC
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index f00587d4ede6..fa62443daade 100644
+index e59b2bbf8d92..ac86a0947f60 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
 @@ -503,7 +503,7 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\

@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.18.1
+%define specrpmversion 6.18.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1251,14 +1251,13 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1012: %{opensuse_url}/perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch#/openSUSE-perf-hwmon_pmu-Fix-uninitialized-variable-warning.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/be12070350a151ffb964c562e58983b16962df6d.patch#/zen-v%{patchversion}-sauce-be12070.patch
-Patch2002: %{zen_url}/commit/69f73106b713eb0f9afe85b73d37dc439b69ca17.patch#/zen-v%{patchversion}-sauce-69f7310.patch
+Patch2001: %{zen_url}/commit/39225a3130e280dcb47ea12877e95eb869c64e33.patch#/zen-v%{patchversion}-sauce-39225a3.patch
+Patch2002: %{zen_url}/commit/2a1c1620255001ad54205564e6104b7f3d79f058.patch#/zen-v%{patchversion}-sauce-2a1c162.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/5e09fcd39d014b89a67ecfb19730deb53115cf24.patch#/pf-cb-5e09fcd.patch
@@ -1272,6 +1271,7 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 %if 0%{?post_factum}
 # archlinux
 Patch6950:  %{pf_url}/1cac491b0bc86faa30e08db85cce64ecf9a1ee78.patch#/pf-cb-1cac491.patch
+Patch6951:  %{pf_url}/51932124d219371d25d9d85dceadb3a73ace7d35.patch#/pf-cb-5193212.patch
 # kbuild (7000)
 # bbr3
 Patch7050:  %{pf_url}/a05ea4b4cef3e2d59b462639db637573a2f9660c.patch#/pf-cb-a05ea4b.patch
@@ -1311,6 +1311,9 @@ Patch7417:  %{pf_url}/f1e72c107233f3864cc40291358cb85b0173705e.patch#/pf-cb-f1e7
 Patch7418:  %{pf_url}/836638b51bc23099e3297cd3f725576fcb2bc9f5.patch#/pf-cb-836638b.patch
 Patch7419:  %{pf_url}/dc77f600d617744d4264e8d00f016690d9aa7d63.patch#/pf-cb-dc77f60.patch
 Patch7420:  %{pf_url}/315194ab11988df478199cae20111d41bf7a7bd5.patch#/pf-cb-315194a.patch
+Patch7421:  %{pf_url}/4562a3bad81891ccfa4729bec736cde98fc3d929.patch#/pf-cb-4562a3b.patch
+Patch7422:  %{pf_url}/28eef0c4059fb7440c6a169862b8e5b7724946a4.patch#/pf-cb-28eef0c.patch
+Patch7423:  %{pf_url}/3def8430e7ea85b3ec595f93c713d4a741aca3e2.patch#/pf-cb-3def843.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2173,6 +2176,7 @@ ApplyOptionalPatch %{PATCH999999}
 %if 0%{?post_factum}
 # archlinux
 ApplyPatch %{PATCH6950}
+ApplyPatch %{PATCH6951}
 # kbuild
 # bbr3
 ApplyPatch %{PATCH7050}
@@ -2212,12 +2216,14 @@ ApplyPatch %{PATCH7417}
 ApplyPatch %{PATCH7418}
 ApplyPatch %{PATCH7419}
 ApplyPatch %{PATCH7420}
+ApplyPatch %{PATCH7421}
+ApplyPatch %{PATCH7422}
+ApplyPatch %{PATCH7423}
 %endif
 
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
-ApplyPatch %{PATCH1012}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
@@ -4748,6 +4754,9 @@ fi\
 #
 #
 %changelog
+* Thu Dec 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.18.2-500.chinfo
+- 6.18.2
+
 * Fri Dec 12 2025 Phantom X <megaphantomx at hotmail dot com> - 6.18.1-500.chinfo
 - 6.18.1
 
