@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.0-rc2
+%global wine_stagingver 11.0-rc3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.0~rc2
+Version:        11.0~rc3
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -206,6 +206,8 @@ Patch707:        %{whq_murl}/-/merge_requests/9710.patch#/%{name}-whq-mr9710.pat
 Patch708:        %{whq_murl}/-/merge_requests/9722.patch#/%{name}-whq-mr9722.patch
 Patch709:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
 Patch710:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
+Patch711:        %{whq_murl}/-/merge_requests/9807.patch#/%{name}-whq-mr9807.patch
+Patch712:        %{whq_murl}/-/merge_requests/9808.patch#/%{name}-whq-mr9808.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -802,6 +804,8 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 708 -p1
 %patch -P 709 -p1
 %patch -P 710 -p1
+%patch -P 711 -p1
+%patch -P 712 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2488,6 +2492,9 @@ fi
 
 
 %changelog
+* Sat Dec 20 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc3-100
+- 11.0-rc3
+
 * Sat Dec 13 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc2-100
 - 11.0-rc2
 
