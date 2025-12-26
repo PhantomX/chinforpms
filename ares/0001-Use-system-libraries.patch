@@ -1,14 +1,14 @@
-From 4d68c3d7cb878aa0a0ae6bf177cb18b7f9af266b Mon Sep 17 00:00:00 2001
+From cdf02d46fef05b1d4d65b881e7cad69428de557c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 5 Feb 2025 20:31:44 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- thirdparty/CMakeLists.txt | 25 ++++++++++++++++---------
- 1 file changed, 16 insertions(+), 9 deletions(-)
+ thirdparty/CMakeLists.txt | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/thirdparty/CMakeLists.txt b/thirdparty/CMakeLists.txt
-index 156f348..da581f0 100644
+index dd4c6fe..a82008d 100644
 --- a/thirdparty/CMakeLists.txt
 +++ b/thirdparty/CMakeLists.txt
 @@ -7,6 +7,14 @@ target_compile_options(sljit PRIVATE $<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,
@@ -16,7 +16,7 @@ index 156f348..da581f0 100644
  
  if(ARES_ENABLE_CHD)
 +  find_package(PkgConfig QUIET)
-+  
++
 +  pkg_search_module(libchdr IMPORTED_TARGET libchdr)
 +  if(libchdr_FOUND)
 +    message(STATUS "Using the system libchdr")
@@ -40,7 +40,7 @@ index 156f348..da581f0 100644
  endif()
  
  add_library(
-@@ -111,12 +126,4 @@ add_library(
+@@ -107,12 +122,4 @@ add_library(qon STATIC qon/qon.cpp)
  set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
@@ -52,9 +52,7 @@ index 156f348..da581f0 100644
 -  set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
 -  set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
 -endif()
--set_target_properties(qon PROPERTIES FOLDER thirdparty PREFIX "")
-\ No newline at end of file
-+set_target_properties(qon PROPERTIES FOLDER thirdparty PREFIX "")
+ set_target_properties(qon PROPERTIES FOLDER thirdparty PREFIX "")
 -- 
-2.51.0
+2.52.0
 

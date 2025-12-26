@@ -1,4 +1,4 @@
-From f1d34ef3dbf1e81879df8ede0701f0d3b2928d2d Mon Sep 17 00:00:00 2001
+From dd3ac7cf9f7982a3bcc0b7961de498487aca3d8e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 25 Dec 2023 12:00:38 -0300
 Subject: [PATCH] CHD: fix for patched libchdr
@@ -11,10 +11,10 @@ Subject: [PATCH] CHD: fix for patched libchdr
  4 files changed, 25 insertions(+), 24 deletions(-)
 
 diff --git a/nall/nall/cmake/sources.cmake b/nall/nall/cmake/sources.cmake
-index ff6f155..10075aa 100644
+index f3f2160..5148fd3 100644
 --- a/nall/nall/cmake/sources.cmake
 +++ b/nall/nall/cmake/sources.cmake
-@@ -23,9 +23,11 @@ target_sources(
+@@ -20,9 +20,11 @@ target_sources(
      dl.hpp
      endian.hpp
      file-buffer.hpp
@@ -24,10 +24,10 @@ index ff6f155..10075aa 100644
      file.hpp
 +    file-chd.hpp
      float-env.hpp
-     function.hpp
      galois-field.hpp
+     hashset.hpp
 diff --git a/nall/nall/decode/chd.hpp b/nall/nall/decode/chd.hpp
-index 2419573..c24e7fa 100644
+index 9a727f4..6500f4b 100644
 --- a/nall/nall/decode/chd.hpp
 +++ b/nall/nall/decode/chd.hpp
 @@ -1,6 +1,6 @@
@@ -37,17 +37,17 @@ index 2419573..c24e7fa 100644
 +#include <nall/file-chd.hpp>
  #include <nall/maybe.hpp>
  #include <nall/string.hpp>
- #include <libchdr/chd.h>
-@@ -34,7 +34,7 @@ struct CHD {
+ #if defined(ARES_ENABLE_CHD)
+@@ -36,7 +36,7 @@ struct CHD {
  
-   vector<Track> tracks;
+   std::vector<Track> tracks;
  private:
 -  file_buffer fp;
 +  chd_patch_file_buffer fp;
    chd_file* chd = nullptr;
    static constexpr int chd_sector_size = 2352 + 96;
    size_t chd_hunk_size;
-@@ -49,7 +49,7 @@ inline CHD::~CHD() {
+@@ -51,7 +51,7 @@ inline CHD::~CHD() {
  }
  
  inline auto CHD::load(const string& location) -> bool {
@@ -57,7 +57,7 @@ index 2419573..c24e7fa 100644
      print("CHD: Failed to open ", location, "\n");
      return false;
 diff --git a/nall/nall/file-buffer-chd.hpp b/nall/nall/file-buffer-chd.hpp
-index eac9570..4abb621 100644
+index e87b99b..65987c6 100644
 --- a/nall/nall/file-buffer-chd.hpp
 +++ b/nall/nall/file-buffer-chd.hpp
 @@ -16,24 +16,24 @@ namespace nall {
@@ -103,14 +103,15 @@ index eac9570..4abb621 100644
    }
  
 diff --git a/nall/nall/file-chd.hpp b/nall/nall/file-chd.hpp
-index 91be160..704c16d 100644
+index 17c5ed3..af73e10 100644
 --- a/nall/nall/file-chd.hpp
 +++ b/nall/nall/file-chd.hpp
-@@ -1,23 +1,23 @@
+@@ -1,24 +1,24 @@
  #pragma once
  
 -#include <nall/file-buffer.hpp>
 +#include <nall/file-buffer-chd.hpp>
+ #include <span>
  
  namespace nall {
  
@@ -137,25 +138,25 @@ index 91be160..704c16d 100644
          for(u64 n : range(reader.size())) writer.write(reader.read());
          return true;
        }
-@@ -73,7 +73,7 @@ struct file : inode {
+@@ -74,7 +74,7 @@ struct file : inode {
  
-   static auto read(const string& filename) -> vector<u8> {
-     vector<u8> memory;
+   static auto read(const string& filename) -> std::vector<u8> {
+     std::vector<u8> memory;
 -    if(auto fp = file::open(filename, mode::read)) {
 +    if(auto fp = chd_patch_file::open(filename, mode::read)) {
        memory.resize(fp.size());
-       fp.read(memory);
+       fp.read({memory.data(), memory.size()});
      }
-@@ -81,18 +81,18 @@ struct file : inode {
+@@ -82,18 +82,18 @@ struct file : inode {
    }
  
-   static auto read(const string& filename, array_span<u8> memory) -> bool {
+   static auto read(const string& filename, std::span<u8> memory) -> bool {
 -    if(auto fp = file::open(filename, mode::read)) return fp.read(memory), true;
 +    if(auto fp = chd_patch_file::open(filename, mode::read)) return fp.read(memory), true;
      return false;
    }
  
-   static auto write(const string& filename, array_view<u8> memory) -> bool {
+   static auto write(const string& filename, std::span<const u8> memory) -> bool {
 -    if(auto fp = file::open(filename, mode::write)) return fp.write(memory), true;
 +    if(auto fp = chd_patch_file::open(filename, mode::write)) return fp.write(memory), true;
      return false;
@@ -169,5 +170,5 @@ index 91be160..704c16d 100644
    }
  
 -- 
-2.48.1
+2.52.0
 

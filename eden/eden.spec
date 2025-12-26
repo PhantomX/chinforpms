@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 363d8610113e83e2eec972b98c62112ed639787c
+%global commit 3413fbd9da657a9b92398256ffe3bf3b4ac005ee
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251213
+%global date 20251221
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -110,8 +110,8 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.4.28093
-Release:        0.1%{?dist}
+Version:        0.0.4.28115
+Release:        1%{?dist}
 Summary:        A NX Emulator
 
 License: %{shrink:
@@ -531,6 +531,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Dec 22 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.28115-1.20251221git3413fbd
+- 0.0.4
+
 * Wed Nov 26 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.28044-0.1.20251125git46239da
 - 0.0.4-rc3
 

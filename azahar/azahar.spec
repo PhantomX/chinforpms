@@ -13,12 +13,12 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 67f6735f02055c3ef7c524b3df364b821b061d8a
+%global commit 275d818cd4f064bb981edcec7b4a4a9f6b4d2280
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251021
+%global date 20251222
 %bcond snapshot 1
 
-%bcond sse42 1
+%bcond sse42 0
 # Enable system boost
 %bcond boost 1
 # Enable system cryptopp
@@ -82,7 +82,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 ext-soundtouch
 
-%global commit8 01db7cdd00aabcce559a8dddce8798dabb71949b
+%global commit8 3d697a18df504f4677b65129d9ab14c7c597e3eb
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 teakra
 
@@ -156,7 +156,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.40
+Version:        2123~rc2.65
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -222,7 +222,6 @@ Source21:       https://github.com/herumi/%{srcname21}/archive/%{commit21}/%{src
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-dumping-ffmpeg-7-buld-fix.patch
-Patch500:       0001-glslang-gcc-15-build-fix.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -396,7 +395,6 @@ tar -xf %{S:12} -C externals/cpp-jwt --strip-components 1
 %endif
 %if %{without glslang}
 tar -xf %{S:13} -C externals/glslang --strip-components 1
-%patch -P 500 -p1
 %endif
 %if %{without sirit}
 tar -xf %{S:14} -C externals/sirit/sirit --strip-components 1

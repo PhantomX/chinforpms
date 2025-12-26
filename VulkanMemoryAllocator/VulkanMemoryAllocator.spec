@@ -1,7 +1,7 @@
-%global commit 871913da6a4b132b567d7b65c509600363c0041e
+%global commit e722e57c891a8fbe3cc73ca56c19dd76be242759
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 202406718
-%bcond snapshot 0
+%global date 20251130
+%bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -12,7 +12,7 @@
 Summary:        Easy to integrate Vulkan memory allocation library
 Name:           VulkanMemoryAllocator
 Version:        3.3.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 
 License:        MIT

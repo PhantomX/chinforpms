@@ -1,15 +1,15 @@
 # shared/static conditional, good luck with unsupported shared one
 %bcond static 0
-# Use bundled abseil-cpp
+# Use system abseil-cpp
 %bcond absl 1
 
 %if %{with static}
 %global debug_package %{nil}
 %endif
 
-%global commit0 ec53225952d5a2a398227644a2017358d2665fa8
+%global commit0 d888bc3f79b4aa80333d8903410fa439db5f6696
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20251114
+%global date 20251212
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -27,7 +27,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        147%{?dist}
+Release:        148%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD
@@ -46,8 +46,7 @@ Source1:        %{cvc_url}/libyuv/libyuv/+archive/%{shortcommit1}.tar.gz#/%{srcn
 Source3:        https://github.com/abseil/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
 
-Patch0:         https://github.com/desktop-app/tg_owt/pull/164.patch#/%{name}-gh-pr164.patch
-Patch1000:      https://github.com/desktop-app/tg_owt/pull/164/
+Patch1000:      0001-fix-build-with-bundled-absl.patch
 
 %if %{with absl}
 BuildRequires:  cmake(absl) >= 20220623
@@ -205,7 +204,6 @@ sed -e '/libabsl.cmake/d' -i CMakeLists.txt
 %patch -P 1000 -p1
 tar -xf %{S:3} -C src/third_party/abseil-cpp --strip-components 1
 cp -f -p src/third_party/abseil-cpp/LICENSE legal/LICENSE.abseil-cpp
-cp -f -p src/third_party/abseil-cpp/README.chromium legal/README.abseil-cpp
 %endif
 cp -f -p src/third_party/pffft/LICENSE legal/LICENSE.pffft
 cp -f -p src/third_party/pffft/README.chromium legal/README.pffft

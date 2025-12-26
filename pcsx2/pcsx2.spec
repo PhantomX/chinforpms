@@ -52,14 +52,14 @@
 %global imgui_ver 1.92.5
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.10.0
-%global rcheevos_ver 12.1.0
+%global rcheevos_ver 12.2.0
 %global simpleini_ver 4.25
 %global soundtouch_ver 2.3.3
 %global xxhash_ver 0.8.1
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.5.385
+Version:        2.5.400
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 

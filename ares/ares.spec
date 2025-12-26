@@ -14,11 +14,11 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global rashader_ver 0.6.3
+%global rashader_ver 0.9.2
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        146
+Version:        147
 Release:        1%{?dist}
 Summary:        Multi-system emulator
 
@@ -89,6 +89,8 @@ cp -a nall/nall/file.hpp nall/nall/file-chd.hpp
 cp -a nall/nall/file-buffer.hpp nall/nall/file-buffer-chd.hpp
 %patch -P 500 -p1
 
+sed -e '/\.github/d' -i CMakeLists.txt
+
 sed -e 's|/usr/lib /usr/local/lib|%{_libdir}|g' -i cmake/finders/*.cmake
 
 sed -e "/handle/s|/usr/local/lib|%{_libdir}|g" -i nall/nall/dl.hpp
@@ -108,7 +110,6 @@ sed -e 's|ARES_ENABLE_LIBRASHADER|ARES_BUNDLE_SHADERS|' -i desktop-ui/CMakeLists
   -DARES_ENABLE_MINIMUM_CPU:BOOL=OFF \
   -DENABLE_IPO:BOOL=OFF \
   -DARES_SKIP_DEPS:BOOL=ON \
-  -DARES_ENABLE_USBHID:BOOL=OFF \
 %if %{without libao}
   -DARES_ENABLE_AO:BOOL=OFF \
 %endif
@@ -151,6 +152,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Dec 23 2025 Phantom X <megaphantomx at hotmail dot com> - 147-1
+- 147
+
 * Wed Aug 27 2025 Phantom X <megaphantomx at hotmail dot com> - 146-1
 - 146
 

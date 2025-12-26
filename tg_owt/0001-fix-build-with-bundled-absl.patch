@@ -12,9 +12,9 @@ index 22cdeb9..2796550 100644
 --- a/cmake/external.cmake
 +++ b/cmake/external.cmake
 @@ -98,7 +98,7 @@ endfunction()
- # * -DCMAKE_CXX_STANDARD=17 on Linux
- # * -DCMAKE_CXX_STANDARD=14 on macOS
- function(link_libabsl target_name)
+     if (${target_type} STREQUAL "INTERFACE_LIBRARY")
+         set(scope INTERFACE)
+     endif()
 -    if (TG_OWT_PACKAGED_BUILD)
 +    if (TG_OWT_PACKAGED_BUILD_DISABLED)
          find_package(absl)
