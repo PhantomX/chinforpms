@@ -3,6 +3,8 @@
 %global date 20251130
 %bcond snapshot 1
 
+BuildArch:      noarch
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
@@ -29,7 +31,6 @@ BuildRequires:  doxygen
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
 
-BuildArch:      noarch
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
 
