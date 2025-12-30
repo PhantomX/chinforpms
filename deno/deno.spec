@@ -7,7 +7,7 @@
 %global vc_id  02f6e49276bb4c03634af4aec4487a5a0a9dbebf
 
 Name:           deno
-Version:        2.5.6
+Version:        2.6.3
 Release:        1%{?dist}
 Summary:        A secure JavaScript and TypeScript runtime
 
@@ -63,6 +63,9 @@ install -pm0644 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
 
 
 %changelog
+* Sun Dec 28 2025 Phantom X <megaphantomx at hotmail dot com> - 2.6.3-1
+- 2.6.3
+
 * Wed Nov 12 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.6-1
 - 2.5.6
 

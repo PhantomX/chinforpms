@@ -444,7 +444,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.1.3
+Version:        10.2.0
 Release:        100%{?dist}
 Epoch:          2
 
@@ -467,6 +467,9 @@ License: %{shrink:
 }
 
 URL:            http://www.qemu.org/
+
+# https://fedoraproject.org/wiki/Changes/DropQEMU32bitHostBuilds
+ExcludeArch: %{ix86} %{arm}
 
 Source0:        %{dlurl}/%{name}-%{ver}.tar.xz
 Source1:        %{dlurl}/%{name}-%{ver}.tar.xz.sig
@@ -1431,6 +1434,7 @@ This package provides the QEMU system emulator for Loongson boards.
 %package system-loongarch64-core
 Summary: QEMU system emulator for LoongArch (LA64)
 Requires: %{name}-common = %{evr}
+Requires: edk2-loongarch64
 %description system-loongarch64-core
 This package provides the QEMU system emulator for Loongson boards.
 
@@ -1718,6 +1722,7 @@ mkdir -p %{static_builddir}
   --disable-modules                \\\
   --disable-module-upgrades        \\\
   --disable-mpath                  \\\
+  --disable-mshv                   \\\
   --disable-multiprocess           \\\
   --disable-netmap                 \\\
   --disable-nettle                 \\\
@@ -3288,11 +3293,13 @@ popd
 %endif
 %{_datadir}/%{name}/dtb/bamboo.dtb
 %{_datadir}/%{name}/dtb/canyonlands.dtb
+%{_datadir}/%{name}/dtb/pegasos1.dtb
+%{_datadir}/%{name}/dtb/pegasos2.dtb
 %{_datadir}/%{name}/qemu_vga.ndrv
 %{_datadir}/%{name}/pnv-pnor.bin
 %{_datadir}/%{name}/skiboot.lid
 %{_datadir}/%{name}/u-boot.e500
-%{_datadir}/%{name}/u-boot-sam460-20100605.bin
+%{_datadir}/%{name}/u-boot-sam460.bin
 %{_datadir}/%{name}/vof*.bin
 %if %{have_memlock_limits}
 %{_sysconfdir}/security/limits.d/95-kvm-memlock.conf
@@ -3426,6 +3433,9 @@ popd
 
 
 %changelog
+* Sat Dec 27 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.2.0-100
+- 10.2.0
+
 * Sun Dec 07 2025 Phantom X <megaphantomx at hotmail dot com> - 2:10.1.3-100
 - 10.1.3
 

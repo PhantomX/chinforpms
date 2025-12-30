@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit d1171e41c001050904fc4cb6995de571c49d13d2
+%global commit ae856c5d45fa45557f242f6fdb56d458075ac536
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251212
+%global date 20251225
 %bcond snapshot 1
 
 # Enable Qt build
@@ -38,7 +38,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 654c7da2ccffc7fd147abbe809aad7ba9e50b0a4
+%global commit2 ee9265e96ae0b9175bc59aefd43d6e29ac35f3b7
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 6755915f2bdf6c11c83b3e0e68c4623a39c0dabe
+%global commit9 926e4608f8dca7989267c787bbefb3ab1c835ac5
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -110,7 +110,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.1182
+Version:        1.19.3.1213
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
