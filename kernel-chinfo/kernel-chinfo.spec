@@ -194,7 +194,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.18.2
+%define specrpmversion 6.18.3
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +223,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id d7c93ef8354904ef83c89b0a4072995b0186c13f
+%global opensuse_id c68e3426e0b2a1d150ad66242862075a7d4db450
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1294,26 +1294,17 @@ Patch7400:  %{pf_url}/59f4bb3ec556c5a8e89cbb7b74641c56c60ab341.patch#/pf-cb-59f4
 Patch7401:  %{pf_url}/162a111c67237ad8fcc2a904e48c2403031bdf39.patch#/pf-cb-162a111.patch
 Patch7402:  %{pf_url}/b146d1bfcf69822990b513b4e9a786b7c32f73ef.patch#/pf-cb-b146d1b.patch
 Patch7403:  %{pf_url}/22f03fc62e1132353b706fc471e1ee93cdb70383.patch#/pf-cb-22f03fc.patch
-Patch7404:  %{pf_url}/7f44e3754db0caec88ad30d5976ffa70d8b7a07b.patch#/pf-cb-7f44e37.patch
-Patch7405:  %{pf_url}/8f300b94b64966f8c376cbc61e171209ba1841f6.patch#/pf-cb-8f300b9.patch
-Patch7406:  %{pf_url}/adb0d5caf4423e547152ba820c80ca6665882c05.patch#/pf-cb-adb0d5c.patch
-Patch7407:  %{pf_url}/09f3322d05fab51e37deebccc4c679a3ead09f4b.patch#/pf-cb-09f3322.patch
-Patch7408:  %{pf_url}/23ae4a7fdb5e17f6e0a2387eb2fb05e1a6dafef0.patch#/pf-cb-23ae4a7.patch
-Patch7409:  %{pf_url}/0048165821d046f5b22367758f1217bef3fe5f4e.patch#/pf-cb-0048165.patch
-Patch7410:  %{pf_url}/7abc396880d16a2c752c89535f6a786ef1b2e728.patch#/pf-cb-7abc396.patch
-Patch7411:  %{pf_url}/585147cfa8e3a504819dc46a44ee17f629cd728d.patch#/pf-cb-585147c.patch
-Patch7412:  %{pf_url}/c2786e426b8023c75f3cfe75b13003a5ef03b29b.patch#/pf-cb-c2786e4.patch
-Patch7413:  %{pf_url}/5e092503687787a4fc23b0c79269a0b355cbf8dc.patch#/pf-cb-5e09250.patch
-Patch7414:  %{pf_url}/8b09f20f3f89daa22ec924347b2cc3311db85cc5.patch#/pf-cb-8b09f20.patch
-Patch7415:  %{pf_url}/26de3ee13bfa25cc17424b24c7d764f6b2d354f2.patch#/pf-cb-26de3ee.patch
-Patch7416:  %{pf_url}/31cc064917a34d662bf98fab96c2d597a165eb51.patch#/pf-cb-31cc064.patch
-Patch7417:  %{pf_url}/f1e72c107233f3864cc40291358cb85b0173705e.patch#/pf-cb-f1e72c1.patch
-Patch7418:  %{pf_url}/836638b51bc23099e3297cd3f725576fcb2bc9f5.patch#/pf-cb-836638b.patch
-Patch7419:  %{pf_url}/dc77f600d617744d4264e8d00f016690d9aa7d63.patch#/pf-cb-dc77f60.patch
-Patch7420:  %{pf_url}/315194ab11988df478199cae20111d41bf7a7bd5.patch#/pf-cb-315194a.patch
-Patch7421:  %{pf_url}/4562a3bad81891ccfa4729bec736cde98fc3d929.patch#/pf-cb-4562a3b.patch
-Patch7422:  %{pf_url}/28eef0c4059fb7440c6a169862b8e5b7724946a4.patch#/pf-cb-28eef0c.patch
-Patch7423:  %{pf_url}/3def8430e7ea85b3ec595f93c713d4a741aca3e2.patch#/pf-cb-3def843.patch
+Patch7404:  %{pf_url}/0048165821d046f5b22367758f1217bef3fe5f4e.patch#/pf-cb-0048165.patch
+Patch7405:  %{pf_url}/7abc396880d16a2c752c89535f6a786ef1b2e728.patch#/pf-cb-7abc396.patch
+Patch7406:  %{pf_url}/26de3ee13bfa25cc17424b24c7d764f6b2d354f2.patch#/pf-cb-26de3ee.patch
+Patch7407:  %{pf_url}/dc77f600d617744d4264e8d00f016690d9aa7d63.patch#/pf-cb-dc77f60.patch
+Patch7408:  %{pf_url}/3e54fe3ab92d0bc958aa103b0ec683d59d4a5bcc.patch#/pf-cb-3e54fe3.patch
+Patch7409:  %{pf_url}/7a3c8bf67553e716c1bd4781e5e42665a01c963a.patch#/pf-cb-7a3c8bf.patch
+Patch7410:  %{pf_url}/9a422b84d05f1c18167906de11f2989d0f7a58d2.patch#/pf-cb-9a422b8.patch
+Patch7411:  %{pf_url}/d7fe6ed9e8855d09f3d16ce029108bd7eeb3d9aa.patch#/pf-cb-d7fe6ed.patch
+Patch7412:  %{pf_url}/52ab241feb84815495a8595b696b374a06f4918f.patch#/pf-cb-52ab241.patch
+Patch7413:  %{pf_url}/314f981816c3dfd99560b343b8576da24a0dbd29.patch#/pf-cb-314f981.patch
+Patch7414:  %{pf_url}/b73da31e457bdfeda1919a6ea68b122834dcad1b.patch#/pf-cb-b73da31.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2210,15 +2201,6 @@ ApplyPatch %{PATCH7411}
 ApplyPatch %{PATCH7412}
 ApplyPatch %{PATCH7413}
 ApplyPatch %{PATCH7414}
-ApplyPatch %{PATCH7415}
-ApplyPatch %{PATCH7416}
-ApplyPatch %{PATCH7417}
-ApplyPatch %{PATCH7418}
-ApplyPatch %{PATCH7419}
-ApplyPatch %{PATCH7420}
-ApplyPatch %{PATCH7421}
-ApplyPatch %{PATCH7422}
-ApplyPatch %{PATCH7423}
 %endif
 
 # openSUSE
@@ -4754,6 +4736,9 @@ fi\
 #
 #
 %changelog
+* Sat Jan 03 2026 Phantom X <megaphantomx at hotmail dot com> - 6.18.3-500.chinfo
+- 6.18.3
+
 * Thu Dec 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.18.2-500.chinfo
 - 6.18.2
 

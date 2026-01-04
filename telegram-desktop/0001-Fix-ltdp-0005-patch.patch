@@ -1,14 +1,14 @@
-From 2b6f7847efb5f1c4ac019e46dccb969f5e2efc23 Mon Sep 17 00:00:00 2001
+From 41e4ca220edfcb8a7e6b8f009b4467833a789c46 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 25 Jul 2025 16:31:50 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ ltdp-0005-Option-to-disable-stories.patch | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..bcbfadc 100644
+index 665f5d3..85cd5aa 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
 @@ -23,8 +23,8 @@ index 0d9671f..f77cf4e 100644
@@ -35,7 +35,7 @@ index 665f5d3..bcbfadc 100644
  +	if (DisableStories.value()) {
  +		return;
  +	}
-@@ -61,13 +61,13 @@ index 4e6b0ce..b71076f 100644
+@@ -61,26 +61,26 @@ index 4e6b0ce..b71076f 100644
  --- a/Telegram/SourceFiles/data/data_stories.h
  +++ b/Telegram/SourceFiles/data/data_stories.h
  @@ -30,6 +30,8 @@ struct StoryIdDates;
@@ -51,7 +51,12 @@ index 665f5d3..bcbfadc 100644
   	std::vector<StoryId> pinnedToTop;
  diff --git a/Telegram/SourceFiles/settings/settings_experimental.cpp b/Telegram/SourceFiles/settings/settings_experimental.cpp
  index 983497e..db40ead 100644
-@@ -79,8 +79,8 @@ index 983497e..db40ead 100644
+ --- a/Telegram/SourceFiles/settings/settings_experimental.cpp
+ +++ b/Telegram/SourceFiles/settings/settings_experimental.cpp
+ @@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+- #include "core/application.h"
+  #include "core/launcher.h"
++ #include "core/sandbox.h"
   #include "chat_helpers/tabbed_panel.h"
  +#include "data/data_stories.h"
   #include "dialogs/dialogs_widget.h"
@@ -62,5 +67,5 @@ index 665f5d3..bcbfadc 100644
   				: rpl::producer<>()));
   	};
 -- 
-2.51.1
+2.52.0
 
