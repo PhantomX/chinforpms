@@ -1,7 +1,7 @@
-%global commit c823c3d99679be11f6814888a0f86c247f87cdf1
+%global commit 4164535eac54a2c5d561cd996c247e7a84644400
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251203
-%bcond snapshot 0
+%global date 20260106
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver ae474f79465f5df24da1c096863999069db18ded
+%global wine_stagingver 52bc59da118fa2b9584b5e54c416bbb055306e00
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,7 +84,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 84fd22aab1ff673d82924b90ffd140c34a0d0504
+%global tkg_id 8c54250246d1b28dc4d0e195ac145305284a7a9d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -125,7 +125,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.0~rc4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -206,7 +206,8 @@ Patch707:        %{whq_murl}/-/merge_requests/9710.patch#/%{name}-whq-mr9710.pat
 Patch708:        %{whq_murl}/-/merge_requests/9722.patch#/%{name}-whq-mr9722.patch
 Patch709:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
 Patch710:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
-Patch711:        %{whq_murl}/-/merge_requests/9823.patch#/%{name}-whq-mr9823.patch
+Patch711:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
+Patch712:        %{whq_murl}/-/merge_requests/9823.patch#/%{name}-whq-mr9823.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -804,6 +805,7 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 709 -p1
 %patch -P 710 -p1
 %patch -P 711 -p1
+%patch -P 712 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}

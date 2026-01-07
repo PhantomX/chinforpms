@@ -220,6 +220,7 @@ mgba
 move-to-next-monitor
 -mozilla-gnotifier
 -mozilla-keepassxc-browser
+mp3diags
 mp3val
 mpdnotify
 -mps-youtube

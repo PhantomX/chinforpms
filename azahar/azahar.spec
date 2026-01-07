@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 275d818cd4f064bb981edcec7b4a4a9f6b4d2280
+%global commit 4bdcf342b63e5adff8a1338a34d1ec3ec570b153
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251222
+%global date 20260103
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -50,11 +50,11 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 cryptopp
 
-%global commit3 278405bd71999ed3f3c77c5f78344a06fef798b9
+%global commit3 526227eebe1efff3fb14dbf494b9c5b44c2e9c1f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
-%global commit300 7b08d83418f628b800dfac1c9a16c3f59036fbad
+%global commit300 5fc4beaf331037649b10625736b41365defb4f50
 %global shortcommit300 %(c=%{commit300}; echo ${c:0:7})
 %global srcname300 mcl
 
@@ -156,7 +156,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.65
+Version:        2123~rc2.90
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator

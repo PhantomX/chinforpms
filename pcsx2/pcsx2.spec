@@ -59,7 +59,7 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.5.400
+Version:        2.6.0
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -469,6 +469,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jan 04 2026 Phantom X <megaphantomx at hotmail dot com> - 2.6.0-1
+- 2.6.0
+
 * Mon Jun 30 2025 Phantom X <megaphantomx at hotmail dot com> - 2.5.24-1
 - 2.5.24
 
