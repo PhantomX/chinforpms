@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 3413fbd9da657a9b92398256ffe3bf3b4ac005ee
+%global commit 8440c2074da7b4c901641dea317f570b256f2c03
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251221
+%global date 20260107
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -93,7 +93,7 @@
 %global glad_ver 0.1.29
 %global nxtzdb_ver 250725
 %global stbdxt_ver 1.12
-%global vkh_ver 1.3.246
+%global vkh_ver 1.4.335
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://git.eden-emu.dev/eden-emu
@@ -110,7 +110,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.0.4.28115
+Version:        0.1.0~rc1.28183
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -531,6 +531,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Jan 07 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.0~rc1.28183-1.20260107git8440c20
+- 0.1.0-rc1
+
 * Mon Dec 22 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.4.28115-1.20251221git3413fbd
 - 0.0.4
 

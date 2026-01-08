@@ -10,14 +10,17 @@
 
 %if 0%{?rhel}
 # Disable static library on RHEL
-%bcond static 0
+%bcond_with static
+# RHEL is Wayland-only, XWayland does not support XScrnSaver
+%bcond_with xscrnsaver
 %else
-%bcond static 1
+%bcond_without static
+%bcond_without xscrnsaver
 %endif
 
 
 Name:           SDL3
-Version:        3.2.28
+Version:        3.4.0
 Release:        100%{?dist}
 Summary:        Cross-platform multimedia library
 License:        Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)
@@ -33,7 +36,8 @@ BuildRequires:  git-core
 BuildRequires:  cmake
 BuildRequires:  make
 BuildRequires:  gcc
-BuildRequires:  gcc-c++
+# Technically, there are a few C++ files in SDL3, but none are used for the Linux build
+%dnl BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glu)
@@ -44,10 +48,12 @@ BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
-# While SDL3 supports this, Xwayland does not expose XScrnSaver.
-# BuildRequires:  pkgconfig(xscrnsaver)
+%if %{with xscrnsaver}
+BuildRequires:  pkgconfig(xscrnsaver)
+%endif
 BuildRequires:  pkgconfig(xinerama)
 BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(systemd)
 # For building man pages
 BuildRequires:  perl-interpreter
@@ -58,6 +64,7 @@ BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(jack)
 # PipeWire
 BuildRequires:  pkgconfig(libpipewire-0.3)
+BuildRequires:  pipewire-jack-audio-connection-kit-devel
 # D-Bus
 BuildRequires:  pkgconfig(dbus-1)
 # IBus
@@ -75,6 +82,7 @@ BuildRequires:  vulkan-devel
 # KMS
 BuildRequires:  pkgconfig(gbm)
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(xtst)
 
 # Ensure libdecor is pulled in when libwayland-client is (rhbz#1992804)
 Requires:       (libdecor-%{libdecor_majver}.so.%{libdecor_majver}%{libsymbolsuffix} if libwayland-client)
@@ -88,7 +96,7 @@ to provide fast access to the graphics frame buffer and audio device.
 
 %package devel
 Summary:        Files needed to develop Simple DirectMedia Layer applications
-Requires:       %{name}%{?_isa} = %{version}-%{release}
+Requires:       %{name}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 # Add deps required to compile SDL apps
 ## For SDL_opengl.h
 Requires:       pkgconfig(gl)
@@ -98,7 +106,7 @@ Requires:       pkgconfig(x11)
 Requires:       pkgconfig(xproto)
 %if ! %{with static}
 # Remove any leftover -static subpackages
-Obsoletes:      %{name}-static < %{version}-%{release}
+Obsoletes:      %{name}-static < %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 
 %description devel
@@ -111,7 +119,7 @@ developing SDL applications.
 %package static
 Summary:        Static libraries for SDL3
 # Needed to keep CMake happy
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Requires:       %{name}-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description static
 Static libraries for SDL3.
@@ -120,7 +128,7 @@ Static libraries for SDL3.
 %package test
 Summary:        Testing libraries for SDL3
 # Needed to keep CMake happy
-Requires:       %{name}-devel%{?_isa} = %{version}-%{release}
+Requires:       %{name}-devel%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description test
 Testing libraries for SDL3.
@@ -137,22 +145,13 @@ export LDFLAGS="%{shrink:%{build_ldflags}}"
 
 %cmake \
     -DSDL_INSTALL_DOCS=ON \
-    -DSDL_DLOPEN=ON \
-    -DSDL_VIDEO_KMSDRM=ON \
-    -DSDL_ARTS=OFF \
-    -DSDL_ESD=OFF \
-    -DSDL_NAS=OFF \
-    -DSDL_PULSEAUDIO_SHARED=ON \
-    -DSDL_JACK_SHARED=ON \
-    -DSDL_PIPEWIRE_SHARED=ON \
-    -DSDL_ALSA=ON \
-    -DSDL_VIDEO_WAYLAND=ON \
-    -DSDL_LIBDECOR_SHARED=ON \
-    -DSDL_VIDEO_VULKAN=ON \
+    -DSDL_DEPS_SHARED=ON \
     -DSDL_SSE3=OFF \
     -DSDL_RPATH=OFF \
+    -DSDL_VENDOR_INFO="%{?dist_vendor} %{version}-%{release}" \
     %{?with_static:-DSDL_STATIC=ON} \
-    %{?with_static:-DSDL_STATIC_PIC=ON} \
+    %{?with_static:-DCMAKE_POSITION_INDEPENDENT_CODE=ON} \
+    %{!?with_xscrnsaver:-DSDL_X11_XSCRNSAVER=OFF} \
 %ifarch ppc64le
     -DSDL_ALTIVEC=OFF \
 %endif
@@ -200,6 +199,10 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_includedir}/SDL3/SDL_revision.h
 
 
 %changelog
+* Thu Jan 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3.4.0-100
+- 3.4.0
+- Rawhide sync
+
 * Fri Dec 05 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.28-100
 - 3.2.28
 

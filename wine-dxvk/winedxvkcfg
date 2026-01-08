@@ -26,7 +26,7 @@
 
 set -e
 
-ver=20250928
+ver=20270107
 
 name="DXVK"
 pkgname="wine-dxvk"
@@ -49,7 +49,11 @@ overrideskey="HKCU\\Software\\Wine\\DllOverrides"
 overrideskeywow64="HKCU\\Software\\WoW6432Node\\Wine\\DllOverrides"
 sysdir="system32"
 sysdirwow64="syswow64"
-wine_path="/usr/lib64/wine"
+if [ -d "/usr/lib64/wine-wow64/wine" ] ;then
+  wine_path="/usr/lib64/wine-wow64/wine"
+else
+  wine_path="/usr/lib64/wine"
+fi
 wine32_path="${wine_path}"
 
 txt() {

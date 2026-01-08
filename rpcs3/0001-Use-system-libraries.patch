@@ -50,7 +50,7 @@ index c7b136e..4adc376 100644
 +	add_library(feralinteractive INTERFACE)
 +	target_link_libraries(feralinteractive INTERFACE PkgConfig::gamemode)
 +else()
- 	target_include_directories(3rdparty_feralinteractive INTERFACE feralinteractive/lib)
+ 	target_include_directories(3rdparty_feralinteractive SYSTEM INTERFACE feralinteractive/lib)
 +endif()
  	target_compile_definitions(3rdparty_feralinteractive INTERFACE -DGAMEMODE_AVAILABLE)
  	target_link_libraries(3rdparty_feralinteractive INTERFACE feralinteractive)

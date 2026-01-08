@@ -22,14 +22,14 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 2d9f1e4238c0a612f6173b97bc28f66403f96a92
+%global commit 9ca0b9c076a01b5b7c046cb9a4fa9834c555eed3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251127
+%global date 20260107
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 4e36bab794afdb7d78f56b866971009ca894fe9c
+%global commit1 e66e8d3d80756a048273bbf7210a2f950c0e6275
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -77,7 +77,7 @@ BuildArch:      noarch
 %global ver     %%(echo %{version} | tr -d '~|^')
 
 Name:           wine-%{pkgname}
-Version:        3.0^a
+Version:        3.0^b
 Release:        1%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
@@ -207,7 +207,7 @@ cp %{S:10} README.%{pkgname}
 cp %{S:11} .
 
 cp -p subprojects/dxil-spirv/LICENSE.MIT LICENSE.MIT.dxil-spirv
-cp -p subprojects/dxil-spirv/subprojects/dxbc-spirv/LICENSE LICENSE.MIT.dxbc-spirv
+cp -p subprojects/dxil-spirv/subprojects/dxbc-spirv/LICENSE LICENSE.dxbc-spirv
 
 
 %build
@@ -318,6 +318,9 @@ install -pm0755 winevkd3dcfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Thu Jan 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3.0^b-1.20260107git9ca0b9c
+- 3.0b
+
 * Sun Nov 30 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0^a-1.20251127git2d9f1e4
 - 3.0a
 

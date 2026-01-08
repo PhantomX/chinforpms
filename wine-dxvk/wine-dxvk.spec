@@ -19,19 +19,19 @@ BuildArch:      noarch
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit ac59b1d3ee49d9e40512fa2504b29fbae55ba877
+%global commit f76b0ef88d1a5cf47cb0e89037f96572d20e2a51
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250829
-%bcond snapshot 0
+%global date 20260105
+%bcond snapshot 1
 
 %bcond debug 0
 %bcond gplasync 1
 %bcond spirv 0
 %bcond vulkan 1
 
-%global gplasync_id bdbd9f6d98057477b3a44921dcd3e2e08b84d935
+%global gplasync_id 1f900f20857b676d314e78d4f352f700c00b4a8b
 
-%global commit5 8b246ff75c6615ba4532fe4fde20f1be090c3764
+%global commit5 c8ad050fcb29e42a2f57d9f59e97488f465c436d
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
@@ -42,6 +42,10 @@ BuildArch:      noarch
 %global commit7 275e6459c7ab1ddd4b125f28d0440716e4888078
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
+
+%global commit8 8c6d5ae3253d15478177c20f4cdaf668a9153020
+%global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
+%global srcname8 dxbc-spirv
 
 %{?mingw_package_header}
 
@@ -72,7 +76,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.7.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -104,6 +108,7 @@ Source5:        %{kg_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcomm
 Source6:        %{kg_url}/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %endif
 Source7:        https://gitlab.freedesktop.org/JoshuaAshton/%{srcname7}/-/archive/%{commit7}/%{srcname7}-%{shortcommit7}.tar.gz
+Source8:        https://github.com/doitsujin/%{srcname8}/archive/%{commit8}/%{srcname8}-%{shortcommit8}.tar.gz
 
 ExclusiveArch:  %{ix86} x86_64
 
@@ -187,6 +192,10 @@ cp -p include/vulkan/LICENSE.txt LICENSE.vulkan
 %endif
 tar -xf %{S:7} -C subprojects/libdisplay-info --strip-components 1
 cp -p subprojects/libdisplay-info/LICENSE LICENSE.libdisplay-info
+tar -xf %{S:8} -C subprojects/dxbc-spirv --strip-components 1
+rm -rf subprojects/dxbc-spirv/submodules/spirv_headers
+ln -sf ../../../include/spirv subprojects/dxbc-spirv/submodules/spirv_headers
+cp -p subprojects/dxbc-spirv/LICENSE LICENSE.dxbc-spirv
 
 cp -p %{S:2} .
 cp -p %{S:3} README.chinforpms

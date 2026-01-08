@@ -11,7 +11,7 @@ diff --git a/dxvk.conf b/dxvk.conf
 index 96e686a..50d466e 100644
 --- a/dxvk.conf
 +++ b/dxvk.conf
-@@ -851,3 +851,21 @@
+@@ -917,3 +917,21 @@
  # - Any positive value to limit the VRAM budget, in Megabytes
  
  # dxvk.maxMemoryBudget = 0

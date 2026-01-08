@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit c3db85c68e6c1724b239d6b538dd436c404613f6
+%global commit 1bfd1154f5a2041ebc2ecb88c72e5c66207bc57a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251213
+%global date 20260107
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.38.18510
+Version:        0.0.39.18620
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -173,7 +173,7 @@ Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/17866.patch#/%{name}-gh-pr17866.patch
+Patch0:         %{vc_url}/%{name}/pull/17985.patch#/%{name}-gh-pr17985.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
@@ -255,7 +255,7 @@ BuildRequires:  pkgconfig(rtmidi) >= %{bundlertmidi}
 BuildRequires:  pkgconfig(alsa)
 Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 %endif
-BuildRequires:  cmake(SDL3) >= 3.2.0
+BuildRequires:  cmake(SDL3) >= 3.4.0
 BuildRequires:  pkgconfig(tinfo)
 BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
 %if %{with vma}
@@ -548,6 +548,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Thu Jan 08 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.39.18620-1.20260107git1bfd115
+- 0.0.39
+
 * Sat Oct 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.0.38.18185-1.20251010git9e49b91
 - 0.0.38
 
