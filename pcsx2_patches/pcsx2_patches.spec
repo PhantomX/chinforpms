@@ -9,7 +9,7 @@ BuildArch:      noarch
 Name:           pcsx2_patches
 Version:        566
 Epoch:          1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later
@@ -30,7 +30,9 @@ PCSX2 patch files.
 
 
 %prep
-%autosetup -n %{name}-%{commit} -p1
+%autosetup -n %{name}-%{commit} -p1 -N
+sed -e 's/\r//' -i patches/*.pnach
+%autopatch -p1
 
 cp %{S:1} .
 

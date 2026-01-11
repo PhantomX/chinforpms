@@ -1,4 +1,4 @@
-From 0a397161ac81033125bd2875dd62718499dfe0f7 Mon Sep 17 00:00:00 2001
+From 4e1a58181d3d1c26cb81efadbd5d8bb7f1e61e56 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -15,14 +15,16 @@ Subject: [PATCH] Personal additions
  patches/SLUS-20393_5A1410AB.pnach |  19 +++
  patches/SLUS-20782_8999FCF4.pnach |   7 ++
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
+ patches/SLUS-21216_CAB2086E.pnach |   7 ++
  patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 12 files changed, 515 insertions(+), 17 deletions(-)
+ 13 files changed, 522 insertions(+), 17 deletions(-)
  create mode 100644 patches/SCUS-97436_646B2E29.pnach
  create mode 100644 patches/SLPS-25450_DB7FFC4B.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
  create mode 100644 patches/SLUS-20212_AA4E5A95.pnach
  create mode 100644 patches/SLUS-20393_5A1410AB.pnach
  create mode 100644 patches/SLUS-20782_8999FCF4.pnach
+ create mode 100644 patches/SLUS-21216_CAB2086E.pnach
  create mode 100644 patches/SLUS-21317_72CE7A78.pnach
 
 diff --git a/patches/SCUS-97436_32A1C752.pnach b/patches/SCUS-97436_32A1C752.pnach
@@ -499,7 +501,7 @@ index 6fb4c5c..17792b8 100644
  //No interlacing by asasega
  //patch=1,EE,201A7054,word,00000000
 diff --git a/patches/SLPS-25842_E84AA114.pnach b/patches/SLPS-25842_E84AA114.pnach
-index 0aba13a..0e006fc 100644
+index e25541f..77482d7 100644
 --- a/patches/SLPS-25842_E84AA114.pnach
 +++ b/patches/SLPS-25842_E84AA114.pnach
 @@ -1,9 +1,23 @@
@@ -633,6 +635,19 @@ index ea512fe..a093754 100644
 +patch=1,EE,2021C9C0,extended,3C013F40 //original code by ElHecht
 +patch=1,EE,2021C9CC,extended,4481F000
 +patch=1,EE,2021C9D0,extended,461EBDC3
+diff --git a/patches/SLUS-21216_CAB2086E.pnach b/patches/SLUS-21216_CAB2086E.pnach
+new file mode 100644
+index 0000000..e9d8bc9
+--- /dev/null
++++ b/patches/SLUS-21216_CAB2086E.pnach
+@@ -0,0 +1,7 @@
++gametitle=Soulcalibur III - Arcade Edition (SLUS-21216)
++
++[Widescreen 16:9]
++gsaspectratio=16:9
++author=nemesis2000
++patch=1,EE,0012a118,word,3c013f40
++patch=1,EE,0012a11c,word,34210000
 diff --git a/patches/SLUS-21317_72CE7A78.pnach b/patches/SLUS-21317_72CE7A78.pnach
 new file mode 100644
 index 0000000..e573932
@@ -649,5 +664,5 @@ index 0000000..e573932
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.51.0
+2.52.0
 

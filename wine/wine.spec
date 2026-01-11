@@ -1,7 +1,7 @@
 %global commit 4164535eac54a2c5d561cd996c247e7a84644400
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260106
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 52bc59da118fa2b9584b5e54c416bbb055306e00
+%global wine_stagingver 11.0-rc5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,8 +124,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.0~rc4
-Release:        101%{?dist}
+Version:        11.0~rc5
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -208,6 +208,8 @@ Patch709:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.pat
 Patch710:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
 Patch711:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch712:        %{whq_murl}/-/merge_requests/9823.patch#/%{name}-whq-mr9823.patch
+Patch713:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
+Patch714:        %{whq_murl}/-/merge_requests/9867.patch#/%{name}-whq-mr9867.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -806,6 +808,8 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 710 -p1
 %patch -P 711 -p1
 %patch -P 712 -p1
+%patch -P 713 -p1
+%patch -P 714 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2492,6 +2496,9 @@ fi
 
 
 %changelog
+* Sun Jan 11 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc5-100
+- 11.0~rc5
+
 * Fri Dec 26 2025 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc4-100
 - 11.0-rc4
 
