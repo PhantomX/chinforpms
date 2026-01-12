@@ -14,9 +14,9 @@
 %bcond rtmidi 1
 %endif
 
-%global commit b1731764af3d7f552ace0c9aa9df2a868b983280
+%global commit a20ea6cfb212ff91efedc12c751fb6cf5de65a7b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251118
+%global date 20260110
 %bcond snapshot 1
 
 %global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
@@ -51,7 +51,7 @@
 
 Name:           ymir
 Version:        0.2.1
-Release:        0.2%{?dist}
+Release:        1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
@@ -217,6 +217,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Jan 11 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.1-1.20260110gita20ea6c
+- 0.2.1
+
 * Mon Aug 11 2025 Phantom X <megaphantomx at hotmail dot com> - 0.1.7-1
 - 0.1.7
 

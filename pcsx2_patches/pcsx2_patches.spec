@@ -9,7 +9,7 @@ BuildArch:      noarch
 Name:           pcsx2_patches
 Version:        566
 Epoch:          1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later
@@ -35,6 +35,9 @@ sed -e 's/\r//' -i patches/*.pnach
 %autopatch -p1
 
 cp %{S:1} .
+
+cp -a patches/SLPS-25450_{B4EC196F,4D7B34BA}.pnach
+mv patches/SLPS-25842_{E84AA114,2E49AF5A}.pnach
 
 
 %build
