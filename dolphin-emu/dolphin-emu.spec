@@ -14,7 +14,7 @@
 %bcond fmt 1
 %bcond llvm 0
 %bcond mbedtls 0
-%bcond mgba 0
+%bcond mgba 1
 %bcond sfml 0
 %bcond vma 1
 %bcond vulkan 1
@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit f4f7424a9f059a25ec09b22a280d03fcf0e751eb
+%global commit c7e063bc7114213772fbe6aa24db8e8662948a60
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251122
+%global date 20260115
 %bcond snapshot 1
 
 %global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
@@ -42,7 +42,7 @@
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 implot
 
-%global commit5 b443902b1cdfee5a66b09fec20a94d2d2afaf2ec
+%global commit5 926e4608f8dca7989267c787bbefb3ab1c835ac5
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 rcheevos
 
@@ -54,7 +54,7 @@
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 enet
 
-%global commit8 8739b22fbc90fdf0b4f6612ef9c0520f0ba44a51
+%global commit8 0b40863f64d0940f333fa1c638e75f86f8a26a33
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 mgba
 
@@ -78,7 +78,7 @@
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 tinygltf
 
-%global commit19 016bea9491ccafc3529019fe1d403885a8b3a6ae
+%global commit19 0fa201c969e48ecc253581c5841ce73f44d42f49
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 SFML
 
@@ -103,7 +103,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2509.503
+Version:        2512.146
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -122,7 +122,13 @@ Url:            https://dolphin-emu.org/
 #dolphin-5.0/Source/Core/VideoBackends/Software/Clipper.cpp
 #dolphin-5.0/Source/Core/AudioCommon/aldlist.cpp
 ##Any code in Externals has a license break down in Externals/licenses.md
-License:        GPL-2.0-or-later AND LGPLv2+ AND BSD-2-Clause AND BSD-3-Clause AND MIT AND Zlib%{!?with_mbedtls: AND Apache-2.0}
+License: %{shrink:
+    GPL-2.0-or-later AND
+    LGPLv2+ AND BSD-2-Clause AND
+    BSD-3-Clause AND
+    MIT AND Zlib
+    %{!?with_mbedtls:AND Apache-2.0}
+}
 
 %if %{with snapshot}
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
@@ -394,7 +400,7 @@ tar -xf %{S:20} -C watcher/watcher --strip-components 1
 pushd picojson
 rm picojson.h
 #In master, picojson has build option "PICOJSON_NOEXCEPT", but for now:
-sed "s/throw std::.*;/std::abort();/g" %{_includedir}/picojson.h > picojson.h
+#sed "s/throw std::.*;/std::abort();/g" %{_includedir}/picojson.h > picojson.h
 popd
 
 popd
@@ -415,6 +421,10 @@ sed \
   -e 's|${DISTRIBUTOR}|%{distributor}|g' \
   -e 's|${DOLPHIN_DEFAULT_UPDATE_TRACK}||g' \
   -i Source/Core/Common/scmrev.h.in
+
+%if %{with mgba}
+sed -e '/LIBMGBA/aadd_definitions(-DENABLE_VFS -DENABLE_DIRECTORIES)' -i CMakeLists.txt
+%endif
 
 cat > %{name}-xcb <<'EOF'
 #!/usr/bin/bash

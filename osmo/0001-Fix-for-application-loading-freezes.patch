@@ -1,0 +1,166 @@
+From 974fef32595d490987d1b2d6e84e62c3dc107b86 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 17 Jan 2026 10:05:37 -0300
+Subject: [PATCH] Fix for application loading freezes
+
+---
+ src/calendar_notes.c |  2 +-
+ src/calendar_notes.h |  2 +-
+ src/gui.c            | 34 ++++++++++++++++++++++++++++++++--
+ src/notes.c          |  4 ++++
+ src/tasks.c          |  4 ++++
+ 5 files changed, 42 insertions(+), 4 deletions(-)
+
+diff --git a/src/calendar_notes.c b/src/calendar_notes.c
+index fa78f82..c8560fa 100644
+--- a/src/calendar_notes.c
++++ b/src/calendar_notes.c
+@@ -66,7 +66,7 @@ cal_check_notes (guint32 julian_start, guint32 julian_end, GUI *appGUI)
+ /*------------------------------------------------------------------------------*/
+ 
+ void
+-cal_notes_foreach (guint32 julian_start, guint32 julian_end, gboolean (*cnfunc)(), GUI *appGUI)
++cal_notes_foreach (guint32 julian_start, guint32 julian_end, gboolean (*cnfunc)(struct note *, GUI *), GUI *appGUI)
+ {
+     GSList *node;
+     struct note *n;
+diff --git a/src/calendar_notes.h b/src/calendar_notes.h
+index 4a96ac1..af16641 100644
+--- a/src/calendar_notes.h
++++ b/src/calendar_notes.h
+@@ -52,7 +52,7 @@ enum {
+ 
+ gboolean    cal_check_note              (guint32 julian, GUI *appGUI);
+ gboolean    cal_check_notes             (guint32 julian_start, guint32 julian_end, GUI *appGUI);
+-void        cal_notes_foreach           (guint32 julian_start, guint32 julian_end, gboolean (*cnfunc)(), GUI *appGUI);
++void        cal_notes_foreach           (guint32 julian_start, guint32 julian_end, gboolean (*cnfunc)(struct note *, GUI *), GUI *appGUI);
+ gchar *     cal_get_note                (guint32 julian, GUI *appGUI);
+ gchar *     cal_get_note_color          (guint32 julian, GUI *appGUI);
+ void        cal_replace_note_color      (gchar *old_color, gchar *new_color, GUI *appGUI);
+diff --git a/src/gui.c b/src/gui.c
+index 892ac8c..a4d19b4 100644
+--- a/src/gui.c
++++ b/src/gui.c
+@@ -1339,6 +1339,8 @@ create_menu_item(const gchar *text, GtkWidget *image) {
+ 
+ /*------------------------------------------------------------------------------*/
+ 
++static gboolean systray_fallback_check (gpointer data);
++
+ void
+ gui_systray_initialize (GUI *appGUI) {
+ 
+@@ -1442,6 +1444,7 @@ GtkWidget   *systray_menu_separator;
+                 appGUI->window_visible = FALSE;
+             } else {
+                 gtk_widget_show (appGUI->main_window);
++                appGUI->window_visible = TRUE;
+             }
+         }
+     } else {
+@@ -1453,6 +1456,27 @@ GtkWidget   *systray_menu_separator;
+     gui_systray_tooltip_update (appGUI);
+ }
+ 
++/*------------------------------------------------------------------------------*/
++
++static gboolean
++systray_fallback_check (gpointer data)
++{
++    GUI *appGUI = (GUI *) data;
++
++    /* If window is not visible and user didn't configure to start minimized,
++     * show it as a fallback. GtkStatusIcon is deprecated and unreliable
++     * in modern environments. */
++    if (appGUI->window_visible == FALSE &&
++        gtk_widget_get_visible (appGUI->main_window) == FALSE &&
++        (!config.start_minimised_in_systray || appGUI->no_tray)) {
++        g_warning ("Window not visible after startup, showing as fallback");
++        gtk_widget_show (appGUI->main_window);
++        appGUI->window_visible = TRUE;
++    }
++
++    return G_SOURCE_REMOVE;  /* Don't repeat */
++}
++
+ /*------------------------------------------------------------------------------*/
+ #ifndef WIN32
+ static gboolean
+@@ -1481,11 +1505,15 @@ gui_create_window (GUI *appGUI)
+     gint sw, sh;
+     gint fdSTDERR, fdSTDERRn;
+ 
++
+     /* disable STDERR temporary - to suppress messages from webkit */
++    /* DISABLED FOR DEBUGGING
+     fdSTDERR = dup (STDERR_FILENO);
+     fdSTDERRn = open("/dev/null", O_WRONLY);
+     dup2 (fdSTDERRn, STDERR_FILENO);
+     close (fdSTDERRn);
++    */
++    fdSTDERR = -1; /* Mark as not redirected */
+ 
+     appGUI->all_pages_added = FALSE;
+ 
+@@ -1666,8 +1694,10 @@ gui_create_window (GUI *appGUI)
+     gtk_notebook_set_current_page(GTK_NOTEBOOK(appGUI->notebook), appGUI->current_tab);
+ 
+     /* enable STDERR */
+-    dup2 (fdSTDERR, STDERR_FILENO);
+-    close (fdSTDERR);
++    if (fdSTDERR != -1) {
++        dup2 (fdSTDERR, STDERR_FILENO);
++        close (fdSTDERR);
++    }
+ 
+     return TRUE;
+ }
+diff --git a/src/notes.c b/src/notes.c
+index 4085bf5..ee92723 100644
+--- a/src/notes.c
++++ b/src/notes.c
+@@ -1755,13 +1755,17 @@ gint nt_columns[MAX_VISIBLE_NOTE_COLUMNS] = {
+     n = MAX_VISIBLE_NOTE_COLUMNS - 1;
+ 
+     while (n >= 0) {
++        gboolean found = FALSE;
+         for (i = 0; i < MAX_VISIBLE_NOTE_COLUMNS; i++) {
+             if (n == columns_order[i]) {
+                 gtk_tree_view_move_column_after(GTK_TREE_VIEW(appGUI->nte->notes_list),
+                         appGUI->nte->notes_columns[nt_columns[i]], NULL);
++                found = TRUE;
+                 n--;
++                break;
+             }
+         }
++        if (!found) n--;  /* Skip missing values to prevent infinite loop */
+     }
+ 
+     set_note_columns_width(appGUI);
+diff --git a/src/tasks.c b/src/tasks.c
+index 7982f40..1cd2aa1 100644
+--- a/src/tasks.c
++++ b/src/tasks.c
+@@ -1673,15 +1673,19 @@ gui_create_tasks (GUI *appGUI)
+ 
+     while (n >= 0)
+     {
++        gboolean found = FALSE;
+         for (i = 0; i < MAX_VISIBLE_TASK_COLUMNS; i++)
+         {
+             if (n == columns_order[i])
+             {
+                 gtk_tree_view_move_column_after (GTK_TREE_VIEW (appGUI->tsk->tasks_list),
+                                                  appGUI->tsk->tasks_columns[ta_columns[i]], NULL);
++                found = TRUE;
+                 n--;
++                break; /* Found a match, move to next n */
+             }
+         }
++        if (!found) n--;  /* Skip missing values to prevent infinite loop */
+     }
+ 
+     set_tasks_columns_width (appGUI);
+-- 
+2.52.0
+

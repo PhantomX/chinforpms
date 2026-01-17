@@ -1,20 +1,35 @@
 # -*- rpm-spec -*-
 
+%global commit d13271422e47d9bc827d6ede3e7d5154568115c7
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20260111
+%bcond snapshot 1
+
+BuildArch: noarch
+
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%endif
+
 %global default_hvs         "qemu,xen,lxc"
 %global have_spice          %{defined fedora}
 
 # End local config
 
 Name: virt-manager
-Version: 5.0.0
-Release: 1%{?dist}
+Version: 5.1.0
+Release: 100%{?dist}
 %global verrel %{?epoch:%{epoch}:}%{version}-%{release}
 
 Summary: Desktop tool for managing virtual machines via libvirt
 License: GPL-2.0-or-later
-BuildArch: noarch
 URL: https://virt-manager.org/
+
+%if %{with snapshot}
+Source0: https://github.com/%{name}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0: https://releases.pagure.org/%{name}/%{name}-%{version}.tar.xz
+%endif
 
 Requires: virt-manager-common = %{verrel}
 Requires: python3-gobject >= 3.31.3
@@ -24,9 +39,6 @@ Requires: gtk-vnc2
 %if %{have_spice}
 Requires: spice-gtk3
 %endif
-
-# We can work with gtksourceview 3 or gtksourceview4, pick the latest one
-Requires: gtksourceview4
 
 # virt-manager is one of those apps that people will often install onto
 # a headless machine for use over SSH. This means the virt-manager dep
@@ -46,6 +58,10 @@ Requires: dconf
 # virt-manager works fine with either, so pull the latest bits so there's
 # no ambiguity.
 Requires: vte291
+
+# We can use GtkTextView, gtksourceview 3 or gtksourceview4, recommend
+# the latest one but don't make it a hard requirement
+Recommends: gtksourceview4
 
 # Weak dependencies for the common virt-manager usecase
 Recommends: (libvirt-daemon-kvm or libvirt-daemon-qemu)
@@ -104,12 +120,12 @@ machine).
 
 
 %prep
-%autosetup -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 
 %build
 %if ! %{have_spice}
-%global _default_graphics -Ddefault_graphics=vnc
+%global _default_graphics -Ddefault-graphics=vnc
 %endif
 
 %meson \
@@ -147,7 +163,7 @@ machine).
 
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/glib-2.0/schemas/org.virt-manager.virt-manager.gschema.xml
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_datadir}/metainfo/org.virt_manager.virt-manager.metainfo.xml
 
 
 %files common -f %{name}.lang
@@ -173,6 +189,9 @@ machine).
 
 
 %changelog
+* Wed Jan 14 2026 Phantom X <megaphantomx at hotmail dot com> - 5.1.0-100.20260111gitd132714
+- Snapshot
+
 * Wed Nov 27 2024 Phantom X <megaphantomx at hotmail dot com> - 5.0.0-1
 - 5.0.0
 

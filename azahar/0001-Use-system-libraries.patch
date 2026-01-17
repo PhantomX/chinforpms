@@ -1,16 +1,16 @@
-From ebafaf312ce201fb60c0dc924181be889136ca09 Mon Sep 17 00:00:00 2001
+From 017d1e3940bdc6b44219ddb1986b392d2df94f5e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt            |  3 +--
- externals/CMakeLists.txt  | 50 ++++++++++++++++++++++++++++++++-------
- src/common/CMakeLists.txt | 10 ++++++--
- 3 files changed, 51 insertions(+), 12 deletions(-)
+ CMakeLists.txt            |  3 +-
+ externals/CMakeLists.txt  | 60 +++++++++++++++++++++++++++++++++------
+ src/common/CMakeLists.txt | 10 +++++--
+ 3 files changed, 60 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 324ddf1..b5bf3cc 100644
+index 9c5e5c1..c19e870 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -21,7 +21,7 @@ index 324ddf1..b5bf3cc 100644
  include(CMakeDependentOption)
  include(FindPkgConfig)
  
-@@ -228,7 +227,7 @@ function(check_submodules_present)
+@@ -230,7 +229,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index 324ddf1..b5bf3cc 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index aa6e6c8..73816af 100644
+index 01e76a0..08a03b8 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -16,7 +16,6 @@ function(target_disable_warnings target)
@@ -65,7 +65,7 @@ index aa6e6c8..73816af 100644
 -    find_package(zstd REQUIRED)
 +    find_package(zstd)
 +    if(NOT zstd_FOUND)
-+      pkg_check_modules(libzstd_shared REQUIRED IMPORTED_TARGET libzstd)
++      pkg_check_modules(libzstd_shared IMPORTED_TARGET libzstd)
 +    endif()
      add_library(zstd INTERFACE)
 -    if(TARGET zstd::libzstd_shared)
@@ -91,11 +91,11 @@ index aa6e6c8..73816af 100644
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -361,7 +379,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
+@@ -356,7 +374,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
  target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
-+    pkg_check_modules(gamemode REQUIRED IMPORTED_TARGET gamemode)
++    pkg_check_modules(gamemode IMPORTED_TARGET gamemode)
 +    if(gamemode_FOUND)
 +       add_library(gamemode INTERFACE)
 +       target_link_libraries(gamemode INTERFACE PkgConfig::gamemode)
@@ -105,7 +105,7 @@ index aa6e6c8..73816af 100644
  endif()
  
  # cpp-jwt
-@@ -436,16 +460,15 @@ if (ENABLE_VULKAN)
+@@ -431,16 +455,15 @@ if (ENABLE_VULKAN)
  
      # spirv-tools
      # TODO: Implement USE_SYSTEM_SPIRV_TOOLS -OS
@@ -124,7 +124,7 @@ index aa6e6c8..73816af 100644
          # System include path is different from submodule include path
          get_target_property(GLSLANG_PREFIX glslang::SPIRV INTERFACE_INCLUDE_DIRECTORIES)
          target_include_directories(SPIRV SYSTEM INTERFACE "${GLSLANG_PREFIX}/glslang")
-@@ -456,11 +479,22 @@ if (ENABLE_VULKAN)
+@@ -451,11 +474,22 @@ if (ENABLE_VULKAN)
          set(ENABLE_CTEST OFF CACHE BOOL "")
          set(ENABLE_HLSL OFF CACHE BOOL "")
          set(BUILD_EXTERNAL OFF CACHE BOOL "")
@@ -147,7 +147,7 @@ index aa6e6c8..73816af 100644
  
      # VMA
      if(USE_SYSTEM_VMA)
-@@ -479,7 +513,7 @@ if (ENABLE_VULKAN)
+@@ -474,7 +508,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)
@@ -156,8 +156,30 @@ index aa6e6c8..73816af 100644
          if(TARGET Vulkan::Headers)
              message(STATUS "Found Vulkan headers")
              target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
+@@ -490,6 +524,13 @@ if (ENABLE_VULKAN)
+     endif()
+ endif()
+ 
++pkg_check_modules(libxxhash IMPORTED_TARGET libxxhash)
++if(libxxhash_FOUND)
++  message(STATUS "Using the system libxxhash")
++  add_library(xxhash INTERFACE)
++  target_link_libraries(xxhash INTERFACE PkgConfig::libxxhash)
++  add_library(xxHash::xxhash ALIAS xxhash)
++else()
+ set(XXHASH_BUILD_XXHSUM OFF)
+ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+ target_compile_definitions(xxhash PRIVATE XXH_FORCE_MEMORY_ACCESS=2)
+@@ -502,4 +543,5 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|ARM64|armv8")
+ else()
+     target_compile_definitions(xxhash PRIVATE XXH_VECTOR=XXH_SCALAR)
+     message(STATUS "Disabling SIMD for xxHash")
+-endif()
+\ No newline at end of file
++endif()
++endif()
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index 44f0a67..d867453 100644
+index b7062e9..5cf324b 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
 @@ -151,12 +151,18 @@ add_library(citra_common STATIC
@@ -182,5 +204,5 @@ index 44f0a67..d867453 100644
    target_sources(citra_common PRIVATE
      linux/gamemode.cpp
 -- 
-2.51.0
+2.52.0
 

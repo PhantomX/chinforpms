@@ -236,6 +236,7 @@ openbor
 openjazz
 opentyrian
 -orage
+osmo
 -pcsx2-multiconfigtool
 -pcsxr
 perl-rename

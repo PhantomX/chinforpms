@@ -259,8 +259,9 @@
 
 # RHEL releases provide stable tool chains and so it is safe to turn
 # compiler warning into errors without being worried about frequent
-# changes in reported warnings
-%if 0%{?rhel}
+# changes in reported warnings. ELN is a rebuild of Rawhide so should
+# be treated as unstable for this flag
+%if 0%{?rhel} && !0%{?eln}
     %define enable_werror -Dwerror=true
 %else
     %define enable_werror -Dwerror=false -Dgit_werror=disabled
@@ -289,7 +290,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 11.10.0
+Version: 12.0.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -2658,6 +2659,9 @@ done
 
 
 %changelog
+* Thu Jan 15 2026 Phantom X <megaphantomx at hotmail dot com> - 12.0.0-100
+- 12.0.0
+
 * Mon Dec 01 2025 Phantom X <megaphantomx at hotmail dot com> - 11.10.0-100
 - 11.10.0
 

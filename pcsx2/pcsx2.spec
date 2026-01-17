@@ -59,7 +59,7 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.6.0
+Version:        2.7.46
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -353,7 +353,7 @@ echo 'set_target_properties(pcsx2-qt PROPERTIES INTERPROCEDURAL_OPTIMIZATION tru
 %endif
 
 sed -e 's|fa-solid-900.ttf|fa-solid-900.otf|g' \
-  -i pcsx2/ImGui/ImGuiManager.cpp 3rdparty/include/IconsFontAwesome6.h
+  -i pcsx2/ImGui/ImGuiManager.cpp 3rdparty/include/IconsFontAwesome.h
 
 
 %build
@@ -469,6 +469,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Fri Jan 16 2026 Phantom X <megaphantomx at hotmail dot com> - 2.7.46-1
+- 2.7.46
+
 * Sun Jan 04 2026 Phantom X <megaphantomx at hotmail dot com> - 2.6.0-1
 - 2.6.0
 

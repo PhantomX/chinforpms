@@ -1,0 +1,123 @@
+From 984b7efa2b6afd44142232a0e595c3c0c644194d Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 17 Jan 2026 10:03:53 -0300
+Subject: [PATCH] Build system fixes
+
+---
+ configure.ac    | 33 +++++++++++++++++++++------------
+ src/Makefile.am | 24 ++++--------------------
+ 2 files changed, 25 insertions(+), 32 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index a2ea28b..c8e9841 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -62,15 +62,15 @@ PKG_CHECK_MODULES(XML, libxml-2.0 >= 2.9)
+ PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= 2.6.0)
+ 
+ # Checks for libgringotts
+-AC_CHECK_LIB(gringotts, grg_context_initialize_defaults, [lib=yes], [lib=no])
+-libgringotts="no"
+-if test "$lib" = "yes"; then
++PKG_CHECK_MODULES(LIBGRINGOTTS, libgringotts >= 1.2.0, have_libgringotts=true,
++    have_libgringotts=false)
++if test "x$have_libgringotts" = "xtrue"; then
+     libgringotts="yes"
+-fi
+-if test "x$lib" = "xyes"; then
+-    gringotts_LIBS="-lgringotts"
+     AC_DEFINE([HAVE_LIBGRINGOTTS], [1], [Defined to 1 if compile with libgringotts support])
++else
++    libgringotts="no"
+ fi
++AM_CONDITIONAL([HAVE_LIBGRINGOTTS], test "x$have_libgringotts" = "xtrue")
+ 
+ # Checks for libarchive
+ PKG_CHECK_MODULES(LIBARCHIVE, libarchive >= 3.0.0, have_libarchive=true,
+@@ -131,11 +131,20 @@ if test "x$tasks" = "xyes"; then
+ fi
+ 
+ # Checks for libwebkit
+-PKG_CHECK_MODULES(LIBWEBKIT, webkit2gtk-4.1 >= 2.8.0, have_libwebkit=true,
+-    have_libwebkit=false)
+-if test "x$have_libwebkit" = "xtrue"; then
+-    libwebkit="yes"
+-else
++AC_ARG_WITH(webkit,
++    [[  --without-webkit        disable WebKit HTML renderer]],
++    [if test "x$withval" = "xyes" ; then use_webkit="yes" ; else use_webkit="no"; fi],
++    use_webkit="yes")
++
++if test "x$use_webkit" = "xyes"; then
++    PKG_CHECK_MODULES(LIBWEBKIT, webkit2gtk-4.1 >= 2.8.0, have_libwebkit=true,
++        have_libwebkit=false)
++    if test "x$have_libwebkit" = "xtrue"; then
++        libwebkit="yes"
++    else
++        have_libwebkit=false
++        libwebkit="no"
++    fi
+     libwebkit="no"
+ fi
+ 
+@@ -221,7 +230,7 @@ AM_CONDITIONAL([CONFIGDIR], [test x$configdir != x])
+ CFLAGS=${CFLAGS:="$BUILD_CFLAGS -Wall $PLATFORM_CFLAGS -D_GNU_SOURCE"}
+ CXXFLAGS=${CXXFLAGS:="$CFLAGS"}
+ CPPFLAGS=""
+-LIBS="$gringotts_LIBS $libarchive_LIBS"
++LIBS="$LIBGRINGOTTS_LIBS $LIBARCHIVE_LIBS"
+ 
+ AC_CONFIG_FILES([
+     Makefile
+diff --git a/src/Makefile.am b/src/Makefile.am
+index da0ae82..49dc6bb 100644
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -10,8 +10,6 @@ AM_CPPFLAGS = -DREPO=$(ISREPO) -DREVISION=$(REVISION) -DLOCALEDIR=\"$(datadir)/l
+ 			  -DICONSDIR=\"$(datadir)/icons\" -DPIXMAPSDIR=\"$(datadir)/pixmaps\" \
+ 			  -DG_DISABLE_CAST_CHECKS
+ 
+-AM_CFLAGS = @CFLAGS@
+-
+ bin_PROGRAMS = osmo
+ osmo_SOURCES = about.c about.h \
+ 			   backup.c backup.h \
+@@ -57,23 +55,8 @@ osmo_SOURCES = about.c about.h \
+ 			   utils_time.c utils_time.h \
+ 			   vcf.c vcf.h
+ 
+-AM_CFLAGS += @LIBNOTIFY_CFLAGS@
+-LIBS += @LIBNOTIFY_LIBS@
+-
+-if HAVE_LIBWEBKIT
+-AM_CFLAGS += @LIBWEBKIT_CFLAGS@
+-LIBS += @LIBWEBKIT_LIBS@
+-endif
+-
+-if HAVE_LIBICAL
+-AM_CFLAGS += @LIBICAL_CFLAGS@
+-LIBS += @LIBICAL_LIBS@
+-endif
+-
+-if HAVE_GSPELL
+-AM_CFLAGS += @GSPELL_CFLAGS@
+-LIBS += @GSPELL_LIBS@
+-endif
++AM_CFLAGS = @CFLAGS@ @LIBNOTIFY_CFLAGS@ @LIBWEBKIT_CFLAGS@ @LIBICAL_CFLAGS@ \
++            @GSPELL_CFLAGS@ @LIBGRINGOTTS_CFLAGS@
+ 
+ if CONFIGPATH
+     AM_CFLAGS += -DCONFIG_PATH=\"$(configpath)\"
+@@ -82,7 +65,8 @@ if CONFIGDIR
+     AM_CFLAGS += -DCONFIG_DIR=\"$(configdir)\"
+ endif
+ 
+-osmo_LDADD = $(LIBINTL) @GTK_LIBS@ -lm @XML_LIBS@ @GTHREAD_LIBS@
++osmo_LDADD = $(LIBINTL) @GTK_LIBS@ -lm @XML_LIBS@ @GTHREAD_LIBS@ \
++             @LIBNOTIFY_LIBS@ @LIBWEBKIT_LIBS@ @LIBICAL_LIBS@ @GSPELL_LIBS@ @LIBGRINGOTTS_CFLAGS@
+ 
+ #if WIN32
+ #AM_CFLAGS = \
+-- 
+2.52.0
+

@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 4bdcf342b63e5adff8a1338a34d1ec3ec570b153
+%global commit f5053868b49f9f519a009cd3e305c4c4c58ace33
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260103
+%global date 20260115
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -156,7 +156,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2123~rc2.90
+Version:        2124
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -272,6 +272,7 @@ BuildRequires:  pkgconfig(libcrypto)
 BuildRequires:  pkgconfig(libssl)
 BuildRequires:  pkgconfig(libenet)
 BuildRequires:  pkgconfig(libusb-1.0)
+BuildRequires:  pkgconfig(libxxhash)
 %if %{with zstd}
 BuildRequires:  pkgconfig(libzstd) >= 1.5.7
 %else
@@ -612,6 +613,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Jan 16 2026 Phantom X <megaphantomx at hotmail dot com> - 2124-1.20260115gitf505386
+- 2124
+
 * Fri Jun 13 2025 Phantom X <megaphantomx at hotmail dot com> - 2122~rc1.2-1.20250609git63f5258
 - 2122-rc1
 
