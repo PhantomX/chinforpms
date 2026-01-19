@@ -20,7 +20,7 @@ URL:            http://osmo-pim.sourceforge.net/
 
 %if %{with snapshot}
 # To regenerate a snapshot:
-# Use your regular webbrowser to open https://sourceforge.net/p/mcomix/git/ci/%%{commit}/tarball
+# Use your regular webbrowser to open https://sourceforge.net/p/osmo-pim/osmo/ci/%%{commit}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
 # After that you can pull in the archive with:
 # spectool -g mcomix.spec
