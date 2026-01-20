@@ -9,6 +9,9 @@
 %ifarch %{ix86} x86_64
 %global intel_platform_vulkan ,intel
 %endif
+%ifarch x86_64
+%global with_intel_vk_rt 1
+%endif
 
 %ifarch %{valgrind_arches}
 %bcond valgrind 1
@@ -38,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.2
+Version:        25.3.3
 Release:        100%{?dist}
 
 Epoch:          100
@@ -185,7 +188,7 @@ echo %{version}-freeworld > VERSION
   -Dglx=dri \
   -Degl=enabled \
   -Dglvnd=enabled \
-  -Dintel-rt=disabled \
+  -Dintel-rt=%{?with_intel_vk_rt:enabled}%{!?with_intel_vk_rt:disabled} \
   -Dgallium-mediafoundation=disabled \
   -Dmicrosoft-clc=disabled \
   -Dllvm=enabled \
@@ -246,6 +249,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Mon Jan 19 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.3-100
+- 25.3.3
+
 * Thu Dec 18 2025 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.2-100
 - 25.3.2
 
