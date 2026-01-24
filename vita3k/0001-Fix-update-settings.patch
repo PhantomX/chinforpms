@@ -1,4 +1,4 @@
-From 29caa263e552e369f80bc1cc171799e921df76f3 Mon Sep 17 00:00:00 2001
+From 4548fd0f533f233606ec66dd2ca1731744be73bc Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Nov 2023 20:04:07 -0300
 Subject: [PATCH] Fix update settings
@@ -8,10 +8,10 @@ Subject: [PATCH] Fix update settings
  1 file changed, 2 insertions(+)
 
 diff --git a/vita3k/gui/src/settings_dialog.cpp b/vita3k/gui/src/settings_dialog.cpp
-index e88e089..6dcb4d9 100644
+index a7349f8..727dcfe 100644
 --- a/vita3k/gui/src/settings_dialog.cpp
 +++ b/vita3k/gui/src/settings_dialog.cpp
-@@ -872,8 +872,10 @@ void draw_settings_dialog(GuiState &gui, EmuEnvState &emuenv) {
+@@ -1016,8 +1016,10 @@ void draw_settings_dialog(GuiState &gui, EmuEnvState &emuenv) {
          ImGui::Checkbox(lang.emulator["log_compat_warn"].c_str(), &emuenv.cfg.log_compat_warn);
          SetTooltipEx(lang.emulator["log_compat_warn_description"].c_str());
          ImGui::Spacing();
@@ -20,8 +20,8 @@ index e88e089..6dcb4d9 100644
          SetTooltipEx(lang.emulator["check_for_updates_description"].c_str());
 +#endif
          ImGui::Spacing();
-         ImGui::SliderInt("File Loading Delay", &config.file_loading_delay, 0, 30, "%d ms", ImGuiSliderFlags_AlwaysClamp);
-         SetTooltipEx("File loading delay in milliseconds.\nThis is required for some games to load files too quickly compared to real hardware (e.g., Silent Hill).\nDefault is 0 ms.");
+         ImGui::SliderInt(lang.emulator["file_loading_delay"].c_str(), &config.file_loading_delay, 0, 30, "%d ms", ImGuiSliderFlags_AlwaysClamp);
+         SetTooltipEx(lang.emulator["file_loading_delay_description"].c_str());
 -- 
-2.46.0
+2.52.0
 

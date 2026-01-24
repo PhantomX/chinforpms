@@ -1,14 +1,14 @@
-From ef6f727390741ce6bcabd099e07aa3fc854e1d00 Mon Sep 17 00:00:00 2001
+From e3d8829779d495ce1c711fefa05edfe049585804 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Nov 2023 10:41:37 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- external/CMakeLists.txt | 99 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 98 insertions(+), 1 deletion(-)
+ external/CMakeLists.txt | 96 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 95 insertions(+), 1 deletion(-)
 
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index 12e72a9..521c312 100644
+index 5c09aab..3b887d0 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
 @@ -28,15 +28,24 @@ function(check_submodules_present)
@@ -92,9 +92,9 @@ index 12e72a9..521c312 100644
  endif ()
 +endif()
  
- if(WIN32)
- 	add_library(winsock INTERFACE)
-@@ -142,9 +177,16 @@ add_subdirectory(unicorn EXCLUDE_FROM_ALL)
+ if(ANDROID)
+ 	add_subdirectory(libadrenotools)
+@@ -143,9 +178,16 @@ endif()
  add_library(vita-toolchain INTERFACE)
  target_include_directories(vita-toolchain INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/vita-toolchain/src")
  
@@ -111,16 +111,13 @@ index 12e72a9..521c312 100644
  
  if(USE_DISCORD_RICH_PRESENCE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/discord_game_sdk.zip")
-@@ -218,12 +260,25 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
+@@ -221,12 +263,22 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
  target_compile_definitions(dlmalloc PUBLIC ONLY_MSPACES=1)
  target_compile_definitions(dlmalloc PUBLIC USE_LOCK=0)
  
-+find_package(pugixml)
++find_package(pugixml GLOBAL)
 +if(pugixml_FOUND)
-+	message(STATUS "Using the system pugixml")
-+	add_library(pugixml-shared INTERFACE)
-+	target_link_libraries(pugixml-shared INTERFACE pugixml)
-+	add_library(pugixml::pugixml ALIAS pugixml-shared)
++message(STATUS "Using the system pugixml")
 +else()
  add_subdirectory(pugixml)
 +endif()
@@ -137,9 +134,9 @@ index 12e72a9..521c312 100644
  target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/Vulkan-Headers/include")
  if(APPLE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/MoltenVK-macos.tar")
-@@ -238,13 +293,40 @@ if(APPLE)
- 	target_include_directories(vulkan INTERFACE "${CMAKE_BINARY_DIR}/external/MoltenVK/include")
- 	set(MOLTENVK_DYLIB "${CMAKE_BINARY_DIR}/external/MoltenVK/dylib/macOS/libMoltenVK.dylib" PARENT_SCOPE)
+@@ -259,16 +311,43 @@ elseif(ANDROID AND NOT (CMAKE_BUILD_TYPE STREQUAL "Release"))
+ 		file(COPY "${CMAKE_BINARY_DIR}/external/validation_layers/${ANDROID_ABI}" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../android/prebuilt")
+ 	endif()
  endif()
 +endif()
  
@@ -173,12 +170,15 @@ index 12e72a9..521c312 100644
 +		PkgConfig::swresample
 +	)
 +else()
+ if(ANDROID)
+ 	set(USE_STATIC_ANDROID_FFMPEG ON)
+ endif()
  add_subdirectory(ffmpeg)
 +endif()
  
  if(APPLE OR NOT FORCE_BUILD_OPENSSL_MAC)
  	execute_process(
-@@ -366,6 +448,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
+@@ -392,6 +471,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
  
  target_include_directories(libatrac9 PUBLIC LibAtrac9/C/src)
  
@@ -192,33 +192,31 @@ index 12e72a9..521c312 100644
  option(BUILD_SHARED_LIBS "Build shared library" OFF)
  option(XXHASH_BUILD_XXHSUM "Build the xxhsum binary" OFF)
  option(XXH_X86DISPATCH_ALLOW_AVX "Allow building XXH3 with AVX even if it crashes on SSE2-Only CPUs" OFF)
-@@ -376,6 +465,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+@@ -402,6 +488,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
  if(XXH_X86DISPATCH_ALLOW_AVX)
  	target_compile_definitions(xxhash PRIVATE XXH_X86DISPATCH_ALLOW_AVX)
  endif()
 +endif()
  
  # Tracy
- option(TRACY_ENABLE_ON_CORE_COMPONENTS
-@@ -424,11 +514,18 @@ target_compile_definitions(tracy PUBLIC $<$<CONFIG:Debug,RelWithDebInfo>:TRACY_E
- #
- # target_compile_definitions(tracy PUBLIC TRACY_ENABLE)
+ if(NOT (CMAKE_BUILD_TYPE STREQUAL "Release"))
+@@ -454,9 +541,16 @@ endif()
+ set(NFD_PORTAL ON)
  
+ if(NOT ANDROID)
 +find_package(nfd)
 +if(nfd_FOUND)
 +	message(STATUS "Using the system nfd")
 +	add_library(nfd INTERFACE)
 +	target_link_libraries(nfd INTERFACE nfd::nfd)
 +else()
- # Use XDG desktop portals on Linux
- set(NFD_PORTAL ON)
+ 	# nativefiledialog-extended
+ 	add_subdirectory(nativefiledialog-extended)
  
- # nativefiledialog-extended
- add_subdirectory(nativefiledialog-extended)
+ 	# Create alias to prevent the need of multiple changes in case the target name changes
+ 	add_library(NFDe::NFDe ALIAS nfd)
+ endif()
 +endif()
- 
- # Create alias to prevent the need of multiple changes in case the target name changes
- add_library(NFDe::NFDe ALIAS nfd)
 -- 
-2.50.1
+2.52.0
 

@@ -97,7 +97,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.3
+Version:        25.3.4
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -130,8 +130,8 @@ Source13:       https://crates.io/api/v1/crates/syn/%{rust_syn_ver}/download#/sy
 Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ident_ver}/download#/unicode-ident-%{rust_unicode_ident_ver}.tar.gz
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
-# fix zink/device-select bug
-Patch10:         %{vc_url}/-/merge_requests/38252.patch#/%{name}-gl-mr38252.patch
+Patch0:         %{vc_url}/-/commit/3427d9f54221ab50384e44e358d02f33eada92c0.patch#/%{name}-gl-3427d9f.patch
+Patch1:         %{vc_url}/-/commit/d3744d5cd1f17ed497684aff28c11826717415b6.patch#/%{name}-gl-d3744d5.patch
 Patch12:        %{vc_url}/-/merge_requests/38532.patch#/%{name}-gl-mr38532.patch
 
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
@@ -801,6 +801,9 @@ popd
 
 
 %changelog
+* Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.4-100
+- 25.3.4
+
 * Mon Jan 19 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.3-100
 - 25.3.3
 

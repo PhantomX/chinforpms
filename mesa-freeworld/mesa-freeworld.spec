@@ -41,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.3
+Version:        25.3.4
 Release:        100%{?dist}
 
 Epoch:          100
@@ -58,6 +58,8 @@ Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vulkan.freeworld.metainfo.xml
 
 Patch0:         0001-Rename-libraries-for-freeworld.patch
+Patch1:         %{vc_url}/-/commit/3427d9f54221ab50384e44e358d02f33eada92c0.patch#/%{pkgname}-gl-3427d9f.patch
+Patch2:         %{vc_url}/-/commit/d3744d5cd1f17ed497684aff28c11826717415b6.patch#/%{pkgname}-gl-d3744d5.patch
 
 ExcludeArch:    s390x
 
@@ -249,6 +251,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.4-100
+- 25.3.4
+
 * Mon Jan 19 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.3-100
 - 25.3.3
 
