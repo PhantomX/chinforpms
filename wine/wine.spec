@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  10.4.1
-%global winevulkan 1.4.335
+%global winevulkan 1.4.340
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.0-rc5
+%global wine_stagingver 11.1
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.0~rc5
+Version:        11.1
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -202,14 +202,11 @@ Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.p
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/9670.patch#/%{name}-whq-mr9670.patch
 Patch706:        %{whq_murl}/-/merge_requests/9704.patch#/%{name}-whq-mr9704.patch
-Patch707:        %{whq_murl}/-/merge_requests/9710.patch#/%{name}-whq-mr9710.patch
-Patch708:        %{whq_murl}/-/merge_requests/9722.patch#/%{name}-whq-mr9722.patch
-Patch709:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
-Patch710:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
-Patch711:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
-Patch712:        %{whq_murl}/-/merge_requests/9823.patch#/%{name}-whq-mr9823.patch
-Patch713:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch714:        %{whq_murl}/-/merge_requests/9867.patch#/%{name}-whq-mr9867.patch
+Patch707:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
+Patch708:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
+Patch709:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
+Patch710:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
+Patch711:        %{whq_murl}/-/merge_requests/9871.patch#/%{name}-whq-mr9871.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -807,9 +804,6 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 709 -p1
 %patch -P 710 -p1
 %patch -P 711 -p1
-%patch -P 712 -p1
-%patch -P 713 -p1
-%patch -P 714 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1447,6 +1441,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/cards.dll
 %{_libdir}/wine/%{winepedirs}/cdosys.dll
 %{_libdir}/wine/%{winepedirs}/cfgmgr32.dll
+%{_libdir}/wine/%{winepedirs}/chakra.dll
 %{_libdir}/wine/%{winepedirs}/chcp.com
 %{_libdir}/wine/%{winepedirs}/clusapi.dll
 %{_libdir}/wine/%{winepedirs}/cng.sys
@@ -2496,6 +2491,9 @@ fi
 
 
 %changelog
+* Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.1-100
+- 11.1
+
 * Sun Jan 11 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.0~rc5-100
 - 11.0~rc5
 

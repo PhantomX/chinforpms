@@ -5,10 +5,10 @@
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 543dde0de2e4de309801fbed92bc043ef6b47e31
+%global commit e9167db9ffbb16e10ac62a0a449dd6bfd124493a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
-%bcond snapshot 0
+%global date 20260123
+%bcond snapshot 1
 
 %bcond rust 0
 
@@ -22,7 +22,7 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.8.8
+Version:        0.8.9
 Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
@@ -194,6 +194,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.9-1.20260123gite9167db
+- 0.8.9
+
 * Fri Nov 21 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.8-1
 - 0.8.8
 
