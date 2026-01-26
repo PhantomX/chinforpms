@@ -1,13 +1,27 @@
+%global commit 0273e318e3b0cc759155db8729ad74266b74cb9b
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20220222
+%bcond snapshot 1
+
+%if %{with snapshot}
+%global dist .%{date}git%{shortcommit}%{?dist}
+%endif
+
 %global __filter_GLIBC_PRIVATE 1
 
 Name:           libstrangle
 Version:        0.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Frame rate limiter
 
 License:        GPL-3.0-only
 URL:            https://gitlab.com/torkel104/%{name}
+
+%if %{with snapshot}
+Source0:        %{url}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
 Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
+%endif
 
 Patch10:         0001-look-for-libvulkan.so.1.patch
 Patch11:         0001-look-for-libdl.so.2.patch
@@ -26,7 +40,7 @@ Recommends:     (libstrangle(x86-32) if glibc(x86-32))
 
 
 %prep
-%autosetup -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 %build
 %make_build libdir=%{_libdir}
@@ -50,6 +64,9 @@ rm -rf %{buildroot}%{_sysconfdir}
 
 
 %changelog
+* Sun Jan 25 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-3.20220222git0273e31
+- Snapshot
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.1.1-2
 - gcc 13 build fix
 

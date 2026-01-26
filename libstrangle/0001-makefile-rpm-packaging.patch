@@ -1,18 +1,18 @@
-From 371ddada93326581fe302837eb5cf270ca2218b0 Mon Sep 17 00:00:00 2001
+From fec0deb283d74ebd53ab81e4a6fbefbec9201e9e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Apr 2021 13:55:16 -0300
 Subject: [PATCH] makefile: rpm packaging
 
 Multilib friendly and cleanups for rpm packaging
 ---
- makefile                       | 111 +++++++++------------------------
+ makefile                       | 112 +++++++++------------------------
  src/strangle.sh                |   4 +-
  src/stranglevk.sh              |   2 +-
  src/vulkan/libstrangle_vk.json |   2 +-
- 4 files changed, 34 insertions(+), 85 deletions(-)
+ 4 files changed, 34 insertions(+), 86 deletions(-)
 
 diff --git a/makefile b/makefile
-index ecf5dc3..84bc113 100644
+index 2f7f822..598d3b6 100644
 --- a/makefile
 +++ b/makefile
 @@ -1,16 +1,15 @@
@@ -23,7 +23,7 @@ index ecf5dc3..84bc113 100644
 +INC=-Isrc -Iinclude
 +CFLAGS+=-rdynamic -fPIC -shared -Wall -std=c99 -fvisibility=hidden $(INC)
 +LDFLAGS+=-Wl,-z,relro,-z,now
- LDLIBS=-ldl -lrt
+ LDLIBS=-ldl -lrt -lc
  
 -prefix=/usr/local
 +prefix?=/usr
@@ -118,11 +118,11 @@ index ecf5dc3..84bc113 100644
  	$(CXX) $(CXXFLAGS) $(LDXXFLAGS) -o $@ $(VK_SOURCES) $(LDXXLIBS)
  
  install-common:
-@@ -88,50 +58,29 @@ install-common:
+@@ -88,50 +58,28 @@ install-common:
  
  install-ld: ld
  	install -m 0644 -D -T $(BUILDDIR)/libstrangle.conf $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
--	ldconfig
+-	if [ -z "$(DESTDIR)" ]; then ldconfig; fi
 -
 -install-32: 32-bit
 -	install -m 0755 -D -T $(BUILDDIR)/libstrangle32.so $(DESTDIR)$(LIB32_PATH)/libstrangle.so
@@ -167,7 +167,7 @@ index ecf5dc3..84bc113 100644
  	rm -f $(BUILDDIR)/libstrangle.conf
  
  uninstall:
- 	rm -f $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
+-	rm -f $(DESTDIR)/etc/ld.so.conf.d/libstrangle.conf
 -	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle.so
 -	rm -f $(DESTDIR)$(LIB64_PATH)/libstrangle.so
 -	rm -f $(DESTDIR)$(LIB32_PATH)/libstrangle_nodlsym.so
@@ -181,10 +181,10 @@ index ecf5dc3..84bc113 100644
  	rm -f $(DESTDIR)$(bindir)/strangle
  	rm -f $(DESTDIR)$(bindir)/stranglevk
 diff --git a/src/strangle.sh b/src/strangle.sh
-index a200ea7..519c573 100755
+index 26ef14f..eda6a9b 100755
 --- a/src/strangle.sh
 +++ b/src/strangle.sh
-@@ -124,9 +124,9 @@ fi
+@@ -134,9 +134,9 @@ fi
  
  if [ "$STRANGLE_VKONLY" != "1" ]; then
  	if [ "$STRANGLE_NODLSYM" = "1" ]; then
@@ -219,5 +219,5 @@ index f7366ac..36d7fc7 100644
        "description": "Libstrangle framerate limiter",
        "enable_environment": {
 -- 
-2.30.2
+2.52.0
 
