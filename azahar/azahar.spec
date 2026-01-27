@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit f5053868b49f9f519a009cd3e305c4c4c58ace33
+%global commit 0a705b74492cc4bd05bb9194fb330017b08c0df9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260115
+%global date 20260124
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -28,6 +28,7 @@
 # Enable system fmt
 %bcond fmt 1
 %bcond glslang 1
+%bcond mcl 1
 # Disable Qt build
 %bcond qt 1
 %bcond sirit 1
@@ -156,7 +157,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2124
+Version:        2124.1.23
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -176,7 +177,9 @@ Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcnam
 %endif
 %if %{without dynarmic}
 Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
+%if %{without mcl}
 Source300:      %{vc_url}/%{srcname300}/archive/%{commit300}/%{srcname300}-%{shortcommit300}.tar.gz
+%endif
 Source301:      https://github.com/zyantific/%{srcname301}/archive/%{commit301}/%{srcname301}-%{shortcommit301}.tar.gz
 Source302:      https://github.com/zyantific/%{srcname302}/archive/%{commit302}/%{srcname302}-%{shortcommit302}.tar.gz
 %endif
@@ -251,6 +254,9 @@ BuildRequires:  cmake(cubeb)
 BuildRequires:  cmake(dynarmic) >= 6.6.1
 %else
 Provides:       bundled(dynarmic) = 0~git%{?shortcommit3}
+%if %{with mcl}
+BuildRequires:  cmake(mcl) >= 0.1.14
+%endif
 %endif
 BuildRequires:  pkgconfig(gamemode)
 BuildRequires:  pkgconfig(libavcodec)
@@ -372,7 +378,9 @@ tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
 rm -rf externals/dynarmic/externals/{catch,fmt,robin-map,xbyak}
+%if %{without mcl}
 tar -xf %{S:300} -C externals/dynarmic/externals/mcl --strip-components 1
+%endif
 tar -xf %{S:301} -C externals/dynarmic/externals/zycore --strip-components 1
 tar -xf %{S:302} -C externals/dynarmic/externals/zydis --strip-components 1
 sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt

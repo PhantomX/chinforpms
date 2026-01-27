@@ -1,31 +1,22 @@
-From f7b98f0b5f62f6f3fc8947e5d27d9968a4ddf7eb Mon Sep 17 00:00:00 2001
+From 4dc203d5193d36375389dee3ae3acc2fb5d5e1e9 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                         | 28 ++++++++++---
+ CMakeLists.txt                         | 30 ++++++++++----
  externals/CMakeLists.txt               | 57 ++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt        |  5 +++
  externals/nx_tzdb/CMakeLists.txt       |  2 +-
- src/dynarmic/CMakeLists.txt            |  2 +-
- src/dynarmic/externals/CMakeLists.txt  |  7 ++++
+ src/dynarmic/CMakeLists.txt            |  4 --
  src/qt_common/externals/CMakeLists.txt | 13 ++++++
- 7 files changed, 106 insertions(+), 8 deletions(-)
+ 6 files changed, 98 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c9b0071..51c32a9 100644
+index 147d175..158e321 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -13,7 +13,6 @@ set(CPM_SOURCE_CACHE ${CMAKE_SOURCE_DIR}/.cache/cpm)
- include(DetectPlatform)
- include(DetectArchitecture)
- include(DefaultConfig)
--include(DownloadExternals)
- include(CMakeDependentOption)
- include(CTest)
- include(CPMUtil)
-@@ -469,7 +468,7 @@ if (YUZU_USE_CPM)
+@@ -455,7 +455,7 @@ if (YUZU_USE_CPM)
  else()
      # TODO: we can probably just use CPM for this... right?
      # Enforce the search mode of non-required packages for better and shorter failure messages
@@ -34,7 +25,7 @@ index c9b0071..51c32a9 100644
  
      if (NOT YUZU_DISABLE_LLVM)
          find_package(LLVM MODULE COMPONENTS Demangle)
-@@ -494,7 +493,11 @@ else()
+@@ -480,7 +480,11 @@ else()
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -46,29 +37,27 @@ index c9b0071..51c32a9 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -560,18 +563,31 @@ find_package(VulkanMemoryAllocator)
+@@ -542,22 +546,32 @@ find_package(VulkanMemoryAllocator)
  find_package(enet)
  find_package(MbedTLS)
  find_package(VulkanUtilityLibraries)
 -find_package(SimpleIni)
  find_package(SPIRV-Tools)
  find_package(sirit)
- find_package(gamemode) 
+ find_package(gamemode)
+ find_package(mcl)
 +find_package(VulkanHeaders 1.3.274 REQUIRED)
  
- if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
-     find_package(xbyak)
- endif()
- 
--if (ENABLE_WEB_SERVICE OR ENABLE_QT_UPDATE_CHECKER)
--    # Workaround: httplib will kill itself if you attempt to do a find_package propagation
--    # find_package(httplib CONFIG)
+-if (ARCHITECTURE_riscv64)
+-    find_package(biscuit)
 +if(fmt_FOUND)
 +    message(STATUS "Using the system fmt")
 +else()
 +    add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
-+endif()
-+
+ endif()
+ 
+-if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+-    find_package(xbyak)
 +if (NOT YUZU_USE_CPM)
 +  if(MbedTLS_FOUND)
 +      message(STATUS "Using the system mbed TLS")
@@ -81,14 +70,20 @@ index c9b0071..51c32a9 100644
 +  endif()
  endif()
  
- if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
+-if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
+-    find_package(cpp-jwt)
++if (ARCHITECTURE_riscv64)
++    find_package(biscuit)
+ endif()
+ 
+ if (ARCHITECTURE_arm64 OR DYNARMIC_TESTS)
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 1849196..4f70378 100644
+index 185be58..e744c28 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -27,11 +27,18 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
- # Xbyak (also used by Dynarmic, so needs to be added first)
+ # Xbyak
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
 +  if (YUZU_USE_CPM)
      if (PLATFORM_SUN OR PLATFORM_OPENBSD OR PLATFORM_NETBSD OR PLATFORM_DRAGONFLY)
@@ -104,16 +99,16 @@ index 1849196..4f70378 100644
 +  endif()
  endif()
  
- # Oaknut (also used by Dynarmic, so needs to be added first)
-@@ -40,6 +47,7 @@ if (ARCHITECTURE_arm64 OR DYNARMIC_TESTS)
- endif()
+ # Oaknut
+@@ -48,6 +55,7 @@ endif()
+ AddJsonPackage(mcl)
  
  # enet
 +if (YUZU_USE_CPM)
  AddJsonPackage(enet)
  
  if (enet_ADDED)
-@@ -49,12 +57,17 @@ endif()
+@@ -57,12 +65,17 @@ endif()
  if (NOT TARGET enet::enet)
      add_library(enet::enet ALIAS enet)
  endif()
@@ -131,7 +126,7 @@ index 1849196..4f70378 100644
  
  # small hack
  if (NOT VulkanUtilityLibraries_ADDED)
-@@ -76,10 +89,15 @@ if (USE_DISCORD_PRESENCE)
+@@ -84,10 +97,15 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -147,7 +142,7 @@ index 1849196..4f70378 100644
      AddJsonPackage(cubeb)
  
      if (cubeb_ADDED)
-@@ -108,6 +126,7 @@ if(ENABLE_CUBEB)
+@@ -116,6 +134,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -155,7 +150,7 @@ index 1849196..4f70378 100644
  
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
  if (ENABLE_SDL2)
-@@ -153,9 +172,14 @@ endif()
+@@ -161,9 +180,14 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
@@ -170,7 +165,7 @@ index 1849196..4f70378 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -164,9 +188,12 @@ else()
+@@ -172,9 +196,12 @@ else()
          target_compile_options(siritobj PRIVATE -Wno-error=unused-command-line-argument)
      endif()
  endif()
@@ -183,7 +178,7 @@ index 1849196..4f70378 100644
  
  if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -174,9 +201,11 @@ if (SPIRV-Tools_ADDED)
+@@ -182,9 +209,11 @@ if (SPIRV-Tools_ADDED)
  endif()
  
  # Catch2
@@ -195,7 +190,7 @@ index 1849196..4f70378 100644
  
  # getopt
  if (MSVC)
-@@ -187,12 +216,16 @@ endif()
+@@ -195,12 +224,16 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -212,7 +207,7 @@ index 1849196..4f70378 100644
  
  if (VulkanMemoryAllocator_ADDED)
      if (CXX_CLANG)
-@@ -208,16 +241,40 @@ endif()
+@@ -216,16 +249,40 @@ endif()
  
  # httplib
  if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
@@ -254,10 +249,10 @@ index 1849196..4f70378 100644
  # FFMpeg
  if (YUZU_USE_EXTERNAL_FFMPEG OR YUZU_USE_BUNDLED_FFMPEG)
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index d71613d..2369f8e 100644
+index 3140f8e..b6a3325 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
-@@ -154,10 +154,15 @@ else()
+@@ -152,10 +152,15 @@ else()
          message(FATAL_ERROR "Required program `autoconf` not found.")
      endif()
  
@@ -274,10 +269,10 @@ index d71613d..2369f8e 100644
      make_directory(${FFmpeg_BUILD_DIR})
  
 diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
-index efb3e2b..ffa1109 100644
+index b9aa50a..f920400 100644
 --- a/externals/nx_tzdb/CMakeLists.txt
 +++ b/externals/nx_tzdb/CMakeLists.txt
-@@ -58,7 +58,7 @@ elseif (MSVC AND NOT CXX_CLANG AND YUZU_ENABLE_LTO)
+@@ -56,7 +56,7 @@ elseif (MSVC AND NOT CXX_CLANG AND YUZU_ENABLE_LTO)
              ${NX_TZDB_ARCHIVE}
          DESTINATION
              ${NX_TZDB_BASE_DIR})
@@ -287,37 +282,20 @@ index efb3e2b..ffa1109 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index 6d19c43..4fac8da 100644
+index 1558d76..4056987 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -112,7 +112,7 @@ find_package(fmt 8 CONFIG)
- # Pull in externals CMakeLists for libs where available
- add_subdirectory(externals)
- 
--find_package(mcl 0.1.12 REQUIRED)
-+find_package(mcl 0.1.12)
- 
- if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
-     find_package(oaknut 2.0.1 CONFIG)
-diff --git a/src/dynarmic/externals/CMakeLists.txt b/src/dynarmic/externals/CMakeLists.txt
-index 1956499..5527320 100644
---- a/src/dynarmic/externals/CMakeLists.txt
-+++ b/src/dynarmic/externals/CMakeLists.txt
-@@ -28,7 +28,14 @@ if ("riscv" IN_LIST ARCHITECTURE)
+@@ -124,10 +124,6 @@ if ("riscv" IN_LIST ARCHITECTURE)
+     find_package(biscuit 0.9.1 REQUIRED)
  endif()
  
- # mcl
-+if (YUZU_USE_CPM)
- AddJsonPackage(
-     NAME mcl
-     BUNDLED_PACKAGE ${DYNARMIC_USE_BUNDLED_EXTERNALS}
- )
-+else()
-+  if (NOT TARGET merry::mcl)
-+      set(MCL_INSTALL OFF)
-+      add_subdirectory(mcl)
-+  endif()
-+endif()
+-if ("x86_64" IN_LIST ARCHITECTURE)
+-    find_package(xbyak 7 CONFIG)
+-endif()
+-
+ if (DYNARMIC_USE_LLVM)
+     find_package(LLVM REQUIRED)
+     separate_arguments(LLVM_DEFINITIONS)
 diff --git a/src/qt_common/externals/CMakeLists.txt b/src/qt_common/externals/CMakeLists.txt
 index b998090..b98b14f 100644
 --- a/src/qt_common/externals/CMakeLists.txt

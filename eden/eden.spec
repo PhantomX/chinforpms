@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 8440c2074da7b4c901641dea317f570b256f2c03
+%global commit 2f1f9be7a41ba742d31657a75c65f7efffbfce12
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260107
+%global date 20260123
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -35,10 +35,6 @@
 %bcond xbyak 0
 # Enable webservice
 %bcond webservice 1
-
-%global commit110 7b08d83418f628b800dfac1c9a16c3f59036fbad
-%global shortcommit110 %(c=%{commit110}; echo ${c:0:7})
-%global srcname110 mcl
 
 %global commit111 73f3cbb237e84d483afafc743f1f14ec53e12314
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
@@ -110,7 +106,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.1.0~rc1.28183
+Version:        0.1.0~rc1.28243
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -131,7 +127,6 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommi
 Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
-Source110:      https://github.com/azahar-emu/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
 Source111:      https://github.com/martinus/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
@@ -230,6 +225,7 @@ Provides:       bundled(ffmpeg) = 0~git%{?shortcommit21}
 Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
 %endif
 %endif
+BuildRequires:  cmake(mcl) >= 0.1.12
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
@@ -309,13 +305,6 @@ This is the Qt frontend.
 %prep
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
-
-mkdir -p src/dynarmic/externals/mcl
-tar -xf %{S:110} -C src/dynarmic/externals/mcl --strip-components 1
-%{__scm_apply_patch -p1 -q} -d src/dynarmic/externals/mcl -i ../../../../.patch/mcl/0001-assert-macro.patch
-sed \
-  -e '/find_package/s|mcl|\0_DISABLED|g' \
-  -i src/dynarmic/CMakeLists.txt
 
 sed \
 %if %{without xbyak}
