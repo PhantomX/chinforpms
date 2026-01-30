@@ -1,18 +1,18 @@
-From 6dca7da0177520e8e95b11b16c39c74e500fa61c Mon Sep 17 00:00:00 2001
+From 4009f741930c22ff5ccb44d52f2e2d8eb3f3afff Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 7 Jan 2024 17:50:57 -0300
 Subject: [PATCH] fix build flags
 
 ---
- Makefiles/Makefile.UNIX | 17 ++++++++++++-----
+ Makefiles/Makefile.UNIX | 18 +++++++++++++-----
  Makefiles/Rules.inc     | 13 ++++++-------
- 2 files changed, 18 insertions(+), 12 deletions(-)
+ 2 files changed, 19 insertions(+), 12 deletions(-)
 
 diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
-index af22be1..7b506d3 100644
+index af02998..49a0b9a 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
-@@ -62,19 +62,26 @@ LD = gcc
+@@ -62,18 +62,26 @@ LD = gcc
  # SDL
  #
  
@@ -38,14 +38,14 @@ index af22be1..7b506d3 100644
 +GLU_LIBS = `pkg-config --libs glu`
 +ZLIB_CFLAGS = `pkg-config --cflags zlib`
 +ZLIB_LIBS = `pkg-config --libs zlib`
- 
++
 +PLATFORM_CXXFLAGS = $(SDL2_CFLAGS) $(SDL2_NET_CFLAGS) $(GL_CFLAGS) $(GLU_CFLAGS) $(ZLIB_CFLAGS)
 +PLATFORM_LDFLAGS = $(SDL2_LIBS) $(SDL2_NET_LIBS) $(GL_LIBS) $(GLU_LIBS) $(ZLIB_LIBS) -lm -lstdc++ -lpthread
+ PLATFORM_BINARY_EXTENSION =
  
- ###############################################################################
- # Core Makefile
+ 
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index bb7f501..547fc5c 100644
+index ae3c05f..0c15d92 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
 @@ -69,14 +69,13 @@ endif
@@ -79,7 +79,7 @@ index bb7f501..547fc5c 100644
  
  
  ###############################################################################
-@@ -377,7 +376,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
+@@ -384,7 +383,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
  
  MUSASHI_OUTFILE = $(OBJ_DIR)/m68kmake.exe # do not remove the .exe suffix!
  MUSASHI_CFLAGS = -ISrc/CPU/68K/Musashi -I$(OBJ_DIR) -DINLINE="static inline" -Wno-unused-variable
@@ -89,5 +89,5 @@ index bb7f501..547fc5c 100644
  $(MUSASHI_OUTFILE): Src/CPU/68K/Musashi/m68kmake.c Src/CPU/68K/Musashi/m68k_in.c | $(OBJ_DIR)
  	$(info --------------------------------------------------------------------------------)
 -- 
-2.51.0
+2.52.0
 

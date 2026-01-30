@@ -1,7 +1,7 @@
-%global commit 4164535eac54a2c5d561cd996c247e7a84644400
+%global commit 93f3d8ae9fad50b3ebc45f808bb4749322a0de14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260106
-%bcond snapshot 0
+%global date 20260128
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.1
+%global wine_stagingver 21f00bc50fe2e8f9ced2a4148f2a82bc3b5c4e21
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,7 +84,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8c54250246d1b28dc4d0e195ac145305284a7a9d
+%global tkg_id 65ea535d2bcd30f18662d6bf202db953f336c37f
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -125,7 +125,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -206,7 +206,7 @@ Patch707:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.pat
 Patch708:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
 Patch709:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch710:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch711:        %{whq_murl}/-/merge_requests/9871.patch#/%{name}-whq-mr9871.patch
+Patch711:        %{whq_murl}/-/merge_requests/10001.patch#/%{name}-whq-mr10001.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -841,9 +841,9 @@ tar -xf %{SOURCE900} --strip-components=1
 %endif
 %patch -P 1023 -p1
 %patch -P 1024 -p1
-%patch -P 1025 -p1
 # https://bugs.winehq.org/show_bug.cgi?id=51687#c7
-%dnl %patch -P 1026 -p1
+%dnl %patch -P 1025 -p1
+%patch -P 1026 -p1
 %patch -P 1027 -p1
 
 %patch -P 1091 -p1 -R
@@ -1973,6 +1973,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wmasf.dll
 %{_libdir}/wine/%{winepedirs}/wmi.dll
 %{_libdir}/wine/%{winepedirs}/wmilib.sys
+%{_libdir}/wine/%{winepedirs}/wminet_utils.dll
 %{_libdir}/wine/%{winepedirs}/wmiutils.dll
 %{_libdir}/wine/%{winepedirs}/wmp.dll
 %{_libdir}/wine/%{winepedirs}/wmvcore.dll

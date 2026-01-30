@@ -1,15 +1,14 @@
-From fb9712aa5fc312d2e22436b4962e9b01794577ff Mon Sep 17 00:00:00 2001
+From 30ba616c31f7f5b20eaa0c96ff5147d452354643 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 26 Aug 2021 08:20:38 -0300
 Subject: [PATCH] Use system vulkan headers
 
 ---
  Common/GPU/Vulkan/VulkanLoader.h | 2 +-
- libretro/libretro_vulkan.h       | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/Common/GPU/Vulkan/VulkanLoader.h b/Common/GPU/Vulkan/VulkanLoader.h
-index a7ca178..578e8d8 100644
+index 83836b6..98b1386 100644
 --- a/Common/GPU/Vulkan/VulkanLoader.h
 +++ b/Common/GPU/Vulkan/VulkanLoader.h
 @@ -36,7 +36,7 @@
@@ -21,19 +20,6 @@ index a7ca178..578e8d8 100644
  #include <string>
  
  // Hacky X11 header workaround
-diff --git a/libretro/libretro_vulkan.h b/libretro/libretro_vulkan.h
-index 3f10da9..4adf828 100644
---- a/libretro/libretro_vulkan.h
-+++ b/libretro/libretro_vulkan.h
-@@ -27,7 +27,7 @@
- #ifndef LIBRETRO_VULKAN_H__
- #define LIBRETRO_VULKAN_H__
- 
--#include "ext/vulkan/vulkan.h"
-+#include <vulkan/vulkan.h>
- #include "libretro.h"
- #include "LibretroGraphicsContext.h"
- 
 -- 
-2.45.2
+2.52.0
 

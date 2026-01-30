@@ -1,6 +1,6 @@
-%global commit 4247c72f7b7d0b3fab669c1216b1fe4e20f83e92
+%global commit 2d0967a41a629ee3dd9c80856e9286f2d3653496
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251106
+%global date 20260128
 %bcond snapshot 1
 
 %global with_python  1
@@ -12,7 +12,7 @@
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global with_autotools 1
-%global extra_ver 175
+%global extra_ver 205
 %global src_hash 641374f82a9e52f195ffc36634211996
 %else
 %global extra_ver 0
@@ -25,7 +25,7 @@
 
 Name:           claws-mail
 Version:        4.3.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 Summary:        Email client and news reader based on GTK+
 License:        GPL-3.0-or-later
@@ -83,12 +83,11 @@ BuildRequires:  docbook-utils docbook-utils-pdf
 BuildRequires:  compface-devel
 %endif
 BuildRequires:  pkgconfig(cairo) >= 1.0.0
-BuildRequires:  pkgconfig(dbus-1) >= 0.60
-BuildRequires:  pkgconfig(dbus-glib-1) >= 0.60
 BuildRequires:  pkgconfig(enchant-2) >= 2.0.0
 BuildRequires:  pkgconfig(expat)
+BuildRequires:  pkgconfig(gio-2.0) >= 2.26
 BuildRequires:  pkgconfig(glib-2.0) >= 2.36.0
-BuildRequires:  pkgconfig(gnutls)
+BuildRequires:  pkgconfig(gnutls) >= 3.4
 BuildRequires:  pkgconfig(gpg-error)
 BuildRequires:  pkgconfig(gpgme) >= 1.0.1
 BuildRequires:  pkgconfig(gtk+-3.0) >= 3.24.0

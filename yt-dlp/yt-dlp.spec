@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2025.12.08
+Version:        2026.01.29
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -33,7 +33,7 @@ BuildRequires:  pandoc
 BuildRequires:  %{py3_dist pytest}
 %endif
 
-Requires:       %{py3_dist yt_dlp_ejs}
+Requires:       %{py3_dist yt_dlp_ejs} >= 0.4.0
 
 Recommends:     AtomicParsley
 Recommends:     deno >= 2.0.0
@@ -130,6 +130,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri Jan 30 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.01.29-100
+- 2026.01.29
+
 * Mon Dec 08 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2025.12.08-100
 - 2025.12.08
 

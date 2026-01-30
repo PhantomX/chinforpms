@@ -1,36 +1,36 @@
-From 8f576d72552d239e799dd9426c7c45f972c7103c Mon Sep 17 00:00:00 2001
+From bdae1b3015d5f5437b910d2396a32be3209b17ba Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 12 Nov 2025 07:33:33 -0300
 Subject: [PATCH] Offline build fixes
 
 ---
- pnpm.py        | 10 ----------
+ hatch_build.py | 10 ----------
  pyproject.toml |  1 +
  2 files changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/pnpm.py b/pnpm.py
-index 0223d50..c41c6a0 100755
---- a/pnpm.py
-+++ b/pnpm.py
-@@ -13,16 +13,6 @@ except ImportError:
+diff --git a/hatch_build.py b/hatch_build.py
+index 54fffb6..684b736 100755
+--- a/hatch_build.py
++++ b/hatch_build.py
+@@ -11,16 +11,6 @@ except ImportError:
  
  class CustomBuildHook(BuildHookInterface):
      def initialize(self, version, build_data):
--        name, pnpm = build_pnpm()
--        if pnpm is None:
+-        name, cmds, env = build_bundle_cmds()
+-        if cmds is None:
 -            raise RuntimeError(
--                "One of 'deno', 'bun', or 'npm' could not be found. "
+-                "One of 'pnpm', 'deno', 'bun', or 'npm' could not be found. "
 -                "Please install one of them to proceed with the build."
 -            )
 -        print(f"Building with {name}...")
 -
--        pnpm(["install", "--frozen-lockfile"])
--        pnpm(["run", "bundle"])
+-        for cmd in cmds:
+-            subprocess.run(cmd, env=env, check=True)
  
          build_data["force_include"].update(
              {
 diff --git a/pyproject.toml b/pyproject.toml
-index f331968..ced744d 100644
+index a2968e1..073b3dd 100644
 --- a/pyproject.toml
 +++ b/pyproject.toml
 @@ -42,6 +42,7 @@ Source = "https://github.com/yt-dlp/ejs"

@@ -2,7 +2,7 @@
 %global modname yt_dlp_ejs
 
 Name:           yt-dlp-%{pkgname}
-Version:        0.3.2
+Version:        0.4.0
 Release:        1%{?dist}
 Summary:        External JavaScript for yt-dlp supporting many runtimes
 
@@ -57,6 +57,9 @@ sed -e 's|_RPM_VERSION_|%{version}|g' -i pyproject.toml
 
 
 %changelog
+* Thu Jan 29 2026 Phantom X <megaphantomx at hotmail dot com> - 0.4.0-1
+- 0.4.0
+
 * Mon Dec 08 2025 Phantom X <megaphantomx at hotmail dot com> - 0.3.2-1
 - 0.3.2
 

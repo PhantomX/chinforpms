@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit a5f877f7609f20a0e83dc8b40a0023e97d7be497
+%global commit 722178e205713da370d070c19d8f493b7eaffd9d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260103
+%global date 20260129
 %bcond snapshot 1
 
 # Enable Qt build
@@ -86,6 +86,10 @@
 %global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
 %global srcname130 nanosvg
 
+%global commit140 098039af82636fa8c5ce10f227aa340e23c77251
+%global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
+%global srcname140 aemu_postoffice
+
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %global vercommit %(c=%{commit}; echo ${c:0:10})
@@ -110,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.1250
+Version:        1.19.3.1456
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -118,6 +122,7 @@ Epoch:          1
 License: %{shrink:
     BSD-3-Clause-Modification AND
     GPL-2.0-or-later AND
+    GPL-3.0-only AND
     Apache-2.0 AND
     MIT AND
     WTF AND
@@ -153,6 +158,7 @@ Source11:       https://github.com/miniupnp/%{srcname11}/archive/%{commit11}/%{s
 Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 Source130:      %{vc_url}/%{srcname130}/archive/%{commit130}/%{srcname130}-%{shortcommit130}.tar.gz
+Source140:      https://github.com/Kethen/%{srcname140}/archive/%{commit140}/%{srcname140}-%{shortcommit140}.tar.gz
 %if %{without sdl2}
 Source900:      https://www.libsdl.org/release/SDL2-%{sdl2_ver}.tar.gz
 Source901:      https://github.com/libsdl-org/SDL_ttf/releases/download/release-%{sdl2_ttf_ver}/SDL2_ttf-%{sdl2_ttf_ver}.tar.gz
@@ -343,6 +349,7 @@ tar -xf %{SOURCE9} -C ext/rcheevos --strip-components 1
 tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
 tar -xf %{SOURCE12} -C ext/lua --strip-components 1
 tar -xf %{SOURCE130} -C ext/nanosvg --strip-components 1
+tar -xf %{SOURCE140} -C ext/aemu_postoffice --strip-components 1
 %if %{without sdl2}
 mkdir ext/sdl2
 tar -xf %{SOURCE900} -C ext/sdl2 --strip-components 1
@@ -383,6 +390,7 @@ cp -p SPIRV-Cross/LICENSE LICENSE.SPIRV-Cross
 cp -p udis86/LICENSE LICENSE.udis86
 cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
 cp -p portable-file-dialogs/COPYING COPYING.pfd
+cp -p aemu_postoffice/gpl-3.0.txt COPYING.aemu_postoffice
 %if %{without sdl2}
 cp -p sdl2/LICENSE.txt LICENSE.sdl2
 cp -p sdl2_ttf/LICENSE.txt LICENSE.sdl2_ttf
