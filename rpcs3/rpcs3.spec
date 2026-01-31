@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 1bfd1154f5a2041ebc2ecb88c72e5c66207bc57a
+%global commit db3d9cd2179ac0c1080b997f277d9c114e82bc76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260107
+%global date 20260130
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -98,9 +98,9 @@
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 ffmpeg-core
 
-%global commit21 595bf0007ab1929570c7671f091313c8fc20644e
+%global commit21 edaa823d8b36a8656d7b2b9241b7d0bfe50af878
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
-%global srcname21 flatbuffers
+%global srcname21 protobuf
 
 %global commit22 1e5b49925aa60065db52de44c366d446a902547b
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
@@ -124,11 +124,17 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.39.18620
+Version:        0.0.39.18747
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
-License:        GPL-2.0-only AND GPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND BSD-3-Clause AND GPL-3.0-or-later AND Apache-2.0
+License: %{shrink:
+    GPL-2.0-only AND
+    GPL-2.0-or-later AND
+    LGPL-2.1-or-later AND
+    MIT AND BSD-3-Clause AND
+    GPL-3.0-or-later
+}
 URL:            https://rpcs3.net/
 
 %if %{with snapshot}
@@ -161,9 +167,7 @@ Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortc
 Source200:      https://ffmpeg.org/releases/ffmpeg-%{bundleffmpegver}.tar.xz
 Source201:      ffmpeg-linux_x86-64.sh
 %endif
-%if %{without flatbuffers}
-Source21:       https://github.com/google/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
-%endif
+Source21:       https://github.com/protocolbuffers/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
 %if %{without rtmidi}
 Source22:       https://github.com/thestk/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 %endif
@@ -173,7 +177,6 @@ Source24:       https://github.com/Megamouse/%{srcname24}/archive/%{commit24}/%{
 %endif
 Source99:       Makefile
 
-Patch0:         %{vc_url}/%{name}/pull/17985.patch#/%{name}-gh-pr17985.patch
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
@@ -195,6 +198,7 @@ BuildRequires:  lld%{?llvm_pkgver}
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
+BuildRequires:  cmake(absl)
 BuildRequires:  cmake(cubeb)
 %if %{with faudio}
 BuildRequires:  cmake(FAudio)
@@ -203,10 +207,6 @@ BuildRequires:  cmake(FAudio)
 BuildRequires:  llvm%{?llvm_pkgver}-devel >= %{bundlellvm}
 %else
 Provides:       bundled(llvm) = %{bundlellvm}~git%{shortcommit18}
-%endif
-%if %{with flatbuffers}
-BuildRequires:  pkgconfig(flatbuffers) >= %{bundleflatbuffers}
-BuildRequires:  flatbuffers-compiler >= %{bundleflatbuffers}
 %endif
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(gamemode)
@@ -296,6 +296,7 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       bundled(soundtouch) = 0~git%{shortcommit11}
 Provides:       bundled(asmjit) = 0~git%{shortcommit12}
 Provides:       bundled(Fusion) = 0~git%{shortcommit17}
+Provides:       bundled(protobuf) = 0~git%{shortcommit21}
 Provides:       bundled(stb) = 0~git%{shortcommit23}
 Provides:       bundled(wolfssl) = 0~git%{shortcommit15}
 
@@ -388,12 +389,8 @@ tar -xf %{S:10} -C 3rdparty/pugixml --strip-components 1
 cp -p 3rdparty/pugixml/LICENSE.md 3rdparty/LICENSE.pugixml.md
 %endif
 
-%if %{without flatbuffers}
-tar -xf %{S:21} -C 3rdparty/flatbuffers --strip-components 1
-cp -p 3rdparty/flatbuffers/LICENSE.txt 3rdparty/LICENSE.flatbuffers
-%else
-rm -rf 3rdparty/flatbuffers
-%endif
+tar -xf %{S:21} -C 3rdparty/protobuf/protobuf --strip-components 1
+cp -p 3rdparty/protobuf/protobuf/LICENSE 3rdparty/LICENSE.protobuf
 
 %if %{without yamlcpp}
 tar -xf %{S:16} -C 3rdparty/yaml-cpp/yaml-cpp --strip-components 1
@@ -472,9 +469,7 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmp
   -DUSE_FAUDIO:BOOL=OFF \
 %endif
   -DUSE_DISCORD_RPC:BOOL=OFF \
-%if %{with flatbuffers}
-  -DUSE_SYSTEM_FLATBUFFERS:BOOL=ON \
-%endif
+  -DUSE_SYSTEM_PROTOBUF:BOOL=OFF \
   -DUSE_SYSTEM_CUBEB:BOOL=ON \
   -DUSE_SYSTEM_CURL:BOOL=ON \
 %if %{with ffmpeg}

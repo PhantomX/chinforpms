@@ -17,7 +17,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        7.7.3851.66
+Version:        7.8.3925.56
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -104,7 +104,7 @@ mkdir -p %{buildroot}%{_libdir}/%{name}
 cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,*.{bin,dat,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
-mv opt/%{name}/lib/*.so %{buildroot}%{_libdir}/%{name}/
+mv opt/%{name}/*.so %{buildroot}%{_libdir}/%{name}/
 rm -f %{buildroot}%{_libdir}/%{name}/libvulkan.so*
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/extensions
@@ -176,6 +176,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %dir %{_libdir}/%{name}/locales
 %{_libdir}/%{name}/locales/en-US*.pak
 %{_libdir}/%{name}/MEIPreload
+%{_libdir}/%{name}/resources/accessibility
+%{_libdir}/%{name}/resources/inspector_overlay
 %{_libdir}/%{name}/resources/%{name}/adblocker_resources
 %{_libdir}/%{name}/resources/%{name}/components
 %{_libdir}/%{name}/resources/%{name}/default-bookmarks
@@ -199,6 +201,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Jan 31 2026 - 7.8.3925.56-1
+- 7.8.3925.56
+
 * Wed Dec 17 2025 - 7.7.3851.66-1
 - 7.7.3851.66
 - Package language fixes
