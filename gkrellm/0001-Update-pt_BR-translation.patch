@@ -1,0 +1,107 @@
+From 9c7fccdc3c0885170072e2bb2e68b5d1091235db Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 1 Feb 2026 19:52:55 -0300
+Subject: [PATCH] Update pt_BR translation
+
+---
+ po/pt_BR.po | 27 ++++++++++-----------------
+ 1 file changed, 10 insertions(+), 17 deletions(-)
+
+diff --git a/po/pt_BR.po b/po/pt_BR.po
+index 597ee98..3906ae3 100644
+--- a/po/pt_BR.po
++++ b/po/pt_BR.po
+@@ -4,20 +4,20 @@
+ # This file is distributed under the same license as the gkrellm package.
+ #
+ # Rodrigo Fabiano Rosa <rodrigo@insignelinux.org>, 2006.
+-# SPDX-FileCopyrightText: 2008, 2009, 2010, 2011, 2014, 2025 Phantom X <megaphantomx
++# SPDX-FileCopyrightText: 2008, 2009, 2010, 2011, 2014, 2025, 2026 Phantom X <megaphantomx
+ msgid ""
+ msgstr ""
+ "Project-Id-Version: GKrellM 2.3.11\n"
+ "Report-Msgid-Bugs-To: \n"
+ "POT-Creation-Date: 2025-12-03 20:03+0100\n"
+-"PO-Revision-Date: 2025-02-22 01:36-0300\n"
++"PO-Revision-Date: 2026-02-01 19:48-0300\n"
+ "Last-Translator: Phantom X <megaphantomx at hotmail dot com>\n"
+ "Language-Team: Portuguese <>\n"
+ "Language: pt_BR\n"
+ "MIME-Version: 1.0\n"
+ "Content-Type: text/plain; charset=UTF-8\n"
+ "Content-Transfer-Encoding: 8bit\n"
+-"X-Generator: Lokalize 24.12.2\n"
++"X-Generator: Lokalize 25.12.1\n"
+ "Plural-Forms:  nplurals=2; plural=(n > 1);\n"
+ 
+ #: src/alerts.c:1167
+@@ -1344,31 +1344,26 @@ msgid "Reload Theme"
+ msgstr "Recarregar Tema"
+ 
+ #: src/gui.c:2524
+-#, fuzzy
+ msgid "Next Theme"
+-msgstr "Tema"
++msgstr "Próximo Tema"
+ 
+ #: src/gui.c:2526
+-#, fuzzy
+ msgid "Previous Theme"
+-msgstr "Recarregar Tema"
++msgstr "Tema Anterior"
+ 
+ #: src/gui.c:2528
+-#, fuzzy
+ msgid "Next Theme Alternative"
+-msgstr "%d total de temas alternativos"
++msgstr "Próximo Tema Alternativo"
+ 
+ #: src/gui.c:2530
+-#, fuzzy
+ msgid "Previous Theme Alternative"
+-msgstr "%d total de temas alternativos"
++msgstr "Tema Alternativo Anterior"
+ 
+ #: src/gui.c:2532
+ msgid "Scale Theme Up"
+ msgstr "Escalar tema para mais"
+ 
+ #: src/gui.c:2534
+-#, fuzzy
+ msgid "Scale Theme Down"
+ msgstr "Escalar tema para menos"
+ 
+@@ -2505,9 +2500,8 @@ msgid "\\f\\ww\\c\\f$M\\D2\\f\\ar\\.$r\\D1\\f\\at\\.$t\\b\\c\\f$L"
+ msgstr ""
+ 
+ #: src/net.c:3233
+-#, fuzzy
+ msgid "Ignore Net Interfaces"
+-msgstr "Habilitar novas intefaces"
++msgstr "Ignorar Interfaces de Rede"
+ 
+ #: src/net.c:3235
+ msgid "Space separated list of patterns.\n"
+@@ -2727,9 +2721,8 @@ msgid "Sensor Fan RPM Limits"
+ msgstr "Limites do sensor Fan RPM"
+ 
+ #: src/sensors.c:1860
+-#, fuzzy
+ msgid "Sensor Power Limits"
+-msgstr "Limites do sensor Volt"
++msgstr "Limites do Sensor de Energia"
+ 
+ #. box = gkrellm_gtk_framed_vbox(vbox, _("Temperatures"), 4, FALSE, 0, 2);
+ #: src/sensors.c:2196 src/sensors.c:2981
+@@ -2747,7 +2740,7 @@ msgstr "Voltagens"
+ 
+ #: src/sensors.c:2217
+ msgid "Power"
+-msgstr ""
++msgstr "Energia"
+ 
+ #: src/sensors.c:2802
+ msgid ""
+-- 
+2.52.0
+

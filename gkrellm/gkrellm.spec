@@ -1,5 +1,5 @@
 Name:           gkrellm
-Version:        2.4.0
+Version:        2.5.0
 Release:        100%{?dist}
 Summary:        Multiple stacked system monitors in one process
 
@@ -12,18 +12,19 @@ Source0:        https://gkrellm.srcbox.net/releases/%{name}-%{version}.tar.bz2
 
 Patch1:         gkrellm-2.4.0-config.patch
 Patch3:         gkrellm-2.4.0-width.patch
-Patch10:        https://git.srcbox.net/%{name}/%{name}/commit/f961318d048b85eb0d40ea530906b040b173a7d0.patch#/%{name}-git-f961318.patch
+Patch10:        0001-Update-pt_BR-translation.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  gcc
+BuildRequires:  meson
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(libntlm)
 BuildRequires:  lm_sensors-devel
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(sm)
 BuildRequires:  libappstream-glib
-Requires:       gdk-pixbuf2-modules-extra%{?_isa}
+Requires:       ( gdk-pixbuf2-modules-extra%{?_isa} or glycin-loaders%{?_isa} >= 2.1 )
 
 %description
 GKrellM charts CPU, load, Disk, and all active net interfaces
@@ -65,7 +66,7 @@ Development files for the GNU Krell Monitors.
 %prep
 %autosetup -p1
 
-for i in gkrellmd.1 gkrellm.1 README Changelog.OLD Changelog-plugins.html \
+for i in docs/gkrellmd.1 docs/gkrellm.1 README Changelog.OLD Changelog-plugins.html \
     src/gkrellm.h server/gkrellmd.h; do
    sed -i -e "s@/usr/lib/gkrellm2*/plugins@%{_libdir}/gkrellm2/plugins@" $i
    sed -i -e "s@/usr/local/lib/gkrellm2*/plugins@/usr/local/%{_lib}/gkrellm2/plugins@" $i
@@ -78,34 +79,25 @@ EOF
 
 
 %build
-%make_build PREFIX=%{_prefix} \
-    PKGCONFIGDIR=%{_libdir}/pkgconfig \
-    INCLUDEDIR=%{_includedir} \
-    SINSTALLDIR=%{_sbindir} \
-    CFLAGS="$CFLAGS -D_GNU_SOURCE -Wno-error=incompatible-pointer-types" \
-    LDFLAGS="$LDFLAGS"
+export CFLAGS+=" -D_GNU_SOURCE -Wno-error=incompatible-pointer-types"
+%meson
+%meson_build
 
 
 %install
 mkdir -p %{buildroot}%{_datadir}/gkrellm2/themes
 mkdir -p %{buildroot}%{_libdir}/gkrellm2/plugins
 
-make install DESTDIR=%{buildroot} PREFIX=%{_prefix} \
-    LOCALEDIR=%{buildroot}%{_datadir}/locale \
-    INSTALLDIR=%{buildroot}%{_bindir} \
-    SINSTALLDIR=%{buildroot}%{_sbindir} \
-    MANDIR=%{buildroot}%{_mandir}/man1 \
-    PKGCONFIGDIR=%{buildroot}%{_libdir}/pkgconfig \
-    INCLUDEDIR=%{buildroot}%{_includedir} \
-    CFGDIR=%{buildroot}%{_sysconfdir}
-
-%find_lang %name
-
-desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
+%meson_install
 
 install -m0644 -D gkrellm.sysusers.conf %{buildroot}%{_sysusersdir}/gkrellm.conf
 
+%find_lang %name
+
+
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 
 %post daemon
@@ -133,6 +125,7 @@ install -m0644 -D gkrellm.sysusers.conf %{buildroot}%{_sysusersdir}/gkrellm.conf
 %license %{_licensedir}/%{name}*
 %{_includedir}/gkrellm2
 %{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/pkgconfig/%{name}d.pc
 
 %files daemon
 %license %{_licensedir}/%{name}*
@@ -144,6 +137,10 @@ install -m0644 -D gkrellm.sysusers.conf %{buildroot}%{_sysusersdir}/gkrellm.conf
 
 
 %changelog
+* Sun Feb 01 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.0-100
+- 2.5.0
+- meson
+
 * Sat Feb 22 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.4.0-100
 - chinforpms build
 

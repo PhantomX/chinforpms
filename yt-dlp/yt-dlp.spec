@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2026.01.29
+Version:        2026.01.31
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -33,7 +33,8 @@ BuildRequires:  pandoc
 BuildRequires:  %{py3_dist pytest}
 %endif
 
-Requires:       %{py3_dist yt_dlp_ejs} >= 0.4.0
+Requires:       %{py3_dist yt_dlp_ejs} >= 0.4
+Requires:       %{name}+default = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Recommends:     AtomicParsley
 Recommends:     deno >= 2.0.0
@@ -86,24 +87,20 @@ sed \
 %endif
 
 %generate_buildrequires
-%pyproject_buildrequires -r
+%pyproject_buildrequires -x default,secretstorage
 
 
 %build
-%pyproject_wheel
-
 %make_build completion-bash completion-zsh completion-fish
 %if %{with man}
 %make_build %{name}.1
 %endif
+%pyproject_wheel
+
 
 %install
 %pyproject_install
-
 %pyproject_save_files yt_dlp
-
-mkdir -p %{buildroot}%{_mandir}/man1
-%make_install MANDIR=%{_mandir} SHAREDIR=%{_datadir}
 
 mkdir -p %{buildroot}%{_sysconfdir}
 install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
@@ -128,8 +125,13 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 %{fish_completions_dir}/%{name}.fish
 %{zsh_completions_dir}/_%{name}
 
+%pyproject_extras_subpkg -n yt-dlp default secretstorage
+
 
 %changelog
+* Sun Feb 01 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.01.31-100
+- 2026.01.31
+
 * Fri Jan 30 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.01.29-100
 - 2026.01.29
 

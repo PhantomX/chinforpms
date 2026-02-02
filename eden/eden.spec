@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit acda082f40d506301efafdcdd4f4201a69b99de0
+%global commit cd9527072d353c765cc5abeef41ea28db9adc32b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260127
+%global date 20260201
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -52,7 +52,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
-%global commit17 9eaea6328fae768d1cc524a27f0db6250e0a165a
+%global commit17 7f24eb4c32145cf7520f5ebb45772e9b28217cff
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 cpp-jwt
 
@@ -106,7 +106,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.1.0.28248
+Version:        0.1.1.28282
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -140,7 +140,7 @@ Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{src
 %if %{without httplib}
 Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %endif
-Source17:       https://github.com/crueter/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
+Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 %if %{without mbedtls}
 Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
@@ -341,6 +341,7 @@ sed -e '/find_package/s|httplib|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
+%{__scm_apply_patch -p1 -q} -d cpp-jwt -i ../../.patch/cpp-jwt/0001-fix-missing-decl.patch
 sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %if %{without mbedtls}
@@ -520,6 +521,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Feb 02 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.1.28282-1.20260201gitcd95270
+- 0.1.1
+
 * Tue Jan 27 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.0.28248-1.20260127gitacda082
 - 0.1.0
 
