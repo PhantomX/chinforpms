@@ -98,7 +98,7 @@ Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
 Version:        25.3.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -376,10 +376,23 @@ Development tools for translating SPIR-V shader code to DXIL for Direct3D 12
 Summary:        Mesa Vulkan drivers
 Requires:       vulkan%{_isa}
 Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+%if 0%{?with_vulkan_hw}
+Requires:       %{name}-vulkan-drivers-free%{?_isa} >= %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
 Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description vulkan-drivers
 The drivers with support for the Vulkan API.
+
+%if 0%{?with_vulkan_hw}
+%package vulkan-drivers-free
+Summary:        Mesa Vulkan drivers - free
+Requires:       vulkan%{_isa}
+Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+
+%description vulkan-drivers-free
+The free drivers with support for the Vulkan API.
+%endif
 
 %package vulkan-lavapipe-layer
 Summary:        Mesa Vulkan lavapipe layer
@@ -756,9 +769,7 @@ popd
 %{_datadir}/vulkan/icd.d/virtio_icd.*.json
 %endif
 %if 0%{?with_vulkan_hw}
-%{_libdir}/libvulkan_radeon.so
 %{_datadir}/drirc.d/00-radv-defaults.conf
-%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %if 0%{?with_nvk}
 %{_libdir}/libvulkan_nouveau.so
 %{_datadir}/vulkan/icd.d/nouveau_icd.*.json
@@ -768,8 +779,6 @@ popd
 %{_datadir}/vulkan/icd.d/dzn_icd.*.json
 %endif
 %ifarch %{ix86} x86_64
-%{_libdir}/libvulkan_intel.so
-%{_datadir}/vulkan/icd.d/intel_icd.*.json
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
 %endif
@@ -789,6 +798,16 @@ popd
 %endif
 %endif
 
+%if 0%{?with_vulkan_hw}
+%files vulkan-drivers-free
+%{_libdir}/libvulkan_radeon.so
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
+%ifarch %{ix86} x86_64
+%{_libdir}/libvulkan_intel.so
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
+%endif
+%endif
+
 %files vulkan-lavapipe-layer
 %{_libdir}/libvulkan_lvp.so
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
@@ -801,6 +820,9 @@ popd
 
 
 %changelog
+* Wed Feb 04 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.4-101
+- Split vulkan-drivers-free package
+
 * Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.4-100
 - 25.3.4
 

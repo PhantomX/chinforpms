@@ -1,19 +1,18 @@
-From e2d907a7ae95cfc63e6019bb30c033a6803225e0 Mon Sep 17 00:00:00 2001
+From 1116f863541534703b1f3a593dbb8551aa91e3b4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                         | 30 ++++++++++---
- externals/CMakeLists.txt               | 60 ++++++++++++++++++++++++++
- externals/ffmpeg/CMakeLists.txt        |  5 +++
- externals/nx_tzdb/CMakeLists.txt       |  2 +-
- src/dynarmic/CMakeLists.txt            |  4 --
- src/qt_common/externals/CMakeLists.txt | 13 ++++++
- 6 files changed, 103 insertions(+), 11 deletions(-)
+ CMakeLists.txt                   | 43 +++++++++++++++++++----
+ externals/CMakeLists.txt         | 60 ++++++++++++++++++++++++++++++++
+ externals/ffmpeg/CMakeLists.txt  |  5 +++
+ externals/nx_tzdb/CMakeLists.txt |  2 +-
+ src/dynarmic/CMakeLists.txt      |  4 ---
+ 5 files changed, 103 insertions(+), 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a3fe858..6de96e7 100644
+index 86a67ce..f3dc64e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -489,7 +489,7 @@ if (YUZU_USE_CPM)
@@ -42,11 +41,11 @@ index a3fe858..6de96e7 100644
      find_package(VulkanMemoryAllocator)
      find_package(VulkanUtilityLibraries)
 -    find_package(SimpleIni)
++    find_package(VulkanHeaders 1.3.274 REQUIRED)
      find_package(SPIRV-Tools)
      find_package(sirit)
      find_package(gamemode)
      find_package(mcl)
-+    find_package(VulkanHeaders 1.3.274 REQUIRED)
  
 -    if (ARCHITECTURE_riscv64)
 -        find_package(biscuit)
@@ -54,10 +53,8 @@ index a3fe858..6de96e7 100644
 +        message(STATUS "Using the system fmt")
 +    else()
 +        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
-     endif()
- 
--    if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
--        find_package(cpp-jwt)
++    endif()
++
 +    if (NOT YUZU_USE_CPM)
 +        if(MbedTLS_FOUND)
 +            message(STATUS "Using the system mbed TLS")
@@ -68,15 +65,41 @@ index a3fe858..6de96e7 100644
 +            add_subdirectory(externals/mbedtls)
 +            set(mbedtls_ADDED ON)
 +        endif()
-+    endif()
-+
+     endif()
+ 
+-    if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
+-        find_package(cpp-jwt)
 +    if (ARCHITECTURE_riscv64)
 +        find_package(biscuit)
      endif()
  
      if (ARCHITECTURE_arm64 OR DYNARMIC_TESTS)
+@@ -697,10 +715,23 @@ if (ENABLE_QT)
+     ## Qt Externals ##
+ 
+     # QuaZip
++    if (YUZU_USE_CPM)
+     AddJsonPackage(quazip)
++    else()
++      find_package(PkgConfig REQUIRED)
++      pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
++      if (TARGET PkgConfig::quazip)
++        message(STATUS "Using the system Quazip")
++        add_library(quazip INTERFACE)
++        target_link_libraries(quazip INTERFACE PkgConfig::quazip)
++        add_library(QuaZip::QuaZip ALIAS quazip)
++      endif()
++    endif()
+ 
+     # frozen
++    if (YUZU_USE_CPM)
+     AddJsonPackage(frozen)
++    endif()
+ endif()
+ 
+ if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 271e49c..6e8912f 100644
+index 81e2b52..77b83d7 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -27,14 +27,22 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
@@ -115,7 +138,7 @@ index 271e49c..6e8912f 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -81,10 +92,14 @@ if (ARCHITECTURE_riscv64)
+@@ -81,11 +92,15 @@ if (ARCHITECTURE_riscv64)
  endif()
  
  # mcl
@@ -123,14 +146,15 @@ index 271e49c..6e8912f 100644
  AddJsonPackage(mcl)
 +endif()
  
- # VulkanUtilityHeaders - pulls in headers and utility libs
+ # Vulkan stuff
 +if (YUZU_USE_CPM)
- AddJsonPackage(vulkan-utility-headers)
+ AddJsonPackage(vulkan-headers)
+ AddJsonPackage(vulkan-utility-libraries)
 +endif()
  
  # small hack
  if (NOT VulkanUtilityLibraries_ADDED)
-@@ -106,10 +121,15 @@ if (USE_DISCORD_PRESENCE)
+@@ -107,10 +122,15 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -146,7 +170,7 @@ index 271e49c..6e8912f 100644
      AddJsonPackage(cubeb)
  
      if (cubeb_ADDED)
-@@ -138,6 +158,7 @@ if(ENABLE_CUBEB)
+@@ -139,6 +159,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -154,7 +178,7 @@ index 271e49c..6e8912f 100644
  
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
  if (ENABLE_SDL2)
-@@ -183,9 +204,14 @@ endif()
+@@ -184,9 +205,14 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
@@ -169,7 +193,7 @@ index 271e49c..6e8912f 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -194,9 +220,12 @@ else()
+@@ -195,9 +221,12 @@ else()
          target_compile_options(siritobj PRIVATE -Wno-error=unused-command-line-argument)
      endif()
  endif()
@@ -182,7 +206,7 @@ index 271e49c..6e8912f 100644
  
  if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -204,9 +233,11 @@ if (SPIRV-Tools_ADDED)
+@@ -205,9 +234,11 @@ if (SPIRV-Tools_ADDED)
  endif()
  
  # Catch2
@@ -194,7 +218,7 @@ index 271e49c..6e8912f 100644
  
  # getopt
  if (MSVC)
-@@ -217,12 +248,16 @@ endif()
+@@ -218,12 +249,16 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -211,7 +235,7 @@ index 271e49c..6e8912f 100644
  
  if (VulkanMemoryAllocator_ADDED)
      if (CXX_CLANG)
-@@ -237,17 +272,42 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -238,17 +273,42 @@ if (VulkanMemoryAllocator_ADDED)
  endif()
  
  # httplib
@@ -302,31 +326,6 @@ index fc22f07..8cf82c0 100644
  if (DYNARMIC_USE_LLVM)
      find_package(LLVM REQUIRED)
      separate_arguments(LLVM_DEFINITIONS)
-diff --git a/src/qt_common/externals/CMakeLists.txt b/src/qt_common/externals/CMakeLists.txt
-index b998090..b98b14f 100644
---- a/src/qt_common/externals/CMakeLists.txt
-+++ b/src/qt_common/externals/CMakeLists.txt
-@@ -13,7 +13,20 @@ set(BUILD_SHARED_LIBS OFF)
- set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
- 
- # QuaZip
-+if (YUZU_USE_CPM)
- AddJsonPackage(quazip)
-+else()
-+  find_package(PkgConfig REQUIRED)
-+  pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
-+  if (TARGET PkgConfig::quazip)
-+    message(STATUS "Using the system Quazip")
-+    add_library(quazip INTERFACE)
-+    target_link_libraries(quazip INTERFACE PkgConfig::quazip)
-+    add_library(QuaZip::QuaZip ALIAS quazip)
-+  endif()
-+endif()
- 
- # frozen
-+if (YUZU_USE_CPM)
- AddJsonPackage(frozen)
-+endif()
 -- 
 2.52.0
 

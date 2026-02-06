@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 3394736b073783cf69ecc2a9348e9fa1f3ab1cee
+%global commit 1b3bf1473d7513d51e2c32ddea4d9a18f9e38b14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251027
+%global date 20260201
 
 %if %{without bin}
 %bcond snapshot 0
@@ -23,8 +23,7 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 9.0.101
-%global local_dotnet_url_id d74fd2dd-3384-4952-924b-f5d492326e35/e91d8295d4cbe82ba3501e411d78c9b8
+%global local_dotnet_ver 10.0.102
 
 %global avalonia_angle_windows_natives_ver 2.1.25547.20250602
 %global avalonia_ver 11.3.6
@@ -49,7 +48,7 @@
 %global jetbrains_annotations_ver 2023.2.0
 %global microcom_runtime_ver 0.11.0
 # Must match dotnet
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 9.0.0
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 10.0.2
 %global microsoft_bcl_timeprovider_ver 8.0.1
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_analyzers_ver2 3.0.0
@@ -63,7 +62,7 @@
 %global microsoft_identitymodel_ver 8.3.0
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
-%global microsoft_netcore_app_runtime_linux_x64_ver 9.0.0
+%global microsoft_netcore_app_runtime_linux_x64_ver 10.0.2
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.1.2
@@ -84,6 +83,7 @@
 %global open_nat_core_ver 2.1.0.5
 %global opentk_ver 4.8.2
 %global opentk_redist_glfw_ver 3.3.8.39
+%global ppy_sdl3_cs_ver 2025.920.0
 %global projektanker_icons_avalonia_ver 9.6.2
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
@@ -132,7 +132,6 @@
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
 %global ryujinx_libhac_ver 0.21.0-alpha.126
 %global ryujinx_libhac_dl_id 1181
-%global ryujinx_sdl2_cs_ver 2.30.0-build32
 %global ryujinx_updateclient_ver 1.0.44
 %global ryujinx_updateclient_dl_id 633
 %global ryujinx_systemsupdate_dl_id 634
@@ -269,7 +268,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.197
+Version:        1.3.252
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -289,7 +288,7 @@ Source0:        %{vc_url}/%{name}/-/archive/%{commit}/%{name}-%{shortcommit}.tar
 Source0:        %{vc_url}/%{name}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.bz2
 %endif
 %if %{with local_dotnet}
-Source199:      https://download.visualstudio.microsoft.com/download/pr/%{local_dotnet_url_id}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
+Source199:      https://builds.dotnet.microsoft.com/dotnet/Sdk/%{local_dotnet_ver}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
 %endif
 Source200:      %{nuget_url}/avalonia.angle.windows.natives.%{avalonia_angle_windows_natives_ver}.nupkg
 Source201:      %{nuget_url}/avalonia.%{avalonia_ver}.nupkg
@@ -418,7 +417,7 @@ Source323:      %{nuget_url}/runtime.unix.system.runtime.extensions.%{runtime_un
 Source324:      %{nuget_url}/ryujinx.audio.openal.dependencies.%{ryujinx_audio_openal_dependencies_ver}.nupkg
 Source325:      %{nuget_url}/ryujinx.graphics.nvdec.dependencies.allarch.%{ryujinx_graphics_nvdec_dependencies_allarch_ver}.nupkg
 Source326:      %{nuget_url}/ryujinx.graphics.vulkan.dependencies.moltenvk.%{ryujinx_graphics_vulkan_dependencies_moltenvk_ver}.nupkg
-Source327:      %{nuget_url}/ryujinx.sdl2-cs.%{ryujinx_sdl2_cs_ver}.nupkg
+Source327:      %{nuget_url}/ppy.sdl3-cs.%{ppy_sdl3_cs_ver}.nupkg
 Source328:      %{nuget_url}/securifybv.propertystore.%{securifybv_ver}.nupkg
 Source329:      %{nuget_url}/securifybv.shelllink.%{securifybv_ver}.nupkg
 Source330:      %{nuget_url}/shaderc.net.%{shaderc_net_ver}.nupkg
@@ -639,7 +638,7 @@ Source537:      %{nuget_url}/fluentavaloniaui.noanim.%{fluentavaloniaui_noanim_v
 %global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532} %{SOURCE533} %{SOURCE534} %{SOURCE535} %{SOURCE536} %{SOURCE537}
 %endif
 
-Patch10:        0001-SDL2Gamepad-prevent-rumble-error-log-spam.patch
+Patch10:        0001-SDL3JoyCon-prevent-rumble-error-log-spam.patch
 Patch11:        0001-Use-system-SDL_GameControllerDB.patch
 Patch12:        0001-Modify-default-settings.patch
 
@@ -660,7 +659,7 @@ Requires:       libglvnd-glx%{?_isa}
 Requires:       libicu%{?_isa}
 Requires:       libsoundio%{?_isa}
 Requires:       openssl%{?_isa}
-Requires:       SDL2%{?_isa}
+Requires:       SDL3%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
 Requires:       hicolor-icon-theme
@@ -707,7 +706,7 @@ install -pm0644 %{nuget_files1} %{nuget_files2} %{nuget_files3} %{nuget_files4} 
 
 sed \
   -e 's|_RPM_GCDB_|%{_datadir}/SDL_GameControllerDB/gamecontrollerdb.txt|g' \
-  -i src/Ryujinx.SDL2.Common/SDL2Driver.cs
+  -i src/Ryujinx.SDL3.Common/SDL3Driver.cs
 %endif
 
 sed \
@@ -720,6 +719,7 @@ sed \
 
 cat > %{appname}.sh <<'EOF'
 #!/usr/bin/bash
+export LANG=C.UTF-8
 export DOTNET_EnableAlternateStackCheck=1
 exec "%{_libdir}/%{name}/%{appname}" "$@"
 EOF
@@ -776,12 +776,10 @@ install -pm0755 libglfw*.so.3.3 %{buildroot}%{_libdir}/%{name}/
 install -pm0755 libHarfBuzzSharp.so %{buildroot}%{_libdir}/%{name}/
 install -pm0755 libSkiaSharp.so %{buildroot}%{_libdir}/%{name}/
 install -pm0644 OpenAL32.dll %{buildroot}%{_libdir}/%{name}/
-
-install -pm0644 Ryujinx.SDL2.Common.dll.config %{buildroot}%{_libdir}/%{name}/
 popd
 
 # Ugly hack to use system libraries
-ln -sf ../libSDL2-2.0.so.0 %{buildroot}%{_libdir}/%{name}/libSDL2.so
+ln -sf ../libSDL3.so.0 %{buildroot}%{_libdir}/%{name}/libSDL3.so
 ln -sf ../libsoundio.so.2 %{buildroot}%{_libdir}/%{name}/libsoundio.so
 
 %if %{with bin}
@@ -822,7 +820,6 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 %{_bindir}/%{appname}
 %{_libdir}/%{name}/%{appname}
 %{_libdir}/%{name}/*.so*
-%{_libdir}/%{name}/*.config
 %{_libdir}/%{name}/*.dll
 %if %{with bin}
 %{_libdir}/%{name}/*.txt
@@ -834,6 +831,11 @@ install -pm0644 mime/%{appname}.xml %{buildroot}%{_datadir}/mime/packages/
 
 
 %changelog
+* Tue Feb 03 2026 - 1.3.252-1
+- 1.3.252
+- dotnet 10
+- SDL3
+
 * Sun May 11 2025 - 1.3.38-1
 - 1.3.38
 

@@ -4,7 +4,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2026.01.31
+Version:        2026.02.04
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -129,6 +129,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Fri Feb 06 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.02.04-100
+- 2026.02.04
+
 * Sun Feb 01 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.01.31-100
 - 2026.01.31
 

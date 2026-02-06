@@ -102,6 +102,7 @@ tush
 vasm
 -VirtualBox-extpack-oracle
 -VirtualBox-guest-additions-iso
+visual-studio-code
 vita3k
 vivaldi
 vivaldi-ffmpeg-codecs

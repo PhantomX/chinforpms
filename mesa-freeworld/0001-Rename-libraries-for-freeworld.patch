@@ -1,15 +1,15 @@
-From 67bc772166f9364a8c79679906d1214daf9a84da Mon Sep 17 00:00:00 2001
+From f921d407b2165d8c87e5d16236c24b0ea4982fbe Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 15 Nov 2025 15:32:17 -0300
 Subject: [PATCH] Rename libraries for freeworld
 
 ---
- src/amd/vulkan/meson.build   | 6 +++---
- src/intel/vulkan/meson.build | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+ src/amd/vulkan/meson.build   | 4 ++--
+ src/intel/vulkan/meson.build | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/amd/vulkan/meson.build b/src/amd/vulkan/meson.build
-index 78b19aa..58226bd 100644
+index 78b19aa..dcd8699 100644
 --- a/src/amd/vulkan/meson.build
 +++ b/src/amd/vulkan/meson.build
 @@ -242,7 +242,7 @@ if radv_build_id != ''
@@ -30,20 +30,11 @@ index 78b19aa..58226bd 100644
  
  icd_command = [
    prog_python, '@INPUT0@',
-@@ -299,7 +299,7 @@ endif
- radeon_icd = custom_target(
-   'radeon_icd',
-   input : [vk_icd_gen, vk_api_xml],
--  output : 'radeon_icd.@0@.json'.format(host_machine.cpu()),
-+  output : 'radeon_icd_freeworld.@0@.json'.format(host_machine.cpu()),
-   command : icd_command,
-   build_by_default : true,
-   install_dir : with_vulkan_icd_dir,
 diff --git a/src/intel/vulkan/meson.build b/src/intel/vulkan/meson.build
-index e8f61a0..0582de2 100644
+index 4963298..891fca1 100644
 --- a/src/intel/vulkan/meson.build
 +++ b/src/intel/vulkan/meson.build
-@@ -45,12 +45,12 @@ else
+@@ -46,7 +46,7 @@ else
    anv_flags += '-DANV_SUPPORT_RT=0'
  endif
  
@@ -52,13 +43,7 @@ index e8f61a0..0582de2 100644
  
  intel_icd = custom_target(
    'intel_icd',
-   input : [vk_icd_gen, vk_api_xml],
--  output : 'intel_icd.@0@.json'.format(host_machine.cpu()),
-+  output : 'intel_icd_freeworld.@0@.json'.format(host_machine.cpu()),
-   command : [
-     prog_python, '@INPUT0@',
-     '--api-version', '1.4', '--xml', '@INPUT1@',
-@@ -253,7 +253,7 @@ libanv_common = static_library(
+@@ -255,7 +255,7 @@ libanv_common = static_library(
  )
  
  libvulkan_intel = shared_library(
@@ -68,5 +53,5 @@ index e8f61a0..0582de2 100644
    include_directories : [
      inc_include, inc_src, inc_intel,
 -- 
-2.51.1
+2.53.0
 

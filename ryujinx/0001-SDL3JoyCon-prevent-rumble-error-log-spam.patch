@@ -1,20 +1,20 @@
-From c51d29c6f81d828dd429292264ed7b4688dc0848 Mon Sep 17 00:00:00 2001
+From 3b60b4522288f98d075d4b538bc08564c7dae141 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Sat, 4 Jan 2025 08:47:14 -0300
-Subject: [PATCH] SDL2Gamepad: prevent rumble error log spam
+Date: Tue, 3 Feb 2026 17:59:48 -0300
+Subject: [PATCH] SDL3JoyCon prevent rumble error log spam
 
 ---
- src/Ryujinx.Input.SDL2/SDL2Gamepad.cs | 6 +++---
+ src/Ryujinx.Input.SDL3/SDL3JoyCon.cs | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/src/Ryujinx.Input.SDL2/SDL2Gamepad.cs b/src/Ryujinx.Input.SDL2/SDL2Gamepad.cs
-index 12bfab4..0c84b0e 100644
---- a/src/Ryujinx.Input.SDL2/SDL2Gamepad.cs
-+++ b/src/Ryujinx.Input.SDL2/SDL2Gamepad.cs
-@@ -157,16 +157,16 @@ namespace Ryujinx.Input.SDL2
+diff --git a/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs b/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
+index 5311a25..6451de4 100644
+--- a/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
++++ b/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
+@@ -168,16 +168,16 @@ namespace Ryujinx.Input.SDL3
              if (durationMs == uint.MaxValue)
              {
-                 if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY) != 0)
+                 if (!SDL_RumbleGamepad(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY))
 -                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
 +                    Logger.Info?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
              }
@@ -25,12 +25,12 @@ index 12bfab4..0c84b0e 100644
              }
              else
              {
-                 if (SDL_GameControllerRumble(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, durationMs) != 0)
+                 if (!SDL_RumbleGamepad(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, durationMs))
 -                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
 +                    Logger.Info?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
              }
          }
  
 -- 
-2.47.1
+2.52.0
 

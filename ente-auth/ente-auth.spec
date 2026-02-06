@@ -59,15 +59,32 @@ rpm2cpio %{S:0} | cpio -imdv
 
 cp -p %{S:1} %{S:2} .
 
-cat > %{appname}.wrapper <<'EOF'
+cat > %{appname}.wrapper <<'SEOF'
 #!/usr/bin/bash
 APP_NAME=%{appname}
 APP_PATH="%{_libdir}/%{appname}"
 
+XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
+APP_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/%{appname}-userflags.conf"
+APP_USER_FLAGS=()
+if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
+  while read -r param
+  do
+    APP_USER_FLAGS+=("$(eval "echo ${param}")")
+  done < <(LANG=C grep '^-' "${APP_USER_FLAGS_FILE}" | tr -d \'\")
+else
+  if [ -w "${XDG_CONFIG_HOME}" ] ; then
+    cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
+# vscode user flags (One parameter per line, environment variables are evaluated)
+#--proxy-server="socks5://proxy:port"
+EOF
+  fi
+fi
+
 LD_LIBRARY_PATH="${APP_PATH}/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export LD_LIBRARY_PATH
 exec "${APP_PATH}/${APP_NAME}" "$@"
-EOF
+SEOF
 
 chrpath -k -d usr/share/%{appname}/%{appname}
 chrpath -k -d usr/share/%{appname}/lib/*.so

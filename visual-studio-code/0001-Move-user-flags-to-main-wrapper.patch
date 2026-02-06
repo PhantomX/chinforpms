@@ -1,0 +1,47 @@
+From 646ad1a317a854762d53395231f8f25d07e838ad Mon Sep 17 00:00:00 2001
+From: Vinicius Moreira de Oliveira <vinicius.oliveira@goias.gov.br>
+Date: Wed, 4 Feb 2026 14:29:55 -0300
+Subject: [PATCH] Move user flags to main wrapper
+
+---
+ usr/share/code/bin/code | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
+
+diff --git a/usr/share/code/bin/code b/usr/share/code/bin/code
+index 97e909e..ae5e9ec 100755
+--- a/usr/share/code/bin/code
++++ b/usr/share/code/bin/code
+@@ -28,6 +28,23 @@ if grep -qi Microsoft /proc/version && [ -z "$DONT_PROMPT_WSL_INSTALL" ]; then
+ 	echo "To no longer see this prompt, start Visual Studio Code with the environment variable DONT_PROMPT_WSL_INSTALL defined." 1>&2
+ fi
+ 
++XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
++VS_CODE_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/%{name}-userflags.conf"
++VS_CODE_USER_FLAGS=()
++if [[ -r "${VS_CODE_USER_FLAGS_FILE}" ]]; then
++  while read -r param
++  do
++    VS_CODE_USER_FLAGS+=("$(eval "echo ${param}")")
++  done < <(LANG=C grep '^-' "${VS_CODE_USER_FLAGS_FILE}" | tr -d \'\")
++else
++  if [ -w "${XDG_CONFIG_HOME}" ] ; then
++    cat > "${VS_CODE_USER_FLAGS_FILE}" <<'EOF'
++# vscode user flags (One parameter per line, environment variables are evaluated)
++#--proxy-server="socks5://proxy:port"
++EOF
++  fi
++fi
++
+ # If root, ensure that --user-data-dir or --file-write is specified
+ if [ "$(id -u)" = "0" ]; then
+ 	for i in "$@"
+@@ -59,5 +76,5 @@ fi
+ 
+ ELECTRON="$VSCODE_PATH/code"
+ CLI="$VSCODE_PATH/resources/app/out/cli.js"
+-ELECTRON_RUN_AS_NODE=1 "$ELECTRON" "$CLI" "$@"
++ELECTRON_RUN_AS_NODE=1 "$ELECTRON" "$CLI" ${APP_USER_FLAGS:+"${APP_USER_FLAGS[@]}"} "$@"
+ exit $?
+-- 
+2.53.0
+

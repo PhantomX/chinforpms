@@ -42,7 +42,7 @@ Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
 Version:        25.3.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 
 Epoch:          100
 
@@ -152,7 +152,9 @@ Enhances:       %{pkgname}-va-drivers%{?_isa}
 %package -n     %{pkgname}-vulkan-drivers-freeworld
 Summary:        Mesa Vulkan drivers - freeworld
 Requires:       %{pkgname}-filesystem%{?_isa} = %{version}
-Requires:       %{pkgname}-vulkan-drivers = %{version}
+Provides:       %{pkgname}-vulkan-drivers-free = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides:       %{pkgname}-vulkan-drivers-free%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
+Conflicts:      %{pkgname}-vulkan-drivers-free%{?_isa}
 Enhances:       %{pkgname}-vulkan-drivers%{?_isa}
 
 %description -n %{pkgname}-vulkan-drivers-freeworld
@@ -241,16 +243,19 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 %files -n %{pkgname}-vulkan-drivers-freeworld
 %license docs/license.rst
-%{_datadir}/vulkan/icd.d/radeon_icd_freeworld.*.json
+%{_datadir}/vulkan/icd.d/radeon_icd.*.json
 %{_libdir}/libvulkan_radeon_freeworld.so
 %ifarch %{ix86} x86_64
 %{_libdir}/libvulkan_intel_freeworld.so
-%{_datadir}/vulkan/icd.d/intel_icd_freeworld.*.json
+%{_datadir}/vulkan/icd.d/intel_icd.*.json
 %endif
 %{_metainfodir}/org.mesa3d.vulkan.freeworld.metainfo.xml
 
 
 %changelog
+* Thu Feb 05 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.4-101
+- Set vulkan-drivers to replace mesa ones
+
 * Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.4-100
 - 25.3.4
 

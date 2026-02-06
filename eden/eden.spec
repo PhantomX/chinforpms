@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit cd9527072d353c765cc5abeef41ea28db9adc32b
+%global commit 8ed0ed5828a6a7511899350bc7c2adf2a1928d37
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260201
+%global date 20260202
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -48,7 +48,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
-%global commit16 a609330e4c6374f741d3b369269f7848255e1954
+%global commit16 dc6faf5c17c1e3c30b5d59e31ae2e890a35e64e1
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
@@ -106,7 +106,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.1.1.28282
+Version:        0.1.1.28289
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -480,9 +480,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DENABLE_WIFI_SCAN:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
-  -DDYNARMIC_ENABLE_LTO:BOOL=ON \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \
-  -DDYNARMIC_NO_BUNDLED_FMT:BOOL=ON \
   -DDYNARMIC_TESTS:BOOL=OFF \
 %{nil}
 
