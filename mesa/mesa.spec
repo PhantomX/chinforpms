@@ -97,8 +97,8 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.4
-Release:        101%{?dist}
+Version:        25.3.5
+Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
 URL:            http://www.mesa3d.org
@@ -130,9 +130,8 @@ Source13:       https://crates.io/api/v1/crates/syn/%{rust_syn_ver}/download#/sy
 Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ident_ver}/download#/unicode-ident-%{rust_unicode_ident_ver}.tar.gz
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
-Patch0:         %{vc_url}/-/commit/3427d9f54221ab50384e44e358d02f33eada92c0.patch#/%{name}-gl-3427d9f.patch
-Patch1:         %{vc_url}/-/commit/d3744d5cd1f17ed497684aff28c11826717415b6.patch#/%{name}-gl-d3744d5.patch
-Patch12:        %{vc_url}/-/merge_requests/38532.patch#/%{name}-gl-mr38532.patch
+Patch0:         %{vc_url}/-/commit/e710e6857376c3f251f6b7ddce69fdfbe96889d8.patch#/%{name}-gl-e710e68.patch
+Patch1:         %{vc_url}/-/commit/c114d94b49ffd42f2ede12436e1d41f0e0756243.patch#/%{name}-gl-c114d94.patch
 
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
@@ -820,6 +819,9 @@ popd
 
 
 %changelog
+* Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.5-100
+- 25.3.5
+
 * Wed Feb 04 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.4-101
 - Split vulkan-drivers-free package
 

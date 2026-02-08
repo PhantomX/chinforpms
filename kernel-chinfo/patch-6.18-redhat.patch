@@ -1,5 +1,6 @@
+ Documentation/hid/intel-ish-hid.rst                |  19 +++-
  Makefile                                           |  38 ++++++-
- arch/arm/Kconfig                                   |   4 +-
+ arch/arm/Kconfig                                   |   2 +-
  arch/arm64/Kconfig                                 |   2 +-
  arch/arm64/kernel/setup.c                          |  27 +++++
  arch/s390/include/asm/ipl.h                        |   1 +
@@ -20,12 +21,17 @@
  drivers/firmware/efi/libstub/secureboot.c          |  14 ++-
  drivers/firmware/efi/secureboot.c                  |  38 +++++++
  drivers/hid/hid-rmi.c                              |  66 -----------
+ drivers/hid/intel-ish-hid/ishtp/loader.c           |  58 +++++++++-
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
  drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++++---------
  drivers/iommu/iommu.c                              |  22 ++++
+ drivers/media/i2c/ov02c10.c                        |  29 ++++-
+ drivers/media/pci/intel/Kconfig                    |   2 +-
+ drivers/media/pci/intel/ipu-bridge.c               |  29 +++++
  drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 ++
  include/linux/efi.h                                |  22 ++--
+ include/linux/module.h                             |   1 +
  include/linux/rmi.h                                |   1 +
  include/linux/security.h                           |   9 ++
  kernel/module/signing.c                            |   9 +-
@@ -34,13 +40,54 @@
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +++
  security/lockdown/lockdown.c                       |  11 ++
- tools/lib/bpf/Makefile                             |   1 +
  tools/testing/selftests/bpf/Makefile               |   2 +-
  tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 ------
- 43 files changed, 550 insertions(+), 216 deletions(-)
+ 48 files changed, 672 insertions(+), 229 deletions(-)
 
+diff --git a/Documentation/hid/intel-ish-hid.rst b/Documentation/hid/intel-ish-hid.rst
+index 2adc174fb576c..068a5906b1774 100644
+--- a/Documentation/hid/intel-ish-hid.rst
++++ b/Documentation/hid/intel-ish-hid.rst
+@@ -413,6 +413,10 @@ Vendors who wish to upstream their custom firmware should follow these guideline
+ 
+ - The firmware filename should use one of the following patterns:
+ 
++  - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_NAME_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++  - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++  - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_NAME_CRC32}.bin``
++  - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}.bin``
+   - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}_${PRODUCT_SKU_CRC32}.bin``
+   - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_SKU_CRC32}.bin``
+   - ``ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}.bin``
+@@ -420,16 +424,21 @@ Vendors who wish to upstream their custom firmware should follow these guideline
+ 
+ - ``${intel_plat_gen}`` indicates the Intel platform generation (e.g., ``lnlm`` for Lunar Lake) and must not exceed 8 characters in length.
+ - ``${SYS_VENDOR_CRC32}`` is the CRC32 checksum of the ``sys_vendor`` value from the DMI field ``DMI_SYS_VENDOR``.
++- ``${PRODUCT_FAMILY_CRC32}`` is the CRC32 checksum of the ``product_family`` value from the DMI field ``DMI_PRODUCT_FAMILY``.
+ - ``${PRODUCT_NAME_CRC32}`` is the CRC32 checksum of the ``product_name`` value from the DMI field ``DMI_PRODUCT_NAME``.
+ - ``${PRODUCT_SKU_CRC32}`` is the CRC32 checksum of the ``product_sku`` value from the DMI field ``DMI_PRODUCT_SKU``.
+ 
+ During system boot, the ISH Linux driver will attempt to load the firmware in the following order, prioritizing custom firmware with more precise matching patterns:
+ 
+-1. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}_${PRODUCT_SKU_CRC32}.bin``
+-2. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_SKU_CRC32}.bin``
+-3. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}.bin``
+-4. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}.bin``
+-5. ``intel/ish/ish_${intel_plat_gen}.bin``
++1. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_NAME_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++2. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++3. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}_${PRODUCT_NAME_CRC32}.bin``
++4. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_FAMILY_CRC32}.bin``
++5. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++6. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_SKU_CRC32}.bin``
++7. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}_${PRODUCT_NAME_CRC32}.bin``
++8. ``intel/ish/ish_${intel_plat_gen}_${SYS_VENDOR_CRC32}.bin``
++9. ``intel/ish/ish_${intel_plat_gen}.bin``
+ 
+ The driver will load the first matching firmware and skip the rest. If no matching firmware is found, it will proceed to the next pattern in the specified order. If all searches fail, the default Intel firmware, listed last in the order above, will be loaded.
+ 
 diff --git a/Makefile b/Makefile
-index c2b5cfd2fce0..2775fe00ddfc 100644
+index 64af72f16125b..4c05f97d3b5a8 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -355,6 +355,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -85,7 +132,7 @@ index c2b5cfd2fce0..2775fe00ddfc 100644
  endef
  
  $(version_h): private PATCHLEVEL := $(or $(PATCHLEVEL), 0)
-@@ -1931,6 +1950,23 @@ endif
+@@ -1932,6 +1951,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -110,23 +157,20 @@ index c2b5cfd2fce0..2775fe00ddfc 100644
  	@:
  
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 4fb985b76e97..ed23eedf6c2d 100644
+index 70cd3b5b5a059..42c80683baa53 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1214,9 +1214,9 @@ config HIGHMEM
+@@ -1214,7 +1214,7 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE
 -	bool "Allocate 2nd-level pagetables from highmem" if EXPERT
 +	bool "Allocate 2nd-level pagetables from highmem"
  	depends on HIGHMEM && !PREEMPT_RT
--	default y
-+	default n
+ 	default y
  	help
- 	  The VM uses one page of physical memory for each page table.
- 	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index 6663ffd23f25..b2e4aa83a696 100644
+index 6663ffd23f252..b2e4aa83a6963 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1432,7 +1432,7 @@ endchoice
@@ -139,7 +183,7 @@ index 6663ffd23f25..b2e4aa83a696 100644
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
 diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
-index 23c05dc7a8f2..d7b7b2f39e16 100644
+index 23c05dc7a8f2a..d7b7b2f39e169 100644
 --- a/arch/arm64/kernel/setup.c
 +++ b/arch/arm64/kernel/setup.c
 @@ -32,6 +32,8 @@
@@ -191,7 +235,7 @@ index 23c05dc7a8f2..d7b7b2f39e16 100644
  
  	arm64_memblock_init();
 diff --git a/arch/s390/include/asm/ipl.h b/arch/s390/include/asm/ipl.h
-index b0d00032479d..afb9544fb007 100644
+index b0d00032479d6..afb9544fb0074 100644
 --- a/arch/s390/include/asm/ipl.h
 +++ b/arch/s390/include/asm/ipl.h
 @@ -139,6 +139,7 @@ int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
@@ -203,10 +247,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 961a3d60a4dd..927ba8a7b3ac 100644
+index dcdc7e2748486..6b2fc225fa184 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2497,3 +2497,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2521,3 +2521,8 @@ int ipl_report_free(struct ipl_report *report)
  }
  
  #endif
@@ -216,7 +260,7 @@ index 961a3d60a4dd..927ba8a7b3ac 100644
 +	return !!ipl_secure_flag;
 +}
 diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
-index 892fce2b7549..eefbda45ac47 100644
+index 892fce2b75497..eefbda45ac47a 100644
 --- a/arch/s390/kernel/setup.c
 +++ b/arch/s390/kernel/setup.c
 @@ -49,6 +49,7 @@
@@ -238,7 +282,7 @@ index 892fce2b7549..eefbda45ac47 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 1b2edd07a3e1..1c434c6900eb 100644
+index 1b2edd07a3e17..1c434c6900ebe 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -285,7 +329,7 @@ index 1b2edd07a3e1..1c434c6900eb 100644
  	reserve_initrd();
  
 diff --git a/crypto/sig.c b/crypto/sig.c
-index beba745b6405..fd41f6d3abf9 100644
+index beba745b64057..fd41f6d3abf9a 100644
 --- a/crypto/sig.c
 +++ b/crypto/sig.c
 @@ -112,8 +112,7 @@ static int sig_prepare_alg(struct sig_alg *alg)
@@ -299,7 +343,7 @@ index beba745b6405..fd41f6d3abf9 100644
  		alg->verify = sig_default_verify;
  	if (!alg->set_priv_key)
 diff --git a/crypto/testmgr.c b/crypto/testmgr.c
-index 6a490aaa71b9..a654d7096bfa 100644
+index 6a490aaa71b9a..a654d7096bfa3 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
 @@ -4070,7 +4070,7 @@ static int test_sig_one(struct crypto_sig *tfm, const struct sig_testvec *vecs)
@@ -312,7 +356,7 @@ index 6a490aaa71b9..a654d7096bfa 100644
  
  	sig_size = crypto_sig_maxsize(tfm);
 diff --git a/drivers/acpi/apei/hest.c b/drivers/acpi/apei/hest.c
-index 20d757687e3d..90a13f20f052 100644
+index 20d757687e3d9..90a13f20f052b 100644
 --- a/drivers/acpi/apei/hest.c
 +++ b/drivers/acpi/apei/hest.c
 @@ -142,6 +142,14 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
@@ -331,7 +375,7 @@ index 20d757687e3d..90a13f20f052 100644
  	for (i = 0; i < hest_tab->error_source_count; i++) {
  		len = hest_esrc_len(hest_hdr);
 diff --git a/drivers/acpi/irq.c b/drivers/acpi/irq.c
-index 76a856c32c4d..f2d25d95811c 100644
+index 76a856c32c4d0..f2d25d95811c9 100644
 --- a/drivers/acpi/irq.c
 +++ b/drivers/acpi/irq.c
 @@ -143,6 +143,7 @@ struct acpi_irq_parse_one_ctx {
@@ -374,7 +418,7 @@ index 76a856c32c4d..f2d25d95811c 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index ef16d58b2949..a3119cc4a9a9 100644
+index ef16d58b29499..a3119cc4a9a9f 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -1802,6 +1802,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
@@ -394,7 +438,7 @@ index ef16d58b2949..a3119cc4a9a9 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index c79abdfcd7a9..e23bfb7f94c7 100644
+index c79abdfcd7a9b..e23bfb7f94c72 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -731,6 +731,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -423,7 +467,7 @@ index c79abdfcd7a9..e23bfb7f94c7 100644
  	tmp = ata_wait_register(ap, port_mmio + PORT_CMD,
  				PORT_CMD_LIST_ON, PORT_CMD_LIST_ON, 1, 500);
 diff --git a/drivers/char/ipmi/ipmi_dmi.c b/drivers/char/ipmi/ipmi_dmi.c
-index bbf7029e224b..cf7faa970dd6 100644
+index bbf7029e224be..cf7faa970dd65 100644
 --- a/drivers/char/ipmi/ipmi_dmi.c
 +++ b/drivers/char/ipmi/ipmi_dmi.c
 @@ -215,6 +215,21 @@ static int __init scan_for_dmi_ipmi(void)
@@ -449,7 +493,7 @@ index bbf7029e224b..cf7faa970dd6 100644
  		dmi_decode_ipmi((const struct dmi_header *) dev->device_data);
  
 diff --git a/drivers/char/ipmi/ipmi_msghandler.c b/drivers/char/ipmi/ipmi_msghandler.c
-index 3700ab4eba3e..68f2c9786654 100644
+index 0a886399f9daf..5193de5880c93 100644
 --- a/drivers/char/ipmi/ipmi_msghandler.c
 +++ b/drivers/char/ipmi/ipmi_msghandler.c
 @@ -34,6 +34,7 @@
@@ -460,7 +504,7 @@ index 3700ab4eba3e..68f2c9786654 100644
  #include <linux/delay.h>
  
  #define IPMI_DRIVER_VERSION "39.2"
-@@ -5586,8 +5587,21 @@ static int __init ipmi_init_msghandler_mod(void)
+@@ -5592,8 +5593,21 @@ static int __init ipmi_init_msghandler_mod(void)
  {
  	int rv;
  
@@ -484,7 +528,7 @@ index 3700ab4eba3e..68f2c9786654 100644
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
-index 8efbcf699e4f..96d5a1ca981d 100644
+index 8efbcf699e4ff..96d5a1ca981df 100644
 --- a/drivers/firmware/efi/Makefile
 +++ b/drivers/firmware/efi/Makefile
 @@ -25,6 +25,7 @@ subdir-$(CONFIG_EFI_STUB)		+= libstub
@@ -496,7 +540,7 @@ index 8efbcf699e4f..96d5a1ca981d 100644
  obj-$(CONFIG_EFI_RCI2_TABLE)		+= rci2-table.o
  obj-$(CONFIG_EFI_EMBEDDED_FIRMWARE)	+= embedded-firmware.o
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 1ce428e2ac8a..12a79ddc2543 100644
+index fc407d891348f..43e706613c512 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -33,6 +33,7 @@
@@ -507,7 +551,7 @@ index 1ce428e2ac8a..12a79ddc2543 100644
  
  #include <asm/early_ioremap.h>
  
-@@ -1016,40 +1017,101 @@ int efi_mem_type(unsigned long phys_addr)
+@@ -1019,40 +1020,101 @@ int efi_mem_type(unsigned long phys_addr)
  	return -EINVAL;
  }
  
@@ -641,7 +685,7 @@ index 1ce428e2ac8a..12a79ddc2543 100644
  EXPORT_SYMBOL_GPL(efi_status_to_err);
  
 diff --git a/drivers/firmware/efi/libstub/fdt.c b/drivers/firmware/efi/libstub/fdt.c
-index 6a337f1f8787..89244e0d9fa8 100644
+index 6a337f1f8787b..89244e0d9fa86 100644
 --- a/drivers/firmware/efi/libstub/fdt.c
 +++ b/drivers/firmware/efi/libstub/fdt.c
 @@ -132,6 +132,11 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
@@ -657,7 +701,7 @@ index 6a337f1f8787..89244e0d9fa8 100644
  	fdt_pack(fdt);
  
 diff --git a/drivers/firmware/efi/libstub/secureboot.c b/drivers/firmware/efi/libstub/secureboot.c
-index 516f4f0069bd..380354755108 100644
+index 516f4f0069bd2..380354755108b 100644
 --- a/drivers/firmware/efi/libstub/secureboot.c
 +++ b/drivers/firmware/efi/libstub/secureboot.c
 @@ -29,10 +29,13 @@ enum efi_secureboot_mode efi_get_secureboot(void)
@@ -694,7 +738,7 @@ index 516f4f0069bd..380354755108 100644
  }
 diff --git a/drivers/firmware/efi/secureboot.c b/drivers/firmware/efi/secureboot.c
 new file mode 100644
-index 000000000000..de0a3714a5d4
+index 0000000000000..de0a3714a5d44
 --- /dev/null
 +++ b/drivers/firmware/efi/secureboot.c
 @@ -0,0 +1,38 @@
@@ -737,7 +781,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hid/hid-rmi.c b/drivers/hid/hid-rmi.c
-index d4af17fdba46..154f0403cbf4 100644
+index d4af17fdba467..154f0403cbf4c 100644
 --- a/drivers/hid/hid-rmi.c
 +++ b/drivers/hid/hid-rmi.c
 @@ -321,21 +321,12 @@ static int rmi_input_event(struct hid_device *hdev, u8 *data, int size)
@@ -838,8 +882,113 @@ index d4af17fdba46..154f0403cbf4 100644
  	data->xport.proto_name = "hid";
  	data->xport.ops = &hid_rmi_ops;
  
+diff --git a/drivers/hid/intel-ish-hid/ishtp/loader.c b/drivers/hid/intel-ish-hid/ishtp/loader.c
+index f34086b29cf08..ffa2042bb316e 100644
+--- a/drivers/hid/intel-ish-hid/ishtp/loader.c
++++ b/drivers/hid/intel-ish-hid/ishtp/loader.c
+@@ -195,13 +195,19 @@ static int prepare_dma_bufs(struct ishtp_device *dev,
+ 	return 0;
+ }
+ 
++/* Patterns with PRODUCT_FAMILY */
++#define ISH_FW_FILE_VENDOR_FAMILY_NAME_SKU_FMT "intel/ish/ish_%s_%08x_%08x_%08x_%08x.bin"
++#define ISH_FW_FILE_VENDOR_FAMILY_SKU_FMT "intel/ish/ish_%s_%08x_%08x_%08x.bin"
++#define ISH_FW_FILE_VENDOR_FAMILY_NAME_FMT "intel/ish/ish_%s_%08x_%08x_%08x.bin"
++#define ISH_FW_FILE_VENDOR_FAMILY_FMT "intel/ish/ish_%s_%08x_%08x.bin"
++
+ #define ISH_FW_FILE_VENDOR_NAME_SKU_FMT "intel/ish/ish_%s_%08x_%08x_%08x.bin"
+ #define ISH_FW_FILE_VENDOR_SKU_FMT "intel/ish/ish_%s_%08x_%08x.bin"
+ #define ISH_FW_FILE_VENDOR_NAME_FMT "intel/ish/ish_%s_%08x_%08x.bin"
+ #define ISH_FW_FILE_VENDOR_FMT "intel/ish/ish_%s_%08x.bin"
+ #define ISH_FW_FILE_DEFAULT_FMT "intel/ish/ish_%s.bin"
+ 
+-#define ISH_FW_FILENAME_LEN_MAX 56
++#define ISH_FW_FILENAME_LEN_MAX 72
+ 
+ #define ISH_CRC_INIT (~0u)
+ #define ISH_CRC_XOROUT (~0u)
+@@ -228,6 +234,12 @@ static int _request_ish_firmware(const struct firmware **firmware_p,
+  * for the given device in the following order, prioritizing custom firmware
+  * with more precise matching patterns:
+  *
++ *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_FAMILY_CRC32)
++ *   _$(PRODUCT_NAME_CRC32)_${PRODUCT_SKU_CRC32}.bin
++ *
++ *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_FAMILY_CRC32)_${PRODUCT_SKU_CRC32}.bin
++ *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_FAMILY_CRC32)_$(PRODUCT_NAME_CRC32).bin
++ *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_FAMILY_CRC32).bin
+  *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_NAME_CRC32)_${PRODUCT_SKU_CRC32}.bin
+  *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_${PRODUCT_SKU_CRC32}.bin
+  *   ish_${fw_generation}_${SYS_VENDOR_CRC32}_$(PRODUCT_NAME_CRC32).bin
+@@ -256,8 +268,9 @@ static int request_ish_firmware(const struct firmware **firmware_p,
+ 				struct device *dev)
+ {
+ 	const char *gen, *sys_vendor, *product_name, *product_sku;
++	const char *product_family;
+ 	struct ishtp_device *ishtp = dev_get_drvdata(dev);
+-	u32 vendor_crc, name_crc, sku_crc;
++	u32 vendor_crc, name_crc, sku_crc, family_crc;
+ 	char filename[ISH_FW_FILENAME_LEN_MAX];
+ 	int ret;
+ 
+@@ -265,14 +278,55 @@ static int request_ish_firmware(const struct firmware **firmware_p,
+ 	sys_vendor = dmi_get_system_info(DMI_SYS_VENDOR);
+ 	product_name = dmi_get_system_info(DMI_PRODUCT_NAME);
+ 	product_sku = dmi_get_system_info(DMI_PRODUCT_SKU);
++	product_family = dmi_get_system_info(DMI_PRODUCT_FAMILY);
+ 
+ 	if (sys_vendor)
+ 		vendor_crc = crc32(ISH_CRC_INIT, sys_vendor, strlen(sys_vendor)) ^ ISH_CRC_XOROUT;
++	if (product_family)
++		family_crc = crc32(ISH_CRC_INIT, product_family,
++				   strlen(product_family)) ^ ISH_CRC_XOROUT;
+ 	if (product_name)
+ 		name_crc = crc32(ISH_CRC_INIT, product_name, strlen(product_name)) ^ ISH_CRC_XOROUT;
+ 	if (product_sku)
+ 		sku_crc = crc32(ISH_CRC_INIT, product_sku, strlen(product_sku)) ^ ISH_CRC_XOROUT;
+ 
++	/* PRODUCT_FAMILY-extended matching */
++	if (sys_vendor && product_family && product_name && product_sku) {
++		snprintf(filename, sizeof(filename),
++			 ISH_FW_FILE_VENDOR_FAMILY_NAME_SKU_FMT,
++			 gen, vendor_crc, family_crc, name_crc, sku_crc);
++		ret = _request_ish_firmware(firmware_p, filename, dev);
++		if (!ret)
++			return 0;
++	}
++
++	if (sys_vendor && product_family && product_sku) {
++		snprintf(filename, sizeof(filename),
++			 ISH_FW_FILE_VENDOR_FAMILY_SKU_FMT,
++			 gen, vendor_crc, family_crc, sku_crc);
++		ret = _request_ish_firmware(firmware_p, filename, dev);
++		if (!ret)
++			return 0;
++	}
++
++	if (sys_vendor && product_family && product_name) {
++		snprintf(filename, sizeof(filename),
++			 ISH_FW_FILE_VENDOR_FAMILY_NAME_FMT,
++			 gen, vendor_crc, family_crc, name_crc);
++		ret = _request_ish_firmware(firmware_p, filename, dev);
++		if (!ret)
++			return 0;
++	}
++
++	if (sys_vendor && product_family) {
++		snprintf(filename, sizeof(filename),
++			 ISH_FW_FILE_VENDOR_FAMILY_FMT,
++			 gen, vendor_crc, family_crc);
++		ret = _request_ish_firmware(firmware_p, filename, dev);
++		if (!ret)
++			return 0;
++}
++
+ 	if (sys_vendor && product_name && product_sku) {
+ 		snprintf(filename, sizeof(filename), ISH_FW_FILE_VENDOR_NAME_SKU_FMT, gen,
+ 			 vendor_crc, name_crc, sku_crc);
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index fdda924a2c71..6483f1078866 100644
+index fdda924a2c711..6483f10788665 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -12,6 +12,7 @@
@@ -890,7 +1039,7 @@ index fdda924a2c71..6483f1078866 100644
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
 diff --git a/drivers/input/rmi4/rmi_driver.c b/drivers/input/rmi4/rmi_driver.c
-index ccd9338a44db..5c54e522e8a4 100644
+index ccd9338a44dbe..5c54e522e8a47 100644
 --- a/drivers/input/rmi4/rmi_driver.c
 +++ b/drivers/input/rmi4/rmi_driver.c
 @@ -183,34 +183,47 @@ void rmi_set_attn_data(struct rmi_device *rmi_dev, unsigned long irq_status,
@@ -1082,7 +1231,7 @@ index ccd9338a44db..5c54e522e8a4 100644
  	if (data->f01_container->dev.driver) {
  		/* Driver already bound, so enable ATTN now. */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 59244c744eab..183f4eaab6e2 100644
+index 59244c744eabd..183f4eaab6e20 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
 @@ -8,6 +8,7 @@
@@ -1121,8 +1270,141 @@ index 59244c744eab..183f4eaab6e2 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/media/i2c/ov02c10.c b/drivers/media/i2c/ov02c10.c
+index 8c4d85dc7922e..cf93d36032e14 100644
+--- a/drivers/media/i2c/ov02c10.c
++++ b/drivers/media/i2c/ov02c10.c
+@@ -165,16 +165,12 @@ static const struct reg_sequence sensor_1928x1092_30fps_setting[] = {
+ 	{0x3809, 0x88},
+ 	{0x380a, 0x04},
+ 	{0x380b, 0x44},
+-	{0x3810, 0x00},
+-	{0x3811, 0x02},
+-	{0x3812, 0x00},
+-	{0x3813, 0x02},
+ 	{0x3814, 0x01},
+ 	{0x3815, 0x01},
+ 	{0x3816, 0x01},
+ 	{0x3817, 0x01},
+ 
+-	{0x3820, 0xb0},
++	{0x3820, 0xa8},
+ 	{0x3821, 0x00},
+ 	{0x3822, 0x80},
+ 	{0x3823, 0x08},
+@@ -462,6 +458,20 @@ static int ov02c10_set_ctrl(struct v4l2_ctrl *ctrl)
+ 		ret = ov02c10_test_pattern(ov02c10, ctrl->val);
+ 		break;
+ 
++	case V4L2_CID_HFLIP:
++		cci_write(ov02c10->regmap, OV02C10_ISP_X_WIN_CONTROL,
++			  ctrl->val ? 2 : 1, &ret);
++		cci_update_bits(ov02c10->regmap, OV02C10_ROTATE_CONTROL,
++				BIT(3), ctrl->val ? 0 : BIT(3), &ret);
++		break;
++
++	case V4L2_CID_VFLIP:
++		cci_write(ov02c10->regmap, OV02C10_ISP_Y_WIN_CONTROL,
++			  ctrl->val ? 2 : 1, &ret);
++		cci_update_bits(ov02c10->regmap, OV02C10_ROTATE_CONTROL,
++				BIT(4), ctrl->val << 4, &ret);
++		break;
++
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -485,7 +495,7 @@ static int ov02c10_init_controls(struct ov02c10 *ov02c10)
+ 	s64 exposure_max, h_blank, pixel_rate;
+ 	int ret;
+ 
+-	v4l2_ctrl_handler_init(ctrl_hdlr, 10);
++	v4l2_ctrl_handler_init(ctrl_hdlr, 12);
+ 
+ 	ov02c10->link_freq = v4l2_ctrl_new_int_menu(ctrl_hdlr,
+ 						    &ov02c10_ctrl_ops,
+@@ -536,6 +546,13 @@ static int ov02c10_init_controls(struct ov02c10 *ov02c10)
+ 					      exposure_max,
+ 					      OV02C10_EXPOSURE_STEP,
+ 					      exposure_max);
++
++	v4l2_ctrl_new_std(ctrl_hdlr, &ov02c10_ctrl_ops, V4L2_CID_HFLIP,
++			  0, 1, 1, 0);
++
++	v4l2_ctrl_new_std(ctrl_hdlr, &ov02c10_ctrl_ops, V4L2_CID_VFLIP,
++			  0, 1, 1, 0);
++
+ 	v4l2_ctrl_new_std_menu_items(ctrl_hdlr, &ov02c10_ctrl_ops,
+ 				     V4L2_CID_TEST_PATTERN,
+ 				     ARRAY_SIZE(ov02c10_test_pattern_menu) - 1,
+diff --git a/drivers/media/pci/intel/Kconfig b/drivers/media/pci/intel/Kconfig
+index d9fcddce028bf..3f14ca110d06c 100644
+--- a/drivers/media/pci/intel/Kconfig
++++ b/drivers/media/pci/intel/Kconfig
+@@ -6,7 +6,7 @@ source "drivers/media/pci/intel/ivsc/Kconfig"
+ 
+ config IPU_BRIDGE
+ 	tristate "Intel IPU Bridge"
+-	depends on ACPI || COMPILE_TEST
++	depends on ACPI
+ 	depends on I2C
+ 	help
+ 	  The IPU bridge is a helper library for Intel IPU drivers to
+diff --git a/drivers/media/pci/intel/ipu-bridge.c b/drivers/media/pci/intel/ipu-bridge.c
+index 4e579352ab2c0..27007327d2307 100644
+--- a/drivers/media/pci/intel/ipu-bridge.c
++++ b/drivers/media/pci/intel/ipu-bridge.c
+@@ -5,6 +5,7 @@
+ #include <acpi/acpi_bus.h>
+ #include <linux/cleanup.h>
+ #include <linux/device.h>
++#include <linux/dmi.h>
+ #include <linux/i2c.h>
+ #include <linux/mei_cl_bus.h>
+ #include <linux/platform_device.h>
+@@ -94,6 +95,28 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	IPU_SENSOR_CONFIG("XMCC0003", 1, 321468000),
+ };
+ 
++/*
++ * DMI matches for laptops which have their sensor mounted upside-down
++ * without reporting a rotation of 180° in neither the SSDB nor the _PLD.
++ */
++static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 13 9350"),
++		},
++		.driver_data = "OVTI02C1",
++	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 16 9640"),
++		},
++		.driver_data = "OVTI02C1",
++	},
++	{} /* Terminating entry */
++};
++
+ static const struct ipu_property_names prop_names = {
+ 	.clock_frequency = "clock-frequency",
+ 	.rotation = "rotation",
+@@ -244,6 +267,12 @@ static int ipu_bridge_read_acpi_buffer(struct acpi_device *adev, char *id,
+ static u32 ipu_bridge_parse_rotation(struct acpi_device *adev,
+ 				     struct ipu_sensor_ssdb *ssdb)
+ {
++	const struct dmi_system_id *dmi_id;
++
++	dmi_id = dmi_first_match(upside_down_sensor_dmi_ids);
++	if (dmi_id && acpi_dev_hid_match(adev, dmi_id->driver_data))
++		return 180;
++
+ 	switch (ssdb->degree) {
+ 	case IPU_SENSOR_ROTATION_NORMAL:
+ 		return 0;
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index b9c252aa6fe0..166a5815e1ef 100644
+index b9c252aa6fe08..166a5815e1efb 100644
 --- a/drivers/pci/quirks.c
 +++ b/drivers/pci/quirks.c
 @@ -4453,6 +4453,30 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_BROADCOM, 0x9000,
@@ -1157,7 +1439,7 @@ index b9c252aa6fe0..166a5815e1ef 100644
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 256fe8c86828..2e4a09948df8 100644
+index 256fe8c86828d..2e4a09948df8f 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
 @@ -5893,6 +5893,13 @@ static void hub_event(struct work_struct *work)
@@ -1175,7 +1457,7 @@ index 256fe8c86828..2e4a09948df8 100644
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index a98cc39e7aaa..00f31eefd0c5 100644
+index a98cc39e7aaa8..00f31eefd0c5a 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -45,6 +45,8 @@ struct screen_info;
@@ -1242,8 +1524,20 @@ index a98cc39e7aaa..00f31eefd0c5 100644
  static inline
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
+diff --git a/include/linux/module.h b/include/linux/module.h
+index e135cc79aceea..65a08753a2e72 100644
+--- a/include/linux/module.h
++++ b/include/linux/module.h
+@@ -418,6 +418,7 @@ struct module {
+ 	struct module_attribute *modinfo_attrs;
+ 	const char *version;
+ 	const char *srcversion;
++	const char *rhelversion;
+ 	struct kobject *holders_dir;
+ 
+ 	/* Exported symbols */
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
-index ab7eea01ab42..fff7c5f737fc 100644
+index ab7eea01ab427..fff7c5f737fc8 100644
 --- a/include/linux/rmi.h
 +++ b/include/linux/rmi.h
 @@ -364,6 +364,7 @@ struct rmi_driver_data {
@@ -1255,7 +1549,7 @@ index ab7eea01ab42..fff7c5f737fc 100644
  
  int rmi_register_transport_device(struct rmi_transport_dev *xport);
 diff --git a/include/linux/security.h b/include/linux/security.h
-index 92ac3f27b973..d9efb9b50aed 100644
+index 92ac3f27b9733..d9efb9b50aed9 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -2407,4 +2407,13 @@ static inline void security_initramfs_populated(void)
@@ -1273,7 +1567,7 @@ index 92ac3f27b973..d9efb9b50aed 100644
 +
  #endif /* ! __LINUX_SECURITY_H */
 diff --git a/kernel/module/signing.c b/kernel/module/signing.c
-index a2ff4242e623..f0d2be1ee4f1 100644
+index a2ff4242e623d..f0d2be1ee4f1c 100644
 --- a/kernel/module/signing.c
 +++ b/kernel/module/signing.c
 @@ -61,10 +61,17 @@ int mod_verify_sig(const void *mod, struct load_info *info)
@@ -1296,7 +1590,7 @@ index a2ff4242e623..f0d2be1ee4f1 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/scripts/Makefile.lib b/scripts/Makefile.lib
-index 1d581ba5df66..7826803444df 100644
+index 1d581ba5df66f..7826803444df9 100644
 --- a/scripts/Makefile.lib
 +++ b/scripts/Makefile.lib
 @@ -191,7 +191,10 @@ objtool-args-$(CONFIG_HAVE_STATIC_CALL_INLINE)		+= --static-call
@@ -1311,7 +1605,7 @@ index 1d581ba5df66..7826803444df 100644
  objtool-args = $(objtool-args-y)					\
  	$(if $(delay-objtool), --link)					\
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 99ce427d9a69..f191cd9d7ee6 100755
+index 99ce427d9a69d..f191cd9d7ee6e 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -1324,7 +1618,7 @@ index 99ce427d9a69..f191cd9d7ee6 100755
  # ignore arbitrary directories
  if [ -n "${IGNORE_DIRS}" ]; then
 diff --git a/security/integrity/platform_certs/load_uefi.c b/security/integrity/platform_certs/load_uefi.c
-index d1fdd113450a..182e8090cfe8 100644
+index d1fdd113450a6..182e8090cfe85 100644
 --- a/security/integrity/platform_certs/load_uefi.c
 +++ b/security/integrity/platform_certs/load_uefi.c
 @@ -74,7 +74,8 @@ static __init void *get_cert_list(efi_char16_t *name, efi_guid_t *guid,
@@ -1348,7 +1642,7 @@ index d1fdd113450a..182e8090cfe8 100644
  	}
  
 diff --git a/security/lockdown/Kconfig b/security/lockdown/Kconfig
-index e84ddf484010..d0501353a4b9 100644
+index e84ddf4840101..d0501353a4b95 100644
 --- a/security/lockdown/Kconfig
 +++ b/security/lockdown/Kconfig
 @@ -16,6 +16,19 @@ config SECURITY_LOCKDOWN_LSM_EARLY
@@ -1372,7 +1666,7 @@ index e84ddf484010..d0501353a4b9 100644
  	prompt "Kernel default lockdown mode"
  	default LOCK_DOWN_KERNEL_FORCE_NONE
 diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
-index cf83afa1d879..aba751e7abff 100644
+index cf83afa1d879a..aba751e7abffe 100644
 --- a/security/lockdown/lockdown.c
 +++ b/security/lockdown/lockdown.c
 @@ -72,6 +72,17 @@ static int lockdown_is_locked_down(enum lockdown_reason what)
@@ -1393,20 +1687,8 @@ index cf83afa1d879..aba751e7abff 100644
  static struct security_hook_list lockdown_hooks[] __ro_after_init = {
  	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
  };
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 168140f8e646..5e24714c22e7 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -85,6 +85,7 @@ override CFLAGS += $(INCLUDES)
- override CFLAGS += -fvisibility=hidden
- override CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
- override CFLAGS += $(CLANG_CROSS_FLAGS)
-+override CFLAGS += -Wno-error=discarded-qualifiers
- 
- # flags specific for shared library
- SHLIB_FLAGS := -DSHARED -fPIC
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index e59b2bbf8d92..ac86a0947f60 100644
+index e59b2bbf8d920..ac86a0947f601 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
 @@ -503,7 +503,7 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\
@@ -1419,7 +1701,7 @@ index e59b2bbf8d92..ac86a0947f60 100644
  SKEL_BLACKLIST += $$(LSKELS) $$(LSKELS_SIGNED)
  
 diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
-index 1d7a2f1e0731..b22f3a9cb8b8 100644
+index 1d7a2f1e07317..b22f3a9cb8b80 100644
 --- a/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
 +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_btf.c
 @@ -7,7 +7,6 @@

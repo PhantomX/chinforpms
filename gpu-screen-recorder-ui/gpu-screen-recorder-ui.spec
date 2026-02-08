@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.7.5
+Version:        1.10.7
 Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
@@ -12,11 +12,13 @@ Source0:        https://dec05eba.com/snapshot/%{name}.git.%{version}.tar.gz
 
 Patch0:         0001-Use-system-fonts.patch
 
+BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  fonts-srpm-macros
 BuildRequires:  systemd
+BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(xcomposite)
@@ -49,7 +51,10 @@ the style of ShadowPlay.
 cp -p depends/mglpp/depends/mgl/LICENSE LICENSE.mglpp
 
 rm -rf fonts
-sed -e "/'fonts'/d" -i meson.build
+sed \
+  -e "/'fonts'/d" \
+  -e '/update_desktop_database/d' \
+  -i meson.build
 sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 
@@ -67,19 +72,27 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 %check
 %meson_test
+desktop-file-validate %{buildroot}%{_datadir}/applications/gpu-screen-recorder.desktop
 
 
 %files
 %license LICENSE LICENSE.mglpp
 %doc README.md
 %caps(cap_setuid+ep) %{_bindir}/gsr-global-hotkeys
+%{_bindir}/gsr-hyprland-helper
+%{_bindir}/gsr-kwin-helper
 %{_bindir}/gsr-ui
 %{_bindir}/gsr-ui-cli
 %{_datadir}/gsr-ui
+%{_datadir}/applications/gpu-screen-recorder.desktop
+%{_datadir}/icons/hicolor/*/*/gpu-screen-recorder.*
 %{_userunitdir}/%{name}.service
 
 
 %changelog
+* Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1.10.7-1
+- 1.10.7
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.7.5-1
 - 1.7.5
 

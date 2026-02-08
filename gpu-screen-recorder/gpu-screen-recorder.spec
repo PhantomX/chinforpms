@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.6.8
+Version:        5.12.3
 Release:        1%{dist}
 Summary:        A shadowplay-like screen recorder
 
@@ -79,12 +79,17 @@ Development files for %{name} plugins.
 %caps(cap_sys_admin+ep) %{_bindir}/gsr-kms-server
 %{_modprobedir}/gsr-nvidia.conf
 %{_userunitdir}/%{name}.service
+%{_datadir}/%{name}
+%{_mandir}/man1/*.1*
 
 %files devel
 %{_includedir}/gsr/plugin.h
 
 
 %changelog
+* Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 5.12.3-1
+- 5.12.3
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.8-1
 - 5.6.8
 - devel package

@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-notification
-Version:        1.0.8
+Version:        1.1.1
 Release:        1%{dist}
 Summary:        A notification in the style of ShadowPlay
 
@@ -63,6 +63,9 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/main.cpp
 
 
 %changelog
+* Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-1
+- 1.1.1
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.0.8-1
 - 1.0.8
 
