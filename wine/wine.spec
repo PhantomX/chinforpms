@@ -1,7 +1,7 @@
 %global commit 93f3d8ae9fad50b3ebc45f808bb4749322a0de14
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260128
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -50,20 +50,20 @@
 %global opencl    1
 
 %global winecapstone 5.0.3
-%global wineFAudio 25.12
+%global wineFAudio 26.02
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
-%global winejpeg 9~f
+%global winejpeg 10
 %global winelcms2 2.17
 %global wineldap 2.5.18
 %global winempg123 1.33.0
-%global winepng 1.6.51
+%global winepng 1.6.54
 %global wineopenldap 2.5.17
 %global winetiff 4.7.1
 %global winejxrlib 1.1
 %global winevkd3d 1.18
 %global winexml2 2.12.8
-%global winexslt 1.1.43
+%global winexslt 1.1.45
 %global winezlib 1.3.1
 %global winezydis 4.1.0
 
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 21f00bc50fe2e8f9ced2a4148f2a82bc3b5c4e21
+%global wine_stagingver 11.2
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,7 +84,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 65ea535d2bcd30f18662d6bf202db953f336c37f
+%global tkg_id 2d624ba32f04b6aa7d13ecbda8f477dff12411c3
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -124,8 +124,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.1
-Release:        101%{?dist}
+Version:        11.2
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -206,7 +206,6 @@ Patch707:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.pat
 Patch708:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
 Patch709:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch710:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch711:        %{whq_murl}/-/merge_requests/10001.patch#/%{name}-whq-mr10001.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -803,7 +802,6 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 708 -p1
 %patch -P 709 -p1
 %patch -P 710 -p1
-%patch -P 711 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -1345,6 +1343,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/net.exe
 %{_libdir}/wine/%{winepedirs}/ngen.exe
 %{_libdir}/wine/%{winepedirs}/ntoskrnl.exe
+%{_libdir}/wine/%{winepedirs}/odbcad32.exe
 %{_libdir}/wine/%{winepedirs}/oleview.exe
 %{_libdir}/wine/%{winepedirs}/ping.exe
 %{_libdir}/wine/%{winepedirs}/pnputil.exe
@@ -2478,11 +2477,9 @@ fi
 
 %files pulseaudio
 %{_libdir}/wine/%{winesodir}/winepulse.so
-%{_libdir}/wine/%{winepedirs}/winepulse.drv
 
 %files alsa
 %{_libdir}/wine/%{winesodir}/winealsa.so
-%{_libdir}/wine/%{winepedirs}/winealsa.drv
 
 %if 0%{?opencl}
 %files opencl
@@ -2492,6 +2489,9 @@ fi
 
 
 %changelog
+* Sun Feb 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.2-100
+- 11.2
+
 * Sat Jan 24 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.1-100
 - 11.1
 
