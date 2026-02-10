@@ -322,6 +322,7 @@ rules:
   - drivers/usb/gadget/function/usb_f_midi2.*: modules
   - drivers/usb/image/.*: modules
   - drivers/usb/misc/trancevibrator.*: modules-extra
+  - drivers/usb/misc/usbio.ko: modules-core
   - drivers/usb/misc/.*: modules
   - drivers/usb/serial/.*: modules
   - drivers/usb/typec/mux/nb7vpq904m.*: modules

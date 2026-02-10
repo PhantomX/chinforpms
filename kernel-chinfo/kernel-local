@@ -1,13 +1,2 @@
 # This file is intentionally left empty in the stock kernel. Its a nicety
 # added for those wanting to do custom rebuilds with altered config opts.
-
-CONFIG_ACPI_TABLE_UPGRADE=y
-
-CONFIG_DRM_AMDGPU_SI=y
-
-CONFIG_SND_HDA_POWER_SAVE_DEFAULT=0
-
-# CONFIG_SND_INTEL_BYT_PREFER_SOF is not set
-# CONFIG_SND_HDA_INTEL_HDMI_SILENT_STREAM is not set
-
-CONFIG_EFI_VARS_PSTORE_DEFAULT_DISABLE=y

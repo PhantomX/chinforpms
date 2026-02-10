@@ -38,6 +38,8 @@
 # or find-debuginfo.sh. Make use of __spec_install_post override
 # and save/restore binaries we want to package as unstripped.
 %define buildroot_unstripped %{_builddir}/root_unstripped
+# buildroot_save_unstripped: Save unstripped binaries before RPM strips them
+#   %1 - Path(s) to binaries to save (relative to buildroot)
 %define buildroot_save_unstripped() \
 (cd %{buildroot}; cp -rav --parents -t %{buildroot_unstripped}/ %1 || true) \
 %{nil}
@@ -63,10 +65,17 @@
 # purposely leave out the removal section.  All global wide changes
 # should be added above this line otherwise the %%install section
 # will not see them.
+#
+# We build multiple kernel variants (debug, rt, etc.) in %%build
+# and install their files to RPM_BUILD_ROOT as we go. If %%install wiped RPM_BUILD_ROOT
+# at the start (the default), we'd lose all the variants built in %%build. So we
+# override __spec_install_pre to skip the "rm -rf" step.
 %global __spec_install_pre %{___build_pre}
 
 # Replace '-' with '_' where needed so that variants can use '-' in
 # their name.
+#   %1 - Variant name (e.g., "debug", "rt-debug")
+#   Returns: "+variant_name" with dashes converted to underscores for uname
 %define uname_suffix() %{lua:
 	local flavour = rpm.expand('%{?1:+%{1}}')
 	flavour = flavour:gsub('-', '_')
@@ -78,8 +87,10 @@
 # This returns the main kernel tied to a debug variant. For example,
 # kernel-debug is the debug version of kernel, so we return an empty
 # string. However, kernel-64k-debug is the debug version of kernel-64k,
-# in this case we need to return "64k", and so on. This is used in
+# in this case we need to return "+64k", and so on. This is used in
 # macros below where we need this for some uname based requires.
+#   %1 - Variant name (e.g., "64k-debug")
+#   Returns: "+main_variant" for compound variants, empty string for simple variants
 %define uname_variant() %{lua:
 	local flavour = rpm.expand('%{?1:%{1}}')
 	_, _, main, sub = flavour:find("(%w+)-(.*)")
@@ -194,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.18.9
+%define specrpmversion 6.19.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -223,7 +234,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id c68e3426e0b2a1d150ad66242862075a7d4db450
+%global opensuse_id 8561097cf2692e21e627104ac4afd15991305156
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -246,9 +257,17 @@ Summary: The Linux kernel
 # Where enabled by default, they can be disabled by using --without <opt> in
 # the rpmbuild command, or by forcing these values to 0.
 #
-# standard kernel
-%define with_up        %{?_without_up:0} %{?!_without_up:1}
-# build the base variants
+# stock kernel (kernel, kernel-core, kernel-modules, etc.)
+# Backwards compatibility: 'up' is deprecated, use 'stock' instead
+%define with_stock        %{?_without_stock:0} %{?!_without_stock:1}
+#  "Base" kernel refers to production configuration for the variant.
+#
+# The --with baseonly option builds: stock-base (skips stock-debug), kernel-doc, kernel-headers;
+# skips: perf, tools, selftests.
+#
+# build the base variants (non-debug builds of any enabled kernel variant)
+#Note: with_stock controls which variant (stock vs realtime/automotive/etc),
+#      with_base controls base vs debug within those variants
 %define with_base      %{?_without_base:0} %{?!_without_base:1}
 # build also debug variants
 %define with_debug     %{?_without_debug:0} %{?!_without_debug:1}
@@ -276,7 +295,7 @@ Summary: The Linux kernel
 
 # Supported variants
 #            with_base with_debug    with_gcov
-# up         X         X             X
+# stock      X         X             X
 # zfcpdump   X                       X
 # arm64_16k  X         X             X
 # arm64_64k  X         X             X
@@ -469,7 +488,7 @@ Summary: The Linux kernel
 %define with_realtime 1
 %define with_realtime_arm64_64k 1
 %define with_automotive 0
-%define with_up 0
+%define with_stock 0
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
@@ -489,7 +508,7 @@ Summary: The Linux kernel
 %if %{with_automotiveonly}
 %define with_automotive 1
 %define with_realtime 0
-%define with_up 0
+%define with_stock 0
 %define with_debug 0
 %define with_debuginfo 0
 %define with_vdso_install 0
@@ -505,7 +524,7 @@ Summary: The Linux kernel
 # if requested, only build tools
 %if %{with_toolsonly}
 %define with_tools 1
-%define with_up 0
+%define with_stock 0
 %define with_base 0
 %define with_debug 0
 %define with_realtime 0
@@ -600,7 +619,7 @@ Summary: The Linux kernel
 
 # don't build noarch kernels or headers (duh)
 %ifarch noarch
-%define with_up 0
+%define with_stock 0
 %define with_realtime 0
 %define with_automotive 0
 %define with_headers 0
@@ -698,7 +717,7 @@ Summary: The Linux kernel
 
 %ifarch %nobuildarches
 # disable BuildKernel commands
-%define with_up 0
+%define with_stock 0
 %define with_debug 0
 %define with_zfcpdump 0
 %define with_arm64_16k 0
@@ -740,10 +759,10 @@ Summary: The Linux kernel
 %endif
 
 # short-hand for "are we building base/non-debug variants of ...?"
-%if %{with_up} && %{with_base}
-%define with_up_base 1
+%if %{with_stock} && %{with_base}
+%define with_stock_base 1
 %else
-%define with_up_base 0
+%define with_stock_base 0
 %endif
 %if %{with_realtime} && %{with_base}
 %define with_realtime_base 1
@@ -857,6 +876,7 @@ BuildRequires: libtracefs-devel
 BuildRequires: libbpf-devel
 BuildRequires: bpftool
 BuildRequires: clang
+BuildRequires: lld
 
 %ifarch %{cpupowerarchs}
 # For libcpupower bindings
@@ -1261,7 +1281,7 @@ Patch2001: %{zen_url}/commit/39225a3130e280dcb47ea12877e95eb869c64e33.patch#/zen
 Patch2002: %{zen_url}/commit/2a1c1620255001ad54205564e6104b7f3d79f058.patch#/zen-v%{patchversion}-sauce-2a1c162.patch
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/5e09fcd39d014b89a67ecfb19730deb53115cf24.patch%{pf_antibot}#/pf-cb-5e09fcd.patch
+Patch6000: %{pf_url}/bbc1987355956b8047f6eda21f199d51ae4048c6.patch%{pf_antibot}#/pf-cb-bbc1987.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1271,33 +1291,23 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/1cac491b0bc86faa30e08db85cce64ecf9a1ee78.patch%{pf_antibot}#/pf-cb-1cac491.patch
-Patch6951:  %{pf_url}/51932124d219371d25d9d85dceadb3a73ace7d35.patch%{pf_antibot}#/pf-cb-5193212.patch
+Patch6950:  %{pf_url}/870602f47fa550dfc931de1453cb686785781ed4.patch%{pf_antibot}#/pf-cb-870602f.patch
+
 # kbuild (7000)
-# bbr3
-Patch7050:  %{pf_url}/a05ea4b4cef3e2d59b462639db637573a2f9660c.patch%{pf_antibot}#/pf-cb-a05ea4b.patch
+# bbr3 (7250)
+Patch7050:  %{pf_url}/990e6d61a8fc5cfcc8ac2a19a10fbd9d37d0362b.patch%{pf_antibot}#/pf-cb-990e6d6.patch
 # zstd
-# v4l2loopback
+# v4l2loopback (7230)
 Patch7230:  %{pf_url}/6e1c80583393935dacb55bd26ce41851de3da85a.patch%{pf_antibot}#/pf-cb-6e1c805.patch
-# cpuidle
-Patch7240:  %{pf_url}/7c86fefe62927a6ecc5eea56a097e1d50c71adb8.patch%{pf_antibot}#/pf-cb-7c86fef.patch
-# crypto
-Patch7300:  %{pf_url}/37b66d510a5d105e4be5e71eb27950fd40f12bfa.patch%{pf_antibot}#/pf-cb-37b66d5.patch
-Patch7301:  %{pf_url}/92496a68f5d4452516fc3b1ec7bf7e643a859922.patch%{pf_antibot}#/pf-cb-92496a6.patch
-Patch7302:  %{pf_url}/93f8ea7734c9f748bbcde925156a9975f5576d31.patch%{pf_antibot}#/pf-cb-93f8ea7.patch
-Patch7303:  %{pf_url}/dcd199da1f43301231939d9f618ff6f98d3747aa.patch%{pf_antibot}#/pf-cb-dcd199d.patch
-Patch7304:  %{pf_url}/b20bb6e49c2fb7abbb251687eb626f4048dec6b8.patch%{pf_antibot}#/pf-cb-b20bb6e.patch
-Patch7305:  %{pf_url}/95d57126e3a70dbbcf3a7add2254485e84c0ef37.patch%{pf_antibot}#/pf-cb-95d5712.patch
-Patch7306:  %{pf_url}/b256bf338771b7558278676f3d16189f5cb710f7.patch%{pf_antibot}#/pf-cb-b256bf3.patch
-Patch7307:  %{pf_url}/6c8374882e99165c26f01bcd9c1688bf5ef15d12.patch%{pf_antibot}#/pf-cb-6c83748.patch
+# cpuidle (7240)
+Patch7240:  %{pf_url}/5e7d91362fb7ac681137c380adcfb49e94a37980.patch%{pf_antibot}#/pf-cb-5e7d913.patch
+Patch7241:  %{pf_url}/125f0c803a49db6a961ed91c609cb79b9dd650ca.patch%{pf_antibot}#/pf-cb-125f0c8.patch
+Patch7242:  %{pf_url}/7fa46923c4422e9fe01c9c7d0d1d9337176d7f36.patch%{pf_antibot}#/pf-cb-7fa4692.patch
+Patch7243:  %{pf_url}/d799205d93720690c38ef58973b7c4a62a933451.patch%{pf_antibot}#/pf-cb-d799205.patch
+Patch7244:  %{pf_url}/3bf5547f86951d437d29147401cc89169df13fc2.patch%{pf_antibot}#/pf-cb-3bf5547.patch
+Patch7245:  %{pf_url}/6860ea089fdbfe8676abf9a11868231de6e9ced3.patch%{pf_antibot}#/pf-cb-6860ea0.patch
+# crypto (7300)
 # fixes (7400)
-Patch7400:  %{pf_url}/59f4bb3ec556c5a8e89cbb7b74641c56c60ab341.patch%{pf_antibot}#/pf-cb-59f4bb3.patch
-Patch7401:  %{pf_url}/162a111c67237ad8fcc2a904e48c2403031bdf39.patch%{pf_antibot}#/pf-cb-162a111.patch
-Patch7402:  %{pf_url}/fadc9192aa00e2bd4b1fb372a0aa7d8dc30ff0f4.patch%{pf_antibot}#/pf-cb-fadc919.patch
-Patch7403:  %{pf_url}/4e5235eb37bbe315efc1f4af5eadcfb4485713da.patch%{pf_antibot}#/pf-cb-4e5235e.patch
-Patch7404:  %{pf_url}/d17b9a2dab54dd5b92a6682f5a7a8edaa783c432.patch%{pf_antibot}#/pf-cb-d17b9a2.patch
-Patch7405:  %{pf_url}/31c47bb5adc15e3538fee96a6af6607a368149e2.patch%{pf_antibot}#/pf-cb-31c47bb.patch
-Patch7406:  %{pf_url}/a3df986a65aafc8f0176733b9a52bce3790c5e13.patch%{pf_antibot}#/pf-cb-a3df986.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1310,12 +1320,16 @@ The %{package_name} meta package
 
 #
 # This macro does requires, provides, conflicts, obsoletes for a kernel package.
-#    %%kernel_reqprovconf [-o] <subpackage>
+#	%%kernel_reqprovconf [-o] <subpackage>
 # It uses any kernel_<subpackage>_conflicts and kernel_<subpackage>_obsoletes
 # macros defined above.
-# -o: Skips main "Provides" that would satisfy general kernel requirements that
-#     special-purpose kernels shouldn't include.
-#     For example, used for zfcpdump-core to *not* provide kernel-core. (BZ 2027654)
+#
+# Options:
+#   -o: Skip main "Provides" that would satisfy general kernel requirements that
+#       special-purpose kernels shouldn't include.
+#       For example, used for zfcpdump-core to *not* provide kernel-core. (BZ 2027654)
+# Arguments:
+#   %1 - Variant/subpackage name (e.g., "debug", "zfcpdump"), or empty for stock kernel
 #
 %define kernel_reqprovconf(o) \
 %if %{-o:0}%{!-o:1}\
@@ -1525,6 +1539,14 @@ This package provides debug information for package kernel-tools.
 # of matching the pattern against the symlinks file.
 %{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/bootconfig(\.debug)?|.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
+%if %{with_tools} && %{with_ynl}
+%package -n python3-kernel-tools
+Summary: Various Python tools for the kernel
+%description -n python3-kernel-tools
+The python3-kernel-tools package contains various python tools
+shipped as part of the kernel tools including ynl.
+%endif
+
 %package -n rtla
 %if 0%{gemini}
 Epoch: %{gemini}
@@ -1542,6 +1564,24 @@ the real-time properties of Linux. Instead of testing Linux as a black box,
 rtla leverages kernel tracing capabilities to provide precise information
 about the properties and root causes of unexpected results.
 
+%if %{with_debuginfo}
+%package -n rtla-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
+Summary: Debug information for package rtla
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n rtla-debuginfo
+This package provides debug information for the rtla package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/rtla(\.debug)?|.*%%{_bindir}/hwnoise(\.debug)?|.*%%{_bindir}/osnoise(\.debug)?|.*%%{_bindir}/timerlat(\.debug)?|XXX' -o rtla-debuginfo.list}
+%endif
+
 %package -n rv
 Summary: RV: Runtime Verification
 %description -n rv
@@ -1550,7 +1590,22 @@ complements classical exhaustive verification techniques (such as model
 checking and theorem proving) with a more practical approach for
 complex systems.
 The rv tool is the interface for a collection of monitors that aim
-analysing the logical and timing behavior of Linux.
+to analyze the logical and timing behavior of Linux.
+
+%if %{with_debuginfo}
+%package -n rv-debuginfo
+Summary: Debug information for package rv
+Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
+AutoReqProv: no
+%description -n rv-debuginfo
+This package provides debug information for the rv package.
+
+# Note that this pattern only works right to match the .build-id
+# symlinks because of the trailing nonmatching alternation and
+# the leading .*, because of find-debuginfo.sh's buggy handling
+# of matching the pattern against the symlinks file.
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/rv(\.debug)?|XXX' -o rv-debuginfo.list}
+%endif
 
 # with_tools
 %endif
@@ -1627,6 +1682,13 @@ This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
 # This macro creates a kernel-<subpackage>-devel package.
 #    %%kernel_devel_package [-m] <subpackage> <pretty-name>
 #
+# Options:
+#   -m: For debug variants with debugbuildsenabled==0, adds a dependency on the
+#       non-debug variant's devel package (e.g., 64k-debug-devel requires 64k-devel)
+# Arguments:
+#   %1 - Variant/subpackage name (e.g., "debug", "rt")
+#   %2 - Pretty name for description (e.g., "debug", "PREEMPT_RT")
+#
 %define kernel_devel_package(m) \
 %package %{?1:%{1}-}devel\
 Summary: Development package for building kernel modules to match the %{?2:%{2} }kernel\
@@ -1702,6 +1764,12 @@ This package provides kernel modules for the %{?2:%{2} }kernel package for Red H
 # This macro creates a kernel-<subpackage>-modules-extra package.
 #    %%kernel_modules_extra_package [-m] <subpackage> <pretty-name>
 #
+# Options:
+#   -m: For debug variants, adds a dependency on the non-debug variant's modules-extra
+# Arguments:
+#   %1 - Variant/subpackage name
+#   %2 - Pretty name for description
+#
 %define kernel_modules_extra_package(m) \
 %package %{?1:%{1}-}modules-extra\
 Summary: Extra kernel modules to match the %{?2:%{2} }kernel\
@@ -1725,6 +1793,12 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 #
 # This macro creates a kernel-<subpackage>-modules package.
 #    %%kernel_modules_package [-m] <subpackage> <pretty-name>
+#
+# Options:
+#   -m: For debug variants, adds a dependency on the non-debug variant's modules
+# Arguments:
+#   %1 - Variant/subpackage name
+#   %2 - Pretty name for description
 #
 %define kernel_modules_package(m) \
 %package %{?1:%{1}-}modules\
@@ -1790,10 +1864,15 @@ The meta-package for the %{1} kernel\
 # This macro creates a kernel-<subpackage> and its -devel and -debuginfo too.
 #	%%define variant_summary The Linux kernel compiled for <configuration>
 #	%%kernel_variant_package [-n <pretty-name>] [-m] [-o] <subpackage>
-# -m: Used with debugbuildsenabled==0 to create a "meta" debug variant that
-#     depends on base variant and skips debug/internal/partner packages.
-# -o: Skips main "Provides" that would satisfy general kernel requirements that
-#     special-purpose kernels shouldn't include.
+#
+# Options:
+#   -n <name>: Use <name> as the pretty variant name in descriptions (default: <subpackage>)
+#   -m: Used with debugbuildsenabled==0 to create a "meta" debug variant that
+#       depends on non-debug variant and skips debug/internal/partner packages.
+#   -o: Skips main "Provides" that would satisfy general kernel requirements that
+#       special-purpose kernels shouldn't include.
+# Arguments:
+#   %1 - Variant/subpackage name (e.g., "debug", "rt", "zfcpdump"), or empty for stock kernel
 #
 %define kernel_variant_package(n:mo) \
 %package %{?1:%{1}-}core\
@@ -1986,7 +2065,7 @@ This package includes a version of the Linux kernel compiled with the
 PREEMPT_RT real-time preemption support, targeted for Automotive platforms
 %endif
 
-%if %{with_up} && %{with_debug}
+%if %{with_stock} && %{with_debug}
 %if !%{debugbuildsenabled}
 %kernel_variant_package -m debug
 %else
@@ -2003,7 +2082,7 @@ It should only be installed when trying to gather additional information
 on kernel bugs, as some of these options impact performance noticably.
 %endif
 
-%if %{with_up_base}
+%if %{with_stock_base}
 # And finally the main -core package
 
 %define variant_summary The Linux kernel
@@ -2015,7 +2094,7 @@ of the operating system: memory allocation, process allocation, device
 input and output, etc.
 %endif
 
-%if %{with_up} && %{with_debug} && %{with_efiuki}
+%if %{with_stock} && %{with_debug} && %{with_efiuki}
 %description debug-uki-virt
 Prebuilt debug unified kernel image for virtual machines.
 
@@ -2023,7 +2102,7 @@ Prebuilt debug unified kernel image for virtual machines.
 Prebuilt debug unified kernel image addons for virtual machines.
 %endif
 
-%if %{with_up_base} && %{with_efiuki}
+%if %{with_stock_base} && %{with_efiuki}
 %description uki-virt
 Prebuilt default unified kernel image for virtual machines.
 
@@ -2067,6 +2146,10 @@ Prebuilt 64k unified kernel image addons for virtual machines.
 %kernel_modules_extra_matched_package
 %endif
 
+# Output a log message with spec file line number for debugging builds
+#
+# Temporarily disables command echoing (set +x) to avoid cluttering output,
+# finds the line number in the spec file, prints the message, then re-enables echoing.
 %define log_msg() \
   { set +x; } 2>/dev/null \
   _log_msglineno=$(grep -n %{*} %{_specdir}/%{name}.spec | grep log_msg | cut -d":" -f1) \
@@ -2080,8 +2163,8 @@ Prebuilt 64k unified kernel image addons for virtual machines.
 
 # do a few sanity-checks for --with *only builds
 %if %{with_baseonly}
-%if !%{with_up}
-%{log_msg "Cannot build --with baseonly, up build is disabled"}
+%if !%{with_stock}
+%{log_msg "Cannot build --with baseonly, stock build is disabled"}
 exit 1
 %endif
 %endif
@@ -2160,7 +2243,6 @@ ApplyOptionalPatch %{PATCH999999}
 %if 0%{?post_factum}
 # archlinux
 ApplyPatch %{PATCH6950}
-ApplyPatch %{PATCH6951}
 # kbuild
 # bbr3
 ApplyPatch %{PATCH7050}
@@ -2169,23 +2251,13 @@ ApplyPatch %{PATCH7050}
 ApplyPatch %{PATCH7230}
 # cpuidle
 ApplyPatch %{PATCH7240}
+ApplyPatch %{PATCH7241}
+ApplyPatch %{PATCH7242}
+ApplyPatch %{PATCH7243}
+ApplyPatch %{PATCH7244}
+ApplyPatch %{PATCH7245}
 # crypto
-ApplyPatch %{PATCH7300}
-ApplyPatch %{PATCH7301}
-ApplyPatch %{PATCH7302}
-ApplyPatch %{PATCH7303}
-ApplyPatch %{PATCH7304}
-ApplyPatch %{PATCH7305}
-ApplyPatch %{PATCH7306}
-ApplyPatch %{PATCH7307}
 # fixes
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
 %endif
 
 # openSUSE
@@ -2453,6 +2525,13 @@ cp_vmlinux()
 
 %define make %{__make} %{?cross_opts} %{?make_opts} HOSTCFLAGS="%{?build_hostcflags}" HOSTLDFLAGS="%{?build_hostldflags}"
 
+#  Initialize build environment for a kernel variant
+#   $1 (Variant) - Variant suffix (e.g., "debug", "rt"), or empty for stock kernel
+# Sets up:
+#   - Config: Path to kernel config file
+#   - DevelDir: Installation directory for kernel-devel files
+#   - KernelVer: Full kernel version string
+#   - Arch: Target architecture
 InitBuildVars() {
     %{log_msg "InitBuildVars for $1"}
 
@@ -2508,6 +2587,12 @@ BuildBpftool(){
     CFLAGS="" LDFLAGS="" make EXTRA_CFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_CXXFLAGS="${BPFBOOTSTRAP_CFLAGS}" EXTRA_LDFLAGS="${BPFBOOTSTRAP_LDFLAGS}" %{?make_opts} %{?clang_make_opts} V=1 -C tools/bpf/bpftool bootstrap
 }
 
+#  Main function to compile and install a kernel variant
+#   $1 (MakeTarget) - Make target to build (e.g., "bzImage", "vmlinux")
+#   $2 (KernelImage) - Path to kernel image file produced by build
+#   $3 (DoVDSO) - Whether to install VDSO files (1=yes, 0=no)
+#   $4 (Variant) - Variant suffix (e.g., "debug", "rt", "zfcpdump"), or empty for stock kernel
+#   $5 (InstallName) - Name for installed kernel (default: "vmlinuz")
 BuildKernel() {
     %{log_msg "BuildKernel for $4"}
     MakeTarget=$1
@@ -3307,7 +3392,7 @@ BuildKernel %make_target %kernel_image %{_use_vdso} 16k-debug
 BuildKernel %make_target %kernel_image %{_use_vdso} 64k-debug
 %endif
 
-%if %{with_up}
+%if %{with_stock}
 BuildKernel %make_target %kernel_image %{_use_vdso} debug
 %endif
 %endif
@@ -3336,12 +3421,12 @@ BuildKernel %make_target %kernel_image %{_use_vdso} rt-64k
 BuildKernel %make_target %kernel_image %{_use_vdso} automotive
 %endif
 
-%if %{with_up_base}
+%if %{with_stock_base}
 BuildKernel %make_target %kernel_image %{_use_vdso}
 %endif
 
 %ifnarch noarch i686 %{nobuildarches}
-%if !%{with_debug} && !%{with_zfcpdump} && !%{with_up} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime} && !%{with_realtime_arm64_64k} && !%{with_automotive}
+%if !%{with_debug} && !%{with_zfcpdump} && !%{with_stock} && !%{with_arm64_16k} && !%{with_arm64_64k} && !%{with_realtime} && !%{with_realtime_arm64_64k} && !%{with_automotive}
 # If only building the user space tools, then initialize the build environment
 # and some variables so that the various userspace tools can be built.
 %{log_msg "Initialize userspace tools build environment"}
@@ -3513,7 +3598,7 @@ pushd tools/testing/selftests
 export CFLAGS="%{build_cflags}"
 export CXXFLAGS="%{build_cxxflags}"
 
-%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CFLAGS="${CXXFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/can net/forwarding net/hsr net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd capabilities clone3 exec filesystems firmware landlock mount mount_setattr move_mount_set_group nsfs openat2 proc safesetid seccomp tmpfs uevent vDSO SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CFLAGS="${CXXFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/can net/forwarding net/hsr net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd capabilities clone3 exec filesystems firmware landlock mount mount_setattr move_mount_set_group nsfs openat2 proc safesetid seccomp tmpfs uevent vDSO" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # Restore the original level of source fortification
 %define _fortify_level %{_fortify_level_bak}
@@ -3572,7 +3657,12 @@ find Documentation -type d | xargs chmod u+w
 # the signature off of the modules.
 #
 # Don't sign modules for the zfcpdump variant as it is monolithic.
-
+#
+# Signs all kernel modules with the kernel module signing key for:
+#   - UEFI Secure Boot validation
+#   - Kernel lockdown mode support
+# Also compresses modules with the configured compression algorithm if zipmodules=1.
+#
 %define __modsign_install_post \
   if [ "%{signmodules}" -eq "1" ]; then \
     %{log_msg "Signing kernel modules ..."} \
@@ -3802,10 +3892,10 @@ install -m755 slabinfo %{buildroot}%{_bindir}/slabinfo
 install -m755 page_owner_sort %{buildroot}%{_bindir}/page_owner_sort
 popd
 pushd tools/verification/rv/
-%{tools_make} DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} STRIP=/bin/true install
 popd
 pushd tools/tracing/rtla/
-%{tools_make} DESTDIR=%{buildroot} install
+%{tools_make} DESTDIR=%{buildroot} STRIP=/bin/true install
 rm -f %{buildroot}%{_bindir}/hwnoise
 rm -f %{buildroot}%{_bindir}/osnoise
 rm -f %{buildroot}%{_bindir}/timerlat
@@ -4083,6 +4173,12 @@ popd
 # for this bug in the hardlink binary (fixed in util-linux 2.38):
 # https://github.com/util-linux/util-linux/issues/1602
 #
+# Arguments:
+#   %1 - Variant name (e.g., "debug", "rt"), or empty for stock kernel
+# Handles:
+#   - Hardlinking duplicate files across kernel-devel packages to save space
+#   - Building scripts and resolve_btfids for cross-compiled kernels (with_cross)
+#
 %define kernel_devel_post() \
 %{expand:%%post %{?1:%{1}-}devel}\
 if [ -f /etc/sysconfig/kernel ]\
@@ -4154,10 +4250,19 @@ fi\
 # It also defines a %%postun script that does the same thing.
 #    %%kernel_modules_post [<subpackage>]
 #
+# Arguments:
+#   %1 - Variant name (e.g., "debug", "rt"), or empty for stock kernel
+# Handles:
+#   - Running depmod to update module dependencies
+#   - Deferring dracut regeneration until posttrans (if kernel-core not yet installed)
+#   - Running dracut in posttrans to build initramfs
+#
 %define kernel_modules_post() \
 %{expand:%%post %{?1:%{1}-}modules}\
 /sbin/depmod -a %{KVERREL}%{?1:+%{1}}\
-if [ ! -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}} ]; then\
+if [ -f /lib/modules/%{KVERREL}%{?1:+%{1}}/vmlinuz ] &&\
+[ -f /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img ] &&\
+[ ! -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?1:+%{1}} ]; then\
 	mkdir -p %{_localstatedir}/lib/rpm-state/%{name}\
 	touch %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}}\
 fi\
@@ -4168,8 +4273,8 @@ fi\
 %{expand:%%posttrans %{?1:%{1}-}modules}\
 if [ -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}} ]; then\
 	rm -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}}\
-	echo "Running: dracut -f --kver %{KVERREL}%{?1:+%{1}}"\
-	dracut -f --kver "%{KVERREL}%{?1:+%{1}}" || exit $?\
+	echo "Running: dracut -f --kver %{KVERREL}%{?1:+%{1}} /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img"\
+	dracut -f --kver "%{KVERREL}%{?1:+%{1}}" /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img || exit $?\
 fi\
 %{nil}
 
@@ -4185,6 +4290,14 @@ fi\
 # This macro defines a %%posttrans script for a kernel package.
 #    %%kernel_variant_posttrans [-v <subpackage>] [-u uki-suffix]
 # More text can follow to go at the end of this variant's %%post.
+#
+# Options:
+#   -v <variant>: Variant name (e.g., "debug", "rt")
+#   -u <suffix>: UKI suffix for unified kernel image packages
+# Handles:
+#   - weak-modules integration (RHEL only)
+#   - kernel-install for bootloader setup
+#   - symvers installation to /boot
 #
 %define kernel_variant_posttrans(v:u:) \
 %{expand:%%posttrans %{?-v:%{-v*}-}%{!?-u*:core}%{?-u*:uki-%{-u*}}}\
@@ -4210,6 +4323,17 @@ fi\
 # This macro defines a %%post script for a kernel package and its devel package.
 #    %%kernel_variant_post [-v <subpackage>] [-r <replace>]
 # More text can follow to go at the end of this variant's %%post.
+#
+# Options:
+#   -v <variant>: Variant name (e.g., "debug", "rt")
+#   -r <name>: Kernel name to replace in /etc/sysconfig/kernel DEFAULTKERNEL
+#              (for setting this variant as the new default)
+# Expands to multiple post scripts for:
+#   - kernel-devel
+#   - kernel-modules, kernel-modules-core, kernel-modules-extra, kernel-modules-internal
+#   - kernel-modules-partner (RHEL only)
+#   - kernel-core
+#   - kernel posttrans
 #
 %define kernel_variant_post(v:r:) \
 %{expand:%%kernel_devel_post %{?-v*}}\
@@ -4237,6 +4361,14 @@ touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%
 # Add kernel-install's --entry-type=type1|type2|all option (if supported) to limit removal
 # to a specific boot entry type.
 #
+# Options:
+#   -v <variant>: Variant name (e.g., "debug", "rt")
+#   -u <suffix>: UKI suffix for unified kernel image packages
+#   -e: Add --entry-type flag to kernel-install (for selective boot entry removal)
+# Handles:
+#   - kernel-install remove for bootloader cleanup
+#   - weak-modules --remove-kernel (RHEL only)
+#
 %define kernel_variant_preun(v:u:e) \
 %{expand:%%preun %{?-v:%{-v*}-}%{!?-u*:core}%{?-u*:uki-%{-u*}}}\
 entry_type=""\
@@ -4253,12 +4385,12 @@ fi\
 %endif\
 %{nil}
 
-%if %{with_up_base} && %{with_efiuki}
+%if %{with_stock_base} && %{with_efiuki}
 %kernel_variant_posttrans -u virt
 %kernel_variant_preun -u virt -e
 %endif
 
-%if %{with_up_base}
+%if %{with_stock_base}
 %kernel_variant_preun -e
 %kernel_variant_post
 %endif
@@ -4268,12 +4400,12 @@ fi\
 %kernel_variant_post -v zfcpdump
 %endif
 
-%if %{with_up} && %{with_debug} && %{with_efiuki}
+%if %{with_stock} && %{with_debug} && %{with_efiuki}
 %kernel_variant_posttrans -v debug -u virt
 %kernel_variant_preun -v debug -u virt -e
 %endif
 
-%if %{with_up} && %{with_debug}
+%if %{with_stock} && %{with_debug}
 %kernel_variant_preun -v debug -e
 %kernel_variant_post -v debug
 %endif
@@ -4403,7 +4535,7 @@ fi\
 %{_includedir}/perf/perf_dlfilter.h
 
 %files -n python3-perf
-%{python3_sitearch}/*
+%{python3_sitearch}/perf*
 
 %if %{with_debuginfo}
 %files -f perf-debuginfo.list -n perf-debuginfo
@@ -4487,7 +4619,9 @@ fi\
 %config(noreplace) %{_sysconfdir}/logrotate.d/kvm_stat
 %{_bindir}/page_owner_sort
 %{_bindir}/slabinfo
+
 %if %{with_ynl}
+%files -n python3-kernel-tools
 %{_bindir}/ynl*
 %{_docdir}/ynl
 %{_datadir}/ynl
@@ -4534,6 +4668,10 @@ fi\
 %{_mandir}/man1/rtla-timerlat.1.gz
 %{_mandir}/man1/rtla.1.gz
 
+%if %{with_debuginfo}
+%files -f rtla-debuginfo.list -n rtla-debuginfo
+%endif
+
 %files -n rv
 %{_bindir}/rv
 %{_mandir}/man1/rv-list.1.gz
@@ -4542,6 +4680,10 @@ fi\
 %{_mandir}/man1/rv-mon.1.gz
 %{_mandir}/man1/rv-mon-sched.1.gz
 %{_mandir}/man1/rv.1.gz
+
+%if %{with_debuginfo}
+%files -f rv-debuginfo.list -n rv-debuginfo
+%endif
 
 # with_tools
 %endif
@@ -4553,7 +4695,7 @@ fi\
 %endif
 
 # empty meta-package
-%if %{with_up_base}
+%if %{with_stock_base}
 %ifnarch %nobuildarches noarch
 %files
 %endif
@@ -4567,6 +4709,23 @@ fi\
 # This macro defines the %%files sections for a kernel package
 # and its devel and debuginfo packages.
 #    %%kernel_variant_files [-k vmlinux] <use_vdso> <condition> <subpackage>
+#
+# Options:
+#   -k <name>: Kernel image filename (default: "vmlinuz")
+# Arguments:
+#   %1 - Whether VDSO was built (1=yes, 0=no) - controls if vdso files are included
+#   %2 - Condition (usually with_<variant>) - only generate files section if true
+#   %3 - Variant/subpackage name, or empty for stock kernel
+# Generates %%files sections for:
+#   - kernel-core (or variant-core): vmlinuz, config, System.map, modules.builtin
+#   - kernel-modules-core: essential modules, dependency metadata
+#   - kernel-modules: additional modules
+#   - kernel-modules-extra: less common modules
+#   - kernel-modules-internal: Red Hat internal modules (RHEL only)
+#   - kernel-modules-partner: Partner modules (RHEL only)
+#   - kernel-devel: headers and build infrastructure
+#   - kernel-debuginfo: vmlinux with debug symbols (if with_debuginfo)
+#   - kernel-uki-virt: unified kernel image for VMs (if with_efiuki)
 #
 %define kernel_variant_files(k:) \
 %if %{2}\
@@ -4661,8 +4820,8 @@ fi\
 %endif\
 %{nil}
 
-%kernel_variant_files %{_use_vdso} %{with_up_base}
-%if %{with_up}
+%kernel_variant_files %{_use_vdso} %{with_stock_base}
+%if %{with_stock}
 %kernel_variant_files %{_use_vdso} %{with_debug} debug
 %endif
 %if %{with_arm64_16k}
@@ -4721,6 +4880,9 @@ fi\
 #
 #
 %changelog
+* Mon Feb 09 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.0-500.chinfo
+- 6.19.0
+
 * Fri Feb 06 2026 Phantom X <megaphantomx at hotmail dot com> - 6.18.9-500.chinfo
 - 6.18.9
 
@@ -4898,45 +5060,6 @@ fi\
 
 * Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.0-500.chinfo
 - 6.13.0
-
-* Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.10-500.chinfo
-- 6.12.10
-
-* Mon Jan 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-501.chinfo
-- invlpgb (patches from Zen)
-
-* Thu Jan 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.9-500.chinfo
-- 6.12.9
-
-* Thu Jan 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.12.8-500.chinfo
-- 6.12.8
-
-* Fri Dec 27 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.7-500.chinfo
-- 6.12.7
-
-* Thu Dec 19 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.6-500.chinfo
-- 6.12.6
-
-* Sat Dec 14 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.5-500.chinfo
-- 6.12.5
-
-* Mon Dec 09 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.4-500.chinfo
-- 6.12.4
-
-* Fri Dec 06 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.3-500.chinfo
-- 6.12.3
-
-* Thu Dec 05 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.2-500.chinfo
-- 6.12.2
-
-* Fri Nov 22 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.1-500.chinfo
-- 6.12.1
-
-* Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-501.chinfo
-- Add full ntsync and vhba modules (patches from Zen)
-
-* Mon Nov 18 2024 Phantom X <megaphantomx at hotmail dot com> - 6.12.0-500.chinfo
-- 6.12.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

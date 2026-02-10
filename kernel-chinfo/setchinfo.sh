@@ -3,15 +3,17 @@
 # This scripts sets extra files with configs for external patchsets
 # del parameter deletes all the files
 
-# 20250728
-# 6.16
+# 20260209
+# 6.19
 
 set -e
 
 default="
+CPU_IDLE_GOV_MENU
 MNATIVE_AMD
 MNATIVE_INTEL
 RHEL_DIFFERENCES
+SND_INTEL_BYT_PREFER_SOF
 "
 
 defaultd="
@@ -23,12 +25,15 @@ VHBA
 "
 
 defaultv="
+SND_HDA_POWER_SAVE_DEFAULT=0
 X86_64_ISA_LEVEL=1
 "
 
 defaulty="
-CPU_IDLE_GOV_MENU
-CONFIG_CPU_IDLE_GOV_TEO
+ACPI_TABLE_UPGRADE
+CPU_IDLE_GOV_TEO
+DRM_AMDGPU_SI
+EFI_VARS_PSTORE_DEFAULT_DISABLE
 USER_NS_UNPRIVILEGED
 "
 

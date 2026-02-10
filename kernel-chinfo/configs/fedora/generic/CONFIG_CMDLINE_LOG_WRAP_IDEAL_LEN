@@ -1,0 +1,15 @@
+# ~~~
+# Symbol: CMDLINE_LOG_WRAP_IDEAL_LEN [=1021]
+# Type  : integer
+# Range : [0 1021]
+# Defined at init/Kconfig:1522
+#   Prompt: Length to try to wrap the cmdline when logged at boot
+#   Location:
+#     -> General setup
+#       -> Length to try to wrap the cmdline when logged at boot (CMDLINE_LOG_WRAP_IDEAL_LEN [=1021])
+# 
+# 
+# 
+# ~~~
+# Commit: 032a730268a3 (init/main.c: wrap long kernel cmdline when printing to logs)
+CONFIG_CMDLINE_LOG_WRAP_IDEAL_LEN=1021

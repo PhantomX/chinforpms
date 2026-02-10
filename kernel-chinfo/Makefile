@@ -60,15 +60,22 @@ ifneq ($(SPECGEMINI),0)
   SPECKEXTRAVERSION:=
 endif
 
-# When building kernel-automotive, set AUTOMOTIVE_BUILD=1.
+# When building the automotive kernel package, set AUTOMOTIVE_BUILD=1.
 ifeq ($(AUTOMOTIVE_BUILD), 1)
-  SPECPACKAGE_NAME:=kernel-automotive
-  DIST:=.el$(RHEL_MAJOR)iv
+  SPECPACKAGE_NAME:=$(AUTOMOTIVE_PKG_NAME)
+  DIST:=$(AUTOMOTIVE_PKG_DIST)
 endif
 
 GITID:= $(shell $(GIT) log --max-count=1 --pretty=format:%H $(HEAD))
+
+# Derivative kernel version elements used in the package NVR
+# If a 'dot' or any other separator is required, include it in DERIVATIVE_TAG.
+ifeq ("$(DERIVATIVE_STREAM)", "yes")
+  DERIVATIVE_VERSION:=$(DERIVATIVE_TAG).$(DERIVATIVE_BUILD)
+endif
+
 ifndef RHSELFTESTDATA
-  BUILD:=$(RHEL_RELEASE)
+  BUILD:=$(RHEL_RELEASE)$(DERIVATIVE_VERSION)
 endif
 FLAVOR=
 CURARCH := $(shell uname -m)
@@ -113,21 +120,29 @@ ifndef RHJOBS
 	  fi)
 endif
 
-LOCVERFILE:=../localversion
-# create an empty localversion file if you don't want a local buildid
-ifneq ($(wildcard $(LOCVERFILE)),)
-  DISTLOCALVERSION:=$(shell cat $(LOCVERFILE))
-  ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
-    $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)". Update '$(shell dirname $(REDHAT))/localversion' to change.)
-  endif
-else
-  ifeq ($(DISTLOCALVERSION),)
-    DISTLOCALVERSION:=.test
-  endif
+# for official builds use RELEASE_LOCALVERSION persisted in Makefile.variables
+ifneq ($(filter $(MAKECMDGOALS),dist-release dist-release-tag dist-release-git dist-rtg dist-get-tag),)
+  DISTLOCALVERSION:=$(RELEASE_LOCALVERSION)
   ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
     $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)".)
   endif
-endif
+else
+  LOCVERFILE:=../localversion
+  # create an empty localversion file if you don't want a local buildid
+  ifneq ($(wildcard $(LOCVERFILE)),)
+    DISTLOCALVERSION:=$(shell cat $(LOCVERFILE))
+    ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
+      $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)". Update '$(shell dirname $(REDHAT))/localversion' to change.)
+    endif
+  else
+    ifeq ($(DISTLOCALVERSION),)
+      DISTLOCALVERSION:=.test
+    endif
+    ifeq (,$(findstring s,$(firstword -$(MAKEFLAGS))))
+      $(info DISTLOCALVERSION is "$(DISTLOCALVERSION)".)
+    endif
+  endif
+endif # MAKECMDGOALS
 
 # options for process_configs.sh script
 ifdef NO_CONFIGCHECKS
@@ -344,7 +359,7 @@ else
   RHPKG_BIN:=rhpkg
 endif
 
-# When building kernel-automotive, set AUTOMOTIVE_BUILD=1.
+# When building the automotive kernel package, set AUTOMOTIVE_BUILD=1.
 ifeq ($(AUTOMOTIVE_BUILD), 1)
   ifeq ("$(DISTRO)", "rhel")
     RHDISTGIT_BRANCH:=rhivos-$(AUTOMOTIVE_MAJOR).$(AUTOMOTIVE_MINOR).0
@@ -402,11 +417,7 @@ ifeq ("$(ZSTREAM)", "yes")
   BUILDOPTS += +kabidupchk
 else
   ZSTREAM_FLAG = no
-  ifeq ("$(EARLY_YSTREAM)", "yes")
-    YSTREAM_FLAG = early
-  else
-    YSTREAM_FLAG = yes
-  endif
+  YSTREAM_FLAG = yes
 endif
 
 endif # Variables do not have to be configured for help output.
@@ -794,7 +805,6 @@ sources-rh: $(TARBALL) $(KABI_TARBALL) $(KABIDW_TARBALL) generate-testpatch-tmp 
 		dracut-virt.conf \
 		$(SOURCES)/
 	@changelog_glob="$(SPECPACKAGE_NAME).changelog-*"; \
-	[[ -n "$(AUTOMOTIVE_BUILD)" ]] && changelog_glob="kernel.changelog-*"; \
 	cat $$(ls -1 $$changelog_glob | sort -V -r) \
 		> $(SOURCES)/$(SPECPACKAGE_NAME).changelog
 	cp keys/redhatsecureboot{501,ca5}.cer $(SOURCES)/;
@@ -852,13 +862,13 @@ dist-rpm-baseonly: ##build Create the binary RPMS for the kernel and modules (no
 dist-rpm-baseonly: RPMBUILDOPTS=--target $(MACH) --without debug --without debuginfo --without vdso_install --without bpftool --without perf --without tools -bb
 dist-rpm-baseonly: dist-sources do-rpmbuild
 
-# unless you know what you're doing, you don't want to use the next four ones
+# dist-release related targets are used by the kernel maintainer team
 dist-release-finish: setup-source
 	@cp $(SOURCES)/$(SPECCHANGELOG) $(REDHAT)/$(SPECCHANGELOG)
 	@echo $(MARKER) > $(REDHAT)/marker
 	@$(GIT) add $(REDHAT)/$(SPECCHANGELOG)
 	@$(GIT) add $(REDHAT)/marker
-	@$(GIT) commit -s ../Makefile.rhelver $(REDHAT)/marker $(REDHAT)/$(SPECCHANGELOG) $(SPECFILE).template -m "[redhat] $(DISTRELEASETAG)"
+	@$(GIT) commit -s ../Makefile.rhelver $(REDHAT)/marker $(REDHAT)/$(SPECCHANGELOG) -m "[redhat] $(DISTRELEASETAG)"
 dist-release-changed:
 	@CLOGF="$$(mktemp)"; \
 	trap 'rm -f "$$CLOGF"' SIGHUP SIGINT SIGTERM EXIT; \
@@ -867,7 +877,9 @@ dist-release-changed:
 		   [ "$$(wc -l $$CLOGF | cut -d ' ' -f 1)" -le 3 ]; then \
 			echo "Nothing changed, skipping updates"; \
 		else \
-			$(REDHAT)/scripts/new_release.sh; \
+			if [ "$(BUMP_RELEASE)" == "yes" ]; then \
+				$(REDHAT)/scripts/new_release.sh; \
+			fi; \
 			$(MAKE) dist-release-finish; \
 		fi \
 	else \
