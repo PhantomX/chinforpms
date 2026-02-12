@@ -41,13 +41,13 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.5
+Version:        26.0.0
 Release:        100%{?dist}
 
 Epoch:          100
 
 License:        MIT
-URL:            http://www.mesa3d.org
+URL:            https://www.mesa3d.org
 
 %if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
@@ -58,8 +58,6 @@ Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
 Source3:        org.mesa3d.vulkan.freeworld.metainfo.xml
 
 Patch0:         0001-Rename-libraries-for-freeworld.patch
-Patch1:         %{vc_url}/-/commit/e710e6857376c3f251f6b7ddce69fdfbe96889d8.patch#/%{pkgname}-gl-e710e68.patch
-Patch2:         %{vc_url}/-/commit/c114d94b49ffd42f2ede12436e1d41f0e0756243.patch#/%{pkgname}-gl-c114d94.patch
 
 ExcludeArch:    s390x
 
@@ -67,7 +65,7 @@ BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
-BuildRequires:  patchutils
+%dnl BuildRequires:  patchutils
 
 
 BuildRequires:  kernel-headers
@@ -253,6 +251,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Feb 11 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.0-100
+- 26.0.0
+
 * Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 100:25.3.5-100
 - 25.3.5
 

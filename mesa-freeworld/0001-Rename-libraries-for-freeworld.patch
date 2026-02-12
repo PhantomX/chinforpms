@@ -1,4 +1,4 @@
-From f921d407b2165d8c87e5d16236c24b0ea4982fbe Mon Sep 17 00:00:00 2001
+From fdf388a337abf275c4dc11c213e3a96b20071eba Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 15 Nov 2025 15:32:17 -0300
 Subject: [PATCH] Rename libraries for freeworld
@@ -9,10 +9,10 @@ Subject: [PATCH] Rename libraries for freeworld
  2 files changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/src/amd/vulkan/meson.build b/src/amd/vulkan/meson.build
-index 78b19aa..dcd8699 100644
+index 3696bad..cb88b6c 100644
 --- a/src/amd/vulkan/meson.build
 +++ b/src/amd/vulkan/meson.build
-@@ -242,7 +242,7 @@ if radv_build_id != ''
+@@ -244,7 +244,7 @@ if radv_build_id != ''
  endif
  
  libvulkan_radeon = shared_library(
@@ -21,7 +21,7 @@ index 78b19aa..dcd8699 100644
    [libradv_files, radv_entrypoints, sha1_h, radix_sort_spv, bvh_spv, radv_annotate_layer],
    vs_module_defs : vulkan_api_def,
    include_directories : [
-@@ -283,7 +283,7 @@ if with_symbols_check
+@@ -285,7 +285,7 @@ if with_symbols_check
    )
  endif
  
@@ -31,7 +31,7 @@ index 78b19aa..dcd8699 100644
  icd_command = [
    prog_python, '@INPUT0@',
 diff --git a/src/intel/vulkan/meson.build b/src/intel/vulkan/meson.build
-index 4963298..891fca1 100644
+index 7e5e771..b604247 100644
 --- a/src/intel/vulkan/meson.build
 +++ b/src/intel/vulkan/meson.build
 @@ -46,7 +46,7 @@ else
@@ -43,8 +43,8 @@ index 4963298..891fca1 100644
  
  intel_icd = custom_target(
    'intel_icd',
-@@ -255,7 +255,7 @@ libanv_common = static_library(
- )
+@@ -260,7 +260,7 @@ idep_libvulkan_intel_decoder = (with_mesa_ndebug ?
+   idep_intel_decoder_stub_brw : idep_intel_decoder_brw)
  
  libvulkan_intel = shared_library(
 -  'vulkan_intel',

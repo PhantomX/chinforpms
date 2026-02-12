@@ -14,16 +14,16 @@
 %bcond rtmidi 1
 %endif
 
-%global commit a20ea6cfb212ff91efedc12c751fb6cf5de65a7b
+%global commit 708eddc0e518bc2951acc41241311941221542c2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260110
+%global date 20260204
 %bcond snapshot 1
 
 %global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 concurrentqueue
 
-%global commit11 8de97d14d8f43e23d30a06aca15bbf3dad121374
+%global commit11 be2cfc26c9ae77de99e6eed8d5e97a5a99b0cf3f
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
@@ -50,8 +50,8 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.2.1
-Release:        1%{?dist}
+Version:        0.3.0
+Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
@@ -122,6 +122,7 @@ Provides:       bundled(stb) = 0~git%{shortcommit13}
 rm -f apps/ymir-sdl3/src/app/update_checker.*
 
 pushd vendor
+rm -rf libchdr lz4 xxHash
 tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
 tar -xf %{S:11} -C imgui/imgui --strip-components 1
 tar -xf %{S:12} -C mio/ --strip-components 1
@@ -165,6 +166,7 @@ sed -e \
   -DYmir_ENABLE_TESTS:BOOL=OFF \
   -DYmir_ENABLE_UPDATE_CHECKS:BOOL=OFF \
   -DYmir_EXTRA_INLINING:BOOL=ON \
+  -DYmir_PGO:BOOL=OFF \
 %{nil}
 
 %cmake_build

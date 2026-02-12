@@ -1,4 +1,4 @@
-From 2942107cec1c0373040a50d596e7b8b0a4047726 Mon Sep 17 00:00:00 2001
+From 1bd03c8e985594e4523054da580178caa57aea70 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 11 Oct 2025 17:38:43 -0300
 Subject: [PATCH] Remove update checker
@@ -11,17 +11,17 @@ Subject: [PATCH] Remove update checker
  .../src/app/events/gui_event_factory.hpp      |  4 ----
  apps/ymir-sdl3/src/app/settings.cpp           |  7 ------
  apps/ymir-sdl3/src/app/settings.hpp           |  2 --
- apps/ymir-sdl3/src/app/shared_context.hpp     |  5 ++---
+ apps/ymir-sdl3/src/app/shared_context.hpp     |  6 ++---
  .../views/settings/general_settings_view.cpp  |  4 ++--
  .../src/app/ui/windows/about_window.cpp       | 19 ----------------
- 10 files changed, 9 insertions(+), 76 deletions(-)
+ 10 files changed, 9 insertions(+), 77 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 261e0d8..53203da 100644
+index 4ce74cb..3ce56f6 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -26,8 +26,6 @@ add_executable(ymir-sdl3
-     src/app/services/savestates/types.hpp
+@@ -23,8 +23,6 @@ add_executable(ymir-sdl3
+     src/app/shared_context.hpp
      src/app/stb_implementations.cpp
      src/app/toml_implementation.cpp
 -    src/app/update_checker.cpp
@@ -29,7 +29,7 @@ index 261e0d8..53203da 100644
  
      src/app/debug/cdblock_tracer.cpp
      src/app/debug/cdblock_tracer.hpp
-@@ -227,10 +225,6 @@ add_executable(ymir-sdl3
+@@ -238,10 +236,6 @@ add_executable(ymir-sdl3
      src/app/ui/windows/settings_window.hpp
      src/app/ui/windows/system_state_window.cpp
      src/app/ui/windows/system_state_window.hpp
@@ -40,7 +40,7 @@ index 261e0d8..53203da 100644
  
      src/app/ui/windows/debug/cdblock_cmd_trace_window.cpp
      src/app/ui/windows/debug/cdblock_cmd_trace_window.hpp
-@@ -357,8 +351,6 @@ endif()
+@@ -371,8 +365,6 @@ endif()
  find_package(cereal CONFIG REQUIRED)
  find_package(cxxopts CONFIG REQUIRED)
  find_package(date CONFIG REQUIRED)
@@ -49,7 +49,7 @@ index 261e0d8..53203da 100644
  find_package(fmt CONFIG REQUIRED)
  find_package(rtmidi CONFIG)
  if(NOT rtmidi_FOUND)
-@@ -394,7 +386,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -408,7 +400,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
      cereal::cereal
      lz4::lz4
      RtMidi::rtmidi
@@ -58,10 +58,10 @@ index 261e0d8..53203da 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index ad722fa..39f4588 100644
+index 9b548d7..dfbb790 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
-@@ -171,9 +171,7 @@ App::App()
+@@ -173,9 +173,7 @@ App::App()
      , m_debugOutputWindow(m_context)
      , m_settingsWindow(m_context)
      , m_periphConfigWindow(m_context)
@@ -70,17 +70,17 @@ index ad722fa..39f4588 100644
 -    , m_updateWindow(m_context) {
 +    , m_aboutWindow(m_context) {
  
-     // Preinitialize some memory viewers
-     for (int i = 0; i < 8; i++) {
-@@ -459,6 +457,7 @@ void App::RunEmulator() {
+     // Register services
+     m_context.serviceLocator.Register(m_graphicsService);
+@@ -509,6 +507,7 @@ void App::RunEmulator() {
  
-     lsn::CScopedNoSubnormals snsNoSubnormals{};
+     auto &settings = m_settings;
  
 +#if 0
      {
          const auto updatesPath = m_context.profile.GetPath(ProfilePath::PersistentState) / "updates";
  
-@@ -495,6 +494,7 @@ void App::RunEmulator() {
+@@ -545,6 +544,7 @@ void App::RunEmulator() {
              m_updateCheckerThread.join();
          }
      }};
@@ -88,7 +88,7 @@ index ad722fa..39f4588 100644
  
      // Get embedded file system
      auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
-@@ -2160,8 +2160,6 @@ void App::RunEmulator() {
+@@ -2555,8 +2555,6 @@ void App::RunEmulator() {
                  break;
              }
  
@@ -97,7 +97,7 @@ index ad722fa..39f4588 100644
              case EvtType::StateLoaded:
                  m_context.DisplayMessage(fmt::format("State {} loaded", std::get<uint32>(evt.value) + 1));
                  break;
-@@ -2814,9 +2812,6 @@ void App::RunEmulator() {
+@@ -3235,9 +3233,6 @@ void App::RunEmulator() {
                      if (ImGui::MenuItem("Open welcome window", nullptr)) {
                          OpenWelcomeModal(false);
                      }
@@ -107,7 +107,7 @@ index ad722fa..39f4588 100644
  
                      ImGui::Separator();
  #if Ymir_ENABLE_IMGUI_DEMO
-@@ -3613,6 +3608,7 @@ void App::ScreenshotThread() {
+@@ -4066,6 +4061,7 @@ void App::ScreenshotThread() {
      }
  }
  
@@ -115,7 +115,7 @@ index ad722fa..39f4588 100644
  void App::UpdateCheckerThread() {
      util::SetCurrentThreadName("Update checker thread");
  
-@@ -3742,6 +3738,7 @@ void App::UpdateCheckerThread() {
+@@ -4201,6 +4197,7 @@ void App::UpdateCheckerThread() {
          }
      }
  }
@@ -123,7 +123,7 @@ index ad722fa..39f4588 100644
  
  void App::OpenWelcomeModal(bool scanIPLROMs) {
      bool activeScanning = scanIPLROMs;
-@@ -3899,11 +3896,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
+@@ -4360,11 +4357,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
      });
  }
  
@@ -133,9 +133,9 @@ index ad722fa..39f4588 100644
 -}
 -
  void App::RebindInputs() {
-     m_context.settings.RebindInputs();
+     m_settings.RebindInputs();
  }
-@@ -4935,10 +4927,6 @@ void App::DrawWindows() {
+@@ -5902,10 +5894,6 @@ void App::DrawWindows() {
      m_settingsWindow.Display();
      m_periphConfigWindow.Display();
      m_aboutWindow.Display();
@@ -147,10 +147,10 @@ index ad722fa..39f4588 100644
  
  void App::OpenMemoryViewer() {
 diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
-index c70bd0b..a24e752 100644
+index 880ba30..b3dfce7 100644
 --- a/apps/ymir-sdl3/src/app/app.hpp
 +++ b/apps/ymir-sdl3/src/app/app.hpp
-@@ -10,8 +10,6 @@
+@@ -14,8 +14,6 @@
  #include "ui/windows/peripheral_config_window.hpp"
  #include "ui/windows/settings_window.hpp"
  #include "ui/windows/system_state_window.hpp"
@@ -159,7 +159,7 @@ index c70bd0b..a24e752 100644
  
  #include "ui/windows/debug/cdblock_window_set.hpp"
  #include "ui/windows/debug/debug_output_window.hpp"
-@@ -73,19 +71,12 @@ private:
+@@ -89,19 +87,12 @@ private:
      std::mutex m_screenshotQueueMtx;
      bool m_screenshotThreadRunning;
  
@@ -178,8 +178,8 @@ index c70bd0b..a24e752 100644
 -    void CheckForUpdates(bool skipCache);
  
      void RebindInputs();
- 
-@@ -173,8 +164,6 @@ private:
+     void UpdateInputs(double timeDelta);
+@@ -211,8 +202,6 @@ private:
      ui::SettingsWindow m_settingsWindow;
      ui::PeripheralConfigWindow m_periphConfigWindow;
      ui::AboutWindow m_aboutWindow;
@@ -189,10 +189,10 @@ index c70bd0b..a24e752 100644
      // -------------------------------------------------------------------------
      // Generic modal dialog
 diff --git a/apps/ymir-sdl3/src/app/events/gui_event.hpp b/apps/ymir-sdl3/src/app/events/gui_event.hpp
-index 13031f3..493236f 100644
+index 69eff7b..536374e 100644
 --- a/apps/ymir-sdl3/src/app/events/gui_event.hpp
 +++ b/apps/ymir-sdl3/src/app/events/gui_event.hpp
-@@ -79,8 +79,6 @@ struct GUIEvent {
+@@ -82,8 +82,6 @@ struct GUIEvent {
          TryLoadCDBlockROM,
          ReloadCDBlockROM,
  
@@ -202,10 +202,10 @@ index 13031f3..493236f 100644
  
          // Emulator notifications
 diff --git a/apps/ymir-sdl3/src/app/events/gui_event_factory.hpp b/apps/ymir-sdl3/src/app/events/gui_event_factory.hpp
-index faa54fa..aa82790 100644
+index afd4b0c..e219439 100644
 --- a/apps/ymir-sdl3/src/app/events/gui_event_factory.hpp
 +++ b/apps/ymir-sdl3/src/app/events/gui_event_factory.hpp
-@@ -103,10 +103,6 @@ inline GUIEvent ReloadCDBlockROM() {
+@@ -111,10 +111,6 @@ inline GUIEvent ReloadCDBlockROM() {
      return {.type = GUIEvent::Type::ReloadCDBlockROM};
  }
  
@@ -217,10 +217,10 @@ index faa54fa..aa82790 100644
      return {.type = GUIEvent::Type::TakeScreenshot};
  }
 diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
-index 41b1757..db14500 100644
+index cac8e2e..640fa42 100644
 --- a/apps/ymir-sdl3/src/app/settings.cpp
 +++ b/apps/ymir-sdl3/src/app/settings.cpp
-@@ -670,9 +670,6 @@ void Settings::ResetToDefaults() {
+@@ -967,9 +967,6 @@ void Settings::ResetToDefaults() {
  
      general.pauseWhenUnfocused = false;
  
@@ -230,7 +230,7 @@ index 41b1757..db14500 100644
      gui.overrideUIScale = false;
      gui.uiScale = 1.0;
      gui.rememberWindowGeometry = true;
-@@ -839,8 +836,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
+@@ -1161,8 +1158,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
          Parse(tblGeneral, "AltSpeedFactor", general.altSpeedFactor);
          Parse(tblGeneral, "UseAltSpeed", general.useAltSpeed);
          Parse(tblGeneral, "PauseWhenUnfocused", general.pauseWhenUnfocused);
@@ -239,7 +239,7 @@ index 41b1757..db14500 100644
  
          general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
  
-@@ -1220,8 +1215,6 @@ SettingsSaveResult Settings::Save() {
+@@ -1781,8 +1776,6 @@ SettingsSaveResult Settings::Save() {
              {"AltSpeedFactor", general.altSpeedFactor.Get()},
              {"UseAltSpeed", general.useAltSpeed.Get()},
              {"PauseWhenUnfocused", general.pauseWhenUnfocused},
@@ -249,10 +249,10 @@ index 41b1757..db14500 100644
              {"PathOverrides", toml::table{{
                  {"IPLROMImages", m_context.profile.GetPathOverride(ProfilePath::IPLROMImages).native()},
 diff --git a/apps/ymir-sdl3/src/app/settings.hpp b/apps/ymir-sdl3/src/app/settings.hpp
-index eef8c9f..9613bda 100644
+index f79aae9..d1ea0f6 100644
 --- a/apps/ymir-sdl3/src/app/settings.hpp
 +++ b/apps/ymir-sdl3/src/app/settings.hpp
-@@ -152,8 +152,6 @@ struct Settings {
+@@ -157,8 +157,6 @@ struct Settings {
  
          bool pauseWhenUnfocused;
  
@@ -262,28 +262,28 @@ index eef8c9f..9613bda 100644
  
      struct GUI {
 diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
-index 159d598..e2e4d04 100644
+index 2303fb1..a93d161 100644
 --- a/apps/ymir-sdl3/src/app/shared_context.hpp
 +++ b/apps/ymir-sdl3/src/app/shared_context.hpp
 @@ -6,7 +6,6 @@
+ #include <app/profile.hpp>
  #include <app/rewind_buffer.hpp>
  #include <app/rom_manager.hpp>
- #include <app/settings.hpp>
 -#include <app/update_checker.hpp>
  
- #include <app/input/input_context.hpp>
- #include <app/input/input_utils.hpp>
-@@ -471,8 +470,8 @@ struct SharedContext {
+ #include <app/services/graphics_types.hpp>
+ 
+@@ -656,8 +655,8 @@ struct SharedContext {
+     int gameControllerDBCount = 0;
  
      Profile profile;
-     Settings settings{*this};
 -    UpdateChecker updateChecker;
  
 +#if 0
      struct Updates {
          bool inProgress = false;
          std::optional<UpdateInfo> latestStable;
-@@ -484,6 +483,7 @@ struct SharedContext {
+@@ -669,6 +668,7 @@ struct SharedContext {
          ReleaseChannel channel;
      };
      std::optional<TargetUpdate> targetUpdate = std::nullopt;
@@ -291,16 +291,17 @@ index 159d598..e2e4d04 100644
  
      ROMManager romManager;
      std::filesystem::path iplRomPath;
-@@ -519,7 +519,6 @@ struct SharedContext {
+@@ -697,8 +697,6 @@ struct SharedContext {
          std::mutex messages;
          std::mutex breakpoints;
          std::mutex watchpoints;
 -        std::mutex updates;
+-        std::mutex targetUpdate;
      } locks;
  
      struct State {
 diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
-index 6431ec6..e44882c 100644
+index 68b15bf..f669340 100644
 --- a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
 @@ -127,7 +127,7 @@ void GeneralSettingsView::Display() {
@@ -312,9 +313,9 @@ index 6431ec6..e44882c 100644
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
      ImGui::SeparatorText("Updates");
      ImGui::PopFont();
-@@ -189,7 +189,7 @@ void GeneralSettingsView::Display() {
-     } else {
-         ImGui::TextUnformatted("You are already using the latest version.");
+@@ -193,7 +193,7 @@ void GeneralSettingsView::Display() {
+             ImGui::TextUnformatted("You are already using the latest version.");
+         }
      }
 -
 +#endif
@@ -322,10 +323,10 @@ index 6431ec6..e44882c 100644
  
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 0a5c33a..ddd877c 100644
+index 872d573..141cb3d 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-@@ -11,17 +11,10 @@
+@@ -14,17 +14,10 @@
  
  // Includes for versions only
  #include <SDL3/SDL.h>
@@ -343,24 +344,24 @@ index 0a5c33a..ddd877c 100644
  #include <toml++/toml.hpp>
  #include <xxhash.h>
  
-@@ -30,16 +23,12 @@
+@@ -35,16 +28,12 @@
  #define BROTLI_VERSION "1.1.0" // Not exported
  #define CEREAL_VERSION "1.3.2" // Not exported
  #define CMRC_VERSION "2.0.0"   // Not exported
--#define CURL_VERSION _STR(LIBCURL_VERSION_MAJOR) "." _STR(LIBCURL_VERSION_MINOR) "." _STR(LIBCURL_VERSION_PATCH)
- #define CXXOPTS_VERSION _STR(CXXOPTS__VERSION_MAJOR) "." _STR(CXXOPTS__VERSION_MINOR) "." _STR(CXXOPTS__VERSION_PATCH)
+-#define CURL_VERSION _SEMVER_STR(LIBCURL_VERSION_MAJOR, LIBCURL_VERSION_MINOR, LIBCURL_VERSION_PATCH)
+ #define CXXOPTS_VERSION _SEMVER_STR(CXXOPTS__VERSION_MAJOR, CXXOPTS__VERSION_MINOR, CXXOPTS__VERSION_PATCH)
  #define DATE_VERSION "3.0.4" // Not exported
  #define IMGUI_VERSION_FULL IMGUI_VERSION " (" _STR(IMGUI_VERSION_NUM) ")"
  #define LZMA_VERSION "24.05" // Private dependency of libchdr
  #define MIO_VERSION "1.1.0"  // Not exported
 -#define NLOHMANN_JSON_VERSION \
--    _STR(NLOHMANN_JSON_VERSION_MAJOR) "." _STR(NLOHMANN_JSON_VERSION_MINOR) "." _STR(NLOHMANN_JSON_VERSION_PATCH)
- #define SDL_VERSION_STR _STR(SDL_MAJOR_VERSION) "." _STR(SDL_MINOR_VERSION) "." _STR(SDL_MICRO_VERSION)
--#define SEMVER_VERSION _STR(SEMVER_VERSION_MAJOR) "." _STR(SEMVER_VERSION_MINOR) "." _STR(SEMVER_VERSION_PATCH)
+-    _SEMVER_STR(NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH)
+ #define SDL_VERSION_STR _SEMVER_STR(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
+-#define SEMVER_VERSION _SEMVER_STR(SEMVER_VERSION_MAJOR, SEMVER_VERSION_MINOR, SEMVER_VERSION_PATCH)
  #define STB_IMAGE_VERSION "2.30"       // Not exported
  #define STB_IMAGE_WRITE_VERSION "1.16" // Not exported
  #define MC_CONCQUEUE_VERSION "1.0.4"   // Not exported
-@@ -80,7 +69,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
+@@ -83,7 +72,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
  //inline constexpr License licenseBSL         {.name = "BSL-1.0", .      url = "https://opensource.org/license/bsl-1-0"};
  //inline constexpr License licenseISC         {.name = "ISC",           .url = "https://opensource.org/licenses/ISC"};
  inline constexpr License licenseMIT         {.name = "MIT",           .url = "https://opensource.org/licenses/MIT"};
@@ -368,7 +369,7 @@ index 0a5c33a..ddd877c 100644
  inline constexpr License licenseMITRtMidi   {.name = "MIT-RtMidi",    .url = "https://github.com/thestk/rtmidi/blob/master/LICENSE"};
  inline constexpr License licensePublicDomain{.name = "Public domain", .url = nullptr};
  //inline constexpr License licenseUnlicense   {.name = "Unlicense",     .url = "https://opensource.org/licenses/unlicense"};
-@@ -99,7 +87,6 @@ static const struct {
+@@ -102,7 +90,6 @@ static const struct {
      {.name = "Brotli",                        .version = BROTLI_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/google/brotli",               .licenseURL = "https://github.com/google/brotli/blob/master/LICENSE"},
      {.name = "cereal",                        .version = CEREAL_VERSION,             .license = licenseBSD3,          .repoURL = "https://github.com/USCiLab/cereal",              .licenseURL = "https://github.com/USCiLab/cereal/blob/master/LICENSE",                  .homeURL = "https://uscilab.github.io/cereal/index.html"},
      {.name = "CMakeRC",                       .version = CMRC_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/vector-of-bool/cmrc",         .licenseURL = "https://github.com/vector-of-bool/cmrc/blob/master/LICENSE.txt"},
@@ -376,7 +377,7 @@ index 0a5c33a..ddd877c 100644
      {.name = "cxxopts",                       .version = CXXOPTS_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/jarro2783/cxxopts",           .licenseURL = "https://github.com/jarro2783/cxxopts/blob/master/LICENSE"},
      {.name = "date",                          .version = DATE_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/HowardHinnant/date",          .licenseURL = "https://github.com/HowardHinnant/date/blob/master/LICENSE.txt"},
      {.name = "Dear ImGui",                    .version = IMGUI_VERSION_FULL,         .license = licenseMIT,           .repoURL = "https://github.com/ocornut/imgui",               .licenseURL = "https://github.com/ocornut/imgui/blob/master/LICENSE.txt"},
-@@ -110,12 +97,6 @@ static const struct {
+@@ -113,12 +100,6 @@ static const struct {
      {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
      {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
      {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},
@@ -390,5 +391,5 @@ index 0a5c33a..ddd877c 100644
      {.name = "SDL3",                          .version = SDL_VERSION_STR,            .license = licenseZlib,          .repoURL = "https://github.com/libsdl-org/SDL",              .licenseURL = "https://github.com/libsdl-org/SDL/blob/main/LICENSE.txt"},
      {.name = "SDL_GameControllerDB",                                                 .license = licenseZlib,          .repoURL = "https://github.com/mdqinc/SDL_GameControllerDB", .licenseURL = "https://github.com/mdqinc/SDL_GameControllerDB/blob/master/LICENSE"},
 -- 
-2.52.0
+2.53.0
 

@@ -23,11 +23,11 @@
 Name:           mesa-libGL-xlib
 Summary:        Mesa libGL runtime libraries with xlib support
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.5
+Version:        26.0.0
 Release:        1%{?dist}
 
 License:        MIT
-URL:            http://www.mesa3d.org
+URL:            https://www.mesa3d.org
 
 %if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pkgname}-%{shortcommit}.tar.bz2
@@ -155,13 +155,6 @@ rm -f %{buildroot}%{_libdir}/libglapi.so*
 rm -rf %{buildroot}%{_datadir}
 rm -rf %{buildroot}%{_includedir}
 
-# this keeps breaking, check it early.  note that the exit from eu-ftr is odd.
-pushd %{buildroot}%{_libdir}
-for i in libGL.so ; do
-    eu-findtextrel $i && exit 1
-done
-popd
-
 rm -f %{buildroot}%{_libdir}/*.so
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
@@ -179,6 +172,9 @@ install -pm0755 xlibglp.sh %{buildroot}%{_bindir}/xlibglp
 
 
 %changelog
+* Wed Feb 11 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.0-1
+- 26.0.0
+
 * Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.5-1
 - 25.3.5
 

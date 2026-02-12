@@ -4,16 +4,18 @@
 %ifnarch s390x
 %global with_hardware 1
 %global with_kmsro 1
-%global with_nvk 1
 %global with_radeonsi 1
 %global with_spirv_tools 1
 %global with_vmware 1
 %global with_vulkan_hw 1
-%global with_va 1
 %if !0%{?rhel}
 %global with_r300 1
 %global with_r600 1
 %global with_opencl 1
+%global with_va 1
+%endif
+%if !0%{?rhel} || 0%{?rhel} >= 9
+%global with_nvk %{with_vulkan_hw}
 %endif
 %global base_vulkan %{?with_vulkan_hw:,amd}%{!?with_vulkan_hw:%{nil}}
 %endif
@@ -97,11 +99,11 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        25.3.5
+Version:        26.0.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
-URL:            http://www.mesa3d.org
+URL:            https://www.mesa3d.org
 
 %if %{with snapshot}
 Source0:        %{vc_url}/-/archive/%{commit}/%{name}-%{commit}.tar.bz2#/%{name}-%{shortcommit}.tar.bz2
@@ -130,9 +132,6 @@ Source13:       https://crates.io/api/v1/crates/syn/%{rust_syn_ver}/download#/sy
 Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ident_ver}/download#/unicode-ident-%{rust_unicode_ident_ver}.tar.gz
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
-Patch0:         %{vc_url}/-/commit/e710e6857376c3f251f6b7ddce69fdfbe96889d8.patch#/%{name}-gl-e710e68.patch
-Patch1:         %{vc_url}/-/commit/c114d94b49ffd42f2ede12436e1d41f0e0756243.patch#/%{name}-gl-c114d94.patch
-
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
@@ -141,7 +140,7 @@ BuildRequires:  meson >= 1.4.0
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  gettext
-BuildRequires:  patchutils
+%dnl BuildRequires:  patchutils
 
 
 %if 0%{?with_hardware}
@@ -241,10 +240,6 @@ Provides:       mesa-dri-filesystem = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-omx-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-libd3d < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      mesa-libd3d-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-%if 0%{?fedora} < 43
-Obsoletes:      mesa-libxatracker < %{?epoch:%{epoch}:}%{version}-%{release}
-Obsoletes:      mesa-libxatracker-devel < %{?epoch:%{epoch}:}%{version}-%{release}
-%endif
 Obsoletes:      mesa-vdpau-drivers < %{?epoch:%{epoch}:}%{version}-%{release}
 
 %description filesystem
@@ -379,6 +374,7 @@ Requires:       %{name}-filesystem%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{rel
 Requires:       %{name}-vulkan-drivers-free%{?_isa} >= %{?epoch:%{epoch}:}%{version}-%{release}
 %endif
 Obsoletes:      mesa-vulkan-devel < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      VK_hdr_layer < 1
 
 %description vulkan-drivers
 The drivers with support for the Vulkan API.
@@ -571,13 +567,6 @@ rm -vf %{buildroot}%{_libdir}/dri/apple_dri.so
 # glvnd needs a default provider for indirect rendering where it cannot
 # determine the vendor
 ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
-
-# this keeps breaking, check it early.  note that the exit from eu-ftr is odd.
-pushd %{buildroot}%{_libdir}
-for i in libGL.so ; do
-    eu-findtextrel $i && exit 1
-done
-popd
 
 
 %files filesystem
@@ -819,6 +808,9 @@ popd
 
 
 %changelog
+* Wed Feb 11 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.0-100
+- 26.0.0
+
 * Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.5-100
 - 25.3.5
 

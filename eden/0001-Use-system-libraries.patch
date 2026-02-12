@@ -1,18 +1,18 @@
-From 1d0d57234df8babad11ab7275b32064f33bb6326 Mon Sep 17 00:00:00 2001
+From 74dcf41569996137e9580dffede3fff4b0e0b860 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                   | 36 ++++++++++++++++++-
- externals/CMakeLists.txt         | 62 ++++++++++++++++++++++++++++++++
+ CMakeLists.txt                   | 45 ++++++++++++++++++++++++--
+ externals/CMakeLists.txt         | 55 ++++++++++++++++++++++++++++++++
  externals/ffmpeg/CMakeLists.txt  |  5 +++
  externals/nx_tzdb/CMakeLists.txt |  2 +-
- src/dynarmic/CMakeLists.txt      |  4 ---
- 5 files changed, 103 insertions(+), 6 deletions(-)
+ src/dynarmic/CMakeLists.txt      |  8 -----
+ 5 files changed, 104 insertions(+), 11 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dbe947c..3832a87 100644
+index 0568a49..55f4793 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -492,7 +492,7 @@ if (YUZU_USE_CPM)
@@ -36,7 +36,16 @@ index dbe947c..3832a87 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -585,6 +589,7 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -576,7 +580,7 @@ add_subdirectory(externals)
+ # pass targets from externals
+ find_package(enet)
+ find_package(MbedTLS)
+-find_package(unordered_dense REQUIRED)
++find_package(unordered_dense)
+ 
+ if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
+     find_package(xbyak)
+@@ -586,6 +590,7 @@ if (NOT YUZU_STATIC_ROOM)
      find_package(libusb)
      find_package(VulkanMemoryAllocator)
      find_package(VulkanUtilityLibraries)
@@ -44,7 +53,7 @@ index dbe947c..3832a87 100644
      find_package(SimpleIni)
      find_package(SPIRV-Tools)
      find_package(sirit)
-@@ -592,6 +597,24 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -593,6 +598,31 @@ if (NOT YUZU_STATIC_ROOM)
      find_package(mcl)
      find_package(frozen)
  
@@ -66,10 +75,17 @@ index dbe947c..3832a87 100644
 +        endif()
 +    endif()
 +
++    if(unordered_dense_FOUND)
++        message(STATUS "Using the system unordered_dense")
++    else()
++        set(UNORDERED_DENSE_INSTALL OFF)
++        add_subdirectory(externals/unordered-dense)
++    endif()
++
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -701,7 +724,18 @@ if (ENABLE_QT)
+@@ -702,7 +732,18 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -89,19 +105,15 @@ index dbe947c..3832a87 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 980d8f6..88c2966 100644
+index 6c3e5cb..3112f57 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -27,14 +27,22 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
+@@ -27,10 +27,18 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
  # Xbyak
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
 +  if (YUZU_USE_CPM)
-     if (PLATFORM_SUN OR PLATFORM_OPENBSD OR PLATFORM_NETBSD OR PLATFORM_DRAGONFLY)
-         AddJsonPackage(xbyak_sun)
-     else()
-         AddJsonPackage(xbyak)
-     endif()
+     AddJsonPackage(xbyak)
 +  else()
 +    find_package(xbyak 7 CONFIG GLOBAL)
 +    if (NOT TARGET xbyak::xbyak)
@@ -115,7 +127,7 @@ index 980d8f6..88c2966 100644
  AddJsonPackage(enet)
  
  if (enet_ADDED)
-@@ -44,9 +52,12 @@ endif()
+@@ -40,9 +48,12 @@ endif()
  if (NOT TARGET enet::enet)
      add_library(enet::enet ALIAS enet)
  endif()
@@ -128,7 +140,17 @@ index 980d8f6..88c2966 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -81,13 +92,19 @@ if (ARCHITECTURE_riscv64)
+@@ -63,7 +74,9 @@ if (NOT TARGET LLVM::Demangle)
+ endif()
+ 
+ # unordered_dense
++if (YUZU_USE_CPM)
+ AddJsonPackage(unordered-dense)
++endif()
+ 
+ if (YUZU_STATIC_ROOM)
+     return()
+@@ -80,13 +93,19 @@ if (ARCHITECTURE_riscv64)
  endif()
  
  # mcl
@@ -148,7 +170,7 @@ index 980d8f6..88c2966 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -104,10 +121,15 @@ if (USE_DISCORD_PRESENCE)
+@@ -103,10 +122,15 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -164,7 +186,7 @@ index 980d8f6..88c2966 100644
      AddJsonPackage(cubeb)
  
      if (cubeb_ADDED)
-@@ -136,6 +158,7 @@ if(ENABLE_CUBEB)
+@@ -135,6 +159,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -172,7 +194,7 @@ index 980d8f6..88c2966 100644
  
  # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
  if (ENABLE_SDL2)
-@@ -181,9 +204,14 @@ endif()
+@@ -180,9 +205,14 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
@@ -187,7 +209,7 @@ index 980d8f6..88c2966 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -192,9 +220,12 @@ else()
+@@ -191,9 +221,12 @@ else()
          target_compile_options(siritobj PRIVATE -Wno-error=unused-command-line-argument)
      endif()
  endif()
@@ -200,7 +222,7 @@ index 980d8f6..88c2966 100644
  
  if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -202,9 +233,11 @@ if (SPIRV-Tools_ADDED)
+@@ -201,9 +234,11 @@ if (SPIRV-Tools_ADDED)
  endif()
  
  # Catch2
@@ -212,7 +234,7 @@ index 980d8f6..88c2966 100644
  
  # getopt
  if (MSVC)
-@@ -215,12 +248,16 @@ endif()
+@@ -214,12 +249,16 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -229,11 +251,9 @@ index 980d8f6..88c2966 100644
  
  if (VulkanMemoryAllocator_ADDED)
      if (CXX_CLANG)
-@@ -235,17 +272,42 @@ if (VulkanMemoryAllocator_ADDED)
- endif()
+@@ -235,12 +274,28 @@ endif()
  
  # httplib
-+
  if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER OR USE_DISCORD_PRESENCE OR ENABLE_OPENSSL)
 +  if (YUZU_USE_CPM)
      AddJsonPackage(httplib)
@@ -259,19 +279,7 @@ index 980d8f6..88c2966 100644
 +  endif()
  endif()
  
- # unordered_dense
-+if (YUZU_USE_CPM)
- AddJsonPackage(unordered-dense)
-+else()
-+  find_package(unordered_dense CONFIG)
-+  if (NOT TARGET ankerl::unordered_dense)
-+      set(UNORDERED_DENSE_INSTALL OFF)
-+      add_subdirectory(unordered-dense)
-+  endif()
-+endif()
- 
  # FFMpeg
- if (YUZU_USE_EXTERNAL_FFMPEG OR YUZU_USE_BUNDLED_FFMPEG)
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
 index 3140f8e..b6a3325 100644
 --- a/externals/ffmpeg/CMakeLists.txt
@@ -293,10 +301,10 @@ index 3140f8e..b6a3325 100644
      make_directory(${FFmpeg_BUILD_DIR})
  
 diff --git a/externals/nx_tzdb/CMakeLists.txt b/externals/nx_tzdb/CMakeLists.txt
-index b9aa50a..f920400 100644
+index a82bf0b..5f4a39c 100644
 --- a/externals/nx_tzdb/CMakeLists.txt
 +++ b/externals/nx_tzdb/CMakeLists.txt
-@@ -56,7 +56,7 @@ elseif (MSVC AND NOT CXX_CLANG AND YUZU_ENABLE_LTO)
+@@ -56,7 +56,7 @@ elseif (MSVC AND NOT CXX_CLANG AND ENABLE_LTO)
              ${NX_TZDB_ARCHIVE}
          DESTINATION
              ${NX_TZDB_BASE_DIR})
@@ -306,10 +314,21 @@ index b9aa50a..f920400 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index fc22f07..8cf82c0 100644
+index e0d1f94..5bb8995 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -127,10 +127,6 @@ if ("riscv" IN_LIST ARCHITECTURE)
+@@ -116,10 +116,6 @@ if (NOT Boost_FOUND)
+     find_package(Boost 1.57 REQUIRED)
+ endif()
+ 
+-find_package(fmt 8 CONFIG)
+-find_package(mcl 0.1.12 REQUIRED)
+-find_package(unordered_dense REQUIRED)
+-
+ if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
+     find_package(oaknut 2.0.1 CONFIG)
+ endif()
+@@ -128,10 +124,6 @@ if ("riscv" IN_LIST ARCHITECTURE)
      find_package(biscuit 0.9.1 REQUIRED)
  endif()
  

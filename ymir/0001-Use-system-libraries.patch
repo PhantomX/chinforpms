@@ -1,4 +1,4 @@
-From 84716311115f09bff8761a0a91cb3a1185d4684e Mon Sep 17 00:00:00 2001
+From f81bc5ffc4e67a2bc13746522efdb5d5418d4a23 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
@@ -6,19 +6,19 @@ Subject: [PATCH] Use system libraries
 ---
  apps/ymir-sdl3/CMakeLists.txt                 | 16 +++++++++---
  apps/ymir-sdl3/src/app/app.cpp                |  2 +-
- apps/ymir-sdl3/src/app/shared_context.hpp     |  2 +-
+ .../ymir-sdl3/src/app/services/midi_types.hpp |  2 +-
  .../ui/views/settings/audio_settings_view.cpp |  2 +-
- .../src/app/ui/windows/about_window.cpp       |  2 +-
+ .../src/app/ui/windows/about_window.cpp       |  6 +----
  apps/ymir-sdl3/stb/CMakeLists.txt             | 22 ++++++++++++++++
  vendor/CMakeLists.txt                         | 25 +++++++++++++++++++
- 7 files changed, 64 insertions(+), 7 deletions(-)
+ 7 files changed, 64 insertions(+), 11 deletions(-)
  create mode 100644 apps/ymir-sdl3/stb/CMakeLists.txt
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 5de971c..9ff595b 100644
+index e26c569..4ce74cb 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -350,9 +350,19 @@ find_package(cxxopts CONFIG REQUIRED)
+@@ -374,9 +374,19 @@ find_package(date CONFIG REQUIRED)
  find_package(OpenSSL CONFIG REQUIRED)
  find_package(CURL REQUIRED)
  find_package(fmt CONFIG REQUIRED)
@@ -40,7 +40,7 @@ index 5de971c..9ff595b 100644
  find_package(tomlplusplus CONFIG REQUIRED)
  
  target_include_directories(ymir-sdl3
-@@ -373,7 +383,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -398,7 +408,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
      cereal::cereal
      lz4::lz4
      RtMidi::rtmidi
@@ -50,10 +50,10 @@ index 5de971c..9ff595b 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 91f1f56..73b129f 100644
+index 8c7b314..e8e2a30 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
-@@ -132,7 +132,7 @@
+@@ -134,7 +134,7 @@
  #include <fmt/chrono.h>
  #include <fmt/std.h>
  
@@ -62,24 +62,24 @@ index 91f1f56..73b129f 100644
  
  #include <clocale>
  #include <mutex>
-diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
-index 60f5099..d1b9e89 100644
---- a/apps/ymir-sdl3/src/app/shared_context.hpp
-+++ b/apps/ymir-sdl3/src/app/shared_context.hpp
-@@ -32,7 +32,7 @@
- 
- #include <blockingconcurrentqueue.h>
+diff --git a/apps/ymir-sdl3/src/app/services/midi_types.hpp b/apps/ymir-sdl3/src/app/services/midi_types.hpp
+index 206d808..31b7fc6 100644
+--- a/apps/ymir-sdl3/src/app/services/midi_types.hpp
++++ b/apps/ymir-sdl3/src/app/services/midi_types.hpp
+@@ -7,7 +7,7 @@
+ //
+ // Hopefully https://github.com/thestk/rtmidi/issues/367 is solved at some point.
  
 -#include <rtmidi/RtMidi.h>
 +#include <RtMidi.h>
  
- #include <array>
- #include <chrono>
+ #include <memory>
+ 
 diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
-index 8baad4f..8bedc38 100644
+index 82cf121..932a71c 100644
 --- a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
-@@ -5,7 +5,7 @@
+@@ -7,7 +7,7 @@
  #include <app/ui/widgets/common_widgets.hpp>
  #include <app/ui/widgets/settings_widgets.hpp>
  
@@ -89,10 +89,10 @@ index 8baad4f..8bedc38 100644
  using namespace ymir;
  
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 17d3dea..ffe0b8b 100644
+index 6e5bc7e..872d573 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-@@ -20,7 +20,7 @@
+@@ -23,12 +23,10 @@
  #include <ngtcp2/version.h>
  #include <nlohmann/json.hpp>
  #include <openssl/opensslv.h>
@@ -101,6 +101,20 @@ index 17d3dea..ffe0b8b 100644
  #include <semver.hpp>
  #include <toml++/toml.hpp>
  #include <xxhash.h>
+-#include <zlib.h>
+-#include <zstd.h>
+ 
+ #define _STR_IMPL(x) #x
+ #define _STR(x) _STR_IMPL(x)
+@@ -128,8 +126,6 @@ static const struct {
+     {.name = "stb_image_write",               .version = STB_IMAGE_WRITE_VERSION,    .license = licenseMIT,           .repoURL = "https://github.com/nothings/stb",                .licenseURL = "https://github.com/nothings/stb/blob/master/LICENSE"},
+     {.name = "toml++",                        .version = TOMLPP_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/marzer/tomlplusplus" ,        .licenseURL = "https://github.com/marzer/tomlplusplus/blob/master/LICENSE",             .homeURL = "https://marzer.github.io/tomlplusplus/"},
+     {.name = "xxHash",                        .version = XXHASH_VERSION,             .license = licenseBSD2,          .repoURL = "https://github.com/Cyan4973/xxHash",             .licenseURL = "https://github.com/Cyan4973/xxHash/blob/dev/LICENSE",                    .homeURL = "https://xxhash.com/"},
+-    {.name = "zlib",                          .version = ZLIB_VERSION,               .license = licenseZlib,          .repoURL = "https://github.com/madler/zlib",                 .licenseURL = "https://github.com/madler/zlib/blob/develop/LICENSE",                    .homeURL = "https://zlib.net/"},
+-    {.name = "zstd",                          .version = ZSTD_VERSION_STRING,        .license = licenseBSD3,          .repoURL = "https://github.com/facebook/zstd",               .licenseURL = "https://github.com/facebook/zstd/blob/dev/LICENSE",                      .homeURL = "http://www.zstd.net/"},
+ };
+ 
+ 
 diff --git a/apps/ymir-sdl3/stb/CMakeLists.txt b/apps/ymir-sdl3/stb/CMakeLists.txt
 new file mode 100644
 index 0000000..49a628c
@@ -130,10 +144,10 @@ index 0000000..49a628c
 +    endif ()
 +endif ()
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 947c636..a5887e7 100644
+index 7695024..afd84af 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
-@@ -25,6 +25,8 @@ endfunction()
+@@ -17,6 +17,8 @@
  
  message(STATUS "Adding vendored libraries")
  
@@ -142,7 +156,7 @@ index 947c636..a5887e7 100644
  # mio - https://github.com/vimpunk/mio
  # Notes:
  # - Using StrikerX3's fork instead
-@@ -46,18 +48,41 @@ add_subdirectory(imgui EXCLUDE_FROM_ALL)
+@@ -38,17 +40,40 @@ add_subdirectory(imgui EXCLUDE_FROM_ALL)
  # xxHash - https://github.com/Cyan4973/xxHash
  # - Unable to configure AVX2 support
  message(STATUS "==> xxHash")
@@ -178,12 +192,11 @@ index 947c636..a5887e7 100644
 +  add_library(chdr-static INTERFACE)
 +  target_link_libraries(chdr-static INTERFACE PkgConfig::libchdr)
 +else()
- set(BUILD_FUZZER OFF)
  add_subdirectory(libchdr)
 +endif()
  
  # Place vendored library projects under a Vendored folder in Visual Studio solutions
  if (MSVC)
 -- 
-2.51.0
+2.53.0
 

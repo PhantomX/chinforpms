@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 71e035f83be0cc806ed3352452be27e3fec57aa9
+%global commit f6547fac8ccd75c8b9d15db21cc189d57e4fefa6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260206
+%global date 20260211
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -36,7 +36,7 @@
 # Enable webservice
 %bcond webservice 1
 
-%global commit111 73f3cbb237e84d483afafc743f1f14ec53e12314
+%global commit111 7b55cab8418da1603496462ce3ccdb4cb1dc3368
 %global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
 %global srcname111 unordered_dense
 
@@ -44,7 +44,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
 
-%global commit13 4e44f4614ddbf038f2a6296f5b906d5c72691e0f
+%global commit13 8c0098b69f95d02dea47efcdd42ab5aa2d03c72d
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
@@ -106,7 +106,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.1.1.28313
+Version:        0.1.1.28332
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -266,7 +266,7 @@ BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.1.0
 Provides:       bundled(VulkanMemoryAllocator) = 0~git%{shortcommit12}
 %endif
 %if %{with xbyak}
-BuildRequires:  cmake(xbyak) >= 7
+BuildRequires:  cmake(xbyak) >= 7.33.2
 %else
 Provides:       bundled(xbyak) = 0~git%{?shortcommit13}
 %endif
@@ -323,6 +323,8 @@ rm -rf sse2neon
 
 mkdir -p unordered-dense
 tar -xf %{S:111} -C unordered-dense --strip-components 1
+%{__scm_apply_patch -p1 -q} -d unordered-dense -i ../../.patch/unordered-dense/0001-avoid-memset-when-clearing-an-empty-table.patch
+sed -e '/find_package/s|unordered_dense|\0_DISABLED|g' -i ../CMakeLists.txt
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
@@ -450,7 +452,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DYUZU_BUILD_PRESET:STRING="none" \
   -DYUZU_SYSTEM_PROFILE:STRING="none" \
-  -DYUZU_ENABLE_LTO:BOOL=ON \
+  -DENABLE_LTO:BOOL=ON \
 %if %{with qt}
   -DYUZU_USE_BUNDLED_QT:BOOL=OFF \
   -DENABLE_QT_TRANSLATION:BOOL=ON \
