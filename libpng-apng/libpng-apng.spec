@@ -4,7 +4,7 @@
 
 Summary:        A library of functions for manipulating PNG image format files
 Name:           %{pkgname}-apng
-Version:        1.6.54
+Version:        1.6.55
 Release:        1%{?dist}
 
 License:        Zlib
@@ -112,6 +112,9 @@ make check
 
 
 %changelog
+* Sun Feb 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1.6.55-1
+- 1.6.55
+
 * Sat Jan 31 2026 Phantom X <megaphantomx at hotmail dot com> - 1.6.54-1
 - 1.6.54
 

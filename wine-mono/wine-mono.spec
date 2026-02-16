@@ -16,10 +16,11 @@
 %global __debug_install_post /bin/true
 %endif
 
-%global vc_url  https://github.com/madewokherd/wine-mono
+%global vc_url  https://github.com/wine-mono
+%global vc_id  e22863828f65f5d166796a8950a8bed862792e5d
 
 Name:           wine-mono
-Version:        10.4.1
+Version:        11.0.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -36,8 +37,8 @@ Source0:        %{dl_url}/%{name}-%{version}-x86.tar.xz
 %else
 Source0:        %{dl_url}/%{name}-%{version}-src.tar.xz
 %endif
-Source1:        %{vc_url}/%{name}/raw/master/COPYING
-Source2:        %{vc_url}/%{name}/raw/master/README
+Source1:        %{vc_url}/%{name}/raw/%{vc_id}/COPYING
+Source2:        %{vc_url}/%{name}/raw/%{vc_id}/README.md
 
 Patch0:         %{name}-7.3.0-iconv.patch
 Patch1:         %{name}-configure-c99.patch
@@ -169,7 +170,7 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 %files
 %license COPYING
-%doc README
+%doc README.md
 %if %{without bin}
 %license mono-LICENSE mono-COPYING.LIB mono-basic-LICENSE mono-mcs*
 %doc mono-basic-README
@@ -178,6 +179,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Sun Feb 15 2026 Phantom X <megaphantomx at hotmail dot com> - 11.0.0-100
+- 11.0.0
+
 * Fri Dec 26 2025 Phantom X <megaphantomx at hotmail dot com> - 10.4.1-100
 - 10.4.1
 

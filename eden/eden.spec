@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit f6547fac8ccd75c8b9d15db21cc189d57e4fefa6
+%global commit f4e7fc91ba8d12dada247139a61e9ac1b8195276
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260211
+%global date 20260215
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -106,7 +106,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           eden
-Version:        0.1.1.28332
+Version:        0.2.0~rc1.28355
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -241,6 +241,7 @@ BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(quazip1-qt6)
 BuildRequires:  pkgconfig(sdl2) >= 2.32.0
 %if %{with qt}
+BuildRequires:  cmake(Qt6Charts)
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6DBus)
 BuildRequires:  cmake(Qt6Gui)
@@ -521,6 +522,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Feb 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.0~rc1.28355-1.20260215gitf4e7fc9
+- 0.2.0-rc1
+
 * Mon Feb 02 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.1.28282-1.20260201gitcd95270
 - 0.1.1
 

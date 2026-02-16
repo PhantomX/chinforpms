@@ -10,7 +10,7 @@
 %global pkgname SPIRV-Cross
 
 Name:           spirv-cross
-Version:        1.4.321.0
+Version:        1.4.341.0
 Release:        1%{?dist}
 Summary:        API and commands for processing SPIR-V modules
 
@@ -86,6 +86,9 @@ sed \
 
 
 %changelog
+* Sun Feb 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1.4.341.0-1
+- 1.4.341.0
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.4.321.0-1
 - 1.4.321.0
 

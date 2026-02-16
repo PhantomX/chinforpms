@@ -1,7 +1,7 @@
-%global commit 93f3d8ae9fad50b3ebc45f808bb4749322a0de14
+%global commit 78a4aa0f9b658cd7466c33bf3059d8e6f2d499c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260128
-%bcond snapshot 0
+%global date 20260214
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -45,7 +45,7 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  10.4.1
+%global winemono  11.0.0
 %global winevulkan 1.4.340
 %global opencl    1
 
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.2
+%global wine_stagingver 609182b73da048aed048c149291470476e1249d4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -125,7 +125,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -202,10 +202,10 @@ Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.p
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/9670.patch#/%{name}-whq-mr9670.patch
 Patch706:        %{whq_murl}/-/merge_requests/9704.patch#/%{name}-whq-mr9704.patch
-Patch707:        %{whq_murl}/-/merge_requests/9742.patch#/%{name}-whq-mr9742.patch
-Patch708:        %{whq_murl}/-/merge_requests/9756.patch#/%{name}-whq-mr9756.patch
-Patch709:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
-Patch710:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
+Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
+Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
+Patch709:        %{whq_murl}/-/merge_requests/10105.patch#/%{name}-whq-mr10105.patch
+Patch710:        %{whq_murl}/-/merge_requests/10106.patch#/%{name}-whq-mr10106.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -1405,6 +1405,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/adsldpc.dll
 %{_libdir}/wine/%{winepedirs}/advapi32.dll
 %{_libdir}/wine/%{winepedirs}/advpack.dll
+%{_libdir}/wine/%{winepedirs}/aero.msstyles
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winepedirs}/audioses.dll
 %endif
@@ -1442,6 +1443,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/cfgmgr32.dll
 %{_libdir}/wine/%{winepedirs}/chakra.dll
 %{_libdir}/wine/%{winepedirs}/chcp.com
+%{_libdir}/wine/%{winepedirs}/cldapi.dll
 %{_libdir}/wine/%{winepedirs}/clusapi.dll
 %{_libdir}/wine/%{winepedirs}/cng.sys
 %{_libdir}/wine/%{winepedirs}/colorcnv.dll
@@ -1614,7 +1616,6 @@ fi
 %{_libdir}/wine/%{winepedirs}/ktmw32.dll
 %{_libdir}/wine/%{winepedirs}/l3codeca.acm
 %{_libdir}/wine/%{winepedirs}/l3codecx.ax
-%{_libdir}/wine/%{winepedirs}/light.msstyles
 %{_libdir}/wine/%{winepedirs}/loadperf.dll
 %{_libdir}/wine/%{winesodir}/localspl.so
 %{_libdir}/wine/%{winepedirs}/localspl.dll
