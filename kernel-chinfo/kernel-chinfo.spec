@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.0
+%define specrpmversion 6.19.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -383,6 +383,17 @@ Summary: The Linux kernel
 %define with_efiuki 0
 %endif
 
+%ifarch aarch64
+# dtbloader sub-package requires stubble which is only in Fedora for now
+%if 0%{?fedora}
+%define with_dtbloader %{?_without_dtbloader:0} %{?!_without_dtbloader:1}
+%else
+%define with_dtbloader 0
+%endif
+%else
+%define with_dtbloader 0
+%endif
+
 ### CPU optimizations
 ### with native take precedence, next is tune, then one set in kernel-local-cpu-generic
 # Use kernel-local-cpu-native (CONFIG_MNATIVE=y)
@@ -499,6 +510,7 @@ Summary: The Linux kernel
 %define with_selftests 0
 %define with_headers 0
 %define with_efiuki 0
+%define with_dtbloader 0
 %define with_zfcpdump 0
 %define with_arm64_16k 0
 %define with_arm64_64k 0
@@ -537,6 +549,7 @@ Summary: The Linux kernel
 %define with_selftests 0
 %define with_headers 0
 %define with_efiuki 0
+%define with_dtbloader 0
 %define with_zfcpdump 0
 %define with_vdso_install 0
 %define with_kabichk 0
@@ -566,6 +579,7 @@ Summary: The Linux kernel
 %define with_arm64_16k 0
 %define with_arm64_64k 0
 %define with_efiuki 0
+%define with_dtbloader 0
 %define with_doc 0
 %define with_headers 0
 %define with_cross_headers 0
@@ -816,6 +830,8 @@ Requires: %{name}-core-uname-r = %{KVERREL}
 Requires: %{name}-modules-uname-r = %{KVERREL}
 Requires: %{name}-modules-core-uname-r = %{KVERREL}
 Requires: ((%{name}-modules-extra-uname-r = %{KVERREL}) if %{name}-modules-extra-matched)
+# Prefer the plain kernel-core pkg as core-uname-r provider
+Suggests: %{name}-core = %{specversion}-%{release}
 Provides: installonlypkg(kernel)
 %endif
 
@@ -876,7 +892,6 @@ BuildRequires: libtracefs-devel
 BuildRequires: libbpf-devel
 BuildRequires: bpftool
 BuildRequires: clang
-BuildRequires: lld
 
 %ifarch %{cpupowerarchs}
 # For libcpupower bindings
@@ -984,6 +999,7 @@ BuildRequires: asciidoc
 
 %if %{with toolchain_clang}
 BuildRequires: clang
+BuildRequires: lld
 %endif
 
 %if %{with clang_lto}
@@ -997,15 +1013,22 @@ BuildRequires: dracut
 BuildRequires: binutils
 # For the initrd
 BuildRequires: lvm2
-BuildRequires: systemd-boot-unsigned
 # For systemd-stub and systemd-pcrphase
 BuildRequires: systemd-udev >= 252-1
 # For systemd-repart
 BuildRequires: xfsprogs e2fsprogs dosfstools
-# For UKI kernel cmdline addons
-BuildRequires: systemd-ukify
 # For TPM operations in UKI initramfs
 BuildRequires: tpm2-tools
+%endif
+
+%if %{with_dtbloader}
+BuildRequires: stubble
+%endif
+
+%if %{with_efiuki} || %{with_dtbloader}
+BuildRequires: systemd-boot-unsigned
+# For UKI kernel cmdline addons
+BuildRequires: systemd-ukify
 # For UKI sb cert
 %if 0%{?rhel}%{?centos} && !0%{?eln}
 %if 0%{?centos}
@@ -1042,18 +1065,23 @@ Source13: redhatsecureboot501.cer
 %define pesign_name_0 redhatsecureboot501
 %define secureboot_ca_0 %{SOURCE10}
 %define secureboot_key_0 %{SOURCE13}
+%define pesign_name_uki_0 %{pesign_name_0}
+%define secureboot_key_uki_0 %{secureboot_key_0}
 %endif
 
 # RHEL/centos certs come from system-sb-certs
 %if 0%{?rhel} && !0%{?eln}
 %define secureboot_ca_0 %{_datadir}/pki/sb-certs/secureboot-ca-%{_arch}.cer
 %define secureboot_key_0 %{_datadir}/pki/sb-certs/secureboot-kernel-%{_arch}.cer
+%define secureboot_key_uki_0 %{_datadir}/pki/sb-certs/secureboot-uki-virt-%{_arch}.cer
 
 %if 0%{?centos}
 %define pesign_name_0 centossecureboot201
+%define pesign_name_uki_0 centossecureboot204
 %else
 %ifarch x86_64 aarch64
 %define pesign_name_0 redhatsecureboot501
+%define pesign_name_uki_0 redhatsecureboot504
 %endif
 %ifarch s390x
 %define pesign_name_0 redhatsecureboot302
@@ -1129,6 +1157,7 @@ Source77: partial-clang_lto-aarch64-debug-snip.config
 Source80: generate_all_configs.sh
 Source81: process_configs.sh
 
+Source82: dtbloader.sbat.template
 Source83: uki.sbat.template
 Source84: uki-addons.sbat.template
 Source85: kernel.sbat.template
@@ -1537,7 +1566,7 @@ This package provides debug information for package kernel-tools.
 # symlinks because of the trailing nonmatching alternation and
 # the leading .*, because of find-debuginfo.sh's buggy handling
 # of matching the pattern against the symlinks file.
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/bootconfig(\.debug)?|.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} -p '.*%%{_bindir}/bootconfig(\.debug)?|.*%%{_bindir}/centrino-decode(\.debug)?|.*%%{_bindir}/powernow-k8-decode(\.debug)?|.*%%{_bindir}/cpupower(\.debug)?|.*%%{_libdir}/libcpupower.*|.*%%{python3_sitearch}/_raw_pylibcpupower.*|.*%%{_bindir}/turbostat(\.debug)?|.*%%{_bindir}/x86_energy_perf_policy(\.debug)?|.*%%{_bindir}/tmon(\.debug)?|.*%%{_bindir}/lsgpio(\.debug)?|.*%%{_bindir}/gpio-hammer(\.debug)?|.*%%{_bindir}/gpio-event-mon(\.debug)?|.*%%{_bindir}/gpio-watch(\.debug)?|.*%%{_bindir}/iio_event_monitor(\.debug)?|.*%%{_bindir}/iio_generic_buffer(\.debug)?|.*%%{_bindir}/lsiio(\.debug)?|.*%%{_bindir}/intel-speed-select(\.debug)?|.*%%{_bindir}/page_owner_sort(\.debug)?|.*%%{_bindir}/slabinfo(\.debug)?|.*%%{_sbindir}/intel_sdsi(\.debug)?|XXX' -o kernel-tools-debuginfo.list}
 
 %if %{with_tools} && %{with_ynl}
 %package -n python3-kernel-tools
@@ -1852,6 +1881,8 @@ Requires: %{name}-%{1}-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 Requires: %{name}-%{1}-modules-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 Requires: %{name}-%{1}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{1}}\
 Requires: ((%{name}-%{1}-modules-extra-uname-r = %{KVERREL}%{uname_suffix %{1}}) if %{name}-modules-extra-matched)\
+# Prefer the plain kernel-<subpackage>-core pkg as core-uname-r provider\
+Suggests: %{name}-%{1}-core = %{specversion}-%{release}\
 %if "%{1}" == "rt" || "%{1}" == "rt-debug" || "%{1}" == "rt-64k" || "%{1}" == "rt-64k-debug"\
 Requires: realtime-setup\
 %endif\
@@ -1913,6 +1944,19 @@ Summary: %{variant_summary} unified kernel image addons for virtual machines\
 Provides: installonlypkg(kernel)\
 Requires: %{name}%{?1:-%{1}}-uki-virt = %{specrpmversion}-%{release}\
 Requires(pre): systemd >= 254-1\
+%endif\
+%if %{with_dtbloader} && ("%{?1}" == "" || "%{1}" == "debug")\
+# This is not a full UKI, uki is in the name for compat with kernel_variant_posttrans -u\
+%package %{?1:%{1}-}uki-dtbloader\
+Summary: %{variant_summary} with systemd-stub for auto DTB loading\
+Provides: installonlypkg(kernel)\
+Provides: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Requires(pre): %{kernel_prereq}\
+# "kernel-install add ..." treats this as a regular kernel, which is what we want.\
+# This causes a /boot/vmlinuz-$(uname -r) and BLS .conf file conflict with kernel-core.\
+Conflicts: %{name}%{?1:-%{1}}-core = %{specrpmversion}-%{release}\
 %endif\
 %if %{with_gcov}\
 %{expand:%%kernel_gcov_package %{?1:%{1}}}\
@@ -2142,6 +2186,16 @@ Prebuilt 64k unified kernel image for virtual machines.
 Prebuilt 64k unified kernel image addons for virtual machines.
 %endif
 
+%if %{with_stock} && %{with_debug} && %{with_dtbloader}
+%description debug-uki-dtbloader
+Prebuilt debug kernel image with auto DTB selection for ARM64 UEFI devices.
+%endif
+
+%if %{with_stock_base} && %{with_dtbloader}
+%description uki-dtbloader
+Prebuilt default kernel image with auto DTB selection for ARM64 UEFI devices.
+%endif
+
 %ifnarch noarch %{nobuildarches}
 %kernel_modules_extra_matched_package
 %endif
@@ -2313,6 +2367,7 @@ rm -f localversion-next localversion-rt
     scripts/clang-tools 2> /dev/null
 
 # SBAT data
+sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE82} > dtbloader.sbat
 sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE83} > uki.sbat
 sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE84} > uki-addons.sbat
 sed -e s,@KVER,%{KVERREL}, -e s,@SBAT_SUFFIX,%{sbat_suffix}, %{SOURCE85} > kernel.sbat
@@ -3130,32 +3185,18 @@ BuildKernel() {
 
 %if %{signkernel}
     %{log_msg "Sign the EFI UKI kernel"}
-%if 0%{?fedora}%{?eln}
-        %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-%else
-%if 0%{?centos}
-        UKI_secureboot_name=centossecureboot204
-%else
-        UKI_secureboot_name=redhatsecureboot504
-%endif
-        UKI_secureboot_cert=%{_datadir}/pki/sb-certs/secureboot-uki-virt-%{_arch}.cer
-
-        %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c $UKI_secureboot_cert -n $UKI_secureboot_name
-# 0%{?fedora}%{?eln}
-%endif
+        %pesign -s -i $KernelUnifiedImage -o $KernelUnifiedImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_uki_0} -n %{pesign_name_uki_0}
         if [ ! -s $KernelUnifiedImage.signed ]; then
             echo "pesigning failed"
             exit 1
         fi
         mv $KernelUnifiedImage.signed $KernelUnifiedImage
 
-      for addon in "$KernelAddonsDirOut"/*; do
-        %pesign -s -i $addon -o $addon.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
-        rm -f $addon
-        mv $addon.signed $addon
-      done
-
-# signkernel
+    for addon in "$KernelAddonsDirOut"/*; do
+       %pesign -s -i $addon -o $addon.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+       rm -f $addon
+       mv $addon.signed $addon
+    done
 %endif
 
     # hmac sign the UKI for FIPS
@@ -3169,6 +3210,51 @@ BuildKernel() {
     :  # in case of empty block
     fi # "$Variant" == "rt" || "$Variant" == "rt-debug" || "$Variant" == "automotive" || "$Variant" == "automotive-debug"
 
+%if %{with_dtbloader}
+    if [[ -z "$Variant" || "$Variant" == "debug" ]]; then
+    %{log_msg "Setup the DTB-loader kernel"}
+    DtbloaderImage="$RPM_BUILD_ROOT/lib/modules/$KernelVer/$InstallName-dtbloader.efi"
+    DtbPath=$RPM_BUILD_ROOT/%{image_install_path}/dtb-$KernelVer/qcom
+
+    pushd $DtbPath
+    Dtbs=""
+    for i in x1 sc8?80x; do
+        Dtbs="$Dtbs $(ls $i*.dtb | grep -v -E 'el2|devkit|crd|qcp|primus')"
+    done
+    popd
+
+    DevicetreeAuto=""
+    for i in $Dtbs; do
+        DevicetreeAuto="$DevicetreeAuto --devicetree-auto=$DtbPath/$i"
+    done
+
+    # os-release is unset, so that this is not seen as a full UKI by
+    # "kernel-install add" and instead is treated as a normal kernel image,
+    # causing kernel-install to generate an initrd + standard BLS cfg.
+    # This is also required for systemd-stub to work with a GRUB provided
+    # initramfs.
+    ukify build --linux=$(realpath $KernelImage) \
+       --sbat=@dtbloader.sbat --os-release="" --uname=$KernelVer \
+       --hwids=/usr/share/stubble/hwids $DevicetreeAuto --output=$DtbloaderImage
+
+%if %{signkernel}
+    %{log_msg "Sign the DTB-loader kernel"}
+    %pesign -s -i $DtbloaderImage -o $DtbloaderImage.signed -a %{secureboot_ca_0} -c %{secureboot_key_0} -n %{pesign_name_0}
+    if [ ! -s $DtbloaderImage.signed ]; then
+        echo "pesigning failed"
+        exit 1
+    fi
+    mv $DtbloaderImage.signed $DtbloaderImage
+%endif
+    chmod 755 $DtbloaderImage
+
+    %{log_msg "hmac sign the DTB-loader kernel for FIPS"}
+    pushd $(dirname $DtbloaderImage)
+    sha512hmac $(basename $DtbloaderImage) > .$(basename $DtbloaderImage).hmac
+    popd
+    fi # -z "$Variant" || "$Variant" == "debug"
+# with_dtbloader
+%endif
 
     #
     # Generate the modules files lists
@@ -4390,6 +4476,11 @@ fi\
 %kernel_variant_preun -u virt -e
 %endif
 
+%if %{with_stock_base} && %{with_dtbloader}
+%kernel_variant_posttrans -u dtbloader
+%kernel_variant_preun -u dtbloader
+%endif
+
 %if %{with_stock_base}
 %kernel_variant_preun -e
 %kernel_variant_post
@@ -4403,6 +4494,11 @@ fi\
 %if %{with_stock} && %{with_debug} && %{with_efiuki}
 %kernel_variant_posttrans -v debug -u virt
 %kernel_variant_preun -v debug -u virt -e
+%endif
+
+%if %{with_stock} && %{with_debug} && %{with_dtbloader}
+%kernel_variant_posttrans -v debug -u dtbloader
+%kernel_variant_preun -v debug -u dtbloader
 %endif
 
 %if %{with_stock} && %{with_debug}
@@ -4726,6 +4822,7 @@ fi\
 #   - kernel-devel: headers and build infrastructure
 #   - kernel-debuginfo: vmlinux with debug symbols (if with_debuginfo)
 #   - kernel-uki-virt: unified kernel image for VMs (if with_efiuki)
+#   - kernel-uki-dtbloader: kernel with systemd-stub for auto DTB loading (if with_dtbloader)
 #
 %define kernel_variant_files(k:) \
 %if %{2}\
@@ -4809,6 +4906,28 @@ fi\
 %dir /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/ \
 /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/*.addon.efi\
 %endif\
+%if %{with_dtbloader} && ("%{?3}" == "" || "%{3}" == "debug")\
+%{expand:%%files %{?3:%{3}-}uki-dtbloader}\
+%%license linux-%{KVERREL}/COPYING-%{version}-%{release}\
+%dir /lib/modules\
+%dir /lib/modules/%{KVERREL}%{?3:+%{3}}\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/System.map\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/config\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/modules.builtin*\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/symvers.%compext\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-dtbloader.efi\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/.%{?-k:%{-k*}}%{!?-k:vmlinuz}-dtbloader.efi.hmac\
+%ghost %attr(0644, root, root) /boot/System.map-%{KVERREL}%{?3:+%{3}}\
+%ghost %attr(0644, root, root) /boot/config-%{KVERREL}%{?3:+%{3}}\
+%ghost %attr(0600, root, root) /boot/initramfs-%{KVERREL}%{?3:+%{3}}.img\
+%ghost %attr(0644, root, root) /boot/symvers-%{KVERREL}%{?3:+%{3}}.%compext\
+%ghost %attr(0755, root, root) /%{image_install_path}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}\
+%ghost %attr(0644, root, root) /%{image_install_path}/.%{?-k:%{-k*}}%{!?-k:vmlinuz}-%{KVERREL}%{?3:+%{3}}.hmac\
+%ifarch aarch64 riscv64\
+/lib/modules/%{KVERREL}%{?3:+%{3}}/dtb \
+%ghost /%{image_install_path}/dtb-%{KVERREL}%{?3:+%{3}} \
+%endif\
+%endif\
 %if %{?3:1} %{!?3:0}\
 %{expand:%%files %{3}}\
 %endif\
@@ -4880,6 +4999,12 @@ fi\
 #
 #
 %changelog
+* Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.2-500.chinfo
+- 6.19.2
+
+* Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.1-500.chinfo
+- 6.19.1
+
 * Mon Feb 09 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.0-500.chinfo
 - 6.19.0
 

@@ -1,6 +1,6 @@
-%global commit 8bba7745d758627258b315997a860039244cedaf
+%global commit 7891cbee2e8d7967bf8b6c24f091d2c5a53d8cfc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250608
+%global date 20260205
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           libchdr
 Version:        0.2
-Release:        28%{?dist}
+Release:        29%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)

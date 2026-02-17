@@ -125,7 +125,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.2
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -206,6 +206,9 @@ Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.pat
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 Patch709:        %{whq_murl}/-/merge_requests/10105.patch#/%{name}-whq-mr10105.patch
 Patch710:        %{whq_murl}/-/merge_requests/10106.patch#/%{name}-whq-mr10106.patch
+# https://bugs.winehq.org/show_bug.cgi?id=59317
+Patch711:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
+Patch712:        %{whq_murl}/-/merge_requests/10107.patch#/%{name}-whq-mr10107.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -802,6 +805,8 @@ cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 708 -p1
 %patch -P 709 -p1
 %patch -P 710 -p1
+%patch -P 711 -p1 -R
+%patch -P 712 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}

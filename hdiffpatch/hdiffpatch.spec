@@ -19,8 +19,8 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.8.0
-Release:        2%{?dist}
+Version:        4.12.1
+Release:        1%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
 License:        MIT
@@ -40,6 +40,7 @@ BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(bzip2)
+BuildRequires:  pkgconfig(libxxhash) >= 0.8.3
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(zlib)
@@ -121,6 +122,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 4.12.1-1
+- 4.12.1
+
 * Sun Jul 13 2025 Phantom X <megaphantomx at hotmail dot com> - 4.8.0-2
 - lzma-sdk rebuild
 

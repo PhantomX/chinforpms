@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit db3d9cd2179ac0c1080b997f277d9c114e82bc76
+%global commit b30a44c1367635af0675f61504e1ca45263655c6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260130
+%global date 20260215
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -78,7 +78,7 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
-%global commit16 456c68f452da09d8ca84b375faa2b1397713eaba
+%global commit16 05c44fcd18074836e21e1eda9fc02b3a4a1529b5
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.39.18747
+Version:        0.0.39.18794
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 

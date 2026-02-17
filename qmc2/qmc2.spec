@@ -18,7 +18,7 @@
 
 Name:           qmc2
 Version:        0.244
-Release:        106%{?dist}
+Release:        107%{?dist}
 Summary:        M.A.M.E. Catalog / Launcher II
 
 #PDF.js is ASL 2.0
@@ -171,6 +171,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/qchdman.desktop
 
 
 %changelog
+* Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.244-107.20240720git1fb6d2b
+- lzma-sdk rebuild
+
 * Sun Jul 13 2025 Phantom X <megaphantomx at hotmail dot com> - 0.244-106.20240720git1fb6d2b
 - lzma-sdk rebuild
 
