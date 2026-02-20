@@ -1,6 +1,6 @@
 Name:           kddockwidgets
 Version:        2.4.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Qt dock widget library
 
 License:        GPL-3.0-only AND GPL-2.0-only AND BSD-3-Clause
@@ -107,6 +107,9 @@ rm -rf %{buildroot}%{_datadir}/doc/KDDockWidgets-qt6
 %{_libdir}/qt6/mkspecs/modules/qt_KDDockWidgets.pri
 
 %changelog
+* Wed Feb 18 2026 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-101
+- Rebuild (qt6)
+
 * Sat Nov 22 2025 Phantom X <megaphantomx at hotmail dot com> - 2.4.0-100
 - 2.4.0
 

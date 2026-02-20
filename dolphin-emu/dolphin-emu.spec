@@ -25,14 +25,10 @@
 %global enablejit 1
 %endif
 
-%global commit c7e063bc7114213772fbe6aa24db8e8662948a60
+%global commit 9323074ada4b1d372809dc71ed092efe8d0e4c8e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260115
+%global date 20260216
 %bcond snapshot 1
-
-%global commit2 ebe2aa0cd80f5eb5cd8a605da604cacf72205f3b
-%global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 SPIRV-Cross
 
 %global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
@@ -103,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2512.146
+Version:        2512.397
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -136,7 +132,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source0:        %{vc_url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 %endif
 Source1:        %{name}.appdata.xml
-Source2:        https://github.com/KhronosGroup/SPIRV-Cross/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %if %{without vma}
 Source3:        https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
 %endif
@@ -219,7 +214,7 @@ BuildRequires:  cmake(SDL3) >= 3.2.0
 BuildRequires:  pkgconfig(sfml-network)
 BuildRequires:  pkgconfig(sfml-system) >= %{sfml_ver}
 %else
-Provides:       bundled(sfml) = 0~git%{shortcommit2}
+Provides:       bundled(sfml) = 0~git%{shortcommit19}
 %endif
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xkbcommon)
@@ -287,10 +282,8 @@ Provides:       bundled(FatFS) = 86631
 Provides:       bundled(cpp-ipc) = 0~git%{shortcommit11}
 Provides:       bundled(cpp-optpart) = 0~git%{shortcommit12}
 Provides:       bundled(imgui) = 0~git%{shortcommit9}
-Provides:       bundled(imgui) = 0~git%{shortcommit9}
 Provides:       bundled(implot) = 0~git%{shortcommit4}
 Provides:       bundled(rcheevos) = 0~git%{shortcommit5}
-Provides:       bundled(spirv-cross) = 0~git%{shortcommit2}
 Provides:       bundled(watcher) = 0~git%{shortcommit20}
 
 
@@ -350,7 +343,7 @@ pushd Externals
 rm -rf \
   bzip2 cubeb curl discord-rpc ed25519 ffmpeg gettext gtest hidapi \
   libiconv-* liblzma libspng libusb lz4 LZO miniupnpc minizip-ng OpenAL \
-  pugixml Qt MoltenVK  WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
+  pugixml Qt MoltenVK spirv_cross WIL XAudio2_7 xxhash zlib-ng zstd Vulkan
 
 %if %{with mbedtls}
   rm -rf mbedtls
@@ -364,7 +357,6 @@ rm -rf glslang
 tar -xf %{S:10} -C glslang/glslang --strip-components 1
 %endif
 
-tar -xf %{S:2} -C spirv_cross/SPIRV-Cross --strip-components 1
 %if %{without vma}
 tar -xf %{S:3} -C VulkanMemoryAllocator/ --strip-components 1
 %endif
@@ -400,7 +392,7 @@ tar -xf %{S:20} -C watcher/watcher --strip-components 1
 pushd picojson
 rm picojson.h
 #In master, picojson has build option "PICOJSON_NOEXCEPT", but for now:
-#sed "s/throw std::.*;/std::abort();/g" %{_includedir}/picojson.h > picojson.h
+sed "s/throw std::.*;/std::abort();/g" %{_includedir}/picojson.h > picojson.h
 popd
 
 popd
@@ -515,7 +507,7 @@ appstream-util validate-relax --nonet \
 
 %files -f %{name}.lang
 %doc Readme.md
-%license COPYING Data/license.txt Externals/licenses.md
+%license COPYING Externals/licenses.md
 %{_bindir}/%{name}
 %{_bindir}/%{name}-x11
 %{_mandir}/man6/%{name}.*
@@ -528,13 +520,13 @@ appstream-util validate-relax --nonet \
 
 %files nogui
 %doc Readme.md
-%license COPYING Data/license.txt Externals/licenses.md
+%license COPYING Externals/licenses.md
 %{_bindir}/%{name}-nogui
 %{_mandir}/man6/%{name}-nogui.*
 
 %files data
 %doc Readme.md docs/gc-font-tool.cpp
-%license COPYING Data/license.txt font-licenses.txt
+%license COPYING font-licenses.txt
 #For the gui package:
 %exclude %{_datadir}/%{name}/sys/Resources/
 %exclude %{_datadir}/%{name}/sys/Themes/
@@ -544,7 +536,7 @@ appstream-util validate-relax --nonet \
 %{_udevrulesdir}/*.rules
 
 %files tool
-%license COPYING Data/license.txt
+%license COPYING
 %{_bindir}/dolphin-tool
 
 
