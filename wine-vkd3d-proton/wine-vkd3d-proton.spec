@@ -22,14 +22,14 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 98e0c3ef667a3450442cd1faadcf62a259868fb1
+%global commit 9ced67dcbbc32c1ffd3257c45744edadb6eece97
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260123
+%global date 20260220
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 09b2677af3535316a8b98ac0a4dd01b96577718b
+%global commit1 f59e3cdf5af32bdd0c81e6605d821a38ad1ce902
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -37,7 +37,7 @@ BuildArch:      noarch
 %global shortcommit100 %(c=%{commit100}; echo ${c:0:7})
 %global srcname100 dxbc-spirv
 
-%global commit2 e9a8ceeddbf7e3aaadac2ab6f8a6ab6437872e88
+%global commit2 64f5770f59db933d46b9cad6edc42b4186409ef4
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 SPIRV-Tools
 
@@ -45,11 +45,11 @@ BuildArch:      noarch
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 b39ab380a44b6c8df462c34e976ea9ce2d2c336b
+%global commit4 ad9ce1235e88dc09287e19171dfac384db8ec32c
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
-%global commit5 c8ad050fcb29e42a2f57d9f59e97488f465c436d
+%global commit5 f88a2d766840fc825af1fc065977953ba1fa4a91
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 

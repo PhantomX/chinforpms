@@ -1,7 +1,7 @@
 %global commit 78a4aa0f9b658cd7466c33bf3059d8e6f2d499c8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260214
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.0.0
-%global winevulkan 1.4.340
+%global winevulkan 1.4.344
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 609182b73da048aed048c149291470476e1249d4
+%global wine_stagingver 11.3
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,8 +124,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.2
-Release:        102%{?dist}
+Version:        11.3
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -204,11 +204,8 @@ Patch705:        %{whq_murl}/-/merge_requests/9670.patch#/%{name}-whq-mr9670.pat
 Patch706:        %{whq_murl}/-/merge_requests/9704.patch#/%{name}-whq-mr9704.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch709:        %{whq_murl}/-/merge_requests/10105.patch#/%{name}-whq-mr10105.patch
-Patch710:        %{whq_murl}/-/merge_requests/10106.patch#/%{name}-whq-mr10106.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59317
-Patch711:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
-Patch712:        %{whq_murl}/-/merge_requests/10107.patch#/%{name}-whq-mr10107.patch
+Patch709:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -803,10 +800,7 @@ This package adds the opencl driver for wine.
 cat %{P:706} | %__scm_apply_git_am -q
 %patch -P 707 -p1
 %patch -P 708 -p1
-%patch -P 709 -p1
-%patch -P 710 -p1
-%patch -P 711 -p1 -R
-%patch -P 712 -p1
+%patch -P 709 -p1 -R
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2495,6 +2489,9 @@ fi
 
 
 %changelog
+* Sat Feb 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.3-100
+- 11.3
+
 * Sun Feb 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.2-100
 - 11.2
 
