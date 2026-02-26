@@ -41,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.0.0
+Version:        26.0.1
 Release:        100%{?dist}
 
 Epoch:          100
@@ -54,7 +54,7 @@ Source0:        %{vc_url}/-/archive/%{commit}/%{pkgname}-%{commit}.tar.bz2#/%{pk
 %else
 Source0:        https://archive.mesa3d.org/%{pkgname}-%{ver}.tar.xz
 %endif
-Source2:        org.mesa3d.vaapi.freeworld.metainfo.xml
+Source2:        org.mesa3d.dri.freeworld.metainfo.xml
 Source3:        org.mesa3d.vulkan.freeworld.metainfo.xml
 
 Patch0:         0001-Rename-libraries-for-freeworld.patch
@@ -134,16 +134,18 @@ BuildRequires:  pkgconfig(DirectX-Headers) >= 1.618.1
 %description
 %{summary}.
 
-%package -n     %{pkgname}-va-drivers-freeworld
-Summary:        Mesa-based VAAPI drivers - freeworld
+%package -n     %{pkgname}-dri-drivers-freeworld
+Summary:        Mesa-based DRI drivers - freeworld
 Requires:       %{pkgname}-filesystem%{?_isa} = %{version}
-Requires:       %{pkgname}-va-drivers%{?_isa} = %{version}
+Requires:       %{pkgname}-dri-drivers%{?_isa} = %{version}
 Requires:       libva%{?_isa}
 Obsoletes:      %{pkgname}-dri-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes:      %{pkgname}-va-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
+Provides :      %{pkgname}-va-drivers-freeworld >= %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{pkgname}-vdpau-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
-Enhances:       %{pkgname}-va-drivers%{?_isa}
+Enhances:       %{pkgname}-dri-drivers%{?_isa}
 
-%description -n %{pkgname}-va-drivers-freeworld
+%description -n %{pkgname}-dri-drivers-freeworld
 %{summary}.
 
 
@@ -227,7 +229,7 @@ install -pm0644 %{S:2} %{buildroot}%{_metainfodir}
 install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
-%files -n %{pkgname}-va-drivers-freeworld
+%files -n %{pkgname}-dri-drivers-freeworld
 %license docs/license.rst
 %{_libdir}/libgallium-*-freeworld.so
 %{_libdir}/dri-freeworld/nouveau_drv_video.so
@@ -237,7 +239,7 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 %endif
 %{_libdir}/dri-freeworld/d3d12_drv_video.so
 %{_libdir}/dri-freeworld/radeonsi_drv_video.so
-%{_metainfodir}/org.mesa3d.vaapi.freeworld.metainfo.xml
+%{_metainfodir}/org.mesa3d.dri.freeworld.metainfo.xml
 
 %files -n %{pkgname}-vulkan-drivers-freeworld
 %license docs/license.rst
@@ -251,6 +253,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Feb 25 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.1-100
+- 26.0.1
+
 * Wed Feb 11 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.0-100
 - 26.0.0
 

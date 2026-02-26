@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2022 Luya Tshimbalanga <luya_tfz@thefinalzone.net> -->
 <component type="driver">
-  <id>org.mesa3d.vaapi.freeworld</id>
+  <id>org.mesa3d.dri.freeworld</id>
   <summary>Video Acceleration API Driver</summary>
   <description>
     <p>

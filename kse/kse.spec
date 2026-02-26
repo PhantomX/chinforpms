@@ -8,8 +8,8 @@
 %global jre_ver latest
 
 Name:           kse
-Version:        5.6.0
-Release:        2%{?dist}
+Version:        5.6.1
+Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
 License:        GPL-3.0-or-later
@@ -101,6 +101,9 @@ done
 
 
 %changelog
+* Mon Feb 23 2026 Phantom X <megaphantomx at hotmail dot com> - 5.6.1-1
+- 5.6.1
+
 * Fri Sep 26 2025 Phantom X <megaphantomx at hotmail dot com> - 5.6.0-2
 - Hardcode JRE version requirement, so full JDK is proper obtained on distro updates
 
