@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           cdemu-client
-Version:        3.2.5
-Release:        2%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 Summary:        CDEmu CLI client
 
 License:        GPL-2.0-only
@@ -65,6 +65,9 @@ ln -sf ../../../../pixmaps/%{name}.svg \
 
 
 %changelog
+* Sat Feb 28 2026 Phantom X <megaphantomx at hotmail dot com> - 3.3.0-1
+- 3.3.0
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 3.2.5-2
 - BR: bash-completion-devel
 

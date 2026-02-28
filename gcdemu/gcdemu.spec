@@ -1,8 +1,8 @@
 %global debug_package %{nil}
 
 Name:           gcdemu
-Version:        3.2.6
-Release:        2%{?dist}
+Version:        3.3.0
+Release:        1%{?dist}
 Summary:        Gtk3-based CDEmu client
 
 License:        GPL-2.0-only
@@ -17,6 +17,7 @@ BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
 BuildRequires:  python3-devel
 Requires:       cdemu-daemon
+Requires:       ( libappindicator-gtk3 or libayatana-appindicator-gtk3 )
 Requires:       python3
 Requires:       python3-gobject
 Requires:       gobject-introspection
@@ -71,6 +72,9 @@ done
 
 
 %changelog
+* Sat Feb 28 2026 Phantom X <megaphantomx at hotmail dot com> - 3.3.0-1
+- 3.3.0
+
 * Wed Nov 20 2024 Phantom X <megaphantomx at hotmail dot com> - 3.2.6-2
 - R: cdemu-daemon
 

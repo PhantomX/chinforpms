@@ -31,6 +31,8 @@ Requires:       gpu-screen-recorder%{?_isa}
 
 sed -e '/gnome/d' -i meson.build
 
+sed -e '/^Name=/s|$| (GTK)|' -i %{appname}.desktop
+
 
 %build
 %meson
