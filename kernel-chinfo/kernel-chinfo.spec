@@ -1306,8 +1306,11 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/39225a3130e280dcb47ea12877e95eb869c64e33.patch#/zen-v%{patchversion}-sauce-39225a3.patch
-Patch2002: %{zen_url}/commit/2a1c1620255001ad54205564e6104b7f3d79f058.patch#/zen-v%{patchversion}-sauce-2a1c162.patch
+Patch2001: %{zen_url}/commit/caeba6735526d5d324aadb6c86415452c5132053.patch#/zen-v%{patchversion}-sauce-caeba67.patch
+Patch2002: %{zen_url}/commit/f8c0b5e54aa1437257286553b6ebedf839703cb2.patch#/zen-v%{patchversion}-sauce-f8c0b5e.patch
+Patch2003: %{zen_url}/commit/5940edfaadb71d6f34b7a21bd24e5c2c0638dfdb.patch#/zen-v%{patchversion}-sauce-5940edf.patch
+Patch2004: %{zen_url}/commit/f163493705e5750b40528b3da78c02a03744655a.patch#/zen-v%{patchversion}-sauce-f163493.patch
+Patch2005: %{zen_url}/commit/fdb45e1bf20822fefd4e3f67673f83b4ea5d4808.patch#/zen-v%{patchversion}-sauce-fdb45e1.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/bbc1987355956b8047f6eda21f199d51ae4048c6.patch%{pf_antibot}#/pf-cb-bbc1987.patch
@@ -1397,6 +1400,10 @@ Patch7455:  %{pf_url}/68471e2b2c845ac17dddba8b5c0234c955a71c92.patch%{pf_antibot
 Patch7456:  %{pf_url}/20f986adf4b94fc2e7def48b325e848df84a2f55.patch%{pf_antibot}#/pf-cb-20f986a.patch
 Patch7457:  %{pf_url}/bc4d06348275da38e685a4ae4306655d829af8f1.patch%{pf_antibot}#/pf-cb-bc4d063.patch
 Patch7458:  %{pf_url}/f537cbaf157f73e42664bc8d16795767b4477644.patch%{pf_antibot}#/pf-cb-f537cba.patch
+Patch7459:  %{pf_url}/79bbbf45f2ee0dda41ece4b45baf89a4bd27490d.patch%{pf_antibot}#/pf-cb-79bbbf4.patch
+Patch7460:  %{pf_url}/e9d5546a5ba556869bda3f351d0617c0322028aa.patch%{pf_antibot}#/pf-cb-e9d5546.patch
+Patch7461:  %{pf_url}/0a6892dd0948eb0fac8bbede354657dc83e29d6b.patch%{pf_antibot}#/pf-cb-0a6892d.patch
+Patch7462:  %{pf_url}/428dc303760cc979a48c6c6a95dde54ef454224a.patch%{pf_antibot}#/pf-cb-428dc30.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2431,6 +2438,10 @@ ApplyPatch %{PATCH7455}
 ApplyPatch %{PATCH7456}
 ApplyPatch %{PATCH7457}
 ApplyPatch %{PATCH7458}
+ApplyPatch %{PATCH7459}
+ApplyPatch %{PATCH7460}
+ApplyPatch %{PATCH7461}
+ApplyPatch %{PATCH7462}
 %endif
 
 # openSUSE
@@ -2440,6 +2451,9 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
+ApplyPatch %{PATCH2003}
+ApplyPatch %{PATCH2004}
+ApplyPatch %{PATCH2005}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
