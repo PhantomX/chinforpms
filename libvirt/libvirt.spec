@@ -290,7 +290,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 12.0.0
+Version: 12.1.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -1880,13 +1880,16 @@ export VIR_TEST_DEBUG=1
 %pre daemon-driver-secret
 %libvirt_sysconfig_pre virtsecretd
 %libvirt_systemd_unix_pre virtsecretd
+%libvirt_systemd_oneshot_pre virt-secret-init-encryption
 
 %posttrans daemon-driver-secret
 %libvirt_sysconfig_posttrans virtsecretd
 %libvirt_systemd_unix_posttrans virtsecretd
+%libvirt_systemd_unix_posttrans virt-secret-init-encryption
 
 %preun daemon-driver-secret
 %libvirt_systemd_unix_preun virtsecretd
+%libvirt_systemd_unix_preun virt-secret-init-encryption
 
 %pre daemon-driver-storage-core
 %libvirt_sysconfig_pre virtstoraged
@@ -2213,12 +2216,17 @@ done
 %config(noreplace) %{_sysconfdir}/libvirt/virtsecretd.conf
 %{_datadir}/augeas/lenses/virtsecretd.aug
 %{_datadir}/augeas/lenses/tests/test_virtsecretd.aug
+%{_datadir}/augeas/lenses/libvirt_secrets.aug
+%{_datadir}/augeas/lenses/tests/test_libvirt_secrets.aug
+%config(noreplace) %{_sysconfdir}/libvirt/secret.conf
 %{_unitdir}/virtsecretd.service
+%{_unitdir}/virt-secret-init-encryption.service
 %{_unitdir}/virtsecretd.socket
 %{_unitdir}/virtsecretd-ro.socket
 %{_unitdir}/virtsecretd-admin.socket
 %attr(0755, root, root) %{_sbindir}/virtsecretd
 %dir %attr(0700, root, root) %{_sysconfdir}/libvirt/secrets/
+%dir %attr(0700, root, root) %{_localstatedir}/lib/libvirt/secrets/
 %ghost %dir %attr(0700, root, root) %{_rundir}/libvirt/secrets/
 %{_libdir}/libvirt/connection-driver/libvirt_driver_secret.so
 %{_mandir}/man8/virtsecretd.8*
@@ -2306,6 +2314,7 @@ done
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/ram/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/save/
 %dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/snapshot/
+%dir %attr(0751, %{qemu_user}, %{qemu_group}) %{_localstatedir}/lib/libvirt/qemu/varstore/
 %dir %attr(0750, root, root) %{_localstatedir}/cache/libvirt/qemu/
 %{_datadir}/augeas/lenses/libvirtd_qemu.aug
 %{_datadir}/augeas/lenses/tests/test_libvirtd_qemu.aug
@@ -2499,7 +2508,6 @@ done
 %attr(4750, root, virtlogin) %{_bindir}/virt-login-shell
 %{_libexecdir}/virt-login-shell-helper
 %config(noreplace) %{_sysconfdir}/libvirt/virt-login-shell.conf
-## chinforpms changes
 %{_sysusersdir}/libvirt-login-shell.conf
 %{_mandir}/man1/virt-login-shell.1*
     %endif
@@ -2659,6 +2667,9 @@ done
 
 
 %changelog
+* Tue Mar 03 2026 Phantom X <megaphantomx at hotmail dot com> - 12.1.0-100
+- 12.1.0
+
 * Thu Jan 15 2026 Phantom X <megaphantomx at hotmail dot com> - 12.0.0-100
 - 12.0.0
 

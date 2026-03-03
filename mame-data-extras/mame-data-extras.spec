@@ -1,17 +1,18 @@
 %global debug_package %{nil}
+%global __brp_check_rpaths %{nil}
 %global __strip /bin/true
 
-%global cheatver 0264
-%global historyver 281
+%global cheatver 0279
+%global historyver 285
 %global infover 0282
 %global cheat_url https://www.mamecheat.co.uk
 %global history_url https://www.arcade-history.com
-%global info_url https://www.mameworld.info/mameinfo
+%global info_url https://mashinfo.github.io/mameinfo
 
 %global samplelink https://www.mameworld.info/samples/wav
 
 Name:           mame-data-extras
-Version:        0.283
+Version:        0.286
 Release:        1%{?dist}
 Summary:        Extra data files for MAME
 
@@ -20,7 +21,7 @@ URL:            http://mamedev.org
 
 Source0:       %{cheat_url}/download/cheat%{cheatver}.zip
 Source1:       %{history_url}/dats/history%{historyver}.zip
-Source2:       %{info_url}/files+/Mameinfo%{infover}.zip
+Source2:       %{info_url}/download/Mameinfo%{infover}.zip
 
 # http://www.mameworld.net/mrdo/mame_art
 Source10:       scanlines_apertures.zip
@@ -92,12 +93,12 @@ Source260:      %{samplelink}/wotw.zip
 Source261:      %{samplelink}/wow.zip
 Source262:      %{samplelink}/zaxxon.zip
 Source263:      %{samplelink}/zektor.zip
-%global samplefiles %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249} %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263}
+%global samplefiles1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} 
+%global samplefiles2 %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249} %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263}
 
 BuildArch: noarch
 
-BuildRequires:  p7zip
-BuildRequires:  p7zip-plugins
+BuildRequires:  7zip-standalone
 BuildRequires:  unzip
 Requires:       mame-data
 
@@ -112,7 +113,7 @@ Requires:       mame-data
 unzip -q %{SOURCE0}
 unzip %{SOURCE1}
 unzip -qa %{SOURCE2} -d .
-7z x Mameinfo%{infover}.7z
+7za x Mameinfo%{infover}.7z
 mv docs mameinfo
 
 mkdir effects
@@ -141,7 +142,7 @@ install -pm0644 cheat.7z %{buildroot}%{_datadir}/mame/cheat/
 
 # Install Samples
 mkdir -p %{buildroot}%{_datadir}/mame/samples
-install -pm0644 %{samplefiles} \
+install -pm0644 %{samplefiles1} %{samplefiles2} \
   %{buildroot}%{_datadir}/mame/samples/
 
 # Install Artwork
@@ -174,6 +175,9 @@ done
 
 
 %changelog
+* Mon Mar 02 2026 Phantom X <megaphantomx at hotmail dot com> - 0.286-1
+- 0.286
+
 * Sun Nov 30 2025 Phantom X <megaphantomx at hotmail dot com> - 0.283-1
 - 0.283
 

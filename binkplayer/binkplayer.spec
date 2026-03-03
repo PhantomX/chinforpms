@@ -25,7 +25,7 @@ ExclusiveArch:  %{ix86} x86_64
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  ImageMagick
-BuildRequires:  p7zip
+BuildRequires:  7zip-standalone
 Requires:       hicolor-icon-theme
 
 

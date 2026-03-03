@@ -1,51 +1,104 @@
-From 74dcf41569996137e9580dffede3fff4b0e0b860 Mon Sep 17 00:00:00 2001
+From e61e41b77114c9a20e163f810d59c3804055ed7b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                   | 45 ++++++++++++++++++++++++--
- externals/CMakeLists.txt         | 55 ++++++++++++++++++++++++++++++++
- externals/ffmpeg/CMakeLists.txt  |  5 +++
+ CMakeLists.txt                   | 44 ++++++++++++++++++++++++--------
+ externals/CMakeLists.txt         | 29 +++++++++++++++------
+ externals/ffmpeg/CMakeLists.txt  |  5 ++++
  externals/nx_tzdb/CMakeLists.txt |  2 +-
- src/dynarmic/CMakeLists.txt      |  8 -----
- 5 files changed, 104 insertions(+), 11 deletions(-)
+ src/dynarmic/CMakeLists.txt      |  8 ------
+ 5 files changed, 61 insertions(+), 27 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0568a49..55f4793 100644
+index 4490df2..ee61e12 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -492,7 +492,7 @@ if (YUZU_USE_CPM)
- else()
-     # TODO: we can probably just use CPM for this... right?
-     # Enforce the search mode of non-required packages for better and shorter failure messages
--    find_package(fmt 8 REQUIRED)
-+    find_package(fmt 8)
+@@ -381,12 +381,13 @@ set(ENABLE_TESTING OFF)
+ # boost
+ set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
  
-     if (NOT YUZU_DISABLE_LLVM)
-         find_package(LLVM MODULE COMPONENTS Demangle)
-@@ -517,7 +517,11 @@ else()
+-AddJsonPackage(boost)
++find_package(Boost 1.57.0 CONFIG REQUIRED OPTIONAL_COMPONENTS headers context system fiber filesystem)
+ 
+ # really annoying thing where boost::headers doesn't work with cpm
+ # TODO(crueter) investigate
+ set(BOOST_NO_HEADERS ${Boost_ADDED})
+ 
++if (PATCH_ENABLED)
+ if (Boost_ADDED)
+     if (MSVC OR ANDROID)
+         add_compile_definitions(YUZU_BOOST_v1)
+@@ -404,19 +405,20 @@ if (Boost_ADDED)
+         target_compile_options(boost_asio INTERFACE -Wno-conversion -Wno-implicit-fallthrough)
+     endif()
+ endif()
++endif()
+ 
+ # fmt
+-AddJsonPackage(fmt)
++find_package(fmt 8)
+ 
+ # lz4
+-AddJsonPackage(lz4)
++find_package(lz4 REQUIRED)
+ 
+ if (lz4_ADDED)
+     add_library(lz4::lz4 ALIAS lz4_static)
+ endif()
+ 
+ # zstd
+-AddJsonPackage(zstd)
++find_package(zstd 1.5 REQUIRED MODULE)
+ 
+ if (zstd_ADDED)
+     add_library(zstd::zstd ALIAS libzstd_static)
+@@ -425,17 +427,17 @@ endif()
+ 
+ if (NOT YUZU_STATIC_ROOM)
+     # nlohmann
+-    AddJsonPackage(nlohmann)
++    find_package(nlohmann_json 3.8 REQUIRED)
+ 
+     # zlib
+-    AddJsonPackage(zlib)
++    find_package(ZLIB 1.2 REQUIRED)
+ 
+     if (ZLIB_ADDED)
+         add_library(ZLIB::ZLIB ALIAS zlibstatic)
+     endif()
+ 
+     # Opus
+-    AddJsonPackage(opus)
++    find_package(Opus 1.3 MODULE REQUIRED)
+ 
+     if (Opus_ADDED)
+         if (MSVC AND CXX_CLANG)
+@@ -451,7 +453,7 @@ if (NOT YUZU_STATIC_ROOM)
  endif()
  
  if(NOT TARGET Boost::headers)
-+  if (YUZU_USE_CPM)
-     AddJsonPackage(boost_headers)
-+  else()
+-    AddJsonPackage(boost_headers)
 +    add_subdirectory(externals/boost-headers)
-+  endif()
  endif()
  
  # List of all FFmpeg components required
-@@ -576,7 +580,7 @@ add_subdirectory(externals)
+@@ -510,16 +512,20 @@ add_subdirectory(externals)
  # pass targets from externals
+ # TODO(crueter): CPMUtil Propagate func?
  find_package(enet)
- find_package(MbedTLS)
 -find_package(unordered_dense REQUIRED)
 +find_package(unordered_dense)
  
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
      find_package(xbyak)
-@@ -586,6 +590,7 @@ if (NOT YUZU_STATIC_ROOM)
++    if (NOT TARGET xbyak::xbyak)
++      add_subdirectory(externals/xbyak)
++    endif()
+ endif()
+ 
+ if (NOT YUZU_STATIC_ROOM)
      find_package(libusb)
      find_package(VulkanMemoryAllocator)
      find_package(VulkanUtilityLibraries)
@@ -53,7 +106,7 @@ index 0568a49..55f4793 100644
      find_package(SimpleIni)
      find_package(SPIRV-Tools)
      find_package(sirit)
-@@ -593,6 +598,31 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -527,6 +533,19 @@ if (NOT YUZU_STATIC_ROOM)
      find_package(mcl)
      find_package(frozen)
  
@@ -61,18 +114,6 @@ index 0568a49..55f4793 100644
 +        message(STATUS "Using the system fmt")
 +    else()
 +        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
-+    endif()
-+
-+    if (NOT YUZU_USE_CPM)
-+        if(MbedTLS_FOUND)
-+            message(STATUS "Using the system mbed TLS")
-+        else()
-+            set(ENABLE_PROGRAMS OFF)
-+            set(DISABLE_PACKAGE_CONFIG_AND_INSTALL ON)
-+            set(mbedtls_SOURCE_DIR ${PROJECT_SOURCE_DIR}/externals/mbedtls)
-+            add_subdirectory(externals/mbedtls)
-+            set(mbedtls_ADDED ON)
-+        endif()
 +    endif()
 +
 +    if(unordered_dense_FOUND)
@@ -85,218 +126,176 @@ index 0568a49..55f4793 100644
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -702,7 +732,18 @@ if (ENABLE_QT)
+@@ -636,7 +655,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
-+    if (YUZU_USE_CPM)
-     AddJsonPackage(quazip)
-+    else()
-+      find_package(PkgConfig REQUIRED)
-+      pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
-+      if (TARGET PkgConfig::quazip)
-+        message(STATUS "Using the system Quazip")
-+        add_library(quazip INTERFACE)
-+        target_link_libraries(quazip INTERFACE PkgConfig::quazip)
-+        add_library(QuaZip::QuaZip ALIAS quazip)
-+      endif()
-+    endif()
+-    AddJsonPackage(quazip)
++    find_package(PkgConfig REQUIRED)
++    pkg_check_modules(quazip IMPORTED_TARGET quazip1-qt6)
++    message(STATUS "Using the system Quazip")
++    add_library(quazip INTERFACE)
++    target_link_libraries(quazip INTERFACE PkgConfig::quazip)
++    add_library(QuaZip::QuaZip ALIAS quazip)
  endif()
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 6c3e5cb..3112f57 100644
+index 7b4c481..766b9fa 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
-@@ -27,10 +27,18 @@ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
+@@ -26,6 +26,7 @@ set(BUILD_SHARED_LIBS OFF)
+ set_directory_properties(PROPERTIES EXCLUDE_FROM_ALL ON)
  
  # Xbyak
++if (PATCH_ENABLED)
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
-+  if (YUZU_USE_CPM)
      AddJsonPackage(xbyak)
-+  else()
-+    find_package(xbyak 7 CONFIG GLOBAL)
-+    if (NOT TARGET xbyak::xbyak)
-+      add_subdirectory(xbyak)
-+    endif()
-+  endif()
  endif()
- 
- # enet
-+if (YUZU_USE_CPM)
- AddJsonPackage(enet)
- 
- if (enet_ADDED)
-@@ -40,9 +48,12 @@ endif()
+@@ -40,6 +41,7 @@ endif()
  if (NOT TARGET enet::enet)
      add_library(enet::enet ALIAS enet)
  endif()
 +endif()
  
- # mbedtls
-+if (YUZU_USE_CPM)
- AddJsonPackage(mbedtls)
-+endif()
- 
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -63,7 +74,9 @@ if (NOT TARGET LLVM::Demangle)
+@@ -59,9 +61,6 @@ if (NOT TARGET LLVM::Demangle)
+     add_library(LLVM::Demangle ALIAS demangle)
  endif()
  
- # unordered_dense
-+if (YUZU_USE_CPM)
- AddJsonPackage(unordered-dense)
-+endif()
- 
+-# unordered_dense
+-AddJsonPackage(unordered-dense)
+-
  if (YUZU_STATIC_ROOM)
      return()
-@@ -80,13 +93,19 @@ if (ARCHITECTURE_riscv64)
+ endif()
+@@ -76,6 +75,7 @@ if (ARCHITECTURE_riscv64)
+     AddJsonPackage(biscuit)
  endif()
  
++if (PATCH_ENABLED)
  # mcl
-+if (YUZU_USE_CPM)
  AddJsonPackage(mcl)
-+endif()
  
- # Vulkan stuff
-+if (YUZU_USE_CPM)
- AddDependentPackages(vulkan-headers vulkan-utility-libraries)
-+endif()
+@@ -84,6 +84,7 @@ AddDependentPackages(vulkan-headers vulkan-utility-libraries)
  
  # frozen
-+if (YUZU_USE_CPM)
  AddJsonPackage(frozen)
 +endif()
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -103,10 +122,15 @@ if (USE_DISCORD_PRESENCE)
+@@ -100,8 +101,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
-+if (YUZU_USE_CPM)
- AddJsonPackage(simpleini)
-+else()
-+  add_subdirectory(simpleini)
-+endif()
+-AddJsonPackage(simpleini)
++add_subdirectory(simpleini)
  
++if (PATCH_ENABLED)
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
-+  if (YUZU_USE_CPM)
      AddJsonPackage(cubeb)
- 
-     if (cubeb_ADDED)
-@@ -135,6 +159,7 @@ if(ENABLE_CUBEB)
+@@ -132,6 +134,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
 +endif()
  
- # find SDL2 exports a bunch of variables that are needed, so its easier to do this outside of the YUZU_find_package
- if (ENABLE_SDL2)
-@@ -180,9 +205,14 @@ endif()
+ if (NOT ANDROID)
+     if (YUZU_USE_EXTERNAL_SDL2)
+@@ -176,9 +179,10 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
-+if (YUZU_USE_CPM)
- AddJsonPackage(spirv-headers)
-+else()
+-AddJsonPackage(spirv-headers)
 +find_package(SPIRV-Headers 1.3.274 REQUIRED)
-+endif()
  
  # Sirit
-+if (YUZU_USE_CPM)
++if (PATCH_ENABLED)
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -191,9 +221,12 @@ else()
-         target_compile_options(siritobj PRIVATE -Wno-error=unused-command-line-argument)
-     endif()
- endif()
-+endif()
+@@ -190,6 +194,7 @@ endif()
  
  # SPIRV Tools
-+if (YUZU_USE_CPM)
  AddJsonPackage(spirv-tools)
 +endif()
  
  if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -201,9 +234,11 @@ if (SPIRV-Tools_ADDED)
- endif()
+@@ -198,7 +203,7 @@ endif()
  
  # Catch2
-+if (YUZU_USE_CPM)
  if (YUZU_TESTS OR DYNARMIC_TESTS)
-     AddJsonPackage(catch2)
+-    AddJsonPackage(catch2)
++    find_package(catch2)
  endif()
-+endif()
  
  # getopt
- if (MSVC)
-@@ -214,12 +249,16 @@ endif()
+@@ -210,6 +215,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
-+if (YUZU_USE_CPM)
++if (PATCH_ENABLED)
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
+@@ -228,13 +234,18 @@ if (VulkanMemoryAllocator_ADDED)
+         )
+     endif()
+ endif()
 +endif()
- 
- # VMA
-+if (YUZU_USE_CPM)
- AddJsonPackage(vulkan-memory-allocator)
-+endif()
- 
- if (VulkanMemoryAllocator_ADDED)
-     if (CXX_CLANG)
-@@ -235,12 +274,28 @@ endif()
  
  # httplib
- if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER OR USE_DISCORD_PRESENCE OR ENABLE_OPENSSL)
-+  if (YUZU_USE_CPM)
-     AddJsonPackage(httplib)
-+  else()
-+    if (NOT TARGET httplib::httplib)
-+      set(HTTPLIB_REQUIRE_OPENSSL ${ENABLE_OPENSSL})
-+      add_subdirectory(cpp-httplib)
-+    endif()
-+  endif()
- endif()
+-AddJsonPackage(httplib)
++set(HTTPLIB_REQUIRE_OPENSSL ON)
++add_subdirectory(cpp-httplib)
  
  # cpp-jwt
  if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
-+  if (YUZU_USE_CPM)
-     AddJsonPackage(cpp-jwt)
-+  else()
-+    if (NOT TARGET cpp-jwt::cpp-jwt)
-+      set(CPP_JWT_BUILD_EXAMPLES OFF)
-+      set(CPP_JWT_BUILD_TESTS OFF)
-+      set(CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF)
-+      add_subdirectory(cpp-jwt)
-+    endif()
-+  endif()
+-    AddJsonPackage(cpp-jwt)
++    set(CPP_JWT_BUILD_EXAMPLES OFF)
++    set(CPP_JWT_BUILD_TESTS OFF)
++    set(CPP_JWT_USE_VENDORED_NLOHMANN_JSON OFF)
++    add_subdirectory(cpp-jwt)
  endif()
  
  # FFMpeg
+@@ -269,6 +280,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+     AddJsonPackage(libadrenotools)
+ endif()
+ 
++if (PATCH_ENABLED)
+ AddJsonPackage(gamemode)
+ 
+ if (gamemode_ADDED)
+@@ -276,6 +288,7 @@ if (gamemode_ADDED)
+     target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
+     add_library(gamemode::headers ALIAS gamemode)
+ endif()
++endif()
+ 
+ # Breakpad
+ # TODO(crueter): Breakpad needs additional fetches
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 3140f8e..b6a3325 100644
+index 3140f8e..2258aa1 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
 @@ -152,10 +152,15 @@ else()
          message(FATAL_ERROR "Required program `autoconf` not found.")
      endif()
  
-+  if (YUZU_USE_CPM)
++  if (PATCH_ENABLED)
      AddJsonPackage(ffmpeg)
  
      set(FFmpeg_PREFIX ${ffmpeg_SOURCE_DIR})
      set(FFmpeg_BUILD_DIR ${ffmpeg_BINARY_DIR})
-+    else()
-+      set(FFmpeg_PREFIX ${PROJECT_SOURCE_DIR}/externals/ffmpeg/ffmpeg)
-+      set(FFmpeg_BUILD_DIR ${PROJECT_BINARY_DIR}/externals/ffmpeg-build)
-+    endif()
++  else()
++    set(FFmpeg_PREFIX ${PROJECT_SOURCE_DIR}/externals/ffmpeg/ffmpeg)
++    set(FFmpeg_BUILD_DIR ${PROJECT_BINARY_DIR}/externals/ffmpeg-build)
++  endif()
      set(FFmpeg_MAKEFILE ${FFmpeg_BUILD_DIR}/Makefile)
      make_directory(${FFmpeg_BUILD_DIR})
  

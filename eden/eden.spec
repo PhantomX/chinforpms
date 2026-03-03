@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 2d273590747cec4716a2e3c293a5b8693abb0403
+%global commit 464212393e296c59488171692df1d096ecfa5607
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260222
+%global date 20260302
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -24,9 +24,6 @@
 %bcond ffmpeg_st 1
 # Enable system fmt
 %bcond fmt 1
-%bcond httplib 0
-# Enable system mbedtls (needs cmac builtin support)
-%bcond mbedtls 1
 # Disable Qt build
 %bcond qt 1
 # Build tests
@@ -55,14 +52,6 @@
 %global commit17 7f24eb4c32145cf7520f5ebb45772e9b28217cff
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 cpp-jwt
-
-%global commit18 c765c831e5c2a0971410692f92f7a81d6ec65ec2
-%global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
-%global srcname18 mbedtls
-
-%global commit180 2a3e2c5ea053c14b745dbdf41f609b1edc6a72fa
-%global shortcommit180 %(c=%{commit180}; echo ${c:0:7})
-%global srcname180 mbedtls-framework
 
 %global commit19 09c21bda1dc1b578fa55f4a005d79b0afd481296
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
@@ -103,10 +92,11 @@
 
 %global appname dev.%{name}_emu.%{name}
 
-%global sbuild %%(echo %{version} | cut -d. -f4)
+%global sbuild  %%(echo %{version} | cut -d. -f4)
+%global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc1.28382
+Version:        0.2.0~rc1.28425
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -117,7 +107,6 @@ License: %{shrink:
     MPL-2.0 AND
     BSL-1.0 AND ( 0BSD AND MIT )
     %{!?with_xbyak:AND BSD-3-Clause}
-    %{!?with_mbedtls:AND (Apache-2.0 OR GPL-2.0-or-later)}
 }
 URL:            https://eden-emulator.github.io
 
@@ -137,14 +126,8 @@ Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{src
 %dnl Source14:       %{gh_url}/%{srcname14}/archive/%{commit14}/%{srcname14}-%{shortcommit14}.tar.gz
 %dnl Source15:       https://github.com/KhronosGroup/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 %if %{with webservice}
-%if %{without httplib}
 Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
-%endif
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
-%endif
-%if %{without mbedtls}
-Source18:       https://github.com/Mbed-TLS/%{srcname18}/archive/%{commit18}/%{srcname18}-%{shortcommit18}.tar.gz
-Source180:      https://github.com/Mbed-TLS/%{srcname180}/archive/%{commit180}/%{srcname180}-%{shortcommit180}.tar.gz
 %endif
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://git.crueter.xyz/misc/%{srcname20}/archive/%{commit20}.tar.gz#/%{srcname20}-%{shortcommit20}.tar.gz
@@ -164,7 +147,7 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 Patch10:        0001-Use-system-libraries.patch
 
-ExclusiveArch:  x86_64 aarch64
+ExclusiveArch:  x86_64
 
 BuildRequires:  cmake
 BuildRequires:  make
@@ -185,15 +168,6 @@ BuildRequires:  boost-devel >= 1.83.0
 BuildRequires:  pkgconfig(catch2) >= 2.13.7
 %endif
 BuildRequires:  cmake(cubeb)
-%if %{with webservice}
-%if %{with httplib}
-BuildRequires:  cmake(httplib) >= 0.12
-%else
-Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
-%endif
-Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
-%endif
-Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
 BuildRequires:  cmake(frozen)
 BuildRequires:  pkgconfig(gamemode) >= 1.7
 BuildRequires:  pkgconfig(libbrotlidec)
@@ -231,11 +205,6 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libzstd) >= 1.5.0
-%if %{with mbedtls}
-BuildRequires:  cmake(MbedTLS) >= 3.6.4
-%else
-Provides:       bundled(mbedtls) = 0~git%{?shortcommit18}
-%endif
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(quazip1-qt6)
@@ -279,6 +248,11 @@ Requires:       shared-mime-info
 Requires:       libGL%{?_isa}
 Requires:       vulkan-loader%{?_isa}
 
+Provides:       bundled(dynarmic) = 0~git%{?shortcommit}
+%if %{with webservice}
+Provides:       bundled(cpp-jwt) = 0~git%{?shortcommit17}
+Provides:       bundled(cpp-httplib) = 0~git%{?shortcommit16}
+%endif
 Provides:       bundled(glad) = %{glad_ver}
 %ifarch aarch64
 Provides:       bundled(oaknut) = 0~git9d09110
@@ -304,13 +278,11 @@ This is the Qt frontend.
 
 
 %prep
+echo %{sver}
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
 sed \
-%if %{without xbyak}
-  -e '/find_/s|xbyak|xbyak_DISABLED|g' \
-%endif
   -e '/-pedantic-errors/d' \
   -e '/-mtune=core2/d' \
   -i src/dynarmic/CMakeLists.txt
@@ -333,29 +305,16 @@ tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
 %if %{without xbyak}
 mkdir -p xbyak
 tar -xf %{S:13} -C xbyak --strip-components 1
-sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i CMakeLists.txt
+sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../CMakeLists.txt
 %endif
 %if %{with webservice}
-%if %{without httplib}
 mkdir -p cpp-httplib
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
-sed -e '/find_package/s|httplib|\0_DISABLED|g' -i ../CMakeLists.txt
-%endif
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
 %{__scm_apply_patch -p1 -q} -d cpp-jwt -i ../../.patch/cpp-jwt/0001-fix-missing-decl.patch
 sed -e '/find_package/s|cpp-jwt|\0_DISABLED|g' -i ../CMakeLists.txt
-%endif
-%if %{without mbedtls}
-mkdir -p mbedtls
-tar -xf %{S:18} -C mbedtls --strip-components 1
-tar -xf %{S:180} -C mbedtls/framework --strip-components 1
-%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0002-aesni-fix.patch
-%{__scm_apply_patch -p1 -q} -d mbedtls -i ../../.patch/mbedtls/0003-aesni-fix.patch
-sed \
-  -e '/find_package/s|mbedtls|\0_DISABLED|g' \
-  -i CMakeLists.txt
 %endif
 mkdir -p simpleini
 tar -xf %{S:19} -C simpleini --strip-components 1
@@ -393,9 +352,6 @@ cp -p cpp-httplib/LICENSE LICENSE.cpp-httplib
 cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
-%if %{without mbedtls}
-cp -p mbedtls/LICENSE LICENSE.mbedtls
-%endif
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 %if %{without vma}
@@ -411,14 +367,18 @@ popd
 
 sed -e '/find_packages/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
+%global sver    %(echo %{ver} | cut -d. -f-3)
+
+echo "%{commit}" > GIT-COMMIT
+echo "main" > GIT-REFSPEC
+echo "v%{sver}" > GIT-TAG
+
 sed \
-  -e 's|@GIT_REV@|%{commit}|g' \
-  -e 's|@GIT_BRANCH@|main|g' \
   -e 's|@GIT_DESC@|%{shortcommit}|g' \
   -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
-  -e 's|@BUILD_DATE@|%(date +%F)|g' \
-  -e 's|@TITLE_BAR_FORMAT_IDLE@|%{name} %{?with_snapshot:v%{version}-%{shortcommit}}%{!?with_snapshot:%{version}}|g' \
-  -e 's,@TITLE_BAR_FORMAT_RUNNING@,%{name} %{?with_snapshot:v%{version}-%{shortcommit}}%{!?with_snapshot:%{version}} | {3},g' \
+  -e 's|@BUILD_VERSION@|%{shortcommit}|g' \
+  -e 's|@TITLE_BAR_FORMAT_IDLE@|Eden %{?with_snapshot:v%{sver}-%{shortcommit}}%{!?with_snapshot:%{sver}}|g' \
+  -e 's,@TITLE_BAR_FORMAT_RUNNING@,Eden %{?with_snapshot:v%{sver}-%{shortcommit}}%{!?with_snapshot:%{sver}} | {3},g' \
   -i src/common/scm_rev.cpp.in
 
 sed \
@@ -463,7 +423,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DENABLE_QT:BOOL=OFF \
 %endif
   -DYUZU_CHECK_SUBMODULES:BOOL=OFF \
-  -DYUZU_USE_CPM:BOOL=OFF \
   -DCPM_DOWNLOAD_ALL:BOOL=OFF \
   -DYUZU_DOWNLOAD_TIME_ZONE_DATA:BOOL=OFF \
   -DYUZU_ENABLE_PORTABLE:BOOL=OFF \

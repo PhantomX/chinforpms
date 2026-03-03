@@ -46,8 +46,7 @@ Requires:       gzip
 Requires:       lz4
 Requires:       lzip
 Requires:       lzop
-Requires:       p7zip
-Requires:       p7zip-plugins
+Requires:       7zip
 Requires:       squashfs-tools
 Requires:       tar
 Requires:       unar
@@ -56,7 +55,6 @@ Requires:       xdg-utils
 Requires:       xz
 Requires:       zip
 Requires:       zstd
-Recommends:     7zip
 
 %description
 Xarchiver is a Desktop Environment independent archiver front-end. All
