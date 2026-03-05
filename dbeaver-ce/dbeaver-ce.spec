@@ -9,14 +9,14 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        25.3.4
+Version:        26.0.0
 Release:        1%{?dist}
 Summary:        Free database tool
 
 License:        Apache-2.0
 URL:            https://dbeaver.io
 
-Source0:        %{vc_url}/releases/download/%{version}/%{name}-%{version}-linux.gtk.%{_arch}.tar.gz
+Source0:        %{vc_url}/releases/download/%{version}/%{name}-%{version}-linux-%{_arch}.tar.gz
 
 ExclusiveArch:  x86_64 aarch64
 
@@ -136,6 +136,9 @@ done
 
 
 %changelog
+* Thu Mar 05 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.0-1
+- 26.0.0
+
 * Mon Feb 02 2026 Phantom X <megaphantomx at hotmail dot com> - 25.3.4-1
 - 25.3.4
 
