@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 722178e205713da370d070c19d8f493b7eaffd9d
+%global commit 2508117ea293a56f49a6c79f3cac1ecc764f99a9
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260129
+%global date 20260305
 %bcond snapshot 1
 
 # Enable Qt build
@@ -29,7 +29,7 @@
 %bcond smallffmpeg 1
 %bcond miniupnpc 1
 # https://github.com/hrydgard/ppsspp/issues/20508
-%bcond sdl2 0
+%bcond sdl2 1
 %global libsymbolsuffix ()(%{__isa_bits}bit)
 %global libdecor_majver 0
 %bcond local 0
@@ -38,7 +38,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 ee9265e96ae0b9175bc59aefd43d6e29ac35f3b7
+%global commit2 1e3b4965632f60b1d85360261d1b9dd45444bc71
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -86,7 +86,7 @@
 %global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
 %global srcname130 nanosvg
 
-%global commit140 098039af82636fa8c5ce10f227aa340e23c77251
+%global commit140 f5ae0ce8cac89cfc592047925f2064a84536eeb4
 %global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
 %global srcname140 aemu_postoffice
 
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.19.3.1456
+Version:        1.20.1.38
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -667,6 +667,10 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Thu Mar 05 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.1.38-100.20260305git2508117
+- 1.20.1
+- Disabled bundled SDL2
+
 * Sat Sep 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1:1.19.3.731-100.20250924gitd43f24d
 - Build with bundled SDL2 until SDL3 is supported by upstream
 

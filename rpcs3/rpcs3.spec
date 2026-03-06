@@ -49,9 +49,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit b30a44c1367635af0675f61504e1ca45263655c6
+%global commit c57d6110c4c503e8145c9d18e38042d275cd6995
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260215
+%global date 20260305
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -124,7 +124,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.39.18794
+Version:        0.0.40.11
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -543,6 +543,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Fri Mar 06 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.40.11-1.20260305gitc57d611
+- 0.0.40
+
 * Thu Jan 08 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.39.18620-1.20260107git1bfd115
 - 0.0.39
 

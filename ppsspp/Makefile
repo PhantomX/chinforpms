@@ -1,5 +1,5 @@
 NAME = ppsspp-ffmpeg
-VERSION ?= ee9265e96ae0b9175bc59aefd43d6e29ac35f3b7
+VERSION ?= 1e3b4965632f60b1d85360261d1b9dd45444bc71
 
 TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
 DLSTR = ${VERSION}

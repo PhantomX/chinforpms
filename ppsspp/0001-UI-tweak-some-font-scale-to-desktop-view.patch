@@ -1,4 +1,4 @@
-From a6eb72bf9332c0052f33bc5bc24b0031459f2170 Mon Sep 17 00:00:00 2001
+From 76f31e026debc963e67d8517d81e355a74203c8e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 14 Mar 2023 11:59:09 -0300
 Subject: [PATCH] UI: tweak some font scale to desktop view
@@ -9,7 +9,7 @@ Subject: [PATCH] UI: tweak some font scale to desktop view
  2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/UI/DebugOverlay.cpp b/UI/DebugOverlay.cpp
-index 19b6447..d9ad0c8 100644
+index 8a4e9e9..77a67f5 100644
 --- a/UI/DebugOverlay.cpp
 +++ b/UI/DebugOverlay.cpp
 @@ -44,7 +44,7 @@ static void DrawDebugStats(UIContext *ctx, const Bounds &bounds) {
@@ -48,20 +48,20 @@ index 19b6447..d9ad0c8 100644
  
  	ctx->Draw()->DrawTextShadow(ubuntu24, info.stackTrace.c_str(), x, y, 0xFFFFFFFF);
  
-@@ -494,7 +494,7 @@ void DrawFPS(UIContext *ctx, const Bounds &bounds) {
- 	ctx->Flush();
+@@ -499,7 +499,7 @@ void DrawFPS(UIContext *ctx, const Bounds &bounds) {
+ #endif
  
  	ctx->BindFontTexture();
 -	ctx->Draw()->SetFontScale(0.7f, 0.7f);
 +	ctx->Draw()->SetFontScale(0.4f, 0.4f);
- 	ctx->Draw()->DrawText(ubuntu24, w.as_view(), bounds.x2() - 8, bounds.y + 10, 0xc0000000, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
- 	ctx->Draw()->DrawText(ubuntu24, w.as_view(), bounds.x2() - 10, bounds.y + 8, 0xFF3fFF3f, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
+ 	ctx->Draw()->DrawText(ubuntu24, w.as_view(), bounds.x2() - offset, bounds.y + 12, 0xc0000000, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
+ 	ctx->Draw()->DrawText(ubuntu24, w.as_view(), bounds.x2() - offset - 2, bounds.y + 10, 0xFF3fFF3f, ALIGN_TOPRIGHT | FLAG_DYNAMIC_ASCII);
  	ctx->Draw()->SetFontScale(1.0f, 1.0f);
 diff --git a/UI/Theme.cpp b/UI/Theme.cpp
-index 340e84e..5638a0c 100644
+index acd85e1..4e36b7b 100644
 --- a/UI/Theme.cpp
 +++ b/UI/Theme.cpp
-@@ -209,10 +209,10 @@ void UpdateTheme() {
+@@ -212,10 +212,10 @@ void UpdateTheme() {
  		SetFontNameOverride(FontFamily::SansSerif, fontOverride);
  	}
  
@@ -77,5 +77,5 @@ index 340e84e..5638a0c 100644
  
  	ui_theme.checkOn = ImageID("I_CHECKEDBOX");
 -- 
-2.51.1
+2.53.0
 

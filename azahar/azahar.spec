@@ -13,7 +13,7 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 0a705b74492cc4bd05bb9194fb330017b08c0df9
+%global commit 2207be30a910dce71d2a16e397683a9cd1303f0f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260124
 %bcond snapshot 1
@@ -157,7 +157,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2124.1.23
+Version:        2125.0~alpha4.5
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -621,6 +621,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Mar 06 2026 Phantom X <megaphantomx at hotmail dot com> - 2125.0~alpha4.5-1.20260124git2207be3
+- 2125.0-alpha4
+
 * Fri Jan 16 2026 Phantom X <megaphantomx at hotmail dot com> - 2124-1.20260115gitf505386
 - 2124
 
