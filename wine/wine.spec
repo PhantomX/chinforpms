@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.3
+%global wine_stagingver 11.4
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.3
+Version:        11.4
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -200,8 +200,8 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/9670.patch#/%{name}-whq-mr9670.patch
-Patch706:        %{whq_murl}/-/merge_requests/9704.patch#/%{name}-whq-mr9704.patch
+Patch705:        %{whq_murl}/-/merge_requests/10154.patch#/%{name}-whq-mr10154.patch
+Patch706:        %{whq_murl}/-/merge_requests/10264.patch#/%{name}-whq-mr10264.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59317
@@ -797,7 +797,7 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
-cat %{P:706} | %__scm_apply_git_am -q
+%patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
 %patch -P 709 -p1 -R
@@ -1913,6 +1913,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/windows.devices.usb.dll
 %{_libdir}/wine/%{winepedirs}/windows.gaming.input.dll
 %{_libdir}/wine/%{winepedirs}/windows.gaming.ui.gamebar.dll
+%{_libdir}/wine/%{winepedirs}/windows.graphics.dll
 %{_libdir}/wine/%{winepedirs}/windows.globalization.dll
 %{_libdir}/wine/%{winepedirs}/windows.media.dll
 %{_libdir}/wine/%{winepedirs}/windows.media.devices.dll
@@ -2489,6 +2490,9 @@ fi
 
 
 %changelog
+* Sat Mar 07 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.4-100
+- 11.4
+
 * Sat Feb 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.3-100
 - 11.3
 
