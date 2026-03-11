@@ -15,14 +15,25 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.11
+Version:        2.7.12
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
 
 %global vc_url  https://github.com/keepassxreboot/%{name}
 
-License:        BSD-2-Clause AND BSD-3-Clause AND CC0-1.0 AND GPL-2.0-or-later AND GPL-3.0-only AND LGPL-2.0-only AND LGPL-2.0-or-later AND LGPL-2.1-or-later AND MIT AND OFL-1.1 AND LicenseRef-Fedora-Public-Domain
+License: %{shrink:
+    BSD-2-Clause AND
+    BSD-3-Clause AND
+    CC0-1.0 AND
+    GPL-2.0-or-later AND
+    GPL-3.0-only AND
+    LGPL-2.0-only AND
+    LGPL-2.0-or-later
+    AND LGPL-2.1-or-later
+    AND MIT AND OFL-1.1
+    AND LicenseRef-Fedora-Public-Domain
+}
 URL:            https://keepassxc.org/
 
 %if %{with snapshot}
@@ -32,7 +43,6 @@ Source0:        %{vc_url}/releases/download/%{ver}/%{name}-%{ver}-src.tar.xz
 %dnl Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
-Patch0:         org.keepassxc.KeePassXC.appdata.xml.patch
 %dnl Patch10:        0001-keepassxc-browser-add-Waterfox-support.patch
 
 
@@ -161,6 +171,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Mar 10 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.12-100
+- 2.7.12
+
 * Mon Nov 24 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.11-100
 - 2.7.11
 
