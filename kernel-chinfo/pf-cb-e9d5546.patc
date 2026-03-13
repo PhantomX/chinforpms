@@ -1,0 +1,26 @@
+From e9d5546a5ba556869bda3f351d0617c0322028aa Mon Sep 17 00:00:00 2001
+From: Oleksandr Natalenko <oleksandr@natalenko.name>
+Date: Sun, 1 Mar 2026 11:34:25 +0100
+Subject: [PATCH] mm/damon/core: adjust c80f46ac228b4 against cc1db8dff8e751
+
+min_sz_region was renamed to min_region_sz, but I haven't cherry-picked
+the rename as it was not marked for stable.
+
+Rename the field in c80f46ac228b4 back.
+---
+ mm/damon/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/mm/damon/core.c b/mm/damon/core.c
+index 5c2414d8b168..1d77deab612a 100644
+--- a/mm/damon/core.c
++++ b/mm/damon/core.c
+@@ -1241,7 +1241,7 @@ int damon_commit_ctx(struct damon_ctx *dst, struct damon_ctx *src)
+ {
+ 	int err;
+ 
+-	if (!is_power_of_2(src->min_region_sz))
++	if (!is_power_of_2(src->min_sz_region))
+ 		return -EINVAL;
+ 
+ 	err = damon_commit_schemes(dst, src);

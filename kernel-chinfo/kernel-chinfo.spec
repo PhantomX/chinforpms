@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.6
+%define specrpmversion 6.19.7
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -234,7 +234,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 8561097cf2692e21e627104ac4afd15991305156
+%global opensuse_id 7f7ff045f0cf70b3a292c6f83ac75067c46dc221
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20250329
 
@@ -1301,6 +1301,8 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
+Patch1012: %{opensuse_url}/usb-gadget-u_ether-use-linux-hex.h-header-file.patch#/openSUSE-usb-gadget-u_ether-use-linux-hex.h-header-file.patch
+Patch1013: %{opensuse_url}/Revert-drm-syncobj-Fix-handle-fd-ioctls-with-dirty-st.patch#/openSUSE-usb-gadget-Revert-drm-syncobj-Fix-handle-fd-ioctls-with-dirty-st.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1339,28 +1341,35 @@ Patch7243:  %{pf_url}/d799205d93720690c38ef58973b7c4a62a933451.patch%{pf_antibot
 Patch7244:  %{pf_url}/3bf5547f86951d437d29147401cc89169df13fc2.patch%{pf_antibot}#/pf-cb-3bf5547.patch
 Patch7245:  %{pf_url}/6860ea089fdbfe8676abf9a11868231de6e9ced3.patch%{pf_antibot}#/pf-cb-6860ea0.patch
 Patch7246:  %{pf_url}/fbef51895fa0c2e2c488368e0be78208668ca063.patch%{pf_antibot}#/pf-cb-fbef518.patch
+Patch7247:  %{pf_url}/4122d77199cdd22462380f0dec7d1c239c9612b5.patch%{pf_antibot}#/pf-cb-4122d77.patch
+Patch7248:  %{pf_url}/937a93d67dab821832b1d5be91d094426a3c310c.patch%{pf_antibot}#/pf-cb-937a93d.patch
+Patch7249:  %{pf_url}/c9bf98b0506581c91399ac4696188c4e0dd12639.patch%{pf_antibot}#/pf-cb-c9bf98b.patch
+Patch7250:  %{pf_url}/f9041530e4a5675a39d5de10da638b16723796ea.patch%{pf_antibot}#/pf-cb-f904153.patch
+Patch7251:  %{pf_url}/3cc9f6a66558a65ba43b0fa83774c3308105b61d.patch%{pf_antibot}#/pf-cb-3cc9f6a.patch
 # crypto (7300)
 # fixes (7400)
 Patch7400:  %{pf_url}/b87446ffb4d4156231d53f9bd0a14d35757a3557.patch%{pf_antibot}#/pf-cb-b87446f.patch
 Patch7401:  %{pf_url}/81b99a82db8b5fcc77b42e144870e2b2b934f1aa.patch%{pf_antibot}#/pf-cb-81b99a8.patch
 Patch7402:  %{pf_url}/bf1b20db8682451bc1b09c9392e67414581100d5.patch%{pf_antibot}#/pf-cb-bf1b20d.patch
-Patch7403:  %{pf_url}/3a0b2a2004d8de49959b686a3b0f7b33ee13f679.patch%{pf_antibot}#/pf-cb-3a0b2a2.patch
-Patch7404:  %{pf_url}/9679779c0316258bcec983ea88edcb495f499123.patch%{pf_antibot}#/pf-cb-9679779.patch
-Patch7405:  %{pf_url}/00676f5d4d9c1a9666de3a29937c57644cfe37fb.patch%{pf_antibot}#/pf-cb-00676f5.patch
-Patch7406:  %{pf_url}/ab5209f8641c26a44129ef79f1199ae39ff7a26b.patch%{pf_antibot}#/pf-cb-ab5209f.patch
-Patch7407:  %{pf_url}/20c02cc20b75068449ef38edbb32804cd04a7462.patch%{pf_antibot}#/pf-cb-20c02cc.patch
-Patch7408:  %{pf_url}/68471e2b2c845ac17dddba8b5c0234c955a71c92.patch%{pf_antibot}#/pf-cb-68471e2.patch
-Patch7409:  %{pf_url}/20f986adf4b94fc2e7def48b325e848df84a2f55.patch%{pf_antibot}#/pf-cb-20f986a.patch
-Patch7410:  %{pf_url}/bc4d06348275da38e685a4ae4306655d829af8f1.patch%{pf_antibot}#/pf-cb-bc4d063.patch
-Patch7411:  %{pf_url}/f537cbaf157f73e42664bc8d16795767b4477644.patch%{pf_antibot}#/pf-cb-f537cba.patch
-Patch7412:  %{pf_url}/79bbbf45f2ee0dda41ece4b45baf89a4bd27490d.patch%{pf_antibot}#/pf-cb-79bbbf4.patch
-Patch7413:  %{pf_url}/e9d5546a5ba556869bda3f351d0617c0322028aa.patch%{pf_antibot}#/pf-cb-e9d5546.patch
-Patch7414:  %{pf_url}/0a6892dd0948eb0fac8bbede354657dc83e29d6b.patch%{pf_antibot}#/pf-cb-0a6892d.patch
-Patch7415:  %{pf_url}/428dc303760cc979a48c6c6a95dde54ef454224a.patch%{pf_antibot}#/pf-cb-428dc30.patch
-Patch7416:  %{pf_url}/4727a8232572cbdba1a5cc0639e9d94f6c3f3acd.patch%{pf_antibot}#/pf-cb-4727a82.patch
-Patch7417:  %{pf_url}/2af5360e503f01d801c93b37b262ed710a3aa79e.patch%{pf_antibot}#/pf-cb-2af5360.patch
-Patch7418:  %{pf_url}/8704bfa1e4b2621d9a7e9ed35c554ecf1cc233dd.patch%{pf_antibot}#/pf-cb-8704bfa.patch
-Patch7419:  %{pf_url}/f8a533cea3b8588a84047832b3e422b787a4b9e5.patch%{pf_antibot}#/pf-cb-f8a533c.patch
+Patch7403:  %{pf_url}/00676f5d4d9c1a9666de3a29937c57644cfe37fb.patch%{pf_antibot}#/pf-cb-00676f5.patch
+Patch7404:  %{pf_url}/ab5209f8641c26a44129ef79f1199ae39ff7a26b.patch%{pf_antibot}#/pf-cb-ab5209f.patch
+Patch7405:  %{pf_url}/20f986adf4b94fc2e7def48b325e848df84a2f55.patch%{pf_antibot}#/pf-cb-20f986a.patch
+Patch7406:  %{pf_url}/bc4d06348275da38e685a4ae4306655d829af8f1.patch%{pf_antibot}#/pf-cb-bc4d063.patch
+Patch7407:  %{pf_url}/79bbbf45f2ee0dda41ece4b45baf89a4bd27490d.patch%{pf_antibot}#/pf-cb-79bbbf4.patch
+Patch7408:  %{pf_url}/e9d5546a5ba556869bda3f351d0617c0322028aa.patch%{pf_antibot}#/pf-cb-e9d5546.patc
+Patch7409:  %{pf_url}/0a6892dd0948eb0fac8bbede354657dc83e29d6b.patch%{pf_antibot}#/pf-cb-0a6892d.patch
+Patch7410:  %{pf_url}/428dc303760cc979a48c6c6a95dde54ef454224a.patch%{pf_antibot}#/pf-cb-428dc30.patch
+Patch7411:  %{pf_url}/4f1c0942d11015655d2a615b2cdf18edcef5f057.patch%{pf_antibot}#/pf-cb-4f1c094.patch
+Patch7412:  %{pf_url}/0b892d5741b35f20cd863e1321c469d3e35166fe.patch%{pf_antibot}#/pf-cb-0b892d5.patch
+Patch7413:  %{pf_url}/0b387ad8342cd88191ac3c7e290e7386a0b2a9ad.patch%{pf_antibot}#/pf-cb-0b387ad.patch
+Patch7414:  %{pf_url}/944ac835977e0a6ce1af9925a8feb1a3368332d5.patch%{pf_antibot}#/pf-cb-944ac83.patch
+Patch7415:  %{pf_url}/c70d33901dd80c145a5247d25d1b1e960b28294b.patch%{pf_antibot}#/pf-cb-c70d339.patch
+Patch7416:  %{pf_url}/f1dbd5b52132342e0364499e9d2060c3bbae44c2.patch%{pf_antibot}#/pf-cb-f1dbd5b.patch
+Patch7417:  %{pf_url}/500132ff91d7bec80d3de423cb0edf6d0529aeea.patch%{pf_antibot}#/pf-cb-500132f.patch
+Patch7418:  %{pf_url}/b0ae811776aae2cf2579d86ef6641e464c6b5e31.patch%{pf_antibot}#/pf-cb-b0ae811.patch
+Patch7419:  %{pf_url}/8076a6c83900699c0bad28aaf9aa5857bf04f3c2.patch%{pf_antibot}#/pf-cb-8076a6c.patch
+Patch7420:  %{pf_url}/c1d52ab2287aee06f4781c2f0384d6731dc1479a.patch%{pf_antibot}#/pf-cb-c1d52ab.patch
+
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2333,7 +2342,13 @@ ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
 ApplyPatch %{PATCH7243}
 ApplyPatch %{PATCH7244}
+ApplyPatch %{PATCH7245}
 ApplyPatch %{PATCH7246}
+ApplyPatch %{PATCH7247}
+ApplyPatch %{PATCH7248}
+ApplyPatch %{PATCH7249}
+ApplyPatch %{PATCH7250}
+ApplyPatch %{PATCH7251}
 # crypto
 # fixes
 echo
@@ -2359,11 +2374,14 @@ ApplyPatch %{PATCH7416}
 ApplyPatch %{PATCH7417}
 ApplyPatch %{PATCH7418}
 ApplyPatch %{PATCH7419}
+ApplyPatch %{PATCH7420}
 %endif
 
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
+ApplyPatch %{PATCH1012}
+ApplyPatch %{PATCH1013}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
@@ -5049,6 +5067,9 @@ fi\
 #
 #
 %changelog
+* Thu Mar 12 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.7-500.chinfo
+- 6.19.7
+
 * Wed Mar 04 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.6-500.chinfo
 - 6.19.6
 
