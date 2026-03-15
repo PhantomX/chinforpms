@@ -1,5 +1,5 @@
 Name:           firejail
-Version:        0.9.76
+Version:        0.9.80
 Release:        100%{?dist}
 Summary:        Linux namespaces sandbox program
 
@@ -75,6 +75,9 @@ install -Dpm 644 %{SOURCE2} %{buildroot}%{_sysusersdir}/%{name}.conf
 
 
 %changelog
+* Sun Mar 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.80-100
+- 0.9.80
+
 * Wed Jul 30 2025 Phantom X <megaphantomx at hotmail dot com> - 0.9.76-100
 - 0.9.76
 

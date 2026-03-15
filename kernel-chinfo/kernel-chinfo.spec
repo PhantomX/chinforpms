@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.7
+%define specrpmversion 6.19.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1369,7 +1369,20 @@ Patch7417:  %{pf_url}/500132ff91d7bec80d3de423cb0edf6d0529aeea.patch%{pf_antibot
 Patch7418:  %{pf_url}/b0ae811776aae2cf2579d86ef6641e464c6b5e31.patch%{pf_antibot}#/pf-cb-b0ae811.patch
 Patch7419:  %{pf_url}/8076a6c83900699c0bad28aaf9aa5857bf04f3c2.patch%{pf_antibot}#/pf-cb-8076a6c.patch
 Patch7420:  %{pf_url}/c1d52ab2287aee06f4781c2f0384d6731dc1479a.patch%{pf_antibot}#/pf-cb-c1d52ab.patch
-
+Patch7421:  %{pf_url}/739719a768ebbd9e727311cb63a759426a1fe612.patch%{pf_antibot}#/pf-cb-739719a.patch
+Patch7422:  %{pf_url}/c12d5c788f76df7644d84ebed7d2139634e84779.patch%{pf_antibot}#/pf-cb-c12d5c7.patch
+Patch7423:  %{pf_url}/ae7927695129dcb976d56534843afd24e9c0a855.patch%{pf_antibot}#/pf-cb-ae79276.patch
+Patch7424:  %{pf_url}/0ad671cbca9292fbc75d77dc31d6a96252a3dd75.patch%{pf_antibot}#/pf-cb-0ad671c.patch
+Patch7425:  %{pf_url}/d3f51a5670713fcec2e71f1108a4ac5d1e8d71ab.patch%{pf_antibot}#/pf-cb-d3f51a5.patch
+Patch7426:  %{pf_url}/b142580819b657ff2a6ce8a5445de52fb39bf89b.patch%{pf_antibot}#/pf-cb-b142580.patch
+Patch7427:  %{pf_url}/7aee725f8a32bfe958ef4e2a80acf6f9f1836b01.patch%{pf_antibot}#/pf-cb-7aee725.patch
+Patch7428:  %{pf_url}/c7ff10972c58719b1f290a9bd384b163a8d93a7b.patch%{pf_antibot}#/pf-cb-c7ff109.patch
+Patch7429:  %{pf_url}/843ca860b1034b31ba9a57c3658a1689029da626.patch%{pf_antibot}#/pf-cb-843ca86.patch
+Patch7430:  %{pf_url}/afc652b38d767212223438ca6675b1e5b43f0000.patch%{pf_antibot}#/pf-cb-afc652b.patch
+Patch7431:  %{pf_url}/e2693bad7117ac83ff9324f1163461b633d81e37.patch%{pf_antibot}#/pf-cb-e2693ba.patch
+Patch7432:  %{pf_url}/f55ec7802871d332ccd12d93af18e260ce82e00e.patch%{pf_antibot}#/pf-cb-f55ec78.patch
+Patch7433:  %{pf_url}/1c98434176a49c0b6bea3ec355c7e8ff78de1d2b.patch%{pf_antibot}#/pf-cb-1c98434.patch
+Patch7434:  %{pf_url}/ecb5dfc305369eee5d81512acc64af4cbba7a948.patch%{pf_antibot}#/pf-cb-ecb5dfc.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2375,6 +2388,20 @@ ApplyPatch %{PATCH7417}
 ApplyPatch %{PATCH7418}
 ApplyPatch %{PATCH7419}
 ApplyPatch %{PATCH7420}
+ApplyPatch %{PATCH7421}
+ApplyPatch %{PATCH7422}
+ApplyPatch %{PATCH7423}
+ApplyPatch %{PATCH7424}
+ApplyPatch %{PATCH7425}
+ApplyPatch %{PATCH7426}
+ApplyPatch %{PATCH7427}
+ApplyPatch %{PATCH7428}
+ApplyPatch %{PATCH7429}
+ApplyPatch %{PATCH7430}
+ApplyPatch %{PATCH7431}
+ApplyPatch %{PATCH7432}
+ApplyPatch %{PATCH7433}
+ApplyPatch %{PATCH7434}
 %endif
 
 # openSUSE
@@ -5067,6 +5094,9 @@ fi\
 #
 #
 %changelog
+* Sun Mar 15 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.8-500.chinfo
+- 6.19.8
+
 * Thu Mar 12 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.7-500.chinfo
 - 6.19.7
 
