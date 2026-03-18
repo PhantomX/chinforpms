@@ -27,7 +27,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        148%{?dist}
+Release:        149%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD

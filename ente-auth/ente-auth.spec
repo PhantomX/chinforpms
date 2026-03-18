@@ -9,7 +9,7 @@
 %global appname enteauth
 
 Name:           ente-auth
-Version:        4.4.12
+Version:        4.4.17
 Release:        1%{?dist}
 Summary:        2FA app with free end-to-end encrypted backup and sync
 
@@ -75,7 +75,7 @@ if [[ -r "${APP_USER_FLAGS_FILE}" ]]; then
 else
   if [ -w "${XDG_CONFIG_HOME}" ] ; then
     cat > "${APP_USER_FLAGS_FILE}" <<'EOF'
-# vscode user flags (One parameter per line, environment variables are evaluated)
+# %{appname} user flags (One parameter per line, environment variables are evaluated)
 #--proxy-server="socks5://proxy:port"
 EOF
   fi
@@ -113,14 +113,14 @@ desktop-file-install \
   usr/share/applications/%{appname}.desktop
 
 mkdir -p %{buildroot}%{_datadir}/icons/hicolor/1024x1024/apps
-install -pm0644 usr/share/pixmaps/%{appname}.png \
+install -pm0644 usr/share/pixmaps/io.ente.auth.png \
   %{buildroot}%{_datadir}/icons/hicolor/1024x1024/apps/
 
 for res in 16 24 32 48 64 96 128 192 256 512;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  magick usr/share/pixmaps/%{appname}.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{appname}.png
+  magick usr/share/pixmaps/io.ente.auth.png -filter Lanczos -resize ${res}x${res} \
+    ${dir}/io.ente.auth.png
 done
 
 
@@ -136,6 +136,9 @@ done
 
 
 %changelog
+* Tue Mar 17 2026 Phantom X <megaphantomx at hotmail dot com> - 4.4.17-1
+- 4.4.17
+
 * Wed Dec 17 2025 Phantom X <megaphantomx at hotmail dot com> - 4.4.12-1
 - 4.4.12
 

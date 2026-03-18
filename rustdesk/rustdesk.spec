@@ -10,7 +10,7 @@
 %global pkgrel 0
 
 Name:           rustdesk
-Version:        1.4.2
+Version:        1.4.6
 Release:        1%{?dist}
 Summary:        A remote desktop software
 
@@ -153,6 +153,9 @@ done
 
 
 %changelog
+* Tue Mar 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1.4.6-1
+- 1.4.6
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.4.2-1
 - 1.4.2
 

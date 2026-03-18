@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 2508117ea293a56f49a6c79f3cac1ecc764f99a9
+%global commit a52501aa243f24757184ec9a01d8b0dc257034c3
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260305
+%global date 20260316
 %bcond snapshot 1
 
 # Enable Qt build
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.1.38
+Version:        1.20.3.4
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -622,8 +622,6 @@ desktop-file-edit \
   --set-value="%{binname}" \
   --set-key="StartupNotify" \
   --set-value="false" \
-  --set-key="StartupWMClass" \
-  --set-value="%{binname}" \
   --remove-key="MimeType" \
   %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
@@ -667,6 +665,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Mon Mar 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.3.4-100.20260316gita52501a
+- 1.20.3
+
 * Thu Mar 05 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.1.38-100.20260305git2508117
 - 1.20.1
 - Disabled bundled SDL2

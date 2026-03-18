@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 464212393e296c59488171692df1d096ecfa5607
+%global commit f0a4ac7359b6de6d6f1926c795831de01d4119d5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260302
+%global date 20260314
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -41,11 +41,11 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
 
-%global commit13 8c0098b69f95d02dea47efcdd42ab5aa2d03c72d
+%global commit13 560ca671421e47e32d3c8270623aaa74454570f4
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
-%global commit16 dc6faf5c17c1e3c30b5d59e31ae2e890a35e64e1
+%global commit16 4d7c9a788de136071ccf0dd4e96239151e2adadb
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
@@ -78,7 +78,7 @@
 %global glad_ver 0.1.29
 %global nxtzdb_ver 250725
 %global stbdxt_ver 1.12
-%global vkh_ver 1.4.317
+%global vkh_ver 1.4.345
 %{?with_qt6:%global qt_ver 6}%{!?with_qt6:%global qt_ver 5}
 
 %global vc_url   https://git.eden-emu.dev/eden-emu
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc1.28425
+Version:        0.2.0~rc2.28480
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -481,6 +481,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Sun Mar 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.0~rc2.28480-1.20260314gitf0a4ac7
+- 0.2.0-rc2
+
 * Sun Feb 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.0~rc1.28355-1.20260215gitf4e7fc9
 - 0.2.0-rc1
 

@@ -8,7 +8,7 @@
 %global appname us.zoom.Zoom
 
 Name:           zoom
-Version:        6.6.0.4410
+Version:        6.7.5.6891
 Release:        1%{?dist}
 Summary:        Video Conferencing and Web Conferencing Service
 
@@ -89,7 +89,9 @@ rm -f opt/%{name}/libturbojpeg*
 
 chrpath --delete opt/%{name}/%{name}
 chrpath --delete opt/%{name}/aomhost
+chrpath --delete opt/%{name}/cpthost
 chrpath --delete opt/%{name}/zopen
+chrpath --delete opt/%{name}/ZoomClips
 chrpath --delete opt/%{name}/ZoomLauncher
 chrpath --delete opt/%{name}/ZoomWebviewHost
 find opt/%{name}/ -type f -name '*.so*' | xargs chrpath -k --delete
@@ -159,6 +161,9 @@ install -pm0644 ./usr/share/mime/packages/*.xml \
 
 
 %changelog
+* Tue Mar 17 2026 - 6.7.5.6891-1
+- 6.7.5.6891
+
 * Wed Sep 17 2025 - 6.6.0.4410-1
 - 6.6.0.4410
 
