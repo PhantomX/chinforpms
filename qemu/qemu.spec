@@ -112,14 +112,6 @@
 %global have_virgl 1
 %endif
 
-%global have_pmem 0
-%ifarch x86_64 %{power64}
-%global have_pmem 1
-%endif
-%if 0%{?rhel} >= 10
-%global have_pmem 0
-%endif
-
 %global have_jack 1
 %if 0%{?rhel}
 %global have_jack 0
@@ -212,7 +204,6 @@
 %global have_numactl 0
 %global have_xen 0
 %global have_liburing 0
-%global have_pmem 0
 %global have_libblkio 0
 %global have_brlapi 0
 %global have_daxctl 0
@@ -444,7 +435,7 @@ Obsoletes: sgabios-bin <= 1:0.20180715git-10.fc38
 Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
-Version:        10.2.1
+Version:        10.2.2
 Release:        100%{?dist}
 Epoch:          2
 
@@ -552,9 +543,6 @@ BuildRequires: numactl-devel
 # qemu-pr-helper multipath support (requires libudev too)
 BuildRequires: device-mapper-multipath-devel
 BuildRequires: systemd-devel
-%endif
-%if %{have_pmem}
-BuildRequires: libpmem-devel
 %endif
 # qemu-keymap
 BuildRequires: pkgconfig(xkbcommon)
@@ -1888,9 +1876,6 @@ run_configure \
 %endif
 %if %{have_block_iscsi}
   --enable-libiscsi \
-%endif
-%if %{have_pmem}
-  --enable-libpmem \
 %endif
   --enable-libssh \
   --enable-libusb \
@@ -3433,6 +3418,9 @@ popd
 
 
 %changelog
+* Wed Mar 18 2026 Phantom X <megaphantomx at hotmail dot com> - 2:10.2.2-100
+- 10.2.2
+
 * Fri Feb 13 2026 Phantom X <megaphantomx at hotmail dot com> - 2:10.2.1-100
 - 10.2.1
 

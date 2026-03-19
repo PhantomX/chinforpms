@@ -1,5 +1,5 @@
 Name:           plzip
-Version:        1.12
+Version:        1.13
 Release:        1%{?dist}
 Summary:        Multi-threaded compressor using the lzip file format
 
@@ -46,6 +46,9 @@ make check
 
 
 %changelog
+* Wed Mar 18 2026 Phantom X <megaphantomx at hotmail dot com> - 1.13-1
+- 1.13
+
 * Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1.12-1
 - 1.12
 

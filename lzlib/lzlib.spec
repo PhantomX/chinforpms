@@ -1,5 +1,5 @@
 Name:           lzlib
-Version:        1.15
+Version:        1.16
 Release:        1%{?dist}
 Summary:        A compression library for the lzip file format
 
@@ -63,6 +63,9 @@ rm -f %{buildroot}%{_infodir}/dir
 
 
 %changelog
+* Wed Mar 18 2026 Phantom X <megaphantomx at hotmail dot com> - 1.16-1
+- 1.16
+
 * Sat Jan 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1.15-1
 - lzlib
 
