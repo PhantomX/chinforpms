@@ -6,7 +6,7 @@ Summary:        A perl script for managing file archives of various types
 License:        GPL-3.0-only
 URL:            http://www.nongnu.org/atool/
 
-Source0:        http://savannah.nongnu.org/download/%{name}/%{name}-%{version}.tar.gz
+Source0:        https://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 
 # zstd support by solsTiCe d'Hiver
 Patch0:         https://github.com/solsticedhiver/atool/commit/7008abf6f88094062eba205cb54fe6dbc4f556b8.patch#/%{name}-gh-zstd-1.patch

@@ -4,7 +4,7 @@
 
 %global with_tracker 0
 
-%global glib2_version 2.80.0
+%global glib2_version 2.84.0
 %global pango_version 1.56.0
 %global cairo_version 1.18.0
 %global gdk_pixbuf_version 2.30.0
@@ -31,7 +31,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.20.3
+Version:        4.22.1
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -178,6 +178,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.22.1-1
+- 4.22.1
+
 * Sat Dec 13 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.20.3-1
 - 4.20.3
 

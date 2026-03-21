@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit a6dc61f064331a67e9665888a0a4c40985da90e4
+%global commit 05b270f05cecfcd675bb0530cf18d0a9b81269a1
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260210
+%global date 20260320
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -54,6 +54,14 @@
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 DreamPicoPort-API
 
+%global commit11 41572a67f96013691685a38f0032f3c97aa34f79
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 tinygettext
+
+%global commit110 9a51e13802d930feb7261ba8876940659b258cb7
+%global shortcommit110 %(c=%{commit110}; echo ${c:0:7})
+%global srcname110 tinycmmc
+
 # Enable system glslang
 %bcond glslang 1
 %bcond vma 1
@@ -79,7 +87,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.6.12
+Version:        2.6.151
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -122,6 +130,8 @@ Source8:        https://github.com/zaphoyd/%{srcname8}/archive/%{commit8}/%{srcn
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 %endif
 Source10:       https://github.com/OrangeFox86/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
+Source11:       https://github.com/flyinghead/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source110:      https://github.com/Grumbel/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -237,6 +247,9 @@ cp -p xbyak/COPYRIGHT LICENSE.xbyak
 %endif
 tar -xf %{S:10} -C DreamPicoPort-API/ --strip-components 1
 cp -p DreamPicoPort-API/LICENSE LICENSE.DreamPicoPort-API
+tar -xf %{S:11} -C tinygettext/ --strip-components 1
+tar -xf %{S:110} -C tinygettext/external/tinycmmc --strip-components 1
+cp -p tinygettext/LICENSE.md LICENSE.tinygettext.md
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/LICENSE LICENSE.nowide

@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           xinput-gui
 Version:        0.3.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A simple GUI for Xorg's Xinput tool
 
 License:        GPL-3.0-only
@@ -53,13 +53,18 @@ Type=Application
 Categories=Settings;DesktopSettings;
 EOF
 
+%generate_buildrequires
+%pyproject_buildrequires -r
+
 
 %build
-%py3_build
+%pyproject_wheel
 
 
 %install
-%py3_install
+%pyproject_install
+
+%pyproject_save_files xinput_gui
 
 mkdir -p %{buildroot}%{_datadir}/applications
 desktop-file-install \
@@ -71,16 +76,17 @@ desktop-file-install \
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
-%files
+%files -f %{pyproject_files}
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{python3_sitelib}/xinput_gui/
-%{python3_sitelib}/xinput_gui-*.egg-info
 %{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-4
+- Update python builder
+
 * Sat Sep 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.3.1-3
 - BR: desktop-file-utils
 

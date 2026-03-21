@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           pipe-viewer
-Version:        0.5.6
+Version:        0.5.7
 Release:        1%{?dist}
 Summary:        A lightweight YouTube client for Linux
 
@@ -142,6 +142,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gtk-%{name}.desktop
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.5.7-1
+- 0.5.7
+
 * Sun Apr 27 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.6-1
 - 0.5.6
 

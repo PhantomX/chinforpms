@@ -12,7 +12,6 @@ Source0:        %{url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  pkgconfig(libzstd)
 
 %description

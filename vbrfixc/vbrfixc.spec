@@ -9,8 +9,8 @@ Summary:        Fixes MP3s and re-constructs VBR headers
 License:        GPL-2.0-only
 URL:            https://deb.debian.org/debian/pool/main/v/%{pkgname}
 
-Source0:        https://deb.debian.org/debian/pool/main/v/%{debname}/%{pkgname}_%{version}+dfsg.orig.tar.xz
-Source1:        https://deb.debian.org/debian/pool/main/v/%{debname}/%{pkgname}_%{version}+dfsg-%{debpatchver}.debian.tar.xz
+Source0:        https://deb.debian.org/debian/pool/main/v/%{pkgname}/%{pkgname}_%{version}+dfsg.orig.tar.xz
+Source1:        https://deb.debian.org/debian/pool/main/v/%{pkgname}/%{pkgname}_%{version}+dfsg-%{debpatchver}.debian.tar.xz
 Source2:        Makefile.%{name}
 
 Patch0:         0001-format-security.patch

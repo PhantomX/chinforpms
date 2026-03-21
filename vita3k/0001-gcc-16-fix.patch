@@ -1,0 +1,24 @@
+From 73004953af98da843809cc4c812402c1c065e168 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 21 Mar 2026 03:26:31 -0300
+Subject: [PATCH] gcc 16 fix
+
+---
+ vita3k/mem/include/mem/atomic.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/vita3k/mem/include/mem/atomic.h b/vita3k/mem/include/mem/atomic.h
+index 74e3fa1..df961e1 100644
+--- a/vita3k/mem/include/mem/atomic.h
++++ b/vita3k/mem/include/mem/atomic.h
+@@ -17,6 +17,7 @@
+ 
+ #pragma once
+ 
++#include <cstdint>
+ #include <memory>
+ 
+ #ifdef _MSC_VER
+-- 
+2.53.0
+

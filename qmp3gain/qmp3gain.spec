@@ -1,6 +1,6 @@
-%global commit ecf61ec0e13023c22e8e277311486ec4e6e72b28
+%global commit fd087e92fa875c963bdc3268aefaf2432327a838
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240427
+%global date 20251221
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           qmp3gain
-Version:        0.9.4
-Release:        0.1%{?dist}
+Version:        0.9.6
+Release:        1%{?dist}
 Summary:        MP3Gain GUI front end
 
 License:        GPL-3.0-only
@@ -88,6 +88,9 @@ desktop-file-edit \
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.6-1.20251221gitfd087e9
+- 0.9.6
+
 * Sun Oct 20 2024 Phantom X <megaphantomx at hotmail dot com> - 0.9.4-0.1.20240427gitecf61ec
 - 0.9.4 release candidate
 

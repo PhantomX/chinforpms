@@ -18,7 +18,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Utility-Libraries-%{ve
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  cmake(VulkanHeaders) >= %{version}
@@ -45,7 +45,7 @@ Provides:       vulkan-validation-layers-devel%{?_isa} = %{version}-%{release}
 %endif
 
 %build
-%cmake3 \
+%cmake \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
@@ -54,7 +54,7 @@ Provides:       vulkan-validation-layers-devel%{?_isa} = %{version}-%{release}
   -DUPDATE_DEPS:BOOL=OFF \
 %{nil}
 
-%cmake3_build
+%cmake_build
 
 %install
 %cmake_install

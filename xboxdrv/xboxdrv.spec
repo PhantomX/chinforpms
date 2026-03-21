@@ -1,6 +1,6 @@
-%global commit d2780b67263a45143feaf08c05caa78b112c5d07
+%global commit 9f0e9c6245921b2f7ef3fe5f605f036b79f11532
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250319
+%global date 20260207
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           xboxdrv
 Version:        0.8.14
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPL-3.0-or-later

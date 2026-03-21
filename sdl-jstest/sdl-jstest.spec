@@ -1,6 +1,6 @@
-%global commit 917d27b3b45a335137bd2c8597f8bcf2bac8a569
+%global commit c3bb98945be0c6cb4ef54e9bbc1647a2b1bb4a6c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250327
+%global date 20251128
 %bcond snapshot 1
 
 %global commit1 ad3e98dbc86157cce04e60343965970cb812e92e
@@ -15,7 +15,7 @@
 
 Name:           sdl-jstest
 Version:        0.2.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Simple SDL joystick test application for the console
 
 License:        GPL-3.0-only
@@ -31,7 +31,6 @@ Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcomm
 Patch0:         0001-Use-system-SDL_GameControllerDB.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(ncurses)

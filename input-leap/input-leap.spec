@@ -1,6 +1,6 @@
-%global commit ea6b4eb8db7d878cdaa2d528f64db6c344e98067
+%global commit 34a34fb20b93113a6b26052cb5a54f9be2327775
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250811
+%global date 20251127
 %bcond snapshot 1
 
 %bcond qt 1
@@ -16,7 +16,7 @@
 
 Name:           input-leap
 Version:        3.0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only
@@ -28,9 +28,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  pkgconfig(avahi-compat-libdns_sd)
 BuildRequires:  cmake(ghc_filesystem)
 BuildRequires:  pkgconfig(gmock)
@@ -82,7 +81,7 @@ sed \
 
 
 %build
-%{cmake3} \
+%cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
 %if %{without qt}
   -DINPUTLEAP_BUILD_GUI:BOOL=OFF \

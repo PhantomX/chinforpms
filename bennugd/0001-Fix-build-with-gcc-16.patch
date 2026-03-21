@@ -1,0 +1,38 @@
+From 833851994510f751707f72dae96e4e96900d5fe1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 20 Mar 2026 16:37:20 -0300
+Subject: [PATCH] Fix build with gcc 16
+
+---
+ core/common/allocator.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
+
+diff --git a/core/common/allocator.c b/core/common/allocator.c
+index 458ed07..46ccccc 100644
+--- a/core/common/allocator.c
++++ b/core/common/allocator.c
+@@ -5,6 +5,10 @@
+ #include <assert.h>
+ #include <stdatomic.h>
+ #include <stddef.h>
++#include <stdarg.h>
++#include <stdbool.h>
++#include <stdio.h>
++#include <limits.h>
+ 
+ uint8_t* allocated_chunk=NULL;
+ 
+@@ -25,8 +29,8 @@ void log_cb(enum retro_log_level level, const char *fmt, ...)
+ {
+ 	va_list arg;
+     int cnt;
+-    va_start(arg, format);
+-	vfprintf(level==RETRO_LOG_ERROR ? sterr : stdout, fmt, arg);
++    va_start(arg, fmt);
++	vfprintf(level==RETRO_LOG_ERROR ? stderr : stdout, fmt, arg);
+ 	va_end(arg);
+ }
+ #endif
+-- 
+2.53.0
+

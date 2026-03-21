@@ -16,7 +16,7 @@ URL:            http://ario-player.sourceforge.net/index.php
 
 %if %{with snapshot}
 # To regenerate a snapshot:
-# Use your regular webbrowser to open https://sourceforge.net/p/qmp3gain/code/ci/%%{snapshot_rev}/tarball
+# Use your regular webbrowser to open https://sourceforge.net/p/ario-player/code/ci/%%{snapshot_rev}/tarball
 # This triggers the SourceForge instructure to generate a snapshot
 # After that you can pull in the archive with:
 # spectool -g ario.spec

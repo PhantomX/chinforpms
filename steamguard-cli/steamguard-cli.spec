@@ -16,7 +16,7 @@ URL:            https://github.com/dyc3/%{name}
 
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
-# cargo vendor --versioned-dirs && tar cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
+# cargo vendor --versioned-dirs && tar --numeric-owner -cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
 Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
 %endif
 
@@ -487,7 +487,9 @@ confirmations.
 %license LICENSE
 %doc README.md
 %license LICENSE.dependencies
+%if %{with vendor}
 %license cargo-vendor.txt
+%endif
 %doc README.md
 %{_bindir}/steamguard
 

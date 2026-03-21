@@ -1,17 +1,18 @@
-%global commit 7891cbee2e8d7967bf8b6c24f091d2c5a53d8cfc
+%global commit 7715de186a6798642ac81912b02667087fec2c2b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260205
+%global date 20260310
 %bcond snapshot 1
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global drflac_ver 0.12.42
+%global drflac_ver 0.13.3
+%global miniz_ver 3.1.1
 
 Name:           libchdr
 Version:        0.2
-Release:        29%{?dist}
+Release:        30%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -26,10 +27,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch10:        0001-Shared-library-fixes.patch
 Patch11:        0001-Use-system-lzma-sdk.patch
 Patch12:        0001-Do-not-build-static-library-if-INSTALL_STATIC_LIBS-O.patch
-Patch13:        0001-Use-system-libzstd.patch
-Patch14:        0001-Updates-from-Stenzek.patch
-Patch15:        0001-Export-needed-functions.patch
-
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -54,9 +51,13 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1 -N
 
-rm -rf deps/{lzma,zlib,zstd}*
+rm -rf deps/{lzma,miniz,zlib,zstd}*
+
+find \( -name '*.c*' -or -name '*.h*' \) -exec sed -i 's/\r$//' {} \;
+
+%autopatch -p1
 
 sed -e 's| -O3||g' -i CMakeLists.txt
 sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt

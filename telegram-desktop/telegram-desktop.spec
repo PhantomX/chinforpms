@@ -43,7 +43,7 @@
 
 Name:           telegram-desktop
 Version:        6.6.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        Telegram Desktop official messaging app
 
 Epoch:          1
@@ -80,6 +80,8 @@ Patch201:       %{name}-realmute.patch
 Patch202:       %{name}-disable-overlay.patch
 Patch204:       %{name}-build-fixes.patch
 Patch206:       0001-webrtc-add-missing-absl_strings-DSO.patch
+
+Patch1000:      https://github.com/TelegramMessenger/tgcalls/pull/50.patch#/%{name}-gh-tgcalls-pr50.patch
 
 Patch1010:       %{ltdp_url}/0001-Disable-sponsored-messages.patch#/ltdp-0001-Disable-sponsored-messages.patch
 Patch1011:       %{ltdp_url}/0002-Disable-saving-restrictions.patch#/ltdp-0002-Disable-saving-restrictions.patch
@@ -233,6 +235,8 @@ tar xvf %{S:1} -C bin --strip-components 1
 sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.service
 %else
 %autopatch -p1 -M 999
+
+%patch -P 1000 -p1 -d Telegram/ThirdParty/tgcalls
 
 %if %{with ltdp}
 %dnl %patch -P 1010 -p1
@@ -389,6 +393,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.6.4-101
+- gcc 16 fix
+
 * Tue Mar 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.6.4-100
 - 6.6.4
 

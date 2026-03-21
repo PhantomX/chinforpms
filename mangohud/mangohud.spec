@@ -14,9 +14,15 @@
 
 %global optflags %{optflags} -Wp,-U_GLIBCXX_ASSERTIONS
 
-%global imgui_ver 1.89.9
+%global imgui_ver 1.91.6
+%global imgui_patch_ver 3
+%global imgui_wrap_ver 2
 %global implot_ver 0.16
-%global vulkan_ver 1.2.158
+%global implot_patch_ver 1
+%global implot_wrap_ver 2
+%global vulkan_headers_ver 1.3.283
+%global vulkan_headers_patch_ver 1
+%global vulkan_headers_wrap_ver 2
 
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
@@ -25,7 +31,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.8.2
+Version:        0.8.3~rc1
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -39,13 +45,13 @@ Source0:        %{url}/archive/v%{ver}/%{pkgname}-v%{ver}.tar.gz
 %endif
 Source4:        README.Fedora.md
 Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{imgui_ver}.tar.gz
-Source11:       https://wrapdb.mesonbuild.com/v2/imgui_%{imgui_ver}-1/get_patch#/imgui-%{imgui_ver}-1-wrap.zip
+Source11:       https://wrapdb.mesonbuild.com/v%{imgui_wrap_ver}/imgui_%{imgui_ver}-%{imgui_patch_ver}/get_patch#/imgui-%{imgui_ver}-%{imgui_patch_ver}-wrap.zip
 %if %{without sysvulkan}
-Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan_ver}.tar.gz#/Vulkan-Headers-%{vulkan_ver}.tar.gz
-Source13:       https://wrapdb.mesonbuild.com/v2/vulkan-headers_%{vulkan_ver}-2/get_patch#/vulkan-headers_%{vulkan_ver}-2-wrap.zip
+Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan_headers_ver}.tar.gz#/Vulkan-Headers-%{vulkan_headers_ver}.tar.gz
+Source13:       https://wrapdb.mesonbuild.com/v%{vulkan_headers_wrap_ver}/vulkan-headers_%{vulkan_headers_ver}-%{vulkan_headers_patch_ver}/get_patch#/vulkan-headers_%{vulkan_headers_ver}-%{vulkan_headers_patch_ver}-wrap.zip
 %endif
 Source14:       https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.zip
-Source15:       https://wrapdb.mesonbuild.com/v2/implot_%{implot_ver}-1/get_patch#/implot-%{implot_ver}-1-wrap.zip
+Source15:       https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-%{implot_patch_ver}/get_patch#/implot-%{implot_ver}-%{implot_patch_ver}-wrap.zip
 
 Patch1:         0001-Change-loader-files-names.patch
 
@@ -72,9 +78,9 @@ BuildRequires:  python3
 BuildRequires:  python3-mako
 BuildRequires:  unzip
 %if %{with sysvulkan}
-BuildRequires:  cmake(VulkanHeaders) >= %{vulkan_ver}
+BuildRequires:  cmake(VulkanHeaders) >= %{vulkan_headers_ver}
 %else
-Provides:       bundled(vulkan-headers) = %{vulkan_ver}
+Provides:       bundled(vulkan-headers) = %{vulkan_headers_ver}
 %endif
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
@@ -173,6 +179,8 @@ sed \
 
 chmod 0755 %{buildroot}%{_bindir}/%{name}
 
+rm -f %{buildroot}%{_libdir}/*.a
+
 rm -rf %{buildroot}%{_datadir}/doc
 
 
@@ -203,6 +211,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.3~rc1-100
+- 0.8.3-rc1
+
 * Sat Nov 29 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.2-100
 - 0.8.2
 

@@ -1,7 +1,7 @@
 %global commit ff755388726f7fdfecf452bc3896427191e318ac
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250928
-%bcond snapshot 1
+%bcond snapshot 0
 
 %bcond map 0
 %bcond thumbnailer 1
@@ -15,8 +15,8 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.6.1
-Release:        101%{?dist}
+Version:        2.7
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -29,8 +29,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %dnl Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %endif
-
-Patch0:         %{vc_url}/pull/1928.patch#/%{name}-gh-pr1928.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
@@ -149,7 +147,7 @@ desktop-file-install \
 
 %find_lang %{name}
 
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 %files -f %{name}.lang
 %doc %{_pkgdocdir}/
@@ -159,13 +157,15 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_mandir}/man1/%{name}.1*
 %{_datadir}/%{name}/
 %{_datadir}/icons/hicolor/*/*/*%{name}*
-%{_datadir}/pixmaps/%{name}.png
 %{_datadir}/applications/%{appname}.desktop
-%{_metainfodir}/%{appname}.appdata.xml
+%{_metainfodir}/%{appname}.metainfo.xml
 %{bash_completions_dir}/%{name}
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.7-100
+- 2.7
+
 * Wed Jul 09 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.6.1-100
 - 2.6.1
 

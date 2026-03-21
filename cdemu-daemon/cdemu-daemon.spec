@@ -12,7 +12,6 @@ Source:         https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.x
 
 BuildRequires:  cmake
 BuildRequires:  gcc
-BuildRequires:  make
 BuildRequires:  pkgconfig(ao)
 BuildRequires:  pkgconfig(glib-2.0)
 BuildRequires:  pkgconfig(libmirage)

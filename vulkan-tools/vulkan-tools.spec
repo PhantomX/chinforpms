@@ -16,7 +16,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Tools-%{version}.tar.g
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  glslang
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
@@ -46,18 +46,18 @@ Vulkan tools
 
 
 %build
-%cmake3 \
+%cmake \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
   -DGLSLANG_INSTALL_DIR=%{_prefix} \
   -DVULKAN_HEADERS_INSTALL_DIR=%{_prefix} \
 %{nil}
 
-%cmake3_build
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 for bin in vkcube vkcubepp vulkaninfo ;do
   mv %{buildroot}%{_bindir}/${bin}{,%{__isa_bits}}

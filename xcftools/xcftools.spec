@@ -1,4 +1,6 @@
 %global debpatchver 6+deb10u1
+%global debpatch_hash 3e163112005069f321dc3ed9a817b6b6
+%global debpatchpkg %{name}_%{version}-%{debpatchver}.debian.tar.xz
 
 Name:           xcftools
 Version:        1.0.7
@@ -9,7 +11,7 @@ License:        LicenseRef-Fedora-Public-Domain
 URL:            http://henning.makholm.net/software
 
 Source0:        http://henning.makholm.net/%{name}/%{name}-%{version}.tar.gz
-Source1:        https://deb.debian.org/debian/pool/main/x/%{name}/%{name}_%{version}-%{debpatchver}.debian.tar.xz
+Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{debpatchpkg}/%{debpatch_hash}/%{debpatchpkg}
 
 BuildRequires:  gcc
 BuildRequires:  gettext

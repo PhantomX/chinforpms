@@ -1,6 +1,6 @@
 Name:           gpa
 Summary:        Graphical user interface for GnuPG
-Version:        0.11.0
+Version:        0.11.1
 Release:        1%{?dist}
 
 License:        GPL-3.0-or-later
@@ -78,6 +78,9 @@ rm -rf %{buildroot}%{_datadir}/pixmaps
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.11.1-1
+- 0.11.1
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.11.0-1
 - 0.11.0
 - BR: gtk+-3.0

@@ -1,5 +1,5 @@
 Name:           chinfo-extramimetypes
-Version:        13.0
+Version:        13.1
 Release:        1%{?dist}
 Summary:        Extra mimetypes for DEs
 
@@ -10,7 +10,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  shared-mime-info
 
 
@@ -43,6 +42,9 @@ rm -f %{buildroot}%{_datadir}/mime/packages/%{name}-cdimage.xml
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 13.1-1
+- 13.1
+
 * Mon Dec 08 2025 Phantom X <megaphantomx at hotmail dot com> - 13.0-1
 - 13.0
 

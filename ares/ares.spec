@@ -19,7 +19,7 @@
 
 Name:           ares
 Version:        147
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Multi-system emulator
 
 License:        ISC AND GPL-3.0-only AND BSD-2-Clause AND BSD-3-Clause AND MIT
@@ -33,7 +33,6 @@ Source0:        %{vc_url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch11:        0001-Use-system-libraries.patch
-Patch500:       0001-CHD-fix-for-patched-libchdr.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  cmake
@@ -85,9 +84,6 @@ find . -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" -o -name '*.slan
 
 find -name '.gitignore' -delete
 
-cp -a nall/nall/file.hpp nall/nall/file-chd.hpp
-cp -a nall/nall/file-buffer.hpp nall/nall/file-buffer-chd.hpp
-%patch -P 500 -p1
 
 sed -e '/\.github/d' -i CMakeLists.txt
 
@@ -152,6 +148,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 147-2
+- Remove libchdr patch
+
 * Tue Dec 23 2025 Phantom X <megaphantomx at hotmail dot com> - 147-1
 - 147
 

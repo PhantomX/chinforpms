@@ -15,12 +15,12 @@ Release:        1%{?dist}
 Summary:        GTK frontend for lossless cropping of jpeg images
 
 License:        GPL-2.0-or-later
-URL:            https://github.com/jepler/cropgui/
+URL:            https://codeberg.org/jepler/cropgui
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         0001-Set-data-files-to-datadir.patch
@@ -44,7 +44,7 @@ cropgui is a a GTK GUI for lossless JPEG cropping
 
 
 %prep
-%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
+%autosetup -n %{name} -p1
 
 sed -e '1{/env/d;}' -i filechooser.py
 

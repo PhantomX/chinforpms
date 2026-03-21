@@ -10,7 +10,6 @@ Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.x
 BuildArch:      noarch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  librsvg2-tools
 BuildRequires:  python3-devel

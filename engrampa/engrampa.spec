@@ -27,11 +27,11 @@ Epoch:         1
 Summary:       MATE Desktop file archiver
 
 License:       GPL-2.0-or-later AND LGPL-2.0-or-later
-URL:           http://mate-desktop.org
+URL:           https://mate-desktop.org
 
 # for downloading the tarball use 'spectool -g -R engrampa.spec'
 # Source for release-builds.
-%{?rel_build:Source0:     http://pub.mate-desktop.org/releases/%{branch}/%{name}-%{version}.tar.xz}
+%{?rel_build:Source0:     https://pub.mate-desktop.org/releases/%{branch}/%{name}-%{version}.tar.xz}
 # Source for snapshot-builds.
 %{!?rel_build:Source0:    %{vc_url}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
 

@@ -12,7 +12,6 @@ URL:            https://cdemu.sourceforge.io/
 Source0:        https://downloads.sourceforge.net/cdemu/%{name}-%{version}.tar.xz
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(glib-2.0)

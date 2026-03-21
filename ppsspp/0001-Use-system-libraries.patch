@@ -1,4 +1,4 @@
-From 61515ffd57eee1bb900504020bf2d98454fd2b7e Mon Sep 17 00:00:00 2001
+From 1581dbd2080e033ac69d98abf4a12cb08bc40b0e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -12,7 +12,6 @@ Subject: [PATCH] Use system libraries
  Core/HLE/sceJpeg.cpp                  |  2 +-
  Core/MIPS/IR/IRJit.cpp                |  2 +-
  Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
- Core/RetroAchievements.cpp            |  2 +-
  Core/Util/GameManager.cpp             |  2 +-
  Core/Util/PPGeDraw.cpp                |  2 +-
  GPU/Common/TextureDecoder.cpp         |  2 +-
@@ -23,14 +22,13 @@ Subject: [PATCH] Use system libraries
  UI/CwCheatScreen.cpp                  |  2 +-
  UI/ImDebugger/ImMemView.cpp           |  2 +-
  Windows/Debugger/CtrlMemView.cpp      |  2 +-
- ext/CMakeLists.txt                    | 14 ++++++++++++++
- 20 files changed, 49 insertions(+), 19 deletions(-)
+ 18 files changed, 34 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 070f49b..d8aaa16 100644
+index dcdb2f5..2762ddd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1738,11 +1738,19 @@ add_library(xbrz STATIC
+@@ -1745,11 +1745,19 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -51,7 +49,7 @@ index 070f49b..d8aaa16 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2570,6 +2578,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2577,6 +2585,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -157,21 +155,8 @@ index e8b751b..82c6f31 100644
  #include "Common/CommonTypes.h"
  #include "Common/Profiler/Profiler.h"
  
-diff --git a/Core/RetroAchievements.cpp b/Core/RetroAchievements.cpp
-index 1f30c0c..577193f 100644
---- a/Core/RetroAchievements.cpp
-+++ b/Core/RetroAchievements.cpp
-@@ -25,7 +25,7 @@
- #include "ext/rcheevos/include/rc_api_request.h"
- #include "ext/rcheevos/include/rc_api_runtime.h"
- 
--#include "ext/rapidjson/include/rapidjson/document.h"
-+#include "rapidjson/document.h"
- 
- #include "Common/Crypto/md5.h"
- #include "Common/Log.h"
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index 9ea4f10..73c5faf 100644
+index ecb0af9..9a8f907 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
 @@ -27,7 +27,7 @@
@@ -300,41 +285,6 @@ index 4345e53..d95c033 100644
  #include "Common/StringUtils.h"
  #include "Core/Config.h"
  #include "Core/System.h"
-diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index 38017bf..09e73b7 100644
---- a/ext/CMakeLists.txt
-+++ b/ext/CMakeLists.txt
-@@ -43,8 +43,15 @@ set(FT_REQUIRE_PNG OFF CACHE BOOL "" FORCE)
- set(FT_REQUIRE_HARFBUZZ OFF CACHE BOOL "" FORCE)
- set(FT_REQUIRE_BROTLI OFF CACHE BOOL "" FORCE)
- if(NOT LIBRETRO)
-+  find_package(Freetype)
-+  if(Freetype_FOUND)
-+    message(STATUS "Using the system freetype")
-+    add_library(freetype INTERFACE)
-+    target_link_libraries(freetype INTERFACE Freetype::Freetype)
-+else()
-     add_subdirectory(freetype freetype-build)
- endif()
-+endif()
- 
- if(NOT LIBRETRO)
-     add_subdirectory(imgui)
-@@ -56,7 +63,14 @@ if(USE_DISCORD AND NOT IOS AND NOT LIBRETRO)
- 	add_subdirectory(discord-rpc-build)
- endif()
- 
-+pkg_search_module(chdr IMPORTED_TARGET libchdr)
-+if(chdr_FOUND)
-+	message(STATUS "Using the system libchdr")
-+	add_library(chdr INTERFACE)
-+	target_link_libraries(chdr INTERFACE PkgConfig::chdr)
-+else()
- add_subdirectory(libchdr-build)
-+endif()
- 
- if(ANDROID)
-     if (ARM64)
 -- 
 2.53.0
 

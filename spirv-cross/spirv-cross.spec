@@ -23,7 +23,7 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 Source0:        %{url}/archive/vulkan-sdk-%{version}/%{name}-vulkan-sdk-%{version}.tar.gz
 %endif
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
@@ -51,7 +51,7 @@ sed \
   -i CMakeLists.txt
 
 %build
-%cmake3 \
+%cmake \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_INSTALL_LIBDIR=%{_lib} \
@@ -68,10 +68,10 @@ sed \
   -DSPIRV_CROSS_ENABLE_UTIL:BOOL=ON \
 %{nil}
 
-%cmake3_build
+%cmake_build
 
 %install
-%cmake3_install
+%cmake_install
 
 %files
 %license LICENSE

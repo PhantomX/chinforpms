@@ -10,7 +10,6 @@ Source0:        %{url}/-/archive/v%{version}/%{name}-v%{version}.tar.bz2
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
 BuildRequires:  gtest-devel

@@ -17,7 +17,6 @@ BuildRequires:  bash-completion-devel
 BuildRequires:  bash-completion
 %endif
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  intltool
 BuildRequires:  python3-devel
 Requires:       cdemu-daemon

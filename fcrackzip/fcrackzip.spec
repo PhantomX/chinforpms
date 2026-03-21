@@ -11,7 +11,7 @@ License:        GPL-2.0-only
 URL:            http://oldhome.schmorp.de/marc/%{name}.html
 
 Source0:        http://oldhome.schmorp.de/marc/data/%{name}-%{version}.tar.gz
-Source1:        http://archive.ubuntu.com/ubuntu/pool/universe/f/fcrackzip/fcrackzip_1.0-9.debian.tar.xz
+Source1:        http://old-releases.ubuntu.com/ubuntu/pool/universe/f/fcrackzip/fcrackzip_1.0-9.debian.tar.xz
 
 BuildRequires:  automake
 BuildRequires:  autoconf

@@ -1,15 +1,20 @@
+%global commit 85640223047d49a305e90ba1b92303eb066ba474
+%global shortcommit %(c=%{commit}; echo ${c:0:7})
+%global date 20230714
+%global dist .%{date}git%{shortcommit}%{?dist}
+
 %global pkgname tap-plugins
-%global vc_url https://github.com/tomscii/%{pkgname}
+%global vc_url https://git.hq.sig7.se/%{pkgname}.git
 
 Name:           ladspa-%{pkgname}
 Version:        1.0.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        Tom's Audio Processing plugin
 
 License:        GPL-2.0-or-later
 URL:            https://tomscii.sig7.se/%{pkgname}/
 
-Source0:        %{vc_url}/archive/v%{version}/%{pkgname}-%{version}.tar.gz
+Source0:        %{vc_url}/snapshot/%{commit}.tar.gz#/%{pkgname}-%{shortcommit}.tar.gz
 
 BuildRequires:  gcc
 BuildRequires:  ladspa-devel
@@ -25,7 +30,7 @@ professional DAW environment such as Ardour.
 
 
 %prep
-%autosetup -n %{pkgname}-%{version} -p1
+%autosetup -n %{pkgname}-%{shortcommit} -p1
 
 # use the system version of ladspa.h
 rm -f ladspa.h
@@ -55,6 +60,9 @@ mkdir -p %{buildroot}%{_libdir}/ladspa
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.1-102.20230714git8564022
+- Snapshot
+
 * Tue Mar 29 2022 Phantom X <megaphantomx at hotmail dot com> - 1.0.1-101
 - Fix for package_note_file
 

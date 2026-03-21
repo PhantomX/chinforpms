@@ -45,7 +45,7 @@ index 7076bed..82da870 100644
 +#include <7zVersion.h>
  
  // minizip includes
- #include <unzip.h>
+ #include <minizip/unzip.h>
 diff --git a/Source/RMG-Core/CMakeLists.txt b/Source/RMG-Core/CMakeLists.txt
 index aac2049..1e29277 100644
 --- a/Source/RMG-Core/CMakeLists.txt

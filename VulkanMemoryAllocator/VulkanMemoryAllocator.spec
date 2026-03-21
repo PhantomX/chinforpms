@@ -1,6 +1,6 @@
-%global commit e722e57c891a8fbe3cc73ca56c19dd76be242759
+%global commit b3cbbb43ea3a506dffe10759e205a41c27c35ae2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251130
+%global date 20260302
 %bcond snapshot 1
 
 BuildArch:      noarch
@@ -14,7 +14,7 @@ BuildArch:      noarch
 Summary:        Easy to integrate Vulkan memory allocation library
 Name:           VulkanMemoryAllocator
 Version:        3.3.0
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 
 License:        MIT

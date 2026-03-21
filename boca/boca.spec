@@ -7,6 +7,8 @@
 %global vc_url https://github.com/enzo1982/BoCA
 
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
+%global src_hash 317dab26206589e74d7100b35f52ea6b
+%global src_pkg %{name}-free-%{ver}.tar.xz
 
 Name:           boca
 Version:        1.0.7
@@ -20,7 +22,7 @@ URL:            http://www.freac.org/
 Source0:        %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %else
 # Use Makefile do download
-Source0:        %{name}-free-%{ver}.tar.xz
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{src_pkg}/%{src_hash}/%{src_pkg}
 %endif
 Source1:        Makefile
 

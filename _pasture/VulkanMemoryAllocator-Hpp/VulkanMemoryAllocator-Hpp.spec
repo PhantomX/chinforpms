@@ -9,28 +9,35 @@ BuildArch:      noarch
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global vma_ver 3.2.1
+%global vma_ver 3.3.0
+
+%global ver %%(echo %{version} | cut -d. -f-3)
+%global xver %%(echo %{version} | cut -d. -f4)
 
 Summary:        C++ bindings for VulkanMemoryAllocator
 Name:           VulkanMemoryAllocator-Hpp
-Version:        3.2.1
-Release:        2%{?dist}
+Version:        3.3.0.3
+Release:        1%{?dist}
 
 License:        Apache-2.0
 URL:            https://github.com/YaaZ/%{name}
 
+%if "%{xver}" == ""
+%global verx 1
+%endif
+
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{ver}%{!?verx:+%{?xver}}/%{name}-%{version}.tar.gz
 %endif
-
-Patch0:         0001-Remove-ValidationFailedEXTError.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
+BuildRequires:  cmake(VulkanHeaders)
+BuildRequires:  VulkanMemoryAllocator-devel >= %{vma_ver}
 
 # https://fedoraproject.org/wiki/Changes/EncourageI686LeafRemoval
 ExcludeArch:    %{ix86}
@@ -50,12 +57,18 @@ The Vulkan Memory Allocator Hpp development package.
 
 
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}%{!?verx:-%{?xver}}} -p1
+
+sed -e '/^add_subdirectory(VulkanMemoryAllocator)/d' -i CMakeLists.txt
 
 
 %build
 %cmake \
   -G Ninja \
+  -DVMA_HPP_ENABLE_INSTALL:BOOL=ON \
+  -DVMA_HPP_SAMPLES_BUILD:BOOL=OFF \
+  -DVMA_HPP_INPUT_HEADER:FILEPATH=%{_includedir}/vk_mem_alloc.h \
+  -DFETCHCONTENT_SOURCE_DIR_VULKAN:STRING="@" \
 %{nil}
 
 %cmake_build
@@ -67,11 +80,15 @@ The Vulkan Memory Allocator Hpp development package.
 %files devel
 %license LICENSE
 %doc README.md
+%{_includedir}/vk*.cppm
 %{_includedir}/vk*.hpp
 %{_datadir}/cmake/%{name}
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 3.3.0-1
+- 3.3.0
+
 * Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 3.2.1-2
 - Remove ValidationFailedEXTError
 

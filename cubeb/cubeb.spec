@@ -1,6 +1,6 @@
-%global commit c486fe06a8a879cc6151211bcac6a4dcb40323c9
+%global commit 1b7de400134aac33d9c6b59ac1be9ddbf86d16eb
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250916
+%global date 20260313
 %bcond snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        56%{?dist}
+Release:        57%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC
@@ -32,7 +32,6 @@ Source1:        https://github.com/google/%{srcname1}/archive/%{commit1}/%{srcna
 Source2:        https://github.com/arsenm/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  doxygen

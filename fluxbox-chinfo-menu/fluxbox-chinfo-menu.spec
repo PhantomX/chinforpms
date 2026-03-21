@@ -9,8 +9,8 @@ BuildArch:      noarch
 %endif
 
 Name:           fluxbox-chinfo-menu
-Version:        5.1.0
-Release:        2%{?dist}
+Version:        5.1.1
+Release:        1%{?dist}
 Summary:        Menu generator for Fluxbox based on XDG
 
 License:        GPL-3.0-only
@@ -23,7 +23,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gettext
 Requires:       fluxbox
 Requires:       gettext
@@ -58,6 +57,9 @@ Requires:       xterm
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 5.1.1-1
+- 5.1.1
+
 * Tue Apr 20 2021 Phantom X <megaphantomx at hotmail dot com> - 5.1.0-2
 - Replace xorg-x11-apps BR with split packages
 

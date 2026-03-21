@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit f0a4ac7359b6de6d6f1926c795831de01d4119d5
+%global commit 96e177702e0bc7d689df52c544bb26819e704c4c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260314
+%global date 20260320
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc2.28480
+Version:        0.2.0~rc2.28489
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -150,7 +150,6 @@ Patch10:        0001-Use-system-libraries.patch
 ExclusiveArch:  x86_64
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  ninja-build
 %if %{with clang}
 BuildRequires:  compiler-rt
@@ -187,6 +186,7 @@ BuildRequires:  pkgconfig(libswscale)
 BuildRequires:  ffmpeg-devel
 %else
 BuildRequires:  autoconf
+BuildRequires:  make
 BuildRequires:  nasm
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libva-drm)
@@ -398,7 +398,7 @@ sed \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
 sed \
-  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable -Wno-error=missing-declarations|' \
+  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=missing-declarations|' \
   -i src/CMakeLists.txt
 
 %if %{with clang}

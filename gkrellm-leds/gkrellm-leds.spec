@@ -8,7 +8,7 @@ Summary:        GKrellM2 plugin for monitoring keyboard LEDs
 
 License:        GPL-2.0-only
 URL:            http://heim.ifi.uio.no/~oyvinha/gkleds/
-Source0:        http://heim.ifi.uio.no/~oyvinha/%{pkgname}/%{pkgname}-%{version}.tar.gz
+Source0:        https://gentoo.osuosl.org/distfiles/96/%{pkgname}-%{version}.tar.gz
 
 BuildRequires:  autoconf libtool
 BuildRequires:  gcc

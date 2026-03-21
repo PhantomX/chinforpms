@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit a52501aa243f24757184ec9a01d8b0dc257034c3
+%global commit 910b60defc089c8a52459bd1e61c18971cf9232c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260316
+%global date 20260319
 %bcond snapshot 1
 
 # Enable Qt build
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.3.4
+Version:        1.20.3.32
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -523,11 +523,14 @@ popd
 %if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG:BOOL=ON \
 %endif
+  -DUSE_SYSTEM_FREETYPE:BOOL=ON \
+  -DUSE_SYSTEM_LIBCHDR:BOOL=ON \
   -DUSE_SYSTEM_LIBPNG:BOOL=ON \
   -DUSE_SYSTEM_LIBZIP:BOOL=ON \
 %if %{with miniupnpc}
   -DUSE_SYSTEM_MINIUPNPC:BOOL=ON \
 %endif
+  -DUSE_SYSTEM_RAPIDJSON:BOOL=ON \
   -DUSE_SYSTEM_SNAPPY:BOOL=ON \
   -DUSE_SYSTEM_ZSTD:BOOL=ON \
   -DUSE_DISCORD:BOOL=OFF \

@@ -11,7 +11,7 @@ BuildArch:      noarch
 
 Name:           pulsemixer
 Version:        1.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        CLI and curses mixer for pulseaudio
 
 License:        MIT
@@ -26,7 +26,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 Patch0:         0001-Decrease-volume-step_big-to-5.patch
 
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist setuptools}
 Requires:       pulseaudio-daemon
 
 
@@ -37,22 +36,25 @@ Requires:       pulseaudio-daemon
 %prep
 %autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
-%build
-%py3_build
+%py3_shebang_fix %{name}
 
+%build
 
 %install
-%py3_install
+mkdir -p %{buildroot}%{_bindir}
+install -pm0755 %{name} %{buildroot}%{_bindir}
 
 
 %files
 %license LICENSE
 %doc README.md
 %{_bindir}/%{name}
-%{python3_sitelib}/%{name}*.egg-info/
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.5.1-3
+- Remove setuptools
+
 * Tue Dec 15 2020 Phantom X <megaphantomx at bol dot com dot br> - 1.5.1-2
 - Requires pulseaudio-daemon
 

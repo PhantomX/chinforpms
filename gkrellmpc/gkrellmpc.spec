@@ -9,7 +9,7 @@ Summary:        GKrellM plugin to control MPD
 License:        GPL-2.0-only
 URL:            http://mpd.wikia.com/wiki/Client:GKrellMPC
 
-Source0:        http://mina.naguib.ca/dist/%{name}-%{ver}.tar.gz
+Source0:        https://gentoo.osuosl.org/distfiles/bd/%{name}-%{ver}.tar.gz
 
 ### Debian
 Patch0:         fix-makefile-flags.patch

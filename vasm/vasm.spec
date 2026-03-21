@@ -16,7 +16,7 @@
 %global pkgver %%(c=%{version}; echo ${c//./_})
 
 Name:           vasm
-Version:        2.0c
+Version:        2.0e
 Release:        1%{?dist}
 Summary:        Portable 6502 6800 arm c16x jagrisc m68k ppc vidcore x86 z80 assembler
 
@@ -71,6 +71,9 @@ strip --strip-unneeded %{buildroot}%{_bindir}/vobjdump
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 2.0e-1
+- 2.0e
+
 * Wed Sep 17 2025 - 2.0c-1
 - 2.0c
 

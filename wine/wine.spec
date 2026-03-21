@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.0.0
-%global winevulkan 1.4.344
+%global winevulkan 1.4.346
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.4
+%global wine_stagingver 11.5
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,7 +84,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 2d624ba32f04b6aa7d13ecbda8f477dff12411c3
+%global tkg_id 13b74356e1b588cf4d6e54a0a9225c1aed100604
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.4
+Version:        11.5
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -201,7 +201,6 @@ Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.pat
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/10154.patch#/%{name}-whq-mr10154.patch
-Patch706:        %{whq_murl}/-/merge_requests/10264.patch#/%{name}-whq-mr10264.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59317
@@ -268,7 +267,9 @@ BuildRequires:  kernel-headers >= 6.14
 BuildRequires:  mingw32-binutils >= 2.34-100
 BuildRequires:  mingw64-binutils >= 2.34-100
 BuildRequires:  mingw32-gcc
+BuildRequires:  mingw32-gcc-c++
 BuildRequires:  mingw64-gcc
+BuildRequires:  mingw64-gcc-c++
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
 BuildRequires:  fontforge
@@ -797,7 +798,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
-%patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
 %patch -P 709 -p1 -R
@@ -1583,6 +1583,9 @@ fi
 %{_libdir}/wine/%{winepedirs}/iccvid.dll
 %{_libdir}/wine/%{winepedirs}/icmp.dll
 %{_libdir}/wine/%{winepedirs}/icmui.dll
+%{_libdir}/wine/%{winepedirs}/icu.dll
+%{_libdir}/wine/%{winepedirs}/icuin.dll
+%{_libdir}/wine/%{winepedirs}/icuuc.dll
 %{_libdir}/wine/%{winepedirs}/ieframe.dll
 %{_libdir}/wine/%{winepedirs}/ieproxy.dll
 %{_libdir}/wine/%{winepedirs}/iertutil.dll
@@ -2272,6 +2275,7 @@ fi
 %{_datadir}/wine/nls/c_936.nls
 %{_datadir}/wine/nls/c_949.nls
 %{_datadir}/wine/nls/c_950.nls
+%{_datadir}/wine/nls/icudtl.dat
 %{_datadir}/wine/nls/l_intl.nls
 %{_datadir}/wine/nls/locale.nls
 %{_datadir}/wine/nls/normidna.nls
@@ -2490,6 +2494,9 @@ fi
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.5-100
+- 11.5
+
 * Sat Mar 07 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.4-100
 - 11.4
 

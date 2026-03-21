@@ -1,15 +1,15 @@
-%global commit 37b2b6b85dd8a02f3adf5282a7d1aaa3ab493836
+%global commit 4a8490a6539e77f88acc716f4647ee7a2feca2e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251227
+%global date 20260313
 
 BuildArch:      noarch
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           pcsx2_patches
-Version:        566
+Version:        588
 Epoch:          1
-Release:        3%{?dist}
+Release:        1%{?dist}
 Summary:        PCSX2 emulator patches
 
 License:        GPL-3.0-only AND LGPL-3.0-or-later

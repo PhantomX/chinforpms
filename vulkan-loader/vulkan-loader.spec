@@ -20,7 +20,7 @@ Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Loader-%{version}.tar.
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  ninja-build
 BuildRequires:  python%{python3_pkgversion}-devel
 BuildRequires:  cmake(VulkanHeaders) >= %{version}
@@ -65,16 +65,16 @@ developing applications that use %{name}.
 %endif
 
 %build
-%cmake3 \
+%cmake \
   -GNinja \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 
-%cmake3_build
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 # create the filesystem
 mkdir -p %{buildroot}%{_sysconfdir}/vulkan/{explicit,implicit}_layer.d/ \

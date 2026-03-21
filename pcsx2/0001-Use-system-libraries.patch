@@ -1,4 +1,4 @@
-From b96ae31e1a234ae630116d7bddd7a260aceaad73 Mon Sep 17 00:00:00 2001
+From 5b0ac78646c0c3a37faffccc415f64fcae5cd3e6 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -12,7 +12,7 @@ Subject: [PATCH] Use system libraries
  5 files changed, 105 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index d7131a3..41485fb 100644
+index 0f7204c..23e6a67 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -19,8 +19,8 @@ find_package(LZ4 REQUIRED)
@@ -26,7 +26,7 @@ index d7131a3..41485fb 100644
  
  if(USE_VULKAN)
  	find_package(Shaderc REQUIRED)
-@@ -78,33 +78,105 @@ endif()
+@@ -79,33 +79,105 @@ endif()
  
  set(CMAKE_FIND_FRAMEWORK ${FIND_FRAMEWORK_BACKUP})
  
@@ -132,10 +132,10 @@ index d7131a3..41485fb 100644
  
  # Find the Qt components that we need.
  if(ENABLE_QT_UI)
-@@ -132,14 +204,27 @@ add_subdirectory(3rdparty/ccc EXCLUDE_FROM_ALL)
+@@ -133,14 +205,27 @@ add_subdirectory(3rdparty/ccc EXCLUDE_FROM_ALL)
  
  # Architecture-specific.
- if(_M_X86)
+ if(ARCH_X86)
 +if(DUMP_BLOCKS)
 +find_package(zydis)
 +	if(zydis_FOUND)
@@ -145,7 +145,7 @@ index d7131a3..41485fb 100644
  	add_subdirectory(3rdparty/zydis EXCLUDE_FROM_ALL)
 +	endif()
 +endif()
- elseif(_M_ARM64)
+ elseif(ARCH_ARM64)
  	add_subdirectory(3rdparty/vixl EXCLUDE_FROM_ALL)
  endif()
  
@@ -161,23 +161,23 @@ index d7131a3..41485fb 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index c66a27e..e17fb65 100644
+index 3c9a8f6..be4694b 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1064,7 +1064,9 @@ set(pcsx2LTOSources
+@@ -1073,7 +1073,9 @@ set(pcsx2LTOSources
  
- if(_M_X86)
+ if(ARCH_X86)
  	list(APPEND pcsx2LTOSources ${pcsx2x86Sources} ${pcsx2x86Headers})
 +	if(DUMP_BLOCKS)
  	target_link_libraries(PCSX2_FLAGS INTERFACE zydis)
 +	endif()
- elseif(_M_ARM64)
+ elseif(ARCH_ARM64)
  	list(APPEND pcsx2LTOSources ${pcsx2arm64Sources} ${pcsx2arm64Headers})
  	target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
-@@ -1194,7 +1196,11 @@ endif()
+@@ -1203,7 +1205,11 @@ endif()
  
  # additonal include directories
- if(_M_X86)
+ if(ARCH_X86)
 +	if(TARGET xbyak::xbyak)
 +		target_link_libraries(PCSX2_FLAGS INTERFACE xbyak::xbyak)
 +	else()
@@ -187,7 +187,7 @@ index c66a27e..e17fb65 100644
  endif()
  target_include_directories(PCSX2_FLAGS INTERFACE
 diff --git a/pcsx2/GS/GSDump.cpp b/pcsx2/GS/GSDump.cpp
-index ac4cb35..77db9f9 100644
+index 2fdb1ac..b813eff 100644
 --- a/pcsx2/GS/GSDump.cpp
 +++ b/pcsx2/GS/GSDump.cpp
 @@ -16,6 +16,10 @@
@@ -202,10 +202,10 @@ index ac4cb35..77db9f9 100644
  	: m_filename(std::move(fn))
  	, m_frames(0)
 diff --git a/pcsx2/GS/GSLzma.cpp b/pcsx2/GS/GSLzma.cpp
-index 01ea3f5..6f301a8 100644
+index 93efbae..645143e 100644
 --- a/pcsx2/GS/GSLzma.cpp
 +++ b/pcsx2/GS/GSLzma.cpp
-@@ -21,6 +21,12 @@
+@@ -23,6 +23,12 @@
  
  #include <mutex>
  
@@ -219,7 +219,7 @@ index 01ea3f5..6f301a8 100644
  
  GSDumpFile::GSDumpFile() = default;
 diff --git a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
-index b1f4d13..2e46f6b 100644
+index 93fbd8a..90456ea 100644
 --- a/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 +++ b/pcsx2/GS/Renderers/SW/GSNewCodeGenerator.h
 @@ -14,8 +14,8 @@
@@ -234,5 +234,5 @@ index b1f4d13..2e46f6b 100644
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
  /// Should make combined SSE and AVX codegen much easier
 -- 
-2.51.0
+2.53.0
 

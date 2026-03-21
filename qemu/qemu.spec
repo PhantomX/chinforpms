@@ -436,7 +436,7 @@ Summary:        QEMU is a FAST! processor emulator
 Name:           qemu
 # If rc, use "~" instead "-", as ~rc1
 Version:        10.2.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          2
 
 License: %{shrink:
@@ -487,6 +487,8 @@ Patch: 0008-Revert-meson.build-Disallow-libnfs-v6-to-fix-the-bro.patch
 # Increase test-replication timeout
 # NOT upstream, but see https://gitlab.com/qemu-project/qemu/-/issues/3035
 Patch: 0002-TEMPORARY-increase-test-timeout.patch
+# https://lists.nongnu.org/archive/html/qemu-devel/2026-01/msg01140.html
+Patch: 0001-meson-disable-libatomic-with-GCC-16.patch
 
 BuildRequires: gnupg2
 BuildRequires: meson >= %{meson_version}
@@ -683,8 +685,6 @@ BuildRequires: igvm-devel
 BuildRequires: glibc-static
 BuildRequires: glib2-static
 BuildRequires: zlib-static
-# -latomic added by GLib 2.81.0, 2024-06-28
-BuildRequires: libatomic-static
 %endif
 
 # Requires for the Fedora 'qemu' metapackage
@@ -2041,7 +2041,7 @@ pushd %{static_builddir}
 run_configure \
   --enable-attr \
   --enable-linux-user \
-%ifnarch %{power64}
+%ifnarch %{power64} s390x
   --enable-pie \
 %endif
   --enable-tcg \
@@ -3418,6 +3418,9 @@ popd
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 2:10.2.2-101
+- Rawhide sync
+
 * Wed Mar 18 2026 Phantom X <megaphantomx at hotmail dot com> - 2:10.2.2-100
 - 10.2.2
 

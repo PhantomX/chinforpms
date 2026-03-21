@@ -5,7 +5,7 @@ Summary:        Translate joystick movements into equivalent keystrokes
 
 License:        GPL-2.0-only
 URL:            https://sourceforge.net/projects/joy2key
-Source0:        https://gentoo.osuosl.org/distfiles/%{name}-%{version}.tar.bz2
+Source0:        https://gentoo.osuosl.org/distfiles/1e/%{name}-%{version}.tar.bz2
 
 # Debian
 Patch0:         button_list_segfault.patch

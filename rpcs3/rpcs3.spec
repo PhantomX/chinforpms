@@ -39,9 +39,7 @@
 %bcond pugixml 0
 %global bundlepugixml 1.15.0
 # Enable system rtmidi
-%if 0%{?fedora} > 43
-%bcond rtmidi 1
-%endif
+%bcond rtmidi 0
 %global bundlertmidi 6.0.0
 %bcond vma 1
 %global bundlevma 3.3.0
@@ -49,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit c57d6110c4c503e8145c9d18e38042d275cd6995
+%global commit 2ba7756c0e2cbba363844104142515c02749cd58
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260305
+%global date 20260320
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -78,7 +76,7 @@
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
-%global commit16 05c44fcd18074836e21e1eda9fc02b3a4a1529b5
+%global commit16 51a5d623e3fde1f58829a56ba910f1cb33596222
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
@@ -124,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.40.11
+Version:        0.0.40.187
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -181,6 +179,7 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
+Patch14:        0001-gcc-16-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 
 ExclusiveArch:  x86_64

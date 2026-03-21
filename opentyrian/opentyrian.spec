@@ -1,6 +1,6 @@
-%global commit b6eb194e1dd0898fd15038481a3a8eed63d79144
+%global commit 2f34a7524a3ab3f0df10673fb078ebe26b7690d7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20241102
+%global date 20260309
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -9,7 +9,7 @@
 
 Name:           opentyrian
 Version:        2.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPL-2.0-only

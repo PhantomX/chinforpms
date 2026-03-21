@@ -1,9 +1,9 @@
 %global _lto_cflags %{nil}
 
-%global commit 69c99d40b238fd355ef0bbb5e0046a5be3797d36
+%global commit 4722942cc6755b423c21e12684fad54b26ada175
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260215
-%global sbuild 8987
+%global date 20260320
+%global sbuild 9029
 %bcond snapshot 1
 
 # Enable ffmpeg support
@@ -21,7 +21,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.36%{?dist}
+Release:        0.37%{?dist}
 Summary:        A Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
@@ -38,7 +38,6 @@ Patch1:         0001-vfs-lzma-update-bool-for-lzma-sdk.patch
 Patch2:         0001-vfs-lzma-lzma-sdk-23.01-support.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  pkgconfig(gl)

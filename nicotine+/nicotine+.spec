@@ -16,7 +16,7 @@ BuildArch:      noarch
 
 Name:           nicotine+
 Version:        3.3.10
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A graphical client for the SoulSeek peer-to-peer system
 
 #   (see pynicotine/geoip/README.md)
@@ -41,10 +41,12 @@ BuildRequires:  python3-devel
 # check
 BuildRequires:  ( gtk3 or gtk4 )
 BuildRequires:  %{py3_dist pytest}
+BuildRequires:  pkgconfig(gobject-introspection-1.0)
 #BuildRequires:  xorg-x11-server-Xvfb
 Requires:       gdbm
 Requires:       ( gtk3 or gtk4 )
 Requires:       %{py3_dist pygobject}
+Requires:       gobject-introspection
 Requires:       hicolor-icon-theme
 Recommends:     gspell
 
@@ -106,6 +108,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appdata_id}.
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 3.3.10-101
+- R: gobject-introspection
+
 * Mon Mar 10 2025 Phantom X <megaphantomx at hotmail dot com> - 3.3.10-100
 - 3.3.10
 

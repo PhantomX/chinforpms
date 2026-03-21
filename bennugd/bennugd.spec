@@ -1,30 +1,28 @@
 %undefine _cmake_shared_libs
 
-%global commit 447b289701e6427d828d41ebcfc74e5008b8729e
+%global commit a78319991d62520bed4e873d3538657ad0ae2ca7
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251019
-
-%global commit10 e4393ff85585d91400bcbad2e7266c011075b673
-%global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
-%global srcname10 rpmalloc
+%global date 20260201
 
 %global dist .%{date}git%{shortcommit}%{?dist}
+
+%global rpmalloc_ver 1.4.5
 
 %global pkgname BennuGD_libretro
 %global vc_url  https://github.com/diekleinekuh/%{pkgname}
 
 Name:           bennugd
 Version:        1.0.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        A programming language to create games
 
 License:        Zlib AND MIT
 URL:            https://www.bennugd.org
 
 Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
-Source10:       https://github.com/mjansson/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
 
 Patch0:         0001-Build-without-git.patch
+Patch1:         0001-Fix-build-with-gcc-16.patch
 
 BuildRequires:  cmake
 BuildRequires:  ninja-build
@@ -39,6 +37,8 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(zlib)
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{name}-libs < %{?epoch:%{epoch}:}%{version}-%{release}
+
+Provides:       bundled(rpmalloc) = %{rpmalloc_ver}
 
 %description
 Bennugd is a programming language to create games.
@@ -56,10 +56,6 @@ do
   sed 's/\r//' -i ${file}
   iconv -f iso8859-1 -t utf-8 ${file} -o ${file}.conv && mv -f ${file}.conv ${file}
 done;
-
-mkdir core/rpmalloc
-tar -xf %{S:10} -C core/rpmalloc/ --strip-components 1
-cp -p core/rpmalloc/LICENSE LICENSE.rpmalloc
 
 sed -e '/CMAKE_BUILD_RPATH/d' -i CMakeLists.txt
 
@@ -86,7 +82,7 @@ install -pm0755 %{_vpath_builddir}/bin/bgdi %{buildroot}%{_bindir}/bgdi
 
 
 %files
-%license core/COPYING LICENSE.*
+%license core/COPYING
 %doc README.md
 %{_bindir}/bgdi
 

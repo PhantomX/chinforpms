@@ -1,12 +1,12 @@
-%global commit 144f3a3f1209994d8d9e8a87964a989cb9911c1e
+%global commit cc59d26d1d628fbd6527aac0ac1d6301f4978b92
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20240802
+%global date 20250330
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
 Name:           discord-rpc
 Version:        3.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Discord Rich Presence library
 
 License:        MIT
@@ -18,7 +18,6 @@ Patch0:         0001-cmake-shared-fixes.patch
 Patch1:         0001-cmake-use-system-libraries.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake(RapidJSON) >= 1.1

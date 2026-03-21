@@ -1,8 +1,11 @@
-%global commit c6d3ffb27550f8832295bb2572b576a014baed75
+%global commit 2ed5b1b2cffcde48ff36f359091756d17d8fe193
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250902
-%global sbuild 2389
+%global date 20251231
+%global sbuild 2391
 %bcond snapshot 1
+
+%global src_hash 052b0480cd105d51f8a5e3030a60b83e
+%global src_pkg %{pkgname}-free-%{?with_snapshot:%{shortcommit}}%{!?with_snapshot:%{version}}.tar.xz
 
 # Enable ffmpeg support
 %bcond ffmpeg 1
@@ -20,18 +23,14 @@
 
 Name:           punes
 Version:        0.111
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        NES emulator
 
 License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT
 URL:            https://github.com/punesemu/%{pkgname}
 
 # Use Makefile to download
-%if %{with snapshot}
-Source0:        %{pkgname}-free-%{shortcommit}.tar.xz
-%else
-Source0:        %{pkgname}-free-%{version}.tar.xz
-%endif
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{src_pkg}/%{src_hash}/%{src_pkg}
 Source10:       Makefile
 
 Patch0:         0001-lib7zip-add-libdir-punes-search-path.patch
@@ -122,6 +121,16 @@ sed \
 sed \
   -e 's|_RPMLIBDIR_|%{_libdir}/%{name}|g' \
   -i src/extra/lib7zip-%{lib7zip_ver}/src/OSFunctions_UnixLike.cpp
+
+sed \
+  -e '/cmake_minimum_required/s|2..|3.5|' \
+  -e '/cmake_minimum_required/s|3..|3.5|' \
+  -i src/extra/p7zip-%{sevenzip_ver}/CPP/*/CMAKE/CMakeLists.txt \
+  -i src/extra/p7zip-%{sevenzip_ver}/CPP/*/CMAKE/*/CMakeLists.txt \
+  -i src/extra/p7zip-%{sevenzip_ver}/CPP/*/Compress/Lzham/*/CMakeLists.txt \
+     src/extra/p7zip-%{sevenzip_ver}/Utils/generate.py \
+     src/extra/xdelta-%{xdelta_ver}/cpp-btree/CMakeLists.txt \
+     src/extra/emu2413/CMakeLists.txt
 
 
 %build

@@ -1,14 +1,14 @@
 %global apiver  1
-%global gtk_version 4.15.2
-%global glib_version 2.76.0
+%global gtk_version 4.17.5
+%global glib_version 2.80.0
 
 %global pkgname libadwaita
 %global tarball_version %%(echo %{version} | tr '~' '.')
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        1.8.2
-Release:        2%{?dist}
+Version:        1.9.0
+Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
 License:        LGPL-2.1-or-later AND MIT
@@ -87,6 +87,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.9.0-1
+- 1.9.0
+
 * Thu Nov 27 2025 Phantom X <megaphantomx at hotmail dot com> - 1.8.2-2
 - chinfo-adwaita.css update
 

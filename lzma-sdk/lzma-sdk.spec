@@ -1,8 +1,8 @@
 %bcond asm 1
 
 %global ver     %%(echo %{version} | tr -d '.')
-%global vermajor %%(echo %{version} | cut -d. -f2)
-%global verminor %%(echo %{version} | cut -d. -f1)
+%global vermajor 26
+%global verminor 0
 # Enable to build versioned package
 #global packver %%{ver}
 
@@ -10,7 +10,7 @@
 
 Name:           lzma-sdk%{?packver}
 Version:        26.00
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -156,6 +156,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 26.00-101
+- Hardcode library version
+
 * Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 26.00-100
 - 26.00
 

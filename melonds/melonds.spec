@@ -51,7 +51,6 @@ ExclusiveArch:  x86_64 %{ix86} %{arm} aarch64
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  cmake(Qt6Core)
 BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6Multimedia)

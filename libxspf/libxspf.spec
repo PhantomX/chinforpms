@@ -1,6 +1,6 @@
 Name:           libxspf
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        XSPF playlist handling library
 
 License:        BSD-3-Clause
@@ -33,6 +33,9 @@ developing applications that use %{name}.
 
 sed -e '\|#include <climits>|a#include <unistd.h> // getcwd' \
   -i examples/read/read.cpp
+
+sed -e '/^# error uriparser/d' \
+  -i src/XspfReader.cpp
 
 sed \
   -e 's|/lib\b|/%{_lib}|g' \
@@ -69,5 +72,8 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.0-2
+- Remove uriparser version check
+
 * Tue May 22 2018 Phantom X <megaphantomx at bol dot com dot br> - 1.2.0-1
 - Initial spec

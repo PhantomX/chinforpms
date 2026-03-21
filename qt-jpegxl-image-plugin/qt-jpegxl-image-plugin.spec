@@ -8,7 +8,7 @@
 %endif
 
 Name:           qt-jpegxl-image-plugin
-Version:        0.8.0
+Version:        0.8.2
 Release:        1%{?dist}
 Summary:        Qt plug-in to allow Qt and KDE based applications to read/write JXL images
 
@@ -98,6 +98,9 @@ popd
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.2-1
+- 0.8.2
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.0-1
 - 0.8.0
 

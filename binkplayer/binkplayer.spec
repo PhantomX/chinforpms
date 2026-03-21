@@ -46,7 +46,7 @@ fi
 
 cp -p %{S:1} .
 
-convert \
+magick \
   %{S:2} -resize 96x96 \
   -background white -gravity center -extent 96x96 %{name}.png
 

@@ -72,7 +72,6 @@ BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  ImageMagick
 %if %{with faudio}
 BuildRequires:  pkgconfig(FAudio)

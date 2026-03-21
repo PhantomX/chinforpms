@@ -9,7 +9,6 @@ Source0:        %{url}/-/archive/%{version}/%{name}-%{version}.tar.bz2
 Source1:        %{name}.appdata.xml
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  ImageMagick
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

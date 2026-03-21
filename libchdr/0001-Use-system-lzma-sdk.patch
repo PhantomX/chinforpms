@@ -1,14 +1,16 @@
-From e4ce525656ce8d73de076a701f070aa793cc00b7 Mon Sep 17 00:00:00 2001
+From 0413da0b0ca40b99d673d21559d4606dcd4a58b0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 11 Nov 2021 20:36:39 -0300
 Subject: [PATCH] Use system lzma-sdk
 
 ---
- CMakeLists.txt | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ CMakeLists.txt               | 8 ++++++++
+ include/libchdr/codec_lzma.h | 4 ++++
+ src/libchdr_chd.c            | 6 +++++-
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e13345d..9a15c09 100644
+index 2f13ba4..40e972c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,6 +8,7 @@ endif()
@@ -16,28 +18,60 @@ index e13345d..9a15c09 100644
  option(WITH_SYSTEM_ZLIB "Use system provided zlib library" OFF)
  option(WITH_SYSTEM_ZSTD "Use system provided zstd library" OFF)
 +option(WITH_SYSTEM_LZMA "Use system provided lzma-sdk library" OFF)
- 
- option(BUILD_LTO "Compile libchdr with link-time optimization if supported" OFF)
- if(BUILD_LTO)
-@@ -34,11 +35,18 @@ include(GNUInstallDirs)
- 
+ option(CHDR_WANT_RAW_DATA_SECTOR "Output ECC data and sync header" ON)
+ option(CHDR_WANT_SUBCODE "Output CD subchannel data" ON)
+ option(CHDR_VERIFY_BLOCK_CRC "Verify integrity of decoded data" ON)
+@@ -36,10 +37,17 @@ include(GNUInstallDirs)
+ #--------------------------------------------------
  
  # lzma
 +if (WITH_SYSTEM_LZMA)
-+  include(FindPkgConfig)
-+  pkg_check_modules(LZMA REQUIRED lzmasdk-c)
-+  list(APPEND CHDR_INCLUDES ${LZMA_INCLUDE_DIRS})
-+  list(APPEND CHDR_LIBS ${LZMA_LIBRARIES})
++  find_package(PkgConfig)
++  pkg_check_modules(LZMA REQUIRED IMPORTED_TARGET lzmasdk-c)
++  list(APPEND PLATFORM_LIBS PkgConfig::LZMA)
++  list(APPEND CHDR_DEFINES CHDR_SYSTEM_LZMA)
 +else()
- if(NOT TARGET lzma)
-   add_subdirectory(deps/lzma-24.05 EXCLUDE_FROM_ALL)
+ if(NOT TARGET chdr-lzma)
+   add_subdirectory(deps/lzma-25.01 EXCLUDE_FROM_ALL)
  endif()
- list(APPEND CHDR_LIBS lzma)
- list(APPEND CHDR_INCLUDES lzma)
+ list(APPEND CHDR_LIBS chdr-lzma)
 +endif()
  
  # zlib
  if (WITH_SYSTEM_ZLIB)
+diff --git a/include/libchdr/codec_lzma.h b/include/libchdr/codec_lzma.h
+index 7f534d8..a5442ae 100644
+--- a/include/libchdr/codec_lzma.h
++++ b/include/libchdr/codec_lzma.h
+@@ -3,7 +3,11 @@
+ 
+ #include <stdint.h>
+ 
++#ifdef CHDR_SYSTEM_LZMA
++#include <LzmaDec.h>
++#else
+ #include "../../deps/lzma-25.01/include/LzmaDec.h"
++#endif
+ 
+ #include "chd.h"
+ 
+diff --git a/src/libchdr_chd.c b/src/libchdr_chd.c
+index d583a16..962b210 100644
+--- a/src/libchdr_chd.c
++++ b/src/libchdr_chd.c
+@@ -58,7 +58,11 @@
+ #include "../include/libchdr/huffman.h"
+ #include "../include/libchdr/macros.h"
+ 
+-#include "../deps/lzma-25.01/include/LzmaDec.h"
++#ifdef CHDR_SYSTEM_LZMA
++#include <LzmaDec.h>
++#else
++#include "../../deps/lzma-25.01/include/LzmaDec.h"
++#endif
+ 
+ #undef TRUE
+ #undef FALSE
 -- 
-2.50.1
+2.53.0
 

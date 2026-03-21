@@ -1,7 +1,7 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
 Name:           vvvvvv-data
-Version:        20161020
+Version:        20250619
 Release:        1%{?dist}
 Summary:        VVVVVV Make and Play data files
 
@@ -12,7 +12,7 @@ URL:            http://distractionware.com/blog/category/vvvvvv-make-and-play/
 %global monthday %(echo %{version} | cut -c5-8)
 
 # Windows release is better to extract
-Source0:        http://www.flibitijibibo.com/VVVVVV-MP-%{monthday}%{year}.zip
+Source0:        https://thelettervsixtim.es/makeandplay/VVVVVV-MP-%{monthday}%{year}.zip
 
 BuildArch:      noarch
 
@@ -23,7 +23,7 @@ Requires:       vvvvvv >= 2.0
 %{summary}.
 
 %prep
-%autosetup -n VVVVVV-MP
+%autosetup -n VVVVVV
 
 
 %build
@@ -38,5 +38,8 @@ install -pm 0644 data.zip %{buildroot}%{_datadir}/VVVVVV/
 
 
 %changelog
+* Sat Mar 21 2026 - 20250619-1
+- 20250619
+
 * Fri Jan 10 2020 - 20161020-1
 - Initial spec

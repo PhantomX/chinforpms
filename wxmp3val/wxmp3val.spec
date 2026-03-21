@@ -23,7 +23,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  gettext

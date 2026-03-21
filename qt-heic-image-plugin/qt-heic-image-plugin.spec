@@ -1,5 +1,5 @@
 Name:           qt-heic-image-plugin
-Version:        0.6.1
+Version:        0.7.0
 Release:        1%{?dist}
 Summary:        Qt plugin for HEIF/HEIC images
 
@@ -87,6 +87,9 @@ popd
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.7.0-1
+- 0.7.0
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 0.6.1-1
 - 0.6.1
 

@@ -8,13 +8,13 @@ buildsys-build-chinforpms
 -compat-bison-36
 cubeb
 glibc-langpack-pt_BR_iso8601
-glyr
-gob2
+-glyr
+-gob2
 -gstreamer1
 -libeatmydata
 libmirage
 -libogg
-libmpd
+-libmpd
 libvirt
 -libtgvoip
 libxspf
@@ -78,7 +78,8 @@ mesa
 -mesa-compat
 mesa-libGL-xlib
 -SDL2
-VulkanMemoryAllocator-Hpp
+SDL3
+-VulkanMemoryAllocator-Hpp
 vulkan-tools
 
 # 5
@@ -108,7 +109,7 @@ bluecurve-icon-theme
 bluecurve-xmms-skin
 boca
 -browsh
-casperjs
+-casperjs
 cavestory-nx
 cdemu-client
 cdemu-daemon
@@ -156,7 +157,7 @@ gkrellm-leds
 gkrellmpc
 gkrellm-themes
 -glslang
-gmpc
+-gmpc
 -gmysqlcc
 gnome-themes
 gnome-themes-extra
@@ -182,7 +183,7 @@ ipsbehead
 jamesdsp
 jazz2-ressurection
 -jdupes
--jetbrains-mono-vf-fonts
+jetbrains-mono-vf-fonts
 joy2key
 kddockwidgets
 kdocker
@@ -207,7 +208,7 @@ lunzip
 -lutris
 -lzip
 makeppf
-manaplus
+-manaplus
 mangohud
 maxcso
 mcl
@@ -241,7 +242,7 @@ osmo
 -pcsx2-multiconfigtool
 -pcsxr
 perl-rename
-phantomjs
+-phantomjs
 pipe-viewer
 playgsf
 plutosvg_ds
@@ -269,8 +270,8 @@ qtct-common
 -qt5ct
 -qt6ct
 -quiterss
-radeon-profile
-radeon-profile-daemon
+-radeon-profile
+-radeon-profile-daemon
 readpe
 -rclone
 reflac
@@ -299,7 +300,7 @@ spirv-cross
 ss-save-parser
 steamguard-cli
 -steamtinkerlaunch
-tde2e
+-tde2e
 thrash-protect
 twitter-color-emoji-fonts
 tyrian-data

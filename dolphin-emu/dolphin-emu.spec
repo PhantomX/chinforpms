@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit 9323074ada4b1d372809dc71ed092efe8d0e4c8e
+%global commit 12935d5b2563e0443210737855f958323575afe5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260216
+%global date 20260320
 %bcond snapshot 1
 
 %global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2512.397
+Version:        2603.88
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -166,7 +166,6 @@ Patch500:       %{vc_url}/pull/13443.patch#/%{name}-gh-pr13443.patch
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  cmake(cubeb)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(ao)
@@ -541,6 +540,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2603.88-1.20260320git12935d5
+- 2603
+
 * Mon Sep 15 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2506.433-1.20250913git695e06c
 - SDL3
 

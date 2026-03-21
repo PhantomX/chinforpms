@@ -2,7 +2,7 @@
 
 Name:           whdd
 Version:        3.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        HDD diagnostic and data recovery tool 
 
 License:        GPL-3.0-only
@@ -13,7 +13,6 @@ Source0:        https://github.com/%{name}/%{name}/archive/%{version}/%{name}-%{
 Patch0:         %{name}-cmake-cflags.patch
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  dialog-devel
@@ -28,7 +27,10 @@ Requires:       smartmontools
 %prep
 %autosetup -p1
 
-sed -e 's|sbin|bin|g' -i CMakeLists.txt
+sed \
+  -e 's|sbin|bin|g' \
+  -e '/cmake_minimum_required/s|2..|3.5|' \
+  -i CMakeLists.txt
 
 
 %build
@@ -50,6 +52,9 @@ sed -e 's|sbin|bin|g' -i CMakeLists.txt
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3.0.1-3
+- cmake fix
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0.1-2
 - Move sbin to bin
 

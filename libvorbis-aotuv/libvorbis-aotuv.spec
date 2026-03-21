@@ -7,7 +7,7 @@
 Name:           %{pkgname}-aotuv
 Summary:        The Vorbis General Audio Compression Codec - aoTuV optimized
 Version:        1.3.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 
 License:        BSD-3-Clause
 
@@ -18,7 +18,6 @@ Source0:        https://downloads.xiph.org/releases/vorbis/%{pkgname}-%{version}
 # https://freac.org
 Patch10:        https://freac.org/patches/%{pkgname}-1.3.7-aotuv-b6.03.patch
 Patch11:        https://freac.org/patches/%{pkgname}-1.3.7-aotuv-b6.03-lancer.patch
-Patch12:        0001-sharedbook-Revert-memory-leak-fix-to-please-Lancer-o.patch
 
 BuildRequires:  make
 BuildRequires:  gcc
@@ -95,6 +94,9 @@ make check
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-4
+- Remove revert memory leak patch
+
 * Mon May 06 2024 Phantom X <megaphantomx at hotmail dot com> - 1.3.7-3
 - Provides and requires tweaks
 

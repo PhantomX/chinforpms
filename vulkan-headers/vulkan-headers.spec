@@ -17,7 +17,7 @@ Source0:        %{url}/archive/sdk-%{version}.tar.gz#/Vulkan-Headers-sdk-%{versi
 Source0:        %{url}/archive/v%{version}.tar.gz#/Vulkan-Headers-%{version}.tar.gz
 %endif
 
-BuildRequires:  cmake3
+BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  ninja-build
@@ -34,16 +34,16 @@ Vulkan Header files and API registry
 %endif
 
 %build
-%cmake3 \
+%cmake \
   -G Ninja \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
 %{nil}
 
-%cmake3_build
+%cmake_build
 
 
 %install
-%cmake3_install
+%cmake_install
 
 
 %files

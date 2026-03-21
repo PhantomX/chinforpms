@@ -6,7 +6,7 @@
 
 Name:           pkgtool
 Version:        0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PS3 PKG tool
 
 License:        GPL-3.0-or-later
@@ -19,6 +19,7 @@ BuildRequires:  automake
 BuildRequires:  gcc
 BuildRequires:  libtool
 BuildRequires:  make
+BuildRequires:  pkgconfig(zlib)
 
 Provides:       bundled(sha1-paulej)
 
@@ -48,6 +49,9 @@ NOCONFIGURE=1 ./autogen.sh
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 0-2.20141223gitd2696b5
+- BR: zlib
+
 * Sun Oct 08 2023 Phantom X <megaphantomx at hotmail dot com> - 0-1.20141223gitd2696b5
 - Initial spec
 

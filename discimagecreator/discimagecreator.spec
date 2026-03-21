@@ -10,7 +10,7 @@
 %global pkgname DiscImageCreator
 
 Name:           discimagecreator
-Version:        20250901
+Version:        20260101
 Release:        1%{?dist}
 Summary:        Disc and disk image creation tool 
 
@@ -26,11 +26,13 @@ Source0:        %{url}/archive/%{version}/%{pkgname}-%{version}.tar.gz
 
 Patch0:         0001-rpm-build-fixes.patch
 
-
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  make
+BuildRequires:  meson
+BuildRequires:  pkgconfig(libarchive)
+BuildRequires:  pkgconfig(libunshield)
 BuildRequires:  pkgconfig(tinyxml2)
+BuildRequires:  pkgconfig(zlib)
 Requires:       eccedc
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -43,10 +45,15 @@ CD and GD, it can dump considering a drive + CD (=combined) offset.
 
 
 %prep
-%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1 -N
+
+find \( -name '*.c*' -or -name '*.h*' -or -name README \) -exec sed -i 's/\r$//' {} \;
+
+%autopatch -p1
 
 rm -f Release_ANSI/E_WISE*
 rm -f Release_ANSI/*.exe
+rm -rf %{pkgname}/_external/libunshield*
 rm -f %{pkgname}/_external/tinyxml2.*
 
 mv "Release_ANSI/Doc/Firmware&Tool.md" Release_ANSI/Doc/Firmware_and_Tool.md
@@ -62,15 +69,12 @@ sed \
   -i %{pkgname}/get.cpp
 
 %build
-%make_build -C %{pkgname}
+%meson
+%meson_build
 
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{pkgname}/%{pkgname} %{buildroot}%{_bindir}/
-
-mkdir -p %{buildroot}%{_datadir}/%{pkgname}
-install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
+%meson_install
 
 
 %files
@@ -81,6 +85,9 @@ install -pm0644 Release_ANSI/*.{dat,txt}  %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 20260101-1
+- 20260101
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 20250901-1
 - 20250901
 

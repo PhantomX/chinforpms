@@ -19,7 +19,7 @@
 %global verminor %%(echo %{version} | cut -d. -f1)
 
 Name:           hdiffpatch
-Version:        4.12.1
+Version:        4.12.2
 Release:        1%{?dist}
 Summary:        Command-line tools for Diff & Patch between binary files or directories
 
@@ -122,6 +122,9 @@ install -pm0644 lib%{name}.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 4.12.2-1
+- 4.12.2
+
 * Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 4.12.1-1
 - 4.12.1
 

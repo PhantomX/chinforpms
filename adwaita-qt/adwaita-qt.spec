@@ -31,7 +31,6 @@ Patch12:        0001-disable-overlay-scrolling.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  pkgconfig(xcb)
 
 Obsoletes:      adwaita-qt4 < 1.1.90

@@ -6,8 +6,8 @@ Summary:        Multi-threaded compressor using the lzip file format
 License:        GPL-2.0-or-later
 URL:            http://www.nongnu.org/lzip/%{name}.html
 
-Source0:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz
-Source1:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz.sig
+Source0:        https://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz
+Source1:        https://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz.sig
 
 BuildRequires:  gcc-c++
 BuildRequires:  lzlib-devel

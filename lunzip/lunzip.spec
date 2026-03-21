@@ -1,13 +1,13 @@
 Name:           lunzip
-Version:        1.14
+Version:        1.16
 Release:        1%{?dist}
 Summary:        Decompressor for lzip files
 
 License:        GPL-2.0-or-later
 URL:            http://www.nongnu.org/lzip/%{name}.html
 
-Source0:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz
-Source1:        http://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz.sig
+Source0:        https://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz
+Source1:        https://download.savannah.gnu.org/releases/lzip/%{name}/%{name}-%{version}.tar.gz.sig
 
 BuildRequires:  gcc
 BuildRequires:  make
@@ -42,6 +42,9 @@ make check
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.16-1
+- 1.16
+
 * Wed Mar 27 2024 Phantom X <megaphantomx at hotmail dot com> - 1.14-1
 - 1.14
 

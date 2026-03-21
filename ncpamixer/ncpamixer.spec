@@ -10,7 +10,7 @@
 %endif
 
 Name:           ncpamixer
-Version:        1.3.10
+Version:        1.3.11
 Release:        1%{?dist}
 Summary:        ncurses PulseAudio Mixer
 
@@ -26,7 +26,6 @@ Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
-BuildRequires:  make
 BuildRequires:  pkgconfig(menuw)
 BuildRequires:  pkgconfig(ncursesw)
 BuildRequires:  pkgconfig(libpulse)
@@ -81,6 +80,9 @@ install -pm0644 %{name}.1 %{buildroot}%{_mandir}/man1/
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.3.11-1
+- 1.3.11
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.10-1
 - 1.3.10
 

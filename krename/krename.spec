@@ -1,6 +1,6 @@
-%global commit 71c95ae1b01f4af02e9491b8651bc06a97302e08
+%global commit cd8c9486eb579c8e28c70be95ed4923b6ec49041
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250915
+%global date 2026032026
 %global with_snapshot 1
 
 %if 0%{?with_snapshot}
@@ -9,7 +9,7 @@
 
 Name:           krename
 Version:        5.0.60
-Release:        107%{?gver}%{?dist}
+Release:        108%{?gver}%{?dist}
 
 Epoch:          1
 
@@ -24,7 +24,7 @@ Source0:        https://invent.kde.org/utilities/krename/-/archive/%{commit}/%{n
 Source0:        https://download.kde.org/stable/%{name}/%{version}/src/%{name}-%{version}.tar.xz
 %endif
 
-BuildRequires:  make
+BuildRequires:  cmake
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  extra-cmake-modules >= 0.0.11

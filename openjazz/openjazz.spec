@@ -10,7 +10,7 @@
 %global binname OpenJazz
 
 Name:           openjazz
-Version:        20240919
+Version:        20260301
 Release:        1%{?dist}
 Summary:        A re-implemetantion of a known platform game engine
 
@@ -25,11 +25,10 @@ Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
 
 BuildRequires:  cmake
-BuildRequires:  make
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc-c++
 BuildRequires:  asciidoctor
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  cmake(SDL3)
 Requires:       hicolor-icon-theme
 
 Provides:       bundled(argparse) = 0~git
@@ -47,7 +46,9 @@ Provides:       bundled(scale2x) = 0~git
 
 
 %build
-%cmake
+%cmake \
+  -DSDL_VERSION:STRING="3" \
+%{nil}
 
 %cmake_build
 
@@ -63,7 +64,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %files
-%license COPYING licenses.txt
+%license COPYING
 %doc README.md
 %{_bindir}/%{binname}
 %{_datadir}/applications/%{binname}.desktop
@@ -72,6 +73,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{binname}.desktop
 
 
 %changelog
+* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 20260301-1
+- 20260301
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 20240919-1
 - 20240919
 
