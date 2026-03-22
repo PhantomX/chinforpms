@@ -8,8 +8,9 @@
 %bcond vendor 1
 %endif
 
-%global vc_id   2a0afcdd36d6bf73f683d77abf352812177cd1a0
+%global vc_id   75efced31b2515285096b8d1c1a3f894
 %global vendor_hash 66d632e6828c68d7c7059f20d371b026
+%global vendor_pkg %{name}-%{version}-vendor.tar.xz
 
 Name:           rusty-psn
 Version:        0.5.10
@@ -29,7 +30,7 @@ Source4:        %{url}/raw/%{vc_id}/resources/OFL.txt
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %if %{with vendor}
 # cargo vendor --versioned-dirs && tar --numeric-owner -cvJf ../%%{name}-%%{version}-vendor.tar.xz vendor/
-Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{name}-%{version}-vendor.tar.xz/%{vendor_hash}/%{name}-%{version}-vendor.tar.xz
+Source1:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{vendor_pkg}/%{vendor_hash}/%{vendor_pkg}
 %endif
 %endif
 
@@ -625,6 +626,7 @@ EOF
 %if %{with vendor}
 %cargo_prep -v vendor
 %else
+%cargo_prep
 %generate_buildrequires
 %cargo_generate_buildrequires
 %endif

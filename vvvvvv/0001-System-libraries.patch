@@ -1,74 +1,91 @@
-From 7820d406671b21770cb7c6de1d9158f130f89163 Mon Sep 17 00:00:00 2001
+From b8bb7c182e6f752e2e8982941ff247af94c5cacf Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 28 Jul 2022 19:22:32 -0300
 Subject: [PATCH] System libraries
 
 ---
- desktop_version/CMakeLists.txt | 35 +++++++++++++++++++++++++---------
- 1 file changed, 26 insertions(+), 9 deletions(-)
+ desktop_version/CMakeLists.txt | 46 +++++++++++++++++++++++++++-------
+ 1 file changed, 37 insertions(+), 9 deletions(-)
 
 diff --git a/desktop_version/CMakeLists.txt b/desktop_version/CMakeLists.txt
-index bc316c5..a488640 100644
+index 900ace7..f5872a6 100644
 --- a/desktop_version/CMakeLists.txt
 +++ b/desktop_version/CMakeLists.txt
-@@ -359,18 +359,37 @@ target_include_directories(sheenbidi-static PRIVATE
+@@ -353,20 +353,42 @@ target_include_directories(sheenbidi-static PRIVATE
      ../third_party/SheenBidi/Headers
  )
  
 -if(BUNDLE_DEPENDENCIES)
--    list(APPEND STATIC_LIBRARIES physfs-static tinyxml2-static lodepng-static c-hashmap-static faudio-static sheenbidi-static)
-+list(APPEND STATIC_LIBRARIES lodepng-static c-hashmap-static sheenbidi-static)
+-    list(APPEND STATIC_LIBRARIES lodepng-static physfs-static tinyxml2-static c-hashmap-static faudio-static sheenbidi-static)
++list(APPEND STATIC_LIBRARIES c-hashmap-static sheenbidi-static)
 +
 +find_package(PkgConfig)
 +
 +pkg_search_module(tinyxml2 IMPORTED_TARGET tinyxml2)
 +if(tinyxml2_FOUND)
-+  message(STATUS "Using the system tinyxml2")
-+  add_library(tinyxml2-static INTERFACE)
-+  target_link_libraries(tinyxml2-static INTERFACE PkgConfig::tinyxml2)
++    message(STATUS "Using the system tinyxml2")
++    add_library(tinyxml2 INTERFACE)
++    target_link_libraries(tinyxml2 INTERFACE PkgConfig::tinyxml2)
++    target_link_libraries(VVVVVV tinyxml2)
  else()
--    list(APPEND STATIC_LIBRARIES lodepng-static c-hashmap-static sheenbidi-static)
+-    list(APPEND STATIC_LIBRARIES c-hashmap-static sheenbidi-static)
 +    add_library(tinyxml2-static STATIC ${XML2_SRC})
++    list(APPEND STATIC_LIBRARIES tinyxml2-static)
  endif()
  
 -if(BUNDLE_DEPENDENCIES)
+-    add_library(lodepng-static STATIC ${PNG_SRC})
+-    target_compile_definitions(lodepng-static PRIVATE ${PNG_DEF})
 -    add_library(tinyxml2-static STATIC ${XML2_SRC})
 +pkg_search_module(physfs IMPORTED_TARGET physfs)
 +if(physfs_FOUND)
-+  message(STATUS "Using the system physfs")
-+  add_library(physfs-static INTERFACE)
-+  target_link_libraries(physfs-static INTERFACE PkgConfig::physfs)
++    message(STATUS "Using the system physfs")
++    add_library(physfs INTERFACE)
++    target_link_libraries(physfs INTERFACE PkgConfig::physfs)
++    target_link_libraries(VVVVVV physfs)
 +else()
      add_library(physfs-static STATIC ${PFS_SRC})
      target_compile_definitions(physfs-static PRIVATE
          -DPHYSFS_SUPPORTS_DEFAULT=0 -DPHYSFS_SUPPORTS_ZIP=1
      )
++    list(APPEND STATIC_LIBRARIES physfs-static)
 +endif()
 +
 +find_package(FAudio CONFIG)
 +if(FAudio_FOUND)
 +  message(STATUS "Using the system FAudio")
 +  add_library(faudio-static INTERFACE)
-+  target_link_libraries(faudio-static INTERFACE FAudio::FAudio)
++  target_link_libraries(faudio INTERFACE FAudio::FAudio)
++  target_link_libraries(VVVVVV faudio)
 +else()
      add_library(faudio-static STATIC ${FAUDIO_SRC})
      target_include_directories(
          faudio-static PRIVATE
-@@ -378,12 +397,10 @@ if(BUNDLE_DEPENDENCIES)
+@@ -374,16 +396,22 @@ if(BUNDLE_DEPENDENCIES)
      )
      # Disable FAudio debug stuff in release mode. This needs a generator expression for CMake reasons(TM)
      target_compile_definitions(faudio-static PRIVATE $<$<CONFIG:Release>:FAUDIO_DISABLE_DEBUGCONFIGURATION>)
--
++    list(APPEND STATIC_LIBRARIES faudio-static)
++endif()
+ 
 -    target_link_libraries(VVVVVV ${STATIC_LIBRARIES})
--else()
--    target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 FAudio)
++if(BUNDLE_DEPENDENCIES)
++    add_library(lodepng-static STATIC ${PNG_SRC})
++    target_compile_definitions(lodepng-static PRIVATE ${PNG_DEF})
++    list(APPEND STATIC_LIBRARIES lodepng-static)
+ else()
+     target_compile_definitions(VVVVVV PRIVATE
+         ${PNG_DEF}
+         -DSYSTEM_LODEPNG
+     )
+-    target_link_libraries(VVVVVV ${STATIC_LIBRARIES} physfs tinyxml2 FAudio lodepng)
++    target_link_libraries(VVVVVV lodepng)
  endif()
  
-+target_link_libraries(VVVVVV ${STATIC_LIBRARIES} faudio-static physfs-static tinyxml2-static)
-+
++target_link_libraries(VVVVVV ${STATIC_LIBRARIES})
  
  if(MSVC)
      # Statically link Microsoft's runtime library so end users don't have to install it (/MT)
 -- 
-2.49.0
+2.53.0
 

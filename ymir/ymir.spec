@@ -10,13 +10,11 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%if 0%{?fedora} > 43
-%bcond rtmidi 1
-%endif
+%bcond rtmidi 0
 
-%global commit 708eddc0e518bc2951acc41241311941221542c2
+%global commit 4e4a01402bf06e16dc7099f0c5c2f207c4a3387f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260204
+%global date 20260320
 %bcond snapshot 1
 
 %global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
@@ -51,7 +49,7 @@
 
 Name:           ymir
 Version:        0.3.0
-Release:        0.1%{?dist}
+Release:        0.2%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1

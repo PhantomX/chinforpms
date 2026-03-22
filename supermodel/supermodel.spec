@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 0d61fa1cf9f7024730be33986bc9f2991465cc5e
+%global commit d6dec3dcf0922459801907950d966e5767c674de
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260101
+%global date 20260228
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -18,7 +18,7 @@
 
 Name:           supermodel
 Version:        0.3~a
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A Sega Model 3 arcade emulator
 
 License:        GPL-3.0
@@ -28,7 +28,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{pkgname}-%{shortcommit}.tar.gz
 Source1:        %{name}.sh
 
 Patch0:         0001-fix-build-flags.patch
-Patch1:         0001-format-security.patch
 
 BuildRequires:  gcc
 BuildRequires:  gcc-c++

@@ -1,8 +1,8 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit d3197d10f7ee6e84331826c89e2415720c9e6888
+%global commit 9bcade977606d8ec6c31c183027ca5106074c30d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20250902
+%global date 20260225
 %bcond snapshot 1
 
 %bcond faudio 0
@@ -38,7 +38,7 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.6%{?dist}
+Release:        0.7%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
@@ -130,18 +130,19 @@ cp -p third_party/SheenBidi/LICENSE LICENSE.SheenBidi
 cp -p desktop_version/README.md README_desktop.md
 
 sed \
-  -e 's|find_package(Git)|find_package(Git_disabled)|g' \
   -e '/BIN_RPATH/d' \
   -e '/disable-new-dtags/d' \
   -e '/CMAKE_BUILD_WITH_INSTALL_RPATH/d' \
   -e '/CMAKE_INSTALL_RPATH/d' \
   -i desktop_version/CMakeLists.txt
 
-%if %{with snapshot}
 sed \
+  -e 's|find_package(Git)|find_package(Git_disabled)|g' \
   -e 's|GIT_FOUND|NOT OFFICIAL_BUILD|g' \
   -e 's|${GIT_EXECUTABLE}|/usr/bin/true|g' \
   -i desktop_version/CMakeLists.txt desktop_version/version.cmake
+
+%if %{with snapshot}
 sed \
   -e 's|@INTERIM_COMMIT@|%{shortcommit}|g' \
   -e 's|@COMMIT_DATE@|%{date}|g' \

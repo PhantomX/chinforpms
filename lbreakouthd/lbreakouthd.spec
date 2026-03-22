@@ -1,5 +1,5 @@
 Name:           lbreakouthd
-Version:        1.2
+Version:        1.2.2
 Release:        1%{?dist}
 Summary:        A breakout-style arcade game
 
@@ -74,6 +74,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.2-1
+- 1.2.2
+
 * Thu Sep 18 2025 Phantom X <megaphantomx at hotmail dot com> - 1.2-1
 - 1.2
 

@@ -26,10 +26,10 @@
 %global local_dotnet_ver 10.0.102
 
 %global avalonia_angle_windows_natives_ver 2.1.25547.20250602
-%global avalonia_ver 11.3.6
+%global avalonia_ver 11.3.12
 %global avalonia_ver2 11.0.4
 %global avalonia_ver3 11.0.0
-%global avalonia_build_services_ver 0.0.31
+%global avalonia_build_services_ver 11.3.2
 %global avalonia_svg_ver 11.0.0.19
 %global commandlineparser_ver 2.9.1
 %global communitytoolkit_mvvm_ver 8.4.0
@@ -39,7 +39,7 @@
 %global discordrichpresence_ver 1.6.1.70
 %global excss_ver 4.3.1
 %global dynamicdata_ver 9.4.1
-%global fluent_avalonia_ver 2.0.5
+%global fluent_avalonia_ver 2.5.0
 %global fluentavaloniaui_noanim_ver 2.4.0-build3
 %global gommon_ver 2.8.0.1
 %global harfbuzzsharp_ver 8.3.1.1
@@ -130,8 +130,8 @@
 %global ryujinx_graphics_nvdec_dependencies_allarch_ver 6.1.2-build3
 %global ryujinx_graphics_nvdec_dependencies_osx_ver 5.0.1
 %global ryujinx_graphics_vulkan_dependencies_moltenvk_ver 1.2.0
-%global ryujinx_libhac_ver 0.21.0-alpha.126
-%global ryujinx_libhac_dl_id 1181
+%global ryujinx_libhac_ver 0.21.0-alpha.129
+%global ryujinx_libhac_dl_id 1815
 %global ryujinx_updateclient_ver 1.0.44
 %global ryujinx_updateclient_dl_id 633
 %global ryujinx_systemsupdate_dl_id 634
@@ -148,8 +148,8 @@
 %global skiasharp_ver2 2.88.8
 %global skiasharp_ver3 2.88.7
 %global spb_ver 0.0.4-build32
-%global svg_model_ver 3.2.1
-%global svg_controls_avalonia_ver 11.3.6.2
+%global svg_model_ver 3.6.0
+%global svg_controls_avalonia_ver 11.3.9.4
 %global system_appcontext_ver 4.1.0
 %global system_buffers_ver 4.0.0
 %global system_buffers_ver2 4.3.0
@@ -268,7 +268,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.252
+Version:        1.3.265
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 

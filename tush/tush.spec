@@ -1,3 +1,6 @@
+%global src_hash 317dab26206589e74d7100b35f52ea6b
+%global src_pkg tush.zip
+
 Name:           tush
 Version:        1.1.1
 Release:        3%{?dist}
@@ -6,7 +9,7 @@ Summary:        The Utility for SNES Headers
 License:        Unknown
 URL:            https://www.romhacking.net/utilities/608
 
-Source0:        tush.zip
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{src_pkg}/%{src_hash}/%{src_pkg}
 
 Patch0:         0001-fix-OpenDialog-crash.patch
 

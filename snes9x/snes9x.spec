@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 83ebd9d9d94521dde231beac0ad5ca253bd767f1
+%global commit 96daa0ede606f3b60a53c24204a2bda4ba207ea6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251108
+%global date 20260320
 %bcond snapshot 1
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
@@ -15,7 +15,7 @@
 
 %bcond portaudio 0
 %bcond qt 0
-%bcond vma 1
+%bcond vma 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -30,7 +30,7 @@
 
 Name:           snes9x
 Version:        1.63
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
