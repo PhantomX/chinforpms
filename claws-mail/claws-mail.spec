@@ -97,7 +97,7 @@ BuildRequires:  pkgconfig(ldap) >= 2.0.7
 BuildRequires:  pkgconfig(libcanberra-gtk3) >= 0.6
 BuildRequires:  pkgconfig(libcurl)
 # actually 1.9.1 with TLS SNI patches, which are integrated into 1.9.2
-BuildRequires:  pkgconfig(libetpan) >= 1.9.2
+BuildRequires:  pkgconfig(libetpan) >= 1.9.4
 BuildRequires:  pkgconfig(libgcrypt)
 BuildRequires:  pkgconfig(libical) >= 2.0
 BuildRequires:  pkgconfig(libidn)

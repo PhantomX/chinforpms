@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 2ba7756c0e2cbba363844104142515c02749cd58
+%global commit 54999d15077b986bd993a02fb19a82525ffbd224
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
+%global date 20260322
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.40.187
+Version:        0.0.40.195
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -181,6 +181,7 @@ Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
 Patch14:        0001-gcc-16-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
+Patch501:       0001-wolfssl-add-new-Fedora-certificate-path.patch
 
 ExclusiveArch:  x86_64
 
@@ -326,6 +327,7 @@ tar -xf %{S:14} -C 3rdparty/hidapi/hidapi --strip-components 1
 cp -p hidapi/hidapi/LICENSE.txt LICENSE.hidapi
 %endif
 tar -xf %{S:15} -C wolfssl/wolfssl --strip-components 1
+%patch -P 501 -p1 -d wolfssl/wolfssl
 cp -p wolfssl/wolfssl/LICENSING LICENSE.wolfssl
 tar -xf %{S:17} -C fusion/fusion --strip-components 1
 cp -p fusion/fusion/LICENSE.md LICENSE.fusion.md

@@ -56,6 +56,7 @@ BuildRequires:  libappstream-glib
 # Required to run the initial setup
 Requires:       tar
 Requires:       zenity
+Requires:       xz
 
 # Most games use OpenGL, some games already use Vulkan. Vulkan is also required
 # for Steam Play to run Windows games through emulation. i686 version of these
@@ -196,6 +197,11 @@ mkdir -p %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 install -m 644 -p %{SOURCE7} %{buildroot}%{_prefix}/lib/systemd/system.conf.d/
 install -m 644 -p %{SOURCE7} %{buildroot}%{_prefix}/lib/systemd/user.conf.d/
 
+%if 0%{?fedora} >= 44
+%post
+# Workaround for https://fedoraproject.org/wiki/Changes/droppingOfCertPemFile#Temporary_fix
+update-ca-trust extract --rhbz2387674 >/dev/null 2>&1 || :
+%endif
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop

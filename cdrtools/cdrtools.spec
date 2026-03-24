@@ -14,7 +14,7 @@
 
 Name:           cdrtools
 Version:        3.02~a09
-Release:        5%{?dist}
+Release:        6%{?dist}
 Epoch:          11
 Summary:        CD/DVD/BluRay command line recording software
 
@@ -73,7 +73,6 @@ This package provides the development files of the %{name} package.
 
 %package libs
 Summary:        Libraries for %{name}
-Requires(post): ldconfig
 
 %description libs
 This package provides the shared libraries for %{name}.
@@ -94,6 +93,30 @@ for i in \
 done
 
 sed -e '/INSDIR/s|sbin|bin|' -i rscsi/Makefile
+
+# Rename libraries with name conflicts
+for i in \
+  deflt find schily
+do
+  sed -e "/^TARGETLIB=/s|${i}|\0-cdrtools|" \
+    -i lib${i}/lib${i}{,_p}.mk lib${i}/shl${i}.mk
+done
+sed \
+  -e "/^TARGETLIB=/s|mdigest|\0-cdrtools|" \
+  -i libmdigest/mdigest{,_p}.mk libmdigest/shlmdigest.mk
+
+for i in \
+  deflt find mdigest schily
+do
+  sed \
+    -e "s|-l${i}|\0-cdrtools|" \
+    -i {cdda2wav,cdrecord,mkisofs,readcd,rscsi,scgcheck,scgskeleton}/Makefile \
+       mkisofs/diag/{dump,isoinfo,isodump,isovfy,isodebug}.mk \
+       libcdrdeflt/shlcdrdeflt.mk libfile/shlfile.mk libfind/shlfind.mk \
+       libmdigest/shlmdigest.mk libparanoia/shlparanoia.mk librscg/shlrscg.mk \
+       libscgcmd/shlscgcmd.mk libscg/shlscg.mk libsiconv/shlsiconv.mk
+done
+
 
 %build
 %make_build GMAKE_NOWARN=true LINKMODE="dynamic" RUNPATH= \
@@ -298,15 +321,45 @@ fi
 
 %files libs
 %license COPYING GPL-2.0.txt LGPL-2.1.txt CDDL.Schily.txt
-%{_libdir}/lib*.so.*
+%{_libdir}/libcdrdeflt.so.1.0
+%{_libdir}/libdeflt-cdrtools.so.1.0
+%{_libdir}/libedc_ecc.so.1.0
+%{_libdir}/libedc_ecc_dec.so.1.0
+%{_libdir}/libfile.so.1.0
+%{_libdir}/libfind-cdrtools.so.1.0
+%{_libdir}/libhfs.so.1.0
+%{_libdir}/libmdigest-cdrtools.so.1.0
+%{_libdir}/libparanoia.so.1.0
+%{_libdir}/librscg.so.1.0
+%{_libdir}/libscg.so.1.0
+%{_libdir}/libscgcmd.so.1.0
+%{_libdir}/libschily-cdrtools.so.1.0
+%{_libdir}/libsiconv.so.1.0
+
 
 %files devel
 %{_includedir}/*
-%{_libdir}/lib*.so
+%{_libdir}/libcdrdeflt.so
+%{_libdir}/libdeflt-cdrtools.so
+%{_libdir}/libedc_ecc.so
+%{_libdir}/libedc_ecc_dec.so
+%{_libdir}/libfile.so
+%{_libdir}/libfind-cdrtools.so
+%{_libdir}/libhfs.so
+%{_libdir}/libmdigest-cdrtools.so
+%{_libdir}/libparanoia.so
+%{_libdir}/librscg.so
+%{_libdir}/libscg.so
+%{_libdir}/libscgcmd.so
+%{_libdir}/libschily-cdrtools.so
+%{_libdir}/libsiconv.so
 %{_mandir}/man3/*
 
 
 %changelog
+* Tue Mar 24 2026 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-6
+- Rename some libraries to prevent name conflicts
+
 * Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 11:3.02~a09-5
 - Move sbin to bin
 

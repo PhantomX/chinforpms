@@ -1,0 +1,32 @@
+From 89cf9be08208e674d4b6f5326fdc6f7accf757e7 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 22 Mar 2026 11:15:22 -0300
+Subject: [PATCH] cpp-httplib: add new Fedora certificate path
+
+---
+ httplib.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/httplib.h b/httplib.h
+index c1cc96c..27c51ef 100644
+--- a/httplib.h
++++ b/httplib.h
+@@ -15900,6 +15900,7 @@ inline bool enumerate_macos_keychain_certs(Callback cb) {
+ // Common CA certificate file paths on Linux/Unix
+ inline const char **system_ca_paths() {
+   static const char *paths[] = {
++      "/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem",  /* Fedora */
+       "/etc/ssl/certs/ca-certificates.crt", // Debian/Ubuntu
+       "/etc/pki/tls/certs/ca-bundle.crt",   // RHEL/CentOS
+       "/etc/ssl/ca-bundle.pem",             // OpenSUSE
+@@ -15912,6 +15913,7 @@ inline const char **system_ca_paths() {
+ // Common CA certificate directory paths on Linux/Unix
+ inline const char **system_ca_dirs() {
+   static const char *dirs[] = {"/etc/ssl/certs",             // Debian/Ubuntu
++                               "/etc/pki/ca-trust/extracted/pem",  /* Fedora */
+                                "/etc/pki/tls/certs",         // RHEL/CentOS
+                                "/usr/share/ca-certificates", // Other
+                                nullptr};
+-- 
+2.53.0
+

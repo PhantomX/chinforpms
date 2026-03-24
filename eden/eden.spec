@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 96e177702e0bc7d689df52c544bb26819e704c4c
+%global commit c5b519380cfed91674483eae0caee40f3a80c7d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
+%global date 20260322
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc2.28489
+Version:        0.2.0~rc2.28491
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -146,6 +146,8 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 %dnl Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
 
 Patch10:        0001-Use-system-libraries.patch
+Patch11:        0001-Add-smaller-game-icon-sizes.patch
+Patch500:       0001-cpp-httplib-add-new-Fedora-certificate-path.patch
 
 ExclusiveArch:  x86_64
 
@@ -311,6 +313,7 @@ sed -e '/find_package/s|xbyak|\0_DISABLED|g' -i ../CMakeLists.txt
 mkdir -p cpp-httplib
 tar -xf %{S:16} -C cpp-httplib --strip-components 1
 sed -e 's|zstd::libzstd|zstd::zstd|g' -i cpp-httplib/CMakeLists.txt
+%patch -P 500 -p1 -d cpp-httplib
 mkdir -p cpp-jwt
 tar -xf %{S:17} -C cpp-jwt --strip-components 1
 %{__scm_apply_patch -p1 -q} -d cpp-jwt -i ../../.patch/cpp-jwt/0001-fix-missing-decl.patch
