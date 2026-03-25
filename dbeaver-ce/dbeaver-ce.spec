@@ -9,7 +9,7 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        26.0.0
+Version:        26.0.1
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -56,6 +56,8 @@ jre_dir="/usr/lib/jvm"
 
 if [ -x "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" ] ;then
   jre_bin="${jre_dir}/temurin-${jre_ver}-jdk/bin/java"
+elif [ -x "${jre_dir}/temurin-${jre_ver}-jre/bin/java" ] ;then
+  jre_bin="${jre_dir}/temurin-${jre_ver}-jre/bin/java"
 else
   jre_bin="${jre_dir}/jre-${jre_ver}/bin/java"
 fi
@@ -136,6 +138,9 @@ done
 
 
 %changelog
+* Tue Mar 24 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.1-1
+- 26.0.1
+
 * Thu Mar 05 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.0-1
 - 26.0.0
 

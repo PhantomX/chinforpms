@@ -16,7 +16,7 @@ index 97e909e..ae5e9ec 100755
  fi
  
 +XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-${HOME}/.config}"
-+VS_CODE_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/%{name}-userflags.conf"
++VS_CODE_USER_FLAGS_FILE="${XDG_CONFIG_HOME}/visual-studio-code-userflags.conf"
 +VS_CODE_USER_FLAGS=()
 +if [[ -r "${VS_CODE_USER_FLAGS_FILE}" ]]; then
 +  while read -r param

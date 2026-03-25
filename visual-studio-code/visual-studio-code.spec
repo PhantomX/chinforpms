@@ -14,7 +14,7 @@
 %endif
 
 Name:           visual-studio-code
-Version:        1.108.2
+Version:        1.112.0
 Release:        1%{?dist}
 Summary:        Code editing. Redefined.
 
@@ -175,6 +175,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{pkgname}.app
 %{zsh_completions_dir}/_%{pkgname}
 
 %changelog
+* Tue Mar 24 2026 - 1.112.0-1
+- 1.112.0
+
 * Wed Feb 04 2026 - 1.108.2-1
 - Initial spec
 

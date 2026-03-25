@@ -1,5 +1,5 @@
 Name:           gkrellm
-Version:        2.5.0
+Version:        2.5.1
 Release:        100%{?dist}
 Summary:        Multiple stacked system monitors in one process
 
@@ -12,7 +12,6 @@ Source0:        https://gkrellm.srcbox.net/releases/%{name}-%{version}.tar.bz2
 
 Patch1:         gkrellm-2.4.0-config.patch
 Patch3:         gkrellm-2.4.0-width.patch
-Patch10:        0001-Update-pt_BR-translation.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gettext
@@ -20,11 +19,12 @@ BuildRequires:  gcc
 BuildRequires:  meson
 BuildRequires:  pkgconfig(gtk+-2.0)
 BuildRequires:  pkgconfig(libntlm)
+BuildRequires:  pkgconfig(libsystemd)
 BuildRequires:  lm_sensors-devel
 BuildRequires:  pkgconfig(openssl)
 BuildRequires:  pkgconfig(sm)
 BuildRequires:  libappstream-glib
-Requires:       ( gdk-pixbuf2-modules-extra%{?_isa} or glycin-loaders%{?_isa} >= 2.1 )
+Requires:       gdk-pixbuf2-modules-extra%{?_isa}
 
 %description
 GKrellM charts CPU, load, Disk, and all active net interfaces
@@ -137,6 +137,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/*.metainfo.xml
 
 
 %changelog
+* Wed Mar 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.1-100
+- 2.5.1
+
 * Sun Feb 01 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.5.0-100
 - 2.5.0
 - meson

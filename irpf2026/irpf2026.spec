@@ -61,6 +61,8 @@ jar_file="%{_datadir}/ProgramasRFB/%{name}/irpf.jar"
 
 if [ -x "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" ] ;then
   exec "${jre_dir}/temurin-${jre_ver}-jdk/bin/java" -jar "${jar_file}" "${@}"
+elif [ -x "${jre_dir}/temurin-${jre_ver}-jre/bin/java" ] ;then
+  exec "${jre_dir}/temurin-${jre_ver}-jre/bin/java" -jar "${jar_file}" "${@}"
 else
   exec "${jre_dir}/jre-${jre_ver}/bin/java" -jar "${jar_file}" "${@}"
 fi
