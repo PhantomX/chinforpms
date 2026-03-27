@@ -118,7 +118,7 @@
 Summary: The Linux kernel
 
 %if 0%{?fedora}
-%define secure_boot_arch x86_64
+%define secure_boot_arch x86_64 aarch64
 %else
 %define secure_boot_arch x86_64 aarch64 s390x ppc64le
 %endif
@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.9
+%define specrpmversion 6.19.10
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1289,6 +1289,8 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
+Patch2: %{ark_url}/ff7c5993900e1dbc5af1055261392ed99cbe6257.patch#/kernel-ark-ff7c5993.patch
+Patch3: %{ark_url}/5d6a7a2981a0bbead5133992f7df2419a6c8318c.patch#/kernel-ark-5d6a7a29.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1351,10 +1353,6 @@ Patch7400:  %{pf_url}/b87446ffb4d4156231d53f9bd0a14d35757a3557.patch%{pf_antibot
 Patch7401:  %{pf_url}/81b99a82db8b5fcc77b42e144870e2b2b934f1aa.patch%{pf_antibot}#/pf-cb-81b99a8.patch
 Patch7402:  %{pf_url}/bf1b20db8682451bc1b09c9392e67414581100d5.patch%{pf_antibot}#/pf-cb-bf1b20d.patch
 Patch7403:  %{pf_url}/f55ec7802871d332ccd12d93af18e260ce82e00e.patch%{pf_antibot}#/pf-cb-f55ec78.patch
-Patch7404:  %{pf_url}/1c98434176a49c0b6bea3ec355c7e8ff78de1d2b.patch%{pf_antibot}#/pf-cb-1c98434.patch
-Patch7405:  %{pf_url}/670aaab66aec6b0a0241fd11a559422d466a0d63.patch%{pf_antibot}#/pf-cb-670aaab.patch
-Patch7406:  %{pf_url}/0600de0b46ecee5849ce42f84efacb142a1f6097.patch%{pf_antibot}#/pf-cb-0600de0.patch
-Patch7407:  %{pf_url}/06e26e399419dfa2caae081f3a60689fe1c5a8a4.patch%{pf_antibot}#/pf-cb-06e26e3.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2309,6 +2307,8 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
+ApplyOptionalPatch %{PATCH2}
+ApplyOptionalPatch %{PATCH3}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2343,10 +2343,6 @@ ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
 %endif
 
 # openSUSE
@@ -5038,6 +5034,9 @@ fi\
 #
 #
 %changelog
+* Thu Mar 26 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.10-500.chinfo
+- 6.19.10
+
 * Thu Mar 19 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.9-500.chinfo
 - 6.19.9
 

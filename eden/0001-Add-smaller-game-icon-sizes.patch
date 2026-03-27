@@ -1,19 +1,22 @@
-From 1857868f47efe996a482db7721f75aa7e3438d57 Mon Sep 17 00:00:00 2001
+From 292d8b730c1c571461c52abdb6193056d9258d03 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 23 Mar 2026 19:57:47 -0300
 Subject: [PATCH] Add smaller game icon sizes
 
 ---
- src/yuzu/main_window.cpp | 2 ++
- 1 file changed, 2 insertions(+)
+ src/yuzu/main_window.cpp | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/src/yuzu/main_window.cpp b/src/yuzu/main_window.cpp
-index 2e7cef0..394b852 100644
+index 2e7cef0..bd9e8b7 100644
 --- a/src/yuzu/main_window.cpp
 +++ b/src/yuzu/main_window.cpp
-@@ -384,6 +384,8 @@ namespace {
+@@ -382,8 +382,10 @@ static QString PrettyProductName() {
  
- constexpr std::array<std::pair<u32, const char*>, 5> default_game_icon_sizes{
+ namespace {
+ 
+-constexpr std::array<std::pair<u32, const char*>, 5> default_game_icon_sizes{
++constexpr std::array<std::pair<u32, const char*>, 7> default_game_icon_sizes{
      std::make_pair(0, QT_TRANSLATE_NOOP("MainWindow", "None")),
 +    std::make_pair(16, QT_TRANSLATE_NOOP("MainWindow", "Mini (16x16)")),
 +    std::make_pair(24, QT_TRANSLATE_NOOP("MainWindow", "Smaller (24x24)")),

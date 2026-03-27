@@ -1,11 +1,13 @@
 %undefine _hardened_build
 
+BuildArch:      noarch
+
 %global commit 884de5ef1263
 %global date 20260224
 %bcond snapshot 1
 
 %if %{with snapshot}
-%global dist .%{date}hg%{commit}
+%global dist .%{date}hg%{commit}%{?dist}
 %endif
 
 %global pkgname blastem
@@ -18,8 +20,6 @@ Summary:        Blastem binary support files
 License:        GPL-3.0-only
 URL:            https://www.retrodev.com/%{pkgname}/
 Source0:        https://www.retrodev.com/repos/%{pkgname}/archive/%{commit}.tar.bz2#/%{pkgname}-%{commit}.tar.bz2
-
-BuildArch:      noarch
 
 BuildRequires:  make
 BuildRequires:  ImageMagick

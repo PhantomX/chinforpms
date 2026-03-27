@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit c5b519380cfed91674483eae0caee40f3a80c7d4
+%global commit 47c6a73971cb3ba6d51e86421a2f4d275687df4f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260322
+%global date 20260326
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -57,11 +57,11 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 simpleini
 
-%global commit20 f140d1e8c56df65993bb267603d09a5b4abd56eb
+%global commit20 d548b3bca566a5224468e77f275437b990bd147d
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 tzdb_to_nx
 
-%global commit200 344c99fc75006e6529df42b2a205c8f40bac4e46
+%global commit200 afcea8761543ac97aeee6399b62763ffa0abfac4
 %global shortcommit200 %(c=%{commit200}; echo ${c:0:7})
 %global srcname200 tz
 
@@ -96,7 +96,8 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc2.28491
+Version:        0.2.0~rc2.23
+Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
 
@@ -130,7 +131,7 @@ Source16:       https://github.com/yhirose/%{srcname16}/archive/%{commit16}/%{sr
 Source17:       https://github.com/arun11299/%{srcname17}/archive/%{commit17}/%{srcname17}-%{shortcommit17}.tar.gz
 %endif
 Source19:       https://github.com/brofield/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
-Source20:       https://git.crueter.xyz/misc/%{srcname20}/archive/%{commit20}.tar.gz#/%{srcname20}-%{shortcommit20}.tar.gz
+Source20:       %{vc_url}/%{srcname20}/archive/%{commit20}.tar.gz#/%{srcname20}-%{shortcommit20}.tar.gz
 Source200:      https://github.com/eggert/%{srcname200}/archive/%{commit200}/%{srcname200}-%{shortcommit200}.tar.gz
 %if %{without ffmpeg}
 %if %{without ffmpeg_st}
@@ -201,7 +202,6 @@ Provides:       bundled(ffmpeg) = 0~git%{?shortcommit21}
 Provides:       bundled(ffmpeg) = %{ffmpeg_ver}
 %endif
 %endif
-BuildRequires:  cmake(mcl) >= 0.1.12
 BuildRequires:  pkgconfig(libenet) >= 1.3
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libusb-1.0)
@@ -401,7 +401,7 @@ sed \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
 sed \
-  -e 's|-Wno-attributes|\0 -Wno-error=array-bounds -Wno-error=shadow -Wno-error=unused-variable -Wno-error=unused-but-set-variable -Wno-error=missing-declarations|' \
+  -e 's|-Werror|-Wno-error|g' \
   -i src/CMakeLists.txt
 
 %if %{with clang}
@@ -484,6 +484,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Mar 27 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.2.0~rc2.23-1.20260326git47c6a73
+- Use git tag release number instead commits
+
 * Sun Mar 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.0~rc2.28480-1.20260314gitf0a4ac7
 - 0.2.0-rc2
 

@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 7f9f1e90ca10799b98063f979fe1ea6376d4bc6e
+%global commit d4e9daa73912a2412cc6fcb064ab6c70c7b4b0dc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
+%global date 20260324
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -43,7 +43,7 @@
 # Build tests
 %bcond tests 0
 
-%global commit1 a36decbe43d0e5a570ac3d3ba9a0b226dc832a17
+%global commit1 d9f1126e42b606d02ecc89b10cb9a336a3b2f5a3
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 compatibility-list
 
@@ -157,7 +157,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2125.0~rc3.2
+Version:        2125.0
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -509,16 +509,18 @@ sed -e '/find_package/s|Git|\0_DISABLED|g' -i CMakeModules/GenerateSCMRev.cmake
 
 sed -e '/pkg_check_modules/s|libopanal|openal|' -i externals/cmake-modules/FindOpenAL.cmake
 
+sed \
+  -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
+  -e 's|@BUILD_DATE@|%(date +%F)|g' \
 %if %{with snapshot}
-  sed \
-    -e 's|@GIT_REV@|%{commit}|g' \
-    -e 's|@GIT_BRANCH@|HEAD|g' \
-    -e 's|@GIT_DESC@|%{shortcommit}|g' \
-    -e 's|@BUILD_FULLNAME@|chinforpms %{version}-%{release}|g' \
-    -e 's|@BUILD_DATE@|%(date +%F)|g' \
-    -e 's|@BUILD_VERSION@|%{verb}-g%{shortcommit}|g' \
-    -i src/common/scm_rev.cpp.in
+  -e 's|@GIT_REV@|%{commit}|g' \
+  -e 's|@GIT_BRANCH@|HEAD|g' \
+  -e 's|@GIT_DESC@|%{shortcommit}|g' \
+  -e 's|@BUILD_VERSION@|%{verb}-g%{shortcommit}|g' \
+%else
+  -e 's|@BUILD_VERSION@|%{verb}|g' \
 %endif
+  -i src/common/scm_rev.cpp.in
 
 
 %build
@@ -621,6 +623,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Mar 27 2026 Phantom X <megaphantomx at hotmail dot com> - 2125.0-1.20260324gitd4e9daa
+- 2125.0
+
 * Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 2125.0~rc3.2-1.20260320git7f9f1e9
 - 2125.0-rc3
 

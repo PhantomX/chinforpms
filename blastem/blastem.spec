@@ -7,7 +7,7 @@
 %bcond snapshot 1
 
 %if %{with snapshot}
-%global dist .%{date}hg%{commit}
+%global dist .%{date}hg%{commit}%{?dist}
 %endif
 
 Name:           blastem
