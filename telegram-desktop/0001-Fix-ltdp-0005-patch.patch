@@ -1,6 +1,6 @@
-From 313478ffb64ccfef5f9def558c040b72f62e54dd Mon Sep 17 00:00:00 2001
+From 52ee91d2e7059cf5656fd6743a8a9d890c3a8d35 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
-Date: Fri, 25 Jul 2025 16:31:50 -0300
+Date: Wed, 1 Apr 2026 18:02:51 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
@@ -8,7 +8,7 @@ Subject: [PATCH] Fix ltdp 0005 patch
  1 file changed, 24 insertions(+), 24 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..b89c8a5 100644
+index 665f5d3..ca13087 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
 @@ -5,16 +5,16 @@ index 0d9671f..f77cf4e 100644
@@ -74,13 +74,11 @@ index 665f5d3..b89c8a5 100644
   void Stories::loadMore(StorySourcesList list) {
  +	if (DisableStories.value()) {
  +		return;
-@@ -60,31 +60,31 @@ diff --git a/Telegram/SourceFiles/data/data_stories.h b/Telegram/SourceFiles/dat
- index 4e6b0ce..b71076f 100644
+@@ -61,31 +61,31 @@ index 4e6b0ce..b71076f 100644
  --- a/Telegram/SourceFiles/data/data_stories.h
  +++ b/Telegram/SourceFiles/data/data_stories.h
--@@ -30,6 +30,8 @@ struct StoryIdDates;
+ @@ -30,6 +30,8 @@ struct StoryIdDates;
 - class Story;
-+@@ -38,6 +38,8 @@ class Story;
 + struct StoryAlbum;
   class StoryPreload;
 -
@@ -95,19 +93,19 @@ index 665f5d3..b89c8a5 100644
  index 983497e..db40ead 100644
  --- a/Telegram/SourceFiles/settings/settings_experimental.cpp
  +++ b/Telegram/SourceFiles/settings/settings_experimental.cpp
--@@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
+ @@ -19,6 +19,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 - #include "core/application.h"
-+@@ -25,6 +25,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
   #include "core/launcher.h"
 + #include "core/sandbox.h"
   #include "chat_helpers/tabbed_panel.h"
  +#include "data/data_stories.h"
   #include "dialogs/dialogs_widget.h"
-+ #include "history/history_item_components.h"
-  #include "info/profile/info_profile_actions.h"
+- #include "info/profile/info_profile_actions.h"
 - #include "lang/lang_keys.h"
 -@@ -140,6 +141,7 @@ void SetupExperimental(
 - 				: rpl::producer<>()));
++ #include "dialogs/ui/dialogs_layout.h"
++ #include "history/history_item_components.h"
 +@@ -203,6 +204,7 @@ void SetupExperimental(
 + 			rpl::duplicate(reloadOptionsRequests));
   	};
@@ -116,6 +114,8 @@ index 665f5d3..b89c8a5 100644
  +	addToggle(Data::kOptionDisableStories);
   	addToggle(ChatHelpers::kOptionTabbedPanelShowOnClick);
   	addToggle(Dialogs::kOptionForumHideChatsList);
+- 	addToggle(Core::kOptionFractionalScalingEnabled);
++ 	addToggle(Dialogs::Ui::kOptionDialogsMuteIcon);
 -- 
 2.53.0
 

@@ -4,12 +4,12 @@
 # Use vendor tarball
 %bcond vendor 1
 
-%global vendor_hash a87181bf46ec7969f7f0759f34ae4319
+%global vendor_hash 5d30f866ca2141733778f04b9d9d3bdf
 
 %global appname io.github.umio_yasuno.%{name}
 
 Name:           amdgpu_top
-Version:        0.11.2
+Version:        0.11.3
 Release:        1%{?dist}
 Summary:        Tool to display AMDGPU usage
 
@@ -243,7 +243,7 @@ Provides:       bundled(crate(khronos_api)) = 3.1.0
 Provides:       bundled(crate(khronos-egl)) = 6.0.0
 Provides:       bundled(crate(lazy_static)) = 1.5.0
 Provides:       bundled(crate(libc)) = 0.2.180
-Provides:       bundled(crate(libdrm_amdgpu_sys)) = 0.8.11
+Provides:       bundled(crate(libdrm_amdgpu_sys)) = 0.8.12
 Provides:       bundled(crate(libloading)) = 0.8.9
 Provides:       bundled(crate(libm)) = 0.2.16
 Provides:       bundled(crate(libredox)) = 0.1.12
@@ -574,6 +574,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Mar 30 2026 Phantom X <megaphantomx at hotmail dot com> - 0.11.3-1
+- 0.11.3
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.11.2-1
 - 0.11.2
 

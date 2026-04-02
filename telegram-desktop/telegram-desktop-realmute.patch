@@ -1,4 +1,4 @@
-From 35f185b04d741635595ff96ccc130f6b7fd9c94a Mon Sep 17 00:00:00 2001
+From e467e32c0aa457e7ffb841058b547bd56992d245 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 1 Feb 2022 11:27:21 -0300
 Subject: [PATCH] Do not show unread counter on muted chats
@@ -8,25 +8,26 @@ Subject: [PATCH] Do not show unread counter on muted chats
  1 file changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
-index 44ec72e..143338e 100644
+index 390d370..994ba75 100644
 --- a/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
 +++ b/Telegram/SourceFiles/dialogs/ui/dialogs_layout.cpp
-@@ -181,12 +181,14 @@ int PaintBadges(
+@@ -221,6 +221,7 @@ int PaintBadges(
  		st.active = context.active;
  		st.selected = context.selected;
  		st.muted = badgesState.unreadMuted;
 +		if (!st.muted) {
  		const auto counter = FormatUnreadCounter(
  			badgesState.unreadCounter,
- 			badgesState.mention || badgesState.reaction,
- 			narrow);
+ 			badgesState.mention || badgesState.reaction || badgesState.poll,
+@@ -228,6 +229,7 @@ int PaintBadges(
  		const auto badge = PaintUnreadBadge(p, counter, right, top, st);
  		right -= badge.width() + st.padding;
+ 		++painted;
 +		}
  	} else if (const auto used = PaintRightButton(p, context)) {
  		return used - st::dialogsUnreadPadding;
  	} else if (displayPinnedIcon) {
-@@ -1251,12 +1253,12 @@ void PaintCollapsedRow(
+@@ -1342,12 +1344,12 @@ void PaintCollapsedRow(
  		const auto unreadRight = context.width - context.st->padding.right();
  		UnreadBadgeStyle st;
  		st.muted = true;
@@ -46,5 +47,5 @@ index 44ec72e..143338e 100644
  }
  
 -- 
-2.51.0
+2.53.0
 

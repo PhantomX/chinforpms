@@ -15,8 +15,8 @@ index 76825ad..746d170 100644
  # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
  
  [dependencies]
--libdrm_amdgpu_sys = { version = "0.8.11", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs", default-features = false, rev = "02aec00249416c762122bdff582fe6ce5053a4ce" }
-+libdrm_amdgpu_sys = { version = "0.8.11", default-features = false }
+-libdrm_amdgpu_sys = { version = "0.8.12", git = "https://github.com/Umio-Yasuno/libdrm-amdgpu-sys-rs", default-features = false, rev = "5f4d7ea6d4d51b2536ac7605a4c325cac15bdfd9" }
++libdrm_amdgpu_sys = { version = "0.8.12", default-features = false }
  nix = { version = "0", default-features = false, features = [ "ioctl" ] }
  num_enum = { workspace = true }
 -- 
