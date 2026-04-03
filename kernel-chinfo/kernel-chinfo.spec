@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.10
+%define specrpmversion 6.19.11
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1353,6 +1353,8 @@ Patch7400:  %{pf_url}/b87446ffb4d4156231d53f9bd0a14d35757a3557.patch%{pf_antibot
 Patch7401:  %{pf_url}/81b99a82db8b5fcc77b42e144870e2b2b934f1aa.patch%{pf_antibot}#/pf-cb-81b99a8.patch
 Patch7402:  %{pf_url}/bf1b20db8682451bc1b09c9392e67414581100d5.patch%{pf_antibot}#/pf-cb-bf1b20d.patch
 Patch7403:  %{pf_url}/f55ec7802871d332ccd12d93af18e260ce82e00e.patch%{pf_antibot}#/pf-cb-f55ec78.patch
+Patch7404:  %{pf_url}/9a1963b66cbef6425e971c441219466089270aed.patch%{pf_antibot}#/pf-cb-9a1963b.patch
+Patch7405:  %{pf_url}/6ee5212d1e5308e57d196e57c657890d7b2d82a1.patch%{pf_antibot}#/pf-cb-6ee5212.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2343,6 +2345,8 @@ ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
 %endif
 
 # openSUSE
@@ -5034,6 +5038,9 @@ fi\
 #
 #
 %changelog
+* Thu Apr 02 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.11-500.chinfo
+- 6.19.11
+
 * Thu Mar 26 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.10-500.chinfo
 - 6.19.10
 
