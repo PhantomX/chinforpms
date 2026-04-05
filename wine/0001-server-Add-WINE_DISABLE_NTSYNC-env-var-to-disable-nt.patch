@@ -1,0 +1,28 @@
+From f391065cad47086624459aefa4c7a2b91c7f2358 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 3 Apr 2026 10:42:00 -0300
+Subject: [PATCH] server: Add WINE_DISABLE_NTSYNC env var to disable ntsync
+
+---
+ server/inproc_sync.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/server/inproc_sync.c b/server/inproc_sync.c
+index ef68ee0..b1cffdc 100644
+--- a/server/inproc_sync.c
++++ b/server/inproc_sync.c
+@@ -47,6 +47,11 @@
+ int get_inproc_device_fd(void)
+ {
+     static int fd = -2;
++    const char *no_ntsync = getenv("WINE_DISABLE_NTSYNC");
++    if (no_ntsync && atoi(no_ntsync) == 1)
++    {
++        return -1;
++    }
+     if (fd == -2) fd = open( "/dev/ntsync", O_CLOEXEC | O_RDONLY );
+     return fd;
+ }
+-- 
+2.53.0
+

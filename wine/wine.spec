@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.0.0
-%global winevulkan 1.4.346
+%global winevulkan 1.4.347
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -54,17 +54,17 @@
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 10
-%global winelcms2 2.17
+%global winelcms2 2.18
 %global wineldap 2.5.18
 %global winempg123 1.33.0
-%global winepng 1.6.54
+%global winepng 1.6.56
 %global wineopenldap 2.5.17
 %global winetiff 4.7.1
 %global winejxrlib 1.1
 %global winevkd3d 1.18
 %global winexml2 2.12.8
 %global winexslt 1.1.45
-%global winezlib 1.3.1
+%global winezlib 1.3.2
 %global winezydis 4.1.0
 
 %global _default_patch_fuzz 2
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.5
+%global wine_stagingver 13290851042b7123a4c030794149b2077eee121c
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,14 +84,14 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 13b74356e1b588cf4d6e54a0a9225c1aed100604
+%global tkg_id 3e3245b5b69ddd49579b6c9c455e4d990cea6a18
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
 %if 0%{?wine_staging}
 %global cap_st cap_sys_nice,
-%global wine_staging_opts -W server-Stored_ACLs
+%global wine_staging_opts -W server-Stored_ACLs -W dcomp-DCompositionCreateDevice2
 %endif
 
 %global perms_pldr %caps(cap_net_raw+eip)
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.5
+Version:        11.6
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -197,10 +197,9 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
 Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-revert-bd89ab3.patch
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
-Patch702:        %{whq_murl}/-/merge_requests/9180.patch#/%{name}-whq-mr9180.patch
+Patch702:        %{whq_murl}/-/merge_requests/10557.patch#/%{name}-whq-mr10557.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/10154.patch#/%{name}-whq-mr10154.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59317
@@ -237,6 +236,7 @@ Patch1201:       %{ge_url}/proton/add-envvar-to-gate-media-converter.patch#/%{na
 Patch1202:       %{ge_url}/proton/proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch#/%{name}-ge-proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch
 Patch1203:       %{ge_url}/wine-hotfixes/pending/8848.patch#/%{name}-ge-8848.patch
 
+Patch1300:       0001-server-Add-WINE_DISABLE_NTSYNC-env-var-to-disable-nt.patch
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
@@ -797,7 +797,6 @@ This package adds the opencl driver for wine.
 %patch -P 702 -p1
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
-%patch -P 705 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
 %patch -P 709 -p1 -R
@@ -849,6 +848,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1093 -p1
 %endif
 %patch -P 1200 -p1
+%patch -P 1300 -p1
 %patch -P 1301 -p1
 %patch -P 1302 -p1
 %if %{with proton_mf}
@@ -1605,6 +1605,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/irprops.cpl
 %{_libdir}/wine/%{winepedirs}/itircl.dll
 %{_libdir}/wine/%{winepedirs}/itss.dll
+%{_libdir}/wine/%{winepedirs}/iyuv_32.dll
 %{_libdir}/wine/%{winepedirs}/joy.cpl
 %{_libdir}/wine/%{winepedirs}/jscript.dll
 %{_libdir}/wine/%{winepedirs}/jsproxy.dll
@@ -1913,6 +1914,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/windows.applicationmodel.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.bluetooth.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.enumeration.dll
+%{_libdir}/wine/%{winepedirs}/windows.devices.radios.dll
 %{_libdir}/wine/%{winepedirs}/windows.devices.usb.dll
 %{_libdir}/wine/%{winepedirs}/windows.gaming.input.dll
 %{_libdir}/wine/%{winepedirs}/windows.gaming.ui.gamebar.dll
@@ -2494,6 +2496,9 @@ fi
 
 
 %changelog
+* Sat Apr 04 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.6-100
+- 11.6
+
 * Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.5-100
 - 11.5
 
