@@ -20,7 +20,7 @@
 
 
 Name:           SDL3
-Version:        3.4.2
+Version:        3.4.4
 Release:        100%{?dist}
 Summary:        Cross-platform multimedia library
 License:        Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)
@@ -199,6 +199,9 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_includedir}/SDL3/SDL_revision.h
 
 
 %changelog
+* Wed Apr 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3.4.4-100
+- 3.4.4
+
 * Sun Feb 22 2026 Phantom X <megaphantomx at hotmail dot com> - 3.4.2-100
 - 3.4.2
 

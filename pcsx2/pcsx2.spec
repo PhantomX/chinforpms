@@ -29,7 +29,7 @@
 %bcond native 0
 # Enable system fmt
 %bcond fmt 1
-%bcond rapidyml 0
+%bcond rapidyml 1
 %bcond shaderc 1
 # Enable system soundtouch_ds
 %bcond soundtouch 0
@@ -59,7 +59,7 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.7.230
+Version:        2.7.243
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -163,7 +163,7 @@ BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
-BuildRequires:  cmake(SDL3) >= 3.2.6
+BuildRequires:  cmake(SDL3) >= 3.4.0
 %if %{with shaderc}
 BuildRequires:  cmake(Shaderc_ds)
 Requires:       libshaderc_ds%{?_isa}

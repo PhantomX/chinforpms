@@ -1,5 +1,5 @@
 Name:           sdl3-testcontroller
-Version:        3.4.2
+Version:        3.4.4
 Release:        1%{?dist}
 Summary:        Official tool to create SDL3 Game Controller controller mappings
 
@@ -43,6 +43,9 @@ cp -p -f %{S:1} test/CMakeLists.txt
 
 
 %changelog
+* Wed Apr 08 2026 Phantom X <megaphantomx at hotmail dot com> - 3.4.4-1
+- 3.4.4
+
 * Fri Mar 27 2026 Phantom X <megaphantomx at hotmail dot com> - 3.4.2-1
 - Initial spec
 
