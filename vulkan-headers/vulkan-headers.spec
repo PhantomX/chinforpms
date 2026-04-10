@@ -35,7 +35,6 @@ Vulkan Header files and API registry
 
 %build
 %cmake \
-  -G Ninja \
   -DCMAKE_INSTALL_LIBDIR=%{_libdir} \
 %{nil}
 

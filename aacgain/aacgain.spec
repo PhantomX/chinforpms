@@ -15,6 +15,8 @@
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
+%global _cmake_generator "Unix Makefiles"
+
 %global vc_url  https://github.com/dgilman
 
 Name:           aacgain
@@ -73,7 +75,6 @@ cp -p mp3gain/lgpl.txt COPYING.mp3gain
 
 %build
 %cmake \
-  -G 'Unix Makefiles' \
 %{nil}
 
 %cmake_build

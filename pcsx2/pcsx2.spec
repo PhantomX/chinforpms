@@ -359,7 +359,6 @@ sed -e 's|fa-solid-900.ttf|fa-solid-900.otf|g' \
 %build
 
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DLTO_PCSX2_CORE:BOOL=ON \
   -DBUILD_REPLAY_LOADERS:BOOL=OFF \

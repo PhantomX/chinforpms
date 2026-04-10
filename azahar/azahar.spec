@@ -533,7 +533,6 @@ export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
 %endif
 
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCITRA_WARNINGS_AS_ERRORS:BOOL=OFF \
   -DENABLE_LTO:BOOL=ON \

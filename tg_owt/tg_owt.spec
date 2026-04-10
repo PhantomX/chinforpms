@@ -234,7 +234,6 @@ sed \
 %build
 # CMAKE_BUILD_TYPE should always be Release due to some hardcoded checks.
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
 %if %{with static}

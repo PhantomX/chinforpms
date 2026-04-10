@@ -72,7 +72,6 @@ rm -f ladspa.h
 
 %build
 %cmake \
-  -G Ninja \
   %{!?with_tests:-DBUILD_TESTS:BOOL=OFF} \
   -DBUILD_LADSPA_PLUGIN:BOOL=ON \
   %{!?with_lv2:-DBUILD_LV2_PLUGIN:BOOL=OFF} \

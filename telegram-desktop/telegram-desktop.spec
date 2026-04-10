@@ -304,7 +304,6 @@ sed -e "/#include <openssl\/engine.h>/d" -i Telegram/SourceFiles/core/utils.cpp
 %if %{without bin}
 # Building Telegram Desktop using cmake...
 %cmake \
-    -G Ninja \
     -DCMAKE_BUILD_TYPE:STRING="Release" \
     -DTDESKTOP_API_ID=%{apiid} \
     -DTDESKTOP_API_HASH=%{apihash} \

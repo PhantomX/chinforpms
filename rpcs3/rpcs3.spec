@@ -449,7 +449,6 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmp
 %endif
 
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
 %if %{without lto}

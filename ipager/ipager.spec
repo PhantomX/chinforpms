@@ -32,7 +32,7 @@ cp -p %{S:1} CMakeLists.txt
 
 
 %build
-%cmake -G Ninja
+%cmake
 
 %cmake_build
 

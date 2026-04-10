@@ -48,7 +48,6 @@ cp plutovg/LICENSE LICENSE.plutovg
 
 %build
 %cmake \
-  -G Ninja \
   -DPLUTOSVG_ENABLE_FREETYPE:BOOL=ON \
   -DPLUTOSVG_BUILD_EXAMPLES:BOOL=OFF \
 %{nil}

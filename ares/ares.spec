@@ -96,7 +96,6 @@ sed -e 's|ARES_ENABLE_LIBRASHADER|ARES_BUNDLE_SHADERS|' -i desktop-ui/CMakeLists
 
 %build
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
 %if %{without snapshot}

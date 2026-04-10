@@ -64,7 +64,6 @@ sed -e '/\/doc\//d' -i CMakeLists.txt
 
 %build
 %cmake \
-  -G Ninja \
   -DVMA_BUILD_DOCUMENTATION:BOOL=ON \
 %{nil}
 

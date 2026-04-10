@@ -1,7 +1,7 @@
 %global commit a072b861a213f3caab1184427aa10105d7b5086e
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20250504
-%bcond snapshot 1
+%bcond snapshot 0
 
 BuildArch:      noarch
 
@@ -15,7 +15,7 @@ BuildArch:      noarch
 
 Name:           asbru-cm
 Version:        6.4.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A multi-purpose SSH/terminal connection manager
 
 License:        GPL-3.0-or-later
@@ -25,7 +25,7 @@ URL:            https://asbru-cm.net
 Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 %global ver     %{lua:ver = string.gsub(rpm.expand("%{version}"), "~", ""); print(ver)}
-Source0:        %{vc_url}/archive/%{ver}/%{name}-%{ver}.tar.gz
+Source0:        %{vc_url}/archive/v%{ver}/%{name}-%{ver}.tar.gz
 %endif
 
 Patch0:         0001-Always-set-GTK_OVERLAY_SCROLLING.patch
@@ -163,6 +163,9 @@ cp -a utils/pac2asbru.pl %{buildroot}%{_datadir}/%{name}/utils/
 
 
 %changelog
+* Thu Apr 09 2026 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-5
+- 6.4.1 final
+
 * Tue Dec 17 2024 Phantom X <megaphantomx at hotmail dot com> - 6.4.1-3.20241010git912227f
 - Fix GTK_OVERLAY_SCROLLING
 

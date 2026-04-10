@@ -154,7 +154,6 @@ cp -f makefile.linux_amd64_asm makefile.machine
 popd
 
 %cmake \
-  -G Ninja \
 %if %{without ffmpeg}
   -DENABLE_FFMPEG:BOOL=OFF \
 %endif

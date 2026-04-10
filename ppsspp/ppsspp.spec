@@ -483,7 +483,6 @@ export RANLIB=llvm-ranlib
 
 pushd ext/native/tools
 %cmake \
-  -G Ninja \
 %{nil}
 
 popd
@@ -511,7 +510,6 @@ popd
 %endif
 
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DATLAS_TOOL:BOOL=ON \

@@ -37,7 +37,6 @@ sed -e 's|_RPM_VERSION_|%{version}|' -i CMakeLists.txt
 
 %build
 %cmake \
-  -G Ninja \
   -DSIRIT_USE_SYSTEM_SPIRV_HEADERS:BOOL=ON \
   -DSIRIT_BUILD_SHARED:BOOL=ON \
   -DSIRIT_BUILD_STATIC:BOOL=OFF \

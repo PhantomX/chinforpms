@@ -155,7 +155,6 @@ sed -e '/set/s|"glslang"|"glslang::SPIRV"|' -i src/Cafe/CMakeLists.txt
 
 %build
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DENABLE_VCPKG:BOOL=OFF \
   -DENABLE_DISCORD_RPC:BOOL=OFF \

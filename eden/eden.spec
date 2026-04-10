@@ -412,7 +412,6 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
 
 %build
 %cmake \
-  -G Ninja \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DYUZU_BUILD_PRESET:STRING="none" \
   -DYUZU_SYSTEM_PROFILE:STRING="none" \

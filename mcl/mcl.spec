@@ -35,7 +35,6 @@ development with %{name} library.
 
 %build
 %cmake \
-  -G Ninja \
   -DCMAKE_INSTALL_LIBDIR:PATH=%{_libdir} \
 %{nil}
 

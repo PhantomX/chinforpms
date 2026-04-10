@@ -53,7 +53,6 @@ sed -e '/-Ofast/d' -i CMakeLists.txt
 
 %build
 %cmake \
-  -G Ninja \
 %{nil}
 
 %cmake_build

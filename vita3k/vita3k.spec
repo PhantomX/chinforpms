@@ -507,7 +507,6 @@ mv external/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/external/ffmp
 %endif
 
 %cmake \
-  -G Ninja \
   -DUSE_LTO:STRING=NEVER \
   -DVITA3K_FORCE_SYSTEM_BOOST:BOOL=ON \
 %if %{with ffmpeg}

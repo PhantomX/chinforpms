@@ -93,7 +93,6 @@ sed \
 
 %build
 %cmake \
-  -G Ninja \
   -DQt6_LRELEASE_EXECUTABLE=lrelease-qt6 \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
