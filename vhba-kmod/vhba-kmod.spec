@@ -11,7 +11,7 @@
 %define repo chinforpms
 
 Name:           vhba-kmod
-Version:        20250329
+Version:        20260313
 Release:        1%{?dist}
 Summary:        Virtual SCSI host bus adapter driver
 
@@ -61,6 +61,9 @@ done
 
 
 %changelog
+* Mon Apr 13 2026 Phantom X <megaphantomx at hotmail dot com> - 20260313-1
+- 20260313
+
 * Wed Apr 09 2025 Phantom X <megaphantomx at hotmail dot com> - 20250329-1
 - 20250329
 

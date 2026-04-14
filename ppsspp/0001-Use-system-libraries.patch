@@ -1,38 +1,63 @@
-From 1581dbd2080e033ac69d98abf4a12cb08bc40b0e Mon Sep 17 00:00:00 2001
+From 027d220e66fbbf274b09023efe36f58d547b5779 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                        | 18 +++++++++++++++++-
- Common/Data/Collections/Hashmaps.h    |  2 +-
- Common/File/VFS/ZipFileReader.cpp     |  2 +-
- Common/File/VFS/ZipFileReader.h       |  2 +-
- Core/Debugger/DisassemblyManager.cpp  |  2 +-
- Core/HLE/sceJpeg.cpp                  |  2 +-
- Core/MIPS/IR/IRJit.cpp                |  2 +-
- Core/MIPS/JitCommon/JitBlockCache.cpp |  2 +-
- Core/Util/GameManager.cpp             |  2 +-
- Core/Util/PPGeDraw.cpp                |  2 +-
- GPU/Common/TextureDecoder.cpp         |  2 +-
- GPU/Common/TextureReplacer.cpp        |  2 +-
- GPU/D3D11/TextureCacheD3D11.cpp       |  2 +-
- GPU/GLES/TextureCacheGLES.cpp         |  2 +-
- GPU/Vulkan/TextureCacheVulkan.cpp     |  2 +-
- UI/CwCheatScreen.cpp                  |  2 +-
- UI/ImDebugger/ImMemView.cpp           |  2 +-
- Windows/Debugger/CtrlMemView.cpp      |  2 +-
- 18 files changed, 34 insertions(+), 18 deletions(-)
+ CMakeLists.txt                         | 27 +++++++++++++++++++++++++-
+ Common/Data/Collections/Hashmaps.h     |  2 +-
+ Common/File/VFS/SevenZipFileReader.cpp |  9 +++++++++
+ Common/File/VFS/SevenZipFileReader.h   |  5 +++++
+ Common/File/VFS/ZipFileReader.cpp      |  2 +-
+ Common/File/VFS/ZipFileReader.h        |  2 +-
+ Core/Debugger/DisassemblyManager.cpp   |  2 +-
+ Core/HLE/sceJpeg.cpp                   |  2 +-
+ Core/MIPS/IR/IRJit.cpp                 |  2 +-
+ Core/MIPS/JitCommon/JitBlockCache.cpp  |  2 +-
+ Core/Util/GameManager.cpp              |  2 +-
+ Core/Util/PPGeDraw.cpp                 |  2 +-
+ GPU/Common/TextureDecoder.cpp          |  2 +-
+ GPU/Common/TextureReplacer.cpp         |  2 +-
+ GPU/D3D11/TextureCacheD3D11.cpp        |  2 +-
+ GPU/GLES/TextureCacheGLES.cpp          |  2 +-
+ GPU/Vulkan/TextureCacheVulkan.cpp      |  2 +-
+ UI/CwCheatScreen.cpp                   |  2 +-
+ UI/ImDebugger/ImMemView.cpp            |  2 +-
+ Windows/Debugger/CtrlMemView.cpp       |  2 +-
+ 20 files changed, 57 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index dcdb2f5..2762ddd 100644
+index ea57576..826d3fc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1745,11 +1745,19 @@ add_library(xbrz STATIC
+@@ -1266,6 +1266,15 @@ else()
+ 	set(LIBZIP_LIBRARY libzip)
+ endif()
+ 
++find_package(PkgConfig QUIET)
++pkg_search_module(7zip IMPORTED_TARGET lzmasdk-c)
++if(7zip_FOUND)
++	message(STATUS "Using the system 7zip")
++	add_library(7zip INTERFACE)
++	include_directories(${7zip_INCLUDE_DIRS})
++	add_compile_definitions(SHARED_7ZIP)
++	target_link_libraries(7zip INTERFACE PkgConfig::7zip)
++else()
+ add_library(7zip STATIC
+ 	ext/lzma-sdk/7zArcIn.c
+ 	ext/lzma-sdk/7zBuf.c
+@@ -1283,6 +1292,7 @@ add_library(7zip STATIC
+ )
+ target_link_libraries(7zip)
+ include_directories(ext/lzma-sdk)
++endif()
+ set(LIB7ZIP_LIBRARY 7zip)
+ 
+ # Arm platforms require at least libpng17.
+@@ -1772,11 +1782,18 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
-+find_package(PkgConfig QUIET)
 +pkg_search_module(xxhash IMPORTED_TARGET libxxhash)
 +if(xxhash_FOUND)
 +	message(STATUS "Using the system libxxhash")
@@ -49,7 +74,7 @@ index dcdb2f5..2762ddd 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2577,6 +2585,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2604,6 +2621,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -77,6 +102,49 @@ index 862c0e4..20c7c44 100644
  #include "Common/CommonFuncs.h"
  #include "Common/Log.h"
  
+diff --git a/Common/File/VFS/SevenZipFileReader.cpp b/Common/File/VFS/SevenZipFileReader.cpp
+index a344f6c..8325d95 100644
+--- a/Common/File/VFS/SevenZipFileReader.cpp
++++ b/Common/File/VFS/SevenZipFileReader.cpp
+@@ -10,11 +10,20 @@
+ #endif
+ 
+ #define NOMINMAX  // 7z includes windows.h for some reason.
++#ifdef SHARED_7ZIP
++#include <7z.h>
++#include <7zCrc.h>
++#include <7zFile.h>
++#include <Lzma2Dec.h>
++#include <LzmaDec.h>
++#define False False7z
++#else
+ #include "ext/lzma-sdk/7z.h"
+ #include "ext/lzma-sdk/7zCrc.h"
+ #include "ext/lzma-sdk/7zFile.h"
+ #include "ext/lzma-sdk/Lzma2Dec.h"
+ #include "ext/lzma-sdk/LzmaDec.h"
++#endif
+ 
+ #include "Common/Data/Encoding/Utf8.h"
+ #include "Common/Log.h"
+diff --git a/Common/File/VFS/SevenZipFileReader.h b/Common/File/VFS/SevenZipFileReader.h
+index 5411587..35934ae 100644
+--- a/Common/File/VFS/SevenZipFileReader.h
++++ b/Common/File/VFS/SevenZipFileReader.h
+@@ -9,8 +9,13 @@
+ 
+ #include "Common/CommonWindows.h"
+ 
++#ifdef SHARED_7ZIP
++#include <7z.h>
++#include <7zFile.h>
++#else
+ #include "ext/lzma-sdk/7z.h"
+ #include "ext/lzma-sdk/7zFile.h"
++#endif
+ 
+ #include "Common/File/VFS/VFS.h"
+ #include "Common/File/FileUtil.h"
 diff --git a/Common/File/VFS/ZipFileReader.cpp b/Common/File/VFS/ZipFileReader.cpp
 index a3720ff..655a201 100644
 --- a/Common/File/VFS/ZipFileReader.cpp
@@ -156,7 +224,7 @@ index e8b751b..82c6f31 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index ecb0af9..9a8f907 100644
+index fd82a4f..d9cafa0 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
 @@ -27,7 +27,7 @@
@@ -234,12 +302,12 @@ index 8ca5ca6..157f596 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index b7458c4..1554dc1 100644
+index 3aa0206..0740751 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
-@@ -18,7 +18,7 @@
- #include <algorithm>
+@@ -19,7 +19,7 @@
  #include <cstring>
+ #include <memory>
  
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
@@ -260,7 +328,7 @@ index d37821a..25b00b5 100644
  
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index 3d7d05d..46d39da 100644
+index 12b3a22..3de6425 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -8,7 +8,7 @@

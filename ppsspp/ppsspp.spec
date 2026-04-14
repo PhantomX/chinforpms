@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 910b60defc089c8a52459bd1e61c18971cf9232c
+%global commit 7a329986376e703f59bef9f7be9f6d2d0ecff258
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260319
+%global date 20260413
 %bcond snapshot 1
 
 # Enable Qt build
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.3.32
+Version:        1.20.3.172
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -226,6 +226,7 @@ BuildRequires:  pkgconfig(libpng) >= 1.6
 BuildRequires:  pkgconfig(libxxhash) >= 0.8.0
 BuildRequires:  pkgconfig(libzip)
 BuildRequires:  pkgconfig(libzstd) >= 1.4.9
+BuildRequires:  pkgconfig(lzmasdk-c)
 %if %{with miniupnpc}
 BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 %else
@@ -234,6 +235,7 @@ Provides:       bundled(miniupnpc) = 0~git%{shortcommit11}
 BuildRequires:  pkgconfig(RapidJSON)
 %if %{with sdl2}
 BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  cmake(SDL2_ttf)
 %else
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gbm)
@@ -367,7 +369,7 @@ sed -i 's/\r//' ext/sdl2*/LICENSE.txt
 
 rm -rf ext/glew/GL
 rm -rf ext/{glew,rapidjson,snappy}/*.{c,cpp,h}
-rm -rf ext/{discord-rpc,libchr,libpng,libzip,openxr/{android,stub},vulkan,zlib,zstd}*
+rm -rf ext/{discord-rpc,libchr,libpng,libzip,lzma-sdk,openxr/{android,stub},vulkan,zlib,zstd}*
 rm -f ext/xxhash.*
 rm -rf MoltenVK/*
 

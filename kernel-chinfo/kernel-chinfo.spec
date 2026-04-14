@@ -6,7 +6,7 @@
 # Disable frame pointers
 %undefine _include_frame_pointers
 
-# Disable LTO in userspace packages.
+# Disable LTO in userspace packages (disabled for perf).
 %global _lto_cflags %{nil}
 
 # Speep up packaging, no rpaths to search here
@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 6.19.11
+%define specrpmversion 7.0.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -234,9 +234,9 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 7f7ff045f0cf70b3a292c6f83ac75067c46dc221
+%global opensuse_id ad33a83aa76d4f363fd1fc1c079f5c26c433f708
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
-%global vhba_ver 20250329
+%global vhba_ver 20260313
 
 %global ark_url https://gitlab.com/cki-project/kernel-ark/-/commit
 %global kernel_url https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/patch
@@ -977,16 +977,6 @@ BuildRequires: binutils-%{_build_arch}-linux-gnu, gcc-%{_build_arch}-linux-gnu
 # debugedit-5.1-5 in F42 added support to override tools with target versions.
 %undefine _include_gdb_index
 %endif
-
-%if 0%{?rhel}%{?centos}
-%ifarch riscv64
-# Temporary workaround to avoid using find-debuginfo and gdb.minimal.
-# The current c10s version of gdb-minimal (14.2-4.el10) crashes when given some
-# riscv64 kernel modules (see RHEL-91586). Not building the gdb index avoids
-# breaking CI for now.
-%undefine _include_gdb_index
-%endif
-%endif
 %endif
 
 # These below are required to build man pages
@@ -1176,6 +1166,8 @@ Source103: rhelimaca1.x509
 Source104: rhelima.x509
 Source105: rhelima_centos.x509
 Source106: fedoraimaca.x509
+Source107: nvidiajetsonsoc.x509
+Source108: nvidiabfdpu.x509
 
 %if 0%{?fedora}%{?eln}
 %define ima_ca_cert %{SOURCE106}
@@ -1289,8 +1281,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch2: %{ark_url}/ff7c5993900e1dbc5af1055261392ed99cbe6257.patch#/kernel-ark-ff7c5993.patch
-Patch3: %{ark_url}/5d6a7a2981a0bbead5133992f7df2419a6c8318c.patch#/kernel-ark-5d6a7a29.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1303,7 +1293,6 @@ Patch999999: linux-kernel-test.patch
 
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
-Patch1013: %{opensuse_url}/Revert-drm-syncobj-Fix-handle-fd-ioctls-with-dirty-st.patch#/openSUSE-usb-gadget-Revert-drm-syncobj-Fix-handle-fd-ioctls-with-dirty-st.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
@@ -1316,7 +1305,7 @@ Patch2004: %{zen_url}/commit/f163493705e5750b40528b3da78c02a03744655a.patch#/zen
 Patch2005: %{zen_url}/commit/fdb45e1bf20822fefd4e3f67673f83b4ea5d4808.patch#/zen-v%{patchversion}-sauce-fdb45e1.patch
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/bbc1987355956b8047f6eda21f199d51ae4048c6.patch%{pf_antibot}#/pf-cb-bbc1987.patch
+Patch6000: %{pf_url}/30b7ebebc5d5feeb39250381069d3d5a260efb67.patch%{pf_antibot}#/pf-cb-30b7ebe.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1326,35 +1315,20 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/870602f47fa550dfc931de1453cb686785781ed4.patch%{pf_antibot}#/pf-cb-870602f.patch
+Patch6950:  %{pf_url}/8d11bdd50300c548589ab623e73e1d2520b24915.patch%{pf_antibot}#/pf-cb-8d11bdd.patch
 
 # kbuild (7000)
 # bbr3 (7250)
-%dnl Patch7050:  %{pf_url}/990e6d61a8fc5cfcc8ac2a19a10fbd9d37d0362b.patch%{pf_antibot}#/pf-cb-990e6d6.patch
+Patch7050:  %{pf_url}/eb62a225cbc867d925d41e85002a8b8def1ed133.patch%{pf_antibot}#/pf-cb-eb62a22.patch
 # zstd
 # v4l2loopback (7230)
-Patch7230:  %{pf_url}/6e1c80583393935dacb55bd26ce41851de3da85a.patch%{pf_antibot}#/pf-cb-6e1c805.patch
+Patch7230:  %{pf_url}/4b972524f58422e53e3186a4d5ac5a9568c1c65e.patch%{pf_antibot}#/pf-cb-4b97252.patch
 # cpuidle (7240)
-Patch7240:  %{pf_url}/5e7d91362fb7ac681137c380adcfb49e94a37980.patch%{pf_antibot}#/pf-cb-5e7d913.patch
-Patch7241:  %{pf_url}/125f0c803a49db6a961ed91c609cb79b9dd650ca.patch%{pf_antibot}#/pf-cb-125f0c8.patch
-Patch7242:  %{pf_url}/7fa46923c4422e9fe01c9c7d0d1d9337176d7f36.patch%{pf_antibot}#/pf-cb-7fa4692.patch
-Patch7243:  %{pf_url}/d799205d93720690c38ef58973b7c4a62a933451.patch%{pf_antibot}#/pf-cb-d799205.patch
-Patch7244:  %{pf_url}/3bf5547f86951d437d29147401cc89169df13fc2.patch%{pf_antibot}#/pf-cb-3bf5547.patch
-Patch7245:  %{pf_url}/6860ea089fdbfe8676abf9a11868231de6e9ced3.patch%{pf_antibot}#/pf-cb-6860ea0.patch
-Patch7246:  %{pf_url}/fbef51895fa0c2e2c488368e0be78208668ca063.patch%{pf_antibot}#/pf-cb-fbef518.patch
-Patch7247:  %{pf_url}/4122d77199cdd22462380f0dec7d1c239c9612b5.patch%{pf_antibot}#/pf-cb-4122d77.patch
-Patch7248:  %{pf_url}/937a93d67dab821832b1d5be91d094426a3c310c.patch%{pf_antibot}#/pf-cb-937a93d.patch
-Patch7249:  %{pf_url}/c9bf98b0506581c91399ac4696188c4e0dd12639.patch%{pf_antibot}#/pf-cb-c9bf98b.patch
-Patch7250:  %{pf_url}/f9041530e4a5675a39d5de10da638b16723796ea.patch%{pf_antibot}#/pf-cb-f904153.patch
-Patch7251:  %{pf_url}/3cc9f6a66558a65ba43b0fa83774c3308105b61d.patch%{pf_antibot}#/pf-cb-3cc9f6a.patch
+Patch7240:  %{pf_url}/262d4f16cb949526bac72b897b5c024dd4b0d597.patch%{pf_antibot}#/pf-cb-262d4f1.patch
+Patch7241:  %{pf_url}/f995633a096f1442ef4eaf529514a0b3070d3a91.patch%{pf_antibot}#/pf-cb-f995633.patch
+Patch7242:  %{pf_url}/f51dd7ec9f0ae025836c70bf5253d654c9797ea6.patch%{pf_antibot}#/pf-cb-f51dd7e.patch
 # crypto (7300)
 # fixes (7400)
-Patch7400:  %{pf_url}/b87446ffb4d4156231d53f9bd0a14d35757a3557.patch%{pf_antibot}#/pf-cb-b87446f.patch
-Patch7401:  %{pf_url}/81b99a82db8b5fcc77b42e144870e2b2b934f1aa.patch%{pf_antibot}#/pf-cb-81b99a8.patch
-Patch7402:  %{pf_url}/bf1b20db8682451bc1b09c9392e67414581100d5.patch%{pf_antibot}#/pf-cb-bf1b20d.patch
-Patch7403:  %{pf_url}/f55ec7802871d332ccd12d93af18e260ce82e00e.patch%{pf_antibot}#/pf-cb-f55ec78.patch
-Patch7404:  %{pf_url}/9a1963b66cbef6425e971c441219466089270aed.patch%{pf_antibot}#/pf-cb-9a1963b.patch
-Patch7405:  %{pf_url}/6ee5212d1e5308e57d196e57c657890d7b2d82a1.patch%{pf_antibot}#/pf-cb-6ee5212.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1630,6 +1604,9 @@ This package provides debug information for the rtla package.
 %endif
 
 %package -n rv
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: RV: Runtime Verification
 %description -n rv
 Runtime Verification (RV) is a lightweight (yet rigorous) method that
@@ -1641,6 +1618,9 @@ to analyze the logical and timing behavior of Linux.
 
 %if %{with_debuginfo}
 %package -n rv-debuginfo
+%if 0%{gemini}
+Epoch: %{gemini}
+%endif
 Summary: Debug information for package rv
 Requires: %{name}-debuginfo-common-%{_target_cpu} = %{version}-%{release}
 AutoReqProv: no
@@ -1662,6 +1642,7 @@ This package provides debug information for the rv package.
 %package selftests-internal
 Summary: Kernel samples and selftests
 Requires: binutils, bpftool, fuse-libs, iproute-tc, iputils, keyutils, nmap-ncat, python3
+Provides: %{name}-selftests-internal-present
 %description selftests-internal
 Kernel sample programs and selftests.
 
@@ -1801,6 +1782,7 @@ Provides: %{name}%{?1:-%{1}}-modules-internal-uname-r = %{KVERREL}%{uname_suffix
 Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
+Supplements: (%{name}-selftests-internal-present and %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}})\
 AutoReq: no\
 AutoProv: yes\
 %description %{?1:%{1}-}modules-internal\
@@ -2309,8 +2291,6 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
-ApplyOptionalPatch %{PATCH2}
-ApplyOptionalPatch %{PATCH3}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2319,7 +2299,7 @@ ApplyOptionalPatch %{PATCH999999}
 ApplyPatch %{PATCH6950}
 # kbuild
 # bbr3
-%dnl ApplyPatch %{PATCH7050}
+ApplyPatch %{PATCH7050}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
@@ -2327,39 +2307,20 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7240}
 ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
-ApplyPatch %{PATCH7243}
-ApplyPatch %{PATCH7244}
-ApplyPatch %{PATCH7245}
-ApplyPatch %{PATCH7246}
-ApplyPatch %{PATCH7247}
-ApplyPatch %{PATCH7248}
-ApplyPatch %{PATCH7249}
-ApplyPatch %{PATCH7250}
-ApplyPatch %{PATCH7251}
 # crypto
 # fixes
-echo
-echo pf
-echo
-ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7401}
-ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
 %endif
 
 # openSUSE
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
-ApplyPatch %{PATCH1013}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
-ApplyPatch %{PATCH2003}
-ApplyPatch %{PATCH2004}
-ApplyPatch %{PATCH2005}
+%dnl ApplyPatch %{PATCH2003}
+%dnl ApplyPatch %{PATCH2004}
+%dnl ApplyPatch %{PATCH2005}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -2507,6 +2468,8 @@ truncate -s0 ../certs/rhel.pem
 openssl x509 -inform der -in %{SOURCE100} -out rheldup3.pem
 openssl x509 -inform der -in %{SOURCE101} -out rhelkpatch1.pem
 openssl x509 -inform der -in %{SOURCE102} -out nvidiagpuoot001.pem
+openssl x509 -inform der -in %{SOURCE107} -out nvidiajetsonsoc.pem
+openssl x509 -inform der -in %{SOURCE108} -out nvidiabfdpu.pem
 cat rheldup3.pem rhelkpatch1.pem nvidiagpuoot001.pem >> ../certs/rhel.pem
 # rhelkeys
 %endif
@@ -3567,6 +3530,9 @@ fi
 %ifarch aarch64
 %global perf_build_extra_opts CORESIGHT=1
 %endif
+%ifarch s390x
+%global perf_build_extra_ldflags -Wl,-z,notext
+%endif
 %global perf_make \
   %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
@@ -3733,7 +3699,7 @@ export CXXFLAGS="%{build_cxxflags}"
 # 'make install' for bpf is broken and upstream refuses to fix it.
 # Install the needed files manually.
 %{log_msg "install selftests"}
-for dir in bpf bpf/no_alu32 bpf/progs; do
+for dir in bpf bpf/no_alu32 bpf/cpuv4 bpf/progs; do
 	# In ARK, the rpm build continues even if some of the selftests
 	# cannot be built. It's not always possible to build selftests,
 	# as upstream sometimes dependens on too new llvm version or has
@@ -3747,14 +3713,17 @@ for dir in bpf bpf/no_alu32 bpf/progs; do
 done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-no_alu32"
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs-cpuv4"
 
 # The urandom_read binary doesn't pass the check-rpaths check and upstream
 # refuses to fix it. So, we save it to buildroot_unstripped and delete it so it
 # will be hidden from check-rpaths and will automatically get restored later.
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/urandom_read"
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/no_alu32/urandom_read"
+%buildroot_save_unstripped "usr/libexec/kselftests/bpf/cpuv4/urandom_read"
 rm -f %{buildroot}/usr/libexec/kselftests/bpf/urandom_read
 rm -f %{buildroot}/usr/libexec/kselftests/bpf/no_alu32/urandom_read
+rm -f %{buildroot}/usr/libexec/kselftests/bpf/cpuv4/urandom_read
 
 # Copy bpftool to kselftests so selftests is packaged with
 # the full bpftool instead of bootstrap bpftool
@@ -4306,9 +4275,10 @@ popd
 #
 %define kernel_devel_post() \
 %{expand:%%post %{?1:%{1}-}devel}\
+%if %{undefined __brp_linkdupes}\
 if [ -f /etc/sysconfig/kernel ]\
 then\
-    . /etc/sysconfig/kernel || exit $?\
+    . /etc/sysconfig/kernel || exit 0\
 fi\
 drstatus=1\
 if [ "$DUPEREMOVE" != "no" -a -x /usr/sbin/duperemove -a ! -e /run/ostree-booted ] \
@@ -4325,6 +4295,7 @@ then\
      /usr/bin/find /usr/src/kernels -type f -name '*.hardlink-temporary' -delete\
     )\
 fi\
+%endif\
 %if %{with_cross}\
     echo "Building scripts and resolve_btfids"\
     env --unset=ARCH make -C /usr/src/kernels/%{KVERREL}%{?1:+%{1}} prepare_after_cross\
@@ -4399,7 +4370,7 @@ fi\
 if [ -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}} ]; then\
 	rm -f %{_localstatedir}/lib/rpm-state/%{name}/need_to_run_dracut_%{KVERREL}%{?1:+%{1}}\
 	echo "Running: dracut -f --kver %{KVERREL}%{?1:+%{1}} /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img"\
-	dracut -f --kver "%{KVERREL}%{?1:+%{1}}" /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img || exit $?\
+	dracut -f --kver "%{KVERREL}%{?1:+%{1}}" /boot/initramfs-%{KVERREL}%{?1:+%{1}}.img || exit 0\
 fi\
 %{nil}
 
@@ -4430,12 +4401,12 @@ fi\
 %if !%{with_automotive}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
-    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?-v:+%{-v*}} || exit $?\
+    %{_sbindir}/weak-modules --add-kernel %{KVERREL}%{?-v:+%{-v*}} || exit 0\
 fi\
 %endif\
 %endif\
 rm -f %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%{-v*}}\
-/bin/kernel-install add %{KVERREL}%{?-v:+%{-v*}} /lib/modules/%{KVERREL}%{?-v:+%{-v*}}/vmlinuz%{?-u:-%{-u*}.efi} || exit $?\
+/bin/kernel-install add %{KVERREL}%{?-v:+%{-v*}} /lib/modules/%{KVERREL}%{?-v:+%{-v*}}/vmlinuz%{?-u:-%{-u*}.efi} || exit 0\
 if [[ ! -e "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext" ]]; then\
     cp "/lib/modules/%{KVERREL}%{?-v:+%{-v*}}/symvers.%compext" "/boot/symvers-%{KVERREL}%{?-v:+%{-v*}}.%compext"\
     if command -v restorecon &>/dev/null; then\
@@ -4474,7 +4445,7 @@ fi\
 %{-r:\
 if [ `uname -i` == "x86_64" -o `uname -i` == "i386" ] &&\
    [ -f /etc/sysconfig/kernel ]; then\
-  /bin/sed -r -i -e 's/^DEFAULTKERNEL=%{-r*}$/DEFAULTKERNEL=kernel%{?-v:-%{-v*}}/' /etc/sysconfig/kernel || exit $?\
+  /bin/sed -r -i -e 's/^DEFAULTKERNEL=%{-r*}$/DEFAULTKERNEL=kernel%{?-v:-%{-v*}}/' /etc/sysconfig/kernel || exit 0\
 fi}\
 mkdir -p %{_localstatedir}/lib/rpm-state/%{name}\
 touch %{_localstatedir}/lib/rpm-state/%{name}/installing_core_%{KVERREL}%{?-v:+%{-v*}}\
@@ -4501,11 +4472,11 @@ entry_type=""\
 /bin/kernel-install --help|grep -q -- '--entry-type=' &&\
     entry_type="--entry-type %{!?-u:type1}%{?-u:type2}" \
 }\
-/bin/kernel-install remove %{KVERREL}%{?-v:+%{-v*}} $entry_type || exit $?\
+/bin/kernel-install remove %{KVERREL}%{?-v:+%{-v*}} $entry_type || exit 0\
 %if !%{with_automotive}\
 if [ -x %{_sbindir}/weak-modules ]\
 then\
-    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?-v:+%{-v*}} || exit $?\
+    %{_sbindir}/weak-modules --remove-kernel %{KVERREL}%{?-v:+%{-v*}} || exit 0\
 fi\
 %endif\
 %{nil}
@@ -4696,6 +4667,7 @@ fi\
 %{_includedir}/perf/evlist.h
 %{_includedir}/perf/evsel.h
 %{_includedir}/perf/mmap.h
+%{_includedir}/perf/schedstat-*.h
 %{_includedir}/perf/threadmap.h
 %{_mandir}/man3/libperf.3.gz
 %{_mandir}/man7/libperf-counting.7.gz
@@ -5038,6 +5010,9 @@ fi\
 #
 #
 %changelog
+* Mon Apr 13 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.0-500.chinfo
+- 7.0.0
+
 * Thu Apr 02 2026 Phantom X <megaphantomx at hotmail dot com> - 6.19.11-500.chinfo
 - 6.19.11
 
@@ -5221,36 +5196,6 @@ fi\
 
 * Mon Mar 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.0-500.chinfo
 - 6.14.0
-
-* Sat Mar 22 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.8-500.chinfo
-- 6.13.8
-
-* Wed Mar 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-501.chinfo
-- gcc 15 fixes
-
-* Thu Mar 13 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.7-500.chinfo
-- 6.13.7
-
-* Fri Mar 07 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.6-500.chinfo
-- 6.13.6
-
-* Thu Feb 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.5-500.chinfo
-- 6.13.5
-
-* Fri Feb 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.4-500.chinfo
-- 6.13.4
-
-* Mon Feb 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.3-500.chinfo
-- 6.13.3
-
-* Sat Feb 08 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.2-500.chinfo
-- 6.13.2
-
-* Sat Feb 01 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.1-500.chinfo
-- 6.13.1
-
-* Tue Jan 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.13.0-500.chinfo
-- 6.13.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.

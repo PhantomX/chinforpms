@@ -47,16 +47,16 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 54999d15077b986bd993a02fb19a82525ffbd224
+%global commit bcd9663349f1e2404976188d9997878ea036bc93
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260322
+%global date 20260413
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 pugixml
 
-%global commit11 3982730833b6daefe77dcfb32b5c282851640c17
+%global commit11 a0fba77b6f9cfbdb71f8bbec58b6ac4e5e3b1097
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 soundtouch
 
@@ -72,7 +72,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 b077c81eb635392e694ccedbab8b644297ec0285
+%global commit15 922d04b3568c6428a9fb905ddee3ef5a68db3108
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.40.195
+Version:        0.0.40.322
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -179,7 +179,6 @@ Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Change-default-settings.patch
 Patch12:        0001-Disable-auto-updater.patch
 Patch13:        0001-Use-system-SDL_GameControllerDB.patch
-Patch14:        0001-gcc-16-fix.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch501:       0001-wolfssl-add-new-Fedora-certificate-path.patch
 
@@ -414,8 +413,6 @@ sed \
   -i 3rdparty/fusion/fusion/CMakeLists.txt
 
 sed -e 's|3rdparty/feralinteractive/feralinteractive/lib/||' -i rpcs3/gamemode_control.cpp
-
-sed -e '/pkg_check_modules/s|2.3.3|2.3.0|' -i 3rdparty/miniupnp/CMakeLists.txt
 
 sed -e 's| -Werror||g' -i 3rdparty/wolfssl/wolfssl/CMakeLists.txt
 
