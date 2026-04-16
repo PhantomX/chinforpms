@@ -41,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.0.4
+Version:        26.0.5
 Release:        100%{?dist}
 
 Epoch:          100
@@ -141,7 +141,8 @@ Requires:       %{pkgname}-dri-drivers%{?_isa} = %{version}
 Requires:       libva%{?_isa}
 Obsoletes:      %{pkgname}-dri-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{pkgname}-va-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides :      %{pkgname}-va-drivers-freeworld >= %{?epoch:%{epoch}:}%{version}-%{release}
+Provides :      %{pkgname}-va-drivers-freeworld = %{?epoch:%{epoch}:}%{version}-%{release}
+Provides :      %{pkgname}-va-drivers-freeworld%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 Obsoletes:      %{pkgname}-vdpau-drivers-freeworld < %{?epoch:%{epoch}:}%{version}-%{release}
 Enhances:       %{pkgname}-dri-drivers%{?_isa}
 
@@ -253,6 +254,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed Apr 15 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.5-100
+- 26.0.5
+
 * Wed Apr 01 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.4-100
 - 26.0.4
 

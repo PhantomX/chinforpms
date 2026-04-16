@@ -208,7 +208,7 @@ Summary: The Linux kernel
 %define specrpmversion 7.0.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1329,6 +1329,27 @@ Patch7241:  %{pf_url}/f995633a096f1442ef4eaf529514a0b3070d3a91.patch%{pf_antibot
 Patch7242:  %{pf_url}/f51dd7ec9f0ae025836c70bf5253d654c9797ea6.patch%{pf_antibot}#/pf-cb-f51dd7e.patch
 # crypto (7300)
 # fixes (7400)
+Patch7400:  %{pf_url}/e5c80e2af88ff089cde74847dda6ed11badfea9c.patch%{pf_antibot}#/pf-cb-e5c80e2.patch
+Patch7401:  %{pf_url}/74196570f573f8539b0b9166343de620a156bfc2.patch%{pf_antibot}#/pf-cb-7419657.patch
+Patch7402:  %{pf_url}/e1ed4dc3669b88e870b30592a1d172904efebb24.patch%{pf_antibot}#/pf-cb-e1ed4dc.patch
+Patch7403:  %{pf_url}/294206934ddffacc0d4660f0a30a5c86256c4c44.patch%{pf_antibot}#/pf-cb-2942069.patch
+Patch7404:  %{pf_url}/ed586f5b2634a15059cdf4dbe4a51dda0f41c649.patch%{pf_antibot}#/pf-cb-ed586f5.patch
+Patch7405:  %{pf_url}/a7837301854c43149922d6fa2abb0612fde437e7.patch%{pf_antibot}#/pf-cb-a783730.patch
+Patch7406:  %{pf_url}/01000e4cd8fca58ee50de12216f15cee19b5e792.patch%{pf_antibot}#/pf-cb-01000e4.patch
+Patch7407:  %{pf_url}/d346b9823884e9a6789a87e8272b1ef035edafd7.patch%{pf_antibot}#/pf-cb-d346b98.patch
+Patch7408:  %{pf_url}/c2a790994dcf985d41deae5de6d8d46aaa7fc1b9.patch%{pf_antibot}#/pf-cb-c2a7909.patch
+Patch7409:  %{pf_url}/b85ce440d9657e720bc122262cfaf2dcbb53d027.patch%{pf_antibot}#/pf-cb-b85ce44.patch
+Patch7410:  %{pf_url}/d1be1e192fc3aee80364946f7c55094d08b1755b.patch%{pf_antibot}#/pf-cb-d1be1e1.patch
+Patch7411:  %{pf_url}/f1de05bb9544196b9e137870e8a1d8e2cdcf8364.patch%{pf_antibot}#/pf-cb-f1de05b.patch
+Patch7412:  %{pf_url}/19fc6f1f9038ace8f24462ab38e6ae754636b779.patch%{pf_antibot}#/pf-cb-19fc6f1.patch
+Patch7413:  %{pf_url}/67d01ca9c30c79765c965c04273123f24ceb5a6b.patch%{pf_antibot}#/pf-cb-67d01ca.patch
+Patch7414:  %{pf_url}/db414dfa4aec2384032ef6506a2f595a4de42517.patch%{pf_antibot}#/pf-cb-db414df.patch
+Patch7415:  %{pf_url}/cb3cf46d3b78623f641cf609b03ddfe0f9084044.patch%{pf_antibot}#/pf-cb-cb3cf46.patch
+Patch7416:  %{pf_url}/8c1c47ec33bfc259419f58653271c97023660adf.patch%{pf_antibot}#/pf-cb-8c1c47e.patch
+Patch7417:  %{pf_url}/30bbcde96f70008cf70b30868c21afcea9b9effd.patch%{pf_antibot}#/pf-cb-30bbcde.patch
+Patch7418:  %{pf_url}/d4c4ded90efb84982e6eb09dd9b3af39803576a1.patch%{pf_antibot}#/pf-cb-d4c4ded.patch
+Patch7419:  %{pf_url}/c67cc239bd9b29d8ec92996d7c807f6b4848ca73.patch%{pf_antibot}#/pf-cb-c67cc23.patch
+Patch7420:  %{pf_url}/70c2c1fe76e7a19e3d5cfb26498de3683b2675ed.patch%{pf_antibot}#/pf-cb-70c2c1f.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2309,6 +2330,27 @@ ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
 # crypto
 # fixes
+ApplyPatch %{PATCH7400}
+ApplyPatch %{PATCH7401}
+ApplyPatch %{PATCH7402}
+ApplyPatch %{PATCH7403}
+ApplyPatch %{PATCH7404}
+ApplyPatch %{PATCH7405}
+ApplyPatch %{PATCH7406}
+ApplyPatch %{PATCH7407}
+ApplyPatch %{PATCH7408}
+ApplyPatch %{PATCH7409}
+ApplyPatch %{PATCH7410}
+ApplyPatch %{PATCH7411}
+ApplyPatch %{PATCH7412}
+ApplyPatch %{PATCH7413}
+ApplyPatch %{PATCH7414}
+ApplyPatch %{PATCH7415}
+ApplyPatch %{PATCH7416}
+ApplyPatch %{PATCH7417}
+ApplyPatch %{PATCH7418}
+ApplyPatch %{PATCH7419}
+ApplyPatch %{PATCH7420}
 %endif
 
 # openSUSE
@@ -5010,6 +5052,9 @@ fi\
 #
 #
 %changelog
+* Tue Apr 14 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.0-501.chinfo
+- pf updates
+
 * Mon Apr 13 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.0-500.chinfo
 - 7.0.0
 
