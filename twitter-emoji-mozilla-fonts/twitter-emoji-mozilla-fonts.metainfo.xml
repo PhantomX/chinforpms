@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="font">
+  <id>twemoji-mozilla</id>
+  <metadata_license>CC-BY-SA-4.0</metadata_license>
+  <project_license>CC-BY-4.0 and ASL-2.0</project_license>
+  <name>Twitter Emoji Mozilla</name>
+  <summary>Twitter Unicode emoji COLRv0 font</summary>
+  <description>
+    <p>
+      A color and B&amp;amp;W emoji SVG-in-OpenType font by Mozilla with support for ZWJ, skin
+      tone modifiers and country flags.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/mozilla/twemoji-colr</url>
+  <url type="bugtracker">https://github.com/mozilla/twemoji-colr/issues</url>
+
+  <provides>
+    <font>Twemoji Emoji Mozilla</font>
+  </provides>
+</component>

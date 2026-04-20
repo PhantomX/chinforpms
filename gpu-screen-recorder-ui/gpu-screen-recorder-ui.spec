@@ -1,16 +1,14 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.10.9
-Release:        1%{dist}
+Version:        1.11.4
+Release:        0%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
 License:        GPL-3.0-or-later
 URL:            %{vc_url}/about
 
 Source0:        https://dec05eba.com/snapshot/%{name}.git.%{version}.tar.gz
-
-Patch0:         0001-Use-system-fonts.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  gcc
@@ -26,6 +24,7 @@ BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(xi)
 # mglpp
 BuildRequires:  pkgconfig(libglvnd)
+BuildRequires:  pkgconfig(pangoft2)
 BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
@@ -37,7 +36,7 @@ Requires:       google-noto-sans-fonts
 Requires:       gpu-screen-recorder%{?_isa}
 Requires:       gpu-screen-recorder-notification%{?_isa}
 
-Provides:       bundled(mglpp) = 1.0.0
+Provides:       bundled(mglpp) = 1.1.0
 
 
 %description
@@ -52,10 +51,8 @@ cp -p depends/mglpp/depends/mgl/LICENSE LICENSE.mglpp
 
 rm -rf fonts
 sed \
-  -e "/'fonts'/d" \
   -e '/update_desktop_database/d' \
   -i meson.build
-sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/Theme.cpp
 
 
 %build
@@ -79,6 +76,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gpu-screen-recorder.d
 %license LICENSE LICENSE.mglpp
 %doc README.md
 %caps(cap_setuid+ep) %{_bindir}/gsr-global-hotkeys
+%{_bindir}/gsr-game-tracker
 %{_bindir}/gsr-hyprland-helper
 %{_bindir}/gsr-kwin-helper
 %{_bindir}/gsr-ui

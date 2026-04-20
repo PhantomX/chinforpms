@@ -1,9 +1,10 @@
 %global _lto_cflags %{nil}
 
-%global commit 4722942cc6755b423c21e12684fad54b26ada175
+%global commit f4a1d044479d668ab01c6ed34ed5c407e6b0d6a8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
-%global sbuild 9029
+%global shortcommit2 %(c=%{commit}; echo ${c:0:9})
+%global date 20260417
+%global sbuild 9050
 %bcond snapshot 1
 
 # Enable ffmpeg support
@@ -21,7 +22,7 @@
 
 Name:           mgba
 Version:        0.11.0
-Release:        0.37%{?dist}
+Release:        0.38%{?dist}
 Summary:        A Gameboy Advance Emulator
 
 License:        MPL-2.0 AND LGPL-2.1
@@ -128,7 +129,7 @@ sed -i \
   -e 's|${GIT_COMMIT_SHORT}|%{shortcommit}|g' \
   -e 's|${GIT_BRANCH}|master|g' \
   -e 's|${GIT_REV}|%{sbuild}|g' \
-  -e 's|${VERSION_STRING}|%{snapver}-r%{sbuild}-%{shortcommit}|g' \
+  -e 's|${VERSION_STRING}|%{snapver}-%{sbuild}-%{shortcommit2}|g' \
   src/core/version.c.in
 %endif
 

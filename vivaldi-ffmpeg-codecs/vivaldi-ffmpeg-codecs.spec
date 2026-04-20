@@ -9,25 +9,34 @@
 %global vivaldi_dir %{_libdir}/vivaldi
 
 %ifarch aarch64
+%bcond snap 0
 %global parch arm64
-%global pkgid 660838579
-%global snaprev 83
-%global ffmpeg_hash b02307b39bceac203b75c2669898c300257f0849acf2cdf6a1ee1325606b2f30
+%global snaprev 110
+%global snap_ffmpeg_hash 7500c6d0cc44031221b0d89f735b32766ad817f7ac94ad0e193d2981ad31c47e
 %else
 %global parch amd64
-%global pkgid 660647727
+%global zipver 0.103.1
 %global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 82
-%global ffmpeg_hash 173067e361ed2ce36c2900b955e0e628f147a46750f77c10fc7591318b827c45
+%global snaprev 109
+%global snap_ffmpeg_hash f374eccea0196a1f6bae9f34bbacac7af67a5bf2191c8a3f60307b1c176f926c
+%global snap_ffmpeg_ver git-2026-02-09
+%global zip_ffmpeg_hash d7633f6fb36313b78545fe09dfea03960ce58bcfa2577c77020262a9ddbe9246
+%global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
+%endif
+%if %{with snap}
+%global ffmpeg_hash %{snap_ffmpeg_hash}
+%global ffmpeg_ver %{snap_ffmpeg_ver}
+%else
+%global ffmpeg_hash %{zip_ffmpeg_hash}
+%global ffmpeg_ver %{zip_ffmpeg_ver}
 %endif
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-%global ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        7.9.120726
+Version:        7.9.121586
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -40,7 +49,8 @@ Source1:        copyright
 ExclusiveArch:  x86_64
 BuildRequires:  squashfs-tools
 %else
-Source0:        https://launchpadlibrarian.net/%{pkgid}/%{pkgname}_%{ffmpeg_ver}-%{pkgdistro}_%{parch}.deb
+Source0:        https://github.com/nwjs-ffmpeg-prebuilt/nwjs-ffmpeg-prebuilt/releases/download/%{zipver}/%{zipver}-linux-x64-gn.zip#/%{name}-%{ffmpeg_ver}-x64.zip
+BuildRequires:  unzip
 %endif
 BuildRequires:  gawk
 BuildRequires:  coreutils
@@ -64,17 +74,15 @@ unsquashfs -n -d %{name} %{S:0}
 cp %{S:1} .
 mv %{name}/chromium-ffmpeg-%{ffmpeg_ver}/chromium-ffmpeg/libffmpeg.so .
 %else
-ar p %{S:0} data.tar.xz | tar xJ -C .
-mv usr/lib/chromium-browser/libffmpeg.so .
-mv usr/share/doc/%{pkgname}/copyright .
+unzip %{S:0}
 %endif
 
-RVER="$(grep -aom1 'N-[0-9]\+-' libffmpeg.so | cut -d- -f2)"
-if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
-  echo "Version mismatch. You have ${RVER} in %{S:0} instead %{ffmpeg_ver} "
-  echo "Edit Version and try again"
-  exit 1
-fi
+%dnl RVER="$(grep -aom1 'N-[0-9]\+-' libffmpeg.so | cut -d- -f2)"
+%dnl if [ "${RVER}" != "%{ffmpeg_ver}" ] ;then
+%dnl   echo "Version mismatch. You have ${RVER} in %{S:0} instead %{ffmpeg_ver} "
+%dnl   echo "Edit Version and try again"
+%dnl   exit 1
+%dnl fi
 
 RHASH="$(sha256sum libffmpeg.so | awk '{print $1}')"
 if [ "${RHASH}" != "%{ffmpeg_hash}" ] ;then
@@ -91,11 +99,16 @@ mkdir -p %{buildroot}%{vivaldi_dir}
 install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
 
 %files
+%if %{with snap}
 %license copyright
+%endif
 %{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
 
 
 %changelog
+* Thu Apr 16 2026 - 7.9.121586-1
+- 121586
+
 * Thu Mar 19 2026 - 7.9.120726-1
 - Set vivaldir_ver to 7.9
 

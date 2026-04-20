@@ -49,17 +49,17 @@
 %global glad_ver 0.1.25
 %global gsl_ver 4.0.0
 %global fmt_ver 11.0.0
-%global imgui_ver 1.92.5
+%global imgui_ver 1.92.7
 %global jpgc_ver 1.05
 %global rapidyml_ver 0.10.0
 %global rcheevos_ver 12.2.0
 %global simpleini_ver 4.25
-%global soundtouch_ver 2.3.3
+%global soundtouch_ver 2.4.1
 %global xxhash_ver 0.8.1
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.7.243
+Version:        2.7.274
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -200,10 +200,10 @@ BuildRequires:  perl-interpreter
 Requires:       pcsx2_patches
 Requires:       joystick
 Requires:       fontawesome-6-free-fonts
-Requires:       google-noto-color-emoji-fonts
 Requires:       google-roboto-fonts
 Requires:       google-roboto-mono-fonts
 Requires:       promptfont-fonts
+Requires:       twitter-emoji-mozilla-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
 Requires:       libwayland-egl%{?_isa}
@@ -303,8 +303,6 @@ cp -p simpleini/LICENCE.txt LICENSE.simpleini
 cp -p promptfont/LICENSE.txt LICENSE.promptfont
 popd
 
-rm -f bin/resources/fonts/promptfont-license
-
 # To remove executable bits from man, doc and icon files
 chmod -x pcsx2/Docs/GPL.txt pcsx2/Docs/License.txt pcsx2/Docs/PCSX2_FAQ.md \
   pcsx2/Docs/Configuration_Guide/Configuration_Guide.md
@@ -398,11 +396,11 @@ rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/fa-solid-900.ttf
 ln -sf ../../../fonts/fontawesome-6-free-fonts/'Font Awesome 6 Free-Solid-900.otf' \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/fa-solid-900.otf
 
-rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Noto*
-ln -sf ../../../fonts/google-noto-color-emoji-fonts/Noto-COLRv1.ttf \
-  %{buildroot}%{_datadir}/%{appres}/resources/fonts/NotoColorEmoji-Regular.ttf
+rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/Twemoji.Mozilla*
+ln -sf ../../../fonts/twitter-emoji-mozilla-fonts/Twemoji.Mozilla.ttf \
+  %{buildroot}%{_datadir}/%{appres}/resources/fonts/Twemoji.Mozilla.ttf
 
-rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/promptfont.otf
+rm -f %{buildroot}%{_datadir}/%{appres}/resources/fonts/promptfont*
 ln -sf ../../../fonts/promptfont-fonts/promptfont.otf \
   %{buildroot}%{_datadir}/%{appres}/resources/fonts/promptfont.otf
 

@@ -128,6 +128,7 @@ devilspie2
 discimagecreator
 discord-rpc
 disk-indicator
+dmemcg-booster
 -dosbox-staging
 -dosbox-x
 -easytag
@@ -304,6 +305,7 @@ steamguard-cli
 -tde2e
 thrash-protect
 twitter-color-emoji-fonts
+twitter-emoji-mozilla-fonts
 tyrian-data
 unbound-chroot
 unbound-update-roothints
@@ -337,6 +339,7 @@ xboxdrv
 xcf-pixbuf-loader
 xdgmenumaker
 xfce4-notes-plugin
+xfce-session-target
 xfwm4
 xinput-gui
 -xorg-x11-server

@@ -1,16 +1,16 @@
-From 064a6cd877c9a42a781bf7d01ce71685f8ed29a5 Mon Sep 17 00:00:00 2001
+From 5a9c25d50786f4e589b49df68545e2529a0b733b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 7 Oct 2025 23:35:41 -0300
 Subject: [PATCH] autoconf: libpng-apng
 
 ---
- Makefile.am      | 96 ++++++++++++++++++++++++------------------------
+ Makefile.am      | 98 ++++++++++++++++++++++++------------------------
  libpng-config.in | 18 ++++-----
  libpng.pc.in     |  8 ++--
- 3 files changed, 61 insertions(+), 61 deletions(-)
+ 3 files changed, 62 insertions(+), 62 deletions(-)
 
 diff --git a/Makefile.am b/Makefile.am
-index 455b6cf..5aed9f7 100644
+index fa5bbeb..3ed17eb 100644
 --- a/Makefile.am
 +++ b/Makefile.am
 @@ -7,7 +7,7 @@
@@ -22,12 +22,16 @@ index 455b6cf..5aed9f7 100644
  
  ACLOCAL_AMFLAGS = -I scripts/autoconf
  
-@@ -40,30 +40,30 @@ BUILT_SOURCES = pnglibconf.h
+@@ -40,33 +40,33 @@ BUILT_SOURCES = pnglibconf.h
  
  if ENABLE_TESTS
  pngtest_SOURCES = pngtest.c
 -pngtest_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
 +pngtest_LDADD = $(PNGLIB_BASENAME).la
+ 
+ pnggetset_SOURCES = contrib/libtests/pnggetset.c
+-pnggetset_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
++pnggetset_LDADD = $(PNGLIB_BASENAME).la
  
  pngvalid_SOURCES = contrib/libtests/pngvalid.c
 -pngvalid_LDADD = libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@.la
@@ -61,7 +65,7 @@ index 455b6cf..5aed9f7 100644
  
  png_fix_itxt_SOURCES = contrib/tools/png-fix-itxt.c
  endif
-@@ -94,88 +94,88 @@ endif
+@@ -117,88 +117,88 @@ endif
  dist_man_MANS= libpng.3 libpngpf.3 png.5
  
  # generate the -config scripts if required
@@ -177,7 +181,7 @@ index 455b6cf..5aed9f7 100644
  endif
  
  #distribute headers in /usr/include/libpng/*
-@@ -186,7 +186,7 @@ nodist_pkginclude_HEADERS= pnglibconf.h
+@@ -209,7 +209,7 @@ nodist_pkginclude_HEADERS= pnglibconf.h
  # pkg-config stuff, note that libpng.pc is always required in order
  # to get the correct library
  pkgconfigdir = @pkgconfigdir@
@@ -186,7 +190,7 @@ index 455b6cf..5aed9f7 100644
  
  # Extra source distribution files, '${srcdir}' is used below to stop build files
  # from those directories being included.  This only works if the configure is
-@@ -200,8 +200,8 @@ EXTRA_DIST= \
+@@ -223,8 +223,8 @@ EXTRA_DIST= \
  
  SCRIPT_CLEANFILES=scripts/*.out scripts/*.chk
  
@@ -197,7 +201,7 @@ index 455b6cf..5aed9f7 100644
  	check.new pnglibconf.h pngprefix.h symbols.new pngtest-log.txt \
  	pnglibconf.out pnglibconf.c pnglibconf.pre pnglibconf.dfn \
  	$(SCRIPT_CLEANFILES)
-@@ -350,7 +350,7 @@ scripts/pnglibconf.c: scripts/pnglibconf.dfa scripts/options.awk pngconf.h
+@@ -374,7 +374,7 @@ scripts/pnglibconf.c: scripts/pnglibconf.dfa scripts/options.awk pngconf.h
  	rm pnglibconf.tf6
  	mv pnglibconf.tf7 $@
  
@@ -206,7 +210,7 @@ index 455b6cf..5aed9f7 100644
  	pnglibconf.h pngpriv.h pngdebug.h pnginfo.h pngstruct.h pngprefix.h
  
  test: check-am
-@@ -374,8 +374,8 @@ uninstall-header-links:
+@@ -398,8 +398,8 @@ uninstall-header-links:
  	cd '$(DESTDIR)$(includedir)'; rm -f $(HEADERS)
  
  install-libpng-pc:
@@ -217,7 +221,7 @@ index 455b6cf..5aed9f7 100644
  
  uninstall-libpng-pc:
  	rm -f '$(DESTDIR)$(pkgconfigdir)/libpng.pc'
-@@ -390,22 +390,22 @@ EXT_LIST = a dll.a so so.@PNGLIB_MAJOR@@PNGLIB_MINOR@.@PNGLIB_RELEASE@ la sl dyl
+@@ -414,22 +414,22 @@ EXT_LIST = a dll.a so so.@PNGLIB_MAJOR@@PNGLIB_MINOR@.@PNGLIB_RELEASE@ la sl dyl
  install-library-links:
  	@set -x; cd '$(DESTDIR)$(libdir)';\
  	for ext in $(EXT_LIST); do\
@@ -305,5 +309,5 @@ index de127d4..0063df9 100644
  Libs.private: @LIBS@
  Cflags: -I${includedir}
 -- 
-2.51.0
+2.53.0
 

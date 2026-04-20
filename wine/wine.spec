@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 13290851042b7123a4c030794149b2077eee121c
+%global wine_stagingver 11.7
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -84,7 +84,7 @@
 %global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 3e3245b5b69ddd49579b6c9c455e4d990cea6a18
+%global tkg_id d88ab005d9b53c2e2f2f2dde66b14e78c7647b8d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.6
+Version:        11.7
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -197,7 +197,6 @@ Patch599:       0003-winemenubuilder-silence-an-err.patch
 #Patch???:      %%{whq_murl}/-/commit/<commit>.patch#/%%{name}-whq-<commit>.patch
 Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.patch#/%{name}-whq-revert-bd89ab3.patch
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
-Patch702:        %{whq_murl}/-/merge_requests/10557.patch#/%{name}-whq-mr10557.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
@@ -227,9 +226,9 @@ Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/
 Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
 Patch1032:       %{tkg_url}/misc/winewayland/use-surfaceless-for-GST.patch#/%{name}-tkg-use-surfaceless-for-GST.patch
 
-Patch1091:       %{valve_url}/commit/e277c9f152d529894bb78260553970d9b276a5d4.patch#/%{name}-valve-e277c9f.patch
-Patch1092:       %{valve_url}/commit/52c401612a5c11fad63d3860f1b3b7d38fde387b.patch#/%{name}-valve-52c4016.patch
-Patch1093:       %{valve_url}/commit/541b9e83ccb766d28d29ada3012cd8c7a8b9c6ee.patch#/%{name}-valve-541b9e8.patch
+Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
+Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
+Patch1093:       %{valve_url}/commit/415086a42b16451a91226579690d3e47e1a56953.patch#/%{name}-valve-415086a.patch
 
 Patch1200:       %{ge_url}/wine-hotfixes/pending/registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch#/%{name}-ge-registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch
 Patch1201:       %{ge_url}/proton/add-envvar-to-gate-media-converter.patch#/%{name}-ge-add-envvar-to-gate-media-converter.patch
@@ -237,6 +236,7 @@ Patch1202:       %{ge_url}/proton/proton-use_winegstreamer_and_set_orientation-P
 Patch1203:       %{ge_url}/wine-hotfixes/pending/8848.patch#/%{name}-ge-8848.patch
 
 Patch1300:       0001-server-Add-WINE_DISABLE_NTSYNC-env-var-to-disable-nt.patch
+# https://bugs.winehq.org/show_bug.cgi?id=48791
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
@@ -794,7 +794,6 @@ This package adds the opencl driver for wine.
 %patch -P 511 -p1 -b.cjk
 %patch -P 599 -p1
 
-%patch -P 702 -p1
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 707 -p1
@@ -849,7 +848,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %endif
 %patch -P 1200 -p1
 %patch -P 1300 -p1
-%patch -P 1301 -p1
+%dnl %patch -P 1301 -p1
 %patch -P 1302 -p1
 %if %{with proton_mf}
 %patch -P 1304 -p1
@@ -2496,6 +2495,9 @@ fi
 
 
 %changelog
+* Sat Apr 18 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.7-100
+- 11.7
+
 * Sat Apr 04 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.6-100
 - 11.6
 

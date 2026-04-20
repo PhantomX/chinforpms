@@ -1,8 +1,8 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.12.5
-Release:        1%{dist}
+Version:        5.13.1
+Release:        0%{dist}
 Summary:        A shadowplay-like screen recorder
 
 License:        GPL-3.0-or-later
@@ -34,7 +34,9 @@ BuildRequires:  pkgconfig(xcomposite)
 BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  cmake(VulkanHeaders)
+BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-client)
+BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-egl)
 
 Suggests:       (mesa-va-drivers or mesa-va-drivers-freeworld)

@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-notification
-Version:        1.1.1
+Version:        1.2.1
 Release:        1%{dist}
 Summary:        A notification in the style of ShadowPlay
 
@@ -10,8 +10,6 @@ URL:            %{vc_url}/about
 
 Source0:        https://dec05eba.com/snapshot/%{name}.git.%{version}.tar.gz
 
-Patch0:         0001-Use-system-fonts.patch
-
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  meson
@@ -19,6 +17,7 @@ BuildRequires:  fonts-srpm-macros
 BuildRequires:  pkgconfig(xext)
 # mglpp
 BuildRequires:  pkgconfig(libglvnd)
+BuildRequires:  pkgconfig(pangoft2)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xrandr)
@@ -26,7 +25,7 @@ BuildRequires:  pkgconfig(xrender)
 
 Requires:       google-noto-sans-fonts
 
-Provides:       bundled(mglpp) = 1.0.0
+Provides:       bundled(mglpp) = 1.1.0
 
 
 %description
@@ -37,10 +36,6 @@ GPU Screen Recorder Notification is a notification in the style of ShadowPlay.
 %autosetup -c -p1
 
 cp -p depends/mglpp/depends/mgl/LICENSE LICENSE.mglpp
-
-rm -rf fonts
-sed -e "/'fonts'/d" -i meson.build
-sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/main.cpp
 
 
 %build
@@ -63,6 +58,9 @@ sed -e 's|_RPM_FONTDIR_|%{_fontbasedir}/google-noto|g' -i src/main.cpp
 
 
 %changelog
+* Sun Apr 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.1-1
+- 1.2.1
+
 * Sat Feb 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1.1.1-1
 - 1.1.1
 

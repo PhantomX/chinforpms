@@ -1,16 +1,16 @@
-From 9ac0732ecbace4a62f1ebb0eeec9f17f93342e79 Mon Sep 17 00:00:00 2001
+From e18dfff1610ea4e64b21ad510fcf612ab37425b4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 19 Oct 2023 20:05:46 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt            |  3 +-
- externals/CMakeLists.txt  | 58 +++++++++++++++++++++++++++++++++------
- src/common/CMakeLists.txt | 11 ++++++--
- 3 files changed, 58 insertions(+), 14 deletions(-)
+ CMakeLists.txt            |  3 +--
+ externals/CMakeLists.txt  | 56 +++++++++++++++++++++++++++++++++------
+ src/common/CMakeLists.txt | 11 +++++---
+ 3 files changed, 57 insertions(+), 13 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 54eb90e..cb8f454 100644
+index 3d58cc7..f696f13 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -15,7 +15,6 @@ set(CMAKE_POLICY_DEFAULT_CMP0063 NEW)
@@ -21,7 +21,7 @@ index 54eb90e..cb8f454 100644
  include(CMakeDependentOption)
  
  project(citra LANGUAGES C CXX ASM)
-@@ -265,7 +264,7 @@ function(check_submodules_present)
+@@ -272,7 +271,7 @@ function(check_submodules_present)
  endfunction()
  if (EXISTS "${PROJECT_SOURCE_DIR}/.git/objects")
      # only check submodules when source is obtained via Git
@@ -31,7 +31,7 @@ index 54eb90e..cb8f454 100644
  
  configure_file(${PROJECT_SOURCE_DIR}/dist/compatibility_list/compatibility_list.qrc
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index db8de43..dcfad1c 100644
+index c799fe6..f74766c 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -16,7 +16,6 @@ function(target_disable_warnings target)
@@ -42,7 +42,7 @@ index db8de43..dcfad1c 100644
  include(ExternalProject)
  
  # Boost
-@@ -218,12 +217,29 @@ endif()
+@@ -225,12 +224,29 @@ endif()
  
  # Zstandard
  if(USE_SYSTEM_ZSTD)
@@ -75,7 +75,7 @@ index db8de43..dcfad1c 100644
  else()
      set(ZSTD_LEGACY_SUPPORT OFF)
      set(ZSTD_BUILD_PROGRAMS OFF)
-@@ -367,7 +383,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
+@@ -374,7 +390,13 @@ target_compile_options(httplib INTERFACE -DCPPHTTPLIB_OPENSSL_SUPPORT)
  target_link_libraries(httplib INTERFACE ${OPENSSL_LIBRARIES})
  
  if (UNIX AND NOT APPLE)
@@ -89,7 +89,7 @@ index db8de43..dcfad1c 100644
  endif()
  
  # cpp-jwt
-@@ -442,16 +464,15 @@ if (ENABLE_VULKAN)
+@@ -449,16 +471,15 @@ if (ENABLE_VULKAN)
  
      # spirv-tools
      # TODO: Implement USE_SYSTEM_SPIRV_TOOLS -OS
@@ -108,7 +108,7 @@ index db8de43..dcfad1c 100644
          # System include path is different from submodule include path
          get_target_property(GLSLANG_PREFIX glslang::SPIRV INTERFACE_INCLUDE_DIRECTORIES)
          target_include_directories(SPIRV SYSTEM INTERFACE "${GLSLANG_PREFIX}/glslang")
-@@ -462,11 +483,22 @@ if (ENABLE_VULKAN)
+@@ -469,11 +490,22 @@ if (ENABLE_VULKAN)
          set(ENABLE_CTEST OFF CACHE BOOL "")
          set(ENABLE_HLSL OFF CACHE BOOL "")
          set(BUILD_EXTERNAL OFF CACHE BOOL "")
@@ -131,7 +131,7 @@ index db8de43..dcfad1c 100644
  
      # VMA
      if(USE_SYSTEM_VMA)
-@@ -485,7 +517,7 @@ if (ENABLE_VULKAN)
+@@ -492,7 +524,7 @@ if (ENABLE_VULKAN)
      # vulkan-headers
      add_library(vulkan-headers INTERFACE)
      if(USE_SYSTEM_VULKAN_HEADERS)
@@ -140,7 +140,7 @@ index db8de43..dcfad1c 100644
          if(TARGET Vulkan::Headers)
              message(STATUS "Found Vulkan headers")
              target_link_libraries(vulkan-headers INTERFACE Vulkan::Headers)
-@@ -501,6 +533,13 @@ if (ENABLE_VULKAN)
+@@ -521,6 +553,13 @@ if (ENABLE_VULKAN)
      endif()
  endif()
  
@@ -154,16 +154,13 @@ index db8de43..dcfad1c 100644
  set(XXHASH_BUILD_XXHSUM OFF)
  add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
  target_compile_definitions(xxhash PRIVATE XXH_FORCE_MEMORY_ACCESS=2)
-@@ -513,4 +552,5 @@ elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|ARM64|armv8")
- else()
+@@ -534,3 +573,4 @@ else()
      target_compile_definitions(xxhash PRIVATE XXH_VECTOR=XXH_SCALAR)
      message(STATUS "Disabling SIMD for xxHash")
--endif()
-\ No newline at end of file
-+endif()
+ endif()
 +endif()
 diff --git a/src/common/CMakeLists.txt b/src/common/CMakeLists.txt
-index d6bdd15..db15d90 100644
+index 4b6e74c..865ebc7 100644
 --- a/src/common/CMakeLists.txt
 +++ b/src/common/CMakeLists.txt
 @@ -99,12 +99,17 @@ add_library(citra_common STATIC
@@ -186,7 +183,7 @@ index d6bdd15..db15d90 100644
  target_include_directories(citra_common PUBLIC ${CMAKE_BINARY_DIR}/src)
  
  if (UNIX AND NOT APPLE)
-@@ -175,4 +180,4 @@ if (SSE42_COMPILE_OPTION)
+@@ -176,4 +181,4 @@ if (SSE42_COMPILE_OPTION)
      target_compile_options(citra_common PRIVATE ${SSE42_COMPILE_OPTION})
  endif()
  

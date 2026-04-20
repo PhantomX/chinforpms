@@ -1303,6 +1303,13 @@ Patch2002: %{zen_url}/commit/f8c0b5e54aa1437257286553b6ebedf839703cb2.patch#/zen
 Patch2003: %{zen_url}/commit/5940edfaadb71d6f34b7a21bd24e5c2c0638dfdb.patch#/zen-v%{patchversion}-sauce-5940edf.patch
 Patch2004: %{zen_url}/commit/f163493705e5750b40528b3da78c02a03744655a.patch#/zen-v%{patchversion}-sauce-f163493.patch
 Patch2005: %{zen_url}/commit/fdb45e1bf20822fefd4e3f67673f83b4ea5d4808.patch#/zen-v%{patchversion}-sauce-fdb45e1.patch
+# dmemcg
+Patch2006: %{zen_url}/commit/08a5cc4ab2b194df37715f1e239ce88b32804628.patch#/zen-v%{patchversion}-dmemcg-08a5cc4.patch
+Patch2007: %{zen_url}/commit/46e43813c90a2fcb988416cab25e4146b10d2949.patch#/zen-v%{patchversion}-dmemcg-46e4381.patch
+Patch2008: %{zen_url}/commit/0f003ed0970c2c0eb55497337d30b6ddbcc3dcea.patch#/zen-v%{patchversion}-dmemcg-0f003ed.patch
+Patch2009: %{zen_url}/commit/97fc4b95e40ec27ad257df19796f6b439ef62699.patch#/zen-v%{patchversion}-dmemcg-97fc4b9.patch
+Patch2010: %{zen_url}/commit/cab4c6e71dee69dc248e8d4f4083f24bb2bc04b5.patch#/zen-v%{patchversion}-dmemcg-cab4c6e.patch
+Patch2011: %{zen_url}/commit/be5281b25b724d7f5ee99c4980cafafa2a7ac201.patch#/zen-v%{patchversion}-dmemcg-be5281b.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/30b7ebebc5d5feeb39250381069d3d5a260efb67.patch%{pf_antibot}#/pf-cb-30b7ebe.patch
@@ -2363,6 +2370,12 @@ ApplyPatch %{PATCH2002}
 %dnl ApplyPatch %{PATCH2003}
 %dnl ApplyPatch %{PATCH2004}
 %dnl ApplyPatch %{PATCH2005}
+ApplyPatch %{PATCH2006}
+ApplyPatch %{PATCH2007}
+ApplyPatch %{PATCH2008}
+ApplyPatch %{PATCH2009}
+ApplyPatch %{PATCH2010}
+ApplyPatch %{PATCH2011}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
