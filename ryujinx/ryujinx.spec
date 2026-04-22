@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 1b3bf1473d7513d51e2c32ddea4d9a18f9e38b14
+%global commit 7f0e82fe481ce9c2cb6eb57e63171421254d2c6b
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260201
+%global date 20260418
 
 %if %{without bin}
 %bcond snapshot 0
@@ -83,7 +83,7 @@
 %global open_nat_core_ver 2.1.0.5
 %global opentk_ver 4.8.2
 %global opentk_redist_glfw_ver 3.3.8.39
-%global ppy_sdl3_cs_ver 2025.920.0
+%global ppy_sdl3_cs_ver 2026.320.0
 %global projektanker_icons_avalonia_ver 9.6.2
 %global runtime_any_system_collections_ver 4.3.0
 %global runtime_any_system_diagnostics_tools_ver 4.3.0
@@ -264,16 +264,16 @@
 %global tmds_dbus_protocol_ver 0.21.2
 
 %global appname Ryujinx
-%global vc_url  https://git.ryujinx.app/ryubing
+%global vc_url  https://git.ryujinx.app/projects
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.265
+Version:        1.3.272
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
 License:        MIT
-URL:            https://git.ryujinx.app/ryubing/%{name}
+URL:            https://git.ryujinx.app/projects/Ryubing
 
 %if %{with bin}
 Source0:        %{vc_url}/release-channel-master/releases/download/%{version}/%{name}-%{version}-linux_x64.tar.gz
@@ -283,9 +283,9 @@ Source3:        %{vc_url}/%{appname}/raw/%{commit}/distribution/linux/%{name}.de
 Source4:        %{vc_url}/%{appname}/raw/%{commit}/distribution/misc/Logo.svg#/%{name}-Logo.svg
 %else
 %if %{with snapshot}
-Source0:        %{vc_url}/%{name}/-/archive/%{commit}/%{name}-%{shortcommit}.tar.bz2
+Source0:        %{url}/archive/%{commit}.tar.gz#/%{name}-%{shortcommit}.tar.bz2
 %else
-Source0:        %{vc_url}/%{name}/-/archive/%{?with_canary:Canary-}%{version}/%{name}%{?with_canary:-Canary}-%{version}.tar.bz2
+Source0:        %{url}/archive/%{?with_canary:Canary-}%{version}.tar.gz#/%{name}%{?with_canary:-Canary}-%{version}.tar.gz
 %endif
 %if %{with local_dotnet}
 Source199:      https://builds.dotnet.microsoft.com/dotnet/Sdk/%{local_dotnet_ver}/dotnet-sdk-%{local_dotnet_ver}-linux-x64.tar.gz
@@ -679,7 +679,7 @@ and consistent builds.
 %if %{with bin}
 %autosetup -N -c
 %else
-%autosetup -n %{name}%{?with_canary:-Canary}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
+%autosetup -n ryubing -p1
 %endif
 
 %if %{with bin}
