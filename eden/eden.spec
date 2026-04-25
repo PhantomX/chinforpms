@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ac99ea96da608e687c3593a1110d0324f87913f3
+%global commit 417ed904f038543f91288692a5153ffffbd8617d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260403
+%global date 20260423
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -41,7 +41,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
 
-%global commit13 560ca671421e47e32d3c8270623aaa74454570f4
+%global commit13 dd90171902677780ffeb4c0d8360cc4f4e91fadb
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0~rc2.54
+Version:        0.2.0~rc2.86
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator

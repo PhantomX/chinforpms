@@ -20,9 +20,8 @@
 %global implot_ver 0.16
 %global implot_patch_ver 1
 %global implot_wrap_ver 2
-%global vulkan_headers_ver 1.3.283
-%global vulkan_headers_patch_ver 1
-%global vulkan_headers_wrap_ver 2
+%global vulkan_headers_ver 1.4.346
+%global vulkan_utility_ver 1.4.346
 
 %global pkgname MangoHud
 %global vc_url https://github.com/flightlessmango
@@ -31,7 +30,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           mangohud
-Version:        0.8.3~rc1
+Version:        0.8.3
 Release:        100%{?dist}
 Summary:        A Vulkan overlay layer for monitoring FPS, temperatures, CPU/GPU load and more
 
@@ -48,7 +47,7 @@ Source10:       https://github.com/ocornut/imgui/archive/v%{imgui_ver}/imgui-%{i
 Source11:       https://wrapdb.mesonbuild.com/v%{imgui_wrap_ver}/imgui_%{imgui_ver}-%{imgui_patch_ver}/get_patch#/imgui-%{imgui_ver}-%{imgui_patch_ver}-wrap.zip
 %if %{without sysvulkan}
 Source12:       https://github.com/KhronosGroup/Vulkan-Headers/archive/v%{vulkan_headers_ver}.tar.gz#/Vulkan-Headers-%{vulkan_headers_ver}.tar.gz
-Source13:       https://wrapdb.mesonbuild.com/v%{vulkan_headers_wrap_ver}/vulkan-headers_%{vulkan_headers_ver}-%{vulkan_headers_patch_ver}/get_patch#/vulkan-headers_%{vulkan_headers_ver}-%{vulkan_headers_patch_ver}-wrap.zip
+Source13:       https://github.com/KhronosGroup/Vulkan-Utility-Libraries/archive/v%{vulkan_utility_ver}.tar.gz#/Vulkan-Utility-Libraries-%{vulkan_utility_ver}.tar.gz
 %endif
 Source14:       https://github.com/epezent/implot/archive/v%{implot_ver}/implot-%{implot_ver}.zip
 Source15:       https://wrapdb.mesonbuild.com/v%{implot_wrap_ver}/implot_%{implot_ver}-%{implot_patch_ver}/get_patch#/implot-%{implot_ver}-%{implot_patch_ver}-wrap.zip
@@ -79,8 +78,10 @@ BuildRequires:  python3-mako
 BuildRequires:  unzip
 %if %{with sysvulkan}
 BuildRequires:  cmake(VulkanHeaders) >= %{vulkan_headers_ver}
+BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vulkan_utility_ver}
 %else
 Provides:       bundled(vulkan-headers) = %{vulkan_headers_ver}
+Provides:       bundled(vulkan-utility-libraries) = %{vulkan_headers_ver}
 %endif
 Requires:       libglvnd%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
@@ -119,7 +120,9 @@ tar xf %{S:10} -C subprojects/
 unzip %{S:11} -d subprojects/
 %if %{without sysvulkan}
 tar xf %{S:12} -C subprojects/
-unzip %{S:13} -d subprojects/
+tar xf %{S:13} -C subprojects/
+mv subprojects/{packagefiles/vulkan-headers/meson.build,Vulkan-Headers-%{vulkan_headers_ver}}
+mv subprojects/{packagefiles/vulkan-utility-libraries/meson.build,Vulkan-Utility-Libraries-%{vulkan_utility_ver}}
 %endif
 unzip %{S:14} -d subprojects/
 unzip %{S:15} -d subprojects/
@@ -211,6 +214,9 @@ rm -rf %{buildroot}%{_datadir}/doc
 
 
 %changelog
+* Fri Apr 24 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.3-100
+- 0.8.3
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.3~rc1-100
 - 0.8.3-rc1
 

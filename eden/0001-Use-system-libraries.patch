@@ -1,4 +1,4 @@
-From 6dada0eb7de85d4a54c865826a1af9b13a8edf34 Mon Sep 17 00:00:00 2001
+From 8eb5cc29aca078feee6dd9650e2c9e2b9789dd6c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
@@ -140,7 +140,7 @@ index 42717c4..a17fd6d 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 00bdf10..fa49360 100644
+index ba0545b..fcf3455 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -26,6 +26,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -159,17 +159,24 @@ index 00bdf10..fa49360 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -59,9 +61,6 @@ if (NOT TARGET LLVM::Demangle)
+@@ -59,14 +61,12 @@ if (NOT TARGET LLVM::Demangle)
      add_library(LLVM::Demangle ALIAS demangle)
  endif()
  
 -# unordered_dense
 -AddJsonPackage(unordered-dense)
 -
+ # httplib
+ if (IOS)
+     set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
+ endif()
+-AddJsonPackage(httplib)
++set(HTTPLIB_REQUIRE_OPENSSL ON)
++add_subdirectory(cpp-httplib)
+ 
  if (YUZU_STATIC_ROOM)
      return()
- endif()
-@@ -76,11 +75,13 @@ if (ARCHITECTURE_riscv64)
+@@ -82,11 +82,13 @@ if (ARCHITECTURE_riscv64)
      AddJsonPackage(biscuit)
  endif()
  
@@ -183,7 +190,7 @@ index 00bdf10..fa49360 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -97,8 +98,9 @@ if (USE_DISCORD_PRESENCE)
+@@ -103,8 +105,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -194,7 +201,7 @@ index 00bdf10..fa49360 100644
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
      AddJsonPackage(cubeb)
-@@ -128,6 +130,7 @@ if(ENABLE_CUBEB)
+@@ -134,6 +137,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -202,7 +209,7 @@ index 00bdf10..fa49360 100644
  
  if (NOT ANDROID)
      if (YUZU_USE_EXTERNAL_SDL2)
-@@ -172,9 +175,10 @@ endif()
+@@ -178,9 +182,10 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
@@ -214,7 +221,7 @@ index 00bdf10..fa49360 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -188,6 +192,7 @@ endif()
+@@ -194,6 +199,7 @@ endif()
  
  # SPIRV Tools
  AddJsonPackage(spirv-tools)
@@ -222,7 +229,7 @@ index 00bdf10..fa49360 100644
  
  if (SPIRV-Tools_ADDED)
      add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -196,7 +201,7 @@ endif()
+@@ -202,7 +208,7 @@ endif()
  
  # Catch2
  if (YUZU_TESTS OR DYNARMIC_TESTS)
@@ -231,7 +238,7 @@ index 00bdf10..fa49360 100644
  endif()
  
  # getopt
-@@ -208,6 +213,7 @@ endif()
+@@ -214,6 +220,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -239,16 +246,11 @@ index 00bdf10..fa49360 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -226,13 +232,18 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -232,10 +239,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
 +endif()
- 
- # httplib
--AddJsonPackage(httplib)
-+set(HTTPLIB_REQUIRE_OPENSSL ON)
-+add_subdirectory(cpp-httplib)
  
  # cpp-jwt
  if (ENABLE_WEB_SERVICE OR ENABLE_UPDATE_CHECKER)
@@ -260,7 +262,7 @@ index 00bdf10..fa49360 100644
  endif()
  
  # FFMpeg
-@@ -267,6 +278,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -270,6 +281,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -268,7 +270,7 @@ index 00bdf10..fa49360 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -274,6 +286,7 @@ if (gamemode_ADDED)
+@@ -277,6 +289,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -310,7 +312,7 @@ index a82bf0b..5f4a39c 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index dd1def5..f5d8c83 100644
+index 4c4bf86..53850f4 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
 @@ -119,9 +119,6 @@ if (NOT Boost_FOUND)
@@ -323,7 +325,7 @@ index dd1def5..f5d8c83 100644
  if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
      find_package(oaknut 2.0.1 CONFIG)
  endif()
-@@ -130,10 +127,6 @@ if ("riscv" IN_LIST ARCHITECTURE)
+@@ -130,10 +127,6 @@ if ("riscv64" IN_LIST ARCHITECTURE)
      find_package(biscuit 0.9.1 REQUIRED)
  endif()
  
