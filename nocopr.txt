@@ -11,7 +11,7 @@ binkplayer
 blastem-bindata
 boca-freeworld
 bsnes
-cdrtools
+-cdrtools
 cemu
 chinforpms-fake-packages
 -citra
