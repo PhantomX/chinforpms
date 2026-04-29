@@ -236,6 +236,7 @@ noise-suppression-for-voice
 -ntsync-kmod
 -nvtop
 openbor
+openbor4
 openjazz
 opentyrian
 -orage

@@ -1,4 +1,4 @@
-From 8eb5cc29aca078feee6dd9650e2c9e2b9789dd6c Mon Sep 17 00:00:00 2001
+From 0726353f674e93dcc2e3ab76a8f629b583682840 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
@@ -12,10 +12,10 @@ Subject: [PATCH] Use system libraries
  5 files changed, 61 insertions(+), 26 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 42717c4..a17fd6d 100644
+index 1142585..79acebc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -381,12 +381,13 @@ set(ENABLE_TESTING OFF)
+@@ -375,12 +375,13 @@ set(ENABLE_TESTING OFF)
  # boost
  set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
  
@@ -30,7 +30,7 @@ index 42717c4..a17fd6d 100644
  if (Boost_ADDED)
      if (MSVC OR ANDROID)
          add_compile_definitions(YUZU_BOOST_v1)
-@@ -406,19 +407,20 @@ if (Boost_ADDED)
+@@ -400,19 +401,20 @@ if (Boost_ADDED)
          )
      endif()
  endif()
@@ -54,13 +54,14 @@ index 42717c4..a17fd6d 100644
  
  if (zstd_ADDED)
      add_library(zstd::zstd ALIAS libzstd_static)
-@@ -427,17 +429,17 @@ endif()
+@@ -420,18 +422,18 @@ if (zstd_ADDED)
+ endif()
+ 
+ # nlohmann
+-AddJsonPackage(nlohmann)
++find_package(nlohmann_json 3.8 REQUIRED)
  
  if (NOT YUZU_STATIC_ROOM)
-     # nlohmann
--    AddJsonPackage(nlohmann)
-+    find_package(nlohmann_json 3.8 REQUIRED)
- 
      # zlib
 -    AddJsonPackage(zlib)
 +    find_package(ZLIB 1.2 REQUIRED)
@@ -75,7 +76,7 @@ index 42717c4..a17fd6d 100644
  
      if (Opus_ADDED)
          if (MSVC AND CXX_CLANG)
-@@ -453,7 +455,7 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -447,7 +449,7 @@ if (NOT YUZU_STATIC_ROOM)
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -84,7 +85,7 @@ index 42717c4..a17fd6d 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -512,22 +514,39 @@ add_subdirectory(externals)
+@@ -506,21 +508,38 @@ add_subdirectory(externals)
  # pass targets from externals
  # TODO(crueter): CPMUtil Propagate func?
  find_package(enet)
@@ -104,7 +105,6 @@ index 42717c4..a17fd6d 100644
      find_package(VulkanUtilityLibraries)
 +    find_package(VulkanHeaders 1.4.317 REQUIRED)
      find_package(SimpleIni)
-     find_package(SPIRV-Tools)
      find_package(sirit)
      find_package(gamemode)
      find_package(frozen)
@@ -125,7 +125,7 @@ index 42717c4..a17fd6d 100644
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -637,7 +656,12 @@ if (ENABLE_QT)
+@@ -630,7 +649,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -140,7 +140,7 @@ index 42717c4..a17fd6d 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index ba0545b..fcf3455 100644
+index e230f70..8dcd603 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -26,6 +26,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -221,15 +221,11 @@ index ba0545b..fcf3455 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -194,6 +199,7 @@ endif()
- 
- # SPIRV Tools
- AddJsonPackage(spirv-tools)
+@@ -191,10 +196,11 @@ else()
+         )
+     endif()
+ endif()
 +endif()
- 
- if (SPIRV-Tools_ADDED)
-     add_library(SPIRV-Tools::SPIRV-Tools ALIAS SPIRV-Tools-static)
-@@ -202,7 +208,7 @@ endif()
  
  # Catch2
  if (YUZU_TESTS OR DYNARMIC_TESTS)
@@ -238,7 +234,7 @@ index ba0545b..fcf3455 100644
  endif()
  
  # getopt
-@@ -214,6 +220,7 @@ endif()
+@@ -206,6 +212,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -246,7 +242,7 @@ index ba0545b..fcf3455 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -232,10 +239,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -224,10 +231,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -262,7 +258,7 @@ index ba0545b..fcf3455 100644
  endif()
  
  # FFMpeg
-@@ -270,6 +281,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -262,6 +273,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -270,7 +266,7 @@ index ba0545b..fcf3455 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -277,6 +289,7 @@ if (gamemode_ADDED)
+@@ -269,6 +281,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -279,7 +275,7 @@ index ba0545b..fcf3455 100644
  # Breakpad
  # TODO(crueter): Breakpad needs additional fetches
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 3140f8e..2258aa1 100644
+index fcc48c7..ebddbfb 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
 @@ -152,10 +152,15 @@ else()
@@ -337,5 +333,5 @@ index 4c4bf86..53850f4 100644
      find_package(LLVM REQUIRED)
      separate_arguments(LLVM_DEFINITIONS)
 -- 
-2.53.0
+2.54.0
 

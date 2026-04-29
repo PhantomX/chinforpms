@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 96daa0ede606f3b60a53c24204a2bda4ba207ea6
+%global commit 121bb374d0d9a5ba2dd73c7b14a58c95c236a9bf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
+%global date 20260413
 %bcond snapshot 1
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
@@ -23,14 +23,14 @@
 
 %global glad_ver 2.0.3
 %global imgui_ver 1.89.5
-%global vma_ver 3.2.1
+%global vma_ver 3.3.0
 
 %global vc_url  https://github.com/snes9xgit/%{name}
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
 Version:        1.63
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -70,7 +70,7 @@ BuildRequires:   pkgconfig(wayland-client)
 BuildRequires:   pkgconfig(wayland-egl)
 BuildRequires:   pkgconfig(zlib)
 BuildRequires:   minizip-ng-compat-devel
-BuildRequires:   cmake(VulkanHeaders) >= 1.3.280
+BuildRequires:   cmake(VulkanHeaders) >= 1.4.344
 %if %{with vma}
 BuildRequires:   cmake(VulkanMemoryAllocator) >= %{vma_ver}
 BuildRequires:   cmake(VulkanMemoryAllocator-Hpp) >= 3

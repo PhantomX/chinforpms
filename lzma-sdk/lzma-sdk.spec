@@ -9,8 +9,8 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        26.00
-Release:        101%{?dist}
+Version:        26.01
+Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
 License:        LGPL-2.1-only
@@ -156,6 +156,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Wed Apr 29 2026 Phantom X <megaphantomx at hotmail dot com> - 26.01-100
+- 26.01
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 26.00-101
 - Hardcode library version
 
