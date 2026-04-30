@@ -101,7 +101,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.0.5
+Version:        26.0.6
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -135,9 +135,6 @@ Source14:       https://crates.io/api/v1/crates/unicode-ident/%{rust_unicode_ide
 Source15:       https://crates.io/api/v1/crates/rustc-hash/%{rustc_hash_ver}/download#/rustc-hash-%{rustc_hash_ver}.tar.gz
 
 Patch21:        %{vc_url}/-/merge_requests/39951.patch#/%{name}-gl-mr39951.patch
-# test patch to disable nvk texture promotion and fix gnome-initial-config
-# https://bugzilla.redhat.com/show_bug.cgi?id=2359799
-Patch30:        %{fd_url}/raw/%{fd_id}/f/0001-nvk-don-t-set-promotion-on-texture-headers.patch#/%{name}-fedora-0001-nvk-don-t-set-promotion-on-texture-headers.patch
 Patch500:       mesa-23.1-x86_32-llvm-detection.patch
 
 Patch1000:      0001-Versioned-LLVM-package-fix.patch
@@ -803,6 +800,9 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 
 %changelog
+* Thu Apr 30 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.6-100
+- 26.0.6
+
 * Wed Apr 15 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.5-100
 - 26.0.5
 
