@@ -1,0 +1,25 @@
+From 7b2de892f6157cb5a5b58bc38c56f04065f0a916 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 1 May 2026 22:28:37 -0300
+Subject: [PATCH] tkg staging nofsync fixup #2
+
+---
+ dlls/winex11.drv/x11drv_main.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/dlls/winex11.drv/x11drv_main.c b/dlls/winex11.drv/x11drv_main.c
+index 0be24a4..e39f47d 100644
+--- a/dlls/winex11.drv/x11drv_main.c
++++ b/dlls/winex11.drv/x11drv_main.c
+@@ -72,8 +72,6 @@ BOOL use_take_focus = TRUE;
+ BOOL use_primary_selection = FALSE;
+ BOOL use_system_cursors = TRUE;
+ BOOL grab_fullscreen = TRUE;
+-int keyboard_layout = -1;
+-BOOL keyboard_scancode_detect = FALSE;
+ BOOL managed_mode = TRUE;
+ BOOL private_color_map = FALSE;
+ int primary_monitor = 0;
+-- 
+2.54.0
+

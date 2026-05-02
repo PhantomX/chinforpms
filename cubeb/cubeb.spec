@@ -1,6 +1,6 @@
-%global commit 1b7de400134aac33d9c6b59ac1be9ddbf86d16eb
+%global commit a37dadd1ed5949ab0accd7087b7c5c57800eab43
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260313
+%global date 20260421
 %bcond snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4
@@ -17,7 +17,7 @@
 
 Name:           cubeb
 Version:        0.2
-Release:        57%{?dist}
+Release:        58%{?dist}
 Summary:        Cross platform audio library
 
 License:        ISC

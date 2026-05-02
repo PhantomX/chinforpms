@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 3b9cc0bc3ae104f86b66de0e013df58151e193f5
+%global commit b6ed4201dfef5d9c3301bf6f30266e4a33674ac5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260416
+%global date 20260501
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -64,7 +64,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 asmjit
 
-%global commit13 fc9889c889561c5882e83819dcaffef5ed45529b
+%global commit13 f0bd0257c308b9a26562c1a30c4748a0219cc951
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 glslang
 
@@ -72,7 +72,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 922d04b3568c6428a9fb905ddee3ef5a68db3108
+%global commit15 1d363f3adceba9d1478230ede476a37b0dcdef24
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.40.346
+Version:        0.0.40.424
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -256,7 +256,7 @@ Provides:       bundled(rtmidi) = %{bundlertmidi}~git%{shortcommit22}
 %endif
 BuildRequires:  cmake(SDL3) >= 3.4.0
 BuildRequires:  pkgconfig(tinfo)
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.240
+BuildRequires:  cmake(VulkanHeaders) >= 1.4.341
 %if %{with vma}
 BuildRequires:  cmake(VulkanMemoryAllocator) >= %{bundlevma}
 %else

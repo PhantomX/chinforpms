@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-notification
-Version:        1.2.1
+Version:        1.2.3
 Release:        1%{dist}
 Summary:        A notification in the style of ShadowPlay
 
@@ -58,6 +58,9 @@ cp -p depends/mglpp/depends/mgl/LICENSE LICENSE.mglpp
 
 
 %changelog
+* Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.3-1
+- 1.2.3
+
 * Sun Apr 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.1-1
 - 1.2.1
 

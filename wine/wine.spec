@@ -45,7 +45,7 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  11.0.0
+%global winemono  11.1.0
 %global winevulkan 1.4.347
 %global opencl    1
 
@@ -73,7 +73,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.7
+%global wine_stagingver 11.8
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -81,10 +81,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id d260c6babaad1fd3db7a08f1509c8d75585f4806
+%global ge_id 721dd76896b434fe3c1328ea533e0b25b4af04d5
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id d88ab005d9b53c2e2f2f2dde66b14e78c7647b8d
+%global tkg_id beb819e62c7a3cbd2f3337e3ff5b63bc308a7640
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -104,7 +104,7 @@
 %endif
 
 # Enable when needed
-%bcond patchutils 0
+%bcond patchutils 1
 
 %global whq_url  https://source.winehq.org/git/wine.git/patch
 %global whq_murl  https://gitlab.winehq.org/wine/wine
@@ -124,7 +124,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.7
+Version:        11.8
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -225,6 +225,9 @@ Patch1029:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{nam
 Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
 Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
 Patch1032:       %{tkg_url}/misc/winewayland/use-surfaceless-for-GST.patch#/%{name}-tkg-use-surfaceless-for-GST.patch
+
+Patch1033:       0001-tkg-staging-nofsync-fixup-1.patch
+Patch1034:       0001-tkg-staging-nofsync-fixup-2.patch
 
 Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
 Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
@@ -828,7 +831,10 @@ tar -xf %{SOURCE900} --strip-components=1
 %endif
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%patch -P 1021 -p1
+%patch -P 1033 -p1
+%dnl %patch -P 1021 -p1
+filterdiff -p1 -x programs/winecfg/input.c %{P:1021} | %{__scm_apply_patch -p1 -q}
+%patch -P 1034 -p1
 %patch -P 1022 -p1
 
 %if %{with proton_winevulkan}
@@ -2495,6 +2501,9 @@ fi
 
 
 %changelog
+* Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.8-100
+- 11.8
+
 * Sat Apr 18 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.7-100
 - 11.7
 

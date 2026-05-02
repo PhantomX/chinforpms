@@ -22,10 +22,6 @@
 %global version10 2024.0
 %global srcname10 shaderc
 
-%global commit12 9f4c61a31435a7a90a314fc68aeb386c92a09c0f
-%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
-%global srcname12 Vulkan-Headers
-
 %bcond native 0
 # Enable system fmt
 %bcond fmt 1
@@ -59,7 +55,7 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.7.274
+Version:        2.7.308
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
@@ -73,9 +69,6 @@ Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 %if %{without shaderc}
 Source10:       https://github.com/google/%{srcname10}/archive/v%{version10}/%{srcname10}-%{version10}.tar.gz
-%endif
-%if %{without vulkan}
-Source12:       https://github.com/KhronosGroup/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
@@ -189,7 +182,7 @@ Provides:       bundled(xbyak) = %{xbyak_ver}
 %endif
 BuildRequires:  pkgconfig(zlib)
 %if %{with vulkan}
-BuildRequires:  cmake(VulkanHeaders) >= 1.3.296
+BuildRequires:  cmake(VulkanHeaders) >= 1.4.348
 BuildRequires:  cmake(VulkanMemoryAllocator) >= 3.2.0
 %endif
 BuildRequires:  fonts-rpm-macros
@@ -283,7 +276,6 @@ cp -p soundtouch/COPYING.TXT COPYING.soundtouch
 %dnl mv vulkan/include/vk_mem_alloc.h ../
 rm -rf vulkan
 %else
-tar -xf %{S:12} -C vulkan-headers --strip-components 1
 sed -e '/find_package/s|VulkanHeaders|\0_DISABLED|g' -i ../cmake/SearchForStuff.cmake
 %endif
 

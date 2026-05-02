@@ -1,8 +1,8 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.11.4
-Release:        0%{dist}
+Version:        1.11.7
+Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
 License:        GPL-3.0-or-later
@@ -15,7 +15,6 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  fonts-srpm-macros
-BuildRequires:  systemd
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(wayland-client)
@@ -84,10 +83,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gpu-screen-recorder.d
 %{_datadir}/gsr-ui
 %{_datadir}/applications/gpu-screen-recorder.desktop
 %{_datadir}/icons/hicolor/*/*/gpu-screen-recorder.*
-%{_userunitdir}/%{name}.service
 
 
 %changelog
+* Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 1.11.7-1
+- 1.11.7
+
 * Tue Mar 24 2026 Phantom X <megaphantomx at hotmail dot com> - 1.10.9-1
 - 1.10.9
 
