@@ -1,4 +1,4 @@
-From f721dd302f902a24316165ad2943a1e3b24d9190 Mon Sep 17 00:00:00 2001
+From 5cb34216d0c0db11a4116a208e804dd4512a748b Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 11 Oct 2025 17:38:43 -0300
 Subject: [PATCH] Remove update checker
@@ -17,7 +17,7 @@ Subject: [PATCH] Remove update checker
  10 files changed, 9 insertions(+), 77 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index a0d7f48..0951b8e 100644
+index e2e5431..e391c4d 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
 @@ -23,8 +23,6 @@ add_executable(ymir-sdl3
@@ -58,7 +58,7 @@ index a0d7f48..0951b8e 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index e195e3e..d8b80a1 100644
+index f4d30fc..fe4981e 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
 @@ -173,9 +173,7 @@ App::App()
@@ -88,7 +88,7 @@ index e195e3e..d8b80a1 100644
  
      // Get embedded file system
      auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
-@@ -2577,8 +2577,6 @@ void App::RunEmulator() {
+@@ -2578,8 +2578,6 @@ void App::RunEmulator() {
                  break;
              }
  
@@ -97,7 +97,7 @@ index e195e3e..d8b80a1 100644
              case EvtType::StateLoaded:
                  m_context.DisplayMessage(fmt::format("State {} loaded", std::get<uint32>(evt.value) + 1));
                  break;
-@@ -3256,9 +3254,6 @@ void App::RunEmulator() {
+@@ -3257,9 +3255,6 @@ void App::RunEmulator() {
                      if (ImGui::MenuItem("Open welcome window", nullptr)) {
                          OpenWelcomeModal(false);
                      }
@@ -107,7 +107,7 @@ index e195e3e..d8b80a1 100644
  
                      ImGui::Separator();
  #if Ymir_ENABLE_IMGUI_DEMO
-@@ -4088,6 +4083,7 @@ void App::ScreenshotThread() {
+@@ -4130,6 +4125,7 @@ void App::ScreenshotThread() {
      }
  }
  
@@ -115,7 +115,7 @@ index e195e3e..d8b80a1 100644
  void App::UpdateCheckerThread() {
      util::SetCurrentThreadName("Update checker thread");
  
-@@ -4223,6 +4219,7 @@ void App::UpdateCheckerThread() {
+@@ -4265,6 +4261,7 @@ void App::UpdateCheckerThread() {
          }
      }
  }
@@ -123,7 +123,7 @@ index e195e3e..d8b80a1 100644
  
  void App::OpenWelcomeModal(bool scanIPLROMs) {
      bool activeScanning = scanIPLROMs;
-@@ -4382,11 +4379,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
+@@ -4424,11 +4421,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
      });
  }
  
@@ -135,7 +135,7 @@ index e195e3e..d8b80a1 100644
  void App::RebindInputs() {
      m_settings.RebindInputs();
  }
-@@ -5954,10 +5946,6 @@ void App::DrawWindows() {
+@@ -6027,10 +6019,6 @@ void App::DrawWindows() {
      m_settingsWindow.Display();
      m_periphConfigWindow.Display();
      m_aboutWindow.Display();
@@ -147,7 +147,7 @@ index e195e3e..d8b80a1 100644
  
  void App::OpenMemoryViewer() {
 diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
-index 880ba30..b3dfce7 100644
+index 81798d1..0220798 100644
 --- a/apps/ymir-sdl3/src/app/app.hpp
 +++ b/apps/ymir-sdl3/src/app/app.hpp
 @@ -14,8 +14,6 @@
@@ -159,7 +159,7 @@ index 880ba30..b3dfce7 100644
  
  #include "ui/windows/debug/cdblock_window_set.hpp"
  #include "ui/windows/debug/debug_output_window.hpp"
-@@ -89,19 +87,12 @@ private:
+@@ -90,19 +88,12 @@ private:
      std::mutex m_screenshotQueueMtx;
      bool m_screenshotThreadRunning;
  
@@ -179,7 +179,7 @@ index 880ba30..b3dfce7 100644
  
      void RebindInputs();
      void UpdateInputs(double timeDelta);
-@@ -211,8 +202,6 @@ private:
+@@ -212,8 +203,6 @@ private:
      ui::SettingsWindow m_settingsWindow;
      ui::PeripheralConfigWindow m_periphConfigWindow;
      ui::AboutWindow m_aboutWindow;
@@ -323,7 +323,7 @@ index 68b15bf..f669340 100644
  
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 323b575..4b95c5d 100644
+index 886bebf..1845fb9 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -16,17 +16,10 @@
@@ -344,7 +344,7 @@ index 323b575..4b95c5d 100644
  #include <toml++/toml.hpp>
  #include <xxhash.h>
  
-@@ -37,16 +30,12 @@
+@@ -37,17 +30,13 @@
  #define BROTLI_VERSION "1.1.0" // Not exported
  #define CEREAL_VERSION "1.3.2" // Not exported
  #define CMRC_VERSION "2.0.0"   // Not exported
@@ -352,8 +352,9 @@ index 323b575..4b95c5d 100644
  #define CXXOPTS_VERSION _SEMVER_STR(CXXOPTS__VERSION_MAJOR, CXXOPTS__VERSION_MINOR, CXXOPTS__VERSION_PATCH)
  #define DATE_VERSION "3.0.4" // Not exported
  #define IMGUI_VERSION_FULL IMGUI_VERSION " (" _STR(IMGUI_VERSION_NUM) ")"
- #define LZMA_VERSION "24.05" // Private dependency of libchdr
- #define MIO_VERSION "1.1.0"  // Not exported
+ #define LZMA_VERSION "25.01"    // Private dependency of libchdr
+ #define LIBCHDR_VERSION "0.3.0" // Not exported
+ #define MIO_VERSION "1.1.0"     // Not exported
 -#define NLOHMANN_JSON_VERSION \
 -    _SEMVER_STR(NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH)
  #define SDL_VERSION_STR _SEMVER_STR(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
@@ -361,7 +362,7 @@ index 323b575..4b95c5d 100644
  #define STB_IMAGE_VERSION "2.30"       // Not exported
  #define STB_IMAGE_WRITE_VERSION "1.16" // Not exported
  #define MC_CONCQUEUE_VERSION "1.0.4"   // Not exported
-@@ -85,7 +74,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
+@@ -86,7 +75,6 @@ inline constexpr License licenseBSD3        {.name = "BSD-3-Clause",  .url = "ht
  //inline constexpr License licenseBSL         {.name = "BSL-1.0", .      url = "https://opensource.org/license/bsl-1-0"};
  //inline constexpr License licenseISC         {.name = "ISC",           .url = "https://opensource.org/licenses/ISC"};
  inline constexpr License licenseMIT         {.name = "MIT",           .url = "https://opensource.org/licenses/MIT"};
@@ -369,7 +370,7 @@ index 323b575..4b95c5d 100644
  inline constexpr License licenseMITRtMidi   {.name = "MIT-RtMidi",    .url = "https://github.com/thestk/rtmidi/blob/master/LICENSE"};
  inline constexpr License licensePublicDomain{.name = "Public domain", .url = nullptr};
  //inline constexpr License licenseUnlicense   {.name = "Unlicense",     .url = "https://opensource.org/licenses/unlicense"};
-@@ -104,7 +92,6 @@ static const struct {
+@@ -105,7 +93,6 @@ static const struct {
      {.name = "Brotli",                        .version = BROTLI_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/google/brotli",               .licenseURL = "https://github.com/google/brotli/blob/master/LICENSE"},
      {.name = "cereal",                        .version = CEREAL_VERSION,             .license = licenseBSD3,          .repoURL = "https://github.com/USCiLab/cereal",              .licenseURL = "https://github.com/USCiLab/cereal/blob/master/LICENSE",                  .homeURL = "https://uscilab.github.io/cereal/index.html"},
      {.name = "CMakeRC",                       .version = CMRC_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/vector-of-bool/cmrc",         .licenseURL = "https://github.com/vector-of-bool/cmrc/blob/master/LICENSE.txt"},
@@ -377,7 +378,7 @@ index 323b575..4b95c5d 100644
      {.name = "cxxopts",                       .version = CXXOPTS_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/jarro2783/cxxopts",           .licenseURL = "https://github.com/jarro2783/cxxopts/blob/master/LICENSE"},
      {.name = "date",                          .version = DATE_VERSION,               .license = licenseMIT,           .repoURL = "https://github.com/HowardHinnant/date",          .licenseURL = "https://github.com/HowardHinnant/date/blob/master/LICENSE.txt"},
      {.name = "Dear ImGui",                    .version = IMGUI_VERSION_FULL,         .license = licenseMIT,           .repoURL = "https://github.com/ocornut/imgui",               .licenseURL = "https://github.com/ocornut/imgui/blob/master/LICENSE.txt"},
-@@ -115,12 +102,6 @@ static const struct {
+@@ -116,12 +103,6 @@ static const struct {
      {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
      {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
      {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},

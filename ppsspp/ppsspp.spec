@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 7a329986376e703f59bef9f7be9f6d2d0ecff258
+%global commit 17fc029b5a6aae1935d9d12b8020dd1d7693735a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260413
+%global date 20260503
 %bcond snapshot 1
 
 # Enable Qt build
@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 926e4608f8dca7989267c787bbefb3ab1c835ac5
+%global commit9 50d7917546ef2a6bde5e352eccde03cb7e05b939
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -86,7 +86,7 @@
 %global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
 %global srcname130 nanosvg
 
-%global commit140 f5ae0ce8cac89cfc592047925f2064a84536eeb4
+%global commit140 530fee545c27ffb8524a8f496cbbcfdb687fe8c5
 %global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
 %global srcname140 aemu_postoffice
 
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.3.172
+Version:        1.20.3.303
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1

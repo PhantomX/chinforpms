@@ -9,8 +9,8 @@
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        26.0.3
-Release:        1%{?dist}
+Version:        26.0.4
+Release:        2%{?dist}
 Summary:        Free database tool
 
 License:        Apache-2.0
@@ -138,6 +138,12 @@ done
 
 
 %changelog
+* Sun May 03 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.4-2
+- 26.0.4
+
+* Sun May 03 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.4-1
+- 26.0.4
+
 * Sun Apr 19 2026 Phantom X <megaphantomx at hotmail dot com> - 26.0.3-1
 - 26.0.3
 

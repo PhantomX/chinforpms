@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 05b270f05cecfcd675bb0530cf18d0a9b81269a1
+%global commit 744e9e4aa560d785000a2653ee3d291716aa2c0a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260320
+%global date 20260501
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -22,11 +22,11 @@
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 mingw-breakpad
 
-%global commit3 85c2334e92e215cce34e8e0ed8b2dce4700f4a50
+%global commit3 b5c8f996196ba4aa6d8f97e52b5d3b6e70f7e4e2
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 Vulkan-Headers
 
-%global commit4 6eb62e1515072827db992c2befd80b71b2d04329
+%global commit4 1d8f600fd424278486eade7ed3e877c99f0846b1
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 VulkanMemoryAllocator
 
@@ -87,7 +87,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.6.151
+Version:        2.6.166
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 

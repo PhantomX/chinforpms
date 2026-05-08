@@ -41,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.0.6
+Version:        26.1.0
 Release:        100%{?dist}
 
 Epoch:          100
@@ -73,7 +73,7 @@ BuildRequires:  systemd-devel
 # We only check for the minimum version of pkgconfig(libdrm) needed so that the
 # SRPMs for each arch still have the same build dependencies. See:
 # https://bugzilla.redhat.com/show_bug.cgi?id=1859515
-BuildRequires:  pkgconfig(libdrm) >= 2.4.122
+BuildRequires:  pkgconfig(libdrm) >= 2.4.133
 BuildRequires:  pkgconfig(libunwind)
 BuildRequires:  pkgconfig(expat)
 BuildRequires:  pkgconfig(zlib) >= 1.2.3
@@ -219,6 +219,7 @@ mv %{buildroot}%{_libdir}/libgallium-*-freeworld.so .
 mv %{buildroot}%{_libdir}/libvulkan*_freeworld.so .
 
 rm -rf %{buildroot}%{_libdir}/*.so*
+rm -rf %{buildroot}%{_libdir}/dri
 mv lib{gallium,vulkan}*freeworld.so %{buildroot}%{_libdir}/
 rm -rf %{buildroot}%{_libdir}/pkgconfig
 rm -rf %{buildroot}%{_includedir}
@@ -254,6 +255,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.1.0-100
+- 26.1.0
+
 * Thu Apr 30 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.0.6-100
 - 26.0.6
 

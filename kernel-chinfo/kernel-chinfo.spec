@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.0.2
+%define specrpmversion 7.0.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1271,6 +1271,8 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
+Patch2: %{ark_url}/ee4bed290fa3c8817aca92da2011e4904a7680ed.patch#/%{name}-ark-ee4bed2.patch
+Patch3: %{ark_url}/eeaa13aa75f77515556db57762d369b57878725c.patch#/%{name}-ark-eeaa13a.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1328,81 +1330,39 @@ Patch7241:  %{pf_url}/f995633a096f1442ef4eaf529514a0b3070d3a91.patch%{pf_antibot
 Patch7242:  %{pf_url}/f51dd7ec9f0ae025836c70bf5253d654c9797ea6.patch%{pf_antibot}#/pf-cb-f51dd7e.patch
 # crypto (7300)
 # fixes (7400)
-Patch7401:  %{pf_url}/74196570f573f8539b0b9166343de620a156bfc2.patch%{pf_antibot}#/pf-cb-7419657.patch
 Patch7402:  %{pf_url}/e1ed4dc3669b88e870b30592a1d172904efebb24.patch%{pf_antibot}#/pf-cb-e1ed4dc.patch
-Patch7403:  %{pf_url}/294206934ddffacc0d4660f0a30a5c86256c4c44.patch%{pf_antibot}#/pf-cb-2942069.patch
-Patch7404:  %{pf_url}/ed586f5b2634a15059cdf4dbe4a51dda0f41c649.patch%{pf_antibot}#/pf-cb-ed586f5.patch
-Patch7405:  %{pf_url}/a7837301854c43149922d6fa2abb0612fde437e7.patch%{pf_antibot}#/pf-cb-a783730.patch
-Patch7406:  %{pf_url}/01000e4cd8fca58ee50de12216f15cee19b5e792.patch%{pf_antibot}#/pf-cb-01000e4.patch
-Patch7407:  %{pf_url}/d346b9823884e9a6789a87e8272b1ef035edafd7.patch%{pf_antibot}#/pf-cb-d346b98.patch
-Patch7408:  %{pf_url}/c2a790994dcf985d41deae5de6d8d46aaa7fc1b9.patch%{pf_antibot}#/pf-cb-c2a7909.patch
-Patch7409:  %{pf_url}/b85ce440d9657e720bc122262cfaf2dcbb53d027.patch%{pf_antibot}#/pf-cb-b85ce44.patch
-Patch7410:  %{pf_url}/d1be1e192fc3aee80364946f7c55094d08b1755b.patch%{pf_antibot}#/pf-cb-d1be1e1.patch
-Patch7411:  %{pf_url}/f1de05bb9544196b9e137870e8a1d8e2cdcf8364.patch%{pf_antibot}#/pf-cb-f1de05b.patch
-Patch7412:  %{pf_url}/19fc6f1f9038ace8f24462ab38e6ae754636b779.patch%{pf_antibot}#/pf-cb-19fc6f1.patch
-Patch7413:  %{pf_url}/67d01ca9c30c79765c965c04273123f24ceb5a6b.patch%{pf_antibot}#/pf-cb-67d01ca.patch
 Patch7414:  %{pf_url}/db414dfa4aec2384032ef6506a2f595a4de42517.patch%{pf_antibot}#/pf-cb-db414df.patch
 Patch7415:  %{pf_url}/cb3cf46d3b78623f641cf609b03ddfe0f9084044.patch%{pf_antibot}#/pf-cb-cb3cf46.patch
 Patch7416:  %{pf_url}/8c1c47ec33bfc259419f58653271c97023660adf.patch%{pf_antibot}#/pf-cb-8c1c47e.patch
 Patch7417:  %{pf_url}/30bbcde96f70008cf70b30868c21afcea9b9effd.patch%{pf_antibot}#/pf-cb-30bbcde.patch
-Patch7418:  %{pf_url}/d4c4ded90efb84982e6eb09dd9b3af39803576a1.patch%{pf_antibot}#/pf-cb-d4c4ded.patch
 Patch7419:  %{pf_url}/c67cc239bd9b29d8ec92996d7c807f6b4848ca73.patch%{pf_antibot}#/pf-cb-c67cc23.patch
-Patch7420:  %{pf_url}/85bcc2ffe72b6b7675b261a316bb9539f6a43220.patch%{pf_antibot}#/pf-cb-85bcc2f.patch
 Patch7421:  %{pf_url}/9867aa75432bec19de03733bb835af6aad007a0b.patch%{pf_antibot}#/pf-cb-9867aa7.patch
 Patch7422:  %{pf_url}/78077fd5512fd2cf54ab05880fabc7159cd38026.patch%{pf_antibot}#/pf-cb-78077fd.patch
-Patch7423:  %{pf_url}/b7556739719a9d3840fd1a077cc87c728a6ea631.patch%{pf_antibot}#/pf-cb-b755673.patch
-Patch7424:  %{pf_url}/6db0bc36a277b4d7806e51c103fb788bd257eaed.patch%{pf_antibot}#/pf-cb-6db0bc3.patch
-
-
-Patch7427:  %{pf_url}/5414d85650461f27c8970ab675cc77b688fba605.patch%{pf_antibot}#/pf-cb-5414d85.patch
 Patch7428:  %{pf_url}/90e44ce70ec154d2effe2c984ebe6abe64762f54.patch%{pf_antibot}#/pf-cb-90e44ce.patch
-
-Patch7430:  %{pf_url}/10f37598fdb7e56da7df8dacc92506e4b609b7d6.patch%{pf_antibot}#/pf-cb-10f3759.patch
 Patch7431:  %{pf_url}/b84e8c6b9d0a45a642e665dd22564fab0ff81b4c.patch%{pf_antibot}#/pf-cb-b84e8c6.patch
 Patch7432:  %{pf_url}/a376d9e88808238457bfe5693cee87071413cea8.patch%{pf_antibot}#/pf-cb-a376d9e.patch
 Patch7433:  %{pf_url}/94044dc22823526b0ed718000aa32b085455d065.patch%{pf_antibot}#/pf-cb-94044dc.patch
-
-Patch7435:  %{pf_url}/9a03367df970fdc2165c4b716239f58cc40ea070.patch%{pf_antibot}#/pf-cb-9a03367.patch
-Patch7436:  %{pf_url}/34b9d7865e4e1e33a21559efd9134becc0341c36.patch%{pf_antibot}#/pf-cb-34b9d78.patch
-Patch7437:  %{pf_url}/ff6205598fa0738bf194e5350f1d480e0d7ae324.patch%{pf_antibot}#/pf-cb-ff62055.patch
 Patch7438:  %{pf_url}/31a840b711fb199d783b103735888370b1dc1a56.patch%{pf_antibot}#/pf-cb-31a840b.patch
 Patch7439:  %{pf_url}/9e63903f5ce9db120e6e824a4cbca25473dfa9db.patch%{pf_antibot}#/pf-cb-9e63903.patch
-Patch7440:  %{pf_url}/23e699a1add5e5beec450267ef69c02c75003822.patch%{pf_antibot}#/pf-cb-23e699a.patch
 Patch7441:  %{pf_url}/aa18066d3e4412e55770e1463c675a8aeed06395.patch%{pf_antibot}#/pf-cb-aa18066.patch
 Patch7442:  %{pf_url}/7bed37fb083dad2212d1d56fd4716d70d6b752f3.patch%{pf_antibot}#/pf-cb-7bed37f.patch
-Patch7443:  %{pf_url}/e403200dc301d3830c08accbc37d32c922bb8270.patch%{pf_antibot}#/pf-cb-e403200.patch
-Patch7444:  %{pf_url}/95d0bfe883160015811fb367d2c58dece56b48b8.patch%{pf_antibot}#/pf-cb-95d0bfe.patch
-Patch7445:  %{pf_url}/8c5eeb5da12c904e01eb685e96c218bb5c299076.patch%{pf_antibot}#/pf-cb-8c5eeb5.patch
-Patch7446:  %{pf_url}/275e49e762ca563c5f3cc104e7450c1ff18acedb.patch%{pf_antibot}#/pf-cb-275e49e.patch
-Patch7447:  %{pf_url}/0b4189a21d4f3a1201cb91a006af3ec9f3b35a36.patch%{pf_antibot}#/pf-cb-0b4189a.patch
-Patch7448:  %{pf_url}/82a0d9b68702d3407f0ad9cd466fe5838139f96b.patch%{pf_antibot}#/pf-cb-82a0d9b.patch
-Patch7449:  %{pf_url}/745fb95a04fc57bf9077b97f4b14f44bf9faf7c5.patch%{pf_antibot}#/pf-cb-745fb95.patch
-Patch7450:  %{pf_url}/95ce6aa8928de7411f36025a1760f6a53ed8b6e0.patch%{pf_antibot}#/pf-cb-95ce6aa.patch
-Patch7451:  %{pf_url}/4f160734049ba7fa21778369d52dc2fccecc7d13.patch%{pf_antibot}#/pf-cb-4f16073.patch
-Patch7452:  %{pf_url}/b6d1756e3216a7ceeb00d51af91648e6a13b572e.patch%{pf_antibot}#/pf-cb-b6d1756.patch
-Patch7453:  %{pf_url}/f689408f8f72bbba64eea54d31dde5597311c561.patch%{pf_antibot}#/pf-cb-f689408.patch
-Patch7454:  %{pf_url}/79c25e4b1f59eea804491ad63c8547e05147e109.patch%{pf_antibot}#/pf-cb-79c25e4.patch
-Patch7455:  %{pf_url}/7db16eb09b0f51913febbcaf3262dbee98991492.patch%{pf_antibot}#/pf-cb-7db16eb.patch
 Patch7456:  %{pf_url}/dd944af8f982071cfd0003c1bbfd7730009d5af6.patch%{pf_antibot}#/pf-cb-dd944af.patch
-Patch7457:  %{pf_url}/5a9b8970d3a368cd9173f2b8d2bc3a52d7e2fd5a.patch%{pf_antibot}#/pf-cb-5a9b897.patch
-Patch7458:  %{pf_url}/da96d407a5bdb617bebf00b97deee85363d89444.patch%{pf_antibot}#/pf-cb-da96d40.patch
-Patch7459:  %{pf_url}/4f6d155cd2f37b05258103515be163d4d6ef7878.patch%{pf_antibot}#/pf-cb-4f6d155.patch
-Patch7460:  %{pf_url}/4de067821b4bef997f54597d619d96e247285075.patch%{pf_antibot}#/pf-cb-4de0678.patch
-Patch7461:  %{pf_url}/7a05ca52b6fc00b3d2c1b89cad5dc1d2e9df1a25.patch%{pf_antibot}#/pf-cb-7a05ca5.patch
-Patch7462:  %{pf_url}/25448e5f47a2bf12e77d31f50c1e526006099956.patch%{pf_antibot}#/pf-cb-25448e5.patch
-Patch7463:  %{pf_url}/c29e8c448ca8802b846031401bc2cc04f501b20d.patch%{pf_antibot}#/pf-cb-c29e8c4.patch
-Patch7464:  %{pf_url}/5260c29f86f69e0039dbe5e472d655873aa0ee30.patch%{pf_antibot}#/pf-cb-5260c29.patch
 Patch7465:  %{pf_url}/a203b3b5ff5b2a344ac06cd2bdd39347c1c20c57.patch%{pf_antibot}#/pf-cb-a203b3b.patch
-Patch7466:  %{pf_url}/213b950c868c332a1fafdefcbda68c02dccb9eab.patch%{pf_antibot}#/pf-cb-213b950.patch
-Patch7467:  %{pf_url}/75ef739d422ad9114f2032a0ff07fe3119940b10.patch%{pf_antibot}#/pf-cb-75ef739.patch
-Patch7468:  %{pf_url}/e120c2da6e373c4f7737e41ee76b418c5446567c.patch%{pf_antibot}#/pf-cb-e120c2d.patch
 Patch7469:  %{pf_url}/acccb2189de83beeaf0652eaf2680649a1cb562c.patch%{pf_antibot}#/pf-cb-acccb21.patch
-Patch7470:  %{pf_url}/7d1744a948e5119b89968c93619316815fa59107.patch%{pf_antibot}#/pf-cb-7d1744a.patch
-Patch7471:  %{pf_url}/39d8c47f3e294a9655ec656824388fbbfd42fb23.patch%{pf_antibot}#/pf-cb-39d8c47.patch
 Patch7472:  %{pf_url}/bec7fa24a7fc1266f62bef7ccbcb7c1ac0fe1c37.patch%{pf_antibot}#/pf-cb-bec7fa2.patch
 Patch7473:  %{pf_url}/dde10a5a77716db9110419548102924441069424.patch%{pf_antibot}#/pf-cb-dde10a5.patch
 Patch7474:  %{pf_url}/9da6c846105c859ebb700c6bb176f4addcdf28b7.patch%{pf_antibot}#/pf-cb-9da6c84.patch
 Patch7475:  %{pf_url}/85177bcb605e00e1f64f4700860b30a6a038a8b1.patch%{pf_antibot}#/pf-cb-85177bc.patch
+Patch7476:  %{pf_url}/4306073221142fcd97a3eca0b6ca51b77a4a44e9.patch%{pf_antibot}#/pf-cb-4306073.patch
+Patch7477:  %{pf_url}/f78474fb2fe5351ff6d79a7c9b5a8192c6d2686b.patch%{pf_antibot}#/pf-cb-f78474f.patch
+Patch7478:  %{pf_url}/af598cde99b98caaad373830b31916f4661f8cf4.patch%{pf_antibot}#/pf-cb-af598cd.patch
+Patch7479:  %{pf_url}/7f98852e00613de01759c628b708607ae3e766de.patch%{pf_antibot}#/pf-cb-7f98852.patch
+Patch7480:  %{pf_url}/3acee7e6f37b06afe3b5b90fbbbfd36d6189ea3f.patch%{pf_antibot}#/pf-cb-3acee7e.patch
+Patch7481:  %{pf_url}/02d554142dab7a74d39434689f6645249da1ca72.patch%{pf_antibot}#/pf-cb-02d5541.patch
+Patch7482:  %{pf_url}/2352a7792037591d02550b09aedc7417c1208291.patch%{pf_antibot}#/pf-cb-2352a77.patch
+Patch7483:  %{pf_url}/b179102e6492f941195a42e19f449ba8a60e2d15.patch%{pf_antibot}#/pf-cb-b179102.patch
+Patch7484:  %{pf_url}/05a05c1aee6b05b1691f17547b70e663f8121cfe.patch%{pf_antibot}#/pf-cb-05a05c1.patch
+Patch7485:  %{pf_url}/c9a7ade2d359052b153dbcd32a87a10cfa06c39c.patch%{pf_antibot}#/pf-cb-c9a7ade.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2365,6 +2325,8 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
+ApplyOptionalPatch %{PATCH2}
+ApplyOptionalPatch %{PATCH3}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2384,77 +2346,39 @@ ApplyPatch %{PATCH7241}
 ApplyPatch %{PATCH7242}
 # crypto
 # fixes
-ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
-ApplyPatch %{PATCH7409}
-ApplyPatch %{PATCH7410}
-ApplyPatch %{PATCH7411}
-ApplyPatch %{PATCH7412}
-ApplyPatch %{PATCH7413}
 ApplyPatch %{PATCH7414}
 ApplyPatch %{PATCH7415}
 ApplyPatch %{PATCH7416}
 ApplyPatch %{PATCH7417}
-ApplyPatch %{PATCH7418}
 ApplyPatch %{PATCH7419}
-ApplyPatch %{PATCH7420}
 ApplyPatch %{PATCH7421}
 ApplyPatch %{PATCH7422}
-ApplyPatch %{PATCH7423}
-ApplyPatch %{PATCH7424}
-ApplyPatch %{PATCH7427}
 ApplyPatch %{PATCH7428}
-ApplyPatch %{PATCH7430}
 ApplyPatch %{PATCH7431}
 ApplyPatch %{PATCH7432}
 ApplyPatch %{PATCH7433}
-ApplyPatch %{PATCH7435}
-ApplyPatch %{PATCH7436}
-ApplyPatch %{PATCH7437}
 ApplyPatch %{PATCH7438}
 ApplyPatch %{PATCH7439}
-ApplyPatch %{PATCH7440}
 ApplyPatch %{PATCH7441}
 ApplyPatch %{PATCH7442}
-ApplyPatch %{PATCH7443}
-ApplyPatch %{PATCH7444}
-ApplyPatch %{PATCH7445}
-ApplyPatch %{PATCH7446}
-ApplyPatch %{PATCH7447}
-ApplyPatch %{PATCH7448}
-ApplyPatch %{PATCH7449}
-ApplyPatch %{PATCH7450}
-ApplyPatch %{PATCH7451}
-ApplyPatch %{PATCH7452}
-ApplyPatch %{PATCH7453}
-ApplyPatch %{PATCH7454}
-ApplyPatch %{PATCH7455}
 ApplyPatch %{PATCH7456}
-ApplyPatch %{PATCH7457}
-ApplyPatch %{PATCH7458}
-ApplyPatch %{PATCH7459}
-ApplyPatch %{PATCH7460}
-ApplyPatch %{PATCH7461}
-ApplyPatch %{PATCH7462}
-ApplyPatch %{PATCH7463}
-ApplyPatch %{PATCH7464}
 ApplyPatch %{PATCH7465}
-ApplyPatch %{PATCH7466}
-ApplyPatch %{PATCH7467}
-ApplyPatch %{PATCH7468}
 ApplyPatch %{PATCH7469}
-ApplyPatch %{PATCH7470}
-ApplyPatch %{PATCH7471}
 ApplyPatch %{PATCH7472}
 ApplyPatch %{PATCH7473}
 ApplyPatch %{PATCH7474}
 ApplyPatch %{PATCH7475}
+ApplyPatch %{PATCH7476}
+ApplyPatch %{PATCH7477}
+ApplyPatch %{PATCH7478}
+ApplyPatch %{PATCH7479}
+ApplyPatch %{PATCH7480}
+ApplyPatch %{PATCH7481}
+ApplyPatch %{PATCH7482}
+ApplyPatch %{PATCH7483}
+ApplyPatch %{PATCH7484}
+ApplyPatch %{PATCH7485}
 %endif
 
 # openSUSE
@@ -5164,6 +5088,9 @@ fi\
 #
 #
 %changelog
+* Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.2-500.chinfo
+- 7.0.4
+
 * Tue Apr 28 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.2-500.chinfo
 - 7.0.2
 

@@ -10,18 +10,19 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
+%bcond avx2 0
 %bcond rtmidi 0
 
-%global commit b927996b3d7e2377930b870f73e891db06678490
+%global commit 82a26c6c6efc8c75efea592e63a16f655048e086
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260424
+%global date 20260506
 %bcond snapshot 1
 
-%global commit10 c68072129c8a5b4025122ca5a0c82ab14b30cb03
+%global commit10 9afb99746f0f5fc94ac8aef737053ae0481ba8d1
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 concurrentqueue
 
-%global commit11 be2cfc26c9ae77de99e6eed8d5e97a5a99b0cf3f
+%global commit11 417f5ed66ddabbec338d8ab0c7ea239ce894f334
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
@@ -48,7 +49,7 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.3.1
+Version:        0.3.2
 Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
@@ -152,8 +153,9 @@ sed -e \
 
 %build
 %cmake \
-  -GNinja \
-  -DYmir_AVX2:BOOL=OFF \
+%if %{with avx2}
+  -DYmir_AVX2:BOOL=ON \
+%endif
 %if %{without snapshot}
   -DYmir_DEV_BUILD:BOOL=OFF \
 %endif

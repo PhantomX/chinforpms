@@ -1,4 +1,4 @@
-From f81bc5ffc4e67a2bc13746522efdb5d5418d4a23 Mon Sep 17 00:00:00 2001
+From e306464d26dd4da9a01c16a91c850847b21f014d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
@@ -8,17 +8,17 @@ Subject: [PATCH] Use system libraries
  apps/ymir-sdl3/src/app/app.cpp                |  2 +-
  .../ymir-sdl3/src/app/services/midi_types.hpp |  2 +-
  .../ui/views/settings/audio_settings_view.cpp |  2 +-
- .../src/app/ui/windows/about_window.cpp       |  6 +----
+ .../src/app/ui/windows/about_window.cpp       | 11 +-------
  apps/ymir-sdl3/stb/CMakeLists.txt             | 22 ++++++++++++++++
  vendor/CMakeLists.txt                         | 25 +++++++++++++++++++
- 7 files changed, 64 insertions(+), 11 deletions(-)
+ 7 files changed, 64 insertions(+), 16 deletions(-)
  create mode 100644 apps/ymir-sdl3/stb/CMakeLists.txt
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index e26c569..4ce74cb 100644
+index 5940176..e2e5431 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -374,9 +374,19 @@ find_package(date CONFIG REQUIRED)
+@@ -389,9 +389,19 @@ find_package(date CONFIG REQUIRED)
  find_package(OpenSSL CONFIG REQUIRED)
  find_package(CURL REQUIRED)
  find_package(fmt CONFIG REQUIRED)
@@ -40,7 +40,7 @@ index e26c569..4ce74cb 100644
  find_package(tomlplusplus CONFIG REQUIRED)
  
  target_include_directories(ymir-sdl3
-@@ -398,7 +408,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -413,7 +423,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
      cereal::cereal
      lz4::lz4
      RtMidi::rtmidi
@@ -50,7 +50,7 @@ index e26c569..4ce74cb 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 8c7b314..e8e2a30 100644
+index 1dcdb0f..8a68d02 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
 @@ -134,7 +134,7 @@
@@ -89,10 +89,10 @@ index 82cf121..932a71c 100644
  using namespace ymir;
  
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 6e5bc7e..872d573 100644
+index 764f34f..886bebf 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-@@ -23,12 +23,10 @@
+@@ -25,15 +25,10 @@
  #include <ngtcp2/version.h>
  #include <nlohmann/json.hpp>
  #include <openssl/opensslv.h>
@@ -103,10 +103,29 @@ index 6e5bc7e..872d573 100644
  #include <xxhash.h>
 -#include <zlib.h>
 -#include <zstd.h>
+-
+-#define MINIZ_NO_ZLIB_COMPATIBLE_NAMES
+-#include <miniz/miniz.h>
  
  #define _STR_IMPL(x) #x
  #define _STR(x) _STR_IMPL(x)
-@@ -128,8 +126,6 @@ static const struct {
+@@ -49,7 +44,6 @@
+ #define LZMA_VERSION "25.01"    // Private dependency of libchdr
+ #define LIBCHDR_VERSION "0.3.0" // Not exported
+ #define MIO_VERSION "1.1.0"     // Not exported
+-// #define MZ_VERSION "3.1.1"      // Private dependency of libchdr
+ #define NLOHMANN_JSON_VERSION \
+     _SEMVER_STR(NLOHMANN_JSON_VERSION_MAJOR, NLOHMANN_JSON_VERSION_MINOR, NLOHMANN_JSON_VERSION_PATCH)
+ #define SDL_VERSION_STR _SEMVER_STR(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_MICRO_VERSION)
+@@ -121,7 +115,6 @@ static const struct {
+     {.name = "lz4",                           .version = LZ4_VERSION_STRING,         .license = licenseBSD2,          .repoURL = "https://github.com/lz4/lz4",                     .licenseURL = "https://github.com/lz4/lz4/blob/dev/lib/LICENSE",                        .homeURL = "https://lz4.org/",},
+     {.name = "lzma",                          .version = LZMA_VERSION,               .license = licensePublicDomain,                                                                                                                                                       .homeURL = "https://www.7-zip.org/sdk.html",},
+     {.name = "mio",                           .version = MIO_VERSION,                .license = licenseMIT,           .repoURL = "https://github.com/StrikerX3/mio",               .licenseURL = "https://github.com/StrikerX3/mio/blob/master/LICENSE"},
+-    {.name = "miniz",                         .version = MZ_VERSION,                 .license = licenseMIT,           .repoURL = "https://github.com/richgel999/miniz",            .licenseURL = "https://github.com/richgel999/miniz/blob/master/LICENSE"},
+     {.name = "moodycamel::\nConcurrentQueue", .version = "\n" MC_CONCQUEUE_VERSION,  .license = licenseBSD2,          .repoURL = "https://github.com/cameron314/concurrentqueue",  .licenseURL = "https://github.com/cameron314/concurrentqueue/blob/master/LICENSE.md"},
+     {.name = "Neargye/semver",                .version = SEMVER_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/Neargye/semver",              .licenseURL = "https://github.com/Neargye/semver/blob/master/LICENSE"},
+     {.name = "nghttp2",                       .version = NGHTTP2_VERSION,            .license = licenseMIT,           .repoURL = "https://github.com/nghttp2/nghttp2",             .licenseURL = "https://github.com/nghttp2/nghttp2/blob/master/COPYING",                 .homeURL = "https://nghttp2.org/"},
+@@ -136,8 +129,6 @@ static const struct {
      {.name = "stb_image_write",               .version = STB_IMAGE_WRITE_VERSION,    .license = licenseMIT,           .repoURL = "https://github.com/nothings/stb",                .licenseURL = "https://github.com/nothings/stb/blob/master/LICENSE"},
      {.name = "toml++",                        .version = TOMLPP_VERSION,             .license = licenseMIT,           .repoURL = "https://github.com/marzer/tomlplusplus" ,        .licenseURL = "https://github.com/marzer/tomlplusplus/blob/master/LICENSE",             .homeURL = "https://marzer.github.io/tomlplusplus/"},
      {.name = "xxHash",                        .version = XXHASH_VERSION,             .license = licenseBSD2,          .repoURL = "https://github.com/Cyan4973/xxHash",             .licenseURL = "https://github.com/Cyan4973/xxHash/blob/dev/LICENSE",                    .homeURL = "https://xxhash.com/"},
@@ -144,7 +163,7 @@ index 0000000..49a628c
 +    endif ()
 +endif ()
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 7695024..afd84af 100644
+index 7baf305..fec5f59 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
 @@ -17,6 +17,8 @@
@@ -198,5 +217,5 @@ index 7695024..afd84af 100644
  # Place vendored library projects under a Vendored folder in Visual Studio solutions
  if (MSVC)
 -- 
-2.53.0
+2.54.0
 
