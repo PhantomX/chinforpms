@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.0.4
+%define specrpmversion 7.0.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1271,8 +1271,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch2: %{ark_url}/ee4bed290fa3c8817aca92da2011e4904a7680ed.patch#/%{name}-ark-ee4bed2.patch
-Patch3: %{ark_url}/eeaa13aa75f77515556db57762d369b57878725c.patch#/%{name}-ark-eeaa13a.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1363,6 +1361,13 @@ Patch7482:  %{pf_url}/2352a7792037591d02550b09aedc7417c1208291.patch%{pf_antibot
 Patch7483:  %{pf_url}/b179102e6492f941195a42e19f449ba8a60e2d15.patch%{pf_antibot}#/pf-cb-b179102.patch
 Patch7484:  %{pf_url}/05a05c1aee6b05b1691f17547b70e663f8121cfe.patch%{pf_antibot}#/pf-cb-05a05c1.patch
 Patch7485:  %{pf_url}/c9a7ade2d359052b153dbcd32a87a10cfa06c39c.patch%{pf_antibot}#/pf-cb-c9a7ade.patch
+Patch7486:  %{pf_url}/3742c1cf4250966830b801792a955520aad227fe.patch%{pf_antibot}#/pf-cb-3742c1c.patch
+Patch7487:  %{pf_url}/64ac756abb37957adef508eafabc4d51c41aa8c0.patch%{pf_antibot}#/pf-cb-64ac756.patch
+Patch7488:  %{pf_url}/feb7a78f021b34aff52f051375f7ecadf4307177.patch%{pf_antibot}#/pf-cb-feb7a78.patch
+Patch7489:  %{pf_url}/ae16a1f121055505bd185df2a91dbb1c2fb290c0.patch%{pf_antibot}#/pf-cb-ae16a1f.patch
+Patch7490:  %{pf_url}/ca21bbcba27db58a4a276e8a5ef0939ec6f1917a.patch%{pf_antibot}#/pf-cb-ca21bbc.patch
+Patch7491:  %{pf_url}/82388864213950c9ff9994d802fc6450d076dd2e.patch%{pf_antibot}#/pf-cb-8238886.patch
+Patch7492:  %{pf_url}/2041f61a4f5d79c810d061aba0428f3e141f06d6.patch%{pf_antibot}#/pf-cb-2041f61.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2325,8 +2330,6 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
-ApplyOptionalPatch %{PATCH2}
-ApplyOptionalPatch %{PATCH3}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2379,6 +2382,13 @@ ApplyPatch %{PATCH7482}
 ApplyPatch %{PATCH7483}
 ApplyPatch %{PATCH7484}
 ApplyPatch %{PATCH7485}
+ApplyPatch %{PATCH7486}
+ApplyPatch %{PATCH7487}
+ApplyPatch %{PATCH7488}
+ApplyPatch %{PATCH7489}
+ApplyPatch %{PATCH7490}
+ApplyPatch %{PATCH7491}
+ApplyPatch %{PATCH7492}
 %endif
 
 # openSUSE
@@ -5088,7 +5098,10 @@ fi\
 #
 #
 %changelog
-* Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.2-500.chinfo
+* Fri May 08 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.5-500.chinfo
+- 7.0.5
+
+* Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.4-500.chinfo
 - 7.0.4
 
 * Tue Apr 28 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.2-500.chinfo
