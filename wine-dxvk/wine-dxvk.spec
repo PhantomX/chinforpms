@@ -19,9 +19,10 @@ BuildArch:      noarch
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit d1b0151cb40288de31d5af4a2e84173c3889afa2
+%global commit 60978eb94c9ae51609b155f4f7e4c7f6f2fb6105
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260501
+%global date 20260514
+%global sbuild 591
 %bcond snapshot 1
 
 %bcond debug 0
@@ -43,7 +44,7 @@ BuildArch:      noarch
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
-%global commit8 0e79a703db8b23004c77dbabacf25ed2d41f0bd9
+%global commit8 69acb01540904d7db8c3ae198ab6e769aa6e6ab4
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 dxbc-spirv
 
@@ -76,7 +77,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.7.1
-Release:        107%{?dist}
+Release:        108%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -202,7 +203,7 @@ cp -p %{S:3} README.chinforpms
 
 sed -e '/command:/s|git|false|g' -i meson.build
 
-sed -e 's|@VCS_TAG@|v%{version}-%{release}|g' -i version.h.in
+sed -e 's|@VCS_TAG@|v%{version}%{?with_snapshot:-%{sbuild}-g%{shortcommit}}|g' -i version.h.in
 
 sed -e "/strip =/s|=.*|= 'true'|g" -i build-win*.txt
 

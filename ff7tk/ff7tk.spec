@@ -11,7 +11,7 @@
 
 Name:           ff7tk
 Version:        1.3.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
 License:        LGPL-3.0-or-later
@@ -40,6 +40,8 @@ BuildRequires:  cmake(Qt6Xml)
 BuildRequires:  qt6-linguist
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(zlib)
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 
 Provides:       %{name}-libs = %{?epoch:%{epoch}:}%{version}-%{release}
 
@@ -100,6 +102,9 @@ rmdir -p %{buildroot}%{_datadir}/%{name} || :
 
 
 %changelog
+* Sun May 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1.3.1.0-3.20251209git0118f5e
+- Rebuild (qt6)
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1.3.1.0-1.20250814git4f6c721
 - 1.3.1.0
 

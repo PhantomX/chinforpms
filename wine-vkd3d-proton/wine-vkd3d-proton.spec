@@ -22,14 +22,15 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 64f5776fdb330abc53408de8b2b53e8e03fb49ca
+%global commit d27571805e44fffe3f3e91b2fb68f52bb785f5d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260506
+%global date 20260515
+%global sbuild 60
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
 
-%global commit1 62dbb07f771534c8ce924479efdc6c8fa510361d
+%global commit1 31ecc70656cbfb30f5fb6ea1a6b67a0e89424346
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 dxil-spirv
 
@@ -45,7 +46,7 @@ BuildArch:      noarch
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 SPIRV-Cross
 
-%global commit4 ad9ce1235e88dc09287e19171dfac384db8ec32c
+%global commit4 8864cdc896bbc2a9b6eb36b3218fc9ef57908d77
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 Vulkan-Headers
 
@@ -78,7 +79,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        3.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT
@@ -200,7 +201,7 @@ sed \
   -i meson.build
 
 sed -e 's|@VCS_TAG@|%{buildcommit}|g' -i vkd3d_build.h.in
-sed -e 's|@VCS_TAG@|v%{version}|g' -i vkd3d_version.h.in
+sed -e 's|@VCS_TAG@|v%{version}%{?with_snapshot:-%{sbuild}-g%{shortcommit}}|g' -i vkd3d_version.h.in
 
 cp %{S:10} README.%{pkgname}
 

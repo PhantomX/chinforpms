@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.1.0
-%global winevulkan 1.4.347
+%global winevulkan 1.4.350
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -61,6 +61,7 @@
 %global wineopenldap 2.5.17
 %global winetiff 4.7.1
 %global winejxrlib 1.1
+%global winesqlite3 3.51.1
 %global winevkd3d 1.18
 %global winexml2 2.12.8
 %global winexslt 1.1.45
@@ -73,7 +74,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.8
+%global wine_stagingver 11.9
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,7 +125,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.8
+Version:        11.9
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -477,6 +478,7 @@ Provides:       bundled(libxml2) = %{winexml2}
 Provides:       bundled(libxslt) = %{winexslt}
 Provides:       bundled(libvkd3d) = %{winevkd3d}
 Provides:       bundled(openldap) = %{wineopenldap}
+Provides:       bundled(sqlite3) = %{winesqlite3}
 Provides:       bundled(zlib) = %{winezlib}
 Provides:       bundled(zydis) = %{winezydis}
 
@@ -1989,6 +1991,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wmvcore.dll
 %{_libdir}/wine/%{winepedirs}/wmvdecod.dll
 %{_libdir}/wine/%{winepedirs}/spoolss.dll
+%{_libdir}/wine/%{winepedirs}/winsqlite3.dll
 %{_libdir}/wine/%{winepedirs}/wintab32.dll
 %{_libdir}/wine/%{winepedirs}/wintrust.dll
 %{_libdir}/wine/%{winepedirs}/winusb.dll
@@ -2501,6 +2504,9 @@ fi
 
 
 %changelog
+* Sun May 17 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.9-100
+- 11.9
+
 * Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.8-100
 - 11.8
 
