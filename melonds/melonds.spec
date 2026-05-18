@@ -7,9 +7,10 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit b01b420cbb983c35ccb26cc78414190c727bf8d4
+%global commit c851d65266db262918df279fa3d67a2170782fb4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260313
+%global date 20260517
+%global sbuild 63
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -26,7 +27,7 @@
 
 Name:           melonds
 Version:        1.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A NDS emulator
 
 # fatfs - BSD
@@ -120,7 +121,13 @@ sed \
 export LDFLAGS+=" -Wl,-z,noexecstack"
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
-  -DMELONDS_VERSION_SUFFIX:STRING="-%{release}" \
+%if %{with snapshot}
+  -DMELONDS_VERSION_SUFFIX:STRING="-%{sbuild}-g%{shortcommit}" \
+  -DMELONDS_EMBED_BUILD_INFO:BOOL=ON \
+  -DMELONDS_GIT_HASH:STRING="%{commit}" \
+  -DMELONDS_GIT_BRANCH:STRING="master" \
+  -DMELONDS_BUILD_PROVIDER:STRING="rpmbuild" \
+%endif
   -DENABLE_LTO:BOOL=OFF \
   -DENABLE_LTO_RELEASE:BOOL=OFF \
   -DTEAKRA_WARNINGS_AS_ERRORS:BOOL=OFF \
