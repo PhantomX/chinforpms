@@ -41,7 +41,7 @@
 Name:           %{pkgname}-freeworld
 Summary:        Mesa-based video acceleration drivers - freeworld
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.1.0
+Version:        26.1.1
 Release:        100%{?dist}
 
 Epoch:          100
@@ -129,7 +129,7 @@ BuildRequires:  python3-pyyaml
 BuildRequires:  vulkan-headers
 BuildRequires:  glslang
 BuildRequires:  pkgconfig(vulkan)
-BuildRequires:  pkgconfig(DirectX-Headers) >= 1.618.1
+BuildRequires:  pkgconfig(DirectX-Headers) >= 1.619.1
 
 %description
 %{summary}.
@@ -255,6 +255,9 @@ install -pm0644 %{S:3} %{buildroot}%{_metainfodir}
 
 
 %changelog
+* Wed May 20 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.1.1-100
+- 26.1.1
+
 * Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 100:26.1.0-100
 - 26.1.0
 

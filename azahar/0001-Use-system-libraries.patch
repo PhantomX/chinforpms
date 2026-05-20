@@ -84,7 +84,7 @@ index c799fe6..f74766c 100644
 +       add_library(gamemode INTERFACE)
 +       target_link_libraries(gamemode INTERFACE PkgConfig::gamemode)
 +    else()
-     add_subdirectory(gamemode)
+     add_subdirectory(gamemode EXCLUDE_FROM_ALL)
 +    endif()
  endif()
  
@@ -114,7 +114,7 @@ index c799fe6..f74766c 100644
          set(BUILD_EXTERNAL OFF CACHE BOOL "")
 +        set(SPIRV_SKIP_EXECUTABLES ON)
 +        add_subdirectory(spirv-tools EXCLUDE_FROM_ALL)
-         add_subdirectory(glslang)
+         add_subdirectory(glslang EXCLUDE_FROM_ALL)
      endif()
  
      # sirit

@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 17fc029b5a6aae1935d9d12b8020dd1d7693735a
+%global commit 721d1e323c94d1df9aff8c18ed25af82d78c6d12
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260503
+%global date 20260519
 %bcond snapshot 1
 
 # Enable Qt build
@@ -66,7 +66,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 50d7917546ef2a6bde5e352eccde03cb7e05b939
+%global commit9 ebfe8ca1bf944358e27200d66964fcb4e00e2487
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -114,7 +114,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.3.303
+Version:        1.20.4.40
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -668,6 +668,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Wed May 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.4.40-100.20260519git721d1e3
+- 1.20.4
+
 * Mon Mar 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.3.4-100.20260316gita52501a
 - 1.20.3
 

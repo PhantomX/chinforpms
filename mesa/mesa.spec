@@ -101,7 +101,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.1.0
+Version:        26.1.1
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -208,12 +208,14 @@ BuildRequires:  spirv-llvm-translator%{?llvm_pkgver}-devel
 %endif
 %if 0%{?with_opencl} || 0%{?with_nvk}
 BuildRequires:  bindgen
-BuildRequires:  libstdc++-static
 %if 0%{?rhel}
 BuildRequires:  rust-toolset
 %else
 BuildRequires:  cargo-rpm-macros
 %endif
+%endif
+%if 0%{?with_opencl}
+BuildRequires:  libstdc++-static
 %endif
 %if 0%{?with_nvk}
 BuildRequires:  cbindgen
@@ -231,7 +233,7 @@ BuildRequires:  glslang
 BuildRequires:  pkgconfig(vulkan)
 %endif
 %if 0%{?with_d3d12}
-BuildRequires:  pkgconfig(DirectX-Headers) >= 1.618.1
+BuildRequires:  pkgconfig(DirectX-Headers) >= 1.619.1
 %endif
 
 %description
@@ -800,6 +802,9 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 
 %changelog
+* Wed May 20 2026 Phantom X <megaphantomx at hotmail dot com> - 26.1.1-100
+- 26.1.1
+
 * Thu May 07 2026 Phantom X <megaphantomx at hotmail dot com> - 26.1.0-100
 - 26.1.0
 

@@ -1,4 +1,4 @@
-From 027d220e66fbbf274b09023efe36f58d547b5779 Mon Sep 17 00:00:00 2001
+From a1a3d5f01fed52e13fe889307c9f795f08fb1676 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -27,7 +27,7 @@ Subject: [PATCH] Use system libraries
  20 files changed, 57 insertions(+), 18 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ea57576..826d3fc 100644
+index 88ffc50..2d37d6a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1266,6 +1266,15 @@ else()
@@ -54,7 +54,7 @@ index ea57576..826d3fc 100644
  set(LIB7ZIP_LIBRARY 7zip)
  
  # Arm platforms require at least libpng17.
-@@ -1772,11 +1782,18 @@ add_library(xbrz STATIC
+@@ -1778,11 +1788,18 @@ add_library(xbrz STATIC
  )
  target_include_directories(xbrz PRIVATE ext/xbrz)
  
@@ -74,7 +74,7 @@ index ea57576..826d3fc 100644
  
  set(CoreExtra)
  set(CoreExtraLibs)
-@@ -2604,6 +2621,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
+@@ -2610,6 +2627,14 @@ if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND AND NOT APPLE)
  	set(OPENGL_LIBRARIES OpenGL::OpenGL)
  endif()
  
@@ -224,7 +224,7 @@ index e8b751b..82c6f31 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index fd82a4f..d9cafa0 100644
+index 6962506..035789e 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
 @@ -27,7 +27,7 @@
@@ -263,7 +263,7 @@ index 274ef6d..0868971 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index 660f006..9ca9ae3 100644
+index e0add5a..afdcd33 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -302,7 +302,7 @@ index 8ca5ca6..157f596 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/GPU/Vulkan/TextureCacheVulkan.cpp b/GPU/Vulkan/TextureCacheVulkan.cpp
-index 3aa0206..0740751 100644
+index 242421e..28f71cb 100644
 --- a/GPU/Vulkan/TextureCacheVulkan.cpp
 +++ b/GPU/Vulkan/TextureCacheVulkan.cpp
 @@ -19,7 +19,7 @@
@@ -315,7 +315,7 @@ index 3aa0206..0740751 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index d37821a..25b00b5 100644
+index 3bf8234..d3c942f 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -325,8 +325,8 @@ index d37821a..25b00b5 100644
 -#include "ext/xxhash.h"
 +#include "xxhash.h"
  #include "Common/UI/UI.h"
+ #include "Common/UI/PopupScreens.h"
  
- #include "Common/Data/Text/I18n.h"
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
 index 12b3a22..3de6425 100644
 --- a/UI/ImDebugger/ImMemView.cpp
@@ -354,5 +354,5 @@ index 4345e53..d95c033 100644
  #include "Core/Config.h"
  #include "Core/System.h"
 -- 
-2.53.0
+2.54.0
 
