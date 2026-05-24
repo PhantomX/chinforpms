@@ -162,7 +162,15 @@ Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
 
-License:        GPL-2.0-only AND MIT AND BSD-2-Clause AND BSD-3-Clause%{!?with_dynarmic: AND ( 0BSD AND MIT )}%{!?with_boost: AND BSL-1.0}%{!?with_glslang: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}
+License: %{shrink:
+    GPL-2.0-only AND
+    MIT AND BSD-2-Clause AND
+    BSD-3-Clause
+    %{!?with_dynarmic: AND ( 0BSD AND MIT )}
+    %{!?with_boost: AND BSL-1.0}
+    %{!?with_glslang: AND Apache-2.0}
+    %{!?with_soundtouch: AND LGPL-2.1}
+}
 URL:            https://azahar-emu.org
 
 %if %{with snapshot}

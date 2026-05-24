@@ -6,8 +6,6 @@
 
 %bcond snap 1
 
-%global vivaldi_dir %{_libdir}/vivaldi
-
 %ifarch aarch64
 %bcond snap 0
 %global parch arm64
@@ -33,10 +31,9 @@
 
 %global pkgname chromium-codecs-ffmpeg-extra
 %global pkgdistro 0ubuntu0.18.04.1
-%global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        7.9.121586
+Version:        121586
 Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
@@ -57,7 +54,7 @@ BuildRequires:  coreutils
 
 ExclusiveArch:  x86_64 aarch64
 
-%global __provides_exclude_from ^%{vivaldi_dir}/.*
+%global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude ^libffmpeg.so.*
 
 
@@ -95,17 +92,20 @@ fi
 
 
 %install
-mkdir -p %{buildroot}%{vivaldi_dir}
-install -pm0755 libffmpeg.so %{buildroot}%{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
+mkdir -p %{buildroot}%{_libdir}/%{name}
+install -pm0755 libffmpeg.so %{buildroot}%{_libdir}/%{name}/libffmpeg.so
 
 %files
 %if %{with snap}
 %license copyright
 %endif
-%{vivaldi_dir}/libffmpeg.so.%{vivaldi_ver}
+%{_libdir}/%{name}/libffmpeg.so
 
 
 %changelog
+* Thu May 21 2026 - 121586-1
+- Remove version tag, main package is using symlink now
+
 * Thu Apr 16 2026 - 7.9.121586-1
 - 121586
 

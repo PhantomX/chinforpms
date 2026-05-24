@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ee188168c12188340961314e1dfc70a4f7ad4f7a
+%global commit 2a66b40267db6ebcea0cd36a7111abcf85af876f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260513
+%global date 20260520
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0
+Version:        0.2.0.23
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -148,6 +148,7 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 
 Patch2:         https://git.eden-emu.dev/eden-emu/eden/pulls/3874.patch#/%{name}-git-pr3874.patch
 Patch3:         https://git.eden-emu.dev/eden-emu/eden/pulls/3880.patch#/%{name}-git-pr3880.patch
+Patch4:         https://git.eden-emu.dev/eden-emu/eden/pulls/3953.patch#/%{name}-git-pr3953.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch
@@ -213,7 +214,7 @@ BuildRequires:  pkgconfig(libzstd) >= 1.5.0
 BuildRequires:  pkgconfig(nlohmann_json) >= 3.8.0
 BuildRequires:  pkgconfig(opus) >= 1.3
 BuildRequires:  pkgconfig(quazip1-qt6)
-BuildRequires:  pkgconfig(sdl2) >= 2.32.0
+BuildRequires:  pkgconfig(sdl3) >= 3.4.8
 %if %{with qt}
 BuildRequires:  cmake(Qt6Charts)
 BuildRequires:  cmake(Qt6Core)
@@ -432,8 +433,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   -DYUZU_ENABLE_PORTABLE:BOOL=OFF \
   -DYUZU_ROOM:BOOL=ON \
   -DYUZU_USE_FASTER_LD:BOOL=OFF \
-  -DYUZU_USE_EXTERNAL_SDL2:BOOL=OFF \
-  -DYUZU_USE_EXTERNAL_VULKAN_SPIRV_TOOLS:BOOL=OFF \
+  -DYUZU_USE_BUNDLED_SDL3:BOOL=OFF \
   %{!?with_httplib:-DYUZU_USE_SYSTEM_HTTPLIB:BOOL=OFF} \
   -DYUZU_USE_EXTERNAL_VULKAN_UTILITY_LIBRARIES:BOOL=OFF \
   %{?with_ffmpeg:-DYUZU_USE_BUNDLED_FFMPEG:BOOL=OFF} \
@@ -485,6 +485,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed May 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.2.0.23-1.20260520git2a66b40
+- SDL3
+
 * Wed May 13 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.2.0-1.20260513gitee18816
 - 0.2.0
 

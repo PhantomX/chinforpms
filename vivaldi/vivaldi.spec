@@ -17,7 +17,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        7.9.3970.67
+Version:        8.0.4033.28
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -41,7 +41,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Requires:       vivaldi-ffmpeg-codecs = %{vivaldi_ver}.%{ffmpegcodec}
+Requires:       vivaldi-ffmpeg-codecs = %{ffmpegcodec}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -101,11 +101,13 @@ mkdir -p %{buildroot}%{_bindir}
 install -pm0755 %{name}.wrapper %{buildroot}%{_bindir}/%{name}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}
-cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,*.{bin,dat,json,pak,so}} \
+cp -rp opt/%{name}/{%{name}{,-bin,-sandbox},chrome_crashpad_handler,locales,MEIPreload,resources,*.{bin,json,pak,so}} \
   %{buildroot}%{_libdir}/%{name}/
 
 mv opt/%{name}/*.so %{buildroot}%{_libdir}/%{name}/
 rm -f %{buildroot}%{_libdir}/%{name}/libvulkan.so*
+
+ln -s ../vivaldi-ffmpeg-codecs/libffmpeg.so %{buildroot}%{_libdir}/%{name}/libffmpeg.so.%{vivaldi_ver}
 
 mkdir -p %{buildroot}%{_libdir}/%{name}/extensions
 
@@ -168,10 +170,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_libdir}/%{name}/%{name}-bin
 %{_libdir}/%{name}/chrome_crashpad_handler
 %{_libdir}/%{name}/*.bin
-%{_libdir}/%{name}/*.dat
 %{_libdir}/%{name}/*.json
 %{_libdir}/%{name}/*.pak
 %{_libdir}/%{name}/*.so
+%{_libdir}/%{name}/*.so.%{vivaldi_ver}
 %attr(4711,root,root) %{_libdir}/%{name}/%{name}-sandbox
 %dir %{_libdir}/%{name}/extensions
 %dir %{_libdir}/%{name}/locales
@@ -202,6 +204,12 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat May 23 2026 - 8.0.4033.28-1
+- 8.0.4033.28
+
+* Thu May 21 2026 - 8.0.4033.26-1
+- 8.0.4033.26
+
 * Tue May 19 2026 - 7.9.3970.67-1
 - 7.9.3970.67
 

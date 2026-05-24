@@ -1,0 +1,46 @@
+From 7b9fa64eaef67222b27b468cde0b625f78a1042d Mon Sep 17 00:00:00 2001
+From: Eric Dumazet <edumazet@google.com>
+Date: Thu, 16 Apr 2026 20:03:09 +0000
+Subject: [PATCH] tcp: annotate data-races around tp->snd_ssthresh
+
+[ Upstream commit fd571afb05ebaeac5d8f09460a0640d4cf6755f8 ]
+
+tcp_get_timestamping_opt_stats() intentionally runs lockless, we must
+add READ_ONCE() and WRITE_ONCE() annotations to keep KCSAN happy.
+
+Fixes: 7156d194a077 ("tcp: add snd_ssthresh stat in SCM_TIMESTAMPING_OPT_STATS")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Link: https://patch.msgid.link/20260416200319.3608680-5-edumazet@google.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/ipv4/tcp_bbr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
+index 9279be755..c00e75746 100644
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -1960,8 +1960,8 @@ static void bbr_check_drain(struct sock *sk, const struct rate_sample *rs,
+ 		 * completion of initial STARTUP by setting to a non-
+ 		 * TCP_INFINITE_SSTHRESH value (ssthresh is not used by BBR).
+ 		 */
+-		tcp_sk(sk)->snd_ssthresh =
+-				bbr_inflight(sk, bbr_max_bw(sk), BBR_UNIT);
++		WRITE_ONCE(tcp_sk(sk)->snd_ssthresh,
++			   bbr_inflight(sk, bbr_max_bw(sk), BBR_UNIT));
+ 		bbr_reset_congestion_signals(sk);
+ 	}	/* fall through to check if in-flight is already small: */
+ 	if (bbr->mode == BBR_DRAIN &&
+@@ -2086,7 +2086,7 @@ __bpf_kfunc static void bbr_init(struct sock *sk)
+ 
+ 	bbr->init_cwnd = min(0x7FU, tcp_snd_cwnd(tp));
+ 	bbr->prior_cwnd = tp->prior_cwnd;
+-	tp->snd_ssthresh = TCP_INFINITE_SSTHRESH;
++	WRITE_ONCE(tp->snd_ssthresh, TCP_INFINITE_SSTHRESH);
+ 	bbr->next_rtt_delivered = tp->delivered;
+ 	bbr->prev_ca_state = TCP_CA_Open;
+ 
+-- 
+2.54.0
+
