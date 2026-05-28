@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit e235cebb011fc1718ae20c857c41844925273c28
+%global commit 9b4534328f2db4d93ca61c8e8d7e6ff14168fd3d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260418
+%global date 20260520
 %bcond snapshot 1
 
 %global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2603.307
+Version:        2603.396
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -406,7 +406,7 @@ sed \
 
 sed \
   -e 's|${DOLPHIN_WC_DESCRIBE}|%{version}|g' \
-  -e 's|${DOLPHIN_WC_REVISION}|%{release}|g' \
+  -e 's|${DOLPHIN_WC_REVISION}|%{?with_snapshot:%{commit}}%{!?with_snapshot:%{release}}|g' \
   -e 's|${DOLPHIN_WC_BRANCH}|master|g' \
   -e 's|${DOLPHIN_WC_COMMITS_AHEAD_MASTER}|0|g' \
   -e 's|${DISTRIBUTOR}|%{distributor}|g' \

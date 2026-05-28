@@ -42,7 +42,7 @@
 %global minizip_ver b617fa6
 
 Name:           telegram-desktop
-Version:        6.8.3
+Version:        6.8.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -57,7 +57,15 @@ Epoch:          1
 # * vazirmatn-fonts - OFL -- bundled font.
 # * Implib.so - MIT -- build-time dependency;
 # * GSL - MIT -- build-time dependency;
-License:        GPL-3.0-or-later AND BSD-3-Clause AND Apache-2.0 AND LGPL-2.1-or-later AND LGPL-3.0-only AND OFL-1.1 AND MIT
+License: %{shrink:
+    GPL-3.0-or-later AND
+    BSD-3-Clause AND
+    Apache-2.0 AND
+    LGPL-2.1-or-later AND
+    LGPL-3.0-only AND
+    OFL-1.1 AND
+    MIT
+}
 URL:            https://github.com/telegramdesktop/%{srcname}
 
 ExclusiveArch:  x86_64 %{!?with_bin:aarch64}
@@ -138,6 +146,7 @@ BuildRequires:  cmake(Qt6Gui)
 BuildRequires:  cmake(Qt6Network)
 BuildRequires:  cmake(Qt6OpenGL)
 BuildRequires:  cmake(Qt6OpenGLWidgets)
+BuildRequires:  cmake(Qt6ShaderTools)
 BuildRequires:  cmake(Qt6Svg)
 BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  qt6-qtbase-private-devel
@@ -388,6 +397,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Wed May 27 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.8.4-100
+- 6.8.4
+
 * Sat May 23 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.8.3-100
 - 6.8.3
 
