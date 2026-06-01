@@ -62,7 +62,7 @@
 %global winetiff 4.7.1
 %global winejxrlib 1.1
 %global winesqlite3 3.51.1
-%global winevkd3d 1.18
+%global winevkd3d 2.0
 %global winexml2 2.12.8
 %global winexslt 1.1.45
 %global winezlib 1.3.2
@@ -74,7 +74,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.9
+%global wine_stagingver 11.10
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -125,7 +125,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.9
+Version:        11.10
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -835,7 +835,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 700 -p1 -R
 %patch -P 1033 -p1
 %dnl %patch -P 1021 -p1
-filterdiff -p1 -x programs/winecfg/input.c %{P:1021} | %{__scm_apply_patch -p1 -q}
+filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021} | %{__scm_apply_patch -p1 -q}
 %patch -P 1034 -p1
 %patch -P 1022 -p1
 
@@ -1747,6 +1747,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/nddeapi.dll
 %{_libdir}/wine/%{winepedirs}/ncrypt.dll
 %{_libdir}/wine/%{winepedirs}/ndis.sys
+%{_libdir}/wine/%{winepedirs}/ndfapi.dll
 %{_libdir}/wine/%{winesodir}/netapi32.so
 %{_libdir}/wine/%{winepedirs}/netapi32.dll
 %{_libdir}/wine/%{winepedirs}/netcfgx.dll
@@ -1815,6 +1816,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/rsabase.dll
 %{_libdir}/wine/%{winepedirs}/rsaenh.dll
 %{_libdir}/wine/%{winepedirs}/rstrtmgr.dll
+%{_libdir}/wine/%{winepedirs}/rtscom.dll
 %{_libdir}/wine/%{winepedirs}/rtutils.dll
 %{_libdir}/wine/%{winepedirs}/rtworkq.dll
 %{_libdir}/wine/%{winepedirs}/samlib.dll
@@ -1865,6 +1867,8 @@ fi
 %{_libdir}/wine/%{winepedirs}/tbs.dll
 %{_libdir}/wine/%{winepedirs}/tdh.dll
 %{_libdir}/wine/%{winepedirs}/tdi.sys
+%{_libdir}/wine/%{winepedirs}/thumbcache.dll
+%{_libdir}/wine/%{winepedirs}/tiptsf.dll
 %{_libdir}/wine/%{winepedirs}/traffic.dll
 %{_libdir}/wine/%{winepedirs}/threadpoolwinrt.dll
 %{_libdir}/wine/%{winepedirs}/twaindsm.dll
@@ -1996,6 +2000,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wintrust.dll
 %{_libdir}/wine/%{winepedirs}/winusb.dll
 %{_libdir}/wine/%{winepedirs}/wlanapi.dll
+%{_libdir}/wine/%{winepedirs}/wkscli.dll
 %{_libdir}/wine/%{winepedirs}/wmphoto.dll
 %{_libdir}/wine/%{winepedirs}/wnaspi32.dll
 %{_libdir}/wine/%{winepedirs}/wofutil.dll
@@ -2504,6 +2509,9 @@ fi
 
 
 %changelog
+* Sun May 31 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.10-100
+- 11.10
+
 * Sun May 17 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.9-100
 - 11.9
 

@@ -19,10 +19,10 @@ BuildArch:      noarch
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 60978eb94c9ae51609b155f4f7e4c7f6f2fb6105
+%global commit be4ac08faa1ba7546193995ac6e45ca8c07763d4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260514
-%global sbuild 591
+%global date 20260530
+%global sbuild 630
 %bcond snapshot 1
 
 %bcond debug 0
@@ -36,7 +36,7 @@ BuildArch:      noarch
 %global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
 %global srcname5 SPIRV-Headers
 
-%global commit6 5d94bb4dcc968cccce1f601324fcaf3eda92a52b
+%global commit6 8864cdc896bbc2a9b6eb36b3218fc9ef57908d77
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 Vulkan-Headers
 
@@ -44,7 +44,7 @@ BuildArch:      noarch
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
-%global commit8 69acb01540904d7db8c3ae198ab6e769aa6e6ab4
+%global commit8 646242df031eb10a115f819f970baf7863d0e67e
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 dxbc-spirv
 
@@ -77,7 +77,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        2.7.1
-Release:        108%{?dist}
+Release:        109%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 

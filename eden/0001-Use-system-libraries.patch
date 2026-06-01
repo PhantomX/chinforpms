@@ -1,4 +1,4 @@
-From f6a82cbc3e42b7fb899981318047d90a6afc1bce Mon Sep 17 00:00:00 2001
+From 6474f809439ca19de12d78a9610a92fd679d44b5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
@@ -12,10 +12,10 @@ Subject: [PATCH] Use system libraries
  5 files changed, 62 insertions(+), 27 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5f84dd5..5389b9a 100644
+index 757943c..ab409dd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -398,12 +398,13 @@ set(ENABLE_TESTING OFF)
+@@ -400,12 +400,13 @@ set(ENABLE_TESTING OFF)
  # boost
  set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
  
@@ -30,7 +30,7 @@ index 5f84dd5..5389b9a 100644
  if (Boost_ADDED)
      if (MSVC OR ANDROID)
          add_compile_definitions(YUZU_BOOST_v1)
-@@ -423,19 +424,20 @@ if (Boost_ADDED)
+@@ -425,19 +426,20 @@ if (Boost_ADDED)
          )
      endif()
  endif()
@@ -54,7 +54,7 @@ index 5f84dd5..5389b9a 100644
  
  if (zstd_ADDED)
      add_library(zstd::zstd ALIAS libzstd_static)
-@@ -443,18 +445,18 @@ if (zstd_ADDED)
+@@ -445,18 +447,18 @@ if (zstd_ADDED)
  endif()
  
  # nlohmann
@@ -76,7 +76,7 @@ index 5f84dd5..5389b9a 100644
  
      if (Opus_ADDED)
          if (MSVC AND CXX_CLANG)
-@@ -470,7 +472,7 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -472,7 +474,7 @@ if (NOT YUZU_STATIC_ROOM)
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -85,7 +85,7 @@ index 5f84dd5..5389b9a 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -529,21 +531,38 @@ add_subdirectory(externals)
+@@ -531,21 +533,38 @@ add_subdirectory(externals)
  # pass targets from externals
  # TODO(crueter): CPMUtil Propagate func?
  find_package(enet)
@@ -125,7 +125,7 @@ index 5f84dd5..5389b9a 100644
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -641,7 +660,12 @@ if (ENABLE_QT)
+@@ -643,7 +662,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -140,7 +140,7 @@ index 5f84dd5..5389b9a 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 13de8f5..2f1a1c9 100644
+index 1aaa4c5..d1f3195 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -26,6 +26,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -176,8 +176,8 @@ index 13de8f5..2f1a1c9 100644
  
  if (YUZU_STATIC_ROOM)
      return()
-@@ -82,11 +82,13 @@ if (ARCHITECTURE_riscv64)
-     AddJsonPackage(biscuit)
+@@ -87,11 +87,13 @@ if (ARCHITECTURE_loongarch64)
+     AddJsonPackage(lagoon)
  endif()
  
 +if (PATCH_ENABLED)
@@ -190,7 +190,7 @@ index 13de8f5..2f1a1c9 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -103,8 +105,9 @@ if (USE_DISCORD_PRESENCE)
+@@ -108,8 +110,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -201,7 +201,7 @@ index 13de8f5..2f1a1c9 100644
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
      AddJsonPackage(cubeb)
-@@ -134,6 +137,7 @@ if(ENABLE_CUBEB)
+@@ -139,6 +142,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
@@ -209,7 +209,7 @@ index 13de8f5..2f1a1c9 100644
  
  if (NOT ANDROID)
      if (NOT YUZU_USE_BUNDLED_SDL3)
-@@ -157,7 +161,7 @@ if (NOT ANDROID)
+@@ -162,7 +166,7 @@ if (NOT ANDROID)
              set(SDL_FILE ON)
          endif()
  
@@ -218,7 +218,7 @@ index 13de8f5..2f1a1c9 100644
      else()
          message(STATUS "Using bundled SDL3")
          if (PLATFORM_FREEBSD)
-@@ -182,9 +186,10 @@ endif()
+@@ -187,9 +191,10 @@ endif()
  set(BUILD_SHARED_LIBS OFF)
  
  # SPIRV Headers
@@ -230,7 +230,7 @@ index 13de8f5..2f1a1c9 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -195,10 +200,11 @@ else()
+@@ -200,10 +205,11 @@ else()
          )
      endif()
  endif()
@@ -243,7 +243,7 @@ index 13de8f5..2f1a1c9 100644
  endif()
  
  # getopt
-@@ -210,6 +216,7 @@ endif()
+@@ -215,6 +221,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -251,7 +251,7 @@ index 13de8f5..2f1a1c9 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -228,10 +235,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -233,10 +240,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -267,7 +267,7 @@ index 13de8f5..2f1a1c9 100644
  endif()
  
  # FFMpeg
-@@ -266,6 +277,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -271,6 +282,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -275,7 +275,7 @@ index 13de8f5..2f1a1c9 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -273,6 +285,7 @@ if (gamemode_ADDED)
+@@ -278,6 +290,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -317,7 +317,7 @@ index a82bf0b..5f4a39c 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index 4c4bf86..53850f4 100644
+index 46b0b61..bc62887 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
 @@ -119,9 +119,6 @@ if (NOT Boost_FOUND)
@@ -330,8 +330,8 @@ index 4c4bf86..53850f4 100644
  if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
      find_package(oaknut 2.0.1 CONFIG)
  endif()
-@@ -130,10 +127,6 @@ if ("riscv64" IN_LIST ARCHITECTURE)
-     find_package(biscuit 0.9.1 REQUIRED)
+@@ -134,10 +131,6 @@ if ("loongarch64" IN_LIST ARCHITECTURE)
+     find_package(lagoon REQUIRED)
  endif()
  
 -if ("x86_64" IN_LIST ARCHITECTURE)
