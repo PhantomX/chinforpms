@@ -205,10 +205,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.0.10
+%define specrpmversion 7.0.11
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1272,21 +1272,11 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 
 Patch1: patch-%{patchversion}-redhat.patch
 Patch2: %{ark_url}/dceba3c610dce15a451f18d00744f48630616ca0.patch#/kernel-ark-dceba3c.patch
-Patch3: %{ark_url}/acf504daf9486f4d70aca6ee47c09fad805278e5.patch#/kernel-ark-acf504d.patch
-Patch4: %{ark_url}/004055d8b9c5166594c8959ec2e30af41eba1cb1.patch#/kernel-ark-004055d.patch
 Patch5: %{ark_url}/d18e8ce949589271f1c3f59063403dca5241c2fd.patch#/kernel-ark-d18e8ce.patch
 Patch6: %{ark_url}/2c1c0335d00d83e2487cced3cb0c36544079b03e.patch#/kernel-ark-2c1c033.patch
 Patch7: %{ark_url}/401ee756f0ef11595447f673aba5f858f4dcb85d.patch#/kernel-ark-401ee75.patch
 Patch8: %{ark_url}/be87cc2732d4e6e651fac2004da0c84f6b1a80d5.patch#/kernel-ark-be87cc2.patch
 Patch9: %{ark_url}/a63bd8dc4b346de2b7c204787ed29e56db84a711.patch#/kernel-ark-a63bd8d.patch
-Patch10: %{ark_url}/ad844ac8ba8a30ae974c57e0f140cd9088f50983.patch#/kernel-ark-ad844ac.patch
-Patch11: %{ark_url}/5bc92df226d9dd13446919ea2840119c105d48d9.patch#/kernel-ark-5bc92df.patch
-Patch12: %{ark_url}/9e32b643f570a31ca38e4d09db93a43e0c59173c.patch#/kernel-ark-9e32b64.patch
-Patch13: %{ark_url}/889538e346244d6596349bc7b2248cfed20b3661.patch#/kernel-ark-889538e.patch
-Patch14: %{ark_url}/8be710d3949bd63939d269ba8083eb408b5366f8.patch#/kernel-ark-8be710d.patch
-Patch15: %{ark_url}/3214dc5ecbb2743ef43dd00b76dce3b3714328f6.patch#/kernel-ark-3214dc5.patch
-Patch16: %{ark_url}/5b3693b70165664ce941249fec8e005a5b093264.patch#/kernel-ark-5b3693b.patch
-Patch17: %{ark_url}/d82d5fbd2b0d6b36f3e2eb180bec55ebee49f64a.patch#/kernel-ark-d82d5fb.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -2315,21 +2305,11 @@ ApplyPatch %{PATCH5000}
 
 ApplyOptionalPatch %{PATCH1}
 ApplyOptionalPatch %{PATCH2}
-ApplyOptionalPatch %{PATCH3}
-ApplyOptionalPatch %{PATCH4}
 ApplyOptionalPatch %{PATCH5}
 ApplyOptionalPatch %{PATCH6}
 ApplyOptionalPatch %{PATCH7}
 ApplyOptionalPatch %{PATCH8}
 ApplyOptionalPatch %{PATCH9}
-ApplyOptionalPatch %{PATCH10}
-ApplyOptionalPatch %{PATCH11}
-ApplyOptionalPatch %{PATCH12}
-ApplyOptionalPatch %{PATCH13}
-ApplyOptionalPatch %{PATCH14}
-ApplyOptionalPatch %{PATCH15}
-ApplyOptionalPatch %{PATCH16}
-ApplyOptionalPatch %{PATCH17}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -5066,6 +5046,9 @@ fi\
 #
 #
 %changelog
+* Mon Jun 01 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.11-500.chinfo
+- 7.0.11
+
 * Thu May 28 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.10-500.chinfo
 - Fedora sync
 
