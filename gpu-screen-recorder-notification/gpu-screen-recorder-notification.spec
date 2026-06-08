@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-notification
-Version:        1.2.3
+Version:        1.3.3
 Release:        1%{dist}
 Summary:        A notification in the style of ShadowPlay
 
@@ -20,10 +20,12 @@ BuildRequires:  pkgconfig(libglvnd)
 BuildRequires:  pkgconfig(pangoft2)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
 
 Requires:       google-noto-sans-fonts
+Requires:       gsettings-desktop-schemas
 
 Provides:       bundled(mglpp) = 1.1.0
 
@@ -58,6 +60,9 @@ cp -p depends/mglpp/depends/mgl/LICENSE LICENSE.mglpp
 
 
 %changelog
+* Sun Jun 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1.3.3-1
+- 1.3.3
+
 * Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 1.2.3-1
 - 1.2.3
 

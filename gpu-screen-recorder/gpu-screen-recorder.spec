@@ -1,8 +1,8 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.13.4
-Release:        1%{dist}
+Version:        5.13.9
+Release:        0%{dist}
 Summary:        A shadowplay-like screen recorder
 
 License:        GPL-3.0-or-later

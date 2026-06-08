@@ -1,7 +1,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-ui
-Version:        1.11.7
+Version:        1.12.5
 Release:        1%{dist}
 Summary:        A fullscreen overlay UI for GPU Screen Recorder
 
@@ -28,12 +28,14 @@ BuildRequires:  pkgconfig(libpulse-simple)
 BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcursor)
+BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
 
 Requires:       google-noto-sans-fonts
 Requires:       gpu-screen-recorder%{?_isa}
 Requires:       gpu-screen-recorder-notification%{?_isa}
+Requires:       gsettings-desktop-schemas
 
 Provides:       bundled(mglpp) = 1.1.0
 
@@ -76,16 +78,20 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/gpu-screen-recorder.d
 %doc README.md
 %caps(cap_setuid+ep) %{_bindir}/gsr-global-hotkeys
 %{_bindir}/gsr-game-tracker
-%{_bindir}/gsr-hyprland-helper
+%{_bindir}/gsr-gnome-helper
 %{_bindir}/gsr-kwin-helper
 %{_bindir}/gsr-ui
 %{_bindir}/gsr-ui-cli
+%{_bindir}/gsr-wayland-bridge
 %{_datadir}/gsr-ui
 %{_datadir}/applications/gpu-screen-recorder.desktop
 %{_datadir}/icons/hicolor/*/*/gpu-screen-recorder.*
 
 
 %changelog
+* Sun Jun 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1.12.5-1
+- 1.12.5
+
 * Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 1.11.7-1
 - 1.11.7
 

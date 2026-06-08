@@ -21,7 +21,7 @@
 %bcond native 0
 # Enable system ffmpeg
 %bcond ffmpeg 1
-%global bundleffmpegver 7.1.1
+%global bundleffmpegver 8.1.1
 %bcond faudio 0
 # Enable system flatbuffers
 %bcond flatbuffers 1
@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit b6ed4201dfef5d9c3301bf6f30266e4a33674ac5
+%global commit e379fba97d132a84b976709ce35670c520ccc0ae
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260501
+%global date 20260607
 %bcond snapshot 1
 
 %global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.40.424
+Version:        0.0.41.21
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -540,6 +540,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sun Jun 07 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.41.21-1.20260607gite379fba
+- 0.0.41
+
 * Fri Mar 06 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.40.11-1.20260305gitc57d611
 - 0.0.40
 
