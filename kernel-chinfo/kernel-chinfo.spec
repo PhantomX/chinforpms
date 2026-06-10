@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.0.11
+%define specrpmversion 7.0.12
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1272,8 +1272,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 
 Patch1: patch-%{patchversion}-redhat.patch
 Patch2: %{ark_url}/dceba3c610dce15a451f18d00744f48630616ca0.patch#/kernel-ark-dceba3c.patch
-Patch5: %{ark_url}/d18e8ce949589271f1c3f59063403dca5241c2fd.patch#/kernel-ark-d18e8ce.patch
-Patch6: %{ark_url}/2c1c0335d00d83e2487cced3cb0c36544079b03e.patch#/kernel-ark-2c1c033.patch
 Patch7: %{ark_url}/401ee756f0ef11595447f673aba5f858f4dcb85d.patch#/kernel-ark-401ee75.patch
 Patch8: %{ark_url}/be87cc2732d4e6e651fac2004da0c84f6b1a80d5.patch#/kernel-ark-be87cc2.patch
 Patch9: %{ark_url}/a63bd8dc4b346de2b7c204787ed29e56db84a711.patch#/kernel-ark-a63bd8d.patch
@@ -2305,8 +2303,6 @@ ApplyPatch %{PATCH5000}
 
 ApplyOptionalPatch %{PATCH1}
 ApplyOptionalPatch %{PATCH2}
-ApplyOptionalPatch %{PATCH5}
-ApplyOptionalPatch %{PATCH6}
 ApplyOptionalPatch %{PATCH7}
 ApplyOptionalPatch %{PATCH8}
 ApplyOptionalPatch %{PATCH9}
@@ -5046,6 +5042,9 @@ fi\
 #
 #
 %changelog
+* Tue Jun 09 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.11-500.chinfo
+- 7.0.12
+
 * Mon Jun 01 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.11-500.chinfo
 - 7.0.11
 

@@ -1,7 +1,7 @@
 %global vermm %%(echo %{version} | cut -d. -f-2)
 
 Name:           libmirage
-Version:        3.3.1
+Version:        3.3.2
 Release:        100%{?dist}
 Summary:        A CD/DVD-ROM image access library
 
@@ -79,6 +79,9 @@ This package contains files needed to develop with libMirage.
 
 
 %changelog
+* Mon Jun 08 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.2-100
+- 3.3.2
+
 * Sat Feb 28 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.1-100
 - 3.3.1
 
