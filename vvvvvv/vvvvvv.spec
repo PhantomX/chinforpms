@@ -204,6 +204,7 @@ for res in 16 22 24 32 36 48 64 72 96 128 256 ;do
     -filter Lanczos -resize ${res}x${res} ${dir}/%{pkgname}.png
 done
 
+%check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 

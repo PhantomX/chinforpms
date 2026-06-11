@@ -131,6 +131,7 @@ disk-indicator
 dmemcg-booster
 -dosbox-staging
 -dosbox-x
+doukutsu-rs
 -easytag
 eiciel-gtk3
 -emojione-picker

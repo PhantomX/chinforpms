@@ -1,0 +1,34 @@
+[source."git+https://github.com/doukutsu-rs/cpal?rev=fe7a16f1f6610b803617a47e027c0305af3a3983"]
+git = "https://github.com/doukutsu-rs/cpal"
+rev = "fe7a16f1f6610b803617a47e027c0305af3a3983"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/doukutsu-rs/deko3d-rs?branch=master"]
+git = "https://github.com/doukutsu-rs/deko3d-rs"
+branch = "master"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/doukutsu-rs/glutin.git?rev=2dd95f042e6e090d36f577cbea125560dd99bd27"]
+git = "https://github.com/doukutsu-rs/glutin.git"
+rev = "2dd95f042e6e090d36f577cbea125560dd99bd27"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/doukutsu-rs/oboe-rs.git?rev=8259ad558991021f2c0eb1f53ffd278f4ed00e2a"]
+git = "https://github.com/doukutsu-rs/oboe-rs.git"
+rev = "8259ad558991021f2c0eb1f53ffd278f4ed00e2a"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/doukutsu-rs/rust-sdl2.git?rev=244ae85833cff4f97ab4b58331741be20e422bd7"]
+git = "https://github.com/doukutsu-rs/rust-sdl2.git"
+rev = "244ae85833cff4f97ab4b58331741be20e422bd7"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/doukutsu-rs/winit.git?rev=878f206d19af01b0977277929eee5e32667453c0"]
+git = "https://github.com/doukutsu-rs/winit.git"
+rev = "878f206d19af01b0977277929eee5e32667453c0"
+replace-with = "vendored-sources"
+
+[source."git+https://github.com/imgui-rs/imgui-rs.git?rev=5d771a83b82c5cc3dd58cca3f969d900369262e6"]
+git = "https://github.com/imgui-rs/imgui-rs.git"
+rev = "5d771a83b82c5cc3dd58cca3f969d900369262e6"
+replace-with = "vendored-sources"
