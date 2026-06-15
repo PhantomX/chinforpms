@@ -19,10 +19,10 @@ BuildArch:      noarch
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit be4ac08faa1ba7546193995ac6e45ca8c07763d4
+%global commit ea987889efefa0839fdbb889c6a14b29ba470da8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260530
-%global sbuild 630
+%global date 20260614
+%global sbuild 746
 %bcond snapshot 1
 
 %bcond debug 0
@@ -44,7 +44,7 @@ BuildArch:      noarch
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
-%global commit8 646242df031eb10a115f819f970baf7863d0e67e
+%global commit8 2c00fa64d4dc14df0e8dd76c346baed276a3f936
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 dxbc-spirv
 
@@ -71,13 +71,13 @@ BuildArch:      noarch
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
-%global gplasync_url https://gitlab.com/Ph42oN/dxvk-gplasync/-/raw/%{gplasync_id}
+%global gplasync_url https://gitlab.com/Ph42oN/dxvk-gplasync
 %global kg_url https://github.com/KhronosGroup
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
 Version:        2.7.1
-Release:        109%{?dist}
+Release:        110%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -97,8 +97,9 @@ Patch100:       0001-util-Add-d3d9.deferSurfaceCreation-to-some-games.patch
 Patch101:       0001-util-Another-missing-weeb-games.patch
 
 %if %{with gplasync}
-Patch500:      %{gplasync_url}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
+Patch500:      %{gplasync_url}/-/raw/%{gplasync_id}/patches/dxvk-gplasync-%{gplasync_ver}.patch#/%{name}-gplasync-%{gplasync_ver}.patch
 Patch501:      0001-dxvk.conf-gplasync-options.patch
+Patch502:      %{gplasync_url}/-/merge_requests/16.patch#/%{name}-gplasync-pr16.patch
 Source500:     %{gplasync_url}/README.md#/README.gplasync.md
 %endif
 
@@ -170,7 +171,9 @@ in order to run 3D applications on Linux using Wine.
 %autopatch -M 499 -p1
 
 %if %{with gplasync}
-%patch -P 500 -p1
+cp -p %{P:500} dxvk-gplasync-master.patch
+%patch -P 502 -p2
+%{__scm_apply_patch -p1 -q} -i dxvk-gplasync-master.patch
 %patch -P 501 -p1
 cp %{S:500} README.gplasync.md
 %endif

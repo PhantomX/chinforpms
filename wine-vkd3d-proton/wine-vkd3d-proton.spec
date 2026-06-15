@@ -22,10 +22,10 @@ BuildArch:      noarch
 %bcond vulkan 1
 
 # Need be set for release builds too
-%global commit 110e8bd4ee09c40031f5513258a10df59d27fd94
+%global commit c15008837a578844b66f951bbbffc91e6ef09042
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260529
-%global sbuild 143
+%global date 20260610
+%global sbuild 173
 %bcond snapshot 1
 
 %global buildcommit %(c=%{commit}; echo ${c:0:15})
@@ -79,7 +79,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        3.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Direct3D 12 to Vulkan translation library
 
 # dxil-spirv - MIT

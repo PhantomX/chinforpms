@@ -46,22 +46,23 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.1.0
-%global winevulkan 1.4.350
+%global winevulkan 1.4.353
 %global opencl    1
 
 %global winecapstone 5.0.3
-%global wineFAudio 26.02
+%global wineFAudio 26.06
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 10
-%global winelcms2 2.18
+%global winelcms2 2.19.1
 %global wineldap 2.5.18
 %global winempg123 1.33.0
-%global winepng 1.6.56
+%global winepng 1.6.58
 %global wineopenldap 2.5.17
+%global winesymcrypt 103.11.0
 %global winetiff 4.7.1
 %global winejxrlib 1.1
-%global winesqlite3 3.51.1
+%global winesqlite3 3.53.2
 %global winevkd3d 2.0
 %global winexml2 2.12.8
 %global winexslt 1.1.45
@@ -74,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.10
+%global wine_stagingver 11.11
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -125,7 +126,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.10
+Version:        11.11
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -478,6 +479,7 @@ Provides:       bundled(libxml2) = %{winexml2}
 Provides:       bundled(libxslt) = %{winexslt}
 Provides:       bundled(libvkd3d) = %{winevkd3d}
 Provides:       bundled(openldap) = %{wineopenldap}
+Provides:       bundled(symcrypt) = %{winesymcrypt}
 Provides:       bundled(sqlite3) = %{winesqlite3}
 Provides:       bundled(zlib) = %{winezlib}
 Provides:       bundled(zydis) = %{winezydis}
@@ -1267,7 +1269,6 @@ fi
 %files core
 %license COPYING.LIB
 %license LICENSE
-%license LICENSE.OLD
 %doc ANNOUNCE.md
 %doc AUTHORS
 %doc README.FEDORA
@@ -1436,7 +1437,6 @@ fi
 %{_libdir}/wine/%{winepedirs}/avicap32.dll
 %{_libdir}/wine/%{winepedirs}/avifil32.dll
 %{_libdir}/wine/%{winepedirs}/avrt.dll
-%{_libdir}/wine/%{winesodir}/bcrypt.so
 %{_libdir}/wine/%{winepedirs}/bcp47langs.dll
 %{_libdir}/wine/%{winepedirs}/bcrypt.dll
 %{_libdir}/wine/%{winepedirs}/bcryptprimitives.dll
@@ -2509,6 +2509,9 @@ fi
 
 
 %changelog
+* Sun Jun 14 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.11-100
+- 11.11
+
 * Sun May 31 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.10-100
 - 11.10
 

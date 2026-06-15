@@ -73,6 +73,7 @@ xcftools
 lzma-sdk
 
 # 4
+curl-impersonate
 libchdr
 mesa
 -mesa-compat
@@ -259,6 +260,7 @@ psxmemcardmgr
 pulsemixer
 punes
 -purple-rocketchat
+python-curl_cffi
 -python-pafy
 python-pypng
 python-u4pak

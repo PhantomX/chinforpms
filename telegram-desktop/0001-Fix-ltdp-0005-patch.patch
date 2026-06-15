@@ -107,7 +107,7 @@ index 665f5d3..ca13087 100644
 + #include "dialogs/ui/dialogs_layout.h"
 + #include "history/history_item_components.h"
 +@@ -203,6 +204,7 @@ void SetupExperimental(
-+ 			rpl::duplicate(query));
++ 			registerHighlight);
   	};
 -
 + 

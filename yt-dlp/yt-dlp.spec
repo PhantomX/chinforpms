@@ -1,10 +1,11 @@
+%bcond curl_cffi 1
 %bcond man 1
 %bcond tests 0
 
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2026.03.17
+Version:        2026.06.09
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -18,6 +19,9 @@ Source1:        %{name}.conf
 BuildArch:      noarch
 
 BuildRequires:  python3-devel >= 3.10
+%if %{with curl_cffi}
+BuildRequires:  %{py3_dist curl_cffi}
+%endif
 BuildRequires:  %{py3_dist hatchling}
 BuildRequires:  %{py3_dist pycrypto}
 BuildRequires:  %{py3_dist mutagen}
@@ -35,9 +39,12 @@ BuildRequires:  %{py3_dist pytest}
 
 Requires:       %{py3_dist yt_dlp_ejs} >= 0.8
 Requires:       %{name}+default = %{?epoch:%{epoch}:}%{version}-%{release}
+%if %{with curl_cffi}
+Requires:       %{name}+curl-cffi = %{?epoch:%{epoch}:}%{version}-%{release}
+%endif
 
 Recommends:     AtomicParsley
-Recommends:     deno >= 2.0.0
+Recommends:     deno >= 2.3.0
 Suggests:       aria2c
 
 # ffmpeg-free is now available in Fedora.
@@ -87,7 +94,7 @@ sed \
 %endif
 
 %generate_buildrequires
-%pyproject_buildrequires -x default,secretstorage
+%pyproject_buildrequires -x default,secretstorage%{?with_curl_cffi:,curl-cffi}
 
 
 %build
@@ -125,10 +132,14 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 %{fish_completions_dir}/%{name}.fish
 %{zsh_completions_dir}/_%{name}
 
-%pyproject_extras_subpkg -n yt-dlp default secretstorage
+%pyproject_extras_subpkg -n yt-dlp default secretstorage%{?with_curl_cffi: curl-cffi}
 
 
 %changelog
+* Sun Jun 14 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.06.09-100
+- 2026.06.09
+- curl_cffi support
+
 * Wed Mar 18 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.03.17-100
 - 2026.03.17
 
