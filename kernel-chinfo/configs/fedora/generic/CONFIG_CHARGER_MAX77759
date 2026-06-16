@@ -1,0 +1,16 @@
+# ~~~
+# Symbol: CHARGER_MAX77759 [=m]
+# Type  : tristate
+# Defined at drivers/power/supply/Kconfig:645
+#   Prompt: Maxim MAX77759 battery charger driver
+#   Depends on: POWER_SUPPLY [=y] && MFD_MAX77759 [=m] && REGULATOR [=y]
+#   Location:
+#     -> Device Drivers
+#       -> Power supply class support (POWER_SUPPLY [=y])
+#         -> Maxim MAX77759 battery charger driver (CHARGER_MAX77759 [=m])
+# 
+# 
+# 
+# ~~~
+# Commit: 70d7dd27f6dc (power: supply: max77759: add charger driver)
+CONFIG_CHARGER_MAX77759=m

@@ -1,1 +1,1 @@
-# CONFIG_SEG_LED_GPIO is not set
+CONFIG_SEG_LED_GPIO=m

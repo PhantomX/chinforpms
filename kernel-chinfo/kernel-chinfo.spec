@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.0.12
+%define specrpmversion 7.1.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -234,7 +234,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id ad33a83aa76d4f363fd1fc1c079f5c26c433f708
+%global opensuse_id a2cbdeb66bb7da52492a8ab7fb96f313f61435f0
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20260313
 
@@ -501,7 +501,9 @@ Summary: The Linux kernel
 %define with_automotive 0
 %define with_stock 0
 %define with_debug 0
+%ifarch s390x ppc64le riscv64
 %define with_debuginfo 0
+%endif
 %define with_vdso_install 0
 %define with_perf 0
 %define with_libperf 0
@@ -551,7 +553,6 @@ Summary: The Linux kernel
 %define with_efiuki 0
 %define with_dtbloader 0
 %define with_zfcpdump 0
-%define with_vdso_install 0
 %define with_kabichk 0
 %define with_kabidwchk 0
 %define with_kabidw_base 0
@@ -564,6 +565,7 @@ Summary: The Linux kernel
 # RT and Automotive kernels are only built on x86_64 and aarch64
 %ifnarch x86_64 aarch64
 %define with_realtime 0
+%define with_realtime_arm64_64k 0
 %define with_automotive 0
 %endif
 
@@ -1271,10 +1273,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch2: %{ark_url}/dceba3c610dce15a451f18d00744f48630616ca0.patch#/kernel-ark-dceba3c.patch
-Patch7: %{ark_url}/401ee756f0ef11595447f673aba5f858f4dcb85d.patch#/kernel-ark-401ee75.patch
-Patch8: %{ark_url}/be87cc2732d4e6e651fac2004da0c84f6b1a80d5.patch#/kernel-ark-be87cc2.patch
-Patch9: %{ark_url}/a63bd8dc4b346de2b7c204787ed29e56db84a711.patch#/kernel-ark-a63bd8d.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1305,11 +1303,12 @@ Patch2012: %{zen_url}/commit/0f003ed0970c2c0eb55497337d30b6ddbcc3dcea.patch#/zen
 Patch2013: %{zen_url}/commit/97fc4b95e40ec27ad257df19796f6b439ef62699.patch#/zen-v%{patchversion}-dmemcg-97fc4b9.patch
 Patch2014: %{zen_url}/commit/cab4c6e71dee69dc248e8d4f4083f24bb2bc04b5.patch#/zen-v%{patchversion}-dmemcg-cab4c6e.patch
 Patch2015: %{zen_url}/commit/be5281b25b724d7f5ee99c4980cafafa2a7ac201.patch#/zen-v%{patchversion}-dmemcg-be5281b.patch
-Patch2016: %{kernel_url}/?id=2b0dc7277b09bec0b2d44cba27f770845247996a#/kernel-stable-revert-2b0dc72.patch
+Patch2016: %{zen_url}/commit/8dc3a7fb1cec6c0d43c7a5242d15b2ec58e7bada.patch#/zen-v%{patchversion}-dmemcg-8dc3a7f.patch
+Patch2030: %{kernel_url}/?id=591711b32681a04b57d00c2a404658f8419a081c#/kernel-stable-revert-591711b.patch
 
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/30b7ebebc5d5feeb39250381069d3d5a260efb67.patch%{pf_antibot}#/pf-cb-30b7ebe.patch
+Patch6000: %{pf_url}/36be5d9932bb885fe9c9a1bc4a3b497bb233c887.patch%{pf_antibot}#/pf-cb-36be5d9.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -1319,27 +1318,17 @@ Patch6020: 0001-ZEN-Add-VHBA-driver.patch
 
 %if 0%{?post_factum}
 # archlinux
-Patch6950:  %{pf_url}/8d11bdd50300c548589ab623e73e1d2520b24915.patch%{pf_antibot}#/pf-cb-8d11bdd.patch
+Patch6950:  %{pf_url}/c2dc38c763c16b17b15af99f49ddcadce4ae4c5b.patch%{pf_antibot}#/pf-cb-c2dc38c.patch
 # kbuild (7000)
-# bbr3 (7250)
-Patch7050:  %{pf_url}/eb62a225cbc867d925d41e85002a8b8def1ed133.patch%{pf_antibot}#/pf-cb-eb62a22.patch
-Patch7051:  kernel-revert-b9109cd.patch
-Patch7052:  kernel-b9109cd.patch
+# bbr3 (7050)
+Patch7050:  %{pf_url}/9dc28c984f536bb1fcdaf3917f1d9e55bd2077be.patch%{pf_antibot}#/pf-cb-9dc28c9.patch
 # zstd
 # v4l2loopback (7230)
-Patch7230:  %{pf_url}/4b972524f58422e53e3186a4d5ac5a9568c1c65e.patch%{pf_antibot}#/pf-cb-4b97252.patch
-Patch7231:  %{pf_url}/79460d049af3b85e36cd74fc9fbc2c26a5335e5b.patch%{pf_antibot}#/pf-cb-79460d0.patch
+Patch7230:  %{pf_url}/5a40b2e42541d89e82e305f09b44b43970093dde.patch%{pf_antibot}#/pf-cb-5a40b2e.patch
 # cpuidle (7240)
-Patch7240:  %{pf_url}/262d4f16cb949526bac72b897b5c024dd4b0d597.patch%{pf_antibot}#/pf-cb-262d4f1.patch
-Patch7241:  %{pf_url}/f995633a096f1442ef4eaf529514a0b3070d3a91.patch%{pf_antibot}#/pf-cb-f995633.patch
-Patch7242:  %{pf_url}/f51dd7ec9f0ae025836c70bf5253d654c9797ea6.patch%{pf_antibot}#/pf-cb-f51dd7e.patch
 # crypto (7300)
 # fixes (7400)
-Patch7400:  %{pf_url}/0f56d492b45e1759bcb21e33b9700084559c429b.patch%{pf_antibot}#/pf-cb-0f56d49.patch
-Patch7439:  %{pf_url}/9e63903f5ce9db120e6e824a4cbca25473dfa9db.patch%{pf_antibot}#/pf-cb-9e63903.patch
-Patch7469:  %{pf_url}/acccb2189de83beeaf0652eaf2680649a1cb562c.patch%{pf_antibot}#/pf-cb-acccb21.patch
-Patch7472:  %{pf_url}/bec7fa24a7fc1266f62bef7ccbcb7c1ac0fe1c37.patch%{pf_antibot}#/pf-cb-bec7fa2.patch
-Patch7473:  %{pf_url}/dde10a5a77716db9110419548102924441069424.patch%{pf_antibot}#/pf-cb-dde10a5.patch
+Patch7400:  %{pf_url}/bfe63808c5c4b3eb65b34ef1107d5916b8d88b49.patch%{pf_antibot}#/pf-cb-bfe6380.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1844,8 +1833,8 @@ This package provides less commonly used kernel modules for the %{?2:%{2} }kerne
 %package %{?1:%{1}-}modules\
 Summary: kernel modules to match the %{?2:%{2}-}core kernel\
 Provides: %{name}%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
-Provides: %{name}-modules = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: %{name}%{?1:-%{1}}-modules-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
@@ -1867,8 +1856,8 @@ This package provides commonly used kernel modules for the %{?2:%{2}-}core kerne
 %package %{?1:%{1}-}modules-core\
 Summary: Core kernel modules to match the %{?2:%{2}-}core kernel\
 Provides: %{name}%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}\
-Provides: %{name}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
-Provides: %{name}-modules-core = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-core-%{_target_cpu} = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
+Provides: %{name}%{?1:-%{1}}-modules-core = %{specrpmversion}-%{release}%{uname_suffix %{?1}}\
 Provides: installonlypkg(kernel-module)\
 Provides: %{name}%{?1:-%{1}}-modules-core-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
 Requires: %{name}-uname-r = %{KVERREL}%{uname_suffix %{?1}}\
@@ -2302,10 +2291,6 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
-ApplyOptionalPatch %{PATCH2}
-ApplyOptionalPatch %{PATCH7}
-ApplyOptionalPatch %{PATCH8}
-ApplyOptionalPatch %{PATCH9}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2314,24 +2299,14 @@ ApplyOptionalPatch %{PATCH999999}
 ApplyPatch %{PATCH6950}
 # kbuild
 # bbr3
-ApplyPatch %{PATCH7051} -R
 ApplyPatch %{PATCH7050}
-ApplyPatch %{PATCH7052}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
-ApplyPatch %{PATCH7231}
 # cpuidle
-ApplyPatch %{PATCH7240}
-ApplyPatch %{PATCH7241}
-ApplyPatch %{PATCH7242}
 # crypto
 # fixes
 ApplyPatch %{PATCH7400}
-ApplyPatch %{PATCH7439}
-ApplyPatch %{PATCH7469}
-ApplyPatch %{PATCH7472}
-ApplyPatch %{PATCH7473}
 %endif
 
 # openSUSE
@@ -2341,18 +2316,19 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
-ApplyPatch %{PATCH2003}
-ApplyPatch %{PATCH2004}
-ApplyPatch %{PATCH2005}
+%dnl ApplyPatch %{PATCH2003}
+%dnl ApplyPatch %{PATCH2004}
+%dnl ApplyPatch %{PATCH2005}
 ApplyPatch %{PATCH2006}
 
 ApplyPatch %{PATCH2010}
 ApplyPatch %{PATCH2011}
-ApplyPatch %{PATCH2016} -R
+ApplyPatch %{PATCH2030} -R
 ApplyPatch %{PATCH2012}
 ApplyPatch %{PATCH2013}
 ApplyPatch %{PATCH2014}
 ApplyPatch %{PATCH2015}
+ApplyPatch %{PATCH2016}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -3213,7 +3189,7 @@ BuildKernel() {
 
   rm -f $KernelUnifiedInitrd
 
-  KernelAddonsDirOut="$KernelUnifiedImage.extra.d"
+  KernelAddonsDirOut="$KernelUnifiedImage.extras/"
   mkdir -p $KernelAddonsDirOut
   python3 %{SOURCE151} %{SOURCE152} $KernelAddonsDirOut virt %{primary_target} %{_target_cpu} @uki-addons.sbat
 
@@ -3566,7 +3542,7 @@ fi
 %global perf_build_extra_ldflags -Wl,-z,notext
 %endif
 %global perf_make \
-  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
+  %{__make} %{?make_opts} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CXXFLAGS="${CFLAGS}" LDFLAGS="${LDFLAGS} -Wl,-E %{?perf_build_extra_ldflags}" %{?cross_opts} -C tools/perf V=1 NO_PERF_READ_VDSO32=1 NO_PERF_READ_VDSOX32=1 WERROR=0 NO_LIBUNWIND=1 HAVE_CPLUS_DEMANGLE=1 NO_GTK2=1 NO_STRLCPY=1 NO_BIONIC=1 LIBTRACEEVENT_DYNAMIC=1 %{?perf_build_extra_opts} prefix=%{_prefix} PYTHON=%{__python3}
 %if %{with_perf}
 %{log_msg "Build perf"}
 # perf
@@ -3721,7 +3697,7 @@ pushd tools/testing/selftests
 export CFLAGS="%{build_cflags}"
 export CXXFLAGS="%{build_cxxflags}"
 
-%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CFLAGS="${CXXFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/can net/forwarding net/hsr net/mptcp net/netfilter net/packetdrill tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd capabilities clone3 exec filesystems firmware landlock mount mount_setattr move_mount_set_group nsfs openat2 proc safesetid seccomp tmpfs uevent vDSO" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
+%{make} %{?_smp_mflags} EXTRA_CFLAGS="${CFLAGS}" EXTRA_CFLAGS="${CXXFLAGS}" EXTRA_LDFLAGS="${LDFLAGS}" ARCH=$Arch V=1 TARGETS="bpf cgroup kmod mm net net/can net/forwarding net/hsr net/mptcp net/netfilter net/packetdrill net/tcp_ao tc-testing memfd drivers/net drivers/net/hw iommu cachestat pid_namespace rlimits timens pidfd capabilities clone3 exec filesystems firmware landlock mount mount_setattr move_mount_set_group nsfs openat2 proc safesetid seccomp tmpfs uevent vDSO" SKIP_TARGETS="" $force_targets INSTALL_PATH=%{buildroot}%{_libexecdir}/kselftests VMLINUX_H="${RPM_VMLINUX_H}" install
 
 # Restore the original level of source fortification
 %define _fortify_level %{_fortify_level_bak}
@@ -3738,9 +3714,15 @@ for dir in bpf bpf/no_alu32 bpf/cpuv4 bpf/progs; do
 	# other issues. If something did not get built, just skip it.
 	test -d $dir || continue
 	mkdir -p %{buildroot}%{_libexecdir}/kselftests/$dir
-	find $dir -maxdepth 1 -type f \( -executable -o -name '*.py' -o -name settings -o \
-		-name 'btf_dump_test_case_*.c' -o -name '*.ko' -o \
-		-name '*.o' -exec sh -c 'readelf -h "{}" | grep -q "^  Machine:.*BPF"' \; \) -print0 | \
+	find $dir -maxdepth 1 -type f \( \
+		-executable -o \
+		-name '*.py' -o \
+		-name settings -o \
+		-name DENYLIST -o \
+		-name 'btf_dump_test_case_*.c' -o \
+		-name '*.ko' -o \
+		-name '*.o' -exec sh -c 'readelf -h "{}" | grep -q "^  Machine:.*BPF"' \; \
+	\) -print0 | \
 	xargs -0 cp -t %{buildroot}%{_libexecdir}/kselftests/$dir || true
 done
 %buildroot_save_unstripped "usr/libexec/kselftests/bpf/test_progs"
@@ -4138,6 +4120,13 @@ pushd tools/testing/selftests/net/packetdrill
 find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
 find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
 find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/packetdrill/{} \;
+popd
+
+# install net/tcp_ao selftests
+pushd tools/testing/selftests/net/tcp_ao
+find -type d -exec install -d %{buildroot}%{_libexecdir}/kselftests/net/tcp_ao/{} \;
+find -type f -executable -exec install -D -m755 {} %{buildroot}%{_libexecdir}/kselftests/net/tcp_ao/{} \;
+find -type f ! -executable -exec install -D -m644 {} %{buildroot}%{_libexecdir}/kselftests/net/tcp_ao/{} \;
 popd
 
 # install memfd selftests
@@ -4818,6 +4807,7 @@ fi\
 %{_mandir}/man1/rv-mon-wwnr.1.gz
 %{_mandir}/man1/rv-mon.1.gz
 %{_mandir}/man1/rv-mon-sched.1.gz
+%{_mandir}/man1/rv-mon-stall.1.gz
 %{_mandir}/man1/rv.1.gz
 
 %if %{with_debuginfo}
@@ -4946,8 +4936,8 @@ fi\
 %attr(0644, root, root) /lib/modules/%{KVERREL}%{?3:+%{3}}/.%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.hmac\
 %ghost /%{image_install_path}/efi/EFI/Linux/%{?-k:%{-k*}}%{!?-k:*}-%{KVERREL}%{?3:+%{3}}.efi\
 %{expand:%%files %{?3:%{3}-}uki-virt-addons}\
-%dir /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/ \
-/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extra.d/*.addon.efi\
+%dir /lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extras/ \
+/lib/modules/%{KVERREL}%{?3:+%{3}}/%{?-k:%{-k*}}%{!?-k:vmlinuz}-virt.efi.extras/*.addon.efi\
 %endif\
 %if %{with_dtbloader} && ("%{?3}" == "" || "%{3}" == "debug")\
 %{expand:%%files %{?3:%{3}-}uki-dtbloader}\
@@ -5042,7 +5032,10 @@ fi\
 #
 #
 %changelog
-* Tue Jun 09 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.11-500.chinfo
+* Mon Jun 15 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.0-500.chinfo
+- 7.1.0
+
+* Tue Jun 09 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.12-500.chinfo
 - 7.0.12
 
 * Mon Jun 01 2026 Phantom X <megaphantomx at hotmail dot com> - 7.0.11-500.chinfo
@@ -5234,33 +5227,6 @@ fi\
 * Mon May 26 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.0-500.chinfo
 - 6.15.0
 - Remove graysky patch
-
-* Thu May 22 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.8-500.chinfo
-- 6.14.8
-
-* Sun May 18 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.7-500.chinfo
-- 6.14.7
-
-* Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.6-500.chinfo
-- 6.14.6
-
-* Fri May 02 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.6-500.chinfo
-- 6.14.5
-
-* Fri Apr 25 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.4-500.chinfo
-- 6.14.4
-
-* Sun Apr 20 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.3-500.chinfo
-- 6.14.3
-
-* Thu Apr 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.2-500.chinfo
-- 6.14.2
-
-* Mon Apr 07 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.1-500.chinfo
-- 6.14.1
-
-* Mon Mar 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.14.0-500.chinfo
-- 6.14.0
 
 ###
 # The following Emacs magic makes C-c C-e use UTC dates.
