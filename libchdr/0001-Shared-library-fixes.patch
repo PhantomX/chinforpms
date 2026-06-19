@@ -1,25 +1,25 @@
-From c8c208b1e8044bd14e95f4b326656cdba88e19fe Mon Sep 17 00:00:00 2001
+From 345576082317ac783f9d795205034f2639227d17 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Apr 2021 14:18:48 -0300
 Subject: [PATCH] Shared library fixes
 
 ---
- pkg-config.pc.in | 3 ++-
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ pkg-config.pc.in | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/pkg-config.pc.in b/pkg-config.pc.in
-index 0289632..3d7f2cd 100644
+index f3f391c..660f24b 100644
 --- a/pkg-config.pc.in
 +++ b/pkg-config.pc.in
-@@ -5,6 +5,7 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/libchdr
+@@ -5,6 +5,6 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@/libchdr
  Name: libchdr
  Description: Standalone library for reading MAME's CHDv1-v5 formats
- Version: @PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@
+ Version: @PROJECT_VERSION@
 -Libs: -L${libdir} -lchdr @LIBS@
+-Cflags: -I${includedir}
 +Libs: -L${libdir} -lchdr
 +Libs.private: @LIBS@
- Cflags: -I${includedir}
  
 -- 
-2.30.2
+2.54.0
 

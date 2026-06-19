@@ -8,16 +8,16 @@
 
 %ifarch aarch64
 %bcond snap 0
+%global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
 %global parch arm64
-%global snaprev 110
-%global snap_ffmpeg_hash 7500c6d0cc44031221b0d89f735b32766ad817f7ac94ad0e193d2981ad31c47e
+%global snaprev 113
+%global snap_ffmpeg_hash ca7ef22883d2eaf7297c5415dc403e6ffa3dadef445aea4b69570fe7b6a83895
 %else
 %global parch amd64
 %global zipver 0.103.1
-%global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
-%global snaprev 109
-%global snap_ffmpeg_hash f374eccea0196a1f6bae9f34bbacac7af67a5bf2191c8a3f60307b1c176f926c
-%global snap_ffmpeg_ver git-2026-02-09
+%global snaprev 112
+%global snap_ffmpeg_hash 02080b664ba6f0b8df3b0ddfebc4832177356b247056512436d34c8750e374eb
+%global snap_ffmpeg_ver git-2026-03-16
 %global zip_ffmpeg_hash d7633f6fb36313b78545fe09dfea03960ce58bcfa2577c77020262a9ddbe9246
 %global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %endif
@@ -34,7 +34,7 @@
 
 Name:           vivaldi-ffmpeg-codecs
 Version:        121586
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -103,6 +103,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{_libdir}/%{name}/libffmpeg.so
 
 
 %changelog
+* Tue Jun 16 2026 - 121586-2
+- Updated snap revision
+
 * Thu May 21 2026 - 121586-1
 - Remove version tag, main package is using symlink now
 

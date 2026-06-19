@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 744e9e4aa560d785000a2653ee3d291716aa2c0a
+%global commit c0f2cf4319d6c77d577599906ca0a90627a3afc8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260501
+%global date 20260612
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -87,7 +87,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.6.166
+Version:        2.6.263
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -137,9 +137,6 @@ Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
 Patch3:         0001-Save-logfile-to-writable_data_path.patch
 Patch4:         0001-lzma-sdk-23.01-support.patch
-Patch6:         0001-CHD-fix-for-patched-libchdr.patch
-Patch7:         0001-vmaallocator-update-vk-detail-resultCheck.patch
-Patch9:         0001-vulkan-update-vk-detail-DynamicLoader.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -152,6 +149,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(asio)
+BuildRequires:  pkgconfig(freetype2)
 %if %{with xbyak}
 BuildRequires:  cmake(xbyak) >= 7
 %else
@@ -218,7 +216,7 @@ Provides:       bundled(websocketpp) = 0~git%{shortcommit8}
 %autopatch -M 499 -p1
 
 pushd core/deps
-rm -rf glm libzip lzma miniupnpc oboe SDL xxHash zlib
+rm -rf freetype glm libzip lzma miniupnpc oboe SDL xxHash zlib
 
 tar -xf %{S:1} -C luabridge/ --strip-components 1
 tar -xf %{S:2} -C breakpad/ --strip-components 1

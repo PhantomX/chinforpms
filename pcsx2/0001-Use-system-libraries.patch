@@ -1,4 +1,4 @@
-From fde54322f2d7b858ecc68b81354044df607548c6 Mon Sep 17 00:00:00 2001
+From 4c5300657b85ba26a0ce0859585416a3db7c8745 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 22 May 2022 20:12:38 -0300
 Subject: [PATCH] Use system libraries
@@ -12,7 +12,7 @@ Subject: [PATCH] Use system libraries
  5 files changed, 99 insertions(+), 4 deletions(-)
 
 diff --git a/cmake/SearchForStuff.cmake b/cmake/SearchForStuff.cmake
-index acd266f..9938f61 100644
+index f3b71b7..4a6c494 100644
 --- a/cmake/SearchForStuff.cmake
 +++ b/cmake/SearchForStuff.cmake
 @@ -19,8 +19,8 @@ find_package(LZ4 REQUIRED)
@@ -24,9 +24,9 @@ index acd266f..9938f61 100644
 +find_package(plutovg 1.1.0)
 +find_package(plutosvg 0.0.7)
  find_package(ryml REQUIRED)
- 
- if(USE_VULKAN)
-@@ -80,32 +80,98 @@ endif()
+ if (WIN32)
+ 	find_package(DirectX-Headers 1.618.1 REQUIRED)
+@@ -83,32 +83,98 @@ endif()
  
  set(CMAKE_FIND_FRAMEWORK ${FIND_FRAMEWORK_BACKUP})
  
@@ -125,7 +125,7 @@ index acd266f..9938f61 100644
  
  # Find the Qt components that we need.
  if(ENABLE_QT_UI)
-@@ -133,14 +199,27 @@ add_subdirectory(3rdparty/ccc EXCLUDE_FROM_ALL)
+@@ -136,14 +202,27 @@ add_subdirectory(3rdparty/ccc EXCLUDE_FROM_ALL)
  
  # Architecture-specific.
  if(ARCH_X86)
@@ -154,10 +154,10 @@ index acd266f..9938f61 100644
  # Deliberately at the end. We don't want to set the flag on third-party projects.
  if(MSVC)
 diff --git a/pcsx2/CMakeLists.txt b/pcsx2/CMakeLists.txt
-index be64e4c..44faf10 100644
+index 4652ff9..e64e627 100644
 --- a/pcsx2/CMakeLists.txt
 +++ b/pcsx2/CMakeLists.txt
-@@ -1073,7 +1073,9 @@ set(pcsx2LTOSources
+@@ -1074,7 +1074,9 @@ set(pcsx2LTOSources
  
  if(ARCH_X86)
  	list(APPEND pcsx2LTOSources ${pcsx2x86Sources} ${pcsx2x86Headers})
@@ -167,7 +167,7 @@ index be64e4c..44faf10 100644
  elseif(ARCH_ARM64)
  	list(APPEND pcsx2LTOSources ${pcsx2arm64Sources} ${pcsx2arm64Headers})
  	target_link_libraries(PCSX2_FLAGS INTERFACE vixl)
-@@ -1203,7 +1205,11 @@ endif()
+@@ -1204,7 +1206,11 @@ endif()
  
  # additonal include directories
  if(ARCH_X86)
@@ -227,5 +227,5 @@ index 8617ee0..94860da 100644
  /// Code generator that automatically selects between SSE and AVX, x86 and x64 so you don't have to
  /// Should make combined SSE and AVX codegen much easier
 -- 
-2.53.0
+2.54.0
 
