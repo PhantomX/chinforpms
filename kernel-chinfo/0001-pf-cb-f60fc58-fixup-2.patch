@@ -1,0 +1,38 @@
+From af895fc65628e122cca27820da42e01b4ea68426 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 19 Jun 2026 18:50:46 -0300
+Subject: [PATCH] pf-cb-f60fc58 fixup 2
+
+---
+ kernel/audit_watch.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/audit_watch.c b/kernel/audit_watch.c
+index c11d016c6..86a98a1db 100644
+--- a/kernel/audit_watch.c
++++ b/kernel/audit_watch.c
+@@ -480,10 +480,17 @@ static int audit_watch_handle_event(struct fsnotify_mark *inode_mark, u32 mask,
+ 	if (WARN_ON_ONCE(inode_mark->group != audit_watch_group))
+ 		return 0;
+ 
+-	if (mask & (FS_CREATE|FS_MOVED_TO) && inode)
+-		audit_update_watch(parent, dname, inode_get_dev(inode), inode->i_ino, 0);
+-	else if (mask & (FS_DELETE|FS_MOVED_FROM))
+-		audit_update_watch(parent, dname, AUDIT_DEV_UNSET, AUDIT_INO_UNSET, 1);
++	if (mask & (FS_CREATE|FS_MOVED_TO) && inode) {
++		struct audit_watch_ctx ctx = { .dir = dir, .child = inode };
++
++		audit_update_watch(parent, dname, inode_get_dev(inode), inode->i_ino, 0,
++				   &ctx);
++	} else if (mask & (FS_DELETE|FS_MOVED_FROM)) {
++		struct audit_watch_ctx ctx = { .dir = dir, .child = NULL };
++
++		audit_update_watch(parent, dname, AUDIT_DEV_UNSET, AUDIT_INO_UNSET, 1,
++				   &ctx);
++	}
+ 	else if (mask & (FS_DELETE_SELF|FS_UNMOUNT|FS_MOVE_SELF))
+ 		audit_remove_parent_watches(parent);
+ 
+-- 
+2.54.0
+
