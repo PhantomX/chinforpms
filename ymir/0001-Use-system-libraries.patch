@@ -1,27 +1,41 @@
-From e306464d26dd4da9a01c16a91c850847b21f014d Mon Sep 17 00:00:00 2001
+From f7a8fac67ddfdfb8008154bec27c2f7c4beba362 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 24 May 2025 22:15:16 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- apps/ymir-sdl3/CMakeLists.txt                 | 16 +++++++++---
+ CMakeLists.txt                                |  2 ++
+ apps/ymir-sdl3/CMakeLists.txt                 | 16 ++++++++--
  apps/ymir-sdl3/src/app/app.cpp                |  2 +-
  .../ymir-sdl3/src/app/services/midi_types.hpp |  2 +-
  .../ui/views/settings/audio_settings_view.cpp |  2 +-
- .../src/app/ui/windows/about_window.cpp       | 11 +-------
- apps/ymir-sdl3/stb/CMakeLists.txt             | 22 ++++++++++++++++
- vendor/CMakeLists.txt                         | 25 +++++++++++++++++++
- 7 files changed, 64 insertions(+), 16 deletions(-)
+ .../src/app/ui/windows/about_window.cpp       | 11 +------
+ apps/ymir-sdl3/stb/CMakeLists.txt             | 22 ++++++++++++++
+ vendor/CMakeLists.txt                         | 29 +++++++++++++++++++
+ 8 files changed, 70 insertions(+), 16 deletions(-)
  create mode 100644 apps/ymir-sdl3/stb/CMakeLists.txt
 
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f2924ca..c2107c3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -117,6 +117,8 @@ else ()
+     message(STATUS "IPO / LTO not supported: ${IPO_ERROR}")
+ endif ()
+ 
++find_package(fmt CONFIG)
++
+ ## Include third-party libraries
+ add_subdirectory(vendor)
+ 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 5940176..e2e5431 100644
+index 4a1f8c1..99b43b8 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -389,9 +389,19 @@ find_package(date CONFIG REQUIRED)
+@@ -429,9 +429,19 @@ find_package(cxxopts CONFIG REQUIRED)
+ find_package(date CONFIG REQUIRED)
  find_package(OpenSSL CONFIG REQUIRED)
  find_package(CURL REQUIRED)
- find_package(fmt CONFIG REQUIRED)
 -find_package(rtmidi CONFIG REQUIRED)
 +find_package(rtmidi CONFIG)
 +if(NOT rtmidi_FOUND)
@@ -40,7 +54,7 @@ index 5940176..e2e5431 100644
  find_package(tomlplusplus CONFIG REQUIRED)
  
  target_include_directories(ymir-sdl3
-@@ -413,7 +423,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -453,7 +463,7 @@ target_link_libraries(ymir-sdl3 PRIVATE
      cereal::cereal
      lz4::lz4
      RtMidi::rtmidi
@@ -50,12 +64,12 @@ index 5940176..e2e5431 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 1dcdb0f..8a68d02 100644
+index 47b356d..3cd73ed 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
-@@ -134,7 +134,7 @@
- #include <fmt/chrono.h>
- #include <fmt/std.h>
+@@ -119,7 +119,7 @@
+ 
+ #include <stb_image.h>
  
 -#include <rtmidi/RtMidi.h>
 +#include <RtMidi.h>
@@ -76,7 +90,7 @@ index 206d808..31b7fc6 100644
  #include <memory>
  
 diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
-index 82cf121..932a71c 100644
+index f684eea..a20b898 100644
 --- a/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/views/settings/audio_settings_view.cpp
 @@ -7,7 +7,7 @@
@@ -89,7 +103,7 @@ index 82cf121..932a71c 100644
  using namespace ymir;
  
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 764f34f..886bebf 100644
+index 6ef1d0e..c642bf6 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -25,15 +25,10 @@
@@ -163,21 +177,34 @@ index 0000000..49a628c
 +    endif ()
 +endif ()
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 7baf305..fec5f59 100644
+index d052935..0b76f8b 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
-@@ -17,6 +17,8 @@
- 
- message(STATUS "Adding vendored libraries")
+@@ -28,6 +28,8 @@ message(STATUS "Adding vendored libraries")
+ ####################################################################################################
+ # Dependencies used by ymir-core
  
 +find_package(PkgConfig REQUIRED)
 +
  # mio - https://github.com/vimpunk/mio
- # Notes:
  # - Using StrikerX3's fork instead
-@@ -38,17 +40,40 @@ add_subdirectory(imgui EXCLUDE_FROM_ALL)
+ #   - This fork implements the features in this PR: https://github.com/vimpunk/mio/pull/78
+@@ -37,8 +39,12 @@ add_subdirectory(mio EXCLUDE_FROM_ALL)
+ 
+ # {fmt} - https://github.com/fmtlib/fmt
+ message(STATUS "==> libfmt")
++if(fmt_FOUND)
++  message(STATUS "Using the system fmt")
++else()
+ set(FMT_MODULE OFF)
+ add_subdirectory(fmt)
++endif()
+ 
+ # concurrentqueue - https://github.com/cameron314/concurrentqueue
+ message(STATUS "==> concurrentqueue")
+@@ -46,11 +52,26 @@ add_subdirectory(concurrentqueue EXCLUDE_FROM_ALL)
+ 
  # xxHash - https://github.com/Cyan4973/xxHash
- # - Unable to configure AVX2 support
  message(STATUS "==> xxHash")
 +pkg_search_module(libxxhash IMPORTED_TARGET libxxhash)
 +if(libxxhash_FOUND)
@@ -189,21 +216,7 @@ index 7baf305..fec5f59 100644
  add_subdirectory(xxHash EXCLUDE_FROM_ALL)
 +endif()
  
- # lz4 - https://github.com/lz4/lz4
- # - Unable to configure AVX2 support
- message(STATUS "==> lz4")
-+pkg_search_module(liblz4 IMPORTED_TARGET liblz4)
-+if(liblz4_FOUND)
-+  message(STATUS "Using the system liblz4")
-+  add_library(liblz4 INTERFACE)
-+  target_link_libraries(liblz4 INTERFACE PkgConfig::liblz4)
-+  add_library(lz4::lz4 ALIAS liblz4)
-+else()
- add_subdirectory(lz4 EXCLUDE_FROM_ALL)
-+endif()
- 
  # libchdr - https://github.com/rtissera/libchdr
- # - Not available as a vcpkg port
  message(STATUS "==> libchdr")
 +pkg_search_module(libchdr IMPORTED_TARGET libchdr)
 +if(libchdr_FOUND)
@@ -214,8 +227,24 @@ index 7baf305..fec5f59 100644
  add_subdirectory(libchdr)
 +endif()
  
+ ####################################################################################################
+ # Other dependencies
+@@ -64,7 +85,15 @@ if (NOT Ymir_LIBRARY_ONLY)
+     # lz4 - https://github.com/lz4/lz4
+     # - Unable to configure AVX2 support from vcpkg
+     message(STATUS "==> lz4")
++    pkg_search_module(liblz4 IMPORTED_TARGET liblz4)
++    if(liblz4_FOUND)
++      message(STATUS "Using the system liblz4")
++      add_library(liblz4 INTERFACE)
++      target_link_libraries(liblz4 INTERFACE PkgConfig::liblz4)
++      add_library(lz4::lz4 ALIAS liblz4)
++    else()
+     add_subdirectory(lz4 EXCLUDE_FROM_ALL)
++    endif()
+ endif ()
+ 
  # Place vendored library projects under a Vendored folder in Visual Studio solutions
- if (MSVC)
 -- 
 2.54.0
 

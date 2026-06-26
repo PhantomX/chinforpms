@@ -13,16 +13,16 @@
 %bcond avx2 0
 %bcond rtmidi 0
 
-%global commit 82a26c6c6efc8c75efea592e63a16f655048e086
+%global commit e020dfd112ad2a2cf0e34a6fa6ad71b8c339de02
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260506
+%global date 20260622
 %bcond snapshot 1
 
-%global commit10 9afb99746f0f5fc94ac8aef737053ae0481ba8d1
+%global commit10 1e2def448e43fb3362123ab5ff039c39e1ba5cfd
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 concurrentqueue
 
-%global commit11 417f5ed66ddabbec338d8ab0c7ea239ce894f334
+%global commit11 036bf939b6f8d74ad76bcf926b757c56e68c54ff
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
@@ -49,7 +49,7 @@
 %global pkgname Ymir
 
 Name:           ymir
-Version:        0.3.2
+Version:        0.4.0
 Release:        0.1%{?dist}
 Summary:        A Sega Saturn emulator
 
@@ -94,6 +94,7 @@ BuildRequires:  cmake(fmt) >= %{fmt_ver}
 BuildRequires:  pkgconfig(libchdr)
 BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(nlohmann_json)
 %if %{with rtmidi}
 BuildRequires:  pkgconfig(rtmidi) >= %{rtmidi_ver}
 %else
@@ -118,7 +119,7 @@ Provides:       bundled(stb) = 0~git%{shortcommit13}
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
-rm -f apps/ymir-sdl3/src/app/update_checker.*
+rm -f apps/ymir-sdl3/src/app/services/update_checker_service.*
 
 pushd vendor
 rm -rf libchdr lz4 xxHash

@@ -47,12 +47,12 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit e379fba97d132a84b976709ce35670c520ccc0ae
+%global commit 927e2492ef720d2223bd8b149a02af875e11c398
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260607
+%global date 20260622
 %bcond snapshot 1
 
-%global commit10 ee86beb30e4973f5feffe3ce63bfa4fbadf72f38
+%global commit10 c8033ce9d039e7f9d134877c363397b3cfe20816
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 pugixml
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.41.21
+Version:        0.0.41.77
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 

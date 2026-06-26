@@ -1,23 +1,25 @@
-From 5cb34216d0c0db11a4116a208e804dd4512a748b Mon Sep 17 00:00:00 2001
+From 018b45043586fb08b2890fa040eddc62dfd6e980 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 11 Oct 2025 17:38:43 -0300
 Subject: [PATCH] Remove update checker
 
 ---
- apps/ymir-sdl3/CMakeLists.txt                 |  9 --------
- apps/ymir-sdl3/src/app/app.cpp                | 22 +++++--------------
- apps/ymir-sdl3/src/app/app.hpp                | 11 ----------
+ apps/ymir-sdl3/CMakeLists.txt                 | 11 -----------
+ apps/ymir-sdl3/src/app/app.cpp                |  8 ++------
+ apps/ymir-sdl3/src/app/app.hpp                |  2 --
  apps/ymir-sdl3/src/app/events/gui_event.hpp   |  2 --
  .../src/app/events/gui_event_factory.hpp      |  4 ----
- apps/ymir-sdl3/src/app/settings.cpp           |  7 ------
+ .../app/services/window_manager_service.cpp   |  8 +-------
+ .../app/services/window_manager_service.hpp   | 10 ----------
+ apps/ymir-sdl3/src/app/settings.cpp           |  7 -------
  apps/ymir-sdl3/src/app/settings.hpp           |  2 --
- apps/ymir-sdl3/src/app/shared_context.hpp     |  6 ++---
+ apps/ymir-sdl3/src/app/shared_context.hpp     |  6 ++----
  .../views/settings/general_settings_view.cpp  |  4 ++--
- .../src/app/ui/windows/about_window.cpp       | 19 ----------------
- 10 files changed, 9 insertions(+), 77 deletions(-)
+ .../src/app/ui/windows/about_window.cpp       | 19 -------------------
+ 12 files changed, 7 insertions(+), 76 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index e2e5431..e391c4d 100644
+index 99b43b8..5dc615a 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
 @@ -23,8 +23,6 @@ add_executable(ymir-sdl3
@@ -29,7 +31,16 @@ index e2e5431..e391c4d 100644
  
      src/app/debug/cdblock_tracer.cpp
      src/app/debug/cdblock_tracer.hpp
-@@ -253,10 +251,6 @@ add_executable(ymir-sdl3
+@@ -73,8 +71,6 @@ add_executable(ymir-sdl3
+     src/app/services/screenshot_service.cpp
+     src/app/services/screenshot_service.hpp
+     src/app/services/screenshot_types.hpp
+-    src/app/services/update_checker_service.cpp
+-    src/app/services/update_checker_service.hpp
+     src/app/services/mouse_capture_service.cpp
+     src/app/services/mouse_capture_service.hpp
+     src/app/services/rom_service.cpp
+@@ -286,10 +282,6 @@ add_executable(ymir-sdl3
      src/app/ui/windows/settings_window.hpp
      src/app/ui/windows/system_state_window.cpp
      src/app/ui/windows/system_state_window.hpp
@@ -40,16 +51,16 @@ index e2e5431..e391c4d 100644
  
      src/app/ui/windows/debug/cdblock_cmd_trace_window.cpp
      src/app/ui/windows/debug/cdblock_cmd_trace_window.hpp
-@@ -386,8 +380,6 @@ endif()
+@@ -427,8 +419,6 @@ endif()
  find_package(cereal CONFIG REQUIRED)
  find_package(cxxopts CONFIG REQUIRED)
  find_package(date CONFIG REQUIRED)
 -find_package(OpenSSL CONFIG REQUIRED)
 -find_package(CURL REQUIRED)
- find_package(fmt CONFIG REQUIRED)
  find_package(rtmidi CONFIG)
  if(NOT rtmidi_FOUND)
-@@ -423,7 +415,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
+     set(RTMIDI_BUILD_STATIC_LIBS ON)
+@@ -463,7 +453,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
      cereal::cereal
      lz4::lz4
      RtMidi::rtmidi
@@ -58,21 +69,18 @@ index e2e5431..e391c4d 100644
  if (WIN32)
      target_link_libraries(ymir-sdl3 PRIVATE
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index f4d30fc..fe4981e 100644
+index 658eac6..dc78b2d 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
-@@ -173,9 +173,7 @@ App::App()
-     , m_debugOutputWindow(m_context)
-     , m_settingsWindow(m_context)
-     , m_periphConfigWindow(m_context)
--    , m_aboutWindow(m_context)
--    , m_updateOnboardingWindow(m_context)
--    , m_updateWindow(m_context) {
-+    , m_aboutWindow(m_context) {
- 
-     // Register services
-     m_context.serviceLocator.Register(m_graphicsService);
-@@ -509,6 +507,7 @@ void App::RunEmulator() {
+@@ -177,7 +177,6 @@ App::App()
+     m_context.serviceLocator.Register(m_midiService);
+     m_context.serviceLocator.Register(m_settings);
+     m_context.serviceLocator.Register(m_screenshotService);
+-    m_context.serviceLocator.Register(m_updateCheckerService);
+     m_context.serviceLocator.Register(m_mouseCaptureService);
+     m_context.serviceLocator.Register(m_romService);
+     m_context.serviceLocator.Register(m_discService);
+@@ -504,6 +503,7 @@ void App::RunEmulator() {
  
      auto &settings = m_settings;
  
@@ -80,114 +88,53 @@ index f4d30fc..fe4981e 100644
      {
          const auto updatesPath = m_context.profile.GetPath(ProfilePath::PersistentState) / "updates";
  
-@@ -545,6 +544,7 @@ void App::RunEmulator() {
-             m_updateCheckerThread.join();
-         }
-     }};
+@@ -534,6 +534,7 @@ void App::RunEmulator() {
+ 
+     m_updateCheckerService.Start(m_context, m_settings, [&] { m_windowManagerService.UpdateWindow().Open = true; });
+     ScopeGuard sgStopUpdateCheckerThread{[&] { m_updateCheckerService.Stop(); }};
 +#endif
  
      // Get embedded file system
      auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
-@@ -2578,8 +2578,6 @@ void App::RunEmulator() {
+@@ -1793,8 +1794,6 @@ void App::RunEmulator() {
                  break;
              }
  
--            case EvtType::CheckForUpdates: CheckForUpdates(true); break;
+-            case EvtType::CheckForUpdates: m_updateCheckerService.CheckForUpdates(true); break;
 -
              case EvtType::StateLoaded:
                  m_context.DisplayMessage(fmt::format("State {} loaded", std::get<uint32>(evt.value) + 1));
                  break;
-@@ -3257,9 +3255,6 @@ void App::RunEmulator() {
+@@ -2523,9 +2522,6 @@ void App::RunEmulator() {
                      if (ImGui::MenuItem("Open welcome window", nullptr)) {
-                         OpenWelcomeModal(false);
+                         m_windowManagerService.OpenWelcomeModal(false);
                      }
 -                    if (ImGui::MenuItem("Check for updates", nullptr)) {
--                        CheckForUpdates(true);
+-                        m_updateCheckerService.CheckForUpdates(true);
 -                    }
  
                      ImGui::Separator();
- #if Ymir_ENABLE_IMGUI_DEMO
-@@ -4130,6 +4125,7 @@ void App::ScreenshotThread() {
-     }
- }
- 
-+#if 0
- void App::UpdateCheckerThread() {
-     util::SetCurrentThreadName("Update checker thread");
- 
-@@ -4265,6 +4261,7 @@ void App::UpdateCheckerThread() {
-         }
-     }
- }
-+#endif
- 
- void App::OpenWelcomeModal(bool scanIPLROMs) {
-     bool activeScanning = scanIPLROMs;
-@@ -4424,11 +4421,6 @@ void App::OpenWelcomeModal(bool scanIPLROMs) {
-     });
- }
- 
--void App::CheckForUpdates(bool skipCache) {
--    m_updateCheckMode = skipCache ? UpdateCheckMode::OnlineNoCache : UpdateCheckMode::Online;
--    m_updateCheckEvent.Set();
--}
--
- void App::RebindInputs() {
-     m_settings.RebindInputs();
- }
-@@ -6027,10 +6019,6 @@ void App::DrawWindows() {
-     m_settingsWindow.Display();
-     m_periphConfigWindow.Display();
-     m_aboutWindow.Display();
--#if Ymir_ENABLE_UPDATE_CHECKS
--    m_updateOnboardingWindow.Display();
--#endif
--    m_updateWindow.Display();
- }
- 
- void App::OpenMemoryViewer() {
+                     ImGui::MenuItem("Show message history",
 diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
-index 81798d1..0220798 100644
+index edab0f9..f509e87 100644
 --- a/apps/ymir-sdl3/src/app/app.hpp
 +++ b/apps/ymir-sdl3/src/app/app.hpp
-@@ -14,8 +14,6 @@
- #include "ui/windows/peripheral_config_window.hpp"
- #include "ui/windows/settings_window.hpp"
- #include "ui/windows/system_state_window.hpp"
--#include "ui/windows/update_onboarding_window.hpp"
--#include "ui/windows/update_window.hpp"
+@@ -15,7 +15,6 @@
+ #include "services/rom_service.hpp"
+ #include "services/save_state_service.hpp"
+ #include "services/screenshot_service.hpp"
+-#include "services/update_checker_service.hpp"
  
- #include "ui/windows/debug/cdblock_window_set.hpp"
- #include "ui/windows/debug/debug_output_window.hpp"
-@@ -90,19 +88,12 @@ private:
-     std::mutex m_screenshotQueueMtx;
-     bool m_screenshotThreadRunning;
+ #include "services/window_manager_service.hpp"
  
--    std::thread m_updateCheckerThread;
--    util::Event m_updateCheckEvent;
--    UpdateCheckMode m_updateCheckMode;
--    bool m_updateCheckerThreadRunning;
--
-     void RunEmulator();
- 
-     void EmulatorThread();
-     void ScreenshotThread();
--    void UpdateCheckerThread();
- 
-     void OpenWelcomeModal(bool scanIPLROMS);
--    void CheckForUpdates(bool skipCache);
- 
-     void RebindInputs();
-     void UpdateInputs(double timeDelta);
-@@ -212,8 +203,6 @@ private:
-     ui::SettingsWindow m_settingsWindow;
-     ui::PeripheralConfigWindow m_periphConfigWindow;
-     ui::AboutWindow m_aboutWindow;
--    ui::UpdateOnboardingWindow m_updateOnboardingWindow;
--    ui::UpdateWindow m_updateWindow;
- 
-     // -------------------------------------------------------------------------
-     // Generic modal dialog
+@@ -55,7 +54,6 @@ private:
+     services::SaveStateService m_saveStateService;
+     services::MIDIService m_midiService;
+     services::ScreenshotService m_screenshotService;
+-    services::UpdateCheckerService m_updateCheckerService;
+     Settings m_settings;
+     services::MouseCaptureService m_mouseCaptureService;
+     services::ROMService m_romService;
 diff --git a/apps/ymir-sdl3/src/app/events/gui_event.hpp b/apps/ymir-sdl3/src/app/events/gui_event.hpp
 index 9d4cf48..4cf5f09 100644
 --- a/apps/ymir-sdl3/src/app/events/gui_event.hpp
@@ -216,13 +163,74 @@ index e0f1444..5101123 100644
  inline GUIEvent TakeScreenshot() {
      return {.type = GUIEvent::Type::TakeScreenshot};
  }
+diff --git a/apps/ymir-sdl3/src/app/services/window_manager_service.cpp b/apps/ymir-sdl3/src/app/services/window_manager_service.cpp
+index ecc76ad..6e03235 100644
+--- a/apps/ymir-sdl3/src/app/services/window_manager_service.cpp
++++ b/apps/ymir-sdl3/src/app/services/window_manager_service.cpp
+@@ -26,9 +26,7 @@ WindowManagerService::WindowManagerService(SharedContext &context, Settings &set
+     , m_settingsWindow(m_context)
+     , m_periphConfigWindow(m_context)
+     , m_messageHistoryWindow(m_context)
+-    , m_aboutWindow(m_context)
+-    , m_updateOnboardingWindow(m_context)
+-    , m_updateWindow(m_context) {
++    , m_aboutWindow(m_context) {
+ 
+     // Preinitialize some memory viewers
+     for (int i = 0; i < 8; i++) {
+@@ -57,10 +55,6 @@ void WindowManagerService::DrawWindows() {
+     m_periphConfigWindow.Display();
+     m_messageHistoryWindow.Display();
+     m_aboutWindow.Display();
+-#if Ymir_ENABLE_UPDATE_CHECKS
+-    m_updateOnboardingWindow.Display();
+-#endif
+-    m_updateWindow.Display();
+ }
+ 
+ void WindowManagerService::OpenMemoryViewer() {
+diff --git a/apps/ymir-sdl3/src/app/services/window_manager_service.hpp b/apps/ymir-sdl3/src/app/services/window_manager_service.hpp
+index 7c141db..1cf2231 100644
+--- a/apps/ymir-sdl3/src/app/services/window_manager_service.hpp
++++ b/apps/ymir-sdl3/src/app/services/window_manager_service.hpp
+@@ -12,8 +12,6 @@
+ #include <app/ui/windows/peripheral_config_window.hpp>
+ #include <app/ui/windows/settings_window.hpp>
+ #include <app/ui/windows/system_state_window.hpp>
+-#include <app/ui/windows/update_onboarding_window.hpp>
+-#include <app/ui/windows/update_window.hpp>
+ 
+ #include <app/ui/windows/debug/cdblock_window_set.hpp>
+ #include <app/ui/windows/debug/debug_output_window.hpp>
+@@ -108,12 +106,6 @@ public:
+     ui::AboutWindow &AboutWindow() {
+         return m_aboutWindow;
+     }
+-    ui::UpdateOnboardingWindow &UpdateOnboardingWindow() {
+-        return m_updateOnboardingWindow;
+-    }
+-    ui::UpdateWindow &UpdateWindow() {
+-        return m_updateWindow;
+-    }
+ 
+     bool &OpenGenericModalFlag() {
+         return m_openGenericModal;
+@@ -153,8 +145,6 @@ private:
+     ui::PeripheralConfigWindow m_periphConfigWindow;
+     ui::MessageHistoryWindow m_messageHistoryWindow;
+     ui::AboutWindow m_aboutWindow;
+-    ui::UpdateOnboardingWindow m_updateOnboardingWindow;
+-    ui::UpdateWindow m_updateWindow;
+ 
+     bool m_openGenericModal = false;
+     bool m_closeGenericModal = false;
 diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
-index d34f9c1..f635fdf 100644
+index e4e4912..e34b1f1 100644
 --- a/apps/ymir-sdl3/src/app/settings.cpp
 +++ b/apps/ymir-sdl3/src/app/settings.cpp
-@@ -974,9 +974,6 @@ void Settings::ResetToDefaults() {
- 
-     general.pauseWhenUnfocused = false;
+@@ -977,9 +977,6 @@ void Settings::ResetToDefaults() {
+     general.unpauseOnDiscLoad = true;
+     general.startPaused = false;
  
 -    general.checkForUpdates = false;
 -    general.includeNightlyBuilds = false;
@@ -230,31 +238,31 @@ index d34f9c1..f635fdf 100644
      gui.overrideUIScale = false;
      gui.uiScale = 1.0;
      gui.rememberWindowGeometry = true;
-@@ -1168,8 +1165,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
-         Parse(tblGeneral, "AltSpeedFactor", general.altSpeedFactor);
-         Parse(tblGeneral, "UseAltSpeed", general.useAltSpeed);
+@@ -1179,8 +1176,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
          Parse(tblGeneral, "PauseWhenUnfocused", general.pauseWhenUnfocused);
+         Parse(tblGeneral, "UnpauseOnDiscLoadd", general.unpauseOnDiscLoad);
+         Parse(tblGeneral, "StartPaused", general.startPaused);
 -        Parse(tblGeneral, "CheckForUpdates", general.checkForUpdates);
 -        Parse(tblGeneral, "IncludeNightlyBuilds", general.includeNightlyBuilds);
  
          general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
  
-@@ -1805,8 +1800,6 @@ SettingsSaveResult Settings::Save() {
-             {"AltSpeedFactor", general.altSpeedFactor.Get()},
-             {"UseAltSpeed", general.useAltSpeed.Get()},
+@@ -1824,8 +1819,6 @@ SettingsSaveResult Settings::Save() {
              {"PauseWhenUnfocused", general.pauseWhenUnfocused},
+             {"UnpauseOnDiscLoad", general.unpauseOnDiscLoad},
+             {"StartPaused", general.startPaused},
 -            {"CheckForUpdates", general.checkForUpdates},
 -            {"IncludeNightlyBuilds", general.includeNightlyBuilds},
  
              {"PathOverrides", toml::table{{
                  {"IPLROMImages", m_context.profile.GetPathOverride(ProfilePath::IPLROMImages).native()},
 diff --git a/apps/ymir-sdl3/src/app/settings.hpp b/apps/ymir-sdl3/src/app/settings.hpp
-index c1367da..753ab01 100644
+index d0de0a3..ea9f586 100644
 --- a/apps/ymir-sdl3/src/app/settings.hpp
 +++ b/apps/ymir-sdl3/src/app/settings.hpp
-@@ -157,8 +157,6 @@ struct Settings {
- 
-         bool pauseWhenUnfocused;
+@@ -159,8 +159,6 @@ struct Settings {
+         bool unpauseOnDiscLoad;
+         bool startPaused;
  
 -        bool checkForUpdates;
 -        bool includeNightlyBuilds;
@@ -262,7 +270,7 @@ index c1367da..753ab01 100644
  
      struct GUI {
 diff --git a/apps/ymir-sdl3/src/app/shared_context.hpp b/apps/ymir-sdl3/src/app/shared_context.hpp
-index 8c809b6..7b92659 100644
+index 6899ff1..22d88da 100644
 --- a/apps/ymir-sdl3/src/app/shared_context.hpp
 +++ b/apps/ymir-sdl3/src/app/shared_context.hpp
 @@ -6,7 +6,6 @@
@@ -273,7 +281,7 @@ index 8c809b6..7b92659 100644
  
  #include <app/services/graphics_types.hpp>
  
-@@ -656,8 +655,8 @@ struct SharedContext {
+@@ -657,8 +656,8 @@ struct SharedContext {
      int gameControllerDBCount = 0;
  
      Profile profile;
@@ -283,7 +291,7 @@ index 8c809b6..7b92659 100644
      struct Updates {
          bool inProgress = false;
          std::optional<UpdateInfo> latestStable;
-@@ -669,6 +668,7 @@ struct SharedContext {
+@@ -670,6 +669,7 @@ struct SharedContext {
          ReleaseChannel channel;
      };
      std::optional<TargetUpdate> targetUpdate = std::nullopt;
@@ -291,7 +299,7 @@ index 8c809b6..7b92659 100644
  
      ROMManager romManager;
      std::filesystem::path iplRomPath;
-@@ -697,8 +697,6 @@ struct SharedContext {
+@@ -698,8 +698,6 @@ struct SharedContext {
          std::mutex messages;
          std::mutex breakpoints;
          std::mutex watchpoints;
@@ -301,11 +309,11 @@ index 8c809b6..7b92659 100644
      } locks;
  
 diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
-index 68b15bf..f669340 100644
+index fad6e8b..2054a93 100644
 --- a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
-@@ -127,7 +127,7 @@ void GeneralSettingsView::Display() {
-         m_context.displayScale);
+@@ -133,7 +133,7 @@ void GeneralSettingsView::Display() {
+     widgets::ExplanationTooltip("Ymir will launch with emulation paused when starting up.", m_context.displayScale);
  
      // -----------------------------------------------------------------------------------------------------------------
 -
@@ -313,7 +321,7 @@ index 68b15bf..f669340 100644
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
      ImGui::SeparatorText("Updates");
      ImGui::PopFont();
-@@ -193,7 +193,7 @@ void GeneralSettingsView::Display() {
+@@ -199,7 +199,7 @@ void GeneralSettingsView::Display() {
              ImGui::TextUnformatted("You are already using the latest version.");
          }
      }
@@ -323,7 +331,7 @@ index 68b15bf..f669340 100644
  
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
 diff --git a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
-index 886bebf..1845fb9 100644
+index c642bf6..ad5a8fb 100644
 --- a/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 +++ b/apps/ymir-sdl3/src/app/ui/windows/about_window.cpp
 @@ -16,17 +16,10 @@

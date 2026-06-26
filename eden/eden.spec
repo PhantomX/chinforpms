@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ce14fc91fb84c51650f57c059396756e1fc3c4cf
+%global commit 39be450fa3a7248f7dde73dfe91d2f0447a155dd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260616
+%global date 20260622
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.111
+Version:        0.2.0.120
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -145,6 +145,9 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 %endif
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 %dnl Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
+
+Patch0:         %{vc_url}/%{name}/pulls/4115.patch#/%{name}-git-pr4115.patch
+Patch1:         %{vc_url}/%{name}/pulls/4116.patch#/%{name}-git-pr4116.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch

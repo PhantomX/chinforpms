@@ -1840,9 +1840,6 @@ fi
 %{_libdir}/wine/%{winepedirs}/shdoclc.dll
 %{_libdir}/wine/%{winepedirs}/shdocvw.dll
 %{_libdir}/wine/%{winepedirs}/schedsvc.dll
-%if (0%{?wine_staging} && %{with proton_winevulkan})
-%{_libdir}/wine/%{winepedirs}/sharedgpures.sys
-%endif
 %{_libdir}/wine/%{winepedirs}/shell32.dll
 %{_libdir}/wine/%{winepedirs}/shfolder.dll
 %{_libdir}/wine/%{winepedirs}/shlwapi.dll
