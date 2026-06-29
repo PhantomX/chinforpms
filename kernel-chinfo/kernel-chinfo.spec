@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.1.1
+%define specrpmversion 7.1.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1290,21 +1290,20 @@ Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUS
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/1c928c3556d29473308037d486be7d0629e78e30.patch#/zen-v%{patchversion}-sauce-1c928c3.patch
-Patch2002: %{zen_url}/commit/ca458f561d4c5b9aa9ced916c082a421532a1a2a.patch#/zen-v%{patchversion}-sauce-ca458f5.patch
-Patch2003: %{zen_url}/commit/63b4ed76255dbbf73224393a5fa1011c06e04f90.patch#/zen-v%{patchversion}-sauce-63b4ed7.patch
-Patch2004: %{zen_url}/commit/c65b02acb10119ba4fc8a9120b58924c48977207.patch#/zen-v%{patchversion}-sauce-c65b02a.patch
-Patch2005: %{zen_url}/commit/8c6f1056414c0913a8025e532c57db3281cecafe.patch#/zen-v%{patchversion}-sauce-8c6f105.patch
-Patch2006: %{zen_url}/commit/b0e637bd70217fd3aeb4620a207d4691ab9d53a1.patch#/zen-v%{patchversion}-sauce-b0e637b.patch
+Patch2001: %{zen_url}/commit/eda711a49eba186853b87d721a8f5b72c29a44ed.patch#/zen-v%{patchversion}-sauce-eda711a.patch
+Patch2002: %{zen_url}/commit/789df99d89235ce06c4c92292adc10b0bb67d101.patch#/zen-v%{patchversion}-sauce-789df99.patch
+Patch2003: %{zen_url}/commit/ed9969e7e41661b43327eef5997f0c8095f8730b.patch#/zen-v%{patchversion}-sauce-ed9969e.patch
+Patch2004: %{zen_url}/commit/291a61e2d6950cd561a7715a782fc54afb87a5a1.patch#/zen-v%{patchversion}-sauce-291a61e.patch
+Patch2005: %{zen_url}/commit/420dbda6d6b42784ca35e6b0596fd8e68c23b219.patch#/zen-v%{patchversion}-sauce-420dbda.patch
 # dmemcg
-Patch2010: %{zen_url}/commit/08a5cc4ab2b194df37715f1e239ce88b32804628.patch#/zen-v%{patchversion}-dmemcg-08a5cc4.patch
-Patch2011: %{zen_url}/commit/46e43813c90a2fcb988416cab25e4146b10d2949.patch#/zen-v%{patchversion}-dmemcg-46e4381.patch
-Patch2012: %{zen_url}/commit/0f003ed0970c2c0eb55497337d30b6ddbcc3dcea.patch#/zen-v%{patchversion}-dmemcg-0f003ed.patch
-Patch2013: %{zen_url}/commit/97fc4b95e40ec27ad257df19796f6b439ef62699.patch#/zen-v%{patchversion}-dmemcg-97fc4b9.patch
-Patch2014: %{zen_url}/commit/cab4c6e71dee69dc248e8d4f4083f24bb2bc04b5.patch#/zen-v%{patchversion}-dmemcg-cab4c6e.patch
-Patch2015: %{zen_url}/commit/be5281b25b724d7f5ee99c4980cafafa2a7ac201.patch#/zen-v%{patchversion}-dmemcg-be5281b.patch
-Patch2016: %{zen_url}/commit/8dc3a7fb1cec6c0d43c7a5242d15b2ec58e7bada.patch#/zen-v%{patchversion}-dmemcg-8dc3a7f.patch
-Patch2030: %{kernel_url}/?id=591711b32681a04b57d00c2a404658f8419a081c#/kernel-stable-revert-591711b.patch
+Patch2010: %{zen_url}/commit/772eafd4c11727b5cf5eedebdf12eb2e6a164beb.patch#/zen-v%{patchversion}-dmemcg-772eafd.patch
+Patch2011: %{zen_url}/commit/3b82b3521eb7a023847e20ab3fc6b573dbcd55f3.patch#/zen-v%{patchversion}-dmemcg-3b82b35.patch
+Patch2012: %{zen_url}/commit/393753401b830b0ce4fa52715b5d36520a4d5c39.patch#/zen-v%{patchversion}-dmemcg-3937534.patch
+Patch2013: %{zen_url}/commit/a307f5c3da4b64c7c2e08e31ceb34751290e27d7.patch#/zen-v%{patchversion}-dmemcg-a307f5c.patch
+Patch2014: %{zen_url}/commit/0e6f7c8bcc26cc4d1b215aa93d6324f6c2cfddc8.patch#/zen-v%{patchversion}-dmemcg-0e6f7c8.patch
+Patch2015: %{zen_url}/commit/1e91ac182a3b6f9f5e01a9f46f080cd5d7f7b2d1.patch#/zen-v%{patchversion}-dmemcg-1e91ac1.patch
+Patch2016: %{zen_url}/commit/79a4de42741f16a203cab4dae534f66125d89138.patch#/zen-v%{patchversion}-dmemcg-79a4de4.patch
+Patch2017: %{zen_url}/commit/df1f3e7dbc9a35c4255627424d1375d60daca386.patch#/zen-v%{patchversion}-dmemcg-df1f3e7.patch
 
 
 # Add native cpu gcc optimization support
@@ -1362,9 +1361,17 @@ Patch7430:  %{pf_url}/c43073b43bf3269e4be8bf60894b4e8ca23b89b4.patch%{pf_antibot
 Patch7431:  %{pf_url}/429c6760b82e85ab20a760cffe20162bf60dbe9b.patch%{pf_antibot}#/pf-cb-429c676.patch
 Patch7432:  %{pf_url}/cc478113658c3fb7e6a061f9d4d3850072ba7dc1.patch%{pf_antibot}#/pf-cb-cc47811.patch
 Patch7433:  %{pf_url}/629ae0e362175eb491ad7924062b3c46897f279e.patch%{pf_antibot}#/pf-cb-629ae0e.patch
-Patch7434:  %{pf_url}/4df00cd5864dd5bb7fdceae501ab056b8e64e6b9.patch%{pf_antibot}#/pf-cb-4df00cd.patch
+Patch7434:  %{pf_url}/b86c3aef4add1e7fdd892307471319f40fe7a915.patch%{pf_antibot}#/pf-cb-b86c3ae.patch
 Patch7435:  0001-pf-cb-f60fc58-fixup-1.patch
 Patch7436:  0001-pf-cb-f60fc58-fixup-2.patch
+Patch7437:  %{pf_url}/25f0c45508a19a469bf25550d21d2818148b09c2.patch%{pf_antibot}#/pf-cb-25f0c45.patch
+Patch7438:  %{pf_url}/a561cabddc6b7262a45cb31201bc784b0c164c29.patch%{pf_antibot}#/pf-cb-a561cab.patch
+Patch7439:  %{pf_url}/a03f0bc07088ed292cf39108cfd2d7ee095fb1ee.patch%{pf_antibot}#/pf-cb-a03f0bc.patch
+Patch7440:  %{pf_url}/db4b10fd0f2cbfb1ee674c5adb4f2111aac0816d.patch%{pf_antibot}#/pf-cb-db4b10f.patch
+Patch7441:  %{pf_url}/d0344623b2be4749b100e956f300c44a7cb9da98.patch%{pf_antibot}#/pf-cb-d034462.patch
+Patch7442:  %{pf_url}/e62f3c7cb1e4cc2ae15601638ab4b4e33812c3f0.patch%{pf_antibot}#/pf-cb-e62f3c7.patch
+Patch7443:  %{pf_url}/d214f6a1336d10908b43230081566ea51af49ca4.patch%{pf_antibot}#/pf-cb-d214f6a.patch
+Patch7444:  %{pf_url}/5b20e100e210491a97a095f83a920b426545252f.patch%{pf_antibot}#/pf-cb-5b20e10.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2377,6 +2384,14 @@ ApplyPatch %{PATCH7431}
 ApplyPatch %{PATCH7432}
 ApplyPatch %{PATCH7433}
 ApplyPatch %{PATCH7434}
+ApplyPatch %{PATCH7437}
+ApplyPatch %{PATCH7438}
+ApplyPatch %{PATCH7439}
+ApplyPatch %{PATCH7440}
+ApplyPatch %{PATCH7441}
+ApplyPatch %{PATCH7442}
+ApplyPatch %{PATCH7443}
+ApplyPatch %{PATCH7444}
 %endif
 
 # openSUSE
@@ -2392,19 +2407,18 @@ ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
-%dnl ApplyPatch %{PATCH2003}
-%dnl ApplyPatch %{PATCH2004}
-%dnl ApplyPatch %{PATCH2005}
-ApplyPatch %{PATCH2006}
+ApplyPatch %{PATCH2003}
+ApplyPatch %{PATCH2004}
+ApplyPatch %{PATCH2005}
 
 ApplyPatch %{PATCH2010}
 ApplyPatch %{PATCH2011}
-ApplyPatch %{PATCH2030} -R
 ApplyPatch %{PATCH2012}
 ApplyPatch %{PATCH2013}
 ApplyPatch %{PATCH2014}
 ApplyPatch %{PATCH2015}
 ApplyPatch %{PATCH2016}
+ApplyPatch %{PATCH2017}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5108,6 +5122,9 @@ fi\
 #
 #
 %changelog
+* Sat Jun 27 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.2-500.chinfo
+- 7.1.2
+
 * Fri Jun 19 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.1-500.chinfo
 - 7.1.1
 

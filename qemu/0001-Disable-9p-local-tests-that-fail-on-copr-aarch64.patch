@@ -25,8 +25,8 @@ index ab3a12c816..261b0c17f1 100644
      qos_add_test("local/create_file", "virtio-9p", fs_create_file, &opts);
 @@ -804,6 +805,7 @@ static void register_virtio_9p_test(void)
                   &opts);
-     qos_add_test("local/use_after_unlink", "virtio-9p", fs_use_after_unlink,
-                  &opts);
+     qos_add_test("local/deep_absolute_path", "virtio-9p",
+                  fs_deep_absolute_path, &opts);
 +#endif
  }
  

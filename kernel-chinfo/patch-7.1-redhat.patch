@@ -1,49 +1,54 @@
- Kconfig                                            |   2 +
- Kconfig.redhat                                     |  31 ++
- Makefile                                           |  38 +-
+ Makefile                                           |  30 ++++
  arch/arm/Kconfig                                   |   4 +-
- arch/arm64/Kconfig                                 |  39 +-
- arch/arm64/kernel/setup.c                          |  27 +
+ arch/arm64/Kconfig                                 |   2 +-
+ arch/arm64/kernel/setup.c                          |  27 ++++
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            | 101 +++-
+ arch/x86/kernel/setup.c                            |  22 ++-
+ crypto/akcipher.c                                  |   3 +-
+ crypto/dh.c                                        |  25 ++++
+ crypto/drbg.c                                      |  18 ++-
+ crypto/rng.c                                       | 155 ++++++++++++++++++---
+ crypto/seqiv.c                                     |  15 +-
  crypto/sig.c                                       |   3 +-
  crypto/testmgr.c                                   |   6 +-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 ++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
+ drivers/char/random.c                              | 126 ++++++++++++++++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
+ drivers/firmware/efi/efi.c                         | 124 ++++++++++++-----
  drivers/firmware/efi/libstub/fdt.c                 |   5 +
  drivers/firmware/efi/libstub/secureboot.c          |  14 +-
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hid/hid-rmi.c                              |  66 ---
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/rmi4/rmi_driver.c                    | 124 +++--
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
+ drivers/firmware/efi/secureboot.c                  |  38 +++++
+ drivers/hid/hid-rmi.c                              |  66 ---------
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
+ drivers/input/rmi4/rmi_driver.c                    | 124 ++++++++++-------
+ drivers/iommu/iommu.c                              |  22 +++
+ drivers/pci/quirks.c                               |  24 ++++
  drivers/usb/core/hub.c                             |   7 +
- include/linux/efi.h                                |  22 +-
+ include/linux/crypto.h                             |   3 +
+ include/linux/efi.h                                |  22 ++-
+ include/linux/random.h                             |  10 ++
  include/linux/rmi.h                                |   1 +
- include/linux/security.h                           |   9 +
- init/main.c                                        |   5 +
+ include/linux/security.h                           |   9 ++
  kernel/module/signing.c                            |   9 +-
  scripts/Makefile.lib                               |   3 +
- scripts/mod/modpost.c                              |   8 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
- security/lockdown/lockdown.c                       |  11 +
+ security/lockdown/Kconfig                          |  13 ++
+ security/lockdown/lockdown.c                       |  11 ++
+ tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++++++++++
  tools/testing/selftests/bpf/Makefile               |   2 +-
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 --
- 84 files changed, 3016 insertions(+), 245 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -----
+ 48 files changed, 931 insertions(+), 241 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 408f070d49b8..f2c5730f87d8 100644
+index 39baa3275447..e773a86c68ef 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -356,6 +356,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -73,7 +78,7 @@ index 408f070d49b8..f2c5730f87d8 100644
  # KERNELRELEASE can change from a few different places, meaning version.h
  # needs to be updated, so this check is forced on all builds
  
-@@ -2065,6 +2084,23 @@ endif
+@@ -2065,6 +2078,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -114,10 +119,10 @@ index 73e6647bea46..32b90d43664c 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fe60738e5943..29f28155a033 100644
+index 10c69474f276..96190d176bc8 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1432,7 +1469,7 @@ endchoice
+@@ -1470,7 +1470,7 @@ endchoice
  
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -226,7 +231,7 @@ index b60284328fe3..e4d37b08ca29 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 46882ce79c3a..49173ab3fcf7 100644
+index 46882ce79c3a..9c73814c31e0 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -237,7 +242,7 @@ index 46882ce79c3a..49173ab3fcf7 100644
  #include <linux/static_call.h>
  #include <linux/sysfb.h>
  #include <linux/swiotlb.h>
-@@ -995,6 +1073,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -995,6 +996,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -251,7 +256,7 @@ index 46882ce79c3a..49173ab3fcf7 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1156,19 +1241,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1156,19 +1164,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  
@@ -272,6 +277,373 @@ index 46882ce79c3a..49173ab3fcf7 100644
  
  	reserve_initrd();
  
+diff --git a/crypto/akcipher.c b/crypto/akcipher.c
+index dfe87b3ce183..cd1302ca3b36 100644
+--- a/crypto/akcipher.c
++++ b/crypto/akcipher.c
+@@ -140,8 +140,7 @@ int crypto_register_akcipher(struct akcipher_alg *alg)
+ 
+ 	if (!alg->encrypt)
+ 		alg->encrypt = akcipher_default_op;
+-	if (!alg->decrypt)
+-		alg->decrypt = akcipher_default_op;
++	alg->decrypt = akcipher_default_op;
+ 	if (!alg->set_priv_key)
+ 		alg->set_priv_key = akcipher_default_set_key;
+ 
+diff --git a/crypto/dh.c b/crypto/dh.c
+index 7ad4768716c8..01ccc24db074 100644
+--- a/crypto/dh.c
++++ b/crypto/dh.c
+@@ -227,10 +227,35 @@ static int dh_compute_value(struct kpp_request *req)
+ 
+ 		/* SP800-56A rev 3 5.6.2.1.3 key check */
+ 		} else {
++			MPI val_pct;
++
+ 			if (dh_is_pubkey_valid(ctx, val)) {
+ 				ret = -EAGAIN;
+ 				goto err_free_val;
+ 			}
++
++			/*
++			 * SP800-56Arev3, 5.6.2.1.4: ("Owner Assurance
++			 * of Pair-wise Consistency"): recompute the
++			 * public key and check if the results match.
++			 */
++			val_pct = mpi_alloc(0);
++			if (!val_pct) {
++				ret = -ENOMEM;
++				goto err_free_val;
++			}
++
++			ret = _compute_val(ctx, base, val_pct);
++			if (ret) {
++				mpi_free(val_pct);
++				goto err_free_val;
++			}
++
++			if (mpi_cmp(val, val_pct) != 0) {
++				fips_fail_notify();
++				panic("dh: pair-wise consistency test failed\n");
++			}
++			mpi_free(val_pct);
+ 		}
+ 	}
+ 
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 9204e6edb426..5c10baf70071 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -1270,13 +1270,14 @@ static int drbg_generate(struct drbg_state *drbg,
+  * Wrapper around drbg_generate which can pull arbitrary long strings
+  * from the DRBG without hitting the maximum request limitation.
+  *
+- * Parameters: see drbg_generate
++ * Parameters: see drbg_generate, except @reseed, which triggers reseeding
+  * Return codes: see drbg_generate -- if one drbg_generate request fails,
+  *		 the entire drbg_generate_long request fails
+  */
+ static int drbg_generate_long(struct drbg_state *drbg,
+ 			      unsigned char *buf, unsigned int buflen,
+-			      struct drbg_string *addtl)
++			      struct drbg_string *addtl,
++			      bool reseed)
+ {
+ 	unsigned int len = 0;
+ 	unsigned int slice = 0;
+@@ -1286,6 +1287,8 @@ static int drbg_generate_long(struct drbg_state *drbg,
+ 		slice = ((buflen - len) / drbg_max_request_bytes(drbg));
+ 		chunk = slice ? drbg_max_request_bytes(drbg) : (buflen - len);
+ 		mutex_lock(&drbg->drbg_mutex);
++		if (reseed)
++			drbg->seeded = DRBG_SEED_STATE_UNSEEDED;
+ 		err = drbg_generate(drbg, buf + len, chunk, addtl);
+ 		mutex_unlock(&drbg->drbg_mutex);
+ 		if (0 > err)
+@@ -1687,6 +1690,7 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+ 	struct drbg_state *drbg = crypto_rng_ctx(tfm);
+ 	struct drbg_string *addtl = NULL;
+ 	struct drbg_string string;
++	int err;
+ 
+ 	if (slen) {
+ 		/* linked list variable is now local to allow modification */
+@@ -1694,7 +1698,15 @@ static int drbg_kcapi_random(struct crypto_rng *tfm,
+ 		addtl = &string;
+ 	}
+ 
+-	return drbg_generate_long(drbg, dst, dlen, addtl);
++	err = drbg_generate_long(drbg, dst, dlen, addtl,
++				 (crypto_tfm_get_flags(crypto_rng_tfm(tfm)) &
++				  CRYPTO_TFM_REQ_NEED_RESEED) ==
++				 CRYPTO_TFM_REQ_NEED_RESEED);
++
++	crypto_tfm_clear_flags(crypto_rng_tfm(tfm),
++			       CRYPTO_TFM_REQ_NEED_RESEED);
++
++	return err;
+ }
+ 
+ /*
+diff --git a/crypto/rng.c b/crypto/rng.c
+index 1d4b9177bad4..d9ca86086946 100644
+--- a/crypto/rng.c
++++ b/crypto/rng.c
+@@ -12,10 +12,13 @@
+ #include <linux/atomic.h>
+ #include <linux/cryptouser.h>
+ #include <linux/err.h>
++#include <linux/fips.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/random.h>
++#include <linux/sched.h>
++#include <linux/sched/signal.h>
+ #include <linux/seq_file.h>
+ #include <linux/slab.h>
+ #include <linux/string.h>
+@@ -23,7 +26,9 @@
+ 
+ #include "internal.h"
+ 
+-static DEFINE_MUTEX(crypto_default_rng_lock);
++static ____cacheline_aligned_in_smp DEFINE_MUTEX(crypto_reseed_rng_lock);
++static struct crypto_rng *crypto_reseed_rng;
++static ____cacheline_aligned_in_smp DEFINE_MUTEX(crypto_default_rng_lock);
+ static struct crypto_rng *crypto_default_rng;
+ static int crypto_default_rng_refcnt;
+ 
+@@ -105,31 +110,37 @@ struct crypto_rng *crypto_alloc_rng(const char *alg_name, u32 type, u32 mask)
+ }
+ EXPORT_SYMBOL_GPL(crypto_alloc_rng);
+ 
+-static int crypto_get_default_rng(void)
++static int crypto_get_rng(struct crypto_rng **rngp)
+ {
+ 	struct crypto_rng *rng;
+ 	int err;
+ 
+-	mutex_lock(&crypto_default_rng_lock);
+-	if (!crypto_default_rng) {
++	if (!*rngp) {
+ 		rng = crypto_alloc_rng("stdrng", 0, 0);
+ 		err = PTR_ERR(rng);
+ 		if (IS_ERR(rng))
+-			goto unlock;
++			return err;
+ 
+ 		err = crypto_rng_reset(rng, NULL, crypto_rng_seedsize(rng));
+ 		if (err) {
+ 			crypto_free_rng(rng);
+-			goto unlock;
++			return err;
+ 		}
+ 
+-		crypto_default_rng = rng;
++		*rngp = rng;
+ 	}
+ 
+-	crypto_default_rng_refcnt++;
+-	err = 0;
++	return 0;
++}
+ 
+-unlock:
++static int crypto_get_default_rng(void)
++{
++	int err;
++
++	mutex_lock(&crypto_default_rng_lock);
++	err = crypto_get_rng(&crypto_default_rng);
++	if (!err)
++		crypto_default_rng_refcnt++;
+ 	mutex_unlock(&crypto_default_rng_lock);
+ 
+ 	return err;
+@@ -157,24 +168,33 @@ int __crypto_stdrng_get_bytes(void *buf, unsigned int len)
+ EXPORT_SYMBOL_GPL(__crypto_stdrng_get_bytes);
+ 
+ #if defined(CONFIG_CRYPTO_RNG) || defined(CONFIG_CRYPTO_RNG_MODULE)
+-int crypto_del_default_rng(void)
++static int crypto_del_rng(struct crypto_rng **rngp, int *refcntp,
++		      struct mutex *lock)
+ {
+ 	int err = -EBUSY;
+ 
+-	mutex_lock(&crypto_default_rng_lock);
+-	if (crypto_default_rng_refcnt)
++	mutex_lock(lock);
++	if (refcntp && *refcntp)
+ 		goto out;
+ 
+-	crypto_free_rng(crypto_default_rng);
+-	crypto_default_rng = NULL;
++	crypto_free_rng(*rngp);
++	*rngp = NULL;
+ 
+ 	err = 0;
+ 
+ out:
+-	mutex_unlock(&crypto_default_rng_lock);
++	mutex_unlock(lock);
+ 
+ 	return err;
+ }
++
++int crypto_del_default_rng(void)
++{
++	return crypto_del_rng(&crypto_default_rng, &crypto_default_rng_refcnt,
++			      &crypto_default_rng_lock) ?:
++	       crypto_del_rng(&crypto_reseed_rng, NULL,
++			      &crypto_reseed_rng_lock);
++}
+ EXPORT_SYMBOL_GPL(crypto_del_default_rng);
+ #endif
+ 
+@@ -232,5 +252,108 @@ void crypto_unregister_rngs(struct rng_alg *algs, int count)
+ }
+ EXPORT_SYMBOL_GPL(crypto_unregister_rngs);
+ 
++static ssize_t crypto_devrandom_read_iter(struct iov_iter *iter, bool reseed)
++{
++	struct crypto_rng *rng;
++	u8 tmp[256];
++	ssize_t ret;
++
++	if (unlikely(!iov_iter_count(iter)))
++		return 0;
++
++	if (reseed) {
++		u32 flags = 0;
++
++		/* If reseeding is requested, acquire a lock on
++		 * crypto_reseed_rng so it is not swapped out until
++		 * the initial random bytes are generated.
++		 *
++		 * The algorithm implementation is also protected with
++		 * a separate mutex (drbg->drbg_mutex) around the
++		 * reseed-and-generate operation.
++		 */
++		mutex_lock(&crypto_reseed_rng_lock);
++
++		/* If crypto_default_rng is not set, it will be seeded
++		 * at creation in __crypto_get_default_rng and thus no
++		 * reseeding is needed.
++		 */
++		if (crypto_reseed_rng)
++			flags |= CRYPTO_TFM_REQ_NEED_RESEED;
++
++		ret = crypto_get_rng(&crypto_reseed_rng);
++		if (ret) {
++			mutex_unlock(&crypto_reseed_rng_lock);
++			return ret;
++		}
++
++		rng = crypto_reseed_rng;
++		crypto_tfm_set_flags(crypto_rng_tfm(rng), flags);
++	} else {
++		ret = crypto_get_default_rng();
++		if (ret)
++			return ret;
++		rng = crypto_default_rng;
++	}
++
++	for (;;) {
++		size_t i, copied;
++		int err;
++
++		i = min_t(size_t, iov_iter_count(iter), sizeof(tmp));
++		err = crypto_rng_get_bytes(rng, tmp, i);
++		if (err) {
++			ret = ret ?: err;
++			break;
++		}
++
++		copied = copy_to_iter(tmp, i, iter);
++		ret += copied;
++		if (!iov_iter_count(iter) || copied != i)
++			break;
++
++		BUILD_BUG_ON(PAGE_SIZE % sizeof(tmp) != 0);
++		if (ret % PAGE_SIZE == 0) {
++			if (signal_pending(current))
++				break;
++			cond_resched();
++		}
++	}
++
++	if (reseed)
++		mutex_unlock(&crypto_reseed_rng_lock);
++	else
++		crypto_put_default_rng();
++	memzero_explicit(tmp, sizeof(tmp));
++	return ret ? ret : -EFAULT;
++}
++
++static const struct random_extrng crypto_devrandom_rng = {
++	.extrng_read_iter = crypto_devrandom_read_iter,
++	.owner = THIS_MODULE,
++};
++
++static int __init crypto_rng_init(void)
++{
++	int err;
++
++	if (fips_enabled) {
++		err = crypto_get_default_rng();
++		if (err)
++			return err;
++		crypto_put_default_rng();
++		random_register_extrng(&crypto_devrandom_rng);
++	}
++	return 0;
++}
++
++static void __exit crypto_rng_exit(void)
++{
++	random_unregister_extrng();
++}
++
++late_initcall(crypto_rng_init);
++module_exit(crypto_rng_exit);
++
+ MODULE_LICENSE("GPL");
+ MODULE_DESCRIPTION("Random Number Generator");
+diff --git a/crypto/seqiv.c b/crypto/seqiv.c
+index 678bb4145d78..fcc059e7d3db 100644
+--- a/crypto/seqiv.c
++++ b/crypto/seqiv.c
+@@ -123,6 +123,19 @@ static int seqiv_aead_decrypt(struct aead_request *req)
+ 	return crypto_aead_decrypt(subreq);
+ }
+ 
++static int aead_init_seqiv(struct crypto_aead *aead)
++{
++	int err;
++
++	err = aead_init_geniv(aead);
++	if (err)
++		return err;
++
++	crypto_aead_set_flags(aead, CRYPTO_TFM_FIPS_COMPLIANCE);
++
++	return 0;
++}
++
+ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
+ {
+ 	struct aead_instance *inst;
+@@ -140,7 +153,7 @@ static int seqiv_aead_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	inst->alg.encrypt = seqiv_aead_encrypt;
+ 	inst->alg.decrypt = seqiv_aead_decrypt;
+ 
+-	inst->alg.init = aead_init_geniv;
++	inst->alg.init = aead_init_seqiv;
+ 	inst->alg.exit = aead_exit_geniv;
+ 
+ 	inst->alg.base.cra_ctxsize = sizeof(struct aead_geniv_ctx);
 diff --git a/crypto/sig.c b/crypto/sig.c
 index beba745b6405..fd41f6d3abf9 100644
 --- a/crypto/sig.c
@@ -495,6 +867,217 @@ index 869ac87a4b6a..64908c1ae88f 100644
  	mutex_lock(&ipmi_interfaces_mutex);
  	rv = ipmi_register_driver();
  	mutex_unlock(&ipmi_interfaces_mutex);
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index b4da1fb976c1..1e112e2b405b 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -51,9 +51,11 @@
+ #include <linux/completion.h>
+ #include <linux/uuid.h>
+ #include <linux/uaccess.h>
++#include <linux/rcupdate.h>
+ #include <linux/suspend.h>
+ #include <linux/siphash.h>
+ #include <linux/sched/isolation.h>
++#include <linux/fips.h>
+ #include <crypto/chacha.h>
+ #include <crypto/blake2s.h>
+ #include <vdso/datapage.h>
+@@ -320,6 +322,11 @@ static void crng_fast_key_erasure(u8 key[CHACHA_KEY_SIZE],
+ 	memzero_explicit(first_block, sizeof(first_block));
+ }
+ 
++/*
++ * Hook for external RNG.
++ */
++static const struct random_extrng __rcu *extrng;
++
+ /*
+  * This function returns a ChaCha state that you may use for generating
+  * random data. It also returns up to 32 bytes on its own of random data
+@@ -732,7 +739,8 @@ static void __cold _credit_init_bits(size_t bits)
+ 			queue_work(system_dfl_wq, &set_ready);
+ 		atomic_notifier_call_chain(&random_ready_notifier, 0, NULL);
+ 		if (IS_ENABLED(CONFIG_VDSO_GETRANDOM))
+-			WRITE_ONCE(vdso_k_rng_data->is_ready, true);
++			if (!fips_enabled)
++				WRITE_ONCE(vdso_k_rng_data->is_ready, true);
+ 		wake_up_interruptible(&crng_init_wait);
+ 		kill_fasync(&fasync, SIGIO, POLL_IN);
+ 		pr_notice("crng init done\n");
+@@ -751,6 +759,9 @@ static void __cold _credit_init_bits(size_t bits)
+ }
+ 
+ 
++static const struct file_operations extrng_random_fops;
++static const struct file_operations extrng_urandom_fops;
++
+ /**********************************************************************
+  *
+  * Entropy collection routines.
+@@ -967,6 +978,19 @@ void __init add_bootloader_randomness(const void *buf, size_t len)
+ 		credit_init_bits(len * 8);
+ }
+ 
++void random_register_extrng(const struct random_extrng *rng)
++{
++	rcu_assign_pointer(extrng, rng);
++}
++EXPORT_SYMBOL_GPL(random_register_extrng);
++
++void random_unregister_extrng(void)
++{
++	RCU_INIT_POINTER(extrng, NULL);
++	synchronize_rcu();
++}
++EXPORT_SYMBOL_GPL(random_unregister_extrng);
++
+ #if IS_ENABLED(CONFIG_VMGENID)
+ static BLOCKING_NOTIFIER_HEAD(vmfork_chain);
+ 
+@@ -1381,6 +1405,7 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+ {
+ 	struct iov_iter iter;
+ 	int ret;
++	const struct random_extrng *rng;
+ 
+ 	if (flags & ~(GRND_NONBLOCK | GRND_RANDOM | GRND_INSECURE))
+ 		return -EINVAL;
+@@ -1392,6 +1417,21 @@ SYSCALL_DEFINE3(getrandom, char __user *, ubuf, size_t, len, unsigned int, flags
+ 	if ((flags & (GRND_INSECURE | GRND_RANDOM)) == (GRND_INSECURE | GRND_RANDOM))
+ 		return -EINVAL;
+ 
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (rng) {
++		ret = import_ubuf(ITER_DEST, ubuf, len, &iter);
++		if (unlikely(ret))
++			return ret;
++		ret = rng->extrng_read_iter(&iter, !!(flags & GRND_RANDOM));
++		module_put(rng->owner);
++		return ret;
++	}
++
+ 	if (!crng_ready() && !(flags & GRND_INSECURE)) {
+ 		if (flags & GRND_NONBLOCK)
+ 			return -EAGAIN;
+@@ -1412,6 +1452,12 @@ static __poll_t random_poll(struct file *file, poll_table *wait)
+ 	return crng_ready() ? EPOLLIN | EPOLLRDNORM : EPOLLOUT | EPOLLWRNORM;
+ }
+ 
++static __poll_t extrng_poll(struct file *file, poll_table * wait)
++{
++	/* extrng pool is always full, always read, no writes */
++	return EPOLLIN | EPOLLRDNORM;
++}
++
+ static ssize_t write_pool_user(struct iov_iter *iter)
+ {
+ 	u8 block[BLAKE2S_BLOCK_SIZE];
+@@ -1552,7 +1598,58 @@ static int random_fasync(int fd, struct file *filp, int on)
+ 	return fasync_helper(fd, filp, on, &fasync);
+ }
+ 
++static int random_open(struct inode *inode, struct file *filp)
++{
++	const struct random_extrng *rng;
++
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (!rng)
++		return 0;
++
++	filp->f_op = &extrng_random_fops;
++	filp->private_data = rng->owner;
++
++	return 0;
++}
++
++static int urandom_open(struct inode *inode, struct file *filp)
++{
++	const struct random_extrng *rng;
++
++	rcu_read_lock();
++	rng = rcu_dereference(extrng);
++	if (rng && !try_module_get(rng->owner))
++		rng = NULL;
++	rcu_read_unlock();
++
++	if (!rng)
++		return 0;
++
++	filp->f_op = &extrng_urandom_fops;
++	filp->private_data = rng->owner;
++
++	return 0;
++}
++
++static int extrng_release(struct inode *inode, struct file *filp)
++{
++	module_put(filp->private_data);
++	return 0;
++}
++
++static ssize_t
++extrng_read_iter(struct kiocb *kiocb, struct iov_iter *iter)
++{
++	return rcu_dereference_raw(extrng)->extrng_read_iter(iter, false);
++}
++
+ const struct file_operations random_fops = {
++	.open  = random_open,
+ 	.read_iter = random_read_iter,
+ 	.write_iter = random_write_iter,
+ 	.poll = random_poll,
+@@ -1565,6 +1662,7 @@ const struct file_operations random_fops = {
+ };
+ 
+ const struct file_operations urandom_fops = {
++	.open  = urandom_open,
+ 	.read_iter = urandom_read_iter,
+ 	.write_iter = random_write_iter,
+ 	.unlocked_ioctl = random_ioctl,
+@@ -1575,6 +1673,32 @@ const struct file_operations urandom_fops = {
+ 	.splice_write = iter_file_splice_write,
+ };
+ 
++static const struct file_operations extrng_random_fops = {
++	.open  = random_open,
++	.read_iter  = extrng_read_iter,
++	.write_iter = random_write_iter,
++	.poll  = extrng_poll,
++	.unlocked_ioctl = random_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
++	.fasync = random_fasync,
++	.llseek = noop_llseek,
++	.release = extrng_release,
++	.splice_read = copy_splice_read,
++	.splice_write = iter_file_splice_write,
++};
++
++static const struct file_operations extrng_urandom_fops = {
++	.open  = urandom_open,
++	.read_iter  = extrng_read_iter,
++	.write_iter = random_write_iter,
++	.unlocked_ioctl = random_ioctl,
++	.compat_ioctl = compat_ptr_ioctl,
++	.fasync = random_fasync,
++	.llseek = noop_llseek,
++	.release = extrng_release,
++	.splice_read = copy_splice_read,
++	.splice_write = iter_file_splice_write,
++};
+ 
+ /********************************************************************
+  *
 diff --git a/drivers/firmware/efi/Makefile b/drivers/firmware/efi/Makefile
 index 8efbcf699e4f..96d5a1ca981d 100644
 --- a/drivers/firmware/efi/Makefile
@@ -1186,6 +1769,20 @@ index 24960ba9caa9..32597cdb72ef 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/linux/crypto.h b/include/linux/crypto.h
+index a2137e19be7d..df268ca70170 100644
+--- a/include/linux/crypto.h
++++ b/include/linux/crypto.h
+@@ -151,6 +151,9 @@
+ #define CRYPTO_TFM_REQ_MAY_SLEEP	0x00000200
+ #define CRYPTO_TFM_REQ_MAY_BACKLOG	0x00000400
+ #define CRYPTO_TFM_REQ_ON_STACK		0x00000800
++#define CRYPTO_TFM_REQ_NEED_RESEED	0x00001000
++
++#define CRYPTO_TFM_FIPS_COMPLIANCE	0x80000000
+ 
+ /*
+  * Miscellaneous stuff.
 diff --git a/include/linux/efi.h b/include/linux/efi.h
 index ccbc35479684..8eb9a1276ba7 100644
 --- a/include/linux/efi.h
@@ -1254,6 +1851,34 @@ index ccbc35479684..8eb9a1276ba7 100644
  static inline
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
+diff --git a/include/linux/random.h b/include/linux/random.h
+index 8a8064dc3970..3238fab8f749 100644
+--- a/include/linux/random.h
++++ b/include/linux/random.h
+@@ -9,6 +9,13 @@
+ 
+ #include <uapi/linux/random.h>
+ 
++struct iov_iter;
++
++struct random_extrng {
++	ssize_t (*extrng_read_iter)(struct iov_iter *iter, bool reseed);
++	struct module *owner;
++};
++
+ struct notifier_block;
+ 
+ void add_device_randomness(const void *buf, size_t len);
+@@ -135,6 +142,9 @@ int random_prepare_cpu(unsigned int cpu);
+ int random_online_cpu(unsigned int cpu);
+ #endif
+ 
++void random_register_extrng(const struct random_extrng *rng);
++void random_unregister_extrng(void);
++
+ #ifndef MODULE
+ extern const struct file_operations random_fops, urandom_fops;
+ #endif
 diff --git a/include/linux/rmi.h b/include/linux/rmi.h
 index ab7eea01ab42..fff7c5f737fc 100644
 --- a/include/linux/rmi.h
@@ -1405,6 +2030,88 @@ index 8d46886d2cca..14a9cdff942b 100644
  static struct security_hook_list lockdown_hooks[] __ro_after_init = {
  	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
  };
+diff --git a/tools/testing/selftests/bpf/DENYLIST.rhel b/tools/testing/selftests/bpf/DENYLIST.rhel
+new file mode 100644
+index 000000000000..9424a83c6f48
+--- /dev/null
++++ b/tools/testing/selftests/bpf/DENYLIST.rhel
+@@ -0,0 +1,76 @@
++# Tests that need CONFIG_FUNCTION_ERROR_INJECTION
++# Typical observed errors are:
++#     <...some function...> is not sleepable
++#     <...some function...> is not modifiable
++cgrp_local_storage/yes_rcu_lock
++cgrp_local_storage/no_rcu_lock
++cgrp_local_storage/cgrp1_yes_rcu_lock
++cgrp_local_storage/cgrp1_no_rcu_lock
++compute_live_registers/addr_space_cast
++dynptr/test_read_write
++dynptr/test_dynptr_data
++dynptr/test_dynptr_copy
++dynptr/test_dynptr_copy_xdp
++dynptr/test_dynptr_memset_zero
++dynptr/test_dynptr_memset_notzero
++dynptr/test_dynptr_memset_zero_offset
++dynptr/test_dynptr_memset_zero_adjusted
++dynptr/test_dynptr_memset_overflow
++dynptr/test_dynptr_memset_overflow_offset
++dynptr/test_dynptr_memset_readonly
++dynptr/test_dynptr_memset_xdp_chunks
++dynptr/test_dynptr_skb_meta_data
++dynptr/test_dynptr_skb_meta_flags
++dynptr/test_ringbuf
++dynptr/test_skb_readonly
++dynptr/test_dynptr_skb_data
++dynptr/test_adjust
++dynptr/test_adjust_err
++dynptr/test_zero_size_dynptr
++dynptr/test_dynptr_is_null
++dynptr/test_dynptr_is_rdonly
++dynptr/test_dynptr_clone
++dynptr/test_dynptr_skb_no_buff
++dynptr/test_dynptr_skb_strcmp
++dynptr/test_dynptr_skb_tp_btf
++dynptr/test_probe_read_user_dynptr
++dynptr/test_probe_read_kernel_dynptr
++dynptr/test_probe_read_user_str_dynptr
++dynptr/test_probe_read_kernel_str_dynptr
++dynptr/test_copy_from_user_dynptr
++dynptr/test_copy_from_user_str_dynptr
++dynptr/test_copy_from_user_task_dynptr
++dynptr/test_copy_from_user_task_str_dynptr
++irq/irq_sleepable_helper
++irq/irq_sleepable_kfunc
++iters/iter_css_task_for_each_sleep
++iters/iter_ret_rcu_test_protected
++iters/iter_ret_rcu_test_type
++iters/iter_ret_rcu_test_protected_nostruct
++iters/iter_ret_rcu_test_type_nostruct
++iters/task
++iters/css
++iters/iter_tasks_without_lock
++iters/iter_css_without_lock
++iters/iter_tasks_lock_and_unlock
++iters/iter_css_lock_and_unlock
++map_excl/map_excl_allowed
++map_in_map/sleepable_acc_map_in_array
++map_in_map/sleepable_acc_map_in_htab
++mem_rdonly_untrusted/helper_param_not_ok
++module_attach
++preempt_lock/preempt_sleepable_helper
++preempt_lock/preempt_sleepable_kfunc
++rcu_read_lock/success
++rcu_read_lock/rcuptr_acquire
++read_vsyscall
++refcounted_kptr/rbtree_sleepable_rcu
++refcounted_kptr/rbtree_sleepable_rcu_no_explicit_rcu_lock
++refcounted_kptr_fail/rbtree_fail_sleepable_lock_across_rcu
++test_lsm/lsm_basic
++verifier_global_subprogs/arg_tag_ctx_fmod_ret
++
++kprobe_multi_test/attach_override                # needs CONFIG_BPF_KPROBE_OVERRIDE
++libbpf_probe_prog_types/BPF_PROG_TYPE_LIRC_MODE2 # needs CONFIG_BPF_LIRC_MODE2
++test_bpffs                                       # needs CONFIG_BPF_PRELOAD
++tunnel                                           # needs CONFIG_NET_FOU
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
 index 6ef6872adbc3..bd76422a1f13 100644
 --- a/tools/testing/selftests/bpf/Makefile
