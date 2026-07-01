@@ -20,7 +20,7 @@
 %global vc_id  e22863828f65f5d166796a8950a8bed862792e5d
 
 Name:           wine-mono
-Version:        11.1.0
+Version:        11.2.0
 Release:        100%{?dist}
 Summary:        Mono library required for Wine
 
@@ -179,6 +179,9 @@ chmod -x %{buildroot}%{_datadir}/wine/mono/%{name}-%{version}/lib/mono/msbuild/C
 
 
 %changelog
+* Tue Jun 30 2026 Phantom X <megaphantomx at hotmail dot com> - 11.2.0-100
+- 11.2.0
+
 * Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 11.1.0-100
 - 11.1.0
 

@@ -1,7 +1,7 @@
-%global commit 78a4aa0f9b658cd7466c33bf3059d8e6f2d499c8
+%global commit 0c1585cf5bb9a29a5c480ee04d5529b8fc236044
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260214
-%bcond snapshot 0
+%global date 20260630
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -45,7 +45,7 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  11.1.0
+%global winemono  11.2.0
 %global winevulkan 1.4.353
 %global opencl    1
 
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.11
+%global wine_stagingver 11.12
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -126,7 +126,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.11
+Version:        11.12
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -205,6 +205,8 @@ Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.pat
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59317
 Patch709:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
+Patch710:        %{whq_murl}/-/merge_requests/11265.patch#/%{name}-whq-mr11265.patch
+Patch711:        https://github.com/FNA-XNA/FAudio/commit/12e46eb4058eef843147c7bfd4be7ac5a67d3e75.patch#/%{name}-gh-faudio-12e46eb.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -250,6 +252,7 @@ Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
+Patch5001:      0001-staging-winex11-Window_Style-fixup.patch
 
 # END of staging patches
 
@@ -806,6 +809,8 @@ This package adds the opencl driver for wine.
 %patch -P 707 -p1
 %patch -P 708 -p1
 %patch -P 709 -p1 -R
+%patch -P 710 -p1
+%patch -P 711 -p1 -d libs/faudio
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -816,6 +821,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1001 -p1
 
 %patch -P 5000 -p1
+%patch -P 5001 -p1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
@@ -1535,6 +1541,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/dpwsockx.dll
 %{_libdir}/wine/%{winepedirs}/drmclien.dll
 %{_libdir}/wine/%{winepedirs}/dsdmo.dll
+%{_libdir}/wine/%{winepedirs}/dsrole.dll
 %{_libdir}/wine/%{winepedirs}/dsound.dll
 %{_libdir}/wine/%{winepedirs}/dsquery.dll
 %{_libdir}/wine/%{winepedirs}/dssenh.dll
@@ -2506,6 +2513,9 @@ fi
 
 
 %changelog
+* Tue Jun 30 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.12-100.20260630git0c1585c
+- 11.12
+
 * Sun Jun 14 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.11-100
 - 11.11
 

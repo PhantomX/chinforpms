@@ -9,9 +9,9 @@
 %{!?firewalld_reload:%global firewalld_reload test -f /usr/bin/firewall-cmd && firewall-cmd --reload --quiet || :}
 
 Name:           steam
-Version:        1.0.0.85
+Version:        1.0.0.87
 Epoch:          1
-Release:        102%{?dist}
+Release:        100%{?dist}
 Summary:        Installer for the Steam software distribution service
 
 # Redistribution and repackaging for Linux is allowed, see license file. udev rules are MIT.
@@ -101,7 +101,7 @@ Requires:       pipewire-libs
 Requires:       pipewire-libs(x86-32)
 Requires:       pulseaudio-libs
 Requires:       pulseaudio-libs(x86-32)
-%if 0%{?fedora}
+%if 0%{?fedora} || 0%{?rhel} >= 10
 Requires:       SDL3
 Requires:       SDL3(x86-32)
 %endif
@@ -237,6 +237,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appstream_id
 
 
 %changelog
+* Mon Jun 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.87-100
+- 1.0.0.87
+
 * Sun Jun 07 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.0.0.85-102
 - RPMFusion sync
 

@@ -1,0 +1,25 @@
+From 726039b672b9fe99358c15a5370caa1df9e0083f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 30 Jun 2026 19:21:10 -0300
+Subject: [PATCH] staging: winex11-Window_Style fixup
+
+---
+ ...1-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/patches/winex11-Window_Style/0001-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch b/patches/winex11-Window_Style/0001-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch
+index 4834b89..2b06303 100644
+--- a/patches/winex11-Window_Style/0001-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch
++++ b/patches/winex11-Window_Style/0001-winex11-Fix-handling-of-window-attributes-for-WS_EX_.patch
+@@ -24,7 +24,7 @@ index df5e2156b1c..660856495b0 100644
+ @@ -3197,7 +3197,7 @@ void X11DRV_WindowPosChanged( HWND hwnd, HWND insert_after, HWND owner_hint, UIN
+  
+      /* layered windows are mapped only once their attributes are set */
+-     if (data->pending_state.wm_state == WithdrawnState && (new_style & WS_VISIBLE) &&
++     if (data->desired_state.wm_state == WithdrawnState && (new_style & WS_VISIBLE) &&
+ -        (ex_style & WS_EX_LAYERED) && !data->layered && !IsRectEmpty( &new_rects->window ))
+ +        (ex_style & (WS_EX_LAYERED | WS_EX_COMPOSITED)) == WS_EX_LAYERED && !data->layered && !IsRectEmpty( &new_rects->window ))
+      {
+-- 
+2.54.0
+
