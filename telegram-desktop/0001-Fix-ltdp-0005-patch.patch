@@ -1,14 +1,14 @@
-From 52ee91d2e7059cf5656fd6743a8a9d890c3a8d35 Mon Sep 17 00:00:00 2001
+From 0fa76da534ca1d614798fea5e0453f1a5290e3c5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 1 Apr 2026 18:02:51 -0300
 Subject: [PATCH] Fix ltdp 0005 patch
 
 ---
- ltdp-0005-Option-to-disable-stories.patch | 48 +++++++++++------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
+ ltdp-0005-Option-to-disable-stories.patch | 46 +++++++++++------------
+ 1 file changed, 23 insertions(+), 23 deletions(-)
 
 diff --git a/ltdp-0005-Option-to-disable-stories.patch b/ltdp-0005-Option-to-disable-stories.patch
-index 665f5d3..ca13087 100644
+index 665f5d3..9f51595 100644
 --- a/ltdp-0005-Option-to-disable-stories.patch
 +++ b/ltdp-0005-Option-to-disable-stories.patch
 @@ -5,16 +5,16 @@ index 0d9671f..f77cf4e 100644
@@ -99,23 +99,22 @@ index 665f5d3..ca13087 100644
 + #include "core/sandbox.h"
   #include "chat_helpers/tabbed_panel.h"
  +#include "data/data_stories.h"
++ #include "dialogs/dialogs_entry.h"
   #include "dialogs/dialogs_widget.h"
 - #include "info/profile/info_profile_actions.h"
 - #include "lang/lang_keys.h"
 -@@ -140,6 +141,7 @@ void SetupExperimental(
 - 				: rpl::producer<>()));
 + #include "dialogs/ui/dialogs_layout.h"
-+ #include "history/history_item_components.h"
 +@@ -203,6 +204,7 @@ void SetupExperimental(
 + 			registerHighlight);
   	};
--
-+ 
+ 
  +	addToggle(Data::kOptionDisableStories);
   	addToggle(ChatHelpers::kOptionTabbedPanelShowOnClick);
   	addToggle(Dialogs::kOptionForumHideChatsList);
 - 	addToggle(Core::kOptionFractionalScalingEnabled);
-+ 	addToggle(Dialogs::Ui::kOptionDialogsMuteIcon);
++ 	addToggle(Dialogs::kOptionDialogsUnreadOnTop);
 -- 
-2.53.0
+2.55.0
 

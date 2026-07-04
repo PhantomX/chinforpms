@@ -40,7 +40,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        6.9.3
+Version:        6.9.4
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -73,9 +73,6 @@ Source0:        %{url}/releases/download/v%{version}/%{srcname}-%{version}-full.
 Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 %endif
 Source20:       thunar-sendto-%{binname}.desktop
-
-Patch10:        %{url}/pull/30824.patch#/%{name}-gh-pr30824.patch
-Patch1000:      %{da_url}/cmake_helpers/pull/439.patch#/%{name}-gh-cmake_helpers-pr439.patch
 
 Patch100:       %{name}-build-fix.patch
 Patch101:       https://github.com/rpmfusion/%{name}/raw/453a609efd0a0445a56f2a91146f41c0227db7c0/findprotobuf_fix.patch#/%{name}-gh-findprotobuf_fix.patch
@@ -240,8 +237,6 @@ sed -e 's|@CMAKE_INSTALL_FULL_BINDIR@|%{_bindir}|g' -i lib/xdg/%{appname}.servic
 %else
 %autopatch -p1 -M 999
 
-%patch -P 1000 -p1 -d cmake
-
 %if %{with ltdp}
 %dnl %patch -P 1010 -p1
 cp %{P:1010} .
@@ -392,6 +387,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Jul 03 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.9.4-100
+- 6.9.4
+
 * Sat Jun 13 2026 Phantom X <megaphantomx at hotmail dot com> - 1:6.9.3-100
 - 6.9.3
 
