@@ -18,8 +18,8 @@
 %global vc_url  https://github.com/ares-emulator/%{name}
 
 Name:           ares
-Version:        147
-Release:        2%{?dist}
+Version:        148
+Release:        1%{?dist}
 Summary:        Multi-system emulator
 
 License:        ISC AND GPL-3.0-only AND BSD-2-Clause AND BSD-3-Clause AND MIT
@@ -147,6 +147,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jul 05 2026 Phantom X <megaphantomx at hotmail dot com> - 148-1
+- 148
+
 * Sat Mar 21 2026 Phantom X <megaphantomx at hotmail dot com> - 147-2
 - Remove libchdr patch
 

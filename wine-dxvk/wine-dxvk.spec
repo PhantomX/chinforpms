@@ -44,7 +44,7 @@ BuildArch:      noarch
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
-%global commit8 aa18e0b062ae9485c9188db12ff77122f51fc4d3
+%global commit8 6da3ed38834b0ae3ae7f4267568181dabc7104bc
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 dxbc-spirv
 
@@ -76,7 +76,7 @@ BuildArch:      noarch
 %global valve_url https://github.com/ValveSoftware/dxvk
 
 Name:           wine-%{pkgname}
-Version:        3.0
+Version:        3.0.1
 Release:        100%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
@@ -314,6 +314,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Sun Jul 05 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.0.1-100
+- 3.0.1
+
 * Thu Jun 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.0-100
 - 3.0
 

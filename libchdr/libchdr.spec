@@ -1,6 +1,6 @@
-%global commit d79b18dbc3036d900f7af711c2ed20756cfa7b92
+%global commit 04a177ee3cea055d93da2d5839d3413168837c6f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260606
+%global date 20260620
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -11,8 +11,8 @@
 %global miniz_ver 3.1.1
 
 Name:           libchdr
-Version:        0.2
-Release:        31%{?dist}
+Version:        0.3.0
+Release:        1%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -21,7 +21,7 @@ URL:            https://github.com/rtissera/%{name}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/%{version}/%{name}-%{version}.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch10:        0001-Shared-library-fixes.patch
@@ -93,6 +93,9 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
 
 
 %changelog
+* Sun Jul 05 2026 Phantom X <megaphantomx at hotmail dot com> - 0.3.0-1.20260620git04a177e
+- 0.3.0 version
+
 * Wed Nov 06 2024 Phantom X <megaphantomx at hotmail dot com> - 0.2-23.20240929gitaaca599
 - Patchset cleanup
 

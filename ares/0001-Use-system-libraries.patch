@@ -1,14 +1,14 @@
-From cdf02d46fef05b1d4d65b881e7cad69428de557c Mon Sep 17 00:00:00 2001
+From cf03b426c7dc51224ce20b354a147f05c3acee28 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Wed, 5 Feb 2025 20:31:44 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- thirdparty/CMakeLists.txt | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ thirdparty/CMakeLists.txt | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/thirdparty/CMakeLists.txt b/thirdparty/CMakeLists.txt
-index dd4c6fe..a82008d 100644
+index 614713d..f95f78f 100644
 --- a/thirdparty/CMakeLists.txt
 +++ b/thirdparty/CMakeLists.txt
 @@ -7,6 +7,14 @@ target_compile_options(sljit PRIVATE $<$<COMPILE_LANG_AND_ID:C,AppleClang,Clang,
@@ -24,8 +24,8 @@ index dd4c6fe..a82008d 100644
 +    target_link_libraries(chdr-static INTERFACE PkgConfig::libchdr)
 +  else()
    # lzma
-   add_subdirectory(libchdr/deps/lzma-24.05 EXCLUDE_FROM_ALL)
-   list(APPEND CHDR_LIBS lzma)
+   add_subdirectory(libchdr/deps/lzma-25.01 EXCLUDE_FROM_ALL)
+   list(APPEND CHDR_INCLUDES lzma)
 @@ -56,6 +64,13 @@ if(ARES_ENABLE_CHD)
      chdr-static
      PRIVATE $<$<CXX_COMPILER_ID:Clang,AppleClang>:-Wno-unreachable-code -Wno-unused-function>
@@ -40,19 +40,16 @@ index dd4c6fe..a82008d 100644
  endif()
  
  add_library(
-@@ -107,12 +122,4 @@ add_library(qon STATIC qon/qon.cpp)
+@@ -108,9 +123,4 @@ add_library(qon STATIC qon/qon.cpp)
  set_target_properties(ymfm PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(tzxfile PROPERTIES FOLDER thirdparty PREFIX "")
  set_target_properties(sljit PROPERTIES FOLDER thirdparty PREFIX "")
 -if(ARES_ENABLE_CHD)
 -  set_target_properties(chdr-static PROPERTIES FOLDER thirdparty PREFIX "")
--  if(NOT WITH_SYSTEM_ZLIB)
--    set_target_properties(zlib PROPERTIES FOLDER thirdparty PREFIX "")
--  endif()
--  set_target_properties(lzma PROPERTIES FOLDER thirdparty PREFIX "")
--  set_target_properties(libzstd_static PROPERTIES FOLDER thirdparty PREFIX "")
+-  set_target_properties(miniz PROPERTIES FOLDER thirdparty PREFIX "")
+-  set_target_properties(zstd PROPERTIES FOLDER thirdparty PREFIX "")
 -endif()
  set_target_properties(qon PROPERTIES FOLDER thirdparty PREFIX "")
 -- 
-2.52.0
+2.55.0
 
