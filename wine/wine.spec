@@ -1,7 +1,7 @@
 %global commit 0c1585cf5bb9a29a5c480ee04d5529b8fc236044
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260630
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.12
+%global wine_stagingver 11.13
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -86,7 +86,7 @@
 %global ge_id 721dd76896b434fe3c1328ea533e0b25b4af04d5
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id beb819e62c7a3cbd2f3337e3ff5b63bc308a7640
+%global tkg_id 8359b3d56f3e6bea19f3cd7bf1351bb04caee6cc
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -126,7 +126,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.12
+Version:        11.13
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -206,7 +206,8 @@ Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.pat
 # https://bugs.winehq.org/show_bug.cgi?id=59317
 Patch709:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
 Patch710:        %{whq_murl}/-/merge_requests/11265.patch#/%{name}-whq-mr11265.patch
-Patch711:        https://github.com/FNA-XNA/FAudio/commit/12e46eb4058eef843147c7bfd4be7ac5a67d3e75.patch#/%{name}-gh-faudio-12e46eb.patch
+# https://bugs.winehq.org/show_bug.cgi?id=59472
+Patch711:        %{name}-bug59472.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -252,7 +253,6 @@ Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
-Patch5001:      0001-staging-winex11-Window_Style-fixup.patch
 
 # END of staging patches
 
@@ -810,7 +810,6 @@ This package adds the opencl driver for wine.
 %patch -P 708 -p1
 %patch -P 709 -p1 -R
 %patch -P 710 -p1
-%patch -P 711 -p1 -d libs/faudio
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -821,7 +820,6 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1001 -p1
 
 %patch -P 5000 -p1
-%patch -P 5001 -p1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
@@ -871,6 +869,7 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %endif
 %patch -P 1303 -p1
 %patch -P 1305 -p1
+%patch -P 711 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2513,6 +2512,9 @@ fi
 
 
 %changelog
+* Sat Jul 11 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.13-100
+- 11.13
+
 * Tue Jun 30 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.12-100.20260630git0c1585c
 - 11.12
 

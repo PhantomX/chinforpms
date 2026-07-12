@@ -13,11 +13,11 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 121586
+%global ffmpegcodec 8.1-149-Z-20260709
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        8.0.4033.57
+Version:        8.1.4087.48
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -41,7 +41,7 @@ Requires:       font(dejavusanscondensed)
 Requires:       font(dejavusanslight)
 Requires:       hicolor-icon-theme
 Requires:       vulkan-loader%{?_isa}
-Requires:       vivaldi-ffmpeg-codecs = %{ffmpegcodec}
+Requires:       vivaldi-ffmpeg-codecs = %( echo %{ffmpegcodec} | cut -d- -f1 )
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude_from ^%{_libdir}/%{name}/resources/.*
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Jul 09 2026 - 8.1.4087.48-1
+- 8.1.4087.48
+
 * Sat Jul 04 2026 - 8.0.4033.57-1
 - 8.0.4033.57
 

@@ -2,23 +2,23 @@
 
 %global debug_package %{nil}
 %global _build_id_links none
-%global __strip /bin/true
+%dnl %global __strip /bin/true
 
 %bcond snap 1
 
+%global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
 %ifarch aarch64
 %bcond snap 0
-%global snapid XXzVIXswXKHqlUATPqGCj2w2l7BxosS8
 %global parch arm64
-%global snaprev 113
-%global snap_ffmpeg_hash ca7ef22883d2eaf7297c5415dc403e6ffa3dadef445aea4b69570fe7b6a83895
+%global snaprev 116
+%global snap_ffmpeg_hash 2f556890447b128eecb308159a30457ef675f564fad7ddec819a001fd3677c3a
 %else
 %global parch amd64
-%global zipver 0.103.1
-%global snaprev 112
-%global snap_ffmpeg_hash 02080b664ba6f0b8df3b0ddfebc4832177356b247056512436d34c8750e374eb
-%global snap_ffmpeg_ver git-2026-03-16
-%global zip_ffmpeg_hash d7633f6fb36313b78545fe09dfea03960ce58bcfa2577c77020262a9ddbe9246
+%global zipver 0.112.0
+%global snaprev 117
+%global snap_ffmpeg_hash b2318b0b534714bfae044bcd96dc771a19134e57a94f2d43f2a4adefab7db398
+%global snap_ffmpeg_ver git-2026-05-18
+%global zip_ffmpeg_hash 6464f290a6ffb15afa93e540ded5adc1a92234fa11a1ed1f3886ca9707878c7b
 %global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %endif
 %if %{with snap}
@@ -33,8 +33,9 @@
 %global pkgdistro 0ubuntu0.18.04.1
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        121586
-Release:        2%{?dist}
+Version:        8.1
+Epoch:          1
+Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -53,6 +54,8 @@ BuildRequires:  gawk
 BuildRequires:  coreutils
 
 ExclusiveArch:  x86_64 aarch64
+
+Provides:       %{name} = %{version}
 
 %global __provides_exclude_from ^%{_libdir}/%{name}/.*
 %global __requires_exclude ^libffmpeg.so.*
@@ -89,6 +92,7 @@ if [ "${RHASH}" != "%{ffmpeg_hash}" ] ;then
 fi
 
 %build
+%__strip --strip-unneeded libffmpeg.so
 
 
 %install
@@ -103,6 +107,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{_libdir}/%{name}/libffmpeg.so
 
 
 %changelog
+* Thu Jul 09 2026 - 1:8.1-1
+- 8.1, bump Epoch
+
 * Tue Jun 16 2026 - 121586-2
 - Updated snap revision
 
