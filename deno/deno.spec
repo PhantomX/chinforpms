@@ -1,4 +1,4 @@
-# Binary packaging only, rust is hateful
+# Binary packaging only, rust and gn are hateful
 
 %global debug_package %{nil}
 %global _build_id_links none
@@ -7,7 +7,7 @@
 %global vc_id  02f6e49276bb4c03634af4aec4487a5a0a9dbebf
 
 Name:           deno
-Version:        2.7.14
+Version:        2.9.3
 Release:        1%{?dist}
 Summary:        A secure JavaScript and TypeScript runtime
 
@@ -63,6 +63,9 @@ install -pm0644 %{name}.zsh %{buildroot}%{zsh_completions_dir}/_%{name}
 
 
 %changelog
+* Wed Jul 15 2026 Phantom X <megaphantomx at hotmail dot com> - 2.9.3-1
+- 2.9.3
+
 * Sat May 09 2026 Phantom X <megaphantomx at hotmail dot com> - 2.7.14-1
 - 2.7.14
 

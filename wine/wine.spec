@@ -203,8 +203,6 @@ Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.p
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-# https://bugs.winehq.org/show_bug.cgi?id=59317
-Patch709:        %{whq_murl}/-/commit/8df796f0f8bd19e1f623b1ec5c67f51914af4eed.patch#/%{name}-whq-revert-8df796f.patch
 Patch710:        %{whq_murl}/-/merge_requests/11265.patch#/%{name}-whq-mr11265.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59472
 Patch711:        %{name}-bug59472.patch
@@ -808,7 +806,6 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
-%patch -P 709 -p1 -R
 %patch -P 710 -p1
 
 # setup and apply wine-staging patches
