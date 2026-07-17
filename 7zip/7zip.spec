@@ -21,10 +21,13 @@
 %endif
 %endif
 
+%global src_hash f048c8e8177cffebce566ff608d43a27
+%global src_pkg %{name}-free-%{version}.tar.xz
+
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        26.01
+Version:        26.02
 Release:        100%{?dist}
 Summary:        A file archiver
 
@@ -37,7 +40,7 @@ URL:            https://www.7-zip.org
 Source0:        %{url}/a/7z%{ver}-src.7z
 %else
 # Use Makefile to download
-Source0:        %{name}-free-%{version}.tar.xz
+Source0:        https://copr-dist-git.fedorainfracloud.org/repo/pkgs/phantomx/chinforpms/%{name}/%{src_pkg}/%{src_hash}/%{src_pkg}
 %endif
 Source1:        Makefile
 
@@ -189,6 +192,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 
 
 %changelog
+* Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.02-100
+- 26.02
+
 * Wed Apr 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.01-100
 - 26.01
 

@@ -9,7 +9,7 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        26.01
+Version:        26.02
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -156,6 +156,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 26.02-100
+- 26.02
+
 * Wed Apr 29 2026 Phantom X <megaphantomx at hotmail dot com> - 26.01-100
 - 26.01
 

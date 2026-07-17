@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 927e2492ef720d2223bd8b149a02af875e11c398
+%global commit cdbc43712bac68cd174f4c7305bfcd41d04db51c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260622
+%global date 20260716
 %bcond snapshot 1
 
 %global commit10 c8033ce9d039e7f9d134877c363397b3cfe20816
@@ -72,7 +72,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 1d363f3adceba9d1478230ede476a37b0dcdef24
+%global commit15 ac01707f552c611fbd135cc723b2682b3e7f80f2
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -80,7 +80,7 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 yaml-cpp
 
-%global commit17 008e03eac0ac1d5f85e16f5fcaefdda3fee75cb8
+%global commit17 0954f3f67f93b9f3aebd22eccf7b41b9696be087
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 Fusion
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.41.77
+Version:        0.0.41.143
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -268,6 +268,7 @@ BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-egl)
 BuildRequires:  pkgconfig(wayland-server)
 BuildRequires:  pkgconfig(x11)
+BuildRequires:  pkgconfig(xkbcommon-x11)
 %if %{with yamlcpp}
 BuildRequires:  cmake(yaml-cpp)
 %else

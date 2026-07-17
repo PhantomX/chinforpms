@@ -15,8 +15,8 @@
 
 Summary:        Image browser and viewer
 Name:           geeqie
-Version:        2.7
-Release:        101%{?dist}
+Version:        2.9
+Release:        100%{?dist}
 
 Epoch:          1
 
@@ -163,6 +163,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Thu Jul 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.9-100
+- 2.9
+
 * Thu Apr 09 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.7-101
 - Rebuild (LibRaw)
 

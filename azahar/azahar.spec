@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit ab6896a2caaaaac0b2b657f490713d2d48f08ffb
+%global commit d81195bdc57decba46a465b63267cb2032e21e4a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260517
+%global date 20260715
 %bcond snapshot 1
 
 %bcond sse42 0
@@ -43,15 +43,15 @@
 # Build tests
 %bcond tests 0
 
-%global commit1 d9f1126e42b606d02ecc89b10cb9a336a3b2f5a3
+%global commit1 60d8bbd51cf1a2e6a41dcad71b2e5853c19912a0
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 compatibility-list
 
-%global commit2 60f81a77e0c9a0e7ffc1ca1bc438ddfa2e43b78e
+%global commit2 8d92d788421483a43e09acf1cd4a2861cb2b8cab
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
-%global srcname2 cryptopp
+%global srcname2 cryptopp-modern
 
-%global commit3 526227eebe1efff3fb14dbf494b9c5b44c2e9c1f
+%global commit3 e77b1ba0b7da7cbe93021b01a663acfe7c4dd516
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 dynarmic
 
@@ -70,10 +70,6 @@
 %global commit4 123913715afeb8a437e6388b4473fcc4753e1c9a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
-
-%global commit5 00a151f8489daaa32434ab1f340e6750793ddf0c
-%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
-%global srcname5 cryptopp-cmake
 
 %global commit6 f4d8659decbfe5d234f04134b5002b82dc515a44
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
@@ -157,7 +153,7 @@
 %global verb    %%{lua:verb = string.gsub(rpm.expand("%%{ver}"), "%.", "-"); print(verb)}
 
 Name:           azahar
-Version:        2126.0~alpha1.1
+Version:        2126.0~rc3.2
 Release:        1%{?dist}
 
 Summary:        A 3DS Emulator
@@ -180,8 +176,7 @@ Source0:        %{vc_url}/%{name}/archive/%{ver}/%{name}-%{ver}.tar.gz
 %endif
 Source1:        %{vc_url}/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 %if %{without cryptopp}
-Source2:        https://github.com/weidai11/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
-Source5:        https://github.com/abdes/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
+Source2:        https://github.com/%{srcname2}/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
 %endif
 %if %{without dynarmic}
 Source3:        %{vc_url}/%{srcname3}/archive/%{commit3}/%{srcname3}-%{shortcommit3}.tar.gz
@@ -381,7 +376,6 @@ sed -e 's|crypto++|cryptopp|' -i externals/cmake-modules/Findcryptopp.cmake
 %else
 mkdir -p externals/cryptopp
 tar -xf %{S:2} -C externals/cryptopp --strip-components 1
-tar -xf %{S:5} -C externals/cryptopp-cmake --strip-components 1
 %endif
 %if %{without dynarmic}
 tar -xf %{S:3} -C externals/dynarmic --strip-components 1
@@ -631,6 +625,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 2126.0~rc3.2-1.20260715gitd81195b
+- 2026.0-rc3
+
 * Sun Apr 19 2026 Phantom X <megaphantomx at hotmail dot com> - 2125.1.4-1.20260419git2fff086
 - 2025.1
 

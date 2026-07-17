@@ -13,14 +13,14 @@
 # Use vendor tarball
 %bcond vendor 1
 
-%global vendor_hash 0d67a9746b86c69e619af0f4277677bb
+%global vendor_hash e30815831c05cc56f3a55f2bc6b5f206
 %global vendor_pkg %{name}-%{?with_snapshot:%{shortcommit}}%{!?with_snapshot:%{version}}-vendor.tar.xz
 
 %global pkgname LACT
 %global appname io.github.ilya_zlobintsev.%{pkgname}
 
 Name:           lact
-Version:        0.9.0
+Version:        0.9.1
 Release:        1%{?dist}
 Summary:        GPU control utility
 
@@ -49,6 +49,7 @@ BuildRequires:  clinfo
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(gtk4)
 BuildRequires:  pkgconfig(libadwaita-1)
+BuildRequires:  pkgconfig(libdisplay-info)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  systemd
 BuildRequires:  vulkan-tools
@@ -65,7 +66,7 @@ Provides:       bundled(crate(adler2)) = 2.0.1
 Provides:       bundled(crate(adler32)) = 1.2.0
 Provides:       bundled(crate(aho-corasick)) = 1.1.4
 Provides:       bundled(crate(allocator-api2)) = 0.2.21
-Provides:       bundled(crate(amdgpu-sysfs)) = 0.20.0
+Provides:       bundled(crate(amdgpu-sysfs)) = 0.21.0
 Provides:       bundled(crate(anstream)) = 1.0.0
 Provides:       bundled(crate(anstyle)) = 1.0.14
 Provides:       bundled(crate(anstyle-parse)) = 1.0.0
@@ -228,7 +229,10 @@ Provides:       bundled(crate(libadwaita)) = 0.8.1
 Provides:       bundled(crate(libadwaita-sys)) = 0.8.1
 Provides:       bundled(crate(libc)) = 0.2.185
 Provides:       bundled(crate(libcopes)) = 1.0.0
-Provides:       bundled(crate(libdrm_amdgpu_sys)) = 0.8.13
+Provides:       bundled(crate(libdisplay-info)) = 0.3.0
+Provides:       bundled(crate(libdisplay-info-derive)) = 0.1.1
+Provides:       bundled(crate(libdisplay-info-sys)) = 0.3.0
+Provides:       bundled(crate(libdrm_amdgpu_sys)) = 0.8.16
 Provides:       bundled(crate(libflate)) = 2.3.0
 Provides:       bundled(crate(libflate_lz77)) = 2.3.0
 Provides:       bundled(crate(libloading)) = 0.8.9
@@ -568,6 +572,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.1-1
+- 0.9.1
+
 * Sat Apr 25 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-1
 - 0.9.0
 
