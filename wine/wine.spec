@@ -1,7 +1,7 @@
-%global commit 0c1585cf5bb9a29a5c480ee04d5529b8fc236044
+%global commit e8781e7c8d0770186678c2dc7279bfc4506cfcb6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260630
-%bcond snapshot 0
+%global date 20260717
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.13
+%global wine_stagingver dc72282a35cce85d58b128db3b728c41ab01626c
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -83,10 +83,10 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id 721dd76896b434fe3c1328ea533e0b25b4af04d5
+%global ge_id c9a347770443b27c028237c90ed224b69457f5b6
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 8359b3d56f3e6bea19f3cd7bf1351bb04caee6cc
+%global tkg_id 6e1c41342a249e0029c1f35f36775e1caa5ce1d1
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -98,12 +98,6 @@
 
 %global perms_pldr %caps(cap_net_raw+eip)
 %global perms_srv %caps(%{?cap_st}cap_net_raw+eip)
-
-%bcond ge_wayland 0
-%bcond proton_winevulkan 0
-%if %{with proton_winevulkan}
-%bcond proton_mf 1
-%endif
 
 # Enable when needed
 %bcond patchutils 1
@@ -127,7 +121,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.13
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -149,7 +143,6 @@ Source1:        wine.init
 Source2:        wine.systemd
 Source3:        wine-README-Fedora
 Source6:        wine-README-chinforpms
-Source7:        wine-README-chinforpms-proton_mf
 
 Source50:       %{vk_url}/vk.xml#/vk-%{winevulkan}.xml
 Source51:       %{vk_url}/video.xml#/video-%{winevulkan}.xml
@@ -203,7 +196,6 @@ Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.p
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch710:        %{whq_murl}/-/merge_requests/11265.patch#/%{name}-whq-mr11265.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59472
 Patch711:        %{name}-bug59472.patch
 
@@ -223,12 +215,6 @@ Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_re
 Patch1026:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
 
-Patch1028:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch1.patch#/%{name}-tkg-gstreamer-patch1.patch
-Patch1029:       %{tkg_url}/proton/proton-mf-patch/gstreamer-patch2.patch#/%{name}-tkg-gstreamer-patch2.patch
-Patch1030:       %{tkg_url}/proton/proton-winevulkan/proton10-winevulkan.patch#/%{name}-tkg-proton10-winevulkan.patch
-Patch1031:       %{tkg_url}/misc/winewayland/ge-wayland.patch#/%{name}-tkg-ge-wayland.patch
-Patch1032:       %{tkg_url}/misc/winewayland/use-surfaceless-for-GST.patch#/%{name}-tkg-use-surfaceless-for-GST.patch
-
 Patch1033:       0001-tkg-staging-nofsync-fixup-1.patch
 Patch1034:       0001-tkg-staging-nofsync-fixup-2.patch
 
@@ -237,17 +223,15 @@ Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.pa
 Patch1093:       %{valve_url}/commit/415086a42b16451a91226579690d3e47e1a56953.patch#/%{name}-valve-415086a.patch
 
 Patch1200:       %{ge_url}/wine-hotfixes/pending/registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch#/%{name}-ge-registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch
-Patch1201:       %{ge_url}/proton/add-envvar-to-gate-media-converter.patch#/%{name}-ge-add-envvar-to-gate-media-converter.patch
-Patch1202:       %{ge_url}/proton/proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch#/%{name}-ge-proton-use_winegstreamer_and_set_orientation-PROTON_MEDIA_USE_GST-PROTON_GST_VIDEO_ORIENTATION.patch
-Patch1203:       %{ge_url}/wine-hotfixes/pending/8848.patch#/%{name}-ge-8848.patch
 
 Patch1300:       0001-server-Add-WINE_DISABLE_NTSYNC-env-var-to-disable-nt.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48791
 Patch1301:       0001-FAudio-Disable-reverb.patch
 Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
-Patch1304:       0001-proton-gstreamer-fixup-1.patch
+Patch1304:       0001-win32u-add-env-switch-to-disable-wm-decorations.patch
 Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
+Patch1306:       0001-win32u-Partially-revert-Move-client-surface-rect-com.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -806,7 +790,6 @@ This package adds the opencl driver for wine.
 %patch -P 704 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
-%patch -P 710 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -820,20 +803,7 @@ tar -xf %{SOURCE900} --strip-components=1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
-%if %{with proton_mf}
-%patch -P 1028 -p1
-%patch -P 1029 -p1
-%patch -P 1201 -p1
-%patch -P 1202 -p1
-%patch -P 1203 -p1
-%endif
 %patch -P 1020 -p1
-%if %{with ge_wayland}
-%patch -P 1031 -p1
-%endif
-%if %{with proton_mf}
-%patch -P 1032 -p1
-%endif
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1033 -p1
@@ -842,9 +812,6 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %patch -P 1034 -p1
 %patch -P 1022 -p1
 
-%if %{with proton_winevulkan}
-%patch -P 1030 -p1
-%endif
 %patch -P 1023 -p1
 %patch -P 1024 -p1
 # https://bugs.winehq.org/show_bug.cgi?id=51687#c7
@@ -854,18 +821,15 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 
 %patch -P 1091 -p1 -R
 %patch -P 1092 -p1
-%if %{without proton_mf}
 %patch -P 1093 -p1
-%endif
 %patch -P 1200 -p1
 %patch -P 1300 -p1
 %dnl %patch -P 1301 -p1
 %patch -P 1302 -p1
-%if %{with proton_mf}
-%patch -P 1304 -p1
-%endif
 %patch -P 1303 -p1
+%patch -P 1304 -p1
 %patch -P 1305 -p1
+%patch -P 1306 -p1
 %patch -P 711 -p1
 
 sed \
@@ -900,11 +864,6 @@ fi
 
 cp -p %{SOURCE3} README.FEDORA
 cp -p %{SOURCE6} README.chinforpms
-%if %{with proton_mf}
-cat README.chinforpms %{SOURCE7} >> README.chinforpms.proton_mf
-touch -r README.chinforpms README.chinforpms.proton_mf
-mv -f README.chinforpms.proton_mf README.chinforpms
-%endif
 
 cp -p %{SOURCE502} README.tahoma
 
@@ -1417,9 +1376,6 @@ fi
 %{_libdir}/wine/%{winepedirs}/aero.msstyles
 %if 0%{?wine_staging}
 %{_libdir}/wine/%{winepedirs}/audioses.dll
-%endif
-%if (0%{?wine_staging} && %{with ge_wayland})
-%{_libdir}/wine/%{winepedirs}/amdxc64.dll
 %endif
 %{_libdir}/wine/%{winepedirs}/amsi.dll
 %{_libdir}/wine/%{winepedirs}/amstream.dll

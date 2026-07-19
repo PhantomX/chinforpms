@@ -11,17 +11,19 @@ diff --git a/ltdp-0002-Disable-saving-restrictions.patch b/ltdp-0002-Disable-sav
 index 6037cb6..bb60497 100644
 --- a/ltdp-0002-Disable-saving-restrictions.patch
 +++ b/ltdp-0002-Disable-saving-restrictions.patch
-@@ -21,11 +21,13 @@ diff --git a/Telegram/SourceFiles/history/history_inner_widget.cpp b/Telegram/So
+@@ -21,11 +21,15 @@ diff --git a/Telegram/SourceFiles/history/history_inner_widget.cpp b/Telegram/So
  index dcc9d77..0260ebb 100644
  --- a/Telegram/SourceFiles/history/history_inner_widget.cpp
  +++ b/Telegram/SourceFiles/history/history_inner_widget.cpp
 -@@ -652,14 +652,7 @@ void HistoryInner::setupSwipeReply() {
-+@@ -621,16 +621,7 @@ void HistoryInner::setupSwipeReplyAndBack() {
++@@ -621,18 +621,7 @@ void HistoryInner::setupSwipeReplyAndBack() {
   }
   
   bool HistoryInner::hasSelectRestriction() const {
 --	if (!_sharingDisallowed.current()) {
-+-	if (session().frozen()) {
++-	if (_chooseForReportReason.has_value()) {
++-		return false;
++-	} else if (session().frozen()) {
 +-		return true;
 +-	} else if (!_sharingDisallowed.current()) {
  -		return false;

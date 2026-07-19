@@ -32,6 +32,10 @@ WINE_NO_OPEN_FILE_SEARCH override (Phantasy Star Online 2 fix)
 =================================
 Enable with WINE_NO_OPEN_FILE_SEARCH=1 environment variable
 
+WINE_NO_WM_DECORATION override
+=================================
+Enable with WINE_NO_WM_DECORATION=1 environment variable
+
 WINE_SIMULATE_WRITECOPY override
 =================================
 Enable with WINE_SIMULATE_WRITECOPY=1 environment variable

@@ -1,0 +1,33 @@
+From 4bfcb4374efcc9b2d5e5d812c9d20e9d98be0d9c Mon Sep 17 00:00:00 2001
+From: Stelios Tsampas <loathingkernel@gmail.com>
+Date: Sat, 16 Nov 2024 14:45:36 +0200
+Subject: [PATCH] win32u: add env switch to disable wm decorations
+
+WINE_NO_WM_DECORATION=1 disables decorations from the window manager
+Works around issues with the mouse clicking through borderless window
+edges.
+---
+ dlls/win32u/sysparams.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/dlls/win32u/sysparams.c b/dlls/win32u/sysparams.c
+index fdcdfc0..8cc217f 100644
+--- a/dlls/win32u/sysparams.c
++++ b/dlls/win32u/sysparams.c
+@@ -6008,6 +6008,13 @@ void sysparams_init(void)
+     if (!get_config_key( hkey, appkey, "EmulateModeset", buffer, sizeof(buffer) ))
+         emulate_modeset = IS_OPTION_TRUE( buffer[0] );
+ 
++    {
++        const char *decorate = NULL;
++
++        decorate = getenv( "WINE_NO_WM_DECORATION" );
++        if (decorate && decorate[0] == '1') decorated_mode = FALSE;
++    }
++
+ #undef IS_OPTION_TRUE
+ 
+     if (app_compat_flags)
+-- 
+2.55.0
+
