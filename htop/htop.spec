@@ -10,7 +10,7 @@
 %global vc_url  https://github.com/%{name}-dev/%{name}
 
 Name:           htop
-Version:        3.4.1
+Version:        3.5.2
 Release:        100%{?gver}%{?dist}
 Summary:        Interactive process viewer
 
@@ -24,8 +24,6 @@ Source0:        %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{vc_url}/archive/%{version}/%{name}-%{version}.tar.gz
 %endif
-
-Patch10:        0001-Use-availableMem.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  lm_sensors-devel
@@ -56,8 +54,8 @@ top(1).
   --enable-hwloc \
   --enable-openvz \
   --enable-unicode \
-  --enable-vserver \
   --enable-sensors \
+  --enable-year2038 \
 %{nil}
 
 %make_build
@@ -82,6 +80,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sun Jul 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.5.2-100
+- 3.5.2
+
 * Thu Jul 03 2025 Phantom X <megaphantomx at hotmail dot com> - 3.4.1-100
 - Add availableMem patch
 

@@ -9,7 +9,7 @@
 
 Name:           osmo
 Version:        0.4.4
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Personal organizer
 Summary(pl):    Osobisty organizer
@@ -31,7 +31,7 @@ Source0:        https://downloads.sourceforge.net/%{name}-pim/%{name}-%{version}
 
 Patch0:         0001-Build-system-fixes.patch
 Patch1:         0001-Fix-for-application-loading-freezes.patch
-
+Patch2:         https://gitlab.archlinux.org/archlinux/packaging/packages/%{name}/-/raw/b2780960b577e53ab728e9aec04cefd08fa59689/fix-delete-event-callback-return-type.patch#/%{name}-archlinux-fix-delete-event-callback-return-type.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -129,6 +129,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Mon Jul 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.4.4-101.20241120git125cfe6
+- Fix crash on close
+
 * Sat Jan 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.4.4-100.20241120git125cfe6
 - Snapshot
 - Build fixes
