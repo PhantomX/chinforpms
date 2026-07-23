@@ -208,7 +208,7 @@ Summary: The Linux kernel
 %define specrpmversion 7.1.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 500
+%define baserelease 501
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1273,6 +1273,15 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
+Patch2:     %{ark_url}/4735f2eec63a6a192b69a79921f8559570f1ebf9.patch#/kernel-ark-4735f2e.patch
+Patch3:     %{ark_url}/ce4210e437cef5c58d496117632473f6ad20f1d1.patch#/kernel-ark-ce4210e.patch
+Patch4:     %{ark_url}/038190229a7c4ce9fd78a0ece5998a483e917b10.patch#/kernel-ark-0381902.patch
+Patch5:     %{ark_url}/c4b8fa261b601be3efe517f7e3556f2bfd033bfa.patch#/kernel-ark-c4b8fa2.patch
+Patch6:     %{ark_url}/6ad64fbb803d084eda1f7b830040b74917abc494.patch#/kernel-ark-6ad64fb.patch
+Patch7:     %{ark_url}/1cbc8746210f2e89a1eacd96824cba825c38fe9d.patch#/kernel-ark-1cbc874.patch
+Patch8:     %{ark_url}/d9fce3c9c9d63614ee75b5f754776c37b791906d.patch#/kernel-ark-d9fce3c.patch
+Patch9:     %{ark_url}/5756e32f73944676e04836e6bbece6f93a39f0a0.patch#/kernel-ark-5756e32.patch
+Patch10:    %{ark_url}/6f9d82f308cc06fdeb6cb1ca5d1ff162797f695f.patch#/kernel-ark-6f9d82f.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -2315,6 +2324,15 @@ ApplyPatch %{PATCH5000}
 %endif
 
 ApplyOptionalPatch %{PATCH1}
+ApplyPatch %{PATCH2}
+ApplyPatch %{PATCH3}
+ApplyPatch %{PATCH4}
+ApplyPatch %{PATCH5}
+ApplyPatch %{PATCH6}
+ApplyPatch %{PATCH7}
+ApplyPatch %{PATCH8}
+ApplyPatch %{PATCH9}
+ApplyPatch %{PATCH10}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -5084,6 +5102,9 @@ fi\
 #
 #
 %changelog
+* Sat Jul 18 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.4-501.chinfo
+- Fedora sync
+
 * Sat Jul 18 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.4-500.chinfo
 - 7.1.4
 
