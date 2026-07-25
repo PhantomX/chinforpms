@@ -1,7 +1,7 @@
 %global commit e8781e7c8d0770186678c2dc7279bfc4506cfcb6
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260717
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.2.0
-%global winevulkan 1.4.353
+%global winevulkan 1.4.357
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver dc72282a35cce85d58b128db3b728c41ab01626c
+%global wine_stagingver 11.14
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -120,8 +120,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.13
-Release:        101%{?dist}
+Version:        11.14
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -194,6 +194,7 @@ Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.p
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
+Patch705:        %{whq_murl}/-/merge_requests/11468.patch#/%{name}-whq-mr11468.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 # https://bugs.winehq.org/show_bug.cgi?id=59472
@@ -788,6 +789,7 @@ This package adds the opencl driver for wine.
 
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
+%patch -P 705 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
 
@@ -2465,6 +2467,9 @@ fi
 
 
 %changelog
+* Sat Jul 25 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.14-100
+- 11.14
+
 * Sat Jul 11 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.13-100
 - 11.13
 

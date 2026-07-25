@@ -205,10 +205,10 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.1.4
+%define specrpmversion 7.1.5
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
-%define baserelease 501
+%define baserelease 500
 %define pkgrelease %{baserelease}
 %define kversion %(echo %{specversion} | cut -d'.' -f1)
 %define tarfile_release %(echo %{specversion} | cut -d'.' -f-2)
@@ -1274,10 +1274,6 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 
 Patch1: patch-%{patchversion}-redhat.patch
 Patch2:     %{ark_url}/4735f2eec63a6a192b69a79921f8559570f1ebf9.patch#/kernel-ark-4735f2e.patch
-Patch3:     %{ark_url}/ce4210e437cef5c58d496117632473f6ad20f1d1.patch#/kernel-ark-ce4210e.patch
-Patch4:     %{ark_url}/038190229a7c4ce9fd78a0ece5998a483e917b10.patch#/kernel-ark-0381902.patch
-Patch5:     %{ark_url}/c4b8fa261b601be3efe517f7e3556f2bfd033bfa.patch#/kernel-ark-c4b8fa2.patch
-Patch6:     %{ark_url}/6ad64fbb803d084eda1f7b830040b74917abc494.patch#/kernel-ark-6ad64fb.patch
 Patch7:     %{ark_url}/1cbc8746210f2e89a1eacd96824cba825c38fe9d.patch#/kernel-ark-1cbc874.patch
 Patch8:     %{ark_url}/d9fce3c9c9d63614ee75b5f754776c37b791906d.patch#/kernel-ark-d9fce3c.patch
 Patch9:     %{ark_url}/5756e32f73944676e04836e6bbece6f93a39f0a0.patch#/kernel-ark-5756e32.patch
@@ -1331,6 +1327,8 @@ Patch6950:  %{pf_url}/c2dc38c763c16b17b15af99f49ddcadce4ae4c5b.patch%{pf_antibot
 # kbuild (7000)
 # bbr3 (7050)
 Patch7050:  %{pf_url}/9dc28c984f536bb1fcdaf3917f1d9e55bd2077be.patch%{pf_antibot}#/pf-cb-9dc28c9.patch
+Patch7051:  0001-pf-cb-c2dc38c-fixup-1.patch
+Patch7052:  0001-pf-cb-c2dc38c-fixup-2.patch
 # zstd
 # v4l2loopback (7230)
 Patch7230:  %{pf_url}/5a40b2e42541d89e82e305f09b44b43970093dde.patch%{pf_antibot}#/pf-cb-5a40b2e.patch
@@ -1342,24 +1340,6 @@ Patch7400:  %{pf_url}/304c849e33d5be82ce90422868ea1fea9ad860bd.patch%{pf_antibot
 Patch7401:  %{pf_url}/b4628ba34e493ca1704be009b811b317a74f8f3a.patch%{pf_antibot}#/pf-cb-b4628ba.patch
 Patch7402:  %{pf_url}/c0983800e8bd7ab8c9e5803f5079edf815aadd2c.patch%{pf_antibot}#/pf-cb-c098380.patch
 Patch7403:  %{pf_url}/f60fc58b0fa4408810f6d02c15ecff2d9bbae38b.patch%{pf_antibot}#/pf-cb-f60fc58.patch
-Patch7404:  %{pf_url}/25f0c45508a19a469bf25550d21d2818148b09c2.patch%{pf_antibot}#/pf-cb-25f0c45.patch
-Patch7405:  %{pf_url}/d214f6a1336d10908b43230081566ea51af49ca4.patch%{pf_antibot}#/pf-cb-d214f6a.patch
-Patch7406:  %{pf_url}/a667333da5fc45992f20bee31e5f559d135a311d.patch%{pf_antibot}#/pf-cb-a667333.patch
-Patch7407:  %{pf_url}/c14951fa97383f70f1d7172e437f2c9364b0c586.patch%{pf_antibot}#/pf-cb-c14951f.patch
-Patch7408:  %{pf_url}/1e780ad841feaba5d9bdf25f10efe9b6747ec5cd.patch%{pf_antibot}#/pf-cb-1e780ad.patch
-Patch7409:  %{pf_url}/aa4a3851c81d474680ec06dcfcd7a1ca9785a09d.patch%{pf_antibot}#/pf-cb-aa4a385.patch
-Patch7410:  %{pf_url}/5dd3ebcc4103a7c0151353036a30ddf319b7c533.patch%{pf_antibot}#/pf-cb-5dd3ebc.patch
-Patch7411:  %{pf_url}/a5d2e09723716c15c41e6e35baeb254724dc0775.patch%{pf_antibot}#/pf-cb-a5d2e09.patch
-Patch7412:  %{pf_url}/a2ec2732ff1e5d3b89aa4cd40681abf5b97a23f0.patch%{pf_antibot}#/pf-cb-a2ec273.patch
-Patch7413:  %{pf_url}/59e487410d8eb7448ad715adba5f8372c691a115.patch%{pf_antibot}#/pf-cb-59e4874.patch
-Patch7414:  %{pf_url}/e2f9f1e1f695b6b32e02611202f67d97f5eedddf.patch%{pf_antibot}#/pf-cb-e2f9f1e.patch
-Patch7415:  %{pf_url}/eaa1a0149a702b1906ff7d044fe38f561a75627f.patch%{pf_antibot}#/pf-cb-eaa1a01.patch
-Patch7416:  %{pf_url}/e95977c5e3b7a126cb0c6faf43a948edab76b15c.patch%{pf_antibot}#/pf-cb-e95977c.patch
-Patch7417:  %{pf_url}/aef080ac65234e98afd6f5b3da19d6582856969d.patch%{pf_antibot}#/pf-cb-aef080a.patch
-Patch7418:  %{pf_url}/f0c32695366d43efc9a98a4fd5d0bb5482ce2f2d.patch%{pf_antibot}#/pf-cb-f0c3269.patch
-Patch7419:  %{pf_url}/996334405df064660eda510c5c9f108324b72d5a.patch%{pf_antibot}#/pf-cb-9963344.patch
-Patch7420:  %{pf_url}/d3dfe2835bb9ddf7da0d49992e85b5282e8be6ed.patch%{pf_antibot}#/pf-cb-d3dfe28.patch
-Patch7421:  %{pf_url}/77978f1b0943b93f0f7da420326521acac9f5811.patch%{pf_antibot}#/pf-cb-77978f1.patch
 Patch7500:  0001-pf-cb-f60fc58-fixup-1.patch
 Patch7501:  0001-pf-cb-f60fc58-fixup-2.patch
 %endif
@@ -2325,10 +2305,6 @@ ApplyPatch %{PATCH5000}
 
 ApplyOptionalPatch %{PATCH1}
 ApplyPatch %{PATCH2}
-ApplyPatch %{PATCH3}
-ApplyPatch %{PATCH4}
-ApplyPatch %{PATCH5}
-ApplyPatch %{PATCH6}
 ApplyPatch %{PATCH7}
 ApplyPatch %{PATCH8}
 ApplyPatch %{PATCH9}
@@ -2341,7 +2317,9 @@ ApplyOptionalPatch %{PATCH999999}
 ApplyPatch %{PATCH6950}
 # kbuild
 # bbr3
+ApplyPatch %{PATCH7051}
 ApplyPatch %{PATCH7050}
+ApplyPatch %{PATCH7052}
 # zstd
 # v4l2loopback
 ApplyPatch %{PATCH7230}
@@ -2353,24 +2331,6 @@ ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
-ApplyPatch %{PATCH7408}
-ApplyPatch %{PATCH7409}
-ApplyPatch %{PATCH7410}
-ApplyPatch %{PATCH7411}
-ApplyPatch %{PATCH7412}
-ApplyPatch %{PATCH7413}
-ApplyPatch %{PATCH7414}
-ApplyPatch %{PATCH7415}
-ApplyPatch %{PATCH7416}
-ApplyPatch %{PATCH7417}
-ApplyPatch %{PATCH7418}
-ApplyPatch %{PATCH7419}
-ApplyPatch %{PATCH7420}
-ApplyPatch %{PATCH7421}
 %endif
 
 # openSUSE
@@ -5102,6 +5062,9 @@ fi\
 #
 #
 %changelog
+* Fri Jul 24 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.5-500.chinfo
+- 7.1.5
+
 * Sat Jul 18 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.4-501.chinfo
 - Fedora sync
 

@@ -37,7 +37,7 @@
 
 Name:           %{pkgname}-classic
 Version:        3.24.52
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        The GIMP ToolKit (GTK+), a library for creating GUIs for X
 
 Epoch:          2
@@ -49,6 +49,9 @@ Source0:        http://download.gnome.org/sources/gtk/%(echo %{version} | cut -d
 Source1:        %{classic_url}/archive/%{classic_ver}/gtk3-classic-%{mspkgver}.tar.gz
 Source2:        chinforpms-adwaita.css
 Source3:        README.chinforpms
+
+Patch0:         %{vc_url}/merge_requests/9852.patch#/gtk3-gl-mr9852.patch
+Patch1:         %{vc_url}/merge_requests/9956.patch#/gtk3-gl-mr9956.patch
 
 # Revert some good features dropped by upstream (3.10)
 Patch100:       gtk+3-3.23.0-gtk-recent-files-limit.patch
@@ -247,6 +250,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Fri Jul 24 2026 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.52-2
+- Sync Fedora patches
+
 * Tue Mar 24 2026 Phantom X <megaphantomx at hotmail dot com> - 2:3.24.52-1
 - 3.24.52
 

@@ -1,0 +1,22 @@
+From b2a919e5f53144d99b963f5ce2088cf1849e7de1 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Fri, 24 Jul 2026 17:25:06 -0300
+Subject: [PATCH] pf-cb-c2dc38c fixup 2
+
+---
+ net/ipv4/tcp_bbr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
+index aa93a5e..ab2de4e 100644
+--- a/net/ipv4/tcp_bbr.c
++++ b/net/ipv4/tcp_bbr.c
+@@ -1,4 +1,4 @@
+-// SPDX-License-Identifier: GPL-2.0
++// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+ /* BBR (Bottleneck Bandwidth and RTT) congestion control
+  *
+  * BBR is a model-based congestion control algorithm that aims for low queues,
+-- 
+2.55.0
+
