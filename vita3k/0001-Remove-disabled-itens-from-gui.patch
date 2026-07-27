@@ -1,0 +1,241 @@
+From 0628aaeae8482b7720ffc7782130d134fda275c0 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 26 Jul 2026 21:41:46 -0300
+Subject: [PATCH] Remove disabled itens from gui
+
+---
+ vita3k/gui-qt/CMakeLists.txt               |  1 -
+ vita3k/gui-qt/include/gui-qt/main_window.h |  2 --
+ vita3k/gui-qt/src/main_window.cpp          | 16 ++++----------
+ vita3k/gui-qt/src/main_window.ui           |  5 -----
+ vita3k/gui-qt/src/settings_dialog.cpp      | 25 ----------------------
+ vita3k/gui-qt/src/settings_dialog.ui       | 21 ------------------
+ 6 files changed, 4 insertions(+), 66 deletions(-)
+
+diff --git a/vita3k/gui-qt/CMakeLists.txt b/vita3k/gui-qt/CMakeLists.txt
+index 57e3a28..dd9a932 100644
+--- a/vita3k/gui-qt/CMakeLists.txt
++++ b/vita3k/gui-qt/CMakeLists.txt
+@@ -29,7 +29,6 @@ add_library(gui-qt STATIC
+     src/vita_theme.cpp
+     src/vita_themes_dialog.cpp
+     src/trophy_collection_dialog.cpp
+-    src/update_manager.cpp
+     src/gui_language.cpp
+     src/user_management_dialog.cpp
+     src/welcome_dialog.cpp
+diff --git a/vita3k/gui-qt/include/gui-qt/main_window.h b/vita3k/gui-qt/include/gui-qt/main_window.h
+index 929c45a..75fc080 100644
+--- a/vita3k/gui-qt/include/gui-qt/main_window.h
++++ b/vita3k/gui-qt/include/gui-qt/main_window.h
+@@ -88,7 +88,6 @@ private slots:
+     void on_about_action_triggered();
+     void on_about_qt_action_triggered();
+     void on_controls_action_triggered();
+-    void on_check_for_updates_action_triggered();
+     void on_app_selected(const app::AppEntry &app);
+     void open_settings(int tab_index = 0);
+     void apply_ui_language(const QString &locale_tag);
+@@ -189,7 +188,6 @@ private:
+     CtrlKeyboardFilter *m_kb_filter = nullptr;
+     QPointer<DebugWidget> m_debug_widget;
+     LiveAreaWidget *m_live_area_widget = nullptr;
+-    UpdateManager *m_update_manager = nullptr;
+     QPointer<ControlsDialog> m_controls_dialog;
+     QPointer<SettingsDialog> m_settings_dialog;
+     QPointer<VitaThemesDialog> m_vita_themes_dialog;
+diff --git a/vita3k/gui-qt/src/main_window.cpp b/vita3k/gui-qt/src/main_window.cpp
+index beb788a..3493103 100644
+--- a/vita3k/gui-qt/src/main_window.cpp
++++ b/vita3k/gui-qt/src/main_window.cpp
+@@ -42,7 +42,6 @@
+ #include <gui-qt/theme_manager.h>
+ #include <gui-qt/theme_surface.h>
+ #include <gui-qt/trophy_collection_dialog.h>
+-#include <gui-qt/update_manager.h>
+ #include <gui-qt/user_management_dialog.h>
+ #include <gui-qt/vita_themes_dialog.h>
+ #include <gui-qt/welcome_dialog.h>
+@@ -500,12 +499,6 @@ void MainWindow::initialize() {
+     setAcceptDrops(true);
+ 
+     setup_status_bar();
+-    m_update_manager = new UpdateManager(this);
+-    connect(m_update_manager, &UpdateManager::update_available_changed, this, [this](const bool available) {
+-        m_update_available = available;
+-        update_update_available_button();
+-    });
+-    update_update_available_button();
+ 
+     setMinimumSize(350, minimumSizeHint().height());
+     restore_window_state();
+@@ -549,6 +542,7 @@ void MainWindow::initialize() {
+         welcome.exec();
+     }
+ 
++#if 0
+     if (m_update_manager) {
+         const auto startup_mode = static_cast<UpdateStartupMode>(emuenv.cfg.check_for_updates_mode);
+         if (startup_mode != UPDATE_STARTUP_OFF) {
+@@ -572,6 +566,7 @@ void MainWindow::initialize() {
+             });
+         }
+     }
++#endif
+ 
+     connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this, [this]() {
+         apply_stylesheet();
+@@ -775,11 +770,6 @@ void MainWindow::on_controls_action_triggered() {
+     present_tool_window(m_controls_dialog);
+ }
+ 
+-void MainWindow::on_check_for_updates_action_triggered() {
+-    if (m_update_manager)
+-        m_update_manager->review_pending_update(this);
+-}
+-
+ void MainWindow::open_settings(int tab_index) {
+     if (!m_settings_dialog) {
+         m_settings_dialog = new SettingsDialog(emuenv, m_gui_settings, *m_theme_manager, {}, tab_index);
+@@ -1980,11 +1970,13 @@ void MainWindow::setup_status_bar() {
+     });
+     sb->addWidget(m_volume_button);
+ 
++#if 0
+     m_update_available_button = new QPushButton(this);
+     m_update_available_button->setObjectName(QStringLiteral("status_button"));
+     m_update_available_button->setVisible(false);
+     connect(m_update_available_button, &QPushButton::clicked, this, &MainWindow::on_check_for_updates_action_triggered);
+     sb->addPermanentWidget(m_update_available_button);
++#endif
+ 
+     update_renderer_button();
+     update_accuracy_button();
+diff --git a/vita3k/gui-qt/src/main_window.ui b/vita3k/gui-qt/src/main_window.ui
+index 811ab37..d8ea746 100644
+--- a/vita3k/gui-qt/src/main_window.ui
++++ b/vita3k/gui-qt/src/main_window.ui
+@@ -186,11 +186,6 @@
+     <string>Controls</string>
+    </property>
+   </action>
+-  <action name="check_for_updates_action">
+-   <property name="text">
+-    <string>Check for updates</string>
+-   </property>
+-  </action>
+   <action name="about_action">
+    <property name="text">
+     <string>About Vita3k</string>
+diff --git a/vita3k/gui-qt/src/settings_dialog.cpp b/vita3k/gui-qt/src/settings_dialog.cpp
+index eeef2da..2644760 100644
+--- a/vita3k/gui-qt/src/settings_dialog.cpp
++++ b/vita3k/gui-qt/src/settings_dialog.cpp
+@@ -178,11 +178,8 @@ SettingsDialog::SettingsDialog(EmuEnvState &emuenv,
+         m_ui->boot_apps_fullscreen->setVisible(false);
+         m_ui->show_live_area_screen->setVisible(false);
+         m_ui->show_compile_shaders->setVisible(false);
+-        m_ui->label_check_for_updates_mode->setVisible(false);
+-        m_ui->check_for_updates_mode->setVisible(false);
+         m_ui->log_compat_warn->setVisible(false);
+         m_ui->archive_log->setVisible(false);
+-        m_ui->discord_rich_presence->setVisible(false);
+         m_ui->gb_emu_logging->setVisible(false);
+         m_ui->gb_performance_overlay->setVisible(false);
+         m_ui->gb_storage->setVisible(false);
+@@ -415,24 +412,9 @@ void SettingsDialog::load_config() {
+     m_ui->boot_apps_fullscreen->setChecked(emuenv.cfg.boot_apps_full_screen);
+     m_ui->show_live_area_screen->setChecked(emuenv.cfg.show_live_area_screen);
+     m_ui->show_compile_shaders->setChecked(emuenv.cfg.show_compile_shaders);
+-    m_ui->check_for_updates_mode->clear();
+-    m_ui->check_for_updates_mode->addItem(tr("Check"), static_cast<int>(UPDATE_STARTUP_PROMPT));
+-    m_ui->check_for_updates_mode->addItem(tr("Don't Check"), static_cast<int>(UPDATE_STARTUP_OFF));
+-    {
+-        const int current_mode = emuenv.cfg.check_for_updates_mode == static_cast<int>(UPDATE_STARTUP_OFF)
+-            ? static_cast<int>(UPDATE_STARTUP_OFF)
+-            : static_cast<int>(UPDATE_STARTUP_PROMPT);
+-        const int index = m_ui->check_for_updates_mode->findData(current_mode);
+-        m_ui->check_for_updates_mode->setCurrentIndex(index >= 0 ? index : 0);
+-    }
+     m_ui->log_compat_warn->setChecked(emuenv.cfg.log_compat_warn);
+     m_ui->texture_cache->setChecked(m_config.texture_cache);
+     m_ui->archive_log->setChecked(emuenv.cfg.archive_log);
+-#ifdef USE_DISCORD
+-    m_ui->discord_rich_presence->setChecked(emuenv.cfg.discord_rich_presence);
+-#else
+-    m_ui->discord_rich_presence->setVisible(false);
+-#endif
+ 
+     m_ui->log_level_box->clear();
+     m_ui->log_level_box->addItems({ tr("Trace"), tr("Debug"), tr("Info"),
+@@ -655,14 +637,9 @@ void SettingsDialog::build_desired_config(Config &desired) const {
+     desired.boot_apps_full_screen = m_ui->boot_apps_fullscreen->isChecked();
+     desired.show_live_area_screen = m_ui->show_live_area_screen->isChecked();
+     desired.show_compile_shaders = m_ui->show_compile_shaders->isChecked();
+-    desired.check_for_updates_mode = m_ui->check_for_updates_mode->currentData().toInt();
+-    desired.check_for_updates = desired.check_for_updates_mode != static_cast<int>(UPDATE_STARTUP_OFF);
+     desired.log_compat_warn = m_ui->log_compat_warn->isChecked();
+     current.texture_cache = m_ui->texture_cache->isChecked();
+     desired.archive_log = m_ui->archive_log->isChecked();
+-#ifdef USE_DISCORD
+-    desired.discord_rich_presence = m_ui->discord_rich_presence->isChecked();
+-#endif
+ 
+     desired.log_level = m_ui->log_level_box->currentIndex();
+     desired.performance_overlay = m_ui->perf_overlay_enabled->isChecked();
+@@ -1235,13 +1212,11 @@ void SettingsDialog::setup_connections() {
+         { m_ui->boot_apps_fullscreen, tr("Boot Games in Fullscreen"), m_tooltips->boot_fullscreen },
+         { m_ui->show_live_area_screen, tr("Show Live Area Before Booting"), m_tooltips->show_live_area },
+         { m_ui->show_compile_shaders, tr("Show Shader Compilation Hint"), m_tooltips->show_compile_shaders },
+-        { m_ui->check_for_updates_mode, tr("Update Check Mode"), m_tooltips->check_for_updates },
+         { m_ui->log_compat_warn, tr("Log Compatibility Warnings"), m_tooltips->log_compat_warn },
+         { m_ui->texture_cache, tr("Enable Texture Cache"), m_tooltips->texture_cache },
+         { m_ui->archive_log, tr("Archive Log"), m_tooltips->archive_log },
+         { m_ui->label_log_level, tr("Log Level"), m_tooltips->log_level },
+         { m_ui->log_level_box, tr("Log Level"), m_tooltips->log_level },
+-        { m_ui->discord_rich_presence, tr("Enable Discord Rich Presence"), m_tooltips->discord_rpc },
+         { m_ui->perf_overlay_enabled, tr("Performance Overlay"), m_tooltips->perf_overlay },
+         { m_ui->label_perf_detail, tr("Overlay Detail"), m_tooltips->perf_overlay_detail },
+         { m_ui->perf_overlay_detail_box, tr("Overlay Detail"), m_tooltips->perf_overlay_detail },
+diff --git a/vita3k/gui-qt/src/settings_dialog.ui b/vita3k/gui-qt/src/settings_dialog.ui
+index 8ca5c8d..be26073 100644
+--- a/vita3k/gui-qt/src/settings_dialog.ui
++++ b/vita3k/gui-qt/src/settings_dialog.ui
+@@ -1978,20 +1978,6 @@ QGroupBox[flat=&quot;true&quot;]::title {
+                      </property>
+                     </widget>
+                    </item>
+-                   <item>
+-                    <layout class="QHBoxLayout" name="check_for_updates_mode_layout">
+-                     <item>
+-                      <widget class="QLabel" name="label_check_for_updates_mode">
+-                       <property name="text">
+-                        <string>Update Check Mode</string>
+-                       </property>
+-                      </widget>
+-                     </item>
+-                     <item>
+-                      <widget class="QComboBox" name="check_for_updates_mode"/>
+-                     </item>
+-                    </layout>
+-                   </item>
+                    <item>
+                     <widget class="QCheckBox" name="texture_cache">
+                      <property name="text">
+@@ -1999,13 +1985,6 @@ QGroupBox[flat=&quot;true&quot;]::title {
+                      </property>
+                     </widget>
+                    </item>
+-                   <item>
+-                    <widget class="QCheckBox" name="discord_rich_presence">
+-                     <property name="text">
+-                      <string>Enable Discord Rich Presence</string>
+-                     </property>
+-                    </widget>
+-                   </item>
+                   </layout>
+                  </widget>
+                 </item>
+-- 
+2.55.0
+

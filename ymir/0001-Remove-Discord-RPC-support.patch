@@ -1,0 +1,169 @@
+From 499fcb06ae0161d235c7d9f65f18f5cadd35bc6f Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 25 Jul 2026 11:54:23 -0300
+Subject: [PATCH] Remove Discord RPC support
+
+---
+ apps/ymir-sdl3/CMakeLists.txt                              | 3 ---
+ apps/ymir-sdl3/src/app/app.cpp                             | 4 ----
+ apps/ymir-sdl3/src/app/app.hpp                             | 2 --
+ apps/ymir-sdl3/src/app/settings.cpp                        | 4 ----
+ apps/ymir-sdl3/src/app/settings.hpp                        | 1 -
+ .../src/app/ui/views/settings/general_settings_view.cpp    | 4 ----
+ vendor/CMakeLists.txt                                      | 7 -------
+ 7 files changed, 25 deletions(-)
+
+diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
+index 4b3ba91..4044edf 100644
+--- a/apps/ymir-sdl3/CMakeLists.txt
++++ b/apps/ymir-sdl3/CMakeLists.txt
+@@ -77,8 +77,6 @@ add_executable(ymir-sdl3
+     src/app/services/rom_service.hpp
+     src/app/services/disc_service.cpp
+     src/app/services/disc_service.hpp
+-    src/app/services/discord_rpc_service.cpp
+-    src/app/services/discord_rpc_service.hpp
+     src/app/services/display_service.cpp
+     src/app/services/display_service.hpp
+     src/app/services/file_dialog_service.cpp
+@@ -456,7 +454,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
+     tomlplusplus::tomlplusplus
+     cereal::cereal
+     lz4::lz4
+-    discord-rpc
+     RtMidi::rtmidi
+ )
+ if (WIN32)
+diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
+index 02a4039..e76dc17 100644
+--- a/apps/ymir-sdl3/src/app/app.cpp
++++ b/apps/ymir-sdl3/src/app/app.cpp
+@@ -149,7 +149,6 @@ App::App()
+     : m_saveStateService(m_context, m_settings)
+     , m_midiService(m_context.serviceLocator)
+     , m_settings(m_context)
+-    , m_discordRPCService(m_context, m_settings)
+     , m_mouseCaptureService(m_context, m_settings)
+     , m_romService(m_context, m_settings,
+                    [this](std::string title, std::function<void()> fnContents) {
+@@ -549,8 +548,6 @@ void App::RunEmulator() {
+     ScopeGuard sgStopUpdateCheckerThread{[&] { m_updateCheckerService.Stop(); }};
+ #endif
+ 
+-    ScopeGuard sgStopDiscordRPC{[&] { m_discordRPCService.Stop(); }};
+-
+     // Get embedded file system
+     auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
+ 
+@@ -3238,7 +3235,6 @@ void App::RunEmulator() {
+         settings.CheckDirty();
+         m_saveStateService.CheckDebuggerStateDirty();
+         m_persistenceService.DoPendingPersistences();
+-        m_discordRPCService.Poll();
+     }
+ 
+ end_loop:; // the semicolon is not a typo!
+diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
+index b53f76e..dfa4703 100644
+--- a/apps/ymir-sdl3/src/app/app.hpp
++++ b/apps/ymir-sdl3/src/app/app.hpp
+@@ -6,7 +6,6 @@
+ #include "shared_context.hpp"
+ 
+ #include "services/disc_service.hpp"
+-#include "services/discord_rpc_service.hpp"
+ #include "services/display_service.hpp"
+ #include "services/file_dialog_service.hpp"
+ #include "services/graphics_service.hpp"
+@@ -41,7 +40,6 @@ private:
+     services::MIDIService m_midiService;
+     services::ScreenshotService m_screenshotService;
+     Settings m_settings;
+-    services::DiscordRPCService m_discordRPCService;
+     services::MouseCaptureService m_mouseCaptureService;
+     services::ROMService m_romService;
+     services::DiscService m_discService;
+diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
+index a662131..9a2c8d1 100644
+--- a/apps/ymir-sdl3/src/app/settings.cpp
++++ b/apps/ymir-sdl3/src/app/settings.cpp
+@@ -973,8 +973,6 @@ void Settings::ResetToDefaults() {
+     general.unpauseOnDiscLoad = true;
+     general.startPaused = false;
+ 
+-    general.enableDiscordPresence = false;
+-
+     gui.overrideUIScale = false;
+     gui.uiScale = 1.0;
+     gui.rememberWindowGeometry = true;
+@@ -1174,7 +1172,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
+         Parse(tblGeneral, "PauseWhenUnfocused", general.pauseWhenUnfocused);
+         Parse(tblGeneral, "UnpauseOnDiscLoadd", general.unpauseOnDiscLoad);
+         Parse(tblGeneral, "StartPaused", general.startPaused);
+-        Parse(tblGeneral, "EnableDiscordPresence", general.enableDiscordPresence);
+ 
+         general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
+ 
+@@ -1819,7 +1816,6 @@ SettingsSaveResult Settings::Save() {
+             {"PauseWhenUnfocused", general.pauseWhenUnfocused},
+             {"UnpauseOnDiscLoad", general.unpauseOnDiscLoad},
+             {"StartPaused", general.startPaused},
+-            {"EnableDiscordPresence", general.enableDiscordPresence},
+ 
+             {"PathOverrides", toml::table{{
+                 {"IPLROMImages", m_context.profile.GetPathOverride(ProfilePath::IPLROMImages).native()},
+diff --git a/apps/ymir-sdl3/src/app/settings.hpp b/apps/ymir-sdl3/src/app/settings.hpp
+index 319c0b6..8a0a127 100644
+--- a/apps/ymir-sdl3/src/app/settings.hpp
++++ b/apps/ymir-sdl3/src/app/settings.hpp
+@@ -159,7 +159,6 @@ struct Settings {
+         bool unpauseOnDiscLoad;
+         bool startPaused;
+ 
+-        bool enableDiscordPresence;
+     } general;
+ 
+     struct GUI {
+diff --git a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
+index da45f9f..2054a93 100644
+--- a/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
++++ b/apps/ymir-sdl3/src/app/ui/views/settings/general_settings_view.cpp
+@@ -132,10 +132,6 @@ void GeneralSettingsView::Display() {
+     MakeDirty(ImGui::Checkbox("Start paused upon launch", &settings.startPaused));
+     widgets::ExplanationTooltip("Ymir will launch with emulation paused when starting up.", m_context.displayScale);
+ 
+-    MakeDirty(ImGui::Checkbox("Enable Discord Rich Presence", &settings.enableDiscordPresence));
+-    widgets::ExplanationTooltip("Displays the current game on your Discord profile while Ymir is running.",
+-                                m_context.displayScale);
+-
+     // -----------------------------------------------------------------------------------------------------------------
+ #if 0
+     ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
+diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
+index 6bdd2f9..0b76f8b 100644
+--- a/vendor/CMakeLists.txt
++++ b/vendor/CMakeLists.txt
+@@ -94,12 +94,6 @@ if (NOT Ymir_LIBRARY_ONLY)
+     else()
+     add_subdirectory(lz4 EXCLUDE_FROM_ALL)
+     endif()
+-
+-    # discord-rpc - https://github.com/discord/discord-rpc
+-    # - Via myMCpp / PCSX2
+-    message(STATUS "==> discord-rpc")
+-    find_package(nlohmann_json CONFIG REQUIRED)
+-    add_subdirectory(discord-rpc EXCLUDE_FROM_ALL)
+ endif ()
+ 
+ # Place vendored library projects under a Vendored folder in Visual Studio solutions
+@@ -110,7 +104,6 @@ if (MSVC)
+     if (NOT Ymir_LIBRARY_ONLY)
+         set_target_properties(imgui PROPERTIES FOLDER Vendored)
+         set_target_properties(lz4 PROPERTIES FOLDER Vendored)
+-        set_target_properties(discord-rpc PROPERTIES FOLDER Vendored)
+     endif ()
+ endif ()
+ 
+-- 
+2.55.0
+

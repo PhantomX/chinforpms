@@ -1,4 +1,5 @@
 !/wine.init
+/wine-fgw-*.patch
 /wine-ge-*.patch
 /wine-gh-*.patch
 /wine-gl-*.patch

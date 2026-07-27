@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 9bb15e0eb36b4a8aedd916be2916c0c8901bfed4
+%global commit be6927105e65c0d6d17b707aac2e7f72214997e4
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260418
+%global date 20260726
 
 %bcond capstone 0
 %bcond ffmpeg 0
@@ -39,13 +39,17 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 SPIRV-Cross
 
-%global commit12 2059f0fdd73492b03d60a90c73e5038224b99093
+%global commit12 3843082eaa6a6f67e6780715fcd602fc81942c9c
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator-Hpp
 
 %global commit13 c35576bed0295689540b39873126129adfa0b4c8
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 better-enums
+
+%global commit13 319da6b563d8da689f3b9df2fbb839edd41a1943
+%global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
+%global srcname13 substitute
 
 %global commit15 e98f4ee160380d7c39dc1f04e7488bcf0770d391
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
@@ -55,11 +59,11 @@
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 dynarmic
 
-%global commit17 ccce45ff00217d480c0dcf7dc75b4cb4a5341db4
+%global commit17 02f4f2691b0efffff8923235baf146a87fc37263
 %global shortcommit17 %(c=%{commit17}; echo ${c:0:7})
 %global srcname17 ffmpeg-core
 
-%global commit18 e424e3f2e607da02742f73db84873b8084fc714c
+%global commit18 1be298e1bd68957e4cd352e1f676f00e07dcfb57
 %global shortcommit18 %(c=%{commit18}; echo ${c:0:7})
 %global srcname18 fmt
 
@@ -67,23 +71,15 @@
 %global shortcommit19 %(c=%{commit19}; echo ${c:0:7})
 %global srcname19 glslang
 
-%global commit20 f8d7d77c06936315286eb55f8de22cd23c188571
+%global commit20 52eb8108c5bdec04579160ae17225d66034bd723
 %global shortcommit20 %(c=%{commit20}; echo ${c:0:7})
 %global srcname20 googletest
-
-%global commit21 cb16568fca5297512ff6a8f3b877f461c4323fbe
-%global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
-%global srcname21 imgui
-
-%global commit22 53a2df3dd1b19dd321beb0897a0d1b9f87e5429c
-%global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
-%global srcname22 imgui_club
 
 %global commit23 d9a890b712dcdb46d3d33230997efc59f5ad8d62
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 libfat16
 
-%global commit24 86d5f2005fe1c00747348a12070fec493ea2407e
+%global commit24 fc168e8605bfa51aaec22ab0c4e46b9de665a437
 %global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
 %global srcname24 nativefiledialog-extended
 
@@ -91,27 +87,27 @@
 %global shortcommit25 %(c=%{commit25}; echo ${c:0:7})
 %global srcname25 printf
 
-%global commit26 ab1aa9b36388843f6a9f8dc86b1746f1f2a7e557
+%global commit26 e21df9a74852433f48d6593b8ef203dc7c424e05
 %global shortcommit26 %(c=%{commit26}; echo ${c:0:7})
 %global srcname26 psvpfstools
 
-%global commit27 f7f20f39fe4f206c6f19e26ebfef7b261ee59ee4
+%global commit27 31c1ad37456438565541f4919958214b6e762fb4
 %global shortcommit27 %(c=%{commit27}; echo ${c:0:7})
 %global srcname27 stb
 
-%global commit28 5d542dc09f3d9378d005092a4ad446bd405f819a
+%global commit28 05cceee0df3b8d7c6fa87e9638af311dbabc63cb
 %global shortcommit28 %(c=%{commit28}; echo ${c:0:7})
 %global srcname28 tracy
 
-%global commit30 77f17b979678e7af0acfe708dc97a45ca6fd55e2
+%global commit30 43fc1e3c686a1fc035eca583fdfeaa5e6419a61a
 %global shortcommit30 %(c=%{commit30}; echo ${c:0:7})
 %global srcname30 vita-toolchain
 
-%global commit31 2f86d13775d119edbb69af52e5f566fd65c6953b
+%global commit31 56e3bb550c91fd7005566f19c079cb7a503223cf
 %global shortcommit31 %(c=%{commit31}; echo ${c:0:7})
 %global srcname31 yaml-cpp
 
-%global commit32 cd6dd7b75d126a855be1f9f76570ee5a850c6061
+%global commit32 022575848782a4801fd150fdbc927effcbca0864
 %global shortcommit32 %(c=%{commit32}; echo ${c:0:7})
 %global srcname32 capstone
 
@@ -119,11 +115,11 @@
 %global shortcommit33 %(c=%{commit33}; echo ${c:0:7})
 %global srcname33 xxHash
 
-%global commit34 6dd38b8a1dbaa7863aa907045f32308a56a6ff5d
+%global commit34 9afb99746f0f5fc94ac8aef737053ae0481ba8d1
 %global shortcommit34 %(c=%{commit34}; echo ${c:0:7})
 %global srcname34 concurrentqueue
 
-%global commit35 48bcf39a661a13be22666ac64db8a7f886f2637e
+%global commit35 79524ddd08a4ec981b7fea76afd08ee05f83755d
 %global shortcommit35 %(c=%{commit35}; echo ${c:0:7})
 %global srcname35 spdlog
 
@@ -139,7 +135,7 @@
 %global shortcommit262 %(c=%{commit262}; echo ${c:0:7})
 %global srcname262 libzrif
 
-%global commit263 4094450bcaac2256236d61ae3a730425ae47bd39
+%global commit263 d14381f871a69009bd18b2aaec2213a6738bebba
 %global shortcommit263 %(c=%{commit263}; echo ${c:0:7})
 %global srcname263 psvpfsparser
 
@@ -154,6 +150,7 @@
 %global miniz_ver 3.0.0
 %global vk_ver 1.4.303
 
+%global appname org.vita3k.vita3k
 %global pkgname Vita3K
 %global vc_url  https://github.com/%{pkgname}
 %global kg_url https://github.com/KhronosGroup
@@ -163,7 +160,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           vita3k
-Version:        0.2.0.3957
+Version:        0.2.0.4067
 Release:        1%{?dist}
 Summary:        Experimental PlayStation Vita emulator
 
@@ -178,7 +175,7 @@ Source11:       %{kg_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortc
 Source12:       https://github.com/Macdu/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 Source120:      https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname120}/archive/%{commit120}/%{srcname120}-%{shortcommit120}.tar.gz
 %endif
-Source13:       https://github.com/aantron/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
+Source13:       %{vc_url}/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
 Source15:       %{vc_url}/%{srcname15}/archive/%{commit15}/%{srcname15}-%{shortcommit15}.tar.gz
 Source16:       %{vc_url}/%{srcname16}/archive/%{commit16}/%{srcname16}-%{shortcommit16}.tar.gz
 %if %{without ffmpeg}
@@ -191,8 +188,6 @@ Source18:       https://github.com/fmtlib/%{srcname18}/archive/%{commit18}/%{src
 %endif
 Source19:       %{kg_url}/%{srcname19}/archive/%{commit19}/%{srcname19}-%{shortcommit19}.tar.gz
 Source20:       https://github.com/google/%{srcname20}/archive/%{commit20}/%{srcname20}-%{shortcommit20}.tar.gz
-Source21:       %{oc_url}/%{srcname21}/archive/%{commit21}/%{srcname21}-%{shortcommit21}.tar.gz
-Source22:       %{oc_url}/%{srcname22}/archive/%{commit22}/%{srcname22}-%{shortcommit22}.tar.gz
 Source23:       %{vc_url}/%{srcname23}/archive/%{commit23}/%{srcname23}-%{shortcommit23}.tar.gz
 %if %{without nfd}
 Source24:       https://github.com/btzy/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
@@ -221,9 +216,8 @@ Source35:       https://github.com/gabime/%{srcname35}/archive/%{commit35}/%{src
 %endif
 
 Patch10:        0001-Use-system-libraries.patch
-Patch11:        0001-Fix-shared_path.patch
-Patch12:        0001-Fix-update-settings.patch
-Patch13:        0001-gcc-16-fix.patch
+Patch11:        0001-cmake-do-not-install-docs.patch
+Patch12:        0001-Remove-disabled-itens-from-gui.patch
 Patch500:       0001-Disable-ffmpeg-download.patch
 Patch501:       0001-Remove-ValidationFailedEXTError.patch
 
@@ -243,7 +237,7 @@ BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
 BuildRequires:  desktop-file-utils
-BuildRequires:  ImageMagick
+BuildRequires:  libappstream-glib
 BuildRequires:  boost-devel
 %if %{with capstone}
 BuildRequires:  pkgconfig(capstone) >= 5
@@ -285,6 +279,16 @@ BuildRequires:  nativefiledialog-extended-devel >= 1.2.0
 Provides:       bundled(%{srcname24}) = 0~git%{shortcommit24}
 %endif
 BuildRequires:  cmake(pugixml)
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6Core)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Multimedia)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6Svg)
+BuildRequires:  cmake(Qt6Widgets)
+BuildRequires:  qt6-qtbase-private-devel
+%{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 %if %{with spdlog}
 BuildRequires:  cmake(spdlog) >= 1.15.2
 %else
@@ -306,7 +310,6 @@ Provides:       bundled(%{srcname31}) = 0~git%{shortcommit31}
 BuildRequires:  pkgconfig(zlib)
 
 Requires:       hicolor-icon-theme
-Requires:       mplus-1mn-fonts
 Requires:       vulkan-loader%{?_isa} >= %{vk_ver}
 Requires:       xdg-desktop-portal
 
@@ -320,8 +323,6 @@ Provides:       bundled(%{srcname15}) = 0~git%{shortcommit15}
 Provides:       bundled(%{srcname16}) = 0~git%{shortcommit16}
 Provides:       bundled(%{srcname19}) = 0~git%{shortcommit19}
 Provides:       bundled(%{srcname20}) = 0~git%{shortcommit20}
-Provides:       bundled(%{srcname21}) = 0~git%{shortcommit21}
-Provides:       bundled(%{srcname22}) = 0~git%{shortcommit22}
 Provides:       bundled(%{srcname23}) = 0~git%{shortcommit23}
 Provides:       bundled(%{srcname25}) = 0~git%{shortcommit25}
 Provides:       bundled(%{srcname26}) = 0~git%{shortcommit26}
@@ -367,8 +368,6 @@ cp -p fmt/LICENSE LICENSE.fmt
 %endif
 tar -xf %{S:19} -C %{srcname19} --strip-components 1
 tar -xf %{S:20} -C %{srcname20} --strip-components 1
-tar -xf %{S:21} -C %{srcname21} --strip-components 1
-tar -xf %{S:22} -C %{srcname22} --strip-components 1
 tar -xf %{S:23} -C %{srcname23} --strip-components 1
 %if %{without nfd}
 tar -xf %{S:24} -C %{srcname24} --strip-components 1
@@ -405,7 +404,7 @@ cp -p spdlog/LICENSE LICENSE.spdlog
 sed -e '/find_package/s|spdlog|\0_DISABLED|g' -i CMakeLists.txt
 %endif
 cp -p LibAtrac9/LICENSE LICENSE.LibAtrac9
-cp -p better-enums/LICENSE.md LICENSE.better-enums.md
+cp -p substitute/LICENSE.txt LICENSE.substitute
 %if %{without capstone}
 cp -p capstone/LICENSE.TXT LICENSE.capstone
 %endif
@@ -417,8 +416,6 @@ cp -p ffmpeg/copyright copyright.ffmpeg
 %endif
 cp -p glslang/LICENSE.txt LICENSE.glslang
 cp -p googletest/LICENSE LICENSE.googletest
-cp -p imgui/LICENSE.txt LICENSE.imgui
-cp -p imgui_club/LICENSE.txt LICENSE.imgui_club
 cp -p libfat16/LICENSE LICENSE.libfat16
 cp -p miniz/LICENSE LICENSE.miniz
 cp -p printf/LICENSE LICENSE.printf
@@ -455,19 +452,6 @@ sed \
   -e 's|getenv("APPDIR")|"%{_prefix}"|g' \
   -e 's|usr/share/|share/|' \
   -i vita3k/app/src/app_init.cpp
-
-cat > %{pkgname}.desktop <<'EOF'
-[Desktop Entry]
-Type=Application
-Version=1.0
-Name=Vita3K
-GenericName=PlayStation Vita Emulator
-Comment=Experimental PlayStation Vita emulator
-Categories=Game;Emulator;
-Icon=%{pkgname}
-Exec=%{pkgname}
-Terminal=false
-EOF
 
 %if %{without ffmpeg}
 pushd external/ffmpeg
@@ -521,48 +505,37 @@ mv external/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/external/ffmp
 
 
 %install
-mkdir -p %{buildroot}%{_bindir}
-install -pm0755 %{_vpath_builddir}/bin/%{pkgname} %{buildroot}%{_bindir}/%{pkgname}
+%cmake_install
 
-mkdir -p %{buildroot}%{_datadir}/%{pkgname}/data
-cp -rp %{_vpath_builddir}/bin/{data,lang,shaders-builtin} \
-  %{buildroot}%{_datadir}/%{pkgname}/
+rm -rf %{buildroot}%{_includedir}
+rm -rf %{buildroot}%{_libdir}
+rm -rf %{buildroot}%{_datadir}/cmake
 
-rm -f %{buildroot}%{_datadir}/%{pkgname}/data/fonts/*
-ln -sf ../../../fonts/mplus/mplus-1mn-bold.ttf \
-  %{buildroot}%{_datadir}/%{pkgname}/data/fonts/mplus-1mn-bold.ttf
-
-mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install \
-  --dir %{buildroot}%{_datadir}/applications \
-  %{pkgname}.desktop
-
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/128x128/apps
-ln -s ../../../../%{pkgname}/data/image/icon.png \
-  %{buildroot}%{_datadir}/icons/hicolor/128x128/apps/%{pkgname}.png
-
-for res in 16 22 24 32 36 48 64 72 96 ;do
-  dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
-  mkdir -p ${dir}
-  magick data/image/icon.png -filter Lanczos -resize ${res}x${res} \
-    ${dir}/%{pkgname}.png
-done
+%find_lang %{name} --with-qt
 
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.metainfo.xml
 
 
-%files
+%files -f %{name}.lang
 %license COPYING.txt external/{COPYING,LICENSE,copyright}.*
 %doc README.md
 %{_bindir}/%{pkgname}
-%{_datadir}/%{pkgname}/
-%{_datadir}/applications/%{pkgname}.desktop
-%{_datadir}/icons/hicolor/*/apps/%{pkgname}.*
+%{_datadir}/%{pkgname}/data
+%{_datadir}/%{pkgname}/icons
+%{_datadir}/%{pkgname}/shaders-builtin
+%dir %{_datadir}/%{pkgname}/translations
+%{_datadir}/applications/%{appname}.desktop
+%{_datadir}/icons/hicolor/*/apps/%{appname}.*
+%{_metainfodir}/%{appname}.metainfo.xml
 
 
 %changelog
+* Mon Jul 27 2026 Phantom X <megaphantomx at hotmail dot com> - 0.2.0.4067-1.20260726gitbe69271
+- Qt6
+
 * Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 0.2.0.3806-1.20250714gitcf3d627
 - SDL3
 

@@ -1,4 +1,4 @@
-From f37408f090e66827a1ab8197c677a656ea56aee0 Mon Sep 17 00:00:00 2001
+From e5f8c0c435851da7bd485aa1f1bda087842e526d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 12 Nov 2023 10:41:37 -0300
 Subject: [PATCH] Use system libraries
@@ -8,7 +8,7 @@ Subject: [PATCH] Use system libraries
  1 file changed, 95 insertions(+), 1 deletion(-)
 
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index 4ecef32..0bc88dd 100644
+index a26cd3a..4d78887 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
 @@ -28,15 +28,24 @@ function(check_submodules_present)
@@ -64,9 +64,9 @@ index 4ecef32..0bc88dd 100644
  add_subdirectory(spdlog EXCLUDE_FROM_ALL)
 +endif()
  
- add_library(stb INTERFACE)
- target_include_directories(stb INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/stb")
-@@ -91,8 +114,19 @@ target_include_directories(imgui PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/imgui"
+ add_subdirectory(substitute EXCLUDE_FROM_ALL)
+ 
+@@ -83,8 +106,19 @@ add_subdirectory(libfat16)
  add_library(miniz STATIC miniz/miniz.c miniz/miniz.h)
  target_include_directories(miniz PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/miniz")
  
@@ -86,15 +86,15 @@ index 4ecef32..0bc88dd 100644
  # Cubeb setup, from https://github.com/RPCS3/rpcs3/blob/master/3rdparty/cubeb/CMakeLists.txt
  set(BUILD_SHARED_LIBS FALSE CACHE BOOL "Don't build shared libs")
  set(BUILD_TESTS FALSE CACHE BOOL "Don't build tests")
-@@ -114,6 +148,7 @@ elseif (ARCHITECTURE STREQUAL "x86_64")
+@@ -106,6 +140,7 @@ elseif (ARCHITECTURE STREQUAL "x86_64")
  		_USE_SSE2
  	)
  endif ()
 +endif()
  
  if(ANDROID)
- 	add_subdirectory(libadrenotools)
-@@ -143,9 +178,16 @@ endif()
+ 	if(ARCHITECTURE STREQUAL "arm64")
+@@ -140,9 +175,16 @@ endif()
  add_library(vita-toolchain INTERFACE)
  target_include_directories(vita-toolchain INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/vita-toolchain/src")
  
@@ -111,7 +111,7 @@ index 4ecef32..0bc88dd 100644
  
  if(USE_DISCORD_RICH_PRESENCE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/discord_game_sdk.zip")
-@@ -221,12 +263,22 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
+@@ -220,12 +262,22 @@ target_include_directories(dlmalloc PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/dlmalloc
  target_compile_definitions(dlmalloc PUBLIC ONLY_MSPACES=1)
  target_compile_definitions(dlmalloc PUBLIC USE_LOCK=0)
  
@@ -134,7 +134,7 @@ index 4ecef32..0bc88dd 100644
  target_include_directories(vulkan INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/VulkanMemoryAllocator-Hpp/Vulkan-Headers/include")
  if(APPLE)
  	if(NOT EXISTS "${CMAKE_BINARY_DIR}/external/MoltenVK-macos.tar")
-@@ -261,16 +313,43 @@ elseif(ANDROID AND NOT (CMAKE_BUILD_TYPE STREQUAL "Release"))
+@@ -264,16 +316,43 @@ elseif(ANDROID AND NOT (CMAKE_BUILD_TYPE STREQUAL "Release"))
  		file(COPY "${CMAKE_BINARY_DIR}/external/validation_layers/${VALIDATION_BINARY}/${ANDROID_ABI}" DESTINATION "${CMAKE_CURRENT_SOURCE_DIR}/../android/prebuilt")
  	endif()
  endif()
@@ -178,7 +178,7 @@ index 4ecef32..0bc88dd 100644
  
  if(APPLE OR NOT FORCE_BUILD_OPENSSL_MAC)
  	execute_process(
-@@ -394,6 +473,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
+@@ -403,6 +482,13 @@ add_library(libatrac9 STATIC ${LIBATRAC9_SOURCES})
  
  target_include_directories(libatrac9 PUBLIC LibAtrac9/C/src)
  
@@ -192,7 +192,7 @@ index 4ecef32..0bc88dd 100644
  option(BUILD_SHARED_LIBS "Build shared library" OFF)
  option(XXHASH_BUILD_XXHSUM "Build the xxhsum binary" OFF)
  option(XXH_X86DISPATCH_ALLOW_AVX "Allow building XXH3 with AVX even if it crashes on SSE2-Only CPUs" OFF)
-@@ -404,6 +490,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
+@@ -413,6 +499,7 @@ add_subdirectory(xxHash/cmake_unofficial EXCLUDE_FROM_ALL)
  if(XXH_X86DISPATCH_ALLOW_AVX)
  	target_compile_definitions(xxhash PRIVATE XXH_X86DISPATCH_ALLOW_AVX)
  endif()
@@ -200,7 +200,7 @@ index 4ecef32..0bc88dd 100644
  
  # Tracy
  if(NOT (CMAKE_BUILD_TYPE STREQUAL "Release"))
-@@ -456,9 +543,16 @@ endif()
+@@ -468,9 +555,16 @@ endif()
  set(NFD_PORTAL ON)
  
  if(NOT ANDROID)
@@ -218,5 +218,5 @@ index 4ecef32..0bc88dd 100644
  endif()
 +endif()
 -- 
-2.53.0
+2.55.0
 

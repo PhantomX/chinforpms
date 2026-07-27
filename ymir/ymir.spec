@@ -13,9 +13,9 @@
 %bcond avx2 0
 %bcond rtmidi 0
 
-%global commit e020dfd112ad2a2cf0e34a6fa6ad71b8c339de02
+%global commit 2f135da37adfe04ffb88be7627a1af2b7ea2b600
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260622
+%global date 20260723
 %bcond snapshot 1
 
 %global commit10 1e2def448e43fb3362123ab5ff039c39e1ba5cfd
@@ -50,7 +50,7 @@
 
 Name:           ymir
 Version:        0.4.0
-Release:        0.1%{?dist}
+Release:        0.2%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
@@ -72,6 +72,7 @@ Source14:       https://github.com/thestk/%{srcname14}/archive/%{commit14}/%{src
 Patch0:         0001-Use-system-libraries.patch
 Patch1:         0001-Set-SDL-application-name.patch
 Patch3:         0001-Remove-update-checker.patch
+Patch4:         0001-Remove-Discord-RPC-support.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
@@ -119,10 +120,11 @@ Provides:       bundled(stb) = 0~git%{shortcommit13}
 %prep
 %autosetup -n %{pkgname}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{version}} -p1
 
+rm -f apps/ymir-sdl3/src/app/services/discord_rpc_service.*
 rm -f apps/ymir-sdl3/src/app/services/update_checker_service.*
 
 pushd vendor
-rm -rf libchdr lz4 xxHash
+rm -rf discord-rpc libchdr lz4 xxHash
 tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
 tar -xf %{S:11} -C imgui/imgui --strip-components 1
 tar -xf %{S:12} -C mio/ --strip-components 1

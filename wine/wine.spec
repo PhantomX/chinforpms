@@ -91,6 +91,9 @@
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
+%global fgw_id d2802b2555ac599b89a78d83a9828ab965716ef0
+%global fgw_url https://github.com/BrandowLucas/fitgirl-wine/raw/%{fgw_id}/patches
+
 %if 0%{?wine_staging}
 %global cap_st cap_sys_nice,
 %global wine_staging_opts -W server-Stored_ACLs -W dcomp-DCompositionCreateDevice2
@@ -121,7 +124,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.14
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -195,10 +198,10 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/11468.patch#/%{name}-whq-mr11468.patch
+Patch706:        %{whq_murl}/-/merge_requests/11465.patch#/%{name}-whq-mr11465.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-# https://bugs.winehq.org/show_bug.cgi?id=59472
-Patch711:        %{name}-bug59472.patch
+Patch709:        %{whq_murl}/-/merge_requests/11476.patch#/%{name}-whq-mr11476.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -233,6 +236,10 @@ Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
 Patch1304:       0001-win32u-add-env-switch-to-disable-wm-decorations.patch
 Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 Patch1306:       0001-win32u-Partially-revert-Move-client-surface-rect-com.patch
+
+Patch1400:       %{fgw_url}/virtual.patch#/wine-fgw-virtual.patch
+Patch1401:       %{fgw_url}/wine-message-progress-rendering.patch#/wine-fgw-wine-message-progress-rendering.patch
+Patch1402:       %{fgw_url}/wine-pipe-file-position.patch#/wine-fgw-wine-pipe-file-position.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -790,8 +797,10 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
+%patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
+%patch -P 709 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -832,7 +841,9 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %patch -P 1304 -p1
 %patch -P 1305 -p1
 %patch -P 1306 -p1
-%patch -P 711 -p1
+%patch -P 1400 -p1
+%patch -P 1401 -p1
+%patch -P 1402 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2467,6 +2478,9 @@ fi
 
 
 %changelog
+* Sun Jul 26 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.14-101
+- Add fgw patches
+
 * Sat Jul 25 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.14-100
 - 11.14
 

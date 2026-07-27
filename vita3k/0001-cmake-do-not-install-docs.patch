@@ -1,0 +1,32 @@
+From 550af4d247c6760cc20b53bfd743ae5251ef9dee Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sun, 26 Jul 2026 21:27:18 -0300
+Subject: [PATCH] cmake: do not install docs
+
+---
+ vita3k/CMakeLists.txt | 9 ---------
+ 1 file changed, 9 deletions(-)
+
+diff --git a/vita3k/CMakeLists.txt b/vita3k/CMakeLists.txt
+index 8808485..7841a2a 100644
+--- a/vita3k/CMakeLists.txt
++++ b/vita3k/CMakeLists.txt
+@@ -379,15 +379,6 @@ elseif(LINUX)
+ 			"${CMAKE_SOURCE_DIR}/dist/linux/${VITA3K_APP_ID}.desktop"
+ 			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+ 			DESTINATION "${CMAKE_INSTALL_DATADIR}/applications/")
+-		install(FILES
+-			"${CMAKE_SOURCE_DIR}/COPYING.txt"
+-			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+-			DESTINATION "${CMAKE_INSTALL_DATADIR}/licenses/${VITA3K_APP_NAME}/"
+-			RENAME "LICENSE")
+-		install(FILES
+-			"${CMAKE_SOURCE_DIR}/README.md"
+-			PERMISSIONS OWNER_WRITE OWNER_READ GROUP_READ WORLD_READ
+-			DESTINATION "${CMAKE_INSTALL_DOCDIR}/")
+ 
+ 		if(USE_DISCORD_RICH_PRESENCE AND ARCHITECTURE STREQUAL "x86_64")
+ 			install(LIBRARY
+-- 
+2.55.0
+
