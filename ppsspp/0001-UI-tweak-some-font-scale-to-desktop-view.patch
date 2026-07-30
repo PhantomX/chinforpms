@@ -1,4 +1,4 @@
-From 76f31e026debc963e67d8517d81e355a74203c8e Mon Sep 17 00:00:00 2001
+From 21d14caa9c33c18a96f79738af7375980252dbe4 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 14 Mar 2023 11:59:09 -0300
 Subject: [PATCH] UI: tweak some font scale to desktop view
@@ -9,7 +9,7 @@ Subject: [PATCH] UI: tweak some font scale to desktop view
  2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/UI/DebugOverlay.cpp b/UI/DebugOverlay.cpp
-index 8a4e9e9..77a67f5 100644
+index 6f99e43..1492f86 100644
 --- a/UI/DebugOverlay.cpp
 +++ b/UI/DebugOverlay.cpp
 @@ -44,7 +44,7 @@ static void DrawDebugStats(UIContext *ctx, const Bounds &bounds) {
@@ -19,9 +19,9 @@ index 8a4e9e9..77a67f5 100644
 -	ctx->Draw()->SetFontScale(.7f, .7f);
 +	ctx->Draw()->SetFontScale(.4f, .4f);
  
- 	__DisplayGetDebugStats(statbuf, sizeof(statbuf));
- 	ctx->Draw()->DrawTextRect(ubuntu24, statbuf, bounds.x + 11, bounds.y + 31, left, bounds.h - 30, 0xc0000000, FLAG_DYNAMIC_ASCII);
-@@ -291,7 +291,7 @@ void DrawCrashDump(UIContext *ctx, const Path &gamePath) {
+ 	StringWriter w(statbuf, sizeof(statbuf));
+ 	w.F("Kernel processing time: %0.2f ms\n"
+@@ -304,7 +304,7 @@ void DrawCrashDump(UIContext *ctx, const Path &gamePath) {
  	ctx->Flush();
  	if (ctx->Draw()->GetFontAtlas()->getFont(ubuntu24))
  		ctx->BindFontTexture();
@@ -30,7 +30,7 @@ index 8a4e9e9..77a67f5 100644
  	ctx->Draw()->DrawTextShadow(ubuntu24, sy->T_cstr("Game crashed"), x, y, 0xFFFFFFFF);
  
  	char statbuf[4096];
-@@ -365,7 +365,7 @@ sysName.c_str(), sysVersion, GetCompilerABI(),
+@@ -378,7 +378,7 @@ sysName.c_str(), sysVersion, GetCompilerABI(),
  crcStr
  );
  
@@ -39,7 +39,7 @@ index 8a4e9e9..77a67f5 100644
  	ctx->Draw()->DrawTextShadow(ubuntu24, statbuf, x, y, 0xFFFFFFFF);
  	y += 160;
  
-@@ -413,7 +413,7 @@ Invalid / Unknown (%d)
+@@ -426,7 +426,7 @@ Invalid / Unknown (%d)
  
  	y += 40;
  
@@ -48,7 +48,7 @@ index 8a4e9e9..77a67f5 100644
  
  	ctx->Draw()->DrawTextShadow(ubuntu24, info.stackTrace.c_str(), x, y, 0xFFFFFFFF);
  
-@@ -499,7 +499,7 @@ void DrawFPS(UIContext *ctx, const Bounds &bounds) {
+@@ -512,7 +512,7 @@ void DrawFPS(UIContext *ctx, const Bounds &bounds) {
  #endif
  
  	ctx->BindFontTexture();
@@ -77,5 +77,5 @@ index acd85e1..4e36b7b 100644
  
  	ui_theme.checkOn = ImageID("I_CHECKEDBOX");
 -- 
-2.53.0
+2.55.0
 

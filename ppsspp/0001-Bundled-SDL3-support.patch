@@ -1,0 +1,35 @@
+From dd540bdc7f628e51b5d4b44aac406122b4121196 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 27 Sep 2025 09:01:14 -0300
+Subject: [PATCH] Bundled SDL3 support
+
+---
+ CMakeLists.txt | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 25e64ca..7fdb8f4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -320,6 +320,7 @@ set(SDL_TTF_LIB_TARGET "")
+ set(FONTCONFIG_LIB_TARGET "")
+ 
+ if(NOT LIBRETRO AND NOT IOS AND NOT LOONGARCH64_DEVICE AND NOT ANDROID)
++	if(USE_SYSTEM_LIBSDL3)
+ 	find_package(SDL3 QUIET)
+ 	if(NOT SDL3_FOUND)
+ 		if(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND (EXISTS "/usr/bin/apt" OR EXISTS "/usr/bin/apt-get" OR EXISTS "/etc/debian_version"))
+@@ -341,6 +342,10 @@ if(NOT LIBRETRO AND NOT IOS AND NOT LOONGARCH64_DEVICE AND NOT ANDROID)
+ 	message(STATUS "Using SDL3 and SDL3_ttf")
+ 	add_compile_definitions(USE_SDL3_TTF)
+ 	find_package(Fontconfig QUIET)
++	else()
++	add_subdirectory(ext/sdl3)
++	add_subdirectory(ext/sdl3_ttf)
++	endif()
+ 	if(Fontconfig_FOUND)
+ 		set(FONTCONFIG_LIB_TARGET Fontconfig::Fontconfig)
+ 		add_compile_definitions(USE_SDL3_TTF_FONTCONFIG)
+-- 
+2.55.0
+

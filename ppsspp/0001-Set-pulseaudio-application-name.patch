@@ -19,7 +19,7 @@ index a0cf73d..6a8c265 100644
 +	SDL_SetHint(SDL_HINT_APP_NAME, app_name_nice.c_str());
 +
  	bool joystick_enabled = true;
- 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER | SDL_INIT_AUDIO) < 0) {
+ 	if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_GAMEPAD | SDL_INIT_AUDIO)) {
  		fprintf(stderr, "Failed to initialize SDL with joystick support. Retrying without.\n");
 -- 
 2.49.0

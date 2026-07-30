@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 721d1e323c94d1df9aff8c18ed25af82d78c6d12
+%global commit 08589f48ef1e084e505445c185bba8d1c6d8da69
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260519
+%global date 20260728
 %bcond snapshot 1
 
 # Enable Qt build
@@ -28,8 +28,10 @@
 # Use smaller ffmpeg tarball, with binaries removed beforehand (use Makefile to download)
 %bcond smallffmpeg 1
 %bcond miniupnpc 1
+%bcond pugixml 1
+%global bundlepugixml 1.15.0
 # https://github.com/hrydgard/ppsspp/issues/20508
-%bcond sdl2 1
+%bcond sdl3 1
 %global libsymbolsuffix ()(%{__isa_bits}bit)
 %global libdecor_majver 0
 %bcond local 0
@@ -38,7 +40,7 @@
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
 %global srcname1 %{name}-debugger
 
-%global commit2 1e3b4965632f60b1d85360261d1b9dd45444bc71
+%global commit2 b87f7c6d522d1edba77cfc4fac96ce48a236f806
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 %{name}-ffmpeg
 
@@ -46,7 +48,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 a8d71f0f279eb0d30ecf6af51473b66ae0cf8e8d
+%global commit4 2d7f351e640ec260b43943f07a00c57211940378
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -66,7 +68,7 @@
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 filesystem
 
-%global commit9 ebfe8ca1bf944358e27200d66964fcb4e00e2487
+%global commit9 2ac45d357bce2906bb0f1438f3eaf8ce6e78e3c4
 %global shortcommit9 %(c=%{commit9}; echo ${c:0:7})
 %global srcname9 rcheevos
 
@@ -78,7 +80,7 @@
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 miniupnp
 
-%global commit12 f3271af11ab8591164b871e36520a7210964f3f6
+%global commit12 7648485f14e8e5ee45e8e39b1eb4d3206dbd405a
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 ppsspp-lua
 
@@ -86,7 +88,7 @@
 %global shortcommit130 %(c=%{commit130}; echo ${c:0:7})
 %global srcname130 nanosvg
 
-%global commit140 530fee545c27ffb8524a8f496cbbcfdb687fe8c5
+%global commit140 9e533637b9a13bb0194c75cf43b0bf6d25d8101a
 %global shortcommit140 %(c=%{commit140}; echo ${c:0:7})
 %global srcname140 aemu_postoffice
 
@@ -98,8 +100,8 @@
 %global vc_url  https://github.com/hrydgard
 
 %global jpgc_ver 1.05
-%global sdl2_ver 2.32.10
-%global sdl2_ttf_ver 2.24.0
+%global sdl3_ver 3.4.12
+%global sdl3_ttf_ver 3.2.2
 %global vma_ver 3.3.0
 
 %if %{with qt}
@@ -114,7 +116,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.4.40
+Version:        1.20.4.788
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1
@@ -128,7 +130,7 @@ License: %{shrink:
     WTF AND
     Zlib
     %{!?with_ffmpeg:AND GPL-3.0-or-later}
-    %{!?with_sdl2:AND Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)}
+    %{!?with_sdl3:AND Zlib AND MIT AND Apache-2.0 AND (Apache-2.0 OR MIT)}
 }
 URL:            http://www.ppsspp.org/
 
@@ -159,9 +161,9 @@ Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortc
 %endif
 Source130:      %{vc_url}/%{srcname130}/archive/%{commit130}/%{srcname130}-%{shortcommit130}.tar.gz
 Source140:      https://github.com/Kethen/%{srcname140}/archive/%{commit140}/%{srcname140}-%{shortcommit140}.tar.gz
-%if %{without sdl2}
-Source900:      https://www.libsdl.org/release/SDL2-%{sdl2_ver}.tar.gz
-Source901:      https://github.com/libsdl-org/SDL_ttf/releases/download/release-%{sdl2_ttf_ver}/SDL2_ttf-%{sdl2_ttf_ver}.tar.gz
+%if %{without sdl3}
+Source900:      https://www.libsdl.org/release/SDL2-%{sdl3_ver}.tar.gz
+Source901:      https://github.com/libsdl-org/SDL_ttf/releases/download/release-%{sdl3_ttf_ver}/SDL3_ttf-%{sdl3_ttf_ver}.tar.gz
 %endif
 
 Source1000:     %{name}.appdata.xml
@@ -175,12 +177,10 @@ Patch4:         0001-Use-system-vulkan-headers.patch
 Patch5:         0001-tools-cmake-fixes.patch
 Patch6:         0001-UI-tweak-some-font-scale-to-desktop-view.patch
 Patch7:         0001-atlastool-add-missing-header.patch
-Patch8:         0001-Bundled-SDL2-support.patch
+Patch8:         0001-Bundled-SDL3-support.patch
 %if %{with local}
 Patch499:       0001-Local-changes.patch
 %endif
-Patch900:       SDL2-2.0.22-prefer-wayland.patch
-Patch901:       SDL2-2.0.3-cmake-joystick.patch
 
 %if %{without ffmpeg}
 ExclusiveArch:  %{ix86} x86_64 %{arm} %{mips32}
@@ -212,6 +212,7 @@ BuildRequires:  ffmpeg-devel
 %else
 Provides:       bundled(ffmpeg) = %{bundleffmpegver}
 %endif
+BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(gl)
 %if %{with egl}
@@ -232,13 +233,19 @@ BuildRequires:  pkgconfig(miniupnpc) >= 2.1
 %else
 Provides:       bundled(miniupnpc) = 0~git%{shortcommit11}
 %endif
+%if %{with pugixml}
+BuildRequires:  cmake(pugixml) >= %{bundlepugixml}
+%else
+Provides:       bundled(pugixml) = %{bundlepugixml}
+%endif
 BuildRequires:  pkgconfig(RapidJSON)
-%if %{with sdl2}
-BuildRequires:  pkgconfig(sdl2)
-BuildRequires:  cmake(SDL2_ttf)
+%if %{with sdl3}
+BuildRequires:  cmake(SDL3)
+BuildRequires:  cmake(SDL3_ttf)
 %else
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(gbm)
+BuildRequires:  pkgconfig(glu)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xcursor)
@@ -248,6 +255,7 @@ BuildRequires:  pkgconfig(xrandr)
 BuildRequires:  pkgconfig(xrender)
 BuildRequires:  pkgconfig(xscrnsaver)
 BuildRequires:  pkgconfig(xinerama)
+BuildRequires:  pkgconfig(xfixes)
 BuildRequires:  pkgconfig(systemd)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libpulse-simple)
@@ -256,13 +264,17 @@ BuildRequires:  pkgconfig(libpipewire-0.3)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(ibus-1.0)
 BuildRequires:  pkgconfig(libdecor-%{libdecor_majver})
+BuildRequires:  pkgconfig(wayland-protocols)
+BuildRequires:  pkgconfig(wayland-scanner)
 BuildRequires:  pkgconfig(xkbcommon)
+BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(vulkan)
-Provides:       bundled(SDL2) = %{sdl2_ver}
+Provides:       bundled(SDL3) = %{sdl3_ver}
 # Ensure libdecor is pulled in when libwayland-client is (rhbz#1992804)
 Requires:       (libdecor-%{libdecor_majver}.so.%{libdecor_majver}%{libsymbolsuffix} if libwayland-client)
 BuildRequires:  pkgconfig(harfbuzz)
-Provides:       bundled(SDL2_ttf) = %{sdl2_ttf_ver}
+BuildRequires:  pkgconfig(plutosvg)
+Provides:       bundled(SDL3_ttf) = %{sdl3_ttf_ver}
 %endif
 BuildRequires:  pkgconfig(snappy)
 BuildRequires:  pkgconfig(wayland-client)
@@ -352,18 +364,16 @@ tar -xf %{SOURCE10} -C ext/OpenXR-SDK --strip-components 1
 tar -xf %{SOURCE12} -C ext/lua --strip-components 1
 tar -xf %{SOURCE130} -C ext/nanosvg --strip-components 1
 tar -xf %{SOURCE140} -C ext/aemu_postoffice --strip-components 1
-%if %{without sdl2}
-mkdir ext/sdl2
-tar -xf %{SOURCE900} -C ext/sdl2 --strip-components 1
-%patch -P 900 -p1 -d ext/sdl2
-%patch -P 901 -p1 -d ext/sdl2
-mkdir ext/sdl2_ttf
-tar -xf %{SOURCE901} -C ext/sdl2_ttf --strip-components 1
+%if %{without sdl3}
+mkdir ext/sdl3
+tar -xf %{SOURCE900} -C ext/sdl3 --strip-components 1
+mkdir ext/sdl3_ttf
+tar -xf %{SOURCE901} -C ext/sdl3_ttf --strip-components 1
 sed \
   -e '/CMAKE_POSITION_INDEPENDENT_CODE/d' \
   -e '/option(BUILD_SHARED_LIBS/d' \
-  -i ext/sdl2_ttf/CMakeLists.txt
-sed -i 's/\r//' ext/sdl2*/LICENSE.txt
+  -i ext/sdl3_ttf/CMakeLists.txt
+sed -i 's/\r//' ext/sdl32*/LICENSE.txt
 %endif
 %endif
 
@@ -393,9 +403,9 @@ cp -p udis86/LICENSE LICENSE.udis86
 cp -p OpenXR-SDK/LICENSE LICENSE.OpenXR-SDK
 cp -p portable-file-dialogs/COPYING COPYING.pfd
 cp -p aemu_postoffice/gpl-3.0.txt COPYING.aemu_postoffice
-%if %{without sdl2}
-cp -p sdl2/LICENSE.txt LICENSE.sdl2
-cp -p sdl2_ttf/LICENSE.txt LICENSE.sdl2_ttf
+%if %{without sdl3}
+cp -p sdl3/LICENSE.txt LICENSE.sdl3
+cp -p sdl3_ttf/LICENSE.txt LICENSE.sdl3_ttf
 %endif
 popd
 
@@ -404,6 +414,12 @@ rm -rf ext/miniupnp
 %else
 tar -xf %{SOURCE11} -C ext/miniupnp --strip-components 1
 cp ext/miniupnp/LICENSE ext/LICENSE.miniupnp
+%endif
+
+%if %{with pugixml}
+rm -rf ext/pugixml
+%else
+sed -e 's|pugixml_FOUND|pugixml_DISABLED|g' -i ext/CMakeLists.txt
 %endif
 
 %if "%{verminor}" == "0"
@@ -433,9 +449,6 @@ sed \
 
 sed \
   -e 's| -O2 | |g' \
-  -i CMakeLists.txt
-
-sed \
   -e 's|"-O2"|""|g' \
   -i CMakeLists.txt
 
@@ -514,7 +527,7 @@ popd
 %cmake \
   -DCMAKE_BUILD_TYPE:STRING="Release" \
   -DCMAKE_SKIP_RPATH:BOOL=ON \
-  -DATLAS_TOOL:BOOL=ON \
+  -DATLAS_TOOL:BOOL=OFF \
 %if %{with egl}
   -DUSING_EGL:BOOL=ON \
   -DUSING_GLES2:BOOL=ON \
@@ -556,28 +569,32 @@ popd
 %if %{with qt}
   -DUSING_QT_UI:BOOL=ON \
 %endif
-%if %{with sdl2}
-  -DUSE_SYSTEM_LIBSDL2:BOOL=ON \
+%if %{with sdl3}
+  -DUSE_SYSTEM_LIBSDL3:BOOL=ON \
 %else
-  -DUSE_SYSTEM_LIBSDL2:BOOL=OFF \
-  -DSDL_STATIC_ENABLED_BY_DEFAULT:BOOL=ON \
-  -DSDL_SHARED_ENABLED_BY_DEFAULT:BOOL=OFF \
-  -DSDL2_DISABLE_INSTALL:BOOL=ON \
-  -DSDL_DLOPEN:BOOL=ON \
-  -DSDL_VIDEO_KMSDRM:BOOL=ON \
-  -DSDL_ALSA:BOOL=ON \
-  -DSDL_ARTS:BOOL=OFF \
-  -DSDL_ESD:BOOL=OFF \
-  -DSDL_JACK_SHARED:BOOL=ON \
-  -DSDL_NAS:BOOL=OFF \
-  -DSDL_PULSEAUDIO_SHARED:BOOL=ON \
-  -DSDL_PIPEWIRE_SHARED:BOOL=ON \
-  -DSDL_VIDEO_WAYLAND:BOOL=ON \
-  -DSDL_LIBDECOR_SHARED:BOOL=ON \
-  -DSDL_VIDEO_VULKAN:BOOL=ON \
-  -DSDL2TTF_BUILD_SHARED_LIBS:BOOL=OFF \
-  -DSDL2TTF_HARFBUZZ:BOOL=ON \
-  -DSDL2TTF_SAMPLES:BOOL=OFF \
+  -DUSE_SYSTEM_LIBSDL3:BOOL=OFF \
+  -DSDL_INSTALL_DOCS:BOOL=OFF \
+  -DSDL_DEPS_SHARED:BOOL=ON \
+  -DSDL_SSE3:BOOL=OFF \
+  -DSDL_RPATH:BOOL=OFF \
+  -DSDL_STATIC:BOOL=ON \
+  -DCMAKE_POSITION_INDEPENDENT_CODE:BOOL=ON \
+  -DSDL_X11_XSCRNSAVER:BOOL=ON \
+  -DSDL_STATIC_DEFAULT:BOOL=ON \
+  -DSDL_SHARED_DEFAULT:BOOL=OFF \
+  -DSDL3_DISABLE_INSTALL:BOOL=ON \
+  -DSDLTTF_BUILD_SHARED_LIBS:BOOL=OFF \
+  -DSDLTTF_HARFBUZZ:BOOL=ON \
+  -DSDLTTF_INSTALL:BOOL=OFF \
+  -DSDLTTF_INSTALL_CPACK:BOOL=OFF \
+  -DSDLTTF_INSTALL_MAN:BOOL=OFF \
+  -DSDLTTF_PLUTOSVG:BOOL=ON \
+  -DSDLTTF_RELOCATABLE:BOOL=OFF \
+  -DSDLTTF_SAMPLES:BOOL=OFF \
+  -DSDLTTF_SAMPLES_INSTALL:BOOL=OFF \
+  -DSDLTTF_STRICT:BOOL=ON \
+  -DSDLTTF_VENDORED:BOOL=OFF \
+  -DSDLTTF_WERROR:BOOL=OFF \
 %endif
 %{nil}
 
@@ -594,7 +611,7 @@ popd
 rm -rf %{buildroot}%{_includedir}
 rm -rf %{buildroot}%{_libdir}
 
-install -pm0755 %{_vpath_builddir}/AtlasTool %{buildroot}%{_bindir}/
+install -pm0755 ext/native/tools/%{_vpath_builddir}/build/atlastool %{buildroot}%{_bindir}/
 
 install -pm0755 ext/native/tools/%{_vpath_builddir}/build/zimtool \
   %{buildroot}%{_bindir}/
@@ -606,10 +623,12 @@ ln -sf ../../SDL_GameControllerDB/gamecontrollerdb.txt \
 rm -f %{buildroot}%{_datadir}/%{name}/assets/Inconsolata-Medium.ttf
 ln -sf ../../fonts/levien-inconsolata/Inconsolata-Medium.ttf \
   %{buildroot}%{_datadir}/%{name}/assets/Inconsolata-Medium.ttf
-  
-rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
-ln -sf ../../fonts/google-roboto/RobotoCondensed-Regular.ttf \
-  %{buildroot}%{_datadir}/%{name}/assets/Roboto-Condensed.ttf
+
+for font in Bold Italic Light Regular ;do
+  rm -f %{buildroot}%{_datadir}/%{name}/assets/Roboto_Condensed-${font}.ttf
+  ln -sf ../../fonts/google-roboto/RobotoCondensed-${font}.ttf \
+    %{buildroot}%{_datadir}/%{name}/assets/Roboto_Condensed-${font}.ttf
+done
 
 %if %{with qt}
   install -pm 644 Qt/languages/*.ts %{buildroot}%{_datadir}/%{name}/assets/lang/
@@ -663,11 +682,14 @@ appstream-util validate-relax --nonet \
 %files tools
 %doc ext/native/tools/README.txt
 %license LICENSE.TXT
-%{_bindir}/AtlasTool
+%{_bindir}/atlastool
 %{_bindir}/zimtool
 
 
 %changelog
+* Wed Jul 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.4.788-100.20260728git08589f4
+- SDL3
+
 * Wed May 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.20.4.40-100.20260519git721d1e3
 - 1.20.4
 
