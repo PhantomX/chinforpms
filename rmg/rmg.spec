@@ -5,9 +5,9 @@
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 7e4e402f277803d3a998e96ea04064063bd1551a
+%global commit 9dced048f747085f942f55941dd4304279acc145
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260224
+%global date 20260729
 %bcond snapshot 1
 
 %bcond rust 0
@@ -22,8 +22,8 @@
 %global vc_url https://github.com/Rosalie241
 
 Name:           rmg
-Version:        0.8.9
-Release:        3%{?dist}
+Version:        0.9.0
+Release:        1%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -76,9 +76,9 @@ Requires:       vulkan-loader%{?_isa}
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
-Provides:       bundled(mupen64plus) = 0~git
-Provides:       bundled(imgui) = 0~git
-Provides:       bundled(SDL3_net) = 0~git
+Provides:       bundled(mupen64plus) = 0~gitc5b1e72
+Provides:       bundled(imgui) = 0~gitdbb5eea
+Provides:       bundled(SDL3_net) = 0~git4dd9d84
 
 %global __provides_exclude_from ^%{_libdir}/%{pkgname}/.*
 
@@ -194,6 +194,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Mon Aug 03 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.0-1.20260729git9dced04
+- 0.9,0
+
 * Mon Feb 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.9-2.20260123gite9167db
 - lzma-sdk rebuild
 
