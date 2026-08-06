@@ -205,7 +205,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.1.5
+%define specrpmversion 7.1.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -234,7 +234,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 1cb50063d3e79af33499000798084b78b65d3685
+%global opensuse_id d12b546cb857e654854c534924f0753404a7d9f2
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20260313
 
@@ -1273,11 +1273,8 @@ Patch5000: https://cdn.kernel.org/pub/linux/kernel/v%{kversion}.x/%{stable_patch
 %if !%{nopatches}
 
 Patch1: patch-%{patchversion}-redhat.patch
-Patch2:     %{ark_url}/4735f2eec63a6a192b69a79921f8559570f1ebf9.patch#/kernel-ark-4735f2e.patch
-Patch7:     %{ark_url}/1cbc8746210f2e89a1eacd96824cba825c38fe9d.patch#/kernel-ark-1cbc874.patch
-Patch8:     %{ark_url}/d9fce3c9c9d63614ee75b5f754776c37b791906d.patch#/kernel-ark-d9fce3c.patch
-Patch9:     %{ark_url}/5756e32f73944676e04836e6bbece6f93a39f0a0.patch#/kernel-ark-5756e32.patch
-Patch10:    %{ark_url}/6f9d82f308cc06fdeb6cb1ca5d1ff162797f695f.patch#/kernel-ark-6f9d82f.patch
+Patch2:     %{ark_url}/abd818c67ba5b050e679014d01e2980d48db0f7e.patch#/kernel-ark-abd818c.patch
+Patch3:     %{ark_url}/9f166bfb17130303352cef32fca1860d76fe60b1.patch#/kernel-ark-9f166bf.patch
 
 # empty final patch to facilitate testing of kernel patches
 Patch999999: linux-kernel-test.patch
@@ -1296,7 +1293,6 @@ Patch1012: %{opensuse_url}/KVM-x86-tdx-Do-not-print-error-message-on-non-presen.
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2001: %{zen_url}/commit/eda711a49eba186853b87d721a8f5b72c29a44ed.patch#/zen-v%{patchversion}-sauce-eda711a.patch
 Patch2002: %{zen_url}/commit/789df99d89235ce06c4c92292adc10b0bb67d101.patch#/zen-v%{patchversion}-sauce-789df99.patch
 Patch2003: %{zen_url}/commit/ed9969e7e41661b43327eef5997f0c8095f8730b.patch#/zen-v%{patchversion}-sauce-ed9969e.patch
 Patch2004: %{zen_url}/commit/291a61e2d6950cd561a7715a782fc54afb87a5a1.patch#/zen-v%{patchversion}-sauce-291a61e.patch
@@ -1339,9 +1335,6 @@ Patch7231:  %{pf_url}/f6c6bccfb1fc96dd73df48197277b1b7eaedd6c8.patch%{pf_antibot
 Patch7400:  %{pf_url}/304c849e33d5be82ce90422868ea1fea9ad860bd.patch%{pf_antibot}#/pf-cb-304c849.patch
 Patch7401:  %{pf_url}/b4628ba34e493ca1704be009b811b317a74f8f3a.patch%{pf_antibot}#/pf-cb-b4628ba.patch
 Patch7402:  %{pf_url}/c0983800e8bd7ab8c9e5803f5079edf815aadd2c.patch%{pf_antibot}#/pf-cb-c098380.patch
-Patch7403:  %{pf_url}/f60fc58b0fa4408810f6d02c15ecff2d9bbae38b.patch%{pf_antibot}#/pf-cb-f60fc58.patch
-Patch7500:  0001-pf-cb-f60fc58-fixup-1.patch
-Patch7501:  0001-pf-cb-f60fc58-fixup-2.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -1716,7 +1709,7 @@ AutoReqProv: no\
 %description %{?1:%{1}-}debuginfo\
 This package provides debug information for package %{name}%{?1:-%{1}}.\
 This is required to use SystemTap with %{name}%{?1:-%{1}}-%{KVERREL}.\
-%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} --keep-section '.BTF' -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
+%{expand:%%global _find_debuginfo_opts %{?_find_debuginfo_opts} --keep-section '.BTF' --keep-section '.rustc' -p '.*\/usr\/src\/kernels/.*|XXX' -o ignored-debuginfo.list -p '/.*/%%{KVERREL_RE}%{?1:[+]%{1}}/.*|/.*%%{KVERREL_RE}%{?1:\+%{1}}(\.debug)?' -o debuginfo%{?1}.list}\
 %{nil}
 
 #
@@ -2305,10 +2298,7 @@ ApplyPatch %{PATCH5000}
 
 ApplyOptionalPatch %{PATCH1}
 ApplyPatch %{PATCH2}
-ApplyPatch %{PATCH7}
-ApplyPatch %{PATCH8}
-ApplyPatch %{PATCH9}
-ApplyPatch %{PATCH10}
+ApplyPatch %{PATCH3}
 
 ApplyOptionalPatch %{PATCH999999}
 
@@ -2330,22 +2320,14 @@ ApplyPatch %{PATCH7231}
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
 %endif
 
 # openSUSE
-%if 0%{?post_factum}
-ApplyPatch %{PATCH7500}
-%endif
 ApplyPatch %{PATCH1010}
-%if 0%{?post_factum}
-ApplyPatch %{PATCH7501}
-%endif
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
 
 ApplyPatch %{PATCH2000}
-ApplyPatch %{PATCH2001}
 ApplyPatch %{PATCH2002}
 ApplyPatch %{PATCH2003}
 ApplyPatch %{PATCH2004}
@@ -3042,6 +3024,14 @@ BuildKernel() {
     fi
     if [ -f tools/objtool/fixdep ]; then
       cp -a tools/objtool/fixdep $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/tools/objtool/ || :
+    fi
+    if ls rust/*.rmeta >/dev/null 2>&1; then
+      mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/rust
+      cp -a rust/*.rmeta $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/rust/ || :
+    fi
+    if ls rust/*.so >/dev/null 2>&1; then
+      mkdir -p $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/rust
+      cp -a rust/*.so $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/rust/ || :
     fi
     if [ -d arch/$Arch/scripts ]; then
       cp -a arch/$Arch/scripts $RPM_BUILD_ROOT/lib/modules/$KernelVer/build/arch/%{_arch} || :
@@ -5062,6 +5052,9 @@ fi\
 #
 #
 %changelog
+* Wed Aug 05 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.6-500.chinfo
+- 7.1.6
+
 * Fri Jul 24 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.5-500.chinfo
 - 7.1.5
 
