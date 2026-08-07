@@ -1,6 +1,6 @@
-%global commit 542c564b43c1a53eb8af1dbadeafb37ff77db968
+%global commit 3177942d5be21c0af5e240ce2f0885a626a4a986
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260222
+%global date 20260804
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -8,7 +8,7 @@
 
 
 Name:           %{pkgname}_ds
-Version:        0.0.7
+Version:        0.0.8
 Release:        1%{?dist}
 Summary:        Tiny SVG rendering library in C
 
@@ -76,6 +76,9 @@ cp plutovg/LICENSE LICENSE.plutovg
 
 
 %changelog
+* Fri Aug 07 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.8-1.20260804git3177942
+- 0.0.8
+
 * Sat Feb 28 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.7-1.20260222git542c564
 - 0.0.7
 
