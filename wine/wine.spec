@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.14
+%global wine_stagingver 11.15
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -123,8 +123,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.14
-Release:        101%{?dist}
+Version:        11.15
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -197,11 +197,13 @@ Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.p
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/11468.patch#/%{name}-whq-mr11468.patch
+Patch705:        %{whq_murl}/-/merge_requests/11617.patch#/%{name}-whq-mr11617.patch
 Patch706:        %{whq_murl}/-/merge_requests/11465.patch#/%{name}-whq-mr11465.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 Patch709:        %{whq_murl}/-/merge_requests/11476.patch#/%{name}-whq-mr11476.patch
+Patch710:        0001-mr11476-fix-up-1.patch
+Patch711:        0001-mr11476-fix-up-2.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -800,7 +802,9 @@ This package adds the opencl driver for wine.
 %patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
+%patch -P 710 -p1
 %patch -P 709 -p1
+%patch -P 711 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2478,6 +2482,9 @@ fi
 
 
 %changelog
+* Sun Aug 09 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.15-100
+- 11.15
+
 * Sun Jul 26 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.14-101
 - Add fgw patches
 

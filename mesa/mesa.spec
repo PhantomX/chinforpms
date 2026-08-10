@@ -101,7 +101,7 @@
 Name:           mesa
 Summary:        Mesa graphics libraries
 # If rc, use "~" instead "-", as ~rc1
-Version:        26.1.6
+Version:        26.2.0
 Release:        100%{?dist}
 
 License:        MIT AND BSD-3-Clause AND SGI-B-2.0
@@ -161,7 +161,7 @@ BuildRequires:  pkgconfig(zlib) >= 1.2.3
 BuildRequires:  pkgconfig(libdisplay-info)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(wayland-scanner)
-BuildRequires:  pkgconfig(wayland-protocols) >= 1.34
+BuildRequires:  pkgconfig(wayland-protocols) >= 1.41
 BuildRequires:  pkgconfig(wayland-client) >= 1.18
 BuildRequires:  pkgconfig(wayland-server) >= 1.18
 BuildRequires:  pkgconfig(wayland-egl-backend) >= 3
@@ -618,20 +618,26 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %{_libdir}/dri/libdril_dri.so
 %{_libdir}/dri/swrast_dri.so
 %{_libdir}/dri/virtio_gpu_dri.so
+%{_datadir}/drirc.d/00-virtio_gpu-defaults.conf
 
 %if 0%{?with_hardware}
 %if 0%{?with_r300}
 %{_libdir}/dri/r300_dri.so
+%{_datadir}/drirc.d/00-r300-defaults.conf
 %endif
 %if 0%{?with_radeonsi}
 %if 0%{?with_r600}
 %{_libdir}/dri/r600_dri.so
+%{_datadir}/drirc.d/00-r600-defaults.conf
 %endif
 %{_libdir}/dri/radeonsi_dri.so
+%{_datadir}/drirc.d/00-radeonsi-defaults.conf
 %endif
 %ifarch %{ix86} x86_64
 %{_libdir}/dri/crocus_dri.so
+%{_datadir}/drirc.d/00-crocus-defaults.conf
 %{_libdir}/dri/iris_dri.so
+%{_datadir}/drirc.d/00-iris-defaults.conf
 %if 0%{?with_i915}
 %{_libdir}/dri/i915_dri.so
 %endif
@@ -640,9 +646,11 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %if 0%{?with_asahi}
 %{_libdir}/dri/apple_dri.so
 %{_libdir}/dri/asahi_dri.so
+%{_datadir}/drirc.d/00-asahi-defaults.conf
 %endif
 %if 0%{?with_d3d12}
 %{_libdir}/dri/d3d12_dri.so
+%{_datadir}/drirc.d/00-d3d12-defaults.conf
 %endif
 %{_libdir}/dri/ingenic-drm_dri.so
 %{_libdir}/dri/imx-drm_dri.so
@@ -660,10 +668,12 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %endif
 %if 0%{?with_v3d}
 %{_libdir}/dri/v3d_dri.so
+%{_datadir}/drirc.d/00-v3d-defaults.conf
 %endif
 %if 0%{?with_freedreno}
 %{_libdir}/dri/kgsl_dri.so
 %{_libdir}/dri/msm_dri.so
+%{_datadir}/drirc.d/00-msm-defaults.conf
 %endif
 %if 0%{?with_etnaviv}
 %{_libdir}/dri/etnaviv_dri.so
@@ -677,10 +687,12 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %if 0%{?with_panfrost}
 %{_libdir}/dri/panfrost_dri.so
 %{_libdir}/dri/panthor_dri.so
+%{_datadir}/drirc.d/00-panfrost-defaults.conf
 %endif
 %{_libdir}/dri/nouveau_dri.so
 %if 0%{?with_vmware}
 %{_libdir}/dri/vmwgfx_dri.so
+%{_datadir}/drirc.d/00-vmwgfx-defaults.conf
 %endif
 %endif
 %if 0%{?with_kmsro}
@@ -713,6 +725,7 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %endif
 %if 0%{?with_vulkan_hw}
 %{_libdir}/dri/zink_dri.so
+%{_datadir}/drirc.d/00-zink-defaults.conf
 %endif
 %if 0%{?with_va}
 %{_libdir}/dri/nouveau_drv_video.so
@@ -749,34 +762,44 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %if 0%{?with_virtio}
 %{_libdir}/libvulkan_virtio.so
 %{_datadir}/vulkan/icd.d/virtio_icd.*.json
+%{_datadir}/drirc.d/00-venus-defaults.conf
 %endif
 %if 0%{?with_vulkan_hw}
 %{_datadir}/drirc.d/00-radv-defaults.conf
 %if 0%{?with_nvk}
 %{_libdir}/libvulkan_nouveau.so
 %{_datadir}/vulkan/icd.d/nouveau_icd.*.json
+%{_datadir}/drirc.d/00-nvk-defaults.conf
 %endif
 %if 0%{?with_d3d12}
 %{_libdir}/libvulkan_dzn.so
 %{_datadir}/vulkan/icd.d/dzn_icd.*.json
+%{_datadir}/drirc.d/00-dzn-defaults.conf
 %endif
 %ifarch %{ix86} x86_64
+%{_datadir}/drirc.d/00-anv-defaults.conf
 %{_libdir}/libvulkan_intel_hasvk.so
 %{_datadir}/vulkan/icd.d/intel_hasvk_icd.*.json
+%{_datadir}/drirc.d/00-hasvk-defaults.conf
 %endif
 %ifarch aarch64 x86_64 %{ix86}
 %if 0%{?with_asahi}
 %{_libdir}/libvulkan_asahi.so
 %{_datadir}/vulkan/icd.d/asahi_icd.*.json
+%{_datadir}/drirc.d/00-hk-defaults.conf
 %endif
 %{_libdir}/libvulkan_broadcom.so
 %{_datadir}/vulkan/icd.d/broadcom_icd.*.json
+%{_datadir}/drirc.d/00-v3dv-defaults.conf
 %{_libdir}/libvulkan_freedreno.so
 %{_datadir}/vulkan/icd.d/freedreno_icd.*.json
+%{_datadir}/drirc.d/00-turnip-defaults.conf
 %{_libdir}/libvulkan_panfrost.so
 %{_datadir}/vulkan/icd.d/panfrost_icd.*.json
+%{_datadir}/drirc.d/00-panvk-defaults.conf
 %{_libdir}/libvulkan_powervr_mesa.so
 %{_datadir}/vulkan/icd.d/powervr_mesa_icd.*.json
+%{_datadir}/drirc.d/00-pvr-defaults.conf
 %endif
 %endif
 
@@ -793,6 +816,7 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 %files vulkan-lavapipe-layer
 %{_libdir}/libvulkan_lvp.so
 %{_datadir}/vulkan/icd.d/lvp_icd.*.json
+%{_datadir}/drirc.d/00-lavapipe-defaults.conf
 
 %files vulkan-overlay
 %doc src/vulkan/overlay-layer/README.rst
@@ -802,6 +826,9 @@ ln -s libGLX_mesa.so.0 %{buildroot}%{_libdir}/libGLX_system.so.0
 
 
 %changelog
+* Sun Aug 09 2026 Phantom X <megaphantomx at hotmail dot com> - 26.2.0-100
+- 26.2.0
+
 * Wed Jul 29 2026 Phantom X <megaphantomx at hotmail dot com> - 26.1.6-100
 - 26.1.6
 
