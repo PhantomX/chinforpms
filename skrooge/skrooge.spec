@@ -2,7 +2,7 @@
 
 Name:           skrooge
 Summary:        Personal finances manager
-Version:        26.4.0
+Version:        26.8.0
 Release:        100%{?dist}
 
 Epoch:          1
@@ -110,6 +110,7 @@ Requires:       %{name} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %check
 appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/org.kde.skrooge.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_kf6_metainfodir}/org.kde.skroogecompanion.appdata.xml
 desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.skrooge.desktop
 
 
@@ -119,7 +120,9 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.skrooge.d
 %{_kf6_datadir}/knsrcfiles/skrooge_unit.knsrc
 %{_kf6_bindir}/skrooge*
 %{_kf6_metainfodir}/org.kde.skrooge.appdata.xml
+%{_kf6_metainfodir}/org.kde.skroogecompanion.appdata.xml
 %{_kf6_datadir}/applications/org.kde.skrooge.desktop
+%{_kf6_datadir}/applications/org.kde.skroogecompanion.desktop
 %{_kf6_datadir}/skrooge/
 %{_kf6_datadir}/mime/packages/x-skg.xml
 %{_kf6_datadir}/icons/breeze/*/*/*
@@ -144,6 +147,9 @@ desktop-file-validate %{buildroot}%{_kf6_datadir}/applications/org.kde.skrooge.d
 %{_kf6_datadir}/skrooge_source/
  
 %changelog
+* Tue Aug 11 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.8.0-100
+- 26.8.0
+
 * Sat Apr 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.4.0-100
 - 26.4.0
 

@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit 121bb374d0d9a5ba2dd73c7b14a58c95c236a9bf
+%global commit 2ab06b3695bce429a074ced6f5193eb1c7acefaf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260413
+%global date 20260809
 %bcond snapshot 1
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
@@ -29,8 +29,8 @@
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
-Version:        1.63
-Release:        12%{?dist}
+Version:        1.63.188
+Release:        1%{?dist}
 Summary:        SNES emulator
 
 License:        Other AND BSD-1-Clause AND Apache-2.0 AND BSD-3-Clause AND GPL-3.0-or-later AND CC0-1.0 AND MIT
@@ -299,6 +299,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-qt.app
 
 
 %changelog
+* Wed Aug 12 2026 Phantom X <megaphantomx at hotmail dot com> - 1.63.188-1.20260809git2ab06b3
+- Update versioning
+
 * Sun Jul 14 2024 Phantom X <megaphantomx at hotmail dot com> - 1.63-1.20240713git18096d9
 - 1.63
 

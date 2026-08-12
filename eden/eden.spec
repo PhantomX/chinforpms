@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 89004124a55a5ce8c45a90dcb60afd8a107238c3
+%global commit 8648c27cbb4c17b176076b09ac245271829cbd9f
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260718
+%global date 20260809
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.180
+Version:        0.2.0.220
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -145,8 +145,6 @@ Source22:       https://github.com/fmtlib/fmt/archive/%{fmt_ver}/fmt-%{fmt_ver}.
 %endif
 Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/%{srcname23}-%{shortcommit23}.tar.gz
 %dnl Source24:       https://github.com/serge-sans-paille/%{srcname24}/archive/%{commit24}/%{srcname24}-%{shortcommit24}.tar.gz
-
-Patch1:         %{vc_url}/%{name}/pulls/4124.patch#/%{name}-git-pr4124.patch
 
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch
@@ -401,10 +399,6 @@ sed \
   -e 's|clone --depth 1 "file://|-rp "|' \
   -i externals/nx_tzdb/tzdb_to_nx/externals/tz/CMakeLists.txt
 
-sed \
-  -e 's|-Werror|-Wno-error|g' \
-  -i src/CMakeLists.txt
-
 %if %{with clang}
 echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' \
   >> src/yuzu/CMakeLists.txt <<EOF
@@ -442,6 +436,7 @@ echo 'set_target_properties(yuzu PROPERTIES INTERPROCEDURAL_OPTIMIZATION true)' 
   %{!?with_tests:-DYUZU_TESTS:BOOL=OFF} \
   %{!?with_webservice:-DENABLE_WEB_SERVICE:BOOL=OFF} \
   -DENABLE_WIFI_SCAN:BOOL=OFF \
+  -DENABLE_WERROR:BOOL=OFF \
   -DUSE_DISCORD_PRESENCE:BOOL=OFF \
   -DENABLE_COMPATIBILITY_LIST_DOWNLOAD:BOOL=OFF \
   -DDYNARMIC_ENABLE_CPU_FEATURE_DETECTION:BOOL=ON \

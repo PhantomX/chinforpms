@@ -19,11 +19,11 @@ BuildArch:      noarch
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 724e309304e4e0546e9b3f062643658d29895963
+%global commit 3a4c6fa3cb1548d56a90a38dd8f526b6c13e63fd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260715
+%global date 20260811
 %global sbuild 21
-%bcond snapshot 0
+%bcond snapshot 1
 
 %bcond debug 0
 %bcond gplasync 1
@@ -44,7 +44,7 @@ BuildArch:      noarch
 %global shortcommit7 %(c=%{commit7}; echo ${c:0:7})
 %global srcname7 libdisplay-info
 
-%global commit8 887bb6c4c4af01a9ccb757e92d35fca3896794f6
+%global commit8 c5c1a5b9b61773d59592f628faa39be9add26282
 %global shortcommit8 %(c=%{commit8}; echo ${c:0:7})
 %global srcname8 dxbc-spirv
 
@@ -77,7 +77,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        3.0.2
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 

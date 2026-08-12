@@ -1,6 +1,6 @@
-%global commit 2f34a7524a3ab3f0df10673fb078ebe26b7690d7
+%global commit 1c34d1bddac8c8f2de834229d04b5a729525c944
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260309
+%global date 20260403
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -8,8 +8,8 @@
 %endif
 
 Name:           opentyrian
-Version:        2.1
-Release:        11%{?dist}
+Version:        2.1.20221123.13
+Release:        1%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
 License:        GPL-2.0-only
@@ -77,6 +77,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Tue Aug 11 2026 Phantom X <megaphantomx at hotmail dot com> - 2.1.20221123.13-1.20260403git1c34d1b
+- Update versioning
+
 * Sat Jul 18 2020 Phantom X <megaphantomx at hotmail dot com> - 2.1-7.20200718gita874e4e
 - Bump
 
