@@ -1,0 +1,39 @@
+From 08f65c0bfd83675349f2a372bda10d0dc2262e4d Mon Sep 17 00:00:00 2001
+From: Cole Robinson <crobinso@redhat.com>
+Date: Tue, 29 Jul 2025 00:00:00 -0400
+Subject: [PATCH] disable busted tests
+
++ virtio-9p-test which fails on copr aarch64:
+  https://gitlab.com/qemu-project/qemu/-/issues/2541
+
++ k230-wdt-test: segfaulting after 11.1.0-rc2 rebase
+
+Signed-off-by: Cole Robinson <crobinso@redhat.com>
+---
+ tests/qtest/meson.build | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/tests/qtest/meson.build b/tests/qtest/meson.build
+index 56ff860e21..ad03910373 100644
+--- a/tests/qtest/meson.build
++++ b/tests/qtest/meson.build
+@@ -296,8 +296,7 @@ qtests_riscv64 = ['riscv-csr-test'] + \
+   (unpack_edk2_blobs ? ['bios-tables-test'] : []) + \
+   (config_all_devices.has_key('CONFIG_IOMMU_TESTDEV') and
+    config_all_devices.has_key('CONFIG_RISCV_IOMMU') ?
+-   ['iommu-riscv-test'] : []) + \
+-  (config_all_devices.has_key('CONFIG_K230') ? ['k230-wdt-test'] : [])
++   ['iommu-riscv-test'] : [])
+ 
+ qtests_hexagon = ['boot-serial-test']
+ 
+@@ -348,9 +347,6 @@ endif
+ if host_os != 'windows'
+   qos_test_ss.add(files('e1000e-test.c'))
+ endif
+-if have_virtfs
+-  qos_test_ss.add(files('virtio-9p-test.c'))
+-endif
+ if have_vhost_user
+   qos_test_ss.add(files('vhost-user-test.c'))
+ endif

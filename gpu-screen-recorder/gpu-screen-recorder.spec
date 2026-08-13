@@ -1,8 +1,8 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder
-Version:        5.13.9
-Release:        0%{dist}
+Version:        6.0.0
+Release:        1%{dist}
 Summary:        A shadowplay-like screen recorder
 
 License:        GPL-3.0-or-later
@@ -37,9 +37,8 @@ BuildRequires:  cmake(VulkanHeaders)
 BuildRequires:  pkgconfig(vulkan)
 BuildRequires:  pkgconfig(wayland-client)
 BuildRequires:  pkgconfig(wayland-egl)
-BuildRequires:  pkgconfig(wayland-egl)
 
-Suggests:       (mesa-va-drivers or mesa-va-drivers-freeworld)
+Suggests:       (mesa-dri-drivers or mesa-dri-drivers-freeworld)
 Suggests:       libva-intel-driver
 Suggests:       intel-media-driver
 
@@ -78,6 +77,7 @@ Development files for %{name} plugins.
 %license LICENSE
 %doc README.md
 %{_bindir}/gpu-screen-recorder
+%{_bindir}/gsr-cli
 %caps(cap_sys_admin+ep) %{_bindir}/gsr-kms-server
 %{_modprobedir}/gsr-nvidia.conf
 %{_userunitdir}/%{name}.service
@@ -89,6 +89,9 @@ Development files for %{name} plugins.
 
 
 %changelog
+* Thu Aug 13 2026 Phantom X <megaphantomx at hotmail dot com> - 6.0.0-1
+- 6.0.0
+
 * Sat May 02 2026 Phantom X <megaphantomx at hotmail dot com> - 5.13.4-1
 - 5.13.4
 
