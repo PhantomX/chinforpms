@@ -43,10 +43,13 @@ come from the package of one of packages it depends on.
 The yaml config describes module packages, their dependencies and rules
 (or constraints) for kmods.
 
-* There are two main rule types:
-** "wants"   - rule is satisfied if kmod ends up in listed package
+* There are three rule types:
+** "wants"   - (default) rule is satisfied if kmod ends up in listed package
               (or any package it depends on - meaning it can move
               down in package hierarchy)
+** "needs"   - enabled by setting `exact_pkg: True` on the rule.
+              Hard-locks matched kmods to exactly one package.
+              The kmod cannot be moved to satisfy other constraints.
 ** "default" - specifies that all kmods which were not covered
               by other rules (implicitly or explicitely) become
               "wants" for listed package
@@ -60,10 +63,25 @@ The yaml config describes module packages, their dependencies and rules
 * General rule format is: "kmod_regex: module_name"
 * Packages and rules can be conditional (see 'if_variant_in' attribute below)
 
+==== Rule attributes
+Rules support optional attributes:
+
+* `exact_pkg: True` - promotes the rule from "wants" to "needs",
+  hard-locking matched kmods to the specified package.
+* `ignore_deps: True` - severs all dependency edges of matched kmods
+  so they do not constrain (or get constrained by) their dependencies.
+  Useful for test/kunit modules that depend on production kmods but
+  should be placed in a sibling package (e.g. modules-internal)
+  without dragging their dependencies out of intended packages.
+  Only meaningful together with `exact_pkg: True`.
+* `if_variant_in: [list]` - makes the rule conditional on variant.
+
 Rule examples:
 
 ----
-- drivers/base/.*(kunit|test).*: modules-internal
+- .*kunit.*: modules-internal
+  exact_pkg: True
+  ignore_deps: True
 - drivers/net/amt.ko: modules-core
 - fs/.*test.*: modules-internal
 - net/appletalk/appletalk.*: modules-extra
@@ -239,23 +257,35 @@ $ ./redhat/scripts/filtermods.py cmp2rpm -c redhat/rhel_files/def_variants.yaml.
 === selftest
 $ filtermods.py selftest [-h] [-g]
 
-Run selftests using data from filtermods-testdata directory.
+Run selftests using data from filtermods-testdata directory. 
 
 == How does it work?
-It is inspired by "label propagation algorithm". Each kmod keeps a
-track of plausible packages that won't break the rules. Initially
-only kmods mentioned in yaml config have these set. Then it
-iterates over all kmods and traverses kmod's children and parents
-and tries to refine set of plausible packages by removing ones
-that would break any of the rules.
+It uses constraint propagation (arc consistency). Each kmod maintains
+a set of allowed packages -- candidates that won't break any rules.
+Initially every kmod is allowed in all packages. Yaml config rules
+narrow these sets, and then a worklist-based propagation prunes
+infeasible packages by checking kmod dependency neighbors.
 
-.There are 3 phases:
-1. Apply initial labels based on yaml config.
-2. If some kmods satisfy rules for more than one package,
-   pick the preferred one specified by config "wants" rules.
-3. If some kmods still satisfy rules for more than one package,
-   prefer one from default rule.
-   For all remaining (not yet assigned) kmods, try to use default rule.
+Each package precomputes two reachability sets:
+`self_and_below` (self + all packages it transitively depends on) and
+`self_and_above` (self + all packages that transitively depend on it).
+These make constraint checks simple set intersections.
+
+.There are 4 phases:
+1. *Apply initial labels* from yaml config:
+   "needs" rules (exact_pkg) lock a kmod to exactly one package
+   (and sever its dependency edges if ignore_deps is set),
+   "wants" rules restrict a kmod to the target package and its ancestors,
+   "default" marks the fallback package.
+2. *Propagate constraints* (worklist-based): for each kmod, remove
+   packages from its allowed set if no compatible package exists in
+   a dependency neighbor's allowed set. When a kmod's allowed set
+   shrinks, its neighbors are re-queued for checking.
+3. *Resolve preferred*: for kmods still with multiple candidates,
+   pick the one matching the "wants" rule preference (or nearest ancestor
+   in the package hierarchy).
+4. *Resolve remaining*: for any kmods still ambiguous, pick the default
+   package (or nearest ancestor), processing in reverse topological order.
 
 == AUTHOR
 Jan Stancek <jstancek@redhat.com>

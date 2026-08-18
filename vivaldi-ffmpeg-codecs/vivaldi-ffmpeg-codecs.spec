@@ -18,7 +18,7 @@
 %global snaprev 117
 %global snap_ffmpeg_hash b2318b0b534714bfae044bcd96dc771a19134e57a94f2d43f2a4adefab7db398
 %global snap_ffmpeg_ver git-2026-05-18
-%global zip_ffmpeg_hash 6464f290a6ffb15afa93e540ded5adc1a92234fa11a1ed1f3886ca9707878c7b
+%global zip_ffmpeg_hash d80e1fdb324c555c9f76163de2ae93b1ba45eb458c9fb95a5736f6d93345ff03
 %global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %endif
 %if %{with snap}
@@ -35,7 +35,7 @@
 Name:           vivaldi-ffmpeg-codecs
 Version:        8.1
 Epoch:          1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only

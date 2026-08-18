@@ -17,6 +17,7 @@ packages:
 rules:
   - .*kunit.*: modules-internal
     exact_pkg: True
+    ignore_deps: True
   - .*test[^/]*.ko: modules-internal
 
   - arch/.*: modules-core

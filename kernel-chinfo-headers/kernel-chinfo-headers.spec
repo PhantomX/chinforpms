@@ -9,7 +9,7 @@
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %global package_name kernel%{?variant}
-%define specrpmversion 7.1.8
+%define specrpmversion 7.2.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -124,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Aug 17 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.0-500.chinfo
+- 7.2.0
+
 * Sun Aug 09 2026 Phantom X <megaphantomx at hotmail dot com> - 7.1.8-500.chinfo
 - 7.1.8
 
@@ -321,30 +324,3 @@ done
 
 * Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.0-500.chinfo
 - 6.16.0
-
-* Thu Jul 24 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.8-500.chinfo
-- 6.15.8
-
-* Thu Jul 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.7-500.chinfo
-- 6.15.7
-
-* Thu Jul 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.6-500.chinfo
-- 6.15.6
-
-* Sun Jul 06 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.5-500.chinfo
-- 6.15.5
-
-* Fri Jun 27 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.4-500.chinfo
-- 6.15.4
-
-* Thu Jun 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.3-500.chinfo
-- 6.15.3
-
-* Tue Jun 10 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.2-500.chinfo
-- 6.15.2
-
-* Thu Jun 05 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.1-500.chinfo
-- 6.15.1
-
-* Mon May 26 2025 Phantom X <megaphantomx at hotmail dot com> - 6.15.0-500.chinfo
-- 6.15.0
