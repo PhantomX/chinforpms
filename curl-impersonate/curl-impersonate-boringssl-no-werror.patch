@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 31be174..7aaa77b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -446,7 +446,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CLANG)
+     # compatibility APIs with clang-cl.
+     list(APPEND C_CXX_WARNINGS -W3 -Wno-unused-parameter -Wno-deprecated)
+   else()
+-    list(APPEND C_CXX_WARNINGS -Wall)
++    list(APPEND C_CXX_WARNINGS -Wall -Wno-error)
+   endif()
+ 
+   if(CLANG)

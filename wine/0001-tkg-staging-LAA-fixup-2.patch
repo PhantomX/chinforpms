@@ -1,0 +1,31 @@
+From ba07808ab1bc0018fa1c328dcb2c4ac5eff401f8 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Wed, 19 Aug 2026 18:11:48 -0300
+Subject: [PATCH] tkg staging LAA fixup #2
+
+---
+ dlls/ntdll/unix/virtual.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
+index 880dd5b..123f7a0 100644
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -5133,7 +5133,13 @@ void virtual_set_large_address_space(void)
+                 free_reserved_memory( 0, (char *)0x7ffe0000 );
+ #endif
+         }
+-        else user_space_wow_limit = (is_large_address_aware() ? limit_4g : limit_2g) - 1;
++        else if (is_large_address_aware())
++        {
++            user_space_wow_limit = limit_4g - 1;
++            /* reserve space for top-down allocations; some apps break if the entire high 2G is available */
++            reserve_area( (void *)0xfff00000, (void *)0xffff0000 );
++        }
++        else user_space_wow_limit = limit_2g - 1;
+     }
+     else
+     {
+-- 
+2.55.0
+

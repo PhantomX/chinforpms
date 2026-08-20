@@ -239,7 +239,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id d12b546cb857e654854c534924f0753404a7d9f2
+%global opensuse_id 2b1d62831e372c454d117a20a6d629665fd2b7d0
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20260313
 

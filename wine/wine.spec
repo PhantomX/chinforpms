@@ -1,7 +1,7 @@
-%global commit e8781e7c8d0770186678c2dc7279bfc4506cfcb6
+%global commit 9306b8e8de4efe3a6035bc5df878e7504029ce13
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260717
-%bcond snapshot 0
+%global date 20260819
+%bcond snapshot 1
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -45,7 +45,7 @@
 # Package mingw files with debuginfo
 %global with_debug 0
 %global winegecko 2.47.4
-%global winemono  11.2.0
+%global winemono  11.3.0
 %global winevulkan 1.4.357
 %global opencl    1
 
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.15
+%global wine_stagingver 3eb6b5a7135fbd65d1be0356bc598237613f3e59
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -83,7 +83,7 @@
 %else
 %global stpkgver %(c=%{wine_stagingver}; echo ${c:0:7})
 %endif
-%global ge_id c9a347770443b27c028237c90ed224b69457f5b6
+%global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
 %global tkg_id 6e1c41342a249e0029c1f35f36775e1caa5ce1d1
@@ -91,7 +91,7 @@
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
 
-%global fgw_id d2802b2555ac599b89a78d83a9828ab965716ef0
+%global fgw_id f6b0520deb92f34de45c9e41bcc73a625986cf96
 %global fgw_url https://github.com/BrandowLucas/fitgirl-wine/raw/%{fgw_id}/patches
 
 %if 0%{?wine_staging}
@@ -124,7 +124,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.15
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -197,13 +197,10 @@ Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.p
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/11617.patch#/%{name}-whq-mr11617.patch
-Patch706:        %{whq_murl}/-/merge_requests/11465.patch#/%{name}-whq-mr11465.patch
+Patch705:        %{whq_murl}/-/merge_requests/11686.patch#/%{name}-whq-mr11686.patch
+Patch706:        %{whq_murl}/-/merge_requests/11705.patch#/%{name}-whq-mr11705.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
-Patch709:        %{whq_murl}/-/merge_requests/11476.patch#/%{name}-whq-mr11476.patch
-Patch710:        0001-mr11476-fix-up-1.patch
-Patch711:        0001-mr11476-fix-up-2.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -223,12 +220,15 @@ Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-
 
 Patch1033:       0001-tkg-staging-nofsync-fixup-1.patch
 Patch1034:       0001-tkg-staging-nofsync-fixup-2.patch
+Patch1035:       %{whq_murl}/-/commit/f4c5b04148db5fc4e5265beec461d3b7d9f4a789.patch#/%{name}-whq-revert-f4c5b04.patch
+Patch1036:       0001-tkg-staging-LAA-fixup-2.patch
 
 Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
 Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
 Patch1093:       %{valve_url}/commit/415086a42b16451a91226579690d3e47e1a56953.patch#/%{name}-valve-415086a.patch
 
 Patch1200:       %{ge_url}/wine-hotfixes/pending/registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch#/%{name}-ge-registry_RRF_RT_REG_SZ-RRF_RT_REG_EXPAND_SZ.patch
+Patch1201:       %{ge_url}/game-patches/0001-win32u-Avoid-zero-WM_ACTIVATEAPP-lparam-on-first-for.patch#/%{name}-ge-0001-win32u-Avoid-zero-WM_ACTIVATEAPP-lparam-on-first-for.patch
 
 Patch1300:       0001-server-Add-WINE_DISABLE_NTSYNC-env-var-to-disable-nt.patch
 # https://bugs.winehq.org/show_bug.cgi?id=48791
@@ -239,9 +239,9 @@ Patch1304:       0001-win32u-add-env-switch-to-disable-wm-decorations.patch
 Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
 Patch1306:       0001-win32u-Partially-revert-Move-client-surface-rect-com.patch
 
-Patch1400:       %{fgw_url}/virtual.patch#/wine-fgw-virtual.patch
 Patch1401:       %{fgw_url}/wine-message-progress-rendering.patch#/wine-fgw-wine-message-progress-rendering.patch
 Patch1402:       %{fgw_url}/wine-pipe-file-position.patch#/wine-fgw-wine-pipe-file-position.patch
+Patch1403:       %{fgw_url}/wine-msvcrt-narrow-open-createfilea.patch#/wine-fgw-wine-msvcrt-narrow-open-createfilea.patch
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
@@ -312,6 +312,8 @@ BuildRequires:  libstdc++-devel
 BuildRequires:  pkgconfig(libudev)
 BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libv4l2)
+BuildRequires:  pkgconfig(libva)
+BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(xkbcommon)
 BuildRequires:  pkgconfig(netapi)
 %if 0%{?opencl}
@@ -341,7 +343,6 @@ BuildRequires:  libappstream-glib
 # Silverlight DRM-stuff needs XATTR enabled.
 %if 0%{?wine_staging}
 BuildRequires:  pkgconfig(libattr)
-BuildRequires:  pkgconfig(libva)
 %endif
 
 Requires:       wine-common = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -802,9 +803,6 @@ This package adds the opencl driver for wine.
 %patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
-%patch -P 710 -p1
-%patch -P 709 -p1
-%patch -P 711 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -818,7 +816,9 @@ tar -xf %{SOURCE900} --strip-components=1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
+%patch -P 1035 -p1 -R
 %patch -P 1020 -p1
+%patch -P 1036 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1033 -p1
@@ -838,6 +838,7 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %patch -P 1092 -p1
 %patch -P 1093 -p1
 %patch -P 1200 -p1
+%patch -P 1201 -p1
 %patch -P 1300 -p1
 %dnl %patch -P 1301 -p1
 %patch -P 1302 -p1
@@ -845,9 +846,9 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %patch -P 1304 -p1
 %patch -P 1305 -p1
 %patch -P 1306 -p1
-%patch -P 1400 -p1
 %patch -P 1401 -p1
 %patch -P 1402 -p1
+%patch -P 1403 -p1
 
 sed \
   -e "s/ (Staging)/ (%{staging_banner})/g" \
@@ -2005,6 +2006,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/d3d9.dll
 %{_libdir}/wine/%{winesodir}/opengl32.so
 %{_libdir}/wine/%{winepedirs}/opengl32.dll
+%{_libdir}/wine/%{winesodir}/wined3d.so
 %{_libdir}/wine/%{winepedirs}/wined3d.dll
 %{_libdir}/wine/%{winepedirs}/winexinput.sys
 %{_libdir}/wine/%{winesodir}/dnsapi.so
