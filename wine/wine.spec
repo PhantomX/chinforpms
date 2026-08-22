@@ -1,7 +1,7 @@
 %global commit 9306b8e8de4efe3a6035bc5df878e7504029ce13
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260819
-%bcond snapshot 1
+%bcond snapshot 0
 
 # disable fortify as it breaks wine
 # http://bugs.winehq.org/show_bug.cgi?id=24606
@@ -123,8 +123,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.15
-Release:        101%{?dist}
+Version:        11.16
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -197,8 +197,7 @@ Patch700:        %{whq_murl}/-/commit/bd89ab3040e30c11b34a95072d88f635ade03bdc.p
 Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.patch#/%{name}-whq-revert-240556e.patch
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
-Patch705:        %{whq_murl}/-/merge_requests/11686.patch#/%{name}-whq-mr11686.patch
-Patch706:        %{whq_murl}/-/merge_requests/11705.patch#/%{name}-whq-mr11705.patch
+Patch705:        %{whq_murl}/-/merge_requests/11701.patch#/%{name}-whq-mr11701.patch
 Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 
@@ -237,7 +236,6 @@ Patch1302:       0001-PSO2-fix.patch
 Patch1303:       0001-mfplat-custom-fixes-from-proton.patch
 Patch1304:       0001-win32u-add-env-switch-to-disable-wm-decorations.patch
 Patch1305:       0001-Add-960x720-size-to-supported-virtual-modes.patch
-Patch1306:       0001-win32u-Partially-revert-Move-client-surface-rect-com.patch
 
 Patch1401:       %{fgw_url}/wine-message-progress-rendering.patch#/wine-fgw-wine-message-progress-rendering.patch
 Patch1402:       %{fgw_url}/wine-pipe-file-position.patch#/wine-fgw-wine-pipe-file-position.patch
@@ -245,6 +243,7 @@ Patch1403:       %{fgw_url}/wine-msvcrt-narrow-open-createfilea.patch#/wine-fgw-
 
 # Patch the patch
 Patch5000:      0001-chinforpms-message.patch
+Patch5001:      0001-staging-mr11701-fixup.patch
 
 # END of staging patches
 
@@ -451,13 +450,10 @@ Requires:       libXrender
 Requires:       libpcap
 Requires:       libpng
 Requires:       libv4l
+Requires:       libva
 Requires:       unixODBC
 Requires:       SDL2
 Requires:       vulkan-loader
-%if 0%{?wine_staging}
-Requires:       libva
-Recommends:     gstreamer1-plugins-ugly
-%endif
 %endif
 
 Provides:       bundled(fluidsynth) = %{winefluidsynth}
@@ -800,7 +796,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
-%patch -P 706 -p1
 %patch -P 707 -p1
 %patch -P 708 -p1
 
@@ -813,6 +808,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1001 -p1
 
 %patch -P 5000 -p1
+%patch -P 5001 -p1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
@@ -845,7 +841,6 @@ filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021
 %patch -P 1303 -p1
 %patch -P 1304 -p1
 %patch -P 1305 -p1
-%patch -P 1306 -p1
 %patch -P 1401 -p1
 %patch -P 1402 -p1
 %patch -P 1403 -p1
@@ -2484,6 +2479,9 @@ fi
 
 
 %changelog
+* Sat Aug 22 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.16-100
+- 11.16
+
 * Sun Aug 09 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.15-100
 - 11.15
 
