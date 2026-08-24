@@ -14,10 +14,10 @@
 
 %bcond packagekit 0
 
-%global vc_url https://git.mate-desktop.org/%{name}
+%global vc_url https://github.com/mate-desktop/%{name}
 
 Name:          engrampa
-Version:       %{branch}.2
+Version:       %{branch}.5
 %if 0%{?rel_build}
 Release:       100%{?dist}
 %else
@@ -31,9 +31,9 @@ URL:           https://mate-desktop.org
 
 # for downloading the tarball use 'spectool -g -R engrampa.spec'
 # Source for release-builds.
-%{?rel_build:Source0:     https://pub.mate-desktop.org/releases/%{branch}/%{name}-%{version}.tar.xz}
+%{?rel_build:Source0:     %{vc_url}/releases/download/v%{version}/%{name}-%{version}.tar.xz}
 # Source for snapshot-builds.
-%{!?rel_build:Source0:    %{vc_url}/snapshot/%{name}-%{commit}.tar.xz#/%{git_tar}}
+%{!?rel_build:Source0:    %{vc_url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz#/%{git_tar}}
 
 BuildRequires: gcc
 BuildRequires: make
@@ -127,6 +127,9 @@ find %{buildroot} -name '*.la' -delete
 
 
 %changelog
+* Sat Aug 22 2026 Phantom X <megaphantomx at hotmail dot com> - 1:1.28.5-100
+- 1.28.5
+
 * Thu Sep 19 2024 Phantom X <megaphantomx at hotmail dot com> - 1:1.28.2-100
 - 1.28.2
 

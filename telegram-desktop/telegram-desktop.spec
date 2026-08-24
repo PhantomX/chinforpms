@@ -40,7 +40,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        7.0.9
+Version:        7.1.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -75,7 +75,6 @@ Source1:        %{url}/releases/download/v%{version}/tsetup.%{version}.tar.xz
 Source20:       thunar-sendto-%{binname}.desktop
 
 Patch100:       %{name}-build-fix.patch
-Patch101:       https://github.com/rpmfusion/%{name}/raw/453a609efd0a0445a56f2a91146f41c0227db7c0/findprotobuf_fix.patch#/%{name}-gh-findprotobuf_fix.patch
 
 # Do not mess input text
 # https://github.com/telegramdesktop/tdesktop/issues/522
@@ -387,6 +386,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sun Aug 23 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.1.1-100
+- 7.1.1
+
 * Sun Aug 09 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.0.9-100
 - 7.0.9
 

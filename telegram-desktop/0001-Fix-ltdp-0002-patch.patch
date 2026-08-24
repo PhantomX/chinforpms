@@ -1,14 +1,14 @@
-From 062f3727ea754d4b93a1060d3158086030a6a276 Mon Sep 17 00:00:00 2001
+From 17c570615479120c22c1690faefaac297e675927 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 27 Mar 2025 16:00:08 -0300
 Subject: [PATCH] Fix ltdp 0002 patch
 
 ---
- ltdp-0002-Disable-saving-restrictions.patch | 26 ++++++++++++++-------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ ltdp-0002-Disable-saving-restrictions.patch | 32 ++++++++++++++-------
+ 1 file changed, 22 insertions(+), 10 deletions(-)
 
 diff --git a/ltdp-0002-Disable-saving-restrictions.patch b/ltdp-0002-Disable-saving-restrictions.patch
-index 6037cb6..bb60497 100644
+index 6037cb6..524a3ed 100644
 --- a/ltdp-0002-Disable-saving-restrictions.patch
 +++ b/ltdp-0002-Disable-saving-restrictions.patch
 @@ -21,11 +21,15 @@ diff --git a/Telegram/SourceFiles/history/history_inner_widget.cpp b/Telegram/So
@@ -29,7 +29,23 @@ index 6037cb6..bb60497 100644
  -		return false;
  -	} else if (const auto chat = _peer->asChat()) {
  -		return !chat->canDeleteMessages();
-@@ -110,12 +112,13 @@ index 2e2c087..223607c 100644
+@@ -56,12 +60,14 @@ diff --git a/Telegram/SourceFiles/history/history_item.cpp b/Telegram/SourceFile
+ index ec57dee..4f586fc 100644
+ --- a/Telegram/SourceFiles/history/history_item.cpp
+ +++ b/Telegram/SourceFiles/history/history_item.cpp
+-@@ -2268,11 +2268,6 @@ bool HistoryItem::forbidsForward() const {
++@@ -2268,13 +2268,6 @@ bool HistoryItem::forbidsForward() const {
+  }
+  
+  bool HistoryItem::forbidsSaving() const {
+ -	if (forbidsForward()) {
+ -		return true;
++-	} else if (_media && _media->ttlSeconds()) {
++-		return true;
+ -	} else if (const auto invoice = _media ? _media->invoice() : nullptr) {
+ -		return HasExtendedMedia(*invoice);
+ -	}
+@@ -110,12 +116,13 @@ index 2e2c087..223607c 100644
   	return false;
   }
  
@@ -46,7 +62,7 @@ index 6037cb6..bb60497 100644
  +	return false;
   }
   
-@@ -146,11 +149,13 @@ diff --git a/Telegram/SourceFiles/info/media/info_media_provider.cpp b/Telegram/
+@@ -146,11 +153,13 @@ diff --git a/Telegram/SourceFiles/info/media/info_media_provider.cpp b/Telegram/
  index 2fc6973..2e830b7 100644
  --- a/Telegram/SourceFiles/info/media/info_media_provider.cpp
  +++ b/Telegram/SourceFiles/info/media/info_media_provider.cpp
@@ -62,7 +78,7 @@ index 6037cb6..bb60497 100644
  -		return false;
  -	} else if (const auto chat = _peer->asChat()) {
  -		return !chat->canDeleteMessages();
-@@ -166,11 +171,14 @@ diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Tel
+@@ -166,11 +175,14 @@ diff --git a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp b/Tel
  index 9362819..4b3944f 100644
  --- a/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
  +++ b/Telegram/SourceFiles/media/view/media_view_overlay_widget.cpp
@@ -78,7 +94,7 @@ index 6037cb6..bb60497 100644
  -		return skipPremiumCheck
  -			? !story->canDownloadIfPremium()
  -			: !story->canDownloadChecked();
-@@ -179,5 +187,5 @@ index 9362819..4b3944f 100644
+@@ -179,5 +191,5 @@ index 9362819..4b3944f 100644
  -		|| (_message && _message->forbidsSaving());
  +	return false;
   }
@@ -86,5 +102,5 @@ index 6037cb6..bb60497 100644
 + 
   bool OverlayWidget::showCopyMediaRestriction(bool skipPRemiumCheck) {
 -- 
-2.51.1
+2.55.0
 

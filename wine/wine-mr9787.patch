@@ -1,0 +1,47 @@
+From e3853eab3ccb0d9c2c54ab2976e20efb21dd73e3 Mon Sep 17 00:00:00 2001
+From: Elizabeth Figura <zfigura@codeweavers.com>
+Date: Wed, 17 Dec 2025 13:50:55 -0600
+Subject: [PATCH] ntdll: Do not report drive roots as reparse points.
+
+From get_file_info(). fd_get_file_info is still broken.
+
+Wine-Bug: https://bugs.winehq.org/show_bug.cgi?id=54903
+---
+ dlls/ntdll/unix/file.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
+
+diff --git a/dlls/ntdll/unix/file.c b/dlls/ntdll/unix/file.c
+index 42c82531051..dc79ab68a41 100644
+--- a/dlls/ntdll/unix/file.c
++++ b/dlls/ntdll/unix/file.c
+@@ -1769,6 +1769,18 @@ static NTSTATUS fd_set_file_info( int fd, UINT attr, BOOL force_set_xattr )
+ }
+ 
+ 
++static BOOL is_unix_path_drive_root( const char *path )
++{
++    if (strncmp( path, config_dir, strlen( config_dir )))
++        return FALSE;
++    path += strlen( config_dir );
++    if (strncmp( path, "/dosdevices/", 12 ))
++        return FALSE;
++    path += 12;
++    return path[0] >= 'a' && path[0] <= 'z' && !strcmp( path + 1, ":/" );
++}
++
++
+ /* get the stat info and file attributes for a file (by name) */
+ static int get_file_info( const char *path, struct stat *st, ULONG *attr, ULONG *reparse_tag )
+ {
+@@ -1792,7 +1804,7 @@ static int get_file_info( const char *path, struct stat *st, ULONG *attr, ULONG
+         *attr |= FILE_ATTRIBUTE_REPARSE_POINT;
+         if (reparse_tag) *reparse_tag = IO_REPARSE_TAG_AF_UNIX;
+     }
+-    else if (S_ISDIR( st->st_mode ) && (parent_path = malloc( len + 4 )))
++    else if (S_ISDIR( st->st_mode ) && !is_unix_path_drive_root( path ) && (parent_path = malloc( len + 4 )))
+     {
+         struct stat parent_st;
+ 
+-- 
+GitLab
+

@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 3eb6b5a7135fbd65d1be0356bc598237613f3e59
+%global wine_stagingver 11.16
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -124,7 +124,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.16
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -198,7 +198,7 @@ Patch701:        %{whq_murl}/-/commit/240556e2b8cb94fc9cc85949b7e043f392b1802a.p
 Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.patch#/%{name}-whq-revert-2941e58.patch
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/11701.patch#/%{name}-whq-mr11701.patch
-Patch707:        %{whq_murl}/-/merge_requests/9787.patch#/%{name}-whq-mr9787.patch
+Patch707:        %{name}-mr9787.patch
 Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 
 # wine staging patches for wine-staging
@@ -796,7 +796,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
-%patch -P 707 -p1
 %patch -P 708 -p1
 
 # setup and apply wine-staging patches
@@ -812,6 +811,7 @@ tar -xf %{SOURCE900} --strip-components=1
 
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
+%patch -P 707 -p1
 %patch -P 1035 -p1 -R
 %patch -P 1020 -p1
 %patch -P 1036 -p1
@@ -2479,6 +2479,9 @@ fi
 
 
 %changelog
+* Sun Aug 23 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.16-101
+- staging 11.16
+
 * Sat Aug 22 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.16-100
 - 11.16
 
