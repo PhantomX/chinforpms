@@ -55,7 +55,7 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.7.451
+Version:        2.7.524
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 

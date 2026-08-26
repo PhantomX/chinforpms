@@ -1,6 +1,6 @@
-%global commit 998d5b08b5b33bdf3a63b2ef8f2ac4ccc664e2f6
+%global commit 82ba57527adf514395fe3223255fc117bcd62193
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260612
+%global date 20260805
 %bcond snapshot 1
 
 BuildArch:      noarch
@@ -12,7 +12,7 @@ BuildArch:      noarch
 %global pkgname SDL_GameControllerDB
 
 Name:           sdl_gamecontrollerdb
-Version:        1645
+Version:        1665
 Release:        1%{?dist}
 Summary:        A database of game controller mappings
 
