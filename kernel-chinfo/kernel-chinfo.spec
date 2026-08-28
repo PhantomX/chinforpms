@@ -210,7 +210,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.2.0
+%define specrpmversion 7.2.1
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -5154,6 +5154,9 @@ fi\
 #
 #
 %changelog
+* Thu Aug 27 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.1-500.chinfo
+- 7.2.1
+
 * Mon Aug 17 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.0-500.chinfo
 - 7.2.0
 

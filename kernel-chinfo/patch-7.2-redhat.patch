@@ -1,50 +1,49 @@
- Makefile                                           |  38 +-
+ Makefile                                           |  30 +++++
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
- arch/arm64/kernel/setup.c                          |  27 +
+ arch/arm64/kernel/setup.c                          |  27 +++++
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/cpu/common.c                       |   1 +
- arch/x86/kernel/setup.c                            | 101 +++-
+ arch/x86/kernel/setup.c                            |  22 ++--
  crypto/akcipher.c                                  |   3 +-
- crypto/dh.c                                        |  25 +
- crypto/seqiv.c                                     |  15 +-
+ crypto/dh.c                                        |  25 ++++
+ crypto/seqiv.c                                     |  15 ++-
  crypto/sig.c                                       |   3 +-
  crypto/testmgr.c                                   |   6 +-
- drivers/acpi/apei/hest.c                           |   8 +
- drivers/acpi/irq.c                                 |  17 +-
- drivers/acpi/scan.c                                |   9 +
- drivers/ata/libahci.c                              |  18 +
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +
- drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
- drivers/char/random.c                              | 126 ++++-
+ drivers/acpi/apei/hest.c                           |   8 ++
+ drivers/acpi/irq.c                                 |  17 ++-
+ drivers/acpi/scan.c                                |   9 ++
+ drivers/ata/libahci.c                              |  18 +++
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
+ drivers/char/random.c                              | 126 ++++++++++++++++++++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++--
+ drivers/firmware/efi/efi.c                         | 124 +++++++++++++++-----
  drivers/firmware/efi/libstub/fdt.c                 |   5 +
- drivers/firmware/efi/libstub/secureboot.c          |  14 +-
- drivers/firmware/efi/secureboot.c                  |  38 ++
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/iommu/iommu.c                              |  22 +
- drivers/pci/quirks.c                               |  24 +
- drivers/usb/core/hub.c                             |   7 +
+ drivers/firmware/efi/libstub/secureboot.c          |  14 ++-
+ drivers/firmware/efi/secureboot.c                  |  38 +++++++
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 ++++
+ drivers/iommu/iommu.c                              |  22 ++++
+ drivers/pci/quirks.c                               |  24 ++++
+ drivers/usb/core/hub.c                             |   7 ++
  include/linux/crypto.h                             |   2 +
- include/linux/efi.h                                |  22 +-
- include/linux/random.h                             |  10 +
- include/linux/security.h                           |   9 +
+ include/linux/efi.h                                |  22 ++--
+ include/linux/random.h                             |  10 ++
+ include/linux/security.h                           |   9 ++
  kernel/module/signing.c                            |   9 +-
  scripts/Makefile.lib                               |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +
- security/lockdown/lockdown.c                       |  11 +
- tools/testing/selftests/bpf/DENYLIST.rhel          |  76 +++
+ security/lockdown/Kconfig                          |  13 +++
+ security/lockdown/lockdown.c                       |  11 ++
+ tools/testing/selftests/bpf/DENYLIST.rhel          |  76 +++++++++++++
  tools/testing/selftests/bpf/Makefile               |   2 +-
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 --
- 76 files changed, 2669 insertions(+), 108 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -----
+ 43 files changed, 701 insertions(+), 106 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index ddcc6dca1ece..7c52f4c368ef 100644
+index b36422350995..348c395cdeea 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -74,7 +73,7 @@ index ddcc6dca1ece..7c52f4c368ef 100644
  # KERNELRELEASE can change from a few different places, meaning version.h
  # needs to be updated, so this check is forced on all builds
  
-@@ -2108,6 +2127,23 @@ endif
+@@ -2108,6 +2121,23 @@ endif
  
  ifdef CONFIG_MODULES
  
@@ -227,7 +226,7 @@ index b60284328fe3..e4d37b08ca29 100644
  	/* boot_command_line has been already set up in early.c */
  	*cmdline_p = boot_command_line;
 diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
-index 46882ce79c3a..49173ab3fcf7 100644
+index 46882ce79c3a..9c73814c31e0 100644
 --- a/arch/x86/kernel/setup.c
 +++ b/arch/x86/kernel/setup.c
 @@ -21,6 +21,7 @@
@@ -238,7 +237,7 @@ index 46882ce79c3a..49173ab3fcf7 100644
  #include <linux/static_call.h>
  #include <linux/sysfb.h>
  #include <linux/swiotlb.h>
-@@ -995,6 +1073,13 @@ void __init setup_arch(char **cmdline_p)
+@@ -995,6 +996,13 @@ void __init setup_arch(char **cmdline_p)
  	if (efi_enabled(EFI_BOOT))
  		efi_init();
  
@@ -252,7 +251,7 @@ index 46882ce79c3a..49173ab3fcf7 100644
  	reserve_ibft_region();
  	x86_init.resources.dmi_setup();
  
-@@ -1156,19 +1241,7 @@ void __init setup_arch(char **cmdline_p)
+@@ -1156,19 +1164,7 @@ void __init setup_arch(char **cmdline_p)
  	/* Allocate bigger log buffer */
  	setup_log_buf(1);
  

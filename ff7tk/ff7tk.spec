@@ -1,8 +1,8 @@
 %undefine _package_note_file
 
-%global commit 0118f5e5be919a13e027b339ef20fba6551caa57
+%global commit cb876ba93f384b3a90a06ece216ccd1a160fbbcf
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251209
+%global date 20260821
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -11,7 +11,7 @@
 
 Name:           ff7tk
 Version:        1.3.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A toolkit for making programs that edit final fantasy 7
 
 License:        LGPL-3.0-or-later

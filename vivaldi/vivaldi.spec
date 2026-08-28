@@ -17,7 +17,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        8.1.4087.70
+Version:        8.1.4087.75
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -204,6 +204,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Aug 27 2026 - 8.1.4087.75-1
+- 8.1.4087.75
+
 * Fri Aug 21 2026 - 8.1.4087.70-1
 - 8.1.4087.70
 
