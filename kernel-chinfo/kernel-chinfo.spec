@@ -210,7 +210,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.2.1
+%define specrpmversion 7.2.2
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -239,7 +239,7 @@ Summary: The Linux kernel
 %global tkg 0
 %global post_factum 1
 
-%global opensuse_id 2b1d62831e372c454d117a20a6d629665fd2b7d0
+%global opensuse_id 788edca36228e95889a8fd390d23c91bd5803086
 %global tkg_id 3ccc607fb2ab85af03711898954c6216ae7303fd
 %global vhba_ver 20260313
 
@@ -1289,25 +1289,45 @@ Patch999999: linux-kernel-test.patch
 Patch1010: %{opensuse_url}/vfs-add-super_operations-get_inode_dev#/openSUSE-vfs-add-super_operations-get_inode_dev.patch
 Patch1011: %{opensuse_url}/btrfs-provide-super_operations-get_inode_dev#/openSUSE-btrfs-provide-super_operations-get_inode_dev.patch
 Patch1012: %{opensuse_url}/KVM-x86-tdx-Do-not-print-error-message-on-non-presen.patch#/openSUSE-KVM-x86-tdx-Do-not-print-error-message-on-non-presen.patch
+Patch1013: %{opensuse_url}/drm-qxl-fix-use-after-free-and-NULL-pointer-deref.patch#/openSUSE-drm-qxl-fix-use-after-free-and-NULL-pointer-deref.patch
 
 %global patchwork_url https://patchwork.kernel.org
 %global patchwork_xdg_url https://patchwork.freedesktop.org/patch
 # https://patchwork.kernel.org/patch/10045863
 Patch2000: radeon_dp_aux_transfer_native-74-callbacks-suppressed.patch
-Patch2002: %{zen_url}/commit/789df99d89235ce06c4c92292adc10b0bb67d101.patch#/zen-v%{patchversion}-sauce-789df99.patch
-Patch2003: %{zen_url}/commit/ed9969e7e41661b43327eef5997f0c8095f8730b.patch#/zen-v%{patchversion}-sauce-ed9969e.patch
-Patch2004: %{zen_url}/commit/291a61e2d6950cd561a7715a782fc54afb87a5a1.patch#/zen-v%{patchversion}-sauce-291a61e.patch
-Patch2005: %{zen_url}/commit/420dbda6d6b42784ca35e6b0596fd8e68c23b219.patch#/zen-v%{patchversion}-sauce-420dbda.patch
-# dmemcg
-Patch2010: %{zen_url}/commit/772eafd4c11727b5cf5eedebdf12eb2e6a164beb.patch#/zen-v%{patchversion}-dmemcg-772eafd.patch
-Patch2011: %{zen_url}/commit/3b82b3521eb7a023847e20ab3fc6b573dbcd55f3.patch#/zen-v%{patchversion}-dmemcg-3b82b35.patch
-Patch2012: %{zen_url}/commit/393753401b830b0ce4fa52715b5d36520a4d5c39.patch#/zen-v%{patchversion}-dmemcg-3937534.patch
-Patch2013: %{zen_url}/commit/a307f5c3da4b64c7c2e08e31ceb34751290e27d7.patch#/zen-v%{patchversion}-dmemcg-a307f5c.patch
-Patch2014: %{zen_url}/commit/0e6f7c8bcc26cc4d1b215aa93d6324f6c2cfddc8.patch#/zen-v%{patchversion}-dmemcg-0e6f7c8.patch
-Patch2015: %{zen_url}/commit/1e91ac182a3b6f9f5e01a9f46f080cd5d7f7b2d1.patch#/zen-v%{patchversion}-dmemcg-1e91ac1.patch
-Patch2016: %{zen_url}/commit/79a4de42741f16a203cab4dae534f66125d89138.patch#/zen-v%{patchversion}-dmemcg-79a4de4.patch
-Patch2017: %{zen_url}/commit/df1f3e7dbc9a35c4255627424d1375d60daca386.patch#/zen-v%{patchversion}-dmemcg-df1f3e7.patch
-
+Patch2002: %{zen_url}/commit/e2a626c293d7650eb49bb3c48983a4cd0ae58cc0.patch#/zen-v%{patchversion}-sauce-e2a626c.patch
+Patch2003: %{zen_url}/commit/3948334070051d9a4c5dfefdbc20af3bc2cfd714.patch#/zen-v%{patchversion}-sauce-3948334.patch
+Patch2004: %{zen_url}/commit/faabc222990250f183a2710f7eb59633c3b73786.patch#/zen-v%{patchversion}-sauce-faabc22.patch
+Patch2005: %{zen_url}/commit/19fdd62d5f96da5dfb77904d03b218a008c5247a.patch#/zen-v%{patchversion}-sauce-19fdd62.patch
+# vramstuff
+Patch2010: %{zen_url}/commit/39e3fe7704590b0a23fcf7e8679d1894b7b8b162.patch#/zen-v%{patchversion}-vramstuff-39e3fe7.patch
+Patch2011: %{zen_url}/commit/07ef453214556b801b6ba8275017405d1ae6482c.patch#/zen-v%{patchversion}-vramstuff-07ef453.patch
+Patch2012: %{zen_url}/commit/d2fc90359ccb0b931f9d709322b31df499b55de5.patch#/zen-v%{patchversion}-vramstuff-d2fc903.patch
+Patch2013: %{zen_url}/commit/97fb03f021f1359628e193847876250c78dce087.patch#/zen-v%{patchversion}-vramstuff-97fb03f.patch
+Patch2014: %{zen_url}/commit/ece9c8cdf2f9fd087f05d270fb7c38a2bbfe0457.patch#/zen-v%{patchversion}-vramstuff-ece9c8c.patch
+Patch2015: %{zen_url}/commit/728e619ae44f7797284048014bf43f4f2b7e2145.patch#/zen-v%{patchversion}-vramstuff-728e619.patch
+Patch2016: %{zen_url}/commit/2388ecc6c08a3f8bc3509809b955571433de2561.patch#/zen-v%{patchversion}-vramstuff-2388ecc.patch
+Patch2017: %{zen_url}/commit/6ee9467a9a72f45b8167cd06edd69999b038a65a.patch#/zen-v%{patchversion}-vramstuff-6ee9467.patch
+Patch2018: %{zen_url}/commit/57394df648c83d7fb95565867626ecdda07f4af7.patch#/zen-v%{patchversion}-vramstuff-57394df.patch
+Patch2019: %{zen_url}/commit/c98c3fe16c75b731ae25a149aec018e0bf2eb798.patch#/zen-v%{patchversion}-vramstuff-c98c3fe.patch
+Patch2020: %{zen_url}/commit/6813f3ab319cbe3532a87e798b785c228ef71369.patch#/zen-v%{patchversion}-vramstuff-6813f3a.patch
+Patch2021: %{zen_url}/commit/0e36b0fd7203ac94de49878034f754c0e9a41824.patch#/zen-v%{patchversion}-vramstuff-0e36b0f.patch
+Patch2022: %{zen_url}/commit/b630bf45538b4f6e209010b2bcc03e413f4c2cff.patch#/zen-v%{patchversion}-vramstuff-b630bf4.patch
+Patch2023: %{zen_url}/commit/63e1ebdf50c838aa2e134cbd67936f3ae63db582.patch#/zen-v%{patchversion}-vramstuff-63e1ebd.patch
+Patch2024: %{zen_url}/commit/3db42673f5950c3433aa8d73c9f014bcffb2a452.patch#/zen-v%{patchversion}-vramstuff-3db4267.patch
+Patch2025: %{zen_url}/commit/a7c63c610b228a958593b5a13a653c55c6e8e4e3.patch#/zen-v%{patchversion}-vramstuff-a7c63c6.patch
+Patch2026: %{zen_url}/commit/3df5b4c0279c8b65ce1262b5e5047ec3c9d89d6e.patch#/zen-v%{patchversion}-vramstuff-3df5b4c.patch
+Patch2027: %{zen_url}/commit/07a1b5bc107c22a7457914175381ae7cf2a0b22f.patch#/zen-v%{patchversion}-vramstuff-07a1b5b.patch
+Patch2028: %{zen_url}/commit/02755e37584e97e4819076e91ce9499836e52d79.patch#/zen-v%{patchversion}-vramstuff-02755e3.patch
+Patch2029: %{zen_url}/commit/5f702541b1d38a9d7d935dc81a14dcb8e38fd3a3.patch#/zen-v%{patchversion}-vramstuff-5f70254.patch
+Patch2030: %{zen_url}/commit/2fbdb6893cc6ed358f0232bff4eef598a6c5b419.patch#/zen-v%{patchversion}-vramstuff-2fbdb68.patch
+Patch2031: %{zen_url}/commit/4827fa587d7a6ea3e995dbe566fea71831cb0001.patch#/zen-v%{patchversion}-vramstuff-4827fa5.patch
+Patch2032: %{zen_url}/commit/4c0b1e92091ba73a4435e0d95e61cd113780d8b0.patch#/zen-v%{patchversion}-vramstuff-4c0b1e9.patch
+Patch2033: %{zen_url}/commit/c1e9d10a4864e7fecde67ce674333c4f4d155d89.patch#/zen-v%{patchversion}-vramstuff-c1e9d10.patch
+Patch2034: %{zen_url}/commit/3e3dbeb1a92e6ae6206dea4ab1b4df642c0833bc.patch#/zen-v%{patchversion}-vramstuff-3e3dbeb.patch
+Patch2035: %{zen_url}/commit/8e38c42cb3149fb4f6c040208efdd9d578f3df23.patch#/zen-v%{patchversion}-vramstuff-8e38c42.patch
+Patch2036: %{zen_url}/commit/0f297bfeedae01c8a0d95ee89de766ad875c3920.patch#/zen-v%{patchversion}-vramstuff-0f297bf.patch
+Patch2037: %{zen_url}/commit/da1cf9de1bba45648450c64323fca70bcf2a65ae.patch#/zen-v%{patchversion}-vramstuff-da1cf9d.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/73123310bf572d9fb815c992e30225239bee0e5d.patch%{pf_antibot}#/pf-cb-7312331.patch
@@ -2338,6 +2358,7 @@ ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH1010}
 ApplyPatch %{PATCH1011}
 ApplyPatch %{PATCH1012}
+ApplyPatch %{PATCH1013}
 
 ApplyPatch %{PATCH2000}
 ApplyPatch %{PATCH2002}
@@ -2353,6 +2374,26 @@ ApplyPatch %{PATCH2014}
 ApplyPatch %{PATCH2015}
 ApplyPatch %{PATCH2016}
 ApplyPatch %{PATCH2017}
+ApplyPatch %{PATCH2018}
+ApplyPatch %{PATCH2019}
+ApplyPatch %{PATCH2020}
+ApplyPatch %{PATCH2021}
+ApplyPatch %{PATCH2022}
+ApplyPatch %{PATCH2023}
+ApplyPatch %{PATCH2024}
+ApplyPatch %{PATCH2025}
+ApplyPatch %{PATCH2026}
+ApplyPatch %{PATCH2027}
+ApplyPatch %{PATCH2028}
+ApplyPatch %{PATCH2029}
+ApplyPatch %{PATCH2030}
+ApplyPatch %{PATCH2031}
+ApplyPatch %{PATCH2032}
+ApplyPatch %{PATCH2033}
+ApplyPatch %{PATCH2034}
+ApplyPatch %{PATCH2035}
+ApplyPatch %{PATCH2036}
+ApplyPatch %{PATCH2037}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5154,6 +5195,9 @@ fi\
 #
 #
 %changelog
+* Fri Aug 28 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.2-500.chinfo
+- 7.2.2
+
 * Thu Aug 27 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.1-500.chinfo
 - 7.2.1
 
