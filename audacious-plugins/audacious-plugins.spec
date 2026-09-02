@@ -1,12 +1,8 @@
-# build with GTK+2
+# 'without' = build with Gtk+ by default
 %bcond gtk 1
-# build with GTK+2 instead 3
-%bcond gtk2 0
-# build with qt5 instead 6
-%bcond qt5 0
 
-%{?with_gtk2:%global gtk_ver 2}%{!?with_gtk2: %global gtk_ver 3}
-%{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
+%global gtk_ver 3
+%global qt_ver 6
 
 %global aud_plugin_api %(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION[ ]\\+' %{_includedir}/libaudcore/plugin.h 2>/dev/null | sed 's!.*_AUD_PLUGIN_VERSION[ ]*\\([0-9]\\+\\).*!\\1!')
 %if 0%{aud_plugin_api} > 0
@@ -20,18 +16,18 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.5.1
+Version:        4.6.1
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.5
+%global aud_ver 4.6.1
 
 Summary: Plugins for the Audacious audio player
 URL:            http://audacious-media-player.org/
 
 # list of license per plugin in README.licences
-License:        BSD-2-Clause AND GPL-2.0-or-later AND LGPL-2.1-or-later AND GPL-3.0-only AND MIT AND BSD-3-Clause
+License:        GPL-2.0-or-later AND LGPL-2.0-or-later AND GPL-3.0-only AND GPL-3.0-or-later AND MIT AND BSD-2-Clause-pkgconf-disclaimer AND LicenseRef-Fedora-Public-Domain
 
 Source0:        http://distfiles.audacious-media-player.org/%{name}-%{tar_ver}.tar.bz2
 Source3:        README.licenses
@@ -39,13 +35,15 @@ Source3:        README.licenses
 Source100:      audacious-plugins-amidi.metainfo.xml
 Source101:      audacious-plugins-exotic.metainfo.xml
 Source102:      audacious-plugins-jack.metainfo.xml
-Source103:      audacious-plugins-ffaudio.metainfo.xml
 
 # Fedora customization
 Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
 # Fedora customization: add default system-wide module_path
 Patch2:         audacious-plugins-3.6-ladspa.patch
+# upstream fix for the accidental Turkish translations in en_GB
+Patch3:         %{vc_url}/commit/f70d7ba42a3a5ee8981027bba6d25cc706dca871.patch#/%{name}-gh-f70d7ba.patch
 
+BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
 BuildRequires:  meson
 BuildRequires:  audacious-devel >= %{aud_ver}
@@ -54,6 +52,7 @@ BuildRequires:  pkgconfig(adplug)
 BuildRequires:  pkgconfig(alsa)
 BuildRequires:  pkgconfig(dbus-1)
 BuildRequires:  pkgconfig(dbus-glib-1)
+BuildRequires:  pkgconfig(faad2)
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(fluidsynth)
 BuildRequires:  pkgconfig(jack)
@@ -65,6 +64,7 @@ BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)
 BuildRequires:  pkgconfig(libcue)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libmms)
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(libmpg123)
 BuildRequires:  pkgconfig(libmtp)
@@ -102,15 +102,23 @@ BuildRequires:  pkgconfig(Qt%{qt_ver}Network)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGL)
 BuildRequires:  pkgconfig(Qt%{qt_ver}OpenGLWidgets)
 BuildRequires:  pkgconfig(Qt%{qt_ver}Svg)
-%if %{without qt5}
 BuildRequires:  qt6-qtbase-private-devel
-%else
-BuildRequires:  pkgconfig(Qt5X11Extras)
-%endif
 BuildRequires:  pkgconfig(ampache_browser_1)
 
 %{?with_gtk:BuildRequires: pkgconfig(gtk+-%{gtk_ver}.0)}
 %{?with_gtk:BuildRequires: pkgconfig(gdk-x11-%{gtk_ver}.0)}
+
+# added 2025-07-17
+Obsoletes: audacious-plugins-freeworld < 1:4.6-100
+Provides:  audacious-plugins-freeworld = %{?epoch:%{epoch}:}%{version}-%{release}
+# added 2025-06-13
+Obsoletes: audacious-plugins-freeworld-aac < 1:4.6-100
+Provides:  audacious-plugins-freeworld-aac = %{?epoch:%{epoch}:}%{version}-%{release}
+Obsoletes: audacious-plugins-freeworld-mms < 1:4.6-100
+Provides:  audacious-plugins-freeworld-mms = %{?epoch:%{epoch}:}%{version}-%{release}
+# added 2025-12-20
+Obsoletes:      audacious-plugins-ffaudio < 1:4.6-100
+Provides:       audacious-plugins-ffaudio = %{?epoch:%{epoch}:}%{version}-%{release}
 
 %global __provides_exclude_from ^%{_libdir}/audacious/.*\\.so$
 
@@ -121,7 +129,7 @@ This package provides essential plugins for the Audacious audio player.
 
 %package jack
 Summary:        Audacious output plugin for Jack Audio Connection Kit
-License:        BSD-2-Clause
+License:        BSD-2-Clause-pkgconf-disclaimer
 %{?aud_plugin_dep}
 Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 
@@ -133,7 +141,7 @@ Jack Audio Connection Kit (JACK) sound service.
 %package exotic
 Summary:        Optional niche market plugins for Audacious 
 # list of license per plugin in README.licences
-License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause
+License:        GPL-2.0-or-later AND LicenseRef-Callaway-LGPLv2+ AND GPL-3.0-only AND MIT AND BSD-2-Clause-pkgconf-disclaimer
 %{?aud_plugin_dep}
 Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 # src/console/ for console.so input plugin in -exotic subpackage
@@ -159,17 +167,6 @@ Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
 This package provides AMIDI-Plug, a modular MIDI music player, as an
 input plugin for Audacious.
 
-%package ffaudio
-Summary:        FFmpeg input plugin for Audacious
-License:        BSD-2-Clause
-%{?aud_plugin_dep}
-Requires:       audacious-plugins%{?_isa} >= %{aud_ver}
-Obsoletes:      audacious-plugins-freeworld-ffaudio < %{?epoch:%{epoch}:}%{version}-%{release}
-Provides:       audacious-plugins-freeworld-ffaudio = %{?epoch:%{epoch}:}%{version}-%{release}
-
-%description ffaudio
-This package provides FFmpeg as an input plugin for Audacious.
-
 
 %prep
 %autosetup -n %{name}-%{tar_ver} -p1
@@ -189,8 +186,8 @@ fi
 %{!?aud_plugin_dep:echo 'No audacious(plugin-api) dependency!' && exit -1}
 
 %meson \
-  %{?with_gtk:-Dgtk=true%{?with_gtk2: -Dgtk2=true}}%{!?with_gtk:-Dgtk=false} \
-  %{?with_qt5:-Dqt5=true} \
+  -Dqt=true \
+  -Dgtk=%{?with_gtk:true}%{!?with_gtk:false} \
   -Dampache=true \
   -Dfilewriter-mp3=true \
   -Dflac=true \
@@ -200,10 +197,10 @@ fi
   -Dvorbis=true \
   -Dopenmpt=true \
   -Dstreamtuner=true \
-  -Daac=false  \
+  -Daac=true  \
   -Dffaudio=true \
   -Dsndio=false \
-  -Dmms=false \
+  -Dmms=true \
 %{nil}
 
 %meson_build
@@ -216,9 +213,14 @@ mkdir -p %{buildroot}%{_metainfodir}
 install -p -m0644 %{SOURCE100} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE101} %{buildroot}%{_metainfodir}/
 install -p -m0644 %{SOURCE102} %{buildroot}%{_metainfodir}/
-install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 
 %find_lang %{name}
+
+
+%check
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-amidi.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-exotic.metainfo.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-jack.metainfo.xml
 
 
 %files -f %{name}.lang
@@ -253,6 +255,7 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/General/ampache.so
 %{_libdir}/audacious/General/cd-menu-items.so
 %{_libdir}/audacious/General/delete-files.so
+%{_libdir}/audacious/General/filebrowser-qt.so
 %{_libdir}/audacious/General/lirc.so
 %{_libdir}/audacious/General/lyrics-qt.so
 %{_libdir}/audacious/General/mpris2.so
@@ -269,7 +272,9 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/General/statusicon-qt.so
 %{_libdir}/audacious/General/streamtuner.so
 %dir %{_libdir}/audacious/Input/
+%{_libdir}/audacious/Input/aac-raw.so
 %{_libdir}/audacious/Input/cdaudio-ng.so
+%{_libdir}/audacious/Input/ffaudio.so
 %{_libdir}/audacious/Input/flacng.so
 %{_libdir}/audacious/Input/metronom.so
 %{_libdir}/audacious/Input/modplug.so
@@ -294,15 +299,18 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %{_libdir}/audacious/Visualization/vumeter-qt.so
 %dir %{_libdir}/audacious/Transport/
 %{_libdir}/audacious/Transport/gio.so
+%{_libdir}/audacious/Transport/mms.so
 %{_libdir}/audacious/Transport/neon.so
-%{_datadir}/audacious/
-# extra GTK specific plugin versions
+
+# optional Gtk+ plugins
 %if %{with gtk}
 %{_libdir}/audacious/General/albumart.so
 %{_libdir}/audacious/General/aosd.so
+%{_libdir}/audacious/General/filebrowser.so
 %{_libdir}/audacious/General/gtkui.so
 %{_libdir}/audacious/General/hotkey.so
 %{_libdir}/audacious/General/lyrics-gtk.so
+%{_libdir}/audacious/General/playback-history.so
 %{_libdir}/audacious/General/playlist-manager.so
 %{_libdir}/audacious/General/search-tool.so
 %{_libdir}/audacious/General/skins.so
@@ -314,6 +322,8 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 %endif
 # name is misleading as it's based on libmpg123 not libmad
 %{_libdir}/audacious/Input/madplug.so
+
+%{_datadir}/audacious/
 
 %files jack
 %{_libdir}/audacious/Output/jack-ng.so
@@ -333,12 +343,13 @@ install -p -m0644 %{SOURCE103} %{buildroot}%{_metainfodir}/
 #%%{_libdir}/audacious/Input/amidi-plug/
 %{_metainfodir}/%{name}-amidi.metainfo.xml
 
-%files ffaudio
-%{_libdir}/audacious/Input/ffaudio.so
-%{_metainfodir}/%{name}-ffaudio.metainfo.xml
-
 
 %changelog
+* Sat Aug 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-100
+- 4.6.1
+- Fedora sync
+- Remove gtk2 and qt5 support
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.1-100
 - 4.5.1
 

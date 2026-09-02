@@ -1,27 +1,23 @@
-# build with GTK+3
+# 'without' = build with Gtk+ by default
 %bcond gtk 1
-# build with GTK+2 instead 3
-%bcond gtk2 0
-# build with qt5 instead 6
-%bcond qt5 0
 
-%{?with_gtk2:%global gtk_ver 2}%{!?with_gtk2: %global gtk_ver 3}
-%{?with_qt5:%global qt_ver 5}%{!?with_qt5:%global qt_ver 6}
+%global gtk_ver 3
+%global qt_ver 6
 
 %global tar_ver %%{lua:tar_ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(tar_ver)}
 
 Name:           audacious
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.5.1
+Version:        4.6.1
 Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
-%global aud_ver 4.5
+%global aud_ver 4.6.1
 
 # Audacious Generic Plugin API is defined in audacious-libs subpackage.
 
-License:        BSD-2-Clause AND BSD-3-Clause
+License:        BSD-2-Clause-pkgconf-disclaimer
 Summary:        Advanced audio player
 URL:            http://audacious-media-player.org/
 
@@ -83,8 +79,8 @@ Summary: Library files for the Audacious audio player
 # As defined in /usr/include/audacious/plugin.h: _AUD_PLUGIN_VERSION
 # This must be an exact match for plugin .so files to load.
 # If multiple versions are supported, add multiple Provides below.
-%global aud_plugin_api 48
-%global aud_plugin_api_min 48
+%global aud_plugin_api 49
+%global aud_plugin_api_min 49
 Provides: audacious(plugin-api)%{?_isa} = %{aud_plugin_api}
 # [!] escaped macros, beware!
 #Provides: audacious(plugin-api)%%{?_isa} = 46
@@ -116,8 +112,8 @@ api_min=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION_MIN' src/libaudcore/plugin.h 
 
 %build
 %meson \
-  %{?with_gtk:-Dgtk=true%{?with_gtk2: -Dgtk2=true}}%{!?with_gtk:-Dgtk=false} \
-  %{?with_qt5:-Dqt5=true} \
+  -Dqt=true \
+  -Dgtk=%{?with_gtk:true}%{!?with_gtk:false} \
   -Dlibarchive=false \
   -Dbuildstamp="chinforpms package" \
 %{nil}
@@ -128,13 +124,13 @@ api_min=$(grep '[ ]*#define[ ]*_AUD_PLUGIN_VERSION_MIN' src/libaudcore/plugin.h 
 %install
 %meson_install
 
-install -D -m0644 contrib/%{name}.appdata.xml %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+install -D -m0644 %{name}.metainfo.xml %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 %find_lang %{name}
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
 
 %files -f %{name}.lang
@@ -145,7 +141,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 %{_mandir}/man[^3]/*
 %{_datadir}/applications/*.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}*.*
-%{_metainfodir}/%{name}.appdata.xml
+%{_metainfodir}/%{name}.metainfo.xml
 
 %files libs
 %license COPYING
@@ -161,6 +157,11 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sat Aug 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-100
+- 4.6.1
+- Fedora sync
+- Remove gtk2 and qt5 support
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 1:4.5.1-100
 - 4.5.1
 

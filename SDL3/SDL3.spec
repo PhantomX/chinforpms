@@ -10,12 +10,12 @@
 
 %if 0%{?rhel}
 # Disable static library on RHEL
-%bcond_with static
+%bcond static 0
 # RHEL is Wayland-only, XWayland does not support XScrnSaver
-%bcond_with xscrnsaver
+%bcond xscrnsaver 0
 %else
-%bcond_without static
-%bcond_without xscrnsaver
+%bcond static 1
+%bcond xscrnsaver 1
 %endif
 
 
