@@ -31,7 +31,10 @@
 %define arches_numad            %{arches_x86} %{power64} aarch64
 %define arches_ch               x86_64 aarch64
 
-# The hypervisor drivers that run in libvirtd
+# The monolithic libvirtd
+%define with_libvirtd      0%{!?_without_libvirtd:1}
+
+# The hypervisor drivers that run in monolithic libvirtd, or a modular daemon
 %define with_lxc           0%{!?_without_lxc:1}
 %define with_libxl         0%{!?_without_libxl:1}
 %define with_vbox          0%{!?_without_vbox:1}
@@ -289,7 +292,7 @@
 
 Summary: Library providing a simple virtualization API
 Name: libvirt
-Version: 12.5.0
+Version: 12.7.0
 Release: 100%{?dist}
 License: GPL-2.0-or-later AND LGPL-2.1-only AND LGPL-2.1-or-later AND OFL-1.1
 URL: https://libvirt.org/
@@ -300,7 +303,11 @@ URL: https://libvirt.org/
 Source0: https://download.libvirt.org/%{?mainturl}libvirt-%{version}.tar.xz
 Source2: libvirt-qemu-sysusers.conf
 
+%if %{with_libvirtd}
 Requires: libvirt-daemon = %{version}-%{release}
+%else
+Obsoletes: libvirt-daemon < %{version}-%(release)
+%endif
 Requires: libvirt-daemon-config-network = %{version}-%{release}
 Requires: libvirt-daemon-config-nwfilter = %{version}-%{release}
 %if %{with_libxl}
@@ -1169,6 +1176,12 @@ echo "This RPM requires either Fedora >= %{min_fedora} or RHEL >= %{min_rhel}"
 exit 1
 %endif
 
+%if %{with_libvirtd}
+    %define arg_libvirtd -Dlibvirtd=enabled
+%else
+    %define arg_libvirtd -Dlibvirtd=disabled
+%endif
+
 %if %{with_qemu}
     %define arg_qemu -Ddriver_qemu=enabled
 %else
@@ -1352,6 +1365,7 @@ export SOURCE_DATE_EPOCH=$(stat --printf='%Y' %{_specdir}/libvirt.spec)
            -Dsasl=enabled \
            -Dpolkit=enabled \
            -Ddriver_libvirtd=enabled \
+           %{?arg_libvirtd} \
            -Ddriver_remote=enabled \
            -Ddriver_test=enabled \
            %{?arg_esx} \
@@ -2039,6 +2053,7 @@ done
 %doc AUTHORS.rst NEWS.rst README.rst
 %doc libvirt-docs/*
 
+    %if %{with_libvirtd}
 %files daemon
 %{_unitdir}/libvirtd.service
 %{_unitdir}/libvirtd.socket
@@ -2055,6 +2070,7 @@ done
 %{_datadir}/augeas/lenses/tests/test_libvirtd.aug
 %attr(0755, root, root) %{_sbindir}/libvirtd
 %{_mandir}/man8/libvirtd.8*
+    %endif
 
 %files daemon-common
 %{_unitdir}/virt-guest-shutdown.target
@@ -2668,6 +2684,9 @@ done
 
 
 %changelog
+* Thu Sep 03 2026 Phantom X <megaphantomx at hotmail dot com> - 12.7.0-100
+- 12.7.0
+
 * Wed Jul 01 2026 Phantom X <megaphantomx at hotmail dot com> - 12.5.0-100
 - 12.5.0
 

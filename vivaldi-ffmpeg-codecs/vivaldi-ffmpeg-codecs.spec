@@ -18,7 +18,7 @@
 %global snaprev 117
 %global snap_ffmpeg_hash b2318b0b534714bfae044bcd96dc771a19134e57a94f2d43f2a4adefab7db398
 %global snap_ffmpeg_ver git-2026-05-18
-%global zip_ffmpeg_hash d80e1fdb324c555c9f76163de2ae93b1ba45eb458c9fb95a5736f6d93345ff03
+%global zip_ffmpeg_hash 6bf4bb714aea8324ca81aa662f41df0dfd11494b138a884a4d6d119f72f76111
 %global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %endif
 %if %{with snap}

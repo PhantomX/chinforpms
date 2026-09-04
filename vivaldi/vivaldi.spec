@@ -13,11 +13,17 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec 8.1-150-Z-20260812
+%global ffmpegcodec_aarch64 8.1-150-S-20260618
+%global ffmpegcodec_x86_64 8.1-150-S-20260618
+%ifarch aarch64
+%global ffmpegcodec %{ffmpegcodec_aarch64}
+%else
+%global ffmpegcodec %{ffmpegcodec_x86_64}
+%endif
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        8.1.4087.75
+Version:        8.2.4133.45
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -63,7 +69,11 @@ Vivaldi web browser.
 
 rpm2cpio %{S:0} | cpio -imdv
 
-FCVER="$(grep ^FFMPEG_VERSION= opt/vivaldi/update-ffmpeg | cut -d= -f2 | cut -d' ' -f1)"
+%ifarch aarch64
+FCVER="$(grep '^      FFMPEG_VERSION=' opt/vivaldi/update-ffmpeg | tail -n1 | cut -d= -f2 | cut -d' ' -f1)"
+%else
+FCVER="$(grep '^      FFMPEG_VERSION=' opt/vivaldi/update-ffmpeg | head -n1 | cut -d= -f2 | cut -d' ' -f1)"
+%endif
 if [ "${FCVER}" != "%{ffmpegcodec}" ] ;then
   echo "Version mismatch. You have ${FCVER} in ffmpegcodec instead %{ffmpegcodec}"
   echo "Edit ffmpegcodec and try again"
@@ -204,6 +214,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Thu Sep 03 2026 - 8.2.4133.45-1
+- 8.2.4133.45
+
 * Thu Aug 27 2026 - 8.1.4087.75-1
 - 8.1.4087.75
 

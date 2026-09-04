@@ -40,7 +40,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        7.1.2
+Version:        7.1.5
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -386,6 +386,12 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Sep 04 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.1.5-100
+- 7.1.5
+
+* Wed Sep 02 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.1.3-100
+- 7.1.3
+
 * Tue Aug 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.1.2-100
 - 7.1.2
 
