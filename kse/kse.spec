@@ -8,7 +8,7 @@
 %global jre_ver latest
 
 Name:           kse
-Version:        5.6.1
+Version:        5.7.0
 Release:        1%{?dist}
 Summary:        Multipurpose keystore and certificate tool
 
@@ -84,12 +84,12 @@ desktop-file-install \
   --set-key="Exec" \
   --set-value="%{name}" \
   --remove-category=Utility \
-  opt/%{name}/%{name}.desktop
+  usr/share/applications/%{name}.desktop
 
 for res in 16 32 48 128 256 512 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  install -pm0644 opt/%{name}/icons/%{name}_${res}.png \
+  install -pm0644 usr/share/icons/hicolor/${res}x${res}/apps/%{name}.png \
     ${dir}/%{name}.png
 done
 
@@ -103,6 +103,9 @@ done
 
 
 %changelog
+* Fri Sep 04 2026 Phantom X <megaphantomx at hotmail dot com> - 5.7.0-1
+- 5.7.0
+
 * Mon Feb 23 2026 Phantom X <megaphantomx at hotmail dot com> - 5.6.1-1
 - 5.6.1
 

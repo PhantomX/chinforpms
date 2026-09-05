@@ -4,12 +4,12 @@
 
 %global rname   dbeaver
 
-%global jre_ver 21
+%global jre_ver 25
 
 %global vc_url https://github.com/%{rname}/%{rname}
 
 Name:           %{rname}-ce
-Version:        26.1.4
+Version:        26.2.0
 Release:        1%{?dist}
 Summary:        Free database tool
 
@@ -138,6 +138,9 @@ done
 
 
 %changelog
+* Fri Sep 04 2026 Phantom X <megaphantomx at hotmail dot com> - 26.2.0-1
+- 26.2.0
+
 * Mon Aug 03 2026 Phantom X <megaphantomx at hotmail dot com> - 26.1.4-1
 - 26.1.4
 

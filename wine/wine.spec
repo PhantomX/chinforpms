@@ -50,7 +50,7 @@
 %global opencl    1
 
 %global winecapstone 5.0.3
-%global wineFAudio 26.06
+%global wineFAudio 26.09
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 10
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.16
+%global wine_stagingver 11.17
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -86,7 +86,7 @@
 %global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 04ddf86c96817d2f8bb45aefc04c9ad3871ca740
+%global tkg_id af63244f1896472c20629c973b97c3d68dd29b4a
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -123,8 +123,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.16
-Release:        101%{?dist}
+Version:        11.17
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -216,9 +216,6 @@ Patch1024:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_ti
 Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1026:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-
-Patch1033:       0001-tkg-staging-nofsync-fixup-1.patch
-Patch1034:       0001-tkg-staging-nofsync-fixup-2.patch
 
 Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
 Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
@@ -813,10 +810,7 @@ tar -xf %{SOURCE900} --strip-components=1
 %patch -P 1020 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
-%patch -P 1033 -p1
-%dnl %patch -P 1021 -p1
-filterdiff -p1 -x programs/winecfg/input.c -x dlls/vulkan-1/Makefile.in %{P:1021} | %{__scm_apply_patch -p1 -q}
-%patch -P 1034 -p1
+%patch -P 1021 -p1
 %patch -P 1022 -p1
 
 %patch -P 1023 -p1
@@ -1594,6 +1588,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/ktmw32.dll
 %{_libdir}/wine/%{winepedirs}/l3codeca.acm
 %{_libdir}/wine/%{winepedirs}/l3codecx.ax
+%{_libdir}/wine/%{winepedirs}/lsass.exe
 %{_libdir}/wine/%{winepedirs}/loadperf.dll
 %{_libdir}/wine/%{winesodir}/localspl.so
 %{_libdir}/wine/%{winepedirs}/localspl.dll
@@ -2475,6 +2470,9 @@ fi
 
 
 %changelog
+* Sat Sep 05 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.17-100
+- 11.17
+
 * Sun Aug 23 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.16-101
 - staging 11.16
 
