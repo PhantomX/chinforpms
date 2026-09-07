@@ -1,21 +1,21 @@
-From d4ee3f7e21cb2c2621714fb0fdc760fe259eb654 Mon Sep 17 00:00:00 2001
+From 6078397c22d3769526d9ce32c551ce3b5deb594d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
 
 ---
- CMakeLists.txt                   | 44 ++++++++++++++++++++++++--------
- externals/CMakeLists.txt         | 31 +++++++++++++++-------
- externals/ffmpeg/CMakeLists.txt  |  5 ++++
+ CMakeLists.txt                   | 35 ++++++++++++++++++++++++--------
+ externals/CMakeLists.txt         | 28 +++++++++++++++++++------
+ externals/ffmpeg/CMakeLists.txt  |  5 +++++
  externals/nx_tzdb/CMakeLists.txt |  2 +-
- src/dynarmic/CMakeLists.txt      |  7 -----
- 5 files changed, 62 insertions(+), 27 deletions(-)
+ src/dynarmic/CMakeLists.txt      |  6 ------
+ 5 files changed, 54 insertions(+), 22 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fa1fa37..1cca020 100644
+index 8b068b8..d6e6635 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -405,12 +405,13 @@ set(ENABLE_TESTING OFF)
+@@ -408,12 +408,13 @@ set(ENABLE_TESTING OFF)
  # boost
  set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
  
@@ -30,7 +30,7 @@ index fa1fa37..1cca020 100644
  if (Boost_ADDED)
      if (MSVC OR ANDROID)
          add_compile_definitions(YUZU_BOOST_v1)
-@@ -430,19 +431,20 @@ if (Boost_ADDED)
+@@ -433,19 +434,20 @@ if (Boost_ADDED)
          )
      endif()
  endif()
@@ -54,7 +54,7 @@ index fa1fa37..1cca020 100644
  
  if (zstd_ADDED)
      add_library(zstd::zstd ALIAS libzstd_static)
-@@ -450,18 +452,18 @@ if (zstd_ADDED)
+@@ -453,18 +455,18 @@ if (zstd_ADDED)
  endif()
  
  # nlohmann
@@ -76,7 +76,7 @@ index fa1fa37..1cca020 100644
  
      if (Opus_ADDED)
          if (MSVC AND CXX_CLANG)
-@@ -477,7 +479,7 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -480,7 +482,7 @@ if (NOT YUZU_STATIC_ROOM)
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -85,12 +85,7 @@ index fa1fa37..1cca020 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -538,21 +540,38 @@ add_subdirectory(externals)
- # pass targets from externals
- # TODO(crueter): CPMUtil Propagate func?
- find_package(enet)
--find_package(unordered_dense REQUIRED)
-+find_package(unordered_dense)
+@@ -544,17 +546,27 @@ find_package(enet)
  
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
      find_package(xbyak)
@@ -115,17 +110,10 @@ index fa1fa37..1cca020 100644
 +        add_subdirectory("externals/fmt" EXCLUDE_FROM_ALL)
 +    endif()
 +
-+    if(unordered_dense_FOUND)
-+        message(STATUS "Using the system unordered_dense")
-+    else()
-+        set(UNORDERED_DENSE_INSTALL OFF)
-+        add_subdirectory(externals/unordered-dense)
-+    endif()
-+
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -645,7 +664,12 @@ if (ENABLE_QT)
+@@ -647,7 +659,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -140,7 +128,7 @@ index fa1fa37..1cca020 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index f190f68..0711343 100644
+index 0682f64..08fa317 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -25,6 +25,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -159,14 +147,7 @@ index f190f68..0711343 100644
  
  # stb
  add_library(stb stb/stb_dxt.cpp)
-@@ -58,14 +60,12 @@ if (WIN32 AND NOT TARGET LLVM::Demangle)
-     add_library(LLVM::Demangle ALIAS demangle)
- endif()
- 
--# unordered_dense
--AddJsonPackage(unordered-dense)
--
- # httplib
+@@ -62,7 +64,8 @@ endif()
  if (IOS)
      set(HTTPLIB_USE_BROTLI_IF_AVAILABLE OFF)
  endif()
@@ -176,7 +157,7 @@ index f190f68..0711343 100644
  
  if (YUZU_STATIC_ROOM)
      return()
-@@ -86,11 +86,13 @@ if (ARCHITECTURE_loongarch64)
+@@ -83,11 +86,13 @@ if (ARCHITECTURE_loongarch64)
      AddJsonPackage(lagoon)
  endif()
  
@@ -190,7 +171,7 @@ index f190f68..0711343 100644
  
  # DiscordRPC
  if (USE_DISCORD_PRESENCE)
-@@ -107,8 +109,9 @@ if (USE_DISCORD_PRESENCE)
+@@ -104,8 +109,9 @@ if (USE_DISCORD_PRESENCE)
  endif()
  
  # SimpleIni
@@ -201,25 +182,25 @@ index f190f68..0711343 100644
  # Most linux distros don't package cubeb, so enable regardless of cpm settings
  if(ENABLE_CUBEB)
      AddJsonPackage(cubeb)
-@@ -138,6 +141,7 @@ if(ENABLE_CUBEB)
+@@ -135,6 +141,7 @@ if(ENABLE_CUBEB)
          add_library(cubeb::cubeb ALIAS cubeb)
      endif()
  endif()
 +endif()
  
- if (NOT ANDROID)
-     if (NOT YUZU_USE_BUNDLED_SDL3)
-@@ -161,7 +165,7 @@ if (NOT ANDROID)
-             set(SDL_FILE ON)
-         endif()
+ if (NOT YUZU_USE_BUNDLED_SDL3)
+     if (NOT WIN32)
+@@ -157,7 +164,7 @@ if (NOT YUZU_USE_BUNDLED_SDL3)
+         set(SDL_FILE ON)
+     endif()
  
--        AddJsonPackage(sdl3)
-+        find_package(SDL3 3.4.8 REQUIRED)
-     else()
-         message(STATUS "Using bundled SDL3")
-         if (FREEBSD)
-@@ -186,9 +190,10 @@ endif()
- set(BUILD_SHARED_LIBS OFF)
+-    AddJsonPackage(sdl3)
++    find_package(SDL3 3.4.8 REQUIRED)
+ else()
+     message(STATUS "Using bundled SDL3")
+     AddJsonPackage(sdl3-ci)
+@@ -181,9 +188,10 @@ if (NOT TARGET SDL3::SDL3)
+ endif()
  
  # SPIRV Headers
 -AddJsonPackage(spirv-headers)
@@ -230,7 +211,7 @@ index f190f68..0711343 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -199,10 +204,11 @@ else()
+@@ -194,10 +202,11 @@ else()
          )
      endif()
  endif()
@@ -243,7 +224,7 @@ index f190f68..0711343 100644
  endif()
  
  # getopt
-@@ -214,6 +220,7 @@ endif()
+@@ -209,6 +218,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -251,7 +232,7 @@ index f190f68..0711343 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -232,10 +239,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -227,10 +237,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -267,7 +248,7 @@ index f190f68..0711343 100644
  endif()
  
  # FFMpeg
-@@ -270,6 +281,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -265,6 +279,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -275,7 +256,7 @@ index f190f68..0711343 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -277,6 +289,7 @@ if (gamemode_ADDED)
+@@ -272,6 +287,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()
@@ -284,10 +265,10 @@ index f190f68..0711343 100644
  # Breakpad
  # TODO(crueter): Breakpad needs additional fetches
 diff --git a/externals/ffmpeg/CMakeLists.txt b/externals/ffmpeg/CMakeLists.txt
-index 6e3f675..a106423 100644
+index f1bf099..c560d6d 100644
 --- a/externals/ffmpeg/CMakeLists.txt
 +++ b/externals/ffmpeg/CMakeLists.txt
-@@ -221,10 +221,15 @@ else()
+@@ -219,10 +219,15 @@ else()
          message(FATAL_ERROR "Required program `autoconf` not found.")
      endif()
  
@@ -317,20 +298,19 @@ index a82bf0b..5f4a39c 100644
      AddJsonPackage(tzdb)
  
 diff --git a/src/dynarmic/CMakeLists.txt b/src/dynarmic/CMakeLists.txt
-index d733dc6..7d80b74 100644
+index bacbd7a..7d80b74 100644
 --- a/src/dynarmic/CMakeLists.txt
 +++ b/src/dynarmic/CMakeLists.txt
-@@ -119,9 +119,6 @@ if (NOT Boost_FOUND)
+@@ -119,8 +119,6 @@ if (NOT Boost_FOUND)
      find_package(Boost 1.57 REQUIRED)
  endif()
  
 -find_package(fmt 8 CONFIG)
--find_package(unordered_dense REQUIRED)
 -
  if ("arm64" IN_LIST ARCHITECTURE OR DYNARMIC_TESTS)
      find_package(oaknut 2.0.1 CONFIG)
  endif()
-@@ -134,10 +131,6 @@ if ("loongarch64" IN_LIST ARCHITECTURE)
+@@ -133,10 +131,6 @@ if ("loongarch64" IN_LIST ARCHITECTURE)
      find_package(lagoon REQUIRED)
  endif()
  

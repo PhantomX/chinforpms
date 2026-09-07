@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 0295dc5fff9b2977e753e7c126cc870abb07ee3f
+%global commit 11de2645411ba83e6fcf47bf30ae48a7ee6ae090
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260825
+%global date 20260905
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -32,10 +32,6 @@
 %bcond xbyak 0
 # Enable webservice
 %bcond webservice 1
-
-%global commit111 7b55cab8418da1603496462ce3ccdb4cb1dc3368
-%global shortcommit111 %(c=%{commit111}; echo ${c:0:7})
-%global srcname111 unordered_dense
 
 %global commit12 05973d8aeb1a4d12f59aadfb86d20decadba82d1
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
@@ -96,7 +92,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.245
+Version:        0.2.0.278
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -117,7 +113,6 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommi
 Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
-Source111:      https://github.com/martinus/%{srcname111}/archive/%{commit111}/%{srcname111}-%{shortcommit111}.tar.gz
 %if %{without vma}
 Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
 %endif
@@ -149,6 +144,8 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch
 Patch500:       0001-cpp-httplib-add-new-Fedora-certificate-path.patch
+Patch501:       %{vc_url}/eden/commit/106a61c9434b8d61ab8cde0170f6fcac403b28f1.patch#/%{name}-git-106a61c.patch
+Patch502:       %{vc_url}/eden/commit/672bcbae012164ec59ef26ff79995c4585bd0e97.patch#/%{name}-git-672bcba.patch
 
 ExclusiveArch:  x86_64
 
@@ -284,6 +281,13 @@ echo %{sver}
 %autopatch -M 499 -p1
 
 sed \
+  -e 's|"common/container/unordered_map.h"|<ankerl/unordered_dense.h>|' \
+  -e 's|::Common::unordered_map|ankerl::unordered_dense::map|' \
+  -i src/core/file_sys/ips_layer.cpp
+%patch -P 501 -p1 -R
+%patch -P 502 -p1 -R
+
+sed \
   -e '/-pedantic-errors/d' \
   -e '/-mtune=core2/d' \
   -i src/dynarmic/CMakeLists.txt
@@ -295,10 +299,6 @@ rm -rf \
 rm -rf sse2neon
 %endif
 
-mkdir -p unordered-dense
-tar -xf %{S:111} -C unordered-dense --strip-components 1
-%{__scm_apply_patch -p1 -q} -d unordered-dense -i ../../.patch/unordered-dense/0001-avoid-memset-when-clearing-an-empty-table.patch
-sed -e '/find_package/s|unordered_dense|\0_DISABLED|g' -i ../CMakeLists.txt
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
