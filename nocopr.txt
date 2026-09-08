@@ -3,7 +3,7 @@ aacgain
 -amdgpu-pro-vulkan-driver
 -amf-amdgpu-pro
 ares
-audacious-plugins-freeworld
+-audacious-plugins-freeworld
 -authy
 azahar
 bh-fonts
@@ -52,6 +52,7 @@ irpf2025
 irpf2026
 -kepka
 lbreakouthd
+lsfg-vk
 -kronos
 -m64py
 mame-data-extras

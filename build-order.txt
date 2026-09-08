@@ -308,6 +308,7 @@ steamguard-cli
 -steamtinkerlaunch
 -tde2e
 thrash-protect
+tlottie
 twitter-color-emoji-fonts
 twitter-emoji-mozilla-fonts
 tyrian-data

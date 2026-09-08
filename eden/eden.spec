@@ -225,7 +225,7 @@ BuildRequires:  cmake(Qt6OpenGLWidgets)
 %endif
 BuildRequires:  cmake(sirit)
 BuildRequires:  cmake(glslang)
-BuildRequires:  spirv-headers-devel
+BuildRequires:  cmake(SPIRV-Headers)
 BuildRequires:  cmake(VulkanHeaders) >= %{vkh_ver}
 BuildRequires:  cmake(VulkanUtilityLibraries) >= %{vkh_ver}
 %if %{with vma}

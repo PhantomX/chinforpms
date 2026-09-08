@@ -568,6 +568,7 @@ EOF
 %if %{with vendor}
 %cargo_prep -v vendor
 %else
+%cargo_prep
 %generate_buildrequires
 %cargo_generate_buildrequires
 %endif

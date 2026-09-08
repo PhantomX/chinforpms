@@ -11,7 +11,7 @@ chinforpms-rpm-config
 gamemode
 -glslang
 gnome-themes-extra
-gstreamer1
+-gstreamer1
 -gstreamer1-plugins-base
 -gstreamer1-plugins-ugly-free
 gtk3-classic

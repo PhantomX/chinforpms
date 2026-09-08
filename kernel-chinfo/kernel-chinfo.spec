@@ -210,7 +210,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.2.3
+%define specrpmversion 7.2.4
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1328,6 +1328,7 @@ Patch2034: %{zen_url}/commit/3e3dbeb1a92e6ae6206dea4ab1b4df642c0833bc.patch#/zen
 Patch2035: %{zen_url}/commit/8e38c42cb3149fb4f6c040208efdd9d578f3df23.patch#/zen-v%{patchversion}-vramstuff-8e38c42.patch
 Patch2036: %{zen_url}/commit/0f297bfeedae01c8a0d95ee89de766ad875c3920.patch#/zen-v%{patchversion}-vramstuff-0f297bf.patch
 Patch2037: %{zen_url}/commit/da1cf9de1bba45648450c64323fca70bcf2a65ae.patch#/zen-v%{patchversion}-vramstuff-da1cf9d.patch
+Patch2038: %{zen_url}/commit/13a8e2000329a36f994acf2fd31d307d27fa9189.patch#/zen-v%{patchversion}-vramstuff-13a8e20.patch
 
 # Add native cpu gcc optimization support
 Patch6000: %{pf_url}/73123310bf572d9fb815c992e30225239bee0e5d.patch%{pf_antibot}#/pf-cb-7312331.patch
@@ -1354,10 +1355,6 @@ Patch7400:  %{pf_url}/750c36d08e8832bd7cde8b78a6b8308c77a985db.patch%{pf_antibot
 Patch7401:  %{pf_url}/85c3c1a832f45fb34320425346aad068911b0cb6.patch%{pf_antibot}#/pf-cb-85c3c1a.patch
 Patch7402:  %{pf_url}/7836de8f6ca1262aeff45992fc7d235e03b92563.patch%{pf_antibot}#/pf-cb-7836de8.patch
 Patch7403:  %{pf_url}/1b28f279fe57e704a8258c72b2c207c3c273c2cf.patch%{pf_antibot}#/pf-cb-1b28f27.patch
-Patch7404:  %{pf_url}/06cbb5c1b3ef58c49262fa52aa358a83f9457374.patch%{pf_antibot}#/pf-cb-06cbb5c.patch
-Patch7405:  %{pf_url}/8fda686123701ccf4dbaf65f295fe046e3650ae7.patch%{pf_antibot}#/pf-cb-8fda686.patch
-Patch7406:  %{pf_url}/22cff48b6a83a837c76b5c638a2a68b2604c113c.patch%{pf_antibot}#/pf-cb-22cff48.patch
-Patch7407:  %{pf_url}/95c92bfa6b55c3ad4ada266e466fbeef190ac20a.patch%{pf_antibot}#/pf-cb-95c92bf.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2360,10 +2357,6 @@ ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
 ApplyPatch %{PATCH7403}
-ApplyPatch %{PATCH7404}
-ApplyPatch %{PATCH7405}
-ApplyPatch %{PATCH7406}
-ApplyPatch %{PATCH7407}
 %endif
 
 # openSUSE
@@ -2406,6 +2399,7 @@ ApplyPatch %{PATCH2034}
 ApplyPatch %{PATCH2035}
 ApplyPatch %{PATCH2036}
 ApplyPatch %{PATCH2037}
+ApplyPatch %{PATCH2038}
 
 ApplyPatch %{PATCH6000}
 ApplyPatch %{PATCH6001}
@@ -5207,6 +5201,9 @@ fi\
 #
 #
 %changelog
+* Mon Sep 07 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.4-500.chinfo
+- 7.2.4
+
 * Thu Sep 03 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.3-500.chinfo
 - 7.2.3
 

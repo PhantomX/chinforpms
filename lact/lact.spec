@@ -496,6 +496,7 @@ sed -e '/^ExecStart=/s|=.*$|=%{_bindir}/lact daemon|' -i res/%{name}d.service
 %cargo_prep -v vendor
 cat %{S:10} >> .cargo/config.toml
 %else
+%cargo_prep
 %generate_buildrequires
 %cargo_generate_buildrequires
 %endif

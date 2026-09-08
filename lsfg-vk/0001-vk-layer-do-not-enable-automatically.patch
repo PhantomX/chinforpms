@@ -1,0 +1,26 @@
+From 6ad8a5d4cd9660c6f87b7e1d5fd87302f2967d04 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Mon, 7 Sep 2026 09:41:04 -0300
+Subject: [PATCH] vk-layer: do not enable automatically
+
+---
+ lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in b/lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in
+index 745ba7c..8e32004 100644
+--- a/lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in
++++ b/lsfg-vk-layer/VkLayer_LSFGVK_frame_generation.json.in
+@@ -7,6 +7,9 @@
+     "library_path": "@LSFGVK_LAYER_LIBRARY_PATH@",
+     "type": "GLOBAL",
+     "api_version": "1.4.350",
++    "enable_environment": {
++      "ENABLE_LSFGVK": "1"
++    },
+     "disable_environment": {
+       "DISABLE_LSFGVK": "1"
+     }
+-- 
+2.55.0
+

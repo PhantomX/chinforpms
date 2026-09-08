@@ -366,6 +366,7 @@ sed -e '/sdl2/s|, "static-link"||g' -i Cargo.toml
 %cargo_prep -v vendor
 cat %{S:10} >> .cargo/config.toml
 %else
+%cargo_prep
 %generate_buildrequires
 %cargo_generate_buildrequires
 %endif

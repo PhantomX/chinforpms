@@ -285,12 +285,9 @@ sed -e '/^packet-builder/s|, git =.*$| }|g' -i Cargo.toml
 
 %if %{with vendor}
 %cargo_prep -v vendor
-%endif
-
-%generate_buildrequires
-%if %{with vendor}
-%cargo_vendor_manifest
 %else
+%cargo_prep
+%generate_buildrequires
 %cargo_generate_buildrequires
 %endif
 %endif
@@ -302,6 +299,9 @@ sed -e '/^packet-builder/s|, git =.*$| }|g' -i Cargo.toml
 mv target/release/%{name} .
 %{cargo_license_summary}
 %{cargo_license} > LICENSE.dependencies
+%endif
+%if %{with vendor}
+%{cargo_vendor_manifest}
 %endif
 
 %install

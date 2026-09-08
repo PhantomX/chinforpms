@@ -40,7 +40,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        7.1.5
+Version:        7.2.7
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -49,7 +49,6 @@ Epoch:          1
 # Application and 3rd-party modules licensing:
 # * Telegram Desktop - GPL-3.0-or-later with OpenSSL exception -- main tarball;
 # * tg_owt - BSD-3-Clause and Apache-2.0 -- static dependency or not;
-# * rlottie - LGPL-2.1-or-later -- static dependency;
 # * qt_functions.cpp - LGPL-3.0-only -- build-time dependency;
 # * open-sans-fonts  - Apache-2.0 -- bundled font;
 # * vazirmatn-fonts - OFL -- bundled font.
@@ -121,6 +120,7 @@ BuildRequires:  pkgconfig(libxxhash)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  cmake(tde2e)
+BuildRequires:  tlottie-devel
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -257,7 +257,6 @@ cp %{P:1014} .
 rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  -i cmake/external/rlottie/CMakeLists.txt \
   cmake/external/gsl/CMakeLists.txt
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
@@ -386,6 +385,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.2.7-100
+- 7.2.7
+
 * Fri Sep 04 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.1.5-100
 - 7.1.5
 
