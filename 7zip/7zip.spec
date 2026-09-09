@@ -21,13 +21,13 @@
 %endif
 %endif
 
-%global src_hash f048c8e8177cffebce566ff608d43a27
+%global src_hash 598a72d5afdf69ef346a74574d8054b2
 %global src_pkg %{name}-free-%{version}.tar.xz
 
 %global ver     %%(echo %{version} | tr -d '.')
 
 Name:           7zip
-Version:        26.02
+Version:        26.03
 Release:        100%{?dist}
 Summary:        A file archiver
 
@@ -192,6 +192,9 @@ install -pm0755 CPP/7zip/Bundles/SFXCon/b/g/7zCon %{buildroot}%{_libexecdir}/%{n
 
 
 %changelog
+* Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.03-100
+- 26.03
+
 * Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1:26.02-100
 - 26.02
 

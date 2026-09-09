@@ -1,14 +1,14 @@
-From 9ee5b902ed4f85c977664e9c928de8c64a95c2b1 Mon Sep 17 00:00:00 2001
+From 256db9828b1fc825a7fbd0b15931b2f6a4e96882 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Thu, 17 Mar 2022 13:53:39 -0300
 Subject: [PATCH] Makefile: package build fixes
 
 ---
- Makefile | 81 +++++++++++++++++++++++++++++++++++++++++---------------
- 1 file changed, 59 insertions(+), 22 deletions(-)
+ Makefile | 83 ++++++++++++++++++++++++++++++++++++++++----------------
+ 1 file changed, 60 insertions(+), 23 deletions(-)
 
 diff --git a/Makefile b/Makefile
-index 4049c2a..641af46 100644
+index e198b55..5526f94 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -2,7 +2,7 @@
@@ -40,7 +40,16 @@ index 4049c2a..641af46 100644
  # used clang?
  CL  	 := 0
  # build with -m32?
-@@ -62,6 +62,15 @@ PIE :=0
+@@ -31,7 +31,7 @@ VCD      := 1
+ # need support bsdiff&bspatch?
+ BSD      := 1
+ # 0: not need bzip2 (must BSD=0);  1: compile bzip2 source code;  2: used -lbz2 to link bzip2 lib;
+-BZIP2    := 1
++BZIP2    := 2
+ ifeq ($(OS),Windows_NT) # mingw?
+   CC    := gcc
+ endif
+@@ -60,6 +60,15 @@ PIE :=0
  ATOMIC_U64 := 1
  
  
@@ -56,7 +65,7 @@ index 4049c2a..641af46 100644
  HDIFF_OBJ  := 
  HPATCH_OBJ := \
      libHDiffPatch/HPatch/patch.o \
-@@ -94,7 +103,7 @@ else
+@@ -93,7 +102,7 @@ else
  	HPATCH_OBJ += bsdiff_wrapper/bspatch_wrapper.o
  endif
  
@@ -65,7 +74,7 @@ index 4049c2a..641af46 100644
  ifeq ($(DIR_DIFF),0)
  else
    ifeq ($(MD5),0)
-@@ -103,7 +112,7 @@ else
+@@ -102,7 +111,7 @@ else
    endif
  endif
  
@@ -90,7 +99,7 @@ index 4049c2a..641af46 100644
    endif
  endif
  
-@@ -266,7 +277,7 @@ UTEST_OBJ := \
+@@ -265,7 +276,7 @@ UTEST_OBJ := \
      libhsync/sync_make/sync_make.o
  
  DEF_FLAGS := \
@@ -99,7 +108,7 @@ index 4049c2a..641af46 100644
      -D_IS_NEED_ALL_CompressPlugin=0 \
      -D_IS_NEED_DEFAULT_CompressPlugin=0 \
      -D_IS_NEED_ALL_ChecksumPlugin=0 \
-@@ -298,6 +309,9 @@ else
+@@ -310,6 +321,9 @@ else
  	ifeq ($(BZIP2),1)
          DEF_FLAGS += -I$(BZ2_PATH)
  	endif
@@ -109,7 +118,7 @@ index 4049c2a..641af46 100644
  endif
  ifeq ($(ZLIB),0)
  else
-@@ -305,6 +319,9 @@ else
+@@ -317,6 +331,9 @@ else
  	ifeq ($(ZLIB),1)
      DEF_FLAGS += -I$(ZLIB_PATH)
  	endif
@@ -119,7 +128,7 @@ index 4049c2a..641af46 100644
  endif
  ifeq ($(LDEF),0)
  else
-@@ -332,9 +349,13 @@ else
+@@ -344,9 +361,13 @@ else
    else
      DEF_FLAGS += -D_ChecksumPlugin_md5 -I$(MD5_PATH)
    endif
@@ -135,8 +144,8 @@ index 4049c2a..641af46 100644
 +    DEF_FLAGS += $(XXH_DEF_FLAGS) -I$(shell pkg-config --cflags-only-I libxxhash)
    endif
  endif
- ifeq ($(BSD),0)
-@@ -366,6 +387,9 @@ else
+ ifeq ($(LZMA),0)
+@@ -368,6 +389,9 @@ else
        endif
      endif
    endif
@@ -146,7 +155,7 @@ index 4049c2a..641af46 100644
  endif
  ifeq ($(ZSTD),0)
  else
-@@ -376,6 +400,9 @@ else
+@@ -378,6 +402,9 @@ else
                   -DZSTD_LIB_DEPRECATED=0 -DZSTD_STRIP_ERROR_STRINGS=1 \
  	               -I$(ZSTD_PATH) -I$(ZSTD_PATH)/common -I$(ZSTD_PATH)/compress -I$(ZSTD_PATH)/decompress
  	endif
@@ -156,7 +165,7 @@ index 4049c2a..641af46 100644
  endif
  
  ifeq ($(MT),0)
-@@ -399,7 +426,7 @@ ifeq ($(ZSTD),2)
+@@ -401,7 +428,7 @@ ifeq ($(ZSTD),2)
    PATCH_LINK += -lzstd		# link zstd
  endif
  ifeq ($(LZMA),2)
@@ -165,7 +174,7 @@ index 4049c2a..641af46 100644
  endif
  ifeq ($(MT),0)
  else
-@@ -437,18 +464,18 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
+@@ -439,18 +466,18 @@ CXXFLAGS += $(DEF_FLAGS) -std=c++11
  
  .PHONY: all install clean
  
@@ -183,16 +192,16 @@ index 4049c2a..641af46 100644
 -hdiffz: libhdiffpatch.a
 -	$(CXX) hdiffz.cpp libhdiffpatch.a $(CXXFLAGS) $(DIFF_LINK) -o hdiffz
 -unit_test: libhdiffpatch.a 
--	$(CXX) ./test/unit_test.cpp libhdiffpatch.a $(DIFF_LINK) -o unit_test
+-	$(CXX) ./test/unit_test.cpp libhdiffpatch.a $(UTEST_FLAGS) $(DIFF_LINK) -o unit_test
 +	$(CC) hpatchz.c $(HPATCH_OBJ) $(CFLAGS) $(LDFLAGS) $(PATCH_LINK) -o hpatchz
 +hdiffz: $(LIBRARYMAJOR)
 +	$(CXX) hdiffz.cpp $(LIBRARYMAJOR) $(CXXFLAGS) $(LDFLAGS) $(DIFF_LINK) -o hdiffz
 +unit_test: $(LIBRARYMAJOR)
-+	$(CXX) ./test/unit_test.cpp $(LIBRARYMAJOR) $(DIFF_LINK) -o unit_test
++	$(CXX) ./test/unit_test.cpp $(LIBRARYMAJOR) $(UTEST_FLAGS) $(DIFF_LINK) -o unit_test
  
  ifeq ($(OS),Windows_NT) # mingw?
    RM := del /Q /F
-@@ -457,17 +484,27 @@ else
+@@ -459,17 +486,27 @@ else
    RM := rm -f
    DEL_ALL_OBJ := $(_ALL_OBJs)
  endif
@@ -224,5 +233,5 @@ index 4049c2a..641af46 100644
  uninstall:
  	$(RM)  $(INSTALL_BIN)/hdiffz  $(INSTALL_BIN)/hpatchz
 -- 
-2.53.0
+2.55.0
 

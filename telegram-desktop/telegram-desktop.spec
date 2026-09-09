@@ -117,6 +117,7 @@ BuildRequires:  pkgconfig(liblz4)
 BuildRequires:  pkgconfig(liblzma)
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(libxxhash)
+BuildRequires:  pkgconfig(openh264)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  cmake(tde2e)
@@ -257,7 +258,7 @@ cp %{P:1014} .
 rm -rf Telegram/ThirdParty/{QR,dispatch,expected,fcitx5-qt,fcitx-qt5,hime,hunspell,kcoreaddons,kimageformats,lz4,nimf,plasma-wayland-protocols,range-v3,wayland-protocols,xxHash}
 
 sed -e 's|DESKTOP_APP_USE_PACKAGED|\0_DISABLED|g' \
-  cmake/external/gsl/CMakeLists.txt
+  -i cmake/external/gsl/CMakeLists.txt
 
 rm -f Telegram/lib_ui/qt_conf/linux.qrc
 

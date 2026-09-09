@@ -96,10 +96,10 @@ appstream-util validate-relax --nonet \
 %files
 %license LICENSE.txt
 %{_bindir}/%{name}-cli
-%{_datadir}/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json
 
 %files libs
 %{_libdir}/liblsfg-vk-layer.so
+%{_datadir}/vulkan/implicit_layer.d/VkLayer_LSFGVK_frame_generation.json
 
 %files ui
 %{_bindir}/%{name}-ui

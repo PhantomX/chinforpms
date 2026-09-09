@@ -16,7 +16,7 @@ index 0cafdbc..00d33e2 100644
  if (DESKTOP_APP_USE_PACKAGED OR LINUX)
      find_package(tg_owt REQUIRED)
 -    target_link_libraries(external_webrtc INTERFACE tg_owt::tg_owt)
-+    target_link_libraries(external_webrtc INTERFACE tg_owt::tg_owt absl::strings)
++    target_link_libraries(external_webrtc INTERFACE tg_owt::tg_owt absl_strings)
      return()
  endif()
  

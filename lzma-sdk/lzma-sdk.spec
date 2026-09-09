@@ -9,7 +9,7 @@
 %global sisong_url https://github.com/sisong/lzma
 
 Name:           lzma-sdk%{?packver}
-Version:        26.02
+Version:        26.03
 Release:        100%{?dist}
 Summary:        SDK for lzma compression
 
@@ -78,6 +78,7 @@ find . \
   -type f \( -name '*.c*' -o -name '*.h*' -o -name '*.cpp' \) \
   -exec sed 's|False\b|False7z|g;s|True\b|True7z|g' -i {} ';'
 
+sed -e 's|kNumAlignBits|kNumAlignBitsMt|g' -i C/Lzma2DecMt.c
 
 install -p -m 0644 %{SOURCE1} .
 
@@ -156,6 +157,9 @@ install -pm0644 *.pc %{buildroot}%{_libdir}/pkgconfig/
 
 
 %changelog
+* Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 26.03-100
+- 26.03
+
 * Fri Jul 17 2026 Phantom X <megaphantomx at hotmail dot com> - 26.02-100
 - 26.02
 

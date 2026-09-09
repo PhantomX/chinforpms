@@ -588,7 +588,7 @@ index 2acb0b8..8e83d37 100644
  
  include ../../../CPP/7zip/LzmaDec_gcc.mak
  
-@@ -16,6 +18,28 @@ OBJS = \
+@@ -16,6 +18,29 @@ OBJS = \
    $O/LzmaEnc.o \
    $O/LzmaUtil.o \
    $O/Threads.o \
@@ -605,6 +605,7 @@ index 2acb0b8..8e83d37 100644
 +  $O/7zCrc.o \
 +  $O/7zDec.o \
 +  $O/Lzma2Dec.o \
++  $O/Lzma2DecMt.o \
 +  $O/Lzma2Enc.o \
 +  $O/MtCoder.o \
 +  $O/MtDec.o \
