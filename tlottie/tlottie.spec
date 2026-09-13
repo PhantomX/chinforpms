@@ -1,8 +1,8 @@
 %bcond check 0
 
-%global commit 758c7cb74444f1c3c9923065c40fdb3aad8b7d60
+%global commit 31f1b542f88e7b4be9a01e749920d857535fc715
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260906
+%global date 20260910
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -76,6 +76,7 @@ install -pm0644 include/tlottie.h %{buildroot}%{_includedir}
 
 %files
 %doc README.md
+%license LICENSE
 %{_libdir}/lib%{name}.so.*
 
 %files devel

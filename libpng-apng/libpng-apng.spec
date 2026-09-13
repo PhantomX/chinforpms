@@ -5,7 +5,7 @@
 Summary:        A library of functions for manipulating PNG image format files
 Name:           %{pkgname}-apng
 Version:        1.6.58
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 License:        Zlib
 URL:            https://sourceforge.net/projects/%{name}/
@@ -78,6 +78,7 @@ autoreconf -ivf
 %build
 %configure \
   --disable-tools \
+  --with-libpng-prefix=APNG_ \
 %{nil}
 
 %make_build DFA_XTRA=pngusr.dfa
@@ -112,6 +113,9 @@ make check
 
 
 %changelog
+* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 1.6.58-2
+- Add symbols prefix
+
 * Sun Apr 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1.6.58-1
 - 1.6.58
 

@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 884de5ef1263
-%global date 20260224
+%global commit 3cfae5af3888
+%global date 20260911
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -11,8 +11,8 @@
 %endif
 
 Name:           blastem
-Version:        0.6.3
-Release:        0.25%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
@@ -47,7 +47,7 @@ TMMS support and menu.bin is not included.
 
 rm -rf zlib android
 
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c event_log.{c,h} png.c system.c zip.c
+sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c chd.h event_log.{c,h} png.c system.c zip.c
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
@@ -125,6 +125,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-1.20260911hg3cfae5af3888
+- 1.0.0
+
 * Fri Jun 17 2022 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.10.20220611hg0bf077df45c3
 - Bump
 

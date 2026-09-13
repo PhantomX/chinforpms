@@ -2,8 +2,8 @@
 
 BuildArch:      noarch
 
-%global commit 884de5ef1263
-%global date 20260224
+%global commit 3cfae5af3888
+%global date 20260911
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -13,8 +13,8 @@ BuildArch:      noarch
 %global pkgname blastem
 
 Name:           %{pkgname}-bindata
-Version:        0.6.3
-Release:        0.10%{?dist}
+Version:        1.0.0
+Release:        1%{?dist}
 Summary:        Blastem binary support files
 
 License:        GPL-3.0-only
@@ -61,6 +61,9 @@ install -pm0644 menu.bin tmss.md %{buildroot}%{_datadir}/%{pkgname}/
 
 
 %changelog
+* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.0-1.20260911hg3cfae5af3888
+- 1.0.0
+
 * Thu Mar 16 2023 Phantom X <megaphantomx at hotmail dot com> - 0.6.3-0.5.20230309hgd30ea441b92e
 - BR: ImageMagick
 

@@ -1,136 +1,76 @@
- Documentation/admin-guide/sysctl/crypto.rst        |  36 ++++++
- Documentation/crypto/userspace-if.rst              |  13 ++-
- Makefile                                           |  30 +++++
+ MAINTAINERS                                        |   6 +
+ Makefile                                           |  30 +
  arch/arm/Kconfig                                   |   4 +-
  arch/arm64/Kconfig                                 |   2 +-
- arch/arm64/kernel/setup.c                          |  27 +++++
+ arch/arm64/kernel/setup.c                          |  27 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
- arch/x86/kernel/setup.c                            |  22 ++--
- crypto/af_alg.c                                    |  76 +++++++++++-
+ arch/x86/kernel/setup.c                            |  22 +-
  crypto/akcipher.c                                  |   3 +-
- crypto/algif_aead.c                                |  11 ++
- crypto/algif_hash.c                                |  24 ++++
- crypto/algif_rng.c                                 |   9 ++
- crypto/algif_skcipher.c                            |  27 ++++-
- crypto/dh.c                                        |  25 ++++
- crypto/seqiv.c                                     |  15 ++-
+ crypto/dh.c                                        |  25 +
+ crypto/seqiv.c                                     |  15 +-
  crypto/sig.c                                       |   3 +-
  crypto/testmgr.c                                   |   6 +-
- drivers/acpi/apei/hest.c                           |   8 ++
- drivers/acpi/irq.c                                 |  17 ++-
- drivers/acpi/scan.c                                |   9 ++
- drivers/ata/libahci.c                              |  18 +++
- drivers/char/ipmi/ipmi_dmi.c                       |  15 +++
- drivers/char/ipmi/ipmi_msghandler.c                |  16 ++-
- drivers/char/random.c                              | 128 ++++++++++++++++++++-
+ drivers/acpi/apei/hest.c                           |   8 +
+ drivers/acpi/irq.c                                 |  17 +-
+ drivers/acpi/scan.c                                |   9 +
+ drivers/ata/libahci.c                              |  18 +
+ drivers/char/ipmi/ipmi_dmi.c                       |  15 +
+ drivers/char/ipmi/ipmi_msghandler.c                |  16 +-
+ drivers/char/random.c                              | 128 ++-
  drivers/firmware/efi/Makefile                      |   1 +
- drivers/firmware/efi/efi.c                         | 124 +++++++++++++++-----
+ drivers/firmware/efi/efi.c                         | 124 ++-
  drivers/firmware/efi/libstub/fdt.c                 |   5 +
- drivers/firmware/efi/libstub/secureboot.c          |  14 ++-
- drivers/firmware/efi/secureboot.c                  |  38 ++++++
- drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +++
- drivers/iommu/iommu.c                              |  22 ++++
+ drivers/firmware/efi/libstub/secureboot.c          |  14 +-
+ drivers/firmware/efi/secureboot.c                  |  38 +
+ drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
+ drivers/input/misc/soc_button_array.c              |  16 +-
+ drivers/iommu/iommu.c                              |  22 +
+ drivers/media/i2c/Kconfig                          |  10 +
+ drivers/media/i2c/Makefile                         |   1 +
  drivers/media/i2c/cvs/core.c                       |   3 +
  drivers/media/i2c/cvs/icvs.h                       |   2 -
- drivers/media/i2c/cvs/v4l2.c                       |  17 ++-
- drivers/pci/quirks.c                               |  24 ++++
- drivers/usb/core/hub.c                             |   7 ++
- include/crypto/if_alg.h                            |  42 ++++---
+ drivers/media/i2c/cvs/v4l2.c                       |  17 +-
+ drivers/media/i2c/imx471.c                         | 957 +++++++++++++++++++++
+ drivers/media/pci/intel/ipu-bridge.c               |  41 +
+ drivers/pci/quirks.c                               |  24 +
+ drivers/usb/core/hub.c                             |   7 +
  include/linux/crypto.h                             |   2 +
- include/linux/efi.h                                |  22 ++--
- include/linux/random.h                             |  10 ++
- include/linux/security.h                           |   9 ++
+ include/linux/efi.h                                |  22 +-
+ include/linux/random.h                             |  10 +
+ include/linux/security.h                           |   9 +
  kernel/module/signing.c                            |   9 +-
  net/core/page_pool.c                               |   3 +-
  scripts/Makefile.lib                               |   3 +
  scripts/tags.sh                                    |   2 +
  security/integrity/platform_certs/load_uefi.c      |   6 +-
- security/lockdown/Kconfig                          |  13 +++
- security/lockdown/lockdown.c                       |  11 ++
- tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++++++++++++
+ security/lockdown/Kconfig                          |  13 +
+ security/lockdown/lockdown.c                       |  11 +
+ tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++
  tools/testing/selftests/bpf/Makefile               |   2 +-
- tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -----
- 55 files changed, 928 insertions(+), 144 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -
+ 53 files changed, 1743 insertions(+), 122 deletions(-)
 
-diff --git a/Documentation/admin-guide/sysctl/crypto.rst b/Documentation/admin-guide/sysctl/crypto.rst
-index b707bd314a64..9a1bd53287f4 100644
---- a/Documentation/admin-guide/sysctl/crypto.rst
-+++ b/Documentation/admin-guide/sysctl/crypto.rst
-@@ -7,6 +7,42 @@ kernel configuration:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8014b9f8253e..62e6c97ee9b2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -25262,6 +25262,12 @@ T:	git git://linuxtv.org/media.git
+ F:	Documentation/devicetree/bindings/media/i2c/sony,imx415.yaml
+ F:	drivers/media/i2c/imx415.c
  
- .. contents:: :local:
- 
-+.. _af_alg_restrict:
++SONY IMX471 SENSOR DRIVER
++M:	Kate Hsuan <hpa@redhat.com>
++L:	linux-media@vger.kernel.org
++S:	Maintained
++F:	drivers/media/i2c/imx471.c
 +
-+af_alg_restrict
-+===============
-+
-+Controls the level of restriction of AF_ALG.
-+
-+AF_ALG is a deprecated and rarely-used userspace interface that is a
-+frequent source of vulnerabilities. It also unnecessarily exposes a
-+large number of kernel implementation details. For more information
-+about AF_ALG, see :ref:`Documentation/crypto/userspace-if.rst
-+<crypto_userspace_interface>`.
-+
-+Starting in Linux v7.3, AF_ALG supports only a limited set of
-+algorithms by default. This sysctl allows the system administrator to
-+remove this restriction when needed for compatibility reasons, or to
-+go further and disable AF_ALG entirely. The default value is 1.
-+
-+===  ==================================================================
-+0    AF_ALG is unrestricted.
-+
-+1    AF_ALG is supported with a limited list of algorithms. The list
-+     is designed for compatibility with known users such as iwd and
-+     bluez that haven't yet been fixed to use userspace crypto code.
-+
-+     Specifically, there is an allowlist for unprivileged processes
-+     and a somewhat longer allowlist for processes that hold
-+     CAP_SYS_ADMIN or CAP_NET_ADMIN in the initial user namespace.
-+
-+     Attempts to bind() an AF_ALG socket with a disallowed algorithm
-+     fail with ENOENT.
-+
-+2    AF_ALG is completely disabled. Attempts to create an AF_ALG
-+     socket fail with EAFNOSUPPORT.
-+===  ==================================================================
-+
- fips_enabled
- ============
- 
-diff --git a/Documentation/crypto/userspace-if.rst b/Documentation/crypto/userspace-if.rst
-index ab93300c8e04..d6194346e366 100644
---- a/Documentation/crypto/userspace-if.rst
-+++ b/Documentation/crypto/userspace-if.rst
-@@ -1,3 +1,5 @@
-+.. _crypto_userspace_interface:
-+
- User Space Interface
- ====================
- 
-@@ -12,9 +14,14 @@ AF_ALG is insecure and is deprecated. Originally added to the kernel in 2010,
- most kernel developers now consider it to be a mistake. Support for hardware
- accelerators, which was the original purpose of AF_ALG, has been removed.
- 
--AF_ALG continues to be supported only for backwards compatibility. On systems
--where no programs using AF_ALG remain, the support for it should be disabled by
--disabling ``CONFIG_CRYPTO_USER_API_*``.
-+AF_ALG continues to be supported only for backwards compatibility.
-+
-+Starting in Linux v7.3, the set of algorithms supported by AF_ALG is limited by
-+default. See :ref:`/proc/sys/crypto/af_alg_restrict <af_alg_restrict>`.
-+
-+On systems where no programs using AF_ALG remain, the support for it should be
-+disabled entirely by setting ``/proc/sys/crypto/af_alg_restrict`` to 2 or by
-+disabling ``CONFIG_CRYPTO_USER_API_*`` in the kernel configuration.
- 
- Deprecation
- -----------
+ SONY MEMORYSTICK SUBSYSTEM
+ M:	Maxim Levitsky <maximlevitsky@gmail.com>
+ M:	Alex Dubov <oakad@yahoo.com>
 diff --git a/Makefile b/Makefile
-index 91d6e74db4dc..da3ae4b426e4 100644
+index 408e8512b713..f1bdadfd7229 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -359,140 +299,6 @@ index 46882ce79c3a..9c73814c31e0 100644
  
  	reserve_initrd();
  
-diff --git a/crypto/af_alg.c b/crypto/af_alg.c
-index cce000e8590e..ab84c4488a15 100644
---- a/crypto/af_alg.c
-+++ b/crypto/af_alg.c
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/atomic.h>
-+#include <linux/capability.h>
- #include <crypto/if_alg.h>
- #include <linux/crypto.h>
- #include <linux/init.h>
-@@ -22,10 +23,28 @@
- #include <linux/sched/signal.h>
- #include <linux/security.h>
- #include <linux/string.h>
-+#include <linux/sysctl.h>
-+#include <linux/user_namespace.h>
- #include <keys/user-type.h>
- #include <keys/trusted-type.h>
- #include <keys/encrypted-type.h>
- 
-+static int af_alg_restrict = 1;
-+
-+static const struct ctl_table af_alg_table[] = {
-+	{
-+		.procname       = "af_alg_restrict",
-+		.data           = &af_alg_restrict,
-+		.maxlen         = sizeof(int),
-+		.mode           = 0644,
-+		.proc_handler   = proc_dointvec_minmax,
-+		.extra1		= SYSCTL_ZERO,
-+		.extra2		= SYSCTL_TWO,
-+	},
-+};
-+
-+static struct ctl_table_header *af_alg_header;
-+
- struct alg_type_list {
- 	const struct af_alg_type *type;
- 	struct list_head list;
-@@ -110,6 +129,43 @@ int af_alg_unregister_type(const struct af_alg_type *type)
- }
- EXPORT_SYMBOL_GPL(af_alg_unregister_type);
- 
-+static bool af_alg_capable(void)
-+{
-+	return ns_capable_noaudit(&init_user_ns, CAP_NET_ADMIN) ||
-+	       capable(CAP_SYS_ADMIN);
-+}
-+
-+int af_alg_check_restriction(const char *name,
-+			     const struct af_alg_allowlist_entry allowlist[])
-+{
-+	int level = READ_ONCE(af_alg_restrict);
-+
-+	if (level == 0)
-+		return 0;
-+	if (level == 1) {
-+		for (const struct af_alg_allowlist_entry *ent = allowlist;
-+		     ent->name; ent++) {
-+			if (strcmp(name, ent->name) == 0) {
-+				if ((ent->flags & AF_ALG_UNPRIVILEGED) ||
-+				    af_alg_capable())
-+					return 0;
-+				/* List contains at most one entry per name. */
-+				break;
-+			}
-+		}
-+	}
-+	/*
-+	 * Use -ENOENT (the error code for "algorithm not found") instead of
-+	 * -EACCES or -EPERM, for the highest chance of correctly triggering
-+	 * fallback code paths in userspace programs.
-+	 *
-+	 * Don't log a warning, since it would be noisy.  iwd tries to bind a
-+	 * bunch of algorithms that it never uses.
-+	 */
-+	return -ENOENT;
-+}
-+EXPORT_SYMBOL_GPL(af_alg_check_restriction);
-+
- static void alg_do_release(const struct af_alg_type *type, void *private)
- {
- 	if (!type)
-@@ -506,6 +562,9 @@ static int alg_create(struct net *net, struct socket *sock, int protocol,
- 	struct sock *sk;
- 	int err;
- 
-+	if (READ_ONCE(af_alg_restrict) == 2)
-+		return -EAFNOSUPPORT;
-+
- 	if (sock->type != SOCK_SEQPACKET)
- 		return -ESOCKTNOSUPPORT;
- 	if (protocol != 0)
-@@ -1222,27 +1281,32 @@ EXPORT_SYMBOL_GPL(af_alg_get_rsgl);
- 
- static int __init af_alg_init(void)
- {
--	int err = proto_register(&alg_proto, 0);
-+	int err;
-+
-+	af_alg_header = register_sysctl("crypto", af_alg_table);
- 
-+	err = proto_register(&alg_proto, 0);
- 	if (err)
--		goto out;
-+		goto out_unregister_sysctl;
- 
- 	err = sock_register(&alg_family);
--	if (err != 0)
-+	if (err)
- 		goto out_unregister_proto;
- 
--out:
--	return err;
-+	return 0;
- 
- out_unregister_proto:
- 	proto_unregister(&alg_proto);
--	goto out;
-+out_unregister_sysctl:
-+	unregister_sysctl_table(af_alg_header);
-+	return err;
- }
- 
- static void __exit af_alg_exit(void)
- {
- 	sock_unregister(PF_ALG);
- 	proto_unregister(&alg_proto);
-+	unregister_sysctl_table(af_alg_header);
- }
- 
- module_init(af_alg_init);
 diff --git a/crypto/akcipher.c b/crypto/akcipher.c
 index 630bb19738be..8da7eedce31e 100644
 --- a/crypto/akcipher.c
@@ -507,151 +313,6 @@ index 630bb19738be..8da7eedce31e 100644
  	if (!alg->set_priv_key)
  		alg->set_priv_key = akcipher_default_set_key;
  
-diff --git a/crypto/algif_aead.c b/crypto/algif_aead.c
-index 787aac8aeb24..5574e2d70539 100644
---- a/crypto/algif_aead.c
-+++ b/crypto/algif_aead.c
-@@ -34,6 +34,11 @@
- #include <linux/net.h>
- #include <net/sock.h>
- 
-+static const struct af_alg_allowlist_entry aead_allowlist[] = {
-+	{ "ccm(aes)" }, /* bluez */
-+	{},
-+};
-+
- static inline bool aead_sufficient_data(struct sock *sk)
- {
- 	struct alg_sock *ask = alg_sk(sk);
-@@ -344,6 +349,12 @@ static struct proto_ops algif_aead_ops_nokey = {
- 
- static void *aead_bind(const char *name)
- {
-+	int err;
-+
-+	err = af_alg_check_restriction(name, aead_allowlist);
-+	if (err)
-+		return ERR_PTR(err);
-+
- 	return crypto_alloc_aead(name, 0, AF_ALG_CRYPTOAPI_MASK);
- }
- 
-diff --git a/crypto/algif_hash.c b/crypto/algif_hash.c
-index 5452ad6c1506..6e8b5fb82a7f 100644
---- a/crypto/algif_hash.c
-+++ b/crypto/algif_hash.c
-@@ -16,6 +16,24 @@
- #include <linux/net.h>
- #include <net/sock.h>
- 
-+static const struct af_alg_allowlist_entry hash_allowlist[] = {
-+	{ "cmac(aes)" }, /* iwd, bluez */
-+	{ "hmac(md5)" }, /* iwd */
-+	{ "hmac(sha1)" }, /* iwd */
-+	{ "hmac(sha224)" }, /* iwd */
-+	{ "hmac(sha256)" }, /* iwd */
-+	{ "hmac(sha384)" }, /* iwd */
-+	{ "hmac(sha512)" }, /* iwd, sha512hmac */
-+	{ "md4" }, /* iwd */
-+	{ "md5" }, /* iwd */
-+	{ "sha1", AF_ALG_UNPRIVILEGED }, /* iwd, iproute2 < 7.0 */
-+	{ "sha224" }, /* iwd */
-+	{ "sha256" }, /* iwd */
-+	{ "sha384" }, /* iwd */
-+	{ "sha512" }, /* iwd */
-+	{},
-+};
-+
- struct hash_ctx {
- 	struct af_alg_sgl sgl;
- 
-@@ -382,6 +400,12 @@ static struct proto_ops algif_hash_ops_nokey = {
- 
- static void *hash_bind(const char *name)
- {
-+	int err;
-+
-+	err = af_alg_check_restriction(name, hash_allowlist);
-+	if (err)
-+		return ERR_PTR(err);
-+
- 	return crypto_alloc_ahash(name, 0, AF_ALG_CRYPTOAPI_MASK);
- }
- 
-diff --git a/crypto/algif_rng.c b/crypto/algif_rng.c
-index 4dfe7899f8fa..bd522915d56d 100644
---- a/crypto/algif_rng.c
-+++ b/crypto/algif_rng.c
-@@ -50,6 +50,10 @@ MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
- MODULE_DESCRIPTION("User-space interface for random number generators");
- 
-+static const struct af_alg_allowlist_entry rng_allowlist[] = {
-+	{},
-+};
-+
- struct rng_ctx {
- #define MAXSIZE 128
- 	unsigned int len;
-@@ -201,6 +205,11 @@ static void *rng_bind(const char *name)
- {
- 	struct rng_parent_ctx *pctx;
- 	struct crypto_rng *rng;
-+	int err;
-+
-+	err = af_alg_check_restriction(name, rng_allowlist);
-+	if (err)
-+		return ERR_PTR(err);
- 
- 	pctx = kzalloc_obj(*pctx);
- 	if (!pctx)
-diff --git a/crypto/algif_skcipher.c b/crypto/algif_skcipher.c
-index 035fed7db81f..d469a3ec1491 100644
---- a/crypto/algif_skcipher.c
-+++ b/crypto/algif_skcipher.c
-@@ -35,6 +35,24 @@
- #include <linux/string.h>
- #include <net/sock.h>
- 
-+static const struct af_alg_allowlist_entry skcipher_allowlist[] = {
-+	{ "adiantum(xchacha12,aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{ "adiantum(xchacha20,aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{ "cbc(aes)" }, /* iwd */
-+	{ "cbc(des)" }, /* iwd */
-+	{ "cbc(des3_ede)" }, /* iwd */
-+	{ "cbc(paes)" }, /* caam and others */
-+	{ "ctr(aes)" }, /* iwd */
-+	{ "ecb(aes)" }, /* iwd, bluez */
-+	{ "ecb(des)" }, /* iwd */
-+	{ "hctr2(aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{ "xts(aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup benchmark */
-+	{ "xts(camellia)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{ "xts(serpent)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{ "xts(twofish)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
-+	{},
-+};
-+
- static int skcipher_sendmsg(struct socket *sock, struct msghdr *msg,
- 			    size_t size)
- {
-@@ -310,12 +328,13 @@ static struct proto_ops algif_skcipher_ops_nokey = {
- 
- static void *skcipher_bind(const char *name)
- {
--	u32 mask = AF_ALG_CRYPTOAPI_MASK;
-+	int err;
- 
--	if (strcmp(name, "cbc(paes)") == 0)
--		mask = 0;
-+	err = af_alg_check_restriction(name, skcipher_allowlist);
-+	if (err)
-+		return ERR_PTR(err);
- 
--	return crypto_alloc_skcipher(name, 0, mask);
-+	return crypto_alloc_skcipher(name, 0, AF_ALG_CRYPTOAPI_MASK);
- }
- 
- static void skcipher_release(void *private)
 diff --git a/crypto/dh.c b/crypto/dh.c
 index 7ad4768716c8..01ccc24db074 100644
 --- a/crypto/dh.c
@@ -1465,6 +1126,61 @@ index 14bb31bd6a0b..0529359d7440 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
+diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
+index b8cad415c62c..f08e29af531f 100644
+--- a/drivers/input/misc/soc_button_array.c
++++ b/drivers/input/misc/soc_button_array.c
+@@ -16,6 +16,7 @@
+ #include <linux/gpio/consumer.h>
+ #include <linux/gpio_keys.h>
+ #include <linux/gpio.h>
++#include <linux/platform_data/x86/soc.h>
+ #include <linux/platform_device.h>
+ 
+ static bool use_low_level_irq;
+@@ -160,7 +161,7 @@ soc_button_device_create(struct platform_device *pdev,
+ 	struct gpio_keys_platform_data *gpio_keys_pdata;
+ 	const struct dmi_system_id *dmi_id;
+ 	int invalid_acpi_index = -1;
+-	int error, gpio, irq;
++	int error, gpio, irq = 0;
+ 	int n_buttons = 0;
+ 
+ 	for (info = button_info; info->name; info++)
+@@ -191,8 +192,9 @@ soc_button_device_create(struct platform_device *pdev,
+ 		error = soc_button_lookup_gpio(&pdev->dev, info->acpi_index, &gpio, &irq);
+ 		if (error || irq < 0) {
+ 			/*
+-			 * Skip GPIO if not present. Note we deliberately
+-			 * ignore -EPROBE_DEFER errors here. On some devices
++			 * Propagate -EPROBE_DEFER, skip button on other errors.
++			 *
++			 * -EPROBE_DEFER is ignored on Bay & Cherry Trail. Here
+ 			 * Intel is using so called virtual GPIOs which are not
+ 			 * GPIOs at all but some way for AML code to check some
+ 			 * random status bits without need a custom opregion.
+@@ -201,6 +203,12 @@ soc_button_device_create(struct platform_device *pdev,
+ 			 * we do not have a driver for these so they will never
+ 			 * show up, therefore we ignore -EPROBE_DEFER.
+ 			 */
++			if ((error == -EPROBE_DEFER || irq == -EPROBE_DEFER) &&
++			    !(soc_intel_is_byt() || soc_intel_is_cht())) {
++				error = -EPROBE_DEFER;
++				goto err_free_mem;
++			}
++
+ 			continue;
+ 		}
+ 
+@@ -369,7 +377,7 @@ static struct soc_button_info *soc_button_get_button_info(struct device *dev)
+ 		}
+ 	}
+ 
+-	if (!btns_desc) {
++	if (!btns_desc || !btns_desc->package.count) {
+ 		dev_err(dev, "ACPI Button Descriptors not found\n");
+ 		button_info = ERR_PTR(-ENODEV);
+ 		goto out;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 23a531595835..2f8952a08112 100644
 --- a/drivers/iommu/iommu.c
@@ -1505,6 +1221,39 @@ index 23a531595835..2f8952a08112 100644
  /**
   * iommu_setup_default_domain - Set the default_domain for the group
   * @group: Group to change
+diff --git a/drivers/media/i2c/Kconfig b/drivers/media/i2c/Kconfig
+index 5d173e0ecf42..b7199f9f5a0c 100644
+--- a/drivers/media/i2c/Kconfig
++++ b/drivers/media/i2c/Kconfig
+@@ -287,6 +287,16 @@ config VIDEO_IMX415
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called imx415.
+ 
++config VIDEO_IMX471
++	tristate "Sony IMX471 sensor support"
++	select V4L2_CCI_I2C
++	help
++	  This is a Video4Linux2 sensor driver for the Sony
++	  IMX471 camera.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called imx471.
++
+ config VIDEO_MAX9271_LIB
+ 	tristate
+ 
+diff --git a/drivers/media/i2c/Makefile b/drivers/media/i2c/Makefile
+index e45359efe0e4..acbd321fc12e 100644
+--- a/drivers/media/i2c/Makefile
++++ b/drivers/media/i2c/Makefile
+@@ -61,6 +61,7 @@ obj-$(CONFIG_VIDEO_IMX335) += imx335.o
+ obj-$(CONFIG_VIDEO_IMX355) += imx355.o
+ obj-$(CONFIG_VIDEO_IMX412) += imx412.o
+ obj-$(CONFIG_VIDEO_IMX415) += imx415.o
++obj-$(CONFIG_VIDEO_IMX471) += imx471.o
+ obj-$(CONFIG_VIDEO_IR_I2C) += ir-kbd-i2c.o
+ obj-$(CONFIG_VIDEO_ISL7998X) += isl7998x.o
+ obj-$(CONFIG_VIDEO_KS0127) += ks0127.o
 diff --git a/drivers/media/i2c/cvs/core.c b/drivers/media/i2c/cvs/core.c
 index fe9e59ac311c..d4a3b9c3bab1 100644
 --- a/drivers/media/i2c/cvs/core.c
@@ -1617,6 +1366,1028 @@ index 3a1ec0059ef7..9fadca7a3bee 100644
  	cfg->link_freq = freq;
  
  	return 0;
+diff --git a/drivers/media/i2c/imx471.c b/drivers/media/i2c/imx471.c
+new file mode 100644
+index 000000000000..4053aed84340
+--- /dev/null
++++ b/drivers/media/i2c/imx471.c
+@@ -0,0 +1,957 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * imx471.c - imx471 sensor driver
++ *
++ * Copyright (C) 2025 Intel Corporation
++ * Copyright (C) 2026 Kate Hsuan <hpa@redhat.com>
++ */
++
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/pm_runtime.h>
++#include <linux/regulator/consumer.h>
++#include <media/v4l2-cci.h>
++#include <media/v4l2-ctrls.h>
++#include <media/v4l2-subdev.h>
++#include <media/v4l2-fwnode.h>
++
++#define IMX471_REG_MODE_SELECT			CCI_REG8(0x0100)
++#define IMX471_MODE_STANDBY			0x00
++#define IMX471_MODE_STREAMING			0x01
++
++/* Chip ID */
++#define IMX471_REG_CHIP_ID			CCI_REG16(0x0016)
++#define IMX471_CHIP_ID				0x0471
++
++/* V_TIMING internal */
++#define IMX471_REG_FLL				CCI_REG16(0x0340)
++#define IMX471_FLL_MAX				0xffff
++
++/* Exposure control */
++#define IMX471_REG_EXPOSURE			CCI_REG16(0x0202)
++#define IMX471_EXPOSURE_MIN			1
++#define IMX471_EXPOSURE_STEP			1
++#define IMX471_EXPOSURE_DEFAULT			1270
++
++/* Default exposure margin */
++#define IMX471_EXPOSURE_MARGIN			18
++
++/* Analog gain control */
++#define IMX471_REG_ANALOG_GAIN			CCI_REG16(0x0204)
++#define IMX471_ANA_GAIN_MIN			0
++#define IMX471_ANA_GAIN_MAX			800
++#define IMX471_ANA_GAIN_STEP			1
++#define IMX471_ANA_GAIN_DEFAULT			0
++
++/* Digital gain control */
++#define IMX471_REG_DPGA_USE_GLOBAL_GAIN		CCI_REG16(0x3ff9)
++#define IMX471_REG_DIG_GAIN_GLOBAL		CCI_REG16(0x020e)
++#define IMX471_DGTL_GAIN_MIN			256
++#define IMX471_DGTL_GAIN_MAX			4095
++#define IMX471_DGTL_GAIN_STEP			1
++#define IMX471_DGTL_GAIN_DEFAULT		256
++
++/* HFLIP and VFLIP control */
++#define IMX471_REG_ORIENTATION			CCI_REG8(0x0101)
++
++/* Test Pattern Control */
++#define IMX471_REG_TEST_PATTERN			CCI_REG8(0x0600)
++
++/* default link frequency and external clock */
++#define IMX471_LINK_FREQ_DEFAULT		200000000LL
++#define IMX471_EXT_CLK				19200000
++
++/* PLL */
++#define IMX471_REG_VTPXCK_DIV			CCI_REG8(0x0301)
++#define IMX471_REG_VTSYCK_DIV			CCI_REG8(0x0303)
++#define IMX471_REG_PREPLLCK_VT_DIV		CCI_REG8(0x0305)
++#define IMX471_REG_PLL_VT_MPY			CCI_REG16(0x0306)
++#define IMX471_REG_OPPXCK_DIV			CCI_REG8(0x0309)
++#define IMX471_REG_OPSYCK_DIV			CCI_REG8(0x030b)
++#define IMX471_REG_PLL_MULT_DRIV		CCI_REG8(0x0310)
++#define IMX471_PLL_SINGLE			0
++#define IMX471_PLL_DUAL				1
++
++/* IMX471 native and active pixel array size */
++#define IMX471_NATIVE_WIDTH			4672
++#define IMX471_NATIVE_HEIGHT			3512
++#define IMX471_PIXEL_ARRAY_LEFT			8
++#define IMX471_PIXEL_ARRAY_TOP			8
++#define IMX471_PIXEL_ARRAY_WIDTH		4656
++#define IMX471_PIXEL_ARRAY_HEIGHT		3496
++
++#define IMX471_REG_EXCK_FREQ			CCI_REG16(0x0136)
++
++#define IMX471_REG_CSI_DATA_FORMAT		CCI_REG16(0x0112)
++#define IMX471_CSI_DATA_FORMAT_RAW10		0x0a0a
++
++#define IMX471_REG_CSI_LANE_MODE		CCI_REG8(0x0114)
++#define IMX471_CSI_2_LANE_MODE			1
++#define IMX471_CSI_4_LANE_MODE			3
++
++#define IMX471_REG_X_ADD_STA			CCI_REG16(0x0344)
++#define IMX471_REG_Y_ADD_STA			CCI_REG16(0x0346)
++#define IMX471_REG_X_ADD_END			CCI_REG16(0x0348)
++#define IMX471_REG_Y_ADD_END			CCI_REG16(0x034a)
++#define IMX471_REG_X_OUTPUT_SIZE		CCI_REG16(0x034c)
++#define IMX471_REG_Y_OUTPUT_SIZE		CCI_REG16(0x034e)
++#define IMX471_REG_X_EVEN_INC			CCI_REG8(0x0381)
++#define IMX471_REG_X_ODD_INC			CCI_REG8(0x0383)
++#define IMX471_REG_Y_EVEN_INC			CCI_REG8(0x0385)
++#define IMX471_REG_Y_ODD_INC			CCI_REG8(0x0387)
++
++#define IMX471_REG_DIG_CROP_X_OFFSET		CCI_REG16(0x0408)
++#define IMX471_REG_DIG_CROP_Y_OFFSET		CCI_REG16(0x040a)
++#define IMX471_REG_DIG_CROP_WIDTH		CCI_REG16(0x040c)
++#define IMX471_REG_DIG_CROP_HEIGHT		CCI_REG16(0x040e)
++
++/* Binning mode */
++#define IMX471_REG_BINNING_MODE			CCI_REG8(0x0900)
++#define IMX471_BINNING_NONE			0
++#define IMX471_BINNING_ENABLE			1
++#define IMX471_REG_BINNING_TYPE			CCI_REG8(0x0901)
++#define IMX471_REG_BINNING_WEIGHTING		CCI_REG8(0x0902)
++
++#define to_imx471(_sd) container_of_const(_sd, struct imx471, sd)
++
++static const char * const imx471_supply_name[] = {
++	"vana",
++};
++
++struct imx471_mode {
++	u32 width;
++	u32 height;
++
++	/* V-timing */
++	u32 fll_def;
++	u32 fll_min;
++
++	/* H-timing */
++	u32 llp;
++
++	const struct cci_reg_sequence *default_mode_regs;
++	unsigned int default_mode_regs_length;
++};
++
++struct imx471 {
++	struct v4l2_subdev sd;
++	struct media_pad pad;
++
++	struct v4l2_ctrl_handler ctrl_handler;
++	struct v4l2_ctrl *vblank;
++	struct v4l2_ctrl *hblank;
++	struct v4l2_ctrl *vflip;
++	struct v4l2_ctrl *hflip;
++	struct v4l2_ctrl *exposure;
++
++	struct gpio_desc *reset_gpio;
++	struct regulator_bulk_data supplies[ARRAY_SIZE(imx471_supply_name)];
++	struct clk *img_clk;
++
++	struct device *dev;
++	struct regmap *regmap;
++};
++
++static const struct cci_reg_sequence imx471_global_regs[] = {
++	{ IMX471_REG_EXCK_FREQ, 0x1333 },
++	{ CCI_REG8(0x3c7e), 0x08 },
++	{ CCI_REG8(0x3c7f), 0x05 },
++	{ CCI_REG8(0x3e35), 0x00 },
++	{ CCI_REG8(0x3e36), 0x00 },
++	{ CCI_REG8(0x3e37), 0x00 },
++	{ CCI_REG8(0x3f7f), 0x01 },
++	{ CCI_REG8(0x4431), 0x04 },
++	{ CCI_REG8(0x531c), 0x01 },
++	{ CCI_REG8(0x531d), 0x02 },
++	{ CCI_REG8(0x531e), 0x04 },
++	{ CCI_REG8(0x5928), 0x00 },
++	{ CCI_REG8(0x5929), 0x2f },
++	{ CCI_REG8(0x592a), 0x00 },
++	{ CCI_REG8(0x592b), 0x85 },
++	{ CCI_REG8(0x592c), 0x00 },
++	{ CCI_REG8(0x592d), 0x32 },
++	{ CCI_REG8(0x592e), 0x00 },
++	{ CCI_REG8(0x592f), 0x88 },
++	{ CCI_REG8(0x5930), 0x00 },
++	{ CCI_REG8(0x5931), 0x3d },
++	{ CCI_REG8(0x5932), 0x00 },
++	{ CCI_REG8(0x5933), 0x93 },
++	{ CCI_REG8(0x5938), 0x00 },
++	{ CCI_REG8(0x5939), 0x24 },
++	{ CCI_REG8(0x593a), 0x00 },
++	{ CCI_REG8(0x593b), 0x7a },
++	{ CCI_REG8(0x593c), 0x00 },
++	{ CCI_REG8(0x593d), 0x24 },
++	{ CCI_REG8(0x593e), 0x00 },
++	{ CCI_REG8(0x593f), 0x7a },
++	{ CCI_REG8(0x5940), 0x00 },
++	{ CCI_REG8(0x5941), 0x2f },
++	{ CCI_REG8(0x5942), 0x00 },
++	{ CCI_REG8(0x5943), 0x85 },
++	{ CCI_REG8(0x5f0e), 0x6e },
++	{ CCI_REG8(0x5f11), 0xc6 },
++	{ CCI_REG8(0x5f17), 0x5e },
++	{ CCI_REG8(0x7990), 0x01 },
++	{ CCI_REG8(0x7993), 0x5d },
++	{ CCI_REG8(0x7994), 0x5d },
++	{ CCI_REG8(0x7995), 0xa1 },
++	{ CCI_REG8(0x799a), 0x01 },
++	{ CCI_REG8(0x799d), 0x00 },
++	{ CCI_REG8(0x8169), 0x01 },
++	{ CCI_REG8(0x8359), 0x01 },
++	{ CCI_REG8(0x9302), 0x1e },
++	{ CCI_REG8(0x9306), 0x1f },
++	{ CCI_REG8(0x930a), 0x26 },
++	{ CCI_REG8(0x930e), 0x23 },
++	{ CCI_REG8(0x9312), 0x23 },
++	{ CCI_REG8(0x9316), 0x2c },
++	{ CCI_REG8(0x9317), 0x19 },
++	{ CCI_REG8(0xb046), 0x01 },
++	{ CCI_REG8(0xb048), 0x01 },
++};
++
++static const struct cci_reg_sequence mode_1928x1088_regs[] = {
++	{ IMX471_REG_CSI_DATA_FORMAT, IMX471_CSI_DATA_FORMAT_RAW10 },
++	{ IMX471_REG_CSI_LANE_MODE, IMX471_CSI_4_LANE_MODE },
++	{ IMX471_REG_X_ADD_STA, 8 },
++	{ IMX471_REG_Y_ADD_STA, 408 },
++	{ IMX471_REG_X_ADD_END, 4647 },
++	{ IMX471_REG_Y_ADD_END, 3051 },
++	{ IMX471_REG_X_EVEN_INC, 1 },
++	{ IMX471_REG_X_ODD_INC, 1 },
++	{ IMX471_REG_Y_EVEN_INC, 1 },
++	{ IMX471_REG_Y_ODD_INC, 1 },
++	{ IMX471_REG_BINNING_MODE, IMX471_BINNING_ENABLE },
++	{ IMX471_REG_BINNING_TYPE, 0x22 },
++	{ IMX471_REG_BINNING_WEIGHTING, 0x08 },
++	{ IMX471_REG_DIG_CROP_X_OFFSET, 208 },
++	{ IMX471_REG_DIG_CROP_Y_OFFSET, 108 },
++	{ IMX471_REG_DIG_CROP_WIDTH, 1928 },
++	{ IMX471_REG_DIG_CROP_HEIGHT, 1088 },
++	{ IMX471_REG_X_OUTPUT_SIZE, 1928 },
++	{ IMX471_REG_Y_OUTPUT_SIZE, 1088 },
++	{ IMX471_REG_VTPXCK_DIV, 0x06 },
++	{ IMX471_REG_VTSYCK_DIV, 0x02 },
++	{ IMX471_REG_PREPLLCK_VT_DIV, 0x02 },
++	{ IMX471_REG_PLL_VT_MPY, 0x0079 },
++	{ IMX471_REG_OPSYCK_DIV, 0x01 },
++	{ CCI_REG8(0x030d), 0x02 },
++	{ CCI_REG8(0x030e), 0x00 },
++	{ CCI_REG8(0x030f), 0x53 },
++	{ IMX471_REG_PLL_MULT_DRIV, IMX471_PLL_DUAL },
++	{ CCI_REG8(0x3f4c), 0x81 },
++	{ CCI_REG8(0x3f4d), 0x81 },
++	{ CCI_REG8(0x3f78), 0x01 },
++	{ CCI_REG8(0x3f79), 0x31 },
++	{ CCI_REG8(0x3ffe), 0x00 },
++	{ CCI_REG8(0x3fff), 0x8a },
++	{ CCI_REG8(0x5f0a), 0xb6 },
++};
++
++static const char * const imx471_test_pattern_menu[] = {
++	"Disabled",
++	"Solid Colour",
++	"Eight Vertical Colour Bars",
++	"Colour Bars With Fade to Grey",
++	"Pseudorandom Sequence (PN9)",
++};
++
++static const s64 link_freq_menu_items[] = {
++	IMX471_LINK_FREQ_DEFAULT,
++};
++
++/*
++ * The Bayer formats for the flipping.
++ * - no flip
++ * - h flip
++ * - v flip
++ * - h and v flips
++ */
++static const u32 imx471_hv_flips_bayer_order[] = {
++	MEDIA_BUS_FMT_SRGGB10_1X10,
++	MEDIA_BUS_FMT_SGRBG10_1X10,
++	MEDIA_BUS_FMT_SGBRG10_1X10,
++	MEDIA_BUS_FMT_SBGGR10_1X10,
++};
++
++static const struct imx471_mode imx471_modes[] = {
++	{
++		.width = 1928,
++		.height = 1088,
++		.fll_def = 1308,
++		.fll_min = 1308,
++		.llp = 2328,
++		.default_mode_regs = mode_1928x1088_regs,
++		.default_mode_regs_length = ARRAY_SIZE(mode_1928x1088_regs),
++	},
++};
++
++static int imx471_get_regulators(struct device *dev, struct imx471 *sensor)
++{
++	for (unsigned int i = 0; i < ARRAY_SIZE(imx471_supply_name); i++)
++		sensor->supplies[i].supply = imx471_supply_name[i];
++
++	return devm_regulator_bulk_get(dev, ARRAY_SIZE(imx471_supply_name),
++				       sensor->supplies);
++}
++
++static int imx471_set_ctrl(struct v4l2_ctrl *ctrl)
++{
++	struct imx471 *sensor = container_of_const(ctrl->handler,
++						   struct imx471,
++						   ctrl_handler);
++	struct v4l2_subdev_state *state =
++			v4l2_subdev_get_locked_active_state(&sensor->sd);
++	const struct v4l2_mbus_framefmt *format =
++			v4l2_subdev_state_get_format(state, 0);
++	int ret;
++
++	if (ctrl->id == V4L2_CID_VBLANK) {
++		s64 exposure_max = format->height + ctrl->val -
++				   IMX471_EXPOSURE_MARGIN;
++		ret = __v4l2_ctrl_modify_range(sensor->exposure,
++					       sensor->exposure->minimum,
++					       exposure_max,
++					       sensor->exposure->step,
++					       exposure_max);
++		if (ret)
++			return ret;
++	}
++
++	if (!pm_runtime_get_if_in_use(sensor->dev))
++		return 0;
++
++	switch (ctrl->id) {
++	case V4L2_CID_ANALOGUE_GAIN:
++		ret = cci_write(sensor->regmap, IMX471_REG_ANALOG_GAIN,
++				ctrl->val, NULL);
++		break;
++	case V4L2_CID_DIGITAL_GAIN:
++		ret = cci_write(sensor->regmap, IMX471_REG_DIG_GAIN_GLOBAL,
++				ctrl->val, NULL);
++		break;
++	case V4L2_CID_EXPOSURE:
++		ret = cci_write(sensor->regmap, IMX471_REG_EXPOSURE,
++				ctrl->val, NULL);
++		break;
++	case V4L2_CID_VBLANK:
++		/* Update FLL that meets expected vertical blanking */
++		ret = cci_write(sensor->regmap, IMX471_REG_FLL,
++				format->height + ctrl->val, NULL);
++		break;
++	case V4L2_CID_TEST_PATTERN:
++		ret = cci_write(sensor->regmap, IMX471_REG_TEST_PATTERN,
++				ctrl->val, NULL);
++		break;
++	case V4L2_CID_HFLIP:
++	case V4L2_CID_VFLIP:
++		ret = cci_write(sensor->regmap, IMX471_REG_ORIENTATION,
++				sensor->hflip->val | sensor->vflip->val << 1,
++				NULL);
++		break;
++	default:
++		ret = -EINVAL;
++		dev_err(sensor->dev, "ctrl(id:0x%x,val:0x%x) is not handled\n",
++			ctrl->id, ctrl->val);
++		break;
++	}
++
++	pm_runtime_put(sensor->dev);
++
++	return ret;
++}
++
++static const struct v4l2_ctrl_ops imx471_ctrl_ops = {
++	.s_ctrl = imx471_set_ctrl,
++};
++
++static u32 imx471_get_format_code(struct imx471 *sensor)
++{
++	unsigned int i;
++
++	i = (sensor->vflip->val ? 2 : 0) | (sensor->hflip->val ? 1 : 0);
++
++	return imx471_hv_flips_bayer_order[i];
++}
++
++static int imx471_enum_mbus_code(struct v4l2_subdev *sd,
++				 struct v4l2_subdev_state *sd_state,
++				 struct v4l2_subdev_mbus_code_enum *code)
++{
++	struct imx471 *sensor = to_imx471(sd);
++
++	if (code->index >= (ARRAY_SIZE(imx471_hv_flips_bayer_order) / 4))
++		return -EINVAL;
++
++	code->code = imx471_get_format_code(sensor);
++
++	return 0;
++}
++
++static int imx471_enum_frame_size(struct v4l2_subdev *sd,
++				  struct v4l2_subdev_state *sd_state,
++				  struct v4l2_subdev_frame_size_enum *fse)
++{
++	if (fse->index >= ARRAY_SIZE(imx471_modes))
++		return -EINVAL;
++
++	fse->min_width = imx471_modes[fse->index].width;
++	fse->max_width = fse->min_width;
++	fse->min_height = imx471_modes[fse->index].height;
++	fse->max_height = fse->min_height;
++
++	return 0;
++}
++
++static void imx471_update_pad_format(struct imx471 *sensor,
++				     const struct imx471_mode *mode,
++				     struct v4l2_subdev_format *fmt)
++{
++	fmt->format.code = imx471_get_format_code(sensor);
++	fmt->format.width = mode->width;
++	fmt->format.height = mode->height;
++	fmt->format.field = V4L2_FIELD_NONE;
++}
++
++static int imx471_set_pad_format(struct v4l2_subdev *sd,
++				 struct v4l2_subdev_state *sd_state,
++				 struct v4l2_subdev_format *fmt)
++{
++	struct imx471 *sensor = to_imx471(sd);
++	const struct imx471_mode *mode;
++	int h_blank, ret;
++
++	mode = v4l2_find_nearest_size(imx471_modes, ARRAY_SIZE(imx471_modes),
++				      width, height, fmt->format.width,
++				      fmt->format.height);
++
++	imx471_update_pad_format(sensor, mode, fmt);
++
++	*v4l2_subdev_state_get_format(sd_state, fmt->pad) = fmt->format;
++
++	if (fmt->which == V4L2_SUBDEV_FORMAT_TRY)
++		return 0;
++
++	if (media_entity_is_streaming(&sensor->sd.entity))
++		return -EBUSY;
++
++	ret = __v4l2_ctrl_modify_range(sensor->vblank,
++				       mode->fll_min - mode->height,
++				       IMX471_FLL_MAX - mode->height,
++				       1,
++				       mode->fll_def - mode->height);
++	if (ret)
++		return ret;
++
++	h_blank = mode->llp - mode->width;
++	/*
++	 * Currently hblank is not changeable.
++	 * So FPS control is done only by vblank.
++	 */
++	return __v4l2_ctrl_modify_range(sensor->hblank, h_blank,
++					h_blank, 1, h_blank);
++}
++
++static int imx471_get_selection(struct v4l2_subdev *sd,
++				struct v4l2_subdev_state *sd_state,
++				struct v4l2_subdev_selection *sel)
++{
++	switch (sel->target) {
++	case V4L2_SEL_TGT_CROP:
++		sel->r = *v4l2_subdev_state_get_crop(sd_state, sel->pad);
++		break;
++
++	case V4L2_SEL_TGT_NATIVE_SIZE:
++		sel->r.top = 0;
++		sel->r.left = 0;
++		sel->r.width = IMX471_NATIVE_WIDTH;
++		sel->r.height = IMX471_NATIVE_HEIGHT;
++		return 0;
++
++	case V4L2_SEL_TGT_CROP_DEFAULT:
++	case V4L2_SEL_TGT_CROP_BOUNDS:
++		sel->r.top = IMX471_PIXEL_ARRAY_TOP;
++		sel->r.left = IMX471_PIXEL_ARRAY_LEFT;
++		sel->r.width = IMX471_PIXEL_ARRAY_WIDTH;
++		sel->r.height = IMX471_PIXEL_ARRAY_HEIGHT;
++		return 0;
++	}
++
++	return -EINVAL;
++}
++
++static int imx471_init_state(struct v4l2_subdev *sd,
++			     struct v4l2_subdev_state *sd_state)
++{
++	struct v4l2_subdev_format fmt = {
++		.which = V4L2_SUBDEV_FORMAT_TRY,
++		.format = {
++			.code = MEDIA_BUS_FMT_SRGGB10_1X10,
++			.width = imx471_modes[0].width,
++			.height = imx471_modes[0].height,
++		},
++	};
++
++	return imx471_set_pad_format(sd, sd_state, &fmt);
++}
++
++static int imx471_identify_module(struct imx471 *sensor)
++{
++	int ret;
++	u64 val;
++
++	ret = cci_read(sensor->regmap, IMX471_REG_CHIP_ID, &val, NULL);
++	if (ret)
++		return dev_err_probe(sensor->dev, ret,
++				     "failed to read chip id\n");
++
++	if (val != IMX471_CHIP_ID)
++		return dev_err_probe(sensor->dev, -EIO,
++				     "chip id mismatch: %x!=%llx\n",
++				     IMX471_CHIP_ID, val);
++
++	return 0;
++}
++
++static int imx471_power_off(struct device *dev)
++{
++	struct v4l2_subdev *sd = dev_get_drvdata(dev);
++	struct imx471 *sensor = to_imx471(sd);
++
++	clk_disable_unprepare(sensor->img_clk);
++	gpiod_set_value_cansleep(sensor->reset_gpio, 1);
++
++	regulator_bulk_disable(ARRAY_SIZE(imx471_supply_name),
++			       sensor->supplies);
++
++	return 0;
++}
++
++static int imx471_power_on(struct device *dev)
++{
++	struct v4l2_subdev *sd = dev_get_drvdata(dev);
++	struct imx471 *sensor = to_imx471(sd);
++	int ret;
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(imx471_supply_name),
++				    sensor->supplies);
++	if (ret < 0) {
++		dev_err(dev, "failed to enable regulators: %d\n", ret);
++		return ret;
++	}
++
++	ret = clk_prepare_enable(sensor->img_clk);
++	if (ret < 0) {
++		regulator_bulk_disable(ARRAY_SIZE(imx471_supply_name),
++				       sensor->supplies);
++		dev_err(dev, "failed to enable imaging clock: %d\n", ret);
++		return ret;
++	}
++
++	gpiod_set_value_cansleep(sensor->reset_gpio, 0);
++
++	usleep_range(10000, 15000);
++
++	return 0;
++}
++
++static int imx471_enable_stream(struct v4l2_subdev *sd,
++				struct v4l2_subdev_state *state,
++				u32 pad, u64 streams_mask)
++{
++	struct imx471 *sensor = to_imx471(sd);
++	const struct imx471_mode *mode;
++	struct v4l2_mbus_framefmt *fmt;
++	int ret;
++
++	ret = pm_runtime_resume_and_get(sensor->dev);
++	if (ret)
++		return ret;
++
++	ret = imx471_identify_module(sensor);
++	if (ret)
++		goto error_powerdown;
++
++	ret = cci_multi_reg_write(sensor->regmap, imx471_global_regs,
++				  ARRAY_SIZE(imx471_global_regs), NULL);
++	if (ret) {
++		dev_err(sensor->dev, "failed to set global settings: %d\n",
++			ret);
++		goto error_powerdown;
++	}
++
++	fmt = v4l2_subdev_state_get_format(state, 0);
++	mode = v4l2_find_nearest_size(imx471_modes, ARRAY_SIZE(imx471_modes),
++				      width, height, fmt->width, fmt->height);
++
++	ret = cci_multi_reg_write(sensor->regmap, mode->default_mode_regs,
++				  mode->default_mode_regs_length, NULL);
++	if (ret) {
++		dev_err(sensor->dev, "failed to set mode: %d\n", ret);
++		goto error_powerdown;
++	}
++
++	ret = cci_write(sensor->regmap, IMX471_REG_DPGA_USE_GLOBAL_GAIN, 1,
++			NULL);
++	if (ret)
++		goto error_powerdown;
++
++	ret = __v4l2_ctrl_handler_setup(&sensor->ctrl_handler);
++	if (ret)
++		goto error_powerdown;
++
++	ret = cci_write(sensor->regmap, IMX471_REG_MODE_SELECT,
++			IMX471_MODE_STREAMING, NULL);
++	if (ret)
++		goto error_powerdown;
++
++	__v4l2_ctrl_grab(sensor->vflip, true);
++	__v4l2_ctrl_grab(sensor->hflip, true);
++
++	return ret;
++
++error_powerdown:
++	pm_runtime_put(sensor->dev);
++
++	return ret;
++}
++
++static int imx471_disable_stream(struct v4l2_subdev *sd,
++				 struct v4l2_subdev_state *state,
++				 u32 pad, u64 streams_mask)
++{
++	struct imx471 *sensor = to_imx471(sd);
++	int ret;
++
++	ret = cci_write(sensor->regmap, IMX471_REG_MODE_SELECT,
++			IMX471_MODE_STANDBY, NULL);
++	pm_runtime_put(sensor->dev);
++
++	if (ret)
++		dev_err(sensor->dev,
++			"failed to disable stream with return value: %d\n",
++			ret);
++
++	__v4l2_ctrl_grab(sensor->vflip, false);
++	__v4l2_ctrl_grab(sensor->hflip, false);
++
++	return 0;
++}
++
++static const struct v4l2_subdev_video_ops imx471_video_ops = {
++	.s_stream = v4l2_subdev_s_stream_helper,
++};
++
++static const struct v4l2_subdev_pad_ops imx471_pad_ops = {
++	.enum_mbus_code = imx471_enum_mbus_code,
++	.get_fmt = v4l2_subdev_get_fmt,
++	.set_fmt = imx471_set_pad_format,
++	.get_selection = imx471_get_selection,
++	.enum_frame_size = imx471_enum_frame_size,
++	.enable_streams = imx471_enable_stream,
++	.disable_streams = imx471_disable_stream,
++};
++
++static const struct v4l2_subdev_ops imx471_subdev_ops = {
++	.video = &imx471_video_ops,
++	.pad = &imx471_pad_ops,
++};
++
++static const struct v4l2_subdev_internal_ops imx471_internal_ops = {
++	.init_state = imx471_init_state,
++};
++
++static int imx471_init_controls(struct imx471 *sensor)
++{
++	const struct imx471_mode *mode = &imx471_modes[0];
++	struct v4l2_fwnode_device_properties props;
++	struct v4l2_ctrl_handler *ctrl_hdlr;
++	struct v4l2_ctrl *link_freq;
++	s64 exposure_max, hblank;
++	u64 pixel_rate;
++	int ret;
++
++	ret = v4l2_fwnode_device_parse(sensor->dev, &props);
++	if (ret) {
++		dev_err(sensor->dev, "failed to parse fwnode: %d\n", ret);
++		return ret;
++	}
++
++	ctrl_hdlr = &sensor->ctrl_handler;
++	v4l2_ctrl_handler_init(ctrl_hdlr, 12);
++
++	v4l2_ctrl_new_fwnode_properties(ctrl_hdlr, &imx471_ctrl_ops, &props);
++
++	link_freq = v4l2_ctrl_new_int_menu(ctrl_hdlr,
++					   &imx471_ctrl_ops,
++					   V4L2_CID_LINK_FREQ,
++					   ARRAY_SIZE(link_freq_menu_items) - 1,
++					   0,
++					   link_freq_menu_items);
++
++	/* pixel_rate = link_freq * 2 * nr_of_lanes / bits_per_sample */
++	pixel_rate = div_u64(IMX471_LINK_FREQ_DEFAULT * 2 * 4, 10);
++
++	v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops,
++			  V4L2_CID_PIXEL_RATE, pixel_rate,
++			  pixel_rate, 1, pixel_rate);
++
++	sensor->vblank = v4l2_ctrl_new_std(ctrl_hdlr,
++					   &imx471_ctrl_ops,
++					   V4L2_CID_VBLANK,
++					   mode->fll_min - mode->height,
++					   IMX471_FLL_MAX - mode->height,
++					   1,
++					   mode->fll_def - mode->height);
++
++	hblank = mode->llp - mode->width;
++	sensor->hblank = v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops,
++					   V4L2_CID_HBLANK, hblank, hblank,
++					   1, hblank);
++
++	/* fll >= exposure time + adjust parameter (default value is 18) */
++	exposure_max = mode->fll_def - IMX471_EXPOSURE_MARGIN;
++	sensor->exposure = v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops,
++					     V4L2_CID_EXPOSURE,
++					     IMX471_EXPOSURE_MIN, exposure_max,
++					     IMX471_EXPOSURE_STEP,
++					     IMX471_EXPOSURE_DEFAULT);
++
++	v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops, V4L2_CID_ANALOGUE_GAIN,
++			  IMX471_ANA_GAIN_MIN, IMX471_ANA_GAIN_MAX,
++			  IMX471_ANA_GAIN_STEP, IMX471_ANA_GAIN_DEFAULT);
++
++	v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
++			  IMX471_DGTL_GAIN_MIN, IMX471_DGTL_GAIN_MAX,
++			  IMX471_DGTL_GAIN_STEP, IMX471_DGTL_GAIN_DEFAULT);
++
++	v4l2_ctrl_new_std_menu_items(ctrl_hdlr, &imx471_ctrl_ops,
++				     V4L2_CID_TEST_PATTERN,
++				     ARRAY_SIZE(imx471_test_pattern_menu) - 1,
++				     0, 0, imx471_test_pattern_menu);
++
++	sensor->hflip = v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops,
++					  V4L2_CID_HFLIP, 0, 1, 1, 0);
++
++	sensor->vflip = v4l2_ctrl_new_std(ctrl_hdlr, &imx471_ctrl_ops,
++					  V4L2_CID_VFLIP, 0, 1, 1, 0);
++
++	if (ctrl_hdlr->error) {
++		dev_err(sensor->dev, "%s control init failed: %d\n",
++			__func__, ctrl_hdlr->error);
++		goto error;
++	}
++
++	link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
++	sensor->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
++	sensor->hflip->flags |= V4L2_CTRL_FLAG_MODIFY_LAYOUT;
++	sensor->vflip->flags |= V4L2_CTRL_FLAG_MODIFY_LAYOUT;
++
++	sensor->sd.ctrl_handler = ctrl_hdlr;
++
++	return 0;
++
++error:
++	v4l2_ctrl_handler_free(ctrl_hdlr);
++
++	return ctrl_hdlr->error;
++}
++
++static int imx471_check_hwcfg(struct imx471 *sensor)
++{
++	struct v4l2_fwnode_endpoint bus_cfg = {
++		.bus_type = V4L2_MBUS_CSI2_DPHY,
++	};
++	struct fwnode_handle *ep, *fwnode = dev_fwnode(sensor->dev);
++	unsigned long link_freq_bitmap;
++	struct clk *clk;
++	int ret;
++
++	clk = devm_v4l2_sensor_clk_get(sensor->dev, NULL);
++	if (IS_ERR(clk))
++		return dev_err_probe(sensor->dev, PTR_ERR(clk),
++				     "can't get clock frequency\n");
++
++	if (clk_get_rate(clk) != IMX471_EXT_CLK)
++		return dev_err_probe(sensor->dev, -EINVAL,
++				     "external clock %lu is not supported\n",
++				     clk_get_rate(clk));
++
++	ep = fwnode_graph_get_endpoint_by_id(fwnode, 0, 0, 0);
++	ret = v4l2_fwnode_endpoint_alloc_parse(ep, &bus_cfg);
++	fwnode_handle_put(ep);
++	if (ret)
++		return dev_err_probe(sensor->dev, ret,
++				     "parsing endpoint failed\n");
++
++	if (bus_cfg.bus.mipi_csi2.num_data_lanes != 4) {
++		ret = dev_err_probe(sensor->dev, -EINVAL,
++				    "number of CSI2 data lanes %u is not supported\n",
++				    bus_cfg.bus.mipi_csi2.num_data_lanes);
++		goto done_endpoint_free;
++	}
++
++	ret = v4l2_link_freq_to_bitmap(sensor->dev, bus_cfg.link_frequencies,
++				       bus_cfg.nr_of_link_frequencies,
++				       link_freq_menu_items,
++				       ARRAY_SIZE(link_freq_menu_items),
++				       &link_freq_bitmap);
++
++done_endpoint_free:
++	v4l2_fwnode_endpoint_free(&bus_cfg);
++
++	return ret;
++}
++
++static int imx471_probe(struct i2c_client *client)
++{
++	struct imx471 *sensor;
++	int ret;
++
++	sensor = devm_kzalloc(&client->dev, sizeof(*sensor), GFP_KERNEL);
++	if (!sensor)
++		return dev_err_probe(&client->dev, -ENOMEM,
++				     "failed to allocate memory\n");
++
++	sensor->dev = &client->dev;
++
++	ret = imx471_check_hwcfg(sensor);
++	if (ret)
++		return dev_err_probe(sensor->dev, ret,
++				     "failed to check hwcfg: %d\n", ret);
++
++	ret = imx471_get_regulators(sensor->dev, sensor);
++	if (ret)
++		return dev_err_probe(sensor->dev, ret,
++				     "failed to get regulators\n");
++
++	sensor->reset_gpio = devm_gpiod_get_optional(sensor->dev, "reset",
++						     GPIOD_OUT_HIGH);
++	if (IS_ERR(sensor->reset_gpio))
++		return dev_err_probe(sensor->dev, PTR_ERR(sensor->reset_gpio),
++				     "failed to get reset gpio\n");
++
++	sensor->img_clk = devm_v4l2_sensor_clk_get(sensor->dev, NULL);
++	if (IS_ERR(sensor->img_clk))
++		return dev_err_probe(sensor->dev, PTR_ERR(sensor->img_clk),
++				     "failed to get imaging clock\n");
++
++	v4l2_i2c_subdev_init(&sensor->sd, client, &imx471_subdev_ops);
++
++	sensor->regmap = devm_cci_regmap_init_i2c(client, 16);
++	if (IS_ERR(sensor->regmap))
++		return dev_err_probe(sensor->dev, PTR_ERR(sensor->regmap),
++				     "failed to initialize CCI\n");
++
++	ret = imx471_power_on(sensor->dev);
++	if (ret)
++		return dev_err_probe(sensor->dev, ret,
++				     "failed to power on\n");
++
++	ret = imx471_identify_module(sensor);
++	if (ret) {
++		dev_err_probe(sensor->dev, ret, "failed to find sensor: %d\n",
++			      ret);
++		goto error_power_off;
++	}
++
++	ret = imx471_init_controls(sensor);
++	if (ret) {
++		dev_err_probe(sensor->dev, ret, "failed to init controls: %d\n",
++			      ret);
++		goto error_power_off;
++	}
++
++	sensor->sd.internal_ops = &imx471_internal_ops;
++	sensor->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
++	sensor->pad.flags = MEDIA_PAD_FL_SOURCE;
++	sensor->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
++
++	ret = media_entity_pads_init(&sensor->sd.entity, 1, &sensor->pad);
++	if (ret) {
++		dev_err_probe(sensor->dev, ret,
++			      "failed to init entity pads: %d\n", ret);
++		goto error_v4l2_ctrl_handler_free;
++	}
++
++	sensor->sd.state_lock = sensor->ctrl_handler.lock;
++	ret = v4l2_subdev_init_finalize(&sensor->sd);
++	if (ret < 0) {
++		dev_err_probe(sensor->dev, ret, "failed to init subdev: %d\n",
++			      ret);
++		goto error_media_entity_pm;
++	}
++
++	pm_runtime_set_active(sensor->dev);
++	pm_runtime_enable(sensor->dev);
++
++	ret = v4l2_async_register_subdev_sensor(&sensor->sd);
++	if (ret < 0)
++		goto error_v4l2_subdev_cleanup;
++
++	pm_runtime_idle(sensor->dev);
++
++	return 0;
++
++error_v4l2_subdev_cleanup:
++	pm_runtime_disable(sensor->dev);
++	pm_runtime_set_suspended(sensor->dev);
++	v4l2_subdev_cleanup(&sensor->sd);
++
++error_media_entity_pm:
++	media_entity_cleanup(&sensor->sd.entity);
++
++error_v4l2_ctrl_handler_free:
++	v4l2_ctrl_handler_free(sensor->sd.ctrl_handler);
++
++error_power_off:
++	imx471_power_off(sensor->dev);
++
++	return ret;
++}
++
++static void imx471_remove(struct i2c_client *client)
++{
++	struct v4l2_subdev *sd = i2c_get_clientdata(client);
++
++	v4l2_async_unregister_subdev(sd);
++	v4l2_subdev_cleanup(sd);
++	media_entity_cleanup(&sd->entity);
++	v4l2_ctrl_handler_free(sd->ctrl_handler);
++
++	pm_runtime_disable(&client->dev);
++
++	if (!pm_runtime_status_suspended(&client->dev)) {
++		imx471_power_off(&client->dev);
++		pm_runtime_set_suspended(&client->dev);
++	}
++}
++
++static DEFINE_RUNTIME_DEV_PM_OPS(imx471_pm_ops, imx471_power_off,
++				 imx471_power_on, NULL);
++
++static const struct acpi_device_id imx471_acpi_ids[] __maybe_unused = {
++	{ "SONY471A" },
++	{ "TBE20A0" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(acpi, imx471_acpi_ids);
++
++static struct i2c_driver imx471_i2c_driver = {
++	.driver = {
++		.name = "imx471",
++		.acpi_match_table = ACPI_PTR(imx471_acpi_ids),
++		.pm = pm_sleep_ptr(&imx471_pm_ops),
++	},
++	.probe = imx471_probe,
++	.remove = imx471_remove,
++};
++module_i2c_driver(imx471_i2c_driver);
++
++MODULE_AUTHOR("Jimmy Su <jimmy.su@intel.com>");
++MODULE_AUTHOR("Serin Yeh <serin.yeh@intel.com>");
++MODULE_AUTHOR("Kate Hsuan <hpa@redhat.com>");
++MODULE_DESCRIPTION("Sony imx471 sensor driver");
++MODULE_LICENSE("GPL");
+diff --git a/drivers/media/pci/intel/ipu-bridge.c b/drivers/media/pci/intel/ipu-bridge.c
+index ad3ddfb9ccb1..0a6d9a9fc040 100644
+--- a/drivers/media/pci/intel/ipu-bridge.c
++++ b/drivers/media/pci/intel/ipu-bridge.c
+@@ -97,6 +97,8 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
+ 	IPU_SENSOR_CONFIG("OVTI8856", 3, 180000000, 360000000, 720000000),
+ 	/* Sony IMX471 */
+ 	IPU_SENSOR_CONFIG("SONY471A", 1, 200000000),
++	/* Sony IMX471 (found on Lenovo X1 Carbon G14) */
++	IPU_SENSOR_CONFIG("TBE20A0", 1, 200000000),
+ 	/* Toshiba T4KA3 */
+ 	IPU_SENSOR_CONFIG("XMCC0003", 1, 321468000),
+ };
+@@ -134,6 +136,45 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "OVTI02C1",
+ 	},
++	/*
++	 * The first four characters of DMI_BOARD_NAME identify the Lenovo
++	 * machine type/model. For example, a DMI_BOARD_NAME starting with
++	 * "21Q6" indicates a ThinkPad X9-15.
++	 *
++	 * Reference: https://psref.lenovo.com/
++	 */
++	{
++		/* Lenovo X9-14 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "21QA"),
++		},
++		.driver_data = "SONY471A",
++	},
++	{
++		/* Lenovo X9-14 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "21QB"),
++		},
++		.driver_data = "SONY471A",
++	},
++	{
++		/* Lenovo X9-15 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "21Q6"),
++		},
++		.driver_data = "SONY471A",
++	},
++	{
++		/* Lenovo X9-15 */
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_BOARD_NAME, "21Q7"),
++		},
++		.driver_data = "SONY471A",
++	},
+ 	{} /* Terminating entry */
+ };
+ 
 diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
 index 0500d5fd4f11..b13589a0860e 100644
 --- a/drivers/pci/quirks.c
@@ -1670,108 +2441,6 @@ index 068c7bea3102..cecfac2b0bdc 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
-diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
-index 7643ba954125..0d51428c1da4 100644
---- a/include/crypto/if_alg.h
-+++ b/include/crypto/if_alg.h
-@@ -8,6 +8,7 @@
- #ifndef _CRYPTO_IF_ALG_H
- #define _CRYPTO_IF_ALG_H
- 
-+#include <linux/bits.h>
- #include <linux/compiler.h>
- #include <linux/completion.h>
- #include <linux/if_alg.h>
-@@ -121,7 +122,7 @@ struct af_alg_async_req {
-  * @iv:			IV for cipher operation
-  * @state:		Existing state for continuing operation
-  * @aead_assoclen:	Length of AAD for AEAD cipher operations
-- * @completion:		Work queue for synchronous operation
-+ * @wait:		For waiting for completion of async crypto ops
-  * @used:		TX bytes sent to kernel. This variable is used to
-  *			ensure that user space cannot cause the kernel
-  *			to allocate too much memory in sendmsg operation.
-@@ -161,9 +162,20 @@ struct af_alg_ctx {
- 	unsigned int inflight;
- };
- 
-+/* Flags for af_alg_allowlist_entry::flags: */
-+#define AF_ALG_UNPRIVILEGED BIT(0) /* Unprivileged use is allowed */
-+
-+struct af_alg_allowlist_entry {
-+	const char *name;
-+	u32 flags;
-+};
-+
- int af_alg_register_type(const struct af_alg_type *type);
- int af_alg_unregister_type(const struct af_alg_type *type);
- 
-+int af_alg_check_restriction(const char *name,
-+			     const struct af_alg_allowlist_entry allowlist[]);
-+
- int af_alg_release(struct socket *sock);
- void af_alg_release_parent(struct sock *sk);
- int af_alg_accept(struct sock *sk, struct socket *newsock,
-@@ -177,10 +189,11 @@ static inline struct alg_sock *alg_sk(struct sock *sk)
- }
- 
- /**
-- * Size of available buffer for sending data from user space to kernel.
-+ * af_alg_sndbuf - Size of available buffer for sending data from user space to kernel.
-  *
-- * @sk socket of connection to user space
-- * @return number of bytes still available
-+ * @sk: socket of connection to user space
-+ *
-+ * Returns: number of bytes still available
-  */
- static inline int af_alg_sndbuf(struct sock *sk)
- {
-@@ -192,10 +205,11 @@ static inline int af_alg_sndbuf(struct sock *sk)
- }
- 
- /**
-- * Can the send buffer still be written to?
-+ * af_alg_writable - Can the send buffer still be written to?
-+ *
-+ * @sk: socket of connection to user space
-  *
-- * @sk socket of connection to user space
-- * @return true => writable, false => not writable
-+ * Returns: true => writable, false => not writable
-  */
- static inline bool af_alg_writable(struct sock *sk)
- {
-@@ -203,10 +217,11 @@ static inline bool af_alg_writable(struct sock *sk)
- }
- 
- /**
-- * Size of available buffer used by kernel for the RX user space operation.
-+ * af_alg_rcvbuf - Size of available buffer used by kernel for the RX user space operation.
-  *
-- * @sk socket of connection to user space
-- * @return number of bytes still available
-+ * @sk: socket of connection to user space
-+ *
-+ * Returns: number of bytes still available
-  */
- static inline int af_alg_rcvbuf(struct sock *sk)
- {
-@@ -218,10 +233,11 @@ static inline int af_alg_rcvbuf(struct sock *sk)
- }
- 
- /**
-- * Can the RX buffer still be written to?
-+ * af_alg_readable - Can the RX buffer still be read from?
-+ *
-+ * @sk: socket of connection to user space
-  *
-- * @sk socket of connection to user space
-- * @return true => writable, false => not writable
-+ * Returns: true => readable, false => not readable
-  */
- static inline bool af_alg_readable(struct sock *sk)
- {
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index b7c97f1c47c9..0a484f45b24a 100644
 --- a/include/linux/crypto.h
