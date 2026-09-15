@@ -13,16 +13,16 @@
 %bcond avx2 0
 %bcond rtmidi 0
 
-%global commit 2f135da37adfe04ffb88be7627a1af2b7ea2b600
+%global commit 6b11602162c13c1bddae5e673d514ce6a0f97ce8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260723
+%global date 20260913
 %bcond snapshot 1
 
 %global commit10 1e2def448e43fb3362123ab5ff039c39e1ba5cfd
 %global shortcommit10 %(c=%{commit10}; echo ${c:0:7})
 %global srcname10 concurrentqueue
 
-%global commit11 036bf939b6f8d74ad76bcf926b757c56e68c54ff
+%global commit11 b48d1afbe8ee8b238e2961dc363a949dd7304e23
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
 %global srcname11 imgui
 
@@ -30,7 +30,7 @@
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 mio
 
-%global commit13 f58f558c120e9b32c217290b80bad1a0729fbb2c
+%global commit13 31c1ad37456438565541f4919958214b6e762fb4
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 stb
 
@@ -50,7 +50,7 @@
 
 Name:           ymir
 Version:        0.4.0
-Release:        0.2%{?dist}
+Release:        0.3%{?dist}
 Summary:        A Sega Saturn emulator
 
 License:        GPL-3.0-or-later AND BSD-2-Clause AND BSD-3-Clause AND MIT AND OFL-1.1
@@ -88,6 +88,7 @@ BuildRequires:  lld
 BuildRequires:  gcc
 BuildRequires:  gcc-c++
 %endif
+BuildRequires:  directx-shader-compiler
 BuildRequires:  cmake(cereal)
 BuildRequires:  cmake(cxxopts)
 BuildRequires:  cmake(date)
@@ -104,6 +105,8 @@ Provides:       bundled(rtmidi) = %{rtmidi_ver}~git%{shortcommit14}
 %endif
 BuildRequires:  cmake(SDL3)
 BuildRequires:  cmake(tomlplusplus)
+
+Requires:       vulkan-loader%{?_isa}
 
 Requires:       hicolor-icon-theme
 
@@ -128,6 +131,8 @@ rm -rf discord-rpc libchdr lz4 xxHash
 tar -xf %{S:10} -C concurrentqueue/ --strip-components 1
 tar -xf %{S:11} -C imgui/imgui --strip-components 1
 tar -xf %{S:12} -C mio/ --strip-components 1
+tar -xf %{S:13} -C stb/stb --strip-components 1
+cp -p stb/stb/LICENSE ../LICENSE.stb
 
 cp -p concurrentqueue/LICENSE.md LICENSE.concurrentqueue.md
 cp -p imgui/imgui/LICENSE.txt LICENSE.imgui
@@ -135,10 +140,6 @@ cp -p mio/LICENSE LICENSE.mio
 popd
 
 pushd apps/ymir-sdl3
-mkdir -p stb/stb
-tar -xf %{S:13} -C stb/stb --strip-components 1
-sed -e '/find_package/s|Stb|Stb_DISABLED|g' -i CMakeLists.txt
-cp -p stb/stb/LICENSE ../../vendor/LICENSE.stb
 %if %{without rtmidi}
 mkdir -p rtmidi
 tar -xf %{S:14} -C rtmidi/ --strip-components 1

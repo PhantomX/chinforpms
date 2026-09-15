@@ -210,7 +210,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.2.5
+%define specrpmversion 7.2.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1352,9 +1352,8 @@ Patch7230:  %{pf_url}/767a14d186e4b7960ec62ddfd93ad27a9405244e.patch%{pf_antibot
 # crypto (7300)
 # fixes (7400)
 Patch7400:  %{pf_url}/750c36d08e8832bd7cde8b78a6b8308c77a985db.patch%{pf_antibot}#/pf-cb-750c36d.patch
-Patch7401:  %{pf_url}/85c3c1a832f45fb34320425346aad068911b0cb6.patch%{pf_antibot}#/pf-cb-85c3c1a.patch
-Patch7402:  %{pf_url}/7836de8f6ca1262aeff45992fc7d235e03b92563.patch%{pf_antibot}#/pf-cb-7836de8.patch
-Patch7403:  %{pf_url}/1b28f279fe57e704a8258c72b2c207c3c273c2cf.patch%{pf_antibot}#/pf-cb-1b28f27.patch
+Patch7401:  %{pf_url}/7836de8f6ca1262aeff45992fc7d235e03b92563.patch%{pf_antibot}#/pf-cb-7836de8.patch
+Patch7402:  %{pf_url}/1b28f279fe57e704a8258c72b2c207c3c273c2cf.patch%{pf_antibot}#/pf-cb-1b28f27.patch
 %endif
 
 # END OF PATCH DEFINITIONS
@@ -2356,7 +2355,6 @@ ApplyPatch %{PATCH7230}
 ApplyPatch %{PATCH7400}
 ApplyPatch %{PATCH7401}
 ApplyPatch %{PATCH7402}
-ApplyPatch %{PATCH7403}
 %endif
 
 # openSUSE
@@ -5201,7 +5199,10 @@ fi\
 #
 #
 %changelog
-* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.4-500.chinfo
+* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.6-500.chinfo
+- 7.2.6
+
+* Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.5-500.chinfo
 - 7.2.5
 
 * Mon Sep 07 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.4-500.chinfo

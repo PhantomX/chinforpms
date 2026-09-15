@@ -9,7 +9,7 @@
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %global package_name kernel%{?variant}
-%define specrpmversion 7.2.5
+%define specrpmversion 7.2.6
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -124,6 +124,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Sep 14 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.6-500.chinfo
+- 7.2.6
+
 * Sat Sep 12 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.5-500.chinfo
 - 7.2.5
 

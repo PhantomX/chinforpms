@@ -126,6 +126,7 @@ deluge
 deno
 -devedeng
 devilspie2
+directx-shader-compiler 
 discimagecreator
 discord-rpc
 disk-indicator

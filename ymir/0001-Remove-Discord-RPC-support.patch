@@ -1,4 +1,4 @@
-From 499fcb06ae0161d235c7d9f65f18f5cadd35bc6f Mon Sep 17 00:00:00 2001
+From 011c949b26977ea571f7c58d299fde2721de92c0 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sat, 25 Jul 2026 11:54:23 -0300
 Subject: [PATCH] Remove Discord RPC support
@@ -14,10 +14,10 @@ Subject: [PATCH] Remove Discord RPC support
  7 files changed, 25 deletions(-)
 
 diff --git a/apps/ymir-sdl3/CMakeLists.txt b/apps/ymir-sdl3/CMakeLists.txt
-index 4b3ba91..4044edf 100644
+index 0a67f87..8d0a566 100644
 --- a/apps/ymir-sdl3/CMakeLists.txt
 +++ b/apps/ymir-sdl3/CMakeLists.txt
-@@ -77,8 +77,6 @@ add_executable(ymir-sdl3
+@@ -75,8 +75,6 @@ add_executable(ymir-sdl3
      src/app/services/rom_service.hpp
      src/app/services/disc_service.cpp
      src/app/services/disc_service.hpp
@@ -26,27 +26,27 @@ index 4b3ba91..4044edf 100644
      src/app/services/display_service.cpp
      src/app/services/display_service.hpp
      src/app/services/file_dialog_service.cpp
-@@ -456,7 +454,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
+@@ -559,7 +557,6 @@ target_link_libraries(ymir-sdl3 PRIVATE
      tomlplusplus::tomlplusplus
      cereal::cereal
      lz4::lz4
 -    discord-rpc
      RtMidi::rtmidi
- )
- if (WIN32)
+     stb::stb
+     dr_libs::dr_libs
 diff --git a/apps/ymir-sdl3/src/app/app.cpp b/apps/ymir-sdl3/src/app/app.cpp
-index 02a4039..e76dc17 100644
+index fd72057..c85e0ec 100644
 --- a/apps/ymir-sdl3/src/app/app.cpp
 +++ b/apps/ymir-sdl3/src/app/app.cpp
-@@ -149,7 +149,6 @@ App::App()
-     : m_saveStateService(m_context, m_settings)
+@@ -155,7 +155,6 @@ App::App()
+     , m_saveStateService(m_context, m_settings)
      , m_midiService(m_context.serviceLocator)
      , m_settings(m_context)
 -    , m_discordRPCService(m_context, m_settings)
      , m_mouseCaptureService(m_context, m_settings)
      , m_romService(m_context, m_settings,
                     [this](std::string title, std::function<void()> fnContents) {
-@@ -549,8 +548,6 @@ void App::RunEmulator() {
+@@ -563,8 +562,6 @@ void App::RunEmulator() {
      ScopeGuard sgStopUpdateCheckerThread{[&] { m_updateCheckerService.Stop(); }};
  #endif
  
@@ -55,7 +55,7 @@ index 02a4039..e76dc17 100644
      // Get embedded file system
      auto embedfs = cmrc::Ymir_sdl3_rc::get_filesystem();
  
-@@ -3238,7 +3235,6 @@ void App::RunEmulator() {
+@@ -3361,7 +3358,6 @@ void App::RunEmulator() {
          settings.CheckDirty();
          m_saveStateService.CheckDebuggerStateDirty();
          m_persistenceService.DoPendingPersistences();
@@ -64,7 +64,7 @@ index 02a4039..e76dc17 100644
  
  end_loop:; // the semicolon is not a typo!
 diff --git a/apps/ymir-sdl3/src/app/app.hpp b/apps/ymir-sdl3/src/app/app.hpp
-index b53f76e..dfa4703 100644
+index 2282c6c..af17dcd 100644
 --- a/apps/ymir-sdl3/src/app/app.hpp
 +++ b/apps/ymir-sdl3/src/app/app.hpp
 @@ -6,7 +6,6 @@
@@ -84,10 +84,10 @@ index b53f76e..dfa4703 100644
      services::ROMService m_romService;
      services::DiscService m_discService;
 diff --git a/apps/ymir-sdl3/src/app/settings.cpp b/apps/ymir-sdl3/src/app/settings.cpp
-index a662131..9a2c8d1 100644
+index 55b79e9..453855c 100644
 --- a/apps/ymir-sdl3/src/app/settings.cpp
 +++ b/apps/ymir-sdl3/src/app/settings.cpp
-@@ -973,8 +973,6 @@ void Settings::ResetToDefaults() {
+@@ -980,8 +980,6 @@ void Settings::ResetToDefaults() {
      general.unpauseOnDiscLoad = true;
      general.startPaused = false;
  
@@ -96,7 +96,7 @@ index a662131..9a2c8d1 100644
      gui.overrideUIScale = false;
      gui.uiScale = 1.0;
      gui.rememberWindowGeometry = true;
-@@ -1174,7 +1172,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
+@@ -1183,7 +1181,6 @@ SettingsLoadResult Settings::Load(const std::filesystem::path &path) {
          Parse(tblGeneral, "PauseWhenUnfocused", general.pauseWhenUnfocused);
          Parse(tblGeneral, "UnpauseOnDiscLoadd", general.unpauseOnDiscLoad);
          Parse(tblGeneral, "StartPaused", general.startPaused);
@@ -104,7 +104,7 @@ index a662131..9a2c8d1 100644
  
          general.screenshotScale = std::clamp(general.screenshotScale, 1, 4);
  
-@@ -1819,7 +1816,6 @@ SettingsSaveResult Settings::Save() {
+@@ -1830,7 +1827,6 @@ SettingsSaveResult Settings::Save() {
              {"PauseWhenUnfocused", general.pauseWhenUnfocused},
              {"UnpauseOnDiscLoad", general.unpauseOnDiscLoad},
              {"StartPaused", general.startPaused},
@@ -113,7 +113,7 @@ index a662131..9a2c8d1 100644
              {"PathOverrides", toml::table{{
                  {"IPLROMImages", m_context.profile.GetPathOverride(ProfilePath::IPLROMImages).native()},
 diff --git a/apps/ymir-sdl3/src/app/settings.hpp b/apps/ymir-sdl3/src/app/settings.hpp
-index 319c0b6..8a0a127 100644
+index f6b08c7..fd7c3a9 100644
 --- a/apps/ymir-sdl3/src/app/settings.hpp
 +++ b/apps/ymir-sdl3/src/app/settings.hpp
 @@ -159,7 +159,6 @@ struct Settings {
@@ -140,10 +140,10 @@ index da45f9f..2054a93 100644
  #if 0
      ImGui::PushFont(m_context.fonts.sansSerif.bold, m_context.fontSizes.large);
 diff --git a/vendor/CMakeLists.txt b/vendor/CMakeLists.txt
-index 6bdd2f9..0b76f8b 100644
+index c66528f..f9ec19b 100644
 --- a/vendor/CMakeLists.txt
 +++ b/vendor/CMakeLists.txt
-@@ -94,12 +94,6 @@ if (NOT Ymir_LIBRARY_ONLY)
+@@ -112,12 +112,6 @@ if (NOT Ymir_LIBRARY_ONLY)
      else()
      add_subdirectory(lz4 EXCLUDE_FROM_ALL)
      endif()
@@ -156,7 +156,7 @@ index 6bdd2f9..0b76f8b 100644
  endif ()
  
  # Place vendored library projects under a Vendored folder in Visual Studio solutions
-@@ -110,7 +104,6 @@ if (MSVC)
+@@ -128,7 +122,6 @@ if (MSVC)
      if (NOT Ymir_LIBRARY_ONLY)
          set_target_properties(imgui PROPERTIES FOLDER Vendored)
          set_target_properties(lz4 PROPERTIES FOLDER Vendored)
