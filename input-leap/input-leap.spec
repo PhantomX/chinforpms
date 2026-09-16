@@ -16,7 +16,7 @@
 
 Name:           input-leap
 Version:        3.0.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Keyboard and mouse sharing solution
 
 License:        GPL-2.0-only
@@ -27,6 +27,8 @@ Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
+
+Patch0:         0001-Fix-build-with-openssl-4.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc-c++
@@ -126,6 +128,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-3.20251127git34a34fb
+- OpenSSL 4 fix
+
 * Tue Sep 16 2025 Phantom X <megaphantomx at hotmail dot com> - 3.0.3-1.20250811gitea6b4eb
 - 3.0.3
 

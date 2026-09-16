@@ -32,7 +32,7 @@ index 5c52522..9768974 100644
 +  list(APPEND CHDR_DEFINES CHDR_SYSTEM_LZMA)
 +else()
  if(NOT TARGET chdr-lzma)
-   add_subdirectory(deps/lzma-25.01 EXCLUDE_FROM_ALL)
+   add_subdirectory(deps/lzma-26.02 EXCLUDE_FROM_ALL)
  endif()
  list(APPEND CHDR_LIBS chdr-lzma)
 +endif()
@@ -50,7 +50,7 @@ index 52baa5d..77d3680 100644
 +#ifdef CHDR_SYSTEM_LZMA
 +#include <LzmaDec.h>
 +#else
- #include "../deps/lzma-25.01/include/LzmaDec.h"
+ #include "../deps/lzma-26.02/include/LzmaDec.h"
 +#endif
  
  #include "../include/libchdr/chd.h"
@@ -66,7 +66,7 @@ index 43a527d..1677b0d 100644
 +#ifdef CHDR_SYSTEM_LZMA
 +#include <LzmaDec.h>
 +#else
- #include "../deps/lzma-25.01/include/LzmaDec.h"
+ #include "../deps/lzma-26.02/include/LzmaDec.h"
 +#endif
  
  #undef TRUE

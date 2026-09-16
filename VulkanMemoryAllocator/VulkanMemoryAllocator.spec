@@ -1,7 +1,7 @@
 %global commit b3cbbb43ea3a506dffe10759e205a41c27c35ae2
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260302
-%bcond snapshot 1
+%bcond snapshot 0
 
 BuildArch:      noarch
 
@@ -13,8 +13,8 @@ BuildArch:      noarch
 
 Summary:        Easy to integrate Vulkan memory allocation library
 Name:           VulkanMemoryAllocator
-Version:        3.3.0
-Release:        102%{?dist}
+Version:        3.4.0
+Release:        100%{?dist}
 Epoch:          1
 
 License:        MIT
@@ -85,6 +85,9 @@ sed -e '/\/doc\//d' -i CMakeLists.txt
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.4.0-100
+- 3.4.0
+
 * Fri May 23 2025 Phantom X <megaphantomx at hotmail dot com> - 1:3.3.0-100
 - 3.3.0
 

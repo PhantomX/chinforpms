@@ -2,9 +2,9 @@
 %global build_type_safety_c 0
 %endif
 
-%global commit 43ad36a8f0026fdc0116bd179cadf00e3ce85a06
+%global commit eb848bf507325ecbe765569d37c163d3b7c6fd11
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260312
+%global date 20260422
 %bcond snapshot 1
 
 %global commit1 b2f392480e00ca232c397610f42688b165b87640
@@ -33,7 +33,7 @@
 
 Name:           jamesdsp
 Version:        2.7.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        An audio effect processor for PipeWire clients
 
 # asyncplusplus: MIT

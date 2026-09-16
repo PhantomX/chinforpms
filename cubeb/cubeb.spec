@@ -1,6 +1,6 @@
-%global commit a37dadd1ed5949ab0accd7087b7c5c57800eab43
+%global commit 80dd0a2e9bb01319938b57fb92dcbb94212bbb76
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260421
+%global date 20260904
 %bcond snapshot 1
 
 %global commit1 800f5422ac9d9e0ad59cd860a2ef3a679588acb4

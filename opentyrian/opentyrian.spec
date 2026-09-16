@@ -1,14 +1,14 @@
 %global commit 1c34d1bddac8c8f2de834229d04b5a729525c944
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260403
-%bcond snapshot 1
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           opentyrian
-Version:        2.1.20221123.13
+Version:        2.1.20260913
 Release:        1%{?dist}
 Summary:        An arcade-style vertical scrolling shooter
 
@@ -18,7 +18,7 @@ URL:            https://github.com/%{name}/%{name}
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        http://www.camanis.net/opentyrian/releases/%{name}-%{version}-src.tar.gz
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 
 Patch0:         %{name}-wild.patch
@@ -68,7 +68,7 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 %files
 %license COPYING
-%doc README NEWS
+%doc README.md
 %{_bindir}/%{name}
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
@@ -77,6 +77,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 2.1.20260913-1
+- 2.1.20260913
+
 * Tue Aug 11 2026 Phantom X <megaphantomx at hotmail dot com> - 2.1.20221123.13-1.20260403git1c34d1b
 - Update versioning
 

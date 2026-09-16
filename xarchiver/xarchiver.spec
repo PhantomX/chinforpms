@@ -8,7 +8,7 @@
 %endif
 
 Name:           xarchiver
-Version:        0.5.4.26
+Version:        0.5.4.27
 Release:        100%{?dist}
 Summary:        Desktop Environment independent archive manager
 
@@ -113,6 +113,9 @@ rm -f _docs/{AUTHORS,COPYING,ChangeLog,NEWS,README,TODO}
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.27-100
+- 0.5.4.27
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 1:0.5.4.26-100
 - 0.5.4.26
 

@@ -1,6 +1,6 @@
-%global commit e7459ca723821f8d12b82a5827f5f796a96b91ef
+%global commit b26838dc797a3a7cd32d2505019e8876b4636f79
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20251515
+%global date 20260811
 %bcond snapshot 1
 
 %ifnarch %{ix86} ppc64 s390x
@@ -14,7 +14,7 @@
 %global pkgname Flips
 
 Name:           flips
-Version:        201
+Version:        202
 Release:        1%{?dist}
 Summary:        A patcher for IPS and BPS files
 
@@ -134,6 +134,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/com.github.Alc
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 202-1.20260811gitb26838d
+- 202
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 201-1.20251515gite7459ca
 - 201
 

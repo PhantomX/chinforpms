@@ -1,0 +1,25 @@
+From 81e981d03d47cc666724a18a1d89a375a0ea67dc Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Tue, 15 Sep 2026 20:09:27 -0300
+Subject: [PATCH] Fix build with openssl 4
+
+---
+ src/lib/net/SecureUtils.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/lib/net/SecureUtils.cpp b/src/lib/net/SecureUtils.cpp
+index 6b2a383..43d094a 100644
+--- a/src/lib/net/SecureUtils.cpp
++++ b/src/lib/net/SecureUtils.cpp
+@@ -194,7 +194,7 @@ void generate_pem_self_signed_cert(const std::string& path)
+     X509_gmtime_adj(X509_get_notAfter(cert), expiration_days * 24 * 3600);
+     X509_set_pubkey(cert, private_key);
+ 
+-    auto* name = X509_get_subject_name(cert);
++    auto* name = X509_NAME_dup(X509_get_subject_name(cert));
+     X509_NAME_add_entry_by_txt(name, "CN", MBSTRING_ASC,
+                                reinterpret_cast<const unsigned char *>("InputLeap"), -1, -1, 0);
+     X509_set_issuer_name(cert, name);
+-- 
+2.55.0
+

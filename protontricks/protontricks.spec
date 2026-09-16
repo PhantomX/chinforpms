@@ -3,7 +3,7 @@
 %bcond tests 0
 
 Name:           protontricks
-Version:        1.14.0
+Version:        1.14.1
 Release:        1%{?dist}
 Summary:        A simple wrapper that does winetricks things for Proton enabled games
 
@@ -70,6 +70,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}-launch.deskto
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1.14.1-1
+- 1.14.1
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.14.0-1
 - 1.14.0
 

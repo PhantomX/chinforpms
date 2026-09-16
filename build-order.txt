@@ -80,11 +80,12 @@ mesa
 mesa-libGL-xlib
 -SDL2
 SDL3
+sdl_gamecontrollerdb
 -VulkanMemoryAllocator-Hpp
 vulkan-tools
 
 # 5
-adriconf
+-adriconf
 adwaita-qt
 -aisleriot
 -amdvlk-vulkan-driver
@@ -189,7 +190,7 @@ jazz2-ressurection
 -jdupes
 jetbrains-mono-vf-fonts
 joy2key
-kddockwidgets
+-kddockwidgets
 kdocker
 keepassxc
 -kernel-tools
@@ -289,7 +290,6 @@ rust-u4pak
 -sdl12-compat
 -sdl2-controllermap
 sdl3-testcontroller
-sdl_gamecontrollerdb
 sdl-jstest
 -sdlcl
 -shaderc
@@ -350,7 +350,6 @@ xfwm4
 xinput-gui
 -xorg-x11-server
 -yad
-yt-dlp
 yt-dlp-ejs
 -ytfzf
 zenity
@@ -371,6 +370,7 @@ freac
 -vkbasalt
 whdd
 wine
+yt-dlp
 
 # 7
 -belcard

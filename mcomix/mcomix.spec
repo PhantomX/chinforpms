@@ -10,7 +10,7 @@ BuildArch:      noarch
 %endif
 
 Name:           mcomix
-Version:        3.1.1
+Version:        3.2.0
 Release:        1%{?dist}
 Summary:        User-friendly, customizable image viewer for comic books
 
@@ -124,6 +124,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 3.2.0-1
+- 3.2.0
+
 * Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 3.1.1-1
 - 3.1.1
 

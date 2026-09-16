@@ -5,9 +5,9 @@
 %{?with_extra_flags:%global _pkg_extra_cflags %{?with_extra_flags}}
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 
-%global commit 9dced048f747085f942f55941dd4304279acc145
+%global commit 3e8b366be91ea96329db0567b038a31785f33468
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260729
+%global date 20260910
 %bcond snapshot 1
 
 %bcond rust 0
@@ -23,7 +23,7 @@
 
 Name:           rmg
 Version:        0.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Rosalie's Mupen GUI
 
 License:        GPL-3.0-only AND ( MIT OR LGPL-3.0-only ) AND GPL-2.0-only AND MIT
@@ -55,6 +55,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(hidapi-hidraw)
 BuildRequires:  pkgconfig(libpng)
 BuildRequires:  pkgconfig(libusb-1.0)
+BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  pkgconfig(lightning)
 BuildRequires:  pkgconfig(lzmasdk-c) >= 23.01
 BuildRequires:  pkgconfig(Qt6Core)
@@ -65,6 +66,7 @@ BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(samplerate)
 BuildRequires:  pkgconfig(speexdsp)
 BuildRequires:  pkgconfig(sdl3)
+BuildRequires:  pkgconfig(sdl3-net)
 BuildRequires:  pkgconfig(xcb)
 BuildRequires:  pkgconfig(zlib)
 BuildRequires:  vulkan-headers
@@ -78,7 +80,6 @@ Provides:       %{pkgname}%{?_isa} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 Provides:       bundled(mupen64plus) = 0~gitc5b1e72
 Provides:       bundled(imgui) = 0~gitdbb5eea
-Provides:       bundled(SDL3_net) = 0~git4dd9d84
 
 %global __provides_exclude_from ^%{_libdir}/%{pkgname}/.*
 

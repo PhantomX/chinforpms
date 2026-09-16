@@ -1,8 +1,8 @@
 NAME = puNES
-VERSION ?= 2ed5b1b2cffcde48ff36f359091756d17d8fe193
+VERSION ?= b1758ec26a3d6da10abf50dc184fa837236c5f61
 SNAPSHOT ?= 1
 SNAPROOT = https://github.com/punesemu/puNES
-P7ZIPDIR = p7zip-17.04
+7ZIPDIR = 7z2500
 
 ifeq ($(SNAPSHOT),1)
 	TARBALLVER = $(shell echo ${VERSION} | cut -c-7 )
@@ -26,9 +26,8 @@ clone: clean
 	tar xf ${NAME}-${TARBALLVER}.tar.gz
 
 sanitize: clone
-	rm -rf $(DIRNAME)/src/extra/${P7ZIPDIR}/CPP/7zip/{Archive,Compress,Crypto,CMAKE,QMAKE}/Rar*
-	rm -f $(DIRNAME)/src/extra/${P7ZIPDIR}/DOC/unRarLicense.txt
-	rm -f $(DIRNAME)/src/extra/${P7ZIPDIR}/Utils/file_Codecs_Rar_so.py
+	rm -rf $(DIRNAME)/src/extra/${7ZIPDIR}/CPP/7zip/{Archive,Compress,Crypto}/Rar*
+	rm -f $(DIRNAME)/src/extra/${7ZIPDIR}/DOC/unRarLicense.txt
 
 archive: clone sanitize
 	tar --numeric-owner -cJf ${NAME}-free-${TARBALLVER}.tar.xz ${DIRNAME}

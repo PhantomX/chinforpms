@@ -1,4 +1,4 @@
-From f104ffdf9df6646aaa4cdf1dd41f3dce1fb5b78b Mon Sep 17 00:00:00 2001
+From 65cab19a5c817fc2baa420c0f745fc534dbc281d Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 18 Apr 2022 09:34:50 -0300
 Subject: [PATCH] Disable overlay-scrolling
@@ -9,19 +9,19 @@ gtk-overlay-scrolling property is ignored, only way to enable is GTK_OVERLAY_SCR
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/gtk/gtkscrolledwindow.c b/gtk/gtkscrolledwindow.c
-index 1678394..72f658e 100644
+index e901389..9cfbc3d 100644
 --- a/gtk/gtkscrolledwindow.c
 +++ b/gtk/gtkscrolledwindow.c
-@@ -730,7 +730,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
+@@ -725,7 +725,7 @@ gtk_scrolled_window_class_init (GtkScrolledWindowClass *class)
     */
    properties[PROP_OVERLAY_SCROLLING] =
        g_param_spec_boolean ("overlay-scrolling", NULL, NULL,
 -                            TRUE,
 +                            FALSE,
-                             GTK_PARAM_READWRITE|G_PARAM_EXPLICIT_NOTIFY);
+                             G_PARAM_READWRITE | G_PARAM_STATIC_NAME | G_PARAM_EXPLICIT_NOTIFY);
  
    /**
-@@ -3924,7 +3924,10 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
+@@ -3922,7 +3922,10 @@ gtk_scrolled_window_update_use_indicators (GtkScrolledWindow *scrolled_window)
  
    g_object_get (settings, "gtk-overlay-scrolling", &overlay_scrolling, NULL);
  
@@ -34,5 +34,5 @@ index 1678394..72f658e 100644
    if (priv->use_indicators != use_indicators)
      {
 -- 
-2.51.0
+2.55.0
 

@@ -1,8 +1,8 @@
 # -*- rpm-spec -*-
 
-%global commit b2b32ccc7913bd21530b03dfa6b65e863b6896ed
+%global commit bac5379d085219457a39c5e7c2a5855919d58ef8
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260304
+%global date 20260904
 %bcond snapshot 1
 
 BuildArch: noarch
@@ -18,7 +18,7 @@ BuildArch: noarch
 
 Name: virt-manager
 Version: 5.1.0
-Release: 101%{?dist}
+Release: 102%{?dist}
 %global verrel %{?epoch:%{epoch}:}%{version}-%{release}
 
 Summary: Desktop tool for managing virtual machines via libvirt

@@ -13,7 +13,7 @@
 %endif
 
 %global goipath         github.com/dim13/otpauth
-Version:                0.6.0
+Version:                0.6.1
 
 %gometa
 
@@ -70,6 +70,9 @@ install -m 0755 -vp %{gobuilddir}/bin/* %{buildroot}%{_bindir}/
 %gopkgfiles
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.6.1-1
+- 0.6.1
+
 * Fri Aug 01 2025 Phantom X <megaphantomx at hotmail dot com> - 0.6.0-1
 - 0.6.0
 

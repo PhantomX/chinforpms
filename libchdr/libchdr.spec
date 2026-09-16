@@ -1,6 +1,6 @@
-%global commit 6cde5348eb118da3baf94f75a69577a005a484fd
+%global commit 8e7b8bd32bc676b7e5c6b42fe7d2daca986c4a0d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260719
+%global date 20260910
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -12,7 +12,7 @@
 
 Name:           libchdr
 Version:        0.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Standalone library for reading MAME's CHDv1-v5 formats
 
 License:        BSD-3-Clause AND (Unlicense OR MIT-0)
@@ -70,6 +70,7 @@ sed -e 's|chdr-static|chdr|g' -i tests/CMakeLists.txt
   -DWITH_SYSTEM_LZMA:BOOL=ON \
   -DWITH_SYSTEM_ZLIB:BOOL=ON \
   -DWITH_SYSTEM_ZSTD:BOOL=ON \
+  -DCHDR_WANT_TESTS:BOOL=OFF \
   -DCMAKE_BUILD_TYPE=Release \
 %{nil}
 

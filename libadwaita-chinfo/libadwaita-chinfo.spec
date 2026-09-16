@@ -1,13 +1,13 @@
 %global apiver  1
-%global gtk_version 4.17.5
-%global glib_version 2.80.0
+%global gtk_version 4.23.1
+%global glib_version 2.84.0
 
 %global pkgname libadwaita
 %global tarball_version %%(echo %{version} | tr '~' '.')
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        1.9.0
+Version:        1.10.0
 Release:        1%{?dist}
 Summary:        Building blocks for modern GNOME applications - chinforpms modifications
 
@@ -18,7 +18,7 @@ Source1:        chinfo-adwaita.css
 
 BuildRequires:  gcc
 BuildRequires:  gettext
-BuildRequires:  meson >= 0.59.0
+BuildRequires:  meson >= 0.63.0
 BuildRequires:  sassc
 
 BuildRequires:  pkgconfig(appstream)
@@ -87,6 +87,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1.10.0-1
+- 1.10.0
+
 * Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.9.0-1
 - 1.9.0
 

@@ -51,7 +51,6 @@ BuildRequires:  gcc-c++
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  asciidoctor
-BuildRequires:  pkgconfig(botan-2) >= 2.11.0
 %if (%{defined fedora} && 0%{?fedora} >= 44) || (%{defined rhel} && 0%{?rhel} >= 10)
 BuildRequires:  pkgconfig(botan-3)
 %else

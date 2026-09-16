@@ -1,15 +1,15 @@
 %global commit 9f0e9c6245921b2f7ef3fe5f605f036b79f11532
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260207
-%bcond snapshot 1
+%bcond snapshot 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
 %endif
 
 Name:           xboxdrv
-Version:        0.8.14
-Release:        2%{?dist}
+Version:        0.8.15
+Release:        1%{?dist}
 Summary:        Userspace Xbox/Xbox360 Gamepad Driver for Linux
 
 License:        GPL-3.0-or-later
@@ -119,6 +119,9 @@ install -pm0644 %{S:7} %{buildroot}%{_udevrulesdir}/99-xbox-controller.rules
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.8.15-1
+- 0.8.15
+
 * Sun Jul 20 2025 Phantom X <megaphantomx at hotmail dot com> - 0.8.14-1.20250319gitd2780b6
 - 0.8.14
 

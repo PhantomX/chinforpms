@@ -1,7 +1,7 @@
 %bcond check 0
 
 Name:           dmemcg-booster
-Version:        0.1.2
+Version:        0.1.3
 Release:        1%{?dist}
 Summary:        Service for enabling and controlling dmem cgroup limits
 
@@ -67,6 +67,9 @@ install -pm0644 %{name}-user.service %{buildroot}%{_userunitdir}
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.3-1
+- 0.1.3
+
 * Fri Apr 17 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.2-1
 - Initial spec
 

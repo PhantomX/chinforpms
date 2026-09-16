@@ -2,7 +2,7 @@
 %global vc_url  https://git.dec05eba.com/%{name}
 
 Name:           gpu-screen-recorder-gtk
-Version:        5.8.0
+Version:        5.8.1
 Release:        1%{dist}
 Summary:        GTK frontend for GPU Screen Recorder
 
@@ -58,6 +58,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 5.8.1-1
+- 5.8.1
+
 * Thu Aug 13 2026 Phantom X <megaphantomx at hotmail dot com> - 5.8.0-1
 - 5.8.0
 

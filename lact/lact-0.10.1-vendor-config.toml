@@ -1,3 +1,8 @@
+[source."git+https://github.com/ilya-zlobintsev/zbus_polkit?branch=fix-uid-type"]
+git = "https://github.com/ilya-zlobintsev/zbus_polkit"
+branch = "fix-uid-type"
+replace-with = "vendored-sources"
+
 [source."git+https://github.com/rust-nvml/nvml-wrapper.git?rev=eb47417eede43443f139053479618e96ad32893d"]
 git = "https://github.com/rust-nvml/nvml-wrapper.git"
 rev = "eb47417eede43443f139053479618e96ad32893d"

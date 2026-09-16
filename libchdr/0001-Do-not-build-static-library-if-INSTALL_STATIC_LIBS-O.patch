@@ -1,4 +1,4 @@
-From d2e786a362b8e0fb7cd14232cd080cf768778f72 Mon Sep 17 00:00:00 2001
+From 1115566c7e69d7a20c206e68a9c232f01157547f Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Fri, 26 Nov 2021 09:47:31 -0300
 Subject: [PATCH] Do not build static library if INSTALL_STATIC_LIBS=OFF
@@ -8,18 +8,18 @@ Subject: [PATCH] Do not build static library if INSTALL_STATIC_LIBS=OFF
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5844cb4..335133e 100644
+index 8f381b5..7a50c9f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -120,6 +120,7 @@ set(CHDR_SOURCES
-   src/libchdr_huffman.c
- )
+@@ -260,6 +260,7 @@ function(chdr_apply_microflac target)
+     $<$<COMPILE_LANGUAGE:CXX>:-fno-threadsafe-statics>)
+ endfunction()
  
 +if (INSTALL_STATIC_LIBS)
  add_library(chdr-static STATIC ${CHDR_SOURCES})
  target_include_directories(chdr-static INTERFACE include)
- target_link_libraries(chdr-static PRIVATE ${CHDR_LIBS} ${PLATFORM_LIBS})
-@@ -129,7 +130,6 @@ if(MSVC)
+ chdr_apply_microflac(chdr-static)
+@@ -285,7 +286,6 @@ if(MSVC)
    target_compile_definitions(chdr-static PRIVATE _CRT_SECURE_NO_WARNINGS)
  endif()
  
@@ -28,5 +28,5 @@ index 5844cb4..335133e 100644
      ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
    )
 -- 
-2.53.0
+2.55.0
 

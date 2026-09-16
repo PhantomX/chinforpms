@@ -13,14 +13,14 @@
 # Use vendor tarball
 %bcond vendor 1
 
-%global vendor_hash 739aba15db10b8ae8a1ea65d99b909f2
+%global vendor_hash b04bc04ffe16407d0a14cb76c63a05e3
 %global vendor_pkg %{name}-%{?with_snapshot:%{shortcommit}}%{!?with_snapshot:%{version}}-vendor.tar.xz
 
 %global pkgname LACT
 %global appname io.github.ilya_zlobintsev.%{pkgname}
 
 Name:           lact
-Version:        0.10.0
+Version:        0.10.1
 Release:        1%{?dist}
 Summary:        GPU control utility
 
@@ -572,6 +572,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.met
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.10.1-1
+- 0.10.1
+
 * Wed Aug 12 2026 Phantom X <megaphantomx at hotmail dot com> - 0.10.0-1
 - 0.10.0
 

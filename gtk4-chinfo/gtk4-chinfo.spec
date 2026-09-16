@@ -5,13 +5,13 @@
 %global with_tracker 0
 
 %global glib2_version 2.84.0
-%global pango_version 1.56.0
-%global cairo_version 1.18.0
+%global pango_version 1.58.0
+%global cairo_version 1.18.2
 %global gdk_pixbuf_version 2.30.0
 %global gstreamer_version 1.24.0
-%global harfbuzz_version 8.4
-%global wayland_protocols_version 1.31
-%global wayland_version 1.21.0
+%global harfbuzz_version 8.4.0
+%global wayland_protocols_version 1.48
+%global wayland_version 1.24.0
 %global epoxy_version 1.4
 
 %global bin_version 4.0.0
@@ -31,7 +31,7 @@
 %global branch %%(echo %{version} | cut -d. -f-2)
 
 Name:           %{pkgname}-chinfo
-Version:        4.22.4
+Version:        4.24.0
 Release:        1%{?dist}
 Summary:        GTK graphical user interface library - chinforpms modifications
 
@@ -69,6 +69,7 @@ BuildRequires:  pkgconfig(cairo-gobject) >= %{cairo_version}
 BuildRequires:  pkgconfig(colord)
 BuildRequires:  pkgconfig(egl)
 BuildRequires:  pkgconfig(epoxy)
+BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(gdk-pixbuf-2.0) >= %{gdk_pixbuf_version}
 BuildRequires:  pkgconfig(glib-2.0) >= %{glib2_version}
 BuildRequires:  pkgconfig(graphene-gobject-1.0)
@@ -126,7 +127,6 @@ cat %{S:2} | tee -a gtk/theme/Default/Default-hc{,-dark}.css > /dev/null
 
 
 %build
-%set_build_flags
 export CFLAGS+=' -fno-strict-aliasing -DG_DISABLE_CAST_CHECKS -DG_DISABLE_ASSERT'
 %meson \
 %if 0%{?with_broadway}
@@ -178,6 +178,9 @@ echo "%{_libdir}/%{name}" \
 
 
 %changelog
+* Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.24.0-1
+- 4.24.0
+
 * Fri May 01 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.22.4-1
 - 4.22.4
 

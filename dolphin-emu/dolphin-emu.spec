@@ -25,9 +25,9 @@
 %global enablejit 1
 %endif
 
-%global commit baf91d4436449ef9b7e5afe2988cbba0fcc60eb8
+%global commit 9611279be550ee262f30b7b0d11f92a0d5fc08f5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260625
+%global date 20260913
 %bcond snapshot 1
 
 %global commit3 3bab6924988e5f19bf36586a496156cf72f70d9f
@@ -99,7 +99,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           dolphin-emu
-Version:        2606.5
+Version:        2606.368
 Release:        1%{?dist}
 Summary:        GameCube / Wii / Triforce Emulator
 
@@ -431,6 +431,7 @@ EOF
   -DENABLE_LTO:BOOL=OFF \
   -DXXHASH_FOUND:BOOL=ON \
   %{?!enablejit:-DENABLE_GENERIC=ON} \
+  -DENABLE_NOGUI:BOOL=ON \
   -DUSE_SHARED_ENET:BOOL=ON \
   -DENABLE_CLI_TOOL:BOOL=ON \
   -DENABLE_ANALYTICS:BOOL=OFF \
@@ -513,8 +514,8 @@ appstream-util validate-relax --nonet \
 %{_mandir}/man6/%{name}-x11.*
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.*
-%{_datadir}/%{name}/sys/Resources/
-%{_datadir}/%{name}/sys/Themes/
+%{_datadir}/%{name}/Sys/Resources/
+%{_datadir}/%{name}/Sys/Themes/
 %{_metainfodir}/*.appdata.xml
 
 %files nogui
@@ -527,10 +528,10 @@ appstream-util validate-relax --nonet \
 %doc Readme.md docs/gc-font-tool.cpp
 %license COPYING font-licenses.txt
 #For the gui package:
-%exclude %{_datadir}/%{name}/sys/Resources/
-%exclude %{_datadir}/%{name}/sys/Themes/
+%exclude %{_datadir}/%{name}/Sys/Resources/
+%exclude %{_datadir}/%{name}/Sys/Themes/
 #Already packaged:
-%exclude %{_datadir}/%{name}/sys/GC/font-licenses.txt
+%exclude %{_datadir}/%{name}/Sys/GC/font-licenses.txt
 %{_datadir}/%{name}/
 %{_udevrulesdir}/*.rules
 
