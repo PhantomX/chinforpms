@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           deluge
 Version:        2.2.0
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -36,7 +36,6 @@ Patch1:         0001-Disable-new-release-check-by-default.patch
 BuildRequires:  desktop-file-utils
 BuildRequires:  libappstream-glib
 BuildRequires:  python3-devel
-BuildRequires:  %{py3_dist setuptools}
 BuildRequires:  intltool
 BuildRequires:  %{py3_dist libtorrent}
 BuildRequires:  %{py3_dist wheel}
@@ -55,20 +54,20 @@ Requires:       %{name}-daemon = %{?epoch:%{epoch}:}%{version}-%{release}
 Deluge is a new BitTorrent client, created using Python and GTK+. It is
 intended to bring a native, full-featured client to Linux GTK+ desktop
 environments such as GNOME and XFCE. It supports features such as DHT
-(Distributed Hash Tables), PEX (µTorrent-compatible Peer Exchange), and UPnP
+(Distributed Hash Tables), PEX (Peer Exchange), and UPnP
 (Universal Plug-n-Play) that allow one to more easily share BitTorrent data
 even from behind a router with virtually zero configuration of port-forwarding.
 
 %package common
 Summary:        Files common to Deluge sub packages
-License:        GPLv3 with exceptions
+License:        LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:       %{py3_dist pyopenssl}
 Requires:       %{py3_dist chardet}
 Requires:       %{py3_dist dbus-python}
 Requires:       %{py3_dist pillow}
+Requires:       python3-pkg-resources
 Requires:       %{py3_dist pygame}
 Requires:       %{py3_dist pyxdg}
-# FIXME: this must be in Fedora python3-twisted Requires, remove when it is fixed
 Requires:       %{py3_dist service-identity}
 Requires:       %{py3_dist setproctitle}
 Requires:       %{py3_dist six}
@@ -80,34 +79,36 @@ Requires:       xdg-utils
 
 
 %description common
-Common files needed by the Deluge bittorrent client sub packages
+Common files needed by the Deluge BitTorrent client sub packages
 
 %package gtk
 Summary:        The gtk UI to Deluge
-License:        GPLv3 with exceptions
+License:        LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:       %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-images = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:       %{name}-daemon = %{?epoch:%{epoch}:}%{version}-%{release}
 ## Required for the proper ownership of icon dirs.
 Requires:       hicolor-icon-theme
 Requires:       gtk3
+Requires:       libappindicator-gtk3
+Requires:       librsvg2
 Requires:       %{py3_dist pycairo}
 Requires:       %{py3_dist pygobject}
 Requires:       python3-gobject
-Requires:       %{py3_dist geoip}
+
 
 %description gtk
-Deluge bittorent client GTK graphical user interface
+Deluge BitTorrent client GTK graphical user interface
 
 %package images
 Summary:       Image files for deluge
-License:       GPLv3 with exceptions
+License:       LicenseRef-Callaway-GPLv3-with-exceptions
 %description images
-Data files used by the GTK and web user interface for Deluge bittorent client
+Data files used by the GTK and web user interface for Deluge BitTorrent client
 
 %package console
 Summary:       CLI to Deluge
-License:       GPLv3 with exceptions
+License:       LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:      %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      %{name}-daemon = %{?epoch:%{epoch}:}%{version}-%{release}
 %description console
@@ -115,7 +116,7 @@ Deluge bittorent client command line interface
 
 %package web
 Summary:       Web interface to Deluge
-License:       GPLv3 with exceptions
+License:       LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:      python3-mako
 Requires:      %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 Requires:      %{name}-images = %{?epoch:%{epoch}:}%{version}-%{release}
@@ -126,7 +127,7 @@ Deluge bittorent client web interface
 
 %package daemon
 Summary:       The Deluge daemon
-License:       GPLv3 with exceptions
+License:       LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:      %{name}-common = %{?epoch:%{epoch}:}%{version}-%{release}
 BuildRequires: systemd
 
@@ -142,12 +143,23 @@ find -name '*~' -delete
 
 sed -e "s|'closure-compiler', 'closure'|'closure_disabled'|g" -i minify_web_js.py
 
+# Remove shebangs from python files that are not wrapper scripts            
+find deluge -name "*.py" -exec sed -i -e '/^#!\s*\/usr\/bin\/env python/d' -e '/^#!\s*\/usr\/bin\/python/d' -e '/^#!\s*\/usr\/bin\/env python3/d' -e '/^#!\s*\/usr\/bin\/python3/d' {} +            
+
+%generate_buildrequires            
+%pyproject_buildrequires
+
 
 %build
-%py3_build
+# Generate desktop and metainfo files so they are available when setup.py is run by pyproject_wheel            
+intltool-merge --desktop-style --utf8 --quiet deluge/i18n deluge/ui/data/share/applications/deluge.desktop.in deluge/ui/data/share/applications/deluge.desktop            
+intltool-merge --xml-style --utf8 --quiet deluge/i18n deluge/ui/data/share/metainfo/deluge.metainfo.xml.in deluge/ui/data/share/metainfo/deluge.metainfo.xml            
+
+%pyproject_wheel
+
 
 %install
-%py3_install
+%pyproject_install
 
 mkdir -p %{buildroot}%{_unitdir}/%{name}-{daemon,web}.service.d
 install -m644 packaging/systemd/deluged.service %{buildroot}%{_unitdir}/%{name}-daemon.service
@@ -188,6 +200,7 @@ popd && mv %{buildroot}/%{name}.lang .
 
 
 %check
+%py3_check_import deluge
 desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metainfo.xml
 
@@ -197,7 +210,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 %files common -f %{name}.lang
 %doc CHANGELOG.md LICENSE README.md
 
-%{python3_sitelib}/%{name}-%{version}-py%{python3_version}.egg-info/
+%{python3_sitelib}/%{name}-*.dist-info/
 %dir %{python3_sitelib}/%{name}
 %{python3_sitelib}/%{name}/*.py*
 %{python3_sitelib}/%{name}/__pycache__/
@@ -276,6 +289,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Sat Sep 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-101
+- Fedora sync
+
 * Tue Apr 29 2025 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-100
 - 2.2.0
 

@@ -8,7 +8,7 @@
 %global jre_ver 17
 
 Name:           irpf%{pkgyear}
-Version:        1.0
+Version:        1.5
 Release:        1%{?dist}
 Summary:        Programa Gerador do IRPF %{pkgyear}, versão Java
 
@@ -116,6 +116,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/rfb-%{name}.desktop
 
 
 %changelog
-* Fri Mar 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0-1
+* Wed Sep 16 2026 - 1.5-1
+- 1.5
+
+* Fri Mar 20 2026 - 1.0-1
 - Initial spec
 

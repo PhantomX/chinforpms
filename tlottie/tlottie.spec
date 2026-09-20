@@ -3,20 +3,27 @@
 %global commit 31f1b542f88e7b4be9a01e749920d857535fc715
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
 %global date 20260910
+%bcond snapshot 0
 
+%if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
+%endif
 
 %global soname_ver 0
 
 Name:           tlottie
-Version:        0.1.0
+Version:        1.0.6
 Release:        1%{?dist}
 Summary:        Rust library for drawing Lottie animations
 
 URL:            https://github.com/dkaraush/%{name}
 License:        MIT
 
+%if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+%else
+Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+%endif
 
 ExclusiveArch:  %{rust_arches}
 
@@ -39,7 +46,7 @@ developing applications that use %{name}.
 
 
 %prep
-%autosetup -n %{name}-%{commit} -p1
+%autosetup %{?with_snapshot:-n %{name}-%{commit}} -p1
 
 cat > build.rs <<'EOF'
 pub fn main() {
@@ -85,5 +92,8 @@ install -pm0644 include/tlottie.h %{buildroot}%{_includedir}
 
 
 %changelog
+* Fri Sep 18 2026 Phantom X <megaphantomx at hotmail dot com> - 1.0.6-1
+- 1.0.6
+
 * Tue Sep 08 2026 Phantom X <megaphantomx at hotmail dot com> - 0.1.0-1.20260906git758c7cb
 - Initial spec

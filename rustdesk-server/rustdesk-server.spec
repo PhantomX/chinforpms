@@ -16,7 +16,7 @@
 %global ver    %%(echo %{version} | sed -z 's/\\./-/3')
 
 Name:           rustdesk-server
-Version:        1.1.15
+Version:        1.1.16
 Release:        1%{?dist}
 Summary:        RustDesk server program
 
@@ -87,6 +87,9 @@ install -pm0644 %{S:6} %{buildroot}%{_prefix}/lib/firewalld/services/%{name}.xml
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 1.1.16-1
+- 1.1.16
+
 * Tue Mar 17 2026 Phantom X <megaphantomx at hotmail dot com> - 1.1.15-1
 - 1.1.15
 

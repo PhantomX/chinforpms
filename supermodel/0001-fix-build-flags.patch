@@ -1,4 +1,4 @@
-From 4009f741930c22ff5ccb44d52f2e2d8eb3f3afff Mon Sep 17 00:00:00 2001
+From 36e66c98851d2a60a4f4d7ee20f05ab0fc4585b5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Sun, 7 Jan 2024 17:50:57 -0300
 Subject: [PATCH] fix build flags
@@ -9,22 +9,20 @@ Subject: [PATCH] fix build flags
  2 files changed, 19 insertions(+), 12 deletions(-)
 
 diff --git a/Makefiles/Makefile.UNIX b/Makefiles/Makefile.UNIX
-index af02998..49a0b9a 100644
+index 8a0ca4b..123ea3f 100644
 --- a/Makefiles/Makefile.UNIX
 +++ b/Makefiles/Makefile.UNIX
-@@ -62,18 +62,26 @@ LD = gcc
+@@ -62,16 +62,24 @@ LD = gcc
  # SDL
  #
  
 -SDL2_CFLAGS = `sdl2-config --cflags`
 -SDL2_LIBS = `sdl2-config --libs`
+-SDL2_LIBS += -lSDL2_net
 +SDL2_CFLAGS = `pkg-config --cflags sdl2`
 +SDL2_LIBS = `pkg-config --libs sdl2`
- ifeq ($(strip $(NET_BOARD)),1)
--	SDL2_LIBS += -lSDL2_net
-+	SDL2_NET_CFLAGS = `pkg-config --cflags SDL2_net`
-+	SDL2_NET_LIBS = `pkg-config --libs SDL2_net
- endif
++SDL2_NET_CFLAGS = `pkg-config --cflags SDL2_net`
++SDL2_NET_LIBS = `pkg-config --libs SDL2_net`
  
  #
  #	UNIX-specific
@@ -45,10 +43,10 @@ index af02998..49a0b9a 100644
  
  
 diff --git a/Makefiles/Rules.inc b/Makefiles/Rules.inc
-index ae3c05f..0c15d92 100644
+index 0b62842..56d4691 100644
 --- a/Makefiles/Rules.inc
 +++ b/Makefiles/Rules.inc
-@@ -69,14 +69,13 @@ endif
+@@ -64,14 +64,13 @@ endif
  # Compiler options
  #
  ARCH =
@@ -64,7 +62,7 @@ index ae3c05f..0c15d92 100644
  ifeq ($(strip $(DEBUG)),1)
  	LDOPT =
  endif
-@@ -84,10 +83,10 @@ endif
+@@ -79,10 +78,10 @@ endif
  #
  # Construct the compiler (C and C++) and linker flags
  #
@@ -75,11 +73,11 @@ index ae3c05f..0c15d92 100644
 +COMMON_CFLAGS = -c $(ARCH) $(WARN) $(addprefix -I,$(sort $(INCLUDE_DIRS))) -DGLEW_STATIC $(SUPERMODEL_BUILD_FLAGS)
 +CFLAGS += $(COMMON_CFLAGS) $(CSTD)
 +CXXFLAGS += $(PLATFORM_CXXFLAGS) $(COMMON_CFLAGS) $(CXXSTD)
-+LDFLAGS += -o $(BIN_DIR)/$(SUPERMODEL_BINARY) $(PLATFORM_LDFLAGS) $(LDOPT)
++LDFLAGS += -o $(BIN_DIR)/$(SUPERMODEL_BINARY) $(PLATFORM_LDFLAGS)
+ CFLAGS_GENERATE_DEPENDENCIES = $(filter-out -c,$(CFLAGS))	# remove -c because clang will warn
+ CXXFLAGS_GENERATE_DEPENDENCIES = $(filter-out -c,$(CXXFLAGS))
  
- 
- ###############################################################################
-@@ -384,7 +383,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
+@@ -388,7 +387,7 @@ $(OBJ_DIR)/%.o:	%.c | $(OBJ_DIR)
  
  MUSASHI_OUTFILE = $(OBJ_DIR)/m68kmake.exe # do not remove the .exe suffix!
  MUSASHI_CFLAGS = -ISrc/CPU/68K/Musashi -I$(OBJ_DIR) -DINLINE="static inline" -Wno-unused-variable
@@ -89,5 +87,5 @@ index ae3c05f..0c15d92 100644
  $(MUSASHI_OUTFILE): Src/CPU/68K/Musashi/m68kmake.c Src/CPU/68K/Musashi/m68k_in.c | $(OBJ_DIR)
  	$(info --------------------------------------------------------------------------------)
 -- 
-2.52.0
+2.55.0
 

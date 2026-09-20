@@ -34,7 +34,7 @@
 %bcond llvm 1
 %global bundlellvm 19.1.7
 # Set to build with versioned LLVM packages
-%dnl %global llvm_pkgver 16
+%global llvm_pkgver 22
 # Enable system pugixml
 %bcond pugixml 0
 %global bundlepugixml 1.15.0
@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 54014a7de4b2ccec98c9c0cb7dbebec0606c5cd6
+%global commit 9e86f165d1711b9429d48b0487e7bc5ba0cc9c6c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260907
+%global date 20260919
 %bcond snapshot 1
 
 %global commit10 c8033ce9d039e7f9d134877c363397b3cfe20816
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.42.283
+Version:        0.0.42.349
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -189,7 +189,7 @@ BuildRequires:  libappstream-glib
 BuildRequires:  cmake
 BuildRequires:  ninja-build
 %if %{with clang}
-BuildRequires:  compiler-rt
+BuildRequires:  compiler-rt%{?llvm_pkgver}
 BuildRequires:  clang%{?llvm_pkgver}
 BuildRequires:  llvm%{?llvm_pkgver}
 BuildRequires:  lld%{?llvm_pkgver}
@@ -359,7 +359,7 @@ cp -p 3rdparty/llvm/llvm/LICENSE.TXT 3rdparty/LICENSE.llvm
 %else
 %if 0%{?llvm_pkgver}
 sed \
-  -e '/CMAKE_MODULE_PATH/alist(APPEND CMAKE_PREFIX_PATH "%{_libdir}/llvm%{?llvm_pkgver}/lib/cmake")' \
+  -e '/CMAKE_MODULE_PATH/alist(APPEND CMAKE_PREFIX_PATH "%{_libdir}/llvm%{?llvm_pkgver}/%{?_lib}/cmake")' \
   -i CMakeLists.txt
 %endif
 %endif

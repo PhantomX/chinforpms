@@ -24,8 +24,8 @@ index f3b71b7..4a6c494 100644
 +find_package(plutovg 1.1.0)
 +find_package(plutosvg 0.0.7)
  find_package(ryml REQUIRED)
+ find_package(FFMPEG 7.1 COMPONENTS avcodec avformat avutil swresample swscale REQUIRED)
  if (WIN32)
- 	find_package(DirectX-Headers 1.618.1 REQUIRED)
 @@ -83,32 +83,98 @@ endif()
  
  set(CMAKE_FIND_FRAMEWORK ${FIND_FRAMEWORK_BACKUP})

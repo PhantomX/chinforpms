@@ -1,4 +1,4 @@
-From 3b60b4522288f98d075d4b538bc08564c7dae141 Mon Sep 17 00:00:00 2001
+From 19001b8eeef122e770bffa8400677e66513927f5 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 3 Feb 2026 17:59:48 -0300
 Subject: [PATCH] SDL3JoyCon prevent rumble error log spam
@@ -8,10 +8,10 @@ Subject: [PATCH] SDL3JoyCon prevent rumble error log spam
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs b/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
-index 5311a25..6451de4 100644
+index e9f11d7..1fb428c 100644
 --- a/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
 +++ b/src/Ryujinx.Input.SDL3/SDL3JoyCon.cs
-@@ -168,16 +168,16 @@ namespace Ryujinx.Input.SDL3
+@@ -183,16 +183,16 @@ namespace Ryujinx.Input.SDL3
              if (durationMs == uint.MaxValue)
              {
                  if (!SDL_RumbleGamepad(_gamepadHandle, lowFrequencyRaw, highFrequencyRaw, SDL_HAPTIC_INFINITY))
@@ -29,8 +29,8 @@ index 5311a25..6451de4 100644
 -                    Logger.Error?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
 +                    Logger.Info?.Print(LogClass.Hid, "Rumble is not supported on this game controller.");
              }
-         }
- 
+             
+             if (!String.IsNullOrEmpty(SDL_GetError()))
 -- 
-2.52.0
+2.55.0
 

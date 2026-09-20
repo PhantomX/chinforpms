@@ -90,6 +90,7 @@ ryujinx
 snes9x
 softmaker-office
 -soulseekqt
+spacecadetpinball
 spideroakone
 steam
 -sudachi

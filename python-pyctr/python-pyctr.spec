@@ -1,7 +1,7 @@
 %global srcname pyctr
 
 Name:           python-%{srcname}
-Version:        0.7.5
+Version:        0.7.6
 Release:        1%{?dist}
 Summary:        Python library to interact with 3DS files
 
@@ -58,6 +58,9 @@ Provides:       %{srcname} = %{?epoch:%{epoch}:}%{version}-%{release}
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.7.6-1
+- 0.7.6
+
 * Sat Mar 16 2024 Phantom X <megaphantomx at hotmail dot com> - 0.7.5-1
 - 0.7.5
 

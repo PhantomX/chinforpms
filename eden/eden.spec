@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 11de2645411ba83e6fcf47bf30ae48a7ee6ae090
+%global commit 908b1e9a3701f142de51e133d910aa058d4b071c
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260905
+%global date 20260919
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -33,6 +33,10 @@
 # Enable webservice
 %bcond webservice 1
 
+%global commit11 18deaa52de0c425a78b329e9cb3c497281cd00ec
+%global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
+%global srcname11 reshade
+
 %global commit12 05973d8aeb1a4d12f59aadfb86d20decadba82d1
 %global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
 %global srcname12 VulkanMemoryAllocator
@@ -41,7 +45,7 @@
 %global shortcommit13 %(c=%{commit13}; echo ${c:0:7})
 %global srcname13 xbyak
 
-%global commit16 4d7c9a788de136071ccf0dd4e96239151e2adadb
+%global commit16 44215e23e92c473a3553d24ae634aed6eefc7dd0
 %global shortcommit16 %(c=%{commit16}; echo ${c:0:7})
 %global srcname16 cpp-httplib
 
@@ -92,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.278
+Version:        0.2.0.345
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -103,7 +107,7 @@ License: %{shrink:
     Apache-2.0 WITH LLVM-exception AND
     MPL-2.0 AND
     BSL-1.0 AND ( 0BSD AND MIT )
-    %{!?with_xbyak:AND BSD-3-Clause}
+    AND BSD-3-Clause
 }
 URL:            https://eden-emulator.github.io
 
@@ -113,8 +117,9 @@ Source0:        %{vc_url}/%{name}/archive/%{commit}.tar.gz#/%{name}-%{shortcommi
 Source0:        %{vc_url}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 %endif
 
+Source11:       https://github.com/crosire/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 %if %{without vma}
-Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit21}.tar.gz
+Source12:       https://github.com/GPUOpen-LibrariesAndSDKs/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
 %endif
 %if %{without xbyak}
 Source13:       https://github.com/herumi/%{srcname13}/archive/%{commit13}/%{srcname13}-%{shortcommit13}.tar.gz
@@ -146,6 +151,10 @@ Patch11:        0001-Add-smaller-game-icon-sizes.patch
 Patch500:       0001-cpp-httplib-add-new-Fedora-certificate-path.patch
 Patch501:       %{vc_url}/eden/commit/106a61c9434b8d61ab8cde0170f6fcac403b28f1.patch#/%{name}-git-106a61c.patch
 Patch502:       %{vc_url}/eden/commit/672bcbae012164ec59ef26ff79995c4585bd0e97.patch#/%{name}-git-672bcba.patch
+Patch503:       %{vc_url}/eden/commit/14235dc0d0543c7397dd19eb1a677e76114c08f3.patch#/%{name}-git-14235dc.patch
+Patch504:       %{vc_url}/eden/commit/ed57836903804f05a0b2c9e84f1eaabb59503bed.patch#/%{name}-git-ed57836.patch
+Patch505:       0001-Revert-672bcba-fixup-1.patch
+Patch506:       0001-Revert-672bcba-fixup-2.patch
 
 ExclusiveArch:  x86_64
 
@@ -280,12 +289,16 @@ echo %{sver}
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
 
+%patch -P 503 -p1 -R
+%patch -P 504 -p1 -R
 sed \
   -e 's|"common/container/unordered_map.h"|<ankerl/unordered_dense.h>|' \
   -e 's|::Common::unordered_map|ankerl::unordered_dense::map|' \
   -i src/core/file_sys/ips_layer.cpp
 %patch -P 501 -p1 -R
+%patch -P 505 -p1
 %patch -P 502 -p1 -R
+%patch -P 506 -p1
 
 sed \
   -e '/-pedantic-errors/d' \
@@ -299,6 +312,12 @@ rm -rf \
 rm -rf sse2neon
 %endif
 
+mkdir -p reshade
+tar -xf %{S:11} -C reshade --strip-components 1
+%{__scm_apply_patch -p1 -q} -d reshade -i ../../.patch/reshade/0001-from-chars-fallback.patch
+sed \
+  -e 's|AddJsonPackage(NAME reshade DOWNLOAD_ONLY)|set(reshade_SOURCE_DIR reshade)|' \
+  -i CMakeLists.txt
 %if %{without vma}
 mkdir -p VulkanMemoryAllocator
 tar -xf %{S:12} -C VulkanMemoryAllocator --strip-components 1
@@ -355,6 +374,7 @@ cp -p cpp-jwt/LICENSE LICENSE.cpp-jwt
 %endif
 cp -p FidelityFX-FSR/license.txt LICENSE.FidelityFX-FSR
 cp -p nx_tzdb/tzdb_to_nx/LICENSE LICENSE.tzdb_to_nx
+cp -p reshade/LICENSE.md LICENSE.reshade.md
 cp -p simpleini/LICENCE.txt LICENSE.simpleini
 %if %{without vma}
 cp -p VulkanMemoryAllocator/LICENSE.txt LICENSE.vma

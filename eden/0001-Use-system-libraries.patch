@@ -1,4 +1,4 @@
-From 6078397c22d3769526d9ce32c551ce3b5deb594d Mon Sep 17 00:00:00 2001
+From 425d7d5bf02e32adcc305afa3da6bb4f4dda50aa Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 9 Sep 2025 18:48:43 -0300
 Subject: [PATCH] Use system libraries
@@ -12,10 +12,10 @@ Subject: [PATCH] Use system libraries
  5 files changed, 54 insertions(+), 22 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8b068b8..d6e6635 100644
+index f647204..e00ba98 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -408,12 +408,13 @@ set(ENABLE_TESTING OFF)
+@@ -410,12 +410,13 @@ set(ENABLE_TESTING OFF)
  # boost
  set(BOOST_INCLUDE_LIBRARIES algorithm icl pool container heap asio headers process filesystem crc variant)
  
@@ -28,10 +28,10 @@ index 8b068b8..d6e6635 100644
  
 +if (PATCH_ENABLED)
  if (Boost_ADDED)
-     if (MSVC OR ANDROID)
-         add_compile_definitions(YUZU_BOOST_v1)
-@@ -433,19 +434,20 @@ if (Boost_ADDED)
-         )
+     add_compile_definitions(YUZU_BOOST_v1)
+     if (NOT MSVC OR CXX_CLANG)
+@@ -431,19 +432,20 @@ if (Boost_ADDED)
+             $<$<COMPILE_LANGUAGE:C,CXX>:-Wno-implicit-fallthrough>)
      endif()
  endif()
 +endif()
@@ -54,7 +54,7 @@ index 8b068b8..d6e6635 100644
  
  if (zstd_ADDED)
      add_library(zstd::zstd ALIAS libzstd_static)
-@@ -453,18 +455,18 @@ if (zstd_ADDED)
+@@ -451,18 +453,18 @@ if (zstd_ADDED)
  endif()
  
  # nlohmann
@@ -76,7 +76,7 @@ index 8b068b8..d6e6635 100644
  
      if (Opus_ADDED)
          if (MSVC AND CXX_CLANG)
-@@ -480,7 +482,7 @@ if (NOT YUZU_STATIC_ROOM)
+@@ -478,7 +480,7 @@ if (NOT YUZU_STATIC_ROOM)
  endif()
  
  if(NOT TARGET Boost::headers)
@@ -85,7 +85,7 @@ index 8b068b8..d6e6635 100644
  endif()
  
  # List of all FFmpeg components required
-@@ -544,17 +546,27 @@ find_package(enet)
+@@ -542,17 +544,27 @@ find_package(enet)
  
  if (ARCHITECTURE_x86 OR ARCHITECTURE_x86_64)
      find_package(xbyak)
@@ -113,7 +113,7 @@ index 8b068b8..d6e6635 100644
      if (ARCHITECTURE_riscv64)
          find_package(biscuit)
      endif()
-@@ -647,7 +659,12 @@ if (ENABLE_QT)
+@@ -645,7 +657,12 @@ if (ENABLE_QT)
      ## Qt Externals ##
  
      # QuaZip
@@ -128,7 +128,7 @@ index 8b068b8..d6e6635 100644
  
  if (NOT YUZU_STATIC_ROOM AND NOT (YUZU_USE_BUNDLED_FFMPEG OR YUZU_USE_EXTERNAL_FFMPEG))
 diff --git a/externals/CMakeLists.txt b/externals/CMakeLists.txt
-index 0682f64..08fa317 100644
+index a211b7f..a351d27 100644
 --- a/externals/CMakeLists.txt
 +++ b/externals/CMakeLists.txt
 @@ -25,6 +25,7 @@ set(BUILD_SHARED_LIBS OFF)
@@ -211,11 +211,15 @@ index 0682f64..08fa317 100644
  if (YUZU_USE_BUNDLED_SIRIT)
      AddJsonPackage(sirit-ci)
  else()
-@@ -194,10 +202,11 @@ else()
+@@ -194,6 +202,7 @@ else()
          )
      endif()
  endif()
 +endif()
+ 
+ # reshadefx
+ if (ENABLE_RESHADE)
+@@ -241,7 +250,7 @@ endif()
  
  # Catch2
  if (YUZU_TESTS OR DYNARMIC_TESTS)
@@ -224,7 +228,7 @@ index 0682f64..08fa317 100644
  endif()
  
  # getopt
-@@ -209,6 +218,7 @@ endif()
+@@ -253,6 +262,7 @@ endif()
  add_subdirectory(glad)
  
  # libusb
@@ -232,7 +236,7 @@ index 0682f64..08fa317 100644
  if (ENABLE_LIBUSB)
      add_subdirectory(libusb)
  endif()
-@@ -227,10 +237,14 @@ if (VulkanMemoryAllocator_ADDED)
+@@ -271,10 +281,14 @@ if (VulkanMemoryAllocator_ADDED)
          )
      endif()
  endif()
@@ -248,7 +252,7 @@ index 0682f64..08fa317 100644
  endif()
  
  # FFMpeg
-@@ -265,6 +279,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
+@@ -309,6 +323,7 @@ if (ANDROID AND ARCHITECTURE_arm64)
      AddJsonPackage(libadrenotools)
  endif()
  
@@ -256,7 +260,7 @@ index 0682f64..08fa317 100644
  AddJsonPackage(gamemode)
  
  if (gamemode_ADDED)
-@@ -272,6 +287,7 @@ if (gamemode_ADDED)
+@@ -316,6 +331,7 @@ if (gamemode_ADDED)
      target_include_directories(gamemode INTERFACE ${gamemode_SOURCE_DIR}/lib)
      add_library(gamemode::headers ALIAS gamemode)
  endif()

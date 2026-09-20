@@ -1,0 +1,25 @@
+From 883e466ebb85e5b15e298de8361630b32e55e242 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 19 Sep 2026 23:27:32 -0300
+Subject: [PATCH] Revert 672bcba fixup 1
+
+---
+ src/core/file_sys/patch_manager.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/file_sys/patch_manager.cpp b/src/core/file_sys/patch_manager.cpp
+index 4fd7dc6..5002b85 100644
+--- a/src/core/file_sys/patch_manager.cpp
++++ b/src/core/file_sys/patch_manager.cpp
+@@ -372,7 +372,7 @@ VirtualDir PatchManager::PatchExeFS(VirtualDir exefs) const {
+ }
+ 
+ std::vector<VirtualFile> PatchManager::CollectPatches(const std::vector<VirtualDir>& patch_dirs, const std::string& build_id) const {
+-    const auto disabled = GetDisabledAddons();
++    const auto& disabled = Settings::values.disabled_addons[title_id];
+     const auto nso_build_id = fmt::format("{:0<64}", build_id);
+ 
+     std::vector<VirtualFile> out;
+-- 
+2.55.0
+

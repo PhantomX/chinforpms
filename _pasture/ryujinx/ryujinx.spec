@@ -7,9 +7,9 @@
 %global __strip /bin/true
 
 # commit and Version must match https://github.com/Ryujinx/Ryujinx/wiki/Changelog
-%global commit 49891ba7af2f1c9469347ae7156def073e5fea6b
+%global commit 475615f0431b4995b03c930c5089d20f6f3570e0
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260512
+%global date 20260826
 
 %if %{without bin}
 %bcond snapshot 0
@@ -23,14 +23,14 @@
 %global shortcommit 0
 %endif
 
-%global local_dotnet_ver 10.0.102
+%global local_dotnet_ver 10.0.301
 
 %global avalonia_angle_windows_natives_ver 2.1.25547.20250602
-%global avalonia_ver 11.3.15
+%global avalonia_ver 12.1.1
 %global avalonia_ver2 11.0.4
 %global avalonia_ver3 11.0.0
 %global avalonia_build_services_ver 11.3.2
-%global avalonia_controls_datagrid_ver 11.3.13
+%global avalonia_controls_datagrid_ver 12.1.2
 %global avalonia_svg_ver 11.0.0.19
 %global commandlineparser_ver 2.9.1
 %global communitytoolkit_mvvm_ver 8.4.2
@@ -45,11 +45,11 @@
 %global gommon_ver 2.8.1.2
 %global harfbuzzsharp_ver 8.3.1.1
 %global harfbuzzsharp_ver2 7.3.0
-%global humanizer_ver 2.14.1
+%global humanizer_ver 3.0.10
 %global jetbrains_annotations_ver 2023.2.0
 %global microcom_runtime_ver 0.11.0
 # Must match dotnet
-%global microsoft_aspnetcore_app_runtime_linux_x64_ver 10.0.2
+%global microsoft_aspnetcore_app_runtime_linux_x64_ver 10.0.9
 %global microsoft_bcl_timeprovider_ver 8.0.1
 %global microsoft_codeanalysis_analyzers_ver 3.3.4
 %global microsoft_codeanalysis_analyzers_ver2 3.0.0
@@ -59,15 +59,15 @@
 %global microsoft_csharp_ver2 4.7.0
 %global microsoft_csharp_ver3 4.3.0
 %global microsoft_dotnet_platformabstractions_ver 3.1.6
-%global microsoft_extensions_dependencymodel_ver 8.0.0
+%global microsoft_extensions_dependencymodel_ver 9.0.9
 %global microsoft_extensions_logging_abstractions_ver 10.0.2
 %global microsoft_extensions_logging_abstractions_ver2 8.0.0
 %global microsoft_extensions_dependencyinjection_abstractions_ver 10.0.2
 %global microsoft_extensions_dependencyinjection_abstractions_ver2 8.0.0
-%global microsoft_identitymodel_ver 8.18.0
+%global microsoft_identitymodel_ver 8.19.1
 %global microsoft_io_recyclablememorystream_ver 3.0.1
 # Must match dotnet
-%global microsoft_netcore_app_runtime_linux_x64_ver 10.0.2
+%global microsoft_netcore_app_runtime_linux_x64_ver 10.0.9
 %global microsoft_netcore_platforms_ver 1.0.1
 %global microsoft_netcore_platforms_ver2 1.1.0
 %global microsoft_netcore_platforms_ver3 2.1.2
@@ -140,18 +140,18 @@
 %global ryujinx_updateclient_ver 2.0.6
 %global ryujinx_updateclient_dl_id 633
 %global ryujinx_systemsupdate_dl_id 634
-%global sdl3_cs_ver 2026.501.0
+%global sdl3_cs_ver 2026.707.0
 %global securifybv_ver 0.1.0
 %global sep_ver 0.13.0
 %global shaderc_net_ver 0.1.0
 %global sharpcompress_ver 0.48.0
 %global sharpmetal_ver 1.0.0-preview21
 %global sharpziplib_ver 1.4.2
-%global silk_net_ver 2.22.0
+%global silk_net_ver 2.23.0
 %global sixlabors_fonts_ver 1.0.0
 %global sixlabors_imagesharp_ver 2.1.9
 %global sixlabors_imagesharp_drawing_ver 1.0.0
-%global skiasharp_ver 2.88.9
+%global skiasharp_ver 3.119.4
 %global skiasharp_ver2 2.88.8
 %global skiasharp_ver3 2.88.7
 %global spb_ver 0.0.4-build32
@@ -187,7 +187,7 @@
 %global system_io_compression_zipfile_ver 4.0.1
 %global system_io_filesystem_ver 4.0.1
 %global system_io_filesystem_primitives_ver 4.0.1
-%global system_io_hashing 9.0.15
+%global system_io_hashing 10.0.9
 %global system_io_pipelines_ver 8.0.0
 %global system_linq_ver 4.1.0
 %global system_linq_expressions_ver 4.1.0
@@ -275,7 +275,7 @@
 %global nuget_url https://globalcdn.nuget.org/packages
 
 Name:           ryujinx
-Version:        1.3.289
+Version:        1.3.351
 Release:        1%{?dist}
 Summary:        Experimental NX Emulator
 
@@ -579,16 +579,16 @@ Source478:      %{nuget_url}/humanizer.core.af.%{humanizer_ver}.nupkg
 Source479:      %{nuget_url}/humanizer.core.ar.%{humanizer_ver}.nupkg
 Source480:      %{nuget_url}/humanizer.core.az.%{humanizer_ver}.nupkg
 Source481:      %{nuget_url}/humanizer.core.bg.%{humanizer_ver}.nupkg
-Source482:      %{nuget_url}/humanizer.core.bn-bd.%{humanizer_ver}.nupkg
+Source482:      %{nuget_url}/humanizer.core.bn.%{humanizer_ver}.nupkg
 Source483:      %{nuget_url}/humanizer.core.cs.%{humanizer_ver}.nupkg
 Source484:      %{nuget_url}/humanizer.core.da.%{humanizer_ver}.nupkg
 Source485:      %{nuget_url}/humanizer.core.de.%{humanizer_ver}.nupkg
 Source486:      %{nuget_url}/humanizer.core.el.%{humanizer_ver}.nupkg
 Source487:      %{nuget_url}/humanizer.core.es.%{humanizer_ver}.nupkg
 Source488:      %{nuget_url}/humanizer.core.fa.%{humanizer_ver}.nupkg
-Source489:      %{nuget_url}/humanizer.core.fi-fi.%{humanizer_ver}.nupkg
+Source489:      %{nuget_url}/humanizer.core.fi.%{humanizer_ver}.nupkg
 Source490:      %{nuget_url}/humanizer.core.fr.%{humanizer_ver}.nupkg
-Source491:      %{nuget_url}/humanizer.core.fr-be.%{humanizer_ver}.nupkg
+Source491:      %{nuget_url}/humanizer.core.fil.%{humanizer_ver}.nupkg
 Source492:      %{nuget_url}/humanizer.core.he.%{humanizer_ver}.nupkg
 Source493:      %{nuget_url}/humanizer.core.hr.%{humanizer_ver}.nupkg
 Source494:      %{nuget_url}/humanizer.core.hu.%{humanizer_ver}.nupkg
@@ -597,13 +597,13 @@ Source496:      %{nuget_url}/humanizer.core.id.%{humanizer_ver}.nupkg
 Source497:      %{nuget_url}/humanizer.core.is.%{humanizer_ver}.nupkg
 Source498:      %{nuget_url}/humanizer.core.it.%{humanizer_ver}.nupkg
 Source499:      %{nuget_url}/humanizer.core.ja.%{humanizer_ver}.nupkg
-Source500:      %{nuget_url}/humanizer.core.ko-kr.%{humanizer_ver}.nupkg
+Source500:      %{nuget_url}/humanizer.core.ko.%{humanizer_ver}.nupkg
 Source501:      %{nuget_url}/humanizer.core.ku.%{humanizer_ver}.nupkg
 Source502:      %{nuget_url}/humanizer.core.lv.%{humanizer_ver}.nupkg
-Source503:      %{nuget_url}/humanizer.core.ms-my.%{humanizer_ver}.nupkg
+Source503:      %{nuget_url}/humanizer.core.ms.%{humanizer_ver}.nupkg
 Source504:      %{nuget_url}/humanizer.core.mt.%{humanizer_ver}.nupkg
 Source505:      %{nuget_url}/humanizer.core.nb.%{humanizer_ver}.nupkg
-Source506:      %{nuget_url}/humanizer.core.nb-no.%{humanizer_ver}.nupkg
+Source506:      %{nuget_url}/humanizer.core.pt-br.%{humanizer_ver}.nupkg
 Source507:      %{nuget_url}/humanizer.core.nl.%{humanizer_ver}.nupkg
 Source508:      %{nuget_url}/humanizer.core.pl.%{humanizer_ver}.nupkg
 Source509:      %{nuget_url}/humanizer.core.pt.%{humanizer_ver}.nupkg
@@ -614,7 +614,7 @@ Source513:      %{nuget_url}/humanizer.core.sl.%{humanizer_ver}.nupkg
 Source514:      %{nuget_url}/humanizer.core.sr.%{humanizer_ver}.nupkg
 Source515:      %{nuget_url}/humanizer.core.sr-latn.%{humanizer_ver}.nupkg
 Source516:      %{nuget_url}/humanizer.core.sv.%{humanizer_ver}.nupkg
-Source517:      %{nuget_url}/humanizer.core.th-th.%{humanizer_ver}.nupkg
+Source517:      %{nuget_url}/humanizer.core.th.%{humanizer_ver}.nupkg
 Source518:      %{nuget_url}/humanizer.core.tr.%{humanizer_ver}.nupkg
 Source519:      %{nuget_url}/humanizer.core.uk.%{humanizer_ver}.nupkg
 Source520:      %{nuget_url}/humanizer.core.uz-cyrl-uz.%{humanizer_ver}.nupkg
@@ -642,6 +642,10 @@ Source541:      %{nuget_url}/microsoft.extensions.dependencyinjection.abstractio
 Source542:      %{nuget_url}/sharpcompress.%{sharpcompress_ver}.nupkg
 Source543:      %{nuget_url}/skiasharp.nativeassets.linux.nodependencies.%{skiasharp_ver}.nupkg
 Source544:      %{nuget_url}/ryujinx.audio.openal.%{ryujinx_audio_openal_ver}.nupkg
+Source545:      %{nuget_url}/humanizer.core.ca.%{humanizer_ver}.nupkg
+Source546:      %{nuget_url}/humanizer.core.lb.%{humanizer_ver}.nupkg
+Source547:      %{nuget_url}/humanizer.core.lt.%{humanizer_ver}.nupkg
+Source548:      %{nuget_url}/silk.net.shaderc.%{silk_net_ver}.nupkg
 
 %global nuget_files1 %{SOURCE200} %{SOURCE201} %{SOURCE202} %{SOURCE203} %{SOURCE204} %{SOURCE205} %{SOURCE206} %{SOURCE207} %{SOURCE208} %{SOURCE209} %{SOURCE210} %{SOURCE211} %{SOURCE212} %{SOURCE213} %{SOURCE214} %{SOURCE215} %{SOURCE216} %{SOURCE217} %{SOURCE218} %{SOURCE219} %{SOURCE220} %{SOURCE221} %{SOURCE222} %{SOURCE223} %{SOURCE224} %{SOURCE225} %{SOURCE226} %{SOURCE227} %{SOURCE228} %{SOURCE229} %{SOURCE230} %{SOURCE231} %{SOURCE232} %{SOURCE233} %{SOURCE234} %{SOURCE235} %{SOURCE236} %{SOURCE237} %{SOURCE238} %{SOURCE239} %{SOURCE240} %{SOURCE241} %{SOURCE242} %{SOURCE243} %{SOURCE244} %{SOURCE245} %{SOURCE246} %{SOURCE247} %{SOURCE248} %{SOURCE249}
 %global nuget_files2 %{SOURCE250} %{SOURCE251} %{SOURCE252} %{SOURCE253} %{SOURCE254} %{SOURCE255} %{SOURCE256} %{SOURCE257} %{SOURCE258} %{SOURCE259} %{SOURCE260} %{SOURCE261} %{SOURCE262} %{SOURCE263} %{SOURCE264} %{SOURCE265} %{SOURCE266} %{SOURCE267} %{SOURCE268} %{SOURCE269} %{SOURCE270} %{SOURCE271} %{SOURCE272} %{SOURCE273} %{SOURCE274} %{SOURCE275} %{SOURCE276} %{SOURCE277} %{SOURCE278} %{SOURCE279} %{SOURCE280} %{SOURCE281} %{SOURCE282} %{SOURCE283} %{SOURCE284} %{SOURCE285} %{SOURCE286} %{SOURCE287} %{SOURCE288} %{SOURCE289} %{SOURCE290} %{SOURCE291} %{SOURCE292} %{SOURCE293} %{SOURCE294} %{SOURCE295} %{SOURCE296} %{SOURCE297} %{SOURCE298} %{SOURCE299}
@@ -649,7 +653,7 @@ Source544:      %{nuget_url}/ryujinx.audio.openal.%{ryujinx_audio_openal_ver}.nu
 %global nuget_files4 %{SOURCE350} %{SOURCE351} %{SOURCE352} %{SOURCE353} %{SOURCE354} %{SOURCE355} %{SOURCE356} %{SOURCE357} %{SOURCE358} %{SOURCE359} %{SOURCE360} %{SOURCE361} %{SOURCE362} %{SOURCE363} %{SOURCE364} %{SOURCE365} %{SOURCE366} %{SOURCE367} %{SOURCE368} %{SOURCE369} %{SOURCE370} %{SOURCE371} %{SOURCE372} %{SOURCE373} %{SOURCE374} %{SOURCE375} %{SOURCE376} %{SOURCE377} %{SOURCE378} %{SOURCE379} %{SOURCE380} %{SOURCE381} %{SOURCE382} %{SOURCE383} %{SOURCE384} %{SOURCE385} %{SOURCE386} %{SOURCE387} %{SOURCE388} %{SOURCE389} %{SOURCE390} %{SOURCE391} %{SOURCE392} %{SOURCE393} %{SOURCE394} %{SOURCE395} %{SOURCE396} %{SOURCE397} %{SOURCE398} %{SOURCE399}
 %global nuget_files5 %{SOURCE400} %{SOURCE401} %{SOURCE402} %{SOURCE403} %{SOURCE404} %{SOURCE405} %{SOURCE406} %{SOURCE407} %{SOURCE408} %{SOURCE409} %{SOURCE410} %{SOURCE411} %{SOURCE412} %{SOURCE413} %{SOURCE414} %{SOURCE415} %{SOURCE416} %{SOURCE417} %{SOURCE418} %{SOURCE419} %{SOURCE420} %{SOURCE421} %{SOURCE422} %{SOURCE423} %{SOURCE424} %{SOURCE425} %{SOURCE426} %{SOURCE427} %{SOURCE428} %{SOURCE429} %{SOURCE430} %{SOURCE431} %{SOURCE432} %{SOURCE433} %{SOURCE434} %{SOURCE435} %{SOURCE436} %{SOURCE437} %{SOURCE438} %{SOURCE439} %{SOURCE440} %{SOURCE441} %{SOURCE442} %{SOURCE443} %{SOURCE444} %{SOURCE445} %{SOURCE446} %{SOURCE447} %{SOURCE448} %{SOURCE449}
 %global nuget_files6 %{SOURCE450} %{SOURCE451} %{SOURCE452} %{SOURCE453} %{SOURCE454} %{SOURCE455} %{SOURCE456} %{SOURCE457} %{SOURCE458} %{SOURCE459} %{SOURCE460} %{SOURCE461} %{SOURCE462} %{SOURCE463} %{SOURCE464} %{SOURCE465} %{SOURCE466} %{SOURCE467} %{SOURCE468} %{SOURCE469} %{SOURCE470} %{SOURCE471} %{SOURCE472} %{SOURCE473} %{SOURCE474} %{SOURCE475} %{SOURCE476} %{SOURCE477} %{SOURCE478} %{SOURCE479} %{SOURCE480} %{SOURCE481} %{SOURCE482} %{SOURCE483} %{SOURCE484} %{SOURCE485} %{SOURCE486} %{SOURCE487} %{SOURCE488} %{SOURCE489} %{SOURCE490} %{SOURCE491} %{SOURCE492} %{SOURCE493} %{SOURCE494} %{SOURCE495} %{SOURCE496} %{SOURCE497} %{SOURCE498} %{SOURCE499}
-%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532} %{SOURCE533} %{SOURCE534} %{SOURCE535} %{SOURCE536} %{SOURCE537} %{SOURCE538} %{SOURCE539} %{SOURCE540} %{SOURCE541} %{SOURCE542} %{SOURCE543} %{SOURCE544}
+%global nuget_files7 %{SOURCE500} %{SOURCE501} %{SOURCE502} %{SOURCE503} %{SOURCE504} %{SOURCE505} %{SOURCE506} %{SOURCE507} %{SOURCE508} %{SOURCE509} %{SOURCE510} %{SOURCE511} %{SOURCE512} %{SOURCE513} %{SOURCE514} %{SOURCE515} %{SOURCE516} %{SOURCE517} %{SOURCE518} %{SOURCE519} %{SOURCE520} %{SOURCE521} %{SOURCE522} %{SOURCE523} %{SOURCE524} %{SOURCE525} %{SOURCE526} %{SOURCE527} %{SOURCE528} %{SOURCE529} %{SOURCE530} %{SOURCE531} %{SOURCE532} %{SOURCE533} %{SOURCE534} %{SOURCE535} %{SOURCE536} %{SOURCE537} %{SOURCE538} %{SOURCE539} %{SOURCE540} %{SOURCE541} %{SOURCE542} %{SOURCE543} %{SOURCE544} %{SOURCE545} %{SOURCE546} %{SOURCE547} %{SOURCE548}
 %endif
 
 Patch10:        0001-SDL3JoyCon-prevent-rumble-error-log-spam.patch
@@ -660,19 +664,20 @@ ExclusiveArch:  x86_64
 
 BuildRequires:  chrpath
 BuildRequires:  desktop-file-utils
-BuildRequires:  librsvg2-tools
+BuildRequires:  ImageMagick
 %if %{without bin}
 %if %{without local_dotnet}
 BuildRequires:  dotnet >= 8.0.100
 %endif
 BuildRequires:  libicu-devel
+BuildRequires:  openssl3-devel
 BuildRequires:  pkgconfig(zlib)
 %endif
 Requires:       gtk3%{?_isa}
 Requires:       libglvnd-glx%{?_isa}
 Requires:       libicu%{?_isa}
 Requires:       libsoundio%{?_isa}
-Requires:       openssl%{?_isa}
+Requires:       openssl3-libs%{?_isa}
 Requires:       SDL3%{?_isa}
 Requires:       sdl_gamecontrollerdb
 Requires:       vulkan-loader%{?_isa}
@@ -705,7 +710,7 @@ cp -p %{S:1} %{S:2} %{S:3} %{S:4} .
 sed -e '/<packageSourceMapping>/,/<\/packageSourceMapping>/d' -i nuget.config
 
 cp distribution/linux/*.desktop distribution/legal/THIRDPARTY.md .
-mv distribution/misc/Logo.svg %{name}-Logo.svg
+mv distribution/misc/Logo.png %{name}-Logo.png
 cp -a distribution/linux/mime .
 
 %if %{with local_dotnet}
@@ -759,7 +764,7 @@ dotnet restore \
   --source "$(pwd)/nuget/cache" \
   src/%{appname} \
 %{nil}
-
+exit 20
 dotnet publish \
   -maxcpucount:%{_smp_build_ncpus} \
   --nologo \
@@ -813,15 +818,15 @@ desktop-file-install \
   --set-value="%{appname} %%f" \
   %{appname}.desktop
 
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/scalable/apps
-install -pm0644 %{name}-Logo.svg \
-  %{buildroot}%{_datadir}/icons/hicolor/scalable/apps/%{appname}.svg
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/256x256/apps
+install -pm0644 %{name}-Logo.png \
+  %{buildroot}%{_datadir}/icons/hicolor/256x256/apps/%{appname}.png
 
-for res in 16 22 24 32 36 48 64 72 96 128 192 256 ;do
+for res in 16 22 24 32 36 48 64 72 96 128 192 ;do
   dir=%{buildroot}%{_datadir}/icons/hicolor/${res}x${res}/apps
   mkdir -p ${dir}
-  rsvg-convert %{name}-Logo.svg -h ${res} -w ${res} \
-    -o ${dir}/%{appname}.png
+  magick %{name}-Logo.png -filter Lanczos -resize ${res}x${res}  \
+    ${dir}/apps/%{appname}.png
 done
 
 mkdir -p %{buildroot}%{_datadir}/mime/packages

@@ -1,4 +1,4 @@
-From 31eb38cf4459688968efe281c18187d9361f9f0e Mon Sep 17 00:00:00 2001
+From 6429e45feae4f0f7a83eef98f1c4fb33d2a31f9c Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 26 Apr 2022 11:46:46 -0300
 Subject: [PATCH] Use system libraries
@@ -29,10 +29,10 @@ Subject: [PATCH] Use system libraries
  22 files changed, 68 insertions(+), 17 deletions(-)
 
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index c703875..7bae3f4 100644
+index c81d415..3cc4b7d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1143,6 +1143,14 @@ endif()
+@@ -1111,6 +1111,14 @@ endif()
  
  add_subdirectory(Common)
  
@@ -48,7 +48,7 @@ index c703875..7bae3f4 100644
  	find_package(ZSTD REQUIRED)
  else()
 diff --git a/Common/Data/Collections/Hashmaps.h b/Common/Data/Collections/Hashmaps.h
-index 862c0e4..20c7c44 100644
+index 2fe1aee..d3658f1 100644
 --- a/Common/Data/Collections/Hashmaps.h
 +++ b/Common/Data/Collections/Hashmaps.h
 @@ -4,7 +4,7 @@
@@ -104,7 +104,7 @@ index 5411587..35934ae 100644
  #include "Common/File/VFS/VFS.h"
  #include "Common/File/FileUtil.h"
 diff --git a/Common/File/VFS/ZipFileReader.cpp b/Common/File/VFS/ZipFileReader.cpp
-index a3720ff..655a201 100644
+index 83655bc..6624fba 100644
 --- a/Common/File/VFS/ZipFileReader.cpp
 +++ b/Common/File/VFS/ZipFileReader.cpp
 @@ -7,7 +7,7 @@
@@ -130,7 +130,7 @@ index c2779d6..0feae89 100644
  
  #include <mutex>
 diff --git a/Core/Debugger/DisassemblyManager.cpp b/Core/Debugger/DisassemblyManager.cpp
-index 39e0330..9170cf8 100644
+index f73c355..43e0c7d 100644
 --- a/Core/Debugger/DisassemblyManager.cpp
 +++ b/Core/Debugger/DisassemblyManager.cpp
 @@ -21,7 +21,7 @@
@@ -143,7 +143,7 @@ index 39e0330..9170cf8 100644
  #include "Common/CommonTypes.h"
  #include "Common/Data/Encoding/Utf8.h"
 diff --git a/Core/HLE/sceJpeg.cpp b/Core/HLE/sceJpeg.cpp
-index 366499d..1afee76 100644
+index ac0f941..ff1e83a 100644
 --- a/Core/HLE/sceJpeg.cpp
 +++ b/Core/HLE/sceJpeg.cpp
 @@ -34,7 +34,7 @@
@@ -156,7 +156,7 @@ index 366499d..1afee76 100644
  #include "Common/StringUtils.h"
  #endif
 diff --git a/Core/MIPS/IR/IRJit.cpp b/Core/MIPS/IR/IRJit.cpp
-index f495d4f..d163aac 100644
+index b5611d2..5116903 100644
 --- a/Core/MIPS/IR/IRJit.cpp
 +++ b/Core/MIPS/IR/IRJit.cpp
 @@ -19,7 +19,7 @@
@@ -169,7 +169,7 @@ index f495d4f..d163aac 100644
  
  #include "Common/Log.h"
 diff --git a/Core/MIPS/JitCommon/JitBlockCache.cpp b/Core/MIPS/JitCommon/JitBlockCache.cpp
-index e8b751b..82c6f31 100644
+index d4e9a7a..fc12309 100644
 --- a/Core/MIPS/JitCommon/JitBlockCache.cpp
 +++ b/Core/MIPS/JitCommon/JitBlockCache.cpp
 @@ -19,7 +19,7 @@
@@ -182,7 +182,7 @@ index e8b751b..82c6f31 100644
  #include "Common/Profiler/Profiler.h"
  
 diff --git a/Core/Util/GameManager.cpp b/Core/Util/GameManager.cpp
-index 6962506..035789e 100644
+index 19d2355..35b4b68 100644
 --- a/Core/Util/GameManager.cpp
 +++ b/Core/Util/GameManager.cpp
 @@ -27,7 +27,7 @@
@@ -195,7 +195,7 @@ index 6962506..035789e 100644
  #ifdef _WIN32
  
 diff --git a/Core/Util/PPGeDraw.cpp b/Core/Util/PPGeDraw.cpp
-index e3d28df..a47088a 100644
+index 94da3cc..ba9565c 100644
 --- a/Core/Util/PPGeDraw.cpp
 +++ b/Core/Util/PPGeDraw.cpp
 @@ -17,7 +17,7 @@
@@ -208,7 +208,7 @@ index e3d28df..a47088a 100644
  #include "Common/System/System.h"
  #include "Common/Data/Color/RGBAUtil.h"
 diff --git a/GPU/Common/TextureCacheCommon.cpp b/GPU/Common/TextureCacheCommon.cpp
-index 25ece3e..e9f4a0a 100644
+index 40477d5..901f37c 100644
 --- a/GPU/Common/TextureCacheCommon.cpp
 +++ b/GPU/Common/TextureCacheCommon.cpp
 @@ -19,7 +19,7 @@
@@ -221,7 +221,7 @@ index 25ece3e..e9f4a0a 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Collections/TinySet.h"
 diff --git a/GPU/Common/TextureDecoder.cpp b/GPU/Common/TextureDecoder.cpp
-index 274ef6d..0868971 100644
+index 59e81d4..742bb04 100644
 --- a/GPU/Common/TextureDecoder.cpp
 +++ b/GPU/Common/TextureDecoder.cpp
 @@ -17,7 +17,7 @@
@@ -234,7 +234,7 @@ index 274ef6d..0868971 100644
  #include "Common/Common.h"
  #include "Common/Log.h"
 diff --git a/GPU/Common/TextureReplacer.cpp b/GPU/Common/TextureReplacer.cpp
-index beac53b..2d0dd8a 100644
+index c6f98e4..c5c5fec 100644
 --- a/GPU/Common/TextureReplacer.cpp
 +++ b/GPU/Common/TextureReplacer.cpp
 @@ -22,7 +22,7 @@
@@ -247,7 +247,7 @@ index beac53b..2d0dd8a 100644
  #include "Common/Data/Format/IniFile.h"
  #include "Common/Data/Format/PNGLoad.h"
 diff --git a/GPU/D3D11/TextureCacheD3D11.cpp b/GPU/D3D11/TextureCacheD3D11.cpp
-index 999dee0..ef9e438 100644
+index 9be6d61..d1565e5 100644
 --- a/GPU/D3D11/TextureCacheD3D11.cpp
 +++ b/GPU/D3D11/TextureCacheD3D11.cpp
 @@ -33,7 +33,7 @@
@@ -260,7 +260,7 @@ index 999dee0..ef9e438 100644
  using namespace Microsoft::WRL;
  
 diff --git a/GPU/GLES/TextureCacheGLES.cpp b/GPU/GLES/TextureCacheGLES.cpp
-index 0e1ebb5..af27d24 100644
+index 8cd71a4..256f2df 100644
 --- a/GPU/GLES/TextureCacheGLES.cpp
 +++ b/GPU/GLES/TextureCacheGLES.cpp
 @@ -17,7 +17,7 @@
@@ -273,7 +273,7 @@ index 0e1ebb5..af27d24 100644
  #include "Common/Data/Convert/ColorConv.h"
  #include "Common/Data/Text/I18n.h"
 diff --git a/UI/AdhocServerScreen.cpp b/UI/AdhocServerScreen.cpp
-index 9324423..915c18e 100644
+index dbbf376..3387bb1 100644
 --- a/UI/AdhocServerScreen.cpp
 +++ b/UI/AdhocServerScreen.cpp
 @@ -9,7 +9,11 @@
@@ -289,7 +289,7 @@ index 9324423..915c18e 100644
  
  #include "AdhocServerScreen.h"
 diff --git a/UI/CwCheatScreen.cpp b/UI/CwCheatScreen.cpp
-index 3bf8234..d3c942f 100644
+index efdcf97..d4e6ebd 100644
 --- a/UI/CwCheatScreen.cpp
 +++ b/UI/CwCheatScreen.cpp
 @@ -16,7 +16,7 @@
@@ -302,7 +302,7 @@ index 3bf8234..d3c942f 100644
  #include "Common/UI/PopupScreens.h"
  
 diff --git a/UI/ImDebugger/ImMemView.cpp b/UI/ImDebugger/ImMemView.cpp
-index 12b3a22..3de6425 100644
+index 85da5f2..7480e83 100644
 --- a/UI/ImDebugger/ImMemView.cpp
 +++ b/UI/ImDebugger/ImMemView.cpp
 @@ -8,7 +8,7 @@
@@ -315,7 +315,7 @@ index 12b3a22..3de6425 100644
  #include "Common/File/FileUtil.h"
  #include "Core/Config.h"
 diff --git a/Windows/Debugger/CtrlMemView.cpp b/Windows/Debugger/CtrlMemView.cpp
-index 4345e53..d95c033 100644
+index 4d0a780..b7c491a 100644
 --- a/Windows/Debugger/CtrlMemView.cpp
 +++ b/Windows/Debugger/CtrlMemView.cpp
 @@ -2,7 +2,7 @@
@@ -326,9 +326,9 @@ index 4345e53..d95c033 100644
 +#include "xxhash.h"
  #include "Common/StringUtils.h"
  #include "Core/Config.h"
- #include "Core/System.h"
+ #include "Core/Core.h"
 diff --git a/ext/CMakeLists.txt b/ext/CMakeLists.txt
-index a700a6b..88c2763 100644
+index 16e1714..f0cb7b8 100644
 --- a/ext/CMakeLists.txt
 +++ b/ext/CMakeLists.txt
 @@ -39,17 +39,42 @@ add_subdirectory(rcheevos-build)
@@ -372,8 +372,8 @@ index a700a6b..88c2763 100644
  )
 +endif()
  
- set(FT_REQUIRE_ZLIB OFF CACHE BOOL "" FORCE)
- set(FT_REQUIRE_BZIP2 OFF CACHE BOOL "" FORCE)
+ set(aemu_postoffice_client_obj
+ 	aemu_postoffice/client/postoffice.c
 -- 
 2.55.0
 

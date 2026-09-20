@@ -12,9 +12,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 08589f48ef1e084e505445c185bba8d1c6d8da69
+%global commit 99fecc1874d13c4aa038bb5cbe9ba2203febd3b5
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260728
+%global date 20260918
 %bcond snapshot 1
 
 # Enable Qt build
@@ -48,7 +48,7 @@
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 ffmpeg-gas-preprocessor
 
-%global commit4 2d7f351e640ec260b43943f07a00c57211940378
+%global commit4 62adab4ef30da765f5cf22a451eb08a59c54dc8b
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 armips
 
@@ -116,7 +116,7 @@
 %global verminor %%(echo %{version} | cut -d. -f3)
 
 Name:           ppsspp
-Version:        1.20.4.788
+Version:        1.20.4.1845
 Release:        100%{?dist}
 Summary:        A PSP emulator
 Epoch:          1

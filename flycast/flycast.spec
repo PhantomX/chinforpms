@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit 44e4c7b50df86bf431f0e7b4ea7ed7a3fd7aef45
+%global commit dd7a5f06201a4f8960ed162e2c6a5b61659bb9cd
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260819
+%global date 20260918
 %bcond snapshot 1
 
 # Disable LTO. Crash.
@@ -62,6 +62,11 @@
 %global shortcommit110 %(c=%{commit110}; echo ${c:0:7})
 %global srcname110 tinycmmc
 
+%global commit12 d3402006e84efb6114ff93e4f2b8508412ed80d5
+%global shortcommit12 %(c=%{commit12}; echo ${c:0:7})
+%global srcname12 asio
+
+%bcond asio 0
 # Enable system glslang
 %bcond glslang 1
 %bcond vma 1
@@ -83,11 +88,13 @@
 %global stb_ver 2.25
 %global vk_ver 1.3.261
 
+%global vc_url https://github.com/flyinghead
+
 %global sver %%(echo %{version} | cut -d. -f-2)
 %global sbuild %%(echo %{version} | cut -d. -f3)
 
 Name:           flycast
-Version:        2.7.1
+Version:        2.7.40
 Release:        1%{?dist}
 Summary:        Sega Dreamcast emulator
 
@@ -108,9 +115,9 @@ License: %{shrink:
 URL:            https://github.com/flyinghead/%{name}
 
 %if %{with snapshot}
-Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
-Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
+Source0:        %{vc_url}/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 %endif
 Source1:        https://github.com/vinniefalco/%{srcname1}/archive/%{commit1}/%{srcname1}-%{shortcommit1}.tar.gz
 Source2:        https://github.com/flyinghead/%{srcname2}/archive/%{commit2}/%{srcname2}-%{shortcommit2}.tar.gz
@@ -130,8 +137,11 @@ Source8:        https://github.com/zaphoyd/%{srcname8}/archive/%{commit8}/%{srcn
 Source9:        https://github.com/herumi/%{srcname9}/archive/%{commit9}/%{srcname9}-%{shortcommit9}.tar.gz
 %endif
 Source10:       https://github.com/OrangeFox86/%{srcname10}/archive/%{commit10}/%{srcname10}-%{shortcommit10}.tar.gz
-Source11:       https://github.com/flyinghead/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
+Source11:       %{vc_url}/%{srcname11}/archive/%{commit11}/%{srcname11}-%{shortcommit11}.tar.gz
 Source110:      https://github.com/Grumbel/%{srcname110}/archive/%{commit110}/%{srcname110}-%{shortcommit110}.tar.gz
+%if %{without asio}
+Source12:       %{vc_url}/%{srcname12}/archive/%{commit12}/%{srcname12}-%{shortcommit12}.tar.gz
+%endif
 
 Patch1:         0001-Use-system-libraries.patch
 Patch2:         0001-Use-system-SDL_GameControllerDB.patch
@@ -148,7 +158,9 @@ BuildRequires:  ImageMagick
 BuildRequires:  libappstream-glib
 BuildRequires:  ninja-build
 BuildRequires:  pkgconfig(alsa)
+%if %{with asio}
 BuildRequires:  pkgconfig(asio)
+%endif
 BuildRequires:  pkgconfig(freetype2)
 %if %{with xbyak}
 BuildRequires:  cmake(xbyak) >= 7
@@ -248,6 +260,10 @@ cp -p DreamPicoPort-API/LICENSE LICENSE.DreamPicoPort-API
 tar -xf %{S:11} -C tinygettext/ --strip-components 1
 tar -xf %{S:110} -C tinygettext/external/tinycmmc --strip-components 1
 cp -p tinygettext/LICENSE.md LICENSE.tinygettext.md
+%if %{without asio}
+tar -xf %{S:12} -C asio --strip-components 1
+cp -p asio/asio/LICENSE_1_0.txt LICENSE_1_0.asio.txt
+%endif
 
 cp -p breakpad/LICENSE LICENSE.breakpad
 cp -p nowide/LICENSE LICENSE.nowide

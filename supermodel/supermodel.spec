@@ -6,9 +6,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit d6dec3dcf0922459801907950d966e5767c674de
+%global commit 24d2ffcfc7f14229337f05f4920fe26b56633d9d
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260228
+%global date 20260726
 
 %global dist .%{date}git%{shortcommit}%{?dist}
 
@@ -18,7 +18,7 @@
 
 Name:           supermodel
 Version:        0.3~a
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A Sega Model 3 arcade emulator
 
 License:        GPL-3.0

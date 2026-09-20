@@ -1,4 +1,4 @@
-From 4e1a58181d3d1c26cb81efadbd5d8bb7f1e61e56 Mon Sep 17 00:00:00 2001
+From 450b6f055339c20b23111f78f563a8413953616e Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Tue, 20 Aug 2024 00:33:00 -0300
 Subject: [PATCH] Personal additions
@@ -16,8 +16,8 @@ Subject: [PATCH] Personal additions
  patches/SLUS-20782_8999FCF4.pnach |   7 ++
  patches/SLUS-21059_652050D2.pnach |  40 +++++-
  patches/SLUS-21216_CAB2086E.pnach |   7 ++
- patches/SLUS-21317_72CE7A78.pnach |   9 ++
- 13 files changed, 522 insertions(+), 17 deletions(-)
+ patches/SLUS-21317_72CE7A78.pnach |   8 ++
+ 13 files changed, 521 insertions(+), 17 deletions(-)
  create mode 100644 patches/SCUS-97436_646B2E29.pnach
  create mode 100644 patches/SLPS-25450_DB7FFC4B.pnach
  create mode 100644 patches/SLPS-25698_5192FAD0.pnach
@@ -25,7 +25,6 @@ Subject: [PATCH] Personal additions
  create mode 100644 patches/SLUS-20393_5A1410AB.pnach
  create mode 100644 patches/SLUS-20782_8999FCF4.pnach
  create mode 100644 patches/SLUS-21216_CAB2086E.pnach
- create mode 100644 patches/SLUS-21317_72CE7A78.pnach
 
 diff --git a/patches/SCUS-97436_32A1C752.pnach b/patches/SCUS-97436_32A1C752.pnach
 index 04f2659..193619c 100644
@@ -649,12 +648,13 @@ index 0000000..e9d8bc9
 +patch=1,EE,0012a118,word,3c013f40
 +patch=1,EE,0012a11c,word,34210000
 diff --git a/patches/SLUS-21317_72CE7A78.pnach b/patches/SLUS-21317_72CE7A78.pnach
-new file mode 100644
-index 0000000..e573932
---- /dev/null
+index 9fa082f..323a704 100644
+--- a/patches/SLUS-21317_72CE7A78.pnach
 +++ b/patches/SLUS-21317_72CE7A78.pnach
-@@ -0,0 +1,9 @@
-+gametitle=Street Fighter Alpha Anthology (SLUS-213.17)
+@@ -41,3 +41,11 @@ patch=1,EE,20149D2C,extended,2506FFFF // GS DISPLAY: restores original normal pa
+ patch=1,EE,20149E70,extended,240509FF // GS DISPLAY: restores original alternate DISPLAY path width value
+ patch=1,EE,20149F20,extended,240504FF // GS DISPLAY: restores original progressive/special DISPLAY width value
+ patch=1,EE,20149F30,extended,3C050080 // GS DISPLAY: restores original progressive/special fixed MAGH bits = 1 << 23 = 0x00800000
 +
 +[No-Interlacing]
 +description=Auto enable progressive mode
@@ -664,5 +664,5 @@ index 0000000..e573932
 +patch=0,EE,001489A4,extended,24060050
 +patch=0,EE,201492C4,extended,24040002
 -- 
-2.52.0
+2.55.0
 

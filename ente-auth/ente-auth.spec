@@ -9,7 +9,7 @@
 %global appname enteauth
 
 Name:           ente-auth
-Version:        4.4.17
+Version:        4.4.25
 Release:        1%{?dist}
 Summary:        2FA app with free end-to-end encrypted backup and sync
 
@@ -37,6 +37,7 @@ Requires:       hicolor-icon-theme
 %global __requires_exclude %__requires_exclude|^libflutter_local_authentication_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libflutter_secure_storage_linux_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libgtk_plugin\\.so.*$
+%global __requires_exclude %__requires_exclude|^liblocal_auth_linux_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libscreen_retriever_linux_plugin\\.so.*$
 %global __requires_exclude %__requires_exclude|^libsentry\\.so.*$
 %global __requires_exclude %__requires_exclude|^libsodium_libs_plugin\\.so.*$
@@ -136,6 +137,9 @@ done
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 4.4.25-1
+- 4.4.25
+
 * Tue Mar 17 2026 Phantom X <megaphantomx at hotmail dot com> - 4.4.17-1
 - 4.4.17
 

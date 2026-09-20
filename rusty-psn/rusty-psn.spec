@@ -9,11 +9,11 @@
 %endif
 
 %global vc_id   75efced31b2515285096b8d1c1a3f894
-%global vendor_hash 66d632e6828c68d7c7059f20d371b026
+%global vendor_hash 03b544eabe13d47ed9842a330a77ca46
 %global vendor_pkg %{name}-%{version}-vendor.tar.xz
 
 Name:           rusty-psn
-Version:        0.5.10
+Version:        0.6.0
 Release:        1%{?dist}
 Summary:        Simple tool to grab updates for PS3 games
 
@@ -154,8 +154,6 @@ Provides:       bundled(crate(dlib)) = 0.5.2
 Provides:       bundled(crate(document-features)) = 0.2.11
 Provides:       bundled(crate(downcast-rs)) = 1.2.1
 Provides:       bundled(crate(dpi)) = 0.1.2
-Provides:       bundled(crate(eframe)) = 0.32.1
-Provides:       bundled(crate(emath)) = 0.32.1
 Provides:       bundled(crate(endi)) = 1.1.0
 Provides:       bundled(crate(enumflags2)) = 0.7.12
 Provides:       bundled(crate(enumflags2_derive)) = 0.7.12
@@ -359,6 +357,7 @@ Provides:       bundled(crate(rustls-webpki)) = 0.103.4
 Provides:       bundled(crate(rustversion)) = 1.0.21
 Provides:       bundled(crate(ryu)) = 1.0.20
 Provides:       bundled(crate(same-file)) = 1.0.6
+Provides:       bundled(crate(sanitise-file-name)) = 1.0.0
 Provides:       bundled(crate(scoped-tls)) = 1.0.1
 Provides:       bundled(crate(scopeguard)) = 1.2.0
 Provides:       bundled(crate(sctk-adwaita)) = 0.10.1
@@ -559,6 +558,8 @@ Requires:       gnome-icon-theme
 %_vendor_provides
 Provides:       bundled(crate(calloop-wayland-source)) = 0.3.0
 Provides:       bundled(crate(ecolor)) = 0.32.1
+Provides:       bundled(crate(eframe)) = 0.32.1
+Provides:       bundled(crate(emath)) = 0.32.1
 Provides:       bundled(crate(egui)) = 0.32.1
 Provides:       bundled(crate(egui_glow)) = 0.32.1
 Provides:       bundled(crate(egui-notify)) = 0.20.0
@@ -676,6 +677,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.6.0-1
+- 0.6.0
+
 * Thu Dec 04 2025 Phantom X <megaphantomx at hotmail dot com> - 0.5.10-1
 - 0.5.10
 

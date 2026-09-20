@@ -124,7 +124,7 @@
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
 Version:        11.17
-Release:        100%{?dist}
+Release:        101%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -255,6 +255,10 @@ BuildRequires:  clang >= 5.0
 BuildRequires:  lld
 %else
 BuildRequires:  gcc
+%if (%{defined fedora} && 0%{?fedora} >= 45)
+# preloader fail to link with binutils 2.47
+BuildRequires:  (compat-binutils >= 2.46 with compat-binutils < 2.47)
+%endif
 %endif
 BuildRequires:  kernel-headers >= 6.14
 # mingw-binutils 2.35 or patched 2.34 is needed to prevent crashes
@@ -903,6 +907,8 @@ export X_CFLAGS+=" -Wno-error=implicit-function-declaration"
 
 export CFLAGS="%{build_cflags} ${X_CFLAGS}"
 
+export LD=ld.bfd246
+
 # Remove this flags by upstream recommendation (see configure.ac)
 export CFLAGS="`echo $CFLAGS | sed \
   -e 's/-Wp,-D_GLIBCXX_ASSERTIONS//' \
@@ -949,9 +955,18 @@ unset PKG_CONFIG_PATH
 export CROSSDEBUG=split
 %endif
 
+%if (%{defined fedora} && 0%{?fedora} >= 45)
+%ifnarch aarch64
+mkdir bin
+ln -s %{_bindir}/ld.bfd246 bin/ld
+ln -s %{_bindir}/ld.bfd246 bin/ld.bfd
+export PATH="$(pwd)/bin:$PATH"
+%endif
+%endif
+
 %configure \
  --sysconfdir=%{_sysconfdir}/wine \
- --x-includes=%{_includedir} --x-libraries=%{x_libdir} \
+ --x-includes=%{_includedir} --x-libraries=%{_x_libdir} \
  --with-dbus \
  --with-x \
 %ifarch x86_64 aarch64
@@ -970,6 +985,12 @@ export CROSSDEBUG=split
 %make_build TARGETFLAGS=""
 
 %install
+%if (%{defined fedora} && 0%{?fedora} >= 45)
+%ifnarch aarch64
+export PATH="$(pwd)/bin:$PATH"
+%endif
+%endif
+
 %make_install \
         LDCONFIG=/bin/true \
         UPDATE_DESKTOP_DATABASE=/bin/true
@@ -2470,6 +2491,9 @@ fi
 
 
 %changelog
+* Fri Sep 18 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.17-101
+- Link with compat-binutils 2.46 for Fedora 45
+
 * Sat Sep 05 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.17-100
 - 11.17
 

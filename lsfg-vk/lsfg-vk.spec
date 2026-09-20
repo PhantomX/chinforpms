@@ -12,7 +12,7 @@
 
 Name:           lsfg-vk
 Version:        2.0.0
-Release:        1
+Release:        1%{?dist}
 Summary:        Lossless Scaling Frame Generation on Linux via DXVK/Vulkan.
 
 License:        CC-BY-NC-ND-4.0

@@ -1,18 +1,19 @@
 # DO NOT DISTRIBUTE PACKAGED RPMS FROM THIS
 
-%global commit 9bcade977606d8ec6c31c183027ca5106074c30d
+%global commit 52ad6ae3c90496b88e6404637e85fa5682827313
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260225
+%global date 20260824
 %bcond snapshot 1
 
 %bcond faudio 0
+%bcond physfs 0
 %bcond tinyxml 1
 
 %global commit2 18964554bc769255401942e0e6dfd09f2fab2093
 %global shortcommit2 %(c=%{commit2}; echo ${c:0:7})
 %global srcname2 lodepng
 
-%global commit3 bfa7997c671957eb0a340ff1cf3c634e6269904a
+%global commit3 23d0b5696445d86262221519c3db3ae351376da0
 %global shortcommit3 %(c=%{commit3}; echo ${c:0:7})
 %global srcname3 physfs
 
@@ -24,7 +25,7 @@
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
 %global srcname6 c-hashmap
 
-%global commit5 25.05
+%global commit5 25.08
 %global srcname5 FAudio
 
 %global commit7 83f77108a2873600283f6da4b326a2dca7a3a7a6
@@ -38,11 +39,12 @@
 
 Name:           vvvvvv
 Version:        2.5
-Release:        0.7%{?dist}
+Release:        0.8%{?dist}
 Summary:        2D puzzle platform video game
 
 # 3rd-party modules licensing:
 # * S1 (lodepng) - Zlib -- static dependency;
+# * S3 (physfs) - Zlib -- static dependency, if with_physfs 0;
 # * S4 (tinyxml2) - zlib -- static dependency, if with_tinyxml 0;
 # * S5 (FAudio) - zlib -- static dependency, if with_faudio 0;
 # * S6 (c-hashmap) - BSD-3-Clause -- static dependency;
@@ -78,8 +80,12 @@ BuildRequires:  pkgconfig(FAudio)
 %else
 Provides:       bundled(FAudio) = %{commit5}
 %endif
-BuildRequires:  pkgconfig(sdl2)
+BuildRequires:  cmake(SDL3)
+%if %{with physfs}
 BuildRequires:  pkgconfig(physfs)
+%else
+Provides:       bundled(physfs) = 0~git%{shortcommit3}
+%endif
 %if %{with tinyxml}
 BuildRequires:  pkgconfig(tinyxml2) >= 8.0
 %else
@@ -92,7 +98,6 @@ Requires:       sdl_gamecontrollerdb
 
 Provides:       %{pkgname} = %{?epoch:%{epoch}:}%{version}-%{release}
 Provides:       bundled(lodepng) = 0~git%{shortcommit2}
-#Provides:       bundled(physfs) = 0~git%%{shortcommit3}
 Provides:       bundled(c-hashmap) = 0~git%{shortcommit6}
 Provides:       bundled(SheenBidi) = 0~git%{shortcommit7}
 
@@ -105,7 +110,13 @@ Provides:       bundled(SheenBidi) = 0~git%{shortcommit7}
 %autopatch -M 999 -p1
 
 tar -xf %{S:2} -C third_party/lodepng --strip-components 1
+%if %{with physfs}
 tar -xf %{S:3} -C third_party/physfs \*/extras --strip-components 1
+%else
+tar -xf %{S:3} -C third_party/physfs --strip-components 1
+sed -e 's|physfs_FOUND|physfs_DISABLED|g' -i desktop_version/CMakeLists.txt
+cp -p third_party/physfs/LICENSE.txt LICENSE.physfs
+%endif
 
 %if %{without tinyxml}
 tar -xf %{S:4} -C third_party/tinyxml2 --strip-components 1
@@ -220,6 +231,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{pkgname}.desktop
 
 
 %changelog
+* Sat Sep 19 2026 Phantom X <megaphantomx at hotmail dot com> - 2.5-0.8.20260824git52ad6ae
+- SDL3
+
 * Tue Apr 01 2025 - 2.5-0.3.20250218gitd419c6e
 - Update system libraries patch
 - Bundle FAudio
