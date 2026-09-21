@@ -77,7 +77,7 @@ BuildArch:      noarch
 
 Name:           wine-%{pkgname}
 Version:        3.1.1
-Release:        100%{?dist}
+Release:        101%{?dist}
 Epoch:          1
 Summary:        Vulkan-based D3D8, D3D9, D3D10 and D3D11 implementation for Linux / Wine
 
@@ -311,6 +311,9 @@ install -pm0755 wine%{pkgname}cfg %{buildroot}%{_bindir}/
 
 
 %changelog
+* Mon Sep 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.1-101
+- Update script
+
 * Fri Sep 18 2026 Phantom X <megaphantomx at hotmail dot com> - 1:3.1.1-100
 - 3.1.1
 

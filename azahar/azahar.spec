@@ -25,6 +25,7 @@
 %bcond cryptopp 1
 # Enable system dynarmic
 %bcond dynarmic 0
+%bcond ffmpeg 0
 # Enable system fmt
 %bcond fmt 1
 %bcond glslang 1
@@ -70,6 +71,10 @@
 %global commit4 123913715afeb8a437e6388b4473fcc4753e1c9a
 %global shortcommit4 %(c=%{commit4}; echo ${c:0:7})
 %global srcname4 fmt
+
+%global commit5 3b3e28dbe6d033395ce2967fa8030825e7b89de7
+%global shortcommit5 %(c=%{commit5}; echo ${c:0:7})
+%global srcname5 ext-library-headers
 
 %global commit6 f4d8659decbfe5d234f04134b5002b82dc515a44
 %global shortcommit6 %(c=%{commit6}; echo ${c:0:7})
@@ -154,7 +159,7 @@
 
 Name:           azahar
 Version:        2126.1.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 
 Summary:        A 3DS Emulator
 
@@ -164,6 +169,7 @@ License: %{shrink:
     BSD-3-Clause
     %{!?with_dynarmic: AND ( 0BSD AND MIT )}
     %{!?with_boost: AND BSL-1.0}
+    %{!?with_ffmpeg: AND GPL-3.0-or-later}
     %{!?with_glslang: AND Apache-2.0}
     %{!?with_soundtouch: AND LGPL-2.1}
 }
@@ -188,6 +194,9 @@ Source302:      https://github.com/zyantific/%{srcname302}/archive/%{commit302}/
 %endif
 %if %{without fmt}
 Source4:        https://github.com/fmtlib/%{srcname4}/archive/%{commit4}/%{srcname4}-%{shortcommit4}.tar.gz
+%endif
+%if %{without ffmpeg}
+Source5:        %{vc_url}/%{srcname5}/archive/%{commit5}/%{srcname5}-%{shortcommit5}.tar.gz
 %endif
 Source6:        https://github.com/neobrain/%{srcname6}/archive/%{commit6}/%{srcname6}-%{shortcommit6}.tar.gz
 %if %{without soundtouch}
@@ -262,12 +271,14 @@ BuildRequires:  cmake(mcl) >= 0.1.14
 %endif
 %endif
 BuildRequires:  pkgconfig(gamemode)
+%if %{with ffmpeg}
 BuildRequires:  pkgconfig(libavcodec)
 BuildRequires:  pkgconfig(libavfilter)
 BuildRequires:  pkgconfig(libavformat)
 BuildRequires:  pkgconfig(libavutil)
 BuildRequires:  pkgconfig(libswresample)
 BuildRequires:  ffmpeg-devel >= 4.2
+%endif
 %if %{with tests}
 BuildRequires:  pkgconfig(catch2) >= 3.3.2
 %endif
@@ -391,6 +402,10 @@ sed -e '/find_package/s|dynarmic|\0_DISABLED|g' -i externals/CMakeLists.txt
 tar -xf %{S:4} -C externals/fmt --strip-components 1
 sed -e '/find_package/s|fmt|\0_DISABLED|g' -i externals/CMakeLists.txt
 %endif
+%if %{without ffmpeg}
+tar -xf %{S:5} -C externals/library-headers --strip-components 1
+rm -rf externals/library-headers/fdk-aac
+%endif
 tar -xf %{S:6} -C externals/nihstro --strip-components 1
 %if %{without soundtouch}
 tar -xf %{S:7} -C externals/soundtouch --strip-components 1
@@ -457,6 +472,9 @@ cp -p dds-ktx/LICENSE LICENSE.dds-ktx
 cp -p dynarmic/LICENSE.txt LICENSE.dynarmic
 %endif
 cp -p faad2/faad2/COPYING COPYING.faad2
+%if %{without ffmpeg}
+cp -p library-headers/ffmpeg/COPYING.GPLv3 COPYING.ffmpeg
+%endif
 %if %{without fmt}
 cp -p fmt/LICENSE LICENSE.fmt
 %endif
@@ -572,8 +590,10 @@ export GITHUB_REPOSITORY="%{vc_url}/%{azahar}"
   %{?with_zstd:-DUSE_SYSTEM_ZSTD:BOOL=ON} \
   %{?with_boost:-DUSE_SYSTEM_BOOST:BOOL=ON} \
   %{?with_soundtouch:-DUSE_SYSTEM_SOUNDTOUCH:BOOL=ON} \
+%if %{with ffmpeg}
   -DUSE_SYSTEM_FFMPEG_HEADERS:BOOL=ON \
   -DSYSTEM_FFMPEG_INCLUDES:PATH=%{ffmpeg_includedir} \
+%endif
   -DCRYPTOPP_SOURCES:PATH=$(pwd)/externals/cryptopp \
 %if %{with tests}
   -DUSE_SYSTEM_CATCH2:BOOL=ON \

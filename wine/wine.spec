@@ -46,7 +46,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.3.0
-%global winevulkan 1.4.357
+%global winevulkan 1.4.362
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.17
+%global wine_stagingver 11.18
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -86,7 +86,7 @@
 %global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id af63244f1896472c20629c973b97c3d68dd29b4a
+%global tkg_id 69cfb8991ebf684e33c7512a6b82b7ea6d44f5bd
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -123,8 +123,8 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.17
-Release:        101%{?dist}
+Version:        11.18
+Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
 Epoch:          3
@@ -1447,7 +1447,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/connect.dll
 %{_libdir}/wine/%{winepedirs}/coremessaging.dll
 %{_libdir}/wine/%{winepedirs}/credui.dll
-%{_libdir}/wine/%{winepedirs}/crtdll.dll
+%{_libdir}/wine/%{winepedir_i386}/crtdll.dll
 %{_libdir}/wine/%{winesodir}/crypt32.so
 %{_libdir}/wine/%{winepedirs}/crypt32.dll
 %{_libdir}/wine/%{winepedirs}/cryptbase.dll
@@ -1497,24 +1497,24 @@ fi
 %{_libdir}/wine/%{winepedirs}/dinput8.dll
 %{_libdir}/wine/%{winepedirs}/directmanipulation.dll
 %{_libdir}/wine/%{winepedirs}/dispex.dll
-%{_libdir}/wine/%{winepedirs}/dmband.dll
-%{_libdir}/wine/%{winepedirs}/dmcompos.dll
-%{_libdir}/wine/%{winepedirs}/dmime.dll
+%{_libdir}/wine/%{winepedir_i386}/dmband.dll
+%{_libdir}/wine/%{winepedir_i386}/dmcompos.dll
+%{_libdir}/wine/%{winepedir_i386}/dmime.dll
 %{_libdir}/wine/%{winepedirs}/dmloader.dll
-%{_libdir}/wine/%{winepedirs}/dmscript.dll
-%{_libdir}/wine/%{winepedirs}/dmstyle.dll
+%{_libdir}/wine/%{winepedir_i386}/dmscript.dll
+%{_libdir}/wine/%{winepedir_i386}/dmstyle.dll
 %{_libdir}/wine/%{winepedirs}/dmsynth.dll
 %{_libdir}/wine/%{winepedirs}/dmusic.dll
 %{_libdir}/wine/%{winepedirs}/dmusic32.dll
-%{_libdir}/wine/%{winepedirs}/dplay.dll
-%{_libdir}/wine/%{winepedirs}/dplayx.dll
+%{_libdir}/wine/%{winepedir_i386}/dplay.dll
+%{_libdir}/wine/%{winepedir_i386}/dplayx.dll
 %{_libdir}/wine/%{winepedirs}/dpnaddr.dll
 %{_libdir}/wine/%{winepedirs}/dpnet.dll
 %{_libdir}/wine/%{winepedirs}/dpnhpast.dll
 %{_libdir}/wine/%{winepedirs}/dpnhupnp.dll
 %{_libdir}/wine/%{winepedirs}/dpnlobby.dll
 %{_libdir}/wine/%{winepedirs}/dpvoice.dll
-%{_libdir}/wine/%{winepedirs}/dpwsockx.dll
+%{_libdir}/wine/%{winepedir_i386}/dpwsockx.dll
 %{_libdir}/wine/%{winepedirs}/drmclien.dll
 %{_libdir}/wine/%{winepedirs}/dsdmo.dll
 %{_libdir}/wine/%{winepedirs}/dsrole.dll
@@ -1590,7 +1590,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/inkobj.dll
 %{_libdir}/wine/%{winepedirs}/inseng.dll
 %{_libdir}/wine/%{winepedirs}/iphlpapi.dll
-%{_libdir}/wine/%{winepedirs}/iprop.dll
+%{_libdir}/wine/%{winepedir_i386}/iprop.dll
 %{_libdir}/wine/%{winepedirs}/ir50_32.dll
 %{_libdir}/wine/%{winepedirs}/irprops.cpl
 %{_libdir}/wine/%{winepedirs}/itircl.dll
@@ -1692,8 +1692,8 @@ fi
 %{_libdir}/wine/%{winepedirs}/msvcm80.dll
 %{_libdir}/wine/%{winepedirs}/msvcm90.dll
 %{_libdir}/wine/%{winepedirs}/msvcp60.dll
-%{_libdir}/wine/%{winepedirs}/msvcp70.dll
-%{_libdir}/wine/%{winepedirs}/msvcp71.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcp70.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcp71.dll
 %{_libdir}/wine/%{winepedirs}/msvcp80.dll
 %{_libdir}/wine/%{winepedirs}/msvcp90.dll
 %{_libdir}/wine/%{winepedirs}/msvcp100.dll
@@ -1705,8 +1705,8 @@ fi
 %{_libdir}/wine/%{winepedirs}/msvcp140_2.dll
 %{_libdir}/wine/%{winepedirs}/msvcp140_atomic_wait.dll
 %{_libdir}/wine/%{winepedirs}/msvcp140_codecvt_ids.dll
-%{_libdir}/wine/%{winepedirs}/msvcr70.dll
-%{_libdir}/wine/%{winepedirs}/msvcr71.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcr70.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcr71.dll
 %{_libdir}/wine/%{winepedirs}/msvcr80.dll
 %{_libdir}/wine/%{winepedirs}/msvcr90.dll
 %{_libdir}/wine/%{winepedirs}/msvcr100.dll
@@ -1714,9 +1714,9 @@ fi
 %{_libdir}/wine/%{winepedirs}/msvcr120.dll
 %{_libdir}/wine/%{winepedirs}/msvcr120_app.dll
 %{_libdir}/wine/%{winepedirs}/msvcrt.dll
-%{_libdir}/wine/%{winepedirs}/msvcrt20.dll
-%{_libdir}/wine/%{winepedirs}/msvcrt40.dll
-%{_libdir}/wine/%{winepedirs}/msvcrtd.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcrt20.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcrt40.dll
+%{_libdir}/wine/%{winepedir_i386}/msvcrtd.dll
 %{_libdir}/wine/%{winepedirs}/msvdsp.dll
 %{_libdir}/wine/%{winepedirs}/msvfw32.dll
 %{_libdir}/wine/%{winepedirs}/msvidc32.dll
@@ -1759,12 +1759,12 @@ fi
 %{_libdir}/wine/%{winepedirs}/ole32.dll
 %{_libdir}/wine/%{winepedirs}/oleacc.dll
 %{_libdir}/wine/%{winepedirs}/oleaut32.dll
-%{_libdir}/wine/%{winepedirs}/olecli32.dll
+%{_libdir}/wine/%{winepedir_i386}/olecli32.dll
 %{_libdir}/wine/%{winepedirs}/oledb32.dll
 %{_libdir}/wine/%{winepedirs}/oledlg.dll
-%{_libdir}/wine/%{winepedirs}/olepro32.dll
+%{_libdir}/wine/%{winepedir_i386}/olepro32.dll
 %{_libdir}/wine/%{winepedirs}/olesvr32.dll
-%{_libdir}/wine/%{winepedirs}/olethk32.dll
+%{_libdir}/wine/%{winepedir_i386}/olethk32.dll
 %{_libdir}/wine/%{winepedirs}/opcservices.dll
 %{_libdir}/wine/%{winepedirs}/packager.dll
 %{_libdir}/wine/%{winepedirs}/pdh.dll
@@ -2008,7 +2008,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/sfc.dll
 %{_libdir}/wine/%{winesodir}/wineps.so
 %{_libdir}/wine/%{winepedirs}/wineps.drv
-%{_libdir}/wine/%{winepedirs}/d3d8.dll
+%{_libdir}/wine/%{winepedir_i386}/d3d8.dll
 %{_libdir}/wine/%{winepedirs}/d3d8thk.dll
 %{_libdir}/wine/%{winepedirs}/d3d9.dll
 %{_libdir}/wine/%{winesodir}/opengl32.so
@@ -2491,6 +2491,12 @@ fi
 
 
 %changelog
+* Mon Sep 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.18-100
+- 11.18
+
+* Sun Sep 20 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.17-102
+- ffmpeg rebuild
+
 * Fri Sep 18 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.17-101
 - Link with compat-binutils 2.46 for Fedora 45
 

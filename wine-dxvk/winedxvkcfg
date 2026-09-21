@@ -26,13 +26,14 @@
 
 set -e
 
-ver=20260107
+ver=20260920
 
 name="DXVK"
 pkgname="wine-dxvk"
 datadir="/usr/share/wine/dxvk"
 dllsuffix=""
-dlls="dxgi d3d8 d3d9 d3d11 d3d10core"
+dlls="dxgi d3d9 d3d11 d3d10core"
+dll32="d3d8"
 nodlls="d3d10 d3d10_1"
 
 unset winebits
@@ -88,14 +89,17 @@ checkcfg(){
       lib=64
       regkey="${overrideskey}"
       winesysdir="${sysdir}"
+      dll_32=""
     elif [ "${winebits}" == "32" ] ;then
       lib=32
       regkey="${overrideskeywow64}"
       winesysdir="${sysdirwow64}"
+      dll_32="${dll32}"
     else
       lib=32
       regkey="${overrideskey}"
       winesysdir="${sysdir}"
+      dll_32="${dll32}"
     fi
     native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
     if [ -z "${native_path}" ] ;then
@@ -103,7 +107,7 @@ checkcfg(){
       exit 5
     fi
     lib_path="${datadir}/${lib}"
-    for dll in ${dlls} ;do
+    for dll in ${dlls} ${dll_32} ;do
       if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -F "native" ;then
         enabled=1
       else
@@ -139,18 +143,21 @@ setcfg(){
       regkey="${overrideskey}"
       winearchdir="${archdir}"
       winesysdir="${sysdir}"
+      dll_32=""
     elif [ "${winebits}" == "32" ] ;then
       lib=32
       regkey="${overrideskeywow64}"
       winearchdir="${archdirwow64}"
       wine_path="${wine32_path}"
       winesysdir="${sysdirwow64}"
+      dll_32="${dll32}"
     else
       lib=32
       regkey="${overrideskey}"
       winearchdir="${archdirwow64}"
       wine_path="${wine32_path}"
       winesysdir="${sysdir}"
+      dll_32="${dll32}"
     fi
     native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
     if [ -z "${native_path}" ] ;then
@@ -159,7 +166,7 @@ setcfg(){
     fi
     lib_path="${datadir}/${lib}"
     arch_path="${wine_path}/${winearchdir}"
-    for dll in ${dlls} ;do
+    for dll in ${dlls} ${dll_32} ;do
       if ! [ -f "${lib_path}/${dll}${dllsuffix}.dll" ];then
         echo "Missing ${dll}${dllsuffix}.dll in ${datadir}/${lib}/."
         dllmissing=1
@@ -180,7 +187,7 @@ setcfg(){
         fi
       done
     fi
-    for dll in ${dlls} ;do
+    for dll in ${dlls} ${dll_32} ;do
       if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -v -F "native" &>/dev/null ;then
         wine reg add "${regkey}" /v "${dll}" -t REG_SZ /d native /f &>/dev/null
         retval=$?
@@ -231,18 +238,21 @@ unsetcfg(){
       regkey="${overrideskey}"
       winearchdir="${archdir}"
       winesysdir="${sysdir}"
+      dll_32=""
     elif [ "${winebits}" == "32" ] ;then
       lib=32
       regkey="${overrideskeywow64}"
       winearchdir="${archdirwow64}"
       wine_path="${wine32_path}"
       winesysdir="${sysdirwow64}"
+      dll_32="${dll32}"
     else
       lib=32
       regkey="${overrideskey}"
       winearchdir="${archdirwow64}"
       wine_path="${wine32_path}"
       winesysdir="${sysdir}"
+      dll_32="${dll32}"
     fi
     native_path="$(wine winepath -u "C:\windows\\${winesysdir}" 2>/dev/null)"
     if [ -z "${native_path}" ] ;then
@@ -251,7 +261,7 @@ unsetcfg(){
     fi
     lib_path="${datadir}/${lib}"
     arch_path="${wine_path}/${winearchdir}"
-    for dll in ${dlls} ;do
+    for dll in ${dlls} ${dll_32} ;do
       if wine reg query "${regkey}" /v "${dll}" 2>/dev/null | grep -q -F "native" &>/dev/null ;then
         wine reg delete "${regkey}" /v "${dll}" /f &>/dev/null
         retval=$?

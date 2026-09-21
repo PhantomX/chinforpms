@@ -2,7 +2,7 @@
 
 Name:           gpu-screen-recorder
 Version:        6.1.2
-Release:        1%{dist}
+Release:        2%{dist}
 Summary:        A shadowplay-like screen recorder
 
 License:        GPL-3.0-or-later
@@ -89,6 +89,9 @@ Development files for %{name} plugins.
 
 
 %changelog
+* Sun Sep 20 2026 Phantom X <megaphantomx at hotmail dot com> - 6.1.2-2
+- ffmpeg rebuild
+
 * Tue Sep 15 2026 Phantom X <megaphantomx at hotmail dot com> - 6.1.2-1
 - 6.1.2
 

@@ -24,7 +24,7 @@
 
 Name:           punes
 Version:        0.111
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        NES emulator
 
 License:        GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause AND MIT
@@ -168,6 +168,9 @@ appstream-util validate-relax --nonet \
 
 
 %changelog
+* Sun Sep 20 2026 Phantom X <megaphantomx at hotmail dot com> - 0.111-9.20260901gitb1758ec
+- ffmpeg rebuild
+
 * Wed Sep 16 2026 Phantom X <megaphantomx at hotmail dot com> - 0.111-8.20260901gitb1758ec
 - Use system 7zip
 
