@@ -14,7 +14,7 @@
 %endif
 
 Name:           visual-studio-code
-Version:        1.133.0
+Version:        1.138.0
 Release:        1%{?dist}
 Summary:        Code editing. Redefined.
 
@@ -175,6 +175,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{pkgname}.app
 %{zsh_completions_dir}/_%{pkgname}
 
 %changelog
+* Mon Sep 21 2026 - 1.138.0-1
+- 1.138.0
+
 * Wed Aug 12 2026 - 1.133.0-1
 - 1.133.0
 
