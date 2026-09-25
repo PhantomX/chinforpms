@@ -13,9 +13,9 @@
 %{?with_extra_flags:%global _pkg_extra_cxxflags %{?with_extra_flags}}
 %{!?_hardened_build:%global _pkg_extra_ldflags -Wl,-z,now}
 
-%global commit a277b62fe4328dddaced9a97d324c6e5478d16a0
+%global commit cb73a4dcc7710a7fea1643797b17e39858f4ae6a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260919
+%global date 20260923
 %bcond snapshot 1
 
 # Enable system ffmpeg
@@ -96,7 +96,7 @@
 %global ver     %%{lua:ver = string.gsub(rpm.expand("%{version}"), "~", "-"); print(ver)}
 
 Name:           eden
-Version:        0.2.0.346
+Version:        0.2.0.354
 Epoch:          1
 Release:        1%{?dist}
 Summary:        A NX Emulator
@@ -149,12 +149,6 @@ Source23:       https://github.com/boostorg/headers/archive/%{commit23}.tar.gz#/
 Patch10:        0001-Use-system-libraries.patch
 Patch11:        0001-Add-smaller-game-icon-sizes.patch
 Patch500:       0001-cpp-httplib-add-new-Fedora-certificate-path.patch
-Patch501:       %{vc_url}/eden/commit/106a61c9434b8d61ab8cde0170f6fcac403b28f1.patch#/%{name}-git-106a61c.patch
-Patch502:       %{vc_url}/eden/commit/672bcbae012164ec59ef26ff79995c4585bd0e97.patch#/%{name}-git-672bcba.patch
-Patch503:       %{vc_url}/eden/commit/14235dc0d0543c7397dd19eb1a677e76114c08f3.patch#/%{name}-git-14235dc.patch
-Patch504:       %{vc_url}/eden/commit/ed57836903804f05a0b2c9e84f1eaabb59503bed.patch#/%{name}-git-ed57836.patch
-Patch505:       0001-Revert-672bcba-fixup-1.patch
-Patch506:       0001-Revert-672bcba-fixup-2.patch
 
 ExclusiveArch:  x86_64
 
@@ -288,17 +282,6 @@ This is the Qt frontend.
 echo %{sver}
 %autosetup -n %{name} -N -p1
 %autopatch -M 499 -p1
-
-%patch -P 503 -p1 -R
-%patch -P 504 -p1 -R
-sed \
-  -e 's|"common/container/unordered_map.h"|<ankerl/unordered_dense.h>|' \
-  -e 's|::Common::unordered_map|ankerl::unordered_dense::map|' \
-  -i src/core/file_sys/ips_layer.cpp
-%patch -P 501 -p1 -R
-%patch -P 505 -p1
-%patch -P 502 -p1 -R
-%patch -P 506 -p1
 
 sed \
   -e '/-pedantic-errors/d' \

@@ -4,7 +4,6 @@
 %bcond snapshot 0
 
 %bcond check 0
-%bcond yubikey 0
 
 %if %{with snapshot}
 %global dist .%{date}git%{shortcommit}%{?dist}
@@ -15,7 +14,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.7.12
+Version:        2.8.0~beta1
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -58,22 +57,23 @@ BuildRequires:  pkgconfig(botan-2) >= 2.11.0
 %endif
 BuildRequires:  pkgconfig(libargon2)
 BuildRequires:  pkgconfig(libcurl)
+BuildRequires:  pkgconfig(libpcsclite)
 BuildRequires:  pkgconfig(libqrencode)
-BuildRequires:  pkgconfig(Qt5)
-BuildRequires:  pkgconfig(Qt5Core) >= 5.2
-BuildRequires:  pkgconfig(Qt5Concurrent) >= 5.2
-BuildRequires:  pkgconfig(Qt5Gui) >= 5.2
-BuildRequires:  pkgconfig(Qt5Network) >= 5.2
-BuildRequires:  pkgconfig(Qt5Svg) >= 5.2
-BuildRequires:  pkgconfig(Qt5Test) >= 5.2
-BuildRequires:  pkgconfig(Qt5Widgets) >= 5.2
-BuildRequires:  pkgconfig(Qt5X11Extras) >= 5.2
+BuildRequires:  pkgconfig(libusb-1.0)
+BuildRequires:  cmake(Qt6)
+BuildRequires:  cmake(Qt6Core) >= 6.2.4
+BuildRequires:  cmake(Qt6Concurrent)
+BuildRequires:  cmake(Qt6DBus)
+BuildRequires:  cmake(Qt6Gui)
+BuildRequires:  cmake(Qt6LinguistTools)
+BuildRequires:  cmake(Qt6Network)
+BuildRequires:  cmake(Qt6SvgWidgets)
+BuildRequires:  cmake(Qt6Test)
+BuildRequires:  cmake(Qt6Widgets)
 BuildRequires:  pkgconfig(x11)
 BuildRequires:  pkgconfig(xi)
 BuildRequires:  pkgconfig(xtst)
 BuildRequires:  pkgconfig(zlib) >= 1.2.0
-BuildRequires:  qt5-linguist
-BuildRequires:  qt5-qtbase-private-devel
 BuildRequires:  readline-devel
 %if %{defined fedora} && 0%{?fedora} >= 38 && 0%{?fedora} < 40
 BuildRequires:  minizip-compat-devel
@@ -81,11 +81,9 @@ BuildRequires:  minizip-compat-devel
 %if %{defined fedora} && 0%{?fedora} >= 40
 BuildRequires:  minizip-ng-compat-devel
 %endif
-%if %{with yubikey}
 BuildRequires:  libyubikey-devel
 BuildRequires:  ykpers-devel
 Provides:       bundled(ykcore)
-%endif
 Requires:       hicolor-icon-theme
 
 %description
@@ -95,7 +93,7 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:v%{ver}} -p1
 
 %if %{with snapshot}
 if [ ! -e .gitrev ] ;then
@@ -113,16 +111,11 @@ fi
   -DCMAKE_BUILD_TYPE=release \
   -DKEEPASSXC_BUILD_TYPE:STRING=Release \
   %{!?with_check:-DWITH_TESTS:BOOL=OFF} \
-  -DWITH_XC_NETWORKING:BOOL=ON \
-  -DWITH_XC_AUTOTYPE:BOOL=ON \
-  -DWITH_XC_BROWSER:BOOL=ON \
-  -DWITH_XC_BROWSER_PASSKEYS:BOOL=ON \
-  -DWITH_XC_FDOSECRETS:BOOL=ON \
-  -DWITH_XC_SSHAGENT:BOOL=ON \
-  -DWITH_XC_KEESHARE:BOOL=ON \
-  -DWITH_XC_KEESHARE_SECURE:BOOL=ON \
-  %{?with_yubikey:-DWITH_XC_YUBIKEY:BOOL=ON} \
-  -DWITH_XC_UPDATECHECK:BOOL=OFF \
+  -DKPXC_FEATURE_NETWORK:BOOL=ON \
+  -DKPXC_FEATURE_BROWSER:BOOL=ON \
+  -DKPXC_FEATURE_FDOSECRETS:BOOL=ON \
+  -DKPXC_FEATURE_SSHAGENT:BOOL=ON \
+  -DKPXC_FEATURE_UPDATES:BOOL=OFF \
 %{nil}
 
 %cmake_build
@@ -155,20 +148,22 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 %{_bindir}/%{name}
 %{_bindir}/%{name}-cli
 %{_bindir}/%{name}-proxy
-%dir %{_libdir}/%{name}
-%{_libdir}/%{name}/*.so
 %dir %{_datadir}/%{name}
 %{_datadir}/%{name}/docs
 %{_datadir}/%{name}/icons
 %{_datadir}/%{name}/wordlists
-%{_datadir}/applications/*.desktop
+%{_datadir}/applications/%{appname}.desktop
 %{_datadir}/man/man1/*.1*
-%{_datadir}/mime/packages/*.xml
+%{_datadir}/mime/packages/%{name}.xml
+%{_datadir}/polkit-1/actions/%{appname}.policy
 %{_datadir}/icons/hicolor/*/*/*%{name}*
-%{_metainfodir}/*.appdata.xml
+%{_metainfodir}/%{appname}.appdata.xml
 
 
 %changelog
+* Fri Sep 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.0~beta1-100
+- 2.8.0-beta1
+
 * Tue Mar 10 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.7.12-100
 - 2.7.12
 

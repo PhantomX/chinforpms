@@ -13,7 +13,7 @@ BuildArch:      noarch
 
 Name:           deluge
 Version:        2.2.0
-Release:        101%{?dist}
+Release:        102%{?dist}
 Summary:        A GTK+ BitTorrent client with support for DHT, UPnP, and PEX
 
 Epoch:          1
@@ -64,8 +64,11 @@ License:        LicenseRef-Callaway-GPLv3-with-exceptions
 Requires:       %{py3_dist pyopenssl}
 Requires:       %{py3_dist chardet}
 Requires:       %{py3_dist dbus-python}
+Requires:       %{py3_dist geoip}
 Requires:       %{py3_dist pillow}
+%if 0%{?fedora} >= 45
 Requires:       python3-pkg-resources
+%endif
 Requires:       %{py3_dist pygame}
 Requires:       %{py3_dist pyxdg}
 Requires:       %{py3_dist service-identity}
@@ -289,6 +292,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Tue Sep 22 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-102
+- Add missing GeoIP dependency
+
 * Sat Sep 19 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.2.0-101
 - Fedora sync
 
