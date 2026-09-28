@@ -10,15 +10,15 @@
 %ifarch aarch64
 %bcond snap 0
 %global parch arm64
-%global snaprev 116
-%global snap_ffmpeg_hash 2f556890447b128eecb308159a30457ef675f564fad7ddec819a001fd3677c3a
+%global snaprev 121
+%global snap_ffmpeg_hash 0ff0af381a9e0b028d8c6947dbc4e3be773bb7b157281604c698c56304dc862c
 %else
 %global parch amd64
 %global zipver 0.112.0
-%global snaprev 117
-%global snap_ffmpeg_hash b2318b0b534714bfae044bcd96dc771a19134e57a94f2d43f2a4adefab7db398
-%global snap_ffmpeg_ver git-2026-05-18
-%global zip_ffmpeg_hash 6bf4bb714aea8324ca81aa662f41df0dfd11494b138a884a4d6d119f72f76111
+%global snaprev 120
+%global snap_ffmpeg_hash c3c6c6eef2e4633584bbf8acc75292fe7bf88291dd56f8cf1bc206e534a2d333
+%global snap_ffmpeg_ver 127365
+%global zip_ffmpeg_hash 39f63af3ef6f8db9eea20803c6f6dff8b2d5ad596d506ea1effb3f856715ac1c
 %global zip_ffmpeg_ver %%(echo %{version} | cut -d. -f3)
 %endif
 %if %{with snap}
@@ -33,9 +33,9 @@
 %global pkgdistro 0ubuntu0.18.04.1
 
 Name:           vivaldi-ffmpeg-codecs
-Version:        8.1
+Version:        8.3
 Epoch:          1
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Additional support for proprietary codecs for Vivaldi
 
 License:        LGPL-2.1-only
@@ -107,6 +107,9 @@ install -pm0755 libffmpeg.so %{buildroot}%{_libdir}/%{name}/libffmpeg.so
 
 
 %changelog
+* Sun Sep 27 2026 - 1:8.3-1
+- 8.3
+
 * Thu Jul 09 2026 - 1:8.1-1
 - 8.1, bump Epoch
 

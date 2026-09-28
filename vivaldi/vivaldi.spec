@@ -13,8 +13,8 @@
 
 %global pkgrel 1
 
-%global ffmpegcodec_aarch64 8.1-150-S-20260618
-%global ffmpegcodec_x86_64 8.1-150-S-20260618
+%global ffmpegcodec_aarch64 8.3-153-S-20260918
+%global ffmpegcodec_x86_64 8.3-153-S-20260918
 %ifarch aarch64
 %global ffmpegcodec %{ffmpegcodec_aarch64}
 %else
@@ -23,7 +23,7 @@
 %global vivaldi_ver %%(echo %{version} | cut -d. -f-2)
 
 Name:           vivaldi
-Version:        8.2.4133.52
+Version:        8.2.4133.76
 Release:        1%{?dist}
 Summary:        Web browser
 
@@ -214,6 +214,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.appdat
 
 
 %changelog
+* Sun Sep 27 2026 - 8.2.4133.76-1
+- 8.2.4133.76
+
 * Sat Sep 12 2026 - 8.2.4133.52-1
 - 8.2.4133.52
 

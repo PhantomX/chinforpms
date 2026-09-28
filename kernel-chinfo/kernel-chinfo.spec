@@ -210,7 +210,7 @@ Summary: The Linux kernel
 #  the --with-release option overrides this setting.)
 %define debugbuildsenabled 1
 # define buildid .local
-%define specrpmversion 7.2.7
+%define specrpmversion 7.2.8
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -1329,9 +1329,11 @@ Patch2035: %{zen_url}/commit/8e38c42cb3149fb4f6c040208efdd9d578f3df23.patch#/zen
 Patch2036: %{zen_url}/commit/0f297bfeedae01c8a0d95ee89de766ad875c3920.patch#/zen-v%{patchversion}-vramstuff-0f297bf.patch
 Patch2037: %{zen_url}/commit/da1cf9de1bba45648450c64323fca70bcf2a65ae.patch#/zen-v%{patchversion}-vramstuff-da1cf9d.patch
 Patch2038: %{zen_url}/commit/13a8e2000329a36f994acf2fd31d307d27fa9189.patch#/zen-v%{patchversion}-vramstuff-13a8e20.patch
+Patch2039: %{kernel_url}/?id=1169fe8c11ca45e3f91d59a73eb271d0ca8a7fb0#/kernel-stable-revert-1169fe8.patch
+Patch2040: kernel-commit-1169fe8.patch
 
 # Add native cpu gcc optimization support
-Patch6000: %{pf_url}/73123310bf572d9fb815c992e30225239bee0e5d.patch%{pf_antibot}#/pf-cb-7312331.patch
+Patch6000: 0001-kbuild-support-x86_64-ISA-levels.patch
 Patch6001: 0001-kbuild-support-native-optimization.patch
 
 Patch6010: 0001-block-elevator-default-blk-mq-to-bfq.patch
@@ -2380,7 +2382,9 @@ ApplyPatch %{PATCH2017}
 ApplyPatch %{PATCH2018}
 ApplyPatch %{PATCH2019}
 ApplyPatch %{PATCH2020}
+ApplyPatch %{PATCH2039} -R
 ApplyPatch %{PATCH2021}
+ApplyPatch %{PATCH2040}
 ApplyPatch %{PATCH2022}
 ApplyPatch %{PATCH2023}
 ApplyPatch %{PATCH2024}
@@ -5199,6 +5203,9 @@ fi\
 #
 #
 %changelog
+* Mon Sep 21 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.8-500.chinfo
+- 7.2.8
+
 * Mon Sep 21 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.7-500.chinfo
 - 7.2.7
 

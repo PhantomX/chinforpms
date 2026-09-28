@@ -1,19 +1,19 @@
-From 404fc0b91014fa9c995d22aaa360da955169730f Mon Sep 17 00:00:00 2001
+From 58b0cc3937f89ae1584937a9f70642f9d4dbfb89 Mon Sep 17 00:00:00 2001
 From: Phantom X <PhantomX@users.noreply.github.com>
 Date: Mon, 26 May 2025 09:28:09 -0300
 Subject: [PATCH] kbuild: support native optimization
 
 ---
  arch/x86/Kconfig.cpu            | 30 +++++++++++++++++++++++++-----
- arch/x86/Makefile               |  8 ++++++++
+ arch/x86/Makefile               | 16 ++++++++++++----
  arch/x86/include/asm/vermagic.h |  4 ++++
- 3 files changed, 37 insertions(+), 5 deletions(-)
+ 3 files changed, 41 insertions(+), 9 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 96776ab..3aa0efa 100644
+index 60edd41..d9436a4 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
-@@ -239,6 +239,26 @@ config X86_64_ISA_LEVEL
+@@ -250,6 +250,26 @@ config X86_64_ISA_LEVEL
  	help
  	  Specify an x86_64 ISA level.
  
@@ -40,7 +40,7 @@ index 96776ab..3aa0efa 100644
  #
  # Define implied options from the CPU selection here
  config X86_INTERNODE_CACHE_SHIFT
-@@ -249,7 +269,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -260,7 +280,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4
@@ -49,7 +49,7 @@ index 96776ab..3aa0efa 100644
  	default "4" if MGEODEGX1
  	default "5" if MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MVIAC3_2 || MGEODE_LX
  
-@@ -263,18 +283,18 @@ config X86_ALIGNMENT_16
+@@ -274,18 +294,18 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -71,7 +71,7 @@ index 96776ab..3aa0efa 100644
  
  config X86_CX8
  	def_bool y
-@@ -283,7 +303,7 @@ config X86_CX8
+@@ -294,7 +314,7 @@ config X86_CX8
  # generates cmov.
  config X86_CMOV
  	def_bool y
@@ -81,13 +81,14 @@ index 96776ab..3aa0efa 100644
  config X86_MINIMUM_CPU_FAMILY
  	int
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index f6d4dc1..70fbca9 100644
+index fcd8b05..1bfdd46 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -160,8 +160,16 @@ else
+@@ -160,13 +160,21 @@ else
  	KBUILD_CFLAGS += -mskip-rax-setup
  
  ifdef CONFIG_X86_NATIVE_CPU
+-        KBUILD_CFLAGS += -march=native
 +    ifdef CONFIG_MNATIVE_INTEL
 +        KBUILD_CFLAGS += -march=native -mtune=native
 +        KBUILD_RUSTFLAGS += -Ctarget-cpu=native -Ztune-cpu=native
@@ -95,9 +96,17 @@ index f6d4dc1..70fbca9 100644
 +        KBUILD_CFLAGS += -march=native -mtune=native
 +        KBUILD_RUSTFLAGS += -Ctarget-cpu=native -Ztune-cpu=native
 +    else
-         KBUILD_CFLAGS += -march=native
-         KBUILD_RUSTFLAGS += -Ctarget-cpu=native
++        KBUILD_CFLAGS += -march=native -Ztune-cpu=native
++
++        # generate_rust_target.rs handles Rust APX gating.
++        KBUILD_RUSTFLAGS += -Ctarget-cpu=native -Ztune-cpu=native
 +    endif
+         # Prevent the compiler from generating EGPR use. The kernel is
+         # not yet prepared for general in-kernel use.
+         KBUILD_CFLAGS += $(call cc-option,-mno-apx-features=egpr)
+-
+-        # generate_rust_target.rs handles Rust APX gating.
+-        KBUILD_RUSTFLAGS += -Ctarget-cpu=native
  else
      ifeq ($(CONFIG_X86_64_ISA_LEVEL),1)
          KBUILD_CFLAGS += -march=x86-64 -mtune=generic

@@ -1,3 +1,5 @@
+ Documentation/admin-guide/sysctl/crypto.rst        |  36 +
+ Documentation/crypto/userspace-if.rst              |  13 +-
  MAINTAINERS                                        |   6 +
  Makefile                                           |  30 +
  arch/arm/Kconfig                                   |   4 +-
@@ -7,7 +9,12 @@
  arch/s390/kernel/ipl.c                             |   5 +
  arch/s390/kernel/setup.c                           |   4 +
  arch/x86/kernel/setup.c                            |  22 +-
+ crypto/af_alg.c                                    |  76 +-
  crypto/akcipher.c                                  |   3 +-
+ crypto/algif_aead.c                                |  11 +
+ crypto/algif_hash.c                                |  24 +
+ crypto/algif_rng.c                                 |   9 +
+ crypto/algif_skcipher.c                            |  27 +-
  crypto/dh.c                                        |  25 +
  crypto/seqiv.c                                     |  15 +-
  crypto/sig.c                                       |   3 +-
@@ -25,17 +32,19 @@
  drivers/firmware/efi/libstub/secureboot.c          |  14 +-
  drivers/firmware/efi/secureboot.c                  |  38 +
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
- drivers/input/misc/soc_button_array.c              |  16 +-
  drivers/iommu/iommu.c                              |  22 +
  drivers/media/i2c/Kconfig                          |  10 +
  drivers/media/i2c/Makefile                         |   1 +
- drivers/media/i2c/cvs/core.c                       |   3 +
+ drivers/media/i2c/cvs/core.c                       |  26 +-
  drivers/media/i2c/cvs/icvs.h                       |   2 -
  drivers/media/i2c/cvs/v4l2.c                       |  17 +-
  drivers/media/i2c/imx471.c                         | 957 +++++++++++++++++++++
- drivers/media/pci/intel/ipu-bridge.c               |  41 +
+ drivers/media/pci/intel/ipu-bridge.c               |  48 ++
  drivers/pci/quirks.c                               |  24 +
+ drivers/platform/x86/intel/int3472/discrete.c      | 110 ++-
+ drivers/soundwire/dmi-quirks.c                     |   7 +
  drivers/usb/core/hub.c                             |   7 +
+ include/crypto/if_alg.h                            |  42 +-
  include/linux/crypto.h                             |   2 +
  include/linux/efi.h                                |  22 +-
  include/linux/random.h                             |  10 +
@@ -50,10 +59,85 @@
  tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++
  tools/testing/selftests/bpf/Makefile               |   2 +-
  tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -
- 53 files changed, 1743 insertions(+), 122 deletions(-)
+ 62 files changed, 2040 insertions(+), 194 deletions(-)
 
+diff --git a/Documentation/admin-guide/sysctl/crypto.rst b/Documentation/admin-guide/sysctl/crypto.rst
+index b707bd314a64..9a1bd53287f4 100644
+--- a/Documentation/admin-guide/sysctl/crypto.rst
++++ b/Documentation/admin-guide/sysctl/crypto.rst
+@@ -7,6 +7,42 @@ kernel configuration:
+ 
+ .. contents:: :local:
+ 
++.. _af_alg_restrict:
++
++af_alg_restrict
++===============
++
++Controls the level of restriction of AF_ALG.
++
++AF_ALG is a deprecated and rarely-used userspace interface that is a
++frequent source of vulnerabilities. It also unnecessarily exposes a
++large number of kernel implementation details. For more information
++about AF_ALG, see :ref:`Documentation/crypto/userspace-if.rst
++<crypto_userspace_interface>`.
++
++Starting in Linux v7.3, AF_ALG supports only a limited set of
++algorithms by default. This sysctl allows the system administrator to
++remove this restriction when needed for compatibility reasons, or to
++go further and disable AF_ALG entirely. The default value is 1.
++
++===  ==================================================================
++0    AF_ALG is unrestricted.
++
++1    AF_ALG is supported with a limited list of algorithms. The list
++     is designed for compatibility with known users such as iwd and
++     bluez that haven't yet been fixed to use userspace crypto code.
++
++     Specifically, there is an allowlist for unprivileged processes
++     and a somewhat longer allowlist for processes that hold
++     CAP_SYS_ADMIN or CAP_NET_ADMIN in the initial user namespace.
++
++     Attempts to bind() an AF_ALG socket with a disallowed algorithm
++     fail with ENOENT.
++
++2    AF_ALG is completely disabled. Attempts to create an AF_ALG
++     socket fail with EAFNOSUPPORT.
++===  ==================================================================
++
+ fips_enabled
+ ============
+ 
+diff --git a/Documentation/crypto/userspace-if.rst b/Documentation/crypto/userspace-if.rst
+index ab93300c8e04..d6194346e366 100644
+--- a/Documentation/crypto/userspace-if.rst
++++ b/Documentation/crypto/userspace-if.rst
+@@ -1,3 +1,5 @@
++.. _crypto_userspace_interface:
++
+ User Space Interface
+ ====================
+ 
+@@ -12,9 +14,14 @@ AF_ALG is insecure and is deprecated. Originally added to the kernel in 2010,
+ most kernel developers now consider it to be a mistake. Support for hardware
+ accelerators, which was the original purpose of AF_ALG, has been removed.
+ 
+-AF_ALG continues to be supported only for backwards compatibility. On systems
+-where no programs using AF_ALG remain, the support for it should be disabled by
+-disabling ``CONFIG_CRYPTO_USER_API_*``.
++AF_ALG continues to be supported only for backwards compatibility.
++
++Starting in Linux v7.3, the set of algorithms supported by AF_ALG is limited by
++default. See :ref:`/proc/sys/crypto/af_alg_restrict <af_alg_restrict>`.
++
++On systems where no programs using AF_ALG remain, the support for it should be
++disabled entirely by setting ``/proc/sys/crypto/af_alg_restrict`` to 2 or by
++disabling ``CONFIG_CRYPTO_USER_API_*`` in the kernel configuration.
+ 
+ Deprecation
+ -----------
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 8014b9f8253e..62e6c97ee9b2 100644
+index 95cd976a068c..9717876c5e96 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
 @@ -25262,6 +25262,12 @@ T:	git git://linuxtv.org/media.git
@@ -70,7 +154,7 @@ index 8014b9f8253e..62e6c97ee9b2 100644
  M:	Maxim Levitsky <maximlevitsky@gmail.com>
  M:	Alex Dubov <oakad@yahoo.com>
 diff --git a/Makefile b/Makefile
-index 408e8512b713..f1bdadfd7229 100644
+index ad1a1ffe789e..7b014908dafd 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -125,10 +209,10 @@ index 408e8512b713..f1bdadfd7229 100644
  	@:
  
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index b8aa3fcce107..27f335712a67 100644
+index bcb53bc9b931..3eecab4784e9 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -1216,9 +1216,9 @@ config HIGHMEM
+@@ -1217,9 +1217,9 @@ config HIGHMEM
  	  If unsure, say n.
  
  config HIGHPTE
@@ -141,7 +225,7 @@ index b8aa3fcce107..27f335712a67 100644
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index b3afe0688919..d23a728aac03 100644
+index fc57d90d92c1..9e96c3e403e8 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
 @@ -1489,7 +1489,7 @@ endchoice
@@ -218,10 +302,10 @@ index b0d00032479d..afb9544fb007 100644
  /*
   * DIAG 308 support
 diff --git a/arch/s390/kernel/ipl.c b/arch/s390/kernel/ipl.c
-index 3c346b02ceb9..30e16a0d4490 100644
+index 68fdd5616dfe..c03ebc73a985 100644
 --- a/arch/s390/kernel/ipl.c
 +++ b/arch/s390/kernel/ipl.c
-@@ -2527,3 +2527,8 @@ int ipl_report_free(struct ipl_report *report)
+@@ -2533,3 +2533,8 @@ int ipl_report_free(struct ipl_report *report)
  }
  
  #endif
@@ -299,6 +383,140 @@ index 46882ce79c3a..9c73814c31e0 100644
  
  	reserve_initrd();
  
+diff --git a/crypto/af_alg.c b/crypto/af_alg.c
+index cce000e8590e..ab84c4488a15 100644
+--- a/crypto/af_alg.c
++++ b/crypto/af_alg.c
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/atomic.h>
++#include <linux/capability.h>
+ #include <crypto/if_alg.h>
+ #include <linux/crypto.h>
+ #include <linux/init.h>
+@@ -22,10 +23,28 @@
+ #include <linux/sched/signal.h>
+ #include <linux/security.h>
+ #include <linux/string.h>
++#include <linux/sysctl.h>
++#include <linux/user_namespace.h>
+ #include <keys/user-type.h>
+ #include <keys/trusted-type.h>
+ #include <keys/encrypted-type.h>
+ 
++static int af_alg_restrict = 1;
++
++static const struct ctl_table af_alg_table[] = {
++	{
++		.procname       = "af_alg_restrict",
++		.data           = &af_alg_restrict,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec_minmax,
++		.extra1		= SYSCTL_ZERO,
++		.extra2		= SYSCTL_TWO,
++	},
++};
++
++static struct ctl_table_header *af_alg_header;
++
+ struct alg_type_list {
+ 	const struct af_alg_type *type;
+ 	struct list_head list;
+@@ -110,6 +129,43 @@ int af_alg_unregister_type(const struct af_alg_type *type)
+ }
+ EXPORT_SYMBOL_GPL(af_alg_unregister_type);
+ 
++static bool af_alg_capable(void)
++{
++	return ns_capable_noaudit(&init_user_ns, CAP_NET_ADMIN) ||
++	       capable(CAP_SYS_ADMIN);
++}
++
++int af_alg_check_restriction(const char *name,
++			     const struct af_alg_allowlist_entry allowlist[])
++{
++	int level = READ_ONCE(af_alg_restrict);
++
++	if (level == 0)
++		return 0;
++	if (level == 1) {
++		for (const struct af_alg_allowlist_entry *ent = allowlist;
++		     ent->name; ent++) {
++			if (strcmp(name, ent->name) == 0) {
++				if ((ent->flags & AF_ALG_UNPRIVILEGED) ||
++				    af_alg_capable())
++					return 0;
++				/* List contains at most one entry per name. */
++				break;
++			}
++		}
++	}
++	/*
++	 * Use -ENOENT (the error code for "algorithm not found") instead of
++	 * -EACCES or -EPERM, for the highest chance of correctly triggering
++	 * fallback code paths in userspace programs.
++	 *
++	 * Don't log a warning, since it would be noisy.  iwd tries to bind a
++	 * bunch of algorithms that it never uses.
++	 */
++	return -ENOENT;
++}
++EXPORT_SYMBOL_GPL(af_alg_check_restriction);
++
+ static void alg_do_release(const struct af_alg_type *type, void *private)
+ {
+ 	if (!type)
+@@ -506,6 +562,9 @@ static int alg_create(struct net *net, struct socket *sock, int protocol,
+ 	struct sock *sk;
+ 	int err;
+ 
++	if (READ_ONCE(af_alg_restrict) == 2)
++		return -EAFNOSUPPORT;
++
+ 	if (sock->type != SOCK_SEQPACKET)
+ 		return -ESOCKTNOSUPPORT;
+ 	if (protocol != 0)
+@@ -1222,27 +1281,32 @@ EXPORT_SYMBOL_GPL(af_alg_get_rsgl);
+ 
+ static int __init af_alg_init(void)
+ {
+-	int err = proto_register(&alg_proto, 0);
++	int err;
++
++	af_alg_header = register_sysctl("crypto", af_alg_table);
+ 
++	err = proto_register(&alg_proto, 0);
+ 	if (err)
+-		goto out;
++		goto out_unregister_sysctl;
+ 
+ 	err = sock_register(&alg_family);
+-	if (err != 0)
++	if (err)
+ 		goto out_unregister_proto;
+ 
+-out:
+-	return err;
++	return 0;
+ 
+ out_unregister_proto:
+ 	proto_unregister(&alg_proto);
+-	goto out;
++out_unregister_sysctl:
++	unregister_sysctl_table(af_alg_header);
++	return err;
+ }
+ 
+ static void __exit af_alg_exit(void)
+ {
+ 	sock_unregister(PF_ALG);
+ 	proto_unregister(&alg_proto);
++	unregister_sysctl_table(af_alg_header);
+ }
+ 
+ module_init(af_alg_init);
 diff --git a/crypto/akcipher.c b/crypto/akcipher.c
 index 630bb19738be..8da7eedce31e 100644
 --- a/crypto/akcipher.c
@@ -313,6 +531,151 @@ index 630bb19738be..8da7eedce31e 100644
  	if (!alg->set_priv_key)
  		alg->set_priv_key = akcipher_default_set_key;
  
+diff --git a/crypto/algif_aead.c b/crypto/algif_aead.c
+index 787aac8aeb24..5574e2d70539 100644
+--- a/crypto/algif_aead.c
++++ b/crypto/algif_aead.c
+@@ -34,6 +34,11 @@
+ #include <linux/net.h>
+ #include <net/sock.h>
+ 
++static const struct af_alg_allowlist_entry aead_allowlist[] = {
++	{ "ccm(aes)" }, /* bluez */
++	{},
++};
++
+ static inline bool aead_sufficient_data(struct sock *sk)
+ {
+ 	struct alg_sock *ask = alg_sk(sk);
+@@ -344,6 +349,12 @@ static struct proto_ops algif_aead_ops_nokey = {
+ 
+ static void *aead_bind(const char *name)
+ {
++	int err;
++
++	err = af_alg_check_restriction(name, aead_allowlist);
++	if (err)
++		return ERR_PTR(err);
++
+ 	return crypto_alloc_aead(name, 0, AF_ALG_CRYPTOAPI_MASK);
+ }
+ 
+diff --git a/crypto/algif_hash.c b/crypto/algif_hash.c
+index 5452ad6c1506..6e8b5fb82a7f 100644
+--- a/crypto/algif_hash.c
++++ b/crypto/algif_hash.c
+@@ -16,6 +16,24 @@
+ #include <linux/net.h>
+ #include <net/sock.h>
+ 
++static const struct af_alg_allowlist_entry hash_allowlist[] = {
++	{ "cmac(aes)" }, /* iwd, bluez */
++	{ "hmac(md5)" }, /* iwd */
++	{ "hmac(sha1)" }, /* iwd */
++	{ "hmac(sha224)" }, /* iwd */
++	{ "hmac(sha256)" }, /* iwd */
++	{ "hmac(sha384)" }, /* iwd */
++	{ "hmac(sha512)" }, /* iwd, sha512hmac */
++	{ "md4" }, /* iwd */
++	{ "md5" }, /* iwd */
++	{ "sha1", AF_ALG_UNPRIVILEGED }, /* iwd, iproute2 < 7.0 */
++	{ "sha224" }, /* iwd */
++	{ "sha256" }, /* iwd */
++	{ "sha384" }, /* iwd */
++	{ "sha512" }, /* iwd */
++	{},
++};
++
+ struct hash_ctx {
+ 	struct af_alg_sgl sgl;
+ 
+@@ -382,6 +400,12 @@ static struct proto_ops algif_hash_ops_nokey = {
+ 
+ static void *hash_bind(const char *name)
+ {
++	int err;
++
++	err = af_alg_check_restriction(name, hash_allowlist);
++	if (err)
++		return ERR_PTR(err);
++
+ 	return crypto_alloc_ahash(name, 0, AF_ALG_CRYPTOAPI_MASK);
+ }
+ 
+diff --git a/crypto/algif_rng.c b/crypto/algif_rng.c
+index 4dfe7899f8fa..bd522915d56d 100644
+--- a/crypto/algif_rng.c
++++ b/crypto/algif_rng.c
+@@ -50,6 +50,10 @@ MODULE_LICENSE("GPL");
+ MODULE_AUTHOR("Stephan Mueller <smueller@chronox.de>");
+ MODULE_DESCRIPTION("User-space interface for random number generators");
+ 
++static const struct af_alg_allowlist_entry rng_allowlist[] = {
++	{},
++};
++
+ struct rng_ctx {
+ #define MAXSIZE 128
+ 	unsigned int len;
+@@ -201,6 +205,11 @@ static void *rng_bind(const char *name)
+ {
+ 	struct rng_parent_ctx *pctx;
+ 	struct crypto_rng *rng;
++	int err;
++
++	err = af_alg_check_restriction(name, rng_allowlist);
++	if (err)
++		return ERR_PTR(err);
+ 
+ 	pctx = kzalloc_obj(*pctx);
+ 	if (!pctx)
+diff --git a/crypto/algif_skcipher.c b/crypto/algif_skcipher.c
+index 035fed7db81f..d469a3ec1491 100644
+--- a/crypto/algif_skcipher.c
++++ b/crypto/algif_skcipher.c
+@@ -35,6 +35,24 @@
+ #include <linux/string.h>
+ #include <net/sock.h>
+ 
++static const struct af_alg_allowlist_entry skcipher_allowlist[] = {
++	{ "adiantum(xchacha12,aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{ "adiantum(xchacha20,aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{ "cbc(aes)" }, /* iwd */
++	{ "cbc(des)" }, /* iwd */
++	{ "cbc(des3_ede)" }, /* iwd */
++	{ "cbc(paes)" }, /* caam and others */
++	{ "ctr(aes)" }, /* iwd */
++	{ "ecb(aes)" }, /* iwd, bluez */
++	{ "ecb(des)" }, /* iwd */
++	{ "hctr2(aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{ "xts(aes)", AF_ALG_UNPRIVILEGED }, /* cryptsetup benchmark */
++	{ "xts(camellia)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{ "xts(serpent)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{ "xts(twofish)", AF_ALG_UNPRIVILEGED }, /* cryptsetup */
++	{},
++};
++
+ static int skcipher_sendmsg(struct socket *sock, struct msghdr *msg,
+ 			    size_t size)
+ {
+@@ -310,12 +328,13 @@ static struct proto_ops algif_skcipher_ops_nokey = {
+ 
+ static void *skcipher_bind(const char *name)
+ {
+-	u32 mask = AF_ALG_CRYPTOAPI_MASK;
++	int err;
+ 
+-	if (strcmp(name, "cbc(paes)") == 0)
+-		mask = 0;
++	err = af_alg_check_restriction(name, skcipher_allowlist);
++	if (err)
++		return ERR_PTR(err);
+ 
+-	return crypto_alloc_skcipher(name, 0, mask);
++	return crypto_alloc_skcipher(name, 0, AF_ALG_CRYPTOAPI_MASK);
+ }
+ 
+ static void skcipher_release(void *private)
 diff --git a/crypto/dh.c b/crypto/dh.c
 index 7ad4768716c8..01ccc24db074 100644
 --- a/crypto/dh.c
@@ -500,10 +863,10 @@ index d1595156c86a..9485212f1a6d 100644
  	return ctx.rc;
  }
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 9a7ac2eb9ce0..6556c3d7b269 100644
+index 99af95f33865..2d7e7ff78354 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
-@@ -1794,6 +1794,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+@@ -1799,6 +1799,15 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
  	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
  		return false;
  
@@ -520,7 +883,7 @@ index 9a7ac2eb9ce0..6556c3d7b269 100644
  	acpi_dev_get_resources(device, &resource_list,
  			       acpi_check_serial_bus_slave,
 diff --git a/drivers/ata/libahci.c b/drivers/ata/libahci.c
-index 6d72eb017b49..0a6701eb8d37 100644
+index 08ab56e95566..3d29a2511800 100644
 --- a/drivers/ata/libahci.c
 +++ b/drivers/ata/libahci.c
 @@ -727,6 +727,24 @@ int ahci_stop_engine(struct ata_port *ap)
@@ -1076,7 +1439,7 @@ index 000000000000..de0a3714a5d4
 +	}
 +}
 diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
-index 14bb31bd6a0b..0529359d7440 100644
+index 2247ad55d444..5f9da88479e8 100644
 --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
 +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
 @@ -12,6 +12,7 @@
@@ -1087,7 +1450,7 @@ index 14bb31bd6a0b..0529359d7440 100644
  #include <linux/io.h>
  #include <linux/err.h>
  #include <linux/fs.h>
-@@ -2447,6 +2448,16 @@ static const struct amba_id etm4_ids[] = {
+@@ -2458,6 +2459,16 @@ static const struct amba_id etm4_ids[] = {
  	{},
  };
  
@@ -1104,7 +1467,7 @@ index 14bb31bd6a0b..0529359d7440 100644
  MODULE_DEVICE_TABLE(amba, etm4_ids);
  
  static struct amba_driver etm4x_amba_driver = {
-@@ -2521,6 +2532,11 @@ static int __init etm4x_init(void)
+@@ -2532,6 +2543,11 @@ static int __init etm4x_init(void)
  {
  	int ret;
  
@@ -1116,7 +1479,7 @@ index 14bb31bd6a0b..0529359d7440 100644
  	ret = etm4_pm_setup();
  
  	/* etm4_pm_setup() does its own cleanup - exit on error */
-@@ -2547,6 +2563,9 @@ static int __init etm4x_init(void)
+@@ -2558,6 +2574,9 @@ static int __init etm4x_init(void)
  
  static void __exit etm4x_exit(void)
  {
@@ -1126,61 +1489,6 @@ index 14bb31bd6a0b..0529359d7440 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
-diff --git a/drivers/input/misc/soc_button_array.c b/drivers/input/misc/soc_button_array.c
-index b8cad415c62c..f08e29af531f 100644
---- a/drivers/input/misc/soc_button_array.c
-+++ b/drivers/input/misc/soc_button_array.c
-@@ -16,6 +16,7 @@
- #include <linux/gpio/consumer.h>
- #include <linux/gpio_keys.h>
- #include <linux/gpio.h>
-+#include <linux/platform_data/x86/soc.h>
- #include <linux/platform_device.h>
- 
- static bool use_low_level_irq;
-@@ -160,7 +161,7 @@ soc_button_device_create(struct platform_device *pdev,
- 	struct gpio_keys_platform_data *gpio_keys_pdata;
- 	const struct dmi_system_id *dmi_id;
- 	int invalid_acpi_index = -1;
--	int error, gpio, irq;
-+	int error, gpio, irq = 0;
- 	int n_buttons = 0;
- 
- 	for (info = button_info; info->name; info++)
-@@ -191,8 +192,9 @@ soc_button_device_create(struct platform_device *pdev,
- 		error = soc_button_lookup_gpio(&pdev->dev, info->acpi_index, &gpio, &irq);
- 		if (error || irq < 0) {
- 			/*
--			 * Skip GPIO if not present. Note we deliberately
--			 * ignore -EPROBE_DEFER errors here. On some devices
-+			 * Propagate -EPROBE_DEFER, skip button on other errors.
-+			 *
-+			 * -EPROBE_DEFER is ignored on Bay & Cherry Trail. Here
- 			 * Intel is using so called virtual GPIOs which are not
- 			 * GPIOs at all but some way for AML code to check some
- 			 * random status bits without need a custom opregion.
-@@ -201,6 +203,12 @@ soc_button_device_create(struct platform_device *pdev,
- 			 * we do not have a driver for these so they will never
- 			 * show up, therefore we ignore -EPROBE_DEFER.
- 			 */
-+			if ((error == -EPROBE_DEFER || irq == -EPROBE_DEFER) &&
-+			    !(soc_intel_is_byt() || soc_intel_is_cht())) {
-+				error = -EPROBE_DEFER;
-+				goto err_free_mem;
-+			}
-+
- 			continue;
- 		}
- 
-@@ -369,7 +377,7 @@ static struct soc_button_info *soc_button_get_button_info(struct device *dev)
- 		}
- 	}
- 
--	if (!btns_desc) {
-+	if (!btns_desc || !btns_desc->package.count) {
- 		dev_err(dev, "ACPI Button Descriptors not found\n");
- 		button_info = ERR_PTR(-ENODEV);
- 		goto out;
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 23a531595835..2f8952a08112 100644
 --- a/drivers/iommu/iommu.c
@@ -1255,7 +1563,7 @@ index e45359efe0e4..acbd321fc12e 100644
  obj-$(CONFIG_VIDEO_ISL7998X) += isl7998x.o
  obj-$(CONFIG_VIDEO_KS0127) += ks0127.o
 diff --git a/drivers/media/i2c/cvs/core.c b/drivers/media/i2c/cvs/core.c
-index fe9e59ac311c..d4a3b9c3bab1 100644
+index fe9e59ac311c..048c87fd9188 100644
 --- a/drivers/media/i2c/cvs/core.c
 +++ b/drivers/media/i2c/cvs/core.c
 @@ -31,6 +31,7 @@
@@ -1274,7 +1582,51 @@ index fe9e59ac311c..d4a3b9c3bab1 100644
  	{ }
  };
  
-@@ -962,6 +964,7 @@ static const struct acpi_device_id intel_cvs_acpi_match[] = {
+@@ -68,6 +70,13 @@ static const struct icvs_device_quirk cvs_quirk_table[] = {
+ 			  ICVS_NO_CAPS |
+ 			  ICVS_NO_FW_UPDATE
+ 	},	/* Lattice NX33 */
++	{ 0x2ac1, 0x20d1, ICVS_NO_MIPI_CONFIG |
++			  ICVS_NO_CAPS |
++			  ICVS_NO_FW_UPDATE
++	},	/*
++		 * The Lattice device was found on a Dell laptop
++		 * XPS 14 (Dell 14 Premium) DA14250
++		 */
+ 	{ 0x06CB, 0x0701, ICVS_SKIP_FW_RESET |
+ 			  ICVS_HOST_SENSOR_PWR_CTRL |
+ 			  ICVS_HOST_PRIV_CTRL |
+@@ -723,8 +732,6 @@ static int cvs_core_probe(struct device *dev, struct i2c_client *i2c)
+ 	}
+ 
+ 	if (ctx->res == ICVS_FULLCAP) {
+-		struct gpio_desc *wake;
+-
+ 		ctx->rst = devm_gpiod_get(dev, "rst", GPIOD_OUT_HIGH);
+ 		if (IS_ERR(ctx->rst)) {
+ 			ret = dev_err_probe(dev, PTR_ERR(ctx->rst),
+@@ -732,14 +739,12 @@ static int cvs_core_probe(struct device *dev, struct i2c_client *i2c)
+ 			goto err_put_ipu;
+ 		}
+ 
+-		wake = devm_gpiod_get(dev, "wake", GPIOD_IN);
+-		if (IS_ERR(wake)) {
+-			ret = dev_err_probe(dev, PTR_ERR(wake),
+-					    "failed to get wake GPIO\n");
+-			goto err_put_ipu;
+-		}
+-
+-		ctx->irq = gpiod_to_irq(wake);
++		/*
++		 * Do not request the line: another device's _CRS may list
++		 * the same pin, and its driver would then fail with -EBUSY.
++		 */
++		ctx->irq = acpi_dev_gpio_irq_get_by(ACPI_COMPANION(dev),
++						    "wake", 0);
+ 		if (ctx->irq < 0) {
+ 			ret = dev_err_probe(dev, ctx->irq,
+ 					    "failed to get wake IRQ\n");
+@@ -962,6 +967,7 @@ static const struct acpi_device_id intel_cvs_acpi_match[] = {
  	{ "INTC10DE" }, /* LNL */
  	{ "INTC10E0" }, /* ARL */
  	{ "INTC10E1" }, /* PTL */
@@ -2330,7 +2682,7 @@ index 000000000000..4053aed84340
 +MODULE_DESCRIPTION("Sony imx471 sensor driver");
 +MODULE_LICENSE("GPL");
 diff --git a/drivers/media/pci/intel/ipu-bridge.c b/drivers/media/pci/intel/ipu-bridge.c
-index ad3ddfb9ccb1..0a6d9a9fc040 100644
+index 510c0eca4484..5473dd598d5b 100644
 --- a/drivers/media/pci/intel/ipu-bridge.c
 +++ b/drivers/media/pci/intel/ipu-bridge.c
 @@ -97,6 +97,8 @@ static const struct ipu_sensor_config ipu_supported_sensors[] = {
@@ -2342,7 +2694,21 @@ index ad3ddfb9ccb1..0a6d9a9fc040 100644
  	/* Toshiba T4KA3 */
  	IPU_SENSOR_CONFIG("XMCC0003", 1, 321468000),
  };
-@@ -134,6 +136,45 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+@@ -127,6 +129,13 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
+ 		},
+ 		.driver_data = "OVTI02C1",
+ 	},
++	{
++		.matches = {
++			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
++			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "XPS 14 (Dell 14 Premium) DA14250"),
++		},
++		.driver_data = "OVTI02C1",
++	},
+ 	{
+ 		.matches = {
+ 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+@@ -134,6 +143,45 @@ static const struct dmi_system_id upside_down_sensor_dmi_ids[] = {
  		},
  		.driver_data = "OVTI02C1",
  	},
@@ -2423,6 +2789,276 @@ index 0500d5fd4f11..b13589a0860e 100644
  /*
   * Intersil/Techwell TW686[4589]-based video capture cards have an empty (zero)
   * class code.  Fix it.
+diff --git a/drivers/platform/x86/intel/int3472/discrete.c b/drivers/platform/x86/intel/int3472/discrete.c
+index 115bb37577a1..749e2e323583 100644
+--- a/drivers/platform/x86/intel/int3472/discrete.c
++++ b/drivers/platform/x86/intel/int3472/discrete.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_data/x86/int3472.h>
+ #include <linux/platform_device.h>
+ #include <linux/string_choices.h>
++#include <linux/time64.h>
+ #include <linux/uuid.h>
+ 
+ /*
+@@ -123,10 +124,31 @@ skl_int3472_gpiod_get_from_temp_lookup(struct int3472_discrete_device *int3472,
+ 	return desc;
+ }
+ 
++/*
++ * Other vana-supply users (e.g. ST, Toshiba, Sony sensors) can be added to
++ * this array instead of adding new quirk table entries.
++ */
++static const char * const power_enable_hids_vana[] = {
++	"SONY471A", /* imx471 on Lenovo X9-14 and X9-15 */
++	"TBE20A0", /* imx471 on Lenovo X1 Carbon G14 */
++	NULL
++};
++
++static const char * const power_enable_hids_vdd[] = {
++	"INT33F0", /* mt9m114 */
++	NULL
++};
++
++static const char * const power_enable_hids_enable[] = {
++	"INT347E", /* ov7251 */
++	NULL
++};
++
+ /**
+  * struct int3472_gpio_map - Map GPIOs to whatever is expected by the
+  * sensor driver (as in DT bindings)
+- * @hid: The ACPI HID of the device without the instance number e.g. INT347E
++ * @hids: NULL-terminated array of ACPI HIDs of the devices without the
++ * instance number e.g. INT347E
+  * @type_from: The GPIO type from ACPI ?SDT
+  * @type_to: The assigned GPIO type, typically same as @type_from
+  * @enable_time_us: Enable time in usec for GPIOs mapped to regulators
+@@ -135,7 +157,7 @@ skl_int3472_gpiod_get_from_temp_lookup(struct int3472_discrete_device *int3472,
+  * GPIO_ACTIVE_HIGH otherwise
+  */
+ struct int3472_gpio_map {
+-	const char *hid;
++	const char * const *hids;
+ 	u8 type_from;
+ 	u8 type_to;
+ 	bool polarity_low;
+@@ -145,27 +167,38 @@ struct int3472_gpio_map {
+ 
+ static const struct int3472_gpio_map int3472_gpio_map[] = {
+ 	{	/* mt9m114 designs declare a powerdown pin which controls the regulators */
+-		.hid = "INT33F0",
++		.hids = power_enable_hids_vdd,
+ 		.type_from = INT3472_GPIO_TYPE_POWERDOWN,
+ 		.type_to = INT3472_GPIO_TYPE_POWER_ENABLE,
+ 		.con_id = "vdd",
+ 		.enable_time_us = GPIO_REGULATOR_ENABLE_TIME,
+ 	},
+ 	{	/* ov7251 driver / DT-bindings expect "enable" as con_id for reset */
+-		.hid = "INT347E",
++		.hids = power_enable_hids_enable,
+ 		.type_from = INT3472_GPIO_TYPE_RESET,
+ 		.type_to = INT3472_GPIO_TYPE_RESET,
+ 		.con_id = "enable",
+ 	},
+-	{	/* ov08x40's handshake pin needs a 45 ms delay on some HP laptops */
+-		.hid = "OVTI08F4",
+-		.type_from = INT3472_GPIO_TYPE_HANDSHAKE,
+-		.type_to = INT3472_GPIO_TYPE_HANDSHAKE,
+-		.con_id = "dvdd",
+-		.enable_time_us = 45 * USEC_PER_MSEC,
++	{	/* Sensors which expect "vana" as con_id for power enable */
++		.hids = power_enable_hids_vana,
++		.type_from = INT3472_GPIO_TYPE_POWER_ENABLE,
++		.type_to = INT3472_GPIO_TYPE_POWER_ENABLE,
++		.con_id = "vana",
++		.enable_time_us = GPIO_REGULATOR_ENABLE_TIME,
+ 	},
+ };
+ 
++static bool int3472_gpio_map_hids_match(struct acpi_device *adev,
++					const char * const *hids)
++{
++	for (unsigned int i = 0; hids[i]; i++) {
++		if (acpi_dev_hid_uid_match(adev, hids[i], NULL))
++			return true;
++	}
++
++	return false;
++}
++
+ static void int3472_get_con_id_and_polarity(struct int3472_discrete_device *int3472, u8 *type,
+ 					    const char **con_id, unsigned long *gpio_flags,
+ 					    unsigned int *enable_time_us)
+@@ -182,7 +215,7 @@ static void int3472_get_con_id_and_polarity(struct int3472_discrete_device *int3
+ 		if (*type != int3472_gpio_map[i].type_from)
+ 			continue;
+ 
+-		if (!acpi_dev_hid_uid_match(adev, int3472_gpio_map[i].hid, NULL))
++		if (!int3472_gpio_map_hids_match(adev, int3472_gpio_map[i].hids))
+ 			continue;
+ 
+ 		dev_dbg(int3472->dev, "mapping type 0x%02x pin to 0x%02x %s\n",
+@@ -234,8 +267,8 @@ static void int3472_get_con_id_and_polarity(struct int3472_discrete_device *int3
+ 	case INT3472_GPIO_TYPE_HANDSHAKE:
+ 		*con_id = "dvdd";
+ 		*gpio_flags = GPIO_ACTIVE_HIGH;
+-		/* Setups using a handshake pin need 25 ms enable delay */
+-		*enable_time_us = 25 * USEC_PER_MSEC;
++		/* Powering up the sensor through the handshake pin takes up to 200 ms */
++		*enable_time_us = 200 * USEC_PER_MSEC;
+ 		break;
+ 	default:
+ 		*con_id = "unknown";
+@@ -289,8 +322,8 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 	u8 active_value, pin, type;
+ 	unsigned long gpio_flags;
+ 	union acpi_object *obj;
++	unsigned int obj_value;
+ 	struct gpio_desc *gpio;
+-	const char *err_msg;
+ 	const char *con_id;
+ 	int ret;
+ 
+@@ -305,24 +338,27 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 				      &int3472_gpio_guid, 0x00,
+ 				      int3472->ngpios + 2,
+ 				      NULL, ACPI_TYPE_INTEGER);
+-
+ 	if (!obj) {
+ 		dev_warn(int3472->dev, "No _DSM entry for GPIO pin %u\n",
+ 			 agpio->pin_table[0]);
+ 		return 1;
+ 	}
+ 
+-	type = FIELD_GET(INT3472_GPIO_DSM_TYPE, obj->integer.value);
++	obj_value = obj->integer.value;
++
++	ACPI_FREE(obj);
++
++	type = FIELD_GET(INT3472_GPIO_DSM_TYPE, obj_value);
+ 
+ 	int3472_get_con_id_and_polarity(int3472, &type, &con_id, &gpio_flags, &enable_time_us);
+ 
+-	pin = FIELD_GET(INT3472_GPIO_DSM_PIN, obj->integer.value);
++	pin = FIELD_GET(INT3472_GPIO_DSM_PIN, obj_value);
+ 	/* Pin field is not really used under Windows and wraps around at 8 bits */
+ 	if (pin != (agpio->pin_table[0] & 0xff))
+ 		dev_dbg(int3472->dev, FW_BUG "%s %s pin number mismatch _DSM %d resource %d\n",
+ 			con_id, agpio->resource_source.string_ptr, pin, agpio->pin_table[0]);
+ 
+-	active_value = FIELD_GET(INT3472_GPIO_DSM_SENSOR_ON_VAL, obj->integer.value);
++	active_value = FIELD_GET(INT3472_GPIO_DSM_SENSOR_ON_VAL, obj_value);
+ 	if (!active_value)
+ 		gpio_flags ^= GPIO_ACTIVE_LOW;
+ 
+@@ -330,15 +366,18 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 		agpio->resource_source.string_ptr, agpio->pin_table[0],
+ 		str_high_low(gpio_flags == GPIO_ACTIVE_HIGH));
+ 
++	int3472->ngpios++;
++
+ 	switch (type) {
+ 	case INT3472_GPIO_TYPE_RESET:
+ 	case INT3472_GPIO_TYPE_POWERDOWN:
+ 	case INT3472_GPIO_TYPE_HOTPLUG_DETECT:
+ 		ret = skl_int3472_map_gpio_to_sensor(int3472, agpio, con_id, gpio_flags);
+ 		if (ret)
+-			err_msg = "Failed to map GPIO pin to sensor\n";
++			return dev_err_probe(int3472->dev, ret,
++					     "Failed to map GPIO pin to sensor\n");
+ 
+-		break;
++		return 1;
+ 	case INT3472_GPIO_TYPE_CLK_ENABLE:
+ 	case INT3472_GPIO_TYPE_PRIVACY_LED:
+ 	case INT3472_GPIO_TYPE_STROBE:
+@@ -346,24 +385,24 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 	case INT3472_GPIO_TYPE_DOVDD:
+ 	case INT3472_GPIO_TYPE_HANDSHAKE:
+ 		gpio = skl_int3472_gpiod_get_from_temp_lookup(int3472, agpio, con_id, gpio_flags);
+-		if (IS_ERR(gpio)) {
+-			ret = PTR_ERR(gpio);
+-			err_msg = "Failed to get GPIO\n";
+-			break;
+-		}
++		if (IS_ERR(gpio))
++			return dev_err_probe(int3472->dev, PTR_ERR(gpio),
++					     "Failed to get GPIO\n");
+ 
+ 		switch (type) {
+ 		case INT3472_GPIO_TYPE_CLK_ENABLE:
+ 			ret = skl_int3472_register_gpio_clock(int3472, gpio);
+ 			if (ret)
+-				err_msg = "Failed to register clock\n";
++				dev_err_probe(int3472->dev, ret,
++					      "Failed to register clock\n");
+ 
+ 			break;
+ 		case INT3472_GPIO_TYPE_PRIVACY_LED:
+ 		case INT3472_GPIO_TYPE_STROBE:
+ 			ret = skl_int3472_register_led(int3472, gpio, con_id);
+ 			if (ret)
+-				err_msg = "Failed to register LED\n";
++				dev_err_probe(int3472->dev, ret,
++					      "Failed to register LED\n");
+ 
+ 			break;
+ 		case INT3472_GPIO_TYPE_POWER_ENABLE:
+@@ -374,7 +413,8 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 			ret = skl_int3472_register_regulator(int3472, gpio, enable_time_us,
+ 							     con_id, second_sensor);
+ 			if (ret)
+-				err_msg = "Failed to register regulator\n";
++				dev_err_probe(int3472->dev, ret,
++					      "Failed to register regulator\n");
+ 
+ 			break;
+ 		default: /* Never reached */
+@@ -385,23 +425,13 @@ static int skl_int3472_handle_gpio_resources(struct acpi_resource *ares,
+ 		if (ret)
+ 			gpiod_put(gpio);
+ 
+-		break;
++		return ret < 0 ? ret : 1;
+ 	default:
+ 		dev_warn(int3472->dev,
+ 			 "GPIO type 0x%02x unknown; the sensor may not work\n",
+ 			 type);
+-		ret = 1;
+-		break;
++		return 1;
+ 	}
+-
+-	int3472->ngpios++;
+-	ACPI_FREE(obj);
+-
+-	if (ret < 0)
+-		return dev_err_probe(int3472->dev, ret, err_msg);
+-
+-	/* Tell acpi_dev_get_resources() to not make a copy of the resource */
+-	return 1;
+ }
+ 
+ int int3472_discrete_parse_crs(struct int3472_discrete_device *int3472)
+diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
+index ff00c4b2578e..ad8853481835 100644
+--- a/drivers/soundwire/dmi-quirks.c
++++ b/drivers/soundwire/dmi-quirks.c
+@@ -199,6 +199,13 @@ static const struct dmi_system_id adr_remap_quirk_table[] = {
+ 		},
+ 		.driver_data = (void *)ghost_realtek,
+ 	},
++	{
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "83QM"),
++		},
++		.driver_data = (void *)ghost_realtek,
++	},
+ 	{
+ 		.matches = {
+ 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
 index 068c7bea3102..cecfac2b0bdc 100644
 --- a/drivers/usb/core/hub.c
@@ -2441,6 +3077,108 @@ index 068c7bea3102..cecfac2b0bdc 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
+index 7643ba954125..0d51428c1da4 100644
+--- a/include/crypto/if_alg.h
++++ b/include/crypto/if_alg.h
+@@ -8,6 +8,7 @@
+ #ifndef _CRYPTO_IF_ALG_H
+ #define _CRYPTO_IF_ALG_H
+ 
++#include <linux/bits.h>
+ #include <linux/compiler.h>
+ #include <linux/completion.h>
+ #include <linux/if_alg.h>
+@@ -121,7 +122,7 @@ struct af_alg_async_req {
+  * @iv:			IV for cipher operation
+  * @state:		Existing state for continuing operation
+  * @aead_assoclen:	Length of AAD for AEAD cipher operations
+- * @completion:		Work queue for synchronous operation
++ * @wait:		For waiting for completion of async crypto ops
+  * @used:		TX bytes sent to kernel. This variable is used to
+  *			ensure that user space cannot cause the kernel
+  *			to allocate too much memory in sendmsg operation.
+@@ -161,9 +162,20 @@ struct af_alg_ctx {
+ 	unsigned int inflight;
+ };
+ 
++/* Flags for af_alg_allowlist_entry::flags: */
++#define AF_ALG_UNPRIVILEGED BIT(0) /* Unprivileged use is allowed */
++
++struct af_alg_allowlist_entry {
++	const char *name;
++	u32 flags;
++};
++
+ int af_alg_register_type(const struct af_alg_type *type);
+ int af_alg_unregister_type(const struct af_alg_type *type);
+ 
++int af_alg_check_restriction(const char *name,
++			     const struct af_alg_allowlist_entry allowlist[]);
++
+ int af_alg_release(struct socket *sock);
+ void af_alg_release_parent(struct sock *sk);
+ int af_alg_accept(struct sock *sk, struct socket *newsock,
+@@ -177,10 +189,11 @@ static inline struct alg_sock *alg_sk(struct sock *sk)
+ }
+ 
+ /**
+- * Size of available buffer for sending data from user space to kernel.
++ * af_alg_sndbuf - Size of available buffer for sending data from user space to kernel.
+  *
+- * @sk socket of connection to user space
+- * @return number of bytes still available
++ * @sk: socket of connection to user space
++ *
++ * Returns: number of bytes still available
+  */
+ static inline int af_alg_sndbuf(struct sock *sk)
+ {
+@@ -192,10 +205,11 @@ static inline int af_alg_sndbuf(struct sock *sk)
+ }
+ 
+ /**
+- * Can the send buffer still be written to?
++ * af_alg_writable - Can the send buffer still be written to?
++ *
++ * @sk: socket of connection to user space
+  *
+- * @sk socket of connection to user space
+- * @return true => writable, false => not writable
++ * Returns: true => writable, false => not writable
+  */
+ static inline bool af_alg_writable(struct sock *sk)
+ {
+@@ -203,10 +217,11 @@ static inline bool af_alg_writable(struct sock *sk)
+ }
+ 
+ /**
+- * Size of available buffer used by kernel for the RX user space operation.
++ * af_alg_rcvbuf - Size of available buffer used by kernel for the RX user space operation.
+  *
+- * @sk socket of connection to user space
+- * @return number of bytes still available
++ * @sk: socket of connection to user space
++ *
++ * Returns: number of bytes still available
+  */
+ static inline int af_alg_rcvbuf(struct sock *sk)
+ {
+@@ -218,10 +233,11 @@ static inline int af_alg_rcvbuf(struct sock *sk)
+ }
+ 
+ /**
+- * Can the RX buffer still be written to?
++ * af_alg_readable - Can the RX buffer still be read from?
++ *
++ * @sk: socket of connection to user space
+  *
+- * @sk socket of connection to user space
+- * @return true => writable, false => not writable
++ * Returns: true => readable, false => not readable
+  */
+ static inline bool af_alg_readable(struct sock *sk)
+ {
 diff --git a/include/linux/crypto.h b/include/linux/crypto.h
 index b7c97f1c47c9..0a484f45b24a 100644
 --- a/include/linux/crypto.h
@@ -2455,7 +3193,7 @@ index b7c97f1c47c9..0a484f45b24a 100644
   * Miscellaneous stuff.
   */
 diff --git a/include/linux/efi.h b/include/linux/efi.h
-index ccbc35479684..8eb9a1276ba7 100644
+index 24221a842412..4b1d4ec2c684 100644
 --- a/include/linux/efi.h
 +++ b/include/linux/efi.h
 @@ -45,6 +45,8 @@ struct screen_info;
@@ -2592,10 +3330,10 @@ index 590ba29c85ab..02153d857531 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 21dc4a9c8714..c8331e9cf5d9 100644
+index 8f8956fb061b..08d7f35cf608 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
-@@ -1063,7 +1063,8 @@ netmem_ref page_pool_alloc_frag_netmem(struct page_pool *pool,
+@@ -1073,7 +1073,8 @@ netmem_ref page_pool_alloc_frag_netmem(struct page_pool *pool,
  	if (WARN_ON(size > max_size))
  		return 0;
  
@@ -2621,7 +3359,7 @@ index 0a4fdd8bd975..dcb12dad419f 100644
  objtool-args = $(objtool-args-y)					\
  	$(if $(delay-objtool), --link)					\
 diff --git a/scripts/tags.sh b/scripts/tags.sh
-index 243373683f98..2affd5e58ee8 100755
+index c9dc2763a505..17ce478a7ef8 100755
 --- a/scripts/tags.sh
 +++ b/scripts/tags.sh
 @@ -16,6 +16,8 @@ fi
@@ -2786,10 +3524,10 @@ index 000000000000..9424a83c6f48
 +test_bpffs                                       # needs CONFIG_BPF_PRELOAD
 +tunnel                                           # needs CONFIG_NET_FOU
 diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index b642ee489ea6..7e3204186a8b 100644
+index 5ae24ee10100..37b840c46e8b 100644
 --- a/tools/testing/selftests/bpf/Makefile
 +++ b/tools/testing/selftests/bpf/Makefile
-@@ -532,7 +532,7 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\
+@@ -530,7 +530,7 @@ LSKELS := fexit_sleep.c trace_printk.c trace_vprintk.c map_ptr_kern.c 	\
  LSKELS_SIGNED := fentry_test.c fexit_test.c atomics.c
  
  # Generate both light skeleton and libbpf skeleton for these
