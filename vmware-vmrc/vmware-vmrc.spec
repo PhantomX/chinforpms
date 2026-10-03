@@ -12,7 +12,7 @@
 %global mark64 %{nil}
 %endif
 
-%bcond bundled_ssl 0
+%bcond bundled_ssl 1
 
 %global ver    13.0.1.0
 %global rel    24954779
@@ -20,7 +20,7 @@
 
 Name:           vmware-vmrc
 Version:        %{ver}.%{rel}
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        VMware Remote Console
 
 License:        VMware
@@ -287,6 +287,9 @@ fi
 
 
 %changelog
+* Tue Sep 29 2026 - 13.0.1.0.24954779-2
+- Bundle openssl
+
 * Mon Dec 08 2025 - 13.0.1.0.24954779-1
 - 13.0.1
 
