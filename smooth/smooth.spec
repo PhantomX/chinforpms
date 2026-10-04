@@ -5,7 +5,7 @@
 
 Name:           smooth
 Version:        0.9.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An object oriented C++ class library
 
 License:        Artistic-2.0
@@ -92,6 +92,9 @@ chmod +x %{buildroot}%{_libdir}/*.so.*
 
 
 %changelog
+* Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 0.9.10-2
+- Rebuilt for libxml-2.5.4
+
 * Wed Mar 15 2023 Phantom X <megaphantomx at hotmail dot com> - 0.9.10-1
 - 0.9.10
 

@@ -8,7 +8,7 @@
 
 Name:           ario
 Version:        1.6
-Release:        2%{?sver}%{?dist}
+Release:        3%{?sver}%{?dist}
 Summary:        Ario MPD Client
 
 License:        GPL-2.0-or-later
@@ -102,6 +102,9 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/ario.desktop
 
 
 %changelog
+* Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 1.6-3.20220325svn822
+- Rebuilt for libxml-2.5.4
+
 * Wed Sep 14 2022 Phantom X <megaphantomx at hotmail dot com> - 1.6-2.20220325svn822
 - Snapshot
 

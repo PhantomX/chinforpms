@@ -17,7 +17,7 @@
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
 Version:        4.6.1
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
@@ -345,6 +345,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-jack.m
 
 
 %changelog
+* Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-102
+- Rebuilt for libxml-2.5.4
+
 * Sun Sep 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-101
 - ffmpeg rebuild
 

@@ -2,8 +2,8 @@
 
 %{!?_hardened_build:%global build_ldflags %{build_ldflags} -Wl,-z,now}
 
-%global commit 3cfae5af3888
-%global date 20260911
+%global commit 9b71c8bd2065
+%global date 20260924
 %bcond snapshot 1
 
 %if %{with snapshot}
@@ -12,13 +12,14 @@
 
 Name:           blastem
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Fast and accurate Sega Genesis/Mega Drive emulator
 
 License:        GPL-3.0-only
 URL:            https://www.retrodev.com/%{name}/
 Source0:        https://www.retrodev.com/repos/%{name}/archive/%{commit}.tar.bz2#/%{name}-%{commit}.tar.bz2
 
+Patch0:         0001-Use-system-libraries.patch
 
 BuildRequires:  desktop-file-utils
 BuildRequires:  icoutils
@@ -27,6 +28,8 @@ BuildRequires:  make
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(glew)
 BuildRequires:  pkgconfig(gtk+-3.0)
+BuildRequires:  pkgconfig(libzstd)
+BuildRequires:  pkgconfig(lzmasdk-c)
 BuildRequires:  pkgconfig(sdl2)
 BuildRequires:  pkgconfig(zlib)
 Requires:       sdl_gamecontrollerdb
@@ -45,9 +48,7 @@ TMMS support and menu.bin is not included.
 %prep
 %autosetup -n %{name}-%{commit} -p1
 
-rm -rf zlib android
-
-sed -e 's|"zlib/zlib.h"|<zlib.h>|g' -i blastem.c chd.h event_log.{c,h} png.c system.c zip.c
+rm -rf zlib android lzma zstd
 
 sed -e 's|./termhelper|%{_bindir}/%{name}-termhelper|g' -i terminal.c
 
@@ -75,11 +76,10 @@ EOF
 
 
 %build
-%set_build_flags
 %make_build \
   DATA_PATH=/usr/share/blastem \
   FONT_PATH=/usr/share/fonts/dejavu-sans-fonts/DejaVuSans.ttf \
-  HOST_ZLIB=1
+  HOST_ZLIB=1 HOST_LZMA=1 HOST_ZSTD=1
 
 
 %install

@@ -1,0 +1,186 @@
+From 59fa128e7314fb58cbb0328a11b56f37124f4579 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 3 Oct 2026 20:39:09 -0300
+Subject: [PATCH] Use system libraries
+
+---
+ Makefile    | 11 +++++++++++
+ chd.c       |  7 ++++++-
+ chd.h       | 13 +++++++++++++
+ event_log.c |  4 ++++
+ event_log.h |  4 ++++
+ png.c       |  4 ++++
+ system.c    |  4 ++++
+ zip.c       |  4 ++++
+ 8 files changed, 50 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index 7e2a6ac..8f8bb1f 100644
+--- a/Makefile
++++ b/Makefile
+@@ -278,6 +278,9 @@ endif
+ ifdef NOZLIB
+ CFLAGS+= -DDISABLE_ZLIB
+ LIBZOBJS=
++else ifdef HOST_ZLIB
++CFLAGS+= -DHOST_ZLIB
++RENDEROBJS+= png.o
+ else
+ RENDEROBJS+= $(LIBZOBJS) png.o
+ endif
+@@ -285,6 +288,10 @@ endif
+ ifdef NOLZMA
+ CFLAGS+= -DDISABLE_LZMA
+ LZMAOBJS=
++else ifdef HOST_LZMA
++CFLAGS+= -DHOST_LZMA
++LIBS+= lzmasdk-c
++LZMAOBJS=
+ else
+ LZMAOBJS=lzma/LzmaDec.o lzma/LzmaEnc.o lzma/LzFind.o lzma/LzFindMt.o lzma/LzFindOpt.o lzma/CpuArch.o lzma/Threads.o
+ ifeq ($(OS),Linux)
+@@ -295,6 +302,10 @@ endif
+ ifdef NOZSTD
+ CFLAGS+= -DDISABLE_ZSTD
+ ZSTDOBJS=
++else ifdef HOST_ZSTD
++CFLAGS+= -DHOST_ZSTD
++LIBS+= libzstd
++ZSTDOBJS=
+ else
+ CFLAGS+= -DZSTD_LEGACY_SUPPORT=0 -DZSTD_TRACE=0 -Izstd
+ ZSTDOBJS=zstd/common/debug.o zstd/common/entropy_common.o zstd/common/error_private.o zstd/common/xxhash.o \
+diff --git a/chd.c b/chd.c
+index 178fa67..33bd2b6 100644
+--- a/chd.c
++++ b/chd.c
+@@ -4,7 +4,12 @@
+ #include <inttypes.h>
+ #include "chd.h"
+ #include "util.h"
+-#include "lzma/LzmaEnc.h"
++#ifdef HOST_LZMA
++#include <LzmaDec.h>
++#include <LzmaEnc.h>
++#else
++#include "lzma/LzmaDec.h"
++#endif
+ 
+ uint16_t bswap16(uint16_t in)
+ {
+diff --git a/chd.h b/chd.h
+index 71148df..eaeb86e 100644
+--- a/chd.h
++++ b/chd.h
+@@ -5,14 +5,27 @@
+ 
+ #include "tern.h"
+ #ifndef DISABLE_ZLIB
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
+ #endif
++#endif
+ #ifndef DISABLE_LZMA
++#ifdef HOST_LZMA
++#include <LzmaDec.h>
++#include <LzmaEnc.h>
++#else
+ #include "lzma/LzmaDec.h"
+ #endif
++#endif
+ #ifndef DISABLE_ZSTD
++#ifdef HOST_ZSTD
++#include <zstd.h>
++#else
+ #include "zstd.h"
+ #endif
++#endif
+ #include "flac.h"
+ 
+ typedef struct {
+diff --git a/event_log.c b/event_log.c
+index 6973901..cc5e2dd 100644
+--- a/event_log.c
++++ b/event_log.c
+@@ -20,7 +20,11 @@
+ #include "net.h"
+ #include "blastem.h"
+ #include "saves.h"
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
++#endif
+ 
+ enum {
+ 	CMD_GAMEPAD_DOWN,
+diff --git a/event_log.h b/event_log.h
+index 63cf1ea..5b424c0 100644
+--- a/event_log.h
++++ b/event_log.h
+@@ -21,7 +21,11 @@ enum {
+ };
+ 
+ #include "serialize.h"
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
++#endif
+ typedef struct event_reader {
+ 	size_t storage;
+ 	uint8_t *socket_buffer;
+diff --git a/png.c b/png.c
+index 2d1af4c..7bd0bc7 100644
+--- a/png.c
++++ b/png.c
+@@ -2,7 +2,11 @@
+ #include <stdlib.h>
+ #include <stdio.h>
+ #include <string.h>
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
++#endif
+ #include "png.h"
+ 
+ static const char png_magic[] = {0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+diff --git a/system.c b/system.c
+index dc0b836..e8f1919 100644
+--- a/system.c
++++ b/system.c
+@@ -30,7 +30,11 @@
+ #define romgetc fgetc
+ #define romclose fclose
+ #else
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
++#endif
+ #define ROMFILE gzFile
+ #ifdef __ANDROID__
+ #define romopen gzopen_wrapper
+diff --git a/zip.c b/zip.c
+index 82f59c1..fceb6c0 100644
+--- a/zip.c
++++ b/zip.c
+@@ -5,8 +5,12 @@
+ #include "util.h"
+ #include "zip.h"
+ #ifndef DISABLE_ZLIB
++#ifdef HOST_ZLIB
++#include <zlib.h>
++#else
+ #include "zlib/zlib.h"
+ #endif
++#endif
+ 
+ static const char cdfd_magic[4] = {'P', 'K', 1, 2};
+ static const char eocd_magic[4] = {'P', 'K', 5, 6};
+-- 
+2.55.0
+

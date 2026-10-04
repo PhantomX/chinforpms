@@ -50,7 +50,7 @@
 %global opencl    1
 
 %global winecapstone 5.0.3
-%global wineFAudio 26.09
+%global wineFAudio 26.10
 %global winefluidsynth 2.4.0
 %global winegsm 1.0.19
 %global winejpeg 10
@@ -75,7 +75,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.18
+%global wine_stagingver 11.19
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -86,7 +86,7 @@
 %global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id 69cfb8991ebf684e33c7512a6b82b7ea6d44f5bd
+%global tkg_id ca3f1a3ce89fa50e325612292e27f6638b78607d
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -123,7 +123,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.18
+Version:        11.19
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -199,7 +199,6 @@ Patch703:        %{whq_murl}/-/commit/2941e58d7d6e630e88b6e9539414f1d86736c7aa.p
 Patch704:        %{whq_murl}/-/merge_requests/9619.patch#/%{name}-whq-mr9619.patch
 Patch705:        %{whq_murl}/-/merge_requests/11701.patch#/%{name}-whq-mr11701.patch
 Patch707:        %{name}-mr9787.patch
-Patch708:        %{whq_murl}/-/merge_requests/9866.patch#/%{name}-whq-mr9866.patch
 
 # wine staging patches for wine-staging
 Source900:       %{wine_stg_url}/-/archive/%{?strel}%{wine_stagingver}/wine-staging-%{stpkgver}.tar.bz2
@@ -795,7 +794,6 @@ This package adds the opencl driver for wine.
 %patch -P 703 -p1 -R
 %patch -P 704 -p1
 %patch -P 705 -p1
-%patch -P 708 -p1
 
 # setup and apply wine-staging patches
 %if 0%{?wine_staging}
@@ -2491,6 +2489,9 @@ fi
 
 
 %changelog
+* Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.19-100
+- 11.19
+
 * Mon Sep 21 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.18-100
 - 11.18
 

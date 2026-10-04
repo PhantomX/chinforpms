@@ -56,10 +56,11 @@
  security/integrity/platform_certs/load_uefi.c      |   6 +-
  security/lockdown/Kconfig                          |  13 +
  security/lockdown/lockdown.c                       |  11 +
+ sound/soc/sof/ipc4-topology.c                      |   9 +-
  tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++
  tools/testing/selftests/bpf/Makefile               |   2 +-
  tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -
- 62 files changed, 2040 insertions(+), 194 deletions(-)
+ 63 files changed, 2046 insertions(+), 197 deletions(-)
 
 diff --git a/Documentation/admin-guide/sysctl/crypto.rst b/Documentation/admin-guide/sysctl/crypto.rst
 index b707bd314a64..9a1bd53287f4 100644
@@ -154,7 +155,7 @@ index 95cd976a068c..9717876c5e96 100644
  M:	Maxim Levitsky <maximlevitsky@gmail.com>
  M:	Alex Dubov <oakad@yahoo.com>
 diff --git a/Makefile b/Makefile
-index ad1a1ffe789e..7b014908dafd 100644
+index 6f8ed7329a20..928ca4ceafec 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -561,7 +562,7 @@ index 787aac8aeb24..5574e2d70539 100644
  }
  
 diff --git a/crypto/algif_hash.c b/crypto/algif_hash.c
-index 5452ad6c1506..6e8b5fb82a7f 100644
+index 5452ad6c1506..0d3ec5760de6 100644
 --- a/crypto/algif_hash.c
 +++ b/crypto/algif_hash.c
 @@ -16,6 +16,24 @@
@@ -575,7 +576,7 @@ index 5452ad6c1506..6e8b5fb82a7f 100644
 +	{ "hmac(sha224)" }, /* iwd */
 +	{ "hmac(sha256)" }, /* iwd */
 +	{ "hmac(sha384)" }, /* iwd */
-+	{ "hmac(sha512)" }, /* iwd, sha512hmac */
++	{ "hmac(sha512)", AF_ALG_UNPRIVILEGED }, /* iwd, sha512hmac */
 +	{ "md4" }, /* iwd */
 +	{ "md5" }, /* iwd */
 +	{ "sha1", AF_ALG_UNPRIVILEGED }, /* iwd, iproute2 < 7.0 */
@@ -3441,6 +3442,28 @@ index 8d46886d2cca..14a9cdff942b 100644
  static struct security_hook_list lockdown_hooks[] __ro_after_init = {
  	LSM_HOOK_INIT(locked_down, lockdown_is_locked_down),
  };
+diff --git a/sound/soc/sof/ipc4-topology.c b/sound/soc/sof/ipc4-topology.c
+index 8f37fbdd3f7f..5ac0195e8505 100644
+--- a/sound/soc/sof/ipc4-topology.c
++++ b/sound/soc/sof/ipc4-topology.c
+@@ -2352,11 +2352,14 @@ sof_ipc4_prepare_copier_module(struct snd_sof_widget *swidget,
+ 				ch_map >>= 4;
+ 			}
+ 
+-			if (swidget->id == snd_soc_dapm_dai_in && ch_count == out_ref_channels) {
++			if ((swidget->id == snd_soc_dapm_dai_in && ch_count == out_ref_channels) ||
++			    ch_count < blob->alh_cfg.device_count) {
+ 				/*
+ 				 * For playback DAI widgets where the channel number is equal to
+-				 * the output reference channels, set the step = 0 to ensure all
+-				 * the ch_mask is applied to all alh mappings.
++				 * the output reference channels, or when there are fewer
++				 * channels than aggregated devices (e.g. a mono capture
++				 * stream split across multiple links), set step = 0 to
++				 * ensure all the ch_mask is applied to all alh mappings.
+ 				 */
+ 				mask = ch_mask;
+ 				step = 0;
 diff --git a/tools/testing/selftests/bpf/DENYLIST.rhel b/tools/testing/selftests/bpf/DENYLIST.rhel
 new file mode 100644
 index 000000000000..9424a83c6f48

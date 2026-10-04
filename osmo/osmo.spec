@@ -9,7 +9,7 @@
 
 Name:           osmo
 Version:        0.4.4
-Release:        101%{?dist}
+Release:        102%{?dist}
 Epoch:          1
 Summary:        Personal organizer
 Summary(pl):    Osobisty organizer
@@ -129,6 +129,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{name}.desktop
 
 
 %changelog
+* Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.4.4-102.20241120git125cfe6
+- Rebuilt for libxml-2.5.4
+
 * Mon Jul 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:0.4.4-101.20241120git125cfe6
 - Fix crash on close
 
