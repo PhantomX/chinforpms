@@ -34,7 +34,7 @@
 %bcond llvm 1
 %global bundlellvm 19.1.7
 # Set to build with versioned LLVM packages
-%global llvm_pkgver 22
+%dnl %global llvm_pkgver 22
 # Enable system pugixml
 %bcond pugixml 0
 %global bundlepugixml 1.15.0
@@ -42,14 +42,14 @@
 %bcond rtmidi 0
 %global bundlertmidi 6.0.0
 %bcond vma 1
-%global bundlevma 3.3.0
+%global bundlevma 3.4.0
 
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 9e86f165d1711b9429d48b0487e7bc5ba0cc9c6c
+%global commit 55a3aff337fe2823676c31f2bf44b3dbc39de9fc
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260919
+%global date 20261006
 %bcond snapshot 1
 
 %global commit10 c8033ce9d039e7f9d134877c363397b3cfe20816
@@ -72,7 +72,7 @@
 %global shortcommit14 %(c=%{commit14}; echo ${c:0:7})
 %global srcname14 hidapi
 
-%global commit15 ac01707f552c611fbd135cc723b2682b3e7f80f2
+%global commit15 3c5eead44904df64e6a5a1f4ebdce377d35a849a
 %global shortcommit15 %(c=%{commit15}; echo ${c:0:7})
 %global srcname15 wolfssl
 
@@ -108,7 +108,7 @@
 %global shortcommit23 %(c=%{commit23}; echo ${c:0:7})
 %global srcname23 stb
 
-%global commit24 1d8f600fd424278486eade7ed3e877c99f0846b1
+%global commit24 3aa921224c154a0d2c43912bc88e1c42ce1f7607
 %global shortcommit24 %(c=%{commit24}; echo ${c:0:7})
 %global srcname24 VulkanMemoryAllocator
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.42.349
+Version:        0.0.43.104
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -541,6 +541,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Oct 07 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.43.104-1.20261006git55a3aff
+- 0.0.43
+
 * Thu Aug 13 2026 Phantom X <megaphantomx at hotmail dot com> - 0.0.42.59-1.20260812git26e37d8
 - 0.0.42
 
