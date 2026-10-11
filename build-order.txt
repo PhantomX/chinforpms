@@ -320,6 +320,7 @@ vbrfix
 vhba
 vhba-kmod
 -vkd3d
+wallet-engine
 -waterfox
 -waterfox-filesystem
 -waterfox-classic-theme-restorer

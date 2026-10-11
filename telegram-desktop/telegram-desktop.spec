@@ -40,7 +40,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        7.2.10
+Version:        7.3.1
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -122,6 +122,7 @@ BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(rnnoise)
 BuildRequires:  cmake(tde2e)
 BuildRequires:  tlottie-devel
+BuildRequires:  wallet-engine-devel
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -386,6 +387,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Sat Oct 10 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.3.1-100
+- 7.3.1
+
 * Wed Sep 30 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.2.10-100
 - 7.2.10
 

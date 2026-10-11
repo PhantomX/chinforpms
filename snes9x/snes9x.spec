@@ -1,8 +1,8 @@
 %undefine _cmake_shared_libs
 
-%global commit eb949b475e48405024a0a91a2ab22cd992dba32d
+%global commit 1bcc369e89f08243e0a462882fb1f3e42e51de3a
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20260918
+%global date 20260924
 %bcond snapshot 1
 
 %global commit10 2c32b6bf86f3c4a5539aa1f0bacbd59fe61759cf
@@ -29,7 +29,7 @@
 %global kg_url  https://github.com/KhronosGroup
 
 Name:           snes9x
-Version:        1.63.222
+Version:        1.63.228
 Release:        1%{?dist}
 Summary:        SNES emulator
 
