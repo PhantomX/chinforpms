@@ -1,7 +1,7 @@
 Name:           liferea
 Epoch:          2
-Version:        1.16.14
-Release:        101%{?dist}
+Version:        1.16.15
+Release:        100%{?dist}
 Summary:        An RSS/RDF feed reader
 
 License:        GPL-2.0-or-later
@@ -96,6 +96,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/net.sourc
 
 
 %changelog
+* Mon Oct 12 2026 Phantom X <megaphantomx at hotmail dot com> - 2:1.16.15-100
+- 1.16.15
+
 * Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 2:1.16.14-101
 - Rebuilt for libxml-2.5.4
 

@@ -1,9 +1,20 @@
  Documentation/admin-guide/sysctl/crypto.rst        |  36 +
  Documentation/crypto/userspace-if.rst              |  13 +-
- MAINTAINERS                                        |   6 +
+ .../devicetree/bindings/arm/bcm/bcm2835.yaml       |   6 +
+ .../bindings/display/brcm,bcm2835-hvs.yaml         |   3 +
+ .../bindings/iommu/brcm,bcm2712-iommu.yaml         |  54 ++
+ .../bindings/iommu/brcm,bcm2712-iommuc.yaml        |  40 +
+ .../bindings/pwm/raspberrypi,rp1-pwm.yaml          |  66 ++
+ MAINTAINERS                                        |  18 +
  Makefile                                           |  30 +
  arch/arm/Kconfig                                   |   4 +-
+ arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts  |  21 +-
  arch/arm64/Kconfig                                 |   2 +-
+ arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts |   5 +
+ .../boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi    |  41 +
+ arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts   |  34 +
+ arch/arm64/boot/dts/broadcom/bcm2712.dtsi          |  91 ++
+ arch/arm64/boot/dts/broadcom/rp1-common.dtsi       | 128 +++
  arch/arm64/kernel/setup.c                          |  27 +
  arch/s390/include/asm/ipl.h                        |   1 +
  arch/s390/kernel/ipl.c                             |   5 +
@@ -32,6 +43,18 @@
  drivers/firmware/efi/libstub/secureboot.c          |  14 +-
  drivers/firmware/efi/secureboot.c                  |  38 +
  drivers/hwtracing/coresight/coresight-etm4x-core.c |  19 +
+ drivers/iommu/Kconfig                              |  15 +
+ drivers/iommu/Makefile                             |   1 +
+ drivers/iommu/bcm2712-iommu-cache.c                |  84 ++
+ drivers/iommu/bcm2712-iommu-cache.h                |   9 +
+ drivers/iommu/bcm2712-iommu.c                      | 550 ++++++++++++
+ drivers/iommu/generic_pt/.kunitconfig              |   1 +
+ drivers/iommu/generic_pt/Kconfig                   |  10 +
+ drivers/iommu/generic_pt/fmt/Makefile              |   2 +
+ drivers/iommu/generic_pt/fmt/bcm2712.h             | 288 +++++++
+ drivers/iommu/generic_pt/fmt/defs_bcm2712.h        |  18 +
+ drivers/iommu/generic_pt/fmt/iommu_bcm2712.c       |   6 +
+ drivers/iommu/generic_pt/kunit_iommu_pt.h          |   2 +-
  drivers/iommu/iommu.c                              |  22 +
  drivers/media/i2c/Kconfig                          |  10 +
  drivers/media/i2c/Makefile                         |   1 +
@@ -42,11 +65,20 @@
  drivers/media/pci/intel/ipu-bridge.c               |  48 ++
  drivers/pci/quirks.c                               |  24 +
  drivers/platform/x86/intel/int3472/discrete.c      | 110 ++-
+ drivers/pwm/Kconfig                                |   7 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-rp1.c                              | 428 +++++++++
  drivers/soundwire/dmi-quirks.c                     |   7 +
  drivers/usb/core/hub.c                             |   7 +
+ fs/xfs/libxfs/xfs_exchmaps.c                       | 103 +--
+ fs/xfs/libxfs/xfs_log_format.h                     |   4 +-
+ fs/xfs/xfs_bmap_util.c                             |  15 +-
+ fs/xfs/xfs_exchrange.c                             |  51 +-
  include/crypto/if_alg.h                            |  42 +-
  include/linux/crypto.h                             |   2 +
  include/linux/efi.h                                |  22 +-
+ include/linux/generic_pt/common.h                  |   6 +
+ include/linux/generic_pt/iommu.h                   |  12 +
  include/linux/random.h                             |  10 +
  include/linux/security.h                           |   9 +
  kernel/module/signing.c                            |   9 +-
@@ -60,7 +92,7 @@
  tools/testing/selftests/bpf/DENYLIST.rhel          |  76 ++
  tools/testing/selftests/bpf/Makefile               |   2 +-
  tools/testing/selftests/bpf/prog_tests/ksyms_btf.c |  31 -
- 63 files changed, 2046 insertions(+), 197 deletions(-)
+ 95 files changed, 4043 insertions(+), 314 deletions(-)
 
 diff --git a/Documentation/admin-guide/sysctl/crypto.rst b/Documentation/admin-guide/sysctl/crypto.rst
 index b707bd314a64..9a1bd53287f4 100644
@@ -137,11 +169,239 @@ index ab93300c8e04..d6194346e366 100644
  
  Deprecation
  -----------
+diff --git a/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml b/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml
+index 2729a542c4f3..7ad6583f7fae 100644
+--- a/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml
++++ b/Documentation/devicetree/bindings/arm/bcm/bcm2835.yaml
+@@ -29,6 +29,12 @@ properties:
+               - raspberrypi,5-model-b
+           - const: brcm,bcm2712
+ 
++      - description: BCM2712-d0 stepping based Boards
++        items:
++          - enum:
++              - raspberrypi,5-model-b-d0
++          - const: brcm,bcm2712-d0
++
+       - description: BCM2835 based Boards
+         items:
+           - enum:
+diff --git a/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml b/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
+index 9aca38a58a16..8f8aae9f3788 100644
+--- a/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
++++ b/Documentation/devicetree/bindings/display/brcm,bcm2835-hvs.yaml
+@@ -35,6 +35,9 @@ properties:
+     minItems: 1
+     maxItems: 2
+ 
++  iommus:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+new file mode 100644
+index 000000000000..5ca8ce469ec3
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommu.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM2712 IOMMU
++
++maintainers:
++  - Daniel Drake <dan@reactivated.net>
++  - Florian Fainelli <florian.fainelli@broadcom.com>
++  - Jim Quinlan <james.quinlan@broadcom.com>
++
++description:
++  The BCM2712 SoC features multiple independent IOMMU instances providing
++  address translation for multimedia hardware blocks, such as the VC6 display
++  pipeline, camera receivers, and ISP. Each IOMMU has its own page tables,
++  control registers, and local TLB, and is additionally linked to a centralized
++  L2 TLB (IOMMUC).
++
++properties:
++  compatible:
++    const: brcm,bcm2712-iommu
++
++  reg:
++    maxItems: 1
++
++  '#iommu-cells':
++    const: 0
++
++  brcm,iommu-cache:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Phandle to the shared IOMMU cache (IOMMUC). Each IOMMU instance caches
++      translated descriptors in this centralized L2 TLB cache block and must
++      trigger cache invalidation commands on it when updating or unmapping page
++      table entries.
++
++required:
++  - compatible
++  - reg
++  - '#iommu-cells'
++  - brcm,iommu-cache
++
++additionalProperties: false
++
++examples:
++  - |
++    iommu@5200 {
++        compatible = "brcm,bcm2712-iommu";
++        reg = <0x5200 0x80>;
++        brcm,iommu-cache = <&iommuc>;
++        #iommu-cells = <0>;
++    };
+diff --git a/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
+new file mode 100644
+index 000000000000..47c584ad667a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommuc.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/brcm,bcm2712-iommuc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Broadcom BCM2712 Shared IOMMU Cache (IOMMUC)
++
++maintainers:
++  - Daniel Drake <dan@reactivated.net>
++  - Florian Fainelli <florian.fainelli@broadcom.com>
++  - Jim Quinlan <james.quinlan@broadcom.com>
++
++description:
++  The BCM2712 IOMMUC is a centralized Translation Lookaside Buffer (TLB) cache
++  which accelerates address translation across the SoC's IOMMU devices. If an
++  address mapping is not found in the IOMMU's local TLB cache, then this
++  IOMMUC is consulted as a L2 TLB. The SoC includes a single IOMMUC which is
++  shared between all IOMMUs, and it must be explicitly invalidated when
++  modifying or unmapping IOMMU page tables.
++
++properties:
++  compatible:
++    const: brcm,bcm2712-iommuc
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    iommuc@5b00 {
++        compatible = "brcm,bcm2712-iommuc";
++        reg = <0x5b00 0x80>;
++    };
+diff --git a/Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml b/Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml
+new file mode 100644
+index 000000000000..be020583fd0b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/raspberrypi,rp1-pwm.yaml
+@@ -0,0 +1,66 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/raspberrypi,rp1-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Raspberry Pi RP1 PWM controller
++
++maintainers:
++  - Naushir Patuck <naush@raspberrypi.com>
++  - Andrea della Porta <andrea.porta@suse.com>
++  - Stanimir Varbanov <svarbanov@suse.de>
++
++allOf:
++  - $ref: pwm.yaml#
++
++description: |
++  The PWM peripheral is a flexible waveform generator with a
++  variety of operational modes. It has the following features:
++   - four independent output channels
++   - 32-bit counter widths
++   - Seven output generation modes
++   - Optional per-channel output inversion
++   - Optional duty-cycle data FIFO with DMA support
++   - Optional sigma-delta noise shaping engine
++  Serves as a fan speed provider to other nodes for a PWM-connected
++  fan.
++
++properties:
++  compatible:
++    const: raspberrypi,rp1-pwm
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  "#pwm-cells":
++    const: 3
++
++  dmas:
++    maxItems: 1
++    description: |
++      Phandle to the DMA controller and the channel specifier for
++      the duty-cycle FIFO.
++
++  dma-names:
++    items:
++      - const: tx
++
++required:
++  - compatible
++  - reg
++  - clocks
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    pwm@98000 {
++      compatible = "raspberrypi,rp1-pwm";
++      reg = <0x98000 0x100>;
++      clocks = <&rp1_clocks 17>;
++      #pwm-cells = <3>;
++    };
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 95cd976a068c..9717876c5e96 100644
+index 95cd976a068c..797dade0f92b 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -25262,6 +25262,12 @@ T:	git git://linuxtv.org/media.git
+@@ -5111,6 +5111,18 @@ N:	bcm2712
+ N:	bcm283*
+ N:	raspberrypi
+ 
++BROADCOM BCM2712 IOMMU DRIVER
++M:	Daniel Drake <dan@reactivated.net>
++M:	Florian Fainelli <florian.fainelli@broadcom.com>
++M:	Jim Quinlan <james.quinlan@broadcom.com>
++R:	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>
++L:	iommu@lists.linux.dev
++L:	linux-rpi-kernel@lists.infradead.org (moderated for non-subscribers)
++S:	Maintained
++F:	Documentation/devicetree/bindings/iommu/brcm,bcm2712-iommu*
++F:	drivers/iommu/bcm2712-iommu*
++F:	drivers/iommu/generic_pt/fmt/*bcm2712*
++
+ BROADCOM BCM281XX/BCM11XXX/BCM216XX ARM ARCHITECTURE
+ M:	Florian Fainelli <florian.fainelli@broadcom.com>
+ M:	Ray Jui <rjui@broadcom.com>
+@@ -25262,6 +25274,12 @@ T:	git git://linuxtv.org/media.git
  F:	Documentation/devicetree/bindings/media/i2c/sony,imx415.yaml
  F:	drivers/media/i2c/imx415.c
  
@@ -155,7 +415,7 @@ index 95cd976a068c..9717876c5e96 100644
  M:	Maxim Levitsky <maximlevitsky@gmail.com>
  M:	Alex Dubov <oakad@yahoo.com>
 diff --git a/Makefile b/Makefile
-index 6f8ed7329a20..928ca4ceafec 100644
+index be413b167b24..f2dc977017fc 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -358,6 +358,17 @@ ifneq ($(filter install,$(MAKECMDGOALS)),)
@@ -225,11 +485,54 @@ index bcb53bc9b931..3eecab4784e9 100644
  	help
  	  The VM uses one page of physical memory for each page table.
  	  For systems with a lot of processes, this can use a lot of
+diff --git a/arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts b/arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts
+index 1f4ebec68370..4f81fbdb85b5 100644
+--- a/arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts
++++ b/arch/arm/boot/dts/broadcom/bcm2711-rpi-cm4-io.dts
+@@ -7,6 +7,10 @@
+ 
+ / {
+ 	model = "Raspberry Pi Compute Module 4 IO Board";
++
++	aliases {
++		rtc0 = &pcf85063;
++	};
+ };
+ 
+ &ddc0 {
+@@ -103,11 +107,26 @@ &genet {
+ };
+ 
+ &i2c0_1 {
+-	rtc@51 {
++	emc2301: fan-controller@2f {
++		compatible = "microchip,emc2301", "microchip,emc2305";
++		reg = <0x2f>;
++		#address-cells = <1>;
++		#size-cells = <0>;
++		#pwm-cells = <3>;
++
++		fan@0 {
++			reg = <0x0>;
++			pwms = <&emc2301 26000 0 1>;
++			#cooling-cells = <2>;
++		};
++	};
++
++	pcf85063: rtc@51 {
+ 		/* Attention: An alarm resets the machine */
+ 		compatible = "nxp,pcf85063a";
+ 		reg = <0x51>;
+ 		quartz-load-femtofarads = <7000>;
++		wakeup-source;
+ 	};
+ };
+ 
 diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
-index fc57d90d92c1..9e96c3e403e8 100644
+index 89b6a7dc6d32..35f169143b2a 100644
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -1489,7 +1489,7 @@ endchoice
+@@ -1519,7 +1519,7 @@ endchoice
  
  config ARM64_FORCE_52BIT
  	bool "Force 52-bit virtual addresses for userspace"
@@ -238,6 +541,507 @@ index fc57d90d92c1..9e96c3e403e8 100644
  	help
  	  For systems with 52-bit userspace VAs enabled, the kernel will attempt
  	  to maintain compatibility with older software by providing 48-bit VAs
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
+index 127be0fc27c2..ae4b7c587dbc 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
++++ b/arch/arm64/boot/dts/broadcom/bcm2712-d-rpi-5-b.dts
+@@ -3,6 +3,11 @@
+ 
+ #include "bcm2712-rpi-5-b.dts"
+ 
++/ {
++	compatible = "raspberrypi,5-model-b-d0", "brcm,bcm2712-d0";
++	model = "Raspberry Pi 5 d0 Stepping";
++};
++
+ &gio_aon {
+ 	brcm,gpio-bank-widths = <15 6>;
+ 
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
+index b7a6bc34ae1a..e5030da60f9e 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b-base.dtsi
+@@ -3,6 +3,7 @@
+ 
+ #include <dt-bindings/gpio/gpio.h>
+ #include <dt-bindings/input/input.h>
++#include <dt-bindings/power/raspberrypi-power.h>
+ #include "bcm2712.dtsi"
+ 
+ / {
+@@ -104,6 +105,18 @@ wl_on_reg: wl-on-reg {
+ 	};
+ };
+ 
++&ddc0 {
++	status = "okay";
++};
++
++&ddc1 {
++	status = "okay";
++};
++
++&disp_intr {
++	status = "okay";
++};
++
+ &pinctrl {
+ 	bt_shutdown_default: bt-shutdown-default-state {
+ 		function = "gpio";
+@@ -227,19 +240,35 @@ bluetooth: bluetooth {
+ 	};
+ };
+ 
++&usb {
++	power-domains = <&power RPI_POWER_DOMAIN_USB>;
++	status = "okay";
++};
++
+ &hvs {
+ 	clocks = <&firmware_clocks 4>, <&firmware_clocks 16>;
+ 	clock-names = "core", "disp";
++	status = "okay";
+ };
+ 
+ &hdmi0 {
+ 	clocks = <&firmware_clocks 13>, <&firmware_clocks 14>, <&dvp 0>, <&clk_27MHz>;
+ 	clock-names = "hdmi", "bvb", "audio", "cec";
++	status = "okay";
+ };
+ 
+ &hdmi1 {
+ 	clocks = <&firmware_clocks 13>, <&firmware_clocks 14>, <&dvp 1>, <&clk_27MHz>;
+ 	clock-names = "hdmi", "bvb", "audio", "cec";
++	status = "okay";
++};
++
++&mop {
++	status = "okay";
++};
++
++&moplet {
++	status = "okay";
+ };
+ 
+ &pcie1 {
+@@ -250,6 +279,18 @@ &pcie2 {
+ 	status = "okay";
+ };
+ 
++&pixelvalve0 {
++	status = "okay";
++};
++
++&pixelvalve1 {
++	status = "okay";
++};
++
+ &v3d {
+ 	clocks = <&firmware_clocks 5>;
+ };
++
++&vc4 {
++	status = "okay";
++};
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
+index 0fc57e72632e..75b262e292cd 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
++++ b/arch/arm64/boot/dts/broadcom/bcm2712-rpi-5-b.dts
+@@ -64,11 +64,31 @@ phy1: ethernet-phy@1 {
+ };
+ 
+ &rp1_gpio {
++	fan_pwm_default_state: fan-pwm-default-state {
++		function = "pwm1";
++		pins = "gpio45";
++		bias-pull-down;
++	};
++
+ 	usb_vbus_default_state: usb-vbus-default-state {
+ 		function = "vbus1";
+ 		groups = "vbus1";
+ 	};
+ 
++	rp1_spi0_default_state: rp1-spi0-default-state {
++		function = "spi0";
++		groups = "spi0";
++		bias-disable;
++		drive-strength = <12>;
++		slew-rate = <1>;
++	};
++
++	rp1_spi0_cs_default_state: rp1-spi0-cs-default-state {
++		function = "gpio";
++		pins = "gpio7", "gpio8";
++		bias-pull-up;
++	};
++
+ 	rp1_i2c4_default_state: rp1-i2c4-default-state {
+ 		function = "i2c4";
+ 		groups = "i2c4_2";
+@@ -94,6 +114,20 @@ &rp1_i2c6 {
+ 	pinctrl-names = "default";
+ };
+ 
++&rp1_spi0 {
++	pinctrl-0 = <&rp1_spi0_default_state &rp1_spi0_cs_default_state>;
++	pinctrl-names = "default";
++
++	num-cs = <2>;
++	cs-gpios = <&rp1_gpio 8 GPIO_ACTIVE_LOW &rp1_gpio 7 GPIO_ACTIVE_LOW>;
++};
++
++&rp1_pwm1 {
++	pinctrl-0 = <&fan_pwm_default_state>;
++	pinctrl-names = "default";
++	status = "okay";
++};
++
+ &rp1_usb0 {
+ 	pinctrl-0 = <&usb_vbus_default_state>;
+ 	pinctrl-names = "default";
+diff --git a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
+index 09ff5e9959d3..5ae9a96d8054 100644
+--- a/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
++++ b/arch/arm64/boot/dts/broadcom/bcm2712.dtsi
+@@ -10,6 +10,15 @@ / {
+ 
+ 	interrupt-parent = <&gicv2>;
+ 
++	arm-pmu {
++		compatible = "arm,cortex-a76-pmu";
++		interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 17 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>,
++			<GIC_SPI 19 IRQ_TYPE_LEVEL_HIGH>;
++		interrupt-affinity = <&cpu0>, <&cpu1>, <&cpu2>, <&cpu3>;
++	};
++
+ 	clocks {
+ 		/* The oscillator is the root of the clock tree. */
+ 		clk_osc: clk-osc {
+@@ -46,6 +55,13 @@ clk_sw_baud: clk-sw-baud {
+ 			clock-frequency = <96000000>;
+ 			clock-output-names = "sw-baud";
+ 		};
++
++		clk_usb: clk-usb {
++			compatible = "fixed-clock";
++			#clock-cells = <0>;
++			clock-frequency = <480000000>;
++			clock-output-names = "otg";
++		};
+ 	};
+ 
+ 	cpus: cpus {
+@@ -359,12 +375,14 @@ pixelvalve0: pixelvalve@7c410000 {
+ 			compatible = "brcm,bcm2712-pixelvalve0";
+ 			reg = <0x7c410000 0x100>;
+ 			interrupts = <GIC_SPI 101 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		pixelvalve1: pixelvalve@7c411000 {
+ 			compatible = "brcm,bcm2712-pixelvalve1";
+ 			reg = <0x7c411000 0x100>;
+ 			interrupts = <GIC_SPI 110 IRQ_TYPE_LEVEL_HIGH>;
++			status = "disabled";
+ 		};
+ 
+ 		mop: mop@7c500000 {
+@@ -372,6 +390,7 @@ mop: mop@7c500000 {
+ 			reg = <0x7c500000 0x28>;
+ 			interrupt-parent = <&disp_intr>;
+ 			interrupts = <1>;
++			status = "disabled";
+ 		};
+ 
+ 		moplet: moplet@7c501000 {
+@@ -379,6 +398,7 @@ moplet: moplet@7c501000 {
+ 			reg = <0x7c501000 0x20>;
+ 			interrupt-parent = <&disp_intr>;
+ 			interrupts = <0>;
++			status = "disabled";
+ 		};
+ 
+ 		disp_intr: interrupt-controller@7c502000 {
+@@ -387,6 +407,7 @@ disp_intr: interrupt-controller@7c502000 {
+ 			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <1>;
++			status = "disabled";
+ 		};
+ 
+ 		dvp: clock@7c700000 {
+@@ -405,6 +426,7 @@ ddc0: i2c@7d508200 {
+ 			clock-frequency = <97500>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
++			status = "disabled";
+ 		};
+ 
+ 		ddc1: i2c@7d508280 {
+@@ -415,6 +437,7 @@ ddc1: i2c@7d508280 {
+ 			clock-frequency = <97500>;
+ 			#address-cells = <1>;
+ 			#size-cells = <0>;
++			status = "disabled";
+ 		};
+ 
+ 		bsc_irq: interrupt-controller@7d508380 {
+@@ -460,6 +483,7 @@ hdmi0: hdmi@7c701400 {
+ 			interrupt-names = "cec-tx", "cec-rx", "cec-low",
+ 					  "hpd-connected", "hpd-removed";
+ 			ddc = <&ddc0>;
++			status = "disabled";
+ 		};
+ 
+ 		hdmi1: hdmi@7c706400 {
+@@ -489,6 +513,19 @@ hdmi1: hdmi@7c706400 {
+ 			interrupt-names = "cec-tx", "cec-rx", "cec-low",
+ 					  "hpd-connected", "hpd-removed";
+ 			ddc = <&ddc1>;
++			status = "disabled";
++		};
++
++		avs_monitor: avs-monitor@7d542000 {
++			compatible = "brcm,bcm2711-avs-monitor",
++						"syscon", "simple-mfd";
++			reg = <0x7d542000 0xf00>;
++			status = "okay";
++
++			thermal: thermal {
++				compatible = "brcm,bcm2711-thermal";
++				#thermal-sensor-cells = <0>;
++			};
+ 		};
+ 	};
+ 
+@@ -626,6 +663,19 @@ pcie2: pcie@1000120000 {
+ 			status = "disabled";
+ 		};
+ 
++		iommu4: iommu@1000005200 {
++			/* IOMMU for VC4 (HVS & MPL/TXP), Unicam, PISP-FE, MiniBVN */
++			compatible = "brcm,bcm2712-iommu";
++			reg = <0x10 0x5200 0x0 0x80>;
++			#iommu-cells = <0>;
++			brcm,iommu-cache = <&iommuc>;
++		};
++
++		iommuc: iommuc@1000005b00 {
++			compatible = "brcm,bcm2712-iommuc";
++			reg = <0x10 0x5b00 0x0 0x80>;
++		};
++
+ 		mip0: msi-controller@1000130000 {
+ 			compatible = "brcm,bcm2712-mip";
+ 			reg = <0x10 0x00130000 0x00 0xc0>,
+@@ -663,10 +713,24 @@ v3d: gpu@1002000000 {
+ 			interrupts = <GIC_SPI 250 IRQ_TYPE_LEVEL_HIGH>,
+ 				     <GIC_SPI 249 IRQ_TYPE_LEVEL_HIGH>;
+ 		};
++
++		usb: usb@1000480000 {
++			compatible = "brcm,bcm2835-usb";
++			reg = <0x10 0x00480000  0x0 0x10000>;
++			interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++			clocks = <&clk_usb>;
++			clock-names = "otg";
++			phys = <&usbphy>;
++			phy-names = "usb2-phy";
++			status = "disabled";
++		};
+ 	};
+ 
+ 	vc4: gpu {
+ 		compatible = "brcm,bcm2712-vc6";
++		status = "disabled";
+ 	};
+ 
+ 	timer {
+@@ -701,5 +765,32 @@ hvs: hvs@107c580000 {
+ 		interrupt-parent = <&disp_intr>;
+ 		interrupts = <2>, <9>, <16>;
+ 		interrupt-names = "ch0-eof", "ch1-eof", "ch2-eof";
++		iommus = <&iommu4>;
++		status = "disabled";
++	};
++
++	thermal-zones {
++		cpu_thermal: cpu-thermal {
++			polling-delay-passive = <1000>;
++			polling-delay = <1000>;
++			coefficients = <(-550) 450000>;
++			thermal-sensors = <&thermal>;
++
++			thermal_trips: trips {
++				cpu_crit: cpu-crit {
++					temperature	= <110000>;
++					hysteresis	= <0>;
++					type		= "critical";
++				};
++			};
++
++			cooling_maps: cooling-maps {
++			};
++		};
++	};
++
++	usbphy: phy {
++		compatible = "usb-nop-xceiv";
++		#phy-cells = <0>;
+ 	};
+ };
+diff --git a/arch/arm64/boot/dts/broadcom/rp1-common.dtsi b/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
+index 16f535939583..980a5f3b231e 100644
+--- a/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
++++ b/arch/arm64/boot/dts/broadcom/rp1-common.dtsi
+@@ -26,6 +26,125 @@ rp1_clocks: clocks@40018000 {
+ 				       <200000000>;  // RP1_CLK_SYS
+ 	};
+ 
++	rp1_spi8: spi@4004c000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x4004c000  0x0 0x130>;
++		interrupts = <56 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <2>;
++
++		status = "disabled";
++	};
++
++	rp1_spi0: spi@40050000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40050000  0x0 0x130>;
++		interrupts = <19 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <4>;
++
++		status = "disabled";
++	};
++
++	rp1_spi1: spi@40054000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40054000  0x0 0x130>;
++		interrupts = <20 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <3>;
++
++		status = "disabled";
++	};
++
++	rp1_spi2: spi@40058000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40058000  0x0 0x130>;
++		interrupts = <21 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <2>;
++
++		status = "disabled";
++	};
++
++	rp1_spi3: spi@4005c000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x4005c000  0x0 0x130>;
++		interrupts = <22 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <2>;
++
++		status = "disabled";
++	};
++
++	rp1_spi4: spi@40060000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40060000  0x0 0x130>;
++		interrupts = <23 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <0>;
++		#size-cells = <0>;
++		num-cs = <1>;
++		spi-slave;
++
++		status = "disabled";
++	};
++
++	rp1_spi5: spi@40064000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40064000  0x0 0x130>;
++		interrupts = <24 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <2>;
++
++		status = "disabled";
++	};
++
++	rp1_spi6: spi@40068000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x40068000  0x0 0x130>;
++		interrupts = <54 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <1>;
++		#size-cells = <0>;
++		num-cs = <3>;
++
++		status = "disabled";
++	};
++
++	rp1_spi7: spi@4006c000 {
++		compatible = "snps,dw-apb-ssi";
++		reg = <0x00 0x4006c000  0x0 0x130>;
++		interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
++		clocks = <&rp1_clocks RP1_CLK_SYS>;
++		clock-names = "ssi_clk";
++		#address-cells = <0>;
++		#size-cells = <0>;
++		num-cs = <1>;
++		spi-slave;
++
++		status = "disabled";
++	};
++
+ 	rp1_i2c0: i2c@40070000 {
+ 		compatible = "snps,designware-i2c";
+ 		reg = <0x0 0x40070000  0x0 0x1000>;
+@@ -33,7 +152,16 @@ rp1_i2c0: i2c@40070000 {
+ 		clocks = <&rp1_clocks RP1_CLK_SYS>;
+ 		i2c-scl-rising-time-ns = <65>;
+ 		i2c-scl-falling-time-ns = <100>;
++		status = "disabled";
++	};
+ 
++	rp1_pwm1: pwm@4009c000 {
++		compatible = "raspberrypi,rp1-pwm";
++		reg = <0x00 0x4009c000  0x0 0x100>;
++		clocks = <&rp1_clocks RP1_CLK_PWM1>;
++		assigned-clocks = <&rp1_clocks RP1_CLK_PWM1>;
++		assigned-clock-rates = <50000000>;
++		#pwm-cells = <3>;
+ 		status = "disabled";
+ 	};
+ 
 diff --git a/arch/arm64/kernel/setup.c b/arch/arm64/kernel/setup.c
 index 23c05dc7a8f2..d7b7b2f39e16 100644
 --- a/arch/arm64/kernel/setup.c
@@ -1490,6 +2294,1099 @@ index 2247ad55d444..5f9da88479e8 100644
  	amba_driver_unregister(&etm4x_amba_driver);
  	platform_driver_unregister(&etm4_platform_driver);
  	etm4_pm_clear();
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 6e07bd69467a..de85fba9c0a7 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -386,6 +386,21 @@ config VSI_IOMMU
+ 	  Say Y here if you want to use this IOMMU in front of these
+ 	  hardware blocks.
+ 
++config BCM2712_IOMMU
++	bool "BCM2712 IOMMU driver"
++	depends on (ARCH_BCM2835 && ARM64) || COMPILE_TEST
++	select IOMMU_API
++	select GENERIC_PT
++	select IOMMU_PT
++	select IOMMU_PT_BCM2712
++	help
++	  Support for IOMMU on BCM2712 SoC. This IOMMU can be used by the
++	  display controller and various multimedia devices to perform
++	  efficient memory management.
++
++	  Say Y here if you want to use this IOMMU in front of these
++	  hardware blocks.
++
+ config IOMMU_DEBUG_PAGEALLOC
+ 	bool "Debug IOMMU mappings against page allocations"
+ 	depends on DEBUG_PAGEALLOC && IOMMU_API && PAGE_EXTENSION
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 2f05725eaab1..29a26d2a3af1 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -37,4 +37,5 @@ obj-$(CONFIG_IOMMU_IOPF) += io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+ obj-$(CONFIG_APPLE_DART) += apple-dart.o
+ obj-$(CONFIG_VSI_IOMMU) += vsi-iommu.o
++obj-$(CONFIG_BCM2712_IOMMU) += bcm2712-iommu.o bcm2712-iommu-cache.o
+ obj-$(CONFIG_IOMMU_DEBUG_PAGEALLOC) += iommu-debug-pagealloc.o
+diff --git a/drivers/iommu/bcm2712-iommu-cache.c b/drivers/iommu/bcm2712-iommu-cache.c
+new file mode 100644
+index 000000000000..8ed436943b83
+--- /dev/null
++++ b/drivers/iommu/bcm2712-iommu-cache.c
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * IOMMU driver for BCM2712 TLB cache
++ *
++ * Copyright (c) 2023 Raspberry Pi Ltd.
++ * Copyright (c) 2026 Daniel Drake
++ *
++ * The BCM2712 IOMMUC is a centralized TLB which accelerates address translation
++ * across the SoC's IOMMU devices. If an address mapping is not found in the
++ * IOMMU's local TLB cache, then this IOMMUC is consulted. The IOMMUC must be
++ * explicitly invalidated when modifying or unmapping IOMMU page tables.
++ */
++
++#include <linux/bits.h>
++#include <linux/cleanup.h>
++#include <linux/err.h>
++#include <linux/iopoll.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++
++#include "bcm2712-iommu-cache.h"
++
++struct bcm2712_iommu_cache {
++	struct device *dev;
++	spinlock_t hw_lock;
++	void __iomem *reg_base;
++};
++
++#define MMUC_CONTROL_ENABLE   BIT(0)
++#define MMUC_CONTROL_FLUSH    BIT(1)
++#define MMUC_CONTROL_FLUSHING BIT(2)
++
++void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache)
++{
++	u32 val;
++	int ret;
++
++	scoped_guard(spinlock_irqsave, &cache->hw_lock) {
++		writel(MMUC_CONTROL_ENABLE | MMUC_CONTROL_FLUSH,
++		       cache->reg_base);
++
++		ret = readl_poll_timeout_atomic(cache->reg_base, val,
++						!(val & MMUC_CONTROL_FLUSHING),
++						0, 50);
++	}
++
++	if (ret)
++		dev_err_ratelimited(cache->dev, "cache flush timed out\n");
++}
++
++static int bcm2712_iommu_cache_probe(struct platform_device *pdev)
++{
++	struct bcm2712_iommu_cache *cache;
++
++	cache = devm_kzalloc(&pdev->dev, sizeof(*cache), GFP_KERNEL);
++	if (!cache)
++		return -ENOMEM;
++
++	cache->dev = &pdev->dev;
++	spin_lock_init(&cache->hw_lock);
++
++	cache->reg_base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(cache->reg_base))
++		return PTR_ERR(cache->reg_base);
++
++	platform_set_drvdata(pdev, cache);
++	return 0;
++}
++
++static const struct of_device_id bcm2712_iommu_cache_of_match[] = {
++	{ .compatible = "brcm,bcm2712-iommuc" },
++	{ /* sentinel */ },
++};
++
++static struct platform_driver bcm2712_iommu_cache_driver = {
++	.probe = bcm2712_iommu_cache_probe,
++	.driver = {
++		.name = "bcm2712-iommu-cache",
++		.of_match_table = bcm2712_iommu_cache_of_match,
++		.suppress_bind_attrs = true,
++	},
++};
++builtin_platform_driver(bcm2712_iommu_cache_driver);
+diff --git a/drivers/iommu/bcm2712-iommu-cache.h b/drivers/iommu/bcm2712-iommu-cache.h
+new file mode 100644
+index 000000000000..d2f7851831cc
+--- /dev/null
++++ b/drivers/iommu/bcm2712-iommu-cache.h
+@@ -0,0 +1,9 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef _BCM2712_IOMMU_CACHE_H
++#define _BCM2712_IOMMU_CACHE_H
++
++struct bcm2712_iommu_cache;
++
++void bcm2712_iommu_cache_flush(struct bcm2712_iommu_cache *cache);
++
++#endif
+diff --git a/drivers/iommu/bcm2712-iommu.c b/drivers/iommu/bcm2712-iommu.c
+new file mode 100644
+index 000000000000..301855475c88
+--- /dev/null
++++ b/drivers/iommu/bcm2712-iommu.c
+@@ -0,0 +1,550 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * IOMMU driver for Broadcom BCM2712
++ *
++ * Copyright (c) 2023-2025 Raspberry Pi Ltd.
++ * Copyright (c) 2026 Daniel Drake
++ *
++ * Each BCM2712 IOMMU has multiple devices hardwired into it, whose
++ * DMA transactions all route through the IOMMU. There is no stream ID tagging
++ * or any other kind of segmentation to differentiate between requests from
++ * different devices. It is also not possible to toggle a specific device
++ * between iommu-mapped and bypass modes.
++ *
++ * The hardware supports the simultaneous configuration of a bypass window
++ * (where memory accesses operate in identity mode) and a translation aperture
++ * (supporting page mapping). While combining these two would allow for
++ * GART-like operation, this driver's paging domain implementation configures
++ * only the translation aperture (starting at IOVA 0) offering a degree of
++ * memory protection.
++ *
++ * The page table format is a two-level format handled by generic_pt/bcm2712.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/cleanup.h>
++#include <linux/dma-mapping.h>
++#include <linux/err.h>
++#include <linux/iommu.h>
++#include <linux/iopoll.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++#include <linux/sizes.h>
++#include <linux/generic_pt/iommu.h>
++
++#include "bcm2712-iommu-cache.h"
++#include "dma-iommu.h"
++#include "iommu-pages.h"
++
++/* BCM2712 IOMMU is organized around 4Kbyte pages */
++#define IOMMU_PAGE_SHIFT       12
++#define IOMMU_PAGE_SIZE        (1ul << IOMMU_PAGE_SHIFT)
++/* A PTE is 4 bytes */
++#define PTE_SIZE_SHIFT         2
++/* L1/L2 table sizing (IOMMU hardware pages): 1024 entries per page */
++#define PTES_PER_IOPG_SHIFT    (IOMMU_PAGE_SHIFT - PTE_SIZE_SHIFT)
++
++#define MMMU_CTRL_OFFSET                       0x00
++#define MMMU_CTRL_CAP_EXCEEDED                 BIT(27)
++#define MMMU_CTRL_CAP_EXCEEDED_ABORT_EN        BIT(26)
++#define MMMU_CTRL_CAP_EXCEEDED_INT_EN          BIT(25)
++#define MMMU_CTRL_CAP_EXCEEDED_EXCEPTION_EN    BIT(24)
++#define MMMU_CTRL_PT_INVALID                   BIT(20)
++#define MMMU_CTRL_PT_INVALID_ABORT_EN          BIT(19)
++#define MMMU_CTRL_PT_INVALID_INT_EN            BIT(18)
++#define MMMU_CTRL_PT_INVALID_EXCEPTION_EN      BIT(17)
++#define MMMU_CTRL_PT_INVALID_EN                BIT(16)
++#define MMMU_CTRL_WRITE_VIOLATION              BIT(12)
++#define MMMU_CTRL_WRITE_VIOLATION_ABORT_EN     BIT(11)
++#define MMMU_CTRL_WRITE_VIOLATION_INT_EN       BIT(10)
++#define MMMU_CTRL_WRITE_VIOLATION_EXCEPTION_EN BIT(9)
++#define MMMU_CTRL_BYPASS                       BIT(8)
++#define MMMU_CTRL_TLB_CLEARING                 BIT(7)
++#define MMMU_CTRL_STATS_CLEAR                  BIT(3)
++#define MMMU_CTRL_TLB_CLEAR                    BIT(2)
++#define MMMU_CTRL_STATS_ENABLE                 BIT(1)
++#define MMMU_CTRL_ENABLE                       BIT(0)
++
++#define MMMU_CTRL_OPERATING_FLAGS (\
++	MMMU_CTRL_CAP_EXCEEDED_ABORT_EN    | \
++	MMMU_CTRL_PT_INVALID_ABORT_EN      | \
++	MMMU_CTRL_PT_INVALID_EN            | \
++	MMMU_CTRL_WRITE_VIOLATION_ABORT_EN | \
++	MMMU_CTRL_STATS_ENABLE             | \
++	MMMU_CTRL_ENABLE)
++
++#define MMMU_PT_PA_BASE_OFFSET                 0x04
++
++#define MMMU_ADDR_CAP_OFFSET                   0x14
++#define MMMU_ADDR_CAP_ENABLE                   BIT(31)
++#define ADDR_CAP_SHIFT                         ilog2(SZ_256M)
++
++#define MMMU_SHOOT_DOWN_OFFSET                 0x18
++#define MMMU_SHOOT_DOWN_SHOOTING               BIT(31)
++#define MMMU_SHOOT_DOWN_SHOOT                  BIT(30)
++
++#define MMMU_BYPASS_START_OFFSET               0x1c
++#define MMMU_BYPASS_START_ENABLE               BIT(31)
++
++#define MMMU_BYPASS_END_OFFSET                 0x20
++#define MMMU_BYPASS_END_ENABLE                 BIT(31)
++
++#define MMMU_MISC_OFFSET                       0x24
++#define MMMU_MISC_SINGLE_TABLE                 BIT(31)
++
++#define MMMU_ILLEGAL_ADR_OFFSET                0x30
++#define MMMU_ILLEGAL_ADR_ENABLE                BIT(31)
++
++#define MMMU_DEBUG_INFO_OFFSET                 0x38
++#define MMMU_DEBUG_INFO_VERSION_MASK           0x0000000Fu
++#define MMMU_DEBUG_INFO_VA_WIDTH_MASK          0x000000F0u
++#define MMMU_DEBUG_INFO_PA_WIDTH_MASK          0x00000F00u
++#define MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK     0x000FF000u
++#define MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK   0x0FF00000u
++#define MMMU_DEBUG_INFO_BYPASS_4M              BIT(28)
++#define MMMU_DEBUG_INFO_BYPASS                 BIT(29)
++
++struct bcm2712_iommu {
++	struct device *dev;
++	struct iommu_device iommu;
++	struct bcm2712_iommu_domain *domain;
++	struct bcm2712_iommu_cache *cache;
++	void __iomem *reg_base;
++	spinlock_t hw_lock;
++	size_t bigpage_size;
++	size_t superpage_size;
++};
++
++struct bcm2712_iommu_domain {
++	union {
++		struct iommu_domain base;
++		struct pt_iommu_bcm2712 pt;
++	};
++	struct bcm2712_iommu *mmu;
++	void *default_page;
++};
++
++static inline void bcm2712_iommu_writel(struct bcm2712_iommu *mmu,
++					unsigned int offset, u32 val)
++{
++	writel(val, mmu->reg_base + offset);
++}
++
++static inline u32 bcm2712_iommu_readl(struct bcm2712_iommu *mmu,
++				      unsigned int offset)
++{
++	return readl(mmu->reg_base + offset);
++}
++
++static struct bcm2712_iommu_domain *
++to_bcm2712_domain(struct iommu_domain *domain)
++{
++	return container_of(domain, struct bcm2712_iommu_domain, base);
++}
++
++static void bcm2712_iommu_init(struct bcm2712_iommu *mmu)
++{
++	unsigned int bigpage_width, superpage_width;
++	u32 u = bcm2712_iommu_readl(mmu, MMMU_DEBUG_INFO_OFFSET);
++	u32 pa_width = FIELD_GET(MMMU_DEBUG_INFO_PA_WIDTH_MASK, u);
++
++	dev_dbg(mmu->dev, "DEBUG_INFO = 0x%08x\n", u);
++	WARN_ON(FIELD_GET(MMMU_DEBUG_INFO_VERSION_MASK, u) < 4 ||
++		FIELD_GET(MMMU_DEBUG_INFO_VA_WIDTH_MASK, u) < 6 ||
++		pa_width < 6 || !(u & MMMU_DEBUG_INFO_BYPASS));
++
++	dma_set_mask_and_coherent(mmu->dev, DMA_BIT_MASK(pa_width + 30u));
++
++	bigpage_width = FIELD_GET(MMMU_DEBUG_INFO_BIGPAGE_WIDTH_MASK, u);
++	if (bigpage_width)
++		mmu->bigpage_size = IOMMU_PAGE_SIZE << bigpage_width;
++
++	superpage_width = FIELD_GET(MMMU_DEBUG_INFO_SUPERPAGE_WIDTH_MASK, u);
++	if (superpage_width)
++		mmu->superpage_size = IOMMU_PAGE_SIZE << superpage_width;
++
++	/* Disable MMU and clear sticky flags */
++	bcm2712_iommu_writel(mmu, MMMU_CTRL_OFFSET,
++			     MMMU_CTRL_CAP_EXCEEDED | MMMU_CTRL_PT_INVALID |
++			     MMMU_CTRL_WRITE_VIOLATION |
++			     MMMU_CTRL_STATS_CLEAR);
++
++	/* Put MMU into 2-level mode */
++	bcm2712_iommu_writel(mmu, MMMU_MISC_OFFSET,
++			     bcm2712_iommu_readl(mmu, MMMU_MISC_OFFSET) &
++				     ~MMMU_MISC_SINGLE_TABLE);
++}
++
++static int bcm2712_iommu_identity_attach(struct iommu_domain *identity_domain,
++					 struct device *dev,
++					 struct iommu_domain *old)
++{
++	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
++
++	guard(spinlock_irqsave)(&mmu->hw_lock);
++	bcm2712_iommu_writel(mmu, MMMU_CTRL_OFFSET, 0);
++	mmu->domain = NULL;
++
++	return 0;
++}
++
++static struct iommu_domain bcm2712_identity_domain = {
++	.type = IOMMU_DOMAIN_IDENTITY,
++	.ops = &(const struct iommu_domain_ops) {
++		.attach_dev = bcm2712_iommu_identity_attach,
++	},
++};
++
++static int bcm2712_iommu_clear_and_enable(struct bcm2712_iommu *mmu)
++	__must_hold(&mmu->hw_lock)
++{
++	u32 val;
++
++	bcm2712_iommu_cache_flush(mmu->cache);
++	bcm2712_iommu_writel(mmu, MMMU_CTRL_OFFSET,
++			     MMMU_CTRL_OPERATING_FLAGS | MMMU_CTRL_TLB_CLEAR);
++	return readl_poll_timeout_atomic(mmu->reg_base + MMMU_CTRL_OFFSET, val,
++					 !(val & MMMU_CTRL_TLB_CLEARING), 0,
++					 50);
++}
++
++
++static int bcm2712_iommu_attach_dev(struct iommu_domain *domain,
++				    struct device *dev,
++				    struct iommu_domain *old)
++{
++	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
++	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
++	struct pt_iommu_bcm2712_hw_info info;
++	u32 default_page_pfn;
++	int ret = 0;
++
++	/* all attached devices must belong to the same IOMMU instance */
++	if (mydomain->mmu != mmu)
++		return -EINVAL;
++
++	scoped_guard(spinlock_irqsave, &mmu->hw_lock) {
++		if (mmu->domain == mydomain)
++			break;
++
++		/* Configure translation aperture */
++		bcm2712_iommu_writel(mmu, MMMU_ADDR_CAP_OFFSET,
++				     MMMU_ADDR_CAP_ENABLE |
++					     (domain->geometry.aperture_end >>
++					      ADDR_CAP_SHIFT));
++
++		/*
++		 * When the IOMMU handles a request, it adds the
++		 * PT_PA_BASE_OFFSET to (IOVA>>32) to calculate the PFN of the
++		 * corresponding L1 directory page.
++		 * IOVA bits [31:22] are then used to fetch the L1 descriptor
++		 * within (which in turn points to the L2 table).
++		 * This clever logic would allow for a L1 table larger than 4kb
++		 * (and hence a larger aperture).
++		 */
++		pt_iommu_bcm2712_hw_info(&mydomain->pt, &info);
++		bcm2712_iommu_writel(mmu, MMMU_PT_PA_BASE_OFFSET,
++				     info.pt_base >> IOMMU_PAGE_SHIFT);
++
++		/* Disable bypass window */
++		bcm2712_iommu_writel(mmu, MMMU_BYPASS_START_OFFSET, 0);
++		bcm2712_iommu_writel(mmu, MMMU_BYPASS_END_OFFSET, 0);
++
++		/*
++		 * A default (error) page is used to catch illegal reads/writes.
++		 */
++		default_page_pfn = virt_to_phys(mydomain->default_page) >>
++				   IOMMU_PAGE_SHIFT;
++		bcm2712_iommu_writel(mmu, MMMU_ILLEGAL_ADR_OFFSET,
++				     MMMU_ILLEGAL_ADR_ENABLE |
++					     default_page_pfn);
++
++		ret = bcm2712_iommu_clear_and_enable(mmu);
++		if (ret) {
++			bcm2712_iommu_writel(mmu, MMMU_CTRL_OFFSET, 0);
++			mmu->domain = NULL;
++			break;
++		}
++
++		mmu->domain = mydomain;
++	}
++
++	if (ret)
++		dev_err_ratelimited(mmu->dev,
++				    "TLB clear timed out during attach\n");
++
++	return ret;
++}
++
++static int bcm2712_iommu_shootdown_range(struct bcm2712_iommu *mmu,
++					 unsigned long iova, size_t size)
++	__must_hold(&mmu->hw_lock)
++{
++	unsigned long start_pfn = iova >> IOMMU_PAGE_SHIFT;
++	unsigned long end_pfn = (iova + size - 1) >> IOMMU_PAGE_SHIFT;
++	unsigned long pfn;
++	u32 val;
++	int ret;
++
++	/* Shootdown register deals with 4 pages at a time */
++	for (pfn = round_down(start_pfn, 4); pfn <= end_pfn; pfn += 4) {
++		bcm2712_iommu_writel(mmu, MMMU_SHOOT_DOWN_OFFSET,
++				     MMMU_SHOOT_DOWN_SHOOT | pfn);
++		ret = readl_poll_timeout_atomic(
++			mmu->reg_base + MMMU_SHOOT_DOWN_OFFSET, val,
++			!(val & MMMU_SHOOT_DOWN_SHOOTING), 0, 50);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int bcm2712_iommu_sync_range(struct iommu_domain *domain,
++				    unsigned long iova, size_t size)
++{
++	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
++	struct bcm2712_iommu *mmu = mydomain->mmu;
++	int ret = 0;
++
++	if (!size)
++		return 0;
++
++	scoped_guard(spinlock_irqsave, &mmu->hw_lock) {
++		if (mmu->domain != mydomain)
++			return 0;
++
++		/* If invalidating more than 1MB, just do a full TLB clear */
++		if (size >= SZ_1M) {
++			ret = bcm2712_iommu_clear_and_enable(mmu);
++		} else {
++			bcm2712_iommu_cache_flush(mmu->cache);
++			ret = bcm2712_iommu_shootdown_range(mmu, iova, size);
++		}
++	}
++
++	if (ret)
++		dev_err_ratelimited(mmu->dev,
++				    "TLB sync timed out (size=%#zx)\n", size);
++
++	return ret;
++}
++
++static void bcm2712_iommu_sync(struct iommu_domain *domain,
++			       struct iommu_iotlb_gather *gather)
++{
++	bcm2712_iommu_sync_range(domain, gather->start,
++				 gather->end - gather->start + 1);
++	iommu_put_pages_list(&gather->freelist);
++}
++
++static int bcm2712_iommu_sync_map(struct iommu_domain *domain,
++				  unsigned long iova, size_t size)
++{
++	return bcm2712_iommu_sync_range(domain, iova, size);
++}
++
++static void bcm2712_iommu_sync_all(struct iommu_domain *domain)
++{
++	size_t aperture_size = domain->geometry.aperture_end -
++			       domain->geometry.aperture_start + 1;
++
++	bcm2712_iommu_sync_range(domain, domain->geometry.aperture_start,
++				 aperture_size);
++}
++
++static void bcm2712_iommu_domain_free(struct iommu_domain *domain)
++{
++	struct bcm2712_iommu_domain *mydomain = to_bcm2712_domain(domain);
++	struct bcm2712_iommu *mmu = mydomain->mmu;
++
++	scoped_guard(spinlock_irqsave, &mmu->hw_lock) {
++		if (mmu->domain == mydomain) {
++			bcm2712_iommu_writel(mmu, MMMU_CTRL_OFFSET, 0);
++			mmu->domain = NULL;
++		}
++	}
++
++	pt_iommu_deinit(&mydomain->pt.iommu);
++	if (mydomain->default_page)
++		iommu_free_pages(mydomain->default_page);
++	kfree(mydomain);
++}
++
++static const struct iommu_domain_ops bcm2712_paging_domain_ops = {
++	IOMMU_PT_DOMAIN_OPS(bcm2712),
++	.attach_dev	 = bcm2712_iommu_attach_dev,
++	.iotlb_sync      = bcm2712_iommu_sync,
++	.iotlb_sync_map  = bcm2712_iommu_sync_map,
++	.flush_iotlb_all = bcm2712_iommu_sync_all,
++	.free		 = bcm2712_iommu_domain_free,
++};
++
++static struct iommu_domain *bcm2712_iommu_domain_alloc(struct device *dev)
++{
++	struct bcm2712_iommu *mmu = dev_iommu_priv_get(dev);
++	struct bcm2712_iommu_domain *domain;
++	struct pt_iommu_bcm2712_cfg cfg = {};
++	int ret;
++
++	domain = kzalloc_obj(*domain);
++	if (!domain)
++		return NULL;
++
++	domain->mmu = mmu;
++	domain->pt.iommu.iommu_device = mmu->dev;
++	cfg.common.features = BIT(PT_FEAT_DMA_INCOHERENT);
++
++	/* Bigpage and superpage sizes are typically 64K and 1M, but may vary */
++	if (mmu->bigpage_size)
++		cfg.bigpage_lg2 = ilog2(mmu->bigpage_size);
++	if (mmu->superpage_size)
++		cfg.superpage_lg2 = ilog2(mmu->superpage_size);
++
++	/* 2-level format: 10-bit L1 + 10-bit L2 + 12-bit page offset */
++	cfg.common.hw_max_vasz_lg2 =
++		(2 * PTES_PER_IOPG_SHIFT) + IOMMU_PAGE_SHIFT;
++
++	/* PTEs encode a 25-bit output address PFN */
++	cfg.common.hw_max_oasz_lg2 = 25 + IOMMU_PAGE_SHIFT;
++
++	ret = pt_iommu_bcm2712_init(&domain->pt, &cfg, GFP_KERNEL);
++	if (ret)
++		goto err;
++
++	/* Set up a default (error) page used to catch illegal reads/writes */
++	domain->default_page = iommu_alloc_pages_sz(GFP_KERNEL, PAGE_SIZE);
++	if (!domain->default_page)
++		goto err;
++
++	domain->base.ops = &bcm2712_paging_domain_ops;
++	return &domain->base;
++
++err:
++	bcm2712_iommu_domain_free(&domain->base);
++	return NULL;
++}
++
++static struct bcm2712_iommu *
++bcm2712_iommu_get_by_fwnode(struct fwnode_handle *fwnode)
++{
++	struct device *dev __free(put_device) =
++		bus_find_device_by_fwnode(&platform_bus_type, fwnode);
++
++	return dev ? dev_get_drvdata(dev) : NULL;
++}
++
++static struct iommu_device *bcm2712_iommu_probe_device(struct device *dev)
++{
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct bcm2712_iommu *mmu;
++
++	if (!fwspec || !fwspec->iommu_fwnode)
++		return ERR_PTR(-ENODEV);
++
++	mmu = bcm2712_iommu_get_by_fwnode(fwspec->iommu_fwnode);
++	if (!mmu)
++		return ERR_PTR(-ENODEV);
++
++	dev_iommu_priv_set(dev, mmu);
++
++	return &mmu->iommu;
++}
++
++static int bcm2712_iommu_of_xlate(struct device *dev,
++				  const struct of_phandle_args *args)
++{
++	return iommu_fwspec_add_ids(dev, args->args, 0);
++}
++
++static const struct iommu_ops bcm2712_iommu_ops = {
++	.identity_domain     = &bcm2712_identity_domain,
++	.domain_alloc_paging = bcm2712_iommu_domain_alloc,
++	.probe_device        = bcm2712_iommu_probe_device,
++	.device_group        = generic_single_device_group,
++	.get_resv_regions    = iommu_dma_get_resv_regions,
++	.of_xlate            = bcm2712_iommu_of_xlate,
++};
++
++static const struct of_device_id bcm2712_iommu_of_match[] = {
++	{ .compatible = "brcm,bcm2712-iommu" },
++	{ /* sentinel */ }
++};
++
++static int bcm2712_iommu_init_cache(struct bcm2712_iommu *mmu,
++				    struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++
++	struct device_node *cache_np __free(device_node) =
++		of_parse_phandle(dev->of_node, "brcm,iommu-cache", 0);
++	if (!cache_np)
++		return dev_err_probe(dev, -ENOENT,
++				     "missing brcm,iommu-cache property\n");
++
++	struct platform_device *cache_pdev __free(platform_device_put) =
++		of_find_device_by_node(cache_np);
++	if (!cache_pdev)
++		return dev_err_probe(dev, -EPROBE_DEFER,
++				     "waiting for cache device\n");
++
++	mmu->cache = platform_get_drvdata(cache_pdev);
++	if (!mmu->cache)
++		return dev_err_probe(dev, -EPROBE_DEFER,
++				     "waiting for cache driver probe\n");
++
++	return 0;
++}
++
++static int bcm2712_iommu_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct bcm2712_iommu *mmu;
++	int ret;
++
++	mmu = devm_kzalloc(dev, sizeof(*mmu), GFP_KERNEL);
++	if (!mmu)
++		return -ENOMEM;
++
++	mmu->dev = dev;
++	spin_lock_init(&mmu->hw_lock);
++
++	mmu->reg_base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(mmu->reg_base))
++		return PTR_ERR(mmu->reg_base);
++
++	ret = bcm2712_iommu_init_cache(mmu, pdev);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, mmu);
++	bcm2712_iommu_init(mmu);
++
++	ret = iommu_device_sysfs_add(&mmu->iommu, dev, NULL, "%s",
++				     dev_name(dev));
++	if (ret)
++		return ret;
++
++	ret = iommu_device_register(&mmu->iommu, &bcm2712_iommu_ops, dev);
++	if (ret) {
++		iommu_device_sysfs_remove(&mmu->iommu);
++		return ret;
++	}
++
++	return 0;
++}
++
++static struct platform_driver bcm2712_iommu_driver = {
++	.driver	= {
++		.name		     = "bcm2712-iommu",
++		.of_match_table	     = bcm2712_iommu_of_match,
++		.suppress_bind_attrs = true,
++	},
++	.probe	= bcm2712_iommu_probe,
++};
++builtin_platform_driver(bcm2712_iommu_driver);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Daniel Drake <dan@reactivated.net>");
++MODULE_DESCRIPTION("Broadcom BCM2712 IOMMU driver");
+diff --git a/drivers/iommu/generic_pt/.kunitconfig b/drivers/iommu/generic_pt/.kunitconfig
+index 0bb98fe581fe..a3da74328f12 100644
+--- a/drivers/iommu/generic_pt/.kunitconfig
++++ b/drivers/iommu/generic_pt/.kunitconfig
+@@ -7,6 +7,7 @@ CONFIG_IOMMU_PT_AMDV1=y
+ CONFIG_IOMMU_PT_VTDSS=y
+ CONFIG_IOMMU_PT_RISCV64=y
+ CONFIG_IOMMU_PT_X86_64=y
++CONFIG_IOMMU_PT_BCM2712=y
+ CONFIG_IOMMU_PT_KUNIT_TEST=y
+ 
+ CONFIG_IOMMUFD=y
+diff --git a/drivers/iommu/generic_pt/Kconfig b/drivers/iommu/generic_pt/Kconfig
+index f4ed1add58b7..2a81dac960ac 100644
+--- a/drivers/iommu/generic_pt/Kconfig
++++ b/drivers/iommu/generic_pt/Kconfig
+@@ -72,6 +72,15 @@ config IOMMU_PT_X86_64
+ 
+ 	  Selected automatically by an IOMMU driver that uses this format.
+ 
++config IOMMU_PT_BCM2712
++	tristate "IOMMU page table for Broadcom BCM2712"
++	help
++	  iommu_domain implementation for the Broadcom BCM2712 IOMMU found on
++	  Raspberry Pi 5. It supports 4K page sizes over a 2-level page table
++	  format.
++
++	  Selected automatically by an IOMMU driver that uses this format.
++
+ config IOMMU_PT_KUNIT_TEST
+ 	tristate "IOMMU Page Table KUnit Test" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+@@ -79,6 +88,7 @@ config IOMMU_PT_KUNIT_TEST
+ 	depends on IOMMU_PT_RISCV64 || !IOMMU_PT_RISCV64
+ 	depends on IOMMU_PT_X86_64 || !IOMMU_PT_X86_64
+ 	depends on IOMMU_PT_VTDSS || !IOMMU_PT_VTDSS
++	depends on IOMMU_PT_BCM2712 || !IOMMU_PT_BCM2712
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  Enable kunit tests for GENERIC_PT and IOMMU_PT that covers all the
+diff --git a/drivers/iommu/generic_pt/fmt/Makefile b/drivers/iommu/generic_pt/fmt/Makefile
+index ea024d582594..82ca3c36823d 100644
+--- a/drivers/iommu/generic_pt/fmt/Makefile
++++ b/drivers/iommu/generic_pt/fmt/Makefile
+@@ -9,6 +9,8 @@ iommu_pt_fmt-$(CONFIG_IOMMU_PT_RISCV64) += riscv64
+ 
+ iommu_pt_fmt-$(CONFIG_IOMMU_PT_X86_64) += x86_64
+ 
++iommu_pt_fmt-$(CONFIG_IOMMU_PT_BCM2712) += bcm2712
++
+ IOMMU_PT_KUNIT_TEST :=
+ define create_format
+ obj-$(2) += iommu_$(1).o
+diff --git a/drivers/iommu/generic_pt/fmt/bcm2712.h b/drivers/iommu/generic_pt/fmt/bcm2712.h
+new file mode 100644
+index 000000000000..2c5b034441c1
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/bcm2712.h
+@@ -0,0 +1,288 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (c) 2026 Daniel Drake
++ *
++ * BCM2712 IOMMU simple two level page table
++ */
++#ifndef __GENERIC_PT_FMT_BCM2712_H
++#define __GENERIC_PT_FMT_BCM2712_H
++
++#include "defs_bcm2712.h"
++#include "../pt_defs.h"
++
++#include <linux/bitfield.h>
++#include <linux/container_of.h>
++#include <linux/log2.h>
++#include <linux/sizes.h>
++
++enum {
++	/* Hardware provides a two-level page table */
++	PT_MAX_TOP_LEVEL = 1,
++
++	/* Hardware page size is strictly 4kb */
++	PT_GRANULE_LG2SZ = ilog2(SZ_4K),
++	PT_TABLEMEM_LG2SZ = PT_GRANULE_LG2SZ,
++
++	/* Table entries and leaf entries are 32 bits */
++	PT_ITEM_WORD_SIZE = sizeof(pt_bcm2712_entry_t),
++
++	/* Leaf entries encode a 25-bit PFN */
++	PT_MAX_OUTPUT_ADDRESS_LG2 = 25 + PT_GRANULE_LG2SZ,
++
++	/*
++	 * For simplicity, only manage mappings within an address space of
++	 * exactly 4GB. This is because our Level 1 directory page will be 4kb
++	 * in the smallest case, permitting 1024 entries pointing at Level 0
++	 * pages, each permitting 4mb of mapped memory.
++	 */
++	PT_MAX_VA_ADDRESS_LG2 = ilog2(SZ_4G),
++
++	/* Level 1 base address is programmed as a 32-bit PFN */
++	PT_TOP_PHYS_MASK = GENMASK_ULL(31 + PT_GRANULE_LG2SZ, PT_GRANULE_LG2SZ),
++};
++
++/* PTE bits */
++enum {
++	BCM2712PT_VALID = BIT(28),
++	BCM2712PT_WRITE = BIT(29),
++	BCM2712PT_PAGESIZE = GENMASK(31, 30),
++	BCM2712PT_PFN = GENMASK(24, 0),
++};
++
++#define common_to_bcm2712pt(common_ptr) \
++	container_of_const(common_ptr, struct pt_bcm2712, common)
++#define to_bcm2712pt(pts) common_to_bcm2712pt((pts)->range->common)
++
++static inline pt_oaddr_t bcm2712pt_table_pa(const struct pt_state *pts)
++{
++	return oalog2_mul(FIELD_GET(BCM2712PT_PFN, pts->entry),
++			  PT_GRANULE_LG2SZ);
++}
++#define pt_table_pa bcm2712pt_table_pa
++#define pt_item_oa bcm2712pt_table_pa
++
++static inline bool bcm2712pt_can_have_leaf(const struct pt_state *pts)
++{
++	return true;
++}
++#define pt_can_have_leaf bcm2712pt_can_have_leaf
++
++/* 4MB pages are installed at level 1, everything else at level 0 */
++static inline unsigned int bcm2712pt_pgsz_lg2_to_level(struct pt_common *common,
++						       unsigned int pgsize_lg2)
++{
++	return pgsize_lg2 == ilog2(SZ_4M) ? 1 : 0;
++}
++#define pt_pgsz_lg2_to_level bcm2712pt_pgsz_lg2_to_level
++
++static inline pt_vaddr_t bcm2712pt_possible_sizes(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++
++	if (pts->level == 1)
++		return SZ_4M;
++
++	return SZ_4K |
++	       (table->bigpage_lg2 ? BIT_ULL(table->bigpage_lg2) : 0) |
++	       (table->superpage_lg2 ? BIT_ULL(table->superpage_lg2) : 0);
++}
++#define pt_possible_sizes bcm2712pt_possible_sizes
++
++static inline unsigned int
++bcm2712pt_entry_num_contig_lg2(const struct pt_state *pts)
++{
++	struct pt_bcm2712 *table = common_to_bcm2712pt(pts->range->common);
++	u32 pgsz = FIELD_GET(BCM2712PT_PAGESIZE, pts->entry);
++
++	if (pts->level != 0 || !(pts->entry & BCM2712PT_VALID))
++		return 0;
++
++	/*
++	 * Superpage/bigpage contiguous mapping (really just hinting) is handled
++	 * via PAGESIZE bits on each leaf entry.
++	 */
++	if (pgsz == 2 && table->superpage_lg2)
++		return table->superpage_lg2 - PT_GRANULE_LG2SZ;
++	else if (pgsz == 1 && table->bigpage_lg2)
++		return table->bigpage_lg2 - PT_GRANULE_LG2SZ;
++	return 0;
++}
++#define pt_entry_num_contig_lg2 bcm2712pt_entry_num_contig_lg2
++
++static inline unsigned int bcm2712pt_num_items_lg2(const struct pt_state *pts)
++{
++	return PT_TABLEMEM_LG2SZ - ilog2(PT_ITEM_WORD_SIZE);
++}
++#define pt_num_items_lg2 bcm2712pt_num_items_lg2
++
++static inline enum pt_entry_type bcm2712pt_load_entry_raw(struct pt_state *pts)
++{
++	const pt_bcm2712_entry_t *tablep =
++		pt_cur_table(pts, pt_bcm2712_entry_t);
++
++	pts->entry = READ_ONCE(tablep[pts->index]);
++	if (!(pts->entry & BCM2712PT_VALID))
++		return PT_ENTRY_EMPTY;
++
++	if (pts->level == 1) {
++		if (FIELD_GET(BCM2712PT_PAGESIZE, pts->entry) == 3)
++			return PT_ENTRY_OA;
++		return PT_ENTRY_TABLE;
++	}
++
++	return PT_ENTRY_OA;
++}
++#define pt_load_entry_raw bcm2712pt_load_entry_raw
++
++static inline void
++bcm2712pt_install_leaf_entry(struct pt_state *pts, pt_oaddr_t oa,
++			     unsigned int oasz_lg2,
++			     const struct pt_write_attrs *attrs)
++{
++	pt_bcm2712_entry_t *tablep = pt_cur_table(pts, pt_bcm2712_entry_t);
++	pt_bcm2712_entry_t entry;
++
++	if (!pt_check_install_leaf_args(pts, oa, oasz_lg2))
++		return;
++
++	entry = BCM2712PT_VALID | attrs->descriptor_bits |
++		FIELD_PREP(BCM2712PT_PFN, oalog2_div(oa, PT_GRANULE_LG2SZ));
++
++	if (pts->level == 1) {
++		/* Level 1 hugepage (4MB) */
++		entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 3);
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
++		return;
++	}
++
++	if (oasz_lg2 == PT_GRANULE_LG2SZ) {
++		WRITE_ONCE(tablep[pts->index], entry);
++		pts->entry = entry;
++	} else {
++		struct pt_bcm2712 *table =
++			common_to_bcm2712pt(pts->range->common);
++		u32 *end;
++
++		tablep += pts->index;
++		end = tablep + log2_to_int(oasz_lg2 - PT_GRANULE_LG2SZ);
++
++		/*
++		 * Leaf entries can contain hints indicating bigpage/superpage
++		 * contiguous mappings to permit TLB optimization
++		 */
++		if (oasz_lg2 == table->superpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 2);
++		else if (oasz_lg2 == table->bigpage_lg2)
++			entry |= FIELD_PREP(BCM2712PT_PAGESIZE, 1);
++
++		pts->entry = entry;
++		for (; tablep != end; tablep++, entry++)
++			WRITE_ONCE(*tablep, entry);
++	}
++}
++#define pt_install_leaf_entry bcm2712pt_install_leaf_entry
++
++static inline bool bcm2712pt_install_table(struct pt_state *pts,
++					   pt_oaddr_t table_pa,
++					   const struct pt_write_attrs *attrs)
++{
++	pt_bcm2712_entry_t entry =
++		BCM2712PT_VALID |
++		FIELD_PREP(BCM2712PT_PFN,
++			   oalog2_div(table_pa, PT_GRANULE_LG2SZ));
++
++	return pt_table_install32(pts, entry);
++}
++#define pt_install_table bcm2712pt_install_table
++
++static inline void bcm2712pt_attr_from_entry(const struct pt_state *pts,
++					     struct pt_write_attrs *attrs)
++{
++	attrs->descriptor_bits = pts->entry & BCM2712PT_WRITE;
++}
++#define pt_attr_from_entry bcm2712pt_attr_from_entry
++
++static inline unsigned int bcm2712pt_max_sw_bit(struct pt_common *common)
++{
++	return 2;
++}
++#define pt_max_sw_bit bcm2712pt_max_sw_bit
++
++static inline u32 bcm2712pt_sw_bit(unsigned int bitnr)
++{
++	if (__builtin_constant_p(bitnr) && bitnr > 2)
++		BUILD_BUG();
++	if (PT_WARN_ON(bitnr > 2))
++		return 0;
++
++	/* Bits 27, 26 and 25 are believed spare */
++	return BIT(27 - bitnr);
++}
++#define pt_sw_bit bcm2712pt_sw_bit
++
++/* --- iommu */
++#include <linux/generic_pt/iommu.h>
++#include <linux/iommu.h>
++
++#define pt_iommu_table pt_iommu_bcm2712
++
++/* The common struct is in the per-format common struct */
++static inline struct pt_common *common_from_iommu(struct pt_iommu *iommu_table)
++{
++	return &container_of(iommu_table, struct pt_iommu_table, iommu)
++			->bcm2712pt.common;
++}
++
++static inline struct pt_iommu *iommu_from_common(struct pt_common *common)
++{
++	return &container_of(common, struct pt_iommu_table, bcm2712pt.common)
++			->iommu;
++}
++
++static inline int bcm2712_pt_iommu_set_prot(struct pt_common *common,
++					    struct pt_write_attrs *attrs,
++					    unsigned int iommu_prot)
++{
++	attrs->descriptor_bits = 0;
++	if (iommu_prot & IOMMU_WRITE)
++		attrs->descriptor_bits |= BCM2712PT_WRITE;
++	return 0;
++}
++#define pt_iommu_set_prot bcm2712_pt_iommu_set_prot
++
++static inline int bcm2712_pt_fmt_init(struct pt_iommu_table *fmt_table,
++				      const struct pt_iommu_bcm2712_cfg *cfg)
++{
++	fmt_table->bcm2712pt.bigpage_lg2 = cfg->bigpage_lg2;
++	fmt_table->bcm2712pt.superpage_lg2 = cfg->superpage_lg2;
++
++	pt_top_set_level(&fmt_table->bcm2712pt.common, PT_MAX_TOP_LEVEL);
++	return 0;
++}
++#define pt_iommu_fmt_init bcm2712_pt_fmt_init
++
++static inline void
++bcm2712pt_iommu_fmt_hw_info(struct pt_iommu_bcm2712 *table,
++			    const struct pt_range *top_range,
++			    struct pt_iommu_bcm2712_hw_info *info)
++{
++	info->pt_base = virt_to_phys(top_range->top_table);
++	PT_WARN_ON(info->pt_base & ~PT_TOP_PHYS_MASK);
++}
++#define pt_iommu_fmt_hw_info bcm2712pt_iommu_fmt_hw_info
++
++#if defined(GENERIC_PT_KUNIT)
++static const struct pt_iommu_bcm2712_cfg bcm2712_kunit_fmt_cfgs[] = {
++	[0] = {
++		.common.hw_max_vasz_lg2 = 32,
++		.common.hw_max_oasz_lg2 = 37,
++		.bigpage_lg2 = 16,
++		.superpage_lg2 = 20,
++	},
++};
++#define kunit_fmt_cfgs bcm2712_kunit_fmt_cfgs
++enum { KUNIT_FMT_FEATURES = 0 };
++#endif
++
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/defs_bcm2712.h b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+new file mode 100644
+index 000000000000..f1d983be1716
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/defs_bcm2712.h
+@@ -0,0 +1,18 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++#ifndef __GENERIC_PT_FMT_DEFS_BCM2712_H
++#define __GENERIC_PT_FMT_DEFS_BCM2712_H
++
++#include <linux/generic_pt/common.h>
++#include <linux/types.h>
++
++typedef u32 pt_bcm2712_entry_t;
++typedef u64 pt_vaddr_t;
++typedef u64 pt_oaddr_t;
++
++struct bcm2712pt_write_attrs {
++	pt_bcm2712_entry_t descriptor_bits;
++	gfp_t gfp;
++};
++#define pt_write_attrs bcm2712pt_write_attrs
++
++#endif
+diff --git a/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+new file mode 100644
+index 000000000000..43fbc3cf3adc
+--- /dev/null
++++ b/drivers/iommu/generic_pt/fmt/iommu_bcm2712.c
+@@ -0,0 +1,6 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#define PT_FMT bcm2712
++#define PT_SUPPORTED_FEATURES BIT(PT_FEAT_DMA_INCOHERENT)
++
++#include <linux/generic_pt/iommu.h>
++#include "iommu_template.h"
+diff --git a/drivers/iommu/generic_pt/kunit_iommu_pt.h b/drivers/iommu/generic_pt/kunit_iommu_pt.h
+index ece1c9b8c55d..9fc71db74234 100644
+--- a/drivers/iommu/generic_pt/kunit_iommu_pt.h
++++ b/drivers/iommu/generic_pt/kunit_iommu_pt.h
+@@ -403,7 +403,7 @@ static void test_pgsize_boundary(struct kunit *test)
+ 	    priv->smallest_pgsz != SZ_4K)
+ 		kunit_skip(test, "Format does not have the required range");
+ 
+-	do_map(test, 0xfef80000, 0x208b95d000, 0xfef9ffff - 0xfef80000 + 1);
++	do_map(test, 0xfef80000, 0x8b95d000, 0xfef9ffff - 0xfef80000 + 1);
+ }
+ 
+ /* See https://lore.kernel.org/r/20250826143816.38686-1-eugkoira@amazon.com */
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
 index 23a531595835..2f8952a08112 100644
 --- a/drivers/iommu/iommu.c
@@ -1721,7 +3618,7 @@ index 3a1ec0059ef7..9fadca7a3bee 100644
  	return 0;
 diff --git a/drivers/media/i2c/imx471.c b/drivers/media/i2c/imx471.c
 new file mode 100644
-index 000000000000..4053aed84340
+index 000000000000..b442b083286d
 --- /dev/null
 +++ b/drivers/media/i2c/imx471.c
 @@ -0,0 +1,957 @@
@@ -1773,7 +3670,7 @@ index 000000000000..4053aed84340
 +#define IMX471_ANA_GAIN_DEFAULT			0
 +
 +/* Digital gain control */
-+#define IMX471_REG_DPGA_USE_GLOBAL_GAIN		CCI_REG16(0x3ff9)
++#define IMX471_REG_DPGA_USE_GLOBAL_GAIN		CCI_REG8(0x3ff9)
 +#define IMX471_REG_DIG_GAIN_GLOBAL		CCI_REG16(0x020e)
 +#define IMX471_DGTL_GAIN_MIN			256
 +#define IMX471_DGTL_GAIN_MAX			4095
@@ -3042,6 +4939,470 @@ index 115bb37577a1..749e2e323583 100644
  }
  
  int int3472_discrete_parse_crs(struct int3472_discrete_device *int3472)
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index e8886a9b64d9..493b65965c8c 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -637,6 +637,13 @@ config PWM_ROCKCHIP
+ 	  Generic PWM framework driver for the PWM controller found on
+ 	  Rockchip SoCs.
+ 
++config PWM_RASPBERRYPI_RP1
++	tristate "RP1 PWM support"
++	depends on MISC_RP1 || COMPILE_TEST
++	depends on HAS_IOMEM
++	help
++	  PWM framework driver for Raspberry Pi RP1 controller.
++
+ config PWM_SAMSUNG
+ 	tristate "Samsung PWM support"
+ 	depends on PLAT_SAMSUNG || ARCH_S5PV210 || ARCH_EXYNOS || COMPILE_TEST
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 5630a521a7cf..c07fd24f69f3 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -57,6 +57,7 @@ obj-$(CONFIG_PWM_RENESAS_RZG2L_GPT)	+= pwm-rzg2l-gpt.o
+ obj-$(CONFIG_PWM_RENESAS_RZ_MTU3)	+= pwm-rz-mtu3.o
+ obj-$(CONFIG_PWM_RENESAS_TPU)	+= pwm-renesas-tpu.o
+ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
++obj-$(CONFIG_PWM_RASPBERRYPI_RP1)	+= pwm-rp1.o
+ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+ obj-$(CONFIG_PWM_SIFIVE)	+= pwm-sifive.o
+ obj-$(CONFIG_PWM_SL28CPLD)	+= pwm-sl28cpld.o
+diff --git a/drivers/pwm/pwm-rp1.c b/drivers/pwm/pwm-rp1.c
+new file mode 100644
+index 000000000000..d4b13fba8d23
+--- /dev/null
++++ b/drivers/pwm/pwm-rp1.c
+@@ -0,0 +1,428 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * pwm-rp1.c
++ *
++ * Raspberry Pi RP1 PWM.
++ *
++ * Copyright © 2026 Raspberry Pi Ltd.
++ *
++ * Author: Naushir Patuck (naush@raspberrypi.com)
++ *
++ * Based on the pwm-bcm2835 driver by:
++ * Bart Tanghe <bart.tanghe@thomasmore.be>
++ *
++ * Datasheet: https://pip-assets.raspberrypi.com/categories/892-raspberry-pi-5/documents/RP-008370-DS-1-rp1-peripherals.pdf?disposition=inline
++ *
++ * Limitations:
++ * - Channels can be enabled/disabled through a global update flag, while the
++ *   period and duty per-channel registers are independently updatable, and
++ *   they are latched on the end of (specific channel) period strobe.
++ *   This means that period and duty changes might result in glitches if the
++ *   period/duty is changed exactly during an end of period strobe.
++ * - Since the duty/period registers are freely updatable (do not depend on
++ *   the global update flag), setting one of them close to the period end and
++ *   the other right afterwards results in a mixed output for that cycle because
++ *   the write ops are not atomic.
++ * - The global update flag prevents mis-sampling of multi-bit bus signals in
++ *   the PWM clock domain. This ensures that all PWM channel settings update
++ *   on the same PWM clock cycle. Channels start in sync only if they share the
++ *   same period.
++ * - If both duty and period are set to 0, the output is a constant low signal
++ *   if polarity is normal or a constant high signal if polarity is inversed.
++ * - When disabled the output is driven to 0 if polarity is normal, or to 1
++ *   if polarity is inversed.
++ * - Disabling the PWM stops the output immediately, without waiting for current
++ *   period to complete first.
++ * - Channels are phase-capable, but on RPi5, the firmware can use a channel
++ *   phase register to report the RPM of the fan connected to that PWM
++ *   channel. As a result, phase control will be ignored for now.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/clk.h>
++#include <linux/err.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/units.h>
++#include <linux/spinlock.h>
++
++#define RP1_PWM_GLB_CTRL			0x000
++#define RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(chan)	BIT(chan)
++#define RP1_PWM_GLB_CTRL_SET_UPDATE		BIT(31)
++
++#define RP1_PWM_CHAN_CTRL(chan)			(0x014 + ((chan) * 0x10))
++#define RP1_PWM_CHAN_CTRL_POLARITY		BIT(3)
++#define RP1_PWM_CHAN_CTRL_FIFO_POP_MASK		BIT(8)
++#define RP1_PWM_CHAN_CTRL_MODE			GENMASK(2, 0)
++enum rp1_pwm_ctrl_mode {
++	RP1_PWM_CHAN_CTRL_MODE_ZERO,
++	RP1_PWM_CHAN_CTRL_MODE_TE_MS,
++	RP1_PWM_CHAN_CTRL_MODE_PC_MS,
++	RP1_PWM_CHAN_CTRL_MODE_PD_ENC,
++	RP1_PWM_CHAN_CTRL_MODE_MSB_SER,
++	RP1_PWM_CHAN_CTRL_MODE_PPM,
++	RP1_PWM_CHAN_CTRL_MODE_LE_MS,
++	RP1_PWM_CHAN_CTRL_MODE_LSB_SER,
++};
++
++#define RP1_PWM_CHAN_CTRL_DEFAULT		(RP1_PWM_CHAN_CTRL_FIFO_POP_MASK +  \
++						FIELD_PREP(RP1_PWM_CHAN_CTRL_MODE, \
++						RP1_PWM_CHAN_CTRL_MODE_TE_MS))
++
++#define RP1_PWM_RANGE(chan)			(0x018 + ((chan) * 0x10))
++#define RP1_PWM_PHASE(chan)			(0x01C + ((chan) * 0x10))
++#define RP1_PWM_DUTY(chan)			(0x020 + ((chan) * 0x10))
++
++#define RP1_PWM_NUM_PWMS			4
++
++struct rp1_pwm {
++	void __iomem *base;
++	struct clk *clk;
++	unsigned long clk_rate;
++	bool clk_enabled;
++	spinlock_t lock; /* sync for RP1_PWM_GLB_CTRL RMW access */
++};
++
++struct rp1_pwm_waveform {
++	u32 period_ticks;
++	u32 duty_ticks;
++	bool enabled;
++	bool inverted_polarity;
++};
++
++static void rp1_pwm_apply_config(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	u32 value;
++
++	/* update the changed registers on the next strobe to avoid glitches */
++	value = readl(rp1->base + RP1_PWM_GLB_CTRL);
++	value |= RP1_PWM_GLB_CTRL_SET_UPDATE;
++	writel(value, rp1->base + RP1_PWM_GLB_CTRL);
++}
++
++static int rp1_pwm_request(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	u32 value, polarity;
++
++	/* init channel to reset defaults, preserving the polarity bit */
++	value = readl(rp1->base + RP1_PWM_CHAN_CTRL(pwm->hwpwm));
++	polarity = FIELD_GET(RP1_PWM_CHAN_CTRL_POLARITY, value);
++	value = u32_replace_bits(RP1_PWM_CHAN_CTRL_DEFAULT, polarity, RP1_PWM_CHAN_CTRL_POLARITY);
++	writel(value, rp1->base + RP1_PWM_CHAN_CTRL(pwm->hwpwm));
++
++	return 0;
++}
++
++static int rp1_pwm_round_waveform_tohw(struct pwm_chip *chip,
++				       struct pwm_device *pwm,
++				       const struct pwm_waveform *wf,
++				       void *_wfhw)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	u64 period_ticks, duty_ticks, offset_ticks;
++	struct rp1_pwm_waveform *wfhw = _wfhw;
++	u64 clk_rate = rp1->clk_rate;
++	int ret = 0;
++
++	if (!wf->period_length_ns) {
++		*wfhw = (typeof(*wfhw)){
++			.enabled = false,
++			.inverted_polarity = false,
++		};
++		return 0;
++	}
++
++	period_ticks = mul_u64_u64_div_u64(wf->period_length_ns, clk_rate, NSEC_PER_SEC);
++
++	/*
++	 * The period is limited to U32_MAX, and it will be decremented by one later
++	 * to allow 100% duty cycle.
++	 */
++	if (period_ticks > U32_MAX) {
++		period_ticks = U32_MAX;
++	} else if (period_ticks < 2) {
++		period_ticks = 2;
++		ret = 1;
++	}
++
++	duty_ticks = mul_u64_u64_div_u64(wf->duty_length_ns, clk_rate, NSEC_PER_SEC);
++	duty_ticks = min(duty_ticks, period_ticks);
++	offset_ticks = mul_u64_u64_div_u64(wf->duty_offset_ns, clk_rate, NSEC_PER_SEC);
++	if (offset_ticks >= period_ticks)
++		offset_ticks = period_ticks - 1;
++	if (duty_ticks && offset_ticks &&
++	    duty_ticks + offset_ticks >= period_ticks) {
++		wfhw->duty_ticks = period_ticks - duty_ticks;
++		wfhw->inverted_polarity = true;
++	} else {
++		wfhw->duty_ticks = duty_ticks;
++		wfhw->inverted_polarity = false;
++	}
++	/* Account for the extra tick at the end of the period */
++	wfhw->period_ticks = period_ticks - 1;
++
++	wfhw->enabled = true;
++
++	return ret;
++}
++
++static int rp1_pwm_round_waveform_fromhw(struct pwm_chip *chip,
++					 struct pwm_device *pwm,
++					 const void *_wfhw,
++					 struct pwm_waveform *wf)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	const struct rp1_pwm_waveform *wfhw = _wfhw;
++	u64 clk_rate = rp1->clk_rate;
++	u64 ticks;
++
++	*wf = (struct pwm_waveform){ };
++
++	if (!wfhw->enabled)
++		return 0;
++
++	wf->period_length_ns = DIV_ROUND_UP_ULL(((u64)wfhw->period_ticks + 1) * NSEC_PER_SEC,
++						(u32)clk_rate);
++
++	if (!wfhw->inverted_polarity) {
++		ticks = min_t(u64, wfhw->duty_ticks, (u64)wfhw->period_ticks + 1);
++		wf->duty_length_ns = DIV_ROUND_UP_ULL(ticks * NSEC_PER_SEC,
++						      (u32)clk_rate);
++	} else {
++		if (wfhw->duty_ticks > (u64)wfhw->period_ticks + 1) {
++			/* 100% duty cycle case */
++			ticks = 0;
++		} else {
++			ticks = (u64)wfhw->period_ticks + 1 - wfhw->duty_ticks;
++		}
++		wf->duty_length_ns = DIV_ROUND_UP_ULL(ticks * NSEC_PER_SEC, (u32)clk_rate);
++		wf->duty_offset_ns = DIV_ROUND_UP_ULL((u64)(wfhw->period_ticks + 1 - ticks) *
++						      NSEC_PER_SEC, (u32)clk_rate);
++	}
++
++	return 0;
++}
++
++static int rp1_pwm_write_waveform(struct pwm_chip *chip,
++				  struct pwm_device *pwm,
++				  const void *_wfhw)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	const struct rp1_pwm_waveform *wfhw = _wfhw;
++	u32 value, ctrl;
++
++	/* set polarity */
++	value = readl(rp1->base + RP1_PWM_CHAN_CTRL(pwm->hwpwm));
++	if (!wfhw->inverted_polarity)
++		value &= ~RP1_PWM_CHAN_CTRL_POLARITY;
++	else
++		value |= RP1_PWM_CHAN_CTRL_POLARITY;
++	writel(value, rp1->base + RP1_PWM_CHAN_CTRL(pwm->hwpwm));
++
++	guard(spinlock_irqsave)(&rp1->lock);
++
++	/* early exit if disabled */
++	ctrl = readl(rp1->base + RP1_PWM_GLB_CTRL);
++	if (!wfhw->enabled) {
++		ctrl &= ~RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm);
++		/* just disable the channel and bail out early */
++		writel(ctrl, rp1->base + RP1_PWM_GLB_CTRL);
++		rp1_pwm_apply_config(chip, pwm);
++		return 0;
++	}
++
++	/* set period and duty cycle */
++	writel(wfhw->period_ticks, rp1->base + RP1_PWM_RANGE(pwm->hwpwm));
++	writel(wfhw->duty_ticks, rp1->base + RP1_PWM_DUTY(pwm->hwpwm));
++
++	/* enable the channel */
++	ctrl |= RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm);
++	writel(ctrl,  rp1->base + RP1_PWM_GLB_CTRL);
++
++	rp1_pwm_apply_config(chip, pwm);
++
++	return 0;
++}
++
++static int rp1_pwm_read_waveform(struct pwm_chip *chip,
++				 struct pwm_device *pwm,
++				 void *_wfhw)
++{
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	struct rp1_pwm_waveform *wfhw = _wfhw;
++	u32 value;
++
++	*wfhw = (typeof(*wfhw)) {
++		.period_ticks = 0,
++		.duty_ticks = 0,
++	};
++
++	value = readl(rp1->base + RP1_PWM_GLB_CTRL);
++	wfhw->enabled = !!(value & RP1_PWM_GLB_CTRL_CHANNEL_ENABLE(pwm->hwpwm));
++
++	value = readl(rp1->base + RP1_PWM_CHAN_CTRL(pwm->hwpwm));
++	wfhw->inverted_polarity = !!(value & RP1_PWM_CHAN_CTRL_POLARITY);
++
++	if (wfhw->enabled) {
++		wfhw->period_ticks = readl(rp1->base + RP1_PWM_RANGE(pwm->hwpwm));
++		wfhw->duty_ticks = readl(rp1->base + RP1_PWM_DUTY(pwm->hwpwm));
++	}
++
++	return 0;
++}
++
++static const struct pwm_ops rp1_pwm_ops = {
++	.sizeof_wfhw = sizeof(struct rp1_pwm_waveform),
++	.request = rp1_pwm_request,
++	.round_waveform_tohw = rp1_pwm_round_waveform_tohw,
++	.round_waveform_fromhw = rp1_pwm_round_waveform_fromhw,
++	.read_waveform = rp1_pwm_read_waveform,
++	.write_waveform = rp1_pwm_write_waveform,
++};
++
++static int rp1_pwm_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	unsigned long clk_rate;
++	struct pwm_chip *chip;
++	struct rp1_pwm *rp1;
++	int ret;
++
++	chip = devm_pwmchip_alloc(dev, RP1_PWM_NUM_PWMS, sizeof(*rp1));
++	if (IS_ERR(chip))
++		return PTR_ERR(chip);
++
++	rp1 = pwmchip_get_drvdata(chip);
++	spin_lock_init(&rp1->lock);
++
++	rp1->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(rp1->base))
++		return PTR_ERR(rp1->base);
++
++	rp1->clk = devm_clk_get(dev, NULL);
++	if (IS_ERR(rp1->clk))
++		return dev_err_probe(dev, PTR_ERR(rp1->clk), "Clock not found\n");
++
++	ret = clk_prepare_enable(rp1->clk);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to enable clock\n");
++	rp1->clk_enabled = true;
++
++	ret = devm_clk_rate_exclusive_get(dev, rp1->clk);
++	if (ret) {
++		dev_err_probe(dev, ret, "Failed to get exclusive rate\n");
++		goto err_disable_clk;
++	}
++
++	clk_rate = clk_get_rate(rp1->clk);
++	if (!clk_rate) {
++		ret = dev_err_probe(dev, -EINVAL, "Failed to get clock rate\n");
++		goto err_disable_clk;
++	}
++	/*
++	 * To prevent u64 overflow in period calculations:
++	 * mul_u64_u64_div_u64(period_ns, clk_rate, NSEC_PER_SEC)
++	 * If clk_rate > 1 GHz, the result can overflow.
++	 */
++	if (clk_rate > HZ_PER_GHZ) {
++		ret = dev_err_probe(dev, -EINVAL, "Clock rate > 1 GHz is not supported\n");
++		goto err_disable_clk;
++	}
++	rp1->clk_rate = clk_rate;
++
++	chip->ops = &rp1_pwm_ops;
++	chip->atomic = true;
++
++	platform_set_drvdata(pdev, chip);
++
++	ret = pwmchip_add(chip);
++	if (ret) {
++		dev_err_probe(dev, ret, "Failed to register PWM chip\n");
++		goto err_disable_clk;
++	}
++
++	return 0;
++
++err_disable_clk:
++	clk_disable_unprepare(rp1->clk);
++
++	return ret;
++}
++
++static void rp1_pwm_remove(struct platform_device *pdev)
++{
++	struct pwm_chip *chip = platform_get_drvdata(pdev);
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++
++	pwmchip_remove(chip);
++
++	if (rp1->clk_enabled) {
++		clk_disable_unprepare(rp1->clk);
++		rp1->clk_enabled = false;
++	}
++}
++
++/*
++ * The PWM core is never powered off, so it retains its
++ * register configuration across suspend/resume. This
++ * means there's no need to save and restore the
++ * channel control register.
++ */
++static int rp1_pwm_suspend(struct device *dev)
++{
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++
++	if (rp1->clk_enabled) {
++		clk_disable_unprepare(rp1->clk);
++		rp1->clk_enabled = false;
++	}
++
++	return 0;
++}
++
++static int rp1_pwm_resume(struct device *dev)
++{
++	struct pwm_chip *chip = dev_get_drvdata(dev);
++	struct rp1_pwm *rp1 = pwmchip_get_drvdata(chip);
++	int ret;
++
++	ret = clk_prepare_enable(rp1->clk);
++	if (ret) {
++		dev_err(dev, "Failed to enable clock on resume: %pe\n", ERR_PTR(ret));
++		return ret;
++	}
++	rp1->clk_enabled = true;
++
++	return 0;
++}
++
++static DEFINE_SIMPLE_DEV_PM_OPS(rp1_pwm_pm_ops, rp1_pwm_suspend, rp1_pwm_resume);
++
++static const struct of_device_id rp1_pwm_of_match[] = {
++	{ .compatible = "raspberrypi,rp1-pwm" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, rp1_pwm_of_match);
++
++static struct platform_driver rp1_pwm_driver = {
++	.probe = rp1_pwm_probe,
++	.remove = rp1_pwm_remove,
++	.driver = {
++		.name = "rp1-pwm",
++		.of_match_table = rp1_pwm_of_match,
++		.pm = pm_ptr(&rp1_pwm_pm_ops),
++	},
++};
++module_platform_driver(rp1_pwm_driver);
++
++MODULE_DESCRIPTION("RP1 PWM driver");
++MODULE_AUTHOR("Naushir Patuck <naush@raspberrypi.com>");
++MODULE_AUTHOR("Andrea della Porta <andrea.porta@suse.com>");
++MODULE_LICENSE("GPL");
 diff --git a/drivers/soundwire/dmi-quirks.c b/drivers/soundwire/dmi-quirks.c
 index ff00c4b2578e..ad8853481835 100644
 --- a/drivers/soundwire/dmi-quirks.c
@@ -3061,10 +5422,10 @@ index ff00c4b2578e..ad8853481835 100644
  		.matches = {
  			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 068c7bea3102..cecfac2b0bdc 100644
+index b119f5b6065c..4dbae2e80b1f 100644
 --- a/drivers/usb/core/hub.c
 +++ b/drivers/usb/core/hub.c
-@@ -5907,6 +5907,13 @@ static void hub_event(struct work_struct *work)
+@@ -5912,6 +5912,13 @@ static void hub_event(struct work_struct *work)
  			(u16) hub->change_bits[0],
  			(u16) hub->event_bits[0]);
  
@@ -3078,6 +5439,294 @@ index 068c7bea3102..cecfac2b0bdc 100644
  	/* Lock the device, then check to see if we were
  	 * disconnected while waiting for the lock to succeed. */
  	usb_lock_device(hdev);
+diff --git a/fs/xfs/libxfs/xfs_exchmaps.c b/fs/xfs/libxfs/xfs_exchmaps.c
+index 49eda8d0994d..37595f579b63 100644
+--- a/fs/xfs/libxfs/xfs_exchmaps.c
++++ b/fs/xfs/libxfs/xfs_exchmaps.c
+@@ -49,7 +49,7 @@ struct xfs_exchmaps_adjacent {
+ 	.right2 = { .br_startblock = HOLESTARTBLOCK }, \
+ }
+ 
+-/* Information to reset reflink flag / CoW fork state after an exchange. */
++/* Information to reset CoW fork state after an exchange. */
+ 
+ /*
+  * If the reflink flag is set on either inode, make sure it has an incore CoW
+@@ -127,9 +127,7 @@ xmi_has_more_exchange_work(const struct xfs_exchmaps_intent *xmi)
+ static inline bool
+ xmi_has_postop_work(const struct xfs_exchmaps_intent *xmi)
+ {
+-	return xmi->xmi_flags & (XFS_EXCHMAPS_CLEAR_INO1_REFLINK |
+-				 XFS_EXCHMAPS_CLEAR_INO2_REFLINK |
+-				 __XFS_EXCHMAPS_INO2_SHORTFORM);
++	return xmi->xmi_flags & __XFS_EXCHMAPS_INO2_SHORTFORM;
+ }
+ 
+ /* Check all mappings to make sure we can actually exchange them. */
+@@ -525,18 +523,6 @@ xfs_exchmaps_link_to_sf(
+ 	return error;
+ }
+ 
+-/* Clear the reflink flag after an exchange. */
+-static inline void
+-xfs_exchmaps_clear_reflink(
+-	struct xfs_trans	*tp,
+-	struct xfs_inode	*ip)
+-{
+-	trace_xfs_reflink_unset_inode_flag(ip);
+-
+-	ip->i_diflags2 &= ~XFS_DIFLAG2_REFLINK;
+-	xfs_trans_log_inode(tp, ip, XFS_ILOG_CORE);
+-}
+-
+ /* Finish whatever work might come after an exchange operation. */
+ static int
+ xfs_exchmaps_do_postop_work(
+@@ -557,16 +543,6 @@ xfs_exchmaps_do_postop_work(
+ 			return error;
+ 	}
+ 
+-	if (xmi->xmi_flags & XFS_EXCHMAPS_CLEAR_INO1_REFLINK) {
+-		xfs_exchmaps_clear_reflink(tp, xmi->xmi_ip1);
+-		xmi->xmi_flags &= ~XFS_EXCHMAPS_CLEAR_INO1_REFLINK;
+-	}
+-
+-	if (xmi->xmi_flags & XFS_EXCHMAPS_CLEAR_INO2_REFLINK) {
+-		xfs_exchmaps_clear_reflink(tp, xmi->xmi_ip2);
+-		xmi->xmi_flags &= ~XFS_EXCHMAPS_CLEAR_INO2_REFLINK;
+-	}
+-
+ 	return 0;
+ }
+ 
+@@ -948,56 +924,14 @@ xfs_exchmaps_intent_destroy_cache(void)
+ }
+ 
+ /*
+- * Decide if we will exchange the reflink flags between the two files after the
+- * exchange.  The only time we want to do this is if we're exchanging all
+- * mappings under EOF and the inode reflink flags have different states.
++ * Allocate and initialize a new incore intent item from a request.
+  */
+-static inline bool
+-xmi_can_exchange_reflink_flags(
+-	const struct xfs_exchmaps_req	*req,
+-	unsigned int			reflink_state)
+-{
+-	struct xfs_mount		*mp = req->ip1->i_mount;
+-
+-	/*
+-	 * The INO1_WRITTEN optimization can skip exchanging hole and
+-	 * unwritten mappings, which means we cannot guarantee that all
+-	 * shared extents actually moved to the other file.  Clearing the
+-	 * reflink flag of an inode that still holds shared extents breaks
+-	 * the CoW write path, so refuse to exchange the flags in that case.
+-	 */
+-	if (req->flags & XFS_EXCHMAPS_INO1_WRITTEN)
+-		return false;
+-
+-	/*
+-	 * The INO1_WRITTEN optimization can skip exchanging hole and
+-	 * unwritten mappings, which means we cannot guarantee that all
+-	 * shared extents actually moved to the other file.  Clearing the
+-	 * reflink flag of an inode that still holds shared extents breaks
+-	 * the CoW write path, so refuse to exchange the flags in that case.
+-	 */
+-	if (req->flags & XFS_EXCHMAPS_INO1_WRITTEN)
+-		return false;
+-
+-	if (hweight32(reflink_state) != 1)
+-		return false;
+-	if (req->startoff1 != 0 || req->startoff2 != 0)
+-		return false;
+-	if (req->blockcount != XFS_B_TO_FSB(mp, req->ip1->i_disk_size))
+-		return false;
+-	if (req->blockcount != XFS_B_TO_FSB(mp, req->ip2->i_disk_size))
+-		return false;
+-	return true;
+-}
+-
+-
+-/* Allocate and initialize a new incore intent item from a request. */
+ struct xfs_exchmaps_intent *
+ xfs_exchmaps_init_intent(
+ 	const struct xfs_exchmaps_req	*req)
+ {
+ 	struct xfs_exchmaps_intent	*xmi;
+-	unsigned int			rs = 0;
++	struct xfs_mount		*mp = req->ip1->i_mount;
+ 
+ 	xmi = kmem_cache_zalloc(xfs_exchmaps_intent_cache,
+ 			GFP_NOFS | __GFP_NOFAIL);
+@@ -1015,27 +949,18 @@ xfs_exchmaps_init_intent(
+ 		return xmi;
+ 	}
+ 
+-	if (req->flags & XFS_EXCHMAPS_SET_SIZES) {
+-		xmi->xmi_flags |= XFS_EXCHMAPS_SET_SIZES;
+-		xmi->xmi_isize1 = req->ip2->i_disk_size;
+-		xmi->xmi_isize2 = req->ip1->i_disk_size;
+-	}
+-
+-	/* Record the state of each inode's reflink flag before the op. */
+-	if (xfs_is_reflink_inode(req->ip1))
+-		rs |= 1;
+-	if (xfs_is_reflink_inode(req->ip2))
+-		rs |= 2;
+-
+ 	/*
+-	 * Figure out if we're clearing the reflink flags (which effectively
+-	 * exchanges them) after the operation.
++	 * If the caller wanted, set each file's size to that file's exchange
++	 * offset + length exchanged from the other file because the ranges in
++	 * each file might be different lengths.
+ 	 */
+-	if (xmi_can_exchange_reflink_flags(req, rs)) {
+-		if (rs & 1)
+-			xmi->xmi_flags |= XFS_EXCHMAPS_CLEAR_INO1_REFLINK;
+-		if (rs & 2)
+-			xmi->xmi_flags |= XFS_EXCHMAPS_CLEAR_INO2_REFLINK;
++	if (req->flags & XFS_EXCHMAPS_SET_SIZES) {
++		loff_t	off1 = XFS_FSB_TO_B(mp, xmi->xmi_startoff1);
++		loff_t	off2 = XFS_FSB_TO_B(mp, xmi->xmi_startoff2);
++
++		xmi->xmi_flags |= XFS_EXCHMAPS_SET_SIZES;
++		xmi->xmi_isize1 = off1 + (req->ip2->i_disk_size - off2);
++		xmi->xmi_isize2 = off2 + (req->ip1->i_disk_size - off1);
+ 	}
+ 
+ 	if (S_ISDIR(VFS_I(xmi->xmi_ip2)->i_mode) ||
+diff --git a/fs/xfs/libxfs/xfs_log_format.h b/fs/xfs/libxfs/xfs_log_format.h
+index a4e1b3eb425c..6e620380d5dc 100644
+--- a/fs/xfs/libxfs/xfs_log_format.h
++++ b/fs/xfs/libxfs/xfs_log_format.h
+@@ -927,10 +927,8 @@ struct xfs_xmi_log_format {
+  */
+ #define XFS_EXCHMAPS_INO1_WRITTEN	(1ULL << 2)
+ 
+-/* Clear the reflink flag from inode1 after the operation. */
++/* No longer set, but older intents may carry them; keep them valid. */
+ #define XFS_EXCHMAPS_CLEAR_INO1_REFLINK	(1ULL << 3)
+-
+-/* Clear the reflink flag from inode2 after the operation. */
+ #define XFS_EXCHMAPS_CLEAR_INO2_REFLINK	(1ULL << 4)
+ 
+ #define XFS_EXCHMAPS_LOGGED_FLAGS	(XFS_EXCHMAPS_ATTR_FORK | \
+diff --git a/fs/xfs/xfs_bmap_util.c b/fs/xfs/xfs_bmap_util.c
+index c88b9ade7389..2ea650767805 100644
+--- a/fs/xfs/xfs_bmap_util.c
++++ b/fs/xfs/xfs_bmap_util.c
+@@ -1514,7 +1514,6 @@ xfs_swap_extents(
+ 	struct xfs_bstat	*sbp = &sxp->sx_stat;
+ 	int			src_log_flags, target_log_flags;
+ 	int			error = 0;
+-	uint64_t		f;
+ 	int			resblks = 0;
+ 	unsigned int		flags = 0;
+ 	struct timespec64	ctime, mtime;
+@@ -1670,14 +1669,12 @@ xfs_swap_extents(
+ 	if (error)
+ 		goto out_trans_cancel;
+ 
+-	/* Do we have to swap reflink flags? */
+-	if ((ip->i_diflags2 & XFS_DIFLAG2_REFLINK) ^
+-	    (tip->i_diflags2 & XFS_DIFLAG2_REFLINK)) {
+-		f = ip->i_diflags2 & XFS_DIFLAG2_REFLINK;
+-		ip->i_diflags2 &= ~XFS_DIFLAG2_REFLINK;
+-		ip->i_diflags2 |= tip->i_diflags2 & XFS_DIFLAG2_REFLINK;
+-		tip->i_diflags2 &= ~XFS_DIFLAG2_REFLINK;
+-		tip->i_diflags2 |= f & XFS_DIFLAG2_REFLINK;
++	/* Either inode may now own shared blocks; flag both, with CoW forks. */
++	if ((ip->i_diflags2 | tip->i_diflags2) & XFS_DIFLAG2_REFLINK) {
++		ip->i_diflags2 |= XFS_DIFLAG2_REFLINK;
++		tip->i_diflags2 |= XFS_DIFLAG2_REFLINK;
++		xfs_ifork_init_cow(ip);
++		xfs_ifork_init_cow(tip);
+ 	}
+ 
+ 	/* Swap the cow forks. */
+diff --git a/fs/xfs/xfs_exchrange.c b/fs/xfs/xfs_exchrange.c
+index fafb4e3f065c..935b561dfd3c 100644
+--- a/fs/xfs/xfs_exchrange.c
++++ b/fs/xfs/xfs_exchrange.c
+@@ -290,17 +290,20 @@ xfs_exchrange_mappings(
+ 		goto out_unlock;
+ 
+ 	/*
+-	 * If the caller wanted us to exchange the contents of two complete
+-	 * files of unequal length, exchange the incore sizes now.  This should
+-	 * be safe because we flushed both files' page caches, exchanged all
+-	 * the mappings, and updated the ondisk sizes.
++	 * If the caller wanted, set each file's size to that file's exchange
++	 * offset + length exchanged from the other file because the ranges in
++	 * each file might be different lengths.  This should be safe because
++	 * we flushed both files' page caches, exchanged all the mappings, and
++	 * updated the ondisk sizes.
+ 	 */
+ 	if (fxr->flags & XFS_EXCHANGE_RANGE_TO_EOF) {
+-		loff_t	temp;
++		loff_t	old_ip1_size = i_size_read(VFS_I(ip1));
++		loff_t	old_ip2_size = i_size_read(VFS_I(ip2));
+ 
+-		temp = i_size_read(VFS_I(ip2));
+-		i_size_write(VFS_I(ip2), i_size_read(VFS_I(ip1)));
+-		i_size_write(VFS_I(ip1), temp);
++		i_size_write(VFS_I(ip2), fxr->file2_offset +
++				(old_ip1_size - fxr->file1_offset));
++		i_size_write(VFS_I(ip1), fxr->file1_offset +
++				(old_ip2_size - fxr->file2_offset));
+ 	}
+ 
+ out_unlock:
+@@ -445,6 +448,30 @@ xfs_exchange_range_checks(
+ 	return blen == fxr->length ? 0 : -EINVAL;
+ }
+ 
++/* Flush all relevant dirty pagecache near the range to be exchanged. */
++static inline int
++xfs_exchange_range_flush(
++	struct xfs_inode		*ip,
++	const struct xfs_exchrange	*fxr,
++	loff_t				offset)
++{
++	/*
++	 * If TO_EOF is set, the ondisk file size update logic depends on the
++	 * ondisk file size matching the incore file size.  Flush everything.
++	 */
++	if (fxr->flags & XFS_EXCHANGE_RANGE_TO_EOF)
++		return filemap_write_and_wait(VFS_I(ip)->i_mapping);
++
++	/*
++	 * Because we're updating the ondisk mappings, flush all dirty data
++	 * between the ondisk size and the exchange offset to reduce the chance
++	 * of zeroed file contents in that gap after a crash.
++	 */
++	return filemap_write_and_wait_range(VFS_I(ip)->i_mapping,
++			min(offset, ip->i_disk_size),
++			offset + fxr->length - 1);
++}
++
+ /*
+  * Check that the two inodes are eligible for range exchanges, the ranges make
+  * sense, and then flush all dirty data.  Caller must ensure that the inodes
+@@ -470,15 +497,11 @@ xfs_exchange_range_prep(
+ 	if (!same_inode)
+ 		inode_dio_wait(inode2);
+ 
+-	error = filemap_write_and_wait_range(inode1->i_mapping,
+-			fxr->file1_offset,
+-			fxr->file1_offset + fxr->length - 1);
++	error = xfs_exchange_range_flush(XFS_I(inode1), fxr, fxr->file1_offset);
+ 	if (error)
+ 		return error;
+ 
+-	error = filemap_write_and_wait_range(inode2->i_mapping,
+-			fxr->file2_offset,
+-			fxr->file2_offset + fxr->length - 1);
++	error = xfs_exchange_range_flush(XFS_I(inode2), fxr, fxr->file2_offset);
+ 	if (error)
+ 		return error;
+ 
 diff --git a/include/crypto/if_alg.h b/include/crypto/if_alg.h
 index 7643ba954125..0d51428c1da4 100644
 --- a/include/crypto/if_alg.h
@@ -3261,6 +5910,44 @@ index 24221a842412..4b1d4ec2c684 100644
  static inline
  enum efi_secureboot_mode efi_get_secureboot_mode(efi_get_variable_t *get_var)
  {
+diff --git a/include/linux/generic_pt/common.h b/include/linux/generic_pt/common.h
+index 07ef1c8341a4..1b39b27f0cfa 100644
+--- a/include/linux/generic_pt/common.h
++++ b/include/linux/generic_pt/common.h
+@@ -213,4 +213,10 @@ enum {
+ 	PT_FEAT_X86_64_AMD_ENCRYPT_TABLES = PT_FEAT_FMT_START,
+ };
+ 
++struct pt_bcm2712 {
++	struct pt_common common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
++
+ #endif
+diff --git a/include/linux/generic_pt/iommu.h b/include/linux/generic_pt/iommu.h
+index dd0edd02a48a..13ebb72a67de 100644
+--- a/include/linux/generic_pt/iommu.h
++++ b/include/linux/generic_pt/iommu.h
+@@ -346,6 +346,18 @@ struct pt_iommu_x86_64_hw_info {
+ 
+ IOMMU_FORMAT(x86_64, x86_64_pt);
+ 
++struct pt_iommu_bcm2712_cfg {
++	struct pt_iommu_cfg common;
++	u8 bigpage_lg2;
++	u8 superpage_lg2;
++};
++
++struct pt_iommu_bcm2712_hw_info {
++	phys_addr_t pt_base;
++};
++
++IOMMU_FORMAT(bcm2712, bcm2712pt);
++
+ #undef IOMMU_PROTOTYPES
+ #undef IOMMU_FORMAT
+ #endif
 diff --git a/include/linux/random.h b/include/linux/random.h
 index 8a8064dc3970..3238fab8f749 100644
 --- a/include/linux/random.h
@@ -3331,7 +6018,7 @@ index 590ba29c85ab..02153d857531 100644
  
  int module_sig_check(struct load_info *info, int flags)
 diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 8f8956fb061b..08d7f35cf608 100644
+index 34ce99514d72..d7c88c0b67e5 100644
 --- a/net/core/page_pool.c
 +++ b/net/core/page_pool.c
 @@ -1073,7 +1073,8 @@ netmem_ref page_pool_alloc_frag_netmem(struct page_pool *pool,
