@@ -19,14 +19,10 @@
 %global date 20220308
 %bcond snapshot 0
 
-%global version10 2024.0
-%global srcname10 shaderc
-
 %bcond native 0
 # Enable system fmt
 %bcond fmt 1
 %bcond rapidyml 1
-%bcond shaderc 1
 # Enable system soundtouch_ds
 %bcond soundtouch 0
 %bcond vulkan 1
@@ -55,20 +51,17 @@
 %global xbyak_ver 7.30
 
 Name:           pcsx2
-Version:        2.9.75
+Version:        2.9.119
 Release:        1%{?dist}
 Summary:        A Sony Playstation2 emulator
 
-License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_shaderc: AND Apache-2.0}%{!?with_soundtouch: AND LGPL-2.1}%{!?with_xbyak: AND BSD-3-Clause}
+License:        GPL-3.0-only AND LGPL-3.0-or-later AND MIT AND OFL-1.1%{!?with_soundtouch: AND LGPL-2.1}%{!?with_xbyak: AND BSD-3-Clause}
 URL:            https://github.com/PCSX2/pcsx2
 
 %if %{with snapshot}
 Source0:        %{url}/archive/%{commit}/%{name}-%{shortcommit}.tar.gz
 %else
 Source0:        %{url}/archive/v%{version}/%{name}-%{version}.tar.gz
-%endif
-%if %{without shaderc}
-Source10:       https://github.com/google/%{srcname10}/archive/v%{version10}/%{srcname10}-%{version10}.tar.gz
 %endif
 
 Patch0:         0001-Use-system-libraries.patch
@@ -78,8 +71,6 @@ Patch3:         0001-cubeb-always-set-same-audiostream-name.patch
 Patch4:         0001-Fix-translation-names.patch
 Patch5:         0001-cmake-use-system-discord-rpc.patch
 
-Patch500:       0001-cmake-shaderc_ds.patch
-Patch501:       0001-cmake-bundled-shaderc.patch
 Patch503:       0001-cmake-soundtouch_ds.patch
 
 
@@ -157,12 +148,7 @@ BuildRequires:  cmake(Qt6WidgetsTools)
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
 BuildRequires:  cmake(SDL3) >= 3.4.0
-%if %{with shaderc}
-BuildRequires:  cmake(Shaderc_ds)
-Requires:       libshaderc_ds%{?_isa}
-%else
-Provides:       bundled(shaderc_ds) = %{version10}
-%endif
+BuildRequires:  pkgconfig(shaderc)
 %if %{with soundtouch}
 BuildRequires:  cmake(SoundTouch_ds)
 %else
@@ -199,6 +185,7 @@ Requires:       promptfont-fonts
 Requires:       twitter-emoji-mozilla-fonts
 Requires:       hicolor-icon-theme
 Requires:       libGL%{?_isa}
+Requires:       libshaderc%{?_isa}
 Requires:       libwayland-egl%{?_isa}
 Requires:       sdl_gamecontrollerdb >= 0-42
 Requires:       vulkan-loader%{?_isa}
@@ -227,19 +214,6 @@ this emulator anyway.
 %autopatch -M 499 -p1
 
 rm -rf .git
-
-%if %{with shaderc}
-%patch -P 500 -p1
-rm -f cmake/FindShaderc.cmake
-%else
-mkdir 3rdparty/shaderc
-tar -xf %{S:10} -C 3rdparty/shaderc --strip-components 1
-%{__scm_apply_patch -p1 -q} -d 3rdparty/shaderc -i ../../.github/workflows/scripts/common/shaderc-changes.patch
-rm -rf 3rdparty/shaderc/third_party
-%patch -P 501 -p1
-sed -e '/find_package/s|Shaderc|\0_DISABLED|g' -i cmake/SearchForStuff.cmake
-cp -p 3rdparty/shaderc/LICENSE 3rdparty/LICENSE.shaderc
-%endif
 
 %if %{with soundtouch}
 %patch -P 503 -p1
