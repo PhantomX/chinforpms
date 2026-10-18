@@ -1,0 +1,51 @@
+From 9739365b9ece0803002831e85a7763c462b8fa65 Mon Sep 17 00:00:00 2001
+From: Phantom X <PhantomX@users.noreply.github.com>
+Date: Sat, 17 Oct 2026 09:36:34 -0300
+Subject: [PATCH] LAA fixup 1
+
+---
+ dlls/ntdll/unix/virtual.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
+
+diff --git a/dlls/ntdll/unix/virtual.c b/dlls/ntdll/unix/virtual.c
+index 62fc430..26a5dc6 100644
+--- a/dlls/ntdll/unix/virtual.c
++++ b/dlls/ntdll/unix/virtual.c
+@@ -3660,22 +3660,24 @@ static void set_large_address_space(void)
+ 
+     if (is_win64)
+     {
+-        if (main_image_info.ImageCharacteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE)
++        if (!is_wow64())
+         {
+-            user_space_wow_limit = limit_4g - 1;
+-            /* block a bit of top memory: some apps break if the entire high 2G is available */
+-            set_mem_area_state( (void *)0xfffe0000, 0x20000, AREA_BLOCKED );
++#ifndef __APPLE__  /* don't free the zerofill section on macOS */
++            if (use_aslr()) free_reserved_memory( 0, (char *)0x7ffe0000 );
++#endif
+         }
+-        else
++        else if (main_image_info.ImageCharacteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE)
+         {
+-            user_space_wow_limit = limit_2g - 1;
+-            set_mem_area_state( (void *)0x7fff0000, 0x10000, AREA_BLOCKED );
++            user_space_wow_limit = limit_4g - 1;
++            /* reserve space for top-down allocations; some apps break if the entire high 2G is available */
++            reserve_area( (void *)0xfff00000, (void *)0xffff0000 );
+         }
++        else user_space_wow_limit = limit_2g - 1;
+     }
+-    else if (!(main_image_info.ImageCharacteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE))
++    else
+     {
+-        reserve_area( (void *)limit_2g, host_addr_space_limit );
+-        return;
++        if (!(main_image_info.ImageCharacteristics & IMAGE_FILE_LARGE_ADDRESS_AWARE)) return;
++        free_reserved_memory( (char *)0x80000000, address_space_limit );
+     }
+     user_space_limit = working_set_limit = address_space_limit;
+ }
+-- 
+2.56.0
+

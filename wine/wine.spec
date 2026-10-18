@@ -25,7 +25,9 @@
 
 # _libdir was restructured and must use a new prefix until at least Fedora 45
 %global _x_libdir %{_libdir}
+%if (%{defined fedora} && 0%{?fedora} < 45)
 %global _libdir %{_libdir}/wine-wow64
+%endif
 
 %ifarch x86_64
 %global winepedir x86_64-windows
@@ -46,7 +48,7 @@
 %global with_debug 0
 %global winegecko 2.47.4
 %global winemono  11.3.0
-%global winevulkan 1.4.362
+%global winevulkan 1.4.363
 %global opencl    1
 
 %global winecapstone 5.0.3
@@ -75,7 +77,7 @@
 # build with staging-patches, see:  https://wine-staging.com/
 # 1 to enable; 0 to disable.
 %global wine_staging 1
-%global wine_stagingver 11.19
+%global wine_stagingver 11.20
 %global wine_stg_url https://gitlab.winehq.org/wine/wine-staging
 %if 0%(echo %{wine_stagingver} | grep -q \\. ; echo $?) == 0
 %global strel v
@@ -123,7 +125,7 @@
 
 Name:           wine
 # If rc, use "~" instead "-", as ~rc1
-Version:        11.19
+Version:        11.20
 Release:        100%{?dist}
 Summary:        A compatibility layer for windows applications
 
@@ -215,6 +217,8 @@ Patch1024:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_ti
 Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1026:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
+Patch1028:       0001-LAA-fixup-1.patch
+Patch1029:       0001-LAA-fixup-2.patch
 
 Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
 Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
@@ -809,7 +813,9 @@ tar -xf %{SOURCE900} --strip-components=1
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %patch -P 707 -p1
+%patch -P 1028 -p1
 %patch -P 1020 -p1
+%patch -P 1029 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1021 -p1
@@ -1993,6 +1999,7 @@ fi
 %{_libdir}/wine/%{winepedirs}/wpc.dll
 %{_libdir}/wine/%{winesodir}/wpcap.so
 %{_libdir}/wine/%{winepedirs}/wpcap.dll
+%{_libdir}/wine/%{winepedirs}/wpnapps.dll
 %{_libdir}/wine/%{winesodir}/ws2_32.so
 %{_libdir}/wine/%{winepedirs}/ws2_32.dll
 %{_libdir}/wine/%{winepedirs}/wsdapi.dll
@@ -2489,6 +2496,9 @@ fi
 
 
 %changelog
+* Sat Oct 17 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.20-100
+- 11.20
+
 * Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 3:11.19-100
 - 11.19
 
