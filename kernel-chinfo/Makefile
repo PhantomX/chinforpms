@@ -44,8 +44,10 @@ ifndef RHDISTDATADIR
   RHDISTDATADIR=${REDHAT}/self-test/data
 endif
 
-RPMBUILD:=$(shell if [ -x "/usr/bin/rpmbuild" ]; then echo rpmbuild; \
-                  else echo rpm; fi)
+RPMBUILD:=rpmbuild
+ifeq ($(shell command -v $(RPMBUILD)),)
+  $(error $(RPMBUILD) not found in PATH)
+endif
 
 MACH:=$(shell uname -m)
 SPECKVERSION:=$(shell $(GIT) show $(HEAD):Makefile | sed -ne '/^VERSION\ =\ /{s///;p;q}')
@@ -209,7 +211,7 @@ UPSTREAM:=$(shell $(GIT) rev-parse -q --verify origin/$(UPSTREAM_BRANCH) || \
 
 ifneq ("$(wildcard $(TOPDIR)/localversion-next)", "")
   # we are building linux-next
-  MARKER:=$(shell $(GIT) describe $(UPSTREAM))
+  MARKER:=$(shell $(GIT) describe --abbrev=12 $(UPSTREAM))
   # The merge window is weird because the actual versioning hasn't
   # been updated but we still need something that works for
   # packaging. Fix this by bumping the patch level.
@@ -225,13 +227,13 @@ else ifeq ($(VERSION_ON_UPSTREAM),1)
       $(error "Missing an $(UPSTREAM_BRANCH) branch")
   endif
   MERGE_BASE:=$(shell $(GIT) merge-base $(HEAD) $(UPSTREAM))
-  _TAG:=$(shell $(GIT) describe $(MERGE_BASE))
+  _TAG:=$(shell $(GIT) describe --abbrev=12 $(MERGE_BASE))
   # a snapshot off of a tagged git is of the form [tag]-[cnt]-g[hash]
   SNAPSHOT:=$(shell echo $(_TAG) | grep -c '\-g')
 
   ifeq ($(SNAPSHOT),1)
     # The base for generating tags is the snapshot commit
-    MARKER:=$(shell echo $(_TAG) | awk -F "-g" '{ print $$2 }')
+    MARKER:=$(shell echo $(_TAG) | awk -F "-g" '{ print $$2 }' | cut -c 1-12)
     # The merge window is weird because the actual versioning hasn't
     # been updated but we still need something that works for
     # packaging. Fix this by bumping the patch level and marking
@@ -261,7 +263,7 @@ else
   ifneq ($(ADD_COMMITID_TO_VERSION),)
     _EXACT_TAG:=$(shell $(GIT) describe --exact-match 2>/dev/null)
     ifeq ($(_EXACT_TAG),)
-      _TAG:=$(shell $(GIT) describe 2>/dev/null)
+      _TAG:=$(shell $(GIT) describe --abbrev=12 2>/dev/null)
       ifneq ($(_TAG),)
         _BUILDCOMMIT:=$(shell echo $(_TAG) | awk -F- '{ printf(".%s", $$(NF)) }' | cut -c 1-6)
         BUILD:=$(BUILD)$(_BUILDCOMMIT)
@@ -450,11 +452,9 @@ dist-kabi: dist-python-check
 	@for KABIARCH in $(ARCH_LIST); do \
 		$(REDHAT)/kabi/show-kabi -k $(REDHAT)/kabi/kabi-module/ -m \
 			-a $$KABIARCH -r $(RHEL_MAJOR).$(RHEL_MINOR) > $(REDHAT)/kabi/Module.kabi_$$KABIARCH;\
-		for i in {0..$(RHEL_MINOR)}; do \
-			mkdir -p $(REDHAT)/kabi/kabi-rhel$(RHEL_MAJOR)$$i/;\
-			$(REDHAT)/kabi/show-kabi -k $(REDHAT)/kabi/kabi-module/ -s -a $$KABIARCH \
-			-r $(RHEL_MAJOR).$$i > $(REDHAT)/kabi/kabi-rhel$(RHEL_MAJOR)$$i/kabi_stablelist_$$KABIARCH;\
-		done;\
+		mkdir -p $(REDHAT)/kabi/kabi-rhel$(RHEL_MAJOR)$(RHEL_MINOR)/;\
+		$(REDHAT)/kabi/show-kabi -k $(REDHAT)/kabi/kabi-module/ -s -a $$KABIARCH \
+		-r $(RHEL_MAJOR).$(RHEL_MINOR) > $(REDHAT)/kabi/kabi-rhel$(RHEL_MAJOR)$(RHEL_MINOR)/kabi_stablelist_$$KABIARCH;\
 	done;
 	@(cd $(REDHAT)/kabi/ && ln -Tsf kabi-rhel$(RHEL_MAJOR)$(RHEL_MINOR) kabi-current)
 
@@ -611,16 +611,16 @@ dist-kabi-dw-check: dist-kabi
 	@rm -rf $(KABIDW)/base/$(CURARCH).tmp
 
 dist-configs-commit: dist-configs-prep
-	+@cd $(REDHAT)/configs; ./generate_all_configs.sh 1;\
+	+@cd $(REDHAT)/configs; ./generate_all_configs.sh;\
 	./process_configs.sh -z "$(SPECRPMVERSION)" "$(FLAVOR)"
 
 dist-configs-commit-mismatches: dist-configs-prep
-	+@cd $(REDHAT)/configs; ./generate_all_configs.sh 1;\
+	+@cd $(REDHAT)/configs; ./generate_all_configs.sh;\
 	./process_configs.sh -M "$(SPECRPMVERSION)" "$(FLAVOR)"
 
 dist-configs: ##configuration Create RHEL config files in redhat/config/.
 dist-configs: dist-configs-prep
-	+@cd $(REDHAT)/configs; ./generate_all_configs.sh 1;\
+	+@cd $(REDHAT)/configs; ./generate_all_configs.sh;\
 	./process_configs.sh $(PROCESS_CONFIGS_OPTS) "$(SPECRPMVERSION)" ""
 
 dist-fedora-configs: ##build build Fedora configs.
@@ -737,7 +737,10 @@ dist-get-buildreqs: setup-source
 # recipes may be ordered before/in parallel with dist-clean-sources
 # (prerequisite of setup-source), which would then delete their results.
 setup-source: dist-clean-sources dist-git-version-check
-	@if [ ! -e $(REDHAT)/$(SPECFILE).template ]; then \
+	@if [ "$(SPECPACKAGE_REBUILD)" = "1" ]; then \
+		$(REDHAT)/scripts/generate-rebuild-changelog.sh; \
+	fi
+	@if ! $(GIT) -C "$(TOPDIR)" ls-files --error-unmatch -- "redhat/$(SPECFILE).template" >/dev/null 2>&1; then \
 		echo "Creating $(REDHAT)/$(SPECFILE).template as a copy of $(REDHAT)/kernel.spec.template"; \
 		cp $(REDHAT)/kernel.spec.template $(REDHAT)/$(SPECFILE).template; \
 	fi
@@ -792,6 +795,7 @@ sources-rh: $(TARBALL) $(KABI_TARBALL) $(KABIDW_TARBALL) generate-testpatch-tmp 
 		scripts/mod/mod-sign.sh \
 		scripts/uki_addons/uki_create_addons.py \
 		scripts/uki_addons/uki_addons.json \
+		scripts/kmap.py \
 		configs/flavors \
 		configs/generate_all_configs.sh \
 		configs/merge.py \
@@ -802,9 +806,10 @@ sources-rh: $(TARBALL) $(KABI_TARBALL) $(KABIDW_TARBALL) generate-testpatch-tmp 
 		kernel.sbat.template \
 		uki.sbat.template \
 		uki-addons.sbat.template \
+		dtbloader.sbat.template \
 		dracut-virt.conf \
 		$(SOURCES)/
-	@changelog_glob="$(SPECPACKAGE_NAME).changelog-*"; \
+	@changelog_glob="$(SPECPACKAGE_NAME).changelog-$(RHEL_MAJOR).*[0-9]"; \
 	cat $$(ls -1 $$changelog_glob | sort -V -r) \
 		> $(SOURCES)/$(SPECPACKAGE_NAME).changelog
 	cp keys/redhatsecureboot{501,ca5}.cer $(SOURCES)/;
@@ -855,11 +860,11 @@ dist-prep: ##build Setup the redhat/rpm/BUILD/ directory with the kernel source.
 dist-prep: RPMBUILDOPTS=--nodeps --target noarch -bp
 dist-prep: dist-sources do-rpmbuild
 
-dist-perf: RPMBUILDOPTS=--without up --without smp --without zfcpdump --without debug --without doc --without headers --without doc --without debuginfo --target $(MACH) -bb
+dist-perf: RPMBUILDOPTS=--without stock --without zfcpdump --without debug --without doc --without headers --without debuginfo --target $(MACH) -bb
 dist-perf: dist-sources do-rpmbuild
 
 dist-rpm-baseonly: ##build Create the binary RPMS for the kernel and modules (no userspace tools or debuginfo).
-dist-rpm-baseonly: RPMBUILDOPTS=--target $(MACH) --without debug --without debuginfo --without vdso_install --without bpftool --without perf --without tools -bb
+dist-rpm-baseonly: RPMBUILDOPTS=--target $(MACH) --without debug --without debuginfo --without vdso_install --without perf --without tools -bb
 dist-rpm-baseonly: dist-sources do-rpmbuild
 
 # dist-release related targets are used by the kernel maintainer team

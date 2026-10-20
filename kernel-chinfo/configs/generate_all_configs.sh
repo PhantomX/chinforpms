@@ -4,11 +4,6 @@
 
 test -n "$RHTEST" && exit 0
 
-DEBUGBUILDSENABLED=$1
-if [ -z "$DEBUGBUILDSENABLED" ]; then
-	exit 1
-fi
-
 if [ -z "$FLAVOR" ]; then
 	FLAVOR=rhel
 fi
@@ -28,11 +23,3 @@ for i in "${SPECPACKAGE_NAME}"*-"$FLAVOR".config; do
 done
 
 rm -f kernel-*-"$SECONDARY".config
-
-if [ "$DEBUGBUILDSENABLED" -eq 0 ]; then
-	for i in "${SPECPACKAGE_NAME}"-*debug*.config; do
-		base=$(echo "$i" | sed -r s/-?debug//g)
-		NEW=${SPECPACKAGE_NAME}-$(echo "$base" | cut -d - -f2-)
-		mv "$i" "$NEW"
-	done
-fi

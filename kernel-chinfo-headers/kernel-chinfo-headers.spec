@@ -9,7 +9,7 @@
 %global variantid  %{lua:variantid = string.gsub(rpm.expand("%{?variant}"), "-", "."); print(variantid)}
 
 %global package_name kernel%{?variant}
-%define specrpmversion 7.2.11
+%define specrpmversion 7.3.0
 %define specversion %{specrpmversion}
 %define patchversion %(echo %{specversion} | cut -d'.' -f-2)
 %define baserelease 500
@@ -72,7 +72,7 @@ cross-glibc package.
 
 %install
 # List of architectures we support and want to copy their headers
-ARCH_LIST="arm arm64 powerpc riscv s390 x86"
+ARCH_LIST="arm arm64 loongarch powerpc riscv s390 x86"
 
 ARCH=%_target_cpu
 case $ARCH in
@@ -81,6 +81,9 @@ case $ARCH in
 		;;
 	aarch64)
 		ARCH=arm64
+		;;
+	loongarch64*)
+		ARCH=loongarch
 		;;
 	ppc64*)
 		ARCH=powerpc
@@ -124,6 +127,9 @@ done
 %{_prefix}/*-linux-gnu/*
 
 %changelog
+* Mon Oct 19 2026 Phantom X <megaphantomx at hotmail dot com> - 7.3.0-500.chinfo
+- 7.3.0
+
 * Thu Oct 15 2026 Phantom X <megaphantomx at hotmail dot com> - 7.2.11-500.chinfo
 - 7.2.11
 
@@ -324,36 +330,3 @@ done
 
 * Mon Sep 29 2025 Phantom X <megaphantomx at hotmail dot com> - 6.17.0-500.chinfo
 - 6.17.0
-
-* Thu Sep 25 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.9-500.chinfo
-- 6.16.9
-
-* Fri Sep 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.8-500.chinfo
-- 6.16.8
-
-* Wed Sep 17 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.7-500.chinfo
-- 6.16.7
-
-* Tue Sep 09 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.6-500.chinfo
-- 6.16.6
-
-* Thu Sep 04 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.5-500.chinfo
-- 6.16.5
-
-* Thu Aug 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.4-500.chinfo
-- 6.16.4
-
-* Sat Aug 23 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.3-500.chinfo
-- 6.16.3
-
-* Thu Aug 21 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.2-500.chinfo
-- 6.16.2
-
-* Tue Aug 19 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.1-501.chinfo
-- 6.16.1
-
-* Fri Aug 15 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.1-500.chinfo
-- 6.16.1
-
-* Mon Jul 28 2025 Phantom X <megaphantomx at hotmail dot com> - 6.16.0-500.chinfo
-- 6.16.0

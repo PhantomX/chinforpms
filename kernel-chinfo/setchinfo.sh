@@ -3,8 +3,8 @@
 # This scripts sets extra files with configs for external patchsets
 # del parameter deletes all the files
 
-# 20260209
-# 6.19
+# 20261019
+# 7.3
 
 set -e
 
@@ -20,7 +20,7 @@ defaultd="
 "
 
 defaultm="
-V4L2_LOOPBACK
+TCP_CONG_BBR3
 VHBA
 "
 

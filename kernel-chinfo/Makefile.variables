@@ -43,6 +43,18 @@ BUMP_RELEASE:=yes
 # by downstream distros.
 CHECK_FOR_RELEASE_COMMIT ?= 0
 
+# DERIVATIVE_STREAM controls whether derivative kernel versioning is enabled.
+# When set to "yes", DERIVATIVE_TAG and DERIVATIVE_BUILD are included in the
+# package release (NVR).
+# Example NVR with derivative versioning:
+#   kernel-6.12.0-180.partner.1.el10
+DERIVATIVE_STREAM ?= no
+
+# DERIVATIVE_TAG is a string included in the release (e.g., ".partner").
+# Ensure that this is set to the shortest value possible or you may exceed the
+# UTS_RELEASE size limit. See dist-vr-check.
+DERIVATIVE_TAG ?=
+
 # This is the dist release suffix used in the package release, eg. .fc34,
 # .el8 etc. In a different branch this may be set to a fixed value.
 DIST ?=
@@ -53,6 +65,16 @@ DISTRO ?=
 
 # This overrides CONFIG_WERROR to 'y' for all arches.  RHEL requires this variable to be set.
 ENABLE_WERROR ?=
+
+# Pattern to match merge commits whose merged commits (second parent) should be excluded from changelog entirely.
+# Example: CHANGELOG_EXCLUDE_REFS_PATTERN = ^Merge tag \S\+ into main
+# Empty value means nothing is excluded.
+CHANGELOG_EXCLUDE_REFS_PATTERN ?=
+
+# Pattern to match merge commits whose merged commits' (second parent) JIRAs should be excluded from the Resolves: line.
+# Example: RESOLVES_EXCLUDE_REFS_PATTERN = ^Merge tag \S\+ into main
+# Empty value means nothing is excluded.
+RESOLVES_EXCLUDE_REFS_PATTERN ?=
 
 # This is the executable for 'git' commands.  It is used by the redhat/self-test
 # tests to provide testing information on git hashes (see redhat/self-test/egit.sh)
@@ -99,6 +121,10 @@ PATCHLIST_URL ?= https://gitlab.com/cki-project/kernel-ark/-/commit
 #  unreleased kernel development snapshot.
 RELEASED_KERNEL:=0
 
+# Local version to be used for official (non-scratch) builds. Makefile
+# dist-{release/tag/git} targets will ignore localversion and DISTLOCALVERSION
+RELEASE_LOCALVERSION:=
+
 # This variable is used by the redhat/self-tests.  It should not be
 # considered stable and my be changed or removed without warning.
 RHDISTDATADIR ?=
@@ -142,6 +168,11 @@ SPECSELFTESTS_MUST_BUILD ?= 0
 # is useful for other projects with different specfile names.
 SPECPACKAGE_NAME ?= kernel
 
+# Set SPECPACKAGE_REBUILD to 1 when rebuilding the kernel for a different
+# package (e.g., kernel-automotive). This triggers generation of a changelog
+# that indicates the package is a rebuild from a known kernel release.
+SPECPACKAGE_REBUILD ?=
+
 # The branch used as upstream. This is what the upstream tarball is it
 # should be tracked in a local branch. This would be "master" for the
 # Linus master branch or linux-5.x.y for a stable branch. It can also be
@@ -162,3 +193,25 @@ endif
 # be set to 1 to decrease the kernel UTS_RELEASE and SPECBUILD by 11 characters
 # (YYYYMMDDgit).
 UPSTREAMBUILD_GIT_ONLY ?=
+
+#
+# ZSTREAM
+# -------
+#
+#  This variable controls whether we use zstream numbering or not for the
+#  package release. The zstream release keeps the build number of the last
+#  build done for ystream for the Beta milestone, and increments a second
+#  number for each build. The third number is used for branched builds
+#  (eg.: for builds with security fixes or hot fixes done outside of the
+#  batch release process).
+#
+#  For example, with ZSTREAM unset or set to "no", all builds will contain
+#  a release with only the build number, eg.: kernel-<kernel version>-X.el*,
+#  where X is the build number. With ZSTREAM set to "yes", we will have
+#  builds with kernel-<kernel version>-X.Y.Z.el*, where X is the last
+#  RHEL_RELEASE number before ZSTREAM flag was set to yes, Y will now be the
+#  build number and Z will always be 1 except if you're doing a branched build
+#  (when you give RHDISTGIT_BRANCH on the command line, in which case the Z
+#  number will be incremented instead of the Y).
+#
+ZSTREAM ?= no
