@@ -7,9 +7,9 @@
 %global debug_package %{nil}
 %endif
 
-%global commit0 d1cf250ea73de26c4c1f0a3c8173eb2648efbb04
+%global commit0 07fb35bc33b3e79125a1beab7690e830f183f5d8
 %global shortcommit0 %(c=%{commit0}; echo ${c:0:7})
-%global date 20261007
+%global date 20261013
 
 %global commit1 04821d1e7d60845525e8db55c7bcd41ef5be9406
 %global shortcommit1 %(c=%{commit1}; echo ${c:0:7})
@@ -27,7 +27,7 @@
 
 Name:           tg_owt
 Version:        0
-Release:        153%{?dist}
+Release:        154%{?dist}
 Summary:        WebRTC library for the Telegram messenger
 
 # Main project - BSD

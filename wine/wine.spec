@@ -88,7 +88,7 @@
 %global ge_id 0fdd9b74b7fad38fb1c483d74efc738bb02c9e59
 %global ge_url https://github.com/GloriousEggroll/proton-ge-custom/raw/%{ge_id}/patches
 
-%global tkg_id ca3f1a3ce89fa50e325612292e27f6638b78607d
+%global tkg_id 2c529ea6c3696f88861a0e061c54523931310cbe
 %global tkg_url https://github.com/Frogging-Family/wine-tkg-git/raw/%{tkg_id}/wine-tkg-git/wine-tkg-patches
 %global tkg_cid a6a468420c0df18d51342ac6864ecd3f99f7011e
 %global tkg_curl https://github.com/Frogging-Family/community-patches/raw/%{tkg_cid}/wine-tkg-git
@@ -217,8 +217,6 @@ Patch1024:       %{tkg_url}/hotfixes/proton_fs_hack_staging/remove_hooks_that_ti
 Patch1025:       %{tkg_url}/hotfixes/GetMappedFileName/Return_nt_filename_and_resolve_DOS_drive_path.mypatch#/%{name}-tkg-Return_nt_filename_and_resolve_DOS_drive_path.patch
 Patch1026:       %{tkg_url}/hotfixes/08cccb5/a608ef1.mypatch#/%{name}-tkg-a608ef1.patch
 Patch1027:       %{tkg_url}/hotfixes/NosTale/nostale_mouse_fix.mypatch#/%{name}-tkg-nostale_mouse_fix.patch
-Patch1028:       0001-LAA-fixup-1.patch
-Patch1029:       0001-LAA-fixup-2.patch
 
 Patch1091:       %{valve_url}/commit/232bbca5ecd23dbaba9a4472195ff4b24da53a5f.patch#/%{name}-valve-232bbca.patch
 Patch1092:       %{valve_url}/commit/71c860c8836bfc0dc9e3321a2a71e207071b3c2c.patch#/%{name}-valve-71c860c.patch
@@ -813,9 +811,7 @@ tar -xf %{SOURCE900} --strip-components=1
 ./staging/patchinstall.py --no-autoconf --destdir="$(pwd)" --all %{?wine_staging_opts}
 
 %patch -P 707 -p1
-%patch -P 1028 -p1
 %patch -P 1020 -p1
-%patch -P 1029 -p1
 %patch -P 701 -p1 -R
 %patch -P 700 -p1 -R
 %patch -P 1021 -p1
