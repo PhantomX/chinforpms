@@ -16,8 +16,8 @@
 
 Name:           audacious-plugins
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.6.1
-Release:        102%{?dist}
+Version:        4.6.2
+Release:        100%{?dist}
 Epoch:          1
 
 # Minimum audacious/audacious-plugins version in inter-package dependencies.
@@ -40,8 +40,6 @@ Source102:      audacious-plugins-jack.metainfo.xml
 Patch0:         audacious-plugins-3.7-alpha1-xmms-skindir.patch
 # Fedora customization: add default system-wide module_path
 Patch2:         audacious-plugins-3.6-ladspa.patch
-# upstream fix for the accidental Turkish translations in en_GB
-Patch3:         %{vc_url}/commit/f70d7ba42a3a5ee8981027bba6d25cc706dca871.patch#/%{name}-gh-f70d7ba.patch
 
 BuildRequires:  libappstream-glib
 BuildRequires:  gcc-c++
@@ -345,6 +343,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}-jack.m
 
 
 %changelog
+* Wed Oct 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.2-100
+- 4.6.2
+
 * Sat Oct 03 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-102
 - Rebuilt for libxml-2.5.4
 

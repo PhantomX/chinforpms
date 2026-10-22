@@ -8,7 +8,7 @@
 
 Name:           audacious
 # If beta, use "~" instead "-", as ~beta1
-Version:        4.6.1
+Version:        4.6.2
 Release:        100%{?dist}
 Epoch:          1
 
@@ -157,6 +157,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{name}.metain
 
 
 %changelog
+* Wed Oct 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.2-100
+- 4.6.2
+
 * Sat Aug 29 2026 Phantom X <megaphantomx at hotmail dot com> - 1:4.6.1-100
 - 4.6.1
 - Fedora sync
