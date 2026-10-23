@@ -14,7 +14,7 @@
 %global ver     %%(echo %{version} | tr '~' '-' | tr '_' '-')
 
 Name:           keepassxc
-Version:        2.8.0~beta1
+Version:        2.8.0
 Release:        100%{?dist}
 Summary:        Cross-platform password manager
 Epoch:          1
@@ -93,7 +93,7 @@ with new features and bugfixes to provide a feature-rich, fully
 cross-platform and modern open-source password manager.
  
 %prep
-%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:v%{ver}} -p1
+%autosetup -n %{name}-%{?with_snapshot:%{commit}}%{!?with_snapshot:%{ver}} -p1
 
 %if %{with snapshot}
 if [ ! -e .gitrev ] ;then
@@ -161,6 +161,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_metainfodir}/%{appname}.app
 
 
 %changelog
+* Fri Oct 23 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.0-100
+- 2.8.0
+
 * Fri Sep 25 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2.8.0~beta1-100
 - 2.8.0-beta1
 
