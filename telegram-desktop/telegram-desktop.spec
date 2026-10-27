@@ -20,6 +20,7 @@
 # Enable or disable build with support...
 # https://github.com/telegramdesktop/tdesktop/issues/23899
 %bcond bundled_fonts 1
+%bcond qt_private 1
 %bcond wayland 1
 %bcond x11 1
 %bcond ltdp 0
@@ -40,7 +41,7 @@
 %global cppgir_ver 47cf94f
 
 Name:           telegram-desktop
-Version:        7.3.2
+Version:        7.3.3
 Release:        100%{?dist}
 Summary:        Telegram Desktop official messaging app
 
@@ -144,8 +145,12 @@ BuildRequires:  cmake(Qt6OpenGLWidgets)
 BuildRequires:  cmake(Qt6ShaderTools)
 BuildRequires:  cmake(Qt6Svg)
 BuildRequires:  cmake(Qt6Widgets)
+%if %{with qt_private}
 BuildRequires:  qt6-qtbase-private-devel
 %{?_qt6:Requires: %{_qt6}%{?_isa} = %{_qt6_version}}
+%else
+BuildRequires:  cmake(KF6WindowSystem)
+%endif
 Requires:       qt6-qtimageformats%{?_isa}
 
 BuildRequires:  cmake(KF6CoreAddons)
@@ -310,6 +315,9 @@ sed -e "/#include <openssl\/engine.h>/d" -i Telegram/SourceFiles/core/utils.cpp
     -DDESKTOP_APP_USE_PACKAGED_FONTS:BOOL=ON \
 %endif
     -DDESKTOP_APP_QT6:BOOL=ON \
+%if %{without qt_private}
+    -DDESKTOP_APP_DISABLE_PRIVATE_QT_API:BOOL=ON \
+%endif
     -DDESKTOP_APP_DISABLE_WEBRTC_INTEGRATION:BOOL=OFF \
     -DDESKTOP_APP_DISABLE_CRASH_REPORTS:BOOL=ON \
 %if %{with wayland}
@@ -387,6 +395,9 @@ desktop-file-validate %{buildroot}%{_datadir}/applications/%{appname}.desktop
 
 
 %changelog
+* Fri Oct 23 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.3.3-100
+- 7.3.3
+
 * Wed Oct 21 2026 Phantom X <megaphantomx at hotmail dot com> - 1:7.3.2-100
 - 7.3.2
 

@@ -5,7 +5,7 @@
 %global forkname youtube-dlc
 
 Name:           yt-dlp
-Version:        2026.08.19
+Version:        2026.10.26
 Release:        100%{?dist}
 Epoch:          1
 Summary:        A command-line program to download videos
@@ -18,7 +18,7 @@ Source1:        %{name}.conf
 
 BuildArch:      noarch
 
-BuildRequires:  python3-devel >= 3.10
+BuildRequires:  python3-devel >= 3.11
 %if %{with curl_cffi}
 BuildRequires:  %{py3_dist curl_cffi}
 %endif
@@ -93,6 +93,8 @@ sed \
   -i Makefile
 %endif
 
+sed -e 's|certifi>=..........|certifi>=2026.01.04|' -i pyproject.toml
+
 %generate_buildrequires
 %pyproject_buildrequires -x default,secretstorage%{?with_curl_cffi:,curl-cffi}
 
@@ -136,6 +138,9 @@ install -pm0644 %{S:1} %{buildroot}%{_sysconfdir}/
 
 
 %changelog
+* Tue Oct 27 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.10.26-100
+- 2026.10.26
+
 * Thu Aug 20 2026 Phantom X <megaphantomx at hotmail dot com> - 1:2026.08.19-100
 - 2026.08.19
 

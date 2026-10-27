@@ -47,9 +47,9 @@
 # Enable system yaml-cpp (need -fexceptions support)
 %bcond yamlcpp 0
 
-%global commit 55a3aff337fe2823676c31f2bf44b3dbc39de9fc
+%global commit aa9ebd2f8643d28e592169fffbb76e379c6d7620
 %global shortcommit %(c=%{commit}; echo ${c:0:7})
-%global date 20261006
+%global date 20261023
 %bcond snapshot 1
 
 %global commit10 c8033ce9d039e7f9d134877c363397b3cfe20816
@@ -100,7 +100,7 @@
 %global shortcommit21 %(c=%{commit21}; echo ${c:0:7})
 %global srcname21 protobuf
 
-%global commit22 1e5b49925aa60065db52de44c366d446a902547b
+%global commit22 7e31b5bfcc9350058fbaf81d62a8eb39dd29c5f7
 %global shortcommit22 %(c=%{commit22}; echo ${c:0:7})
 %global srcname22 rtmidi
 
@@ -122,7 +122,7 @@
 %global sbuild %%(echo %{version} | cut -d. -f4)
 
 Name:           rpcs3
-Version:        0.0.43.104
+Version:        0.0.43.254
 Release:        1%{?dist}
 Summary:        PS3 emulator/debugger
 
@@ -242,7 +242,6 @@ BuildRequires:  pkgconfig(libusb-1.0)
 BuildRequires:  pkgconfig(libzstd)
 BuildRequires:  cmake(miniupnpc)
 BuildRequires:  pkgconfig(openal)
-BuildRequires:  cmake(OpenCV)
 %if %{with pugixml}
 BuildRequires:  pkgconfig(pugixml) >= %{bundlepugixml}
 %else
@@ -485,7 +484,6 @@ mv 3rdparty/ffmpeg/include/linux/x86_64/lib/*.a %{_vpath_builddir}/3rdparty/ffmp
 %if %{with pugixml}
   -DUSE_SYSTEM_PUGIXML:BOOL=ON \
 %endif
-  -DUSE_SYSTEM_OPENCV:BOOL=ON \
 %if %{with rtmidi}
   -DUSE_SYSTEM_RTMIDI:BOOL=ON \
 %endif

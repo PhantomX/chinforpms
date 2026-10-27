@@ -1,7 +1,7 @@
 %undefine _cmake_shared_libs
 
 %global srcname10 brotli
-%global srcname10_ver 1.2.0
+%global srcname10_ver 1.2.1
 
 %global commit11 156c7b75ae9b8c3b3f847acf264f17594c3859fb
 %global shortcommit11 %(c=%{commit11}; echo ${c:0:7})
@@ -17,7 +17,7 @@
 %global srcname14_ver 1.15.0
 
 %global srcname15 curl 
-%global srcname15_ver curl-8_21_0
+%global srcname15_ver curl-8_23_0
 
 %global srcname16 zlib
 %global srcname16_ver 1.3.1
@@ -28,9 +28,12 @@
 %global srcname18 libidn2
 %global srcname18_ver 2.3.7
 
+%global srcname19 c-ares
+%global srcname19_ver 1.34.9
+
 
 Name:           curl-impersonate
-Version:        2.1.0
+Version:        2.3.1
 Release:        1%{?dist}
 Summary:        A build of curl that impersonates four major browsers
 
@@ -57,8 +60,9 @@ Source15:       https://github.com/%{srcname15}/%{srcname15}/archive/%{srcname15
 Source16:       https://github.com/madler/%{srcname16}/releases/download/v%{srcname16_ver}/%{srcname16}-%{srcname16_ver}.tar.gz
 Source17:       https://github.com/facebook/%{srcname17}/releases/download/v%{srcname17_ver}/%{srcname17}-%{srcname17_ver}.tar.gz
 Source18:       https://ftp.gnu.org/gnu/libidn/%{srcname18}-%{srcname18_ver}.tar.gz
+Source19:       https://github.com/c-ares/c-ares/releases/download/v%{srcname19_ver}/%{srcname19}-%{srcname19_ver}.tar.gz
 
-Patch0:         https://gitlab.archlinux.org/archlinux/packaging/packages/%{name}/-/raw/f0e407566499d479b55791fcdae3b9bdaf2fb590/no-download.patch#/%{name}-archlinux-no-download.patch
+Patch0:         0001-cmake-no-download.patch
 
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -106,7 +110,7 @@ developing applications that use %{name}.
 mkdir -p %{_vpath_builddir}/deps/downloads
 
 cp -a \
-  %{S:10} %{S:11} %{S:12} %{S:13} %{S:14} %{S:15} %{S:16} %{S:17} %{S:18} \
+  %{S:10} %{S:11} %{S:12} %{S:13} %{S:14} %{S:15} %{S:16} %{S:17} %{S:18} %{S:19} \
   %{_vpath_builddir}/deps/downloads
 
 cat %{S:110} >> patches/boringssl.patch
@@ -131,6 +135,7 @@ cp -p %{srcname15}/COPYING ../../../COPYING.curl
 cp -p %{srcname16}/LICENSE ../../../LICENSE.zlib
 cp -p %{srcname17}/COPYING ../../../COPYING.zstd
 cp -p %{srcname18}/COPYING ../../../COPYING.libidn2
+cp -p cares/LICENSE.md ../../../LICENSE.cares.md
 popd
 
 
@@ -139,7 +144,9 @@ popd
 
 mv %{buildroot}%{_includedir}/curl %{buildroot}%{_includedir}/%{name}
 
+rm -fv %{buildroot}%{_bindir}/%{name}-config
 rm -fv %{buildroot}%{_libdir}/*.{la,a}
+rm -fv %{buildroot}%{_libdir}/%{name}/*.{la,a}
 
 
 %files
@@ -156,9 +163,13 @@ rm -fv %{buildroot}%{_libdir}/*.{la,a}
 %files devel
 %{_includedir}/%{name}
 %{_libdir}/lib%{name}.so
+%{_libdir}/pkgconfig/lib%{name}.pc
 
 
 %changelog
+* Tue Oct 27 2026 Phantom X <megaphantomx at hotmail dot com> - 2.3.1-1
+- 2.3.1
+
 * Thu Aug 20 2026 Phantom X <megaphantomx at hotmail dot com> - 2.1.0-1
 - 2.1.0
 
